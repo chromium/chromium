@@ -9,6 +9,7 @@
 #include <set>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
 #include "base/barrier_closure.h"
 #include "base/containers/enum_set.h"
@@ -28,16 +29,16 @@
 #include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/public/resource_attribution/resource_types.h"
-#include "components/performance_manager/resource_attribution/cpu_measurement_monitor.h"
 #include "components/performance_manager/resource_attribution/query_params.h"
 #include "components/performance_manager/resource_attribution/query_scheduler.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
 #include "components/performance_manager/test_support/resource_attribution/gtest_util.h"
-#include "components/performance_manager/test_support/resource_attribution/simulated_cpu_measurement_delegate.h"
+#include "components/performance_manager/test_support/resource_attribution/measurement_delegates.h"
 #include "components/performance_manager/test_support/run_in_graph.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -50,8 +51,30 @@ namespace performance_manager::resource_attribution {
 
 namespace {
 
+using ::testing::_;
 using ::testing::ElementsAre;
 using QueryParams = internal::QueryParams;
+
+// Bits for QueryParams::ContextTypeSet.
+constexpr size_t kFrameContextBit = 0;
+constexpr size_t kWorkerContextBit = 3;
+
+static_assert(
+    std::is_same_v<
+        absl::variant_alternative_t<kFrameContextBit, ResourceContext>,
+        FrameContext>,
+    "FrameContext is no longer index 0 in the ResourceContext variant, "
+    "please update the test.");
+static_assert(
+    std::is_same_v<
+        absl::variant_alternative_t<kWorkerContextBit, ResourceContext>,
+        WorkerContext>,
+    "WorkerContext is no longer index 3 in the ResourceContext variant, "
+    "please update the test.");
+
+// Fake memory results.
+constexpr uint64_t kFakeResidentSetSize = 123;
+constexpr uint64_t kFakePrivateFootprint = 456;
 
 class LenientMockQueryResultObserver : public QueryResultObserver {
  public:
@@ -80,8 +103,10 @@ class ResourceAttrQueriesPMTest : public PerformanceManagerTestHarness {
 
     RunInGraph([&](Graph* graph) {
       graph_ = graph;
-      CPUMeasurementDelegate::SetDelegateFactoryForTesting(graph,
-                                                           &delegate_factory_);
+      CPUMeasurementDelegate::SetDelegateFactoryForTesting(
+          graph, &cpu_delegate_factory_);
+      MemoryMeasurementDelegate::SetDelegateFactoryForTesting(
+          graph, &memory_delegate_factory_);
     });
 
     // Navigate to an initial page.
@@ -92,6 +117,16 @@ class ResourceAttrQueriesPMTest : public PerformanceManagerTestHarness {
     ASSERT_TRUE(rfh);
     main_frame_context_ = FrameContext::FromRenderFrameHost(rfh);
     ASSERT_TRUE(main_frame_context_.has_value());
+
+    // Set fake memory results for the page's process.
+    content::RenderProcessHost* rph = rfh->GetProcess();
+    ASSERT_TRUE(rph);
+    memory_delegate_factory_.memory_summaries()
+        [ProcessContext::FromRenderProcessHost(rph).value()] =
+        MemoryMeasurementDelegate::MemorySummaryMeasurement{
+            .resident_set_size_kb = kFakeResidentSetSize,
+            .private_footprint_kb = kFakePrivateFootprint,
+        };
   }
 
   void TearDown() override {
@@ -116,14 +151,41 @@ class ResourceAttrQueriesPMTest : public PerformanceManagerTestHarness {
 
   absl::optional<FrameContext> main_frame_context_;
 
-  // This must be deleted after TearDown() so that it outlives the
-  // CPUMeasurementMonitor.
-  SimulatedCPUMeasurementDelegateFactory delegate_factory_;
+  // These must be deleted after TearDown() so that they outlive the
+  // CPUMeasurementMonitor and MemoryMeasurementProvider.
+  SimulatedCPUMeasurementDelegateFactory cpu_delegate_factory_;
+  FakeMemoryMeasurementDelegateFactory memory_delegate_factory_;
 };
+
+QueryParams CreateQueryParams(
+    const ResourceTypeSet& resource_types = {},
+    const std::set<ResourceContext>& resource_contexts = {},
+    const std::vector<size_t>& all_context_types = {}) {
+  QueryParams params;
+  params.resource_types = resource_types;
+  params.resource_contexts = resource_contexts;
+  for (const auto& context_type : all_context_types) {
+    params.all_context_types.set(context_type);
+  }
+  return params;
+}
+
+// Returns a MemorySummaryResult containing the default fake memory results.
+// This can be used for the results from a process, or a page or frame that gets
+// all the memory from one process.
+MemorySummaryResult FakeMemorySummaryResult() {
+  // Since the tests use the mock clock, the measurement time is the same time
+  // the fake result is created.
+  return {
+      .metadata = {.measurement_time = base::TimeTicks::Now()},
+      .resident_set_size_kb = kFakeResidentSetSize,
+      .private_footprint_kb = kFakePrivateFootprint,
+  };
+}
 
 }  // namespace
 
-TEST_F(ResourceAttrQueriesTest, QueryBuilderParams) {
+TEST_F(ResourceAttrQueriesTest, QueryBuilder_Params) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
 
   QueryBuilder builder;
@@ -138,29 +200,11 @@ TEST_F(ResourceAttrQueriesTest, QueryBuilderParams) {
           .AddResourceType(ResourceType::kCPUTime);
   EXPECT_EQ(builder.GetParamsForTesting(), builder_ref.GetParamsForTesting());
 
-  constexpr size_t kFrameContextBit = 0;
-  constexpr size_t kWorkerContextBit = 3;
-  static_assert(
-      std::is_same_v<
-          absl::variant_alternative_t<kFrameContextBit, ResourceContext>,
-          FrameContext>,
-      "FrameContext is no longer index 0 in the ResourceContext variant, "
-      "please update the test");
-  static_assert(
-      std::is_same_v<
-          absl::variant_alternative_t<kWorkerContextBit, ResourceContext>,
-          WorkerContext>,
-      "WorkerContext is no longer index 3 in the ResourceContext variant, "
-      "please update the test");
-
-  QueryParams expected_params;
-  expected_params.resource_contexts = {
-      mock_graph.page->GetResourceContext(),
-      mock_graph.process->GetResourceContext()};
-  expected_params.all_context_types.set(kFrameContextBit);
-  expected_params.all_context_types.set(kWorkerContextBit);
-  expected_params.resource_types = {ResourceType::kCPUTime};
-
+  const QueryParams expected_params =
+      CreateQueryParams({ResourceType::kCPUTime},
+                        {mock_graph.page->GetResourceContext(),
+                         mock_graph.process->GetResourceContext()},
+                        {kFrameContextBit, kWorkerContextBit});
   EXPECT_EQ(*builder.GetParamsForTesting(), expected_params);
 
   // Creating a ScopedQuery invalidates the builder.
@@ -170,7 +214,7 @@ TEST_F(ResourceAttrQueriesTest, QueryBuilderParams) {
   EXPECT_EQ(*scoped_query.GetParamsForTesting(), expected_params);
 }
 
-TEST_F(ResourceAttrQueriesTest, QueryBuilderClone) {
+TEST_F(ResourceAttrQueriesTest, QueryBuilder_Clone) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   QueryBuilder builder;
   builder.AddResourceContext(mock_graph.page->GetResourceContext())
@@ -186,42 +230,84 @@ TEST_F(ResourceAttrQueriesTest, QueryBuilderClone) {
   // Cloned builder can be modified independently.
   builder.AddResourceContext(mock_graph.process->GetResourceContext());
   cloned_builder.AddResourceContext(mock_graph.frame->GetResourceContext());
+  cloned_builder.AddResourceType(ResourceType::kMemorySummary);
 
-  const std::set<ResourceContext> expected_contexts{
-      mock_graph.page->GetResourceContext(),
-      mock_graph.process->GetResourceContext()};
-  EXPECT_EQ(builder.GetParamsForTesting()->resource_contexts,
-            expected_contexts);
-  const std::set<ResourceContext> expected_cloned_contexts{
-      mock_graph.page->GetResourceContext(),
-      mock_graph.frame->GetResourceContext()};
-  EXPECT_EQ(cloned_builder.GetParamsForTesting()->resource_contexts,
-            expected_cloned_contexts);
+  EXPECT_EQ(*builder.GetParamsForTesting(),
+            CreateQueryParams({ResourceType::kCPUTime},
+                              {mock_graph.page->GetResourceContext(),
+                               mock_graph.process->GetResourceContext()},
+                              {kFrameContextBit}));
+  EXPECT_EQ(
+      *cloned_builder.GetParamsForTesting(),
+      CreateQueryParams({ResourceType::kCPUTime, ResourceType::kMemorySummary},
+                        {mock_graph.page->GetResourceContext(),
+                         mock_graph.frame->GetResourceContext()},
+                        {kFrameContextBit}));
 }
 
-TEST_F(ResourceAttrQueriesPMTest, QueryBuilderQueryOnce) {
+TEST_F(ResourceAttrQueriesPMTest, QueryBuilder_QueryOnce_CPU) {
+  auto expect_no_results = [&](const QueryResultMap& results) {
+    // CPU measurements need to cover a period of time, so without a scoped
+    // query to start the monitoring period there will be no results. This just
+    // tests that the query request and empty result are delivered to and from
+    // the scheduler.
+    EXPECT_TRUE(results.empty());
+  };
+
   base::RunLoop run_loop;
   QueryBuilder()
       .AddResourceContext(main_frame_context())
       .AddResourceType(ResourceType::kCPUTime)
-      .QueryOnce(base::BindLambdaForTesting([](const QueryResultMap& results) {
-                   // CPU measurements need to cover a period of time, so
-                   // without a scoped query to start the monitoring period
-                   // there will be no results. This just tests that the query
-                   // request and empty result are delivered to and from the
-                   // scheduler.
-                   EXPECT_TRUE(results.empty());
-                 }).Then(run_loop.QuitClosure()));
+      .QueryOnce(base::BindLambdaForTesting(expect_no_results)
+                     .Then(run_loop.QuitClosure()));
   run_loop.Run();
 }
 
-TEST_F(ResourceAttrQueriesPMTest, QueryBuilderQueryOnceWithTaskRunner) {
+TEST_F(ResourceAttrQueriesPMTest, QueryBuilder_QueryOnce_Memory) {
+  auto expect_memory_results = [&](const QueryResultMap& results) {
+    EXPECT_THAT(results,
+                ElementsAre(ResultForContextMatches<MemorySummaryResult>(
+                    main_frame_context(), FakeMemorySummaryResult())));
+  };
+
+  base::RunLoop run_loop;
+  QueryBuilder()
+      .AddResourceContext(main_frame_context())
+      .AddResourceType(ResourceType::kMemorySummary)
+      .QueryOnce(base::BindLambdaForTesting(expect_memory_results)
+                     .Then(run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+TEST_F(ResourceAttrQueriesPMTest, QueryBuilder_QueryOnce_CPUAndMemory) {
+  auto expect_only_memory_results = [&](const QueryResultMap& results) {
+    // CPU measurements need to cover a period of time, so without a scoped
+    // query to start the monitoring period there will be no results. The memory
+    // result should be delivered from the scheduler without a CPU measurement.
+    EXPECT_THAT(results,
+                ElementsAre(ResultForContextMatches<MemorySummaryResult>(
+                    main_frame_context(), FakeMemorySummaryResult())));
+  };
+
+  base::RunLoop run_loop;
+  QueryBuilder()
+      .AddResourceContext(main_frame_context())
+      .AddResourceType(ResourceType::kCPUTime)
+      .AddResourceType(ResourceType::kMemorySummary)
+      .QueryOnce(base::BindLambdaForTesting(expect_only_memory_results)
+                     .Then(run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+TEST_F(ResourceAttrQueriesPMTest, QueryBuilder_QueryOnceWithTaskRunner) {
   auto main_thread_task_runner = base::SequencedTaskRunner::GetCurrentDefault();
   base::RunLoop run_loop;
-  auto expect_empty_on_main_thread =
-      [main_thread_task_runner,
+  auto expect_results_on_main_thread =
+      [this, main_thread_task_runner,
        quit_closure = run_loop.QuitClosure()](const QueryResultMap& results) {
-        EXPECT_TRUE(results.empty());
+        EXPECT_THAT(results,
+                    ElementsAre(ResultForContextMatches<MemorySummaryResult>(
+                        main_frame_context(), FakeMemorySummaryResult())));
         EXPECT_TRUE(main_thread_task_runner->RunsTasksInCurrentSequence());
         std::move(quit_closure).Run();
       };
@@ -231,8 +317,8 @@ TEST_F(ResourceAttrQueriesPMTest, QueryBuilderQueryOnceWithTaskRunner) {
   RunInGraph([&] {
     QueryBuilder()
         .AddResourceContext(main_frame_context())
-        .AddResourceType(ResourceType::kCPUTime)
-        .QueryOnce(base::BindLambdaForTesting(expect_empty_on_main_thread),
+        .AddResourceType(ResourceType::kMemorySummary)
+        .QueryOnce(base::BindLambdaForTesting(expect_results_on_main_thread),
                    main_thread_task_runner);
   });
 
@@ -245,22 +331,61 @@ TEST_F(ResourceAttrQueriesPMTest, AddRemoveScopedQuery) {
   RunInGraph([&](Graph* graph) {
     scheduler = QueryScheduler::GetFromGraph(graph);
     ASSERT_TRUE(scheduler);
-    EXPECT_FALSE(scheduler->GetCPUMonitorForTesting().IsMonitoring());
+    EXPECT_EQ(scheduler->GetQueryCountForTesting(ResourceType::kCPUTime), 0U);
+    EXPECT_EQ(scheduler->GetQueryCountForTesting(ResourceType::kMemorySummary),
+              0U);
   });
   // Abort the whole test if the scheduler wasn't found.
   ASSERT_TRUE(scheduler);
 
-  absl::optional<ScopedResourceUsageQuery> scoped_query =
+  absl::optional<ScopedResourceUsageQuery> scoped_memory_query =
+      QueryBuilder()
+          .AddResourceContext(main_frame_context())
+          .AddResourceType(ResourceType::kMemorySummary)
+          .CreateScopedQuery();
+  RunInGraph([&] {
+    EXPECT_EQ(scheduler->GetQueryCountForTesting(ResourceType::kCPUTime), 0U);
+    EXPECT_EQ(scheduler->GetQueryCountForTesting(ResourceType::kMemorySummary),
+              1U);
+  });
+  absl::optional<ScopedResourceUsageQuery> scoped_cpu_query =
       QueryBuilder()
           .AddResourceContext(main_frame_context())
           .AddResourceType(ResourceType::kCPUTime)
           .CreateScopedQuery();
   RunInGraph([&] {
-    EXPECT_TRUE(scheduler->GetCPUMonitorForTesting().IsMonitoring());
+    EXPECT_EQ(scheduler->GetQueryCountForTesting(ResourceType::kCPUTime), 1U);
+    EXPECT_EQ(scheduler->GetQueryCountForTesting(ResourceType::kMemorySummary),
+              1U);
   });
-  scoped_query.reset();
+  scoped_memory_query.reset();
   RunInGraph([&] {
-    EXPECT_FALSE(scheduler->GetCPUMonitorForTesting().IsMonitoring());
+    EXPECT_EQ(scheduler->GetQueryCountForTesting(ResourceType::kCPUTime), 1U);
+    EXPECT_EQ(scheduler->GetQueryCountForTesting(ResourceType::kMemorySummary),
+              0U);
+  });
+  absl::optional<ScopedResourceUsageQuery> scoped_cpu_memory_query =
+      QueryBuilder()
+          .AddResourceContext(main_frame_context())
+          .AddResourceType(ResourceType::kCPUTime)
+          .AddResourceType(ResourceType::kMemorySummary)
+          .CreateScopedQuery();
+  RunInGraph([&] {
+    EXPECT_EQ(scheduler->GetQueryCountForTesting(ResourceType::kCPUTime), 2U);
+    EXPECT_EQ(scheduler->GetQueryCountForTesting(ResourceType::kMemorySummary),
+              1U);
+  });
+  scoped_cpu_query.reset();
+  RunInGraph([&] {
+    EXPECT_EQ(scheduler->GetQueryCountForTesting(ResourceType::kCPUTime), 1U);
+    EXPECT_EQ(scheduler->GetQueryCountForTesting(ResourceType::kMemorySummary),
+              1U);
+  });
+  scoped_cpu_memory_query.reset();
+  RunInGraph([&] {
+    EXPECT_EQ(scheduler->GetQueryCountForTesting(ResourceType::kCPUTime), 0U);
+    EXPECT_EQ(scheduler->GetQueryCountForTesting(ResourceType::kMemorySummary),
+              0U);
   });
 }
 
@@ -269,7 +394,7 @@ TEST_F(ResourceAttrQueriesPMTest, ScopedQueryIsMovable) {
   RunInGraph([&](Graph* graph) {
     scheduler = QueryScheduler::GetFromGraph(graph);
     ASSERT_TRUE(scheduler);
-    EXPECT_FALSE(scheduler->GetCPUMonitorForTesting().IsMonitoring());
+    EXPECT_EQ(scheduler->GetQueryCountForTesting(ResourceType::kCPUTime), 0U);
   });
   // Abort the whole test if the scheduler wasn't found.
   ASSERT_TRUE(scheduler);
@@ -282,7 +407,7 @@ TEST_F(ResourceAttrQueriesPMTest, ScopedQueryIsMovable) {
             .AddResourceType(ResourceType::kCPUTime)
             .CreateScopedQuery();
     RunInGraph([&] {
-      EXPECT_TRUE(scheduler->GetCPUMonitorForTesting().IsMonitoring());
+      EXPECT_EQ(scheduler->GetQueryCountForTesting(ResourceType::kCPUTime), 1U);
     });
 
     auto* params = inner_query.GetParamsForTesting();
@@ -304,11 +429,11 @@ TEST_F(ResourceAttrQueriesPMTest, ScopedQueryIsMovable) {
 
   // `inner_query` should not notify the scheduler when it goes out of scope.
   RunInGraph([&] {
-    EXPECT_TRUE(scheduler->GetCPUMonitorForTesting().IsMonitoring());
+    EXPECT_EQ(scheduler->GetQueryCountForTesting(ResourceType::kCPUTime), 1U);
   });
   outer_query.reset();
   RunInGraph([&] {
-    EXPECT_FALSE(scheduler->GetCPUMonitorForTesting().IsMonitoring());
+    EXPECT_EQ(scheduler->GetQueryCountForTesting(ResourceType::kCPUTime), 0U);
   });
 }
 
@@ -317,6 +442,7 @@ TEST_F(ResourceAttrQueriesPMTest, Observers) {
       QueryBuilder()
           .AddResourceContext(main_frame_context())
           .AddResourceType(ResourceType::kCPUTime)
+          .AddResourceType(ResourceType::kMemorySummary)
           .CreateScopedQuery();
 
   // Allow some time to pass to measure.
@@ -342,13 +468,14 @@ TEST_F(ResourceAttrQueriesPMTest, Observers) {
   });
 
   // Quit the RunLoop when both observers receive results. Expect each result to
-  // contain a single ResourceContext with a CPUTimeResult.
+  // contain a single ResourceContext with both results.
   base::RunLoop run_loop;
   auto barrier_closure = base::BarrierClosure(2, run_loop.QuitClosure());
   EXPECT_CALL(
       main_thread_observer,
       OnResourceUsageUpdated(ElementsAre(
-          QueryResultMapEntryMatches<CPUTimeResult>(main_frame_context()))))
+          ResultForContextMatchesAll<MemorySummaryResult, CPUTimeResult>(
+              main_frame_context(), FakeMemorySummaryResult(), _))))
       .WillOnce([&] {
         EXPECT_TRUE(main_thread_task_runner->RunsTasksInCurrentSequence());
         barrier_closure.Run();
@@ -356,7 +483,8 @@ TEST_F(ResourceAttrQueriesPMTest, Observers) {
   EXPECT_CALL(
       graph_sequence_observer,
       OnResourceUsageUpdated(ElementsAre(
-          QueryResultMapEntryMatches<CPUTimeResult>(main_frame_context()))))
+          ResultForContextMatchesAll<MemorySummaryResult, CPUTimeResult>(
+              main_frame_context(), FakeMemorySummaryResult(), _))))
       .WillOnce([&] {
         EXPECT_TRUE(graph_sequence_task_runner->RunsTasksInCurrentSequence());
         barrier_closure.Run();
@@ -388,7 +516,8 @@ TEST_F(ResourceAttrQueriesPMTest, GraphTeardown) {
 TEST_F(ResourceAttrQueriesPMTest, ScopedQueryAndQueryOnce) {
   QueryBuilder builder;
   builder.AddResourceContext(main_frame_context())
-      .AddResourceType(ResourceType::kCPUTime);
+      .AddResourceType(ResourceType::kCPUTime)
+      .AddResourceType(ResourceType::kMemorySummary);
 
   // Create a scoped query to start the CPU monitor.
   auto scoped_query = builder.Clone().CreateScopedQuery();
@@ -396,15 +525,19 @@ TEST_F(ResourceAttrQueriesPMTest, ScopedQueryAndQueryOnce) {
   // Allow some time to pass to measure.
   task_environment()->FastForwardBy(base::Minutes(1));
 
+  auto expect_results = [&](const QueryResultMap& results) {
+    // QueryOnce should get measurements that were collected for `scoped_query`,
+    // including CPU time.
+    EXPECT_THAT(
+        results,
+        ElementsAre(
+            ResultForContextMatchesAll<MemorySummaryResult, CPUTimeResult>(
+                main_frame_context(), FakeMemorySummaryResult(), _)));
+  };
+
   base::RunLoop run_loop;
   builder.Clone().QueryOnce(
-      base::BindLambdaForTesting([&](const QueryResultMap& results) {
-        // QueryOnce should get measurements that were collected for
-        // `scoped_query`.
-        EXPECT_THAT(results,
-                    ElementsAre(QueryResultMapEntryMatches<CPUTimeResult>(
-                        main_frame_context())));
-      }).Then(run_loop.QuitClosure()));
+      base::BindLambdaForTesting(expect_results).Then(run_loop.QuitClosure()));
   run_loop.Run();
 }
 

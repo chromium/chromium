@@ -109,8 +109,7 @@ void ApplyOverlappingDelta(CPUTimeResult& result, const CPUTimeResult& delta) {
 }  // namespace
 
 CPUMeasurementMonitor::CPUMeasurementMonitor()
-    : cpu_measurement_delegate_factory_(
-          CPUMeasurementDelegate::GetDefaultFactory()) {}
+    : delegate_factory_(CPUMeasurementDelegate::GetDefaultFactory()) {}
 
 CPUMeasurementMonitor::~CPUMeasurementMonitor() {
   if (graph_) {
@@ -119,13 +118,13 @@ CPUMeasurementMonitor::~CPUMeasurementMonitor() {
   CHECK(!graph_);
 }
 
-void CPUMeasurementMonitor::SetCPUMeasurementDelegateFactoryForTesting(
+void CPUMeasurementMonitor::SetDelegateFactoryForTesting(
     CPUMeasurementDelegate::Factory* factory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Ensure that all CPU measurements use the same delegate.
   CHECK(cpu_measurement_map_.empty());
   CHECK(factory);
-  cpu_measurement_delegate_factory_ = factory;
+  delegate_factory_ = factory;
 }
 
 void CPUMeasurementMonitor::StartMonitoring(Graph* graph) {
@@ -140,7 +139,7 @@ void CPUMeasurementMonitor::StartMonitoring(Graph* graph) {
   // usage until they have a pid assigned.
   graph_->VisitAllProcessNodes([this](const ProcessNode* process_node) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (cpu_measurement_delegate_factory_->ShouldMeasureProcess(process_node)) {
+    if (delegate_factory_->ShouldMeasureProcess(process_node)) {
       MonitorCPUUsage(process_node);
     }
     return true;
@@ -162,18 +161,18 @@ bool CPUMeasurementMonitor::IsMonitoring() const {
   return graph_;
 }
 
-std::map<ResourceContext, CPUTimeResult>
+std::map<ResourceContext, QueryResult>
 CPUMeasurementMonitor::UpdateAndGetCPUMeasurements() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   UpdateAllCPUMeasurements();
-  std::map<ResourceContext, CPUTimeResult> results;
+  std::map<ResourceContext, QueryResult> results;
   for (const auto& [context, result] : measurement_results_) {
     ValidateCPUTimeResult(result);
     if (IsEmptyCPUTimeResult(result)) {
       // Don't include empty measurements in the public results.
       continue;
     }
-    results.emplace(context, result);
+    results.emplace(context, QueryResult(result));
   }
   return results;
 }
@@ -204,7 +203,7 @@ void CPUMeasurementMonitor::OnProcessLifetimeChange(
     CHECK(cpu_measurement_map_.empty());
     return;
   }
-  if (cpu_measurement_delegate_factory_->ShouldMeasureProcess(process_node)) {
+  if (delegate_factory_->ShouldMeasureProcess(process_node)) {
     MonitorCPUUsage(process_node);
   }
 }
@@ -295,10 +294,8 @@ void CPUMeasurementMonitor::MonitorCPUUsage(const ProcessNode* process_node) {
   // ApplyMeasurementDeltas will add the new measurements and the old
   // measurements in the same ProcessContext.
   cpu_measurement_map_.insert_or_assign(
-      process_node,
-      CPUMeasurement(
-          cpu_measurement_delegate_factory_->CreateDelegateForProcess(
-              process_node)));
+      process_node, CPUMeasurement(delegate_factory_->CreateDelegateForProcess(
+                        process_node)));
 }
 
 void CPUMeasurementMonitor::UpdateAllCPUMeasurements() {

@@ -11,7 +11,6 @@
 
 #include "base/containers/enum_set.h"
 #include "base/dcheck_is_on.h"
-#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -34,7 +33,7 @@
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
 #include "components/performance_manager/test_support/resource_attribution/gtest_util.h"
-#include "components/performance_manager/test_support/resource_attribution/simulated_cpu_measurement_delegate.h"
+#include "components/performance_manager/test_support/resource_attribution/measurement_delegates.h"
 #include "components/performance_manager/test_support/run_in_graph.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,33 +42,11 @@ namespace performance_manager::resource_attribution {
 
 namespace {
 
+using ::testing::_;
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
 using ::testing::UnorderedElementsAre;
 using QueryParams = internal::QueryParams;
-
-// A QueryResultObserver that passes the result to a callback.
-class CallbackQueryResultObserver final : public QueryResultObserver {
- public:
-  CallbackQueryResultObserver() = default;
-  ~CallbackQueryResultObserver() final = default;
-
-  CallbackQueryResultObserver(const CallbackQueryResultObserver&) = delete;
-  CallbackQueryResultObserver operator=(const CallbackQueryResultObserver&) =
-      delete;
-
-  void SetCallback(base::OnceCallback<void(const QueryResultMap&)> callback) {
-    callback_ = std::move(callback);
-  }
-
-  // QueryResultObserver:
-  void OnResourceUsageUpdated(const QueryResultMap& results) final {
-    if (callback_) {
-      std::move(callback_).Run(results);
-    }
-  }
-
- private:
-  base::OnceCallback<void(const QueryResultMap&)> callback_;
-};
 
 std::unique_ptr<QueryParams> CreateQueryParams(
     ResourceTypeSet resource_types = {},
@@ -102,68 +79,92 @@ class ResourceAttrQuerySchedulerTest : public GraphTestHarness {
   void SetUp() override {
     GetGraphFeatures().EnableResourceAttributionScheduler();
     Super::SetUp();
-    CPUMeasurementDelegate::SetDelegateFactoryForTesting(graph(),
-                                                         &delegate_factory_);
+    CPUMeasurementDelegate::SetDelegateFactoryForTesting(
+        graph(), &cpu_delegate_factory_);
+    MemoryMeasurementDelegate::SetDelegateFactoryForTesting(
+        graph(), &memory_delegate_factory_);
   }
 
-  // This must be deleted after TearDown() so that it outlives the
-  // CPUMeasurementMonitor.
-  SimulatedCPUMeasurementDelegateFactory delegate_factory_;
+  // These must be deleted after TearDown() so that they outlive the
+  // CPUMeasurementMonitor and MemoryMeasurementProvider.
+  SimulatedCPUMeasurementDelegateFactory cpu_delegate_factory_;
+  FakeMemoryMeasurementDelegateFactory memory_delegate_factory_;
 };
 
 using ResourceAttrQuerySchedulerPMTest = PerformanceManagerTestHarness;
 
-TEST_F(ResourceAttrQuerySchedulerTest, CPUQueries) {
+TEST_F(ResourceAttrQuerySchedulerTest, AddRemoveQueries) {
   MockMultiplePagesWithMultipleProcessesGraph mock_graph(graph());
+
+  // Install fake memory results for all processes.
+  for (const ProcessNode* node :
+       {mock_graph.browser_process.get(), mock_graph.process.get(),
+        mock_graph.other_process.get()}) {
+    memory_delegate_factory_.memory_summaries()[node->GetResourceContext()] =
+        MemoryMeasurementDelegate::MemorySummaryMeasurement{
+            .resident_set_size_kb = 1,
+            .private_footprint_kb = 2,
+        };
+  }
 
   auto* scheduler = QueryScheduler::GetFromGraph(graph());
   ASSERT_TRUE(scheduler);
 
   EXPECT_FALSE(scheduler->GetCPUMonitorForTesting().IsMonitoring());
 
-  // Query without kCPUTime should not start CPU monitoring.
-  auto no_cpu_query =
+  // Queries without kCPUTime should not start CPU monitoring.
+  auto no_resource_query =
       CreateQueryParams({}, {mock_graph.process->GetResourceContext()});
-  scheduler->AddScopedQuery(no_cpu_query.get());
+  auto memory_query =
+      CreateQueryParams({ResourceType::kMemorySummary},
+                        {mock_graph.process->GetResourceContext()});
+  scheduler->AddScopedQuery(no_resource_query.get());
+  scheduler->AddScopedQuery(memory_query.get());
   EXPECT_FALSE(scheduler->GetCPUMonitorForTesting().IsMonitoring());
 
   // First kCPUTime query should start CPU monitoring.
-  auto cpu_query1 = CreateQueryParams(
+  auto cpu_query = CreateQueryParams(
       {ResourceType::kCPUTime}, {mock_graph.process->GetResourceContext()});
-  scheduler->AddScopedQuery(cpu_query1.get());
+  scheduler->AddScopedQuery(cpu_query.get());
   EXPECT_TRUE(scheduler->GetCPUMonitorForTesting().IsMonitoring());
 
-  auto cpu_query2 = CreateQueryParams({ResourceType::kCPUTime}, {});
-  cpu_query2->all_context_types.set(
+  auto cpu_memory_query = CreateQueryParams(
+      {ResourceType::kCPUTime, ResourceType::kMemorySummary}, {});
+  cpu_memory_query->all_context_types.set(
       base::VariantIndexOfType<ResourceContext, ProcessContext>());
-  scheduler->AddScopedQuery(cpu_query2.get());
+  scheduler->AddScopedQuery(cpu_memory_query.get());
 
   // Allow some time to pass to measure.
   task_env().FastForwardBy(base::Minutes(1));
 
-  // Only the kCPUTime queries should receive CPU results. `cpu_query1` should
+  // Only the kCPUTime queries should receive CPU results. `cpu_query` should
   // only get results for `process`.
-  ExpectQueryResult(scheduler, no_cpu_query.get(),
-                    UnorderedElementsAre(/*none*/));
+  ExpectQueryResult(scheduler, no_resource_query.get(), IsEmpty());
+  ExpectQueryResult(scheduler, memory_query.get(),
+                    ElementsAre(ResultForContextMatches<MemorySummaryResult>(
+                        mock_graph.process->GetResourceContext(), _)));
+  ExpectQueryResult(scheduler, cpu_query.get(),
+                    ElementsAre(ResultForContextMatches<CPUTimeResult>(
+                        mock_graph.process->GetResourceContext(), _)));
   ExpectQueryResult(
-      scheduler, cpu_query1.get(),
-      UnorderedElementsAre(QueryResultMapEntryMatches<CPUTimeResult>(
-          mock_graph.process->GetResourceContext())));
-  ExpectQueryResult(scheduler, cpu_query2.get(),
-                    UnorderedElementsAre(
-                        QueryResultMapEntryMatches<CPUTimeResult>(
-                            mock_graph.process->GetResourceContext()),
-                        QueryResultMapEntryMatches<CPUTimeResult>(
-                            mock_graph.other_process->GetResourceContext())));
+      scheduler, cpu_memory_query.get(),
+      UnorderedElementsAre(
+          ResultForContextMatchesAll<CPUTimeResult, MemorySummaryResult>(
+              mock_graph.process->GetResourceContext(), _, _),
+          ResultForContextMatchesAll<CPUTimeResult, MemorySummaryResult>(
+              mock_graph.other_process->GetResourceContext(), _, _),
+          // Only renderer processes get CPU measurements.
+          ResultForContextMatches<MemorySummaryResult>(
+              mock_graph.browser_process->GetResourceContext(), _)));
 
   // Removing non-CPU query should not affect CPU monitoring.
-  scheduler->RemoveScopedQuery(std::move(no_cpu_query));
+  scheduler->RemoveScopedQuery(std::move(no_resource_query));
   EXPECT_TRUE(scheduler->GetCPUMonitorForTesting().IsMonitoring());
 
-  // CPU monitoring should not stop until the last query is deleted.
-  scheduler->RemoveScopedQuery(std::move(cpu_query1));
+  // CPU monitoring should not stop until the last CPU query is deleted.
+  scheduler->RemoveScopedQuery(std::move(cpu_query));
   EXPECT_TRUE(scheduler->GetCPUMonitorForTesting().IsMonitoring());
-  scheduler->RemoveScopedQuery(std::move(cpu_query2));
+  scheduler->RemoveScopedQuery(std::move(cpu_memory_query));
   EXPECT_FALSE(scheduler->GetCPUMonitorForTesting().IsMonitoring());
 }
 

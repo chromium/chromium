@@ -45,8 +45,7 @@ class CPUMeasurementMonitor : public FrameNode::ObserverDefaultImpl,
 
   // The given `factory` will be used to create a CPUMeasurementDelegate for
   // each ProcessNode to be measured.
-  void SetCPUMeasurementDelegateFactoryForTesting(
-      CPUMeasurementDelegate::Factory* factory);
+  void SetDelegateFactoryForTesting(CPUMeasurementDelegate::Factory* factory);
 
   // Starts monitoring CPU usage for all renderer ProcessNode's in `graph`.
   void StartMonitoring(Graph* graph);
@@ -59,8 +58,9 @@ class CPUMeasurementMonitor : public FrameNode::ObserverDefaultImpl,
 
   // Updates the CPU measurements for each ProcessNode being tracked and returns
   // the estimated CPU usage of each frame and worker in those processes, and
-  // all pages containing them.
-  std::map<ResourceContext, CPUTimeResult> UpdateAndGetCPUMeasurements();
+  // all pages containing them. Each QueryResult variant will contain a
+  // CPUTimeResult.
+  std::map<ResourceContext, QueryResult> UpdateAndGetCPUMeasurements();
 
   // FrameNode::Observer:
   void OnFrameNodeAdded(const FrameNode* frame_node) override;
@@ -165,7 +165,7 @@ class CPUMeasurementMonitor : public FrameNode::ObserverDefaultImpl,
 
   // Factory that creates CPUMeasurementDelegate objects for each ProcessNode
   // being measured.
-  raw_ptr<CPUMeasurementDelegate::Factory> cpu_measurement_delegate_factory_
+  raw_ptr<CPUMeasurementDelegate::Factory> delegate_factory_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Graph being monitored. This will be only be set if StartMonitoring() was

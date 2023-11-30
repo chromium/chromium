@@ -46,8 +46,6 @@ struct CPUTimeResult {
 };
 
 // Results of a kMemorySummary query.
-// TODO(crbug.com/1471683): Add kMemorySummary to the ResourceType enum,
-// implement queries for it.
 struct MemorySummaryResult {
   ResultMetadata metadata;
   uint64_t resident_set_size_kb = 0;

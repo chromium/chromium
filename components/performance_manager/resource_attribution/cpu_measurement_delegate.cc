@@ -91,15 +91,14 @@ CPUMeasurementDelegateFactoryImpl::CreateDelegateForProcess(
 }  // namespace
 
 // static
-void CPUMeasurementDelegate::SetDelegateFactoryForTesting(
-    Graph* graph,
-    CPUMeasurementDelegate::Factory* factory) {
+void CPUMeasurementDelegate::SetDelegateFactoryForTesting(Graph* graph,
+                                                          Factory* factory) {
   auto* scheduler = QueryScheduler::GetFromGraph(graph);
   CHECK(scheduler);
   scheduler
-      ->GetCPUMonitorForTesting()                   // IN-TEST
-      .SetCPUMeasurementDelegateFactoryForTesting(  // IN-TEST
-          factory ? factory : GetDefaultFactory());
+      ->GetCPUMonitorForTesting()                      // IN-TEST
+      .SetDelegateFactoryForTesting(factory ? factory  // IN-TEST
+                                            : GetDefaultFactory());
 }
 
 // static

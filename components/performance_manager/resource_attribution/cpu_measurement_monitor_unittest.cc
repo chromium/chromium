@@ -36,7 +36,7 @@
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
 #include "components/performance_manager/test_support/resource_attribution/gtest_util.h"
-#include "components/performance_manager/test_support/resource_attribution/simulated_cpu_measurement_delegate.h"
+#include "components/performance_manager/test_support/resource_attribution/measurement_delegates.h"
 #include "components/performance_manager/test_support/run_in_graph.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/process_type.h"
@@ -44,6 +44,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 namespace performance_manager::resource_attribution {
@@ -55,6 +56,7 @@ using ::testing::Conditional;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Not;
+using ::testing::VariantWith;
 
 constexpr base::TimeDelta kTimeBetweenMeasurements = base::Minutes(5);
 
@@ -71,7 +73,7 @@ class ResourceAttrCPUMonitorTest : public GraphTestHarness {
     // These tests validate specific timing of measurements around process
     // creation and destruction.
     delegate_factory_.SetRequireValidProcesses(true);
-    cpu_monitor_.SetCPUMeasurementDelegateFactoryForTesting(&delegate_factory_);
+    cpu_monitor_.SetDelegateFactoryForTesting(&delegate_factory_);
   }
 
   // Creates a renderer process and starts mocking its CPU measurements. By
@@ -121,10 +123,11 @@ class ResourceAttrCPUMonitorTest : public GraphTestHarness {
     current_measurements_ = cpu_monitor_.UpdateAndGetCPUMeasurements();
   }
 
-  // GMock matcher expecting that a given CPUTimeResult equals
-  // `last_measurements_[context] + expected_delta`. That is, since the last
-  // time `context` was tested, expect that `expected_delta` was added to its
-  // CPU measurement, which was taken at `expected_measurement_time`.
+  // GMock matcher expecting that a given QueryResult variant contains a
+  // CPUTimeResult with cumulative_cpu `last_measurements_[context] +
+  // expected_delta`. That is, since the last time `context` was tested, expect
+  // that `expected_delta` was added to its CPU measurement, which was taken at
+  // `expected_measurement_time`.
   auto CPUDeltaMatches(const ResourceContext& context,
                        base::TimeDelta expected_delta,
                        base::TimeTicks expected_measurement_time =
@@ -133,10 +136,11 @@ class ResourceAttrCPUMonitorTest : public GraphTestHarness {
     base::TimeTicks expected_start_time;
     const auto last_it = last_measurements_.find(context);
     if (last_it != last_measurements_.end()) {
-      expected_cpu += last_it->second.cumulative_cpu;
-      expected_start_time = last_it->second.start_time;
+      expected_cpu += absl::get<CPUTimeResult>(last_it->second).cumulative_cpu;
+      expected_start_time =
+          absl::get<CPUTimeResult>(last_it->second).start_time;
     }
-    return AllOf(
+    return VariantWith<CPUTimeResult>(AllOf(
         Field("metadata", &CPUTimeResult::metadata,
               Field("measurement_time", &ResultMetadata::measurement_time,
                     expected_measurement_time)),
@@ -148,13 +152,14 @@ class ResourceAttrCPUMonitorTest : public GraphTestHarness {
         // temporary.
         Field("start_time", &CPUTimeResult::start_time,
               Conditional(last_it != last_measurements_.end(),
-                          expected_start_time, Not(base::TimeTicks()))));
+                          expected_start_time, Not(base::TimeTicks())))));
   }
 
-  // GMock matcher expecting that a given CPUTimeResult has the given
-  // `expected_start_time`.
+  // GMock matcher expecting that a given QueryResult variant contains a
+  // CPUTimeResult with the given `expected_start_time`.
   auto StartTimeMatches(base::TimeTicks expected_start_time) const {
-    return Field("start_time", &CPUTimeResult::start_time, expected_start_time);
+    return VariantWith<CPUTimeResult>(
+        Field("start_time", &CPUTimeResult::start_time, expected_start_time));
   }
 
   // Factory to return CPUMeasurementDelegates for `cpu_monitor_`. This must be
@@ -168,8 +173,8 @@ class ResourceAttrCPUMonitorTest : public GraphTestHarness {
   // Cached results from UpdateAndGetCPUMeasurements(). Most tests will validate
   // the difference between the "last" and "current" measurements, which is
   // easier to follow than the full cumulative measurements at any given time.
-  std::map<ResourceContext, CPUTimeResult> last_measurements_;
-  std::map<ResourceContext, CPUTimeResult> current_measurements_;
+  std::map<ResourceContext, QueryResult> last_measurements_;
+  std::map<ResourceContext, QueryResult> current_measurements_;
 };
 
 // Tests that renderers created at various points around CPU measurement
@@ -1162,6 +1167,12 @@ TEST_F(ResourceAttrCPUMonitorTimingTest, ProcessLifetime) {
   // Let some time pass so there's CPU to measure after monitoring starts.
   LetTimePass();
 
+  auto get_cumulative_cpu =
+      [](std::map<ResourceContext, QueryResult> measurements,
+         const ResourceContext& context) -> base::TimeDelta {
+    return absl::get<CPUTimeResult>(measurements.at(context)).cumulative_cpu;
+  };
+
   base::TimeDelta cumulative_process_cpu;
   base::TimeDelta cumulative_frame_cpu;
   RunInGraph([&] {
@@ -1174,11 +1185,11 @@ TEST_F(ResourceAttrCPUMonitorTimingTest, ProcessLifetime) {
     ASSERT_TRUE(
         base::Contains(measurements, process_node->GetResourceContext()));
     cumulative_process_cpu =
-        measurements.at(process_node->GetResourceContext()).cumulative_cpu;
+        get_cumulative_cpu(measurements, process_node->GetResourceContext());
     EXPECT_FALSE(cumulative_process_cpu.is_negative());
 
     ASSERT_TRUE(base::Contains(measurements, frame_context));
-    cumulative_frame_cpu = measurements.at(frame_context).cumulative_cpu;
+    cumulative_frame_cpu = get_cumulative_cpu(measurements, frame_context);
     EXPECT_FALSE(cumulative_frame_cpu.is_negative());
   });
 
@@ -1200,13 +1211,13 @@ TEST_F(ResourceAttrCPUMonitorTimingTest, ProcessLifetime) {
     ASSERT_TRUE(
         base::Contains(measurements, process_node->GetResourceContext()));
     const base::TimeDelta new_process_cpu =
-        measurements.at(process_node->GetResourceContext()).cumulative_cpu;
+        get_cumulative_cpu(measurements, process_node->GetResourceContext());
     EXPECT_GE(new_process_cpu, cumulative_process_cpu);
     cumulative_process_cpu = new_process_cpu;
 
     ASSERT_TRUE(base::Contains(measurements, frame_context));
     const base::TimeDelta new_frame_cpu =
-        measurements.at(frame_context).cumulative_cpu;
+        get_cumulative_cpu(measurements, frame_context);
     EXPECT_GE(new_frame_cpu, cumulative_frame_cpu);
     cumulative_frame_cpu = new_frame_cpu;
   });
@@ -1226,13 +1237,13 @@ TEST_F(ResourceAttrCPUMonitorTimingTest, ProcessLifetime) {
     ASSERT_TRUE(
         base::Contains(measurements, process_node->GetResourceContext()));
     const base::TimeDelta new_process_cpu =
-        measurements.at(process_node->GetResourceContext()).cumulative_cpu;
+        get_cumulative_cpu(measurements, process_node->GetResourceContext());
     EXPECT_GE(new_process_cpu, cumulative_process_cpu);
     cumulative_process_cpu = new_process_cpu;
 
     ASSERT_TRUE(base::Contains(measurements, frame_context));
     const base::TimeDelta new_frame_cpu =
-        measurements.at(frame_context).cumulative_cpu;
+        get_cumulative_cpu(measurements, frame_context);
     EXPECT_GE(new_frame_cpu, cumulative_frame_cpu);
     cumulative_frame_cpu = new_frame_cpu;
   });

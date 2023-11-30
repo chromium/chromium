@@ -2,19 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_RESOURCE_ATTRIBUTION_SIMULATED_CPU_MEASUREMENT_DELEGATE_H_
-#define COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_RESOURCE_ATTRIBUTION_SIMULATED_CPU_MEASUREMENT_DELEGATE_H_
-
-#include "components/performance_manager/public/resource_attribution/cpu_measurement_delegate.h"
+#ifndef COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_RESOURCE_ATTRIBUTION_MEASUREMENT_DELEGATES_H_
+#define COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_RESOURCE_ATTRIBUTION_MEASUREMENT_DELEGATES_H_
 
 #include <map>
 #include <memory>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
+#include "components/performance_manager/public/resource_attribution/cpu_measurement_delegate.h"
+#include "components/performance_manager/public/resource_attribution/memory_measurement_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_manager {
@@ -162,6 +163,71 @@ class SimulatedCPUMeasurementDelegate final : public CPUMeasurementDelegate {
   absl::optional<base::TimeDelta> usage_error_;
 };
 
+// A factory that manages FakeMemoryMeasurementDelegate instances. Embed an
+// instance of this in a unit test, and pass it to
+// MemoryMeasurementDelegate::SetDelegateFactoryForTesting(). The caller must
+// ensure that the FakeMemoryMeasurementDelegateFactory outlives all callers
+// of CreateDelegate().
+class FakeMemoryMeasurementDelegateFactory final
+    : public MemoryMeasurementDelegate::Factory {
+ public:
+  using PassKey = base::PassKey<FakeMemoryMeasurementDelegateFactory>;
+
+  FakeMemoryMeasurementDelegateFactory();
+  ~FakeMemoryMeasurementDelegateFactory() final;
+
+  FakeMemoryMeasurementDelegateFactory(
+      const FakeMemoryMeasurementDelegateFactory&) = delete;
+  FakeMemoryMeasurementDelegateFactory& operator=(
+      const FakeMemoryMeasurementDelegateFactory&) = delete;
+
+  // Returns a reference to the map of memory measurements that will be returned
+  // by delegates created by this factory. Callers can modify the map through
+  // the reference.
+  MemoryMeasurementDelegate::MemorySummaryMap& memory_summaries() {
+    return memory_summaries_;
+  }
+
+  // MemoryMeasurementDelegate::Factory implementation
+
+  std::unique_ptr<MemoryMeasurementDelegate> CreateDelegate(Graph*) final;
+
+ private:
+  // The MemorySummary results returned by delegates created by this factory.
+  MemoryMeasurementDelegate::MemorySummaryMap memory_summaries_;
+
+  base::WeakPtrFactory<FakeMemoryMeasurementDelegateFactory> weak_factory_{
+      this};
+};
+
+// A MemoryMeasurementDelegate that returns fake results.
+class FakeMemoryMeasurementDelegate final : public MemoryMeasurementDelegate {
+ public:
+  using PassKey = base::PassKey<FakeMemoryMeasurementDelegate>;
+
+  // Only FakeMemoryMeasurementDelegateFactory can call the constructor.
+  FakeMemoryMeasurementDelegate(
+      base::PassKey<FakeMemoryMeasurementDelegateFactory>,
+      base::SafeRef<FakeMemoryMeasurementDelegateFactory> factory);
+
+  ~FakeMemoryMeasurementDelegate() final;
+
+  FakeMemoryMeasurementDelegate(const FakeMemoryMeasurementDelegate&) = delete;
+  FakeMemoryMeasurementDelegate& operator=(
+      const FakeMemoryMeasurementDelegate&) = delete;
+
+  // MemoryMeasurementDelegate interface:
+
+  // Invokes `callback` with the fake measurements returned by
+  // FakeMemoryMeasurementDelegateFactory::memory_summaries().
+  void RequestMemorySummary(
+      base::OnceCallback<void(MemorySummaryMap)> callback) final;
+
+ private:
+  // The factory that created this delegate.
+  base::SafeRef<FakeMemoryMeasurementDelegateFactory> factory_;
+};
+
 }  // namespace performance_manager::resource_attribution
 
-#endif  // COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_RESOURCE_ATTRIBUTION_SIMULATED_CPU_MEASUREMENT_DELEGATE_H_
+#endif  // COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_RESOURCE_ATTRIBUTION_MEASUREMENT_DELEGATES_H_

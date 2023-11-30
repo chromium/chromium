@@ -5,9 +5,11 @@
 #include "components/performance_manager/resource_attribution/query_scheduler.h"
 
 #include <bitset>
+#include <set>
 #include <utility>
 #include <vector>
 
+#include "base/barrier_callback.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/enum_set.h"
@@ -15,8 +17,10 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/variant_util.h"
 #include "components/performance_manager/public/resource_attribution/resource_types.h"
 #include "components/performance_manager/resource_attribution/query_params.h"
 
@@ -142,6 +146,9 @@ void QueryScheduler::AddScopedQuery(QueryParams* query_params) {
   if (query_params->resource_types.Has(ResourceType::kCPUTime)) {
     AddCPUQuery();
   }
+  if (query_params->resource_types.Has(ResourceType::kMemorySummary)) {
+    AddMemoryQuery();
+  }
 }
 
 void QueryScheduler::RemoveScopedQuery(
@@ -152,6 +159,9 @@ void QueryScheduler::RemoveScopedQuery(
   if (query_params->resource_types.Has(ResourceType::kCPUTime)) {
     RemoveCPUQuery();
   }
+  if (query_params->resource_types.Has(ResourceType::kMemorySummary)) {
+    RemoveMemoryQuery();
+  }
   // `query_params` goes out of scope and is deleted here.
 }
 
@@ -159,31 +169,40 @@ void QueryScheduler::RequestResults(
     const QueryParams& query_params,
     base::OnceCallback<void(const QueryResultMap&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  QueryResultMap results;
-  // If no scoped query is keeping the CPU monitor running, just return empty
-  // results.
-  // TODO(crbug.com/1471683): Could run the CPU monitor for a few seconds
-  // instead.
-  if (query_params.resource_types.Has(ResourceType::kCPUTime) &&
-      cpu_monitor_.IsMonitoring()) {
-    // TODO(crbug.com/1471683): Pass the contexts of interest into
-    // `cpu_monitor_` so it doesn't have to do work measuring contexts that will
-    // be filtered out.
-    for (auto& [context, cpu_time_result] :
-         cpu_monitor_.UpdateAndGetCPUMeasurements()) {
-      // index() gets context's type index in the ResourceContext variant.
-      if (query_params.all_context_types.test(context.index()) ||
-          base::Contains(query_params.resource_contexts, context)) {
-        results[context].push_back(std::move(cpu_time_result));
-      }
+  // Make a copy of QueryParams so that it doesn't go out of scope while the
+  // requests are in flight.
+  QueryParams params = query_params;
+
+  // Send out a measurement request for each resource type. The BarrierCallback
+  // will invoke OnResultsReceived when all have responded.
+  const size_t num_requests = query_params.resource_types.Size();
+  auto barrier_callback = base::BarrierCallback<SingleQueryResultMap>(
+      num_requests, base::BindOnce(&QueryScheduler::OnResultsReceived,
+                                   weak_factory_.GetWeakPtr(),
+                                   std::move(params), std::move(callback)));
+
+  size_t requests_sent = 0;
+  for (ResourceType resource_type : query_params.resource_types) {
+    switch (resource_type) {
+      case ResourceType::kCPUTime:
+        if (cpu_monitor_.IsMonitoring()) {
+          barrier_callback.Run(cpu_monitor_.UpdateAndGetCPUMeasurements());
+        } else {
+          // If no scoped query is keeping the CPU monitor running, just return
+          // empty results.
+          // TODO(crbug.com/1471683): Could run the CPU monitor for a few
+          // seconds instead.
+          barrier_callback.Run({});
+        }
+        requests_sent++;
+        break;
+      case ResourceType::kMemorySummary:
+        memory_provider_->RequestMemorySummary(barrier_callback);
+        requests_sent++;
+        break;
     }
   }
-  std::move(callback).Run(results);
-}
-
-CPUMeasurementMonitor& QueryScheduler::GetCPUMonitorForTesting() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return cpu_monitor_;
+  CHECK_EQ(requests_sent, num_requests);
 }
 
 void QueryScheduler::OnPassedToGraph(Graph* graph) {
@@ -192,6 +211,7 @@ void QueryScheduler::OnPassedToGraph(Graph* graph) {
   graph_ = graph;
   graph_->RegisterObject(this);
   SchedulerTaskRunner::GetInstance()->OnSchedulerPassedToGraph(graph);
+  memory_provider_.emplace(graph);
 }
 
 void QueryScheduler::OnTakenFromGraph(Graph* graph) {
@@ -203,6 +223,29 @@ void QueryScheduler::OnTakenFromGraph(Graph* graph) {
   if (cpu_query_count_ > 0) {
     cpu_monitor_.StopMonitoring();
   }
+  memory_provider_.reset();
+}
+
+CPUMeasurementMonitor& QueryScheduler::GetCPUMonitorForTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return cpu_monitor_;
+}
+
+MemoryMeasurementProvider& QueryScheduler::GetMemoryProviderForTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return memory_provider_.value();
+}
+
+uint32_t QueryScheduler::GetQueryCountForTesting(
+    ResourceType resource_type) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  switch (resource_type) {
+    case ResourceType::kCPUTime:
+      return cpu_query_count_;
+    case ResourceType::kMemorySummary:
+      return memory_query_count_;
+  }
+  NOTREACHED_NORETURN();
 }
 
 void QueryScheduler::AddCPUQuery() {
@@ -226,6 +269,39 @@ void QueryScheduler::RemoveCPUQuery() {
     CHECK(cpu_monitor_.IsMonitoring());
     cpu_monitor_.StopMonitoring();
   }
+}
+
+void QueryScheduler::AddMemoryQuery() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_NE(graph_, nullptr);
+  memory_query_count_ += 1;
+  // Check for overflow.
+  CHECK_GT(memory_query_count_, 0U);
+}
+
+void QueryScheduler::RemoveMemoryQuery() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_NE(graph_, nullptr);
+  CHECK_GE(memory_query_count_, 1U);
+  memory_query_count_ -= 1;
+}
+
+void QueryScheduler::OnResultsReceived(
+    const internal::QueryParams& query_params,
+    base::OnceCallback<void(const QueryResultMap&)> callback,
+    const std::vector<SingleQueryResultMap>& results) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  QueryResultMap merged_results;
+  for (const auto& result_map : results) {
+    for (auto& [context, result] : result_map) {
+      // index() gets context's type index in the ResourceContext variant.
+      if (query_params.all_context_types.test(context.index()) ||
+          base::Contains(query_params.resource_contexts, context)) {
+        merged_results[context].push_back(std::move(result));
+      }
+    }
+  }
+  std::move(callback).Run(merged_results);
 }
 
 }  // namespace performance_manager::resource_attribution

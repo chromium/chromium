@@ -13,10 +13,15 @@ namespace performance_manager::resource_attribution {
 enum class ResourceType {
   // CPU usage, measured in time spent on CPU.
   kCPUTime,
+
+  // High-level memory information, such as PrivateMemoryFootprint. Relatively
+  // efficient to measure.
+  kMemorySummary,
 };
 
-using ResourceTypeSet =
-    base::EnumSet<ResourceType, ResourceType::kCPUTime, ResourceType::kCPUTime>;
+using ResourceTypeSet = base::EnumSet<ResourceType,
+                                      /*min=*/ResourceType::kCPUTime,
+                                      /*max=*/ResourceType::kMemorySummary>;
 
 }  // namespace performance_manager::resource_attribution
 

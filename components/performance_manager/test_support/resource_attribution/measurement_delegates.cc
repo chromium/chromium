@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/performance_manager/test_support/resource_attribution/simulated_cpu_measurement_delegate.h"
+#include "components/performance_manager/test_support/resource_attribution/measurement_delegates.h"
 
 #include <utility>
 
@@ -143,6 +143,30 @@ base::TimeDelta SimulatedCPUMeasurementDelegate::GetCumulativeCPUUsage() {
         (end_time - usage_period.start_time) * usage_period.cpu_usage;
   }
   return cumulative_usage;
+}
+
+FakeMemoryMeasurementDelegateFactory::FakeMemoryMeasurementDelegateFactory() =
+    default;
+
+FakeMemoryMeasurementDelegateFactory::~FakeMemoryMeasurementDelegateFactory() =
+    default;
+
+std::unique_ptr<MemoryMeasurementDelegate>
+FakeMemoryMeasurementDelegateFactory::CreateDelegate(Graph*) {
+  return std::make_unique<FakeMemoryMeasurementDelegate>(
+      PassKey(), weak_factory_.GetSafeRef());
+}
+
+FakeMemoryMeasurementDelegate::FakeMemoryMeasurementDelegate(
+    base::PassKey<FakeMemoryMeasurementDelegateFactory>,
+    base::SafeRef<FakeMemoryMeasurementDelegateFactory> factory)
+    : factory_(factory) {}
+
+FakeMemoryMeasurementDelegate::~FakeMemoryMeasurementDelegate() = default;
+
+void FakeMemoryMeasurementDelegate::RequestMemorySummary(
+    base::OnceCallback<void(MemorySummaryMap)> callback) {
+  std::move(callback).Run(factory_->memory_summaries());
 }
 
 }  // namespace performance_manager::resource_attribution

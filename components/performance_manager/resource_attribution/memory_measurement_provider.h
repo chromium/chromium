@@ -30,8 +30,15 @@ class MemoryMeasurementProvider {
   MemoryMeasurementProvider& operator=(const MemoryMeasurementProvider&) =
       delete;
 
+  // The given `factory` will be used to create a MemoryMeasurementDelegate for
+  // ProcessNodes to be measured.
+  void SetDelegateFactoryForTesting(
+      MemoryMeasurementDelegate::Factory* factory);
+
+  // Results of a memory summary query. Each QueryResult variant will contain a
+  // MemorySummaryResult.
   using ResultCallback =
-      base::OnceCallback<void(std::map<ResourceContext, MemorySummaryResult>)>;
+      base::OnceCallback<void(std::map<ResourceContext, QueryResult>)>;
 
   // Requests memory summaries for all processes. `callback` will be invoked
   // with the results.

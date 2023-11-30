@@ -5,8 +5,12 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_RESOURCE_ATTRIBUTION_GTEST_UTIL_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_RESOURCE_ATTRIBUTION_GTEST_UTIL_H_
 
+#include <optional>
 #include <ostream>
+#include <string_view>
 
+#include "base/strings/strcat.h"
+#include "base/types/optional_ref.h"
 #include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -14,25 +18,114 @@
 
 namespace performance_manager::resource_attribution {
 
-// GMock matcher expecting that a given QueryResultMap entry has a key of
-// `resource_context` whose value contains a result of type ResultType.
+namespace internal {
+
+// AsResult<T> wrapper that returns an optional, since gMock doesn't have a
+// matcher for optional_ref.
+template <typename T>
+std::optional<T> AsResultToOptional(const QueryResults& results) {
+  return AsResult<T>(results).CopyAsOptional();
+}
+
+// Returns the name of a QueryResult type at compile-time, for better error
+// messages.
+template <typename T>
+constexpr std::string_view TypeNameString();
+
+template <>
+constexpr std::string_view TypeNameString<CPUTimeResult>() {
+  return "CPUTimeResult";
+}
+
+template <>
+constexpr std::string_view TypeNameString<MemorySummaryResult>() {
+  return "MemorySummaryResult";
+}
+
+}  // namespace internal
+
+// gMock matcher expecting that a given QueryResults object contains a result of
+// type ResultType that matches `matcher`.
 //
 // Usage:
 //
+//  // Match any CPUTimeResult:
+//  EXPECT_THAT(results, QueryResultsMatch<CPUTimeResult>(_));
+//
+//  // Match an exact MemorySummaryResult:
+//  EXPECT_THAT(results, QueryResultsMatch<MemorySummaryResult>(
+//                           MemorySummaryResult{...});
+template <typename ResultType, typename Matcher>
+auto QueryResultsMatch(Matcher matcher) {
+  return ::testing::ResultOf(
+      // Format the function name "AsResult<ResultType>" in error messages.
+      base::StrCat({"AsResult<", internal::TypeNameString<ResultType>(), ">"}),
+      internal::AsResultToOptional<ResultType>, ::testing::Optional(matcher));
+}
+
+// As QueryResultsMatch() but expects that the QueryResults object contains
+// multiple results.
+//
+// Usage:
+//
+//  // Match an exact MemorySummaryResult and any CPUTimeResult:
+//  EXPECT_THAT(results,
+//              QueryResultsMatchAll<MemorySummaryResult, CPUTimeResult>(
+//                  MemorySummaryResult{...}, _));
+template <typename... ResultTypes, typename... Matchers>
+auto QueryResultsMatchAll(Matchers... matchers) {
+  return ::testing::AllOf(QueryResultsMatch<ResultTypes>(matchers)...);
+}
+
+// gMock matcher expecting that a given QueryResultMap entry has a key of
+// `resource_context` whose value contains a result of type ResultType that
+// matches `matcher`.
+//
+// Usage:
+//
+//   QueryResultMap result_map;
+//   result_map[context1] = {CPUTimeResult{...}};
+//   result_map[context2] = {CPUTimeResult{...}, MemorySummaryResult{...}};
+//
 //   // Tests that the map contains `context1` and possibly other elements.
 //   EXPECT_THAT(result_map, ::testing::Contains(
-//       QueryResultMapEntryMatches<CPUTimeResult>(context1));
+//       ResultForContextMatches<CPUTimeResult>(context1, _));
 //
 //   // Tests that the map contains exactly `context1` and `context2`.
+//   // `context2` contains at least a MemorySummaryResult and possibly others.
 //   EXPECT_THAT(result_map, ::testing::UnorderedElementsAre(
-//       QueryResultMapEntryMatches<CPUTimeResult>(context1),
-//       QueryResultMapEntryMatches<CPUTimeResult>(context2));
-template <typename ResultType>
-auto QueryResultMapEntryMatches(const ResourceContext& resource_context) {
+//       ResultForContextMatches<CPUTimeResult>(context1, _),
+//       ResultForContextMatches<MemorySummaryResult>(context2, _)));
+template <typename ResultType, typename Matcher>
+auto ResultForContextMatches(const ResourceContext& resource_context,
+                             Matcher matcher) {
+  // Pair matches the key and value of a map entry.
+  return ::testing::Pair(resource_context,
+                         QueryResultsMatch<ResultType>(matcher));
+}
+
+// As ResultForContextMatches() but expects that the QueryResultMap entry
+// contains multiple results.
+//
+// Usage:
+//
+//   QueryResultMap result_map;
+//   result_map[context1] = {CPUTimeResult{...}};
+//   result_map[context2] = {CPUTimeResult{...}, MemorySummaryResult{...}};
+//
+//   // Tests that the map contains exactly `context1` and `context2`.
+//   // `context2` contains at a CPUTimeResult and a MemorySummaryResult.
+//   EXPECT_THAT(result_map, ::testing::UnorderedElementsAre(
+//       ResultForContextMatches<CPUTimeResult>(context1, _),
+//       ResultForContextMatchesAll<CPUTimeResult, MemorySummaryResult>(
+//           context2, _, _)));
+template <typename... ResultTypes, typename... Matchers>
+auto ResultForContextMatchesAll(const ResourceContext& resource_context,
+                                Matchers... matchers) {
+  // Pair matches the key and value of a map entry.
   return ::testing::Pair(
       resource_context,
-      ::testing::ResultOf("contains correct QueryResult type",
-                          ContainsResult<ResultType>, ::testing::IsTrue()));
+      ::testing::AllOf(QueryResultsMatch<ResultTypes>(matchers)...));
 }
 
 // Test result printers. These need to go in the same namespace as the type

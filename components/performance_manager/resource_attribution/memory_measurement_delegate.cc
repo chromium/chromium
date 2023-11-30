@@ -17,6 +17,7 @@
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/resource_attribution/process_context.h"
+#include "components/performance_manager/resource_attribution/query_scheduler.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 
@@ -113,13 +114,14 @@ class MemoryMeasurementDelegateFactoryImpl final
 }  // namespace
 
 // static
-void MemoryMeasurementDelegate::SetDelegateFactoryForTesting(
-    Graph* graph,
-    MemoryMeasurementDelegate::Factory* factory) {
-  // TODO(crbug.com/1471683): When a MemoryProvider is added to
-  // QueryScheduler, implement this the same way as
-  // CPUMeasurementDelegate::SetDelegateFactoryForTesting().
-  NOTIMPLEMENTED();
+void MemoryMeasurementDelegate::SetDelegateFactoryForTesting(Graph* graph,
+                                                             Factory* factory) {
+  auto* scheduler = QueryScheduler::GetFromGraph(graph);
+  CHECK(scheduler);
+  scheduler
+      ->GetMemoryProviderForTesting()                  // IN-TEST
+      .SetDelegateFactoryForTesting(factory ? factory  // IN-TEST
+                                            : GetDefaultFactory());
 }
 
 // static

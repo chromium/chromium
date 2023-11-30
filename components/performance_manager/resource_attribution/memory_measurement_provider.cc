@@ -18,6 +18,7 @@
 #include "components/performance_manager/public/graph/worker_node.h"
 #include "components/performance_manager/public/resource_attribution/attribution_helpers.h"
 #include "components/performance_manager/resource_attribution/worker_client_pages.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace performance_manager::resource_attribution {
 
@@ -30,6 +31,13 @@ MemoryMeasurementProvider::MemoryMeasurementProvider(Graph* graph)
 
 MemoryMeasurementProvider::~MemoryMeasurementProvider() = default;
 
+void MemoryMeasurementProvider::SetDelegateFactoryForTesting(
+    MemoryMeasurementDelegate::Factory* factory) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(factory);
+  measurement_delegate_ = factory->CreateDelegate(graph_.get());
+}
+
 void MemoryMeasurementProvider::RequestMemorySummary(ResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   measurement_delegate_->RequestMemorySummary(base::BindOnce(
@@ -41,7 +49,7 @@ void MemoryMeasurementProvider::OnMemorySummary(
     MemoryMeasurementDelegate::MemorySummaryMap process_summaries) {
   using MemorySummaryMeasurement =
       MemoryMeasurementDelegate::MemorySummaryMeasurement;
-  std::map<ResourceContext, MemorySummaryResult> results;
+  std::map<ResourceContext, QueryResult> results;
 
   // Adds the memory from `summary` to a MemorySummaryResult for `context`.
   // Returns true if a new result was created, false if one already existed.
@@ -50,9 +58,11 @@ void MemoryMeasurementProvider::OnMemorySummary(
                                 MemorySummaryMeasurement summary) -> bool {
     // Create a result with metadata if the key isn't in the map yet.
     const auto [it, inserted] = results.try_emplace(
-        context, MemorySummaryResult{.metadata = {.measurement_time = now}});
-    it->second.resident_set_size_kb += summary.resident_set_size_kb;
-    it->second.private_footprint_kb += summary.private_footprint_kb;
+        context, QueryResult(MemorySummaryResult{
+                     .metadata = {.measurement_time = now}}));
+    MemorySummaryResult& result = absl::get<MemorySummaryResult>(it->second);
+    result.resident_set_size_kb += summary.resident_set_size_kb;
+    result.private_footprint_kb += summary.private_footprint_kb;
     return inserted;
   };
 

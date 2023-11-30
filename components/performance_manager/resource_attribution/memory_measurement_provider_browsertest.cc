@@ -29,6 +29,7 @@
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 namespace performance_manager::resource_attribution {
@@ -43,7 +44,8 @@ using ::testing::IsEmpty;
 using ::testing::IsSupersetOf;
 using ::testing::Lt;
 using ::testing::Pair;
-using ResultMap = std::map<ResourceContext, MemorySummaryResult>;
+using ::testing::VariantWith;
+using ResultMap = std::map<ResourceContext, QueryResult>;
 
 class ResourceAttrMemoryMeasurementProviderBrowserTest
     : public PerformanceManagerBrowserTestHarness {
@@ -82,14 +84,14 @@ class ResourceAttrMemoryMeasurementProviderBrowserTest
 // GMock matcher expecting that a given MemorySummaryResult has the metadata
 // filled in and all memory measurements >0.
 auto MemorySummaryResultIsPositive() {
-  return AllOf(
+  return VariantWith<MemorySummaryResult>(AllOf(
       Field("metadata", &MemorySummaryResult::metadata,
             Field("measurement_time", &ResultMetadata::measurement_time,
                   AllOf(Gt(base::TimeTicks()), Lt(base::TimeTicks::Now())))),
       Field("resident_set_size_kb", &MemorySummaryResult::resident_set_size_kb,
             Gt(0u)),
       Field("private_footprint_kb", &MemorySummaryResult::private_footprint_kb,
-            Gt(0u)));
+            Gt(0u))));
 }
 
 IN_PROC_BROWSER_TEST_F(ResourceAttrMemoryMeasurementProviderBrowserTest,
@@ -127,9 +129,12 @@ IN_PROC_BROWSER_TEST_F(ResourceAttrMemoryMeasurementProviderBrowserTest,
 
   // The process memory should be split between frames in the
   // process.
-  const auto main_frame_result = results.at(main_frame_context);
-  const auto child_frame_result = results.at(child_frame_context);
-  const auto process_result = results.at(process_context);
+  const auto main_frame_result =
+      absl::get<MemorySummaryResult>(results.at(main_frame_context));
+  const auto child_frame_result =
+      absl::get<MemorySummaryResult>(results.at(child_frame_context));
+  const auto process_result =
+      absl::get<MemorySummaryResult>(results.at(process_context));
   EXPECT_LE(main_frame_result.resident_set_size_kb,
             process_result.resident_set_size_kb);
   EXPECT_LE(main_frame_result.private_footprint_kb,
@@ -179,10 +184,14 @@ IN_PROC_BROWSER_TEST_F(ResourceAttrMemoryMeasurementProviderBrowserTest,
 
   // Each process memory should be assigned entirely to the frame in the
   // process.
-  const auto main_frame_result = results.at(main_frame_context);
-  const auto child_frame_result = results.at(child_frame_context);
-  const auto process_a_result = results.at(process_a_context);
-  const auto process_b_result = results.at(process_b_context);
+  const auto main_frame_result =
+      absl::get<MemorySummaryResult>(results.at(main_frame_context));
+  const auto child_frame_result =
+      absl::get<MemorySummaryResult>(results.at(child_frame_context));
+  const auto process_a_result =
+      absl::get<MemorySummaryResult>(results.at(process_a_context));
+  const auto process_b_result =
+      absl::get<MemorySummaryResult>(results.at(process_b_context));
   EXPECT_EQ(main_frame_result.resident_set_size_kb,
             process_a_result.resident_set_size_kb);
   EXPECT_EQ(main_frame_result.private_footprint_kb,
