@@ -48,8 +48,13 @@ bool IsEnabledOrEnabling(HotspotState state) {
 }
 
 bool CanToggleHotspot(HotspotState state, HotspotAllowStatus allow_status) {
-  return allow_status == HotspotAllowStatus::kAllowed &&
-         state != HotspotState::kDisabling;
+  if (state == HotspotState::kDisabling) {
+    return false;
+  }
+  if (state == HotspotState::kEnabling || state == HotspotState::kEnabled) {
+    return true;
+  }
+  return allow_status == HotspotAllowStatus::kAllowed;
 }
 
 }  // namespace

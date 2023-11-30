@@ -200,6 +200,11 @@ TEST_F(HotspotDetailedViewTest, HotspotEnabledUI) {
 
   UpdateHotspotView(HotspotState::kEnabled, HotspotAllowStatus::kAllowed, 2);
   AssertSubtextLabel(u"2 devices connected");
+
+  UpdateHotspotView(HotspotState::kEnabled,
+                    HotspotAllowStatus::kDisallowedNoMobileData);
+  AssertToggleOn(/*expected_toggle_on=*/true,
+                 /**expected_toggle_enabled=*/true);
 }
 
 TEST_F(HotspotDetailedViewTest, HotspotEnablingUI) {
