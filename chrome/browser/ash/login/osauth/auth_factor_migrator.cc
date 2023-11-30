@@ -74,6 +74,7 @@ void AuthFactorMigrator::Run(std::unique_ptr<UserContext> context,
                              AuthOperationCallback callback) {
   if (migration_steps_.size() == 0) {
     std::move(callback).Run(std::move(context), absl::nullopt);
+    return;
   }
 
   RunImpl(std::move(context), std::move(callback));

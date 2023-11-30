@@ -127,6 +127,19 @@ class AuthFactorMigratorTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
+TEST_F(AuthFactorMigratorTest, EmptyListRun) {
+  base::HistogramTester histogram_tester;
+  auto migrator = CreateMigrator({});
+  AuthOperationTestFuture future;
+  migrator->Run(CreateContext(), future.GetCallback());
+
+  ASSERT_EQ(future.Get<0>().get(), context_);
+  context_ = nullptr;  // Release ptr.
+  ASSERT_EQ(future.Get<1>(), absl::nullopt);
+
+  ExpectTotalMetricsCount(&histogram_tester, 0);
+}
+
 TEST_F(AuthFactorMigratorTest, SingleSuccessRun) {
   base::HistogramTester histogram_tester;
   auto migrator = CreateMigrator({FakeMigrationInput{.error = absl::nullopt}});
