@@ -1125,28 +1125,6 @@ deps = {
   'src/third_party/breakpad/breakpad':
     Var('chromium_git') + '/breakpad/breakpad.git' + '@' + 'f49c2f1a2023da0cb055874fba050563dfea57db',
 
-  'src/third_party/byte_buddy': {
-      'packages': [
-          {
-              'package': 'chromium/third_party/byte_buddy',
-              'version': 'c9b53316603fc2d997c899c7ca1707f809b918cd',
-          },
-      ],
-      'condition': 'checkout_android',
-      'dep_type': 'cipd',
-  },
-
-  'src/third_party/byte_buddy/android_sdk_build_tools_25_0_2': {
-      'packages': [
-          {
-              'package': 'chromium/third_party/android_sdk/public/build-tools',
-              'version': 'kwIs2vdfTm93yEP8LG5aSnchN4BVEdVxbqQtF4XpPdkC',
-          },
-      ],
-      'condition': 'checkout_android',
-      'dep_type': 'cipd',
-  },
-
   'src/third_party/cast_core/public/src':
     Var('chromium_git') + '/cast_core/public' + '@' + '71f51fd6fa45fac73848f65421081edd723297cd',
 

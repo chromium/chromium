@@ -183,6 +183,9 @@ dependencies {
     androidTestCompile "org.mockito:mockito-core:${mockitoVersion}"
     androidTestCompile "org.mockito:mockito-subclass:${mockitoVersion}"
 
+    // Used by //third_party/byte_buddy
+    androidTestCompile "net.bytebuddy:byte-buddy:1.14.5"
+
     // Use testCompile to have is_robolectric = true set on targets.
     testCompile "org.robolectric:robolectric:4.11.1"
 }
