@@ -1550,10 +1550,6 @@ crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/browsers/history/th
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/browsers/the-window-object/BarProp.window.html [ Failure Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/browsers/the-window-object/open-close/close_unload.html [ Failure Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/browsers/the-window-object/self-et-al.window.html [ Failure Skip Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/bailout-exception-vs-return-origin.sub.window.html [ Failure Skip Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/bailout-exception-vs-return-xml.window.html [ Failure Skip Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/bailout-side-effects-ignore-opens-during-unload.window.html [ Failure Skip Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/ignore-opens-during-unload.window.html [ Failure Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/webappapis/scripting/events/event-handler-attributes-body-window.html [ Failure Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/webappapis/scripting/events/event-handler-attributes-frameset-window.html [ Failure Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/webappapis/scripting/events/event-handler-attributes-windowless-body.html [ Failure Skip Timeout ]
@@ -1575,6 +1571,10 @@ crbug.com/1488371 virtual/deprecate-unload/external/wpt/fetch/metadata/unload.ht
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/navigation-timing/nested-unload-timing.html [ Failure ]
 crbug.com/1488371 virtual/deprecate-unload/http/tests/navigation/targeted-navigation-in-unload-handler.html [ Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/http/tests/devtools/sources/debugger/skip-pause-during-navigation.js [ Skip Timeout ]
+crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/bailout-exception-vs-return-origin.sub.window.html [ Timeout ]
+crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/bailout-exception-vs-return-xml.window.html [ Timeout ]
+crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/bailout-side-effects-ignore-opens-during-unload.window.html [ Timeout ]
+crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/ignore-opens-during-unload.window.html [ Timeout ]
 
 # Pagehide is not appropriate as the test checks if PiP window is functional until the very end of the page's lifecycle:
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/document-picture-in-picture/clears-session-on-close.https.html [ Timeout ]
