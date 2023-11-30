@@ -13,7 +13,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/shell_observer.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/overview/overview_types.h"
@@ -30,6 +29,10 @@
 #include "ui/display/display_observer.h"
 #include "ui/events/event_handler.h"
 #include "ui/wm/public/activation_change_observer.h"
+
+namespace display {
+enum class TabletState;
+}  // namespace display
 
 namespace gfx {
 class PointF;
@@ -62,7 +65,6 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
                                    public ui::EventHandler,
                                    public ShellObserver,
                                    public SplitViewObserver,
-                                   public TabletModeObserver,
                                    public DesksController::Observer {
  public:
   using WindowList = std::vector<aura::Window*>;
@@ -335,6 +337,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   void OnDisplayAdded(const display::Display& display) override;
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t metrics) override;
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
@@ -353,10 +356,6 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   void OnSplitViewStateChanged(SplitViewController::State previous_state,
                                SplitViewController::State state) override;
   void OnSplitViewDividerPositionChanged() override;
-
-  // TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
 
   OverviewDelegate* delegate() { return delegate_; }
 
@@ -531,8 +530,6 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // such as scrolling and dragging.
   std::unique_ptr<ScopedFloatContainerStacker> float_container_stacker_;
 
-  std::optional<display::ScopedDisplayObserver> display_observer_;
-
   // Boolean to indicate whether chromeVox is enabled or not.
   bool chromevox_enabled_;
 
@@ -552,8 +549,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // removed.
   bool allow_empty_desk_without_exiting_ = false;
 
-  base::ScopedObservation<TabletModeController, TabletModeObserver>
-      tablet_mode_observation_{this};
+  std::optional<display::ScopedDisplayObserver> display_observer_;
 
   base::ScopedObservation<DesksController, DesksController::Observer>
       desks_controller_observation_{this};

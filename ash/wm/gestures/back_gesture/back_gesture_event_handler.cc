@@ -23,7 +23,6 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_divider.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
@@ -33,6 +32,7 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/display/screen.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/window_util.h"
 
@@ -440,8 +440,9 @@ bool BackGestureEventHandler::CanStartGoingBack(
   if (shell->session_controller()->IsRunningInAppMode())
     return false;
 
-  if (!shell->tablet_mode_controller()->InTabletMode())
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     return false;
+  }
 
   // Do not enable back gesture if it is not in an ACTIVE session. e.g, login
   // screen, lock screen.

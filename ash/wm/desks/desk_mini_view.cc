@@ -45,6 +45,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
@@ -315,7 +316,7 @@ void DeskMiniView::OnWidgetGestureTap(const gfx::Rect& screen_rect,
   // the desk.
   const bool old_force_show_desk_buttons = force_show_desk_buttons_;
   force_show_desk_buttons_ =
-      !Shell::Get()->tablet_mode_controller()->InTabletMode() &&
+      !display::Screen::GetScreen()->InTabletMode() &&
       ((is_long_gesture && IsPointOnMiniView(screen_rect.CenterPoint())) ||
        (!is_long_gesture && desk_action_view_->GetVisible() &&
         desk_action_view_->HitTestRect(

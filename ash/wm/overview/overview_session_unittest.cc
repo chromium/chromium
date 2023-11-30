@@ -107,6 +107,7 @@
 #include "ui/compositor/test/test_utils.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
@@ -8857,7 +8858,7 @@ class SplitViewOverviewSessionInClamshellTest
 // Test some basic functionalities in clamshell splitview mode.
 TEST_F(SplitViewOverviewSessionInClamshellTest, BasicFunctionalitiesTest) {
   UpdateDisplay("600x400");
-  EXPECT_FALSE(Shell::Get()->tablet_mode_controller()->InTabletMode());
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
 
   // 1. Test the 1 window scenario.
   const gfx::Rect bounds(400, 400);

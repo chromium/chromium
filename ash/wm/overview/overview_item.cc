@@ -33,7 +33,6 @@
 #include "ash/wm/raster_scale/raster_scale_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_utils.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_mini_view_header_view.h"
 #include "ash/wm/window_preview_view.h"
 #include "ash/wm/window_state.h"
@@ -52,6 +51,7 @@
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor_extra/shadow.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/widget/widget.h"
@@ -211,7 +211,7 @@ void OverviewItem::UpdateRoundedCorners() {
   OverviewController* overview_controller = OverviewController::Get();
   bool show_rounded_corners_for_start_animation = false;
   if (features::IsContinuousOverviewScrollAnimationEnabled() &&
-      !Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+      !display::Screen::GetScreen()->InTabletMode()) {
     show_rounded_corners_for_start_animation =
         transform_window_.IsMinimizedOrTucked() ||
         !IsContinuousScrollInProgress();
@@ -476,7 +476,7 @@ void OverviewItem::RestoreWindow(bool reset_transform, bool animate) {
   // TODO(oshima): SplitViewController has its own logic to adjust the
   // target state in `SplitViewController::OnOverviewModeEnding`.
   // Unify the mechanism to control it and remove ifs.
-  if (Shell::Get()->tablet_mode_controller()->InTabletMode() &&
+  if (display::Screen::GetScreen()->InTabletMode() &&
       !SplitViewController::Get(root_window_)->InSplitViewMode() &&
       reset_transform) {
     MaximizeIfSnapped(GetWindow());
@@ -1332,7 +1332,7 @@ OverviewItem::GetExitOverviewAnimationTypeForMinimizedWindow(
   // Fade out the minimized window without animation if switch from tablet mode
   // to clamshell mode.
   if (type == OverviewEnterExitType::kFadeOutExit) {
-    return Shell::Get()->tablet_mode_controller()->InTabletMode()
+    return display::Screen::GetScreen()->InTabletMode()
                ? OVERVIEW_ANIMATION_EXIT_TO_HOME_LAUNCHER
                : OVERVIEW_ANIMATION_NONE;
   }
@@ -1365,7 +1365,7 @@ void OverviewItem::AnimateOpacity(float opacity,
 void OverviewItem::CloseButtonPressed() {
   base::RecordAction(
       base::UserMetricsAction("WindowSelector_OverviewCloseButton"));
-  if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     base::RecordAction(
         base::UserMetricsAction("Tablet_WindowCloseFromOverviewButton"));
   }

@@ -7,7 +7,6 @@
 #include <array>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -22,6 +21,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
+#include "ui/display/screen.h"
 
 namespace ash {
 
@@ -172,7 +172,7 @@ const Desk* GetDeskForContext(aura::Window* context) {
 }
 
 bool ShouldDesksBarBeCreated() {
-  return !TabletMode::Get()->InTabletMode() ||
+  return !display::Screen::GetScreen()->InTabletMode() ||
          DesksController::Get()->desks().size() > 1;
 }
 

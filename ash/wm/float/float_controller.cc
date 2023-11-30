@@ -26,7 +26,6 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/scoped_window_tucker.h"
 #include "ash/wm/screen_pinning_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_state.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -48,6 +47,7 @@
 #include "ui/aura/window_delegate.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -290,7 +290,7 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
     if (desk->is_active())
       float_start_time_ = base::TimeTicks::Now();
 
-    if (Shell::Get()->tablet_mode_controller()->InTabletMode() &&
+    if (display::Screen::GetScreen()->InTabletMode() &&
         TabletModeTuckEducation::CanActivateTuckEducation()) {
       tuck_education_ =
           std::make_unique<TabletModeTuckEducation>(floated_window);
@@ -818,34 +818,6 @@ void FloatController::ClearWorkspaceEventHandler(aura::Window* root) {
   workspace_event_handlers_.erase(root);
 }
 
-void FloatController::OnTabletModeStarted() {
-  DCHECK(!floated_window_info_map_.empty());
-  // If a window can still remain floated, update its bounds, otherwise unfloat
-  // it. Note that the bounds update has to happen after tablet mode has started
-  // as opposed to while it is still starting, since some windows change their
-  // minimum size, which tablet float bounds depend on.
-  for (auto& [window, info] : floated_window_info_map_) {
-    if (chromeos::wm::CanFloatWindow(window)) {
-      info->set_magnetism_corner(
-          GetMagnetismCornerForBounds(window->GetBoundsInScreen()));
-      UpdateWindowBoundsForTablet(
-          window, WindowState::BoundsChangeAnimationType::kCrossFade);
-    } else {
-      ResetFloatedWindow(window);
-    }
-  }
-}
-
-void FloatController::OnTabletModeEnding() {
-  for (auto& [window, info] : floated_window_info_map_) {
-    info->MaybeUntuckWindow(/*animate=*/false);
-  }
-}
-
-void FloatController::OnTabletControllerDestroyed() {
-  tablet_mode_observation_.Reset();
-}
-
 void FloatController::OnDeskActivationChanged(const Desk* activated,
                                               const Desk* deactivated) {
   // Since floated windows are not children of desk containers, switching desks
@@ -934,6 +906,20 @@ void FloatController::OnDisplayMetricsChanged(const display::Display& display,
   }
 }
 
+void FloatController::OnDisplayTabletStateChanged(display::TabletState state) {
+  switch (state) {
+    case display::TabletState::kInClamshellMode:
+    case display::TabletState::kEnteringTabletMode:
+      break;
+    case display::TabletState::kInTabletMode:
+      OnTabletModeStarted();
+      break;
+    case display::TabletState::kExitingTabletMode:
+      OnTabletModeEnding();
+      break;
+  }
+}
+
 void FloatController::OnRootWindowAdded(aura::Window* root_window) {
   workspace_event_handlers_[root_window] =
       std::make_unique<WorkspaceEventHandler>(
@@ -963,7 +949,7 @@ void FloatController::OnScreenRotationAnimationFinished(
     if (window->GetProperty(aura::client::kAppType) ==
         static_cast<int>(AppType::ARC_APP)) {
       const gfx::Rect bounds =
-          Shell::Get()->tablet_mode_controller()->InTabletMode()
+          display::Screen::GetScreen()->InTabletMode()
               ? GetFloatWindowTabletBounds(window)
               : GetFloatWindowClamshellBounds(
                     window, chromeos::FloatStartLocation::kBottomRight);
@@ -1128,8 +1114,6 @@ void FloatController::FloatImpl(aura::Window* window) {
   // counted as 2 floated windows.
   ++floated_window_counter_;
 
-  if (!tablet_mode_observation_.IsObserving())
-    tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
   if (!desks_controller_observation_.IsObserving())
     desks_controller_observation_.Observe(desk_controller);
   if (!display_observer_)
@@ -1157,7 +1141,6 @@ void FloatController::UnfloatImpl(aura::Window* window) {
   floated_window_info_map_.erase(window);
   if (floated_window_info_map_.empty()) {
     desks_controller_observation_.Reset();
-    tablet_mode_observation_.Reset();
     display_observer_.reset();
   }
 
@@ -1187,8 +1170,31 @@ void FloatController::OnFloatedWindowDestroying(aura::Window* floated_window) {
   floated_window_info_map_.erase(floated_window);
   if (floated_window_info_map_.empty()) {
     desks_controller_observation_.Reset();
-    tablet_mode_observation_.Reset();
     display_observer_.reset();
+  }
+}
+
+void FloatController::OnTabletModeStarted() {
+  DCHECK(!floated_window_info_map_.empty());
+  // If a window can still remain floated, update its bounds, otherwise unfloat
+  // it. Note that the bounds update has to happen after tablet mode has started
+  // as opposed to while it is still starting, since some windows change their
+  // minimum size, which tablet float bounds depend on.
+  for (auto& [window, info] : floated_window_info_map_) {
+    if (chromeos::wm::CanFloatWindow(window)) {
+      info->set_magnetism_corner(
+          GetMagnetismCornerForBounds(window->GetBoundsInScreen()));
+      UpdateWindowBoundsForTablet(
+          window, WindowState::BoundsChangeAnimationType::kCrossFade);
+    } else {
+      ResetFloatedWindow(window);
+    }
+  }
+}
+
+void FloatController::OnTabletModeEnding() {
+  for (auto& [window, info] : floated_window_info_map_) {
+    info->MaybeUntuckWindow(/*animate=*/false);
   }
 }
 

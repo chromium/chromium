@@ -34,6 +34,7 @@
 #include "base/time/time.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/display/screen.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -355,8 +356,7 @@ void SavedDeskPresenter::UpdateUIForSavedDeskLibrary() {
   // The library and the library button is always hidden if we enter tablet
   // mode. If not in tablet mode, the library button is visible if there are
   // saved desks in the model, *or* we are already showing the library.
-  const bool in_tablet_mode =
-      Shell::Get()->tablet_mode_controller()->InTabletMode();
+  const bool in_tablet_mode = display::Screen::GetScreen()->InTabletMode();
 
   for (auto& overview_grid : overview_session_->grid_list()) {
     const bool is_showing_library = overview_grid->IsShowingSavedDeskLibrary();

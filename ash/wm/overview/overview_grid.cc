@@ -61,7 +61,6 @@
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_overview_session.h"
 #include "ash/wm/splitview/split_view_utils.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_state_delegate.h"
 #include "ash/wm/window_util.h"
@@ -82,6 +81,7 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/throughput_tracker.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -525,8 +525,7 @@ void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
     animator->RemoveObserver(this);
   }
 
-  Shell* shell = Shell::Get();
-  shell->wallpaper_controller()->RemoveObserver(this);
+  Shell::Get()->wallpaper_controller()->RemoveObserver(this);
   grid_event_handler_.reset();
 
   if (IsShowingSavedDeskLibrary())
@@ -553,7 +552,7 @@ void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
         OverviewEnterExitType::kFadeOutExit;
     const bool single_animation_in_clamshell =
         (animate_count == 1 && !has_non_cover_animating) &&
-        !shell->tablet_mode_controller()->InTabletMode();
+        !display::Screen::GetScreen()->InTabletMode();
     // The following instance self-destructs when shutdown animation ends.
     new ShutdownAnimationMetricsTrackerObserver(
         root_window_->layer()->GetCompositor(), in_split_view,
@@ -599,7 +598,7 @@ void OverviewGrid::PrepareForOverview() {
   }
 
   SplitViewController::Get(root_window_)->AddObserver(this);
-  if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     if (auto* animator = RootWindowController::ForWindow(root_window_)
                              ->GetScreenRotationAnimator()) {
       animator->AddObserver(this);
@@ -748,7 +747,7 @@ void OverviewGrid::PositionWindows(
       !window_list_.empty()) {
     bool single_animation_in_clamshell =
         animate_count == 1 && !has_non_cover_animating &&
-        !Shell::Get()->tablet_mode_controller()->InTabletMode();
+        !display::Screen::GetScreen()->InTabletMode();
     bool minimized_in_tablet = overview_session_->enter_exit_overview_type() ==
                                OverviewEnterExitType::kFadeInEnter;
     metrics_tracker_ = std::make_unique<OverviewEnterMetricsTracker>(
@@ -1276,7 +1275,7 @@ void OverviewGrid::CalculateWindowListAnimationStates(
                   : items[i]->GetWindow()->GetBoundsInRootWindow();
     if (!src_bounds_temp.IsEmpty()) {
       if (transition == OverviewTransition::kEnter &&
-          Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+          display::Screen::GetScreen()->InTabletMode()) {
         BackdropController* backdrop_controller =
             GetActiveWorkspaceController(root_window_)
                 ->layout_manager()
@@ -2065,7 +2064,7 @@ void OverviewGrid::UpdateSaveDeskButtons() {
   // scroll is in progress.
   const bool target_visible =
       !no_items && !overview_session_->GetCurrentDraggedOverviewItem() &&
-      !Shell::Get()->tablet_mode_controller()->InTabletMode() &&
+      !display::Screen::GetScreen()->InTabletMode() &&
       !IsShowingSavedDeskLibrary() && desks_widget_ &&
       (!features::IsContinuousOverviewScrollAnimationEnabled() ||
        !OverviewController::Get()->is_continuous_scroll_in_progress());

@@ -27,7 +27,6 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_overview_session.h"
 #include "ash/wm/splitview/split_view_utils.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_transient_descendant_iterator.h"
 #include "ash/wm/window_util.h"
@@ -36,6 +35,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/view.h"
@@ -248,8 +248,7 @@ gfx::Rect GetGridBoundsInScreen(
 
   // Hotseat overlaps the work area / split view bounds when extended, but in
   // some cases we don't want its bounds in our calculations.
-  if (account_for_hotseat &&
-      Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+  if (account_for_hotseat && display::Screen::GetScreen()->InTabletMode()) {
     Shelf* shelf = Shelf::ForWindow(target_root);
     const bool hotseat_extended =
         shelf->shelf_layout_manager()->hotseat_state() ==
@@ -307,10 +306,12 @@ gfx::Rect GetGridBoundsInScreen(
 }
 
 std::optional<gfx::RectF> GetSplitviewBoundsMaintainingAspectRatio() {
-  if (!ShouldAllowSplitView())
-    return std::nullopt;
-  if (!Shell::Get()->tablet_mode_controller()->InTabletMode())
-    return std::nullopt;
+  if (!ShouldAllowSplitView()) {
+    return absl::nullopt;
+  }
+  if (!display::Screen::GetScreen()->InTabletMode()) {
+    return absl::nullopt;
+  }
   auto* overview_session = OverviewController::Get()->overview_session();
   DCHECK(overview_session);
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
@@ -334,7 +335,7 @@ std::optional<gfx::RectF> GetSplitviewBoundsMaintainingAspectRatio() {
 }
 
 bool ShouldUseTabletModeGridLayout() {
-  return Shell::Get()->tablet_mode_controller()->InTabletMode();
+  return display::Screen::GetScreen()->InTabletMode();
 }
 
 gfx::Rect ToStableSizeRoundedRect(const gfx::RectF& rect) {

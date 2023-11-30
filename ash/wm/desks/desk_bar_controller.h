@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/shell_observer.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_button/desk_button.h"
@@ -25,6 +24,10 @@ namespace aura {
 class Window;
 }  // namespace aura
 
+namespace display {
+enum class TabletState;
+}  // namespace display
+
 namespace ash {
 
 // Controller for the desk bars that is responsible for creating, destroying,
@@ -35,7 +38,6 @@ class ASH_EXPORT DeskBarController : public DesksController::Observer,
                                      public ui::EventHandler,
                                      public OverviewObserver,
                                      public ShellObserver,
-                                     public TabletModeObserver,
                                      public wm::ActivationChangeObserver,
                                      public display::DisplayObserver {
  public:
@@ -86,9 +88,6 @@ class ASH_EXPORT DeskBarController : public DesksController::Observer,
   // ShellObserver:
   void OnShellDestroying() override;
 
-  // TabletModeObserver:
-  void OnTabletModeStarting() override;
-
   // wm::ActivationChangeObserver:
   void OnWindowActivated(ActivationReason reason,
                          aura::Window* gained_active,
@@ -97,6 +96,7 @@ class ASH_EXPORT DeskBarController : public DesksController::Observer,
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // Returns desk bar view in `root`. If there is no such desk bar, nullptr is
   // returned.

@@ -47,6 +47,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/display/screen.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/events/event_observer.h"
@@ -860,7 +861,7 @@ void DeskBarViewBase::NudgeDeskName(int desk_index) {
 
     // If we're in tablet mode and there are no external keyboards, open up the
     // virtual keyboard.
-    if (Shell::Get()->tablet_mode_controller()->InTabletMode() &&
+    if (display::Screen::GetScreen()->InTabletMode() &&
         !HasExternalKeyboard()) {
       keyboard::KeyboardUIController::Get()->ShowKeyboard(/*lock=*/false);
     }
@@ -974,7 +975,7 @@ bool DeskBarViewBase::ShouldShowLibraryUi() {
   // Only update visibility when needed. This will save a lot of repeated work.
   if (library_ui_visibility_ == LibraryUiVisibility::kToBeChecked) {
     if (!saved_desk_util::IsSavedDesksEnabled() ||
-        Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+        display::Screen::GetScreen()->InTabletMode()) {
       library_ui_visibility_ = LibraryUiVisibility::kHidden;
     } else {
       auto* desk_model = Shell::Get()->saved_desk_delegate()->GetDeskModel();

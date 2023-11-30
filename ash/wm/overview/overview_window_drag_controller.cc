@@ -26,7 +26,6 @@
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 #include "ash/wm/splitview/split_view_utils.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_util.h"
 #include "base/debug/crash_logging.h"
@@ -39,6 +38,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -1004,7 +1004,7 @@ OverviewGrid* OverviewWindowDragController::GetCurrentGrid() const {
 void OverviewWindowDragController::RecordNormalDrag(
     NormalDragAction action,
     bool is_dragged_to_other_display) const {
-  const bool is_tablet = Shell::Get()->tablet_mode_controller()->InTabletMode();
+  const bool is_tablet = display::Screen::GetScreen()->InTabletMode();
   if (is_dragged_to_other_display) {
     DCHECK(!is_touch_dragging_);
     if (!is_tablet) {
@@ -1046,7 +1046,7 @@ void OverviewWindowDragController::RecordDragToClose(
       OverviewDragAction::kSwipeToCloseSuccessfulTabletTouch,
       OverviewDragAction::kSwipeToCloseCanceledTabletTouch,
       OverviewDragAction::kFlingToCloseTabletTouch};
-  RecordDrag(Shell::Get()->tablet_mode_controller()->InTabletMode()
+  RecordDrag(display::Screen::GetScreen()->InTabletMode()
                  ? kTabletDrag[action]
                  : kClamshellDrag[action]);
 }

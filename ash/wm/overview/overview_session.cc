@@ -51,6 +51,8 @@
 #include "chromeos/utils/haptics_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/layer.h"
+#include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/events/event.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -173,7 +175,6 @@ void OverviewSession::Init(const WindowList& windows,
   Shell::Get()->AddShellObserver(this);
 
   if (saved_desk_util::IsSavedDesksEnabled()) {
-    tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
     hide_windows_for_saved_desks_grid_ =
         std::make_unique<ScopedOverviewHideWindows>(
             /*windows=*/std::vector<aura::Window*>{}, /*forced_hidden=*/true);
@@ -312,8 +313,6 @@ void OverviewSession::Shutdown() {
   Shell::Get()->RemoveShellObserver(this);
 
   float_container_stacker_.reset();
-
-  tablet_mode_observation_.Reset();
 
   // Stop the presenter from receiving any events that may update the model or
   // UI.
@@ -885,7 +884,7 @@ void OverviewSession::OnWindowActivating(
   // logic to end overview when app list (i.e., home launcher) is open in tablet
   // mode, so do not handle it here.
   if (gained_active == Shell::Get()->app_list_controller()->GetWindow() &&
-      !Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+      !display::Screen::GetScreen()->InTabletMode()) {
     RestoreWindowActivation(false);
     EndOverview(OverviewEndAction::kAppListActivatedInClamshell);
     return;
@@ -1108,7 +1107,7 @@ void OverviewSession::ShowSavedDeskLibrary(
   // occlusion computations. These should not cause use to exit overview.
   base::AutoReset<bool> ignore(&ignore_activations_, true);
 
-  if (Shell::Get()->tablet_mode_controller()->InTabletMode() ||
+  if (display::Screen::GetScreen()->InTabletMode() ||
       IsShowingSavedDeskLibrary()) {
     return;
   }
@@ -1347,9 +1346,8 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
   // we let the app list to handle the key event.
   // TODO(crbug.com/952315): Explore better ways to handle this splitview +
   // overview + applist case.
-  Shell* shell = Shell::Get();
-  if (!shell->tablet_mode_controller()->InTabletMode() &&
-      shell->app_list_controller()->IsVisible()) {
+  if (!display::Screen::GetScreen()->InTabletMode() &&
+      Shell::Get()->app_list_controller()->IsVisible()) {
     return;
   }
 
@@ -1538,11 +1536,12 @@ void OverviewSession::OnSplitViewDividerPositionChanged() {
   RefreshNoWindowsWidgetBoundsOnEachGrid(/*animate=*/false);
 }
 
-void OverviewSession::OnTabletModeStarted() {
-  OnTabletModeChanged();
-}
+void OverviewSession::OnDisplayTabletStateChanged(display::TabletState state) {
+  if (display::IsTabletStateChanging(state)) {
+    // Do nothing if the tablet state is still in the process of transition.
+    return;
+  }
 
-void OverviewSession::OnTabletModeEnded() {
   OnTabletModeChanged();
 }
 
@@ -1561,7 +1560,7 @@ void OverviewSession::Move(bool reverse) {
 }
 
 bool OverviewSession::ProcessForScrolling(const ui::KeyEvent& event) {
-  if (!Shell::Get()->IsInTabletMode()) {
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     return false;
   }
 

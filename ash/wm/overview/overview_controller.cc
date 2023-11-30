@@ -24,7 +24,6 @@
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/containers/unique_ptr_adapters.h"
@@ -36,6 +35,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/presentation_time_recorder.h"
+#include "ui/display/screen.h"
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -79,8 +79,9 @@ OverviewEnterExitType MaybeOverrideEnterExitTypeForHomeScreen(
     return original_type;
 
   // Use normal type if home launcher is not available.
-  if (!Shell::Get()->tablet_mode_controller()->InTabletMode())
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     return original_type;
+  }
 
   // Transition to home screen only if all windows are minimized.
   for (const aura::Window* window : windows) {

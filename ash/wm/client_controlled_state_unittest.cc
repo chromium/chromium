@@ -39,6 +39,7 @@
 #include "chromeos/ui/wm/window_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/display/screen.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -820,7 +821,7 @@ TEST_F(ClientControlledStateTest, DisconnectPrimary) {
 TEST_F(ClientControlledStateTest,
        WmEventNormalIsResolvedToMaximizeInTabletMode) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  ASSERT_EQ(true, Shell::Get()->tablet_mode_controller()->InTabletMode());
+  ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
   window_state()->window()->SetProperty(
       aura::client::kResizeBehaviorKey,
       aura::client::kResizeBehaviorCanMaximize);
@@ -912,7 +913,7 @@ TEST_F(ClientControlledStateTest, FlingFloatedWindowInTabletMode) {
 
   // Enter tablet mode
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  ASSERT_EQ(true, Shell::Get()->tablet_mode_controller()->InTabletMode());
+  ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
 
   // Float window.
   const WindowFloatWMEvent float_event(
@@ -965,7 +966,7 @@ TEST_F(ClientControlledStateTest, TuckAndUntuckFloatedWindowInTabletMode) {
 
   // Enter tablet mode
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  ASSERT_TRUE(Shell::Get()->tablet_mode_controller()->InTabletMode());
+  ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
 
   // Float window.
   const WindowFloatWMEvent float_event(

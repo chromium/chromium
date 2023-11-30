@@ -40,7 +40,6 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/switchable_windows.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_restore/window_restore_controller.h"
@@ -71,6 +70,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/display/screen.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/views/widget/native_widget_private.h"
 #include "ui/wm/core/window_animations.h"
@@ -237,11 +237,11 @@ bool IsParentSwitchableContainer(const aura::Window* window) {
 
 bool IsApplistActiveInTabletMode(const aura::Window* active_window) {
   DCHECK(active_window);
-  Shell* shell = Shell::Get();
-  if (!shell->tablet_mode_controller()->InTabletMode())
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     return false;
+  }
 
-  auto* app_list_controller = shell->app_list_controller();
+  auto* app_list_controller = Shell::Get()->app_list_controller();
   return active_window == app_list_controller->GetWindow();
 }
 
