@@ -35,50 +35,59 @@ _default_specs = {
     ),
 }
 
-_blank_thresholds = struct(
-    infra_fail_rate = struct(
-        average = None,
-    ),
-    fail_rate = struct(
-        average = None,
-    ),
-    build_time = struct(
-        p50_mins = None,
-    ),
-    pending_time = struct(
-        p50_mins = None,
-    ),
-)
-
-DEFAULT = {
+_blank_thresholds = {
     "Unhealthy": struct(
-        _default = "Unhealthy",
+        infra_fail_rate = struct(
+            average = None,
+        ),
+        fail_rate = struct(
+            average = None,
+        ),
+        build_time = struct(
+            p50_mins = None,
+        ),
+        pending_time = struct(
+            p50_mins = None,
+        ),
     ),
 }
 
-def thresholds(**kwargs):
-    return structs.evolve(_blank_thresholds, **kwargs)
+DEFAULT = {
+    "Unhealthy": struct(
+        _default = "_default",
+    ),
+}
+
+# Users define the specs as {problem_name -> problem_spec} for aesthetic reasons,
+# So all user-exposed functions expect a dictionary.
+# We then convert that into a list of [problem_specs] so the object encapsulates its own name, for ease of processing
+def thresholds(modifications):
+    return _merge_mods(_blank_thresholds, modifications)
 
 def modified_default(modifications):
-    spec = dict(_default_specs)
-    for problem in modifications:
-        if problem not in spec:
-            spec[problem] = modifications[problem]
+    return _merge_mods(_default_specs, modifications)
+
+def _merge_mods(base, modifications):
+    spec = dict(base)
+
+    for mod_name in modifications:
+        if mod_name not in spec:
+            spec[mod_name] = modifications[mod_name]
         else:
-            spec[problem] = structs.evolve(spec[problem], **structs.to_proto_properties(modifications[problem]))
+            spec[mod_name] = structs.evolve(spec[mod_name], **structs.to_proto_properties(modifications[mod_name]))
 
     return spec
 
 def _exempted_from_contact(bucket, builder):
     return builder in _exempted_from_contact_builders.get(bucket, [])
 
-def register_health_spec(bucket, name, thresholds, contact_team_email):
+def register_health_spec(bucket, name, specs, contact_team_email):
     if not contact_team_email and not _exempted_from_contact(bucket, name):
         fail("Builder " + name + " must have a contact_team_email. All new builders must specify a team email for contact in case the builder stops being healthy or providing value.")
 
-    if thresholds:
+    if specs:
         spec = struct(
-            problem_specs = thresholds,
+            problem_specs = _convert_specs(specs),
             contact_team_email = contact_team_email,
         )
         health_spec_key = _HEALTH_SPEC.add(
@@ -90,6 +99,17 @@ def register_health_spec(bucket, name, thresholds, contact_team_email):
 
         graph.add_edge(keys.project(), health_spec_key)
 
+def _convert_specs(specs):
+    """Users define the specs as {problem_name -> problem_spec} for aesthetic reasons,
+
+    So all user-exposed functions expect a dictionary.
+    We then convert that into a list of [problem_specs] so the object encapsulates its own name, for ease of processing
+    """
+    return [struct(
+        name = name,
+        thresholds = spec,
+    ) for name, spec in specs.items()]
+
 def _generate_health_specs(ctx):
     specs = {}
 
@@ -99,7 +119,7 @@ def _generate_health_specs(ctx):
         specs.setdefault(bucket, {})[builder] = node.props
 
     result = {
-        "_default_specs": _default_specs,
+        "_default_specs": _convert_specs(_default_specs),
         "specs": specs,
     }
 
