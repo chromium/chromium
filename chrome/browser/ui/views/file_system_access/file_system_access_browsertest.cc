@@ -32,6 +32,7 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/permissions/permission_util.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/content/common/file_type_policies_test_util.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -373,6 +374,19 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserSlowLoadTest, WaitUntilLoaded) {
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, SafeBrowsing) {
+  safe_browsing::FileTypePoliciesTestOverlay policies;
+  std::unique_ptr<safe_browsing::DownloadFileTypeConfig> file_type_config =
+      std::make_unique<safe_browsing::DownloadFileTypeConfig>();
+  auto* file_type = file_type_config->mutable_default_file_type();
+  file_type->set_uma_value(-1);
+  file_type->set_ping_setting(safe_browsing::DownloadFileType::FULL_PING);
+  auto* platform_settings = file_type->add_platform_settings();
+  platform_settings->set_danger_level(
+      safe_browsing::DownloadFileType::NOT_DANGEROUS);
+  platform_settings->set_auto_open_hint(
+      safe_browsing::DownloadFileType::ALLOW_AUTO_OPEN);
+  policies.SwapConfig(file_type_config);
+
   const std::string file_name("test.pdf");
   const base::FilePath test_file = temp_dir_.GetPath().AppendASCII(file_name);
 
