@@ -42,7 +42,8 @@
     <cr-toggle
         id="microphoneToggle"
         checked="{{prefs.ash.user.microphone_allowed.value}}"
-        disabled="[[shouldDisableMicrophoneToggle_]]">
+        disabled="[[shouldDisableMicrophoneToggle_]]"
+        on-click="onMicrophoneToggleClick_">
     </cr-toggle>
   </div>
   <paper-tooltip

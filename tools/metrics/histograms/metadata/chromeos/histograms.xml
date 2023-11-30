@@ -2066,6 +2066,21 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </token>
 </histogram>
 
+<histogram name="ChromeOS.PrivacyHub.{SensorName}Subpage.UserAction"
+    enum="PrivacyHubSensorSubpageUserAction" expires_after="2025-01-01">
+  <owner>shahinmd@google.com</owner>
+  <owner>cros-privacy-features-dev@google.com</owner>
+  <summary>
+    Records when the user interacts with the Privacy controls (aka. Privacy hub)
+    {SensorName} subpage.
+  </summary>
+  <token key="SensorName">
+    <variant name="Camera"/>
+    <variant name="Location"/>
+    <variant name="Microphone"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.RgbKeyboard.RgbKeyboardCapabilityType"
     enum="RgbKeyboardCapabilityType" expires_after="2024-07-10">
   <owner>michaelcheco@google.com</owner>

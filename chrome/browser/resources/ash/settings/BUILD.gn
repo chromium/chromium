@@ -432,6 +432,7 @@ build_webui("build") {
     "os_privacy_page/mojo_interface_provider.ts",
     "os_privacy_page/peripheral_data_access_browser_proxy.ts",
     "os_privacy_page/privacy_hub_browser_proxy.ts",
+    "os_privacy_page/privacy_hub_metrics_util.ts",
     "os_reset_page/os_reset_browser_proxy.ts",
     "os_search_page/google_assistant_browser_proxy.ts",
     "os_search_page/search_engines_browser_proxy.ts",

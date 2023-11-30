@@ -21,6 +21,7 @@ import {App, AppPermissionsHandlerInterface} from '../mojom-webui/app_permission
 
 import {getAppPermissionProvider} from './mojo_interface_provider.js';
 import {getTemplate} from './privacy_hub_app_permission_row.html.js';
+import {NUMBER_OF_POSSIBLE_USER_ACTIONS, PrivacyHubSensorSubpageUserAction} from './privacy_hub_metrics_util.js';
 
 function getPermissionValueAsTriState(permission: Permission): TriState {
   if (isTriStateValue(permission.value)) {
@@ -148,8 +149,16 @@ export class SettingsPrivacyHubAppPermissionRow extends
       return;
     }
 
+    const userActionHistogramName = `ChromeOS.PrivacyHub.${
+        this.permissionType.substring(1)}Subpage.UserAction`;
+
     if (this.shouldRedirectToAndroidSettings_) {
       this.mojoInterfaceProvider_.openNativeSettings(this.app.id);
+
+      chrome.metricsPrivate.recordEnumerationValue(
+          userActionHistogramName,
+          PrivacyHubSensorSubpageUserAction.ANDROID_SETTINGS_LINK_CLICKED,
+          Object.keys(PrivacyHubSensorSubpageUserAction).length);
       return;
     }
 
@@ -164,6 +173,11 @@ export class SettingsPrivacyHubAppPermissionRow extends
     }
 
     this.mojoInterfaceProvider_.setPermission(this.app.id, permission);
+
+    chrome.metricsPrivate.recordEnumerationValue(
+        userActionHistogramName,
+        PrivacyHubSensorSubpageUserAction.APP_PERMISSION_CHANGED,
+        NUMBER_OF_POSSIBLE_USER_ACTIONS);
   }
 
   private computeShouldRedirectToAndroidSettings_(): boolean {

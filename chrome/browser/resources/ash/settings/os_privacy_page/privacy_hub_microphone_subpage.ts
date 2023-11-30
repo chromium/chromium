@@ -25,6 +25,7 @@ import {App, AppPermissionsHandlerInterface, AppPermissionsObserverReceiver} fro
 import {MediaDevicesProxy} from './media_devices_proxy.js';
 import {getAppPermissionProvider} from './mojo_interface_provider.js';
 import {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from './privacy_hub_browser_proxy.js';
+import {MICROPHONE_SUBPAGE_USER_ACTION_HISTOGRAM_NAME, NUMBER_OF_POSSIBLE_USER_ACTIONS, PrivacyHubSensorSubpageUserAction} from './privacy_hub_metrics_util.js';
 import {getTemplate} from './privacy_hub_microphone_subpage.html.js';
 
 /**
@@ -189,6 +190,11 @@ export class SettingsPrivacyHubMicrophoneSubpage extends
   }
 
   private onManagePermissionsInChromeRowClick_(): void {
+    chrome.metricsPrivate.recordEnumerationValue(
+        MICROPHONE_SUBPAGE_USER_ACTION_HISTOGRAM_NAME,
+        PrivacyHubSensorSubpageUserAction.WEBSITE_PERMISSION_LINK_CLICKED,
+        NUMBER_OF_POSSIBLE_USER_ACTIONS);
+
     window.open('chrome://settings/content/microphone');
   }
 
@@ -236,6 +242,13 @@ export class SettingsPrivacyHubMicrophoneSubpage extends
     }
 
     this.getMicrophoneToggle_().click();
+  }
+
+  private onMicrophoneToggleClick_(): void {
+    chrome.metricsPrivate.recordEnumerationValue(
+        MICROPHONE_SUBPAGE_USER_ACTION_HISTOGRAM_NAME,
+        PrivacyHubSensorSubpageUserAction.SYSTEM_ACCESS_CHANGED,
+        NUMBER_OF_POSSIBLE_USER_ACTIONS);
   }
 }
 

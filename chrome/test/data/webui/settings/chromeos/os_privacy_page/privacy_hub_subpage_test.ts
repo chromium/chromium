@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {MediaDevicesProxy, PrivacyHubBrowserProxyImpl, SettingsPrivacyHubSubpage} from 'chrome://os-settings/lazy_load.js';
-import {CrLinkRowElement, CrToggleElement, MetricsConsentBrowserProxyImpl, OsSettingsPrivacyPageElement, PaperTooltipElement, Router, routes, SecureDnsMode, settingMojom, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrLinkRowElement, CrToggleElement, MetricsConsentBrowserProxyImpl, OsSettingsPrivacyPageElement, PaperTooltipElement, PrivacyHubSensorSubpageUserAction, Router, routes, SecureDnsMode, settingMojom, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -17,6 +17,7 @@ import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {FakeMediaDevices} from '../fake_media_devices.js';
 import {FakeMetricsPrivate} from '../fake_metrics_private.js';
 
+import {createFakeMetricsPrivate} from './privacy_hub_app_permission_test_util.js';
 import {DEVICE_METRICS_CONSENT_PREF_NAME, TestMetricsConsentBrowserProxy} from './test_metrics_consent_browser_proxy.js';
 import {TestPrivacyHubBrowserProxy} from './test_privacy_hub_browser_proxy.js';
 
@@ -674,6 +675,7 @@ suite(
 
 
 suite('<settings-privacy-hub-subpage> app permissions', () => {
+  let metrics: FakeMetricsPrivate;
   let privacyHubSubpage: SettingsPrivacyHubSubpage;
   let privacyHubBrowserProxy: TestPrivacyHubBrowserProxy;
   let mediaDevices: FakeMediaDevices;
@@ -683,6 +685,8 @@ suite('<settings-privacy-hub-subpage> app permissions', () => {
       showPrivacyHubPage: true,
       showAppPermissionsInsidePrivacyHub: true,
     });
+
+    metrics = createFakeMetricsPrivate();
 
     privacyHubBrowserProxy = new TestPrivacyHubBrowserProxy();
     PrivacyHubBrowserProxyImpl.setInstanceForTesting(privacyHubBrowserProxy);
@@ -716,12 +720,23 @@ suite('<settings-privacy-hub-subpage> app permissions', () => {
   test('Navigate to the camera subpage', () => {
     createSubpage();
 
+    assertEquals(
+        0,
+        metrics.countMetricValue(
+            'ChromeOS.PrivacyHub.CameraSubpage.UserAction',
+            PrivacyHubSensorSubpageUserAction.SUBPAGE_OPENED));
+
     const cameraSubpageLink =
         privacyHubSubpage.shadowRoot!.querySelector<CrLinkRowElement>(
             '#cameraSubpageLink');
     assertTrue(!!cameraSubpageLink);
-
     cameraSubpageLink.click();
+
+    assertEquals(
+        1,
+        metrics.countMetricValue(
+            'ChromeOS.PrivacyHub.CameraSubpage.UserAction',
+            PrivacyHubSensorSubpageUserAction.SUBPAGE_OPENED));
     assertEquals(routes.PRIVACY_HUB_CAMERA, Router.getInstance().currentRoute);
   });
 
@@ -849,12 +864,23 @@ suite('<settings-privacy-hub-subpage> app permissions', () => {
   test('Navigate to the microphone subpage', () => {
     createSubpage();
 
+    assertEquals(
+        0,
+        metrics.countMetricValue(
+            'ChromeOS.PrivacyHub.MicrophoneSubpage.UserAction',
+            PrivacyHubSensorSubpageUserAction.SUBPAGE_OPENED));
+
     const microphoneSubpageLink =
         privacyHubSubpage.shadowRoot!.querySelector<CrLinkRowElement>(
             '#microphoneSubpageLink');
     assertTrue(!!microphoneSubpageLink);
-
     microphoneSubpageLink.click();
+
+    assertEquals(
+        1,
+        metrics.countMetricValue(
+            'ChromeOS.PrivacyHub.MicrophoneSubpage.UserAction',
+            PrivacyHubSensorSubpageUserAction.SUBPAGE_OPENED));
     assertEquals(
         routes.PRIVACY_HUB_MICROPHONE, Router.getInstance().currentRoute);
   });

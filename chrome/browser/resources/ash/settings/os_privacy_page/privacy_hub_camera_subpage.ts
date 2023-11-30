@@ -25,6 +25,7 @@ import {MediaDevicesProxy} from './media_devices_proxy.js';
 import {getAppPermissionProvider} from './mojo_interface_provider.js';
 import {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from './privacy_hub_browser_proxy.js';
 import {getTemplate} from './privacy_hub_camera_subpage.html.js';
+import {CAMERA_SUBPAGE_USER_ACTION_HISTOGRAM_NAME, NUMBER_OF_POSSIBLE_USER_ACTIONS, PrivacyHubSensorSubpageUserAction} from './privacy_hub_metrics_util.js';
 
 /**
  * Whether the app has camera permission defined.
@@ -215,7 +216,19 @@ export class SettingsPrivacyHubCameraSubpage extends
   }
 
   private onManagePermissionsInChromeRowClick_(): void {
+    chrome.metricsPrivate.recordEnumerationValue(
+        CAMERA_SUBPAGE_USER_ACTION_HISTOGRAM_NAME,
+        PrivacyHubSensorSubpageUserAction.WEBSITE_PERMISSION_LINK_CLICKED,
+        NUMBER_OF_POSSIBLE_USER_ACTIONS);
+
     window.open('chrome://settings/content/camera');
+  }
+
+  private onCameraToggleClick_(): void {
+    chrome.metricsPrivate.recordEnumerationValue(
+        CAMERA_SUBPAGE_USER_ACTION_HISTOGRAM_NAME,
+        PrivacyHubSensorSubpageUserAction.SYSTEM_ACCESS_CHANGED,
+        NUMBER_OF_POSSIBLE_USER_ACTIONS);
   }
 }
 

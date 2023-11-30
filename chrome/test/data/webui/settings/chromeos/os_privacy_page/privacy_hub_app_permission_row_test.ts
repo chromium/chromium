@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {appPermissionHandlerMojom, CrIconButtonElement, CrToggleElement, setAppPermissionProviderForTesting, SettingsPrivacyHubAppPermissionRow} from 'chrome://os-settings/os_settings.js';
+import {appPermissionHandlerMojom, CrIconButtonElement, CrToggleElement, PrivacyHubSensorSubpageUserAction, setAppPermissionProviderForTesting, SettingsPrivacyHubAppPermissionRow} from 'chrome://os-settings/os_settings.js';
 import {AppType, Permission, PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
 import {createTriStatePermission, isTriStateValue} from 'chrome://resources/cr_components/app_management/permission_util.js';
@@ -13,13 +13,17 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
+import {FakeMetricsPrivate} from '../fake_metrics_private.js';
+
 import {FakeAppPermissionHandler} from './fake_app_permission_handler.js';
+import {createFakeMetricsPrivate} from './privacy_hub_app_permission_test_util.js';
 
 type App = appPermissionHandlerMojom.App;
 type PermissionMap = Partial<Record<PermissionType, Permission>>;
 
 suite('<settings-privacy-hub-app-permission-row>', () => {
   let fakeHandler: FakeAppPermissionHandler;
+  let metrics: FakeMetricsPrivate;
   let testRow: SettingsPrivacyHubAppPermissionRow;
   let app: App;
   const permissionType: PermissionTypeIndex = 'kMicrophone';
@@ -31,6 +35,8 @@ suite('<settings-privacy-hub-app-permission-row>', () => {
 
     fakeHandler = new FakeAppPermissionHandler();
     setAppPermissionProviderForTesting(fakeHandler);
+
+    metrics = createFakeMetricsPrivate();
 
     testRow = document.createElement('settings-privacy-hub-app-permission-row');
     testRow.permissionType = permissionType;
@@ -117,12 +123,22 @@ suite('<settings-privacy-hub-app-permission-row>', () => {
 
   test('Clicking on the toggle triggers permission update', async () => {
     assertEquals(
+        0,
+        metrics.countMetricValue(
+            'ChromeOS.PrivacyHub.MicrophoneSubpage.UserAction',
+            PrivacyHubSensorSubpageUserAction.APP_PERMISSION_CHANGED));
+    assertEquals(
         PermissionType.kUnknown,
         fakeHandler.getLastUpdatedPermission().permissionType);
 
     getPermissionToggle().click();
     await fakeHandler.whenCalled('setPermission');
 
+    assertEquals(
+        1,
+        metrics.countMetricValue(
+            'ChromeOS.PrivacyHub.MicrophoneSubpage.UserAction',
+            PrivacyHubSensorSubpageUserAction.APP_PERMISSION_CHANGED));
     const updatedPermission = fakeHandler.getLastUpdatedPermission();
     assertEquals(
         permissionType, PermissionType[updatedPermission.permissionType]);
@@ -165,11 +181,22 @@ suite('<settings-privacy-hub-app-permission-row>', () => {
     testRow.set('app.type', AppType.kArc);
     flush();
 
+    assertEquals(
+        0,
+        metrics.countMetricValue(
+            'ChromeOS.PrivacyHub.MicrophoneSubpage.UserAction',
+            PrivacyHubSensorSubpageUserAction.ANDROID_SETTINGS_LINK_CLICKED));
+
     const linkButton = getAndroidSettingsLinkButton();
     assertTrue(!!linkButton);
     linkButton.click();
     await fakeHandler.whenCalled('openNativeSettings');
 
+    assertEquals(
+        1,
+        metrics.countMetricValue(
+            'ChromeOS.PrivacyHub.MicrophoneSubpage.UserAction',
+            PrivacyHubSensorSubpageUserAction.ANDROID_SETTINGS_LINK_CLICKED));
     assertEquals(1, fakeHandler.getNativeSettingsOpenedCount());
   });
 });
