@@ -19,7 +19,7 @@ eventually add the child fragment to their output, i.e. BoxFragmentBuilder (or
 abort / finish without doing so). Rather than having each layout algorithm
 implement block fragmentation on its own, we have a shared fragmentation
 machinery, which mainly consists of utility functions in
-[ng_fragmentation_utils.cc](ng_fragmentation_utils.cc). This way each layout
+[fragmentation_utils.cc](fragmentation_utils.cc). This way each layout
 algorithm can easily hook up with the various stages or aspects of block
 fragmentation of a node. The utility functions will perform the relevant
 operations on these core NG structures (ConstraintSpace, BlockNode,
@@ -69,7 +69,7 @@ fragmentainer. This is what we want to avoid at all costs, but if monolithic
 content is taller than the fragmentainer, there's really nothing we can do about
 it.
 
-[GetConstraintSpace().HasBlockFragmentation()](../constraint_space.h) returns
+[GetConstraintSpace().HasBlockFragmentation()](constraint_space.h) returns
 true for anything that *participates* in block fragmentation. A multicol
 container *establishes* a [fragmentation
 context](https://www.w3.org/TR/css-break-3/#fragmentation-context). It is a
@@ -106,20 +106,20 @@ hook it up with the fragmentation machinery when setting up the constraint space
 for that node. Every algorithm (fragmented or not) needs to set up a constraint
 space for each child somehow, and this is done by setting up an
 ConstraintSpaceBuilder. This is where we need to add a call to
-[SetupSpaceBuilderForFragmentation()](ng_fragmentation_utils.h) as the final
+[SetupSpaceBuilderForFragmentation()](fragmentation_utils.h) as the final
 step before constructing the constraint space. This sets up the
 [fragmentainer](https://www.w3.org/TR/css-break-3/#fragmentainer) (column /
 page) block-size, and block-offset into the fragmentainer, so that we can tell
 how much space we can use before we need to insert a break. See
-[FragmentainerSpaceLeft()](ng_fragmentation_utils.h). If content is
+[FragmentainerSpaceLeft()](fragmentation_utils.h). If content is
 [monolithic](https://www.w3.org/TR/css-break-3/#monolithic) (i.e. truly
-unbreakable), [LayoutInputNode::IsMonolithic()](../layout_input_node.h) will
+unbreakable), [LayoutInputNode::IsMonolithic()](layout_input_node.h) will
 return true. Being monolithic means that we cannot break inside the element (but
 we may break before or after it).
 
-([Fragment builders](ng_box_fragment_builder.h) also need to be
+([Fragment builders](ng/ng_box_fragment_builder.h) also need to be
 fragmentation-aware. This is automatically taken care of by the
-[LayoutAlgorithm](ng_layout_algorithm.h) constructor, so algorithm
+[LayoutAlgorithm](ng/ng_layout_algorithm.h) constructor, so algorithm
 implementors need not worry about this.)
 
 **Important:** When laying out a child that participates in block fragmentation,
@@ -154,11 +154,11 @@ is that all the layout algorithm needs to do when laying out children, is:
 * Figure out where to begin - which child is the first that wasn't fully laid
   out in the previous fragmentainer (if any)? Check the incoming break token for
   the node that was passed to the layout algorithm, by calling
-  [GetBreakToken()](ng_layout_algorithm.h). There will be a child break token
+  [GetBreakToken()](ng/ng_layout_algorithm.h). There will be a child break token
   for each unfinished child. Block break tokens form a tree. Children are found
-  in [BlockBreakToken::ChildBreakTokens()](ng_block_break_token.h). These will
+  in [BlockBreakToken::ChildBreakTokens()](block_break_token.h). These will
   need to be resumed and laid out by passing the corresponding child break token
-  to [LayoutInputNode::Layout()](../layout_input_node.h). When done with all
+  to [LayoutInputNode::Layout()](layout_input_node.h). When done with all
   the incoming child break tokens, and as long as we didn't break again, proceed
   with the consecutive siblings of the node associated with the last incoming
   child break token.
@@ -168,7 +168,7 @@ is that all the layout algorithm needs to do when laying out children, is:
   before adding the child to the fragment builder (and we should only add the
   child if we are allowed to continue).
 
-The utility function [BreakBeforeChildIfNeeded()](ng_fragmentation_utils.h) is
+The utility function [BreakBeforeChildIfNeeded()](fragmentation_utils.h) is
 typically a suitable hook into the fragmentation machinery which an algorithm
 can call after layout of a child, but before adding it to the fragment
 builder. This function should be sufficient for most algorithms. However, note
@@ -176,7 +176,7 @@ that the block layout algorithm in particular doesn't use it, because it needs
 to do some extra work for the calculation of [orphans and
 widows](https://www.w3.org/TR/css-break-3/#widows-orphans), which is specific to
 block containers. Instead, it has its own implementation, in
-[BlockLayoutAlgorithm::BreakBeforeChildIfNeeded()](ng_block_layout_algorithm.cc),
+[BlockLayoutAlgorithm::BreakBeforeChildIfNeeded()](block_layout_algorithm.cc),
 that performs additional logic for handling orphans and widows.
 
 What BreakBeforeChildIfNeeded() returns determines how to proceed. We'll either:
@@ -194,7 +194,7 @@ What BreakBeforeChildIfNeeded() returns determines how to proceed. We'll either:
 If (and only if) BreakBeforeChildIfNeeded() returns kContinue, should the
 algorithm add the child to the fragment builder. After the child has been added
 to the builder, check the return value of
-[BoxFragmentBuilder::HasInflowChildBreakInside()](ng_box_fragment_builder.h)
+[BoxFragmentBuilder::HasInflowChildBreakInside()](ng/ng_box_fragment_builder.h)
 to determine if there was a same-flow break inside the builder. If there is no
 same-flow break, the next child can be laid out. Otherwise, the algorithm should
 finish. In this case, a break token has already been created, so the node will
@@ -211,7 +211,7 @@ ConsumeRemainingFragmentainerSpace(), for instance.
 
 Unless we decided to abort and retry layout, when finishing layout of a node,
 regardless of whether break was inserted or not, an algorithm needs to call
-[FinishFragmentation()](ng_fragmentation_utils.h). This may also cause a break,
+[FinishFragmentation()](fragmentation_utils.h). This may also cause a break,
 unless one was already inserted: some nodes have a specified block-size, which
 will be applied at the end of layout. If this is larger than what we can fit in
 the current fragmentainer, we need to break inside the node. If breaking inside
@@ -226,11 +226,11 @@ ComputeBlockSizeForFragment(). Knowing the total block-size from all fragments
 allows us to constrain the block-size correctly, since the relevant computed CSS
 values know nothing about fragmentation. The space taken up by previous
 fragments can be retrieved from
-[GetBreakToken()->ConsumedBlockSize()](ng_block_break_token.h).
+[GetBreakToken()->ConsumedBlockSize()](block_break_token.h).
 
 As mentioned earlier, normally the right thing to do before performing block
 fragmentation steps is to check if
-[GetConstraintSpace().HasBlockFragmentation()](../constraint_space.h) returns
+[GetConstraintSpace().HasBlockFragmentation()](constraint_space.h) returns
 true, but there are situations where we may already have generated fragments
 from a node, but need to stop it from fragmenting any further. This happens when
 overflow is clipped
@@ -239,7 +239,7 @@ such situations, GetConstraintSpace().HasBlockFragmentation() will return false,
 but we still need to pick up any previous break token to resume layout
 correctly. In cases where this distinction matters (like here - since the
 previous break token is necessary in order to calculate the final block-size, if
-specified), [InvolvedInBlockFragmentation()](ng_fragmentation_utils.h) should be
+specified), [InvolvedInBlockFragmentation()](fragmentation_utils.h) should be
 called instead. This situation is detected in FinishFragmentation(), and
 kDisableFragmentation will be returned then, which means that we need to abort
 layout and retry without fragmentation.
@@ -249,7 +249,7 @@ layout and retry without fragmentation.
 Some breakpoints are more appealing, while others violate certain breaking
 rules. We'll always break at the breakpoint with the highest appeal that's
 closer to the end of the fragmentainer (remember the golden rule mentioned
-earlier). [BreakAppeal](ng_break_appeal.h) defines the appeal values, ranging
+earlier). [BreakAppeal](break_appeal.h) defines the appeal values, ranging
 from kBreakAppealPerfect, which is used when no breaking rules are violated at
 all, to kBreakAppealLastResort, which means an invalid breakpoint, that we'll
 sometimes end up breaking at nevertheless (if there are no valid breakpoints
@@ -260,33 +260,33 @@ overflowing.
 ## Break tokens, resuming in the next fragmentainer ##
 
 When we break before or inside a node, we attach a [break
-token](ng_block_break_token.h) to the resulting fragment. The break tokens form
+token](block_break_token.h) to the resulting fragment. The break tokens form
 a tree structure for each parent we need to break and resume inside of, which
 we'll traverse when resuming layout in the next fragmentainer. See for instance
-[BlockChildIterator](ng_block_child_iterator.h), and how it makes use of the
+[BlockChildIterator](ng/ng_block_child_iterator.h), and how it makes use of the
 break token tree structure during child layout in
-[BlockLayoutAlgorithm::Layout()](ng_block_layout_algorithm.cc).
+[BlockLayoutAlgorithm::Layout()](ng/ng_block_layout_algorithm.cc).
 
 Note that the mere existence of a break token for a node doesn't imply that any
 fragment has been generated for a node, since we also create break tokens
 *before* nodes, not just inside them. If we want to know if we're actually
 resuming layout of a node, we also need to check that it's not a break-before
 break token (BlockBreakToken::IsBreakBefore()). There's a utility function for
-this: [IsBreakInside()](ng_fragmentation_utils.h).
+this: [IsBreakInside()](fragmentation_utils.h).
 
 Break tokens are attached to each fragment that breaks inside. Child fragments
 that broke inside have an entry in the child list
-([BlockBreakToken::ChildBreakTokens()](ng_block_break_token.h)). There is also
+([BlockBreakToken::ChildBreakTokens()](block_break_token.h)). There is also
 a child break token for each child node that we need to break *before*.
 
 For multicol layout, a break token tree is built all the way up to the
 containing column fragment, and there it will serve as input to the next
 column. The column fragments are produced by the regular
-[BlockLayoutAlgorithm](ng_block_layout_algorithm.h), while the multicol
+[BlockLayoutAlgorithm](ng/ng_block_layout_algorithm.h), while the multicol
 container itself produces multicol container fragments (we may be nested inside
 of another fragmentation context; otherwise there'll only be one multicol
 container fragment) using
-[ColumnLayoutAlgorithm](ng_column_layout_algorithm.h).
+[ColumnLayoutAlgorithm](column_layout_algorithm.h).
 
 Example:
 
@@ -305,7 +305,7 @@ Example:
 
 We'll run out of space in the first column before #block3 (it's monolithic due
 to contain:size). We'll create a break token for #block3
-([BlockBreakToken::IsBreakBefore()](ng_block_break_token.h) will return true
+([BlockBreakToken::IsBreakBefore()](block_break_token.h) will return true
 for that one). We'll finish the fragment for #wrapper2, create a break token for
 it, and put the break token for #block3 inside. We'll finish the fragment for
 #wrapper1, create a break token for it, and put the break token for #wrapper2
@@ -353,7 +353,7 @@ fit:
 
 #child fits just fine inside #container in the first column, but when finishing
 layout of #container, and calculating the block-size, it turns out that it's too
-tall. This takes place in [FinishFragmentation()](ng_fragmentation_utils.h). So
+tall. This takes place in [FinishFragmentation()](fragmentation_utils.h). So
 we need a break inside. We end up with this break token structure as input to
 the second column:
 
@@ -367,11 +367,11 @@ We'll resume inside #container. It has no child break tokens. What does this
 mean? Start from scratch? No. We finished #child in the first column. Laying it
 out again here would be bad (infinite loop generating an infinite amount of
 columns not getting anywhere, proabably). This is where
-[BlockBreakToken::HasSeenAllChildren()](ng_block_break_token.h) comes into
+[BlockBreakToken::HasSeenAllChildren()](block_break_token.h) comes into
 play. No child break tokens either means that we're done with the children, or
 that we haven't started yet. HasSeenAllChildren() will tell us what to do. In
 this case it returns true, so we'll just finish layout.
-[GetBreakToken()->ConsumedBlockSize()](ng_block_break_token.h) will be used to
+[GetBreakToken()->ConsumedBlockSize()](block_break_token.h) will be used to
 tell us how much space we actually need to fit in this column. We were able to
 fit 100px in the previous column, so that's our previously consumed block-size.
 The specified height is 150px, so we need room for another 50px, which will
@@ -390,27 +390,27 @@ means that we have actually found a better earlier breakpoint (further up in the
 fragmentainer). When this happens, we need to abort and rerun layout, but this
 time with a parameter that says exactly where to stop and break. Early breaks
 are stored in LayoutResult when found. See LayoutResult::GetEarlyBreak() and
-the [EarlyBreak](ng_early_break.h) structure.
+the [EarlyBreak](early_break.h) structure.
 
 An algorithm can be rerun to break at the appealing early breakpoint by passing
 said early breakpoint to the algorithm's constructor. This can be done in the
 algorithm by calling and returning the result from
-[LayoutAlgorithm::RelayoutAndBreakEarlier()](ng_layout_algorithm.h). This will
+[LayoutAlgorithm::RelayoutAndBreakEarlier()](ng/ng_layout_algorithm.h). This will
 set the early_break_ member and relayout. Any compliant algorithm needs to
 check if an early break has been set, and, if so, break when reaching that
 node.
 
 EarlyBreak forms a container chain, so that we know where to enter, and where
 to stop in the second layout pass. If there's an early break set, before
-entering every child, [IsEarlyBreakTarget()](ng_fragmentation_utils.h) may be
+entering every child, [IsEarlyBreakTarget()](fragmentation_utils.h) may be
 called (as long as the algorithm only deals with block nodes). If it returns
 true, this is where to break. Otherwise, before laying out a child,
-[EnterEarlyBreakInChild()](ng_fragmentation_utils.h) should be called, and
+[EnterEarlyBreakInChild()](fragmentation_utils.h) should be called, and
 the return value should be passed to the layout algorithm of the child.
 
 ### Re-running without block fragmentation ###
 
-If [FinishFragmentation()](ng_fragmentation_utils.h) returns
+If [FinishFragmentation()](fragmentation_utils.h) returns
 kDisableFragmentation, it means that a clipped node isn't allowed to fragment
 any further, because we've reached the end, and anything past that point will be
 clipped (and we don't want any additional fragmentainers generated just to hold
@@ -420,7 +420,7 @@ and relayout without block fragmentation, so that the node from this point will
 be treated as monolithic.
 
 The correct response to this is to abort layout of the node and relayout using
-[LayoutAlgorithm::RelayoutWithoutFragmentation()](ng_layout_algorithm.h).
+[LayoutAlgorithm::RelayoutWithoutFragmentation()](ng/ng_layout_algorithm.h).
 
 ## Parallel flows ##
 
@@ -520,7 +520,7 @@ already be broken inside if something didn't fit there.
 The first thing that takes place: if there's a forced break at the break point,
 insert a break before the child and return kBrokeBefore. Otherwise, we'll
 attempt to move past the break point
-([MovePastBreakpoint()](ng_fragmentation_utils.h)). If we can't do that
+([MovePastBreakpoint()](fragmentation_utils.h)). If we can't do that
 (i.e. we're out of space), we need to break.
 
 Details:
@@ -543,7 +543,7 @@ Details:
   previously found "best" break point, store this breakpoint as the current
   early break candidate (in the fragment builder). This may end up becoming the
   actual place to break, if we don't find anything better. This is stored as an
-  [EarlyBreak](ng_early_break.h) structure, which forms a container chain,
+  [EarlyBreak](early_break.h) structure, which forms a container chain,
   which we will have to enter if we need an early break. Return kContinue for
   now.
 
@@ -564,7 +564,7 @@ Details:
 * If we're out of space, and the appeal of breaking before and inside are both
   lower than the appeal of an earlier breakpoint, we need to use said earlier
   breakpoint, which is stored in the fragment builder (and propagated from
-  descendants via their [LayoutResult](ng_layout_result.h)). Return
+  descendants via their [LayoutResult](layout_result.h)). Return
   kNeedsEarlierBreak. We'll need to re-run layout in a special mode, where the
   algorithm is told to break at a specified node (automatic breaking will be
   disabled). There may be nested situations to consider here. For example:

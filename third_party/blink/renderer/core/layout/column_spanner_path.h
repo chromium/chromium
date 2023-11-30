@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_COLUMN_SPANNER_PATH_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_COLUMN_SPANNER_PATH_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_COLUMN_SPANNER_PATH_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_COLUMN_SPANNER_PATH_H_
 
 #include "third_party/blink/renderer/core/layout/block_node.h"
 
@@ -36,4 +36,4 @@ class ColumnSpannerPath : public GarbageCollected<ColumnSpannerPath> {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_COLUMN_SPANNER_PATH_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_COLUMN_SPANNER_PATH_H_

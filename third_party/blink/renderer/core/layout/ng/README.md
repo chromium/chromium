@@ -28,13 +28,13 @@ for every kind of layout:
 
  - The [ConstraintSpace](../constraint_space.h) which represents the "space"
    in which the current layout should produce a
-   [PhysicalFragment](ng_physical_fragment.h).
+   [PhysicalFragment](../physical_fragment.h).
 
  - TODO(layout-dev): BreakTokens should go here once implemented.
 
 The current layout should not access any information outside this set, this
 will break invariants in the system. (As a concrete example we intend to cache
-[PhysicalFragment](ng_physical_fragment.h)s based on this set, accessing
+[PhysicalFragment](../physical_fragment.h)s based on this set, accessing
 additional information outside this set will break caching behaviour).
 
 ### Box Tree ###
@@ -98,7 +98,7 @@ Here's how it works:
 
 Design doc [here](https://docs.google.com/document/d/1EJOdFesZKspvrU7uWtGl-8ab2jIrzRF6NKJhwYOs6hU/).
 
-Tutorial [here](block-fragmentation-tutorial.md).
+Tutorial [here](../block_fragmentation_tutorial.md).
 
 ### Code coverage ###
 

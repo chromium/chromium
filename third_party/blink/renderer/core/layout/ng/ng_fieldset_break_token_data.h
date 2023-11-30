@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_FIELDSET_BREAK_TOKEN_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_FIELDSET_BREAK_TOKEN_DATA_H_
 
-#include "third_party/blink/renderer/core/layout/ng/ng_block_break_token_data.h"
+#include "third_party/blink/renderer/core/layout/block_break_token_data.h"
 
 namespace blink {
 

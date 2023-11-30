@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_BREAK_APPEAL_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_BREAK_APPEAL_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_BREAK_APPEAL_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_BREAK_APPEAL_H_
 
 namespace blink {
 
@@ -38,4 +38,4 @@ const int kBreakAppealBitsNeeded = 2;
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_BREAK_APPEAL_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_BREAK_APPEAL_H_

@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/inline/inline_child_layout_context.h"
 
-#include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
+#include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 
 namespace blink {

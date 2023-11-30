@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/core/layout/mathml/math_operator_layout_algorithm.h"
 
+#include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_child_layout_context.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/core/layout/mathml/math_layout_utils.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/mathml/mathml_operator_element.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/stretchy_operator_shaper.h"
 

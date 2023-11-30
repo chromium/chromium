@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_TABLE_TABLE_BREAK_TOKEN_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_TABLE_TABLE_BREAK_TOKEN_DATA_H_
 
-#include "third_party/blink/renderer/core/layout/ng/ng_block_break_token_data.h"
+#include "third_party/blink/renderer/core/layout/block_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/table/table_layout_algorithm_types.h"
 
 namespace blink {

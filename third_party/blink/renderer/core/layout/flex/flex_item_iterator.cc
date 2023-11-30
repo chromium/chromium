@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/flex/flex_item_iterator.h"
 
+#include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/flex/ng_flex_line.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 
 namespace blink {
 
