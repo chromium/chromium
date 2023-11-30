@@ -35,6 +35,7 @@
 #include "ui/gfx/selection_model.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/touch_selection/touch_selection_metrics.h"
+#include "ui/views/buildflags.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/textfield/textfield_model.h"
 #include "ui/views/drag_controller.h"
@@ -688,6 +689,12 @@ class VIEWS_EXPORT Textfield : public View,
 
   void StopSelectionDragging();
 
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+  // Calculate widths for each grapheme and word starts and ends. Used for
+  // accessibility. Currently only on Windows when UIA is enabled.
+  void RefreshAccessibleTextOffsets();
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+
   // The text model.
   std::unique_ptr<TextfieldModel> model_;
 
@@ -838,6 +845,12 @@ class VIEWS_EXPORT Textfield : public View,
 
   // Whether the text should be used to improve typing suggestions.
   absl::optional<bool> should_do_learning_;
+
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+  // The string used to compute the text offsets for accessibility. This is used
+  // to determine if the offsets need to be recomputed.
+  std::u16string ax_value_used_to_compute_offsets_;
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 
   // Context menu related members.
   std::unique_ptr<ui::SimpleMenuModel> context_menu_contents_;

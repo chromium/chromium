@@ -13,12 +13,15 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "build/build_config.h"
-#include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "url/origin.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace content {
 enum class PictureInPictureResult;
