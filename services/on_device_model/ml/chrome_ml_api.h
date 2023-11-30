@@ -31,6 +31,9 @@ enum ContextMode {
 // Opaque handle to an instance of a ChromeML model.
 using ChromeMLModel = uintptr_t;
 
+// Function called to release resources.
+using ChromeMLDisposeFn = std::function<void()>;
+
 // Describes a ChromeML model's underlying tensors.
 struct ChromeMLModelData {
   // Points to a serialized description of the model's tensors.
@@ -39,12 +42,18 @@ struct ChromeMLModelData {
   // The size in bytes of the serialized proto at `model_proto_data`.
   size_t model_proto_size;
 
+  // Called when the model_proto data is no longer needed.
+  const ChromeMLDisposeFn* model_proto_dispose;
+
   // Points to raw tensor weight data, indexed by fields encoded in the above
   // proto. This memory must be mutable.
   void* weights_data;
 
   // The size in bytes of the data at `weights_data`.
   size_t weights_size;
+
+  // Called when the weights data is no longer needed.
+  const ChromeMLDisposeFn* weights_dispose;
 };
 
 // Describes a model to use with ChromeML.
@@ -54,6 +63,9 @@ struct ChromeMLModelDescriptor {
 
   // The size in bytes of the serialized proto at `sentencepiece_model_data`.
   size_t sentencepiece_model_proto_size;
+
+  // Called when the sentencepiece_model_proto data is no longer needed.
+  const ChromeMLDisposeFn* sentencepiece_model_proto_dispose;
 
   // The model data to use.
   const ChromeMLModelData* model_data;

@@ -23,7 +23,9 @@ namespace ml {
 
 // Uses the ChromeML API to create a model based on the params passed to
 // |Create()|. This is the main interface for interacting with the model.
-class OnDeviceModelExecutor : public on_device_model::OnDeviceModel {
+class OnDeviceModelExecutor
+    : public on_device_model::OnDeviceModel,
+      public base::SupportsWeakPtr<OnDeviceModelExecutor> {
  public:
   explicit OnDeviceModelExecutor(base::PassKey<OnDeviceModelExecutor>,
                                  const ChromeML& chrome_ml);
@@ -43,13 +45,17 @@ class OnDeviceModelExecutor : public on_device_model::OnDeviceModel {
   on_device_model::mojom::LoadModelResult Init(
       on_device_model::mojom::LoadModelParamsPtr params);
 
+  void DisposeSentencepiece();
+  void DisposeModelProto();
+  void DisposeWeights();
+
   static void Schedule(uintptr_t context, std::function<void()>* fn);
 
   const raw_ref<const ChromeML> chrome_ml_;
 
-  base::MemoryMappedFile sentencepiece_model_proto_;
-  base::MemoryMappedFile model_proto_;
-  base::MemoryMappedFile weights_;
+  std::unique_ptr<base::MemoryMappedFile> sentencepiece_model_proto_;
+  std::unique_ptr<base::MemoryMappedFile> model_proto_;
+  std::unique_ptr<base::MemoryMappedFile> weights_;
   base::MemoryMappedFile ts_data_;
   base::MemoryMappedFile ts_sp_model_;
 
