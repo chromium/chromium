@@ -94,9 +94,8 @@ class _BaseVRBenchmark(perf_benchmark.PerfBenchmark):
 
 class _BaseWebVRWebXRBenchmark(_BaseVRBenchmark):
 
-  # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
-  # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
-  # from expectations.config in SUPPORTED_PLATFORM_TAGS.
+  # TODO(johnchen): Remove either the SUPPORTED_PLATFORMS or
+  # SUPPORTED_PLATFORMS_TAGS lists. Only one is necessary.
   SUPPORTED_PLATFORM_TAGS = [platforms.ANDROID, platforms.WIN10]
   SUPPORTED_PLATFORMS = [
       story.expectations.ALL_ANDROID,
@@ -145,9 +144,8 @@ class XrWebXrStatic(_BaseWebXRBenchmark):
 
 class _BaseBrowsingBenchmark(_BaseVRBenchmark):
 
-  # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
-  # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
-  # from expectations.config in SUPPORTED_PLATFORM_TAGS.
+  # TODO(johnchen): Remove either the SUPPORTED_PLATFORMS or
+  # SUPPORTED_PLATFORMS_TAGS lists. Only one is necessary.
   SUPPORTED_PLATFORM_TAGS = [platforms.ANDROID]
   SUPPORTED_PLATFORMS = [story.expectations.ALL_ANDROID]
 
