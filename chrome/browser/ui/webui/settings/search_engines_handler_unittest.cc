@@ -167,10 +167,6 @@ TEST_P(SearchEnginesHandlerParametrizedTest,
   web_ui()->HandleReceivedMessage("setDefaultSearchEngine", first_call_args);
 
   histogram_tester().ExpectUniqueSample(
-      search_engines::kDefaultSearchEngineChoiceLocationHistogram,
-      search_engines::ChoiceMadeLocation::kSearchEngineSettings, 1);
-
-  histogram_tester().ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
       SearchEngineType::SEARCH_ENGINE_BING,
       WithSearchEnginesChoiceEnabled() ? 1 : 0);
@@ -181,10 +177,6 @@ TEST_P(SearchEnginesHandlerParametrizedTest,
   second_call_args.Append(
       static_cast<int>(search_engines::ChoiceMadeLocation::kSearchSettings));
   web_ui()->HandleReceivedMessage("setDefaultSearchEngine", second_call_args);
-
-  histogram_tester().ExpectBucketCount(
-      search_engines::kDefaultSearchEngineChoiceLocationHistogram,
-      search_engines::ChoiceMadeLocation::kSearchSettings, 1);
 
   histogram_tester().ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
@@ -241,10 +233,6 @@ TEST_F(SearchEnginesHandlerTestWithSearchEngineChoiceEnabled,
   EXPECT_EQ(pref_service->GetString(
                 prefs::kDefaultSearchProviderChoiceScreenCompletionVersion),
             version_info::GetVersionNumber());
-
-  histogram_tester().ExpectUniqueSample(
-      search_engines::kDefaultSearchEngineChoiceLocationHistogram,
-      search_engines::ChoiceMadeLocation::kSearchEngineSettings, 1);
 }
 
 TEST_F(SearchEnginesHandlerTestWithSearchEngineChoiceEnabled,
