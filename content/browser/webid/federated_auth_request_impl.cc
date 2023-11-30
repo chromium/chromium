@@ -2144,22 +2144,16 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
             should_delay_callback);
         return;
       }
-      // Grant sharing permission specific to *this account*.
-      //
-      // TODO(majidvp): But wait which account?
-      //   1) The account that user selected in our UI (i.e., account_id_) or
-      //   2) The one for which the IDP generated a token.
-      //
-      // Ideally these are one and the same but currently there is no
-      // enforcement for that equality so they could be different. In the
-      // future we may want to enforce that the token account (aka subject)
-      // matches the user selected account. But for now these questions are
-      // moot since we don't actually inspect the returned idtoken.
-      // https://crbug.com/1199088
+
+      // Auto re-authentication can only be triggered when there's already a
+      // sharing permission OR the IdP is exempted with 3PC access. Either way
+      // we shouldn't explicitly grant permission here.
       CHECK(!account_id_.empty());
-      permission_delegate_->GrantSharingPermission(
-          origin(), GetEmbeddingOrigin(), url::Origin::Create(idp_config_url),
-          account_id_);
+      if (dialog_type_ != kAutoReauth) {
+        permission_delegate_->GrantSharingPermission(
+            origin(), GetEmbeddingOrigin(), url::Origin::Create(idp_config_url),
+            account_id_);
+      }
 
       SetRequiresUserMediation(false);
 

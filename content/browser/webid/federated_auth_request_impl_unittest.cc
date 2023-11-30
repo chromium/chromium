@@ -2190,6 +2190,13 @@ TEST_F(FederatedAuthRequestImplTest,
                                          OriginFromString(kRpUrl)))
       .WillOnce(Return(true));
 
+  // Sharing permission won't be granted with this setup.
+  EXPECT_CALL(*test_permission_delegate_,
+              GrantSharingPermission(
+                  OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                  OriginFromString(kProviderUrlFull), std::string(kAccountId)))
+      .Times(0);
+
   // Set IDP claims user is signed in.
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].accounts[0].login_state =
