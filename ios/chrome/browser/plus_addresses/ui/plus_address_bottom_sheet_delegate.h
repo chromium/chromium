@@ -17,6 +17,9 @@
 // called only after `reservePlusAddress` succeeds.
 - (void)confirmPlusAddress;
 
+// Asks the delegate for the user's primary email address.
+- (NSString*)primaryEmailAddress;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_PLUS_ADDRESSES_UI_PLUS_ADDRESS_BOTTOM_SHEET_DELEGATE_H_

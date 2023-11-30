@@ -41,6 +41,8 @@
   return self;
 }
 
+#pragma mark - PlusAddressBottomSheetDelegate
+
 - (void)reservePlusAddress {
   __weak __typeof(self) weakSelf = self;
   // Create the callback needed by the C++ `_plusAddressService` object,
@@ -74,6 +76,17 @@
   _plusAddressService->ConfirmPlusAddress(
       _mainFrameOrigin, base::SysNSStringToUTF8(_reservedPlusAddress),
       std::move(callback));
+}
+
+- (NSString*)primaryEmailAddress {
+  absl::optional<std::string> primaryAddress =
+      _plusAddressService->GetPrimaryEmail();
+  // TODO(crbug.com/1467623): determine the appropriate behavior in cases
+  // without a primary email (or just switch the signature away from optional).
+  if (!primaryAddress.has_value()) {
+    return @"";
+  }
+  return base::SysUTF8ToNSString(primaryAddress.value());
 }
 
 #pragma mark - Private

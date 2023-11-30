@@ -20,6 +20,7 @@
 #import "components/infobars/core/infobar_manager.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
+#import "components/plus_addresses/features.h"
 #import "components/prefs/pref_service.h"
 #import "components/profile_metrics/browser_profile_type.h"
 #import "components/safe_browsing/core/common/features.h"
@@ -1804,6 +1805,15 @@ enum class ToolbarKind {
 - (void)dismissPlusAddressBottomSheet {
   [self.plusAddressBottomSheetCoordinator stop];
   self.plusAddressBottomSheetCoordinator = nil;
+}
+
+- (void)showPlusAddressManagementPage {
+  GURL managementUrl(plus_addresses::kPlusAddressManagementUrl.Get());
+  UrlLoadParams params = UrlLoadParams::InNewTab(managementUrl);
+  params.append_to = OpenPosition::kCurrentTab;
+  params.user_initiated = NO;
+  params.in_incognito = self.browser->GetBrowserState()->IsOffTheRecord();
+  _urlLoadingBrowserAgent->Load(params);
 }
 
 - (void)showOmniboxPositionChoice {

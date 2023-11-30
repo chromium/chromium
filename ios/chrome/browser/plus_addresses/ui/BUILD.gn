@@ -10,13 +10,23 @@ source_set("ui") {
     "plus_address_bottom_sheet_view_controller.mm",
   ]
   deps = [
+    ":constants",
     "//components/plus_addresses",
     "//components/strings",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/util",
     "//ios/chrome/common/ui/util:dynamic_type_util",
     "//ui/base",
+  ]
+}
+
+source_set("constants") {
+  sources = [
+    "plus_address_bottom_sheet_constants.h",
+    "plus_address_bottom_sheet_constants.mm",
   ]
 }
 
@@ -25,6 +35,7 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "plus_addresses_egtest.mm" ]
   deps = [
+    ":constants",
     "//components/plus_addresses",
     "//components/strings:components_strings_grit",
     "//ios/chrome/browser/shared/public/features",

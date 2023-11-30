@@ -8,19 +8,51 @@
 #import "base/logging.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/types/expected.h"
+#import "components/plus_addresses/features.h"
 #import "components/plus_addresses/plus_address_service.h"
 #import "components/plus_addresses/plus_address_types.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_constants.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/common/string_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 #import "ios/chrome/common/ui/util/dynamic_type_util.h"
+#import "ios/chrome/common/ui/util/text_view_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
+namespace {
+// Generates the description to be displayed in the modal, which includes an
+// attributed string that links to the user's myaccount page.
+NSAttributedString* DescriptionMessage() {
+  // Create and format the text.
+  NSDictionary* text_attributes = @{
+    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
+    NSFontAttributeName : [UIFont preferredFontForTextStyle:UIFontTextStyleBody]
+  };
+
+  NSString* message = l10n_util::GetNSString(
+      IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_DESCRIPTION_IOS);
+
+  NSDictionary* link_attributes = @{
+    NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
+    NSFontAttributeName :
+        [UIFont preferredFontForTextStyle:UIFontTextStyleBody],
+    NSLinkAttributeName : base::SysUTF8ToNSString(
+        plus_addresses::kPlusAddressManagementUrl.Get()),
+  };
+
+  return AttributedStringFromStringWithLink(message, text_attributes,
+                                            link_attributes);
+}
+}  // namespace
+
 @interface PlusAddressBottomSheetViewController () <
-    ConfirmationAlertActionHandler>
+    ConfirmationAlertActionHandler,
+    UITextViewDelegate>
 
 @end
 
@@ -50,13 +82,27 @@
 - (void)viewDidLoad {
   // Set the properties read by the super when constructing the
   // views in `-[ConfirmationAlertViewController viewDidLoad]`.
+  self.titleString = l10n_util::GetNSString(IDS_PLUS_ADDRESS_MODAL_TITLE);
   self.primaryActionString =
       l10n_util::GetNSString(IDS_PLUS_ADDRESS_MODAL_OK_TEXT);
   self.secondaryActionString =
       l10n_util::GetNSString(IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT);
   // Set up the label that will indicate the reserved plus address to the user.
-  _reservedPlusAddressLabel = [self setUpReservedPlusAddressView:@""];
-  self.aboveTitleView = _reservedPlusAddressLabel;
+  _reservedPlusAddressLabel = [self reservedPlusAddressView:@""];
+  NSString* primaryEmailAddress = [_delegate primaryEmailAddress];
+  UILabel* primaryAddressLabel =
+      [self primaryEmailAddressView:primaryEmailAddress];
+  UITextView* description = [self descriptionView:DescriptionMessage()];
+  UIStackView* verticalStack = [[UIStackView alloc] initWithArrangedSubviews:@[
+    description, primaryAddressLabel, _reservedPlusAddressLabel
+  ]];
+  verticalStack.axis = UILayoutConstraintAxisVertical;
+  verticalStack.spacing = 0;
+  verticalStack.distribution = UIStackViewDistributionFill;
+  verticalStack.layoutMarginsRelativeArrangement = YES;
+  verticalStack.layoutMargins = UIEdgeInsetsMake(0, 0, 0, 0);
+  verticalStack.translatesAutoresizingMaskIntoConstraints = NO;
+  self.underTitleView = verticalStack;
   [super viewDidLoad];
 
   self.actionHandler = self;
@@ -98,11 +144,28 @@
       l10n_util::GetNSString(IDS_PLUS_ADDRESS_MODAL_ERROR_MESSAGE);
 }
 
+#pragma mark - UITextViewDelegate
+
+// Handle click to the user's google account settings. Note that `URL` is
+// currently ignored, as the only available link has only one possible function.
+- (BOOL)textView:(UITextView*)textView
+    shouldInteractWithURL:(NSURL*)URL
+                  inRange:(NSRange)characterRange
+              interaction:(UITextItemInteraction)interaction {
+  CHECK([URL.absoluteString
+      isEqual:base::SysUTF8ToNSString(
+                  plus_addresses::kPlusAddressManagementUrl.Get())]);
+  [_browserCoordinatorHandler showPlusAddressManagementPage];
+  [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
+  // Returns NO as the app is handling the opening of the URL.
+  return NO;
+}
+
 #pragma mark - Private
 
 // Configures the reserved address view, which allows the user to understand the
 // plus address they can confirm use of (or not).
-- (UILabel*)setUpReservedPlusAddressView:(NSString*)text {
+- (UILabel*)reservedPlusAddressView:(NSString*)text {
   UILabel* reservedPlusAddressLabel = [[UILabel alloc] init];
   reservedPlusAddressLabel.text = text;
 
@@ -114,6 +177,44 @@
   reservedPlusAddressLabel.numberOfLines = 0;
   reservedPlusAddressLabel.textAlignment = NSTextAlignmentCenter;
   return reservedPlusAddressLabel;
+}
+
+// The primary email address is displayed in a separate view with slightly
+// different formatting.
+// TODO(crbug.com/1467623): polish the UI.
+- (UILabel*)primaryEmailAddressView:(NSString*)primaryEmailAddress {
+  UILabel* primaryEmailAddressLabel = [[UILabel alloc] init];
+  primaryEmailAddressLabel.text = primaryEmailAddress;
+
+  // Limit the size of text to avoid truncation.
+  primaryEmailAddressLabel.font = PreferredFontForTextStyleWithMaxCategory(
+      UIFontTextStyleBody, self.traitCollection.preferredContentSizeCategory,
+      UIContentSizeCategoryExtraExtraExtraLarge);
+
+  primaryEmailAddressLabel.numberOfLines = 0;
+  primaryEmailAddressLabel.textAlignment = NSTextAlignmentCenter;
+  return primaryEmailAddressLabel;
+}
+
+// Create a description UITextView, which will describe the function of the
+// feature and link out to the user's account settings.
+- (UITextView*)descriptionView:(NSAttributedString*)description {
+  UITextView* descriptionView = CreateUITextViewWithTextKit1();
+  descriptionView.accessibilityIdentifier =
+      kPlusAddressModalDescriptionAccessibilityIdentifier;
+  descriptionView.scrollEnabled = NO;
+  descriptionView.editable = NO;
+  descriptionView.delegate = self;
+  descriptionView.backgroundColor = [UIColor clearColor];
+  descriptionView.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  descriptionView.adjustsFontForContentSizeCategory = YES;
+  descriptionView.translatesAutoresizingMaskIntoConstraints = NO;
+  descriptionView.textContainerInset = UIEdgeInsetsZero;
+  descriptionView.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  descriptionView.linkTextAttributes =
+      @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]};
+  descriptionView.attributedText = description;
+  return descriptionView;
 }
 
 @end
