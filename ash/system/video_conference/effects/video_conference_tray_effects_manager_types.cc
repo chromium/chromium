@@ -4,6 +4,8 @@
 
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 
+#include <utility>
+
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager.h"
 #include "ui/gfx/vector_icon_types.h"
 
@@ -17,7 +19,7 @@ VcEffectState::VcEffectState(const gfx::VectorIcon* icon,
     : icon_(icon),
       label_text_(label_text),
       accessible_name_id_(accessible_name_id),
-      button_callback_(button_callback),
+      button_callback_(std::move(button_callback)),
       state_value_(state_value) {
   DCHECK(icon);
 }

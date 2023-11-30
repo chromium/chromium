@@ -4,6 +4,8 @@
 
 #include "ash/system/unified/power_button.h"
 
+#include <utility>
+
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/session/session_controller.h"
@@ -339,7 +341,7 @@ class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
 };
 
 PowerButtonContainer::PowerButtonContainer(PressedCallback callback)
-    : Button(callback) {
+    : Button(std::move(callback)) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
 

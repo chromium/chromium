@@ -5,6 +5,7 @@
 #include "ash/system/brightness/unified_brightness_slider_controller.h"
 
 #include <memory>
+#include <utility>
 
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/shell.h"
@@ -28,7 +29,7 @@ static constexpr double kMinBrightnessPercent = 5.0;
 UnifiedBrightnessSliderController::UnifiedBrightnessSliderController(
     scoped_refptr<UnifiedSystemTrayModel> model,
     views::Button::PressedCallback callback)
-    : model_(model), callback_(callback) {}
+    : model_(model), callback_(std::move(callback)) {}
 
 UnifiedBrightnessSliderController::~UnifiedBrightnessSliderController() =
     default;

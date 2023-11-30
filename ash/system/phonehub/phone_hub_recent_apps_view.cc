@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <numeric>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -158,7 +159,7 @@ PhoneHubRecentAppsView::HeaderView::HeaderView(
 
   if (features::IsEcheNetworkConnectionStateEnabled()) {
     error_button_ =
-        AddChildView(std::make_unique<views::ImageButton>(callback));
+        AddChildView(std::make_unique<views::ImageButton>(std::move(callback)));
     ui::ImageModel image = ui::ImageModel::FromVectorIcon(
         kPhoneHubEcheErrorStatusIcon,
         AshColorProvider::Get()->GetContentLayerColor(

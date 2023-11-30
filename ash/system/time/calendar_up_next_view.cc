@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <utility>
 
 #include "ash/bubble/bubble_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -197,7 +198,7 @@ CalendarUpNextView::CalendarUpNextView(
       ->SetLayoutManager(std::make_unique<views::BoxLayout>())
       ->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
   todays_events_button_container_->AddChildView(
-      CreateTodaysEventsButton(callback));
+      CreateTodaysEventsButton(std::move(callback)));
 
   // Header.
   auto* header_layout_manager =

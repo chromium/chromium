@@ -5,6 +5,7 @@
 #include "ash/system/focus_mode/focus_mode_detailed_view.h"
 
 #include <memory>
+#include <utility>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -97,7 +98,8 @@ std::unique_ptr<IconButton> CreateTimerAdjustmentButton(
     ui::ColorId background_color,
     int accessible_name_id) {
   std::unique_ptr<IconButton> timer_adjustment_button =
-      std::make_unique<IconButton>(callback, IconButton::Type::kLarge, &icon,
+      std::make_unique<IconButton>(std::move(callback),
+                                   IconButton::Type::kLarge, &icon,
                                    accessible_name_id);
   timer_adjustment_button->SetImageHorizontalAlignment(
       views::ImageButton::HorizontalAlignment::ALIGN_CENTER);

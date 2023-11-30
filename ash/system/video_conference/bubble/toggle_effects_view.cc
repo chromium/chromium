@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <utility>
 
 #include "ash/bubble/bubble_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -169,7 +170,7 @@ ToggleEffectsButton::ToggleEffectsButton(
     std::optional<int> container_id,
     const VcEffectId effect_id,
     int num_button_per_row)
-    : callback_(callback),
+    : callback_(std::move(callback)),
       toggled_(toggle_state),
       effect_id_(effect_id),
       vector_icon_(vector_icon),
