@@ -288,7 +288,8 @@ class PrintRenderFrameHelper
 
   // Renders a print preview page. `page_index` is 0-based.
   // Returns true if print preview should continue, false on failure.
-  bool RenderPreviewPage(uint32_t page_index);
+  bool RenderPreviewPage(uint32_t page_index,
+                         blink::WebLocalFrame* header_footer_frame);
 
   // Finalize the print ready preview document.
   bool FinalizePrintReadyDocument();
@@ -371,6 +372,7 @@ class PrintRenderFrameHelper
                          uint32_t page_index,
                          uint32_t page_count,
                          blink::WebLocalFrame* frame,
+                         blink::WebLocalFrame* header_footer_frame,
                          MetafileSkia* metafile);
 
   // Helper methods -----------------------------------------------------------
