@@ -714,19 +714,21 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'os-settings:display';
       case SearchResultIcon.kDockedMagnifier:
         return 'os-settings:docked-magnifier';
-      case SearchResultIcon.kDrive:
-        return isRevampEnabled ? 'os-settings:google-drive-revamp' :
-                                 'os-settings:google-drive';
       case SearchResultIcon.kEthernet:
         return 'os-settings:settings-ethernet';
       case SearchResultIcon.kFingerprint:
         return 'os-settings:fingerprint';
       case SearchResultIcon.kFolder:
         return 'os-settings:folder-outline';
+      case SearchResultIcon.kFolderShared:
+        return 'os-settings:folder-shared';
       case SearchResultIcon.kFullscreenMagnifier:
         return 'os-settings:fullscreen-magnifier';
       case SearchResultIcon.kGeolocation:
         return 'os-settings:geolocation';
+      case SearchResultIcon.kGoogleDrive:
+        return isRevampEnabled ? 'os-settings:google-drive-revamp' :
+                                 'os-settings:google-drive';
       case SearchResultIcon.kGooglePlay:
         return 'os-settings:google-play';
       case SearchResultIcon.kHotspot:

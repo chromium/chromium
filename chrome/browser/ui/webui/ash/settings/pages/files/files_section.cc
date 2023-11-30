@@ -50,7 +50,7 @@ const std::vector<SearchConcept>& GetDefaultSearchConcepts(
        {.section = section}},
       {IDS_OS_SETTINGS_TAG_FILES_NETWORK_FILE_SHARES,
        mojom::kNetworkFileSharesSubpagePath,
-       mojom::SearchResultIcon::kFolder,
+       mojom::SearchResultIcon::kFolderShared,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kNetworkFileShares},
@@ -76,7 +76,7 @@ const std::vector<SearchConcept>& GetFilesGoogleDriveFileSyncSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags(
       {{IDS_OS_SETTINGS_TAG_FILES_GOOGLE_DRIVE_FILE_SYNC,
         mojom::kGoogleDriveSubpagePath,
-        mojom::SearchResultIcon::kDrive,
+        mojom::SearchResultIcon::kGoogleDrive,
         mojom::SearchResultDefaultRank::kMedium,
         mojom::SearchResultType::kSubpage,
         {.setting = mojom::Setting::kGoogleDriveFileSync},
@@ -91,13 +91,13 @@ const std::vector<SearchConcept>& GetFilesGoogleDriveSubpageSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags(
       {{IDS_OS_SETTINGS_TAG_FILES_GOOGLE_DRIVE,
         mojom::kGoogleDriveSubpagePath,
-        mojom::SearchResultIcon::kDrive,
+        mojom::SearchResultIcon::kGoogleDrive,
         mojom::SearchResultDefaultRank::kMedium,
         mojom::SearchResultType::kSubpage,
         {.subpage = mojom::Subpage::kGoogleDrive}},
        {IDS_OS_SETTINGS_TAG_FILES_REMOVE_GOOGLE_DRIVE_ACCESS,
         mojom::kGoogleDriveSubpagePath,
-        mojom::SearchResultIcon::kDrive,
+        mojom::SearchResultIcon::kGoogleDrive,
         mojom::SearchResultDefaultRank::kMedium,
         mojom::SearchResultType::kSetting,
         {.setting = mojom::Setting::kGoogleDriveRemoveAccess}}});
@@ -111,7 +111,7 @@ GetFilesGoogleDriveDisconnectSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags(
       {{IDS_OS_SETTINGS_TAG_FILES_DISCONNECT_GOOGLE_DRIVE,
         mojom::kFilesSectionPath,
-        mojom::SearchResultIcon::kDrive,
+        mojom::SearchResultIcon::kGoogleDrive,
         mojom::SearchResultDefaultRank::kMedium,
         mojom::SearchResultType::kSetting,
         {.setting = mojom::Setting::kGoogleDriveConnection}}});
@@ -335,22 +335,25 @@ void FilesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSetting(mojom::Setting::kGoogleDriveRemoveAccess);
 
   // Network file shares.
-  generator->RegisterTopLevelSubpage(
-      IDS_SETTINGS_DOWNLOADS_SMB_SHARES, mojom::Subpage::kNetworkFileShares,
-      mojom::SearchResultIcon::kFolder, mojom::SearchResultDefaultRank::kMedium,
-      mojom::kNetworkFileSharesSubpagePath);
+  generator->RegisterTopLevelSubpage(IDS_SETTINGS_DOWNLOADS_SMB_SHARES,
+                                     mojom::Subpage::kNetworkFileShares,
+                                     mojom::SearchResultIcon::kFolderShared,
+                                     mojom::SearchResultDefaultRank::kMedium,
+                                     mojom::kNetworkFileSharesSubpagePath);
 
-  // Office.
+  // MS Office.
   generator->RegisterTopLevelSubpage(
       IDS_SETTINGS_OFFICE_LABEL, mojom::Subpage::kOfficeFiles,
       mojom::SearchResultIcon::kFolder, mojom::SearchResultDefaultRank::kMedium,
       mojom::kNetworkFileSharesSubpagePath);
 
+  // Google Drive.
   generator->RegisterTopLevelSubpage(
       IDS_SETTINGS_GOOGLE_DRIVE, mojom::Subpage::kGoogleDrive,
-      mojom::SearchResultIcon::kFolder, mojom::SearchResultDefaultRank::kMedium,
-      mojom::kGoogleDriveSubpagePath);
+      mojom::SearchResultIcon::kGoogleDrive,
+      mojom::SearchResultDefaultRank::kMedium, mojom::kGoogleDriveSubpagePath);
 
+  // One Drive
   generator->RegisterTopLevelSubpage(
       IDS_SETTINGS_ONE_DRIVE_LABEL, mojom::Subpage::kOneDrive,
       mojom::SearchResultIcon::kFolder, mojom::SearchResultDefaultRank::kMedium,
