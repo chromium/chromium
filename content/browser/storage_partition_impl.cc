@@ -1784,7 +1784,7 @@ StoragePartitionImpl::GetSharedStorageWorkletHostManager() {
 
 storage::mojom::IndexedDBControl& StoragePartitionImpl::GetIndexedDBControl() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return indexed_db_control_wrapper_->GetIndexedDBControl();
+  return *indexed_db_control_wrapper_.get();
 }
 
 FileSystemAccessEntryFactory*
