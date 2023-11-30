@@ -226,6 +226,12 @@ class VIEWS_EXPORT ViewAccessibility {
   void OverrideChildTreeID(ui::AXTreeID tree_id);
   ui::AXTreeID GetChildTreeID() const;
 
+  void OverrideCharacterOffsets(const std::vector<int32_t>& offsets);
+  void OverrideWordStarts(const std::vector<int32_t>& offsets);
+  void OverrideWordEnds(const std::vector<int32_t>& offsets);
+
+  void ClearTextOffsets();
+
   // Returns the accessibility object that represents the View whose
   // accessibility is managed by this instance. This may be an AXPlatformNode or
   // it may be a native accessible object implemented by another class.

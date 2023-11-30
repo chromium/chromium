@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -33,6 +34,7 @@
 #include "ui/gfx/text_utils.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/accessibility/views_utilities_aura.h"
 #include "ui/views/background.h"
 #include "ui/views/cascading_property.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -1003,6 +1005,42 @@ bool Label::CanHandleAccelerators() const {
   return HasFocus() && GetRenderTextForSelectionController() &&
          View::CanHandleAccelerators();
 }
+
+void Label::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  View::GetAccessibleNodeData(node_data);
+
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+  // If the accessible name changed since the last time we computed the text
+  // offsets, we need to recompute them.
+  if (::features::IsUiaProviderEnabled() &&
+      ax_name_used_to_compute_offsets_ != GetAccessibleName()) {
+    GetViewAccessibility().ClearTextOffsets();
+    ax_name_used_to_compute_offsets_.clear();
+    if (RefreshAccessibleTextOffsets()) {
+      ax_name_used_to_compute_offsets_ = GetAccessibleName();
+    }
+  }
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+}
+
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+bool Label::RefreshAccessibleTextOffsets() {
+  MaybeBuildDisplayText();
+  // TODO(https://crbug.com/1485632): Add support for multiline textfields.
+  if (!display_text_ || display_text_->multiline()) {
+    return false;
+  }
+
+  GetViewAccessibility().OverrideCharacterOffsets(
+      ComputeTextOffsets(display_text_.get()));
+
+  WordBoundaries boundaries = ComputeWordBoundaries(GetText());
+  GetViewAccessibility().OverrideWordStarts(boundaries.starts);
+  GetViewAccessibility().OverrideWordEnds(boundaries.ends);
+
+  return true;
+}
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 
 void Label::OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                        float new_device_scale_factor) {

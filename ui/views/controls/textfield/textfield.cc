@@ -19,6 +19,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -55,6 +56,7 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/touch_selection/touch_selection_metrics.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/accessibility/views_utilities_aura.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_impl.h"
@@ -336,6 +338,7 @@ void Textfield::SetTextInputType(ui::TextInputType type) {
     GetInputMethod()->OnTextInputTypeChanged(this);
   OnCaretBoundsChanged();
   OnPropertyChanged(&text_input_type_, kPropertyEffectsPaint);
+  UpdateAfterChange(TextChangeType::kInternal, false);
 }
 
 void Textfield::SetTextInputFlags(int flags) {
@@ -1062,7 +1065,36 @@ void Textfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
                              base::checked_cast<int32_t>(range.start()));
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kTextSelEnd,
                              base::checked_cast<int32_t>(range.end()));
+
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+  std::u16string ax_value =
+      node_data->GetString16Attribute(ax::mojom::StringAttribute::kValue);
+  // If the accessible value changed since the last time we computed the text
+  // offsets, we need to recompute them.
+  if (::features::IsUiaProviderEnabled() &&
+      ax_value_used_to_compute_offsets_ != ax_value) {
+    GetViewAccessibility().ClearTextOffsets();
+    RefreshAccessibleTextOffsets();
+    ax_value_used_to_compute_offsets_ = ax_value;
+  }
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 }
+
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+void Textfield::RefreshAccessibleTextOffsets() {
+  // TODO(https://crbug.com/1485632): Add support for multiline textfields.
+  if (GetRenderText()->multiline()) {
+    return;
+  }
+
+  GetViewAccessibility().OverrideCharacterOffsets(
+      ComputeTextOffsets(GetRenderText()));
+
+  WordBoundaries boundaries = ComputeWordBoundaries(GetText());
+  GetViewAccessibility().OverrideWordStarts(boundaries.starts);
+  GetViewAccessibility().OverrideWordEnds(boundaries.ends);
+}
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 
 bool Textfield::HandleAccessibleAction(const ui::AXActionData& action_data) {
   if (action_data.action == ax::mojom::Action::kSetSelection) {

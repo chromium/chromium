@@ -23,6 +23,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -5156,5 +5157,118 @@ TEST_F(TextfieldTest, AccessibleTextDirectionRTL) {
   EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kTextDirection),
             static_cast<int32_t>(ax::mojom::WritingDirection::kRtl));
 }
+
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+TEST_F(TextfieldTest, WordOffsets) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
+  InitTextfield();
+  ui::AXNodeData node_data;
+  textfield_->SetText(u"abc 12 34 def hij :' $*() ");
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  std::vector<int32_t> expected_starts = {0, 4, 7, 10, 14};
+  std::vector<int32_t> expected_ends = {3, 6, 9, 13, 17};
+  EXPECT_EQ(
+      node_data.GetIntListAttribute(ax::mojom::IntListAttribute::kWordStarts),
+      expected_starts);
+  EXPECT_EQ(
+      node_data.GetIntListAttribute(ax::mojom::IntListAttribute::kWordEnds),
+      expected_ends);
+}
+
+TEST_F(TextfieldTest, AccessibleGraphemeOffsets) {
+  struct {
+    std::u16string text;
+    std::vector<int32_t> expected_offsets;
+  } cases[] = {
+      {std::u16string(), {}},
+      // LTR.
+      {u"asdfghkl:/", {8, 18, 28, 38, 48, 58, 68, 78, 88, 98, 108}},
+      // RTL: should render left-to-right as "<space>43210 \n cba9876".
+      // Note this used to say "Arabic language", in Arabic, but the last
+      // character in the string (\u0629) got fancy in an updated Mac font, so
+      // now the penultimate character repeats.
+      //
+      // TODO(accessibility): This is not the correct order of grapheme offsets.
+      // Blink returns the offsets from the right boundary when in RTL and so
+      // should we for Views.
+      {u"اللغة العربيي",
+       {128, 118, 108, 98, 88, 78, 68, 58, 48, 38, 28, 18, 8, 18}},
+      // LTR कि (DEVANAGARI KA with VOWEL I) (2-char grapheme), LTR abc, and LTR
+      // कि.
+      {u"\u0915\u093fabc\u0915\u093f", {8, 28, 38, 48, 58, 78}},
+      // LTR ab, LTR कि (DEVANAGARI KA with VOWEL I) (2-char grapheme), LTR cd.
+      {u"ab\u0915\u093fcd", {8, 18, 28, 48, 58, 68}},
+      // LTR ab, 𝄞 'MUSICAL SYMBOL G CLEF' U+1D11E (surrogate pair), LTR cd.
+      // Windows requires wide strings for \Unnnnnnnn universal character names.
+      {u"ab\U0001D11Ecd", {8, 18, 28, 38, 48, 58}},
+  };
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
+
+  InitTextfield();
+
+  // Set the glyph width to a fixed value to avoid flakiness and dependency on
+  // each platform's default font size.
+  constexpr int kGlyphWidth = 10;
+  gfx::test::RenderTextTestApi(GetTextfieldTestApi().GetRenderText())
+      .SetGlyphWidth(kGlyphWidth);
+
+  for (size_t i = 0; i < std::size(cases); i++) {
+    SCOPED_TRACE(base::StringPrintf("Testing cases[%" PRIuS "]", i));
+    textfield_->SetText(cases[i].text);
+
+    ui::AXNodeData node_data;
+    textfield_->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.GetIntListAttribute(
+                  ax::mojom::IntListAttribute::kCharacterOffsets),
+              cases[i].expected_offsets);
+  }
+}
+
+TEST_F(TextfieldTest, AccessibleGraphemeOffsetsObscured) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
+  InitTextfield();
+  textfield_->SetText(u"abcdef");
+
+  ASSERT_FALSE(GetTextfieldTestApi().GetRenderText()->obscured());
+
+  ui::AXNodeData node_data;
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  std::vector<int32_t> non_obscured_offsets = node_data.GetIntListAttribute(
+      ax::mojom::IntListAttribute::kCharacterOffsets);
+
+  textfield_->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_NE(node_data.GetIntListAttribute(
+                ax::mojom::IntListAttribute::kCharacterOffsets),
+            non_obscured_offsets);
+}
+
+TEST_F(TextfieldTest, AccessibleGraphemeOffsetsElidedTail) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
+  InitTextfield();
+
+  constexpr int kGlyphWidth = 10;
+
+  GetTextfieldTestApi().GetRenderText()->SetDisplayRect(
+      gfx::Rect(0, 0, 5 * kGlyphWidth, 100));
+  GetTextfieldTestApi().GetRenderText()->SetElideBehavior(gfx::ELIDE_TAIL);
+  gfx::test::RenderTextTestApi(GetTextfieldTestApi().GetRenderText())
+      .SetGlyphWidth(kGlyphWidth);
+
+  textfield_->SetText(u"abcdef");
+
+  ui::AXNodeData node_data;
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  std::vector<int32_t> expected_offsets = {0, 10, 20, 30, 40, 40, 40};
+  EXPECT_EQ(node_data.GetIntListAttribute(
+                ax::mojom::IntListAttribute::kCharacterOffsets),
+            expected_offsets);
+}
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 
 }  // namespace views::test
