@@ -43,7 +43,6 @@
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_type.mojom.h"
@@ -101,10 +100,6 @@ const base::FilePath::CharType kDatabasePath[] =
     FILE_PATH_LITERAL("Conversions");
 
 constexpr int64_t kUnsetRecordId = -1;
-
-const base::FeatureParam<bool> kSourceDeactivationAfterFiltering{
-    &attribution_reporting::features::kConversionMeasurement,
-    "source_deactivation_after_filtering", false};
 
 void RecordInitializationStatus(
     const AttributionStorageSql::InitStatus status) {
@@ -1012,8 +1007,8 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
         AggregatableResult::kNoMatchingSourceFilterData);
   }
 
-  const bool deactivate_after_filtering =
-      kSourceDeactivationAfterFiltering.Get();
+  const bool deactivate_after_filtering = base::FeatureList::IsEnabled(
+      kAttributionReportingDeactivateAfterFilterMatch);
 
   if (deactivate_after_filtering) {
     // Delete all unattributed sources.
