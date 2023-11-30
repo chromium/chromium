@@ -210,8 +210,8 @@ class TurnSyncOnHelperBrowserTestWithParam
 IN_PROC_BROWSER_TEST_P(TurnSyncOnHelperBrowserTestWithParam,
                        PrimaryAccountResetAfterSyncOptInFlowAborted) {
   Profile* profile = GetProfile();
-  auto accounts_info =
-      SetAccounts({"first@gmail.com", "second@gmail.com", "third@gmail.com"});
+  auto accounts_info = SetAccountsCookiesAndTokens(
+      {"first@gmail.com", "second@gmail.com", "third@gmail.com"});
   AccountInfo first_account_info = accounts_info[0];
   AccountInfo second_account_info = accounts_info[1];
   AccountInfo third_account_info = accounts_info[2];
@@ -330,7 +330,7 @@ class TurnSyncOnHelperBrowserTest : public SigninBrowserTestBase {
 // Regression test for https://crbug.com/1404961
 IN_PROC_BROWSER_TEST_F(TurnSyncOnHelperBrowserTest, UndoSyncRemoveAccount) {
   Profile* profile = GetProfile();
-  auto accounts_info = SetAccounts({"account@gmail.com"});
+  auto accounts_info = SetAccountsCookiesAndTokens({"account@gmail.com"});
   AccountInfo account_info = accounts_info[0];
   CoreAccountId account_id = account_info.account_id;
 
