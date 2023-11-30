@@ -5,6 +5,7 @@
 #include "media/gpu/v4l2/stateless/queue.h"
 
 #include "base/containers/contains.h"
+#include "base/notreached.h"
 #include "media/gpu/macros.h"
 
 namespace {
@@ -96,6 +97,25 @@ bool BaseQueue::StopStreaming() {
   return device_->StreamOff(buffer_type_);
 }
 
+absl::optional<uint32_t> BaseQueue::GetFreeBufferIndex() {
+  // TODO(frkoenig): This is an expected error, there will be times that all of
+  // the buffers will be in the queue. For now give it a high severity for
+  // visibility.
+  if (free_buffer_indices_.empty()) {
+    DVLOGF(1) << "No buffers available for " << Description();
+    return absl::nullopt;
+  }
+
+  auto it = free_buffer_indices_.begin();
+  uint32_t index = *it;
+  free_buffer_indices_.erase(index);
+
+  DVLOGF(3) << free_buffer_indices_.size() << " buffers available for "
+            << Description();
+
+  return index;
+}
+
 // static
 std::unique_ptr<InputQueue> InputQueue::Create(
     scoped_refptr<StatelessDevice> device,
@@ -135,6 +155,72 @@ bool InputQueue::SetupFormat(const gfx::Size resolution) {
 bool InputQueue::PrepareBuffers() {
   DVLOGF(4);
   return AllocateBuffers(kNumberInputPlanes);
+}
+
+bool InputQueue::SubmitCompressedFrameData(void* ctrls,
+                                           const void* data,
+                                           size_t length,
+                                           uint32_t frame_id) {
+  // Failing to acquire a buffer is a normal part of the process. All of the
+  // input buffers can be full if the output buffers are not being cleared.
+  auto buffer_index = GetFreeBufferIndex();
+  if (!buffer_index) {
+    DVLOGF(1) << "No free buffers to submit a compressed frame with.";
+    // TODO(frkoenig): This is a place holder. Correct error handling needs
+    // to be implemented. It may be better to obtain the buffer and pass it
+    // into this method so that retry is more straight forward.
+    NOTREACHED();
+    return false;
+  }
+
+  DVLOG(3) << "Submitting buffer " << buffer_index.value();
+
+  Buffer& buffer = buffers_[buffer_index.value()];
+
+  // Compressed input buffers only need one plane for data,
+  // uncompressed output buffers may need more than one plane.
+  if (1 != buffer.PlaneCount()) {
+    DVLOGF(1) << "Compressed buffer has more than one plane: "
+              << buffer.PlaneCount();
+    return false;
+  }
+
+  // Each request needs an FD. A pool of FD's can be reused, but require
+  // reinitialization after use. Instead a scoped FD is created, which will
+  // be closed at the end of this function. This is fine as the driver will
+  // keep the FD open until it is done using it.
+  const base::ScopedFD request_fd = device_->CreateRequestFD();
+
+  // |frame_id| is used for two things:
+  // 1. To track the buffer from compressed to uncompressed. The timestamp will
+  //    be copied.
+  // 2. This value is also used for reference frame management. Future frames
+  //    can reference this one by using the |frame_id|.
+  buffer.SetTimeAsFrameID(frame_id);
+  buffer.CopyDataIn(data, length);
+
+  // This shouldn't happen. A buffer has been allocated and filled, there
+  // should be nothing preventing it from getting queued.
+  if (!device_->QueueBuffer(buffer, request_fd)) {
+    DVLOGF(1) << "Failed to queue buffer.";
+    return false;
+  }
+
+  // Headers submission failure should never happen. There is no way to
+  // recover from this error.
+  if (!device_->SetHeaders(ctrls, request_fd)) {
+    DVLOGF(1) << "Unable to set headers to V4L2 at fd: " << request_fd.get();
+    return false;
+  }
+
+  // Everything has been allocated and this is the final submission. To error
+  // out here would mean that the driver is not in a state to decode video.
+  if (!device_->QueueRequest(request_fd)) {
+    DVLOGF(1) << "Unable to queue request at fd :" << request_fd.get();
+    return false;
+  }
+
+  return true;
 }
 
 std::string InputQueue::Description() {

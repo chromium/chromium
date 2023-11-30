@@ -56,6 +56,7 @@ class Buffer {
   BufferType GetBufferType() const { return buffer_type_; }
   MemoryType GetMemoryType() const { return memory_type_; }
 
+  void SetTimeAsFrameID(uint64_t usec);
   struct timeval GetTimeval() const;
 
   // Method for copying compressed input data into a Buffer's backing store. It

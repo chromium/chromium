@@ -4,8 +4,12 @@
 
 #include "media/gpu/v4l2/stateless/stateless_device.h"
 
+#include <fcntl.h>
+#include <linux/media.h>
 #include <linux/videodev2.h>
 
+#include "base/posix/eintr_wrapper.h"
+#include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_utils.h"
@@ -20,8 +24,16 @@
 
 namespace media {
 
+StatelessDevice::StatelessDevice() {}
+
+StatelessDevice::~StatelessDevice() {}
+
 bool StatelessDevice::Open() {
-  return OpenDevice();
+  if (!OpenDevice()) {
+    return false;
+  }
+
+  return OpenMedia();
 }
 
 bool StatelessDevice::CheckCapabilities(VideoCodec codec) {
@@ -72,8 +84,6 @@ bool StatelessDevice::IsCompressedVP9HeaderSupported() {
   return (IoctlDevice(VIDIOC_QUERYCTRL, &query_ctrl) == kIoctlOk);
 }
 
-StatelessDevice::~StatelessDevice() {}
-
 uint32_t StatelessDevice::VideoCodecToV4L2PixFmt(VideoCodec codec) {
   switch (codec) {
     case VideoCodec::kH264:
@@ -113,6 +123,91 @@ bool StatelessDevice::SetHeaders(void* ctrls,
   ext_ctrls->request_fd = request_fd.get();
 
   return (IoctlDevice(VIDIOC_S_EXT_CTRLS, ext_ctrls) == kIoctlOk);
+}
+
+// MEDIA_IOC_REQUEST_ALLOC
+base::ScopedFD StatelessDevice::CreateRequestFD() {
+  DVLOGF(4);
+  int request_fd;
+  const int ret = Ioctl(media_fd_, MEDIA_IOC_REQUEST_ALLOC, &request_fd);
+  if (ret != kIoctlOk) {
+    VPLOGF(1) << "Failed to create request file descriptor.";
+    return base::ScopedFD(-1);
+  }
+
+  return base::ScopedFD(request_fd);
+}
+
+// MEDIA_REQUEST_IOC_QUEUE
+bool StatelessDevice::QueueRequest(const base::ScopedFD& request_fd) {
+  DVLOGF(4);
+  return (Ioctl(request_fd, MEDIA_REQUEST_IOC_QUEUE, nullptr) == kIoctlOk);
+}
+
+bool StatelessDevice::OpenMedia() {
+  DVLOGF(4);
+
+  struct v4l2_capability caps;
+  if (IoctlDevice(VIDIOC_QUERYCAP, &caps) != kIoctlOk) {
+    return false;
+  }
+
+  // Some devices, namely the RK3399, have multiple hardware decoder blocks.
+  // We have to find and use the matching media device, or the kernel gets
+  // confused.
+  // Note that the match persists for the lifetime of V4L2Device. In practice
+  // this should be fine, since |GetRequestsQueue()| is only called after
+  // the codec format is configured, and the VD/VDA instance is always tied
+  // to a specific format, so it will never need to switch media devices.
+  static const std::string kRequestDevicePrefix = "/dev/media-dec";
+
+  // We are sandboxed, so we can't query directory contents to check which
+  // devices are actually available. Try to open the first 10; if not present,
+  // we will just fail to open immediately.
+  base::ScopedFD media_fd;
+  for (int i = 0; i < 10; ++i) {
+    const auto path = kRequestDevicePrefix + base::NumberToString(i);
+    media_fd_.reset(HANDLE_EINTR(open(path.c_str(), O_RDWR, 0)));
+    if (!media_fd_.is_valid()) {
+      VPLOGF(2) << "Failed to open media device: " << path;
+      continue;
+    }
+
+    struct media_device_info media_info;
+    if (Ioctl(media_fd_, MEDIA_IOC_DEVICE_INFO, &media_info) != kIoctlOk) {
+      continue;
+    }
+
+    // Match the video driver and the media controller by the bus_info
+    // field. This works better than the driver field if there are multiple
+    // instances of the same decoder driver in the system. However old MediaTek
+    // drivers didn't fill in the bus_info field for the media drivers.
+    if (strlen(reinterpret_cast<const char*>(caps.bus_info)) > 0 &&
+        strlen(reinterpret_cast<const char*>(media_info.bus_info)) > 0 &&
+        strncmp(reinterpret_cast<const char*>(caps.bus_info),
+                reinterpret_cast<const char*>(media_info.bus_info),
+                sizeof(caps.bus_info))) {
+      continue;
+    }
+
+    // Fall back to matching the video driver and the media controller by the
+    // driver field. The mtk-vcodec driver does not fill the card and bus fields
+    // properly, so those won't work.
+    if (strncmp(reinterpret_cast<const char*>(caps.driver),
+                reinterpret_cast<const char*>(media_info.driver),
+                sizeof(caps.driver))) {
+      continue;
+    }
+
+    break;
+  }
+
+  if (!media_fd_.is_valid()) {
+    VLOGF(1) << "Failed to open request queue fd.";
+    return false;
+  }
+
+  return true;
 }
 
 std::string StatelessDevice::DevicePath() {

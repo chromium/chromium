@@ -13,7 +13,6 @@
 #endif
 
 #include <fcntl.h>
-#include <linux/media.h>
 #include <linux/videodev2.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
@@ -238,6 +237,11 @@ void Buffer::SetMappedAddress(uint32_t plane, void* address) {
 void Buffer::SetupPlane(uint32_t plane, size_t offset, size_t size) {
   planes_[plane].mem_offset = offset;
   planes_[plane].length = size;
+}
+
+void Buffer::SetTimeAsFrameID(uint64_t usec) {
+  time_val_.tv_sec = 0;
+  time_val_.tv_usec = usec;
 }
 
 struct timeval Buffer::GetTimeval() const {

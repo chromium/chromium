@@ -35,6 +35,7 @@ class MEDIA_GPU_EXPORT BaseQueue {
  protected:
   bool AllocateBuffers(uint32_t num_planes);
   virtual std::string Description() = 0;
+  absl::optional<uint32_t> GetFreeBufferIndex();
 
   scoped_refptr<StatelessDevice> device_;
   const BufferType buffer_type_;
@@ -59,6 +60,10 @@ class MEDIA_GPU_EXPORT InputQueue : public BaseQueue {
       const gfx::Size resolution);
 
   InputQueue(scoped_refptr<StatelessDevice> device, VideoCodec codec);
+  bool SubmitCompressedFrameData(void* ctrls,
+                                 const void* data,
+                                 size_t length,
+                                 uint32_t frame_id);
   bool PrepareBuffers() override;
 
  private:

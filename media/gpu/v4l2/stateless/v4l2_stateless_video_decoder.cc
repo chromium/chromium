@@ -218,7 +218,8 @@ bool V4L2StatelessVideoDecoder::SubmitFrame(void* ctrls,
     output_queue_->StartStreaming();
   }
 
-  return true;
+  DVLOGF(2) << "Submitting compressed frame " << frame_id << " to be decoded.";
+  return input_queue_->SubmitCompressedFrameData(ctrls, data, size, frame_id);
 }
 
 void V4L2StatelessVideoDecoder::SurfaceReady(
