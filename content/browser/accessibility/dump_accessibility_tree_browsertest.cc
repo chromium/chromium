@@ -2458,6 +2458,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTestWithIgnoredNodes,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityInputRadioChunked) {
+  RunHtmlTest(FILE_PATH_LITERAL("input-radio-chunked.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityInputRadioInMenu) {
   RunHtmlTest(FILE_PATH_LITERAL("input-radio-in-menu.html"));
 }

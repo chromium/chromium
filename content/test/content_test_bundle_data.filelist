@@ -3796,6 +3796,8 @@ data/accessibility/html/input-radio-checkbox-label-expected-mac.txt
 data/accessibility/html/input-radio-checkbox-label-expected-uia-win.txt
 data/accessibility/html/input-radio-checkbox-label-expected-win.txt
 data/accessibility/html/input-radio-checkbox-label.html
+data/accessibility/html/input-radio-chunked-expected-blink.txt
+data/accessibility/html/input-radio-chunked.html
 data/accessibility/html/input-radio-expected-android-assist-data.txt
 data/accessibility/html/input-radio-expected-android-external.txt
 data/accessibility/html/input-radio-expected-android.txt
