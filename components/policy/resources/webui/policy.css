@@ -140,6 +140,14 @@ body > header {
   user-select: none;
 }
 
+.action-row-button:hover {
+  filter: brightness(var(--action-row-button-hover-brightness));
+}
+
+.action-row-button:active {
+  filter: brightness(var(--action-row-button-active-brightness));
+}
+
 #topbar {
   gap: 5px;
   justify-content: space-between;
