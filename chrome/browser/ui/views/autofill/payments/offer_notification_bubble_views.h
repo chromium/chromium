@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller.h"
+#include "chrome/browser/ui/views/controls/page_switcher_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/controls/styled_label.h"
@@ -90,7 +91,14 @@ class OfferNotificationBubbleViews : public AutofillBubbleBase,
 
   void UpdateButtonTooltipsAndAccessibleNames();
 
-  void OpenTermsAndConditionsPage();
+  void OpenTermsAndConditionsPage(AutofillOfferData offer);
+
+  std::unique_ptr<views::View> CreateFreeListingCouponOfferMainPageHeaderView();
+  std::unique_ptr<views::View> CreateFreeListingCouponOfferMainPageTitleView(
+      const AutofillOfferData& offer);
+  std::unique_ptr<views::View> CreateFreeListingCouponOfferMainPageContent(
+      const AutofillOfferData& offer);
+  void OpenFreeListingCouponOfferMainPage(AutofillOfferData offer);
 
   raw_ptr<OfferNotificationBubbleController> controller_;
 
@@ -102,6 +110,8 @@ class OfferNotificationBubbleViews : public AutofillBubbleBase,
   raw_ptr<views::StyledLabel> promo_code_label_ = nullptr;
 
   raw_ptr<views::Label> instructions_label_ = nullptr;
+
+  raw_ptr<PageSwitcherView> free_listing_coupon_page_container_ = nullptr;
 
   base::WeakPtrFactory<OfferNotificationBubbleViews> weak_factory_{this};
 };
