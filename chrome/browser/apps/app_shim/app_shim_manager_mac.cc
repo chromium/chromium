@@ -55,6 +55,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/mac/app_mode_common.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/crx_file/id_util.h"
@@ -1214,7 +1215,7 @@ void RecordSignatureValidationResult(SignatureValidationResult result) {
 
 bool AppShimManager::IsAcceptablyCodeSigned(pid_t pid) const {
   static const bool requires_adhoc_signature =
-      web_app::UseAdHocSigningForWebAppShims();
+      app_mode::UseAdHocSigningForWebAppShims();
 
   if (requires_adhoc_signature && IsAcceptablyAdHocCodeSigned(pid)) {
     RecordSignatureValidationResult(SignatureValidationResult::kSuccessAdHoc);

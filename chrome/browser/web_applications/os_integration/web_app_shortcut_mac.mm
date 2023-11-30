@@ -230,10 +230,6 @@ BASE_FEATURE(kWebAppMaskableIconsOnMac,
              "WebAppMaskableIconsOnMac",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUseAdHocSigningForWebAppShims,
-             "UseAdHocSigningForWebAppShims",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 namespace {
 
 WebAppAutoLoginUtil* g_auto_login_util_for_testing = nullptr;
@@ -1793,21 +1789,9 @@ bool WebAppShortcutCreator::UpdateIcon(const base::FilePath& app_path) const {
   return icns_encoder.WriteToFile(resources_path.Append("app.icns"));
 }
 
-bool UseAdHocSigningForWebAppShims() {
-  if (@available(macOS 11.7, *)) {
-    // macOS 11.7 and above can code sign at runtime without requiring that the
-    // developer tools be installed.
-    return base::FeatureList::IsEnabled(kUseAdHocSigningForWebAppShims);
-  }
-
-  // Code signing on older macOS versions invokes `codesign_allocate` from the
-  // developer tools, so we can't do it at runtime.
-  return false;
-}
-
 bool WebAppShortcutCreator::UpdateSignature(
     const base::FilePath& app_path) const {
-  if (!UseAdHocSigningForWebAppShims()) {
+  if (!app_mode::UseAdHocSigningForWebAppShims()) {
     return true;
   }
 

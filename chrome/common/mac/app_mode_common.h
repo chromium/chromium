@@ -250,6 +250,10 @@ struct ChromeConnectionConfig {
   static ChromeConnectionConfig DecodeFromPath(const base::FilePath& path);
 };
 
+// Returns true when running on version of macOS that can perform code signing
+// at runtime and the UseAdHocSigningForWebAppShims feature is enabled.
+bool UseAdHocSigningForWebAppShims();
+
 }  // namespace app_mode
 
 #endif  // CHROME_COMMON_MAC_APP_MODE_COMMON_H_
