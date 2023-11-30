@@ -4,7 +4,7 @@
     grid-template-areas:
       'leftspacertop    userpreview rightspacertop   '
       'leftspacerbottom avatars     rightspacerbottom';
-    grid-template-columns: minmax(24px, 1fr) minmax(568px, 920px) minmax(24px, 1fr);
+    grid-template-columns: minmax(10px, 1fr) minmax(568px, 920px) minmax(10px, 1fr);
     grid-template-rows: auto minmax(0, 1fr);
     height: 100%;
     min-height: var(--personalization-app-subpage-container-min-height);
@@ -19,7 +19,7 @@
   }
   user-preview + avatar-list {
     border-top: 1px solid var(--cros-separator-color);
-    padding-top: 8px;
+    padding-top: 10px;
   }
   :host-context(body.jelly-enabled) avatar-list {
     background-color: var(--cros-bg-color);
