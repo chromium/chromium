@@ -18,6 +18,7 @@ import android.util.DisplayMetrics;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.View.DragShadowBuilder;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -29,14 +30,15 @@ import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
+import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.dragdrop.ChromeDragAndDropBrowserDelegate;
 import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.DragDropGlobalState;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
@@ -56,9 +58,12 @@ public class TabDragSource implements View.OnDragListener {
     private MultiInstanceManager mMultiInstanceManager;
     private DragAndDropDelegate mDragAndDropDelegate;
     private Supplier<StripLayoutHelper> mStripLayoutHelperSupplier;
+    private Supplier<TabContentManager> mTabContentManagerSupplier;
+    private Supplier<LayerTitleCache> mLayerTitleCacheSupplier;
     private BrowserControlsStateProvider mBrowserControlStateProvider;
     private View mDragSourceView;
-    private PointF mDragShadowOffset = new PointF(0, 0);
+    private StripTabDragShadowView mShadowView;
+    private PointF mDragShadowDefaultOffset = new PointF(0, 0);
     private float mPxToDp;
     private final float mTabStripHeightPx;
 
@@ -90,6 +95,8 @@ public class TabDragSource implements View.OnDragListener {
     public TabDragSource(
             @NonNull Context context,
             @NonNull Supplier<StripLayoutHelper> stripLayoutHelperSupplier,
+            @NonNull Supplier<TabContentManager> tabContentManagerSupplier,
+            @NonNull Supplier<LayerTitleCache> layerTitleCacheSupplier,
             @NonNull MultiInstanceManager multiInstanceManager,
             @NonNull DragAndDropDelegate dragAndDropDelegate,
             @NonNull BrowserControlsStateProvider browserControlStateProvider,
@@ -98,6 +105,8 @@ public class TabDragSource implements View.OnDragListener {
         // TODO(crbug.com/1498252): Use Toolbar#getTabStripHeight() instead.
         mTabStripHeightPx = context.getResources().getDimension(R.dimen.tab_strip_height);
         mStripLayoutHelperSupplier = stripLayoutHelperSupplier;
+        mTabContentManagerSupplier = tabContentManagerSupplier;
+        mLayerTitleCacheSupplier = layerTitleCacheSupplier;
         mMultiInstanceManager = multiInstanceManager;
         mDragAndDropDelegate = dragAndDropDelegate;
         mBrowserControlStateProvider = browserControlStateProvider;
@@ -128,8 +137,28 @@ public class TabDragSource implements View.OnDragListener {
 
         setGlobalState(tabBeingDragged);
 
+        if (mShadowView == null) {
+            View rootView =
+                    View.inflate(
+                            toolbarContainerView.getContext(),
+                            R.layout.strip_tab_drag_shadow_view,
+                            (ViewGroup) toolbarContainerView.getRootView());
+            mShadowView = rootView.findViewById(R.id.strip_tab_drag_shadow_view);
+
+            mShadowView.initialize(
+                    mBrowserControlStateProvider,
+                    mTabContentManagerSupplier,
+                    mLayerTitleCacheSupplier,
+                    () -> {
+                        if (DragDropGlobalState.getInstance().dragShadowShowing) {
+                            showDragShadow(true);
+                        }
+                    });
+        }
+        mShadowView.setTab(tabBeingDragged);
+
         mDragSourceView = toolbarContainerView;
-        mDragShadowOffset =
+        mDragShadowDefaultOffset =
                 TabUiFeatureUtilities.isTabDragAsWindowEnabled()
                         ? getPositionOnScreen(toolbarContainerView, startPoint)
                         : new PointF(0f, 0f);
@@ -218,6 +247,7 @@ public class TabDragSource implements View.OnDragListener {
         mStripLayoutHelperSupplier
                 .get()
                 .dragActiveClickedTabOntoStrip(LayoutManagerImpl.time(), mLastXDp);
+        showDragShadow(false);
         return true;
     }
 
@@ -278,6 +308,7 @@ public class TabDragSource implements View.OnDragListener {
         DragDropGlobalState.getInstance().reset();
         // TODO (crbug.com/1497784): Remove this method.
         mStripLayoutHelperSupplier.get().clearActiveClickedTab();
+        mShadowView.clear();
         return true;
     }
 
@@ -292,6 +323,7 @@ public class TabDragSource implements View.OnDragListener {
 
     private void showDragShadow(boolean show) {
         assert mDragSourceView != null;
+        DragDropGlobalState.getInstance().dragShadowShowing = show;
         DragShadowBuilder builder = createTabDragShadowBuilder(mDragSourceView.getContext(), show);
         mDragSourceView.updateDragShadow(builder);
     }
@@ -405,17 +437,17 @@ public class TabDragSource implements View.OnDragListener {
                 addAppIconToShadow(imageView, context, shadowWidthPx, shadowHeightPx);
             }
         } else {
-            shadowWidthPx =
-                    context.getResources().getDimensionPixelSize(R.dimen.tab_hover_card_width);
-            shadowHeightPx =
-                    TabUtils.deriveGridCardHeight(
-                            shadowWidthPx, context, mBrowserControlStateProvider);
+            if (show) {
+                return new TabDragShadowBuilder(mShadowView, mDragShadowDefaultOffset);
+            }
+            shadowWidthPx = mShadowView.getWidth();
+            shadowHeightPx = mShadowView.getHeight();
         }
         if (show) {
             imageView.setBackgroundDrawable(new ColorDrawable(Color.LTGRAY));
         }
         imageView.layout(0, 0, shadowWidthPx, shadowHeightPx);
-        return new TabDragShadowBuilder(imageView, mDragShadowOffset);
+        return new TabDragShadowBuilder(imageView, mDragShadowDefaultOffset);
     }
 
     private void addAppIconToShadow(
@@ -514,5 +546,9 @@ public class TabDragSource implements View.OnDragListener {
                 (topLeftLocationOfToolbarView[1] - topLeftLocationOfDecorView[1])
                         + positionInView.y / mPxToDp;
         return new PointF(positionXOnScreen, positionYOnScreen);
+    }
+
+    View getShadowViewForTesting() {
+        return mShadowView;
     }
 }

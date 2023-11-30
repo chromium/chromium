@@ -291,7 +291,9 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
     }
 
     protected int buildFlags(DropDataAndroid dropData) {
-        if (dropData.isPlainText() || dropData.hasBrowserContent() || dropData.hasLink()) {
+        if (dropData.hasBrowserContent()) {
+            return View.DRAG_FLAG_GLOBAL | View.DRAG_FLAG_OPAQUE;
+        } else if (dropData.isPlainText() || dropData.hasLink()) {
             return View.DRAG_FLAG_GLOBAL;
         } else if (dropData.hasImage()) {
             int flag = View.DRAG_FLAG_GLOBAL | View.DRAG_FLAG_GLOBAL_URI_READ;

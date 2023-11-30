@@ -398,6 +398,8 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                     new TabDragSource(
                             context,
                             () -> getActiveStripLayoutHelper(),
+                            tabContentManagerSupplier,
+                            mLayerTitleCacheSupplier,
                             multiInstanceManager,
                             dragDropDelegate,
                             browserControlsStateProvider,

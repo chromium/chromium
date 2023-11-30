@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -30,7 +31,9 @@ import android.os.Build.VERSION_CODES;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.View.DragShadowBuilder;
+import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
+import android.widget.FrameLayout;
 
 import org.junit.After;
 import org.junit.Before;
@@ -47,6 +50,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.compositor.LayerTitleCache;
+import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.dragdrop.DragDropGlobalState;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -85,6 +90,8 @@ public class TabDragSourceTest {
     @Mock private MultiInstanceManager mMultiInstanceManager;
     @Mock private DragAndDropDelegate mDragDropDelegate;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock private TabContentManager mTabContentManager;
+    @Mock private LayerTitleCache mLayerTitleCache;
     @Mock private StripLayoutHelper mStripLayoutHelper;
     @Mock private Profile mProfile;
     @Mock private TabModelSelector mTabModelSelector;
@@ -94,7 +101,7 @@ public class TabDragSourceTest {
 
     private Activity mActivity;
     private TabDragSource mTabDragSource;
-    private View mTabsToolbarView;
+    private ViewGroup mTabsToolbarView;
     private Tab mTabBeingDragged;
     private static final float DROP_X_SCREEN_POS = 1000.f;
     private static final float DROP_Y_SCREEN_POS = 500.f;
@@ -110,7 +117,7 @@ public class TabDragSourceTest {
         mPosY = mTabStripHeight - 2 * DRAG_MOVE_DISTANCE;
 
         // Create and spy on a simulated tab view.
-        mTabsToolbarView = new View(mActivity);
+        mTabsToolbarView = new FrameLayout(mActivity);
         mTabsToolbarView.setLayoutParams(new MarginLayoutParams(150, 50));
 
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
@@ -126,6 +133,8 @@ public class TabDragSourceTest {
                 new TabDragSource(
                         mActivity,
                         () -> mStripLayoutHelper,
+                        () -> mTabContentManager,
+                        () -> mLayerTitleCache,
                         mMultiInstanceManager,
                         mDragDropDelegate,
                         mBrowserControlsStateProvider,
@@ -159,13 +168,15 @@ public class TabDragSourceTest {
                         any(DragShadowBuilder.class),
                         any(DropDataAndroid.class));
         assertEquals(
-                "Global state instanceId not set",
+                "Global state instanceId not set.",
                 CURR_INSTANCE_ID,
                 DragDropGlobalState.getInstance().dragSourceInstanceId);
         assertEquals(
-                "Global state tabBeingDragged not set",
+                "Global state tabBeingDragged not set.",
                 mTabBeingDragged,
                 DragDropGlobalState.getInstance().tabBeingDragged);
+        assertNotNull(
+                "Shadow view is unexpectedly null.", mTabDragSource.getShadowViewForTesting());
     }
 
     @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
@@ -188,13 +199,15 @@ public class TabDragSourceTest {
                         any(DragShadowBuilder.class),
                         any(DropDataAndroid.class));
         assertEquals(
-                "Global state instanceId not set",
+                "Global state instanceId not set.",
                 CURR_INSTANCE_ID,
                 DragDropGlobalState.getInstance().dragSourceInstanceId);
         assertEquals(
-                "Global state tabBeingDragged not set",
+                "Global state tabBeingDragged not set.",
                 mTabBeingDragged,
                 DragDropGlobalState.getInstance().tabBeingDragged);
+        assertNotNull(
+                "Shadow view is unexpectedly null.", mTabDragSource.getShadowViewForTesting());
     }
 
     @Test

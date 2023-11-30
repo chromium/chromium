@@ -328,4 +328,8 @@ public class TabThumbnailView extends ImageView {
         return ChromeFeatureList.sThumbnailPlaceholder.isEnabled()
                 || ChromeFeatureList.sAdvancedPeripheralsSupportTabStrip.isEnabled();
     }
+
+    public VectorDrawable getIconDrawableForTesting() {
+        return mIconDrawable;
+    }
 }
