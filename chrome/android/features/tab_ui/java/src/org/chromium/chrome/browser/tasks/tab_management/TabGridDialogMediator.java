@@ -608,7 +608,7 @@ public class TabGridDialogMediator
             if (currentTab == null) {
                 mTabCreatorManager
                         .getTabCreator(mTabModelSelector.isIncognitoSelected())
-                        .launchNTP();
+                        .launchNtp();
                 return;
             }
             List<Tab> relatedTabs = getRelatedTabs(currentTab.getId());

@@ -93,17 +93,17 @@ public abstract class TabCreator {
     }
 
     /** Creates a new tab and loads the NTP. */
-    public final void launchNTP() {
-        launchNTP(TabLaunchType.FROM_CHROME_UI);
+    public final void launchNtp() {
+        launchNtp(TabLaunchType.FROM_CHROME_UI);
     }
 
     /** Creates a new tab and loads the NTP. */
-    public final void launchNTP(@TabLaunchType int type) {
+    public final void launchNtp(@TabLaunchType int type) {
         try {
-            TraceEvent.begin("TabCreator.launchNTP");
+            TraceEvent.begin("TabCreator.launchNtp");
             launchUrl(UrlConstants.NTP_URL, type);
         } finally {
-            TraceEvent.end("TabCreator.launchNTP");
+            TraceEvent.end("TabCreator.launchNtp");
         }
     }
 }

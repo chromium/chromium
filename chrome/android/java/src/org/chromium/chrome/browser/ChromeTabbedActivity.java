@@ -178,6 +178,7 @@ import org.chromium.chrome.browser.tab.tab_restore.HistoricalTabModelObserver;
 import org.chromium.chrome.browser.tabbed_mode.TabbedAppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
+import org.chromium.chrome.browser.tabmodel.ChromeTabCreator.OverviewNtpCreator;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHost;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostRegistry;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
@@ -927,7 +928,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                                 == LayoutType.TAB_SWITCHER)
                                         ? TabLaunchType.FROM_TAB_SWITCHER_UI
                                         : TabLaunchType.FROM_CHROME_UI;
-                        getCurrentTabCreator().launchNTP(tabLaunchType);
+                        getCurrentTabCreator().launchNtp(tabLaunchType);
                         mLocaleManager.showSearchEnginePromoIfNeeded(
                                 ChromeTabbedActivity.this, null);
                         if (getTabModelSelector().isIncognitoSelected()) {
@@ -2370,20 +2371,20 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     protected Pair<ChromeTabCreator, ChromeTabCreator> createTabCreators() {
-        ChromeTabCreator.OverviewNTPCreator overviewNTPCreator = null;
+        OverviewNtpCreator overviewNTPCreator = null;
 
         if (ReturnToChromeUtil.isStartSurfaceEnabled(this)) {
             overviewNTPCreator =
-                    new ChromeTabCreator.OverviewNTPCreator() {
+                    new OverviewNtpCreator() {
                         @Override
-                        public boolean handleCreateNTPIfNeeded(
-                                boolean isNTP,
+                        public boolean handleCreateNtpIfNeeded(
+                                boolean isNtp,
                                 boolean incognito,
                                 Tab parentTab,
                                 @NewTabPageLaunchOrigin int launchOrigin) {
                             boolean shouldShowStart =
                                     showStartSurfaceHomeForNTP(
-                                            isNTP, incognito, parentTab, launchOrigin);
+                                            isNtp, incognito, parentTab, launchOrigin);
                             if (shouldShowStart) {
                                 mStartSurfaceParentTabSupplier.set(parentTab);
                             }
@@ -2674,7 +2675,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             reportNewTabShortcutUsed(false);
             if (fromMenu) RecordUserAction.record("MobileMenuNewTab.AppMenu");
 
-            getTabCreator(false).launchNTP();
+            getTabCreator(false).launchNtp();
 
             mLocaleManager.showSearchEnginePromoIfNeeded(this, null);
         } else if (id == R.id.new_incognito_tab_menu_id) {
@@ -2688,7 +2689,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 RecordUserAction.record("MobileNewTabOpened");
                 reportNewTabShortcutUsed(true);
                 if (fromMenu) RecordUserAction.record("MobileMenuNewIncognitoTab.AppMenu");
-                getTabCreator(true).launchNTP();
+                getTabCreator(true).launchNtp();
                 Tracker tracker =
                         TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
                 tracker.notifyEvent(EventConstants.APP_MENU_NEW_INCOGNITO_TAB_CLICKED);
@@ -3235,7 +3236,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // See crbug.com/1473947.
             if (mStartSurfaceSupplier.get() == null) {
                 if (getTabModelSelector().getCurrentModel().getCount() == 0) {
-                    getCurrentTabCreator().launchNTP();
+                    getCurrentTabCreator().launchNtp();
                 } else {
                     mLayoutManager.showLayout(LayoutType.BROWSING, true);
                 }

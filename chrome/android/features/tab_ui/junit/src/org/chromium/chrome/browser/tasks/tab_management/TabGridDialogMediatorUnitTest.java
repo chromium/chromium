@@ -260,7 +260,7 @@ public class TabGridDialogMediatorUnitTest {
         View.OnClickListener listener = mModel.get(TabGridPanelProperties.ADD_CLICK_LISTENER);
         listener.onClick(mView);
 
-        verify(mTabCreator).launchNTP();
+        verify(mTabCreator).launchNtp();
     }
 
     @Test

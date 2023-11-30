@@ -1701,7 +1701,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         if (mModel == null) return;
 
         if (!mModel.isIncognito()) mModel.commitAllTabClosures();
-        mTabCreator.launchNTP();
+        mTabCreator.launchNtp();
     }
 
     @Override
@@ -1893,7 +1893,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         mReorderState = REORDER_SCROLL_NONE;
         if (mNewTabButton.onUpOrCancel() && mModel != null) {
             if (!mModel.isIncognito()) mModel.commitAllTabClosures();
-            mTabCreator.launchNTP();
+            mTabCreator.launchNtp();
         }
         mIsStripScrollInProgress = false;
     }

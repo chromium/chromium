@@ -52,18 +52,19 @@ import org.chromium.url.GURL;
 
 /** This class creates various kinds of new tabs and adds them to the right {@link TabModel}. */
 public class ChromeTabCreator extends TabCreator {
-    /**Interface to handle showing overview instead of NTP if needed. */
-    public interface OverviewNTPCreator {
+    /** Interface to handle showing overview instead of NTP if needed. */
+    public interface OverviewNtpCreator {
         /**
          * Handles showing the StartSurface instead of the NTP if needed.
-         * @param isNTP Whether tab with NTP should be created.
+         *
+         * @param isNtp Whether tab with NTP should be created.
          * @param isIncognito Whether tab is created in incognito.
          * @param parentTab The parent tab of the tab creation.
          * @param launchOrigin The {@link NewTabPageLaunchOrigin} that launched the NTP.
          * @return Whether NTP creation was handled.
          */
-        boolean handleCreateNTPIfNeeded(
-                boolean isNTP,
+        boolean handleCreateNtpIfNeeded(
+                boolean isNtp,
                 boolean isIncognito,
                 Tab parentTab,
                 @NewTabPageLaunchOrigin int launchOrigin);
@@ -77,7 +78,7 @@ public class ChromeTabCreator extends TabCreator {
     private TabModel mTabModel;
     private TabModelOrderController mOrderController;
     private Supplier<TabDelegateFactory> mTabDelegateFactorySupplier;
-    @Nullable private final OverviewNTPCreator mOverviewNTPCreator;
+    @Nullable private final OverviewNtpCreator mOverviewNtpCreator;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
@@ -89,7 +90,7 @@ public class ChromeTabCreator extends TabCreator {
             Supplier<TabDelegateFactory> tabDelegateFactory,
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             boolean incognito,
-            OverviewNTPCreator overviewNTPCreator,
+            OverviewNtpCreator overviewNtpCreator,
             AsyncTabParamsManager asyncTabParamsManager,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             Supplier<CompositorViewHolder> compositorViewHolderSupplier,
@@ -99,7 +100,7 @@ public class ChromeTabCreator extends TabCreator {
         mTabDelegateFactorySupplier = tabDelegateFactory;
         mProfileProviderSupplier = profileProviderSupplier;
         mIncognito = incognito;
-        mOverviewNTPCreator = overviewNTPCreator;
+        mOverviewNtpCreator = overviewNtpCreator;
         mAsyncTabParamsManager = asyncTabParamsManager;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
@@ -253,8 +254,8 @@ public class ChromeTabCreator extends TabCreator {
             Tab parent,
             int position,
             Intent intent) {
-        if (mOverviewNTPCreator != null
-                && mOverviewNTPCreator.handleCreateNTPIfNeeded(
+        if (mOverviewNtpCreator != null
+                && mOverviewNtpCreator.handleCreateNtpIfNeeded(
                         UrlUtilities.isNtpUrl(loadUrlParams.getUrl()),
                         mIncognito,
                         parent,

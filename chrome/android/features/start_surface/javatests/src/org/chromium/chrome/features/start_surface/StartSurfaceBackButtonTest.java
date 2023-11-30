@@ -431,7 +431,7 @@ public class StartSurfaceBackButtonTest {
         openMvTileInAnIncognitoTab(cta, tileView, 1);
 
         // Go back to Start homepage.
-        TestThreadUtils.runOnUiThreadBlocking(() -> cta.getTabCreator(false).launchNTP());
+        TestThreadUtils.runOnUiThreadBlocking(() -> cta.getTabCreator(false).launchNtp());
         StartSurfaceTestUtils.waitForStartSurfaceVisible(
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
 

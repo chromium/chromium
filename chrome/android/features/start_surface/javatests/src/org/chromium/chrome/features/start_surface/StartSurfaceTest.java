@@ -385,7 +385,7 @@ public class StartSurfaceTest {
         TabUiTestHelper.verifyTabModelTabCount(cta, 0, 0);
         assertTrue(cta.getLayoutManager().isLayoutVisible(getStartSurfaceLayoutType()));
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> cta.getTabCreator(/* incognito= */ true).launchNTP());
+                () -> cta.getTabCreator(/* incognito= */ true).launchNtp());
         TabUiTestHelper.verifyTabModelTabCount(cta, 0, 1);
 
         // Simulates pressing the Android's home button and bringing Chrome to the background.
@@ -430,7 +430,7 @@ public class StartSurfaceTest {
         TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
         ChromeTabUtils.waitForTabPageLoaded(cta.getActivityTab(), (String) null);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> cta.getTabCreator(false).launchNTP());
+        TestThreadUtils.runOnUiThreadBlocking(() -> cta.getTabCreator(false).launchNtp());
         StartSurfaceTestUtils.waitForStartSurfaceVisible(
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
 
@@ -703,7 +703,7 @@ public class StartSurfaceTest {
         StartSurfaceTestUtils.waitForTabSwitcherVisible(cta);
         assertFalse(bottomSheetTestSupport.hasSuppressionTokens());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> cta.getTabCreator(false).launchNTP());
+        TestThreadUtils.runOnUiThreadBlocking(() -> cta.getTabCreator(false).launchNtp());
         onViewWaiting(withId(R.id.primary_tasks_surface_view));
         assertFalse(bottomSheetTestSupport.hasSuppressionTokens());
 
@@ -745,7 +745,7 @@ public class StartSurfaceTest {
         StartSurfaceTestUtils.clickTabSwitcherButton(cta);
 
         StartSurfaceTestUtils.waitForTabSwitcherVisible(cta);
-        TestThreadUtils.runOnUiThreadBlocking(() -> cta.getTabCreator(false).launchNTP());
+        TestThreadUtils.runOnUiThreadBlocking(() -> cta.getTabCreator(false).launchNtp());
         onViewWaiting(withId(R.id.primary_tasks_surface_view));
 
         // The Start surface should reset its scroll position.
@@ -851,7 +851,7 @@ public class StartSurfaceTest {
                 cta.getLayoutManager()
                         .isLayoutVisible(StartSurfaceTestUtils.getStartSurfaceLayoutType()));
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> cta.getTabCreator(/* incognito= */ true).launchNTP());
+                () -> cta.getTabCreator(/* incognito= */ true).launchNtp());
         TabUiTestHelper.verifyTabModelTabCount(cta, 0, 1);
 
         // Simulates pressing the home button. Incognito tab should stay and homepage shouldn't
