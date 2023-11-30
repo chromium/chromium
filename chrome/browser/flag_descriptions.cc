@@ -5834,6 +5834,12 @@ const char kCaptureModeAudioMixingDescription[] =
     "separately, or mix them together in a single stream in the screen capture "
     "tool.";
 
+const char kCaptureModeEducationName[] = "Enable Capture Mode Education";
+const char kCaptureModeEducationDescription[] =
+    "Enables the Capture Mode Education nudges and tutorials that inform users "
+    "of the screenshot keyboard shortcut and the screen capture tool in the "
+    "quick settings menu.";
+
 const char kCaptureModeGifRecordingName[] =
     "Enable GIF recording in screen capture";
 const char kCaptureModeGifRecordingDescription[] =

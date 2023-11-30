@@ -3360,6 +3360,9 @@ extern const char kBluetoothUseLLPrivacyDescription[];
 extern const char kCaptureModeAudioMixingName[];
 extern const char kCaptureModeAudioMixingDescription[];
 
+extern const char kCaptureModeEducationName[];
+extern const char kCaptureModeEducationDescription[];
+
 extern const char kCaptureModeGifRecordingName[];
 extern const char kCaptureModeGifRecordingDescription[];
 

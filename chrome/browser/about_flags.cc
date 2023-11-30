@@ -3011,6 +3011,21 @@ const FeatureEntry::FeatureVariation kEolIncentiveVariations[] = {
     {"with no offer", kEolIncentiveNoOffer, std::size(kEolIncentiveNoOffer),
      nullptr}};
 
+const FeatureEntry::FeatureParam kCaptureModeEducationShortcutNudge[] = {
+    {"CaptureModeEducationParam", "ShortcutNudge"}};
+const FeatureEntry::FeatureParam kCaptureModeEducationShortcutTutorial[] = {
+    {"CaptureModeEducationParam", "ShortcutTutorial"}};
+const FeatureEntry::FeatureParam kCaptureModeEducationQuickSettingsNudge[] = {
+    {"CaptureModeEducationParam", "QuickSettingsNudge"}};
+
+const FeatureEntry::FeatureVariation kCaptureModeEducationVariations[] = {
+    {"Shortcut Nudge", kCaptureModeEducationShortcutNudge,
+     std::size(kCaptureModeEducationShortcutNudge), nullptr},
+    {"Shortcut Tutorial", kCaptureModeEducationShortcutTutorial,
+     std::size(kCaptureModeEducationShortcutTutorial), nullptr},
+    {"Quick Settings Nudge", kCaptureModeEducationQuickSettingsNudge,
+     std::size(kCaptureModeEducationQuickSettingsNudge), nullptr}};
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -4233,6 +4248,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCaptureModeAudioMixingName,
      flag_descriptions::kCaptureModeAudioMixingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kCaptureModeAudioMixing)},
+    {"ash-capture-mode-education", flag_descriptions::kCaptureModeEducationName,
+     flag_descriptions::kCaptureModeEducationDescription, kOsCrOS,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kCaptureModeEducation,
+                                    kCaptureModeEducationVariations,
+                                    "CaptureModeEducation")},
     {"ash-capture-mode-gif-recording",
      flag_descriptions::kCaptureModeGifRecordingName,
      flag_descriptions::kCaptureModeGifRecordingDescription, kOsCrOS,

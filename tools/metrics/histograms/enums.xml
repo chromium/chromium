@@ -33583,6 +33583,7 @@ from previous Chrome versions.
   <int value="-1570760081" label="FocusFollowsCursor:disabled"/>
   <int value="-1569571629"
       label="AutofillEnableOffersInClankKeyboardAccessory:disabled"/>
+  <int value="-1569426427" label="CaptureModeEducation:enabled"/>
   <int value="-1568737447" label="InsecureFormSubmissionInterstitial:enabled"/>
   <int value="-1568559155" label="WebSocketHandshakeReuseConnection:enabled"/>
   <int value="-1567941546" label="EnableUniveralLinks:enabled"/>
@@ -33948,6 +33949,7 @@ from previous Chrome versions.
   <int value="-1405048637" label="OfflinePagesResourceBasedSnapshot:enabled"/>
   <int value="-1404469375" label="RemoteCopyProgressNotification:enabled"/>
   <int value="-1404088616" label="TetheringExperimentalFunctionality:enabled"/>
+  <int value="-1401308932" label="CaptureModeEducation:disabled"/>
   <int value="-1400745093" label="SystemEmojiPickerSearchExtension:enabled"/>
   <int value="-1400693146" label="LauncherImageSearchIca:enabled"/>
   <int value="-1399753480" label="disable-harfbuzz-rendertext"/>
