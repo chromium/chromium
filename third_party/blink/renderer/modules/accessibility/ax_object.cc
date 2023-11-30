@@ -2982,7 +2982,7 @@ bool AXObject::IsVisited() const {
 }
 
 bool AXObject::AccessibilityIsIgnored() const {
-  CHECK(CanAccessCachedValues());
+  CheckCanAccessCachedValues();
   UpdateCachedAttributeValuesIfNeeded();
 #if defined(AX_FAIL_FAST_BUILD)
   if (!cached_is_ignored_ && IsDetached()) {
@@ -3000,7 +3000,7 @@ bool AXObject::AccessibilityIsIgnored() const {
 }
 
 bool AXObject::AccessibilityIsIgnoredButIncludedInTree() const {
-  CHECK(CanAccessCachedValues());
+  CheckCanAccessCachedValues();
 
   UpdateCachedAttributeValuesIfNeeded();
   return cached_is_ignored_but_included_in_tree_;
@@ -3009,14 +3009,16 @@ bool AXObject::AccessibilityIsIgnoredButIncludedInTree() const {
 // AccessibilityIsIncludedInTree should be true for all nodes that should be
 // included in the tree, even if they are ignored
 bool AXObject::AccessibilityIsIncludedInTree() const {
-  CHECK(CanAccessCachedValues());
+  CheckCanAccessCachedValues();
 
   return !AccessibilityIsIgnored() || AccessibilityIsIgnoredButIncludedInTree();
 }
 
-bool AXObject::CanAccessCachedValues() const {
-  return IsDetached() || !NeedsToUpdateCachedValues() ||
-         !AXObjectCache().IsFrozen();
+void AXObject::CheckCanAccessCachedValues() const {
+  if (!IsDetached() && AXObjectCache().IsFrozen()) {
+    DUMP_WILL_BE_CHECK(!NeedsToUpdateCachedValues())
+        << "Stale values: " << ToString(true, true);
+  }
 }
 
 void AXObject::InvalidateCachedValues() {
@@ -3283,7 +3285,7 @@ bool AXObject::ShouldIgnoreForHiddenOrInert(
 // In practice, it does not matter because nodes in display:none subtrees are
 // marked ignored either way.
 bool AXObject::IsInert() const {
-  CHECK(CanAccessCachedValues());
+  CheckCanAccessCachedValues();
 
   UpdateCachedAttributeValuesIfNeeded();
   return cached_is_inert_;
@@ -3386,7 +3388,7 @@ bool AXObject::ComputeIsInert(IgnoredReasons* ignored_reasons) const {
 }
 
 bool AXObject::IsAriaHidden() const {
-  CHECK(CanAccessCachedValues());
+  CheckCanAccessCachedValues();
 
   UpdateCachedAttributeValuesIfNeeded();
   return cached_is_aria_hidden_;
@@ -3428,7 +3430,7 @@ bool AXObject::ComputeIsAriaHidden(IgnoredReasons* ignored_reasons) const {
 }
 
 bool AXObject::IsHiddenByChildTree() const {
-  CHECK(CanAccessCachedValues());
+  CheckCanAccessCachedValues();
   UpdateCachedAttributeValuesIfNeeded();
   return cached_is_hidden_by_child_tree_;
 }
@@ -3616,7 +3618,7 @@ bool AXObject::DispatchEventToAOMEventListeners(Event& event) {
 }
 
 bool AXObject::IsDescendantOfDisabledNode() const {
-  CHECK(CanAccessCachedValues());
+  CheckCanAccessCachedValues();
 
   UpdateCachedAttributeValuesIfNeeded();
   return cached_is_descendant_of_disabled_node_;
@@ -4032,7 +4034,7 @@ bool AXObject::CanSetValueAttribute() const {
 }
 
 bool AXObject::CanSetFocusAttribute() const {
-  CHECK(CanAccessCachedValues());
+  CheckCanAccessCachedValues();
 
   UpdateCachedAttributeValuesIfNeeded();
   return cached_can_set_focus_attribute_;
@@ -4386,7 +4388,7 @@ bool AXObject::ComputeIsHiddenViaStyle(const ComputedStyle* style) const {
 }
 
 bool AXObject::IsHiddenViaStyle() const {
-  CHECK(CanAccessCachedValues());
+  CheckCanAccessCachedValues();
 
   UpdateCachedAttributeValuesIfNeeded();
   return cached_is_hidden_via_style_;
@@ -5165,7 +5167,7 @@ bool AXObject::IsRichlyEditable() const {
 }
 
 AXObject* AXObject::LiveRegionRoot() const {
-  CHECK(CanAccessCachedValues());
+  CheckCanAccessCachedValues();
 
   UpdateCachedAttributeValuesIfNeeded();
   return cached_live_region_root_.Get();
@@ -5183,7 +5185,7 @@ bool AXObject::LiveRegionAtomic() const {
 }
 
 const AtomicString& AXObject::ContainerLiveRegionStatus() const {
-  CHECK(CanAccessCachedValues());
+  CheckCanAccessCachedValues();
 
   UpdateCachedAttributeValuesIfNeeded();
   return cached_live_region_root_ ? cached_live_region_root_->LiveRegionStatus()
@@ -5191,7 +5193,7 @@ const AtomicString& AXObject::ContainerLiveRegionStatus() const {
 }
 
 const AtomicString& AXObject::ContainerLiveRegionRelevant() const {
-  CHECK(CanAccessCachedValues());
+  CheckCanAccessCachedValues();
 
   UpdateCachedAttributeValuesIfNeeded();
   return cached_live_region_root_
@@ -5200,7 +5202,7 @@ const AtomicString& AXObject::ContainerLiveRegionRelevant() const {
 }
 
 bool AXObject::ContainerLiveRegionAtomic() const {
-  CHECK(CanAccessCachedValues());
+  CheckCanAccessCachedValues();
 
   UpdateCachedAttributeValuesIfNeeded();
   return cached_live_region_root_ &&
@@ -5208,7 +5210,7 @@ bool AXObject::ContainerLiveRegionAtomic() const {
 }
 
 bool AXObject::ContainerLiveRegionBusy() const {
-  CHECK(CanAccessCachedValues());
+  CheckCanAccessCachedValues();
 
   UpdateCachedAttributeValuesIfNeeded();
   return cached_live_region_root_ &&
@@ -7582,7 +7584,7 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
 
     if (cached_values_need_update_) {
       string_builder = string_builder + " needsToUpdateCachedValues";
-      if (!CanAccessCachedValues()) {
+      if (AXObjectCache().IsFrozen()) {
         cached_values_only = true;
         string_builder = string_builder + "/disallowed";
       }
