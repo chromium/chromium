@@ -758,6 +758,10 @@ inline constexpr char kSecondaryDisplays[] =
 inline constexpr char kAllowMGSToStoreDisplayProperties[] =
     "settings.display.allow_mgs_to_store";
 
+// A list of all displays used by the user and reported to popularity metrics.
+const char kDisplayPopularityUserReportedDisplays[] =
+    "display_popularity.user_reported_displays";
+
 // A boolean pref that enable fullscreen alert bubble.
 // TODO(zxdan): Change to an allowlist in M89.
 inline constexpr char kFullscreenAlertEnabled[] =

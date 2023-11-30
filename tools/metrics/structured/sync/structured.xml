@@ -20,7 +20,7 @@
         The Name of the Monitor.
       </summary>
     </metric>
-    <metric name="ProductCode" type="int">
+    <metric name="ProductCode" type="raw-string">
       <summary>
         An identifier for the display ManufacturerId and ProductId
       </summary>

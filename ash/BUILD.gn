@@ -2938,6 +2938,7 @@ component("ash") {
     "//components/live_caption:constants",
     "//components/live_caption:utils",
     "//components/media_message_center",
+    "//components/metrics/structured:structured_events",
     "//components/onc",
     "//components/password_manager/core/browser:hash_password_manager",
     "//components/pref_registry",

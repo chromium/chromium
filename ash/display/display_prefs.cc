@@ -20,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/values.h"
+#include "components/metrics/structured/structured_events.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -767,6 +768,38 @@ void StoreDisplayTouchAssociations(PrefService* pref_service) {
   }
 }
 
+void ReportToPopularityMetricsAndStore(PrefService* pref_service) {
+  base::Value::List cached_list =
+      pref_service->GetList(prefs::kDisplayPopularityUserReportedDisplays)
+          .Clone();
+
+  for (int64_t id : GetDisplayManager()->GetConnectedDisplayIdList()) {
+    const display::ManagedDisplayInfo& display =
+        GetDisplayManager()->GetDisplayInfo(id);
+
+    // We don't want to report internal panels.
+    if (display::IsInternalDisplayId(id)) {
+      continue;
+    }
+
+    std::string display_id = base::NumberToString(display.edid_display_id());
+    // If we've already reported that display, don't report it again.
+    if (base::Contains(cached_list, display_id)) {
+      continue;
+    }
+
+    metrics::structured::events::v2::popular_displays::MonitorInfo()
+        .SetDisplayName(display.name())
+        .SetProductCode(display.product_id())
+        .Record();
+
+    cached_list.Append(display_id);
+  }
+
+  pref_service->SetList(prefs::kDisplayPopularityUserReportedDisplays,
+                        std::move(cached_list));
+}
+
 // Stores mirror info for each external display.
 void StoreExternalDisplayMirrorInfo(PrefService* pref_service) {
   ScopedListPrefUpdate update(pref_service, prefs::kExternalDisplayMirrorInfo);
@@ -823,6 +856,7 @@ void DisplayPrefs::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kDisplayMixedMirrorModeParams);
   registry->RegisterBooleanPref(prefs::kAllowMGSToStoreDisplayProperties,
                                 false);
+  registry->RegisterListPref(prefs::kDisplayPopularityUserReportedDisplays);
 }
 
 DisplayPrefs::DisplayPrefs(PrefService* local_state)
@@ -881,6 +915,7 @@ void DisplayPrefs::MaybeStoreDisplayPrefs() {
   }
   StoreCurrentDisplayProperties(local_state_);
   StoreDisplayTouchAssociations(local_state_);
+  ReportToPopularityMetricsAndStore(local_state_);
   // The display prefs need to be committed immediately to guarantee they're not
   // lost, and are restored properly on reboot. https://crbug.com/936884.
   // This sends a request via mojo to commit the prefs to disk.
