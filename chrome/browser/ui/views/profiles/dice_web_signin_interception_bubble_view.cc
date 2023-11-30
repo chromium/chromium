@@ -31,6 +31,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
@@ -42,7 +43,18 @@ namespace {
 // SetHeightAndShowWidget().
 constexpr int kInterceptionBubbleBaseHeight = 500;
 constexpr int kInterceptionBubbleWidth = 290;
-constexpr int kInterceptionChromeSigninBubbleWidth = 320;
+
+// The Chrome Signin bubble width is expected to be 320px; since the default
+// x-margins are different with CR2023, then the fixed width must be adapted in
+// order to have the same bubble total size. The padding is also adapted in the
+// web UI in order to have the same spacing with the border elements.
+//
+// Total width = bubble_margin + fixed_width
+//      320    =     20 * 2    +     280
+constexpr int kInterceptionChromeSigninBubbleWidthCR2023 = 280;
+// Total width = bubble_margin + fixed_width
+//      320    =     16 * 2    +     288
+constexpr int kInterceptionChromeSigninBubbleWidth = 288;
 
 AvatarToolbarButton* GetAvatarToolbarButton(const Browser& browser) {
   return BrowserView::GetBrowserViewForBrowser(&browser)
@@ -62,7 +74,9 @@ int GetBubbleFixedWidthForInterceptionType(
     WebSigninInterceptor::SigninInterceptionType interception_type) {
   return interception_type ==
                  WebSigninInterceptor::SigninInterceptionType::kChromeSignin
-             ? kInterceptionChromeSigninBubbleWidth
+             ? features::IsChromeRefresh2023()
+                   ? kInterceptionChromeSigninBubbleWidthCR2023
+                   : kInterceptionChromeSigninBubbleWidth
              : kInterceptionBubbleWidth;
 }
 
@@ -228,7 +242,12 @@ DiceWebSigninInterceptionBubbleView::DiceWebSigninInterceptionBubbleView(
   web_view_ = web_view.get();
   AddChildView(std::move(web_view));
 
-  set_margins(gfx::Insets());
+  // Keep the default margin, so that the rounded corners take proper effect.
+  // Currently only affects Chrome Signin intercept as it's padding got adapted.
+  if (bubble_parameters.interception_type !=
+      WebSigninInterceptor::SigninInterceptionType::kChromeSignin) {
+    set_margins(gfx::Insets());
+  }
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetLayoutManager(std::make_unique<views::FillLayout>());
 }
