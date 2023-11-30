@@ -334,7 +334,7 @@ std::unique_ptr<TargetPolicy> BrokerServicesBase::CreatePolicy() {
 }
 
 std::unique_ptr<TargetPolicy> BrokerServicesBase::CreatePolicy(
-    base::StringPiece tag) {
+    std::string_view tag) {
   // If you change the type of the object being created here you must also
   // change the downcast to it in SpawnTarget().
   auto policy = std::make_unique<PolicyBase>(tag);

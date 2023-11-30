@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 
 #include <optional>
 #include "base/functional/bind.h"
@@ -119,7 +120,7 @@ class SANDBOX_POLICY_EXPORT SandboxWin {
 
   // Helper for sandbox delegates to generate a SandboxTag
   static std::string GetSandboxTagForDelegate(
-      base::StringPiece prefix,
+      std::string_view prefix,
       sandbox::mojom::Sandbox sandbox_type);
 
  private:

@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -751,16 +752,16 @@ void TestRewriteProcSelfHelper(bool fast_check_in_client) {
 
     ASSERT_GT(num_read, 0);
 
-    base::StringPiece status(buf, static_cast<size_t>(num_read));
-    base::StringPiece tracer("Pid:\t");
+    std::string_view status(buf, static_cast<size_t>(num_read));
+    std::string_view tracer("Pid:\t");
 
-    base::StringPiece::size_type pid_index = status.find(tracer);
-    ASSERT_NE(pid_index, base::StringPiece::npos);
+    std::string_view::size_type pid_index = status.find(tracer);
+    ASSERT_NE(pid_index, std::string_view::npos);
     pid_index += tracer.size();
-    base::StringPiece::size_type pid_end_index = status.find('\n', pid_index);
-    ASSERT_NE(pid_end_index, base::StringPiece::npos);
+    std::string_view::size_type pid_end_index = status.find('\n', pid_index);
+    ASSERT_NE(pid_end_index, std::string_view::npos);
 
-    base::StringPiece pid_str(buf + pid_index, pid_end_index - pid_index);
+    std::string_view pid_str(buf + pid_index, pid_end_index - pid_index);
     int pid = 0;
     ASSERT_TRUE(base::StringToInt(pid_str, &pid));
 

@@ -1127,7 +1127,7 @@ std::string SandboxWin::GetSandboxTypeInEnglish(Sandbox sandbox_type) {
 
 // static
 std::string SandboxWin::GetSandboxTagForDelegate(
-    base::StringPiece prefix,
+    std::string_view prefix,
     sandbox::mojom::Sandbox sandbox_type) {
   // sandbox.mojom.Sandbox has an operator << we can use for non-human values.
   std::ostringstream stream;

@@ -11,6 +11,7 @@
 #include <list>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include <optional>
@@ -20,7 +21,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/process/launch.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "base/win/access_token.h"
 #include "base/win/windows_types.h"
@@ -165,7 +165,7 @@ class ConfigBase final : public TargetConfig {
 
 class PolicyBase final : public TargetPolicy {
  public:
-  PolicyBase(base::StringPiece key);
+  PolicyBase(std::string_view key);
   ~PolicyBase() override;
 
   PolicyBase(const PolicyBase&) = delete;

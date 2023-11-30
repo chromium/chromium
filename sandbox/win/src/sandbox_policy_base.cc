@@ -443,7 +443,7 @@ void ConfigBase::SetZeroAppShim() {
   zero_appshim_ = true;
 }
 
-PolicyBase::PolicyBase(base::StringPiece tag)
+PolicyBase::PolicyBase(std::string_view tag)
     : tag_(tag),
       config_(),
       config_ptr_(nullptr),

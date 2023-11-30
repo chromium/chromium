@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
@@ -391,7 +392,7 @@ int DispatchCall(int argc, wchar_t **argv) {
   // in read only mode and sleep infinitely if we succeed.
   if (0 == _wcsicmp(argv[3], L"shared_memory_handle")) {
     HANDLE raw_handle = nullptr;
-    base::StringPiece test_contents = "Hello World";
+    std::string_view test_contents = "Hello World";
     base::StringToUint(base::AsStringPiece16(argv[4]),
                        reinterpret_cast<unsigned int*>(&raw_handle));
     if (raw_handle == nullptr)
