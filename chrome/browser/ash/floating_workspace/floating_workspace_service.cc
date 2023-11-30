@@ -462,6 +462,9 @@ FloatingWorkspaceService::GetLatestFloatingWorkspaceTemplate() {
 std::vector<const ash::DeskTemplate*>
 FloatingWorkspaceService::GetFloatingWorkspaceTemplateEntries() {
   std::vector<const ash::DeskTemplate*> entries;
+  if (!desk_sync_service_ || !desk_sync_service_->GetDeskModel()) {
+    return entries;
+  }
   desks_storage::DeskModel::GetAllEntriesResult result =
       desk_sync_service_->GetDeskModel()->GetAllEntries();
   if (result.status != desks_storage::DeskModel::GetAllEntriesStatus::kOk) {
@@ -941,8 +944,6 @@ void FloatingWorkspaceService::OnAppRegistryCacheAdded(
   is_cache_ready_ = AreRequiredAppTypesInitialized();
 }
 
-// TODO(b/308682173): Add unittest once refactor is done to allow for testing
-// this section.
 void FloatingWorkspaceService::OnActiveUserSessionChanged(
     const AccountId& account_id) {
   VLOG(1) << "Active User session changed for fws";

@@ -93,6 +93,9 @@ class FloatingWorkspaceService : public KeyedService,
   void CaptureAndUploadActiveDeskForTest(
       std::unique_ptr<DeskTemplate> desk_template);
 
+  // Get latest Floating Workspace Template from DeskSyncBridge.
+  const DeskTemplate* GetLatestFloatingWorkspaceTemplate();
+
   // syncer::SyncServiceObserver overrides:
   void OnStateChanged(syncer::SyncService* sync) override;
   void OnSyncShutdown(syncer::SyncService* sync) override;
@@ -100,6 +103,9 @@ class FloatingWorkspaceService : public KeyedService,
   // message_center::NotificationObserver overrides:
   void Click(const absl::optional<int>& button_index,
              const absl::optional<std::u16string>& reply) override;
+
+  // ash::SessionObserver:
+  void OnActiveUserSessionChanged(const AccountId& account_id) override;
 
   void MaybeCloseNotification();
 
@@ -109,9 +115,6 @@ class FloatingWorkspaceService : public KeyedService,
   std::unique_ptr<DeskTemplate> previously_captured_desk_template_;
 
  private:
-  // ash::SessionObserver:
-  void OnActiveUserSessionChanged(const AccountId& account_id) override;
-
   // AppRegistryCache::Observer
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
@@ -148,9 +151,6 @@ class FloatingWorkspaceService : public KeyedService,
 
   // Handles the updating of progress bar notification.
   void HandleProgressBarStatus();
-
-  // Get latest Floating Workspace Template from DeskSyncBridge.
-  const DeskTemplate* GetLatestFloatingWorkspaceTemplate();
 
   // Capture the current active desk task, running every ~30(TBD) seconds.
   // Upload captured desk to chrome sync and record the randomly generated
