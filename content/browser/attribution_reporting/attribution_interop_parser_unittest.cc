@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/overloaded.h"
 #include "base/strings/strcat.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/values_test_util.h"
@@ -24,6 +25,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
 namespace {
@@ -437,7 +439,11 @@ INSTANTIATE_TEST_SUITE_P(AttributionInteropParserInvalidInputs,
                          ::testing::ValuesIn(kParseErrorTestCases));
 
 TEST(AttributionInteropParserTest, ValidConfig) {
-  typedef void (*MakeExpectedFunc)(AttributionConfig&);
+  typedef void (*MakeAttributionConfigFunc)(AttributionConfig&);
+  typedef void (*MakeInteropConfigFunc)(AttributionInteropConfig&);
+
+  using MakeExpectedFunc =
+      absl::variant<MakeAttributionConfigFunc, MakeInteropConfigFunc>;
 
   const struct {
     const char* json;
@@ -489,9 +495,8 @@ TEST(AttributionInteropParserTest, ValidConfig) {
          c.rate_limit.origins_per_site_window = base::Days(2);
        }},
       {R"json({"randomized_response_epsilon":"inf"})json", false,
-       [](AttributionConfig& c) {
-         c.event_level_limit.randomized_response_epsilon =
-             std::numeric_limits<double>::infinity();
+       [](AttributionInteropConfig& c) {
+         c.max_event_level_epsilon = std::numeric_limits<double>::infinity();
        }},
       {R"json({"max_event_level_reports_per_destination":"10"})json", false,
        [](AttributionConfig& c) {
@@ -537,7 +542,9 @@ TEST(AttributionInteropParserTest, ValidConfig) {
         "aggregatable_report_min_delay":"10",
         "aggregatable_report_delay_span":"20"
       })json",
-       true, [](AttributionConfig& c) {
+       true, [](AttributionInteropConfig& config) {
+         AttributionConfig& c = config.attribution_config;
+
          c.max_sources_per_origin = 10;
          c.max_destinations_per_source_site_reporting_site = 10;
 
@@ -548,7 +555,7 @@ TEST(AttributionInteropParserTest, ValidConfig) {
          c.rate_limit.max_reporting_origins_per_source_reporting_site = 5;
          c.rate_limit.origins_per_site_window = base::Days(5);
 
-         c.event_level_limit.randomized_response_epsilon = 0.2;
+         config.max_event_level_epsilon = 0.2;
          c.event_level_limit.max_reports_per_destination = 10;
          c.event_level_limit.max_navigation_info_gain = 5.5;
          c.event_level_limit.max_event_info_gain = 0.5;
@@ -563,16 +570,23 @@ TEST(AttributionInteropParserTest, ValidConfig) {
        }}};
 
   for (const auto& test_case : kTestCases) {
-    AttributionConfig expected;
-    test_case.make_expected(expected);
+    AttributionInteropConfig expected;
+    absl::visit(base::Overloaded{
+                    [&](MakeAttributionConfigFunc f) {
+                      f(expected.attribution_config);
+                    },
+                    [&](MakeInteropConfigFunc f) { f(expected); },
+                },
+                test_case.make_expected);
 
     base::Value::Dict json = base::test::ParseJsonDict(test_case.json);
     if (test_case.required) {
-      EXPECT_THAT(ParseAttributionConfig(json), base::test::ValueIs(expected))
+      EXPECT_THAT(ParseAttributionInteropConfig(json),
+                  base::test::ValueIs(expected))
           << json;
     } else {
-      AttributionConfig config;
-      EXPECT_EQ("", MergeAttributionConfig(json, config)) << json;
+      AttributionInteropConfig config;
+      EXPECT_EQ("", MergeAttributionInteropConfig(json, config)) << json;
       EXPECT_EQ(config, expected) << json;
     }
   }
@@ -596,7 +610,7 @@ TEST(AttributionInteropParserTest, InvalidConfigPositiveIntegers) {
   };
 
   {
-    auto result = ParseAttributionConfig(base::Value::Dict());
+    auto result = ParseAttributionInteropConfig(base::Value::Dict());
     for (const char* field : kFields) {
       EXPECT_THAT(result, base::test::ErrorIs(HasSubstr(
                               base::StrCat({"[\"", field,
@@ -607,13 +621,13 @@ TEST(AttributionInteropParserTest, InvalidConfigPositiveIntegers) {
   }
 
   {
-    AttributionConfig config;
+    AttributionInteropConfig config;
     base::Value::Dict dict;
     for (const char* field : kFields) {
       dict.Set(field, "0");
     }
 
-    std::string error = MergeAttributionConfig(dict, config);
+    std::string error = MergeAttributionInteropConfig(dict, config);
 
     for (const char* field : kFields) {
       EXPECT_THAT(
@@ -633,7 +647,7 @@ TEST(AttributionInteropParserTest, InvalidConfigNonNegativeIntegers) {
   };
 
   {
-    auto result = ParseAttributionConfig(base::Value::Dict());
+    auto result = ParseAttributionInteropConfig(base::Value::Dict());
     for (const char* field : kFields) {
       EXPECT_THAT(result, base::test::ErrorIs(HasSubstr(base::StrCat(
                               {"[\"", field,
@@ -644,13 +658,13 @@ TEST(AttributionInteropParserTest, InvalidConfigNonNegativeIntegers) {
   }
 
   {
-    AttributionConfig config;
+    AttributionInteropConfig config;
     base::Value::Dict dict;
     for (const char* field : kFields) {
       dict.Set(field, "-10");
     }
 
-    std::string error = MergeAttributionConfig(dict, config);
+    std::string error = MergeAttributionInteropConfig(dict, config);
 
     for (const char* field : kFields) {
       EXPECT_THAT(error,
@@ -664,17 +678,17 @@ TEST(AttributionInteropParserTest, InvalidConfigNonNegativeIntegers) {
 
 TEST(AttributionInteropParserTest, InvalidConfigRandomizedResponseEpsilon) {
   {
-    auto result = ParseAttributionConfig(base::Value::Dict());
+    auto result = ParseAttributionInteropConfig(base::Value::Dict());
     EXPECT_THAT(result,
                 base::test::ErrorIs(HasSubstr(
                     "[\"randomized_response_epsilon\"]: must be \"inf\" or a "
                     "non-negative double formated as a base-10 string")));
   }
   {
-    AttributionConfig config;
+    AttributionInteropConfig config;
     base::Value::Dict dict;
     dict.Set("randomized_response_epsilon", "-1.5");
-    std::string error = MergeAttributionConfig(dict, config);
+    std::string error = MergeAttributionInteropConfig(dict, config);
     EXPECT_THAT(
         error,
         HasSubstr("[\"randomized_response_epsilon\"]: must be \"inf\" or a "
@@ -684,7 +698,7 @@ TEST(AttributionInteropParserTest, InvalidConfigRandomizedResponseEpsilon) {
 
 TEST(AttributionInteropParserTest, InvalidConfigMaxInfGain) {
   {
-    auto result = ParseAttributionConfig(base::Value::Dict());
+    auto result = ParseAttributionInteropConfig(base::Value::Dict());
     ASSERT_FALSE(result.has_value());
     EXPECT_THAT(
         result.error(),
@@ -692,19 +706,19 @@ TEST(AttributionInteropParserTest, InvalidConfigMaxInfGain) {
                   "non-negative double formated as a base-10 string"));
   }
   {
-    AttributionConfig config;
+    AttributionInteropConfig config;
     base::Value::Dict dict;
     dict.Set("max_navigation_info_gain", "-1.5");
-    std::string error = MergeAttributionConfig(dict, config);
+    std::string error = MergeAttributionInteropConfig(dict, config);
     EXPECT_THAT(
         error, HasSubstr("[\"max_navigation_info_gain\"]: must be \"inf\" or a "
                          "non-negative double formated as a base-10 string"));
   }
   {
-    AttributionConfig config;
+    AttributionInteropConfig config;
     base::Value::Dict dict;
     dict.Set("max_event_info_gain", "-1.5");
-    std::string error = MergeAttributionConfig(dict, config);
+    std::string error = MergeAttributionInteropConfig(dict, config);
     EXPECT_THAT(error,
                 HasSubstr("[\"max_event_info_gain\"]: must be \"inf\" or a "
                           "non-negative double formated as a base-10 string"));

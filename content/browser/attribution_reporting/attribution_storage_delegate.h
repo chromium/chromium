@@ -20,6 +20,7 @@
 #include "content/common/content_export.h"
 
 namespace attribution_reporting {
+class EventLevelEpsilon;
 class EventReportWindows;
 class MaxEventLevelReports;
 class TriggerSpecs;
@@ -142,7 +143,8 @@ class CONTENT_EXPORT AttributionStorageDelegate {
   // for the lifetime of the delegate for calls with identical inputs.
   virtual double GetRandomizedResponseRate(
       const attribution_reporting::TriggerSpecs&,
-      attribution_reporting::MaxEventLevelReports) const = 0;
+      attribution_reporting::MaxEventLevelReports,
+      attribution_reporting::EventLevelEpsilon) const = 0;
 
   using GetRandomizedResponseResult =
       base::expected<RandomizedResponseData, ExceedsChannelCapacityLimit>;
@@ -154,6 +156,7 @@ class CONTENT_EXPORT AttributionStorageDelegate {
       attribution_reporting::mojom::SourceType,
       const attribution_reporting::TriggerSpecs&,
       attribution_reporting::MaxEventLevelReports,
+      attribution_reporting::EventLevelEpsilon,
       base::Time source_time) const = 0;
 
   int GetMaxAggregatableReportsPerSource() const;

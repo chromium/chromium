@@ -19,6 +19,7 @@
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/destination_set.h"
+#include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
@@ -239,6 +240,10 @@ bool StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
 
   if (!out->max_event_level_reports.SetIfValid(
           data.max_event_level_reports())) {
+    return false;
+  }
+
+  if (!out->event_level_epsilon.SetIfValid(data.event_level_epsilon())) {
     return false;
   }
 

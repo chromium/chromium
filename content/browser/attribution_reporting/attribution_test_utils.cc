@@ -241,7 +241,8 @@ StoredSource SourceBuilder::BuildStored() const {
       registration_.filter_data, registration_.debug_key,
       registration_.aggregation_keys, attribution_logic_, active_state_,
       source_id_, aggregatable_budget_consumed_, randomized_response_rate_,
-      registration_.trigger_data_matching, debug_cookie_set_);
+      registration_.trigger_data_matching, registration_.event_level_epsilon,
+      debug_cookie_set_);
   source.SetDedupKeys(dedup_keys_);
   source.SetAggregatableDedupKeys(aggregatable_dedup_keys_);
   return source;
@@ -522,7 +523,7 @@ bool operator==(const StoredSource& a, const StoredSource& b) {
         source.attribution_logic(), source.active_state(), source.dedup_keys(),
         source.aggregatable_budget_consumed(), source.aggregatable_dedup_keys(),
         source.randomized_response_rate(), source.trigger_data_matching(),
-        source.debug_cookie_set());
+        source.event_level_epsilon(), source.debug_cookie_set());
   };
   return tie(a) == tie(b);
 }
@@ -697,6 +698,7 @@ std::ostream& operator<<(std::ostream& out, const StoredSource& source) {
       << ",aggregatable_budget_consumed="
       << source.aggregatable_budget_consumed()
       << ",randomized_response_rate=" << source.randomized_response_rate()
+      << ",event_level_epsilon=" << source.event_level_epsilon()
       << ",trigger_data_matching=" << source.trigger_data_matching()
       << ",dedup_keys=[";
 

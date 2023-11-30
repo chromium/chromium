@@ -249,6 +249,7 @@ class Source {
   aggregatableBudgetConsumed: bigint;
   aggregatableDedupKeys: bigint[];
   triggerDataMatching: string;
+  eventLevelEpsilon: number;
   debugCookieSet: boolean;
 
   constructor(mojo: WebUISource) {
@@ -274,6 +275,7 @@ class Source {
     this.aggregatableDedupKeys = mojo.aggregatableDedupKeys;
     this.triggerDataMatching =
         triggerDataMatchingText[mojo.triggerDataMatching];
+    this.eventLevelEpsilon = mojo.eventLevelEpsilon;
     this.status = attributabilityText[mojo.attributability];
     this.debugCookieSet = mojo.debugCookieSet;
   }
@@ -309,6 +311,8 @@ class SourceTableModel extends TableModel<Source> {
           new CodeColumn<Source>('Aggregation Keys', (e) => e.aggregationKeys),
           new ValueColumn<Source, string>(
               'Trigger Data Matching', (e) => e.triggerDataMatching),
+          new ValueColumn<Source, number>(
+              'Event-Level Epsilon', (e) => e.eventLevelEpsilon),
           new ValueColumn<Source, string>(
               'Aggregatable Budget Consumed',
               (e) => `${e.aggregatableBudgetConsumed} / ${BUDGET_PER_SOURCE}`),

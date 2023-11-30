@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/destination_set.h"
+#include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
@@ -320,10 +321,24 @@ TEST(SourceRegistrationTest, Parse) {
           R"json({"debug_reporting":"true","destination":"https://d.example"})json",
           ValueIs(Field(&SourceRegistration::debug_reporting, false)),
       },
+      {
+          // Tested more thoroughly in `event_level_epsilon_unittest.cc`
+          "event_level_epsilon_valid",
+          R"json({"event_level_epsilon":4.2,
+          "destination":"https://d.example"})json",
+          ValueIs(Field(&SourceRegistration::event_level_epsilon, 4.2)),
+      },
+      {
+          // Tested more thoroughly in `event_level_epsilon_unittest.cc`
+          "event_level_epsilon_invalid",
+          R"json({"event_level_epsilon":null,
+          "destination":"https://d.example"})json",
+          ErrorIs(SourceRegistrationError::kEventLevelEpsilonWrongType),
+      },
   };
 
   static constexpr char kSourceRegistrationErrorMetric[] =
-      "Conversions.SourceRegistrationError9";
+      "Conversions.SourceRegistrationError10";
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.desc);
@@ -360,6 +375,7 @@ TEST(SourceRegistrationTest, ToJson) {
               "start_time": 0,
               "end_times": [2592000]
             },
+            "event_level_epsilon": 14.0,
             "expiry": 2592000,
             "max_event_level_reports": 0,
             "priority": "0",
@@ -381,6 +397,7 @@ TEST(SourceRegistrationTest, ToJson) {
                 r.source_event_id = 7;
                 r.max_event_level_reports = MaxEventLevelReports(8);
                 r.trigger_data_matching = mojom::TriggerDataMatching::kExact;
+                r.event_level_epsilon = EventLevelEpsilon(0);
               }),
           R"json({
             "aggregatable_report_window": 1,
@@ -397,7 +414,8 @@ TEST(SourceRegistrationTest, ToJson) {
             "priority": "-6",
             "source_event_id": "7",
             "max_event_level_reports": 8,
-            "trigger_data_matching": "exact"
+            "trigger_data_matching": "exact",
+            "event_level_epsilon": 0.0
           })json",
       },
   };

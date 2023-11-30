@@ -19,6 +19,7 @@
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/destination_set.h"
+#include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
@@ -224,6 +225,11 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
   trigger_data_matching(
       const attribution_reporting::SourceRegistration& source) {
     return source.trigger_data_matching;
+  }
+
+  static double event_level_epsilon(
+      const attribution_reporting::SourceRegistration& source) {
+    return source.event_level_epsilon;
   }
 
   static bool Read(

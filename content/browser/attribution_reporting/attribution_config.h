@@ -68,14 +68,6 @@ struct CONTENT_EXPORT AttributionConfig {
     // Returns true if this config is valid.
     [[nodiscard]] bool Validate() const;
 
-    // Controls randomized response rates for the API: when a source is
-    // registered, this parameter is used to determine the probability that any
-    // subsequent attributions for the source are handled truthfully, or whether
-    // the source is immediately attributed with zero or more fake reports and
-    // real attributions are dropped. Must be non-negative and non-NaN, but may
-    // be infinite.
-    double randomized_response_epsilon = 14;
-
     // Controls how many reports can be in the storage per attribution
     // destination.
     int max_reports_per_destination = 1024;

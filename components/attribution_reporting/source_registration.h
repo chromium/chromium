@@ -15,6 +15,7 @@
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/destination_set.h"
+#include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
@@ -75,6 +76,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
   bool debug_reporting = false;
   mojom::TriggerDataMatching trigger_data_matching =
       mojom::TriggerDataMatching::kModulus;
+  EventLevelEpsilon event_level_epsilon;
 };
 
 }  // namespace attribution_reporting

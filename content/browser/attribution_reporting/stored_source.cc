@@ -14,6 +14,7 @@
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/destination_set.h"
+#include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/trigger_config.h"
@@ -70,6 +71,7 @@ absl::optional<StoredSource> StoredSource::Create(
     int64_t aggregatable_budget_consumed,
     double randomized_response_rate,
     attribution_reporting::mojom::TriggerDataMatching trigger_data_matching,
+    attribution_reporting::EventLevelEpsilon event_level_epsilon,
     bool debug_cookie_set) {
   if (!AreFieldsValid(aggregatable_budget_consumed, randomized_response_rate,
                       source_time, expiry_time, aggregatable_report_window_time,
@@ -77,13 +79,14 @@ absl::optional<StoredSource> StoredSource::Create(
     return absl::nullopt;
   }
 
-  return StoredSource(
-      std::move(common_info), source_event_id, std::move(destination_sites),
-      source_time, expiry_time, std::move(trigger_specs),
-      aggregatable_report_window_time, max_event_level_reports, priority,
-      std::move(filter_data), debug_key, std::move(aggregation_keys),
-      attribution_logic, active_state, source_id, aggregatable_budget_consumed,
-      randomized_response_rate, trigger_data_matching, debug_cookie_set);
+  return StoredSource(std::move(common_info), source_event_id,
+                      std::move(destination_sites), source_time, expiry_time,
+                      std::move(trigger_specs), aggregatable_report_window_time,
+                      max_event_level_reports, priority, std::move(filter_data),
+                      debug_key, std::move(aggregation_keys), attribution_logic,
+                      active_state, source_id, aggregatable_budget_consumed,
+                      randomized_response_rate, trigger_data_matching,
+                      event_level_epsilon, debug_cookie_set);
 }
 
 StoredSource::StoredSource(
@@ -105,6 +108,7 @@ StoredSource::StoredSource(
     int64_t aggregatable_budget_consumed,
     double randomized_response_rate,
     attribution_reporting::mojom::TriggerDataMatching trigger_data_matching,
+    attribution_reporting::EventLevelEpsilon event_level_epsilon,
     bool debug_cookie_set)
     : common_info_(std::move(common_info)),
       source_event_id_(source_event_id),
@@ -124,6 +128,7 @@ StoredSource::StoredSource(
       aggregatable_budget_consumed_(aggregatable_budget_consumed),
       randomized_response_rate_(randomized_response_rate),
       trigger_data_matching_(std::move(trigger_data_matching)),
+      event_level_epsilon_(event_level_epsilon),
       debug_cookie_set_(debug_cookie_set) {
   DCHECK(AreFieldsValid(aggregatable_budget_consumed_,
                         randomized_response_rate_, source_time_, expiry_time_,

@@ -314,11 +314,18 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
   auto trigger_specs = attribution_reporting::TriggerSpecs::Default(
       *source_type, std::move(*event_report_windows));
 
+  attribution_reporting::EventLevelEpsilon event_level_epsilon;
+  if (read_only_source_data_msg->has_event_level_epsilon() &&
+      !event_level_epsilon.SetIfValid(
+          read_only_source_data_msg->event_level_epsilon())) {
+    return absl::nullopt;
+  }
+
   double randomized_response_rate =
       read_only_source_data_msg->has_randomized_response_rate()
           ? read_only_source_data_msg->randomized_response_rate()
-          : delegate_->GetRandomizedResponseRate(trigger_specs,
-                                                 max_event_level_reports);
+          : delegate_->GetRandomizedResponseRate(
+                trigger_specs, max_event_level_reports, event_level_epsilon);
 
   // If "debug_cookie_set" field was not set in earlier versions, set the value
   // to whether the debug key was set for the source.
@@ -368,7 +375,7 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
       max_event_level_reports, priority, std::move(*filter_data), debug_key,
       std::move(*aggregation_keys), *attribution_logic, *active_state,
       source_id, aggregatable_budget_consumed, randomized_response_rate,
-      trigger_data_matching, debug_cookie_set);
+      trigger_data_matching, event_level_epsilon, debug_cookie_set);
   if (!stored_source.has_value()) {
     return absl::nullopt;
   }
@@ -544,13 +551,14 @@ StoreSourceResult AttributionStorageSql::StoreSource(
   auto trigger_specs = attribution_reporting::TriggerSpecs::Default(
       common_info.source_type(), reg.event_report_windows);
 
-  ASSIGN_OR_RETURN(const auto randomized_response_data,
-                   delegate_->GetRandomizedResponse(
-                       common_info.source_type(), trigger_specs,
-                       reg.max_event_level_reports, source_time),
-                   [](auto) -> StoreSourceResult {
-                     return StoreSourceResult::ExceedsMaxChannelCapacity();
-                   });
+  ASSIGN_OR_RETURN(
+      const auto randomized_response_data,
+      delegate_->GetRandomizedResponse(common_info.source_type(), trigger_specs,
+                                       reg.max_event_level_reports,
+                                       reg.event_level_epsilon, source_time),
+      [](auto) -> StoreSourceResult {
+        return StoreSourceResult::ExceedsMaxChannelCapacity();
+      });
 
   int num_conversions = 0;
   auto attribution_logic = StoredSource::AttributionLogic::kTruthfully;
@@ -632,7 +640,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
       reg.priority, reg.filter_data, reg.debug_key, reg.aggregation_keys,
       attribution_logic, *active_state, source_id,
       /*aggregatable_budget_consumed=*/0, randomized_response_data.rate(),
-      reg.trigger_data_matching, debug_cookie_set);
+      reg.trigger_data_matching, reg.event_level_epsilon, debug_cookie_set);
 
   if (!stored_source.has_value() ||
       !rate_limit_table_.AddRateLimitForSource(&db_, *stored_source)) {

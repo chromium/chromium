@@ -4,8 +4,6 @@
 
 #include "content/browser/attribution_reporting/attribution_config.h"
 
-#include <cmath>
-
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/features.h"
@@ -111,11 +109,6 @@ bool AttributionConfig::RateLimitConfig::Validate() const {
 
 bool AttributionConfig::EventLevelLimit::Validate() const {
   if (max_reports_per_destination <= 0) {
-    return false;
-  }
-
-  if (randomized_response_epsilon < 0 ||
-      std::isnan(randomized_response_epsilon)) {
     return false;
   }
 

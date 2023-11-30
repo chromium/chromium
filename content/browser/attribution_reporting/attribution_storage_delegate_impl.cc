@@ -20,6 +20,7 @@
 #include "base/uuid.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/constants.h"
+#include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
@@ -198,11 +199,11 @@ void AttributionStorageDelegateImpl::ShuffleTriggerVerifications(
 
 double AttributionStorageDelegateImpl::GetRandomizedResponseRate(
     const attribution_reporting::TriggerSpecs& trigger_specs,
-    attribution_reporting::MaxEventLevelReports max_event_level_reports) const {
+    attribution_reporting::MaxEventLevelReports max_event_level_reports,
+    attribution_reporting::EventLevelEpsilon epsilon) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return content::GetRandomizedResponseRate(
-      GetNumStates(trigger_specs, max_event_level_reports),
-      config_.event_level_limit.randomized_response_epsilon);
+      GetNumStates(trigger_specs, max_event_level_reports), epsilon);
 }
 
 AttributionStorageDelegate::GetRandomizedResponseResult
@@ -210,11 +211,11 @@ AttributionStorageDelegateImpl::GetRandomizedResponse(
     SourceType source_type,
     const attribution_reporting::TriggerSpecs& trigger_specs,
     attribution_reporting::MaxEventLevelReports max_event_level_reports,
+    attribution_reporting::EventLevelEpsilon epsilon,
     base::Time source_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RandomizedResponseData response = DoRandomizedResponse(
-      trigger_specs, max_event_level_reports,
-      config_.event_level_limit.randomized_response_epsilon);
+  RandomizedResponseData response =
+      DoRandomizedResponse(trigger_specs, max_event_level_reports, epsilon);
 
   if (response.channel_capacity() > GetMaxChannelCapacity(source_type)) {
     return base::unexpected(ExceedsChannelCapacityLimit());

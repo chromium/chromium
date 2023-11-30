@@ -75,4 +75,7 @@ enum SourceRegistrationError {
   kSummaryBucketsValueWrongType = 55,
   kSummaryBucketsValueOutOfRange = 56,
   kSummaryBucketsNonIncreasing = 57,
+
+  kEventLevelEpsilonWrongType = 58,
+  kEventLevelEpsilonValueInvalid = 59,
 };

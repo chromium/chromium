@@ -14,13 +14,12 @@
 #include "base/values.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
-
-struct AttributionConfig;
 
 struct AttributionSimulationEvent {
   attribution_reporting::SuitableOrigin reporting_origin;
@@ -53,12 +52,21 @@ using AttributionSimulationEvents = std::vector<AttributionSimulationEvent>;
 base::expected<AttributionSimulationEvents, std::string>
 ParseAttributionInteropInput(base::Value::Dict input, base::Time offset_time);
 
-base::expected<AttributionConfig, std::string> ParseAttributionConfig(
-    const base::Value::Dict&);
+struct AttributionInteropConfig {
+  AttributionConfig attribution_config;
+  double max_event_level_epsilon = 0;
+
+  friend bool operator==(const AttributionInteropConfig&,
+                         const AttributionInteropConfig&) = default;
+};
+
+base::expected<AttributionInteropConfig, std::string>
+ParseAttributionInteropConfig(const base::Value::Dict&);
 
 // Returns a non-empty string on failure.
-[[nodiscard]] std::string MergeAttributionConfig(const base::Value::Dict&,
-                                                 AttributionConfig&);
+[[nodiscard]] std::string MergeAttributionInteropConfig(
+    const base::Value::Dict&,
+    AttributionInteropConfig&);
 
 struct AttributionInteropOutput {
   struct Report {

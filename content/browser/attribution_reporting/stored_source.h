@@ -13,6 +13,7 @@
 #include "base/types/strong_alias.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/destination_set.h"
+#include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/trigger_config.h"
@@ -65,6 +66,7 @@ class CONTENT_EXPORT StoredSource {
       int64_t aggregatable_budget_consumed,
       double randomized_response_rate,
       attribution_reporting::mojom::TriggerDataMatching,
+      attribution_reporting::EventLevelEpsilon,
       bool debug_cookie_set);
 
   ~StoredSource();
@@ -136,6 +138,10 @@ class CONTENT_EXPORT StoredSource {
 
   bool debug_cookie_set() const { return debug_cookie_set_; }
 
+  attribution_reporting::EventLevelEpsilon event_level_epsilon() const {
+    return event_level_epsilon_;
+  }
+
   void SetDedupKeys(std::vector<uint64_t> dedup_keys) {
     dedup_keys_ = std::move(dedup_keys);
   }
@@ -163,6 +169,7 @@ class CONTENT_EXPORT StoredSource {
                int64_t aggregatable_budget_consumed,
                double randomized_response_rate,
                attribution_reporting::mojom::TriggerDataMatching,
+               attribution_reporting::EventLevelEpsilon,
                bool debug_cookie_set);
 
   CommonSourceInfo common_info_;
@@ -196,6 +203,8 @@ class CONTENT_EXPORT StoredSource {
   double randomized_response_rate_;
 
   attribution_reporting::mojom::TriggerDataMatching trigger_data_matching_;
+
+  attribution_reporting::EventLevelEpsilon event_level_epsilon_;
 
   bool debug_cookie_set_;
 

@@ -124,6 +124,11 @@ struct SourceRegistration {
 
   // Controls how trigger data is matched against the source's trigger specs.
   TriggerDataMatching trigger_data_matching;
+
+  // Controls the epsilon parameter used for obtaining a randomized response for
+  // the containing source registration. Must be greater than or equal to 0.
+  // https://wicg.github.io/attribution-reporting-api/#obtain-a-randomized-source-response
+  double event_level_epsilon;
 };
 
 // Mojo representation of the trigger configuration provided by a reporting

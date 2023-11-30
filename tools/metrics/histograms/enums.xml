@@ -9795,6 +9795,8 @@ Called by update_net_error_codes.py.-->
   <int value="55" label="summary_buckets value wrong type"/>
   <int value="56" label="summary_buckets value out of range"/>
   <int value="57" label="summary_buckets non-increasing"/>
+  <int value="58" label="event_level_epsilon has wrong type"/>
+  <int value="59" label="event_level_epsilon value is invalid"/>
 </enum>
 
 <enum name="ConversionStorageCreateReportStatus">

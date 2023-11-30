@@ -21,6 +21,7 @@
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/destination_set.h"
+#include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
@@ -60,9 +61,9 @@ base::TimeDelta AdjustExpiry(base::TimeDelta expiry, SourceType source_type) {
 void RecordSourceRegistrationError(SourceRegistrationError error) {
   static_assert(
       SourceRegistrationError::kMaxValue ==
-          SourceRegistrationError::kSummaryBucketsNonIncreasing,
-      "Bump version of Conversions.SourceRegistrationError9 histogram.");
-  base::UmaHistogramEnumeration("Conversions.SourceRegistrationError9", error);
+          SourceRegistrationError::kEventLevelEpsilonValueInvalid,
+      "Bump version of Conversions.SourceRegistrationError10 histogram.");
+  base::UmaHistogramEnumeration("Conversions.SourceRegistrationError10", error);
 }
 
 SourceRegistration::SourceRegistration(mojo::DefaultConstruct::Tag tag)
@@ -145,6 +146,9 @@ SourceRegistration::Parse(base::Value::Dict registration,
   ASSIGN_OR_RETURN(result.trigger_data_matching,
                    ParseTriggerDataMatching(registration));
 
+  ASSIGN_OR_RETURN(result.event_level_epsilon,
+                   EventLevelEpsilon::Parse(registration));
+
   result.debug_key = ParseDebugKey(registration);
 
   result.debug_reporting = ParseDebugReporting(registration);
@@ -207,6 +211,8 @@ base::Value::Dict SourceRegistration::ToJson() const {
   max_event_level_reports.Serialize(dict);
 
   Serialize(dict, trigger_data_matching);
+
+  event_level_epsilon.Serialize(dict);
 
   return dict;
 }

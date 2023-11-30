@@ -16,6 +16,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
@@ -43,8 +44,6 @@ ConfigurableStorageDelegate::ConfigurableStorageDelegate()
         c.rate_limit.max_reporting_origins_per_source_reporting_site =
             std::numeric_limits<int>::max();
 
-        c.event_level_limit.randomized_response_epsilon =
-            std::numeric_limits<double>::infinity();
         c.event_level_limit.max_reports_per_destination =
             std::numeric_limits<int>::max();
 
@@ -122,7 +121,8 @@ void ConfigurableStorageDelegate::ShuffleTriggerVerifications(
 
 double ConfigurableStorageDelegate::GetRandomizedResponseRate(
     const attribution_reporting::TriggerSpecs&,
-    attribution_reporting::MaxEventLevelReports) const {
+    attribution_reporting::MaxEventLevelReports,
+    attribution_reporting::EventLevelEpsilon) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return randomized_response_rate_;
 }
@@ -132,6 +132,7 @@ ConfigurableStorageDelegate::GetRandomizedResponse(
     attribution_reporting::mojom::SourceType,
     const attribution_reporting::TriggerSpecs&,
     attribution_reporting::MaxEventLevelReports,
+    attribution_reporting::EventLevelEpsilon,
     base::Time source_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (exceeds_channel_capacity_limit_) {
