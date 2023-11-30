@@ -99,9 +99,7 @@ class AwMetricsServiceClientTest : public testing::Test {
 
 }  // namespace
 
-TEST_F(
-    AwMetricsServiceClientTest,
-    TestServerSideAllowlist_TestShouldRecordPackageNameWithServerSideAllowlistEnabled) {
+TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName) {
   AwMetricsServiceClient* client = GetClient();
   EXPECT_TRUE(client->ShouldRecordPackageName());
 }
