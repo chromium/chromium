@@ -76,7 +76,7 @@ SelectionStyleScope::~SelectionStyleScope() {
 enum class SvgPaintMode { kText, kTextDecoration };
 
 const ComputedStyle& GetSvgStyleToPaint(
-    const NGTextPainter::SvgTextPaintState& state,
+    const TextPainter::SvgTextPaintState& state,
     SvgPaintMode svg_paint_mode,
     absl::optional<SelectionStyleScope>& selection_style_scope,
     bool& out_has_fill,
@@ -113,7 +113,7 @@ const ComputedStyle& GetSvgStyleToPaint(
   return *style_to_paint;
 }
 
-bool SetupPaintForSvgText(const NGTextPainter::SvgTextPaintState& state,
+bool SetupPaintForSvgText(const TextPainter::SvgTextPaintState& state,
                           const GraphicsContext& context,
                           const ComputedStyle& style,
                           SvgPaintMode svg_paint_mode,
@@ -174,11 +174,11 @@ bool SetupPaintForSvgText(const NGTextPainter::SvgTextPaintState& state,
 
 }  // namespace
 
-void NGTextPainter::Paint(const TextFragmentPaintInfo& fragment_paint_info,
-                          const TextPaintStyle& text_style,
-                          DOMNodeId node_id,
-                          const AutoDarkMode& auto_dark_mode,
-                          ShadowMode shadow_mode) {
+void TextPainter::Paint(const TextFragmentPaintInfo& fragment_paint_info,
+                        const TextPaintStyle& text_style,
+                        DOMNodeId node_id,
+                        const AutoDarkMode& auto_dark_mode,
+                        ShadowMode shadow_mode) {
   // TODO(layout-dev): We shouldn't be creating text fragments without text.
   if (!fragment_paint_info.shape_result) {
     return;
@@ -202,7 +202,7 @@ void NGTextPainter::Paint(const TextFragmentPaintInfo& fragment_paint_info,
 // 1. Paint glyphs inside of |selection_rect| using |selection_style|, and
 //    outside using |text_style|.
 // 2. Paint parts of a ligature glyph.
-void NGTextPainter::PaintSelectedText(
+void TextPainter::PaintSelectedText(
     const TextFragmentPaintInfo& fragment_paint_info,
     unsigned selection_start,
     unsigned selection_end,
@@ -229,8 +229,9 @@ void NGTextPainter::PaintSelectedText(
       (selection_start == fragment_paint_info.from &&
        selection_end == fragment_paint_info.to)) {
     absl::optional<base::AutoReset<bool>> is_painting_selection_reset;
-    if (NGTextPainter::SvgTextPaintState* state = GetSvgState())
+    if (TextPainter::SvgTextPaintState* state = GetSvgState()) {
       is_painting_selection_reset.emplace(&state->is_painting_selection_, true);
+    }
     Paint(fragment_paint_info.Slice(selection_start, selection_end),
           selection_style, node_id, auto_dark_mode);
     return;
@@ -255,8 +256,9 @@ void NGTextPainter::PaintSelectedText(
   // Then draw the glyphs inside the selection area, with the selection style.
   {
     absl::optional<base::AutoReset<bool>> is_painting_selection_reset;
-    if (NGTextPainter::SvgTextPaintState* state = GetSvgState())
+    if (TextPainter::SvgTextPaintState* state = GetSvgState()) {
       is_painting_selection_reset.emplace(&state->is_painting_selection_, true);
+    }
     GraphicsContextStateSaver state_saver(graphics_context_);
     graphics_context_.Clip(float_selection_rect);
     Paint(fragment_paint_info.Slice(selection_start, selection_end),
@@ -264,7 +266,7 @@ void NGTextPainter::PaintSelectedText(
   }
 }
 
-void NGTextPainter::PaintDecorationsExceptLineThrough(
+void TextPainter::PaintDecorationsExceptLineThrough(
     const TextFragmentPaintInfo& fragment_paint_info,
     const FragmentItem& text_item,
     const PaintInfo& paint_info,
@@ -296,7 +298,7 @@ void NGTextPainter::PaintDecorationsExceptLineThrough(
   }
 }
 
-void NGTextPainter::PaintDecorationsOnlyLineThrough(
+void TextPainter::PaintDecorationsOnlyLineThrough(
     const FragmentItem& text_item,
     const PaintInfo& paint_info,
     const ComputedStyle& style,
@@ -320,8 +322,8 @@ void NGTextPainter::PaintDecorationsOnlyLineThrough(
   }
 }
 
-template <NGTextPainter::PaintInternalStep step>
-void NGTextPainter::PaintInternalFragment(
+template <TextPainter::PaintInternalStep step>
+void TextPainter::PaintInternalFragment(
     const TextFragmentPaintInfo& fragment_paint_info,
     DOMNodeId node_id,
     const AutoDarkMode& auto_dark_mode) {
@@ -359,7 +361,7 @@ void NGTextPainter::PaintInternalFragment(
   }
 }
 
-void NGTextPainter::ClipDecorationsStripe(
+void TextPainter::ClipDecorationsStripe(
     const TextFragmentPaintInfo& fragment_paint_info,
     float upper,
     float stripe_width,
@@ -376,11 +378,11 @@ void NGTextPainter::ClipDecorationsStripe(
   DecorationsStripeIntercepts(upper, stripe_width, dilation, text_intercepts);
 }
 
-void NGTextPainter::PaintSvgTextFragment(
+void TextPainter::PaintSvgTextFragment(
     const TextFragmentPaintInfo& fragment_paint_info,
     DOMNodeId node_id,
     const AutoDarkMode& auto_dark_mode) {
-  const NGTextPainter::SvgTextPaintState& state = svg_text_paint_state_.value();
+  const TextPainter::SvgTextPaintState& state = svg_text_paint_state_.value();
   if (state.IsPaintingTextMatch()) {
     cc::PaintFlags fill_flags;
     fill_flags.setColor(state.TextMatchColor().Rgb());
@@ -446,14 +448,14 @@ void NGTextPainter::PaintSvgTextFragment(
   }
 }
 
-void NGTextPainter::PaintSvgDecorationsExceptLineThrough(
+void TextPainter::PaintSvgDecorationsExceptLineThrough(
     const TextFragmentPaintInfo& fragment_paint_info,
     const TextDecorationOffset& decoration_offset,
     TextDecorationInfo& decoration_info,
     TextDecorationLine lines_to_paint,
     const PaintInfo& paint_info,
     const TextPaintStyle& text_style) {
-  const NGTextPainter::SvgTextPaintState& state = svg_text_paint_state_.value();
+  const TextPainter::SvgTextPaintState& state = svg_text_paint_state_.value();
   absl::optional<SelectionStyleScope> selection_style_scope;
   bool has_fill = false;
   bool has_visible_stroke = false;
@@ -495,11 +497,11 @@ void NGTextPainter::PaintSvgDecorationsExceptLineThrough(
   }
 }
 
-void NGTextPainter::PaintSvgDecorationsOnlyLineThrough(
+void TextPainter::PaintSvgDecorationsOnlyLineThrough(
     TextDecorationInfo& decoration_info,
     const PaintInfo& paint_info,
     const TextPaintStyle& text_style) {
-  const NGTextPainter::SvgTextPaintState& state = svg_text_paint_state_.value();
+  const TextPainter::SvgTextPaintState& state = svg_text_paint_state_.value();
   absl::optional<SelectionStyleScope> selection_style_scope;
   bool has_fill = false;
   bool has_visible_stroke = false;
@@ -540,7 +542,7 @@ void NGTextPainter::PaintSvgDecorationsOnlyLineThrough(
   }
 }
 
-NGTextPainter::SvgTextPaintState& NGTextPainter::SetSvgState(
+TextPainter::SvgTextPaintState& TextPainter::SetSvgState(
     const LayoutSVGInlineText& svg_inline_text,
     const ComputedStyle& style,
     StyleVariant style_variant,
@@ -549,7 +551,7 @@ NGTextPainter::SvgTextPaintState& NGTextPainter::SetSvgState(
                                        paint_flags);
 }
 
-NGTextPainter::SvgTextPaintState& NGTextPainter::SetSvgState(
+TextPainter::SvgTextPaintState& TextPainter::SetSvgState(
     const LayoutSVGInlineText& svg_inline_text,
     const ComputedStyle& style,
     Color text_match_color) {
@@ -557,11 +559,11 @@ NGTextPainter::SvgTextPaintState& NGTextPainter::SetSvgState(
                                        text_match_color);
 }
 
-NGTextPainter::SvgTextPaintState* NGTextPainter::GetSvgState() {
+TextPainter::SvgTextPaintState* TextPainter::GetSvgState() {
   return base::OptionalToPtr(svg_text_paint_state_);
 }
 
-NGTextPainter::SvgTextPaintState::SvgTextPaintState(
+TextPainter::SvgTextPaintState::SvgTextPaintState(
     const LayoutSVGInlineText& layout_svg_inline_text,
     const ComputedStyle& style,
     StyleVariant style_variant,
@@ -571,7 +573,7 @@ NGTextPainter::SvgTextPaintState::SvgTextPaintState(
       style_variant_(style_variant),
       paint_flags_(paint_flags) {}
 
-NGTextPainter::SvgTextPaintState::SvgTextPaintState(
+TextPainter::SvgTextPaintState::SvgTextPaintState(
     const LayoutSVGInlineText& layout_svg_inline_text,
     const ComputedStyle& style,
     Color text_match_color)
@@ -579,12 +581,11 @@ NGTextPainter::SvgTextPaintState::SvgTextPaintState(
       style_(style),
       text_match_color_(text_match_color) {}
 
-const LayoutSVGInlineText& NGTextPainter::SvgTextPaintState::InlineText()
-    const {
+const LayoutSVGInlineText& TextPainter::SvgTextPaintState::InlineText() const {
   return layout_svg_inline_text_;
 }
 
-const LayoutObject& NGTextPainter::SvgTextPaintState::TextDecorationObject()
+const LayoutObject& TextPainter::SvgTextPaintState::TextDecorationObject()
     const {
   // Lookup the first LayoutObject in parent hierarchy which has text-decoration
   // set.
@@ -608,36 +609,36 @@ const LayoutObject& NGTextPainter::SvgTextPaintState::TextDecorationObject()
   return *result;
 }
 
-const ComputedStyle& NGTextPainter::SvgTextPaintState::Style() const {
+const ComputedStyle& TextPainter::SvgTextPaintState::Style() const {
   return style_;
 }
 
-bool NGTextPainter::SvgTextPaintState::IsPaintingSelection() const {
+bool TextPainter::SvgTextPaintState::IsPaintingSelection() const {
   return is_painting_selection_;
 }
 
-PaintFlags NGTextPainter::SvgTextPaintState::GetPaintFlags() const {
+PaintFlags TextPainter::SvgTextPaintState::GetPaintFlags() const {
   return paint_flags_;
 }
 
-bool NGTextPainter::SvgTextPaintState::IsRenderingClipPathAsMaskImage() const {
+bool TextPainter::SvgTextPaintState::IsRenderingClipPathAsMaskImage() const {
   return paint_flags_ & PaintFlag::kPaintingClipPathAsMask;
 }
 
-bool NGTextPainter::SvgTextPaintState::IsPaintingTextMatch() const {
+bool TextPainter::SvgTextPaintState::IsPaintingTextMatch() const {
   return text_match_color_.has_value();
 }
 
-Color NGTextPainter::SvgTextPaintState::TextMatchColor() const {
+Color TextPainter::SvgTextPaintState::TextMatchColor() const {
   return *text_match_color_;
 }
 
-AffineTransform& NGTextPainter::SvgTextPaintState::EnsureShaderTransform() {
+AffineTransform& TextPainter::SvgTextPaintState::EnsureShaderTransform() {
   return shader_transform_ ? shader_transform_.value()
                            : shader_transform_.emplace();
 }
 
-const AffineTransform* NGTextPainter::SvgTextPaintState::GetShaderTransform()
+const AffineTransform* TextPainter::SvgTextPaintState::GetShaderTransform()
     const {
   return base::OptionalToPtr(shader_transform_);
 }

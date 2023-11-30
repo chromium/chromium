@@ -400,8 +400,8 @@ void PaintLayerPainter::PaintFragmentWithPhase(
     NGBoxFragmentPainter(*physical_fragment).Paint(paint_info);
   } else if (const auto* layout_inline =
                  DynamicTo<LayoutInline>(&paint_layer_.GetLayoutObject())) {
-    NGInlineBoxFragmentPainter::PaintAllFragments(
-        *layout_inline, fragment_data, fragment_data_idx, paint_info);
+    InlineBoxFragmentPainter::PaintAllFragments(*layout_inline, fragment_data,
+                                                fragment_data_idx, paint_info);
   } else {
     // We are about to enter legacy paint code. Set the right FragmentData
     // object, to use the right paint offset.

@@ -471,7 +471,7 @@ gfx::RectF InlineCursorPosition::ObjectBoundingBox(
 
 void InlineCursorPosition::RecalcInkOverflow(
     const InlineCursor& cursor,
-    NGInlinePaintContext* inline_context) const {
+    InlinePaintContext* inline_context) const {
   DCHECK(item_);
   DCHECK_EQ(item_, cursor.Current().Item());
   PhysicalRect self_and_contents_rect;

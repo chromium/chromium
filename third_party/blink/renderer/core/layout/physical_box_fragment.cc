@@ -1124,7 +1124,7 @@ PhysicalRect PhysicalBoxFragment::RecalcContentsInkOverflow() {
   PhysicalRect contents_rect;
   if (const FragmentItems* items = Items()) {
     InlineCursor cursor(*this, *items);
-    NGInlinePaintContext child_inline_context;
+    InlinePaintContext child_inline_context;
     contents_rect = FragmentItem::RecalcInkOverflowForCursor(
         &cursor, &child_inline_context);
 

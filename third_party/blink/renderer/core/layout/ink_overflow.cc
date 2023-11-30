@@ -361,7 +361,7 @@ InkOverflow::Type InkOverflow::SetTextInkOverflow(
     const TextFragmentPaintInfo& text_info,
     const ComputedStyle& style,
     const PhysicalRect& rect_in_container,
-    const NGInlinePaintContext* inline_context,
+    const InlinePaintContext* inline_context,
     PhysicalRect* ink_overflow_out) {
   CheckType(type);
   DCHECK(type == Type::kNotSet || type == Type::kInvalidated);
@@ -452,7 +452,7 @@ absl::optional<PhysicalRect> InkOverflow::ComputeTextInkOverflow(
     const ComputedStyle& style,
     const Font& scaled_font,
     const PhysicalRect& rect_in_container,
-    const NGInlinePaintContext* inline_context) {
+    const InlinePaintContext* inline_context) {
   // Glyph bounds is in logical coordinate, origin at the alphabetic baseline.
   const gfx::RectF text_ink_bounds = scaled_font.TextInkBounds(text_info);
   LogicalRect ink_overflow = LogicalRect::EnclosingRect(text_ink_bounds);
@@ -536,7 +536,7 @@ LogicalRect InkOverflow::ComputeDecorationOverflow(
     const Font& scaled_font,
     const PhysicalOffset& container_offset,
     const LogicalRect& ink_overflow,
-    const NGInlinePaintContext* inline_context) {
+    const InlinePaintContext* inline_context) {
   LogicalRect accumulated_bound;
   if (!scaled_font.PrimaryFont()) {
     return accumulated_bound;
@@ -619,7 +619,7 @@ LogicalRect InkOverflow::ComputeAppliedDecorationOverflow(
     const Font& scaled_font,
     const PhysicalOffset& offset_in_container,
     const LogicalRect& ink_overflow,
-    const NGInlinePaintContext* inline_context,
+    const InlinePaintContext* inline_context,
     const AppliedTextDecoration* decoration_override) {
   DCHECK(style.HasAppliedTextDecorations() || decoration_override);
   // SVGText is currently the only reason we use decoration_override,
@@ -666,7 +666,7 @@ LogicalRect InkOverflow::ComputeMarkerOverflow(
     const Font& scaled_font,
     const PhysicalOffset& offset_in_container,
     const LogicalRect& ink_overflow,
-    const NGInlinePaintContext* inline_context) {
+    const InlinePaintContext* inline_context) {
   LogicalRect accumulated_bound;
   auto* pseudo_style =
       fragment_item->Type() == FragmentItem::kSvgText
@@ -713,7 +713,7 @@ LogicalRect InkOverflow::ComputeCustomHighlightOverflow(
     const Font& scaled_font,
     const PhysicalOffset& offset_in_container,
     const LogicalRect& ink_overflow,
-    const NGInlinePaintContext* inline_context) {
+    const InlinePaintContext* inline_context) {
   LogicalRect accumulated_bound;
   const TextOffsetRange fragment_dom_offsets =
       NGHighlightPainter::GetFragmentDOMOffsets(

@@ -15,14 +15,14 @@ namespace blink {
 class ComputedStyle;
 class FragmentItem;
 class GraphicsContextStateSaver;
-class NGTextPainter;
+class TextPainter;
 struct LineRelativeRect;
 struct PaintInfo;
 struct TextPaintStyle;
 
-// NGTextFragmentPainter helper that paints text-decoration.
+// TextFragmentPainter helper that paints text-decoration.
 //
-// We expose a friendlier interface over NGTextPainter’s decoration
+// We expose a friendlier interface over TextPainter’s decoration
 // primitives that’s harder to misuse. Callers of Begin must then call
 // PaintExceptLineThrough and PaintOnlyLineThrough, in exactly that order
 // (though other painting code may happen in between).
@@ -31,19 +31,19 @@ struct TextPaintStyle;
 // any ::selection background, but paint all decorations along the full logical
 // width of |decoration_rect|. This yields better results for wavy lines, since
 // they stay perfectly continuous and in phase into any highlighted parts.
-class CORE_EXPORT NGTextDecorationPainter {
+class CORE_EXPORT TextDecorationPainter {
   STACK_ALLOCATED();
 
  public:
-  explicit NGTextDecorationPainter(
-      NGTextPainter& text_painter,
+  explicit TextDecorationPainter(
+      TextPainter& text_painter,
       const FragmentItem& text_item,
       const PaintInfo& paint_info,
       const ComputedStyle& style,
       const TextPaintStyle& text_style,
       const LineRelativeRect& decoration_rect,
       NGHighlightPainter::SelectionPaintState* selection);
-  ~NGTextDecorationPainter();
+  ~TextDecorationPainter();
 
   // Sets the given optional to a new TextDecorationInfo with the decorations
   // that need to be painted, or nullopt if decorations should not be painted.
@@ -61,7 +61,7 @@ class CORE_EXPORT NGTextDecorationPainter {
   enum Step { kBegin, kExcept, kOnly };
   void ClipIfNeeded(GraphicsContextStateSaver&);
 
-  NGTextPainter& text_painter_;
+  TextPainter& text_painter_;
   const FragmentItem& text_item_;
   const PaintInfo& paint_info_;
   const ComputedStyle& style_;

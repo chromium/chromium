@@ -267,7 +267,7 @@ TextDecorationInfo::TextDecorationInfo(
     LineRelativeOffset local_origin,
     LayoutUnit width,
     const ComputedStyle& target_style,
-    const NGInlinePaintContext* inline_context,
+    const InlinePaintContext* inline_context,
     const absl::optional<AppliedTextDecoration> selection_text_decoration,
     const AppliedTextDecoration* decoration_override,
     const Font* font_override,

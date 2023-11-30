@@ -23,9 +23,9 @@ struct TextFragmentPaintInfo;
 // Text painter for LayoutNG, logic shared between legacy layout and LayoutNG
 // is implemented in the TextPainterBase base class.
 // Operates on NGPhysicalTextFragments and only paints text and decorations.
-// Border painting etc is handled by the NGTextFragmentPainter class.
+// Border painting etc is handled by the TextFragmentPainter class.
 // TODO(layout-dev): Does this distinction make sense?
-class CORE_EXPORT NGTextPainter : public TextPainterBase {
+class CORE_EXPORT TextPainter : public TextPainterBase {
   STACK_ALLOCATED();
 
  public:
@@ -62,24 +62,20 @@ class CORE_EXPORT NGTextPainter : public TextPainterBase {
     StyleVariant style_variant_ = StyleVariant::kStandard;
     PaintFlags paint_flags_ = PaintFlag::kNoFlag;
     bool is_painting_selection_ = false;
-    friend class NGTextPainter;
+    friend class TextPainter;
   };
 
-  NGTextPainter(GraphicsContext& context,
-                const Font& font,
-                const gfx::Rect& visual_rect,
-                const LineRelativeOffset& text_origin,
-                NGInlinePaintContext* inline_context,
-                bool horizontal)
-      : TextPainterBase(context,
-                        font,
-                        text_origin,
-                        inline_context,
-                        horizontal),
+  TextPainter(GraphicsContext& context,
+              const Font& font,
+              const gfx::Rect& visual_rect,
+              const LineRelativeOffset& text_origin,
+              InlinePaintContext* inline_context,
+              bool horizontal)
+      : TextPainterBase(context, font, text_origin, inline_context, horizontal),
         visual_rect_(visual_rect) {
     DCHECK(inline_context_);
   }
-  ~NGTextPainter() = default;
+  ~TextPainter() = default;
 
   void Paint(const TextFragmentPaintInfo& fragment_paint_info,
              const TextPaintStyle&,

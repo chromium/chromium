@@ -278,7 +278,7 @@ void NGHighlightPainter::SelectionPaintState::PaintSelectionBackground(
 
 // Paint the selected text only.
 void NGHighlightPainter::SelectionPaintState::PaintSelectedText(
-    NGTextPainter& text_painter,
+    TextPainter& text_painter,
     const TextFragmentPaintInfo& fragment_paint_info,
     const TextPaintStyle& text_style,
     DOMNodeId node_id,
@@ -293,7 +293,7 @@ void NGHighlightPainter::SelectionPaintState::PaintSelectedText(
 // (painting shadows only) where selected.
 void NGHighlightPainter::SelectionPaintState::
     PaintSuppressingTextProperWhereSelected(
-        NGTextPainter& text_painter,
+        TextPainter& text_painter,
         const TextFragmentPaintInfo& fragment_paint_info,
         const TextPaintStyle& text_style,
         DOMNodeId node_id,
@@ -301,7 +301,7 @@ void NGHighlightPainter::SelectionPaintState::
   // First paint the shadows for the whole range.
   if (text_style.shadow) {
     text_painter.Paint(fragment_paint_info, text_style, node_id, auto_dark_mode,
-                       NGTextPainter::kShadowsOnly);
+                       TextPainter::kShadowsOnly);
   }
 
   // Then paint the text proper for any unselected parts in storage order, so
@@ -309,19 +309,19 @@ void NGHighlightPainter::SelectionPaintState::
   if (fragment_paint_info.from < selection_status_.start) {
     text_painter.Paint(
         fragment_paint_info.WithEndOffset(selection_status_.start), text_style,
-        node_id, auto_dark_mode, NGTextPainter::kTextProperOnly);
+        node_id, auto_dark_mode, TextPainter::kTextProperOnly);
   }
   if (selection_status_.end < fragment_paint_info.to) {
     text_painter.Paint(
         fragment_paint_info.WithStartOffset(selection_status_.end), text_style,
-        node_id, auto_dark_mode, NGTextPainter::kTextProperOnly);
+        node_id, auto_dark_mode, TextPainter::kTextProperOnly);
   }
 }
 
 NGHighlightPainter::NGHighlightPainter(
     const TextFragmentPaintInfo& fragment_paint_info,
-    NGTextPainter& text_painter,
-    NGTextDecorationPainter& decoration_painter,
+    TextPainter& text_painter,
+    TextDecorationPainter& decoration_painter,
     const PaintInfo& paint_info,
     const InlineCursor& cursor,
     const FragmentItem& fragment_item,
@@ -746,8 +746,7 @@ void NGHighlightPainter::PaintOriginatingText(const TextPaintStyle& text_style,
   // First paint the shadows for the whole range.
   if (text_style.shadow) {
     text_painter_.Paint(fragment_paint_info_, text_style, node_id,
-                        foreground_auto_dark_mode_,
-                        NGTextPainter::kShadowsOnly);
+                        foreground_auto_dark_mode_, TextPainter::kShadowsOnly);
   }
 
   // Then paint the text proper for any unhighlighted parts in storage order,
@@ -759,7 +758,7 @@ void NGHighlightPainter::PaintOriginatingText(const TextPaintStyle& text_style,
     PaintDecorationsExceptLineThrough(part);
     text_painter_.Paint(
         fragment_paint_info_.Slice(part.range.from, part.range.to), text_style,
-        node_id, foreground_auto_dark_mode_, NGTextPainter::kTextProperOnly);
+        node_id, foreground_auto_dark_mode_, TextPainter::kTextProperOnly);
     PaintDecorationsOnlyLineThrough(part);
     PaintSpellingGrammarDecorations(part);
   }
@@ -934,7 +933,7 @@ void NGHighlightPainter::PaintHighlightOverlays(
         continue;
 
       // TODO(crbug.com/1434114) expand range to include partial glyphs, then
-      // paint with clipping (NGTextPainter::PaintSelectedText)
+      // paint with clipping (TextPainter::PaintSelectedText)
       PaintDecorationsExceptLineThrough(part);
       text_painter_.Paint(
           fragment_paint_info_.Slice(part.range.from, part.range.to),
@@ -1302,12 +1301,12 @@ void NGHighlightPainter::PaintDecoratedText(
   LineRelativeRect decoration_rect = LineRelativeLocalRect(
       fragment_item_, text, paint_start_offset, paint_end_offset);
   decoration_rect.Move(LineRelativeOffset::CreateFromBoxOrigin(box_origin_));
-  NGTextDecorationPainter decoration_painter(
+  TextDecorationPainter decoration_painter(
       text_painter_, fragment_item_, paint_info_,
       pseudo_style ? *pseudo_style : originating_style_, text_style,
       decoration_rect, selection_);
 
-  decoration_painter.Begin(NGTextDecorationPainter::kOriginating);
+  decoration_painter.Begin(TextDecorationPainter::kOriginating);
   decoration_painter.PaintExceptLineThrough(
       fragment_paint_info_.Slice(paint_start_offset, paint_end_offset));
 

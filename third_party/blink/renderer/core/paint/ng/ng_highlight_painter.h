@@ -30,16 +30,16 @@ class FragmentItem;
 class FrameSelection;
 class InlineCursor;
 class LayoutObject;
-class NGTextPainter;
-class NGTextDecorationPainter;
 class Node;
+class TextDecorationPainter;
+class TextPainter;
 struct LayoutSelectionStatus;
 struct PaintInfo;
 struct PhysicalOffset;
 struct TextFragmentPaintInfo;
 
 // Highlight overlay painter for LayoutNG. Operates on a FragmentItem that
-// IsText(). Delegates to NGTextPainter to paint the text itself.
+// IsText(). Delegates to TextPainter to paint the text itself.
 class CORE_EXPORT NGHighlightPainter {
   STACK_ALLOCATED();
 
@@ -90,14 +90,14 @@ class CORE_EXPORT NGHighlightPainter {
         const ComputedStyle& style,
         const absl::optional<AffineTransform>& rotation);
 
-    void PaintSelectedText(NGTextPainter& text_painter,
+    void PaintSelectedText(TextPainter& text_painter,
                            const TextFragmentPaintInfo&,
                            const TextPaintStyle& text_style,
                            DOMNodeId node_id,
                            const AutoDarkMode& auto_dark_mode);
 
     void PaintSuppressingTextProperWhereSelected(
-        NGTextPainter& text_painter,
+        TextPainter& text_painter,
         const TextFragmentPaintInfo&,
         const TextPaintStyle& text_style,
         DOMNodeId node_id,
@@ -127,8 +127,8 @@ class CORE_EXPORT NGHighlightPainter {
 
   NGHighlightPainter(
       const TextFragmentPaintInfo& fragment_paint_info,
-      NGTextPainter& text_painter,
-      NGTextDecorationPainter& decoration_painter,
+      TextPainter& text_painter,
+      TextDecorationPainter& decoration_painter,
       const PaintInfo& paint_info,
       const InlineCursor& cursor,
       const FragmentItem& fragment_item,
@@ -290,8 +290,8 @@ class CORE_EXPORT NGHighlightPainter {
   // marker's offsets to the fragment space.
   absl::optional<TextOffsetRange> fragment_dom_offsets_{};
 
-  NGTextPainter& text_painter_;
-  NGTextDecorationPainter& decoration_painter_;
+  TextPainter& text_painter_;
+  TextDecorationPainter& decoration_painter_;
   const PaintInfo& paint_info_;
   const InlineCursor& cursor_;
   const FragmentItem& fragment_item_;

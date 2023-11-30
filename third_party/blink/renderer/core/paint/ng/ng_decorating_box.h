@@ -15,27 +15,27 @@ class ComputedStyle;
 
 // Represents a [decorating box].
 // [decorating box]: https://drafts.csswg.org/css-text-decor-3/#decorating-box
-class CORE_EXPORT NGDecoratingBox {
+class CORE_EXPORT DecoratingBox {
   DISALLOW_NEW();
 
  public:
-  NGDecoratingBox(const PhysicalOffset& content_offset_in_container,
-                  const ComputedStyle& style,
-                  const Vector<AppliedTextDecoration, 1>* decorations)
+  DecoratingBox(const PhysicalOffset& content_offset_in_container,
+                const ComputedStyle& style,
+                const Vector<AppliedTextDecoration, 1>* decorations)
       : content_offset_in_container_(content_offset_in_container),
         style_(&style),
         decorations_(decorations ? decorations
                                  : &style.AppliedTextDecorations()) {
     DCHECK_EQ(&style.AppliedTextDecorations(), decorations_);
   }
-  NGDecoratingBox(const FragmentItem& item,
-                  const ComputedStyle& style,
-                  const Vector<AppliedTextDecoration, 1>* decorations)
-      : NGDecoratingBox(item.ContentOffsetInContainerFragment(),
-                        style,
-                        decorations) {}
-  explicit NGDecoratingBox(const FragmentItem& item)
-      : NGDecoratingBox(item, item.Style(), /* decorations */ nullptr) {}
+  DecoratingBox(const FragmentItem& item,
+                const ComputedStyle& style,
+                const Vector<AppliedTextDecoration, 1>* decorations)
+      : DecoratingBox(item.ContentOffsetInContainerFragment(),
+                      style,
+                      decorations) {}
+  explicit DecoratingBox(const FragmentItem& item)
+      : DecoratingBox(item, item.Style(), /* decorations */ nullptr) {}
 
   void Trace(Visitor* visitor) const { visitor->Trace(style_); }
 
@@ -55,6 +55,6 @@ class CORE_EXPORT NGDecoratingBox {
 
 }  // namespace blink
 
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::NGDecoratingBox)
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::DecoratingBox)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_NG_NG_DECORATING_BOX_H_

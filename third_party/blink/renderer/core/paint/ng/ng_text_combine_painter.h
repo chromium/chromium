@@ -14,13 +14,13 @@ class LayoutTextCombine;
 struct LineRelativeOffset;
 
 // The painter for painting text decorations and emphasis marks for
-// LayoutNGTextCombine.
-class NGTextCombinePainter final : public TextPainterBase {
+// LayoutTextCombine.
+class TextCombinePainter final : public TextPainterBase {
  public:
-  NGTextCombinePainter(GraphicsContext& context,
-                       const ComputedStyle& style,
-                       const LineRelativeOffset& text_origin);
-  ~NGTextCombinePainter();
+  TextCombinePainter(GraphicsContext& context,
+                     const ComputedStyle& style,
+                     const LineRelativeOffset& text_origin);
+  ~TextCombinePainter();
 
   static void Paint(const PaintInfo& paint_info,
                     const PhysicalOffset& paint_offset,

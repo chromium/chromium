@@ -40,7 +40,7 @@ TEST_P(NGHighlightPainterTest, FastSpellingGrammarPaintCase) {
   auto expect = [&](NGHighlightPainter::Case expected, unsigned line) {
     LayoutObject& body = *GetDocument().body()->GetLayoutObject();
     const auto& block_flow = To<LayoutNGBlockFlow>(body);
-    NGInlinePaintContext inline_context{};
+    InlinePaintContext inline_context{};
     InlineCursor cursor{block_flow};
     cursor.MoveToFirstLine();
     inline_context.SetLineBox(cursor);
@@ -71,13 +71,13 @@ TEST_P(NGHighlightPainterTest, FastSpellingGrammarPaintCase) {
     }
     LineRelativeRect rotated_rect =
         LineRelativeRect::CreateFromLineBox(physical_rect, true);
-    NGTextPainter text_painter(
+    TextPainter text_painter(
         graphics_context, text_item.ScaledFont(), rect,
         LineRelativeOffset::CreateFromBoxOrigin(physical_offset),
         &inline_context, true);
-    NGTextDecorationPainter decoration_painter(text_painter, text_item,
-                                               paint_info, style, text_style,
-                                               rotated_rect, selection);
+    TextDecorationPainter decoration_painter(text_painter, text_item,
+                                             paint_info, style, text_style,
+                                             rotated_rect, selection);
     NGHighlightPainter highlight_painter(
         cursor.Current()->TextPaintInfo(cursor.Items()), text_painter,
         decoration_painter, paint_info, cursor, text_item, {}, physical_offset,

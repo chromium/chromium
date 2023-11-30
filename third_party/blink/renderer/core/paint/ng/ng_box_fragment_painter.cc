@@ -396,7 +396,7 @@ PhysicalRect NGBoxFragmentPainter::InkOverflowIncludingFilters() const {
       ->VisualOverflowRectIncludingFilters();
 }
 
-NGInlinePaintContext& NGBoxFragmentPainter::EnsureInlineContext() {
+InlinePaintContext& NGBoxFragmentPainter::EnsureInlineContext() {
   if (!inline_context_)
     inline_context_ = &inline_context_storage_.emplace();
   return *inline_context_;
@@ -527,7 +527,7 @@ void NGBoxFragmentPainter::PaintInternal(const PaintInfo& paint_info) {
   }
 
   if (UNLIKELY(text_combine) &&
-      NGTextCombinePainter::ShouldPaint(*text_combine)) {
+      TextCombinePainter::ShouldPaint(*text_combine)) {
     if (recorder) {
       // Paint text decorations and emphasis marks without scaling and share.
       DCHECK(text_combine->NeedsAffineTransformInPaint());
@@ -540,7 +540,7 @@ void NGBoxFragmentPainter::PaintInternal(const PaintInfo& paint_info) {
                        paint_info.phase,
                        text_combine->VisualRectForPaint(paint_offset));
     }
-    NGTextCombinePainter::Paint(info, paint_offset, *text_combine);
+    TextCombinePainter::Paint(info, paint_offset, *text_combine);
   }
 
   // If we haven't painted overflow controls, paint scrollbars after we painted
@@ -1586,9 +1586,9 @@ inline void NGBoxFragmentPainter::PaintLineBox(
   }
 
   // Paint the background of the `::first-line` line box.
-  if (NGLineBoxFragmentPainter::NeedsPaint(line_box_fragment)) {
-    NGLineBoxFragmentPainter line_box_painter(line_box_fragment, line_box_item,
-                                              GetPhysicalFragment());
+  if (LineBoxFragmentPainter::NeedsPaint(line_box_fragment)) {
+    LineBoxFragmentPainter line_box_painter(line_box_fragment, line_box_item,
+                                            GetPhysicalFragment());
     line_box_painter.PaintBackgroundBorderShadow(paint_info, child_offset);
   }
 }
@@ -1628,8 +1628,8 @@ void NGBoxFragmentPainter::PaintLineBoxChildItems(
       DCHECK(line_box_fragment);
       PaintLineBox(*line_box_fragment, *child_item->GetDisplayItemClient(),
                    *child_item, paint_info, child_offset);
-      NGInlinePaintContext::ScopedLineBox scoped_line_box(*children,
-                                                          inline_context_);
+      InlinePaintContext::ScopedLineBox scoped_line_box(*children,
+                                                        inline_context_);
       InlineCursor line_box_cursor = children->CursorForDescendants();
       PaintInlineItems(paint_info, paint_offset,
                        child_item->OffsetInContainerFragment(),
@@ -1711,8 +1711,8 @@ void NGBoxFragmentPainter::PaintTextItem(const InlineCursor& cursor,
   ScopedDisplayItemFragment display_item_fragment(paint_info.context,
                                                   item.FragmentId());
   DCHECK(inline_context_);
-  NGInlinePaintContext::ScopedInlineItem scoped_item(item, inline_context_);
-  NGTextFragmentPainter text_painter(cursor, parent_offset, inline_context_);
+  InlinePaintContext::ScopedInlineItem scoped_item(item, inline_context_);
+  TextFragmentPainter text_painter(cursor, parent_offset, inline_context_);
   text_painter.Paint(paint_info, paint_offset);
 }
 
@@ -1744,7 +1744,7 @@ void NGBoxFragmentPainter::PaintBoxItem(
 
   if (child_fragment.IsInlineBox()) {
     DCHECK(inline_context_);
-    NGInlineBoxFragmentPainter(cursor, item, child_fragment, inline_context_)
+    InlineBoxFragmentPainter(cursor, item, child_fragment, inline_context_)
         .Paint(paint_info, paint_offset);
     return;
   }
@@ -1813,8 +1813,8 @@ void NGBoxFragmentPainter::PaintTextClipMask(const PaintInfo& paint_info,
   DCHECK(inline_box_cursor_);
   DCHECK(box_item_);
   DCHECK(inline_context_);
-  NGInlineBoxFragmentPainter inline_box_painter(*inline_box_cursor_, *box_item_,
-                                                inline_context_);
+  InlineBoxFragmentPainter inline_box_painter(*inline_box_cursor_, *box_item_,
+                                              inline_context_);
   PaintTextClipMask(mask_paint_info,
                     paint_offset - box_item_->OffsetInContainerFragment(),
                     &inline_box_painter);
@@ -1823,7 +1823,7 @@ void NGBoxFragmentPainter::PaintTextClipMask(const PaintInfo& paint_info,
 void NGBoxFragmentPainter::PaintTextClipMask(
     const PaintInfo& paint_info,
     PhysicalOffset paint_offset,
-    NGInlineBoxFragmentPainter* inline_box_painter) {
+    InlineBoxFragmentPainter* inline_box_painter) {
   const ComputedStyle& style = box_fragment_.Style();
   if (style.BoxDecorationBreak() == EBoxDecorationBreak::kSlice) {
     LayoutUnit offset_on_line;

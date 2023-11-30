@@ -9,7 +9,7 @@
 
 namespace blink {
 
-void NGInlinePaintContext::ClearDecoratingBoxes(
+void InlinePaintContext::ClearDecoratingBoxes(
     DecoratingBoxList* saved_decorating_boxes) {
   if (saved_decorating_boxes) {
     DCHECK(saved_decorating_boxes->empty());
@@ -19,9 +19,9 @@ void NGInlinePaintContext::ClearDecoratingBoxes(
   }
 }
 
-NGInlinePaintContext::ScopedInlineItem::ScopedInlineItem(
+InlinePaintContext::ScopedInlineItem::ScopedInlineItem(
     const FragmentItem& item,
-    NGInlinePaintContext* inline_context) {
+    InlinePaintContext* inline_context) {
   if (!RuntimeEnabledFeatures::TextDecoratingBoxEnabled())
     return;
   DCHECK(inline_context);
@@ -38,7 +38,7 @@ NGInlinePaintContext::ScopedInlineItem::ScopedInlineItem(
 //
 // This function may push multiple decorating boxes, or clear if the propagation
 // was stopped. See |StopPropagateTextDecorations|.
-wtf_size_t NGInlinePaintContext::SyncDecoratingBox(
+wtf_size_t InlinePaintContext::SyncDecoratingBox(
     const FragmentItem& item,
     DecoratingBoxList* saved_decorating_boxes) {
   DCHECK(RuntimeEnabledFeatures::TextDecoratingBoxEnabled());
@@ -58,7 +58,7 @@ wtf_size_t NGInlinePaintContext::SyncDecoratingBox(
     STACK_ALLOCATED();
 
    public:
-    DecorationBoxSynchronizer(NGInlinePaintContext* inline_context,
+    DecorationBoxSynchronizer(InlinePaintContext* inline_context,
                               const FragmentItem& item,
                               const Vector<AppliedTextDecoration, 1>* stop_at,
                               DecoratingBoxList* saved_decorating_boxes)
@@ -208,7 +208,7 @@ wtf_size_t NGInlinePaintContext::SyncDecoratingBox(
           item->ContentOffsetInContainerFragment(), style, &decorations);
     }
 
-    NGInlinePaintContext* inline_context_;
+    InlinePaintContext* inline_context_;
     const Vector<AppliedTextDecoration, 1>* stop_at_;
     absl::optional<InlineCursor> line_cursor_;
     DecoratingBoxList* saved_decorating_boxes_;
@@ -223,9 +223,9 @@ wtf_size_t NGInlinePaintContext::SyncDecoratingBox(
   return push_count;
 }
 
-NGInlinePaintContext::ScopedInlineBoxAncestors::ScopedInlineBoxAncestors(
+InlinePaintContext::ScopedInlineBoxAncestors::ScopedInlineBoxAncestors(
     const InlineCursor& inline_box,
-    NGInlinePaintContext* inline_context) {
+    InlinePaintContext* inline_context) {
   if (!RuntimeEnabledFeatures::TextDecoratingBoxEnabled())
     return;
   DCHECK(inline_context);
@@ -233,7 +233,7 @@ NGInlinePaintContext::ScopedInlineBoxAncestors::ScopedInlineBoxAncestors(
   inline_context->PushDecoratingBoxAncestors(inline_box);
 }
 
-void NGInlinePaintContext::PushDecoratingBoxAncestors(
+void InlinePaintContext::PushDecoratingBoxAncestors(
     const InlineCursor& inline_box) {
   DCHECK(RuntimeEnabledFeatures::TextDecoratingBoxEnabled());
   DCHECK(inline_box.Current());
@@ -259,14 +259,14 @@ void NGInlinePaintContext::PushDecoratingBoxAncestors(
   }
 }
 
-void NGInlinePaintContext::PushDecoratingBoxes(
-    const base::span<NGDecoratingBox>& boxes) {
+void InlinePaintContext::PushDecoratingBoxes(
+    const base::span<DecoratingBox>& boxes) {
   decorating_boxes_.AppendRange(boxes.begin(), boxes.end());
 }
 
-NGInlinePaintContext::ScopedLineBox::ScopedLineBox(
+InlinePaintContext::ScopedLineBox::ScopedLineBox(
     const InlineCursor& line_cursor,
-    NGInlinePaintContext* inline_context) {
+    InlinePaintContext* inline_context) {
   if (!RuntimeEnabledFeatures::TextDecoratingBoxEnabled())
     return;
   DCHECK(inline_context);
@@ -274,7 +274,7 @@ NGInlinePaintContext::ScopedLineBox::ScopedLineBox(
   inline_context->SetLineBox(line_cursor);
 }
 
-void NGInlinePaintContext::SetLineBox(const InlineCursor& line_cursor) {
+void InlinePaintContext::SetLineBox(const InlineCursor& line_cursor) {
   DCHECK(RuntimeEnabledFeatures::TextDecoratingBoxEnabled());
   DCHECK_EQ(line_cursor.Current()->Type(), FragmentItem::kLine);
   line_cursor_ = line_cursor;
@@ -310,7 +310,7 @@ void NGInlinePaintContext::SetLineBox(const InlineCursor& line_cursor) {
     decorating_boxes_.emplace_back(offset, style, &applied_text_decorations);
 }
 
-void NGInlinePaintContext::ClearLineBox() {
+void InlinePaintContext::ClearLineBox() {
   last_decorations_ = nullptr;
   line_decorations_ = nullptr;
   line_cursor_.reset();

@@ -25,7 +25,7 @@ namespace blink {
 TextPainterBase::TextPainterBase(GraphicsContext& context,
                                  const Font& font,
                                  const LineRelativeOffset& text_origin,
-                                 NGInlinePaintContext* inline_context,
+                                 InlinePaintContext* inline_context,
                                  bool horizontal)
     : inline_context_(inline_context),
       graphics_context_(context),

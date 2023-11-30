@@ -415,9 +415,9 @@ void LayoutBoxModelObject::RecalcVisualOverflow() {
   if (IsInline() && IsInLayoutNGInlineFormattingContext()) {
     DCHECK(HasSelfPaintingLayer());
     InlineCursor cursor;
-    NGInlinePaintContext inline_context;
+    InlinePaintContext inline_context;
     for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject()) {
-      NGInlinePaintContext::ScopedInlineBoxAncestors scoped_items(
+      InlinePaintContext::ScopedInlineBoxAncestors scoped_items(
           cursor, &inline_context);
       cursor.Current().RecalcInkOverflow(cursor, &inline_context);
     }

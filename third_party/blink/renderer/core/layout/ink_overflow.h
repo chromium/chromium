@@ -21,7 +21,7 @@ class ComputedStyle;
 class Font;
 class FragmentItem;
 class InlineCursor;
-class NGInlinePaintContext;
+class InlinePaintContext;
 class Text;
 struct LogicalRect;
 struct TextFragmentPaintInfo;
@@ -125,7 +125,7 @@ class CORE_EXPORT InkOverflow {
                           const TextFragmentPaintInfo& text_info,
                           const ComputedStyle& style,
                           const PhysicalRect& rect_in_container,
-                          const NGInlinePaintContext* inline_context,
+                          const InlinePaintContext* inline_context,
                           PhysicalRect* ink_overflow_out);
 
   // Compute and set ink overflow for SVG text.
@@ -148,7 +148,7 @@ class CORE_EXPORT InkOverflow {
       const ComputedStyle& style,
       const Font& scaled_font,
       const PhysicalRect& rect_in_container,
-      const NGInlinePaintContext* inline_context);
+      const InlinePaintContext* inline_context);
 
   // Returns ink-overflow with emphasis mark overflow in logical direction.
   // |size| is a size of text item, e.g. |FragmentItem::Size()|.
@@ -170,7 +170,7 @@ class CORE_EXPORT InkOverflow {
       const Font& scaled_font,
       const PhysicalOffset& container_offset,
       const LogicalRect& ink_overflow,
-      const NGInlinePaintContext* inline_context);
+      const InlinePaintContext* inline_context);
 
 #if DCHECK_IS_ON()
   struct ReadUnsetAsNoneScope {
@@ -190,7 +190,7 @@ class CORE_EXPORT InkOverflow {
       const Font& scaled_font,
       const PhysicalOffset& offset_in_container,
       const LogicalRect& ink_overflow,
-      const NGInlinePaintContext* inline_context,
+      const InlinePaintContext* inline_context,
       const AppliedTextDecoration* decoration_override = nullptr);
 
   // For all markers but custom highlights. i.e. those with only one
@@ -204,7 +204,7 @@ class CORE_EXPORT InkOverflow {
       const Font& scaled_font,
       const PhysicalOffset& offset_in_container,
       const LogicalRect& ink_overflow,
-      const NGInlinePaintContext* inline_context);
+      const InlinePaintContext* inline_context);
 
   static LogicalRect ComputeCustomHighlightOverflow(
       const DocumentMarkerVector& markers,
@@ -214,7 +214,7 @@ class CORE_EXPORT InkOverflow {
       const Font& scaled_font,
       const PhysicalOffset& offset_in_container,
       const LogicalRect& ink_overflow,
-      const NGInlinePaintContext* inline_context);
+      const InlinePaintContext* inline_context);
 
   PhysicalRect FromOutsets(const PhysicalSize& size) const;
 

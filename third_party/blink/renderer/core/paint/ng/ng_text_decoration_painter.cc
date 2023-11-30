@@ -13,8 +13,8 @@
 
 namespace blink {
 
-NGTextDecorationPainter::NGTextDecorationPainter(
-    NGTextPainter& text_painter,
+TextDecorationPainter::TextDecorationPainter(
+    TextPainter& text_painter,
     const FragmentItem& text_item,
     const PaintInfo& paint_info,
     const ComputedStyle& style,
@@ -31,11 +31,11 @@ NGTextDecorationPainter::NGTextDecorationPainter(
       step_(kBegin),
       phase_(kOriginating) {}
 
-NGTextDecorationPainter::~NGTextDecorationPainter() {
+TextDecorationPainter::~TextDecorationPainter() {
   DCHECK(step_ == kBegin);
 }
 
-void NGTextDecorationPainter::UpdateDecorationInfo(
+void TextDecorationPainter::UpdateDecorationInfo(
     absl::optional<TextDecorationInfo>& result,
     const ComputedStyle& style,
     absl::optional<LineRelativeRect> decoration_rect_override,
@@ -64,7 +64,7 @@ void NGTextDecorationPainter::UpdateDecorationInfo(
         *text_item_.GetLayoutObject(), scaling_factor, scaled_font);
     DCHECK(scaling_factor);
     // Adjust the origin of the decoration because
-    // NGTextPainter::PaintDecorationsExceptLineThrough() will change the
+    // TextPainter::PaintDecorationsExceptLineThrough() will change the
     // scaling of the GraphicsContext.
     LayoutUnit top = decoration_rect_.offset.line_over;
     // In svg/text/text-decorations-in-scaled-pattern.svg, the size of
@@ -90,7 +90,7 @@ void NGTextDecorationPainter::UpdateDecorationInfo(
   }
 }
 
-void NGTextDecorationPainter::Begin(Phase phase) {
+void TextDecorationPainter::Begin(Phase phase) {
   DCHECK(step_ == kBegin);
 
   phase_ = phase;
@@ -118,7 +118,7 @@ void NGTextDecorationPainter::Begin(Phase phase) {
   step_ = kExcept;
 }
 
-void NGTextDecorationPainter::PaintExceptLineThrough(
+void TextDecorationPainter::PaintExceptLineThrough(
     const TextFragmentPaintInfo& fragment_paint_info) {
   DCHECK(step_ == kExcept);
 
@@ -137,7 +137,7 @@ void NGTextDecorationPainter::PaintExceptLineThrough(
   step_ = kOnly;
 }
 
-void NGTextDecorationPainter::PaintOnlyLineThrough() {
+void TextDecorationPainter::PaintOnlyLineThrough() {
   DCHECK(step_ == kOnly);
 
   // Clipping the canvas unnecessarily is expensive, so avoid doing it if there
@@ -154,7 +154,7 @@ void NGTextDecorationPainter::PaintOnlyLineThrough() {
   step_ = kBegin;
 }
 
-void NGTextDecorationPainter::ClipIfNeeded(
+void TextDecorationPainter::ClipIfNeeded(
     GraphicsContextStateSaver& state_saver) {
   DCHECK(step_ != kBegin);
 

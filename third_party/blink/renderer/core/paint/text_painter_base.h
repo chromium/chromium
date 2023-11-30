@@ -28,7 +28,7 @@ namespace blink {
 class ComputedStyle;
 class Document;
 class GraphicsContext;
-class NGInlinePaintContext;
+class InlinePaintContext;
 class Node;
 
 namespace {
@@ -51,11 +51,11 @@ class CORE_EXPORT TextPainterBase {
   TextPainterBase(GraphicsContext&,
                   const Font&,
                   const LineRelativeOffset& text_origin,
-                  NGInlinePaintContext* inline_context,
+                  InlinePaintContext* inline_context,
                   bool horizontal);
   ~TextPainterBase();
 
-  const NGInlinePaintContext* InlineContext() const { return inline_context_; }
+  const InlinePaintContext* InlineContext() const { return inline_context_; }
 
   void SetEmphasisMark(const AtomicString&, TextEmphasisPosition);
 
@@ -124,7 +124,7 @@ class CORE_EXPORT TextPainterBase {
 
   enum PaintInternalStep { kPaintText, kPaintEmphasisMark };
 
-  NGInlinePaintContext* inline_context_ = nullptr;
+  InlinePaintContext* inline_context_ = nullptr;
   GraphicsContext& graphics_context_;
   const Font& font_;
   const LineRelativeOffset text_origin_;

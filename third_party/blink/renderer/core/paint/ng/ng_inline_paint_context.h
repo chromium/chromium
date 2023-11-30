@@ -15,11 +15,11 @@ namespace blink {
 
 // Carries contextual information shared across multiple inline fragments within
 // an inline formatting context.
-class CORE_EXPORT NGInlinePaintContext {
+class CORE_EXPORT InlinePaintContext {
   STACK_ALLOCATED();
 
  public:
-  using DecoratingBoxList = HeapVector<NGDecoratingBox, 4>;
+  using DecoratingBoxList = HeapVector<DecoratingBox, 4>;
   const DecoratingBoxList& DecoratingBoxes() const { return decorating_boxes_; }
 
   InlineCursor CursorForDescendantsOfLine() const {
@@ -31,7 +31,7 @@ class CORE_EXPORT NGInlinePaintContext {
     decorating_boxes_.emplace_back(std::forward<Args>(args)...);
   }
   void PushDecoratingBoxAncestors(const InlineCursor& inline_box);
-  void PushDecoratingBoxes(const base::span<NGDecoratingBox>& boxes);
+  void PushDecoratingBoxes(const base::span<DecoratingBox>& boxes);
   void PopDecoratingBox(wtf_size_t size);
   void ClearDecoratingBoxes(
       DecoratingBoxList* saved_decorating_boxes = nullptr);
@@ -50,11 +50,11 @@ class CORE_EXPORT NGInlinePaintContext {
 
    public:
     ScopedInlineItem(const FragmentItem& inline_item,
-                     NGInlinePaintContext* inline_context);
+                     InlinePaintContext* inline_context);
     ~ScopedInlineItem();
 
    private:
-    NGInlinePaintContext* inline_context_ = nullptr;
+    InlinePaintContext* inline_context_ = nullptr;
     const Vector<AppliedTextDecoration, 1>* last_decorations_ = nullptr;
     DecoratingBoxList saved_decorating_boxes_;
     wtf_size_t push_count_ = 0;
@@ -66,11 +66,11 @@ class CORE_EXPORT NGInlinePaintContext {
 
    public:
     ScopedInlineBoxAncestors(const InlineCursor& inline_box,
-                             NGInlinePaintContext* inline_context);
+                             InlinePaintContext* inline_context);
     ~ScopedInlineBoxAncestors();
 
    private:
-    NGInlinePaintContext* inline_context_ = nullptr;
+    InlinePaintContext* inline_context_ = nullptr;
   };
 
   // Pushes all decorating boxes for a line box.
@@ -79,11 +79,11 @@ class CORE_EXPORT NGInlinePaintContext {
 
    public:
     ScopedLineBox(const InlineCursor& line_cursor,
-                  NGInlinePaintContext* inline_context);
+                  InlinePaintContext* inline_context);
     ~ScopedLineBox();
 
    private:
-    NGInlinePaintContext* inline_context_ = nullptr;
+    InlinePaintContext* inline_context_ = nullptr;
   };
 
   // Set |PaintOffset| while the instance of this class is in the scope.
@@ -92,7 +92,7 @@ class CORE_EXPORT NGInlinePaintContext {
 
    public:
     ScopedPaintOffset(const PhysicalOffset& paint_offset,
-                      NGInlinePaintContext* inline_context)
+                      InlinePaintContext* inline_context)
         : paint_offset_(&inline_context->paint_offset_, paint_offset) {}
 
    private:
@@ -112,12 +112,12 @@ class CORE_EXPORT NGInlinePaintContext {
   PhysicalOffset paint_offset_;
 };
 
-inline void NGInlinePaintContext::PopDecoratingBox(wtf_size_t size) {
+inline void InlinePaintContext::PopDecoratingBox(wtf_size_t size) {
   DCHECK_LE(size, decorating_boxes_.size());
   decorating_boxes_.Shrink(decorating_boxes_.size() - size);
 }
 
-inline NGInlinePaintContext::ScopedInlineItem::~ScopedInlineItem() {
+inline InlinePaintContext::ScopedInlineItem::~ScopedInlineItem() {
   if (!inline_context_)
     return;
   inline_context_->last_decorations_ = last_decorations_;
@@ -129,13 +129,13 @@ inline NGInlinePaintContext::ScopedInlineItem::~ScopedInlineItem() {
     inline_context_->PopDecoratingBox(push_count_);
 }
 
-inline NGInlinePaintContext::ScopedInlineBoxAncestors::
+inline InlinePaintContext::ScopedInlineBoxAncestors::
     ~ScopedInlineBoxAncestors() {
   if (inline_context_)
     inline_context_->ClearLineBox();
 }
 
-inline NGInlinePaintContext::ScopedLineBox::~ScopedLineBox() {
+inline InlinePaintContext::ScopedLineBox::~ScopedLineBox() {
   if (inline_context_)
     inline_context_->ClearLineBox();
 }

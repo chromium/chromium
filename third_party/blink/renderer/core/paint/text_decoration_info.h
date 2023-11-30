@@ -24,9 +24,9 @@
 namespace blink {
 
 class ComputedStyle;
+class DecoratingBox;
 class Font;
-class NGDecoratingBox;
-class NGInlinePaintContext;
+class InlinePaintContext;
 class SimpleFontData;
 class TextDecorationOffset;
 
@@ -50,7 +50,7 @@ class CORE_EXPORT TextDecorationInfo {
       LineRelativeOffset local_origin,
       LayoutUnit width,
       const ComputedStyle& target_style,
-      const NGInlinePaintContext* inline_context,
+      const InlinePaintContext* inline_context,
       const absl::optional<AppliedTextDecoration> selection_text_decoration,
       const AppliedTextDecoration* decoration_override = nullptr,
       const Font* font_override = nullptr,
@@ -179,8 +179,8 @@ class CORE_EXPORT TextDecorationInfo {
   const ComputedStyle* decorating_box_style_ = nullptr;
 
   // Decorating box properties for the current |decoration_index_|.
-  const NGInlinePaintContext* const inline_context_ = nullptr;
-  const NGDecoratingBox* decorating_box_ = nullptr;
+  const InlinePaintContext* const inline_context_ = nullptr;
+  const DecoratingBox* decorating_box_ = nullptr;
   const AppliedTextDecoration* applied_text_decoration_ = nullptr;
   const absl::optional<AppliedTextDecoration> selection_text_decoration_;
   const Font* font_ = nullptr;

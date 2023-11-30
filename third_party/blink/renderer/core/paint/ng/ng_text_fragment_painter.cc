@@ -189,11 +189,11 @@ Path GetCanonicalDisclosurePath(const ComputedStyle& style, bool is_open) {
 
 }  // namespace
 
-void NGTextFragmentPainter::PaintSymbol(const LayoutObject* layout_object,
-                                        const ComputedStyle& style,
-                                        const PhysicalSize box_size,
-                                        const PaintInfo& paint_info,
-                                        const PhysicalOffset& paint_offset) {
+void TextFragmentPainter::PaintSymbol(const LayoutObject* layout_object,
+                                      const ComputedStyle& style,
+                                      const PhysicalSize box_size,
+                                      const PaintInfo& paint_info,
+                                      const PhysicalOffset& paint_offset) {
   const AtomicString& type = LayoutCounter::ListStyle(layout_object, style);
   PhysicalRect marker_rect(
       ListMarker::RelativeSymbolMarkerRect(style, type, box_size.width));
@@ -241,8 +241,8 @@ void NGTextFragmentPainter::PaintSymbol(const LayoutObject* layout_object,
   }
 }
 
-void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
-                                  const PhysicalOffset& paint_offset) {
+void TextFragmentPainter::Paint(const PaintInfo& paint_info,
+                                const PhysicalOffset& paint_offset) {
   const auto& text_item = *cursor_.CurrentItem();
   // We can skip painting if the fragment (including selection) is invisible.
   if (!text_item.TextLength())
@@ -413,11 +413,11 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
           ? text_combine->AdjustTextTopForPaint(physical_box.offset.top)
           : physical_box.offset.top + ascent};
 
-  NGTextPainter text_painter(context, font, visual_rect, text_origin,
-                             inline_context_, is_horizontal);
-  NGTextDecorationPainter decoration_painter(text_painter, text_item,
-                                             paint_info, style, text_style,
-                                             rotated_box, selection);
+  TextPainter text_painter(context, font, visual_rect, text_origin,
+                           inline_context_, is_horizontal);
+  TextDecorationPainter decoration_painter(text_painter, text_item, paint_info,
+                                           style, text_style, rotated_box,
+                                           selection);
   NGHighlightPainter highlight_painter(
       fragment_paint_info, text_painter, decoration_painter, paint_info,
       cursor_, *cursor_.CurrentItem(), rotation, physical_box.offset, style,
@@ -437,7 +437,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   }
 
   if (svg_inline_text) {
-    NGTextPainter::SvgTextPaintState& svg_state = text_painter.SetSvgState(
+    TextPainter::SvgTextPaintState& svg_state = text_painter.SetSvgState(
         *svg_inline_text, style, text_item.GetStyleVariant(),
         paint_info.GetPaintFlags());
 
@@ -464,7 +464,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   if (rotation) {
     state_saver.SaveIfNeeded();
     context.ConcatCTM(*rotation);
-    if (NGTextPainter::SvgTextPaintState* state = text_painter.GetSvgState()) {
+    if (TextPainter::SvgTextPaintState* state = text_painter.GetSvgState()) {
       DCHECK(rotation->IsInvertible());
       state->EnsureShaderTransform().PostConcat(rotation->Inverse());
     }
@@ -497,8 +497,8 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
     if (auto* layout_text = DynamicTo<LayoutText>(node->GetLayoutObject()))
       node_id = layout_text->EnsureNodeId();
   }
-  NGInlinePaintContext::ScopedPaintOffset scoped_paint_offset(paint_offset,
-                                                              inline_context_);
+  InlinePaintContext::ScopedPaintOffset scoped_paint_offset(paint_offset,
+                                                            inline_context_);
 
   AutoDarkMode auto_dark_mode(
       PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kForeground));
@@ -507,14 +507,14 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   switch (highlight_case) {
     case NGHighlightPainter::kNoHighlights:
       // Fast path: just paint the text, including its decorations.
-      decoration_painter.Begin(NGTextDecorationPainter::kOriginating);
+      decoration_painter.Begin(TextDecorationPainter::kOriginating);
       decoration_painter.PaintExceptLineThrough(fragment_paint_info);
       text_painter.Paint(fragment_paint_info, text_style, node_id,
                          auto_dark_mode);
       decoration_painter.PaintOnlyLineThrough();
       break;
     case NGHighlightPainter::kFastSpellingGrammar:
-      decoration_painter.Begin(NGTextDecorationPainter::kOriginating);
+      decoration_painter.Begin(TextDecorationPainter::kOriginating);
       decoration_painter.PaintExceptLineThrough(fragment_paint_info);
       text_painter.Paint(fragment_paint_info, text_style, node_id,
                          auto_dark_mode);
@@ -561,7 +561,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
             auto_dark_mode);
         break;
       case NGHighlightPainter::kSelectionOnly:
-        decoration_painter.Begin(NGTextDecorationPainter::kSelection);
+        decoration_painter.Begin(TextDecorationPainter::kSelection);
         decoration_painter.PaintExceptLineThrough(fragment_paint_info);
         highlight_painter.Selection()->PaintSelectedText(
             text_painter, fragment_paint_info, text_style, node_id,

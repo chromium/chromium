@@ -821,7 +821,7 @@ void FragmentItem::InvalidateInkOverflow() {
 
 PhysicalRect FragmentItem::RecalcInkOverflowForCursor(
     InlineCursor* cursor,
-    NGInlinePaintContext* inline_context) {
+    InlinePaintContext* inline_context) {
   DCHECK(cursor);
   DCHECK(!cursor->Current() || cursor->IsAtFirst());
   PhysicalRect contents_ink_overflow;
@@ -848,7 +848,7 @@ PhysicalRect FragmentItem::RecalcInkOverflowForCursor(
 }
 
 void FragmentItem::RecalcInkOverflow(const InlineCursor& cursor,
-                                     NGInlinePaintContext* inline_context,
+                                     InlinePaintContext* inline_context,
                                      PhysicalRect* self_and_contents_rect_out) {
   DCHECK_EQ(this, cursor.CurrentItem());
 
@@ -882,8 +882,8 @@ void FragmentItem::RecalcInkOverflow(const InlineCursor& cursor,
       }
       // Create |ScopedInlineItem| here because the decoration box is not
       // supported for SVG.
-      NGInlinePaintContext::ScopedInlineItem scoped_inline_item(*this,
-                                                                inline_context);
+      InlinePaintContext::ScopedInlineItem scoped_inline_item(*this,
+                                                              inline_context);
       ink_overflow_type_ =
           static_cast<unsigned>(ink_overflow_.SetTextInkOverflow(
               InkOverflowType(), cursor, paint_info, Style(),
@@ -917,8 +917,8 @@ void FragmentItem::RecalcInkOverflow(const InlineCursor& cursor,
     }
 
     DCHECK(box_fragment->IsInlineBox());
-    NGInlinePaintContext::ScopedInlineItem scoped_inline_item(*this,
-                                                              inline_context);
+    InlinePaintContext::ScopedInlineItem scoped_inline_item(*this,
+                                                            inline_context);
     const PhysicalRect contents_rect =
         RecalcInkOverflowForDescendantsOf(cursor, inline_context);
     DCHECK(box_fragment->Children().empty());
@@ -929,7 +929,7 @@ void FragmentItem::RecalcInkOverflow(const InlineCursor& cursor,
   }
 
   if (Type() == kLine) {
-    NGInlinePaintContext::ScopedLineBox scoped_line_box(cursor, inline_context);
+    InlinePaintContext::ScopedLineBox scoped_line_box(cursor, inline_context);
     PhysicalRect contents_rect =
         RecalcInkOverflowForDescendantsOf(cursor, inline_context);
     const auto* const text_combine =
@@ -948,7 +948,7 @@ void FragmentItem::RecalcInkOverflow(const InlineCursor& cursor,
 
 PhysicalRect FragmentItem::RecalcInkOverflowForDescendantsOf(
     const InlineCursor& cursor,
-    NGInlinePaintContext* inline_context) const {
+    InlinePaintContext* inline_context) const {
   // Re-compute descendants, then compute the contents ink overflow from them.
   InlineCursor descendants_cursor = cursor.CursorForDescendants();
   PhysicalRect contents_rect =

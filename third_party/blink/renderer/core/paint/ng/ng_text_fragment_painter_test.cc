@@ -16,16 +16,16 @@ using testing::ElementsAre;
 
 namespace blink {
 
-class NGTextFragmentPainterTest : public PaintControllerPaintTest {
+class TextFragmentPainterTest : public PaintControllerPaintTest {
  public:
-  explicit NGTextFragmentPainterTest(
+  explicit TextFragmentPainterTest(
       LocalFrameClient* local_frame_client = nullptr)
       : PaintControllerPaintTest(local_frame_client) {}
 };
 
-INSTANTIATE_PAINT_TEST_SUITE_P(NGTextFragmentPainterTest);
+INSTANTIATE_PAINT_TEST_SUITE_P(TextFragmentPainterTest);
 
-TEST_P(NGTextFragmentPainterTest, TestTextStyle) {
+TEST_P(TextFragmentPainterTest, TestTextStyle) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <body>
@@ -44,7 +44,7 @@ TEST_P(NGTextFragmentPainterTest, TestTextStyle) {
                           IsSameId(text_fragment.Id(), kForegroundType)));
 }
 
-TEST_P(NGTextFragmentPainterTest, LineBreak) {
+TEST_P(TextFragmentPainterTest, LineBreak) {
   SetBodyInnerHTML("<span style='font-size: 20px'>A<br>B<br>C</span>");
   // 0: view background, 1: A, 2: B, 3: C
   EXPECT_EQ(4u, ContentDisplayItems().size());
@@ -55,7 +55,7 @@ TEST_P(NGTextFragmentPainterTest, LineBreak) {
   EXPECT_EQ(6u, ContentDisplayItems().size());
 }
 
-TEST_P(NGTextFragmentPainterTest, LineBreaksInLongDocument) {
+TEST_P(TextFragmentPainterTest, LineBreaksInLongDocument) {
   SetBodyInnerHTML(
       "<div id='div' style='font-size: 100px; width: 300px'><div>");
   auto* div = GetDocument().getElementById(AtomicString("div"));
@@ -72,7 +72,7 @@ TEST_P(NGTextFragmentPainterTest, LineBreaksInLongDocument) {
   EXPECT_LE(ContentDisplayItems().size(), 100u);
 }
 
-TEST_P(NGTextFragmentPainterTest, DegenerateUnderlineIntercepts) {
+TEST_P(TextFragmentPainterTest, DegenerateUnderlineIntercepts) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -89,7 +89,7 @@ TEST_P(NGTextFragmentPainterTest, DegenerateUnderlineIntercepts) {
   // due to letter spacing and this test passes if that does not cause a crash.
 }
 
-TEST_P(NGTextFragmentPainterTest, SvgTextWithFirstLineTextDecoration) {
+TEST_P(TextFragmentPainterTest, SvgTextWithFirstLineTextDecoration) {
   SetBodyInnerHTML(R"HTML(
 <!DOCTYPE html>
 <style>
@@ -104,7 +104,7 @@ TEST_P(NGTextFragmentPainterTest, SvgTextWithFirstLineTextDecoration) {
   // Test passes if no crashes.
 }
 
-TEST_P(NGTextFragmentPainterTest, SvgTextWithTextDecorationNotInFirstLine) {
+TEST_P(TextFragmentPainterTest, SvgTextWithTextDecorationNotInFirstLine) {
   SetBodyInnerHTML(R"HTML(
     <style>text:first-line { fill: lime; }</style>
     <svg xmlns="http://www.w3.org/2000/svg">
@@ -114,7 +114,7 @@ TEST_P(NGTextFragmentPainterTest, SvgTextWithTextDecorationNotInFirstLine) {
   // Test passes if no crashes.
 }
 
-TEST_P(NGTextFragmentPainterTest, WheelEventListenerOnInlineElement) {
+TEST_P(TextFragmentPainterTest, WheelEventListenerOnInlineElement) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>body {margin: 0}</style>

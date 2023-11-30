@@ -19,21 +19,22 @@ String StringFromTextItem(const InlineCursor& cursor) {
 
 }  // namespace
 
-class NGInlinePaintContextTest : public RenderingTest,
-                                 private ScopedTextDecoratingBoxForTest {
+class InlinePaintContextTest : public RenderingTest,
+                               private ScopedTextDecoratingBoxForTest {
  public:
-  NGInlinePaintContextTest() : ScopedTextDecoratingBoxForTest(true) {}
+  InlinePaintContextTest() : ScopedTextDecoratingBoxForTest(true) {}
 
   Vector<float> GetFontSizes(
-      const NGInlinePaintContext::DecoratingBoxList& boxes) {
+      const InlinePaintContext::DecoratingBoxList& boxes) {
     Vector<float> font_sizes;
-    for (const NGDecoratingBox& box : boxes)
+    for (const DecoratingBox& box : boxes) {
       font_sizes.push_back(box.Style().ComputedFontSize());
+    }
     return font_sizes;
   }
 };
 
-TEST_F(NGInlinePaintContextTest, MultiLine) {
+TEST_F(InlinePaintContextTest, MultiLine) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -97,7 +98,7 @@ TEST_F(NGInlinePaintContextTest, MultiLine) {
   EXPECT_EQ(container_fragment.InkOverflowRect(), PhysicalRect(0, 0, 800, 40));
 }
 
-TEST_F(NGInlinePaintContextTest, VerticalAlign) {
+TEST_F(InlinePaintContextTest, VerticalAlign) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -153,7 +154,7 @@ TEST_F(NGInlinePaintContextTest, VerticalAlign) {
                 span3_item.OffsetInContainerFragment().top);
 }
 
-TEST_F(NGInlinePaintContextTest, NestedBlocks) {
+TEST_F(InlinePaintContextTest, NestedBlocks) {
   SetBodyInnerHTML(R"HTML(
     <style>
     .ul {
@@ -170,7 +171,7 @@ TEST_F(NGInlinePaintContextTest, NestedBlocks) {
     </div>
   )HTML");
 
-  NGInlinePaintContext context;
+  InlinePaintContext context;
   const auto* ifc = To<LayoutBlockFlow>(GetLayoutObjectByElementId("ifc"));
   InlineCursor cursor(*ifc);
   cursor.MoveToFirstLine();
@@ -196,13 +197,13 @@ TEST_F(NGInlinePaintContextTest, NestedBlocks) {
               testing::ElementsAre(20.f, 20.f, 10.f, 5.f));
 
   // Push all decorating boxes in the ancestor chain of the `span5`.
-  NGInlinePaintContext context2;
+  InlinePaintContext context2;
   context2.PushDecoratingBoxAncestors(cursor);
   EXPECT_THAT(GetFontSizes(context2.DecoratingBoxes()),
               testing::ElementsAre(20.f, 20.f, 10.f));
 }
 
-TEST_F(NGInlinePaintContextTest, StopPropagateTextDecorations) {
+TEST_F(InlinePaintContextTest, StopPropagateTextDecorations) {
   // The `<rt>` element produces an inline box that stops propagations.
   SetBodyInnerHTML(R"HTML(
     <style>
