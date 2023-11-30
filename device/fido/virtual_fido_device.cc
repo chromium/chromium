@@ -404,7 +404,10 @@ bool VirtualFidoDevice::State::InjectRegistration(
 bool VirtualFidoDevice::State::InjectRegistration(
     base::span<const uint8_t> credential_id,
     const std::string& relying_party_id) {
-  return InjectRegistration(credential_id, RegistrationData(relying_party_id));
+  RegistrationData registration(relying_party_id);
+  registration.backup_eligible = default_backup_eligibility;
+  registration.backup_state = default_backup_state;
+  return InjectRegistration(credential_id, std::move(registration));
 }
 
 bool VirtualFidoDevice::State::InjectResidentKey(
@@ -430,6 +433,8 @@ bool VirtualFidoDevice::State::InjectResidentKey(
   registration.is_resident = true;
   registration.rp = std::move(rp);
   registration.user = std::move(user);
+  registration.backup_eligible = default_backup_eligibility;
+  registration.backup_state = default_backup_state;
 
   bool was_inserted;
   std::tie(std::ignore, was_inserted) = registrations.emplace(

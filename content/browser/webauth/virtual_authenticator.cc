@@ -36,6 +36,8 @@ VirtualAuthenticator::VirtualAuthenticator(
   // If the authenticator has user verification, simulate having set it up
   // already.
   state_->fingerprints_enrolled = has_user_verification_;
+  state_->default_backup_eligibility = options.default_backup_eligibility;
+  state_->default_backup_state = options.default_backup_state;
   observation_.Observe(state_.get());
   SetUserPresence(true);
 }

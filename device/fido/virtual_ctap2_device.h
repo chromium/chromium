@@ -106,9 +106,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
     // transports_in_get_info, if not empty, contains the transports that will
     // be reported via getInfo. Otherwise no transports will be reported.
     std::vector<FidoTransportProtocol> transports_in_get_info;
-    // backup_eligible, if true, causes credentials to set the BE (Backup
-    // Eligible) flag to indicate that they can be synced.
-    bool backup_eligible = false;
 
     IncludeCredential include_credential_in_assertion_response =
         IncludeCredential::ONLY_IF_NEEDED;

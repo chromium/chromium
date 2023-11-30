@@ -9092,6 +9092,7 @@ class AuthenticatorCableV2Test : public AuthenticatorImplRequestDelegateTest {
   static VirtualCtap2Device::State* DeviceState() {
     VirtualCtap2Device::State* state = new VirtualCtap2Device::State;
     state->fingerprints_enrolled = true;
+    state->default_backup_eligibility = true;
     return state;
   }
 
@@ -9105,7 +9106,6 @@ class AuthenticatorCableV2Test : public AuthenticatorImplRequestDelegateTest {
     ret.internal_account_chooser = true;
     ret.internal_uv_support = true;
     ret.always_uv = true;
-    ret.backup_eligible = true;
     return ret;
   }
 };

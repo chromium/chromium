@@ -24,6 +24,7 @@ constexpr size_t kAttestedCredentialDataOffset =
 uint8_t AuthenticatorDataFlags(bool user_present,
                                bool user_verified,
                                bool backup_eligible,
+                               bool backup_state,
                                bool has_attested_credential_data,
                                bool has_extension_data) {
   return (user_present ? base::strict_cast<uint8_t>(
@@ -35,6 +36,9 @@ uint8_t AuthenticatorDataFlags(bool user_present,
          (backup_eligible ? base::strict_cast<uint8_t>(
                                 AuthenticatorData::Flag::kBackupEligible)
                           : 0) |
+         (backup_state ? base::strict_cast<uint8_t>(
+                             AuthenticatorData::Flag::kBackupState)
+                       : 0) |
          (has_attested_credential_data
               ? base::strict_cast<uint8_t>(
                     AuthenticatorData::Flag::kAttestation)
@@ -113,12 +117,14 @@ AuthenticatorData::AuthenticatorData(
     bool user_present,
     bool user_verified,
     bool backup_eligible,
+    bool backup_state,
     uint32_t sign_counter,
     absl::optional<AttestedCredentialData> attested_credential_data,
     absl::optional<cbor::Value> extensions)
     : flags_(AuthenticatorDataFlags(user_present,
                                     user_verified,
                                     backup_eligible,
+                                    backup_state,
                                     attested_credential_data.has_value(),
                                     extensions.has_value())),
       application_parameter_(fido_parsing_utils::Materialize(rp_id_hash)),

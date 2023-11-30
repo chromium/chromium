@@ -268,8 +268,8 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorMakeCredential(
                         /*user_present=*/true,
                         options->dwUserVerificationRequirement !=
                             WEBAUTHN_USER_VERIFICATION_REQUIREMENT_DISCOURAGED,
-                        /*backup_eligible=*/false, registration.counter,
-                        std::move(credential_data),
+                        /*backup_eligible=*/false, /*backup_state=*/false,
+                        registration.counter, std::move(credential_data),
                         /*extensions=*/absl::nullopt)
           .SerializeToByteArray();
   attestation->credential_id = credential_id;
@@ -366,7 +366,8 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorGetAssertion(
           /*user_present=*/true,
           /*user_verified=*/options->dwUserVerificationRequirement !=
               WEBAUTHN_USER_VERIFICATION_REQUIREMENT_DISCOURAGED,
-          /*backup_eligible=*/false, registration->counter++,
+          /*backup_eligible=*/false, /*backup_state=*/false,
+          registration->counter++,
           /*attested_credential_data=*/absl::nullopt,
           /*extensions=*/absl::nullopt)
           .SerializeToByteArray();

@@ -53,6 +53,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorData {
       bool user_present,
       bool user_verified,
       bool backup_eligible,
+      bool backup_state,
       uint32_t sign_counter,
       absl::optional<AttestedCredentialData> attested_credential_data,
       absl::optional<cbor::Value> extensions);
@@ -115,6 +116,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorData {
 
   bool backup_eligible() const {
     return flags_ & base::strict_cast<uint8_t>(Flag::kBackupEligible);
+  }
+
+  bool backup_state() const {
+    return flags_ & base::strict_cast<uint8_t>(Flag::kBackupState);
   }
 
   base::span<const uint8_t, kSignCounterLength> counter() const {

@@ -140,7 +140,8 @@ void PasskeyAuthenticatorServiceAsh::DoAssert() {
       crypto::SHA256Hash(base::as_bytes(
           base::make_span(request_state_->assert_request->rp_id))),
       /*user_present=*/true,
-      /*user_verified=*/true, /*backup_eligible=*/true, /*sign_counter=*/0,
+      /*user_verified=*/true, /*backup_eligible=*/true, /*backup_state=*/false,
+      /*sign_counter=*/0,
       /*attested_credential_data=*/absl::nullopt, /*extensions=*/absl::nullopt);
   std::vector<uint8_t> signed_over_data =
       authenticator_data.SerializeToByteArray();
