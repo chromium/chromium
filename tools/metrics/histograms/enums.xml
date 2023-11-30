@@ -64767,6 +64767,8 @@ from previous Chrome versions.
   <int value="-574217217" label="kSignInProfileCreationEnterprise:enabled"/>
   <int value="-574000901" label="AVIF:enabled"/>
   <int value="-573570330" label="QuickAnswersTranslationCloudAPI:disabled"/>
+  <int value="-572592521"
+      label="FencedFramesReportingAttestationsChanges:enabled"/>
   <int value="-572285609" label="PretokenizeCss:enabled"/>
   <int value="-572112724" label="DialogTouchBar:disabled"/>
   <int value="-572012175" label="AssistantEnableStereoAudioInput:disabled"/>
@@ -69153,6 +69155,8 @@ from previous Chrome versions.
   <int value="1562855415" label="WebRtcUseMinMaxVEADimensions:disabled"/>
   <int value="1562856564" label="DragDropIntoOmnibox:enabled"/>
   <int value="1563255033" label="memlog-stack-mode"/>
+  <int value="1563267770"
+      label="FencedFramesReportingAttestationsChanges:disabled"/>
   <int value="1566945988" label="PdfOcr:disabled"/>
   <int value="1567695310" label="CrostiniBullseyeUpgrade:disabled"/>
   <int value="1567839560"

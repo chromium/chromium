@@ -755,6 +755,9 @@ extern const char kEnableFencedFramesDeveloperModeDescription[];
 extern const char kEnableFencedFramesM120FeaturesName[];
 extern const char kEnableFencedFramesM120FeaturesDescription[];
 
+extern const char kEnableFencedFramesReportingAttestationsChangeName[];
+extern const char kEnableFencedFramesReportingAttestationsChangeDescription[];
+
 extern const char kEnableGamepadButtonAxisEventsName[];
 extern const char kEnableGamepadButtonAxisEventsDescription[];
 

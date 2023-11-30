@@ -3382,7 +3382,7 @@ bool ChromeContentBrowserClient::IsPrivacySandboxReportingDestinationAttested(
 
   if (invoking_api == content::PrivacySandboxInvokingAPI::kProtectedAudience) {
     if (base::FeatureList::IsEnabled(
-            blink::features::kFencedFramesM120FeaturesPart2) &&
+            blink::features::kFencedFramesReportingAttestationsChanges) &&
         post_impression_reporting) {
       // M120 and afterwards: For beacons sent by `reportEvent()` and automatic
       // beacons, the destination is required to be attested for either

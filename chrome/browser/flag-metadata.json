@@ -2668,6 +2668,11 @@
     "expiry_milestone": 123
   },
   {
+    "name": "enable-fenced-frames-reporting-attestations-changes",
+    "owners": [ "lbrady@google.com", "shivanisha@chromium.org", "xiaochenzh@chromium.org", "chrome-fenced-frames-core@google.com" ],
+    "expiry_milestone": 123
+  },
+  {
     "name": "enable-file-backed-blob-factory",
     "owners": [ "chromeos-dlp@google.com", "accorsi@chromium.org" ],
     "expiry_milestone": 130
