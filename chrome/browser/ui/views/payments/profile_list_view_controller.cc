@@ -368,8 +368,9 @@ bool ProfileListViewController::ShouldShowPrimaryButton() {
 
 PaymentRequestSheetController::ButtonCallback
 ProfileListViewController::GetSecondaryButtonCallback() {
-  return base::BindRepeating(&ProfileListViewController::ShowEditor,
-                             base::Unretained(this), nullptr);
+  return base::BindRepeating(
+      &ProfileListViewController::OnCreateNewProfileButtonClicked,
+      base::Unretained(this));
 }
 
 void ProfileListViewController::FillContentView(views::View* content_view) {
@@ -390,6 +391,12 @@ void ProfileListViewController::FillContentView(views::View* content_view) {
 base::WeakPtr<PaymentRequestSheetController>
 ProfileListViewController::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+void ProfileListViewController::OnCreateNewProfileButtonClicked(
+    const ui::Event& event) {
+  // nullptr means 'create a new profile'
+  ShowEditor(nullptr);
 }
 
 }  // namespace payments

@@ -205,7 +205,7 @@ class EditorViewController : public PaymentRequestSheetController,
   void AddOrUpdateErrorMessageForField(autofill::ServerFieldType type,
                                        const std::u16string& error_message);
 
-  void SaveButtonPressed();
+  void SaveButtonPressed(const ui::Event& event);
 
   // Used to remember the association between the input field UI element and the
   // original field definition. The ValidatingTextfield* and ValidatingCombobox*

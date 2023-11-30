@@ -432,7 +432,8 @@ std::u16string PaymentRequestSheetController::GetPrimaryButtonLabel() {
 PaymentRequestSheetController::ButtonCallback
 PaymentRequestSheetController::GetPrimaryButtonCallback() {
   return base::BindRepeating(
-      [](const base::WeakPtr<PaymentRequestDialogView>& dialog) {
+      [](const base::WeakPtr<PaymentRequestDialogView>& dialog,
+         const ui::Event& event) {
         if (dialog->IsInteractive())
           dialog->Pay();
       },
@@ -599,7 +600,7 @@ bool PaymentRequestSheetController::CanContentViewBeScrollable() {
   return true;
 }
 
-void PaymentRequestSheetController::CloseButtonPressed() {
+void PaymentRequestSheetController::CloseButtonPressed(const ui::Event& event) {
   if (dialog()->IsInteractive())
     dialog()->CloseDialog();
 }
