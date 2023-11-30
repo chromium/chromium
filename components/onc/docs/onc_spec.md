@@ -1325,6 +1325,12 @@ type exists to configure the authentication.
       presented to the outer protocol. This value is subject to string
       expansions. If not specified, use empty string.
 
+* **ClientCertKeyPairAlias**
+    * (required if **ClientCertType** is *KeyPairAlias*, otherwise ignored) -
+      **string**
+    * Key pair alias specifies the client certificate stored in Android keychain
+      and allowed for Wi-Fi authentication.
+
 * **ClientCertPKCS11Id**
     * (required if **ClientCertType** is *PKCS11Id*, otherwise ignored) -
     * PKCS#11 identifier in the format slot:key_id.
@@ -1341,12 +1347,13 @@ type exists to configure the authentication.
 * **ClientCertType**
     * (optional) - **string**
     * Allowed values are:
+        * *KeyPairAlias* (Android only)
         * *PKCS11Id*
         * *Pattern*
         * *Ref*
         * *None*
-    * *Ref* and *Pattern* indicate that the associated property should be used
-      to identify the client certificate.
+    * *KeyPairAlias*, *Ref* and *Pattern* indicate that the associated property
+      should be used to identify the client certificate.
     * *PKCS11Id* is used when representing a certificate in a local store and is
       only valid when describing a local configuration.
     * *None* indicates that the server is configured to not require client
