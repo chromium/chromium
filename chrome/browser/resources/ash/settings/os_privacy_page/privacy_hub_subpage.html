@@ -60,9 +60,9 @@
 
 <div id="microphoneSection">
   <template is="dom-if" if="[[!showAppPermissions_]]">
+    <div class="hr"></div>
     <settings-toggle-button
         id="microphoneToggle"
-        class="hr"
         pref="{{prefs.ash.user.microphone_allowed}}"
         label="$i18n{microphoneToggleTitle}"
         deep-link-focus-id$="[[Setting.kMicrophoneOnOff]]"
@@ -124,8 +124,8 @@
 </div>
 
 <template is="dom-if" if="[[showSpeakOnMuteDetectionPage_]]" restamp>
+  <div class="hr"></div>
   <settings-toggle-button
-      class="hr"
       pref="{{prefs.ash.user.speak_on_mute_detection_enabled}}"
       id="speakonmuteDetectionToggle"
       label="$i18n{speakOnMuteDetectionToggleTitle}"
@@ -136,9 +136,9 @@
 </template>
 
 <template is="dom-if" if="[[showPrivacyHubLocationControl_]]" restamp>
+  <div class="hr"></div>
   <cr-link-row
       id="geolocationAreaLinkRow"
-      class="hr"
       on-click="onGeolocationAreaClick_"
       deep-link-focus-id$="[[Setting.kGeolocationOnOff]]"
       using-slotted-label>
@@ -153,16 +153,16 @@
 </template>
 
 <if expr="_google_chrome">
+  <div class="hr"></div>
   <settings-metrics-consent-toggle-button
       id="metricsConsentToggle"
       deep-link-focus-id$="[[Setting.kUsageStatsAndCrashReports]]"
-      prefs="{{prefs}}"
-      class="hr">
+      prefs="{{prefs}}">
   </settings-metrics-consent-toggle-button>
 </if>
 
+<div class="hr"></div>
 <settings-toggle-button id="contentRecommendationsToggle"
-    class="hr"
     pref="{{prefs.settings.suggested_content_enabled}}"
     label="$i18n{enableSuggestedContent}"
     sub-label="$i18n{enableSuggestedContentDesc}"
