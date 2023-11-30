@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/remote_commands/crd_support_host_observer_proxy.h"
 
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_logging.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_session_observer.h"
@@ -21,17 +22,26 @@ void SupportHostObserverProxy::AddObserver(CrdSessionObserver* observer) {
   observers_.AddObserver(observer);
 }
 
+void SupportHostObserverProxy::AddOwnedObserver(
+    std::unique_ptr<CrdSessionObserver> observer) {
+  AddObserver(observer.get());
+  owned_session_observers_.push_back(std::move(observer));
+}
+
 void SupportHostObserverProxy::Bind(
     mojo::PendingReceiver<remoting::mojom::SupportHostObserver> receiver) {
   receiver_.Bind(std::move(receiver));
-}
 
-void SupportHostObserverProxy::Unbind() {
-  receiver_.reset();
-}
+  // Inform our observers that the session has started
+  for (auto& observer : observers_) {
+    observer.OnHostStarted();
+  }
 
-bool SupportHostObserverProxy::IsBound() const {
-  return receiver_.is_bound();
+  // Ensure we can inform our observers if the mojom connection drops.
+  receiver_.set_disconnect_handler(base::BindOnce(
+      &SupportHostObserverProxy::ReportHostStopped, base::Unretained(this),
+      ExtendedStartCrdSessionResultCode::kFailureCrdHostError,
+      "mojom connection dropped"));
 }
 
 // `remoting::mojom::SupportHostObserver` implementation:
@@ -49,7 +59,7 @@ void SupportHostObserverProxy::OnHostStateReceivedAccessCode(
   CRD_DVLOG(3) << __func__;
 
   for (auto& observer : observers_) {
-    observer.OnHostStarted(access_code);
+    observer.OnAccessCodeReceived(access_code);
   }
 }
 

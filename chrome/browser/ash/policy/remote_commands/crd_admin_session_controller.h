@@ -8,13 +8,17 @@
 #include <memory>
 #include <optional>
 #include <string_view>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/types/expected.h"
+#include "chrome/browser/ash/policy/remote_commands/crd_session_observer.h"
 #include "chrome/browser/ash/policy/remote_commands/remote_activity_notification_controller.h"
 #include "chrome/browser/ash/policy/remote_commands/start_crd_session_job_delegate.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
 #include "remoting/host/chromeos/remote_support_host_ash.h"
 #include "remoting/host/chromeos/session_id.h"
@@ -26,7 +30,8 @@ namespace policy {
 //
 // Will keep the session alive and active as long as this class lives.
 // Deleting this class object will forcefully interrupt the active CRD session.
-class CrdAdminSessionController : private StartCrdSessionJobDelegate {
+class CrdAdminSessionController : private StartCrdSessionJobDelegate,
+                                  private CrdSessionObserver {
  public:
   // Proxy class to establish a connection with the Remoting service.
   // Overwritten in unittests to inject a test service.
@@ -91,6 +96,8 @@ class CrdAdminSessionController : private StartCrdSessionJobDelegate {
   // reconnectable session has been re-established.
   void TryToReconnect(base::OnceClosure done_callback);
 
+  std::unique_ptr<CrdHostSession> CreateCrdHostSession();
+
   bool IsCurrentSessionCurtained() const;
 
   // `DeviceCommandStartCrdSessionJob::Delegate` implementation:
@@ -102,9 +109,12 @@ class CrdAdminSessionController : private StartCrdSessionJobDelegate {
       ErrorCallback error_callback,
       SessionEndCallback session_finished_callback) override;
 
+  // `CrdHostObserver` implementation:
+  void OnHostStopped(ExtendedStartCrdSessionResultCode result,
+                     const std::string& message) override;
+
   std::unique_ptr<RemotingServiceProxy> remoting_service_;
   std::unique_ptr<CrdHostSession> active_session_;
-  std::unique_ptr<SessionLauncher> session_launcher_;
 
   std::unique_ptr<RemoteActivityNotificationController>
       notification_controller_;

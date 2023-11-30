@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_SUPPORT_HOST_OBSERVER_PROXY_H_
 
 #include <cstdint>
+#include <memory>
 #include <string>
+#include <vector>
 
 #include "base/observer_list.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
@@ -33,11 +35,10 @@ class SupportHostObserverProxy : public remoting::mojom::SupportHostObserver {
   ~SupportHostObserverProxy() override;
 
   void AddObserver(CrdSessionObserver* observer);
+  void AddOwnedObserver(std::unique_ptr<CrdSessionObserver> observer);
 
   void Bind(
       mojo::PendingReceiver<remoting::mojom::SupportHostObserver> receiver);
-  void Unbind();
-  bool IsBound() const;
 
   // `remoting::mojom::SupportHostObserver` implementation:
   void OnHostStateStarting() override;
@@ -60,6 +61,7 @@ class SupportHostObserverProxy : public remoting::mojom::SupportHostObserver {
  private:
   mojo::Receiver<remoting::mojom::SupportHostObserver> receiver_{this};
   base::ObserverList<CrdSessionObserver> observers_;
+  std::vector<std::unique_ptr<CrdSessionObserver>> owned_session_observers_;
 };
 
 }  // namespace policy

@@ -19,9 +19,11 @@ class CrdSessionObserver : public base::CheckedObserver {
   CrdSessionObserver& operator=(CrdSessionObserver&) = delete;
   ~CrdSessionObserver() override = default;
 
-  // Invoked when the CRD host has successfully been started and when it was
-  // able to generate an access code.
-  virtual void OnHostStarted(const std::string& access_code) {}
+  // Invoked when the CRD host has successfully been started.
+  virtual void OnHostStarted() {}
+
+  // Invoked when the CRD host was able to generate an access code.
+  virtual void OnAccessCodeReceived(const std::string& access_code) {}
 
   // Invoked when the remote admin used the access code to actually start a
   // CRD connection.
