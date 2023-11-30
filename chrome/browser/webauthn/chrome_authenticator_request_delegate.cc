@@ -1155,6 +1155,17 @@ void ChromeAuthenticatorRequestDelegate::ConfigureEnclaveDiscovery(
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
       passkey_model->GetPasskeysForRelyingPartyId(rp_id);
   discovery_factory->set_enclave_passkeys(std::move(passkeys));
+  discovery_factory->set_enclave_passkey_creation_callback(
+      base::BindRepeating(&ChromeAuthenticatorRequestDelegate::OnPasskeyCreated,
+                          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ChromeAuthenticatorRequestDelegate::OnPasskeyCreated(
+    sync_pb::WebauthnCredentialSpecifics passkey) {
+  webauthn::PasskeyModel* passkey_model =
+      PasskeyModelFactory::GetInstance()->GetForProfile(
+          Profile::FromBrowserContext(GetBrowserContext()));
+  passkey_model->CreatePasskey(passkey);
 }
 
 #if BUILDFLAG(IS_MAC)

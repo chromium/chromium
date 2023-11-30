@@ -41,11 +41,14 @@ class TestPasskeyModel : public PasskeyModel {
       base::span<const uint8_t> trusted_vault_key,
       int32_t trusted_vault_key_version,
       std::vector<uint8_t>* public_key_spki_der_out) override;
+  void CreatePasskey(sync_pb::WebauthnCredentialSpecifics& passkey) override;
   std::string AddNewPasskeyForTesting(
       sync_pb::WebauthnCredentialSpecifics passkey) override;
 
  private:
   void NotifyPasskeysChanged(const std::vector<PasskeyModelChange>& changes);
+  void AddShadowedCredentialIdsToNewPasskey(
+      sync_pb::WebauthnCredentialSpecifics& passkey);
 
   std::vector<sync_pb::WebauthnCredentialSpecifics> credentials_;
   base::ObserverList<Observer> observers_;

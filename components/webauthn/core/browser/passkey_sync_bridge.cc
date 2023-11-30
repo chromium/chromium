@@ -407,13 +407,7 @@ sync_pb::WebauthnCredentialSpecifics PasskeySyncBridge::CreatePasskey(
       webauthn::passkey_model_utils::GeneratePasskeyAndEncryptSecrets(
           rp_id, user_entity, trusted_vault_key, trusted_vault_key_version);
 
-  for (const auto& [sync_id, existing_passkey] : data_) {
-    if (specifics.rp_id() == existing_passkey.rp_id() &&
-        specifics.user_id() == existing_passkey.user_id()) {
-      specifics.add_newly_shadowed_credential_ids(
-          existing_passkey.credential_id());
-    }
-  }
+  AddShadowedCredentialIdsToNewPasskey(specifics);
 
   AddPasskeyInternal(specifics);
 
@@ -421,6 +415,17 @@ sync_pb::WebauthnCredentialSpecifics PasskeySyncBridge::CreatePasskey(
     *public_key_spki_der_out = std::move(public_key_spki_der);
   }
   return specifics;
+}
+
+void PasskeySyncBridge::CreatePasskey(
+    sync_pb::WebauthnCredentialSpecifics& passkey) {
+  CHECK(WebauthnCredentialSpecificsValid(passkey));
+
+  std::string sync_id = passkey.sync_id();
+  CHECK(!base::Contains(data_, sync_id));
+
+  AddShadowedCredentialIdsToNewPasskey(passkey);
+  AddPasskeyInternal(passkey);
 }
 
 std::string PasskeySyncBridge::AddNewPasskeyForTesting(
@@ -514,6 +519,17 @@ void PasskeySyncBridge::NotifyPasskeysChanged(
   TRACE_EVENT0("sync", "PasskeySyncBridge::NotifyPasskeysChanged");
   for (auto& observer : observers_) {
     observer.OnPasskeysChanged(changes);
+  }
+}
+
+void PasskeySyncBridge::AddShadowedCredentialIdsToNewPasskey(
+    sync_pb::WebauthnCredentialSpecifics& passkey) {
+  for (const auto& [sync_id, existing_passkey] : data_) {
+    if (passkey.rp_id() == existing_passkey.rp_id() &&
+        passkey.user_id() == existing_passkey.user_id()) {
+      passkey.add_newly_shadowed_credential_ids(
+          existing_passkey.credential_id());
+    }
   }
 }
 

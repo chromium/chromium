@@ -91,14 +91,7 @@ sync_pb::WebauthnCredentialSpecifics TestPasskeyModel::CreatePasskey(
       webauthn::passkey_model_utils::GeneratePasskeyAndEncryptSecrets(
           rp_id, user_entity, trusted_vault_key, trusted_vault_key_version);
 
-  for (const auto& existing_passkey : credentials_) {
-    if (existing_passkey.rp_id() == specifics.rp_id() &&
-        existing_passkey.user_id() == specifics.user_id()) {
-      specifics.add_newly_shadowed_credential_ids(
-          existing_passkey.credential_id());
-    }
-  }
-
+  AddShadowedCredentialIdsToNewPasskey(specifics);
   credentials_.push_back(specifics);
 
   NotifyPasskeysChanged(
@@ -108,6 +101,14 @@ sync_pb::WebauthnCredentialSpecifics TestPasskeyModel::CreatePasskey(
     *public_key_spki_der_out = std::move(public_key_spki_der);
   }
   return specifics;
+}
+
+void TestPasskeyModel::CreatePasskey(
+    sync_pb::WebauthnCredentialSpecifics& passkey) {
+  AddShadowedCredentialIdsToNewPasskey(passkey);
+  credentials_.push_back(passkey);
+  NotifyPasskeysChanged(
+      {PasskeyModelChange(PasskeyModelChange::ChangeType::ADD, passkey)});
 }
 
 std::string TestPasskeyModel::AddNewPasskeyForTesting(
@@ -153,6 +154,17 @@ void TestPasskeyModel::NotifyPasskeysChanged(
     const std::vector<PasskeyModelChange>& changes) {
   for (auto& observer : observers_) {
     observer.OnPasskeysChanged(changes);
+  }
+}
+
+void TestPasskeyModel::AddShadowedCredentialIdsToNewPasskey(
+    sync_pb::WebauthnCredentialSpecifics& passkey) {
+  for (const auto& existing_passkey : credentials_) {
+    if (existing_passkey.rp_id() == passkey.rp_id() &&
+        existing_passkey.user_id() == passkey.user_id()) {
+      passkey.add_newly_shadowed_credential_ids(
+          existing_passkey.credential_id());
+    }
   }
 }
 

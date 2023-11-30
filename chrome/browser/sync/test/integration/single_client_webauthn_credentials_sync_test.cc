@@ -236,6 +236,64 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
               UnorderedElementsAre(PasskeyHasSyncId(passkey2.sync_id())));
 }
 
+// Tests CreatePasskey from a pre-constructed WebAuthnCredentialSpecifics.
+IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+                       CreatePasskeyFromEntity) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  sync_pb::WebauthnCredentialSpecifics passkey = NewPasskey();
+  GetModel().CreatePasskey(passkey);
+
+  EXPECT_TRUE(ServerPasskeysMatchChecker(
+                  UnorderedElementsAre(EntityHasSyncId(passkey.sync_id())))
+                  .Wait());
+  EXPECT_THAT(GetModel().GetAllPasskeys().at(0), PasskeySpecificsEq(passkey));
+  EXPECT_THAT(passkey, PasskeyHasRpId(kTestRpId));
+}
+
+// Tests CreatePasskey from a pre-constructed WebAuthnCredentialSpecifics with
+// shadow passkeys being added.
+IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+                       CreatePasskeyFromEntityWithShadows) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  sync_pb::WebauthnCredentialSpecifics passkey1a = NewPasskey();
+  sync_pb::WebauthnCredentialSpecifics passkey1b = NewPasskey();
+  // Make 1a shadow 1b implicitly, i.e. without setting
+  // newly_shadowed_credential_ids.
+  passkey1b.set_user_id(passkey1a.user_id());
+  // Add another that shadows 1b explicitly.
+  sync_pb::WebauthnCredentialSpecifics passkey1c =
+      NewShadowingPasskey(passkey1b);
+  // These shouldn't shadow anything.
+  sync_pb::WebauthnCredentialSpecifics passkey2 = NewPasskey();
+  passkey2.set_rp_id("rpid2.com");
+  passkey2.set_user_id(passkey1a.user_id());
+  sync_pb::WebauthnCredentialSpecifics passkey3 = NewPasskey();
+
+  GetModel().AddNewPasskeyForTesting(passkey1a);
+  GetModel().AddNewPasskeyForTesting(passkey1b);
+  GetModel().AddNewPasskeyForTesting(passkey1c);
+  GetModel().AddNewPasskeyForTesting(passkey2);
+  GetModel().AddNewPasskeyForTesting(passkey3);
+
+  // Invoking CreatePasskey() for the given RP ID should shadow 1a, 1b and 1c,
+  // but not 2 or 3 (different RP or user ID).
+  sync_pb::WebauthnCredentialSpecifics new_passkey = NewPasskey();
+  new_passkey.set_user_id(passkey1a.user_id());
+  GetModel().CreatePasskey(new_passkey);
+
+  EXPECT_THAT(
+      new_passkey.newly_shadowed_credential_ids(),
+      UnorderedElementsAre(passkey1a.credential_id(), passkey1b.credential_id(),
+                           passkey1c.credential_id()));
+  EXPECT_THAT(GetModel().GetPasskeysForRelyingPartyId(passkey1a.rp_id()),
+              UnorderedElementsAre(PasskeyHasSyncId(passkey3.sync_id()),
+                                   PasskeyHasSyncId(new_passkey.sync_id())));
+  EXPECT_THAT(GetModel().GetPasskeysForRelyingPartyId(passkey2.rp_id()),
+              UnorderedElementsAre(PasskeyHasSyncId(passkey2.sync_id())));
+}
+
 // Adding a remote passkey should sync to the client.
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                        DownloadNewServerPasskey) {

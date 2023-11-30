@@ -2197,10 +2197,16 @@ void AuthenticatorRequestDialogModel::
         absl::optional<device::AuthenticatorType> type) {
   HideDialog();
 
+  // Prefer to use the enclave authenticator over a platform authenticator
+  // if the device has registered to use it.
+  if (!type && is_enclave_authenticator_available_) {
+    type = device::AuthenticatorType::kEnclave;
+  }
+
 #if BUILDFLAG(IS_WIN)
   // The Windows-native UI already handles retrying so we do not offer a second
   // level of retry in that case.
-  if (type != device::AuthenticatorType::kEnclave) {
+  if (type && *type != device::AuthenticatorType::kEnclave) {
     offer_try_again_in_ui_ = false;
   }
 #elif BUILDFLAG(IS_MAC)

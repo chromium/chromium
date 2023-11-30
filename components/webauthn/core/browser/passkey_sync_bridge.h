@@ -73,6 +73,7 @@ class PasskeySyncBridge : public syncer::ModelTypeSyncBridge,
       base::span<const uint8_t> trusted_vault_key,
       int32_t trusted_vault_key_version,
       std::vector<uint8_t>* public_key_spki_der_out) override;
+  void CreatePasskey(sync_pb::WebauthnCredentialSpecifics& passkey) override;
   std::string AddNewPasskeyForTesting(
       sync_pb::WebauthnCredentialSpecifics passkey) override;
 
@@ -89,6 +90,8 @@ class PasskeySyncBridge : public syncer::ModelTypeSyncBridge,
   void OnStoreCommitWriteBatch(const absl::optional<syncer::ModelError>& error);
   void NotifyPasskeysChanged(const std::vector<PasskeyModelChange>& changes);
   void AddPasskeyInternal(sync_pb::WebauthnCredentialSpecifics specifics);
+  void AddShadowedCredentialIdsToNewPasskey(
+      sync_pb::WebauthnCredentialSpecifics& passkey);
 
   // Local view of the stored data. Indexes specifics protos by storage key.
   std::map<std::string, sync_pb::WebauthnCredentialSpecifics> data_;
