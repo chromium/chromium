@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './strings.m.js';
+import './bypass_warning_confirmation_dialog.js';
 import './item.js';
 import './toolbar.js';
 import 'chrome://resources/cr_components/managed_footnote/managed_footnote.js';
@@ -35,6 +36,14 @@ export interface DownloadsManagerElement {
     'toolbar': DownloadsToolbarElement,
     'downloadsList': IronListElement,
   };
+}
+
+type SaveDangerousClickEvent = CustomEvent<{id: string}>;
+
+declare global {
+  interface HTMLElementEventMap {
+    'save-dangerous-click': SaveDangerousClickEvent;
+  }
 }
 
 const DownloadsManagerElementBase = FindShortcutMixin(PolymerElement);
@@ -78,6 +87,11 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
         notify: true,
       },
 
+      bypassDialogItemId_: {
+        type: String,
+        value: '',
+      },
+
       lastFocused_: Object,
 
       listBlurred_: Boolean,
@@ -93,6 +107,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
   private hasShadow_: boolean;
   private inSearchMode_: boolean;
   private spinnerActive_: boolean;
+  private bypassDialogItemId_: string;
 
   private announcerDebouncer_: Debouncer|null = null;
   private mojoHandler_: PageHandlerInterface;
@@ -120,7 +135,6 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     }
   }
 
-  /** @override */
   override connectedCallback() {
     super.connectedCallback();
 
@@ -155,7 +169,6 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
         e => this.onToastClicked_(e);
   }
 
-  /** @override */
   override disconnectedCallback() {
     super.disconnectedCallback();
 
@@ -163,6 +176,39 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
         id => assert(this.mojoEventTarget_.removeListener(id)));
 
     this.eventTracker_.removeAll();
+  }
+
+  private onSaveDangerousClick_(e: SaveDangerousClickEvent) {
+    const bypassItem = this.items_.find(item => item.id === e.detail.id);
+    if (bypassItem) {
+      this.bypassDialogItemId_ = bypassItem.id;
+    }
+  }
+
+  private shouldShowBypassWarningDialog_(): boolean {
+    return this.bypassDialogItemId_ !== '';
+  }
+
+  private computeBypassWarningDialogFileName_(): string {
+    const bypassItem =
+        this.items_.find(item => item.id === this.bypassDialogItemId_);
+    return bypassItem?.fileName || '';
+  }
+
+  private hideBypassWarningDialog_() {
+    this.bypassDialogItemId_ = '';
+  }
+
+  private onBypassWarningConfirmationDialogClose_() {
+    const dialog = this.shadowRoot!.querySelector(
+        'download-bypass-warning-confirmation-dialog');
+    assert(dialog);
+    assert(this.bypassDialogItemId_ !== '');
+    if (dialog.wasConfirmed()) {
+      this.mojoHandler_!.saveDangerousRequiringGesture(
+          this.bypassDialogItemId_);
+    }
+    this.hideBypassWarningDialog_();
   }
 
   private clearAll_() {
@@ -308,6 +354,9 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
   private removeItem_(index: number) {
     const removed = this.items_.splice(index, 1);
     this.updateHideDates_(index, index);
+    if (removed.some(item => item.id === this.bypassDialogItemId_)) {
+      this.hideBypassWarningDialog_();
+    }
     this.notifySplices('items_', [{
                          index: index,
                          addedCount: 0,

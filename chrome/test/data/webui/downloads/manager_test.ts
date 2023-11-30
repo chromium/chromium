@@ -8,6 +8,7 @@ import {isMac} from 'chrome://resources/js/platform.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {createDownload, TestDownloadsProxy} from './test_support.js';
 
@@ -234,4 +235,72 @@ suite('manager tests', function() {
     keyDownOn(document.documentElement, 0, 'alt', isMac ? 'ç' : 'c');
     assertFalse(toastManager.slottedHidden);
   });
+
+  test(
+      'bypass warning confirmation dialog shown on save-dangerous-click',
+      async () => {
+        callbackRouterRemote.insertItems(0, [
+          createDownload({
+            id: 'itemId',
+            fileName: 'item.pdf',
+            state: State.kDangerous,
+            isDangerous: true,
+            dangerType: DangerType.kDangerousUrl,
+          }),
+        ]);
+        await callbackRouterRemote.$.flushForTesting();
+        flush();
+        const item = manager.shadowRoot!.querySelector('downloads-item')!;
+        assertTrue(!!item);
+        item.dispatchEvent(new CustomEvent('save-dangerous-click', {
+          bubbles: true,
+          composed: true,
+          detail: {id: item.data.id},
+        }));
+        flush();
+        const dialog = manager.shadowRoot!.querySelector(
+            'download-bypass-warning-confirmation-dialog');
+        assertTrue(!!dialog);
+        assertTrue(dialog.$.dialog.open);
+        assertEquals('item.pdf', dialog.fileName);
+        // Confirm the dialog to download the dangerous file.
+        dialog.$.dialog.close();
+        flush();
+        const id = await testBrowserProxy.handler.whenCalled(
+            'saveDangerousRequiringGesture');
+        assertEquals('itemId', id);
+        assertFalse(dialog.$.dialog.open);
+      });
+
+  test(
+      'bypass warning confirmation dialog closed when file removed',
+      async () => {
+        callbackRouterRemote.insertItems(0, [
+          createDownload({
+            id: 'itemId',
+            state: State.kDangerous,
+            isDangerous: true,
+            dangerType: DangerType.kDangerousUrl,
+          }),
+        ]);
+        await callbackRouterRemote.$.flushForTesting();
+        flush();
+        const item = manager.shadowRoot!.querySelector('downloads-item')!;
+        assertTrue(!!item);
+        item.dispatchEvent(new CustomEvent('save-dangerous-click', {
+          bubbles: true,
+          composed: true,
+          detail: {id: item.data.id},
+        }));
+        flush();
+        const dialog = manager.shadowRoot!.querySelector(
+            'download-bypass-warning-confirmation-dialog');
+        assertTrue(!!dialog);
+        assertTrue(dialog.$.dialog.open);
+        // Remove the file and check that the dialog is hidden.
+        callbackRouterRemote.removeItem(0);
+        await callbackRouterRemote.$.flushForTesting();
+        flush();
+        assertFalse(isVisible(dialog));
+      });
 });

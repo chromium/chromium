@@ -16,7 +16,6 @@ import './strings.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
-import './bypass_warning_confirmation_dialog.js';
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -186,8 +185,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       },
 
       useFileIcon_: Boolean,
-
-      showBypassWarningConfirmationDialog_: Boolean,
     };
   }
 
@@ -218,7 +215,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   private displayType_: DisplayType;
   private improvedDownloadWarningsUx_: boolean;
   private completelyOnDisk_: boolean;
-  private showBypassWarningConfirmationDialog_: boolean;
   override overrideCustomEquivalent: boolean;
 
   constructor() {
@@ -228,7 +224,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     this.overrideCustomEquivalent = true;
   }
 
-  /** @override */
   override ready() {
     super.ready();
 
@@ -927,25 +922,24 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     }
   }
 
+  private notifySaveDangerousClick_() {
+    this.dispatchEvent(new CustomEvent('save-dangerous-click', {
+      bubbles: true,
+      composed: true,
+      detail: {id: this.data.id},
+    }));
+  }
+
   private onSaveDangerousClick_() {
     if (this.improvedDownloadWarningsUx_) {
       this.getMoreActionsMenu().close();
+      // TODO(crbug.com/1465966): Suspicious downloads should validate directly.
       if (this.displayType_ === DisplayType.DANGEROUS) {
-        this.showBypassWarningConfirmationDialog_ = true;
+        this.notifySaveDangerousClick_();
         return;
       }
     }
     this.mojoHandler_!.saveDangerousRequiringGesture(this.data.id);
-  }
-
-  private onBypassWarningConfirmationDialogClose_() {
-    const dialog = this.shadowRoot!.querySelector(
-        'download-bypass-warning-confirmation-dialog');
-    assert(dialog);
-    if (dialog.wasConfirmed()) {
-      this.mojoHandler_!.saveDangerousRequiringGesture(this.data.id);
-    }
-    this.showBypassWarningConfirmationDialog_ = false;
   }
 
   private onShowClick_() {

@@ -584,9 +584,3 @@
     <div id="incognito" title="$i18n{inIncognito}" hidden="[[!data.otr]]"></div>
   </div>
 </div>
-<template is="dom-if" if="[[showBypassWarningConfirmationDialog_]]" restamp>
-  <download-bypass-warning-confirmation-dialog
-      file-name="[[data.fileName]]"
-      on-close="onBypassWarningConfirmationDialogClose_">
-  </download-bypass-warning-confirmation-dialog>
-</template>

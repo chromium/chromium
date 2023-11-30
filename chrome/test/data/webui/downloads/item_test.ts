@@ -5,8 +5,8 @@
 import {BrowserProxy, CrToastManagerElement, DangerType, DownloadsItemElement, IconLoaderImpl, loadTimeData, SafeBrowsingState, State} from 'chrome://downloads/downloads.js';
 import {stringToMojoString16, stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {createDownload, TestDownloadsProxy, TestIconLoader} from './test_support.js';
 
@@ -395,7 +395,7 @@ suite('item tests', function() {
         assertEquals('true', iconWrapper!.ariaHidden);
       });
 
-  test('bypass warning confirmation dialog shown for dangerous', () => {
+  test('save dangerous click fires event for dangerous', () => {
     loadTimeData.overrideValues({improvedDownloadWarningsUX: true});
     const item = document.createElement('downloads-item');
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -407,6 +407,7 @@ suite('item tests', function() {
                dangerType: DangerType.kDangerousUrl,
              }));
     flush();
+    const whenFired = eventToPromise('save-dangerous-click', item);
     item.getMoreActionsButton().click();
     const saveDangerousButton =
         item.shadowRoot!.querySelector<HTMLElement>('#save-dangerous');
@@ -414,14 +415,10 @@ suite('item tests', function() {
     assertTrue(isVisible(saveDangerousButton));
     saveDangerousButton.click();
     flush();
-    assertFalse(item.getMoreActionsMenu().open);
-    const dialog = item.shadowRoot!.querySelector(
-        'download-bypass-warning-confirmation-dialog');
-    assertTrue(!!dialog);
-    assertTrue(dialog.$.dialog.open);
+    return whenFired;
   });
 
-  test('confirming bypass warning dialog calls mojo handler', async () => {
+  test('save dangerous click does not fire event for suspicious', async () => {
     loadTimeData.overrideValues({improvedDownloadWarningsUX: true});
     const item = document.createElement('downloads-item');
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -431,41 +428,17 @@ suite('item tests', function() {
                filePath: 'unique1',
                hideDate: false,
                state: State.kDangerous,
-               dangerType: DangerType.kDangerousUrl,
-             }));
-    flush();
-    item.getMoreActionsButton().click();
-    const saveDangerousButton =
-        item.shadowRoot!.querySelector<HTMLElement>('#save-dangerous');
-    assertTrue(!!saveDangerousButton);
-    saveDangerousButton.click();
-    flush();
-    const dialog = item.shadowRoot!.querySelector(
-        'download-bypass-warning-confirmation-dialog');
-    assertTrue(!!dialog);
-    assertTrue(dialog.$.dialog.open);
-    // Confirm the dialog to download the dangerous file.
-    dialog.$.dialog.close();
-    const id = await testDownloadsProxy.handler.whenCalled(
-        'saveDangerousRequiringGesture');
-    assertEquals('itemId', id);
-    assertFalse(dialog.$.dialog.open);
-  });
-
-  test('bypass warning confirmation dialog not shown for suspicious', () => {
-    loadTimeData.overrideValues({improvedDownloadWarningsUX: true});
-    const item = document.createElement('downloads-item');
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    document.body.appendChild(item);
-    item.set('data', createDownload({
-               filePath: 'unique1',
-               hideDate: false,
-               state: State.kDangerous,
                // Uncommon content is suspicious, not dangerous, so no dialog
-               // should appear.
+               // event should be fired.
                dangerType: DangerType.kUncommonContent,
              }));
     flush();
+
+    // The event should never be fired.
+    item.addEventListener('save-dangerous-click', () => {
+      assertNotReached('Unexpected event fired');
+    });
+
     item.getMoreActionsButton().click();
     const saveDangerousButton =
         item.shadowRoot!.querySelector<HTMLElement>('#save-dangerous');
@@ -473,10 +446,10 @@ suite('item tests', function() {
     assertTrue(isVisible(saveDangerousButton));
     saveDangerousButton.click();
     flush();
-    assertFalse(item.getMoreActionsMenu().open);
-    const dialog = item.shadowRoot!.querySelector(
-        'download-bypass-warning-confirmation-dialog');
-    assertFalse(!!dialog);
+    // The mojo handler is called directly, no event for the dialog is fired.
+    const id = await testDownloadsProxy.handler.whenCalled(
+        'saveDangerousRequiringGesture');
+    assertEquals('itemId', id);
   });
 
   test('deep scan dropdown buttons shown on correct state', () => {
