@@ -4,6 +4,8 @@
 
 #include "ash/login/ui/login_camera_timeout_view.h"
 
+#include <utility>
+
 #include "ash/login/ui/arrow_button_view.h"
 #include "ash/login/ui/views_utils.h"
 #include "ash/style/ash_color_id.h"
@@ -57,7 +59,7 @@ views::View* LoginCameraTimeoutView::TestApi::arrow_button() const {
 }
 
 LoginCameraTimeoutView::LoginCameraTimeoutView(
-    const views::Button::PressedCallback& callback)
+    views::Button::PressedCallback callback)
     : NonAccessibleView(kLoginCameraTimeoutViewClassName) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
@@ -86,8 +88,8 @@ LoginCameraTimeoutView::LoginCameraTimeoutView(
       kFontDeltaSubtitle));
 
   // Create arrow button.
-  auto arrow_button =
-      std::make_unique<ArrowButtonView>(callback, kArrowButtonSizeDp);
+  auto arrow_button = std::make_unique<ArrowButtonView>(std::move(callback),
+                                                        kArrowButtonSizeDp);
   arrow_button->SetAccessibleName(base::JoinString(
       {l10n_util::GetStringFUTF16(IDS_ASH_LOGIN_CAMERA_TIME_OUT_TITLE,
                                   ui::GetChromeOSDeviceName()),

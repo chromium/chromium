@@ -39,7 +39,7 @@ class ASH_EXPORT LoginCameraTimeoutView : public NonAccessibleView {
 
   using OnPublicAccountTapped = base::RepeatingClosure;
 
-  LoginCameraTimeoutView(const views::Button::PressedCallback& callback);
+  LoginCameraTimeoutView(views::Button::PressedCallback callback);
 
   LoginCameraTimeoutView(const LoginCameraTimeoutView&) = delete;
   LoginCameraTimeoutView& operator=(const LoginCameraTimeoutView&) = delete;

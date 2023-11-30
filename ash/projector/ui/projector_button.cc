@@ -4,6 +4,8 @@
 
 #include "ash/projector/ui/projector_button.h"
 
+#include <utility>
+
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
@@ -26,7 +28,7 @@ constexpr gfx::Insets kButtonPadding{0};
 
 ProjectorButton::ProjectorButton(views::Button::PressedCallback callback,
                                  const std::u16string& name)
-    : ToggleImageButton(callback), name_(name) {
+    : ToggleImageButton(std::move(callback)), name_(name) {
   SetPreferredSize(gfx::Size(kProjectorButtonSize, kProjectorButtonSize));
   SetBorder(views::CreateEmptyBorder(kButtonPadding));
 

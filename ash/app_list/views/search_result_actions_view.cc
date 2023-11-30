@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <utility>
 
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/views/search_result_actions_view_delegate.h"
@@ -82,7 +83,7 @@ SearchResultActionButton::SearchResultActionButton(
     Type type,
     const gfx::VectorIcon* icon,
     const std::u16string& accessible_name)
-    : IconButton(callback,
+    : IconButton(std::move(callback),
                  type,
                  icon,
                  action.tooltip_text,

@@ -145,7 +145,7 @@ class ClosePromoButton : public views::ImageButton {
  public:
   ClosePromoButton(const std::u16string accessible_name,
                    PressedCallback callback) {
-    SetCallback(callback);
+    SetCallback(std::move(callback));
     views::ConfigureVectorImageButton(this);
     views::HighlightPathGenerator::Install(
         this,
