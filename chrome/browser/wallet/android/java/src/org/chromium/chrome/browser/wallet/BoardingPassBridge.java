@@ -20,16 +20,6 @@ public class BoardingPassBridge {
     private BoardingPassBridge() {}
 
     /**
-     * Decides whether to run boarding pass detection on given url.
-     *
-     * @param url URL of the current page.
-     * @return whether to run detection
-     */
-    public static boolean shouldDetect(String url) {
-        return BoardingPassBridgeJni.get().shouldDetect(url);
-    }
-
-    /**
      * Detects boarding pass barcode raw string from web page.
      *
      * @return Detected boarding passes raw string.
@@ -48,7 +38,6 @@ public class BoardingPassBridge {
 
     @NativeMethods
     public interface Natives {
-        boolean shouldDetect(String url);
 
         void detectBoardingPass(Callback<String[]> callback);
     }
