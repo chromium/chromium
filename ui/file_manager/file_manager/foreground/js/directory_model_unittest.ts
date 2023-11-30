@@ -7,15 +7,16 @@ import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {RootType} from '../../common/js/volume_manager_types.js';
+import type {VolumeInfo} from '../../externs/volume_info.js';
 
 import {FileFilter} from './directory_contents.js';
 import {DirectoryModel} from './directory_model.js';
 import {MockMetadataModel} from './metadata/mock_metadata.js';
 
-/**
- * @type {?function(!chrome.fileManagerPrivate.ProgressStatus):void}
- */
-let onIOTaskProgressStatusCallback;
+type ProgressStatusCallback =
+    (status: chrome.fileManagerPrivate.ProgressStatus) => void;
+
+let onIOTaskProgressStatusCallback: ProgressStatusCallback;
 
 /**
  * Initializes the test environment.
@@ -23,16 +24,11 @@ let onIOTaskProgressStatusCallback;
 export function setUp() {
   /**
    * Mock chrome APIs.
-   * @type {!Object}
    */
   const mockChrome = {
     fileManagerPrivate: {
       onIOTaskProgressStatus: {
-        /**
-         * @param {?function(!chrome.fileManagerPrivate.ProgressStatus):void}
-         *     callback
-         */
-        addListener(callback) {
+        addListener(callback: ProgressStatusCallback) {
           onIOTaskProgressStatusCallback = callback;
         },
       },
@@ -46,17 +42,13 @@ export function setUp() {
 /**
  * Mock DirectoryModel's dependencies and return a DirectoryModel instance.
  *
- * @returns {!DirectoryModel}
  */
-function getDirectoryModel() {
+function getDirectoryModel(): DirectoryModel {
   const volumeManager = new MockVolumeManager();
   MockVolumeManager.installMockSingleton(volumeManager);
   const fileFilter = new FileFilter(volumeManager);
   const metadataModel = new MockMetadataModel({});
-  return new DirectoryModel(
-      // @ts-ignore: error TS2345: Argument of type 'MockMetadataModel' is not
-      // assignable to parameter of type 'MetadataModel'.
-      false, fileFilter, metadataModel, volumeManager);
+  return new DirectoryModel(false, fileFilter, metadataModel, volumeManager);
 }
 
 /**
@@ -64,14 +56,14 @@ function getDirectoryModel() {
  * operation.
  */
 export function testRecanAfterDeletionForRecents() {
-  const deleteEvent = /** @type {chrome.fileManagerPrivate.ProgressStatus} */ ({
+  const deleteEvent = {
     type: chrome.fileManagerPrivate.IOTaskType.DELETE,
     state: chrome.fileManagerPrivate.IOTaskState.SUCCESS,
-  });
-  const copyEvent = /** @type {chrome.fileManagerPrivate.ProgressStatus} */ ({
+  } as chrome.fileManagerPrivate.ProgressStatus;
+  const copyEvent = {
     type: chrome.fileManagerPrivate.IOTaskType.COPY,
     state: chrome.fileManagerPrivate.IOTaskState.SUCCESS,
-  });
+  } as chrome.fileManagerPrivate.ProgressStatus;
 
   const directoryModel = getDirectoryModel();
   let isRescanCalled = false;
@@ -81,20 +73,16 @@ export function testRecanAfterDeletionForRecents() {
 
   // Current directory is not Recent.
   directoryModel.getCurrentRootType = () => RootType.DOWNLOADS;
-  // @ts-ignore: error TS2721: Cannot invoke an object which is possibly 'null'.
   onIOTaskProgressStatusCallback(deleteEvent);
   assertFalse(isRescanCalled);
-  // @ts-ignore: error TS2721: Cannot invoke an object which is possibly 'null'.
   onIOTaskProgressStatusCallback(copyEvent);
   assertFalse(isRescanCalled);
 
   // Current directory is Recent.
   directoryModel.getCurrentRootType = () => RootType.RECENT;
-  // @ts-ignore: error TS2721: Cannot invoke an object which is possibly 'null'.
   onIOTaskProgressStatusCallback(deleteEvent);
   assertTrue(isRescanCalled);
   isRescanCalled = false;
-  // @ts-ignore: error TS2721: Cannot invoke an object which is possibly 'null'.
   onIOTaskProgressStatusCallback(copyEvent);
   assertTrue(isRescanCalled);
 }
@@ -110,12 +98,10 @@ export function testRescanAfterIOTaskOperationOnlyForNonWatchableVolume() {
     isRescanCalled = true;
   };
   // Current directory is non-watchable.
-  // @ts-ignore: error TS2322: Type '() => { watchable: false; }' is not
-  // assignable to type '() => VolumeInfo'.
   directoryModel.getCurrentVolumeInfo = () => {
     return {
       watchable: false,
-    };
+    } as VolumeInfo;
   };
 
   /** @type {!Array<!chrome.fileManagerPrivate.IOTaskType>} */
@@ -132,14 +118,12 @@ export function testRescanAfterIOTaskOperationOnlyForNonWatchableVolume() {
   ];
 
   for (const operation of operations) {
-    const event = /** @type {chrome.fileManagerPrivate.ProgressStatus} */ ({
+    const event = {
       type: operation,
       state: chrome.fileManagerPrivate.IOTaskState.SUCCESS,
-    });
+    } as chrome.fileManagerPrivate.ProgressStatus;
 
     isRescanCalled = false;
-    // @ts-ignore: error TS2721: Cannot invoke an object which is possibly
-    // 'null'.
     onIOTaskProgressStatusCallback(event);
     assertTrue(isRescanCalled);
   }
