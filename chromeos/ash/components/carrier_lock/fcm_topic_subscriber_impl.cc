@@ -172,10 +172,7 @@ void FcmTopicSubscriberImpl::ReturnSuccess() {
 }
 
 void FcmTopicSubscriberImpl::ShutdownHandler() {
-  if (gcm_driver_) {
-    gcm_driver_->RemoveAppHandler(app_id_);
-  }
-  gcm_driver_ = nullptr;
+  NOTREACHED() << "FcmTopicSubscriberImpl should be destroyed before GCMDriver";
 }
 
 void FcmTopicSubscriberImpl::OnStoreReset() {}

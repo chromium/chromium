@@ -1516,6 +1516,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   SystemProxyManager::Shutdown();
   report_controller_.reset();
   crostini_unsupported_action_notifier_.reset();
+  carrier_lock_manager_.reset();
 
   BootTimesRecorder::Get()->AddLogoutTimeMarker("UIMessageLoopEnded", true);
 
