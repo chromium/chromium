@@ -656,16 +656,9 @@ TEST_F(TargetDeviceBootstrapControllerTest,
       .Times(1);
 
   // Expect that TargetDeviceBootstrapController passes the certificate it
-  // received from SecondDeviceAuthBroker back to it, and also the original
-  // FidoAssertion, but with a modified client_data field based on the challenge
-  // bytes.
-  FidoAssertionInfo modified_fido_assertion = fido_assertion;
-  auto client_data =
-      quick_start::AccountTransferClientData(kFakeChallengeBytes_).CreateJson();
-  modified_fido_assertion.client_data =
-      std::vector<uint8_t>(client_data.begin(), client_data.end());
-  EXPECT_CALL(*auth_broker_, FetchAuthCode(modified_fido_assertion,
-                                           pem_cert_chain, testing::_))
+  // received from SecondDeviceAuthBroker back to it.
+  EXPECT_CALL(*auth_broker_,
+              FetchAuthCode(fido_assertion, pem_cert_chain, testing::_))
       .Times(1);
 
   fake_target_device_connection_broker_->GetFakeConnection()

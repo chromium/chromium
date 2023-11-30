@@ -261,6 +261,9 @@ void Connection::OnRequestAccountTransferAssertionResponse(
 
   assertion_info.authenticator_data = fido_response->auth_data;
   assertion_info.signature = fido_response->signature;
+  std::string client_data = client_data_->CreateJson();
+  assertion_info.client_data =
+      std::vector<uint8_t>(client_data.begin(), client_data.end());
 
   quick_start_metrics_.RecordGaiaTransferResult(
       /*succeeded=*/true, /*failure_reason=*/absl::nullopt);

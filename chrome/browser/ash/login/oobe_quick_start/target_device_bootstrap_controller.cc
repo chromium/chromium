@@ -391,12 +391,7 @@ void TargetDeviceBootstrapController::OnFidoAssertionReceived(
   }
 
   quick_start::QS_LOG(INFO) << "Received FIDO assertion.";
-  // Store the FIDO assertion and set the client_data field.
   fido_assertion_ = assertion.value();
-  auto client_data =
-      quick_start::AccountTransferClientData(challenge_bytes_).CreateJson();
-  fido_assertion_.client_data =
-      std::vector<uint8_t>(client_data.begin(), client_data.end());
 
   auth_broker_->FetchAttestationCertificate(
       fido_assertion_.credential_id,
