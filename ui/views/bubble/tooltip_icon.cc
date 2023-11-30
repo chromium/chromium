@@ -24,7 +24,10 @@
 namespace views {
 
 TooltipIcon::TooltipIcon(const std::u16string& tooltip, int tooltip_icon_size)
-    : tooltip_(tooltip), tooltip_icon_size_(tooltip_icon_size) {
+    : tooltip_(tooltip),
+      tooltip_icon_size_(tooltip_icon_size),
+
+      bubble_(nullptr) {
   SetFocusBehavior(PlatformStyle::kDefaultFocusBehavior);
   set_suppress_default_focus_handling();
   FocusRing::Install(this);
@@ -136,7 +139,7 @@ void TooltipIcon::ShowBubble() {
 
   SetDrawAsHovered(true);
 
-  bubble_ = std::make_unique<InfoBubble>(this, anchor_point_arrow_, tooltip_);
+  bubble_ = new InfoBubble(this, anchor_point_arrow_, tooltip_);
   bubble_->set_preferred_width(preferred_width_);
   // When shown due to a gesture event, close on deactivate (i.e. don't use
   // "focusless").
@@ -167,7 +170,7 @@ void TooltipIcon::OnWidgetDestroyed(Widget* widget) {
 
   SetDrawAsHovered(false);
   mouse_watcher_.reset();
-  bubble_.reset();
+  bubble_ = nullptr;
 }
 
 BEGIN_METADATA(TooltipIcon, ImageView)
