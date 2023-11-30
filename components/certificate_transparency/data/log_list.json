@@ -1,6 +1,6 @@
 {
-  "version": "27.4",
-  "log_list_timestamp": "2023-11-29T12:55:32Z",
+  "version": "28.1",
+  "log_list_timestamp": "2023-11-30T12:54:34Z",
   "operators": [
     {
       "name": "Google",
@@ -203,22 +203,6 @@
         "ctops@digicert.com"
       ],
       "logs": [
-        {
-          "description": "DigiCert Yeti2023 Log",
-          "log_id": "Nc8ZG7+xbFe/D61MbULLu7YnICZR6j/hKu+oA8M71kw=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEfQ0DsdWYitzwFTvG3F4Nbj8Nv5XIVYzQpkyWsU4nuSYlmcwrAp6m092fsdXEw6w1BAeHlzaqrSgNfyvZaJ9y0Q==",
-          "url": "https://yeti2023.ct.digicert.com/log/",
-          "mmd": 86400,
-          "state": {
-            "retired": {
-              "timestamp": "2022-09-29T00:00:00Z"
-            }
-          },
-          "temporal_interval": {
-            "start_inclusive": "2023-01-01T00:00:00Z",
-            "end_exclusive": "2024-01-01T00:00:00Z"
-          }
-        },
         {
           "description": "DigiCert Yeti2024 Log",
           "log_id": "SLDja9qmRzQP5WoC+p0w6xxSActW3SyB2bu/qznYhHM=",
