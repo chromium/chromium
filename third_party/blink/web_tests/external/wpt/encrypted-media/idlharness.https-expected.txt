@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] MediaKeys interface: operation getStatusForPolicy(optional MediaKeysPolicy)
+  assert_equals: property has wrong .length expected 0 but got 1
+Harness: the test ran to completion.
+
