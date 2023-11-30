@@ -13,7 +13,6 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
 #include "components/services/storage/storage_service_impl.h"
 #include "content/child/child_process.h"
@@ -32,6 +31,7 @@
 #include "services/data_decoder/data_decoder_service.h"
 #include "services/network/network_service.h"
 #include "services/on_device_model/on_device_model_service.h"
+#include "services/on_device_model/public/cpp/features.h"
 #include "services/tracing/public/mojom/tracing_service.mojom.h"
 #include "services/tracing/tracing_service.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
@@ -403,9 +403,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunVideoCapture);
 
   if (base::FeatureList::IsEnabled(
-          optimization_guide::features::kOptimizationGuideOnDeviceModel) ||
-      base::FeatureList::IsEnabled(
-          optimization_guide::features::kLogOnDeviceMetricsOnStartup)) {
+          on_device_model::features::kOnDeviceModelService)) {
     services.Add(RunOnDeviceModel);
   }
 
