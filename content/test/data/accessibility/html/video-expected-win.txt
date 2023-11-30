@@ -1,0 +1,11 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++IA2_ROLE_SECTION READONLY
+++++ROLE_SYSTEM_CLIENT name='0:00' FOCUSABLE
+++++++ROLE_SYSTEM_TOOLBAR name='video' READONLY description='video'
+++++++ROLE_SYSTEM_TOOLBAR name='video' READONLY description='video'
+++++++++ROLE_SYSTEM_TOOLBAR name='video' READONLY description='video'
+++++++++++ROLE_SYSTEM_PUSHBUTTON name='play' FOCUSABLE description='begin playback'
+++++++++++ROLE_SYSTEM_SLIDER name='movie time scrubber' FOCUSABLE
+++++++++++IA2_ROLE_SECTION READONLY
+++++++++++++ROLE_SYSTEM_STATICTEXT name='0:00'
+++++++++++ROLE_SYSTEM_PUSHBUTTON name='mute' FOCUSABLE description='mute audio track'

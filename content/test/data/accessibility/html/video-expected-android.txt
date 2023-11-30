@@ -1,0 +1,10 @@
+android.webkit.WebView focusable focused scrollable
+++android.view.View
+++++android.view.View focusable name='0:00'
+++++++android.view.View name='video'
+++++++++android.view.View clickable focusable name='media control'
+++++++android.view.View name='video'
+++++++++android.view.View name='video'
+
+++++++++++android.widget.Button clickable focusable name='play'
+++++++++++android.widget.SeekBar clickable focusable range name='movie time scrubber' item_count=100

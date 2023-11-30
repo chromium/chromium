@@ -1,0 +1,11 @@
+AXWebArea
+++AXGroup
+++++AXUnknown AXTitle='0:00'
+++++++AXToolbar AXTitle='media control'
+++++++AXToolbar AXTitle='media control'
+++++++++AXToolbar AXTitle='media control'
+++++++++++AXButton
+++++++++++AXSlider AXValue='0'
+++++++++++AXGroup
+++++++++++++AXStaticText AXValue='0:00'
+++++++++++AXButton
