@@ -50,6 +50,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="WINDOWS_MIXED_REALITY_ID"/>
   <int value="7" label="ARCORE_DEVICE_ID"/>
   <int value="8" label="OPENXR_DEVICE_ID"/>
+  <int value="9" label="CARDBOARD_DEVICE_ID"/>
 </enum>
 
 </enums>
