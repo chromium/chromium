@@ -439,26 +439,23 @@ bool ColorFunctionParser::MakePerColorSpaceAdjustments() {
     }
   }
 
-  if (color_space_ == Color::ColorSpace::kHWB) {
     // Legacy syntax is not allowed for hwb().
-    if (is_legacy_syntax_) {
-      return false;
-    }
-    // w and b must be percentages or relative color channels.
-    if (channel_types_[1] == ChannelType::kNumber ||
-        channel_types_[2] == ChannelType::kNumber) {
-      return false;
-    }
+  if (color_space_ == Color::ColorSpace::kHWB && is_legacy_syntax_) {
+    return false;
   }
 
-  if (color_space_ == Color::ColorSpace::kHSL) {
-    // 2nd and 3rd parameters of hsl() must be percentages or "none" and clamped
-    // to the range [0, 1].
+  if (color_space_ == Color::ColorSpace::kHSL ||
+      color_space_ == Color::ColorSpace::kHWB) {
     for (int i : {1, 2}) {
       if (channel_types_[i] == ChannelType::kNumber) {
-        return false;
+        // Legacy color syntax needs percentages.
+        if (is_legacy_syntax_) {
+          return false;
+        }
+        // Raw numbers are interpreted as percentages in these color spaces.
+        channels_[i] = channels_[i].value() / 100.0;
       }
-      if (channel_types_[i] == ChannelType::kPercentage) {
+      if (channels_[i].has_value() && is_legacy_syntax_) {
         channels_[i] = ClampTo<double>(channels_[i].value(), 0.0, 1.0);
       }
     }
