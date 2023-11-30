@@ -554,21 +554,26 @@ VirtualCardUsageData VirtualCardUsageDataFromUsageSpecifics(
           GURL(virtual_card_usage_data_specifics.merchant_url())));
 }
 
-void CopyRelevantWalletMetadataFromDisk(
+void CopyRelevantWalletMetadataAndCvc(
     const AutofillTable& table,
     std::vector<CreditCard>* cards_from_server) {
-  std::vector<std::unique_ptr<CreditCard>> cards_on_disk;
-  table.GetServerCreditCards(cards_on_disk);
+  std::vector<std::unique_ptr<CreditCard>> cards_from_local_storage;
+  table.GetServerCreditCards(cards_from_local_storage);
 
   // Since the number of cards is fairly small, the brute-force search is good
   // enough.
-  for (const auto& saved_card : cards_on_disk) {
+  for (const auto& saved_card : cards_from_local_storage) {
     for (CreditCard& server_card : *cards_from_server) {
       if (saved_card->server_id() == server_card.server_id()) {
         // The wallet data doesn't have the use stats. Use the ones present on
         // disk to not overwrite them with bad data.
         server_card.set_use_count(saved_card->use_count());
         server_card.set_use_date(saved_card->use_date());
+
+        // Wallet data from the server doesn't have the CVC data as it's
+        // decoupled. Use the data present in the local storage, to prevent
+        // CVC data deletion.
+        server_card.set_cvc(saved_card->cvc());
 
         // Keep the billing address id of the saved cards only if it points to
         // a local address.

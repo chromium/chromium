@@ -97,11 +97,13 @@ VirtualCardUsageData VirtualCardUsageDataFromUsageSpecifics(
 
 // TODO(sebsg): This should probably copy the converted state for the address
 // too.
-// Copies the metadata from the local cards (if present) to the corresponding
-// server cards so that they don't get overwritten. This is because the wallet
-// data does not include those. They are handled by the
-// AutofillWalletMetadataSyncBridge.
-void CopyRelevantWalletMetadataFromDisk(
+// Copies the metadata and the CVC data from the local cards (if
+// present) to the corresponding server cards so that they don't get
+// overwritten. This is needed as the incoming wallet data does not include
+// those and for updates, we do a "Remove + Add", instead of "Update". The
+// "Remove + Add" operation is handled by the AutofillWalletMetadataSyncBridge
+// and AutofillWalletCredentialSyncBridge.
+void CopyRelevantWalletMetadataAndCvc(
     const AutofillTable& table,
     std::vector<CreditCard>* cards_from_server);
 

@@ -193,8 +193,8 @@ TEST_F(AutofillSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
 // Verify that the billing address id from the card saved on disk is kept if it
 // is a local profile guid.
 TEST_F(AutofillSyncBridgeUtilTest,
-       CopyRelevantWalletMetadataFromDisk_KeepLocalAddresses) {
-  std::vector<CreditCard> cards_on_disk;
+       CopyRelevantWalletMetadataAndCvc_KeepLocalAddresses) {
+  std::vector<CreditCard> cards_from_local_storage;
   std::vector<CreditCard> wallet_cards;
 
   // Create a local profile to be used as a billing address.
@@ -202,50 +202,51 @@ TEST_F(AutofillSyncBridgeUtilTest,
 
   // Create a card on disk that refers to that local profile as its billing
   // address.
-  cards_on_disk.push_back(CreditCard());
-  cards_on_disk.back().set_billing_address_id(billing_address.guid());
+  cards_from_local_storage.emplace_back();
+  cards_from_local_storage.back().set_billing_address_id(
+      billing_address.guid());
 
   // Create a card pulled from wallet with the same id, but a different billing
   // address id.
-  wallet_cards.push_back(CreditCard(cards_on_disk.back()));
+  wallet_cards.emplace_back(cards_from_local_storage.back());
   wallet_cards.back().set_billing_address_id("1234");
 
-  // Setup the TestAutofillTable with the cards_on_disk.
-  TestAutofillTable table(cards_on_disk);
+  // Setup the TestAutofillTable with the `cards_from_local_storage`.
+  TestAutofillTable table(cards_from_local_storage);
 
-  CopyRelevantWalletMetadataFromDisk(table, &wallet_cards);
+  CopyRelevantWalletMetadataAndCvc(table, &wallet_cards);
 
   ASSERT_EQ(1U, wallet_cards.size());
 
   // Make sure the wallet card replace its billing address id for the one that
   // was saved on disk.
-  EXPECT_EQ(cards_on_disk.back().billing_address_id(),
+  EXPECT_EQ(cards_from_local_storage.back().billing_address_id(),
             wallet_cards.back().billing_address_id());
 }
 
 // Verify that the billing address id from the card saved on disk is overwritten
 // if it does not refer to a local profile.
 TEST_F(AutofillSyncBridgeUtilTest,
-       CopyRelevantWalletMetadataFromDisk_OverwriteOtherAddresses) {
+       CopyRelevantWalletMetadataAndCvc_OverwriteOtherAddresses) {
   std::string old_billing_id = "1234";
   std::string new_billing_id = "9876";
-  std::vector<CreditCard> cards_on_disk;
+  std::vector<CreditCard> cards_from_local_storage;
   std::vector<CreditCard> wallet_cards;
 
   // Create a card on disk that does not refer to a local profile (which have 36
   // chars ids).
-  cards_on_disk.push_back(CreditCard());
-  cards_on_disk.back().set_billing_address_id(old_billing_id);
+  cards_from_local_storage.emplace_back();
+  cards_from_local_storage.back().set_billing_address_id(old_billing_id);
 
   // Create a card pulled from wallet with the same id, but a different billing
   // address id.
-  wallet_cards.push_back(CreditCard(cards_on_disk.back()));
+  wallet_cards.emplace_back(cards_from_local_storage.back());
   wallet_cards.back().set_billing_address_id(new_billing_id);
 
-  // Setup the TestAutofillTable with the cards_on_disk.
-  TestAutofillTable table(cards_on_disk);
+  // Setup the TestAutofillTable with the `cards_from_local_storage`.
+  TestAutofillTable table(cards_from_local_storage);
 
-  CopyRelevantWalletMetadataFromDisk(table, &wallet_cards);
+  CopyRelevantWalletMetadataAndCvc(table, &wallet_cards);
 
   ASSERT_EQ(1U, wallet_cards.size());
 
@@ -256,35 +257,60 @@ TEST_F(AutofillSyncBridgeUtilTest,
 
 // Verify that the use stats on disk are kept when server cards are synced.
 TEST_F(AutofillSyncBridgeUtilTest,
-       CopyRelevantWalletMetadataFromDisk_KeepUseStats) {
+       CopyRelevantWalletMetadataAndCvc_KeepUseStats) {
   TestAutofillClock test_clock;
   base::Time arbitrary_time = base::Time::FromSecondsSinceUnixEpoch(25);
   base::Time disk_time = base::Time::FromSecondsSinceUnixEpoch(10);
   test_clock.SetNow(arbitrary_time);
 
-  std::vector<CreditCard> cards_on_disk;
+  std::vector<CreditCard> cards_from_local_storage;
   std::vector<CreditCard> wallet_cards;
 
   // Create a card on disk with specific use stats.
-  cards_on_disk.push_back(CreditCard());
-  cards_on_disk.back().set_use_count(3U);
-  cards_on_disk.back().set_use_date(disk_time);
+  cards_from_local_storage.emplace_back();
+  cards_from_local_storage.back().set_use_count(3U);
+  cards_from_local_storage.back().set_use_date(disk_time);
 
   // Create a card pulled from wallet with the same id, but a different billing
   // address id.
-  wallet_cards.push_back(CreditCard());
+  wallet_cards.emplace_back();
   wallet_cards.back().set_use_count(10U);
 
-  // Setup the TestAutofillTable with the cards_on_disk.
-  TestAutofillTable table(cards_on_disk);
+  // Setup the TestAutofillTable with the `cards_from_local_storage`.
+  TestAutofillTable table(cards_from_local_storage);
 
-  CopyRelevantWalletMetadataFromDisk(table, &wallet_cards);
+  CopyRelevantWalletMetadataAndCvc(table, &wallet_cards);
 
   ASSERT_EQ(1U, wallet_cards.size());
 
   // Make sure the use stats from disk were kept
   EXPECT_EQ(3U, wallet_cards.back().use_count());
   EXPECT_EQ(disk_time, wallet_cards.back().use_date());
+}
+
+// Verify that the credential data on disk are kept when server cards are
+// synced.
+TEST_F(AutofillSyncBridgeUtilTest,
+       CopyRelevantWalletMetadataAndCvc_KeepCredentialData) {
+  std::vector<CreditCard> cards_from_local_storage;
+  std::vector<CreditCard> wallet_cards;
+
+  // Create a card on disk with specific use stats.
+  cards_from_local_storage.emplace_back();
+  cards_from_local_storage.back().set_cvc(u"123");
+
+  // Create a card pulled from wallet with the same id, but with an empty CVC.
+  wallet_cards.emplace_back();
+
+  // Setup the TestAutofillTable with the `cards_from_local_storage`.
+  TestAutofillTable table(cards_from_local_storage);
+
+  CopyRelevantWalletMetadataAndCvc(table, &wallet_cards);
+
+  ASSERT_EQ(1U, wallet_cards.size());
+
+  // Verify the wallet credential (CVC) data.
+  EXPECT_EQ(u"123", wallet_cards.back().cvc());
 }
 
 // Test to ensure the general-purpose fields from an AutofillOfferData are

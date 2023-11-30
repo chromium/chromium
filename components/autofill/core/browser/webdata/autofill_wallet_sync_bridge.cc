@@ -328,9 +328,12 @@ bool AutofillWalletSyncBridge::SetWalletCards(
   // Users can set billing address of the server credit card locally, but that
   // information does not propagate to either Chrome Sync or Google Payments
   // server. To preserve user's preferred billing address and most recent use
-  // stats, copy them from disk into |wallet_cards|.
+  // stats, copy them from local storage into `wallet_cards`.
+  // Wallet CVC data is decoupled from the Wallet card data, so if
+  // CVC data is present on the locally saved server card, copy that onto
+  // `wallet_cards` to prevent deletion of CVC data.
   AutofillTable* table = GetAutofillTable();
-  CopyRelevantWalletMetadataFromDisk(*table, &wallet_cards);
+  CopyRelevantWalletMetadataAndCvc(*table, &wallet_cards);
 
   std::vector<std::unique_ptr<CreditCard>> existing_cards;
   if (!table->GetServerCreditCards(existing_cards)) {
