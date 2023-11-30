@@ -99,11 +99,11 @@ export class ComposeAppElement extends ComposeAppElementBase {
       },
       isEditSubmitEnabled_: {
         type: Boolean,
-        value: false,
+        value: true,
       },
       isSubmitEnabled_: {
         type: Boolean,
-        value: false,
+        value: true,
       },
       loading_: {
         type: Boolean,
@@ -311,7 +311,9 @@ export class ComposeAppElement extends ComposeAppElementBase {
 
   private onEditedInputChanged_() {
     this.userHasModifiedState_ = true;
-    this.isEditSubmitEnabled_ = this.$.editTextarea.validate();
+    if (!this.isEditSubmitEnabled_) {
+      this.isEditSubmitEnabled_ = this.$.editTextarea.validate();
+    }
   }
 
   private onEditClick_() {
@@ -332,7 +334,9 @@ export class ComposeAppElement extends ComposeAppElementBase {
   }
 
   private onSubmit_() {
-    if (!this.$.textarea.validate()) {
+    this.isSubmitEnabled_ = this.$.textarea.validate();
+    if (!this.isSubmitEnabled_) {
+      this.$.textarea.focusInput();
       return;
     }
 
@@ -341,7 +345,9 @@ export class ComposeAppElement extends ComposeAppElementBase {
   }
 
   private onSubmitEdit_() {
-    if (!this.$.editTextarea.validate()) {
+    this.isEditSubmitEnabled_ = this.$.editTextarea.validate();
+    if (!this.isEditSubmitEnabled_) {
+      this.$.editTextarea.focusInput();
       return;
     }
 
@@ -362,7 +368,9 @@ export class ComposeAppElement extends ComposeAppElementBase {
 
   private onInputChanged_() {
     this.userHasModifiedState_ = true;
-    this.isSubmitEnabled_ = this.$.textarea.validate();
+    if (!this.isSubmitEnabled_) {
+      this.isSubmitEnabled_ = this.$.textarea.validate();
+    }
   }
 
   private onLengthChanged_() {

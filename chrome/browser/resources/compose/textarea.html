@@ -46,22 +46,22 @@
     color: var(--color-compose-dialog-textarea-placeholder);
   }
 
-  :host([too-long_]) textarea {
+  :host([invalid-input_]) textarea {
     outline: solid 2px var(--google-red-600);
     outline-offset: -2px;
   }
 
   @media (prefers-color-scheme: dark) {
-    :host([too-long_]) textarea {
+    :host([invalid-input_]) textarea {
       outline-color: var(--google-red-300);
     }
   }
 
-  :host-context([chrome-refresh-2023]):host([too-long_]) #textarea {
+  :host-context([chrome-refresh-2023]):host([invalid-input_]) #textarea {
     outline-color: var(--color-compose-dialog-error);
   }
 
-  #error {
+  .error {
     margin: 4px 10px 0;
     color: var(--google-red-600);
     font-size: 11px;
@@ -69,12 +69,12 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    #error {
+    .error {
       color: var(--google-red-300);
     }
   }
 
-  :host-context([chrome-refresh-2023]) #error {
+  :host-context([chrome-refresh-2023]) .error {
     color: var(--color-compose-dialog-error);
   }
 
@@ -140,7 +140,10 @@
       required
       autofocus>
   </textarea>
-  <div id="error" hidden$="[[!tooLong_]]">
+  <div class="error" id="tooShortError" hidden$="[[!tooShort_]]">
+    $i18n{errorTooShort}
+  </div>
+  <div class="error" id="tooLongError" hidden$="[[!tooLong_]]">
     $i18n{errorTooLong}
   </div>
 </div>

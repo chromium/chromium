@@ -60,15 +60,15 @@ suite('ComposeTextarea', () => {
     textarea.$.input.value = 'Here is some input with more than 5 words.';
     assertTrue(textarea.validate());
 
-    // Too short of an input, should be invalid but not display an error.
+    // Too short of an input, should be invalid and display an error.
     textarea.$.input.value = 'Short';
     assertFalse(textarea.validate());
-    assertFalse(isVisible(textarea.$.error));
+    assertTrue(isVisible(textarea.$.tooShortError));
 
     // Too many characters, should show error.
     textarea.$.input.value = Array(101).fill('a').join('');
     assertFalse(textarea.validate());
-    assertTrue(isVisible(textarea.$.error));
+    assertTrue(isVisible(textarea.$.tooLongError));
 
     // Should revalidate when value becomes valid.
     textarea.$.input.value = 'Here is another input with more than 5 words.';
@@ -77,6 +77,6 @@ suite('ComposeTextarea', () => {
     // Too many words, should show error.
     textarea.$.input.value = Array(51).fill('a').join(' ');
     assertFalse(textarea.validate());
-    assertTrue(isVisible(textarea.$.error));
+    assertTrue(isVisible(textarea.$.tooLongError));
   });
 });

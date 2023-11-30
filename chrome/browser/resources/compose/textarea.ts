@@ -15,7 +15,8 @@ import {getTemplate} from './textarea.html.js';
 export interface ComposeTextareaElement {
   $: {
     editButtonContainer: HTMLElement,
-    error: HTMLElement,
+    tooShortError: HTMLElement,
+    tooLongError: HTMLElement,
     input: HTMLTextAreaElement,
     readonlyText: HTMLElement,
   };
@@ -43,10 +44,14 @@ export class ComposeTextareaElement extends PolymerElement {
         value: false,
         reflectToAttribute: true,
       },
-      tooLong_: {
+      invalidInput_: {
         type: Boolean,
         value: false,
         reflectToAttribute: true,
+      },
+      tooLong_: {
+        type: Boolean,
+        value: false,
       },
       tooShort_: {
         type: Boolean,
@@ -62,6 +67,7 @@ export class ComposeTextareaElement extends PolymerElement {
   allowExitingReadonlyMode: boolean;
   inputParams: ConfigurableParams;
   readonly: boolean;
+  private invalidInput_: boolean;
   private tooLong_: boolean;
   private tooShort_: boolean;
   value: string;
@@ -85,7 +91,8 @@ export class ComposeTextareaElement extends PolymerElement {
     this.tooShort_ = wordCount < this.inputParams.minWordLimit;
     this.tooLong_ = value.length > this.inputParams.maxCharacterLimit ||
         wordCount > this.inputParams.maxWordLimit;
-    return !this.tooLong_ && !this.tooShort_;
+    this.invalidInput_ = this.tooLong_ || this.tooShort_;
+    return !this.invalidInput_;
   }
 }
 

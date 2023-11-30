@@ -85,6 +85,9 @@
   <message name="IDS_COMPOSE_CONFIGURATION_ERROR" desc="The error text shown when Compose is not available due to an internal configuration error." translateable="false">
   Configuration error. Try again later.
   </message>
+  <message name="IDS_COMPOSE_ERROR_TOO_SHORT" desc="Error that the input was too short." translateable="false">
+  Input is too short. Cannot use Autofill.
+  </message>
   <message name="IDS_COMPOSE_ERROR_TOO_LONG" desc="Error that the input was too long." translateable="false">
   Input is too long. Cannot use Autofill.
   </message>

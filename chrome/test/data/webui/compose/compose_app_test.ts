@@ -173,15 +173,23 @@ suite('ComposeApp', () => {
   });
 
   test('SubmitsAndAcceptsInput', async () => {
-    // Starts off with submit disabled since input is empty.
+    // Starts off with submit enabled even when input is empty.
     assertTrue(isVisible(app.$.submitButton));
-    assertTrue(app.$.submitButton.disabled);
+    assertFalse(app.$.submitButton.disabled);
     assertFalse(isVisible(app.$.resultContainer));
     assertFalse(isVisible(app.$.insertButton));
 
-    // Invalid input keeps submit disabled.
+    // Invalid input keeps submit enabled and error is not visible.
     mockInput('Short');
+    assertFalse(app.$.submitButton.disabled);
+    assertFalse(isVisible(app.$.textarea.$.tooShortError));
+    assertFalse(isVisible(app.$.textarea.$.tooLongError));
+
+    // Clicking on submit shows error.
+    app.$.submitButton.click();
     assertTrue(app.$.submitButton.disabled);
+    assertTrue(isVisible(app.$.textarea.$.tooShortError));
+    assertFalse(isVisible(app.$.textarea.$.tooLongError));
 
     // Inputting valid text enables submit.
     mockInput('Here is my input.');
@@ -338,17 +346,11 @@ suite('ComposeApp', () => {
         await initializeNewAppWithState({}, 'initial input');
     assertEquals('initial input', appWithInitialInput.$.textarea.value);
 
-    // Invalid input is sent to textarea but submit is still disabled.
+    // Invalid input is sent to textarea but submit is enabled.
     const appWithInvalidInput = await initializeNewAppWithState(
         {webuiState: JSON.stringify({input: 'short'})});
     assertEquals('short', appWithInvalidInput.$.textarea.value);
-    assertTrue(appWithInvalidInput.$.submitButton.disabled);
-
-    // Valid input is sent to textarea and submit is enabled.
-    const appWithValidInput = await initializeNewAppWithState(
-        {webuiState: JSON.stringify({input: 'not short at all'})});
-    assertEquals('not short at all', appWithValidInput.$.textarea.value);
-    assertFalse(appWithValidInput.$.submitButton.disabled);
+    assertFalse(appWithInvalidInput.$.submitButton.disabled);
 
     // Input with pending response shows loading state.
     const appWithLoadingState = await initializeNewAppWithState({

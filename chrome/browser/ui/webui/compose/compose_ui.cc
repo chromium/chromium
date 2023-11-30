@@ -55,6 +55,7 @@ ComposeUI::ComposeUI(content::WebUI* web_ui)
       {"toneMenuTitle", IDS_COMPOSE_MENU_2_TITLE},
       {"casualToneOption", IDS_COMPOSE_MENU_2_OPTION_1},
       {"formalToneOption", IDS_COMPOSE_MENU_2_OPTION_2},
+      {"errorTooShort", IDS_COMPOSE_ERROR_TOO_SHORT},
       {"errorTooLong", IDS_COMPOSE_ERROR_TOO_LONG},
       {"errorTryAgain", IDS_COMPOSE_ERROR_TRY_AGAIN},
       {"errorTryAgainLater", IDS_COMPOSE_ERROR_TRY_AGAIN_LATER},
