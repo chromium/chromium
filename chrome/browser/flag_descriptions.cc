@@ -2467,12 +2467,6 @@ const char kOmniboxMostVisitedTilesHorizontalRenderGroupDescription[] =
     "Updates the logic constructing MV tiles to use horizontal render group. "
     "No user-facing changes expected.";
 
-const char kOmniboxSuppressClipboardSuggestionAfterFirstUsedName[] =
-    "Suppress clipboard suggestion after first used";
-const char kOmniboxSuppressClipboardSuggestionAfterFirstUsedDescription[] =
-    "Stops showing a clipboard suggestion for distinct clip data once it's "
-    "been clicked on";
-
 const char kOmniboxWarmRecycledViewPoolName[] =
     "Omnibox warm recycled view pool";
 const char kOmniboxWarmRecycledViewPoolDescription[] =

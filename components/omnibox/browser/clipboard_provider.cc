@@ -180,23 +180,6 @@ void ClipboardProvider::Start(const AutocompleteInput& input,
 
   done_ = true;
 
-#if !BUILDFLAG(IS_IOS)
-  // kSuppressClipboardSuggestionAfterFirstUsed is enabled only for platforms
-  // that don't access the clipboard contents until clicked. On those platforms,
-  // we store a timestamp identifying the clipboard contents when the suggestion
-  // is clicked. If we see this timestamp subsequently, we suppress showing a
-  // suggestion. If the timestamp of the clipboard content changes, we start
-  // showing the suggestion again.
-  if (most_recently_used_clipboard_suggestion_timestamp_ != base::Time() &&
-      most_recently_used_clipboard_suggestion_timestamp_ ==
-          ui::Clipboard::GetForCurrentThread()->GetLastModifiedTime() &&
-      base::FeatureList::IsEnabled(
-          omnibox::kSuppressClipboardSuggestionAfterFirstUsed)) {
-    done_ = true;
-    return;
-  }
-#endif  // !BUILDFLAG(IS_IOS)
-
   // On iOS and Android, accessing the clipboard contents shows a notification
   // to the user. To avoid this, all the methods above will not check the
   // contents and will return false/absl::nullopt. Instead, check the existence
@@ -621,7 +604,6 @@ void ClipboardProvider::OnReceiveURLForMatchWithContent(
   GURL url = std::move(optional_gurl).value();
   UpdateClipboardURLContent(url, match);
 
-  UpdateMostRecentlyUsedClipboardSuggestionTimestamp();
   std::move(callback).Run();
 }
 
@@ -636,7 +618,6 @@ void ClipboardProvider::OnReceiveTextForMatchWithContent(
   if (!UpdateClipboardTextContent(text, match))
     return;
 
-  UpdateMostRecentlyUsedClipboardSuggestionTimestamp();
   std::move(callback).Run();
 }
 
@@ -647,7 +628,6 @@ void ClipboardProvider::OnReceiveImageForMatchWithContent(
   if (!optional_image)
     return;
 
-  UpdateMostRecentlyUsedClipboardSuggestionTimestamp();
   gfx::Image image = std::move(optional_image).value();
   NewClipboardImageMatch(
       image,
@@ -721,11 +701,4 @@ bool ClipboardProvider::UpdateClipboardTextContent(const std::u16string& text,
   match->keyword = default_url->keyword();
 
   return true;
-}
-
-void ClipboardProvider::UpdateMostRecentlyUsedClipboardSuggestionTimestamp() {
-#if !BUILDFLAG(IS_IOS)
-  most_recently_used_clipboard_suggestion_timestamp_ =
-      ui::Clipboard::GetForCurrentThread()->GetLastModifiedTime();
-#endif  // !BUILDFLAG(IS_IOS)
 }

@@ -6071,13 +6071,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kOmniboxQueryTilesVariations,
                                     "OmniboxQueryTilesInZPSOnNTP")},
 
-    {"omnibox-suppress-clipboard-suggestion-after-first-used",
-     flag_descriptions::kOmniboxSuppressClipboardSuggestionAfterFirstUsedName,
-     flag_descriptions::
-         kOmniboxSuppressClipboardSuggestionAfterFirstUsedDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(omnibox::kSuppressClipboardSuggestionAfterFirstUsed)},
-
     {"omnibox-warm-recycled-view-pool",
      flag_descriptions::kOmniboxWarmRecycledViewPoolName,
      flag_descriptions::kOmniboxWarmRecycledViewPoolDescription, kOsAndroid,

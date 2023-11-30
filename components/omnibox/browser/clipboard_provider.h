@@ -190,10 +190,6 @@ class ClipboardProvider : public AutocompleteProvider {
   GURL current_url_suggested_;
   size_t current_url_suggested_times_;
 
-  // The timestamp of the most recently used clipboard suggestion. Used to
-  // suppress showing a suggestion for the same clip data after it's been used.
-  base::Time most_recently_used_clipboard_suggestion_timestamp_;
-
   // Used to cancel image construction callbacks if autocomplete Stop() is
   // called.
   base::WeakPtrFactory<ClipboardProvider> callback_weak_ptr_factory_{this};

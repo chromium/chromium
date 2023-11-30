@@ -273,12 +273,6 @@ BASE_FEATURE(kClipboardSuggestionContentHidden,
              "ClipboardSuggestionContentHidden",
              enabled_by_default_android_only);
 
-// If enabled, clipboard suggestion for distinct clip data will not show after
-// first use.
-BASE_FEATURE(kSuppressClipboardSuggestionAfterFirstUsed,
-             "SuppressClipboardSuggestionAfterFirstUsed",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, company entity icons may be replaced by a search loupe.
 BASE_FEATURE(kCompanyEntityIconAdjustment,
              "CompanyEntityIconAdjustment",
