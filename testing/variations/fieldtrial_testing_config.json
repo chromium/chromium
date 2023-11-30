@@ -9992,7 +9992,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "available_languages": "en-US,fr-FR,it-IT,de-DE,hi-IN,pt-BR,ja-JP"
+                        "available_languages": "en-US,fr-FR,it-IT,de-DE,es-ES,ja-JP,hi-IN,pt-BR"
                     },
                     "enable_features": [
                         "LiveCaptionExperimentalLanguages"
