@@ -2,10 +2,9 @@
   "_default_specs": [
     {
       "name": "Unhealthy",
+      "score": 5,
       "thresholds": {
-        "build_time": {
-          "p50_mins": null
-        },
+        "build_time": {},
         "fail_rate": {
           "average": 0.2
         },
@@ -25,6 +24,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -36,6 +36,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -46,6 +47,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -57,6 +59,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -68,6 +71,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -79,6 +83,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -90,6 +95,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -101,6 +107,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -112,6 +119,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -123,6 +131,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -134,6 +143,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -145,6 +155,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -156,6 +167,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -167,6 +179,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -178,6 +191,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -189,6 +203,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -200,10 +215,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -222,10 +236,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -244,6 +257,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -255,6 +269,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -266,6 +281,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -277,6 +293,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -288,6 +305,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -299,6 +317,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -310,6 +329,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -321,10 +341,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -343,10 +362,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -365,6 +383,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -376,6 +395,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -387,6 +407,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -398,6 +419,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -409,6 +431,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -420,6 +443,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -431,6 +455,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -442,6 +467,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -453,6 +479,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -464,6 +491,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -475,6 +503,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -486,6 +515,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -497,6 +527,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -508,6 +539,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -519,6 +551,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -530,6 +563,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -541,6 +575,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -552,6 +587,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -563,6 +599,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -574,6 +611,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -585,6 +623,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -596,6 +635,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -607,6 +647,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -618,6 +659,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -629,6 +671,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -640,6 +683,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -651,6 +695,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -662,6 +707,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -673,6 +719,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -684,6 +731,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -695,6 +743,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -706,6 +755,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -717,6 +767,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -728,6 +779,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -739,6 +791,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -750,6 +803,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -761,6 +815,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -772,6 +827,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -783,6 +839,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -794,6 +851,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -805,6 +863,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -816,6 +875,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -827,6 +887,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -838,6 +899,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -849,6 +911,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -860,6 +923,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -871,6 +935,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -882,6 +947,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -893,6 +959,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -904,6 +971,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -915,6 +983,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -926,6 +995,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -937,6 +1007,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -948,6 +1019,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -959,6 +1031,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -970,6 +1043,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -981,6 +1055,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -992,6 +1067,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1003,6 +1079,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1014,6 +1091,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1025,6 +1103,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1036,6 +1115,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1047,6 +1127,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1058,6 +1139,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1069,6 +1151,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1080,6 +1163,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1091,6 +1175,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1102,6 +1187,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1113,6 +1199,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1124,6 +1211,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1135,6 +1223,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1146,6 +1235,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1157,6 +1247,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1168,6 +1259,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1179,6 +1271,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1190,6 +1283,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1201,6 +1295,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1212,6 +1307,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1223,6 +1319,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1234,6 +1331,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1245,6 +1343,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1256,6 +1355,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1267,6 +1367,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1278,6 +1379,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1289,6 +1391,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1300,6 +1403,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1311,6 +1415,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1322,6 +1427,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1333,10 +1439,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -1352,6 +1457,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1363,6 +1469,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1374,6 +1481,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1385,6 +1493,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1396,6 +1505,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1407,6 +1517,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1418,6 +1529,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1429,6 +1541,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1440,6 +1553,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1451,6 +1565,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1462,6 +1577,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1473,6 +1589,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1483,6 +1600,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1493,6 +1611,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1504,6 +1623,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1514,6 +1634,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1525,6 +1646,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1536,6 +1658,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -1547,10 +1670,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -1569,10 +1691,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -1591,10 +1712,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -1613,10 +1733,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -1635,10 +1754,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -1657,10 +1775,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -1679,10 +1796,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -1701,10 +1817,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -1723,10 +1838,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -1745,10 +1859,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -1767,10 +1880,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -1789,10 +1901,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -1811,10 +1922,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -1833,10 +1943,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -1855,10 +1964,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -1877,10 +1985,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -1899,10 +2006,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -1921,10 +2027,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -1943,10 +2048,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -1965,10 +2069,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -1987,10 +2090,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -2009,10 +2111,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -2031,10 +2132,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -2053,10 +2153,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -2075,10 +2174,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -2097,10 +2195,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -2119,10 +2216,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -2141,10 +2237,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -2163,10 +2258,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -2185,10 +2279,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -2207,10 +2300,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -2229,10 +2321,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -2251,10 +2342,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -2273,10 +2363,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -2295,10 +2384,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -2317,10 +2405,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -2339,10 +2426,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -2361,10 +2447,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -2383,10 +2468,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -2405,10 +2489,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -2427,6 +2510,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2438,6 +2522,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2449,6 +2534,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2460,6 +2546,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2471,6 +2558,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2482,6 +2570,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2493,6 +2582,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2504,6 +2594,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2515,6 +2606,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2526,6 +2618,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2537,6 +2630,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2548,6 +2642,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2559,6 +2654,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2570,6 +2666,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2581,6 +2678,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2592,6 +2690,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2603,6 +2702,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2614,6 +2714,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2625,6 +2726,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2635,6 +2737,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2646,6 +2749,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2657,6 +2761,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2667,6 +2772,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2678,6 +2784,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2689,6 +2796,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2700,6 +2808,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2710,6 +2819,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2721,6 +2831,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2732,6 +2843,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2743,6 +2855,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2754,6 +2867,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2765,6 +2879,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2776,6 +2891,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2787,6 +2903,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2798,6 +2915,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2809,6 +2927,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2820,6 +2939,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2831,6 +2951,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2842,6 +2963,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2853,6 +2975,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2864,6 +2987,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2875,6 +2999,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2886,6 +3011,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2897,6 +3023,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2908,6 +3035,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2919,6 +3047,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2930,6 +3059,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2941,6 +3071,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2952,6 +3083,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2963,6 +3095,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2974,6 +3107,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2985,6 +3119,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -2996,6 +3131,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3007,6 +3143,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3018,6 +3155,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3029,6 +3167,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3040,6 +3179,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3051,6 +3191,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3062,6 +3203,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3073,6 +3215,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3084,6 +3227,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3095,6 +3239,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3106,6 +3251,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3117,6 +3263,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3128,6 +3275,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3139,6 +3287,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3150,6 +3299,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "build_time": {
                 "p50_mins": 60
@@ -3172,6 +3322,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "build_time": {
                 "p50_mins": 100
@@ -3194,6 +3345,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "build_time": {
                 "p50_mins": 60
@@ -3216,6 +3368,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "build_time": {
                 "p50_mins": 60
@@ -3238,6 +3391,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "build_time": {
                 "p50_mins": 60
@@ -3260,6 +3414,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "build_time": {
                 "p50_mins": 60
@@ -3282,6 +3437,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "build_time": {
                 "p50_mins": 60
@@ -3304,6 +3460,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "build_time": {
                 "p50_mins": 60
@@ -3326,6 +3483,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "build_time": {
                 "p50_mins": 60
@@ -3348,6 +3506,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "build_time": {
                 "p50_mins": 60
@@ -3370,6 +3529,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "build_time": {
                 "p50_mins": 60
@@ -3391,6 +3551,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "build_time": {
                 "p50_mins": 60
@@ -3412,6 +3573,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "build_time": {
                 "p50_mins": 60
@@ -3434,6 +3596,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3445,6 +3608,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3456,6 +3620,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3466,6 +3631,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3477,6 +3643,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3488,6 +3655,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3499,6 +3667,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3510,6 +3679,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3521,6 +3691,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3532,6 +3703,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3542,6 +3714,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3552,6 +3725,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3562,6 +3736,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3572,6 +3747,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3582,6 +3758,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3593,6 +3770,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "build_time": {
                 "p50_mins": 60
@@ -3615,6 +3793,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "build_time": {
                 "p50_mins": 60
@@ -3637,6 +3816,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3648,6 +3828,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "build_time": {
                 "p50_mins": 60
@@ -3670,6 +3851,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "build_time": {
                 "p50_mins": 60
@@ -3691,6 +3873,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3701,6 +3884,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "build_time": {
                 "p50_mins": 60
@@ -3723,6 +3907,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "build_time": {
                 "p50_mins": 60
@@ -3745,6 +3930,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3756,6 +3942,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3767,6 +3954,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3778,6 +3966,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3789,6 +3978,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3800,6 +3990,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3810,6 +4001,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "build_time": {
                 "p50_mins": 60
@@ -3832,6 +4024,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3843,6 +4036,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "build_time": {
                 "p50_mins": 60
@@ -3864,6 +4058,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3875,6 +4070,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "build_time": {
                 "p50_mins": 150
@@ -3897,6 +4093,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "build_time": {
                 "p50_mins": 60
@@ -3919,6 +4116,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3930,6 +4128,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3940,6 +4139,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3951,6 +4151,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -3962,6 +4163,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "build_time": {
                 "p50_mins": 60
@@ -3984,6 +4186,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "build_time": {
                 "p50_mins": 60
@@ -4006,6 +4209,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "build_time": {
                 "p50_mins": 60
@@ -4027,6 +4231,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "build_time": {
                 "p50_mins": 240
@@ -4049,6 +4254,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4060,6 +4266,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4071,6 +4278,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4082,6 +4290,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4093,6 +4302,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4104,6 +4314,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4115,6 +4326,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4126,6 +4338,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4137,10 +4350,9 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
-              "build_time": {
-                "p50_mins": null
-              },
+              "build_time": {},
               "fail_rate": {
                 "average": 0.2
               },
@@ -4159,6 +4371,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4170,6 +4383,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4181,6 +4395,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4192,6 +4407,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4203,6 +4419,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4214,6 +4431,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4225,6 +4443,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4236,6 +4455,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4246,6 +4466,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4257,6 +4478,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4268,6 +4490,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4279,6 +4502,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4290,6 +4514,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4301,6 +4526,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4312,6 +4538,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4323,6 +4550,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4334,6 +4562,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4345,6 +4574,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4356,6 +4586,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4367,6 +4598,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4378,6 +4610,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4389,6 +4622,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4400,6 +4634,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4411,6 +4646,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4422,6 +4658,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4433,6 +4670,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4444,6 +4682,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4455,6 +4694,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4466,6 +4706,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }
@@ -4477,6 +4718,7 @@
         "problem_specs": [
           {
             "name": "Unhealthy",
+            "score": 5,
             "thresholds": {
               "_default": "_default"
             }

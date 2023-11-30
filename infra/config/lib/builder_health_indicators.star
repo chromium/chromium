@@ -18,6 +18,7 @@ _HEALTH_SPEC = nodes.create_bucket_scoped_node_type("health_spec")
 # for all configurable thresholds.
 _default_specs = {
     "Unhealthy": struct(
+        score = 5,
         # If any of these thresholds are exceeded, the builder will be deemed unhealthy.
         # Setting a value of None will ignore that threshold
         infra_fail_rate = struct(
@@ -37,6 +38,7 @@ _default_specs = {
 
 _blank_thresholds = {
     "Unhealthy": struct(
+        score = 5,
         infra_fail_rate = struct(
             average = None,
         ),
@@ -54,6 +56,7 @@ _blank_thresholds = {
 
 DEFAULT = {
     "Unhealthy": struct(
+        score = 5,
         _default = "_default",
     ),
 }
@@ -105,10 +108,17 @@ def _convert_specs(specs):
     So all user-exposed functions expect a dictionary.
     We then convert that into a list of [problem_specs] so the object encapsulates its own name, for ease of processing
     """
-    return [struct(
-        name = name,
-        thresholds = spec,
-    ) for name, spec in specs.items()]
+    converted_specs = []
+    for name, spec in specs.items():
+        scoreless_spec = structs.to_proto_properties(spec)
+        scoreless_spec.pop("score")
+        converted_specs.append(struct(
+            name = name,
+            score = spec.score,
+            thresholds = scoreless_spec,
+        ))
+
+    return converted_specs
 
 def _generate_health_specs(ctx):
     specs = {}
