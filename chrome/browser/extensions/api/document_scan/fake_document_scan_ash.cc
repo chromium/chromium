@@ -41,6 +41,19 @@ void FakeDocumentScanAsh::GetScannerList(
   std::move(callback).Run(std::move(response));
 }
 
+void FakeDocumentScanAsh::OpenScanner(const std::string& client_id,
+                                      const std::string& scanner_id,
+                                      OpenScannerCallback callback) {
+  // TODO(b/297435720): Implement this when adding the extension handler.
+  NOTIMPLEMENTED();
+}
+
+void FakeDocumentScanAsh::CloseScanner(const std::string& scanner_handle,
+                                       CloseScannerCallback callback) {
+  // TODO(b/297435720): Implement this when adding the extension handler.
+  NOTIMPLEMENTED();
+}
+
 void FakeDocumentScanAsh::SetGetScannerNamesResponse(
     std::vector<std::string> scanner_names) {
   scanner_names_ = std::move(scanner_names);

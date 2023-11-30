@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ash/crosapi/document_scan_ash_type_converters.h"
 
+#include "base/containers/contains.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo {
 namespace {
 
+using ::testing::ElementsAre;
 using ::testing::UnorderedElementsAre;
 
 TEST(DocumentScanAshTypeConvertersTest, OperationResult) {
@@ -64,6 +66,381 @@ TEST(DocumentScanAshTypeConvertersTest, OperationResult) {
   EXPECT_EQ(ConvertTo<crosapi::mojom::ScannerOperationResult>(
                 lorgnette::OPERATION_RESULT_INTERNAL_ERROR),
             crosapi::mojom::ScannerOperationResult::kInternalError);
+}
+
+TEST(DocumentScanAshTypeConvertersTest, OptionType) {
+  EXPECT_EQ(ConvertForTesting(lorgnette::TYPE_UNKNOWN),
+            crosapi::mojom::OptionType::kUnknown);
+  EXPECT_EQ(ConvertForTesting(lorgnette::TYPE_BOOL),
+            crosapi::mojom::OptionType::kBool);
+  EXPECT_EQ(ConvertForTesting(lorgnette::TYPE_INT),
+            crosapi::mojom::OptionType::kInt);
+  EXPECT_EQ(ConvertForTesting(lorgnette::TYPE_FIXED),
+            crosapi::mojom::OptionType::kFixed);
+  EXPECT_EQ(ConvertForTesting(lorgnette::TYPE_STRING),
+            crosapi::mojom::OptionType::kString);
+  EXPECT_EQ(ConvertForTesting(lorgnette::TYPE_BUTTON),
+            crosapi::mojom::OptionType::kButton);
+  EXPECT_EQ(ConvertForTesting(lorgnette::TYPE_GROUP),
+            crosapi::mojom::OptionType::kGroup);
+}
+
+TEST(DocumentScanAshTypeConvertersTest, OptionUnit) {
+  EXPECT_EQ(ConvertForTesting(lorgnette::UNIT_NONE),
+            crosapi::mojom::OptionUnit::kUnitless);
+  EXPECT_EQ(ConvertForTesting(lorgnette::UNIT_PIXEL),
+            crosapi::mojom::OptionUnit::kPixel);
+  EXPECT_EQ(ConvertForTesting(lorgnette::UNIT_BIT),
+            crosapi::mojom::OptionUnit::kBit);
+  EXPECT_EQ(ConvertForTesting(lorgnette::UNIT_MM),
+            crosapi::mojom::OptionUnit::kMm);
+  EXPECT_EQ(ConvertForTesting(lorgnette::UNIT_DPI),
+            crosapi::mojom::OptionUnit::kDpi);
+  EXPECT_EQ(ConvertForTesting(lorgnette::UNIT_PERCENT),
+            crosapi::mojom::OptionUnit::kPercent);
+  EXPECT_EQ(ConvertForTesting(lorgnette::UNIT_MICROSECOND),
+            crosapi::mojom::OptionUnit::kMicrosecond);
+}
+
+TEST(DocumentScanAshTypeConvertersTest, OptionConstraintType) {
+  EXPECT_EQ(ConvertForTesting(lorgnette::OptionConstraint::CONSTRAINT_NONE),
+            crosapi::mojom::OptionConstraintType::kNone);
+  EXPECT_EQ(
+      ConvertForTesting(lorgnette::OptionConstraint::CONSTRAINT_INT_RANGE),
+      crosapi::mojom::OptionConstraintType::kIntRange);
+  EXPECT_EQ(
+      ConvertForTesting(lorgnette::OptionConstraint::CONSTRAINT_FIXED_RANGE),
+      crosapi::mojom::OptionConstraintType::kFixedRange);
+  EXPECT_EQ(ConvertForTesting(lorgnette::OptionConstraint::CONSTRAINT_INT_LIST),
+            crosapi::mojom::OptionConstraintType::kIntList);
+  EXPECT_EQ(
+      ConvertForTesting(lorgnette::OptionConstraint::CONSTRAINT_FIXED_LIST),
+      crosapi::mojom::OptionConstraintType::kFixedList);
+  EXPECT_EQ(
+      ConvertForTesting(lorgnette::OptionConstraint::CONSTRAINT_STRING_LIST),
+      crosapi::mojom::OptionConstraintType::kStringList);
+}
+
+TEST(DocumentScanAshTypeConvertersTest, OptionConstraint_TypeNone) {
+  lorgnette::OptionConstraint input;
+  input.set_constraint_type(lorgnette::OptionConstraint::CONSTRAINT_NONE);
+  input.mutable_int_range()->set_min(42);
+  input.mutable_fixed_range()->set_min(42);
+  input.add_valid_int(1);
+  input.add_valid_fixed(2.0);
+  input.add_valid_string("string");
+  auto output = ConvertForTesting(input);
+  EXPECT_EQ(output->type, crosapi::mojom::OptionConstraintType::kNone);
+  EXPECT_TRUE(output->restriction.is_null());
+}
+
+TEST(DocumentScanAshTypeConvertersTest, OptionConstraint_IntRangeWithoutRange) {
+  lorgnette::OptionConstraint input;
+  input.set_constraint_type(lorgnette::OptionConstraint::CONSTRAINT_INT_RANGE);
+  auto output = ConvertForTesting(input);
+  EXPECT_EQ(output->type, crosapi::mojom::OptionConstraintType::kIntRange);
+  ASSERT_FALSE(output->restriction.is_null());
+  ASSERT_TRUE(output->restriction->is_int_range());
+  EXPECT_EQ(output->restriction->get_int_range()->min, 0);
+  EXPECT_EQ(output->restriction->get_int_range()->max, 0);
+  EXPECT_EQ(output->restriction->get_int_range()->quant, 0);
+}
+
+TEST(DocumentScanAshTypeConvertersTest, OptionConstraint_IntRangeWithRange) {
+  lorgnette::OptionConstraint input;
+  input.set_constraint_type(lorgnette::OptionConstraint::CONSTRAINT_INT_RANGE);
+  input.mutable_int_range()->set_min(1);
+  input.mutable_int_range()->set_max(10);
+  input.mutable_int_range()->set_quant(2);
+  auto output = ConvertForTesting(input);
+  EXPECT_EQ(output->type, crosapi::mojom::OptionConstraintType::kIntRange);
+  ASSERT_FALSE(output->restriction.is_null());
+  ASSERT_TRUE(output->restriction->is_int_range());
+  EXPECT_EQ(output->restriction->get_int_range()->min, 1);
+  EXPECT_EQ(output->restriction->get_int_range()->max, 10);
+  EXPECT_EQ(output->restriction->get_int_range()->quant, 2);
+}
+
+TEST(DocumentScanAshTypeConvertersTest,
+     OptionConstraint_FixedRangeWithoutRange) {
+  lorgnette::OptionConstraint input;
+  input.set_constraint_type(
+      lorgnette::OptionConstraint::CONSTRAINT_FIXED_RANGE);
+  auto output = ConvertForTesting(input);
+  EXPECT_EQ(output->type, crosapi::mojom::OptionConstraintType::kFixedRange);
+  ASSERT_FALSE(output->restriction.is_null());
+  ASSERT_TRUE(output->restriction->is_fixed_range());
+  EXPECT_EQ(output->restriction->get_fixed_range()->min, 0.0);
+  EXPECT_EQ(output->restriction->get_fixed_range()->max, 0.0);
+  EXPECT_EQ(output->restriction->get_fixed_range()->quant, 0.0);
+}
+
+TEST(DocumentScanAshTypeConvertersTest, OptionConstraint_FixedRangeWithRange) {
+  lorgnette::OptionConstraint input;
+  input.set_constraint_type(
+      lorgnette::OptionConstraint::CONSTRAINT_FIXED_RANGE);
+  input.mutable_fixed_range()->set_min(1.0);
+  input.mutable_fixed_range()->set_max(10.0);
+  input.mutable_fixed_range()->set_quant(0.5);
+  auto output = ConvertForTesting(input);
+  EXPECT_EQ(output->type, crosapi::mojom::OptionConstraintType::kFixedRange);
+  ASSERT_FALSE(output->restriction.is_null());
+  ASSERT_TRUE(output->restriction->is_fixed_range());
+  EXPECT_EQ(output->restriction->get_fixed_range()->min, 1.0);
+  EXPECT_EQ(output->restriction->get_fixed_range()->max, 10.0);
+  EXPECT_EQ(output->restriction->get_fixed_range()->quant, 0.5);
+}
+
+TEST(DocumentScanAshTypeConvertersTest, OptionConstraint_IntListWithoutList) {
+  lorgnette::OptionConstraint input;
+  input.set_constraint_type(lorgnette::OptionConstraint::CONSTRAINT_INT_LIST);
+  auto output = ConvertForTesting(input);
+  EXPECT_EQ(output->type, crosapi::mojom::OptionConstraintType::kIntList);
+  ASSERT_FALSE(output->restriction.is_null());
+  ASSERT_TRUE(output->restriction->is_valid_int());
+  EXPECT_TRUE(output->restriction->get_valid_int().empty());
+}
+
+TEST(DocumentScanAshTypeConvertersTest, OptionConstraint_IntListWithList) {
+  lorgnette::OptionConstraint input;
+  input.set_constraint_type(lorgnette::OptionConstraint::CONSTRAINT_INT_LIST);
+  input.add_valid_int(42);
+  input.add_valid_int(43);
+  auto output = ConvertForTesting(input);
+  EXPECT_EQ(output->type, crosapi::mojom::OptionConstraintType::kIntList);
+  ASSERT_FALSE(output->restriction.is_null());
+  ASSERT_TRUE(output->restriction->is_valid_int());
+  EXPECT_THAT(output->restriction->get_valid_int(), ElementsAre(42, 43));
+}
+
+TEST(DocumentScanAshTypeConvertersTest, OptionConstraint_FixedListWithoutList) {
+  lorgnette::OptionConstraint input;
+  input.set_constraint_type(lorgnette::OptionConstraint::CONSTRAINT_FIXED_LIST);
+  auto output = ConvertForTesting(input);
+  EXPECT_EQ(output->type, crosapi::mojom::OptionConstraintType::kFixedList);
+  ASSERT_FALSE(output->restriction.is_null());
+  ASSERT_TRUE(output->restriction->is_valid_fixed());
+  EXPECT_TRUE(output->restriction->get_valid_fixed().empty());
+}
+
+TEST(DocumentScanAshTypeConvertersTest, OptionConstraint_FixedListWithList) {
+  lorgnette::OptionConstraint input;
+  input.set_constraint_type(lorgnette::OptionConstraint::CONSTRAINT_FIXED_LIST);
+  input.add_valid_fixed(0.25);
+  input.add_valid_fixed(0.5);
+  auto output = ConvertForTesting(input);
+  EXPECT_EQ(output->type, crosapi::mojom::OptionConstraintType::kFixedList);
+  ASSERT_FALSE(output->restriction.is_null());
+  ASSERT_TRUE(output->restriction->is_valid_fixed());
+  EXPECT_THAT(output->restriction->get_valid_fixed(), ElementsAre(0.25, 0.5));
+}
+
+TEST(DocumentScanAshTypeConvertersTest,
+     OptionConstraint_StringListWithoutList) {
+  lorgnette::OptionConstraint input;
+  input.set_constraint_type(
+      lorgnette::OptionConstraint::CONSTRAINT_STRING_LIST);
+  auto output = ConvertForTesting(input);
+  EXPECT_EQ(output->type, crosapi::mojom::OptionConstraintType::kStringList);
+  ASSERT_FALSE(output->restriction.is_null());
+  ASSERT_TRUE(output->restriction->is_valid_string());
+  EXPECT_TRUE(output->restriction->get_valid_string().empty());
+}
+
+TEST(DocumentScanAshTypeConvertersTest, OptionConstraint_StringListWithList) {
+  lorgnette::OptionConstraint input;
+  input.set_constraint_type(
+      lorgnette::OptionConstraint::CONSTRAINT_STRING_LIST);
+  input.add_valid_string("1");
+  input.add_valid_string("2");
+  auto output = ConvertForTesting(input);
+  EXPECT_EQ(output->type, crosapi::mojom::OptionConstraintType::kStringList);
+  ASSERT_FALSE(output->restriction.is_null());
+  ASSERT_TRUE(output->restriction->is_valid_string());
+  EXPECT_THAT(output->restriction->get_valid_string(), ElementsAre("1", "2"));
+}
+
+// Test all the fields that don't require complicated logic so they can be
+// omitted from the subsequent tests.
+TEST(DocumentScanAshTypeConvertersTest, ScannerOption_BasicFields) {
+  lorgnette::ScannerOption input;
+  input.set_name("option-name");
+  input.set_title("Option title");
+  input.set_description("Option Description\nLine 2");
+  input.set_option_type(lorgnette::OptionType::TYPE_BUTTON);
+  input.set_unit(lorgnette::OptionUnit::UNIT_NONE);
+  input.set_detectable(true);
+  input.set_auto_settable(true);
+  input.set_emulated(true);
+  input.set_active(true);
+  input.set_advanced(true);
+
+  auto output = ConvertForTesting(input);
+  EXPECT_EQ(output->name, "option-name");
+  EXPECT_EQ(output->title, "Option title");
+  EXPECT_EQ(output->description, "Option Description\nLine 2");
+  EXPECT_EQ(output->type, crosapi::mojom::OptionType::kButton);
+  EXPECT_EQ(output->unit, crosapi::mojom::OptionUnit::kUnitless);
+  EXPECT_TRUE(output->value.is_null());
+  EXPECT_TRUE(output->constraint.is_null());
+  EXPECT_TRUE(output->isDetectable);
+  EXPECT_EQ(output->configurability,
+            crosapi::mojom::OptionConfigurability::kNotConfigurable);
+  EXPECT_TRUE(output->isAutoSettable);
+  EXPECT_TRUE(output->isEmulated);
+  EXPECT_TRUE(output->isActive);
+  EXPECT_TRUE(output->isAdvanced);
+  EXPECT_FALSE(output->isInternal);
+}
+
+TEST(DocumentScanAshTypeConvertersTest, ScannerOption_ConfigurabilitySoftware) {
+  lorgnette::ScannerOption input;
+  input.set_sw_settable(true);
+  auto output = ConvertForTesting(input);
+  EXPECT_EQ(output->configurability,
+            crosapi::mojom::OptionConfigurability::kSoftwareConfigurable);
+}
+
+TEST(DocumentScanAshTypeConvertersTest, ScannerOption_ConfigurabilityHardware) {
+  lorgnette::ScannerOption input;
+  input.set_hw_settable(true);
+  auto output = ConvertForTesting(input);
+  EXPECT_EQ(output->configurability,
+            crosapi::mojom::OptionConfigurability::kHardwareConfigurable);
+}
+
+TEST(DocumentScanAshTypeConvertersTest, ScannerOption_BoolWithoutBoolValue) {
+  lorgnette::ScannerOption input;
+  input.set_option_type(lorgnette::TYPE_BOOL);
+  auto output = ConvertForTesting(input);
+  EXPECT_EQ(output->type, crosapi::mojom::OptionType::kBool);
+  EXPECT_TRUE(output->value.is_null());
+}
+
+TEST(DocumentScanAshTypeConvertersTest, ScannerOption_BoolWithBoolValue) {
+  lorgnette::ScannerOption input;
+  input.set_option_type(lorgnette::TYPE_BOOL);
+  input.set_bool_value(true);
+  auto output = ConvertForTesting(input);
+  EXPECT_EQ(output->type, crosapi::mojom::OptionType::kBool);
+  ASSERT_FALSE(output->value.is_null());
+  ASSERT_TRUE(output->value->is_bool_value());
+  EXPECT_EQ(output->value->get_bool_value(), true);
+}
+
+TEST(DocumentScanAshTypeConvertersTest, ScannerOption_IntWithoutIntValue) {
+  lorgnette::ScannerOption input;
+  input.set_option_type(lorgnette::TYPE_INT);
+  auto output = ConvertForTesting(input);
+  EXPECT_EQ(output->type, crosapi::mojom::OptionType::kInt);
+  EXPECT_TRUE(output->value.is_null());
+}
+
+TEST(DocumentScanAshTypeConvertersTest, ScannerOption_IntWithOneIntValue) {
+  lorgnette::ScannerOption input;
+  input.set_option_type(lorgnette::TYPE_INT);
+  input.mutable_int_value()->add_value(1);
+  auto output = ConvertForTesting(input);
+  EXPECT_EQ(output->type, crosapi::mojom::OptionType::kInt);
+  ASSERT_FALSE(output->value.is_null());
+  ASSERT_TRUE(output->value->is_int_value());
+  EXPECT_EQ(output->value->get_int_value(), 1);
+}
+
+TEST(DocumentScanAshTypeConvertersTest,
+     ScannerOption_IntWithMultipleIntValues) {
+  lorgnette::ScannerOption input;
+  input.set_option_type(lorgnette::TYPE_INT);
+  input.mutable_int_value()->add_value(5);
+  input.mutable_int_value()->add_value(4);
+  auto output = ConvertForTesting(input);
+  EXPECT_EQ(output->type, crosapi::mojom::OptionType::kInt);
+  ASSERT_FALSE(output->value.is_null());
+  ASSERT_TRUE(output->value->is_int_list());
+  EXPECT_THAT(output->value->get_int_list(), ElementsAre(5, 4));
+}
+
+TEST(DocumentScanAshTypeConvertersTest, ScannerOption_FixedWithoutFixedValue) {
+  lorgnette::ScannerOption input;
+  input.set_option_type(lorgnette::TYPE_FIXED);
+  auto output = ConvertForTesting(input);
+  EXPECT_EQ(output->type, crosapi::mojom::OptionType::kFixed);
+  EXPECT_TRUE(output->value.is_null());
+}
+
+TEST(DocumentScanAshTypeConvertersTest, ScannerOption_FixedWithOneFixedValue) {
+  lorgnette::ScannerOption input;
+  input.set_option_type(lorgnette::TYPE_FIXED);
+  input.mutable_fixed_value()->add_value(3.25);
+  auto output = ConvertForTesting(input);
+  EXPECT_EQ(output->type, crosapi::mojom::OptionType::kFixed);
+  ASSERT_FALSE(output->value.is_null());
+  ASSERT_TRUE(output->value->is_fixed_value());
+  EXPECT_EQ(output->value->get_fixed_value(), 3.25);
+}
+
+TEST(DocumentScanAshTypeConvertersTest,
+     ScannerOption_FixedWithMultipleFixedValues) {
+  lorgnette::ScannerOption input;
+  input.set_option_type(lorgnette::TYPE_FIXED);
+  input.mutable_fixed_value()->add_value(5.0);
+  input.mutable_fixed_value()->add_value(4.5);
+  auto output = ConvertForTesting(input);
+  EXPECT_EQ(output->type, crosapi::mojom::OptionType::kFixed);
+  ASSERT_FALSE(output->value.is_null());
+  ASSERT_TRUE(output->value->is_fixed_list());
+  EXPECT_THAT(output->value->get_fixed_list(), ElementsAre(5.0, 4.5));
+}
+
+TEST(DocumentScanAshTypeConvertersTest,
+     ScannerOption_StringWithoutStringValue) {
+  lorgnette::ScannerOption input;
+  input.set_option_type(lorgnette::TYPE_STRING);
+  auto output = ConvertForTesting(input);
+  EXPECT_EQ(output->type, crosapi::mojom::OptionType::kString);
+  EXPECT_TRUE(output->value.is_null());
+}
+
+TEST(DocumentScanAshTypeConvertersTest,
+     ScannerOption_StringWithEmptyStringValue) {
+  lorgnette::ScannerOption input;
+  input.set_option_type(lorgnette::TYPE_STRING);
+  input.set_string_value("");
+  auto output = ConvertForTesting(input);
+  EXPECT_EQ(output->type, crosapi::mojom::OptionType::kString);
+  ASSERT_FALSE(output->value.is_null());
+  ASSERT_TRUE(output->value->is_string_value());
+  EXPECT_EQ(output->value->get_string_value(), "");
+}
+
+TEST(DocumentScanAshTypeConvertersTest,
+     ScannerOption_StringWithNonEmptyStringValue) {
+  lorgnette::ScannerOption input;
+  input.set_option_type(lorgnette::TYPE_STRING);
+  input.set_string_value("string");
+  auto output = ConvertForTesting(input);
+  EXPECT_EQ(output->type, crosapi::mojom::OptionType::kString);
+  ASSERT_FALSE(output->value.is_null());
+  ASSERT_TRUE(output->value->is_string_value());
+  EXPECT_EQ(output->value->get_string_value(), "string");
+}
+
+// Verifies that a constraint is copied in.  Details of the OptionConstraint
+// conversion are covered in specific tests above.  The case of a missing
+// constraint is covered in the BasicFields test.
+TEST(DocumentScanAshTypeConvertersTest, ScannerOption_NonEmptyConstraint) {
+  lorgnette::ScannerOption input;
+  input.mutable_constraint()->set_constraint_type(
+      lorgnette::OptionConstraint::CONSTRAINT_STRING_LIST);
+  input.mutable_constraint()->add_valid_string("string");
+  auto output = ConvertForTesting(input);
+  ASSERT_FALSE(output->constraint.is_null());
+  EXPECT_EQ(output->constraint->type,
+            crosapi::mojom::OptionConstraintType::kStringList);
+  ASSERT_FALSE(output->constraint->restriction.is_null());
+  ASSERT_TRUE(output->constraint->restriction->is_valid_string());
+  EXPECT_THAT(output->constraint->restriction->get_valid_string(),
+              ElementsAre("string"));
 }
 
 TEST(DocumentScanAshTypeConvertersTest,
@@ -132,6 +509,54 @@ TEST(DocumentScanAshTypeConvertersTest, GetScannerListResponse_NetworkScanner) {
   EXPECT_FALSE(scanner_out->secure);
   EXPECT_THAT(scanner_out->image_formats,
               UnorderedElementsAre("image/png", "image/jpeg"));
+}
+
+TEST(DocumentScanAshTypeConvertersTest,
+     OpenScannerResponse_EmptyObjectSucceeds) {
+  lorgnette::OpenScannerResponse input;
+  auto output = crosapi::mojom::OpenScannerResponse::From(input);
+  EXPECT_TRUE(output->scanner_id.empty());
+  EXPECT_EQ(output->result, crosapi::mojom::ScannerOperationResult::kUnknown);
+  EXPECT_FALSE(output->scanner_handle.has_value());
+  EXPECT_FALSE(output->options.has_value());
+}
+
+// Test that all provided options are copied into the mojom result.  Ensuring
+// that option details are converted correctly is covered by specific
+// ScannerOption tests above.
+TEST(DocumentScanAshTypeConvertersTest,
+     OpenScannerResponse_AllOptionsIncluded) {
+  lorgnette::OpenScannerResponse input;
+  input.mutable_scanner_id()->set_connection_string("scanner:id");
+  input.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
+  input.mutable_config()->mutable_scanner()->set_token("12345");
+  (*input.mutable_config()->mutable_options())["option1-name"] = {};
+  (*input.mutable_config()->mutable_options())["option2-name"] = {};
+  auto output = crosapi::mojom::OpenScannerResponse::From(input);
+  EXPECT_EQ(output->scanner_id, "scanner:id");
+  EXPECT_EQ(output->result, crosapi::mojom::ScannerOperationResult::kSuccess);
+  ASSERT_TRUE(output->scanner_handle.has_value());
+  EXPECT_EQ(output->scanner_handle.value(), "12345");
+  ASSERT_TRUE(output->options.has_value());
+  EXPECT_TRUE(base::Contains(output->options.value(), "option1-name"));
+  EXPECT_TRUE(base::Contains(output->options.value(), "option2-name"));
+}
+
+TEST(DocumentScanAshTypeConvertersTest,
+     CloseScannerResponse_EmptyObjectSucceeds) {
+  lorgnette::CloseScannerResponse input;
+  auto output = crosapi::mojom::CloseScannerResponse::From(input);
+  EXPECT_TRUE(output->scanner_handle.empty());
+  EXPECT_EQ(output->result, crosapi::mojom::ScannerOperationResult::kUnknown);
+}
+
+TEST(DocumentScanAshTypeConvertersTest, CloseScannerResponse_NonEmptyResponse) {
+  lorgnette::CloseScannerResponse input;
+  input.mutable_scanner()->set_token("55555");
+  input.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
+  auto output = crosapi::mojom::CloseScannerResponse::From(input);
+  EXPECT_EQ(output->scanner_handle, "55555");
+  EXPECT_EQ(output->result, crosapi::mojom::ScannerOperationResult::kSuccess);
 }
 
 }  // namespace

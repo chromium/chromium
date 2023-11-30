@@ -112,6 +112,36 @@ void GetScannerListAdapter(
       mojom::GetScannerListResponse::From(response_in.value()));
 }
 
+void OpenScannerAdapter(
+    const std::string& scanner_id,
+    DocumentScanAsh::OpenScannerCallback callback,
+    const absl::optional<lorgnette::OpenScannerResponse>& response_in) {
+  if (!response_in) {
+    auto response_out = mojom::OpenScannerResponse::New();
+    response_out->scanner_id = scanner_id;
+    response_out->result = mojom::ScannerOperationResult::kInternalError;
+    std::move(callback).Run(std::move(response_out));
+    return;
+  }
+  std::move(callback).Run(
+      mojom::OpenScannerResponse::From(response_in.value()));
+}
+
+void CloseScannerAdapter(
+    const std::string& scanner_handle,
+    DocumentScanAsh::CloseScannerCallback callback,
+    const absl::optional<lorgnette::CloseScannerResponse>& response_in) {
+  if (!response_in) {
+    auto response_out = mojom::CloseScannerResponse::New();
+    response_out->scanner_handle = scanner_handle;
+    response_out->result = mojom::ScannerOperationResult::kInternalError;
+    std::move(callback).Run(std::move(response_out));
+    return;
+  }
+  std::move(callback).Run(
+      mojom::CloseScannerResponse::From(response_in.value()));
+}
+
 }  // namespace
 
 DocumentScanAsh::DocumentScanAsh() = default;
@@ -164,6 +194,44 @@ void DocumentScanAsh::GetScannerList(const std::string& client_id,
           filter->secure ? SecureScannerFilter::kSecureScannersOnly
                          : SecureScannerFilter::kIncludeUnsecureScanners,
           base::BindOnce(&GetScannerListAdapter, std::move(callback)));
+}
+
+void DocumentScanAsh::OpenScanner(const std::string& client_id,
+                                  const std::string& scanner_id,
+                                  OpenScannerCallback callback) {
+  if (!ash::features::IsAdvancedDocumentScanAPIEnabled()) {
+    auto response = crosapi::mojom::OpenScannerResponse::New();
+    response->scanner_id = scanner_id;
+    response->result = crosapi::mojom::ScannerOperationResult::kUnsupported;
+    std::move(callback).Run(std::move(response));
+    return;
+  }
+
+  lorgnette::OpenScannerRequest request;
+  request.mutable_scanner_id()->set_connection_string(scanner_id);
+  request.set_client_id(client_id);
+  ash::LorgnetteScannerManagerFactory::GetForBrowserContext(GetProfile())
+      ->OpenScanner(
+          std::move(request),
+          base::BindOnce(&OpenScannerAdapter, scanner_id, std::move(callback)));
+}
+
+void DocumentScanAsh::CloseScanner(const std::string& scanner_handle,
+                                   CloseScannerCallback callback) {
+  if (!ash::features::IsAdvancedDocumentScanAPIEnabled()) {
+    auto response = crosapi::mojom::CloseScannerResponse::New();
+    response->scanner_handle = scanner_handle;
+    response->result = crosapi::mojom::ScannerOperationResult::kUnsupported;
+    std::move(callback).Run(std::move(response));
+    return;
+  }
+
+  lorgnette::CloseScannerRequest request;
+  request.mutable_scanner()->set_token(scanner_handle);
+  ash::LorgnetteScannerManagerFactory::GetForBrowserContext(GetProfile())
+      ->CloseScanner(std::move(request),
+                     base::BindOnce(&CloseScannerAdapter, scanner_handle,
+                                    std::move(callback)));
 }
 
 }  // namespace crosapi

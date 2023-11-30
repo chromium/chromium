@@ -149,6 +149,176 @@ struct ScannerEnumFilter {
   bool secure@1;
 };
 
+// The enum below is exactly the same as its counterpart in
+// third_party/cros_system_api/dbus/lorgnette/lorgnette_service.proto
+//
+// The type of an option.  This is the same set of types as SANE_Value_Type.
+[Stable, Extensible]
+enum OptionType {
+  [Default] kUnknown = 0,
+  kBool = 1,
+  kInt = 2,
+  kFixed = 3,
+  kString = 4,
+  kButton = 5,
+  kGroup = 6,
+};
+
+// The enum below is exactly the same as its counterpart in
+// third_party/cros_system_api/dbus/lorgnette/lorgnette_service.proto
+//
+// The unit of measurement for an option.  This is the same set of units as
+// SANE_Unit.
+[Stable, Extensible]
+enum OptionUnit {
+  // Value is a unitless number, e.g., threshold.
+  [Default] kUnitless = 0,
+
+  // Value is a number of pixels, e.g., scan dimensions.
+  kPixel = 1,
+
+  // Value is the number of bits, e.g., color depth.
+  kBit = 2,
+
+  // Value is in mm, e.g., scan dimensions.
+  kMm = 3,
+
+  // Value is in dots per inch, e.g., resolution.
+  kDpi = 4,
+
+  // Value is a percent, e.g., brightness.
+  kPercent = 5,
+
+  // Value is in µs, e.g. exposure time.
+  kMicrosecond = 6,
+};
+
+// The value of a `ScannerOption`.  The active field must match the
+// `OptionType` of the option.
+[Stable]
+union OptionValue {
+  bool bool_value;
+  int32 int_value;
+  array<int32> int_list;
+  double fixed_value;
+  array<double> fixed_list;
+  string string_value;
+};
+
+// The enum below is exactly the same as its counterpart in
+// third_party/cros_system_api/dbus/lorgnette/lorgnette_service.proto
+//
+// The type of a constraint.  These correspond to SANE_Constraint_Type.
+[Stable, Extensible]
+enum OptionConstraintType {
+  [Default] kNone = 0,
+  kIntRange = 1,
+  kFixedRange = 2,
+  kIntList = 3,
+  kFixedList = 4,
+  kStringList = 5,
+};
+
+// A range of valid values for an option of type `OptionType.kInt`.
+[Stable]
+struct IntRange {
+  int32 min@0;
+  int32 max@1;
+  int32 quant@2;
+};
+
+// A range of valid values for an option of type `OptionType.kFixed`.
+[Stable]
+struct FixedRange {
+  double min@0;
+  double max@1;
+  double quant@2;
+};
+
+// The specific restriction imposed by an `OptionConstraint`.  Each type of
+// restriction corresponds to a value of `OptionConstraintType`.
+[Stable]
+union OptionConstraintRestriction {
+  IntRange int_range;
+  FixedRange fixed_range;
+  array<int32> valid_int;
+  array<double> valid_fixed;
+  array<string> valid_string;
+};
+
+// A constraint on the allowed values of a `ScannerOption`.  The `type` field
+// indicates which union member of `constraint` is expected to be set.
+[Stable]
+struct OptionConstraint {
+  OptionConstraintType type@0;
+  OptionConstraintRestriction restriction@1;
+};
+
+// How an option can be configured.  An option can be configured through
+// software, through hardware, or neither (read-only).  The SANE model does not
+// permit an option to be configured in both hardware and software.
+[Stable, Extensible]
+enum OptionConfigurability {
+  // Option is read-only and cannot be changed.
+  kNotConfigurable = 0,
+
+  // Option can be set in software.
+  [Default] kSoftwareConfigurable = 1,
+
+  // Option can be set by the user toggling/pushing a hardware button.
+  kHardwareConfigurable = 2,
+};
+
+// A self-describing scanner option, in the style of SANE_Option_Descriptor.  A
+// `ScannerOption` represents an individual option with display information, an
+// optional current value, and an optional constraint on valid values.
+[Stable]
+struct ScannerOption {
+  // Option name using lowercase a-z, numbers, and dashes.
+  string name@0;
+
+  // Printable one-line title.
+  string title@1;
+
+  // Longer description of the option.  May contain embedded newlines.
+  string description@2;
+
+  // Lorgnette type for the option.
+  OptionType type@3;
+
+  // Unit of the option's value.
+  OptionUnit unit@4;
+
+  // Current value of the option if relevant.
+  OptionValue? value@5;
+
+  // Constrain on possible option values.
+  OptionConstraint? constraint@6;
+
+  // Option can be detected in software.
+  bool isDetectable@7;
+
+  // How the option value can be changed.
+  OptionConfigurability configurability@8;
+
+  // Can be automatically set by the backend.
+  bool isAutoSettable@9;
+
+  // Emulated by the backend instead of implemented in the scanner.
+  bool isEmulated@10;
+
+  // Option is active and can be set/retrieved.  If false, the `value` field
+  // will not be set.
+  bool isActive@11;
+
+  // UI should not display this option by default.
+  bool isAdvanced@12;
+
+  // Option is used for internal configuration and should never be displayed
+  // in the UI.
+  bool isInternal@13;
+};
+
 // The result of combining lorgnette's d-bus response with Chrome's mDNS
 // discovery for `GetScannerList()`.
 [Stable]
@@ -160,9 +330,40 @@ struct GetScannerListResponse {
   array<ScannerInfo> scanners@1;
 };
 
+// The response from calling `OpenScanner()`.
+[Stable]
+struct OpenScannerResponse {
+  // Same scanner_id value passed to `OpenScanner()`.
+  string scanner_id@0;
+
+  // Backend result of opening the scanner.
+  ScannerOperationResult result@1;
+
+  // If result is ScannerOperationResult.kSuccess, an exclusive handle to the
+  // scanner that can be used for further operations.  This handle remains
+  // valid until `CloseScanner()` is called, `OpenScanner()` is called again by
+  // the same client with the same `scanner_id`, or a hardware change causes
+  // the scanner to become inaccessible.
+  string? scanner_handle@2;
+
+  // If result is ScannerOperationResult.kSuccess, a mapping from option names
+  // to `ScannerOption`.
+  map<string, ScannerOption>? options@3;
+};
+
+// The response from calling `CloseScanner()`.
+[Stable]
+struct CloseScannerResponse {
+  // Same scanner_handle value passed to `CloseScanner()`.
+  string scanner_handle@0;
+
+  // Backend result of closing the scanner handle.
+  ScannerOperationResult result@1;
+};
+
 // This interface is used to access scanners.
-// Next version: 2
-// Next method id: 3
+// Next version: 3
+// Next method id: 5
 [Stable, Uuid="f0c77c02-b5c1-4919-8218-3076ecad58db"]
 interface DocumentScan {
   // Returns the names of all available, de-duplicated scanners.
@@ -187,4 +388,13 @@ interface DocumentScan {
   [MinVersion=1]
   GetScannerList@2(string client_id, ScannerEnumFilter? filter)
       => (GetScannerListResponse response);
+
+  // Open an exclusive handle to a scanner returned from `GetScannerList()`.
+  [MinVersion=2]
+  OpenScanner@3(string client_id, string scanner_id)
+      => (OpenScannerResponse response);
+
+  // Close a scanner handle opened by `OpenScanner()`.
+  [MinVersion=2]
+  CloseScanner@4(string scanner_handle) => (CloseScannerResponse response);
 };
