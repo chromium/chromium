@@ -3464,75 +3464,6 @@ const FeatureEntry::FeatureVariation
 };
 #endif
 
-const FeatureEntry::FeatureParam
-    kPrivacySandboxSettings4ShowSampleDataForTesting[] = {
-        {privacy_sandbox::kPrivacySandboxSettings4ShowSampleDataForTestingName,
-         "true"}};
-const FeatureEntry::FeatureParam kPrivacySandboxSettings4NoticeRequired[] = {
-    {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName, "true"}};
-const FeatureEntry::FeatureParam kPrivacySandboxSettings4ConsentRequired[] = {
-    {privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName, "true"}};
-const FeatureEntry::FeatureParam kPrivacySandboxSettings4RestrictedNotice[] = {
-    {privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName, "true"},
-    {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName, "true"}};
-const FeatureEntry::FeatureParam
-    kPrivacySandboxSettings4ForceShowConsentForTesting[] = {
-        {privacy_sandbox::
-             kPrivacySandboxSettings4ForceShowConsentForTestingName,
-         "true"},
-        {privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName, "true"}};
-const FeatureEntry::FeatureParam
-    kPrivacySandboxSettings4ForceShowROWNoticeForTesting[] = {
-        {privacy_sandbox::
-             kPrivacySandboxSettings4ForceShowNoticeRowForTestingName,
-         "true"},
-        {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName, "true"}};
-const FeatureEntry::FeatureParam
-    kPrivacySandboxSettings4ForceShowEEANoticeForTesting[] = {
-        {privacy_sandbox::
-             kPrivacySandboxSettings4ForceShowNoticeEeaForTestingName,
-         "true"},
-        {privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName, "true"}};
-const FeatureEntry::FeatureParam
-    kPrivacySandboxSettings4ForceShowRestrictedNoticeForTesting[] = {
-        {privacy_sandbox::
-             kPrivacySandboxSettings4ForceShowNoticeRestrictedForTestingName,
-         "true"},
-        {privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName, "true"},
-        {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName, "true"}};
-const FeatureEntry::FeatureParam
-    kPrivacySandboxSettings4ForceRestrictedUserForTesting[] = {
-        {privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName, "true"},
-        {privacy_sandbox::
-             kPrivacySandboxSettings4ForceRestrictedUserForTestingName,
-         "true"}};
-
-const FeatureEntry::FeatureVariation kPrivacySandboxSettings4Variations[] = {
-    {"Sample Data", kPrivacySandboxSettings4ShowSampleDataForTesting,
-     std::size(kPrivacySandboxSettings4ShowSampleDataForTesting), nullptr},
-    {"Notice Required", kPrivacySandboxSettings4NoticeRequired,
-     std::size(kPrivacySandboxSettings4NoticeRequired), nullptr},
-    {"Consent Required", kPrivacySandboxSettings4ConsentRequired,
-     std::size(kPrivacySandboxSettings4ConsentRequired), nullptr},
-    {"Restricted notice", kPrivacySandboxSettings4RestrictedNotice,
-     std::size(kPrivacySandboxSettings4RestrictedNotice), nullptr},
-    {"Force show consent", kPrivacySandboxSettings4ForceShowConsentForTesting,
-     std::size(kPrivacySandboxSettings4ForceShowConsentForTesting), nullptr},
-    {"Force show ROW notice",
-     kPrivacySandboxSettings4ForceShowROWNoticeForTesting,
-     std::size(kPrivacySandboxSettings4ForceShowROWNoticeForTesting), nullptr},
-    {"Force show EEA notice",
-     kPrivacySandboxSettings4ForceShowEEANoticeForTesting,
-     std::size(kPrivacySandboxSettings4ForceShowEEANoticeForTesting), nullptr},
-    {"Force show Restricted notice",
-     kPrivacySandboxSettings4ForceShowRestrictedNoticeForTesting,
-     std::size(kPrivacySandboxSettings4ForceShowRestrictedNoticeForTesting),
-     nullptr},
-    {"Force restricted user",
-     kPrivacySandboxSettings4ForceRestrictedUserForTesting,
-     std::size(kPrivacySandboxSettings4ForceRestrictedUserForTesting), nullptr},
-};
-
 const FeatureEntry::FeatureParam kTPCPhaseOutFacilitatedTestingControl1[] = {
     {tpcd::experiment::kForceEligibleForTestingName, "false"},
     {tpcd::experiment::kDisable3PCookiesName, "false"},
@@ -8779,13 +8710,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrivacySandboxAdsNoticeCCTDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(privacy_sandbox::kPrivacySandboxAdsNoticeCCT)},
 #endif  // BUILDFLAG(IS_ANDROID)
-
-    {"privacy-sandbox-settings-4",
-     flag_descriptions::kPrivacySandboxSettings4Name,
-     flag_descriptions::kPrivacySandboxSettings4Description, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(privacy_sandbox::kPrivacySandboxSettings4,
-                                    kPrivacySandboxSettings4Variations,
-                                    "PrivacySandboxSettings4")},
 
     {"privacy-sandbox-proactive-topics-blocking",
      flag_descriptions::kPrivacySandboxProactiveTopicsBlockingName,

@@ -6634,14 +6634,6 @@
     "expiry_milestone": 122
   },
   {
-    "name": "privacy-sandbox-settings-4",
-    "owners": [
-      "sauski@chromium.org",
-      "olesiamarukhno@chromium.org",
-      "tommasin@chromium.org"],
-    "expiry_milestone": 120
-  },
-  {
     "name": "private-aggregation-developer-mode",
     "owners": [
       "//content/browser/private_aggregation/OWNERS"

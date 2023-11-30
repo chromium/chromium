@@ -1694,9 +1694,6 @@ extern const char kPrivacySandboxAdsNoticeCCTDescription[];
 extern const char kPrivacySandboxEnrollmentOverridesName[];
 extern const char kPrivacySandboxEnrollmentOverridesDescription[];
 
-extern const char kPrivacySandboxSettings4Name[];
-extern const char kPrivacySandboxSettings4Description[];
-
 extern const char kPrivacySandboxProactiveTopicsBlockingName[];
 extern const char kPrivacySandboxProactiveTopicsBlockingDescription[];
 
