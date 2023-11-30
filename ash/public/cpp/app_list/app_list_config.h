@@ -225,6 +225,12 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   int shortcut_background_border_margin() const {
     return shortcut_background_border_margin_;
   }
+  int promise_icon_dimension_installing() const {
+    return promise_icon_dimension_installing_;
+  }
+  int promise_icon_dimension_pending() const {
+    return promise_icon_dimension_pending_;
+  }
   int GetShortcutHostBadgeIconContainerDimension() const;
   int GetShortcutBackgroundContainerDimension() const;
   gfx::Size GetShortcutIconSize() const;
@@ -323,6 +329,12 @@ class ASH_PUBLIC_EXPORT AppListConfig {
 
   // The dimension of a background container border of a shortcut.
   const int shortcut_background_border_margin_;
+
+  // The preferred icon size for the promise apps on installing state.
+  const int promise_icon_dimension_installing_;
+
+  // The preferred icon size for the promise apps on pending state.
+  const int promise_icon_dimension_pending_;
 };
 
 }  // namespace ash

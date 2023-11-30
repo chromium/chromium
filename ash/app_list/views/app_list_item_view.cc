@@ -119,22 +119,23 @@ static const int kTouchDragImageVerticalOffset = 25;
 // The drag and drop app icon should get scaled by this factor.
 constexpr float kDragDropAppIconScale = 1.2f;
 
-// The icon for promise apps should be scaled down by these factors depending on
-// the app state.
-constexpr float kPromiseIconScalePending = 24.0f / 36.0f;
+// The icon for promise apps should be scaled down by this factor on installing.
 constexpr float kPromiseIconScaleInstalling = 28.0f / 36.0f;
 
-// The promise apps should scale the base constants for bounding proportionally
-// to this icon size.
-constexpr float kPromiseRingBaseIconSize = 36.0f;
+// The promise app placeholder icon should use this size.
+constexpr int kPlaceholderIconDimension = 24;
+
+// The width of the promise app progress ring.
+constexpr float kPromiseRingStrokeSize = 2.0f;
 
 // The duration of the animation to animate an app list item view in as a
 // promise app replacement.
 constexpr base::TimeDelta kSwapPromiseIconDuration = base::Milliseconds(100);
 
 // The amount of space between the progress ring and the promise app background
-// and icon.
-constexpr float kProgressRingMargin = -2.0f;
+// and icon depending on the app_state.
+constexpr gfx::Insets kProgressRingMarginInstalling = gfx::Insets(-2);
+constexpr gfx::Insets kProgressRingMarginPending = gfx::Insets(-3);
 
 // The drag and drop icon scaling up or down animation transition duration.
 constexpr int kDragDropAppIconScaleTransitionInMs = 200;
@@ -160,8 +161,8 @@ constexpr size_t kMaxItemCounterCount = 100u;
 class PromiseIconBackground : public views::Background {
  public:
   PromiseIconBackground(ui::ColorId color_id,
-                        const gfx::RectF& icon_bounds,
-                        const gfx::InsetsF& insets)
+                        const gfx::Rect& icon_bounds,
+                        const gfx::Insets& insets)
       : color_id_(color_id), icon_bounds_(icon_bounds), insets_(insets) {}
 
   PromiseIconBackground(const PromiseIconBackground&) = delete;
@@ -170,8 +171,8 @@ class PromiseIconBackground : public views::Background {
 
   // views::Background:
   void Paint(gfx::Canvas* canvas, views::View* view) const override {
-    gfx::RectF bounds = icon_bounds_;
-    bounds.Inset(insets_);
+    gfx::RectF bounds = gfx::RectF(icon_bounds_);
+    bounds.Inset(gfx::InsetsF(insets_));
 
     const float radius =
         std::min(bounds.size().width(), bounds.size().height()) / 2.f;
@@ -190,8 +191,8 @@ class PromiseIconBackground : public views::Background {
 
  private:
   const ui::ColorId color_id_;
-  const gfx::RectF icon_bounds_;
-  const gfx::InsetsF insets_;
+  const gfx::Rect icon_bounds_;
+  const gfx::Insets insets_;
 };
 
 // Draws a dot with no shadow.
@@ -772,8 +773,8 @@ void AppListItemView::SetIcon(const gfx::ImageSkia& icon) {
     return;
   }
 
-  const gfx::Size icon_size = gfx::ScaleToRoundedSize(
-      GetIconSize(), GetAdjustedIconScaleForProgressRing());
+  const gfx::Size icon_size =
+      gfx::ScaleToRoundedSize(GetIconSize(), icon_scale_);
 
   gfx::ImageSkia resized = gfx::ImageSkiaOperations::CreateResizedImage(
       icon, skia::ImageOperations::RESIZE_BEST, icon_size);
@@ -789,6 +790,10 @@ gfx::Size AppListItemView::GetIconSize() const {
 
   if (has_host_badge_) {
     return app_list_config_->GetShortcutIconSize();
+  }
+
+  if (is_promise_app_ && features::ArePromiseIconsEnabled() && item_weak_) {
+    return GetPreferredIconSizeForProgressRing();
   }
 
   return app_list_config_->grid_icon_size();
@@ -870,28 +875,28 @@ void AppListItemView::UpdateDraggedItem(const AppListItem* dragged_item) {
   }
 }
 
-float AppListItemView::GetAdjustedIconScaleForProgressRing() {
-  // Account for the promise icon scale (if needed).
-  if (is_promise_app_ && features::ArePromiseIconsEnabled() && item_weak_) {
-    switch (item_weak_->app_status()) {
-      case AppStatus::kPending:
-        return icon_scale_ * kPromiseIconScalePending;
-      case AppStatus::kInstalling:
-      case AppStatus::kInstallCancelled:
-      case AppStatus::kInstallSuccess:
-      case AppStatus::kPaused:
-        // Placeholder icons do not change size between states.
-        if (icon_image_model_.IsVectorIcon()) {
-          return icon_scale_ * kPromiseIconScalePending;
-        }
-        return icon_scale_ * kPromiseIconScaleInstalling;
-      case AppStatus::kReady:
-      case AppStatus::kBlocked:
-        return icon_scale_;
-    }
-  }
+gfx::Size AppListItemView::GetPreferredIconSizeForProgressRing() const {
+  DCHECK(is_promise_app_);
+  CHECK(item_weak_);
 
-  return icon_scale_;
+  switch (item_weak_->app_status()) {
+    case AppStatus::kPending:
+      return gfx::Size(app_list_config_->promise_icon_dimension_pending(),
+                       app_list_config_->promise_icon_dimension_pending());
+    case AppStatus::kInstalling:
+    case AppStatus::kInstallCancelled:
+    case AppStatus::kInstallSuccess:
+    case AppStatus::kPaused:
+      // Placeholder icons do not change size between states.
+      if (icon_image_model_.IsVectorIcon()) {
+        return gfx::Size(kPlaceholderIconDimension, kPlaceholderIconDimension);
+      }
+      return gfx::Size(app_list_config_->promise_icon_dimension_installing(),
+                       app_list_config_->promise_icon_dimension_installing());
+    case AppStatus::kReady:
+    case AppStatus::kBlocked:
+      return app_list_config_->grid_icon_size();
+  }
 }
 
 void AppListItemView::ScaleIconImmediatly(float scale_factor) {
@@ -1379,8 +1384,7 @@ void AppListItemView::Layout() {
   const gfx::Size icon_size = GetIconSize();
 
   const gfx::Rect icon_bounds = GetIconBoundsForTargetViewBounds(
-      app_list_config_, rect,
-      gfx::ScaleToRoundedSize(icon_size, GetAdjustedIconScaleForProgressRing()),
+      app_list_config_, rect, gfx::ScaleToRoundedSize(icon_size, icon_scale_),
       icon_scale_);
 
   const int shortcut_background_container_dimension =
@@ -1408,7 +1412,7 @@ void AppListItemView::Layout() {
         GetIconBoundsForTargetViewBounds(
             app_list_config_, rect,
             gfx::ScaleToRoundedSize(shortcut_background_container_size,
-                                    GetAdjustedIconScaleForProgressRing()),
+                                    icon_scale_),
             icon_scale_);
 
     shortcut_background_container_->SetBoundsRect(
@@ -2180,9 +2184,7 @@ void AppListItemView::UpdateProgressIndicatorState() {
             base::Unretained(this)));
     progress_indicator_->SetInnerIconVisible(false);
     progress_indicator_->SetInnerRingVisible(false);
-    progress_indicator_->SetOuterRingStrokeWidth(
-        2.0 * app_list_config_->grid_icon_dimension() /
-        kPromiseRingBaseIconSize);
+    progress_indicator_->SetOuterRingStrokeWidth(kPromiseRingStrokeSize);
     EnsureLayer();
     layer()->Add(progress_indicator_->CreateLayer(base::BindRepeating(
         [](AppListItemView* view, ui::ColorId color_id) {
@@ -2213,17 +2215,19 @@ void AppListItemView::UpdateProgressRingBounds() {
 
   CHECK(!is_folder_);
 
-  gfx::RectF progress_bounds = gfx::RectF(
+  gfx::Rect progress_bounds = gfx::Rect(
       views::View::ConvertRectToTarget(icon_, this, icon_->GetImageBounds()));
 
-  const gfx::InsetsF progress_ring_padding = gfx::InsetsF(
-      kProgressRingMargin * app_list_config_->grid_icon_dimension() /
-      kPromiseRingBaseIconSize);
+  const gfx::Insets progress_ring_padding =
+      icon_image_model_.IsVectorIcon() ||
+              item()->app_status() != AppStatus::kPending
+          ? kProgressRingMarginInstalling
+          : kProgressRingMarginPending;
 
   progress_bounds.Inset(progress_ring_padding);
 
-  progress_indicator_->layer()->SetBounds(
-      gfx::ToEnclosingRect(progress_bounds));
+  progress_indicator_->layer()->SetBounds(progress_bounds);
+
   layer()->StackAtBottom(progress_indicator_->layer());
   progress_indicator_->InvalidateLayer();
 

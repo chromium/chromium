@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/scrollable_shelf_view.h"
 #include "ash/shelf/shelf.h"
@@ -43,6 +44,8 @@
 #include "ui/gfx/animation/throb_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -87,9 +90,19 @@ constexpr int kInkDropRippleActivationTimeMs = 650;
 // The drag and drop app icon should get scaled by this factor.
 constexpr float kAppIconScale = 1.2f;
 
-// The icon for promise apps should be scaled down by this factor.
-constexpr float kPromiseIconScalePending = 24.0f / 36.0f;
+// The icon for promise apps should be scaled down by this factor on installing
+// state.
 constexpr float kPromiseIconScaleInstalling = 28.0f / 36.0f;
+
+// The preferred promise icon size for a placeholder icon. Placeholder icons do
+// not change size between states.
+constexpr int kPlaceholderIconDimension = 24;
+
+// The preferred promise icon size if the app is currently installing.
+constexpr int kPromiseIconDimensionInstalling = 28;
+
+// The preferred promise icon size if the app is currently pending.
+constexpr int kPromiseIconDimensionPending = 24;
 
 // The amount of space between the progress ring and the promise app background
 // and icon.
@@ -937,10 +950,34 @@ bool ShelfAppButton::OnMouseDragged(const ui::MouseEvent& event) {
   return true;
 }
 
+float ShelfAppButton::GetIconDimensionByAppState() const {
+  if (is_promise_app_ && features::ArePromiseIconsEnabled()) {
+    // Placeholder icons do not change size between states.
+    if (icon_image_model_.IsVectorIcon()) {
+      return kPlaceholderIconDimension;
+    }
+
+    switch (app_status_) {
+      case AppStatus::kPending:
+        return kPromiseIconDimensionPending;
+      case AppStatus::kInstalling:
+      case AppStatus::kInstallCancelled:
+      case AppStatus::kInstallSuccess:
+      case AppStatus::kPaused:
+        return kPromiseIconDimensionInstalling;
+      case AppStatus::kReady:
+      case AppStatus::kBlocked:
+        return shelf_view_->GetButtonIconSize();
+    }
+  }
+
+  return shelf_view_->GetButtonIconSize();
+}
+
 gfx::Rect ShelfAppButton::GetIconViewBounds(const gfx::Rect& button_bounds,
                                             float icon_scale,
                                             bool ignore_shadow_insets) const {
-  const float icon_size = shelf_view_->GetButtonIconSize() * icon_scale;
+  const float icon_size = GetIconDimensionByAppState() * icon_scale;
   const float icon_padding = (shelf_view_->GetButtonSize() - icon_size) / 2;
 
   const Shelf* shelf = shelf_view_->shelf();
@@ -1053,11 +1090,9 @@ void ShelfAppButton::Layout() {
   Shelf* shelf = shelf_view_->shelf();
   gfx::Rect icon_view_bounds =
       has_host_badge_
-          ? GetShortcutViewBounds(GetContentsBounds(),
-                                  GetAdjustedIconScaleForProgressRing(),
+          ? GetShortcutViewBounds(GetContentsBounds(), icon_scale_,
                                   shelf_view_->GetShortcutIconSize())
-          : GetIconViewBounds(GetContentsBounds(),
-                              GetAdjustedIconScaleForProgressRing(),
+          : GetIconViewBounds(GetContentsBounds(), icon_scale_,
                               /*ignore_shadow_bounds=*/false);
   const gfx::Rect button_bounds(GetContentsBounds());
   const int status_indicator_offet_from_shelf_edge =
@@ -1069,9 +1104,9 @@ void ShelfAppButton::Layout() {
         shelf_view_->GetShelfShortcutIconContainerSize();
     const gfx::Size icon_container_view_size(icon_container_size,
                                              icon_container_size);
-    const gfx::Rect icon_container_view_bounds = GetShortcutViewBounds(
-        GetContentsBounds(), GetAdjustedIconScaleForProgressRing(),
-        shelf_view_->GetShelfShortcutIconContainerSize());
+    const gfx::Rect icon_container_view_bounds =
+        GetShortcutViewBounds(GetContentsBounds(), icon_scale_,
+                              shelf_view_->GetShelfShortcutIconContainerSize());
     icon_container_view_->SetBackground(
         views::CreateThemedRoundedRectBackground(
             cros_tokens::kCrosSysSystemOnBaseOpaque, (icon_container_size / 2),
@@ -1087,7 +1122,7 @@ void ShelfAppButton::Layout() {
   }
 
   notification_indicator_->SetIndicatorBounds(
-      GetNotificationIndicatorBounds(GetAdjustedIconScaleForProgressRing()));
+      GetNotificationIndicatorBounds(icon_scale_));
 
   // The indicators should be aligned with the icon, not the icon + shadow.
   // Use 1.0 as icon scale for |indicator_midpoint|, otherwise integer rounding
@@ -1292,10 +1327,8 @@ gfx::Transform ShelfAppButton::GetScaleTransform(float icon_scale) {
 gfx::Size ShelfAppButton::GetPreferredIconSize(
     const ui::ImageModel& image_model) const {
   const int icon_size = has_host_badge_
-                            ? shelf_view_->GetShortcutIconSize() *
-                                  GetAdjustedIconScaleForProgressRing()
-                            : shelf_view_->GetButtonIconSize() *
-                                  GetAdjustedIconScaleForProgressRing();
+                            ? shelf_view_->GetShortcutIconSize() * icon_scale_
+                            : GetIconDimensionByAppState() * icon_scale_;
 
   const gfx::Size current_icon_size = image_model.Size();
 
@@ -1453,29 +1486,6 @@ void ShelfAppButton::UpdateProgressRingBounds() {
   progress_indicator_->layer()->SetBounds(progress_indicator_bounds);
   layer()->StackAtBottom(progress_indicator_->layer());
   progress_indicator_->InvalidateLayer();
-}
-
-float ShelfAppButton::GetAdjustedIconScaleForProgressRing() const {
-  // Account for the promise icon scale (if needed).
-  if (is_promise_app_ && features::ArePromiseIconsEnabled()) {
-    switch (app_status_) {
-      case AppStatus::kPending:
-        return icon_scale_ * kPromiseIconScalePending;
-      case AppStatus::kInstalling:
-      case AppStatus::kInstallCancelled:
-      case AppStatus::kInstallSuccess:
-      case AppStatus::kPaused:
-        if (icon_image_model_.IsVectorIcon()) {
-          return icon_scale_ * kPromiseIconScalePending;
-        }
-        return icon_scale_ * kPromiseIconScaleInstalling;
-      case AppStatus::kReady:
-      case AppStatus::kBlocked:
-        return icon_scale_;
-    }
-  }
-
-  return icon_scale_;
 }
 
 ProgressIndicator* ShelfAppButton::GetProgressIndicatorForTest() const {
