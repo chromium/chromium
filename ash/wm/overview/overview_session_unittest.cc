@@ -943,8 +943,7 @@ TEST_P(OverviewSessionTest, MaximizedWindow) {
 // maximized and fullscreen window.
 #if defined(NDEBUG) && !defined(ADDRESS_SANITIZER) && \
     !defined(LEAK_SANITIZER) && !defined(THREAD_SANITIZER)
-// TODO(crbug.com/1493835): Re-enable this test. Disabled because of flakiness.
-TEST_P(OverviewSessionTest, DISABLED_MaximizedFullscreenHistograms) {
+TEST_P(OverviewSessionTest, MaximizedFullscreenHistograms) {
   std::unique_ptr<aura::Window> maximized_window(CreateTestWindow());
   std::unique_ptr<aura::Window> fullscreen_window(CreateTestWindow());
 
