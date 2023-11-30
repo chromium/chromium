@@ -4,7 +4,6 @@
 
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
 
-#include "base/json/json_reader.h"
 #include "base/json/values_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
@@ -137,49 +136,6 @@ TEST_F(WebAppPrefsUtilsTest, TestGlobalConsecutiveAppIgnore) {
     update->Set(kIphIgnoreCount, kIphMuteAfterConsecutiveAppAgnosticIgnores);
   }
   EXPECT_FALSE(ShouldShowIph(prefs(), app_id));
-}
-
-TEST_F(WebAppPrefsUtilsTest, TestTakeAllWebAppInstallSources) {
-  base::Value old = *base::JSONReader::Read(R"({
-      "app1": {},
-      "app2": { "latest_web_app_install_source": 2 },
-      "app3": {
-          "latest_web_app_install_source": 3,
-         "IPH_last_ignore_time": "123345567"
-      }
-  })");
-
-  prefs()->Set(prefs::kWebAppsPreferences, std::move(old));
-  EXPECT_TRUE(GetWebAppInstallSourceDeprecated(prefs(), "app2"));
-  EXPECT_TRUE(GetWebAppInstallSourceDeprecated(prefs(), "app3"));
-
-  std::map<webapps::AppId, int> values = TakeAllWebAppInstallSources(prefs());
-
-  // Verify the returned map.
-  ASSERT_EQ(2u, values.size());
-  auto app1 = values.find("app1");
-  ASSERT_TRUE(app1 == values.end());
-  auto app2 = values.find("app2");
-  ASSERT_FALSE(app2 == values.end());
-  EXPECT_EQ(2, app2->second);
-  auto app3 = values.find("app3");
-  ASSERT_FALSE(app3 == values.end());
-  EXPECT_EQ(3, app3->second);
-  EXPECT_FALSE(GetWebAppInstallSourceDeprecated(prefs(), "app2"));
-  EXPECT_FALSE(GetWebAppInstallSourceDeprecated(prefs(), "app3"));
-
-  // Verify what's left behind in prefs.
-  const base::Value* web_apps_prefs =
-      prefs()->GetUserPrefValue(prefs::kWebAppsPreferences);
-  ASSERT_TRUE(web_apps_prefs);
-  ASSERT_TRUE(web_apps_prefs->is_dict());
-  const base::Value::Dict& web_apps_pref_dict = web_apps_prefs->GetDict();
-  EXPECT_EQ(1u, web_apps_pref_dict.size());
-  EXPECT_FALSE(web_apps_pref_dict.Find("app1"));
-  EXPECT_FALSE(web_apps_pref_dict.Find("app2"));
-  EXPECT_TRUE(web_apps_pref_dict.Find("app3"));
-  EXPECT_FALSE(web_apps_pref_dict.FindByDottedPath(
-      "app3.latest_web_app_install_source"));
 }
 
 TEST_F(WebAppPrefsUtilsTest, MLInstallIgnored) {

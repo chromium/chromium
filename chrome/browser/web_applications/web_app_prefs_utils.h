@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_PREFS_UTILS_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_PREFS_UTILS_H_
 
-#include <map>
-
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/webapps/common/web_app_id.h"
@@ -47,17 +45,6 @@ void RemoveWebAppPref(PrefService* pref_service,
 
 void WebAppPrefsUtilsRegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry);
-
-// Deprecated. See crbug.com/1287292
-absl::optional<int> GetWebAppInstallSourceDeprecated(
-    PrefService* prefs,
-    const webapps::AppId& app_id);
-
-// Looks up all install sources in the web apps prefs dictionary and returns
-// them as a map. Also deletes the values from the dictionary. Used for
-// migration to the WebApp database. This should be safe to delete one year
-// after 02-2022.
-std::map<webapps::AppId, int> TakeAllWebAppInstallSources(PrefService* prefs);
 
 void RecordInstallIphIgnored(PrefService* pref_service,
                              const webapps::AppId& app_id,

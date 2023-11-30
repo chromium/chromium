@@ -24,8 +24,6 @@ namespace web_app {
 
 namespace {
 
-const char kLatestWebAppInstallSource[] = "latest_web_app_install_source";
-
 const base::Value::Dict* GetWebAppDictionary(const PrefService* pref_service,
                                              const webapps::AppId& app_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -45,33 +43,6 @@ base::Value::Dict& UpdateWebAppDictionary(
 // Returns whether the time occurred within X days.
 bool TimeOccurredWithinDays(absl::optional<base::Time> time, int days) {
   return time && (base::Time::Now() - time.value()).InDays() < days;
-}
-
-// Removes all the empty app ID dictionaries from the `web_app_ids` dictionary.
-// That is, this dictionary:
-//
-//   "web_app_ids": {
-//     "<app_id_1>": {},
-//     "<app_id_2>": { "foo": true }
-//   }
-//
-// will become this dictionary:
-//
-//   "web_app_ids": {
-//     "<app_id_2>": { "foo": true }
-//   }
-void RemoveEmptyWebAppPrefs(PrefService* pref_service) {
-  ScopedDictPrefUpdate update(pref_service, prefs::kWebAppsPreferences);
-
-  std::vector<webapps::AppId> apps_to_remove;
-  for (const auto [app_id, dict] : *update) {
-    if (dict.is_dict() && dict.GetDict().empty())
-      apps_to_remove.push_back(app_id);
-  }
-
-  for (const webapps::AppId& app_id : apps_to_remove) {
-    update->Remove(app_id);
-  }
 }
 
 bool AreAllMLPromosBlocked(PrefService* pref_service) {
@@ -213,39 +184,6 @@ void RemoveWebAppPref(PrefService* pref_service,
 
   base::Value::Dict& web_app_prefs = UpdateWebAppDictionary(update, app_id);
   web_app_prefs.RemoveByDottedPath(path);
-}
-
-absl::optional<int> GetWebAppInstallSourceDeprecated(
-    PrefService* prefs,
-    const webapps::AppId& app_id) {
-  absl::optional<int> value =
-      GetIntWebAppPref(prefs, app_id, kLatestWebAppInstallSource);
-  return value;
-}
-
-std::map<webapps::AppId, int> TakeAllWebAppInstallSources(
-    PrefService* pref_service) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const base::Value* web_apps_prefs =
-      pref_service->GetUserPrefValue(prefs::kWebAppsPreferences);
-  if (!web_apps_prefs || !web_apps_prefs->is_dict())
-    return {};
-
-  std::map<webapps::AppId, int> return_value;
-  for (auto item : web_apps_prefs->GetDict()) {
-    const webapps::AppId& app_id = item.first;
-    absl::optional<int> install_source =
-        item.second.GetDict().FindInt(kLatestWebAppInstallSource);
-    if (install_source)
-      return_value.insert(std::make_pair(app_id, *install_source));
-  }
-
-  for (const auto& item : return_value)
-    RemoveWebAppPref(pref_service, item.first, kLatestWebAppInstallSource);
-
-  RemoveEmptyWebAppPrefs(pref_service);
-
-  return return_value;
 }
 
 void RecordInstallIphIgnored(PrefService* pref_service,

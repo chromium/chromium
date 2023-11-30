@@ -225,11 +225,6 @@ class WebAppProvider : public KeyedService {
 
   void CheckIsConnected() const;
 
-  // Performs a migration of some entries from the `web_app_ids` pref
-  // dictionary to the web app database. This should be safe to delete one year
-  // after 02-2022.
-  void DoMigrateProfilePrefs(Profile* profile);
-
   std::unique_ptr<AbstractWebAppDatabaseFactory> database_factory_;
   std::unique_ptr<WebAppRegistrarMutable> registrar_;
   std::unique_ptr<WebAppSyncBridge> sync_bridge_;

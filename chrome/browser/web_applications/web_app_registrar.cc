@@ -1420,20 +1420,7 @@ WebAppRegistrar::GetLatestAppInstallSource(const webapps::AppId& app_id) const {
   if (!web_app)
     return absl::nullopt;
 
-  absl::optional<webapps::WebappInstallSource> value =
-      web_app->latest_install_source();
-
-  // If the migration code hasn't run yet, `WebApp::latest_install_source_`
-  // may not be populated. After migration code is removed, this branch can be
-  // deleted.
-  if (!value) {
-    absl::optional<int> old_value =
-        GetWebAppInstallSourceDeprecated(profile_->GetPrefs(), app_id);
-    if (old_value)
-      return static_cast<webapps::WebappInstallSource>(*old_value);
-  }
-
-  return value;
+  return web_app->latest_install_source();
 }
 
 std::vector<apps::IconInfo> WebAppRegistrar::GetAppIconInfos(
