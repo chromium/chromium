@@ -10,7 +10,6 @@
 #include "base/base64.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
@@ -686,11 +685,6 @@ bool ParseAndValidateOncForImport(const std::string& onc_blob,
       validator.ValidateAndRepairObject(&kToplevelConfigurationSignature,
                                         toplevel_onc.value(),
                                         &validation_result);
-
-  if (from_policy) {
-    UMA_HISTOGRAM_BOOLEAN("Enterprise.ONC.PolicyValidation",
-                          validation_result == Validator::VALID);
-  }
 
   bool success = true;
   if (validation_result == Validator::VALID_WITH_WARNINGS) {
