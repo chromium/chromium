@@ -1613,8 +1613,8 @@ class ComputedStyle final : public ComputedStyleBase {
     return IsInlineOrBlockSizeContainer() && StyleType() == kPseudoIdNone;
   }
 
-  bool IsContainerForStickyContainerQueries() const {
-    return IsStickyContainer() && StyleType() == kPseudoIdNone;
+  bool IsContainerForScrollStateContainerQueries() const {
+    return IsScrollStateContainer() && StyleType() == kPseudoIdNone;
   }
 
   bool DependsOnContainerQueries() const {
@@ -2421,10 +2421,9 @@ class ComputedStyle final : public ComputedStyleBase {
   bool IsSizeContainer() const {
     return (ContainerType() & kContainerTypeSize) == kContainerTypeSize;
   }
-  bool IsStickyContainer() const {
-    return ContainerType() & kContainerTypeSticky;
+  bool IsScrollStateContainer() const {
+    return ContainerType() & kContainerTypeScrollState;
   }
-  bool IsSnapContainer() const { return ContainerType() & kContainerTypeSnap; }
 
   static bool IsDisplayBlockContainer(EDisplay display) {
     return display == EDisplay::kBlock || display == EDisplay::kListItem ||

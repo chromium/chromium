@@ -191,19 +191,18 @@ const MediaQueryExpNode* ContainerQueryParser::ConsumeQueryInParens(
       context_.Count(WebFeature::kCSSStyleContainerQuery);
       return MediaQueryExpNode::Function(query, AtomicString("style"));
     }
-  } else if ((RuntimeEnabledFeatures::CSSStickyContainerQueriesEnabled() ||
-              RuntimeEnabledFeatures::CSSSnapContainerQueriesEnabled()) &&
+  } else if (RuntimeEnabledFeatures::CSSScrollStateContainerQueriesEnabled() &&
              range.Peek().GetType() == kFunctionToken &&
-             range.Peek().FunctionId() == CSSValueID::kState) {
-    // state(stuck: [ none | top | left | right | bottom | inset-* ] )
-    // state(snapped: [ none | block | inline ] )
+             range.Peek().FunctionId() == CSSValueID::kScrollState) {
+    // scroll-state(stuck: [ none | top | left | right | bottom | inset-* ] )
+    // scroll-state(snapped: [ none | block | inline ] )
     CSSParserTokenRange block = range.ConsumeBlock();
     block.ConsumeWhitespace();
     range.ConsumeWhitespace();
 
     if (const MediaQueryExpNode* query =
             ConsumeFeatureQuery(block, offsets, StateFeatureSet())) {
-      return MediaQueryExpNode::Function(query, AtomicString("state"));
+      return MediaQueryExpNode::Function(query, AtomicString("scroll-state"));
     }
   }
   range = original_range;

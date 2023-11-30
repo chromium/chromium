@@ -2637,9 +2637,9 @@
     {
       name: "container-type",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
-      keywords: ["normal", "inline-size", "size", "sticky", "snap"],
+      keywords: ["normal", "inline-size", "size", "scroll-state"],
       field_group: "*",
-      field_size: 4,
+      field_size: 3,
       field_template: "primitive",
       default_value: "kContainerTypeNormal",
       type_name: "unsigned",

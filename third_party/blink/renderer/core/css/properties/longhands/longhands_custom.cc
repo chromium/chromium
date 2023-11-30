@@ -2346,11 +2346,8 @@ const CSSValue* ContainerType::CSSValueFromComputedStyleInternal(
   } else if (style.ContainerType() & kContainerTypeInlineSize) {
     values->Append(*CSSIdentifierValue::Create(CSSValueID::kInlineSize));
   }
-  if (style.ContainerType() & kContainerTypeSticky) {
-    values->Append(*CSSIdentifierValue::Create(CSSValueID::kSticky));
-  }
-  if (style.ContainerType() & kContainerTypeSnap) {
-    values->Append(*CSSIdentifierValue::Create(CSSValueID::kSnap));
+  if (style.ContainerType() & kContainerTypeScrollState) {
+    values->Append(*CSSIdentifierValue::Create(CSSValueID::kScrollState));
   }
   return values;
 }

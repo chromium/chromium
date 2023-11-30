@@ -1731,10 +1731,8 @@ inline EContainerType CSSIdentifierValue::ConvertTo() const {
       return kContainerTypeInlineSize;
     case CSSValueID::kSize:
       return kContainerTypeSize;
-    case CSSValueID::kSticky:
-      return kContainerTypeSticky;
-    case CSSValueID::kSnap:
-      return kContainerTypeSnap;
+    case CSSValueID::kScrollState:
+      return kContainerTypeScrollState;
     default:
       break;
   }

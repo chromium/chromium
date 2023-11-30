@@ -168,7 +168,7 @@ class ContainerQueryEvaluatorTest : public PageTestBase {
   const unsigned type_normal = kContainerTypeNormal;
   const unsigned type_size = kContainerTypeSize;
   const unsigned type_inline_size = kContainerTypeInlineSize;
-  const unsigned type_sticky = kContainerTypeSticky;
+  const unsigned type_scroll_state = kContainerTypeScrollState;
 };
 
 TEST_F(ContainerQueryEvaluatorTest, ContainmentMatch) {
@@ -364,15 +364,17 @@ TEST_F(ContainerQueryEvaluatorTest, StyleContainerChanged) {
 }
 
 TEST_F(ContainerQueryEvaluatorTest, StickyContainerChanged) {
-  ContainerQuery* container_query_left = ParseContainer("state(stuck: left)");
+  ContainerQuery* container_query_left =
+      ParseContainer("scroll-state(stuck: left)");
   ContainerQuery* container_query_bottom =
-      ParseContainer("state(stuck: bottom)");
+      ParseContainer("scroll-state(stuck: bottom)");
   ASSERT_TRUE(container_query_left);
   ASSERT_TRUE(container_query_bottom);
 
-  ContainerQueryEvaluator* evaluator = CreateEvaluatorForType(type_sticky);
+  ContainerQueryEvaluator* evaluator =
+      CreateEvaluatorForType(type_scroll_state);
   StickyContainerChanged(evaluator, ContainerStuckPhysical::kLeft,
-                         ContainerStuckPhysical::kNo, type_sticky);
+                         ContainerStuckPhysical::kNo, type_scroll_state);
 
   EXPECT_TRUE(EvalAndAdd(evaluator, *container_query_left));
   EXPECT_FALSE(EvalAndAdd(evaluator, *container_query_bottom));
@@ -380,9 +382,9 @@ TEST_F(ContainerQueryEvaluatorTest, StickyContainerChanged) {
 
   // Calling StickyContainerChanged the values we already have should not
   // produce a Change.
-  EXPECT_EQ(Change::kNone,
-            StickyContainerChanged(evaluator, ContainerStuckPhysical::kLeft,
-                                   ContainerStuckPhysical::kNo, type_sticky));
+  EXPECT_EQ(Change::kNone, StickyContainerChanged(
+                               evaluator, ContainerStuckPhysical::kLeft,
+                               ContainerStuckPhysical::kNo, type_scroll_state));
   EXPECT_EQ(2u, GetResults(evaluator).size());
 
   // EvalAndAdding the same queries again is allowed.
@@ -391,10 +393,10 @@ TEST_F(ContainerQueryEvaluatorTest, StickyContainerChanged) {
   EXPECT_EQ(2u, GetResults(evaluator).size());
 
   // Set vertically stuck to bottom.
-  EXPECT_EQ(
-      Change::kNearestContainer,
-      StickyContainerChanged(evaluator, ContainerStuckPhysical::kLeft,
-                             ContainerStuckPhysical::kBottom, type_sticky));
+  EXPECT_EQ(Change::kNearestContainer,
+            StickyContainerChanged(evaluator, ContainerStuckPhysical::kLeft,
+                                   ContainerStuckPhysical::kBottom,
+                                   type_scroll_state));
   EXPECT_EQ(0u, GetResults(evaluator).size());
 
   // Now both left and bottom queries should return true.
@@ -781,10 +783,10 @@ TEST_F(ContainerQueryEvaluatorTest, FindContainer) {
 
 TEST_F(ContainerQueryEvaluatorTest, FindStickyContainer) {
   SetBodyInnerHTML(R"HTML(
-    <div style="container-type: sticky size">
-      <div style="container-name:outer;container-type: sticky">
+    <div style="container-type: scroll-state size">
+      <div style="container-name:outer;container-type: scroll-state">
         <div style="container-name:outer">
-          <div style="container-type: sticky">
+          <div style="container-type: scroll-state">
             <div>
               <div></div>
             </div>
@@ -802,32 +804,33 @@ TEST_F(ContainerQueryEvaluatorTest, FindStickyContainer) {
   Element* inner_sticky = outer->firstElementChild();
   Element* inner = inner_sticky->firstElementChild();
 
-  EXPECT_EQ(
-      ContainerQueryEvaluator::FindContainer(
-          inner,
-          ParseContainer("state(stuck: top) and style(--foo: bar)")->Selector(),
-          &GetDocument()),
-      inner_sticky);
   EXPECT_EQ(ContainerQueryEvaluator::FindContainer(
                 inner,
-                ParseContainer("outer state(stuck: top) and style(--foo: bar)")
+                ParseContainer("scroll-state(stuck: top) and style(--foo: bar)")
                     ->Selector(),
                 &GetDocument()),
-            outer_sticky);
+            inner_sticky);
   EXPECT_EQ(
       ContainerQueryEvaluator::FindContainer(
           inner,
-          ParseContainer("state(stuck: top) and (width > 0px)")->Selector(),
+          ParseContainer("outer scroll-state(stuck: top) and style(--foo: bar)")
+              ->Selector(),
           &GetDocument()),
-      sticky_size);
+      outer_sticky);
+  EXPECT_EQ(ContainerQueryEvaluator::FindContainer(
+                inner,
+                ParseContainer("scroll-state(stuck: top) and (width > 0px)")
+                    ->Selector(),
+                &GetDocument()),
+            sticky_size);
 }
 
 TEST_F(ContainerQueryEvaluatorTest, FindSnapContainer) {
   SetBodyInnerHTML(R"HTML(
-    <div style="container-type: sticky snap">
-      <div style="container-name:outer;container-type: snap">
+    <div style="container-type: scroll-state inline-size">
+      <div style="container-name:outer;container-type: scroll-state">
         <div style="container-name:outer">
-          <div style="container-type: snap">
+          <div style="container-type: scroll-state">
             <div>
               <div></div>
             </div>
@@ -845,22 +848,24 @@ TEST_F(ContainerQueryEvaluatorTest, FindSnapContainer) {
   Element* inner_snap = outer->firstElementChild();
   Element* inner = inner_snap->firstElementChild();
 
-  EXPECT_EQ(ContainerQueryEvaluator::FindContainer(
-                inner,
-                ParseContainer("state(snapped: inline) and style(--foo: bar)")
-                    ->Selector(),
-                &GetDocument()),
-            inner_snap);
   EXPECT_EQ(
       ContainerQueryEvaluator::FindContainer(
           inner,
-          ParseContainer("outer state(snapped: block) and style(--foo: bar)")
+          ParseContainer("scroll-state(snapped: inline) and style(--foo: bar)")
               ->Selector(),
           &GetDocument()),
-      outer_snap);
+      inner_snap);
   EXPECT_EQ(ContainerQueryEvaluator::FindContainer(
                 inner,
-                ParseContainer("state((snapped: none) and (stuck: bottom))")
+                ParseContainer(
+                    "outer scroll-state(snapped: block) and style(--foo: bar)")
+                    ->Selector(),
+                &GetDocument()),
+            outer_snap);
+  EXPECT_EQ(ContainerQueryEvaluator::FindContainer(
+                inner,
+                ParseContainer("scroll-state((snapped: none) and (stuck: "
+                               "bottom)) and (width > 0px)")
                     ->Selector(),
                 &GetDocument()),
             sticky_snap);

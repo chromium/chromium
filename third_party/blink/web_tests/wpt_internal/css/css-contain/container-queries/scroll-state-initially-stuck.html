@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>@container: state(stuck) matching for initial rendering</title>
+<title>@container: scroll-state(stuck) matching for initial rendering</title>
 <link rel="help" href="https://drafts.csswg.org/css-contain-3/#container-rule">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -11,12 +11,12 @@
   }
   #stuck {
     container-name: initially-stuck;
-    container-type: sticky;
+    container-type: scroll-state;
     position: sticky;
     bottom: 0;
   }
 
-  @container initially-stuck state(stuck: bottom) {
+  @container initially-stuck scroll-state(stuck: bottom) {
     span { --stuck: yes }
   }
 </style>
@@ -30,5 +30,5 @@
   promise_test(async t => {
     await waitForAnimationFrames(2);
     assert_equals(getComputedStyle(target).getPropertyValue("--stuck"), "yes");
-  }, "Check that state(stuck: bottom) matches");
+  }, "Check that scroll-state(stuck: bottom) matches");
 </script>

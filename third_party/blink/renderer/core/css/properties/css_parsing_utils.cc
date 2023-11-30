@@ -6940,8 +6940,7 @@ CSSValue* ConsumeContainerType(CSSParserTokenRange& range) {
   }
 
   CSSValue* size_value = nullptr;
-  CSSValue* sticky_value = nullptr;
-  CSSValue* snap_value = nullptr;
+  CSSValue* scroll_state_value = nullptr;
 
   do {
     if (!size_value) {
@@ -6951,17 +6950,10 @@ CSSValue* ConsumeContainerType(CSSParserTokenRange& range) {
         continue;
       }
     }
-    if (!sticky_value &&
-        RuntimeEnabledFeatures::CSSStickyContainerQueriesEnabled()) {
-      sticky_value = ConsumeIdent<CSSValueID::kSticky>(range);
-      if (sticky_value) {
-        continue;
-      }
-    }
-    if (!snap_value &&
-        RuntimeEnabledFeatures::CSSSnapContainerQueriesEnabled()) {
-      snap_value = ConsumeIdent<CSSValueID::kSnap>(range);
-      if (snap_value) {
+    if (!scroll_state_value &&
+        RuntimeEnabledFeatures::CSSScrollStateContainerQueriesEnabled()) {
+      scroll_state_value = ConsumeIdent<CSSValueID::kScrollState>(range);
+      if (scroll_state_value) {
         continue;
       }
     }
@@ -6972,11 +6964,8 @@ CSSValue* ConsumeContainerType(CSSParserTokenRange& range) {
   if (size_value) {
     list->Append(*size_value);
   }
-  if (sticky_value) {
-    list->Append(*sticky_value);
-  }
-  if (snap_value) {
-    list->Append(*snap_value);
+  if (scroll_state_value) {
+    list->Append(*scroll_state_value);
   }
   return list;
 }

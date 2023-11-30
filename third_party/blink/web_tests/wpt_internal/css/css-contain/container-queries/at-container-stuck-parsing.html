@@ -4,7 +4,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/css-contain/container-queries/support/cq-testcommon.js"></script>
-<div style="container-name:name;container-type:sticky">
+<div style="container-name:name;container-type:scroll-state">
   <main id="main"></main>
 </div>
 <script>
@@ -61,25 +61,25 @@
     test_condition_valid(condition, true /* unknown */);
   }
 
-  test_condition_known('state(stuck)');
-  test_condition_known('state(stuck: none)');
-  test_condition_known('state(stuck: top)');
-  test_condition_known('state(stuck: left)');
-  test_condition_known('state(stuck: bottom)');
-  test_condition_known('state(stuck: right)');
-  test_condition_known('state(stuck: inset-block-start)');
-  test_condition_known('state(stuck: inset-block-end)');
-  test_condition_known('state(stuck: inset-inline-start)');
-  test_condition_known('state(stuck: inset-inline-end)');
-  test_condition_known('(state(stuck: top))');
-  test_condition_known('state((stuck: top))');
-  test_condition_known('state(not ((stuck: top) and (stuck: bottom)))');
-  test_condition_known('state((stuck: right) or (stuck: left))');
+  test_condition_known('scroll-state(stuck)');
+  test_condition_known('scroll-state(stuck: none)');
+  test_condition_known('scroll-state(stuck: top)');
+  test_condition_known('scroll-state(stuck: left)');
+  test_condition_known('scroll-state(stuck: bottom)');
+  test_condition_known('scroll-state(stuck: right)');
+  test_condition_known('scroll-state(stuck: inset-block-start)');
+  test_condition_known('scroll-state(stuck: inset-block-end)');
+  test_condition_known('scroll-state(stuck: inset-inline-start)');
+  test_condition_known('scroll-state(stuck: inset-inline-end)');
+  test_condition_known('(scroll-state(stuck: top))');
+  test_condition_known('scroll-state((stuck: top))');
+  test_condition_known('scroll-state(not ((stuck: top) and (stuck: bottom)))');
+  test_condition_known('scroll-state((stuck: right) or (stuck: left))');
 
-  test_condition_unknown('state(stuck: auto)');
-  test_condition_unknown('state(stuck: true)');
-  test_condition_unknown('state(style(stuck: top))');
-  test_condition_unknown('style(state(stuck: top))');
-  test_condition_unknown('state(stuck:)');
-  test_condition_unknown('state(--foo)');
+  test_condition_unknown('scroll-state(stuck: auto)');
+  test_condition_unknown('scroll-state(stuck: true)');
+  test_condition_unknown('scroll-state(style(stuck: top))');
+  test_condition_unknown('style(scroll-state(stuck: top))');
+  test_condition_unknown('scroll-state(stuck:)');
+  test_condition_unknown('scroll-state(--foo)');
 </script>

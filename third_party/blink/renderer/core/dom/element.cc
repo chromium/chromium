@@ -3522,7 +3522,7 @@ static bool NeedsContainerQueryEvaluator(
     const ComputedStyle& new_style) {
   return evaluator.DependsOnStyle() ||
          new_style.IsContainerForSizeContainerQueries() ||
-         new_style.IsContainerForStickyContainerQueries();
+         new_style.IsContainerForScrollStateContainerQueries();
 }
 
 static const StyleRecalcChange ApplyComputedStyleDiff(

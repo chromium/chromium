@@ -1528,7 +1528,7 @@
     // @container
     // size
     // style
-    "state",
+    "scroll-state",
     // top
     // left
     // right
@@ -1744,8 +1744,7 @@
     // inline-size,
     // normal,
     // size,
-    "snap",
-    // sticky,
+    // scroll-state,
 
     // (scripting:) media feature
     "enabled",
