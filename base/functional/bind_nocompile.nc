@@ -424,19 +424,19 @@ void WontCompile() {
   std::move(cb).Run();
 }
 
-#elif defined(NCTEST_DISALLOW_BIND_ONCECALLBACK)  // [r"BindRepeating cannot bind OnceCallback. Use BindOnce with std::move\(\)."]
+#elif defined(NCTEST_DISALLOW_BIND_ONCECALLBACK)  // [r"BindRepeating\(\) cannot bind OnceCallback. Use BindOnce\(\) with std::move\(\)\."]
 
 void WontCompile() {
   BindRepeating(BindOnce([](int) {}), 42);
 }
 
-#elif defined(NCTEST_DISALLOW_BINDONCE_LVALUE_ONCECALLBACK)  // [r"BindOnce requires non-const rvalue for OnceCallback binding, i.e. base::BindOnce\(std::move\(callback\)\)."]
+#elif defined(NCTEST_DISALLOW_BINDONCE_LVALUE_ONCECALLBACK)  // [r"BindOnce\(\) requires non-const rvalue for OnceCallback binding, i\.e\. base::BindOnce\(std::move\(callback\)\)\."]
 void WontCompile() {
   auto cb = BindOnce([](int) {});
   BindOnce(cb, 42);
 }
 
-#elif defined(NCTEST_DISALLOW_BINDONCE_RVALUE_CONST_ONCECALLBACK)  // [r"BindOnce requires non-const rvalue for OnceCallback binding, i.e. base::BindOnce\(std::move\(callback\)\)."]
+#elif defined(NCTEST_DISALLOW_BINDONCE_RVALUE_CONST_ONCECALLBACK)  // [r"BindOnce\(\) requires non-const rvalue for OnceCallback binding, i\.e\. base::BindOnce\(std::move\(callback\)\)\."]
 
 void WontCompile() {
   const auto cb = BindOnce([](int) {});
@@ -470,14 +470,14 @@ void WontCompile() {
   BindRepeating(NonEmptyFunctor());
 }
 
-#elif defined(NCTEST_DISALLOW_BINDLAMBDAFORTESTING_LVALUE_MUTABLE_LAMBDA)  // [r"BindLambdaForTesting\(\) requires non-const rvalue for mutable lambda binding, i\.e\. base::BindLambdaForTesting\(std::move\(lambda\)\)."]
+#elif defined(NCTEST_DISALLOW_BINDLAMBDAFORTESTING_LVALUE_MUTABLE_LAMBDA)  // [r"BindLambdaForTesting\(\) requires non-const rvalue for mutable lambda binding, i\.e\. base::BindLambdaForTesting\(std::move\(lambda\)\)\."]
 void WontCompile() {
   int foo = 42;
   auto mutable_lambda = [&]() mutable {};
   BindLambdaForTesting(mutable_lambda);
 }
 
-#elif defined(NCTEST_DISALLOW_BINDLAMBDAFORTESTING_RVALUE_CONST_MUTABLE_LAMBDA)  // [r"BindLambdaForTesting\(\) requires non-const rvalue for mutable lambda binding, i\.e\. base::BindLambdaForTesting\(std::move\(lambda\)\)."]
+#elif defined(NCTEST_DISALLOW_BINDLAMBDAFORTESTING_RVALUE_CONST_MUTABLE_LAMBDA)  // [r"BindLambdaForTesting\(\) requires non-const rvalue for mutable lambda binding, i\.e\. base::BindLambdaForTesting\(std::move\(lambda\)\)\."]
 
 void WontCompile() {
   int foo = 42;

@@ -56,28 +56,15 @@ namespace base {
 // Bind as OnceCallback.
 template <typename Functor, typename... Args>
 inline auto BindOnce(Functor&& functor, Args&&... args) {
-  static_assert(!internal::IsOnceCallback<std::decay_t<Functor>>() ||
-                    (std::is_rvalue_reference<Functor&&>() &&
-                     !std::is_const<std::remove_reference_t<Functor>>()),
-                "BindOnce requires non-const rvalue for OnceCallback binding, "
-                "i.e. base::BindOnce(std::move(callback)).");
-  static_assert(
-      !(... || internal::kBindArgIsBasePassed<std::decay_t<Args>>),
-      "Use std::move() instead of base::Passed() with base::BindOnce().");
-
-  return internal::BindImpl<OnceCallback>(std::forward<Functor>(functor),
-                                          std::forward<Args>(args)...);
+  return internal::BindOnceHelper<Functor, Args...>::BindOnce(
+      std::forward<Functor>(functor), std::forward<Args>(args)...);
 }
 
 // Bind as RepeatingCallback.
 template <typename Functor, typename... Args>
 inline auto BindRepeating(Functor&& functor, Args&&... args) {
-  static_assert(
-      !internal::IsOnceCallback<std::decay_t<Functor>>(),
-      "BindRepeating cannot bind OnceCallback. Use BindOnce with std::move().");
-
-  return internal::BindImpl<RepeatingCallback>(std::forward<Functor>(functor),
-                                               std::forward<Args>(args)...);
+  return internal::BindRepeatingHelper<Functor, Args...>::BindRepeating(
+      std::forward<Functor>(functor), std::forward<Args>(args)...);
 }
 
 // Overloads to allow nicer compile errors when attempting to pass the address
