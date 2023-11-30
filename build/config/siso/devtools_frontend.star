@@ -26,22 +26,6 @@ def __step_config(ctx, step_config):
     })
 
     step_config["rules"].extend([
-        # TODO: b/308405411 - fix deps.
-        {
-            "name": "devtools-frontend/typescript/ts_library_local",
-            "command_prefix": "python3 ../../third_party/devtools-frontend/src/third_party/typescript/ts_library.py",
-            "exclude_input_patterns": [
-                "*.stamp",
-            ],
-            "remote": False,
-            "handler": "devtools_frontend/typescript_ts_library",
-            "action_outs": [
-                "./gen/third_party/devtools-frontend/src/front_end/entrypoints/formatter_worker/formatter_worker-tsconfig.json",
-                "./gen/third_party/devtools-frontend/src/test/unittests/front_end/entrypoints/formatter_worker/formatter_worker-tsconfig.json",
-                "./gen/third_party/devtools-frontend/src/test/unittests/front_end/entrypoints/missing_entrypoints/missing_entrypoints-tsconfig.json",
-                "./gen/third_party/devtools-frontend/src/test/unittests/front_end/panels/lighthouse/lighthouse-tsconfig.json",
-            ],
-        },
         {
             "name": "devtools-frontend/typescript/ts_library",
             "command_prefix": "python3 ../../third_party/devtools-frontend/src/third_party/typescript/ts_library.py",
@@ -121,12 +105,16 @@ def _ts_library(ctx, cmd):
     # Infer gen files from source file.
     if gen_dir:
         for f in cmd.inputs + inputs:
-            if not f.endswith(".ts"):
-                continue
-            f = path.join(gen_dir, f)
-            f = f.removesuffix(".ts") + ".d.ts"
-            if ctx.fs.exists(f) and not f in files:
-                files[f] = True
+            if f.endswith(".ts"):
+                f = path.join(gen_dir, f)
+                f = f.removesuffix(".ts") + ".d.ts"
+                if ctx.fs.exists(f) and not f in files:
+                    files[f] = True
+            if f.endswith(".js"):
+                f = path.join(gen_dir, f)
+                f = f.removesuffix(".js") + ".d.ts"
+                if ctx.fs.exists(f) and not f in files:
+                    files[f] = True
 
     ctx.actions.fix(inputs = cmd.inputs + inputs + sources + files.keys())
 
