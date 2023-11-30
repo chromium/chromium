@@ -698,6 +698,9 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'os-settings:camera';
       case SearchResultIcon.kCellular:
         return 'os-settings:cellular';
+      case SearchResultIcon.kCheckForUpdate:
+        return isRevampEnabled ? 'os-settings:about-update-complete' :
+                                 'os-settings:chrome';
       case SearchResultIcon.kChrome:
         return 'os-settings:chrome';
       case SearchResultIcon.kChromeVox:
@@ -706,8 +709,14 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'os-settings:clock';
       case SearchResultIcon.kContrast:
         return 'os-settings:contrast';
+      case SearchResultIcon.kDetailedBuild:
+        return isRevampEnabled ? 'os-settings:about-additional-details' :
+                                 'os-settings:chrome';
       case SearchResultIcon.kDeveloperTags:
         return 'os-settings:developer-tags';
+      case SearchResultIcon.kDiagnostics:
+        return isRevampEnabled ? 'os-settings:about-diagnostics' :
+                                 'os-settings:chrome';
       case SearchResultIcon.kDictation:
         return 'os-settings:dictation';
       case SearchResultIcon.kDisplay:
@@ -718,6 +727,9 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'os-settings:settings-ethernet';
       case SearchResultIcon.kFingerprint:
         return 'os-settings:fingerprint';
+      case SearchResultIcon.kFirmwareUpdates:
+        return isRevampEnabled ? 'os-settings:about-firmware-updates' :
+                                 'os-settings:chrome';
       case SearchResultIcon.kFolder:
         return 'os-settings:folder-outline';
       case SearchResultIcon.kFolderShared:
@@ -731,6 +743,9 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
                                  'os-settings:google-drive';
       case SearchResultIcon.kGooglePlay:
         return 'os-settings:google-play';
+      case SearchResultIcon.kHelp:
+        return isRevampEnabled ? 'os-settings:about-help' :
+                                 'os-settings:chrome';
       case SearchResultIcon.kHotspot:
         return 'os-settings:hotspot';
       case SearchResultIcon.kInstantTethering:
@@ -772,6 +787,9 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'os-settings:power';
       case SearchResultIcon.kPrinter:
         return 'os-settings:print';
+      case SearchResultIcon.kReleaseNotes:
+        return isRevampEnabled ? 'os-settings:about-release-notes' :
+                                 'os-settings:chrome';
       case SearchResultIcon.kReset:
         return isRevampEnabled ? 'os-settings:startup' : 'os-settings:restore';
       case SearchResultIcon.kRestore:
