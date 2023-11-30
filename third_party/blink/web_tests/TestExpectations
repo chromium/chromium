@@ -1604,6 +1604,11 @@ crbug.com/1395464 http/tests/security/vibration/vibrate-on-top-page-before-durin
 crbug.com/1395465 media/media-controls-hide-menu-stoppropagation-iframe.html [ Failure ]
 crbug.com/1395499 http/tests/auto-sizes-image-use-counter.html [ Failure Pass ]
 
+# Implement auto sizes
+crbug.com/1359051 external/wpt/html/semantics/embedded-content/the-img-element/sizes/sizes-auto-rendering.html [ Failure ]
+crbug.com/1359051 external/wpt/html/semantics/embedded-content/the-img-element/sizes/sizes-auto-rendering-3.html [ Failure ]
+crbug.com/1359051 external/wpt/html/semantics/embedded-content/the-img-element/sizes/sizes-auto-rendering-dynamic.html [ Failure ]
+
 # Elastic overscroll doesn't work on Mac/Linux when running as a web_test. Manually,
 # this works as expected.
 crbug.com/1310079 [ Mac ] virtual/elastic-overscroll/fixed-elements-dont-overscroll.html [ Failure ]
