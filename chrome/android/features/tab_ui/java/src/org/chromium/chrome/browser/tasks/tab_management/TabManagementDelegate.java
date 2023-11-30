@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestions;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -195,12 +194,6 @@ public interface TabManagementDelegate {
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             @NonNull SnackbarManager snackbarManager);
-
-    /**
-     * Create a {@link TabGroupModelFilter} for the given {@link TabModel}.
-     * @return The {@link TabGroupModelFilter}.
-     */
-    TabGroupModelFilter createTabGroupModelFilter(TabModel tabModel);
 
     /**
      * Create a {@link TabSuggestions} for the given {@link Activity}

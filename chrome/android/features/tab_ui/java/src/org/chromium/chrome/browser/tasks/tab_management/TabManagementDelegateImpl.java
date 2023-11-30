@@ -26,9 +26,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestions;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionsOrchestrator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -175,11 +173,6 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                 tabCreatorManager,
                 layoutStateProviderSupplier,
                 snackbarManager);
-    }
-
-    @Override
-    public TabGroupModelFilter createTabGroupModelFilter(TabModel tabModel) {
-        return new TabGroupModelFilter(tabModel);
     }
 
     @Override
