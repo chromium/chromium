@@ -47,6 +47,9 @@ const char kClientSideDetectionTagParamName[] = "reporter_omaha_tag";
 // the client_side_detection_type field
 BASE_DECLARE_FEATURE(kClientSideDetectionTypeForceRequest);
 
+// Creates and sends CSBRRs when warnings are first shown to users.
+BASE_DECLARE_FEATURE(kCreateWarningShownClientSafeBrowsingReports);
+
 // Controls whether we prompt encrypted archive deep scans to provide a
 // password.
 BASE_DECLARE_FEATURE(kDeepScanningEncryptedArchives);

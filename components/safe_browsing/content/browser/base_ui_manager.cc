@@ -277,6 +277,10 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
     // TODO(vakh): crbug/883462: The reports for SB_THREAT_TYPE_BILLING should
     // be disabled for M70 but enabled for a later release (M71?).
     CreateAndSendHitReport(resource);
+    if (base::FeatureList::IsEnabled(
+            safe_browsing::kCreateWarningShownClientSafeBrowsingReports)) {
+      CreateAndSendClientSafeBrowsingWarningShownReport(resource);
+    }
   }
 
   AddToAllowlistUrlSet(GetMainFrameAllowlistUrlForResource(resource),

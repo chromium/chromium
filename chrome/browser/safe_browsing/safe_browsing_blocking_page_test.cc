@@ -364,7 +364,17 @@ class FakeSafeBrowsingUIManager : public TestSafeBrowsingUIManager {
     }
   }
 
+  void MaybeSendClientSafeBrowsingWarningShownReport(
+      std::unique_ptr<ClientSafeBrowsingReportRequest> report,
+      WebContents* web_contents) override {
+    if (SafeBrowsingUIManager::ShouldSendClientSafeBrowsingWarningShownReport(
+            report.get(), web_contents)) {
+      report_sent_ = true;
+    }
+  }
+
   bool hit_report_sent() { return hit_report_sent_; }
+  bool report_sent() { return report_sent_; }
   absl::optional<ThreatSource> hit_report_sent_threat_source() {
     return hit_report_sent_threat_source_;
   }
@@ -401,6 +411,7 @@ class FakeSafeBrowsingUIManager : public TestSafeBrowsingUIManager {
   base::OnceClosure threat_details_done_callback_;
   bool threat_details_done_ = false;
   bool hit_report_sent_ = false;
+  bool report_sent_ = false;
   bool expect_empty_report_for_hats_ = true;
   bool expect_report_url_for_hats_ = false;
   bool expect_interstitial_interactions_ = false;
@@ -610,8 +621,12 @@ class SafeBrowsingBlockingPageBrowserTest
         safe_browsing::kThreatDomDetailsTagAndAttributeFeature, parameters);
     base::test::FeatureRefAndParams add_warning_shown_timestamp_csbrrs(
         safe_browsing::kAddWarningShownTSToClientSafeBrowsingReport, {});
+    base::test::FeatureRefAndParams create_warning_shown_csbrrs(
+        safe_browsing::kCreateWarningShownClientSafeBrowsingReports, {});
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {tag_and_attribute, add_warning_shown_timestamp_csbrrs}, {});
+        {tag_and_attribute, add_warning_shown_timestamp_csbrrs,
+         create_warning_shown_csbrrs},
+        {});
   }
 
   SafeBrowsingBlockingPageBrowserTest(
@@ -968,6 +983,12 @@ class SafeBrowsingBlockingPageBrowserTest
     return static_cast<FakeSafeBrowsingUIManager*>(
                factory_.test_safe_browsing_service()->ui_manager().get())
         ->hit_report_sent();
+  }
+
+  bool report_sent() {
+    return static_cast<FakeSafeBrowsingUIManager*>(
+               factory_.test_safe_browsing_service()->ui_manager().get())
+        ->report_sent();
   }
 
   // Helper method for LearnMore test below. Implemented as a test fixture
@@ -1909,6 +1930,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
       prefs::kSafeBrowsingScoutReportingEnabled, true);
   GURL url = SetupWarningAndNavigate(browser());  // not incognito
   EXPECT_TRUE(hit_report_sent());
+  EXPECT_TRUE(report_sent());
 }
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
@@ -1933,6 +1955,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
                         incognito_browser, "enhanced-protection-message"));
 
   EXPECT_FALSE(hit_report_sent());
+  EXPECT_FALSE(report_sent());
 }
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
@@ -1950,6 +1973,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
       prefs::kSafeBrowsingScoutReportingEnabled, false);  // set up SBER
   GURL url = SetupWarningAndNavigate(browser());          // not incognito
   EXPECT_FALSE(hit_report_sent());
+  EXPECT_FALSE(report_sent());
 }
 
 namespace {
