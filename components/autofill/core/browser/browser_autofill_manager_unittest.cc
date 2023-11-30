@@ -7276,7 +7276,8 @@ void DoTestDeterminePossibleFieldTypesForUploadOfSelect(
                                 enable_autofill_vote_for_select_option_values);
 
   // Set up a profile and no credit cards.
-  std::vector<AutofillProfile> profiles(1);
+  std::vector<AutofillProfile> profiles = {
+      AutofillProfile(i18n_model_definition::kLegacyHierarchyCountryCode)};
   TestAddressFillData profile_info_data = GetElvisAddressFillData();
   profile_info_data.phone = "+1 (234) 567-8901";
   profiles[0] = FillDataToAutofillProfile(profile_info_data);

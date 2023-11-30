@@ -106,7 +106,7 @@ void AutofillMetricsBaseTest::CreateAmbiguousProfiles() {
   personal_data().ClearProfiles();
   CreateTestAutofillProfiles();
 
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile, "John", "Decca", "Public", "john@gmail.com",
                        "Company", "123 Main St.", "unit 7", "Springfield",
                        "Texas", "79401", "US", "2345678901");
@@ -117,7 +117,7 @@ void AutofillMetricsBaseTest::CreateAmbiguousProfiles() {
 
 void AutofillMetricsBaseTest::RecreateProfile() {
   personal_data().ClearProfiles();
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   SetProfileTestData(&profile);
   personal_data().AddProfile(profile);
   personal_data().Refresh();
@@ -298,7 +298,7 @@ void AutofillMetricsBaseTest::AddMaskedServerCreditCardWithOffer(
 }
 
 void AutofillMetricsBaseTest::CreateTestAutofillProfiles() {
-  AutofillProfile profile1;
+  AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile1, "Elvis", "Aaron", "Presley",
                        "theking@gmail.com", "RCA", "3734 Elvis Presley Blvd.",
                        "Apt. 10", "Memphis", "Tennessee", "38116", "US",
@@ -306,7 +306,7 @@ void AutofillMetricsBaseTest::CreateTestAutofillProfiles() {
   profile1.set_guid(kTestProfileId);
   personal_data().AddProfile(profile1);
 
-  AutofillProfile profile2;
+  AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile2, "Charles", "Hardin", "Holley",
                        "buddy@gmail.com", "Decca", "123 Apple St.", "unit 6",
                        "Lubbock", "Texas", "79401", "US", "2345678901");

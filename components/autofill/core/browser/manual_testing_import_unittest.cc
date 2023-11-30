@@ -194,7 +194,9 @@ TEST_F(ManualTestingImportTest, LoadProfilesFromFile_Valid) {
     ]
   })");
 
-  AutofillProfile expected_profile1(AutofillProfile::Source::kLocalOrSyncable);
+  AutofillProfile expected_profile1(
+      AutofillProfile::Source::kLocalOrSyncable,
+      i18n_model_definition::kLegacyHierarchyCountryCode);
   expected_profile1.SetRawInfoWithVerificationStatus(
       NAME_FULL, u"first last", VerificationStatus::kObserved);
   expected_profile1.SetRawInfoWithVerificationStatus(
@@ -204,7 +206,9 @@ TEST_F(ManualTestingImportTest, LoadProfilesFromFile_Valid) {
   expected_profile1.SetRawInfoWithVerificationStatus(
       NAME_LAST_SECOND, u"last", VerificationStatus::kObserved);
 
-  AutofillProfile expected_profile2(AutofillProfile::Source::kAccount);
+  AutofillProfile expected_profile2(
+      AutofillProfile::Source::kAccount,
+      i18n_model_definition::kLegacyHierarchyCountryCode);
   expected_profile2.set_initial_creator_id(999);
   expected_profile2.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_STREET_ADDRESS, u"street 123",
@@ -341,7 +345,9 @@ TEST_F(ManualTestingImportTesti18n, Loadi18nProfilesFromFile_Valid) {
     ]
   })");
 
-  AutofillProfile expected_profile1(AutofillProfile::Source::kLocalOrSyncable);
+  AutofillProfile expected_profile1(
+      AutofillProfile::Source::kLocalOrSyncable,
+      i18n_model_definition::kLegacyHierarchyCountryCode);
   expected_profile1.SetRawInfoWithVerificationStatus(
       NAME_FULL, u"first last", VerificationStatus::kObserved);
   expected_profile1.SetRawInfoWithVerificationStatus(

@@ -108,7 +108,7 @@ TEST(AddressI18nTest, UnconvertableServerFields) {
 }
 
 TEST(AddressI18nTest, CreateAddressDataFromAutofillProfile) {
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile, "John", "H.", "Doe", "johndoe@hades.com",
                        "Underworld", "666 Erebus St.", "Apt 8", "Elysium", "CA",
                        "91111", "US", "16502111111");

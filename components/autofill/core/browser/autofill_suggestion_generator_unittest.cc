@@ -779,7 +779,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(AutofillSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_LogProfileSuggestionsMadeWithFormatter) {
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile, "Hoa", "", "Pham", "hoa.pham@comcast.net", "",
                        "401 Merrimack St", "", "Lowell", "MA", "01852", "US",
                        "19786744120");
@@ -806,7 +806,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(AutofillSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_ForContactForm) {
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile, "Hoa", "", "Pham", "hoa.pham@comcast.net", "",
                        "401 Merrimack St", "", "Lowell", "MA", "01852", "US",
                        "19786744120");
@@ -832,7 +832,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(AutofillSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_AddressForm) {
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile, "Hoa", "", "Pham", "hoa.pham@comcast.net", "",
                        "401 Merrimack St", "", "Lowell", "MA", "01852", "US",
                        "19786744120");
@@ -858,7 +858,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(AutofillSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_AddressPhoneForm) {
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile, "Hoa", "", "Pham", "hoa.pham@comcast.net", "",
                        "401 Merrimack St", "", "Lowell", "MA", "01852", "US",
                        "19786744120");
@@ -884,7 +884,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(AutofillSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_AddressEmailForm) {
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile, "Hoa", "", "Pham", "hoa.pham@comcast.net", "",
                        "401 Merrimack St", "", "Lowell", "MA", "01852", "US",
                        "19786744120");
@@ -909,7 +909,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(AutofillSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_FormWithOneProfile) {
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile, "Hoa", "", "Pham", "hoa.pham@comcast.net", "",
                        "401 Merrimack St", "", "Lowell", "MA", "01852", "US",
                        "19786744120");

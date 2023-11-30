@@ -64,7 +64,8 @@ class AutofillProfileImportProcessTest : public testing::Test {
 
 // Test that two subsequently created `ProfileImportProcess`s have distinct ids.
 TEST_F(AutofillProfileImportProcessTest, DistinctIds) {
-  AutofillProfile empty_profile;
+  AutofillProfile empty_profile(
+      i18n_model_definition::kLegacyHierarchyCountryCode);
   ProfileImportProcess import_data1(empty_profile, "en_US", url_,
                                     &personal_data_manager_,
                                     /*allow_only_silent_updates=*/false);
