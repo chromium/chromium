@@ -100,28 +100,6 @@ Suggestion CreateFieldByFieldFillingSuggestion(const std::string& guid,
   return suggestion;
 }
 
-// Matches a FillFieldLogEvent by equality of fields. Use FillEventId(-1) if
-// you want to ignore the fill_event_id.
-auto EqualsFillFieldLogEvent(const FillFieldLogEvent& expected) {
-  return AllOf(testing::Conditional(
-                   expected.fill_event_id == FillEventId(-1), _,
-                   Field("fill_event_id", &FillFieldLogEvent::fill_event_id,
-                         expected.fill_event_id)),
-               Field("had_value_before_filling",
-                     &FillFieldLogEvent::had_value_before_filling,
-                     expected.had_value_before_filling),
-               Field("autofill_skipped_status",
-                     &FillFieldLogEvent::autofill_skipped_status,
-                     expected.autofill_skipped_status),
-               Field("was_autofilled", &FillFieldLogEvent::was_autofilled,
-                     expected.was_autofilled),
-               Field("had_value_after_filling",
-                     &FillFieldLogEvent::had_value_after_filling,
-                     expected.had_value_after_filling),
-               Field("filling_method", &FillFieldLogEvent::filling_method,
-                     expected.filling_method));
-}
-
 Matcher<const AutofillTriggerDetails&> EqualsAutofilltriggerDetails(
     AutofillTriggerDetails details) {
   return AllOf(
@@ -1915,42 +1893,6 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
   external_delegate().DidAcceptSuggestion(
       suggestion, SuggestionPosition{.row = 0}, kDefaultTriggerSource);
-}
-
-TEST_F(AutofillExternalDelegateUnitTest,
-       ExternalDelegate_FieldByFieldFilling_LogFillFieldEvent) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillGranularFillingAvailable);
-  const AutofillProfile profile = test::GetFullProfile();
-  pdm().AddProfile(profile);
-  EXPECT_CALL(client(),
-              HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
-  IssueOnQuery();
-  manager().OnFormsSeen({queried_form_}, {});
-  external_delegate().DidAcceptSuggestion(
-      CreateFieldByFieldFillingSuggestion(profile.guid(), NAME_FIRST),
-      SuggestionPosition{.row = 0}, kDefaultTriggerSource);
-  const std::vector<AutofillField::FieldLogEventType>& log_events =
-      get_triggering_autofill_field()->field_log_events();
-
-  // We only expect one `FillFieldLogEvent` for this field.
-  size_t count_fill_field_log_event = 0;
-  for (const auto& event : log_events) {
-    if (absl::holds_alternative<FillFieldLogEvent>(event)) {
-      ++count_fill_field_log_event;
-      EXPECT_THAT(
-          absl::get<FillFieldLogEvent>(event),
-          EqualsFillFieldLogEvent(FillFieldLogEvent{
-              .fill_event_id = FillEventId(-1),
-              .had_value_before_filling = OptionalBoolean::kFalse,
-              .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
-              .was_autofilled = OptionalBoolean::kTrue,
-              .had_value_after_filling = OptionalBoolean::kTrue,
-              .filling_method = AutofillFillingMethod::kFieldByFieldFilling,
-          }));
-    }
-  }
-  EXPECT_EQ(count_fill_field_log_event, 1u);
 }
 
 TEST_F(AutofillExternalDelegateUnitTest, ShouldShowGooglePayIcon) {

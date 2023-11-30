@@ -354,6 +354,28 @@ TestAddressFillData GetElvisAddressFillData() {
       "RCA"};
 }
 
+// Matches a FillFieldLogEvent by equality of fields. Use FillEventId(-1) if
+// you want to ignore the fill_event_id.
+auto EqualsFillFieldLogEvent(const FillFieldLogEvent& expected) {
+  return AllOf(testing::Conditional(
+                   expected.fill_event_id == FillEventId(-1), _,
+                   Field("fill_event_id", &FillFieldLogEvent::fill_event_id,
+                         expected.fill_event_id)),
+               Field("had_value_before_filling",
+                     &FillFieldLogEvent::had_value_before_filling,
+                     expected.had_value_before_filling),
+               Field("autofill_skipped_status",
+                     &FillFieldLogEvent::autofill_skipped_status,
+                     expected.autofill_skipped_status),
+               Field("was_autofilled", &FillFieldLogEvent::was_autofilled,
+                     expected.was_autofilled),
+               Field("had_value_after_filling",
+                     &FillFieldLogEvent::had_value_after_filling,
+                     expected.had_value_after_filling),
+               Field("filling_method", &FillFieldLogEvent::filling_method,
+                     expected.filling_method));
+}
+
 // Creates a GUID for testing. For example,
 // MakeGuid(123) = "00000000-0000-0000-0000-000000000123";
 std::string MakeGuid(size_t last_digit) {
@@ -5910,14 +5932,20 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
           ->field_log_events();
 
   ASSERT_EQ(CountEventOfType<FillFieldLogEvent>(fill_field_log_events), 1u);
-  const FillFieldLogEvent* first_fill_field_log_event =
-      FindFirstEventOfType<FillFieldLogEvent>(fill_field_log_events);
-  EXPECT_EQ(first_fill_field_log_event->filling_method,
-            AutofillFillingMethod::kFullForm);
+  EXPECT_THAT(
+      *FindFirstEventOfType<FillFieldLogEvent>(fill_field_log_events),
+      EqualsFillFieldLogEvent(FillFieldLogEvent{
+          .fill_event_id = FillEventId(-1),
+          .had_value_before_filling = OptionalBoolean::kFalse,
+          .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
+          .was_autofilled = OptionalBoolean::kTrue,
+          .had_value_after_filling = OptionalBoolean::kTrue,
+          .filling_method = AutofillFillingMethod::kFullForm,
+      }));
 }
 
 TEST_F(BrowserAutofillManagerWithLogEventsTest,
-       FillingMethod_TargetedGranularFillingGroup_GroupFiling) {
+       FillingMethod_TargetedGranularFillingGroup_GroupFilling) {
   base::test::ScopedFeatureList enabled_features(
       features::kAutofillGranularFillingAvailable);
 
@@ -5935,10 +5963,46 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
           ->field_log_events();
 
   ASSERT_EQ(CountEventOfType<FillFieldLogEvent>(fill_field_log_events), 1u);
-  const FillFieldLogEvent* first_fill_field_log_event =
-      FindFirstEventOfType<FillFieldLogEvent>(fill_field_log_events);
-  EXPECT_EQ(first_fill_field_log_event->filling_method,
-            AutofillFillingMethod::kGroupFilling);
+  EXPECT_THAT(
+      *FindFirstEventOfType<FillFieldLogEvent>(fill_field_log_events),
+      EqualsFillFieldLogEvent(FillFieldLogEvent{
+          .fill_event_id = FillEventId(-1),
+          .had_value_before_filling = OptionalBoolean::kFalse,
+          .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
+          .was_autofilled = OptionalBoolean::kTrue,
+          .had_value_after_filling = OptionalBoolean::kTrue,
+          .filling_method = AutofillFillingMethod::kGroupFilling,
+      }));
+}
+
+TEST_F(BrowserAutofillManagerWithLogEventsTest,
+       FillingMethod_TargetedSingleField_FieldByFieldFilling) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillGranularFillingAvailable);
+
+  FormData form =
+      test::GetFormData({.fields = {{.role = NAME_FIRST,
+                                     .autocomplete_attribute = "given-name"}}});
+  FormsSeen({form});
+  FillAutofillFormDataAndGetResults(
+      form, form.fields[0], MakeGuid(1),
+      {.trigger_source = AutofillTriggerSource::kPopup,
+       .field_types_to_fill = {NAME_FIRST}});
+  const std::vector<AutofillField::FieldLogEventType>& fill_field_log_events =
+      browser_autofill_manager_->GetAutofillField(form, form.fields[0])
+          ->field_log_events();
+
+  ASSERT_EQ(CountEventOfType<FillFieldLogEvent>(fill_field_log_events), 1u);
+  EXPECT_THAT(
+      *FindFirstEventOfType<FillFieldLogEvent>(fill_field_log_events),
+      EqualsFillFieldLogEvent(FillFieldLogEvent{
+          .fill_event_id = FillEventId(-1),
+          .had_value_before_filling = OptionalBoolean::kFalse,
+          .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
+          .was_autofilled = OptionalBoolean::kTrue,
+          .had_value_after_filling = OptionalBoolean::kTrue,
+          .filling_method = AutofillFillingMethod::kFieldByFieldFilling,
+      }));
 }
 
 // Test that we record FillFieldLogEvents after filling a form twice, the first
