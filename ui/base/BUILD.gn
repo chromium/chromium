@@ -491,7 +491,6 @@ component("base") {
     "//base",
     "//skia",
     "//third_party/abseil-cpp:absl",
-    "//ui/color:color_headers",
     "//ui/gfx",
     "//ui/gfx/geometry",
   ]
@@ -513,7 +512,6 @@ component("base") {
     "//ui/base:data_exchange",
     "//ui/base/clipboard:clipboard_types",
     "//ui/base/dragdrop/mojom",
-    "//ui/color",
     "//ui/display",
     "//ui/display/util:gpu_info_util",
     "//ui/events",
@@ -552,6 +550,9 @@ component("base") {
         "//ui/events/devices",
       ]
     }
+  } else {  # !is_ios
+    public_deps += [ "//ui/color:color_headers" ]
+    deps += [ "//ui/color" ]
   }
 
   if (is_win) {
@@ -983,6 +984,7 @@ source_set("run_all_unittests") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//mojo/core/embedder:embedder",
     "//skia",
     "//testing/gtest",
     "//ui/base",
@@ -1062,7 +1064,6 @@ test("ui_base_unittests") {
     "//ui/base/data_transfer_policy:unittests",
     "//ui/base/metadata:metadata_tests",
     "//ui/base/prediction:prediction",
-    "//ui/color",
     "//ui/display",
     "//ui/events:events_base",
     "//ui/events:test_support",
@@ -1128,6 +1129,8 @@ test("ui_base_unittests") {
       "themed_vector_icon_unittest.cc",
       "webui/web_ui_util_unittest.cc",
     ]
+
+    deps += [ "//ui/color" ]
   }
 
   if (is_linux || is_chromeos) {

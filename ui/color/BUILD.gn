@@ -8,6 +8,8 @@ import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/test.gni")
 import("//ui/base/ui_features.gni")
 
+assert(!is_ios, "Not supported on iOS")
+
 source_set("color_headers") {
   sources = [
     "color_id.h",
@@ -145,6 +147,8 @@ component("mixers") {
     "color_provider_manager.h",
     "core_default_color_mixer.cc",
     "core_default_color_mixer.h",
+    "fluent_ui_color_mixer.cc",
+    "fluent_ui_color_mixer.h",
     "forced_colors_mixer.cc",
     "forced_colors_mixer.h",
     "material_ui_color_mixer.cc",
@@ -170,6 +174,7 @@ component("mixers") {
     "//ui/base:features",
     "//ui/color/dynamic_color",
     "//ui/gfx:color_utils",
+    "//ui/native_theme:features",
   ]
 
   public_deps = [ "//base" ]
@@ -185,10 +190,7 @@ component("mixers") {
       "win/forced_colors_mixer_win.h",
       "win/native_color_mixers_win.cc",
     ]
-    deps += [
-      ":accent_color_observer",
-      "//ui/native_theme:features",
-    ]
+    deps += [ ":accent_color_observer" ]
   }
 }
 
