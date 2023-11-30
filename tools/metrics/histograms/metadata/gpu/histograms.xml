@@ -1818,7 +1818,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.BeginFrameSource.VrrFrameCount" units="frames"
-    expires_after="2023-12-13">
+    expires_after="2024-01-13">
   <owner>aswolfers@chromium.org</owner>
   <owner>chromeos-gfx-compositor@chromium.org</owner>
   <summary>
