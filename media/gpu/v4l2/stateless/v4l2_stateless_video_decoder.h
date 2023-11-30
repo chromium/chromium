@@ -86,6 +86,11 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
   // can be created.
   bool CreateInputQueue(VideoCodecProfile profile, const gfx::Size resolution);
 
+  // The uncompressed format that the driver produces is setup by the
+  // |output_queue_|. This format then needs to be passed further down the
+  // pipeline.
+  bool SetupOutputFormatForPipeline();
+
   // Process the data in the |compressed_buffer| using the |decoder_|.
   void ProcessCompressedBuffer(scoped_refptr<DecoderBuffer> compressed_buffer,
                                VideoDecoder::DecodeCB decode_cb,
@@ -104,8 +109,12 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
 
   // Queue to hold compressed bitstream buffers to be submitted to the hardware
   std::unique_ptr<InputQueue> input_queue_;
+
   // Queue to hold uncompressed image buffers returned by the hardware
   std::unique_ptr<OutputQueue> output_queue_;
+
+  // Aspect ratio from config to use for output frames.
+  VideoAspectRatio aspect_ratio_;
 
   // Int32 safe ID generator, starting at 0. Generated IDs are used to uniquely
   // identify a Decode() request for stateless backends. BitstreamID is just

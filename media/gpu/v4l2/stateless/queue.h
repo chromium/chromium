@@ -78,6 +78,9 @@ class MEDIA_GPU_EXPORT OutputQueue : public BaseQueue {
   bool NegotiateFormat();
   bool PrepareBuffers() override;
 
+  Fourcc GetQueueFormat() const { return buffer_format_.fourcc; }
+  gfx::Size GetVideoResolution() const { return buffer_format_.resolution; }
+
  private:
   std::string Description() override;
   uint32_t BufferMinimumCount() override;
