@@ -21,8 +21,7 @@ class TriggerPolicy {
   virtual bool ShouldTrigger(float score) = 0;
 };
 
-using TriggerScoringFunction =
-    base::RepeatingCallback<float(const TabStripModel*)>;
+using TriggerScoringFunction = base::RepeatingCallback<float(TabStripModel*)>;
 
 // Decides when to trigger the tab organization proactive nudge UI by scoring
 // potential trigger moments and picking the best one based on a score threshold
@@ -38,7 +37,7 @@ class TabOrganizationTrigger {
                          std::unique_ptr<TriggerPolicy> policy);
   ~TabOrganizationTrigger();
 
-  bool ShouldTrigger(const TabStripModel* inputs) const;
+  bool ShouldTrigger(TabStripModel* inputs) const;
 
  private:
   TriggerScoringFunction scoring_function_;
