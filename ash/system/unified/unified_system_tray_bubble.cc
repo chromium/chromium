@@ -25,14 +25,14 @@
 #include "base/metrics/histogram_macros.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
+#include "ui/display/screen.h"
 #include "ui/events/event.h"
 
 namespace ash {
+
 namespace {
-
 constexpr int kDetailedViewHeight = 464;
-
-}
+}  // namespace
 
 UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
     : controller_(std::make_unique<UnifiedSystemTrayController>(tray->model(),
@@ -69,7 +69,7 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
   NotifyAccessibilityEvent(ax::mojom::Event::kShow, true);
 
   // Explicitly close the app list in clamshell mode.
-  if (!Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     Shell::Get()->app_list_controller()->DismissAppList();
   }
 }

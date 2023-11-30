@@ -67,7 +67,6 @@
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/system/unified/user_chooser_detailed_view_controller.h"
 #include "ash/wm/lock_state_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -444,7 +443,7 @@ void UnifiedSystemTrayController::InitFeatureTiles() {
   quick_settings_metrics_util::RecordQsFeaturePodCount(
       quick_settings_view_->feature_tiles_container()
           ->GetVisibleFeatureTileCount(),
-      Shell::Get()->tablet_mode_controller()->InTabletMode());
+      display::Screen::GetScreen()->InTabletMode());
 }
 
 void UnifiedSystemTrayController::ShowDetailedView(

@@ -53,6 +53,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_types.h"
 
@@ -294,7 +295,7 @@ void StatusAreaWidget::LogVisiblePodCountMetric() {
     }
   }
 
-  if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     UMA_HISTOGRAM_COUNTS_100("ChromeOS.SystemTray.Tablet.ShelfPodCount",
                              visible_pod_count);
   } else {
@@ -488,9 +489,8 @@ StatusAreaWidget::CollapseState StatusAreaWidget::CalculateCollapseState()
     return CollapseState::NOT_COLLAPSIBLE;
   }
 
-  bool is_collapsible =
-      Shell::Get()->tablet_mode_controller()->InTabletMode() &&
-      ShelfConfig::Get()->is_in_app();
+  bool is_collapsible = display::Screen::GetScreen()->InTabletMode() &&
+                        ShelfConfig::Get()->is_in_app();
 
   bool force_collapsible = base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kAshForceStatusAreaCollapsible);

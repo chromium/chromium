@@ -5,11 +5,15 @@
 #ifndef ASH_SYSTEM_UNIFIED_IME_MODE_VIEW_H_
 #define ASH_SYSTEM_UNIFIED_IME_MODE_VIEW_H_
 
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/system/ime/ime_observer.h"
 #include "ash/system/model/locale_model.h"
 #include "ash/system/tray/tray_item_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/display/display_observer.h"
+
+namespace display {
+enum class TabletState;
+}  // namespace display
 
 namespace ash {
 
@@ -17,7 +21,7 @@ namespace ash {
 class ImeModeView : public TrayItemView,
                     public IMEObserver,
                     public LocaleModel::Observer,
-                    public TabletModeObserver {
+                    public display::DisplayObserver {
   METADATA_HEADER(ImeModeView, TrayItemView)
 
  public:
@@ -35,9 +39,8 @@ class ImeModeView : public TrayItemView,
   // LocaleModel::Observer:
   void OnLocaleListSet() override;
 
-  // TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // views::TrayItemView:
   void HandleLocaleChange() override;
@@ -47,6 +50,8 @@ class ImeModeView : public TrayItemView,
   void Update();
 
   bool ime_menu_on_shelf_activated_ = false;
+
+  display::ScopedDisplayObserver display_observer_{this};
 };
 
 }  // namespace ash

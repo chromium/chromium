@@ -599,13 +599,13 @@ TEST_P(AshMessagePopupCollectionTest, BaselineUpdates_InTabletMode) {
 
   // Baseline is higher than the top of the shelf after entering tablet mode.
   tablet_mode_controller->SetEnabledForTest(true);
-  EXPECT_TRUE(tablet_mode_controller->InTabletMode());
+  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
   EXPECT_GT(GetPrimaryShelf()->GetShelfBoundsInScreen().y(),
             popup_collection->GetBaseline());
 
   // Baseline is higher than the top of the shelf after exiting tablet mode.
   tablet_mode_controller->SetEnabledForTest(false);
-  EXPECT_FALSE(tablet_mode_controller->InTabletMode());
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
   EXPECT_GT(GetPrimaryShelf()->GetShelfBoundsInScreen().y(),
             popup_collection->GetBaseline());
 }
@@ -619,7 +619,7 @@ TEST_P(AshMessagePopupCollectionTest, BaselineUpdates_InAppMode) {
   // Enable tablet mode without an open window.
   auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
   tablet_mode_controller->SetEnabledForTest(true);
-  EXPECT_TRUE(tablet_mode_controller->InTabletMode());
+  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
   auto previous_popup_collection_bottom =
       popup_collection->popup_collection_bounds().bottom();
   EXPECT_EQ(ShelfBackgroundType::kHomeLauncher,

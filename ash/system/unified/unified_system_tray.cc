@@ -57,6 +57,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/view_class_properties.h"
@@ -145,11 +146,9 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
   set_use_bounce_in_animation(false);
 
   ShelfConfig::Get()->AddObserver(this);
-  Shell::Get()->tablet_mode_controller()->AddObserver(this);
 }
 
 UnifiedSystemTray::~UnifiedSystemTray() {
-  Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
   ShelfConfig::Get()->RemoveObserver(this);
 
   DestroyBubble();
@@ -332,11 +331,13 @@ void UnifiedSystemTray::OnTransitioningFromCalendarToMainView() {
   }
 }
 
-void UnifiedSystemTray::OnTabletModeStarted() {
-  UpdateLayout();
-}
+void UnifiedSystemTray::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  if (display::IsTabletStateChanging(state)) {
+    // Do nothing when the tablet state is still in the process of transition.
+    return;
+  }
 
-void UnifiedSystemTray::OnTabletModeEnded() {
   UpdateLayout();
 }
 

@@ -35,6 +35,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/display/tablet_state.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
@@ -503,7 +504,6 @@ void HoldingSpaceTrayBubble::Init() {
   holding_space_metrics::RecordVisibleItemCounts(visible_items);
 
   shelf_observation_.Observe(holding_space_tray_->shelf());
-  tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
 }
 
 void HoldingSpaceTrayBubble::AnchorUpdated() {
@@ -568,11 +568,13 @@ void HoldingSpaceTrayBubble::OnAutoHideStateChanged(ShelfAutoHideState state) {
   UpdateBubbleBounds();
 }
 
-void HoldingSpaceTrayBubble::OnTabletModeStarted() {
-  UpdateBubbleBounds();
-}
+void HoldingSpaceTrayBubble::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  if (display::IsTabletStateChanging(state)) {
+    // Do nothing when the tablet state is still in the process of transition.
+    return;
+  }
 
-void HoldingSpaceTrayBubble::OnTabletModeEnded() {
   UpdateBubbleBounds();
 }
 

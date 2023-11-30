@@ -38,7 +38,6 @@
 #include "ash/system/tray/tray_utils.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom-shared.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -255,7 +254,6 @@ EcheTray::EcheTray(Shelf* shelf)
   }
 
   shelf_observation_.Observe(shelf);
-  tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
   shell_observer_.Observe(Shell::Get());
   keyboard_observation_.Observe(keyboard::KeyboardUIController::Get());
 }
@@ -951,6 +949,20 @@ void EcheTray::OnAutoHideStateChanged(ShelfAutoHideState state) {
   UpdateEcheSizeAndBubbleBounds();
 }
 
+void EcheTray::OnDisplayTabletStateChanged(display::TabletState state) {
+  switch (state) {
+    case display::TabletState::kEnteringTabletMode:
+    case display::TabletState::kExitingTabletMode:
+      break;
+    case display::TabletState::kInTabletMode:
+      OnTabletModeStarted();
+      break;
+    case display::TabletState::kInClamshellMode:
+      UpdateEcheSizeAndBubbleBounds();
+      break;
+  }
+}
+
 void EcheTray::OnTabletModeStarted() {
   if (!IsBubbleVisible())
     return;
@@ -969,10 +981,6 @@ void EcheTray::OnTabletModeStarted() {
       ash::ToastData::kDefaultToastDuration,
       /*visible_on_lock_screen=*/false));
   PurgeAndClose();
-}
-
-void EcheTray::OnTabletModeEnded() {
-  UpdateEcheSizeAndBubbleBounds();
 }
 
 void EcheTray::OnShelfAlignmentChanged(aura::Window* root_window,

@@ -25,6 +25,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
+#include "ui/display/tablet_state.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/stylus_state.h"
 
@@ -195,7 +196,7 @@ class LockScreenNoteDisplayStateHandlerTest : public AshTestBase {
         chromeos::PowerManagerClient::SwitchStates{
             chromeos::PowerManagerClient::LidState::OPEN,
             chromeos::PowerManagerClient::TabletMode::ON});
-    Shell::Get()->power_button_controller()->OnTabletModeStarted();
+    Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   }
 
   base::SimpleTestTickClock tick_clock_;

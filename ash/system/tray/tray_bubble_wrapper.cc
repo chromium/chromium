@@ -11,6 +11,7 @@
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_event_filter.h"
 #include "ui/aura/window.h"
+#include "ui/display/screen.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/transient_window_manager.h"
@@ -53,8 +54,9 @@ void TrayBubbleWrapper::ShowBubble(
   bubble_view_->InitializeAndShowBubble();
 
   // We need to explicitly dismiss app list bubble here due to b/1186479.
-  if (!Shell::Get()->tablet_mode_controller()->InTabletMode())
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     Shell::Get()->app_list_controller()->DismissAppList();
+  }
 
   if (event_handling_) {
     tray_event_filter_ = std::make_unique<TrayEventFilter>(

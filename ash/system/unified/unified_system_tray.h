@@ -20,6 +20,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/display/display_observer.h"
+
+namespace display {
+enum class TabletState;
+}  // namespace display
 
 namespace ui {
 class Event;
@@ -64,7 +69,7 @@ class ASH_EXPORT UnifiedSystemTray
     : public TrayBackgroundView,
       public ShelfConfig::Observer,
       public UnifiedSystemTrayController::Observer,
-      public TabletModeObserver {
+      public display::DisplayObserver {
   METADATA_HEADER(UnifiedSystemTray, TrayBackgroundView)
 
  public:
@@ -182,9 +187,8 @@ class ASH_EXPORT UnifiedSystemTray
   void OnOpeningCalendarView() override;
   void OnTransitioningFromCalendarToMainView() override;
 
-  // TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // Gets called when an action is performed on the `DateTray`.
   void OnDateTrayActionPerformed(const ui::Event& event);
@@ -260,6 +264,8 @@ class ASH_EXPORT UnifiedSystemTray
   bool first_interaction_recorded_ = false;
 
   base::ObserverList<Observer> observers_;
+
+  display::ScopedDisplayObserver display_observer_{this};
 
   // Records time the QS bubble was shown. Used for metrics.
   base::TimeTicks time_opened_;
