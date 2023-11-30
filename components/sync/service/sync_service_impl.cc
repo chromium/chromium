@@ -62,6 +62,10 @@ namespace syncer {
 
 namespace {
 
+BASE_FEATURE(kSyncUnsubscribeFromTypesWithPermanentErrors,
+             "SyncUnsubscribeFromTypesWithPermanentErrors",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // The time after browser startup to report sync configuration metrics.
 constexpr base::TimeDelta kRecordDownloadStatusTimeout = base::Seconds(30);
 
@@ -1624,13 +1628,21 @@ void SyncServiceImpl::UpdateDataTypesForInvalidations() {
   }
 
   // No need to register invalidations for non-protocol or commit-only types.
-  // TODO(crbug.com/1260836): consider DataTypeManager::GetActiveDataTypes() to
-  // unsubscribe from failed data types.
   ModelTypeSet types = Intersection(GetPreferredDataTypes(), ProtocolTypes());
   types.RemoveAll(CommitOnlyTypes());
   if (!sessions_invalidations_enabled_) {
     types.Remove(SESSIONS);
   }
+
+  if (!data_type_manager_->GetDataTypesWithPermanentErrors().Empty() &&
+      base::FeatureList::IsEnabled(
+          kSyncUnsubscribeFromTypesWithPermanentErrors)) {
+    // Unsubscribe from data types with permanent errors. Types which are
+    // unready or have crypto errors are intentionally kept because they will
+    // may change their state.
+    types.RemoveAll(data_type_manager_->GetDataTypesWithPermanentErrors());
+  }
+
 #if BUILDFLAG(IS_ANDROID)
   // On Android, don't subscribe to HISTORY invalidations, to save network
   // traffic.

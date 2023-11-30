@@ -1553,6 +1553,115 @@ TEST_F(SyncServiceImplTest, ShouldNotSubscribeToProxyTypes) {
   base::RunLoop().RunUntilIdle();
 }
 
+TEST_F(SyncServiceImplTest, ShouldNotSubscribeToFailedTypes) {
+  PopulatePrefsForInitialSyncFeatureSetupComplete();
+  SignInWithSyncConsent();
+  InitializeService(
+      /*registered_types_and_transport_mode_support=*/
+      {
+          {BOOKMARKS, false},
+          {DEVICE_INFO, true},
+      });
+  get_controller(BOOKMARKS)->model()->SimulateModelError(
+      ModelError(FROM_HERE, "Model error"));
+
+  EXPECT_CALL(*sync_invalidations_service(),
+              SetInterestedDataTypes(AllOf(ContainsDataType(DEVICE_INFO),
+                                           Not(ContainsDataType(BOOKMARKS)))));
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(SyncServiceImplTest, ShouldNotSubscribeToStopAndClearDataTypes) {
+  PopulatePrefsForInitialSyncFeatureSetupComplete();
+  SignInWithSyncConsent();
+  InitializeService(
+      /*registered_types_and_transport_mode_support=*/
+      {
+          {BOOKMARKS, false},
+          {DEVICE_INFO, true},
+      });
+  get_controller(BOOKMARKS)->SetPreconditionState(
+      DataTypeController::PreconditionState::kMustStopAndClearData);
+
+  EXPECT_CALL(*sync_invalidations_service(),
+              SetInterestedDataTypes(AllOf(ContainsDataType(DEVICE_INFO),
+                                           Not(ContainsDataType(BOOKMARKS)))));
+  base::RunLoop().RunUntilIdle();
+
+  // Verify that data type is subscribed again when preconditions are met.
+  EXPECT_CALL(*sync_invalidations_service(),
+              SetInterestedDataTypes(AllOf(ContainsDataType(DEVICE_INFO),
+                                           ContainsDataType(BOOKMARKS))));
+  get_controller(BOOKMARKS)->SetPreconditionState(
+      DataTypeController::PreconditionState::kPreconditionsMet);
+  service()->DataTypePreconditionChanged(BOOKMARKS);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(SyncServiceImplTest, ShouldSubscribeToStopAndKeepDataTypes) {
+  PopulatePrefsForInitialSyncFeatureSetupComplete();
+  SignInWithSyncConsent();
+  InitializeService(
+      /*registered_types_and_transport_mode_support=*/
+      {
+          {BOOKMARKS, false},
+          {DEVICE_INFO, true},
+      });
+  get_controller(BOOKMARKS)->SetPreconditionState(
+      DataTypeController::PreconditionState::kMustStopAndKeepData);
+
+  EXPECT_CALL(*sync_invalidations_service(),
+              SetInterestedDataTypes(AllOf(ContainsDataType(DEVICE_INFO),
+                                           ContainsDataType(BOOKMARKS))));
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(SyncServiceImplTest, ShouldUnsubscribeWhenStopAndClear) {
+  PopulatePrefsForInitialSyncFeatureSetupComplete();
+  SignInWithSyncConsent();
+  InitializeService(
+      /*registered_types_and_transport_mode_support=*/
+      {
+          {BOOKMARKS, false},
+          {DEVICE_INFO, true},
+      });
+  EXPECT_CALL(*sync_invalidations_service(),
+              SetInterestedDataTypes(AllOf(ContainsDataType(DEVICE_INFO),
+                                           ContainsDataType(BOOKMARKS))));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_CALL(*sync_invalidations_service(),
+              SetInterestedDataTypes(AllOf(ContainsDataType(DEVICE_INFO),
+                                           Not(ContainsDataType(BOOKMARKS)))));
+  get_controller(BOOKMARKS)->SetPreconditionState(
+      DataTypeController::PreconditionState::kMustStopAndClearData);
+  service()->DataTypePreconditionChanged(BOOKMARKS);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(SyncServiceImplTest, ShouldUnsubscribeOnTypeFailure) {
+  PopulatePrefsForInitialSyncFeatureSetupComplete();
+  SignInWithSyncConsent();
+  InitializeService(
+      /*registered_types_and_transport_mode_support=*/
+      {
+          {BOOKMARKS, false},
+          {DEVICE_INFO, true},
+      });
+  EXPECT_CALL(*sync_invalidations_service(),
+              SetInterestedDataTypes(AllOf(ContainsDataType(DEVICE_INFO),
+                                           ContainsDataType(BOOKMARKS))));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_CALL(*sync_invalidations_service(),
+              SetInterestedDataTypes(AllOf(ContainsDataType(DEVICE_INFO),
+                                           Not(ContainsDataType(BOOKMARKS)))));
+  get_controller(BOOKMARKS)->model()->SimulateModelError(
+      ModelError(FROM_HERE, "Model error"));
+  service()->DataTypePreconditionChanged(BOOKMARKS);
+  base::RunLoop().RunUntilIdle();
+}
+
 TEST_F(SyncServiceImplTest,
        ShouldActivateSyncInvalidationsServiceWhenSyncIsInitialized) {
   SignInWithSyncConsent();
