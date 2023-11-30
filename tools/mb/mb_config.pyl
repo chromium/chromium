@@ -221,7 +221,7 @@
       'linux-perfetto-rel': 'perfetto_release_bot_reclient',
       'linux-rel-no-external-ip': 'gpu_tests_release_bot_do_typecheck_reclient',
       'linux-upload-perfetto': 'release_bot_perfetto_zlib_reclient',
-      'linux-wpt-chromium-rel': 'release_bot_blink_minimal_symbols_reclient',
+      'linux-wpt-chromium-rel': 'release_bot_blink_minimal_symbols_reclient_dcheck_always_on',
       'linux-wpt-content-shell-asan-fyi-rel': 'asan_lsan_release_trybot_reclient',
       'linux-wpt-content-shell-fyi-rel': 'release_bot_blink_minimal_symbols_reclient',
       'linux-wpt-content-shell-leak-detection': 'release_bot_blink_minimal_symbols_reclient',
@@ -552,7 +552,7 @@
       # cause them to produce different baselines than the release
       # waterfall bots, and run_web_tests.py can't handle that (by design).
       'linux-blink-rel': 'release_bot_blink_minimal_symbols_reclient',
-      'linux-wpt-chromium-rel': 'release_bot_blink_minimal_symbols_reclient',
+      'linux-wpt-chromium-rel': 'release_bot_blink_minimal_symbols_reclient_dcheck_always_on',
       'mac10.15-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl_reclient',
       'mac11.0-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl_reclient',
       'mac11.0.arm64-blink-rel': 'release_bot_blink_arm64_minimal_symbols_reclient',
@@ -2025,6 +2025,10 @@
 
     'release_bot_blink_minimal_symbols_reclient': [
       'release_bot_blink', 'minimal_symbols',
+    ],
+
+    'release_bot_blink_minimal_symbols_reclient_dcheck_always_on': [
+      'release_bot_blink', 'minimal_symbols', 'dcheck_always_on',
     ],
 
     'release_bot_blink_v8_debug_reclient': [
