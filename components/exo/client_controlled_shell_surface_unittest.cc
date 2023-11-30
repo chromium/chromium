@@ -14,6 +14,7 @@
 #include "ash/shell.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/test_widget_builder.h"
+#include "ash/wm/pip/pip_controller.h"
 #include "ash/wm/pip/pip_positioner.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -2245,7 +2246,7 @@ TEST_P(ClientControlledShellSurfaceTest,
 }
 
 TEST_P(ClientControlledShellSurfaceTest,
-       DoNotApplyCollisionDetectionWhileDragged) {
+       DoNotApplyCollisionDetectionWhileDraggedOrTucked) {
   constexpr gfx::Size buffer_size(256, 256);
   constexpr gfx::Rect original_bounds({8, 50}, buffer_size);
   auto shell_surface = exo::test::ShellSurfaceBuilder(buffer_size)
@@ -2266,6 +2267,13 @@ TEST_P(ClientControlledShellSurfaceTest,
   shell_surface->SetGeometry(gfx::Rect(gfx::Point(20, 50), buffer_size));
   surface->Commit();
   EXPECT_EQ(gfx::Rect(20, 50, 256, 256), window->bounds());
+  window_state->DeleteDragDetails();
+  ASSERT_FALSE(window_state->is_dragged());
+
+  ash::Shell::Get()->pip_controller()->TuckWindow(/*left=*/true);
+  shell_surface->SetGeometry(gfx::Rect(gfx::Point(-20, 50), buffer_size));
+  surface->Commit();
+  EXPECT_EQ(gfx::Rect(-20, 50, 256, 256), window->bounds());
 }
 
 TEST_P(ClientControlledShellSurfaceTest, EnteringPipSavesPipSnapFraction) {

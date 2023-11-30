@@ -22,6 +22,7 @@
 #include "ash/wm/client_controlled_state.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "ash/wm/drag_details.h"
+#include "ash/wm/pip/pip_controller.h"
 #include "ash/wm/pip/pip_positioner.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/toplevel_window_event_handler.h"
@@ -981,7 +982,8 @@ void ClientControlledShellSurface::SetWidgetBounds(const gfx::Rect& bounds,
     // resting postiion. The resting position should be fully controlled by
     // chrome afterwards because Android isn't aware of Chrome OS System UI.
     bool is_resizing_without_rotation =
-        !display_rotating_with_pip_ &&
+        !display_rotating_with_pip_ && !IsDragging() &&
+        !ash::Shell::Get()->pip_controller()->is_tucked() &&
         GetWindowState()->GetCurrentBoundsInScreen().size() != bounds.size();
     if (GetWindowState()->IsPip() &&
         (!ash::PipPositioner::HasSnapFraction(GetWindowState()) ||
