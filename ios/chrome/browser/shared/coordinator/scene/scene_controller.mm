@@ -175,6 +175,14 @@
 
 namespace {
 
+// Killswitch, can be removed around February 2024. If enabled,
+// createInitialUI will call makeKeyAndVisible before mainCoordinator start.
+// When disabled, this fix resolves a flicker when starting the app in light
+// mode
+BASE_FEATURE(kMakeKeyAndVisibleBeforeMainCoordinatorStart,
+             "MakeKeyAndVisibleBeforeMainCoordinatorStart",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Feature to control whether Search Intents (Widgets, Application
 // Shortcuts menu) forcibly open a new tab, rather than reusing an
 // existing NTP. See http://crbug.com/1363375 for details.
@@ -1042,12 +1050,22 @@ void InjectNTP(Browser* browser) {
       _webStateListForwardingObserver.get());
   _mainWebStateObserver->Observe(self.mainInterface.browser->GetWebStateList());
 
-  // Enables UI initializations to query the keyWindow's size.
-  [self.sceneState.window makeKeyAndVisible];
+  if (base::FeatureList::IsEnabled(
+          kMakeKeyAndVisibleBeforeMainCoordinatorStart)) {
+    [self.sceneState.window makeKeyAndVisible];
+  }
 
   // Lazy init of mainCoordinator.
   [self.mainCoordinator start];
 
+  if (!base::FeatureList::IsEnabled(
+          kMakeKeyAndVisibleBeforeMainCoordinatorStart)) {
+    // Enables UI initializations to query the keyWindow's size. Do this after
+    // `mainCoordinator start` as it sets self.window.rootViewController to work
+    // around crbug.com/850387, causing a flicker if -makeKeyAndVisible has been
+    // called.
+    [self.sceneState.window makeKeyAndVisible];
+  }
   [self.mainCoordinator setActivePage:[self activePage]];
 
   if (!self.sceneState.appState.startupInformation.isFirstRun) {
