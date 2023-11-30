@@ -14,7 +14,6 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/cxx20_is_constant_evaluated.h"
 #include "base/functional/identity.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/ranges/functional.h"
@@ -935,7 +934,7 @@ constexpr bool equal(ForwardIterator1 first1,
                      Pred pred = {},
                      Proj1 proj1 = {},
                      Proj2 proj2 = {}) {
-  if (base::is_constant_evaluated()) {
+  if (std::is_constant_evaluated()) {
     for (; first1 != last1 && first2 != last2; ++first1, ++first2) {
       if (!std::invoke(pred, std::invoke(proj1, *first1),
                        std::invoke(proj2, *first2))) {

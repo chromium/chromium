@@ -13,7 +13,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/cxx20_is_constant_evaluated.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
@@ -161,7 +160,7 @@ class EnumSet {
   ~EnumSet() = default;
 
   constexpr EnumSet(std::initializer_list<E> values) {
-    if (base::is_constant_evaluated()) {
+    if (std::is_constant_evaluated()) {
       enums_ = bitstring(values);
     } else {
       for (E value : values) {
@@ -174,7 +173,7 @@ class EnumSet {
   // also contains undefined enum values if the enum in question has gaps
   // between kMinValue and kMaxValue.
   static constexpr EnumSet All() {
-    if (base::is_constant_evaluated()) {
+    if (std::is_constant_evaluated()) {
       if (kValueCount == 0) {
         return EnumSet();
       }
@@ -337,7 +336,7 @@ class EnumSet {
   // can safely remove the constepxr qualifiers from this file, at the cost of
   // some minor optimizations.
   explicit constexpr EnumSet(EnumBitSet enums) : enums_(enums) {
-    if (base::is_constant_evaluated()) {
+    if (std::is_constant_evaluated()) {
       CHECK(kValueCount <= 64)
           << "Max number of enum values is 64 for constexpr constructor";
     }
