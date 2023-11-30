@@ -15,14 +15,18 @@ import java.util.Objects;
 /** Resolves a non-resource drawable's button data. */
 public class DrawableButtonData implements DisplayButtonData {
     private final @StringRes int mTextRes;
+    private final @StringRes int mContentDescriptionRes;
     private final Drawable mDrawable;
 
     /**
      * @param textRes The text resource to resolve.
+     * @param contentDescriptionRes The content description resource to resolve.
      * @param drawable The non-resource {@link Drawable} to display.
      */
-    public DrawableButtonData(@StringRes int textRes, Drawable drawable) {
+    public DrawableButtonData(
+            @StringRes int textRes, @StringRes int contentDescriptionRes, Drawable drawable) {
         mTextRes = textRes;
+        mContentDescriptionRes = contentDescriptionRes;
         mDrawable = drawable;
     }
 
@@ -32,13 +36,18 @@ public class DrawableButtonData implements DisplayButtonData {
     }
 
     @Override
+    public String resolveContentDescription(Context context) {
+        return context.getString(mContentDescriptionRes);
+    }
+
+    @Override
     public Drawable resolveIcon(Context context) {
         return mDrawable;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mTextRes, mDrawable);
+        return Objects.hash(mTextRes, mContentDescriptionRes, mDrawable);
     }
 
     @Override
@@ -47,7 +56,9 @@ public class DrawableButtonData implements DisplayButtonData {
             return true;
         }
         if (o instanceof DrawableButtonData that) {
-            return mTextRes == that.mTextRes && mDrawable.equals(that.mDrawable);
+            return mTextRes == that.mTextRes
+                    && mContentDescriptionRes == that.mContentDescriptionRes
+                    && mDrawable.equals(that.mDrawable);
         }
         return false;
     }

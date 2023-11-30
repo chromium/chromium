@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -39,15 +40,20 @@ public abstract class TabSwitcherPaneBase implements Pane {
     /**
      * @param tabSwitcher The {@link TabSwitcher} hosted by the Pane.
      * @param newTabButtonClickListener The {@link OnClickListener} for the new tab button.
+     * @param newTabButtonContentDescriptionRes The resource for the new tab button content
+     *     description.
      */
     TabSwitcherPaneBase(
-            @NonNull TabSwitcher tabSwitcher, @NonNull OnClickListener newTabButtonClickListener) {
+            @NonNull TabSwitcher tabSwitcher,
+            @NonNull OnClickListener newTabButtonClickListener,
+            @StringRes int newTabButtonContentDescriptionRes) {
         mTabSwitcher = tabSwitcher;
 
         mNewTabButtonDataSupplier.set(
                 new DelegateButtonData(
                         new ResourceButtonData(
                                 org.chromium.chrome.browser.toolbar.R.string.button_new_tab,
+                                newTabButtonContentDescriptionRes,
                                 org.chromium.chrome.browser.toolbar.R.drawable.new_tab_icon),
                         () -> newTabButtonClickListener.onClick(null)));
     }

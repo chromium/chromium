@@ -106,6 +106,9 @@ public class TabSwitcherPaneUnitTest {
         FullButtonData buttonData = mTabSwitcherPane.getActionButtonDataSupplier().get();
 
         assertEquals(mContext.getString(R.string.button_new_tab), buttonData.resolveText(mContext));
+        assertEquals(
+                mContext.getString(R.string.button_new_tab),
+                buttonData.resolveContentDescription(mContext));
         assertTrue(
                 AppCompatResources.getDrawable(mContext, R.drawable.new_tab_icon)
                         .getConstantState()
@@ -123,6 +126,9 @@ public class TabSwitcherPaneUnitTest {
         assertEquals(
                 mContext.getString(R.string.accessibility_tab_switcher),
                 buttonData.resolveText(mContext));
+        assertEquals(
+                mContext.getString(R.string.accessibility_tab_switcher),
+                buttonData.resolveContentDescription(mContext));
         assertEquals(mTabSwitcherDrawable, buttonData.resolveIcon(mContext));
     }
 

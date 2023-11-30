@@ -27,11 +27,14 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 public class DrawableButtonDataUnitTest {
     @Test
     @SmallTest
-    public void testResolveTextAndIcon() {
+    public void testResolveTextAndIconAndContentDescription() {
         Context context = ApplicationProvider.getApplicationContext();
         Drawable drawable = createBitmapDrawable();
-        DisplayButtonData buttonData = new DrawableButtonData(R.string.button_new_tab, drawable);
+        DisplayButtonData buttonData =
+                new DrawableButtonData(
+                        R.string.button_new_tab, R.string.button_new_incognito_tab, drawable);
         assertNotEquals(0, buttonData.resolveText(context).length());
+        assertNotEquals(0, buttonData.resolveContentDescription(context).length());
         assertEquals(drawable, buttonData.resolveIcon(context));
     }
 
@@ -39,8 +42,12 @@ public class DrawableButtonDataUnitTest {
     @SmallTest
     public void testHashCode() {
         Drawable drawable = createBitmapDrawable();
-        DisplayButtonData buttonData1 = new DrawableButtonData(R.string.button_new_tab, drawable);
-        DisplayButtonData buttonData2 = new DrawableButtonData(R.string.button_new_tab, drawable);
+        DisplayButtonData buttonData1 =
+                new DrawableButtonData(
+                        R.string.button_new_tab, R.string.button_new_incognito_tab, drawable);
+        DisplayButtonData buttonData2 =
+                new DrawableButtonData(
+                        R.string.button_new_tab, R.string.button_new_incognito_tab, drawable);
         // Only test positive case, since we're not guaranteed to get different hash codes for
         // different values.
         assertEquals(buttonData1.hashCode(), buttonData2.hashCode());
@@ -50,13 +57,28 @@ public class DrawableButtonDataUnitTest {
     @SmallTest
     public void testEquals() {
         Drawable drawable = createBitmapDrawable();
-        DisplayButtonData buttonData = new DrawableButtonData(R.string.button_new_tab, drawable);
+        DisplayButtonData buttonData =
+                new DrawableButtonData(
+                        R.string.button_new_tab, R.string.button_new_incognito_tab, drawable);
         assertEquals(buttonData, buttonData);
-        assertEquals(buttonData, new DrawableButtonData(R.string.button_new_tab, drawable));
+        assertEquals(
+                buttonData,
+                new DrawableButtonData(
+                        R.string.button_new_tab, R.string.button_new_incognito_tab, drawable));
         assertNotEquals(
-                buttonData, new DrawableButtonData(R.string.button_new_incognito_tab, drawable));
+                buttonData,
+                new DrawableButtonData(
+                        R.string.button_new_incognito_tab,
+                        R.string.button_new_incognito_tab,
+                        drawable));
         Drawable newDrawable = createBitmapDrawable();
-        assertNotEquals(buttonData, new DrawableButtonData(R.string.button_new_tab, newDrawable));
+        assertNotEquals(
+                buttonData,
+                new DrawableButtonData(
+                        R.string.button_new_tab, R.string.button_new_incognito_tab, newDrawable));
+        assertNotEquals(
+                buttonData,
+                new DrawableButtonData(R.string.button_new_tab, R.string.button_new_tab, drawable));
 
         // assert*Equals will not invoke #equals on a null object, manually call it instead.
         assertFalse(buttonData.equals(null));

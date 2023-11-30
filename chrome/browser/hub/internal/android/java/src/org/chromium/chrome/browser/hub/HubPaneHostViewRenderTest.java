@@ -73,7 +73,8 @@ public class HubPaneHostViewRenderTest {
     @Feature({"RenderTest"})
     public void test() throws Exception {
         DisplayButtonData displayButtonData =
-                new ResourceButtonData(R.string.button_new_tab, R.drawable.ic_add);
+                new ResourceButtonData(
+                        R.string.button_new_tab, R.string.button_new_tab, R.drawable.ic_add);
         FullButtonData fullButtonData = new DelegateButtonData(displayButtonData, () -> {});
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {

@@ -36,11 +36,15 @@ public class DelegateButtonDataUnitTest {
     public void testFocusChangesPane() {
         Context context = ApplicationProvider.getApplicationContext();
         String expectedText = "foo";
+        String expectedContentDescription = "bar";
         when(mDisplayButtonData.resolveText(context)).thenReturn(expectedText);
+        when(mDisplayButtonData.resolveContentDescription(context))
+                .thenReturn(expectedContentDescription);
         when(mDisplayButtonData.resolveIcon(context)).thenReturn(mExpectedDrawable);
         FullButtonData buttonData = new DelegateButtonData(mDisplayButtonData, mRunnable);
 
         assertEquals(expectedText, buttonData.resolveText(context));
+        assertEquals(expectedContentDescription, buttonData.resolveContentDescription(context));
         assertEquals(mExpectedDrawable, buttonData.resolveIcon(context));
         assertEquals(mRunnable, buttonData.getOnPressRunnable());
     }

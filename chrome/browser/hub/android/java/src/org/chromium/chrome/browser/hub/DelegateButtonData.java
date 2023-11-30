@@ -27,6 +27,11 @@ public class DelegateButtonData implements FullButtonData {
     }
 
     @Override
+    public String resolveContentDescription(Context context) {
+        return mDelegateButtonData.resolveContentDescription(context);
+    }
+
+    @Override
     public Drawable resolveIcon(Context context) {
         return mDelegateButtonData.resolveIcon(context);
     }

@@ -17,11 +17,22 @@ import java.util.Objects;
 /** Resolves data by reading from Android resources on demand. */
 public class ResourceButtonData implements DisplayButtonData {
     private final @StringRes int mTextRes;
+    private final @StringRes int mContentDescriptionRes;
     private final @DrawableRes int mIconRes;
 
-    /** Stores resource ids until resolution time. */
-    public ResourceButtonData(@StringRes int textRes, @DrawableRes int iconRes) {
+    /**
+     * Stores resource ids until resolution time.
+     *
+     * @param textRes The text resource to resolve.
+     * @param contentDescriptionRes The content description resource to resolve.
+     * @param drawableRes The drawable resource to resolve.
+     */
+    public ResourceButtonData(
+            @StringRes int textRes,
+            @StringRes int contentDescriptionRes,
+            @DrawableRes int iconRes) {
         mTextRes = textRes;
+        mContentDescriptionRes = contentDescriptionRes;
         mIconRes = iconRes;
     }
 
@@ -31,13 +42,18 @@ public class ResourceButtonData implements DisplayButtonData {
     }
 
     @Override
+    public String resolveContentDescription(Context context) {
+        return context.getString(mContentDescriptionRes);
+    }
+
+    @Override
     public Drawable resolveIcon(Context context) {
         return AppCompatResources.getDrawable(context, mIconRes);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mTextRes, mIconRes);
+        return Objects.hash(mTextRes, mContentDescriptionRes, mIconRes);
     }
 
     @Override
@@ -45,10 +61,11 @@ public class ResourceButtonData implements DisplayButtonData {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof ResourceButtonData)) {
-            return false;
+        if (o instanceof ResourceButtonData that) {
+            return mTextRes == that.mTextRes
+                    && mContentDescriptionRes == that.mContentDescriptionRes
+                    && mIconRes == that.mIconRes;
         }
-        ResourceButtonData that = (ResourceButtonData) o;
-        return mTextRes == that.mTextRes && mIconRes == that.mIconRes;
+        return false;
     }
 }

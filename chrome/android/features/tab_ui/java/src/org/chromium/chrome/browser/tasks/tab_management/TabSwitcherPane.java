@@ -28,12 +28,16 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
             @NonNull TabSwitcher tabSwitcher,
             @NonNull OnClickListener newTabButtonClickListener,
             @NonNull TabSwitcherDrawable tabSwitcherDrawable) {
-        super(tabSwitcher, newTabButtonClickListener);
+        super(
+                tabSwitcher,
+                newTabButtonClickListener,
+                org.chromium.chrome.browser.toolbar.R.string.button_new_tab);
 
         // TODO(crbug/1505772): Update this string to not be an a11y string and it should probably
         // just say "Tabs".
         mReferenceButtonDataSupplier.set(
                 new DrawableButtonData(
+                        org.chromium.chrome.tab_ui.R.string.accessibility_tab_switcher,
                         org.chromium.chrome.tab_ui.R.string.accessibility_tab_switcher,
                         tabSwitcherDrawable));
     }

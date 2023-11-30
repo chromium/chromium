@@ -67,7 +67,8 @@ public class HubPaneHostViewUnitTest {
     @MediumTest
     public void testActionButtonVisibility() {
         DisplayButtonData displayButtonData =
-                new ResourceButtonData(R.string.button_new_tab, R.drawable.ic_add);
+                new ResourceButtonData(
+                        R.string.button_new_tab, R.string.button_new_tab, R.drawable.ic_add);
         FullButtonData fullButtonData = new DelegateButtonData(displayButtonData, mOnActionButton);
         View button = mPaneHost.findViewById(R.id.action_button);
         assertEquals(View.GONE, button.getVisibility());
@@ -83,7 +84,8 @@ public class HubPaneHostViewUnitTest {
     @MediumTest
     public void testActionButtonCallback() {
         DisplayButtonData displayButtonData =
-                new ResourceButtonData(R.string.button_new_tab, R.drawable.ic_add);
+                new ResourceButtonData(
+                        R.string.button_new_tab, R.string.button_new_tab, R.drawable.ic_add);
         FullButtonData fullButtonData = new DelegateButtonData(displayButtonData, mOnActionButton);
         mPropertyModel.set(ACTION_BUTTON_DATA, fullButtonData);
 
