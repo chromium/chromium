@@ -90,30 +90,22 @@ export class QuickViewController {
         this.onFileSelectionChanged_.bind(this) as EventListener);
     this.listContainer_.element.addEventListener(
         'keydown', this.onKeyDownToOpen_.bind(this));
+
+    // Selection menu command can be triggered with focus outside of file list
+    // or button e.g.: from the directory tree.
     dialogDom.addEventListener(
-        'command', ((event: CommandEvent) => {
-                     // Selection menu command can be triggered with focus
-                     // outside of file list or button e.g.: from the directory
-                     // tree.
-                     if (event.command.id === 'get-info') {
-                       event.stopPropagation();
-                       this.display_(WayToOpen.SELECTION_MENU);
-                     }
-                   }) as EventListener);
+        'command', this.onCommad_.bind(this, WayToOpen.SELECTION_MENU));
     this.listContainer_.element.addEventListener(
-        'command', ((event: CommandEvent) => {
-                     if (event.command.id === 'get-info') {
-                       event.stopPropagation();
-                       this.display_(WayToOpen.CONTEXT_MENU);
-                     }
-                   }) as EventListener);
+        'command', this.onCommad_.bind(this, WayToOpen.CONTEXT_MENU));
     selectionMenuButton.addEventListener(
-        'command', ((event: CommandEvent) => {
-                     if (event.command.id === 'get-info') {
-                       event.stopPropagation();
-                       this.display_(WayToOpen.SELECTION_MENU);
-                     }
-                   }) as EventListener);
+        'command', this.onCommad_.bind(this, WayToOpen.SELECTION_MENU));
+  }
+
+  private onCommad_(wayToOpen: WayToOpen, event: CommandEvent) {
+    if (event.detail.command.id === 'get-info') {
+      event.stopPropagation();
+      this.display_(wayToOpen);
+    }
   }
 
   /**

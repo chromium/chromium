@@ -41,6 +41,16 @@ import {List} from './ui/list.js';
 
 
 /**
+ * TODO(TS): Remove when converting to TS.
+ *
+ * @param {!Event} event
+ */
+function getCommand(event) {
+  return /** @type {import('ui/command.js').CommandEvent} */ (event)
+      .detail.command;
+}
+
+/**
  * A command.
  * @abstract
  */
@@ -292,6 +302,7 @@ CommandUtil.canExecuteVisibleOnDriveInNormalAppModeOnly =
       event.canExecute = enabled;
       // @ts-ignore: error TS2339: Property 'command' does not exist on type
       // 'Event'.
+
       event.command.setHidden(!enabled);
     };
 
@@ -318,14 +329,11 @@ CommandUtil.forceDefaultHandler = (node, commandId) => {
     }
   });
   node.addEventListener('command', event => {
-    // @ts-ignore: error TS2339: Property 'command' does not exist on type
-    // 'Event'.
-    if (event.command.id !== commandId) {
+    const command = getCommand(event);
+    if (command.id !== commandId) {
       return;
     }
-    // @ts-ignore: error TS2339: Property 'command' does not exist on type
-    // 'Event'.
-    document.execCommand(event.command.id);
+    document.execCommand(command.id);
     event.cancelBubble = true;
   });
   node.addEventListener('canExecute', event => {
@@ -730,9 +738,8 @@ export class CommandHandler {
     if (CommandUtil.shouldIgnoreEvents(assert(this.fileManager_.document))) {
       return;
     }
-    // @ts-ignore: error TS2339: Property 'command' does not exist on type
-    // 'Event'.
-    const handler = CommandHandler.COMMANDS_[event.command.id];
+    const command = getCommand(event);
+    const handler = CommandHandler.COMMANDS_[command.id];
     // @ts-ignore: error TS18048: 'handler' is possibly 'undefined'.
     handler.execute.call(
         /** @type {FilesCommand} */ (handler), event, this.fileManager_);
@@ -1386,7 +1393,8 @@ CommandHandler.COMMANDS_['toggle-hidden-files'] =
       execute(event, fileManager) {
         const visible = !fileManager.fileFilter.isHiddenFilesVisible();
         fileManager.fileFilter.setHiddenFilesVisible(visible);
-        event.command.checked = visible;  // Checkmark for "Show hidden files".
+        const command = getCommand(event);
+        command.checked = visible;  // Check-mark for "Show hidden files".
         CommandHandler.recordMenuItemSelected(
             visible ? CommandHandler.MenuCommandsForUMA.HIDDEN_FILES_SHOW :
                       CommandHandler.MenuCommandsForUMA.HIDDEN_FILES_HIDE);
@@ -1406,7 +1414,8 @@ CommandHandler.COMMANDS_['toggle-hidden-android-folders'] =
       execute(event, fileManager) {
         const visible = !fileManager.fileFilter.isAllAndroidFoldersVisible();
         fileManager.fileFilter.setAllAndroidFoldersVisible(visible);
-        event.command.checked = visible;
+        const command = getCommand(event);
+        command.checked = visible;
         CommandHandler.recordMenuItemSelected(
             visible ?
                 CommandHandler.MenuCommandsForUMA.HIDDEN_ANDROID_FOLDERS_SHOW :
@@ -1476,9 +1485,8 @@ export class DeleteCommand extends FilesCommand {
    */
   execute(event, fileManager) {
     const entries = CommandUtil.getCommandEntries(fileManager, event.target);
-    // @ts-ignore: error TS2339: Property 'command' does not exist on type
-    // 'Event'.
-    const permanentlyDelete = event.command.id === 'delete';
+    const command = getCommand(event);
+    const permanentlyDelete = command.id === 'delete';
 
     // Execute might be called without a call of canExecute method, e.g.,
     // called directly from code, crbug.com/509483. See toolbar controller
@@ -1857,7 +1865,7 @@ CommandHandler.COMMANDS_['paste'] = new (class extends FilesCommand {
     if (CommandUtil.isOnTrashRoot(fileManager)) {
       return;
     }
-    fileManager.document.execCommand(event.command.id);
+    fileManager.document.execCommand(getCommand(event).id);
   }
 
   /** @override */
@@ -2015,7 +2023,7 @@ CommandHandler.cutCopyCommand_ = new (class extends FilesCommand {
     // Cancel check-select-mode on cut/copy.  Any further selection of a dir
     // should start a new selection rather than add to the existing selection.
     fileManager.directoryModel.getFileListSelection().setCheckSelectMode(false);
-    fileManager.document.execCommand(event.command.id);
+    fileManager.document.execCommand(getCommand(event).id);
   }
 
   /** @override */

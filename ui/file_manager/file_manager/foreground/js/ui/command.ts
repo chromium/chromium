@@ -23,13 +23,8 @@ import {boolAttrSetter, convertToKebabCase, decorate, domAttrSetter} from '../..
 
 import {MenuItem} from './menu_item.js';
 
-export type CommandEvent = Event&{
-  command: Command,
-};
-
 /**
  * Creates a new command element.
- * @constructor
  */
 export class Command extends HTMLElement {
   private shortcut_: string|null = null;
@@ -64,8 +59,12 @@ export class Command extends HTMLElement {
 
     const doc = this.ownerDocument;
     if (doc.activeElement) {
-      const e = new Event('command', {bubbles: true}) as CommandEvent;
-      e.command = this;
+      const e = new CustomEvent('command', {
+        bubbles: true,
+        detail: {
+          command: this,
+        },
+      });
 
       (element || doc.activeElement).dispatchEvent(e);
     }
@@ -307,5 +306,17 @@ export class CanExecuteEvent extends Event {
     this.canExecute_ = !!canExecute;
     this.stopPropagation();
     this.preventDefault();
+  }
+}
+
+// Event triggered when a Command is executed.
+export type CommandEvent = CustomEvent<{command: Command}>;
+
+// These event can bubble, so we can listen to it in any element parent of the
+// <command>.
+declare global {
+  interface HTMLElementEventMap {
+    'command': CommandEvent;
+    'canExecute': CanExecuteEvent;
   }
 }
