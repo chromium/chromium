@@ -89,7 +89,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.tableView.accessibilityIdentifier = kPasswordIssuesTableViewId;
+  self.tableView.accessibilityIdentifier = kPasswordIssuesTableViewID;
 
   [self loadModel];
 }
@@ -226,7 +226,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   dismissedWarningsItem.accessibilityTraits = UIAccessibilityTraitButton;
   dismissedWarningsItem.accessoryType =
       UITableViewCellAccessoryDisclosureIndicator;
-  dismissedWarningsItem.accessibilityIdentifier = kDismissedWarningsCellId;
+  dismissedWarningsItem.accessibilityIdentifier = kDismissedWarningsCellID;
   return dismissedWarningsItem;
 }
 

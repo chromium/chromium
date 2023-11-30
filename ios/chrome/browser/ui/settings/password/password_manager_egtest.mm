@@ -114,7 +114,7 @@ GREYElementInteraction* GetInteractionForListItem(id<GREYMatcher> matcher,
       selectElementWithMatcher:grey_allOf(matcher, grey_sufficientlyVisible(),
                                           nil)]
          usingSearchAction:grey_scrollInDirection(direction, kScrollAmount)
-      onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)];
+      onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewID)];
 }
 
 // Returns the GREYElementInteraction* for the cell on the password list with
@@ -135,7 +135,7 @@ GREYElementInteraction* GetInteractionForPasswordDetailItem(
   return [[EarlGrey
       selectElementWithMatcher:grey_allOf(matcher, grey_interactable(), nil)]
          usingSearchAction:grey_scrollToContentEdge(kGREYContentEdgeTop)
-      onElementWithMatcher:grey_accessibilityID(kPasswordDetailsTableViewId)];
+      onElementWithMatcher:grey_accessibilityID(kPasswordDetailsTableViewID)];
 }
 
 // Returns the GREYElementInteraction* for the item on the deletion alert
@@ -175,7 +175,7 @@ id<GREYMatcher> SavedPasswordsHeaderMatcher() {
 
 // Matcher for a UITextField inside a SettingsSearchCell.
 id<GREYMatcher> SearchTextField() {
-  return grey_accessibilityID(kPasswordsSearchBarId);
+  return grey_accessibilityID(kPasswordsSearchBarID);
 }
 
 GREYLayoutConstraint* Below() {
@@ -279,7 +279,7 @@ id<GREYMatcher> PopUpMenuItemWithLabel(int label) {
 
 // Returns matcher for the "Add Password" button.
 id<GREYMatcher> AddPasswordButton() {
-  return grey_accessibilityID(kAddPasswordButtonId);
+  return grey_accessibilityID(kAddPasswordButtonID);
 }
 
 // Returns matcher for the "Add Password" toolbar button located at the bottom
@@ -290,7 +290,7 @@ id<GREYMatcher> AddPasswordToolbarButton() {
 
 // Returns matcher for the "Save" button in the "Add Password" view.
 id<GREYMatcher> AddPasswordSaveButton() {
-  return grey_accessibilityID(kPasswordsAddPasswordSaveButtonId);
+  return grey_accessibilityID(kPasswordsAddPasswordSaveButtonID);
 }
 
 id<GREYMatcher> ToolbarSettingsSubmenuButton() {
@@ -308,12 +308,12 @@ id<GREYMatcher> TooLongNoteFooter() {
 
 // Returns matcher for the Password Manager widget promo.
 id<GREYMatcher> PasswordManagerWidgetPromo() {
-  return grey_accessibilityID(kWidgetPromoId);
+  return grey_accessibilityID(kWidgetPromoID);
 }
 
 // Returns matcher for the Password Manager widget promo's close button.
 id<GREYMatcher> PasswordManagerWidgetPromoCloseButton() {
-  return grey_accessibilityID(kWidgetPromoCloseButtonId);
+  return grey_accessibilityID(kWidgetPromoCloseButtonID);
 }
 
 // Returns matcher for the Password Manager widget promo's more info button.
@@ -347,7 +347,7 @@ id<GREYMatcher> PasswordManagerWidgetPromoInstructionsCloseButton() {
 
 // Returns matcher for the Password Details move to account button.
 id<GREYMatcher> PasswordDetailsMoveToAccountButton() {
-  return grey_accessibilityID(kMovePasswordToAccountButtonId);
+  return grey_accessibilityID(kMovePasswordToAccountButtonID);
 }
 
 // Saves two example forms in the store.
@@ -943,7 +943,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   // Check that the current view is now the list view, by locating
   // PasswordTableViewController.
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewID)]
       assertWithMatcher:grey_notNil()];
 
   // Verify that the deletion was propagated to the PasswordStore.
@@ -995,7 +995,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   // Check that the current view is now the list view, by locating
   // PasswordTableViewController.
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewID)]
       assertWithMatcher:grey_notNil()];
 
   // Verify that the deletion was propagated to the PasswordStore.
@@ -1043,7 +1043,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   // Check that the current view is now the list view, by locating
   // PasswordTableViewController.
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewID)]
       assertWithMatcher:grey_notNil()];
 
   // Verify that the deletion was propagated to the PasswordStore.
@@ -1100,7 +1100,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   // Check that the current view is now the list view, by locating
   // PasswordTableViewController.
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewID)]
       assertWithMatcher:grey_notNil()];
 
   // Verify that the deletion was propagated to the PasswordStore.
@@ -1150,7 +1150,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   // Check that the current view is now the list view, by locating
   // PasswordTableViewController.
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewID)]
       assertWithMatcher:grey_notNil()];
 
   // Verify that the deletion was propagated to the PasswordStore.
@@ -1203,7 +1203,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   // Check that the current view is now the list view, by locating
   // PasswordTableViewController.
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewID)]
       assertWithMatcher:grey_notNil()];
 
   // Verify that the deletion was propagated to the PasswordStore.
@@ -1247,7 +1247,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
   // Check that the current view is still the detail view.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPasswordDetailsTableViewId)]
+                                          kPasswordDetailsTableViewID)]
       assertWithMatcher:grey_notNil()];
 
   // Verify that the deletion did not happen.
@@ -1435,7 +1435,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [[EarlGrey selectElementWithMatcher:EditDoneButton()]
       assertWithMatcher:grey_not(grey_enabled())];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPasswordDetailsViewControllerId)]
+                                          kPasswordDetailsViewControllerID)]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
   [[EarlGrey selectElementWithMatcher:TooLongNoteFooter()]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -1718,7 +1718,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
                                                kRemoteIndex]]]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
                                                   kScrollAmount)
-      onElementWithMatcher:grey_accessibilityID(kPasswordDetailsTableViewId)]
+      onElementWithMatcher:grey_accessibilityID(kPasswordDetailsTableViewID)]
       assertWithMatcher:grey_notNil()];
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
@@ -1780,7 +1780,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
                              grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
                                                   kScrollAmount)
-      onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)]
+      onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewID)]
       performAction:grey_tap()];
 
   [GetInteractionForPasswordsExportConfirmAlert(
@@ -1880,7 +1880,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   //  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewID)]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
 
   TapNavigationBarEditButton();
@@ -2370,7 +2370,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [[EarlGrey selectElementWithMatcher:AddPasswordSaveButton()]
       assertWithMatcher:grey_not(grey_enabled())];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPasswordDetailsViewControllerId)]
+                                          kPasswordDetailsViewControllerID)]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
   [[EarlGrey selectElementWithMatcher:TooLongNoteFooter()]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -2860,7 +2860,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   ConditionBlock condition = ^{
     NSError* error = nil;
     [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                            kPasswordDetailsTableViewId)]
+                                            kPasswordDetailsTableViewID)]
         assertWithMatcher:grey_notNil()
                     error:&error];
     return error == nil;
@@ -2878,7 +2878,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   condition = ^{
     NSError* error = nil;
     [[EarlGrey
-        selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)]
+        selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewID)]
         assertWithMatcher:grey_notNil()
                     error:&error];
     return error == nil;
@@ -2997,7 +2997,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   id<GREYMatcher> passwordMatcher = grey_allOf(
       ButtonWithAccessibilityID(@"local.com"), grey_sufficientlyVisible(), nil);
   id<GREYMatcher> localIconMatcher =
-      grey_allOf(grey_accessibilityID(kLocalOnlyPasswordIconId),
+      grey_allOf(grey_accessibilityID(kLocalOnlyPasswordIconID),
                  grey_ancestor(passwordMatcher), nil);
   [GetInteractionForListItem(localIconMatcher, kGREYDirectionDown)
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -3006,15 +3006,15 @@ void OpenPasswordManagerWidgetPromoInstructions() {
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kMovePasswordToAccountButtonId)]
+                                          kMovePasswordToAccountButtonID)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kMovePasswordToAccountButtonId)]
+                                          kMovePasswordToAccountButtonID)]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kMovePasswordToAccountButtonId)]
+                                          kMovePasswordToAccountButtonID)]
       assertWithMatcher:grey_notVisible()];
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
@@ -3046,7 +3046,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   id<GREYMatcher> passwordMatcher = grey_allOf(
       ButtonWithAccessibilityID(@"local.com"), grey_sufficientlyVisible(), nil);
   id<GREYMatcher> localIconMatcher =
-      grey_allOf(grey_accessibilityID(kLocalOnlyPasswordIconId),
+      grey_allOf(grey_accessibilityID(kLocalOnlyPasswordIconID),
                  grey_ancestor(passwordMatcher), nil);
   [GetInteractionForListItem(localIconMatcher, kGREYDirectionDown)
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -3055,15 +3055,15 @@ void OpenPasswordManagerWidgetPromoInstructions() {
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kMovePasswordToAccountButtonId)]
+                                          kMovePasswordToAccountButtonID)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kMovePasswordToAccountButtonId)]
+                                          kMovePasswordToAccountButtonID)]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kMovePasswordToAccountButtonId)]
+                                          kMovePasswordToAccountButtonID)]
       assertWithMatcher:grey_notVisible()];
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]

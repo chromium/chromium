@@ -78,7 +78,7 @@
   [_localOnlyIcon
       setContentCompressionResistancePriority:UILayoutPriorityRequired
                                       forAxis:UILayoutConstraintAxisVertical];
-  _localOnlyIcon.accessibilityIdentifier = kLocalOnlyPasswordIconId;
+  _localOnlyIcon.accessibilityIdentifier = kLocalOnlyPasswordIconID;
 
   _titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   _titleLabel.adjustsFontForContentSizeCategory = YES;

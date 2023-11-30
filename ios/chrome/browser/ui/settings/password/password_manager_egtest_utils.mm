@@ -93,7 +93,7 @@ id<GREYMatcher> PasswordCheckupCellForState(PasswordCheckUIState state,
 }
 
 id<GREYMatcher> PasswordIssuesTableView() {
-  return grey_accessibilityID(kPasswordIssuesTableViewId);
+  return grey_accessibilityID(kPasswordIssuesTableViewID);
 }
 
 id<GREYMatcher> PasswordDetailPassword() {
@@ -122,7 +122,7 @@ id<GREYMatcher> UsernameTextfieldForUsernameAndSites(NSString* username,
                                                      NSString* sites) {
   return grey_allOf(
       grey_accessibilityID([NSString
-          stringWithFormat:@"%@%@%@", kUsernameTextfieldForPasswordDetailsId,
+          stringWithFormat:@"%@%@%@", kUsernameTextfieldForPasswordDetailsID,
                            username, sites]),
       grey_interactable(), nullptr);
 }
@@ -131,7 +131,7 @@ id<GREYMatcher> PasswordTextfieldForUsernameAndSites(NSString* username,
                                                      NSString* sites) {
   return grey_allOf(
       grey_accessibilityID([NSString
-          stringWithFormat:@"%@%@%@", kPasswordTextfieldForPasswordDetailsId,
+          stringWithFormat:@"%@%@%@", kPasswordTextfieldForPasswordDetailsID,
                            username, sites]),
       grey_interactable(), nullptr);
 }
@@ -140,7 +140,7 @@ id<GREYMatcher> DeleteButtonForUsernameAndSites(NSString* username,
                                                 NSString* sites) {
   return grey_allOf(
       grey_accessibilityID([NSString
-          stringWithFormat:@"%@%@%@", kDeleteButtonForPasswordDetailsId,
+          stringWithFormat:@"%@%@%@", kDeleteButtonForPasswordDetailsID,
                            username, sites]),
       grey_interactable(), nullptr);
 }

@@ -1060,7 +1060,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)settingsPasswordSearchMatcher {
-  return grey_accessibilityID(kPasswordsSearchBarId);
+  return grey_accessibilityID(kPasswordsSearchBarID);
 }
 
 + (id<GREYMatcher>)settingsProfileMatcher {
@@ -1159,7 +1159,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)passwordsTableViewMatcher {
-  return grey_accessibilityID(kPasswordsTableViewId);
+  return grey_accessibilityID(kPasswordsTableViewID);
 }
 
 + (id<GREYMatcher>)defaultBrowserSettingsTableViewMatcher {

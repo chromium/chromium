@@ -149,7 +149,7 @@ const int kMinNoteCharAmountForWarning = 901;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.tableView.accessibilityIdentifier = kPasswordDetailsViewControllerId;
+  self.tableView.accessibilityIdentifier = kPasswordDetailsViewControllerID;
   self.tableView.allowsSelectionDuringEditing = YES;
 
   self.navigationItem.title = l10n_util::GetNSString(
@@ -162,7 +162,7 @@ const int kMinNoteCharAmountForWarning = 901;
              target:self
              action:@selector(didTapCancelButton:)];
   self.navigationItem.leftBarButtonItem.accessibilityIdentifier =
-      kPasswordsAddPasswordCancelButtonId;
+      kPasswordsAddPasswordCancelButtonID;
 
   self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
       initWithTitle:l10n_util::GetNSString(
@@ -172,7 +172,7 @@ const int kMinNoteCharAmountForWarning = 901;
              action:@selector(didTapSaveButton:)];
   self.navigationItem.rightBarButtonItem.enabled = NO;
   self.navigationItem.rightBarButtonItem.accessibilityIdentifier =
-      kPasswordsAddPasswordSaveButtonId;
+      kPasswordsAddPasswordSaveButtonID;
 
   password_manager::metrics_util::
       LogUserInteractionsWhenAddingCredentialFromSettings(

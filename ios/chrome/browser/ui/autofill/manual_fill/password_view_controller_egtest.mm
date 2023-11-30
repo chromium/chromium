@@ -239,7 +239,7 @@ void CheckPasswordManagerUIDismissesAfterFailedAuthentication(
   // Changed minimum visible percentage to 70% for Passwords table view in
   // settings because subviews cover > 25% in smaller screens(eg. iPhone 6s).
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewID)]
       assertWithMatcher:grey_minimumVisiblePercent(0.7)];
 }
 
@@ -302,7 +302,7 @@ void CheckPasswordManagerUIDismissesAfterFailedAuthentication(
   // Changed minimum visible percentage to 70% for Passwords table view in
   // settings because subviews cover > 25% in smaller screens(eg. iPhone 6s).
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewID)]
       assertWithMatcher:grey_minimumVisiblePercent(0.7)];
 }
 

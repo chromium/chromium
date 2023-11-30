@@ -26,7 +26,7 @@ id<GREYMatcher> PasswordBreachMatcher() {
 }
 
 id<GREYMatcher> PasswordListMatcher() {
-  return grey_accessibilityID(kPasswordsTableViewId);
+  return grey_accessibilityID(kPasswordsTableViewID);
 }
 
 id<GREYMatcher> CheckPasswordButton() {

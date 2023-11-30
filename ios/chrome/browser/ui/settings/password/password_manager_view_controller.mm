@@ -350,7 +350,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   [self setUpTitle];
 
   self.tableView.allowsMultipleSelectionDuringEditing = YES;
-  self.tableView.accessibilityIdentifier = kPasswordsTableViewId;
+  self.tableView.accessibilityIdentifier = kPasswordsTableViewID;
 
   // With no header on first appearance, UITableView adds a 35 points space at
   // the beginning of the table view. This space remains after this table view
@@ -370,7 +370,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   UISearchBar* searchBar = searchController.searchBar;
   searchBar.delegate = self;
   searchBar.backgroundColor = UIColor.clearColor;
-  searchBar.accessibilityIdentifier = kPasswordsSearchBarId;
+  searchBar.accessibilityIdentifier = kPasswordsSearchBarID;
 
   // TODO(crbug.com/1268684): Explicitly set the background color for the search
   // bar to match with the color of navigation bar in iOS 13/14 to work around
@@ -389,7 +389,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   self.scrimView.alpha = 0.0f;
   self.scrimView.backgroundColor = [UIColor colorNamed:kScrimBackgroundColor];
   self.scrimView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.scrimView.accessibilityIdentifier = kPasswordsScrimViewId;
+  self.scrimView.accessibilityIdentifier = kPasswordsScrimViewID;
   [self.scrimView addTarget:self
                      action:@selector(dismissSearchController:)
            forControlEvents:UIControlEventTouchUpInside];
@@ -702,7 +702,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
       IDS_IOS_PASSWORD_MANAGER_WIDGET_PROMO_BUTTON_TITLE);
   _widgetPromoItem.shouldHaveWideLayout =
       [self shouldWidgetPromoCellHaveWideLayout];
-  _widgetPromoItem.accessibilityIdentifier = kWidgetPromoId;
+  _widgetPromoItem.accessibilityIdentifier = kWidgetPromoID;
   return _widgetPromoItem;
 }
 
@@ -743,7 +743,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   _addPasswordItem =
       [[TableViewTextItem alloc] initWithType:ItemTypeAddPasswordButton];
   _addPasswordItem.text = l10n_util::GetNSString(IDS_IOS_ADD_PASSWORD);
-  _addPasswordItem.accessibilityIdentifier = kAddPasswordButtonId;
+  _addPasswordItem.accessibilityIdentifier = kAddPasswordButtonID;
   _addPasswordItem.accessibilityTraits = UIAccessibilityTraitButton;
   _addPasswordItem.textColor = [UIColor colorNamed:kBlueColor];
   return _addPasswordItem;
@@ -2015,7 +2015,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
                     action:@selector(didTapWidgetPromoMoreInfoButton)
           forControlEvents:UIControlEventTouchUpInside];
       widgetPromoCell.closeButton.accessibilityIdentifier =
-          kWidgetPromoCloseButtonId;
+          kWidgetPromoCloseButtonID;
       widgetPromoCell.promoImageView.accessibilityIdentifier =
           kWidgetPromoImageID;
       break;

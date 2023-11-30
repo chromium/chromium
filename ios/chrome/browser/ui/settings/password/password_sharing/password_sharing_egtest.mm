@@ -74,7 +74,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
                                           grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
                                                   kScrollAmount)
-      onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)]
+      onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewID)]
       performAction:grey_tap()];
 }
 
@@ -98,7 +98,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
                                           grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
                                                   kScrollAmount)
-      onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)]
+      onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewID)]
       performAction:grey_tap()];
 }
 
@@ -163,7 +163,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
   [self saveExamplePasswordAndOpenDetails];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 }
 
@@ -172,7 +172,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
   [self saveExamplePasswordAndOpenDetails];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -180,7 +180,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
   [self saveExamplePasswordAndOpenDetails];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 }
 
@@ -191,7 +191,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
   [self saveExamplePasswordAndOpenDetails];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -204,7 +204,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
   [self saveExamplePasswordAndOpenDetails];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 }
 
@@ -213,11 +213,11 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
   [self saveExamplePasswordAndOpenDetails];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -226,7 +226,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
 
   // Check that the current view is the password details view.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPasswordDetailsTableViewId)]
+                                          kPasswordDetailsTableViewID)]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -235,10 +235,10 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
   [self saveExamplePasswordsAndOpenDetails];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -247,7 +247,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
 
   // Check that the current view is the password details view.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPasswordDetailsTableViewId)]
+                                          kPasswordDetailsTableViewID)]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -264,7 +264,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
   [self saveExamplePasswordAndOpenDetails];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       performAction:grey_tap()];
 
   // Check that the family promo view was displayed.
@@ -283,7 +283,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
 
   // Check that the current view is the password details view.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPasswordDetailsTableViewId)]
+                                          kPasswordDetailsTableViewID)]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -301,7 +301,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
   [self saveExamplePasswordAndOpenDetails];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       performAction:grey_tap()];
 
   // Check that the family promo view was displayed.
@@ -322,7 +322,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
 
   // Check that the current view is the password details view.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPasswordDetailsTableViewId)]
+                                          kPasswordDetailsTableViewID)]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -339,7 +339,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
   [self saveExamplePasswordAndOpenDetails];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       performAction:grey_tap()];
 
   // Check that the error view was displayed and close it.
@@ -352,7 +352,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
 
   // Check that the current view is the password details view.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPasswordDetailsTableViewId)]
+                                          kPasswordDetailsTableViewID)]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -361,10 +361,10 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
   [self saveExamplePasswordAndOpenDetails];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       performAction:grey_tap()];
 
   // Make sure that the share button is disabled before the recipient selection
@@ -407,7 +407,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
       selectElementWithMatcher:grey_accessibilityID(kSharingStatusDoneButtonId)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPasswordDetailsTableViewId)]
+                                          kPasswordDetailsTableViewID)]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -416,7 +416,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
   [self saveExamplePasswordsAndOpenDetails];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       performAction:grey_tap()];
 
   // Check that the next button is enabled by default.
@@ -450,10 +450,10 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
   [self saveExamplePasswordAndOpenDetails];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       performAction:grey_tap()];
 
   // Scroll down to the last recipient (the ineligible ones are on the bottom).
@@ -487,7 +487,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
   [self saveExamplePasswordAndOpenDetails];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       performAction:grey_tap()];
 
   // Tap the cancel button.
@@ -498,13 +498,13 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
 
   // Check that the current view is the password details view.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPasswordDetailsTableViewId)]
+                                          kPasswordDetailsTableViewID)]
       assertWithMatcher:grey_notNil()];
 
   // Tap the share button again and verify that the first run view is still
   // displayed since it was not acknowledged.
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:PasswordSharingFirstRunMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -518,7 +518,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
   [self saveExamplePasswordAndOpenDetails];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       performAction:grey_tap()];
 
   // Tap the share button in the first run experience view.
@@ -540,7 +540,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
   // Tap the share button in password details view and verify that the first run
   // view will not be displayed anymore since it was acknowledged.
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       performAction:grey_tap()];
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kFamilyPickerTableViewId)]
@@ -560,10 +560,10 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
   [self saveExamplePasswordAndOpenDetails];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       performAction:grey_tap()];
 
   // Tap the "Learn more" link in the popup.
@@ -584,7 +584,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
   [self saveExamplePasswordAndOpenDetails];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:PasswordSharingFirstRunMatcher()]

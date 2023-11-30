@@ -222,7 +222,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.tableView.accessibilityIdentifier = kPasswordDetailsViewControllerId;
+  self.tableView.accessibilityIdentifier = kPasswordDetailsViewControllerID;
   self.tableView.allowsSelectionDuringEditing = YES;
 
   if (base::FeatureList::IsEnabled(kEnableUIEditMenuInteraction)) {
@@ -340,7 +340,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   // more than one password shown on the Password Details.
   if (_passwords.count > 1) {
     item.customTextfieldAccessibilityIdentifier = [NSString
-        stringWithFormat:@"%@%@%@", kUsernameTextfieldForPasswordDetailsId,
+        stringWithFormat:@"%@%@%@", kUsernameTextfieldForPasswordDetailsID,
                          passwordDetails.username, passwordDetails.websites[0]];
   }
   return item;
@@ -385,7 +385,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   // more than one password shown on the Password Details.
   if (_passwords.count > 1) {
     item.customTextfieldAccessibilityIdentifier = [NSString
-        stringWithFormat:@"%@%@%@", kPasswordTextfieldForPasswordDetailsId,
+        stringWithFormat:@"%@%@%@", kPasswordTextfieldForPasswordDetailsID,
                          passwordDetails.username, passwordDetails.websites[0]];
   }
   return item;
@@ -433,7 +433,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
       IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION_BRANDED);
   item.image = [self compromisedIcon];
   item.imageViewTintColor = [UIColor colorNamed:kRed500Color];
-  item.accessibilityIdentifier = kCompromisedWarningId;
+  item.accessibilityIdentifier = kCompromisedWarningID;
   return item;
 }
 
@@ -469,7 +469,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   item.textColor = [UIColor colorNamed:kRedColor];
   item.accessibilityTraits = UIAccessibilityTraitButton;
   item.accessibilityIdentifier = [NSString
-      stringWithFormat:@"%@%@%@", kDeleteButtonForPasswordDetailsId,
+      stringWithFormat:@"%@%@%@", kDeleteButtonForPasswordDetailsID,
                        passwordDetails.username, passwordDetails.websites[0]];
   return item;
 }
@@ -482,7 +482,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
                        ? [UIColor colorNamed:kTextSecondaryColor]
                        : [UIColor colorNamed:kBlueColor];
   item.enabled = !self.tableView.editing;
-  item.accessibilityIdentifier = kMovePasswordToAccountButtonId;
+  item.accessibilityIdentifier = kMovePasswordToAccountButtonID;
   return item;
 }
 
@@ -837,7 +837,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
               style:UIBarButtonItemStylePlain
              target:self
              action:@selector(onShareButtonPressed)];
-  shareButton.accessibilityIdentifier = kPasswordShareButtonId;
+  shareButton.accessibilityIdentifier = kPasswordShareButtonID;
   self.navigationItem.rightBarButtonItems =
       @[ self.navigationItem.rightBarButtonItem, shareButton ];
 }
