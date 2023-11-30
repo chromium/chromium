@@ -62,6 +62,7 @@
 #include "components/omnibox/browser/most_visited_sites_provider.h"
 #include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/on_device_head_provider.h"
 #include "components/omnibox/browser/open_tab_provider.h"
 #include "components/omnibox/browser/query_tile_provider.h"
@@ -2034,12 +2035,15 @@ void AutocompleteController::MaybeCleanSuggestionsForKeywordMode(
     // Clear help text that is repeated across consecutive instant keyword
     // matches. During this pass, also eliminate tab switch on instant
     // keyword matches for an extra clean appearance.
+    PrefService* prefs = provider_client_->GetPrefs();
+    const bool instant_keyword_used =
+        prefs ? prefs->GetBoolean(omnibox::kOmniboxInstantKeywordUsed) : false;
     size_t instant_counter = 0;
     for (size_t i = 0; i < result->size(); i++) {
       if (result->match_at(i)->HasInstantKeyword(template_url_service_)) {
         result->match_at(i)->actions.clear();
         instant_counter++;
-        if (instant_counter > 1) {
+        if (instant_counter > 1 || instant_keyword_used) {
           result->match_at(i)->contents.clear();
           result->match_at(i)->contents_class = {{}};
         }

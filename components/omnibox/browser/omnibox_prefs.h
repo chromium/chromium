@@ -61,6 +61,7 @@ extern const char kSuggestionGroupVisibility[];
 extern const char kPreventUrlElisionsInOmnibox[];
 extern const char kZeroSuggestCachedResults[];
 extern const char kZeroSuggestCachedResultsWithURL[];
+extern const char kOmniboxInstantKeywordUsed[];
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 

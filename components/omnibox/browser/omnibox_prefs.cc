@@ -76,11 +76,16 @@ const char kZeroSuggestCachedResults[] = "zerosuggest.cachedresults";
 const char kZeroSuggestCachedResultsWithURL[] =
     "zerosuggest.cachedresults_with_url";
 
+// Boolean that specifies whether user has successfully used the instant
+// keyword mode feature.
+const char kOmniboxInstantKeywordUsed[] = "omnibox.instant_keyword_used";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kSuggestionGroupVisibility);
   registry->RegisterBooleanPref(
       kKeywordSpaceTriggeringEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(kOmniboxInstantKeywordUsed, false);
 }
 
 SuggestionGroupVisibility GetUserPreferenceForSuggestionGroupVisibility(
