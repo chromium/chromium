@@ -47,6 +47,7 @@ public class TabSwitcherPaneUnitTest {
 
     @Mock private TabSwitcher mTabSwitcher;
     @Mock private TabSwitcher.Controller mTabSwitcherController;
+    @Mock private TabSwitcherPaneDrawableCoordinator mTabSwitcherPaneDrawableCoordinator;
     @Mock private TabSwitcherDrawable mTabSwitcherDrawable;
     @Mock private HubContainerView mHubContainerView;
     @Mock private ViewGroup mContainerView;
@@ -66,6 +67,8 @@ public class TabSwitcherPaneUnitTest {
         when(mTabSwitcherController.getTabSwitcherContainer()).thenReturn(mContainerView);
         when(mTabSwitcherController.getHandleBackPressChangedSupplier())
                 .thenReturn(mHandleBackPressChangeSupplier);
+        when(mTabSwitcherPaneDrawableCoordinator.getTabSwitcherDrawable())
+                .thenReturn(mTabSwitcherDrawable);
         doAnswer(
                         invocation -> {
                             return mHandleBackPressChangeSupplier.get()
@@ -76,7 +79,10 @@ public class TabSwitcherPaneUnitTest {
                 .handleBackPress();
 
         mTabSwitcherPane =
-                new TabSwitcherPane(mTabSwitcher, mNewTabButtonClickListener, mTabSwitcherDrawable);
+                new TabSwitcherPane(
+                        mTabSwitcher,
+                        mNewTabButtonClickListener,
+                        mTabSwitcherPaneDrawableCoordinator);
     }
 
     @Test

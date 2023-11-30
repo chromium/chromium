@@ -12,26 +12,28 @@ import org.chromium.chrome.browser.hub.DrawableButtonData;
 import org.chromium.chrome.browser.hub.LoadHint;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneId;
-import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
 
 /**
  * A {@link Pane} representing the tab switcher. This is effectively an adapter layer between the
  * {@link Pane} and {@link TabSwitcher} APIs.
  */
 public class TabSwitcherPane extends TabSwitcherPaneBase {
+    private final TabSwitcherPaneDrawableCoordinator mTabSwitcherPaneDrawableCoordinator;
+
     /**
      * @param tabSwitcher The {@link TabSwitcher} hosted by the Pane.
      * @param newTabButtonClickListener The {@link OnClickListener} for the new tab button.
-     * @param tabSwitcherDrawable The {@link TabSwitcherDrawable} to represent the UI.
+     * @param tabSwitcherPaneDrawableCoordinator The drawable to represent the pane.
      */
     TabSwitcherPane(
             @NonNull TabSwitcher tabSwitcher,
             @NonNull OnClickListener newTabButtonClickListener,
-            @NonNull TabSwitcherDrawable tabSwitcherDrawable) {
+            @NonNull TabSwitcherPaneDrawableCoordinator tabSwitcherDrawableCoordinator) {
         super(
                 tabSwitcher,
                 newTabButtonClickListener,
                 org.chromium.chrome.browser.toolbar.R.string.button_new_tab);
+        mTabSwitcherPaneDrawableCoordinator = tabSwitcherDrawableCoordinator;
 
         // TODO(crbug/1505772): Update this string to not be an a11y string and it should probably
         // just say "Tabs".
@@ -39,7 +41,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
                 new DrawableButtonData(
                         org.chromium.chrome.tab_ui.R.string.accessibility_tab_switcher,
                         org.chromium.chrome.tab_ui.R.string.accessibility_tab_switcher,
-                        tabSwitcherDrawable));
+                        tabSwitcherDrawableCoordinator.getTabSwitcherDrawable()));
     }
 
     @Override
