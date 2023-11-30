@@ -44,7 +44,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
-import org.chromium.chrome.browser.util.BrowserUiUtils;
+import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -163,7 +163,7 @@ public class SingleTabViewBinderUnitTest {
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         HISTOGRAM_START_SURFACE_MODULE_CLICK,
-                        BrowserUiUtils.ModuleTypeOnStartAndNTP.SINGLE_TAB_CARD));
+                        ModuleTypeOnStartAndNtp.SINGLE_TAB_CARD));
     }
 
     @Test

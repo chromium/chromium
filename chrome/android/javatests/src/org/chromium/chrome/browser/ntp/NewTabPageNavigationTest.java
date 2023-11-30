@@ -22,7 +22,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.HomepageTestRule;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
-import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNTP;
+import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
@@ -123,7 +123,7 @@ public class NewTabPageNavigationTest {
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        HISTOGRAM_NTP_MODULE_CLICK, ModuleTypeOnStartAndNTP.TAB_SWITCHER_BUTTON));
+                        HISTOGRAM_NTP_MODULE_CLICK, ModuleTypeOnStartAndNtp.TAB_SWITCHER_BUTTON));
     }
 
     /** Tests navigating to the tab switcher from the Incognito NTP. */
@@ -146,11 +146,11 @@ public class NewTabPageNavigationTest {
         Assert.assertEquals(
                 0,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        HISTOGRAM_NTP_MODULE_CLICK, ModuleTypeOnStartAndNTP.TAB_SWITCHER_BUTTON));
+                        HISTOGRAM_NTP_MODULE_CLICK, ModuleTypeOnStartAndNtp.TAB_SWITCHER_BUTTON));
         Assert.assertEquals(
                 0,
                 RecordHistogram.getHistogramValueCountForTesting(
                         HISTOGRAM_START_SURFACE_MODULE_CLICK,
-                        ModuleTypeOnStartAndNTP.TAB_SWITCHER_BUTTON));
+                        ModuleTypeOnStartAndNtp.TAB_SWITCHER_BUTTON));
     }
 }

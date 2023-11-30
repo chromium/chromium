@@ -152,7 +152,7 @@ import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
-import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNTP;
+import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
@@ -1413,7 +1413,7 @@ public class ToolbarManager
         HomepageManager.getInstance().onMenuClick(context);
         if (isNtp) {
             BrowserUiUtils.recordModuleLongClickHistogram(
-                    HostSurface.NEW_TAB_PAGE, ModuleTypeOnStartAndNTP.HOME_BUTTON);
+                    HostSurface.NEW_TAB_PAGE, ModuleTypeOnStartAndNtp.HOME_BUTTON);
         }
     }
 

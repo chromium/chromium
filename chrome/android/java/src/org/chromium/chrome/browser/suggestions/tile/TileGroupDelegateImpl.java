@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
+import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
@@ -172,7 +173,7 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
             int windowDisposition, @BrowserUiUtils.HostSurface int hostSurface) {
         if (windowDisposition != WindowOpenDisposition.NEW_WINDOW) {
             BrowserUiUtils.recordModuleClickHistogram(
-                    hostSurface, BrowserUiUtils.ModuleTypeOnStartAndNTP.MOST_VISITED_TILES);
+                    hostSurface, ModuleTypeOnStartAndNtp.MOST_VISITED_TILES);
         }
         if (MVTilesClickForUserAction.contains(windowDisposition)) {
             RecordUserAction.record(

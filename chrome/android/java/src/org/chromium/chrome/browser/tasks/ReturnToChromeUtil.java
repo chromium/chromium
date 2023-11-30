@@ -67,6 +67,7 @@ import org.chromium.chrome.browser.ui.fold_transitions.FoldTransitionController;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
+import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
@@ -474,8 +475,7 @@ public final class ReturnToChromeUtil {
                 || transitionAfterMask == PageTransition.GENERATED) {
             RecordUserAction.record("MobileOmniboxUse.StartSurface");
             BrowserUiUtils.recordModuleClickHistogram(
-                    BrowserUiUtils.HostSurface.START_SURFACE,
-                    BrowserUiUtils.ModuleTypeOnStartAndNTP.OMNIBOX);
+                    BrowserUiUtils.HostSurface.START_SURFACE, ModuleTypeOnStartAndNtp.OMNIBOX);
 
             // These are not duplicated here with the recording in LocationBarLayout#loadUrl.
             RecordUserAction.record("MobileOmniboxUse");
@@ -966,14 +966,12 @@ public final class ReturnToChromeUtil {
     public static void recordClickTabSwitcher(boolean isInOverview, @Nullable Tab currentTab) {
         if (isInOverview) {
             BrowserUiUtils.recordModuleClickHistogram(
-                    HostSurface.START_SURFACE,
-                    BrowserUiUtils.ModuleTypeOnStartAndNTP.TAB_SWITCHER_BUTTON);
+                    HostSurface.START_SURFACE, ModuleTypeOnStartAndNtp.TAB_SWITCHER_BUTTON);
         } else if (currentTab != null
                 && !currentTab.isIncognito()
                 && UrlUtilities.isNtpUrl(currentTab.getUrl())) {
             BrowserUiUtils.recordModuleClickHistogram(
-                    HostSurface.NEW_TAB_PAGE,
-                    BrowserUiUtils.ModuleTypeOnStartAndNTP.TAB_SWITCHER_BUTTON);
+                    HostSurface.NEW_TAB_PAGE, ModuleTypeOnStartAndNtp.TAB_SWITCHER_BUTTON);
         }
     }
 

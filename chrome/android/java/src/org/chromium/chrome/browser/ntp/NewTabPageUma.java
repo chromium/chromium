@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
+import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -193,8 +194,7 @@ public class NewTabPageUma {
         }
         if (isNtp) {
             BrowserUiUtils.recordModuleClickHistogram(
-                    BrowserUiUtils.HostSurface.NEW_TAB_PAGE,
-                    BrowserUiUtils.ModuleTypeOnStartAndNTP.OMNIBOX);
+                    BrowserUiUtils.HostSurface.NEW_TAB_PAGE, ModuleTypeOnStartAndNtp.OMNIBOX);
         }
     }
 

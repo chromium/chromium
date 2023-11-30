@@ -57,7 +57,7 @@ import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
-import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNTP;
+import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
@@ -432,7 +432,7 @@ public class NewTabPageLayout extends LinearLayout {
                             mManager.getNativePageHost()
                                     .loadUrl(urlParams, /* isIncognito= */ false);
                             BrowserUiUtils.recordModuleClickHistogram(
-                                    HostSurface.NEW_TAB_PAGE, ModuleTypeOnStartAndNTP.DOODLE);
+                                    HostSurface.NEW_TAB_PAGE, ModuleTypeOnStartAndNtp.DOODLE);
                         });
         Callback<Logo> onLogoAvailableCallback =
                 mCallbackController.makeCancelable(

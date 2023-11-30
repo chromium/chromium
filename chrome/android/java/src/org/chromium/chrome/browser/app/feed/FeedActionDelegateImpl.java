@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
+import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -114,8 +115,7 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
                     });
         }
 
-        BrowserUiUtils.recordModuleClickHistogram(
-                mHostSurface, BrowserUiUtils.ModuleTypeOnStartAndNTP.FEED);
+        BrowserUiUtils.recordModuleClickHistogram(mHostSurface, ModuleTypeOnStartAndNtp.FEED);
     }
 
     @Override
@@ -129,8 +129,7 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
                 WindowOpenDisposition.CURRENT_TAB,
                 new LoadUrlParams(NEW_TAB_URL_HELP, PageTransition.AUTO_BOOKMARK));
 
-        BrowserUiUtils.recordModuleClickHistogram(
-                mHostSurface, BrowserUiUtils.ModuleTypeOnStartAndNTP.FEED);
+        BrowserUiUtils.recordModuleClickHistogram(mHostSurface, ModuleTypeOnStartAndNtp.FEED);
     }
 
     @Override

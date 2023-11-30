@@ -89,8 +89,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
-import org.chromium.chrome.browser.util.BrowserUiUtils;
-import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNTP;
+import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.chrome.features.tasks.SingleTabSwitcherMediator;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -335,7 +334,7 @@ public class StartSurfaceTest {
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         HISTOGRAM_START_SURFACE_MODULE_CLICK,
-                        ModuleTypeOnStartAndNTP.TAB_SWITCHER_BUTTON));
+                        ModuleTypeOnStartAndNtp.TAB_SWITCHER_BUTTON));
 
         if (isInstantReturn()) {
             // TODO(crbug.com/1076274): fix toolbar to avoid wrongly focusing on the toolbar
@@ -899,7 +898,7 @@ public class StartSurfaceTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         HISTOGRAM_START_SURFACE_MODULE_CLICK,
-                        BrowserUiUtils.ModuleTypeOnStartAndNTP.PROFILE_BUTTON);
+                        ModuleTypeOnStartAndNtp.PROFILE_BUTTON);
         onViewWaiting(withId(R.id.identity_disc_button)).perform(click());
         histogramWatcher.assertExpected(
                 HISTOGRAM_START_SURFACE_MODULE_CLICK
@@ -921,8 +920,7 @@ public class StartSurfaceTest {
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        HISTOGRAM_START_SURFACE_MODULE_CLICK,
-                        BrowserUiUtils.ModuleTypeOnStartAndNTP.MENU_BUTTON);
+                        HISTOGRAM_START_SURFACE_MODULE_CLICK, ModuleTypeOnStartAndNtp.MENU_BUTTON);
         onView(allOf(withId(R.id.menu_button_wrapper), withParent(withId(R.id.menu_anchor))))
                 .perform(click());
         histogramWatcher.assertExpected(

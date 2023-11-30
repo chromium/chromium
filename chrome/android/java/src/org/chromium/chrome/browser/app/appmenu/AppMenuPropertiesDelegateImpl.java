@@ -72,7 +72,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuUtil;
 import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
-import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNTP;
+import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
@@ -1302,7 +1302,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     public void onMenuShown() {
         if (isInStartSurfaceHomepage()) {
             BrowserUiUtils.recordModuleClickHistogram(
-                    HostSurface.START_SURFACE, ModuleTypeOnStartAndNTP.MENU_BUTTON);
+                    HostSurface.START_SURFACE, ModuleTypeOnStartAndNtp.MENU_BUTTON);
             return;
         }
         Tab currentTab = mActivityTabProvider.get();
@@ -1310,7 +1310,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                 && UrlUtilities.isNtpUrl(currentTab.getUrl())
                 && !currentTab.isIncognito()) {
             BrowserUiUtils.recordModuleClickHistogram(
-                    HostSurface.NEW_TAB_PAGE, ModuleTypeOnStartAndNTP.MENU_BUTTON);
+                    HostSurface.NEW_TAB_PAGE, ModuleTypeOnStartAndNtp.MENU_BUTTON);
         }
     }
 }

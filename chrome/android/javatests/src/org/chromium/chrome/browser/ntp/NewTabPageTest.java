@@ -90,8 +90,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.util.BrowserUiUtils;
-import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNTP;
+import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -921,8 +920,7 @@ public class NewTabPageTest {
         waitForSignIn();
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        HISTOGRAM_NTP_MODULE_CLICK,
-                        BrowserUiUtils.ModuleTypeOnStartAndNTP.PROFILE_BUTTON);
+                        HISTOGRAM_NTP_MODULE_CLICK, ModuleTypeOnStartAndNtp.PROFILE_BUTTON);
         onView(withId(R.id.optional_toolbar_button)).perform(click());
         histogramWatcher.assertExpected(
                 HISTOGRAM_NTP_MODULE_CLICK
@@ -945,7 +943,7 @@ public class NewTabPageTest {
         logoCoordinator.setOnLogoClickUrlForTesting(TEST_URL);
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        HISTOGRAM_NTP_MODULE_CLICK, ModuleTypeOnStartAndNTP.DOODLE);
+                        HISTOGRAM_NTP_MODULE_CLICK, ModuleTypeOnStartAndNtp.DOODLE);
         TestThreadUtils.runOnUiThreadBlocking(() -> logoCoordinator.onLogoClickedForTesting(true));
         histogramWatcher.assertExpected(
                 HISTOGRAM_NTP_MODULE_CLICK
@@ -961,8 +959,7 @@ public class NewTabPageTest {
     public void testRecordHistogramMenuButtonClick_Ntp() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        HISTOGRAM_NTP_MODULE_CLICK,
-                        BrowserUiUtils.ModuleTypeOnStartAndNTP.MENU_BUTTON);
+                        HISTOGRAM_NTP_MODULE_CLICK, ModuleTypeOnStartAndNtp.MENU_BUTTON);
         onView(withId(R.id.menu_button_wrapper)).perform(click());
         histogramWatcher.assertExpected(
                 HISTOGRAM_NTP_MODULE_CLICK
@@ -1386,23 +1383,22 @@ public class NewTabPageTest {
 
     private static HistogramWatcher expectMostVisitedTilesRecordForNtpModuleClick() {
         return HistogramWatcher.newSingleRecordWatcher(
-                HISTOGRAM_NTP_MODULE_CLICK,
-                BrowserUiUtils.ModuleTypeOnStartAndNTP.MOST_VISITED_TILES);
+                HISTOGRAM_NTP_MODULE_CLICK, ModuleTypeOnStartAndNtp.MOST_VISITED_TILES);
     }
 
     private static HistogramWatcher expectFeedRecordForNtpModuleClick() {
         return HistogramWatcher.newSingleRecordWatcher(
-                HISTOGRAM_NTP_MODULE_CLICK, BrowserUiUtils.ModuleTypeOnStartAndNTP.FEED);
+                HISTOGRAM_NTP_MODULE_CLICK, ModuleTypeOnStartAndNtp.FEED);
     }
 
     private static HistogramWatcher expectHomeButtonRecordForNtpModuleClick() {
         return HistogramWatcher.newSingleRecordWatcher(
-                HISTOGRAM_NTP_MODULE_CLICK, BrowserUiUtils.ModuleTypeOnStartAndNTP.HOME_BUTTON);
+                HISTOGRAM_NTP_MODULE_CLICK, ModuleTypeOnStartAndNtp.HOME_BUTTON);
     }
 
     private static HistogramWatcher expectHomeButtonRecordForNtpModuleLongClick() {
         return HistogramWatcher.newSingleRecordWatcher(
-                HISTOGRAM_NTP_MODULE_LONGCLICK, BrowserUiUtils.ModuleTypeOnStartAndNTP.HOME_BUTTON);
+                HISTOGRAM_NTP_MODULE_LONGCLICK, ModuleTypeOnStartAndNtp.HOME_BUTTON);
     }
 
     private static HistogramWatcher expectNoRecordsForNtpModuleClick() {
