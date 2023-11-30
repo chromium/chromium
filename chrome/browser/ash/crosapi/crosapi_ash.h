@@ -36,6 +36,10 @@ class SmartReaderManagerAsh;
 class TelemetryDiagnosticsRoutineServiceAsh;
 class TelemetryEventServiceAsh;
 class VideoConferenceManagerAsh;
+
+namespace auth {
+class InSessionAuth;
+}  // namespace auth
 }  // namespace ash
 
 namespace crosapi {
@@ -82,7 +86,6 @@ class GeolocationServiceAsh;
 class IdentityManagerAsh;
 class IdleServiceAsh;
 class ImageWriterAsh;
-class InSessionAuthAsh;
 class KerberosInBrowserAsh;
 class KeystoreServiceAsh;
 class KioskSessionServiceAsh;
@@ -634,7 +637,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<IdentityManagerAsh> identity_manager_ash_;
   std::unique_ptr<IdleServiceAsh> idle_service_ash_;
   std::unique_ptr<ImageWriterAsh> image_writer_ash_;
-  std::unique_ptr<InSessionAuthAsh> in_session_auth_ash_;
   std::unique_ptr<KerberosInBrowserAsh> kerberos_in_browser_ash_;
   std::unique_ptr<KeystoreServiceAsh> keystore_service_ash_;
   std::unique_ptr<KioskSessionServiceAsh> kiosk_session_service_ash_;

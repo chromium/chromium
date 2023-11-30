@@ -27,8 +27,8 @@ struct RequestTokenReply {
 [Stable, Extensible, RenamedFrom="crosapi.mojom.Reason"]
 enum Reason {
   [Default] kAccessPasswordManager = 0,
-  kModifyAuthFactors,
-  kModifyAuthFactorsMultidevice,
+  kAccessAuthenticationSettings,
+  kAccessMultideviceSettings,
 };
 
 // An interface implemented by Ash to expose Ash's authentication capabilities.

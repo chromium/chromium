@@ -19,8 +19,8 @@ class ASH_PUBLIC_EXPORT InSessionAuthDialogController {
  public:
   enum Reason {
     kAccessPasswordManager,
-    kModifyAuthFactors,
-    kModifyAuthFactorsMultidevice
+    kAccessAuthenticationSettings,
+    kAccessMultideviceSettings,
   };
 
   // Returns the singleton instance.

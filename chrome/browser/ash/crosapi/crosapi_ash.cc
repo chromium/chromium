@@ -66,7 +66,6 @@
 #include "chrome/browser/ash/crosapi/identity_manager_ash.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/crosapi/image_writer_ash.h"
-#include "chrome/browser/ash/crosapi/in_session_auth_ash.h"
 #include "chrome/browser/ash/crosapi/kerberos_in_browser_ash.h"
 #include "chrome/browser/ash/crosapi/keystore_service_ash.h"
 #include "chrome/browser/ash/crosapi/kiosk_session_service_ash.h"
@@ -110,6 +109,7 @@
 #include "chrome/browser/ash/crosapi/web_kiosk_service_ash.h"
 #include "chrome/browser/ash/crosapi/web_page_info_ash.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/passkeys/passkey_authenticator_service_ash.h"
 #include "chrome/browser/ash/passkeys/passkey_authenticator_service_factory_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -134,6 +134,8 @@
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy_ash.h"
+#include "chromeos/components/in_session_auth/in_process_instances.h"
+#include "chromeos/components/in_session_auth/in_session_auth.h"
 #include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
 #include "chromeos/crosapi/mojom/device_local_account_extension_service.mojom.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
@@ -253,7 +255,6 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       identity_manager_ash_(std::make_unique<IdentityManagerAsh>()),
       idle_service_ash_(std::make_unique<IdleServiceAsh>()),
       image_writer_ash_(std::make_unique<ImageWriterAsh>()),
-      in_session_auth_ash_(std::make_unique<InSessionAuthAsh>()),
       kerberos_in_browser_ash_(std::make_unique<KerberosInBrowserAsh>()),
       keystore_service_ash_(std::make_unique<KeystoreServiceAsh>()),
       kiosk_session_service_ash_(std::make_unique<KioskSessionServiceAsh>()),
@@ -657,7 +658,7 @@ void CrosapiAsh::BindImageWriter(
 
 void CrosapiAsh::BindInSessionAuth(
     mojo::PendingReceiver<chromeos::auth::mojom::InSessionAuth> receiver) {
-  in_session_auth_ash_->BindReceiver(std::move(receiver));
+  chromeos::auth::BindToInSessionAuthService(std::move(receiver));
 }
 
 void CrosapiAsh::BindKerberosInBrowser(
