@@ -17,6 +17,7 @@ source_set("navigation") {
 
   sources = [
     "browser_url_rewriter.h",
+    "form_warning_type.h",
     "https_upgrade_type.h",
     "https_upgrade_type.mm",
     "navigation_context.h",
