@@ -9,6 +9,7 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/mem_buffer_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
@@ -549,19 +550,18 @@ class ChunkedHttpTransactionFactory : public net::test_server::HttpResponse {
 IN_PROC_BROWSER_TEST_F(FrameImplTest, NavigationEventDuringPendingLoad) {
   auto frame = FrameForTest::Create(context(), {});
 
-  ChunkedHttpTransactionFactory* factory = new ChunkedHttpTransactionFactory;
+  auto factory = std::make_unique<ChunkedHttpTransactionFactory>();
   base::RunLoop transaction_created_run_loop;
   factory->SetOnResponseCreatedCallback(
       transaction_created_run_loop.QuitClosure());
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
       &net::test_server::HandlePrefixedRequest, "/pausable",
-      base::BindRepeating(
-          [](std::unique_ptr<ChunkedHttpTransactionFactory> out_factory,
-             const net::test_server::HttpRequest&)
+      base::BindLambdaForTesting(
+          [&](const net::test_server::HttpRequest&)
               -> std::unique_ptr<net::test_server::HttpResponse> {
-            return out_factory;
-          },
-          base::Passed(base::WrapUnique(factory)))));
+            CHECK(factory);
+            return std::move(factory);
+          })));
 
   net::test_server::EmbeddedTestServerHandle test_server_handle;
   ASSERT_TRUE(test_server_handle =
