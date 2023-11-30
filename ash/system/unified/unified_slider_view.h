@@ -83,7 +83,6 @@ class UnifiedSliderView : public views::View {
 
  private:
   raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon_;
-  views::Button::PressedCallback callback_;
   const bool is_togglable_;
 
   // Unowned. Owned by views hierarchy.
