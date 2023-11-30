@@ -1053,6 +1053,11 @@
     "expiry_milestone": 122
   },
   {
+    "name": "CCO",
+    "owners": ["//components/compose/OWNERS", "chrome-compose-frontend@google.com"],
+    "expiry_milestone": 132
+  },
+  {
     "name": "cco-test1",
     "owners": [ "petewil@chromium.org", "sky@chromium.org" ],
     "expiry_milestone": 121

@@ -83,6 +83,8 @@
 #include "components/commerce/core/flag_descriptions.h"
 #include "components/component_updater/component_updater_command_line_config_policy.h"
 #include "components/component_updater/component_updater_switches.h"
+#include "components/compose/buildflags.h"
+#include "components/compose/core/browser/compose_features.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/contextual_search/core/browser/contextual_search_field_trial.h"
 #include "components/contextual_search/core/browser/public.h"
@@ -11087,6 +11089,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebAppSystemMediaControlsWinDescription, kOsWin,
      FEATURE_VALUE_TYPE(features::kWebAppSystemMediaControlsWin)},
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(ENABLE_COMPOSE)
+    {"CCO", flag_descriptions::kComposeName, flag_descriptions::kComposeName,
+     kOsWin | kOsLinux | kOsMac | kOsCrOS,
+     FEATURE_VALUE_TYPE(compose::features::kEnableCompose)},
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
     {"app-to-app-link-capturing", flag_descriptions::kAppToAppLinkCapturingName,

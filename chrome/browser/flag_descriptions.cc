@@ -7836,6 +7836,11 @@ const char kEnableAudioFocusEnforcementDescription[] =
     "any one time. Requires #enable-media-session-service to be enabled too.";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(ENABLE_COMPOSE)
+const char kComposeName[] = "CCO Edits";
+const char kComposeDescription[] = "Enables CCO editing feature";
+#endif  // BUILDFLAG(ENABLE_COMPOSE)
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 const char kThirdPartyProfileManagementName[] =
     "Third party profile management";
