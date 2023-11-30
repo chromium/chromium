@@ -21,6 +21,7 @@ _PLATFORM_TO_RELEASE_OS = {
   'win': 'win64',
   'android': 'android',
   'webview': 'webview',
+  'android_webview': 'webview',
 }
 
 def pytest_addoption(parser):
@@ -102,7 +103,7 @@ def chromedriver_path(pytestconfig, test_options: TestOptions) -> Optional[str]:
     chrome_dir = test_utils.download_chrome_mac(version=version)
   elif platform == "win":
     chrome_dir = test_utils.download_chrome_win(version=version)
-  elif platform in ('android', 'webview'):
+  elif platform in ('android', 'webview', 'android_webview'):
     # For Android/Webview, we will use install_webview or install_chrome to
     # download and install APKs, however, we will still need the chromedriver
     # binaries for the hosts. Currently we will only run on Linux, so fetching
@@ -153,7 +154,7 @@ def driver_factory(
       channel=pytestconfig.getoption('channel'),
       crash_dump_dir=str(tmp_path_factory.mktemp('crash')),
       chromedriver_path=chromedriver_path)
-  elif target_platform in ('android', 'webview'):
+  elif target_platform in ('android', 'webview', 'android_webview'):
     assert test_utils.get_hosted_platform() == 'linux', (
       f'Only support to run android tests on Linux, but running on '
       f'{test_utils.get_hosted_platform()}'
@@ -162,6 +163,7 @@ def driver_factory(
     factories = {
       'android': android.AndroidDriverFactory,
       'webview': android.WebviewDriverFactory,
+      'android_webview': android.WebviewDriverFactory,
     }
 
     factory = factories[target_platform](

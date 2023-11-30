@@ -54,7 +54,7 @@ class DriverUtil:
 
   def get_features(self) -> features.Features:
     # Cannot use the chrome version page on webview.
-    if self._test_options.platform == 'webview':
+    if self._test_options.platform in ['webview', 'android_webview']:
       logging.info('Skipping feature logging on webview')
       return features.Features([], [])
     logging.info('Fetching data from chrome://version/?show-variations-cmd')
