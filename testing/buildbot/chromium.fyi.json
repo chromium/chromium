@@ -50948,7 +50948,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Windows-10-19045"
+            "os": "Windows-10-19045",
+            "pool": "chromium.tests.multiscreen"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },

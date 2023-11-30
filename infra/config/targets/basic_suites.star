@@ -1203,6 +1203,11 @@ targets.legacy_basic_suite(
                 "--windows-virtual-display-driver",
                 "--gtest_filter=*MultiScreen*:*VirtualDisplayWinUtil*",
             ],
+            swarming = targets.swarming(
+                dimensions = {
+                    "pool": "chromium.tests.multiscreen",
+                },
+            ),
         ),
     },
 )

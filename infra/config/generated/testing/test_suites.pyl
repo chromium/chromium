@@ -970,6 +970,11 @@
           '--windows-virtual-display-driver',
           '--gtest_filter=*MultiScreen*:*VirtualDisplayWinUtil*',
         ],
+        'swarming': {
+          'dimensions': {
+            'pool': 'chromium.tests.multiscreen',
+          },
+        },
       },
     },
 
