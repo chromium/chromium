@@ -13,6 +13,7 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -39,6 +40,8 @@ class AppDiscoveryMetrics : public AppPlatformMetrics::Observer,
                       InstanceRegistry& instance_registry,
                       AppPlatformMetrics* app_platform_metrics);
   ~AppDiscoveryMetrics() override;
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // AppPlatformMetrics::Observer
   void OnAppInstalled(const std::string& app_id,
@@ -98,6 +101,26 @@ class AppDiscoveryMetrics : public AppPlatformMetrics::Observer,
   void RecordAppInactive(const InstanceUpdate& instance_update);
   void RecordAppClosed(const InstanceUpdate& instance_update);
 
+  // Adds an app based on |id| to the install list of apps.
+  //
+  // Returns true if the |id| was not previously in the install set and has been
+  // added.
+  bool AddAppInstall(const std::string& id);
+
+  // Removes an app based on |id| to the install list of apps.
+  //
+  // Returns true if the |id| was in the install set and has been removed.
+  bool RemoveAppInstall(const std::string& id);
+
+  // Returns true if app |id| is in |app_installed_|.
+  bool IsAppInstalled(const std::string& id);
+
+  // Returns true if the list of apps that are tracked is at capacity.
+  bool IsAppListAtCapacity();
+
+  // Builds a list based on current |app_installed_|.
+  base::Value::List BuildAppInstalledList();
+
   // Returns the string identifier to be logged for the given |profile_| and
   // |hashed_app_id|.
   //
@@ -120,6 +143,9 @@ class AppDiscoveryMetrics : public AppPlatformMetrics::Observer,
 
   // Map associating instance_ids to current state.
   std::map<base::UnguessableToken, InstanceState> instance_to_state_;
+
+  // A set of installed events by |profile_|.
+  std::set<std::string> apps_installed_;
 
   // Map associating app_ids to instance_ids.
   std::map<std::string, std::set<base::UnguessableToken>>

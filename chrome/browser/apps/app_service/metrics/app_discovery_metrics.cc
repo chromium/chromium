@@ -14,12 +14,28 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/metrics/structured/structured_events.h"
+#include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/service/sync_service.h"
 
 namespace apps {
+
+// Maximum number of apps to keep track per-profile to prevent logging too many
+// apps in prefs.
+constexpr int kAppListCapacity = 400;
+
+namespace prefs {
+
+// Pref containing the set of apps installed for a profile. This is needed
+// because app_ids for ARC apps are generated using both the package name and
+// app activity name. ARC apps with the same package name are considered to be
+// the same app.
+constexpr char kAppDiscoveryAppsInstallList[] = "Apps.AppsInstalled";
+
+}  // namespace prefs
+
 namespace {
 
 namespace cros_events = metrics::structured::events::v2::cr_os_events;
@@ -36,6 +52,12 @@ AppDiscoveryMetrics::AppDiscoveryMetrics(
       app_platform_metrics_(app_platform_metrics) {
   DCHECK(app_platform_metrics);
 
+  // Unwrap the prefs into a set in-memory for faster look-ups.
+  for (const base::Value& id :
+       profile_->GetPrefs()->GetList(prefs::kAppDiscoveryAppsInstallList)) {
+    apps_installed_.insert(id.GetString());
+  }
+
   instance_registry_observation_.Observe(&instance_registry);
   app_platform_metrics_->AddObserver(this);
 }
@@ -46,18 +68,26 @@ AppDiscoveryMetrics::~AppDiscoveryMetrics() {
   }
 }
 
+// static
+void AppDiscoveryMetrics::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterListPref(prefs::kAppDiscoveryAppsInstallList);
+}
+
 void AppDiscoveryMetrics::OnAppInstalled(const std::string& app_id,
                                          AppType app_type,
                                          InstallSource app_install_source,
                                          InstallReason app_install_reason,
                                          InstallTime app_install_time) {
-  // Do not record if app-sync is disabled.
-  if (!ShouldRecordUkmForAppId(app_id)) {
+  auto app_str_to_record = GetAppStringToRecord(app_id, app_type);
+  bool app_installed = AddAppInstall(app_str_to_record);
+
+  // Do not record if app-sync is disabled or the app is already installed.
+  if (!ShouldRecordUkmForAppId(app_id) || !app_installed) {
     return;
   }
 
   cros_events::AppDiscovery_AppInstalled event;
-  event.SetAppId(GetAppStringToRecord(app_id, app_type))
+  event.SetAppId(app_str_to_record)
       .SetAppType(static_cast<int>(app_type))
       .SetInstallSource(static_cast<int>(app_install_source))
       .SetInstallReason(static_cast<int>(app_install_reason));
@@ -83,13 +113,20 @@ void AppDiscoveryMetrics::OnAppUninstalled(
     const std::string& app_id,
     AppType app_type,
     UninstallSource app_uninstall_source) {
-  // Do not record if app-sync is disabled.
-  if (!ShouldRecordUkmForAppId(app_id)) {
+  // TODO(b/313980856): App service currently does not receive events when apps
+  // disappear from a publisher (i.e. app is uninstalled via a sync). Revisit
+  // this once app service can receive these events.
+  auto app_str_to_record = GetAppStringToRecord(app_id, app_type);
+  bool app_uninstalled = RemoveAppInstall(app_str_to_record);
+
+  // Do not record if app-sync is disabled or if app was not uninstalled from
+  // prefs.
+  if (!ShouldRecordUkmForAppId(app_id) || !app_uninstalled) {
     return;
   }
 
   cros_events::AppDiscovery_AppUninstall event;
-  event.SetAppId(GetAppStringToRecord(app_id, app_type))
+  event.SetAppId(app_str_to_record)
       .SetAppType(static_cast<int>(app_type))
       .SetUninstallSource(static_cast<int>(app_uninstall_source));
   event.Record();
@@ -106,9 +143,17 @@ void AppDiscoveryMetrics::OnInstanceUpdate(
     return;
   }
 
+  auto app_id = instance_update.AppId();
+  auto app_type = GetAppType(profile_, app_id);
+
   // Only record if app-sync is enabled. Recording is done before internal model
   // update to check for previous state.
-  if (ShouldRecordUkmForAppId(instance_update.AppId())) {
+  //
+  // Check whether the app is installed or not since there is a maximum
+  // number of apps we want to kepp track of. If the app is not in the installed
+  // apps list, do not emit state changes of the app.
+  if (ShouldRecordUkmForAppId(app_id) &&
+      IsAppInstalled(GetAppStringToRecord(app_id, app_type))) {
     RecordAppState(instance_update);
   }
 
@@ -315,6 +360,42 @@ std::string AppDiscoveryMetrics::GetAppStringToRecord(
     default:
       return "";
   }
+}
+
+bool AppDiscoveryMetrics::AddAppInstall(const std::string& id) {
+  if (IsAppInstalled(id) || IsAppListAtCapacity()) {
+    return false;
+  }
+  apps_installed_.insert(id);
+  profile_->GetPrefs()->SetList(prefs::kAppDiscoveryAppsInstallList,
+                                BuildAppInstalledList());
+  return true;
+}
+
+bool AppDiscoveryMetrics::RemoveAppInstall(const std::string& id) {
+  if (!IsAppInstalled(id)) {
+    return false;
+  }
+  apps_installed_.erase(id);
+  profile_->GetPrefs()->SetList(prefs::kAppDiscoveryAppsInstallList,
+                                BuildAppInstalledList());
+  return true;
+}
+
+bool AppDiscoveryMetrics::IsAppInstalled(const std::string& id) {
+  return apps_installed_.contains(id);
+}
+
+bool AppDiscoveryMetrics::IsAppListAtCapacity() {
+  return apps_installed_.size() > kAppListCapacity;
+}
+
+base::Value::List AppDiscoveryMetrics::BuildAppInstalledList() {
+  base::Value::List installed_apps;
+  for (std::string app : apps_installed_) {
+    installed_apps.Append(app);
+  }
+  return installed_apps;
 }
 
 }  // namespace apps

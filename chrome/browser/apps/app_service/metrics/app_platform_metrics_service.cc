@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service.h"
 
+#include "base/feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/metrics/structured/event_logging_features.h"
 #include "chrome/browser/profiles/profile.h"
@@ -56,6 +57,10 @@ void AppPlatformMetricsService::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(kAppUsageTime);
   registry->RegisterDictionaryPref(kAppInputEventsKey);
   registry->RegisterDictionaryPref(kWebsiteUsageTime);
+
+  if (base::FeatureList::IsEnabled(metrics::structured::kAppDiscoveryLogging)) {
+    AppDiscoveryMetrics::RegisterProfilePrefs(registry);
+  }
 }
 
 // static
