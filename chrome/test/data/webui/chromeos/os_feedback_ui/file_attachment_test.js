@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://os-feedback/strings.m.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {FakeFeedbackServiceProvider} from 'chrome://os-feedback/fake_feedback_service_provider.js';
 import {FileAttachmentElement} from 'chrome://os-feedback/file_attachment.js';

@@ -125,7 +125,7 @@ this[PersonalizationAppBrowserTest.name] = PersonalizationAppBrowserTest;
 // without javascript errors or a 404 or crash. Displays user preview, wallpaper
 // preview, and ambient preview.
 TEST_F(PersonalizationAppBrowserTest.name, 'All', async () => {
-  await import('chrome://webui-test/mojo_webui_test_support.js');
+  await import('chrome://webui-test/chromeos/mojo_webui_test_support.js');
 
   suite('main page', () => {
     test('has root page content', () => {
@@ -218,7 +218,7 @@ this[PersonalizationAppAmbientModeAllowedBrowserTest.name] =
 
 TEST_F(
     PersonalizationAppAmbientModeAllowedBrowserTest.name, 'All', async () => {
-      await import('chrome://webui-test/mojo_webui_test_support.js');
+      await import('chrome://webui-test/chromeos/mojo_webui_test_support.js');
 
       suite('ambient mode allowed', () => {
         test('shows ambient preview', () => {
@@ -266,7 +266,7 @@ this[PersonalizationAppAmbientModeDisallowedBrowserTest.name] =
 TEST_F(
     PersonalizationAppAmbientModeDisallowedBrowserTest.name, 'All',
     async () => {
-      await import('chrome://webui-test/mojo_webui_test_support.js');
+      await import('chrome://webui-test/chromeos/mojo_webui_test_support.js');
 
       suite('ambient mode disallowed', () => {
         test('does not show ambient preview', () => {
@@ -312,7 +312,7 @@ this[PersonalizationAppAmbientModeDisallowedJellyBrowserTest.name] =
 TEST_F(
     PersonalizationAppAmbientModeDisallowedJellyBrowserTest.name, 'All',
     async () => {
-      await import('chrome://webui-test/mojo_webui_test_support.js');
+      await import('chrome://webui-test/chromeos/mojo_webui_test_support.js');
 
       suite('ambient mode disallowed', () => {
         test('shows ambient preview', () => {
@@ -365,7 +365,7 @@ this[PersonalizationAppWallpaperSubpageBrowserTest.name] =
     PersonalizationAppWallpaperSubpageBrowserTest;
 
 TEST_F(PersonalizationAppWallpaperSubpageBrowserTest.name, 'All', async () => {
-  await import('chrome://webui-test/mojo_webui_test_support.js');
+  await import('chrome://webui-test/chromeos/mojo_webui_test_support.js');
 
   function clickWallpaperPreviewLink() {
     assertEquals(
@@ -635,7 +635,7 @@ this[PersonalizationAppDynamicColorEnabledBrowserTest.name] =
 
 TEST_F(
     PersonalizationAppDynamicColorEnabledBrowserTest.name, 'All', async () => {
-      await import('chrome://webui-test/mojo_webui_test_support.js');
+      await import('chrome://webui-test/chromeos/mojo_webui_test_support.js');
       const {getThemeProvider} =
           await import('chrome://personalization/js/personalization_app.js');
       const themeProvider = getThemeProvider();

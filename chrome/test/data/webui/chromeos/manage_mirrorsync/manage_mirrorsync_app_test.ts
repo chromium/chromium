@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://manage-mirrorsync/components/manage_mirrorsync.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {BrowserProxy} from 'chrome://manage-mirrorsync/browser_proxy.js';
 import {FolderSelector} from 'chrome://manage-mirrorsync/components/folder_selector.js';

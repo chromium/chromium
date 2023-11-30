@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-test/mojo_webui_test_support.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 import 'chrome://diagnostics/strings.m.js';
 
 import {fakeTouchDevices} from 'chrome://diagnostics/fake_data.js';

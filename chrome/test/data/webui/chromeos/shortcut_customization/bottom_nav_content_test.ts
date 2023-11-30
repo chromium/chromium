@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://shortcut-customization/js/bottom_nav_content.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
