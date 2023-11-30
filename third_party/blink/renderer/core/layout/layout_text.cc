@@ -731,19 +731,6 @@ bool LayoutText::IsAllCollapsibleWhitespace() const {
   return true;
 }
 
-bool LayoutText::ContainsOnlyWhitespace(unsigned from, unsigned len) const {
-  NOT_DESTROYED();
-  DCHECK(text_);
-  unsigned curr_pos;
-  for (curr_pos = from;
-       curr_pos < from + len && (text_[curr_pos] == kNewlineCharacter ||
-                                 text_[curr_pos] == kSpaceCharacter ||
-                                 text_[curr_pos] == kTabulationCharacter);
-       curr_pos++) {
-  }
-  return curr_pos >= (from + len);
-}
-
 UChar32 LayoutText::FirstCharacterAfterWhitespaceCollapsing() const {
   NOT_DESTROYED();
   if (IsInLayoutNGInlineFormattingContext()) {
