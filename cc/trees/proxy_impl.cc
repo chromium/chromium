@@ -67,10 +67,6 @@ class ScopedCommitCompletionEvent {
         proxy_main_weak_ptr_(proxy_main_weak_ptr) {}
   ScopedCommitCompletionEvent(const ScopedCommitCompletionEvent&) = delete;
   ~ScopedCommitCompletionEvent() {
-
-    recordreplay::CommandDiagnostic(
-      "[RUN-2110-2761] ~ScopedCommitCompletionEvent");
-
     event_.ExtractAsDangling()->Signal();
     main_thread_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&ProxyMain::DidCompleteCommit,
