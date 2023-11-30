@@ -28,13 +28,16 @@ CrosAppsApiInfo& CrosAppsApiInfo::AddAllowlistedOrigins(
   std::vector<url::Origin> new_origins;
   new_origins.reserve(additions.size());
 
-  base::ranges::transform(
-      additions, std::back_inserter(new_origins), [](std::string_view str) {
-        auto ret = url::Origin::Create(GURL(str));
-        CHECK(!ret.opaque())
-            << "Matching origin (" << str << ") must be non-opaque.";
-        return ret;
-      });
+  base::ranges::transform(additions, std::back_inserter(new_origins),
+                          [](std::string_view str) {
+                            auto ret = url::Origin::Create(GURL(str));
+                            // The provided literal string be the same as the
+                            // parsed origin. It shouldn't contain extra parts
+                            // (e.g. URL path and query) that aren't part of the
+                            // origin.
+                            CHECK_EQ(ret.GetURL().spec(), str);
+                            return ret;
+                          });
 
   AddAllowlistedOrigins(std::move(new_origins));
   return *this;
@@ -44,7 +47,9 @@ CrosAppsApiInfo& CrosAppsApiInfo::AddAllowlistedOrigins(
     const std::vector<url::Origin>& additions) {
   for (const auto& origin : additions) {
     CHECK(!origin.opaque());
+    CHECK(IsUrlEligibleForCrosAppsApis(origin.GetURL()));
   }
+
   // For-loop with insert() is O(N^2) because we use a flat_set.
   // Instead, merge two vectors then sort.
   std::vector<url::Origin> merged_origins;

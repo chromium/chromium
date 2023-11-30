@@ -26,7 +26,7 @@ CreateDefaultCrosAppsApiInfo() {
       .SetRequiredFeatures({chromeos::features::kBlinkExtensionDiagnostics})
       .AddAllowlistedOrigins({
           // Externally visible prototype hosting website.
-          "https://serve-dot-zipline.appspot.com/"
+          "https://serve-dot-zipline.appspot.com/",
           // System info viewer isolated app.
           "isolated-app://"
           "uwsszrmaowqmxw4f262x5jozzhe5bc4tefqfa5lado674o462aoaaaic/",
