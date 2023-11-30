@@ -23,6 +23,14 @@ class GPU_EXPORT ClientSharedImage
 
   const Mailbox& mailbox() { return mailbox_; }
 
+  // Returns a clone of the GpuMemoryBufferHandle associated with this ClientSI.
+  // Valid to call only if this instance was created with a non-null
+  // GpuMemoryBuffer.
+  gfx::GpuMemoryBufferHandle CloneGpuMemoryBufferHandle() const {
+    CHECK(gpu_memory_buffer_);
+    return gpu_memory_buffer_->CloneHandle();
+  }
+
   base::trace_event::MemoryAllocatorDumpGuid GetGUIDForTracing() {
     return gpu::GetSharedImageGUIDForTracing(mailbox_);
   }
