@@ -6,7 +6,6 @@
     "enable_backup_ref_ptr_feature_flag": true,
     "enable_dangling_raw_ptr_checks": true,
     "enable_dangling_raw_ptr_feature_flag": true,
-    "enable_mojom_message_id_scrambling": false,
     "ffmpeg_branding": "Chrome",
     "is_component_build": false,
     "is_debug": false,

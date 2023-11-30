@@ -2,7 +2,6 @@
   "gn_args": {
     "debuggable_apks": false,
     "enable_cast_receiver": true,
-    "enable_mojom_message_id_scrambling": false,
     "ffmpeg_branding": "Chrome",
     "is_cast_android": true,
     "is_clang": true,

@@ -3,7 +3,6 @@
   "gn_args": {
     "chromeos_is_browser_only": true,
     "dcheck_always_on": true,
-    "enable_mojom_message_id_scrambling": false,
     "is_chromeos_device": true,
     "is_debug": false,
     "is_skylab": true,

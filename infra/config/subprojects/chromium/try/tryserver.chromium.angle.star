@@ -57,7 +57,6 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/fuchsia-angle-builder",
-            "disable_mojom_message_id_scrambling",
             "no_symbols",
             "use_dummy_lastchange",
         ],

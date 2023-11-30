@@ -422,7 +422,6 @@ gn_args.config(
     "debug_try_builder",
     configs = [
         "debug_builder",
-        "disable_mojom_message_id_scrambling",
         "use_dummy_lastchange",
     ],
 )
@@ -450,16 +449,6 @@ gn_args.config(
     "devtools_do_typecheck",
     args = {
         "devtools_skip_typecheck": False,
-    },
-)
-
-# Scrambling mojom message IDs invalidates the outputs in build dir every time
-# when changing chrome/VERSION. This should be disabled in CQ to make
-# incremental builds more efficient.
-gn_args.config(
-    "disable_mojom_message_id_scrambling",
-    args = {
-        "enable_mojom_message_id_scrambling": False,
     },
 )
 
@@ -976,7 +965,6 @@ gn_args.config(
     "try_builder",
     configs = [
         "dcheck_always_on",
-        "disable_mojom_message_id_scrambling",
         "minimal_symbols",
         "use_dummy_lastchange",
     ],

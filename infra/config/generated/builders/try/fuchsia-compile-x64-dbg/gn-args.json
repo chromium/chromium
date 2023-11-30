@@ -1,6 +1,5 @@
 {
   "gn_args": {
-    "enable_mojom_message_id_scrambling": false,
     "is_component_build": true,
     "is_debug": true,
     "symbol_level": 0,

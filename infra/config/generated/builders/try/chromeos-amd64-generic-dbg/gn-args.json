@@ -2,7 +2,6 @@
   "args_file": "//build/args/chromeos/amd64-generic.gni",
   "gn_args": {
     "dcheck_always_on": false,
-    "enable_mojom_message_id_scrambling": false,
     "is_chromeos_device": true,
     "is_debug": true,
     "ozone_platform_headless": true,

@@ -187,7 +187,6 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/Win Builder (dbg)",
-            "disable_mojom_message_id_scrambling",
             "use_dummy_lastchange",
         ],
     ),

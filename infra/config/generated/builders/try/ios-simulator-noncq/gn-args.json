@@ -1,6 +1,5 @@
 {
   "gn_args": {
-    "enable_mojom_message_id_scrambling": false,
     "enable_run_ios_unittests_with_xctest": true,
     "is_component_build": false,
     "is_debug": true,
