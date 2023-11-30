@@ -106,12 +106,28 @@ void ListSelectionModel::DecrementFrom(size_t index) {
 void ListSelectionModel::SetSelectedIndex(absl::optional<size_t> index) {
   anchor_ = active_ = index;
   selected_indices_.clear();
-  if (index.has_value())
+  if (index.has_value()) {
     selected_indices_.insert(index.value());
+    // The reason for adding last_accessed_map_ specifically in SetSelectedIndex
+    // is that it is the primary method responsible for updating the selected
+    // index, and it's where we have a clear indication of when a tab is being
+    // actively selected by user.
+    last_accessed_map_[index.value()] = base::Time::Now();
+  }
 }
 
 bool ListSelectionModel::IsSelected(size_t index) const {
   return base::Contains(selected_indices_, index);
+}
+
+absl::optional<base::Time> ListSelectionModel::GetLastAccessed(
+    size_t index) const {
+  const auto it = last_accessed_map_.find(index);
+  if (it == last_accessed_map_.end()) {
+    return absl::nullopt;
+  }
+
+  return it->second;
 }
 
 void ListSelectionModel::AddIndexToSelection(size_t index) {

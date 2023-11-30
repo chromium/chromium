@@ -460,6 +460,13 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
     if (group.has_value()) {
       tab_object.group_id = tab_groups_util::GetGroupId(group.value());
     }
+
+    absl::optional<base::Time> last_accessed =
+        tab_strip->GetLastAccessed(tab_index);
+
+    if (last_accessed.has_value()) {
+      tab_object.last_accessed = last_accessed->InMillisecondsFSinceUnixEpoch();
+    }
   }
 
   auto* audible_helper = RecentlyAudibleHelper::FromWebContents(contents);

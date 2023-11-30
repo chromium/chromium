@@ -62,6 +62,7 @@ chrome.tabs.MutedInfo;
  *   windowId: number,
  *   openerTabId: (number|undefined),
  *   selected: boolean,
+ *   lastAccessed: number,
  *   highlighted: boolean,
  *   active: boolean,
  *   pinned: boolean,
