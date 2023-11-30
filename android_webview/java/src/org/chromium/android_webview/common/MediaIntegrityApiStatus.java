@@ -11,15 +11,26 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Defines permission levels for the Media Integrity API.
+ *
+ * This enum is logged in Android.WebView.MediaIntegrity.ApiStatus
+ * histogram and its values correspond to
+ * AndroidWebViewMediaIntegrityApiStatus in enums.xml
+ *
+ * Please do not delete, reorder or reuse these values.
+ */
 @Target(ElementType.TYPE_USE)
 @Retention(RetentionPolicy.SOURCE)
 @IntDef({
     MediaIntegrityApiStatus.DISABLED,
     MediaIntegrityApiStatus.ENABLED_WITHOUT_APP_IDENTITY,
-    MediaIntegrityApiStatus.ENABLED
+    MediaIntegrityApiStatus.ENABLED,
+    MediaIntegrityApiStatus.COUNT
 })
 public @interface MediaIntegrityApiStatus {
     int DISABLED = 0;
     int ENABLED_WITHOUT_APP_IDENTITY = 1;
     int ENABLED = 2;
+    int COUNT = 3;
 }
