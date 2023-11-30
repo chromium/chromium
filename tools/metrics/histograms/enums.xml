@@ -56427,6 +56427,23 @@ would be helpful to identify which type is being sent.
   <int value="1" label="OOBE Marker"/>
 </enum>
 
+<enum name="UpdateEngineOperation">
+  <int value="-1" label="kError"/>
+  <int value="0" label="kIdle"/>
+  <int value="1" label="kCheckingForUpdate"/>
+  <int value="2" label="kUpdateAvailable"/>
+  <int value="3" label="kDownloading"/>
+  <int value="4" label="kVerifying"/>
+  <int value="5" label="kFinalizing"/>
+  <int value="6" label="kUpdateNeedReboot"/>
+  <int value="7" label="kReportErrorEvent"/>
+  <int value="8" label="kAttemptingRollback"/>
+  <int value="9" label="kDisabled"/>
+  <int value="10" label="kNeedPermissionToUpdate"/>
+  <int value="11" label="kCleanupPreviousUpdate"/>
+  <int value="12" label="kUpdatedButDeferred"/>
+</enum>
+
 <enum name="UpdateEnginePayloadFormat">
   <int value="0" label="Full"/>
   <int value="1" label="Delta"/>

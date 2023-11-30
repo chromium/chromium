@@ -1085,6 +1085,41 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OOBE.VersionUpdater.UpdateCheckDuration" units="ms"
+    expires_after="2024-08-01">
+  <owner>bchikhaoui@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Records the total time it took the version updater to receive a non idle
+    state from the update engine.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.VersionUpdater.UpdateCheckRetriesCount" units="retries"
+    expires_after="2024-08-01">
+  <owner>bchikhaoui@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Records the total number of retires attempts with VersionUpdater checking
+    for update in OOBE (both ConsumerUpdateScreen and CriticalUpdateScreen).
+  </summary>
+</histogram>
+
+<histogram
+    name="OOBE.VersionUpdater.UpdateEngineOperation.{UpdateEngineOperationType}"
+    enum="UpdateEngineOperation" expires_after="2024-08-01">
+  <owner>bchikhaoui@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Recorded the update engine operation received during OOBE when the operation
+    type is {UpdateEngineOperationType}.
+  </summary>
+  <token key="UpdateEngineOperationType">
+    <variant name="DLCInstall"/>
+    <variant name="Update"/>
+  </token>
+</histogram>
+
 <histogram name="OOBE.WebUI.LoadTime.FirstRun" units="ms"
     expires_after="2024-05-05">
   <owner>rsorokin@chromium.org</owner>

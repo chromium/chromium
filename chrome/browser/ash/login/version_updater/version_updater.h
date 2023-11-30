@@ -215,6 +215,11 @@ class VersionUpdater : public UpdateEngineClient::Observer,
   // Time to retry reaching to update_engine before exit.
   base::TimeDelta retry_check_timeout_ = base::Seconds(180);
 
+  // Current count of retiries to request `checking of update`.
+  int num_retries_ = 0;
+
+  base::TimeTicks checking_for_update_start_;
+
   // Stores information about current downloading process, update progress and
   // state. It is sent to Delegate on each UpdateInfoChanged call, and also can
   // be obtained with corresponding getter.
