@@ -49,9 +49,6 @@ constexpr net::NetworkTrafficAnnotationTag
             contacts {
               email: "mpetrisor@google.com"
             }
-            contacts {
-              email: "eariassoto@google.com"
-            }
           }
           last_reviewed: "2023-03-30"
         }
