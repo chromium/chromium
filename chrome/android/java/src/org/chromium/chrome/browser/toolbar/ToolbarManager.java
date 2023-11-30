@@ -2622,6 +2622,11 @@ public class ToolbarManager
         return mToolbarTabController;
     }
 
+    /** Return the TabStripTransitionCoordinator as component callback. */
+    ComponentCallbacks getTabStripTransitionCoordinatorForTesting() {
+        return mToolbar.getTabStripTransitionCoordinatorForTesting(); // IN-TEST
+    }
+
     /**
      * Sets whether to skip recreating the activity when the settings are changed. It should only be
      * true in testing.

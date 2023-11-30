@@ -867,6 +867,11 @@ public class TopToolbarCoordinator implements Toolbar {
         return mStartSurfaceToolbarCoordinator;
     }
 
+    /** Returns the {@link TabStripTransitionCoordinator}. */
+    public TabStripTransitionCoordinator getTabStripTransitionCoordinatorForTesting() {
+        return mTabStripTransitionCoordinator;
+    }
+
     @Override
     public void setBrowsingModeHairlineVisibility(boolean isVisible) {
         mToolbarLayout.setHairlineVisibility(isVisible);

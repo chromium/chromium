@@ -19,6 +19,7 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import android.content.ComponentCallbacks;
 import android.content.res.Configuration;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -256,18 +257,25 @@ public class ToolbarTest {
         int tabStripHeightResource =
                 activity.getResources().getDimensionPixelSize(R.dimen.tab_strip_height);
         checkTabStripHeightOnUiThread(tabStripHeightResource);
+        ComponentCallbacks tabStripCallback =
+                activity.getToolbarManager().getTabStripTransitionCoordinatorForTesting();
+        Assert.assertNotNull("Tab strip transition callback is null.", tabStripCallback);
 
         // Set the screen width bucket and trigger an configuration change to force toggle tab strip
-        // visibility. This is an test only strategy, as we don't want to vastly change the
+        // visibility. This is an test only strategy, as we don't want to actually change the
         // configuration which might result in an activity restart.
         TabStripTransitionCoordinator.setMinScreenWidthForTesting(10000);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> activity.onConfigurationChanged(activity.getResources().getConfiguration()));
+                () ->
+                        tabStripCallback.onConfigurationChanged(
+                                activity.getResources().getConfiguration()));
         checkTabStripHeightOnUiThread(0);
 
         TabStripTransitionCoordinator.setMinScreenWidthForTesting(1);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> activity.onConfigurationChanged(activity.getResources().getConfiguration()));
+                () ->
+                        tabStripCallback.onConfigurationChanged(
+                                activity.getResources().getConfiguration()));
         checkTabStripHeightOnUiThread(tabStripHeightResource);
     }
 
