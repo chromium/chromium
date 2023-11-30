@@ -82,7 +82,7 @@
                         "navigator_language/reduce_accept_language"],
     "args": ["--enable-features=ReduceAcceptLanguage",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jan 1, 2024"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "gpu",

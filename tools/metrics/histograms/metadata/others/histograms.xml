@@ -8300,10 +8300,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReduceAcceptLanguage.AcceptLanguageNegotiationRestart"
-    enum="AcceptLanguageNegotiationRestart" expires_after="2024-04-28">
+    enum="AcceptLanguageNegotiationRestart" expires_after="M128">
+  <owner>victortan@chromium.org</owner>
   <owner>awillia@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
-  <owner>victortan@chromium.org</owner>
   <summary>
     Count of requests restarted or the reason why not restarted when reducing
     accept-language HTTP header.
@@ -8311,10 +8311,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReduceAcceptLanguage.ClearLatency" units="ms"
-    expires_after="M122">
+    expires_after="M128">
+  <owner>victortan@chromium.org</owner>
   <owner>awillia@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
-  <owner>victortan@chromium.org</owner>
   <summary>
     The latency (in milliseconds) to clear the reduce accept language for a
     given origin in the language negotiation cache. This histogram is recorded
@@ -8323,10 +8323,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReduceAcceptLanguage.FetchLatencyUs" units="microseconds"
-    expires_after="M122">
+    expires_after="M128">
+  <owner>victortan@chromium.org</owner>
   <owner>awillia@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
-  <owner>victortan@chromium.org</owner>
   <summary>
     The latency (in microseconds) to fetch the reduce accept language for a
     given origin in the language negotiation cache. This histogram is recorded
@@ -8341,10 +8341,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReduceAcceptLanguage.StoreLatency" units="ms"
-    expires_after="M122">
+    expires_after="M128">
+  <owner>victortan@chromium.org</owner>
   <owner>awillia@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
-  <owner>victortan@chromium.org</owner>
   <summary>
     The latency (in milliseconds) to store the reduced accept language header
     value for a given origin in the language negotiation cache. This histogram
@@ -8353,10 +8353,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReduceAcceptLanguage.UpdateSize" units="count"
-    expires_after="M122">
+    expires_after="M128">
+  <owner>victortan@chromium.org</owner>
   <owner>awillia@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
-  <owner>victortan@chromium.org</owner>
   <summary>
     Count of reduce accept language that need to be persisted to the disk.
     Recorded by the renderer. This histogram is recorded when navigation
