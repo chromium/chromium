@@ -202,6 +202,21 @@ enum OptimizationType {
   // This optimization provides information about whether a merchant can be
   // triggered with PIX bottom sheet.
   PIX_PAYMENT_MERCHANT_ALLOWLIST = 36;
+  // The below optimizations provide information for merchant URLs that are
+  // eligible for credit card category benefits. These URLs are shared and apply
+  // to all card issuers that support showing benefits on Chrome.
+  SHARED_CREDIT_CARD_FLIGHT_BENEFITS = 37;
+  SHARED_CREDIT_CARD_DINING_BENEFITS = 38;
+  SHARED_CREDIT_CARD_GROCERY_BENEFITS = 39;
+  SHARED_CREDIT_CARD_ENTERTAINMENT_BENEFITS = 40;
+  SHARED_CREDIT_CARD_STREAMING_BENEFITS = 41;
+  SHARED_CREDIT_CARD_SUBSCRIPTION_BENEFITS = 42;
+  // The below optimizations provide information about merchant URLs that only
+  // Capital One supports for credit card category benefits.
+  CAPITAL_ONE_CREDIT_CARD_DINING_BENEFITS = 43;
+  CAPITAL_ONE_CREDIT_CARD_GROCERY_BENEFITS = 44;
+  CAPITAL_ONE_CREDIT_CARD_ENTERTAINMENT_BENEFITS = 45;
+  CAPITAL_ONE_CREDIT_CARD_STREAMING_BENEFITS = 46;
 }
 
 // Presents semantics for how page load URLs should be matched.

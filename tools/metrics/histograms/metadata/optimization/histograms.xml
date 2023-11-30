@@ -102,6 +102,26 @@ chromium-metrics-reviews@google.com.
                of Autofill UKM metrics per origin based on origin popularity."/>
   <variant name="BloomFilterValidation"
       summary="Validates bloom filer allowlist/blocklist based hints"/>
+  <variant name="CapitalOneCreditCardDiningBenefits"
+      summary="This optimization provides information about whether a
+               merchant url is eligible for dining credit card benefits.
+               Applies to only Capital One credit cards that support benefits
+               on Chrome"/>
+  <variant name="CapitalOneCreditCardEntertainmentBenefits"
+      summary="This optimization provides information about whether a
+               merchant url is eligible for entertainment credit card
+               benefits. Applies to only Capital One credit cards that
+               support benefits on Chrome"/>
+  <variant name="CapitalOneCreditCardGroceryBenefits"
+      summary="This optimization provides information about whether a
+               merchant url is eligible for grocery credit card benefits.
+               Applies to only Capital One credit cards that support benefits
+               on Chrome"/>
+  <variant name="CapitalOneCreditCardStreamingBenefits"
+      summary="This optimization provides information about whether a
+               merchant url is eligible for streaming credit card benefits.
+               Applies to only Capital One credit cards that support benefits
+               on Chrome"/>
   <variant name="Compose"
       summary="Returns suitability of this page for compose."/>
   <variant name="CompressPublicImages" summary="Compresses public images"/>
@@ -151,6 +171,32 @@ chromium-metrics-reviews@google.com.
       summary="Returns price related data for shopping websites"/>
   <variant name="SalientImage"
       summary="Provides information about images for a URL."/>
+  <variant name="SharedCreditCardDiningBenefits"
+      summary="This optimization provides information about whether a
+               merchant url is eligible for dining credit card benefits.
+               Applies to all credit cards that support benefits on Chrome"/>
+  <variant name="SharedCreditCardEntertainmentBenefits"
+      summary="This optimization provides information about whether a
+               merchant url is eligible for entertainment credit card
+               benefits. Applies to all credit cards that support benefits on
+               Chrome"/>
+  <variant name="SharedCreditCardFlightBenefits"
+      summary="This optimization provides information about whether a
+               merchant url is eligible for flight credit card benefits.
+               Applies to all credit cards that support benefits on Chrome"/>
+  <variant name="SharedCreditCardGroceryBenefits"
+      summary="This optimization provides information about whether a
+               merchant url is eligible for grocery credit card benefits.
+               Applies to all credit cards that support benefits on Chrome"/>
+  <variant name="SharedCreditCardStreamingBenefits"
+      summary="This optimization provides information about whether a
+               merchant url is eligible for streamining credit card benefits.
+               Applies to all credit cards that support benefits on Chrome"/>
+  <variant name="SharedCreditCardSubscriptionBenefits"
+      summary="This optimization provides information about whether a
+               merchant url is eligible for subscription credit card
+               benefits. Applies to all credit cards that support benefits on
+               Chrome"/>
   <variant name="ShoppingDiscounts"
       summary="This optimization provides information about shopping
                discounts for a URL."/>
