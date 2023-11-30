@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -23,6 +24,7 @@
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "media/base/media_export.h"
 #include "media/base/video_frame.h"
+#include "media/video/half_float_maker.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -180,6 +182,41 @@ class MEDIA_EXPORT VideoResourceUpdater
   // CreateForSoftwarePlanes().
   VideoFrameExternalResources CreateForHardwarePlanes(
       scoped_refptr<VideoFrame> video_frame);
+
+  // Get the shared image format for creating resource which is used for
+  // software compositing or GPU compositing with video frames without textures
+  // (pixel upload).
+  viz::SharedImageFormat GetSoftwareOutputFormat(
+      VideoPixelFormat input_frame_format,
+      int bits_per_channel,
+      bool& texture_needs_rgb_conversion_out);
+
+  // Get the subplane shared image format used for creating
+  // SoftwarePlaneResource per plane for multiplanar formats.
+  std::optional<viz::SharedImageFormat> GetSoftwareSubplaneFormat(
+      VideoPixelFormat input_frame_format,
+      viz::SharedImageFormat output_si_format);
+
+  // Transfer RGB pixels from the video frame to software resource through
+  // canvas via PaintCanvasVideoRenderer.
+  void TransferRGBPixelsToPaintCanvas(scoped_refptr<VideoFrame> video_frame,
+                                      PlaneResource* plane_resource);
+
+  // Write/copy RGB pixels from video frame to hardware resource through
+  // WritePixels or TexSubImage2D.
+  bool WriteRGBPixelsToTexture(scoped_refptr<VideoFrame> video_frame,
+                               PlaneResource* plane_resource,
+                               viz::SharedImageFormat output_si_format);
+
+  // Write/copy YUV pixels per plane from video frame to hardware resource
+  // through WritePixels or TexSubImage2D. Also perform bit downshifting for
+  // channel format mismatch between input frame and supported shared image
+  // format.
+  bool WriteYUVPixelsPerPlaneToPerTexture(scoped_refptr<VideoFrame> video_frame,
+                                          HardwarePlaneResource* plane_resource,
+                                          size_t bits_per_channel,
+                                          size_t plane_index,
+                                          HalfFloatMaker* half_float_maker);
 
   // Get resources ready to be appended into DrawQuads. This is always used for
   // software compositing. This is also used for GPU compositing when the input

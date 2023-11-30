@@ -1348,4 +1348,23 @@ scoped_refptr<VideoFrame> CreateFromSkImage(sk_sp<SkImage> sk_image,
   return frame;
 }
 
+std::tuple<SkYUVAInfo::PlaneConfig, SkYUVAInfo::Subsampling>
+VideoPixelFormatToSkiaValues(VideoPixelFormat video_format) {
+  // To expand support for additional VideoFormats expand this switch.
+  switch (video_format) {
+    case PIXEL_FORMAT_NV12:
+    case PIXEL_FORMAT_P016LE:
+      return {SkYUVAInfo::PlaneConfig::kY_UV, SkYUVAInfo::Subsampling::k420};
+    case PIXEL_FORMAT_NV12A:
+      return {SkYUVAInfo::PlaneConfig::kY_UV_A, SkYUVAInfo::Subsampling::k420};
+    case PIXEL_FORMAT_I420:
+      return {SkYUVAInfo::PlaneConfig::kY_U_V, SkYUVAInfo::Subsampling::k420};
+    case PIXEL_FORMAT_I420A:
+      return {SkYUVAInfo::PlaneConfig::kY_U_V_A, SkYUVAInfo::Subsampling::k420};
+    default:
+      return {SkYUVAInfo::PlaneConfig::kUnknown,
+              SkYUVAInfo::Subsampling::kUnknown};
+  }
+}
+
 }  // namespace media

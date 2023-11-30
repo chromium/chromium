@@ -16,6 +16,7 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "media/base/media_switches.h"
+#include "media/base/video_util.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -374,28 +375,6 @@ void VideoFrameYUVMailboxesHolder::ReleaseTextures() {
   }
 
   imported_textures_ = false;
-}
-
-// static
-std::tuple<SkYUVAInfo::PlaneConfig, SkYUVAInfo::Subsampling>
-VideoFrameYUVMailboxesHolder::VideoPixelFormatToSkiaValues(
-    VideoPixelFormat video_format) {
-  // To expand support for additional VideoFormats expand this switch. Note that
-  // we do assume 8 bit formats. With that exception, anything else should work.
-  switch (video_format) {
-    case PIXEL_FORMAT_NV12:
-    case PIXEL_FORMAT_P016LE:
-      return {SkYUVAInfo::PlaneConfig::kY_UV, SkYUVAInfo::Subsampling::k420};
-    case PIXEL_FORMAT_NV12A:
-      return {SkYUVAInfo::PlaneConfig::kY_UV_A, SkYUVAInfo::Subsampling::k420};
-    case PIXEL_FORMAT_I420:
-      return {SkYUVAInfo::PlaneConfig::kY_U_V, SkYUVAInfo::Subsampling::k420};
-    case PIXEL_FORMAT_I420A:
-      return {SkYUVAInfo::PlaneConfig::kY_U_V_A, SkYUVAInfo::Subsampling::k420};
-    default:
-      return {SkYUVAInfo::PlaneConfig::kUnknown,
-              SkYUVAInfo::Subsampling::kUnknown};
-  }
 }
 
 // static

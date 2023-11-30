@@ -58,10 +58,6 @@ class MEDIA_EXPORT VideoFrameYUVMailboxesHolder {
 
   const SkYUVAInfo& yuva_info() const { return yuva_info_; }
 
-  // Utility to convert a media pixel format to SkYUVAInfo.
-  static std::tuple<SkYUVAInfo::PlaneConfig, SkYUVAInfo::Subsampling>
-  VideoPixelFormatToSkiaValues(VideoPixelFormat video_format);
-
   // Utility to populate a SkYUVAInfo from a video frame.
   static SkYUVAInfo VideoFrameGetSkYUVAInfo(const VideoFrame* video_frame);
 
