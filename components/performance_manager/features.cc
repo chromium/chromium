@@ -179,6 +179,16 @@ const base::FeatureParam<bool> kProactiveDiscardingSimulationMode{
     &kProbabilisticProactiveDiscarding, "proactive_discarding_simulation_mode",
     true};
 
+BASE_FEATURE(kModalMemorySaver,
+             "ModalMemorySaver",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kModalMemorySaverMode{
+    &kModalMemorySaver,
+    "modal_memory_saver_mode",
+    0,
+};
+
 BASE_FEATURE(kBFCachePerformanceManagerPolicy,
              "BFCachePerformanceManagerPolicy",
              base::FEATURE_ENABLED_BY_DEFAULT);

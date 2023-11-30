@@ -8,17 +8,54 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/test_support/page_discarding_utils.h"
+#include "components/performance_manager/public/decorators/tab_connectedness_decorator.h"
+#include "components/performance_manager/public/decorators/tab_page_decorator.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
+#include "components/performance_manager/public/user_tuning/tab_revisit_tracker.h"
 #include "components/prefs/testing_pref_service.h"
 
 namespace performance_manager::policies {
+
+class TestTabRevisitTracker : public TabRevisitTracker {
+ public:
+  void SetStateBundle(const TabPageDecorator::TabHandle* tab_handle,
+                      StateBundle bundle) {
+    state_bundles_[tab_handle] = bundle;
+  }
+
+ private:
+  StateBundle GetStateForTabHandle(
+      const TabPageDecorator::TabHandle* tab_handle) override {
+    auto it = state_bundles_.find(tab_handle);
+    // Some of these tests don't exercise behavior around the
+    // TabRevisitTrackerState. Instead of requiring all of them to set up proper
+    // state explicitly, just return a default constructed bundle. The only
+    // field that is being used from HighEfficiencyModePolicy is `num_revisits`,
+    // and it being default initialized to 0 is what we'd want anyway.
+    if (it != state_bundles_.end()) {
+      return it->second;
+    }
+    return {};
+  }
+
+  std::map<const TabPageDecorator::TabHandle*, TabRevisitTracker::StateBundle>
+      state_bundles_;
+};
 
 class HighEfficiencyModeTest
     : public testing::GraphTestHarnessWithMockDiscarder {
  public:
   void SetUp() override {
     testing::GraphTestHarnessWithMockDiscarder::SetUp();
+
+    graph()->PassToGraph(
+        std::make_unique<performance_manager::TabPageDecorator>());
+    graph()->PassToGraph(std::make_unique<TabConnectednessDecorator>());
+    std::unique_ptr<TestTabRevisitTracker> tab_revisit_tracker =
+        std::make_unique<TestTabRevisitTracker>();
+    tab_revisit_tracker_ = tab_revisit_tracker.get();
+    graph()->PassToGraph(std::move(tab_revisit_tracker));
 
     // This is usually called when the profile is created. Fake it here since it
     // doesn't happen in tests.
@@ -50,6 +87,8 @@ class HighEfficiencyModeTest
     return other_page_node_.get();
   }
 
+  TestTabRevisitTracker* tab_revisit_tracker() { return tab_revisit_tracker_; }
+
  private:
   raw_ptr<HighEfficiencyModePolicy, DanglingUntriaged> policy_;
 
@@ -60,7 +99,7 @@ class HighEfficiencyModeTest
   performance_manager::TestNodeWrapper<performance_manager::FrameNodeImpl>
       other_main_frame_node_;
 
-  base::test::ScopedFeatureList feature_list_;
+  raw_ptr<TestTabRevisitTracker> tab_revisit_tracker_;
 };
 
 TEST_F(HighEfficiencyModeTest, NoDiscardIfHighEfficiencyOff) {
@@ -341,19 +380,53 @@ TEST_F(HighEfficiencyModeTest, PageNodeDiscardedIfTypeChanges) {
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
-TEST_F(HighEfficiencyModeTest, PageNodeNotDiscardedIfBecomesNotTab) {
-  // This case will be using a different page node, so make the default one
-  // visible so it's not discarded.
+TEST_F(HighEfficiencyModeTest,
+       DiscardAfterTimeForCurrentModeIfNumRevisitsUnderMax) {
+  page_node()->SetType(PageType::kTab);
   page_node()->SetIsVisible(true);
   policy()->OnHighEfficiencyModeChanged(true);
 
-  PageNodeImpl* page_node = CreateOtherPageNode();
-  page_node->SetType(PageType::kTab);
+  base::test::ScopedFeatureList feature_list;
+  // 1 is "conservative, so 6 hours and max_num_revisits == 5"
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kModalMemorySaver, {{"modal_memory_saver_mode", "1"}});
 
-  page_node->SetIsVisible(false);
-  page_node->SetType(PageType::kUnknown);
+  page_node()->SetIsVisible(false);
+  EXPECT_EQ(policy()->GetTimeBeforeDiscardForTesting(), base::Hours(6));
 
-  task_env().FastForwardUntilNoTasksRemain();
+  // Advancing by less than 6 hours shouldn't discard.
+  task_env().FastForwardBy(policy()->GetTimeBeforeDiscardForTesting() -
+                           base::Seconds(10));
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+
+  EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
+      .WillOnce(::testing::Return(true));
+  task_env().FastForwardBy(base::Seconds(10));
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+}
+
+TEST_F(HighEfficiencyModeTest, DontDiscardIfAboveMaxNumRevisits) {
+  page_node()->SetType(PageType::kTab);
+  page_node()->SetIsVisible(true);
+  policy()->OnHighEfficiencyModeChanged(true);
+
+  base::test::ScopedFeatureList feature_list;
+  // 1 is "conservative, so 6 hours and max_num_revisits == 5"
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kModalMemorySaver, {{"modal_memory_saver_mode", "1"}});
+
+  TabRevisitTracker::StateBundle state;
+  state.num_revisits =
+      100;  // needs to be > 5 because the mode is set to "conservative".
+  tab_revisit_tracker()->SetStateBundle(
+      TabPageDecorator::FromPageNode(page_node()), state);
+
+  page_node()->SetIsVisible(false);
+  EXPECT_EQ(policy()->GetTimeBeforeDiscardForTesting(), base::Hours(6));
+
+  // Advancing by 6 hours shouldn't discard because the tab has been revisited
+  // too many times.
+  task_env().FastForwardBy(policy()->GetTimeBeforeDiscardForTesting());
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 

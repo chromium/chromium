@@ -38186,6 +38186,7 @@ from previous Chrome versions.
   <int value="638845342"
       label="OmniboxUIExperimentShowSuffixOnAllSearchSuggestions:enabled"/>
   <int value="638865852" label="UsePreferredIntervalForVideo:disabled"/>
+  <int value="638977069" label="ModalMemorySaver:enabled"/>
   <int value="639765450" label="AccessCodeCastTabSwitchingUI:enabled"/>
   <int value="640174751" label="AndroidMultipleDisplay:enabled"/>
   <int value="640256251" label="RemotePageMetadata:enabled"/>
@@ -40040,6 +40041,7 @@ from previous Chrome versions.
   <int value="1519067750" label="ActionableContentSettings:disabled"/>
   <int value="1520181151" label="PrintServerScaling:disabled"/>
   <int value="1520754417" label="ConfirmationChip:enabled"/>
+  <int value="1521290440" label="ModalMemorySaver:disabled"/>
   <int value="1524016321" label="QuickAppAccessTestUI:disabled"/>
   <int value="1524178643" label="AppServiceExternalProtocol:enabled"/>
   <int value="1524631783" label="CrOSLateBootCrasSplitAlsaUSBInternal:enabled"/>

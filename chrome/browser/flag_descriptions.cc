@@ -4854,6 +4854,12 @@ const char kIOSPromoPasswordBubbleDecription[] =
     "users. The different flag options are for the promo's activation.";
 #endif
 
+const char kModalMemorySaverName[] = "Multi mode memory saver.";
+const char kModalMemorySaverDescription[] =
+    "Configures which underlying Memory Saver mode is active. The mode "
+    "determines how fast a tab will be discarded and the maximum amount of "
+    "times it can be revisited and still be discarded.";
+
 const char kMuteNotificationSnoozeActionName[] =
     "Snooze action for mute notifications";
 const char kMuteNotificationSnoozeActionDescription[] =

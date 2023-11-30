@@ -2799,6 +2799,9 @@ extern const char kIOSPromoPasswordBubbleName[];
 extern const char kIOSPromoPasswordBubbleDecription[];
 #endif
 
+extern const char kModalMemorySaverName[];
+extern const char kModalMemorySaverDescription[];
+
 extern const char kMuteNotificationSnoozeActionName[];
 extern const char kMuteNotificationSnoozeActionDescription[];
 

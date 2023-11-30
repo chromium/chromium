@@ -20,6 +20,14 @@ namespace performance_manager::policies {
 class HighEfficiencyModePolicy : public GraphOwned,
                                  public PageNode::ObserverDefaultImpl {
  public:
+  enum class MemorySaverMode {
+    kUserSpecified = 0,  // The user has selected the time value
+    kConservative,
+    kMedium,
+    kAggressive,
+    kMaxValue = kAggressive,
+  };
+
   HighEfficiencyModePolicy();
   ~HighEfficiencyModePolicy() override;
 
@@ -52,6 +60,9 @@ class HighEfficiencyModePolicy : public GraphOwned,
   void DiscardPageTimerCallback(const PageNode* page_node,
                                 base::LiveTicks posted_at,
                                 base::TimeDelta requested_time_before_discard);
+
+  base::TimeDelta GetTimeBeforeDiscardForCurrentMode() const;
+  int GetMaxNumRevisitsForCurrentMode() const;
 
   bool high_efficiency_mode_enabled_ = false;
 

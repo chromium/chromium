@@ -5418,6 +5418,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "modal-memory-saver",
+    "owners": ["chrome-performance-ui-team@google.com"],
+    "expiry_milestone": 125
+  },
+  {
     "name": "modern-tab-strip",
     "owners": [ "bling-flags@google.com" ],
     "expiry_milestone": 125
