@@ -5,8 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEX_NG_FLEX_LINE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEX_NG_FLEX_LINE_H_
 
+#include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/geometry/flex_offset.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {

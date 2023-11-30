@@ -4,13 +4,13 @@
 
 #include "third_party/blink/renderer/core/layout/inline/score_line_breaker.h"
 
+#include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/core/layout/inline/leading_floats.h"
 #include "third_party/blink/renderer/core/layout/inline/line_break_point.h"
 #include "third_party/blink/renderer/core/layout/inline/line_info_list.h"
 #include "third_party/blink/renderer/core/layout/inline/line_widths.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 

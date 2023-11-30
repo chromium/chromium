@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_LEGACY_LAYOUT_TREE_WALKING_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_LEGACY_LAYOUT_TREE_WALKING_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LEGACY_LAYOUT_TREE_WALKING_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LEGACY_LAYOUT_TREE_WALKING_H_
 
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 
@@ -64,4 +64,4 @@ inline bool AreNGBlockFlowChildrenInline(const LayoutBlock* block) {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_LEGACY_LAYOUT_TREE_WALKING_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LEGACY_LAYOUT_TREE_WALKING_H_

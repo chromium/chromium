@@ -69,7 +69,7 @@ fragmentainer. This is what we want to avoid at all costs, but if monolithic
 content is taller than the fragmentainer, there's really nothing we can do about
 it.
 
-[GetConstraintSpace().HasBlockFragmentation()](ng_constraint_space.h) returns
+[GetConstraintSpace().HasBlockFragmentation()](../constraint_space.h) returns
 true for anything that *participates* in block fragmentation. A multicol
 container *establishes* a [fragmentation
 context](https://www.w3.org/TR/css-break-3/#fragmentation-context). It is a
@@ -113,7 +113,7 @@ page) block-size, and block-offset into the fragmentainer, so that we can tell
 how much space we can use before we need to insert a break. See
 [FragmentainerSpaceLeft()](ng_fragmentation_utils.h). If content is
 [monolithic](https://www.w3.org/TR/css-break-3/#monolithic) (i.e. truly
-unbreakable), [LayoutInputNode::IsMonolithic()](ng_layout_input_node.h) will
+unbreakable), [LayoutInputNode::IsMonolithic()](../layout_input_node.h) will
 return true. Being monolithic means that we cannot break inside the element (but
 we may break before or after it).
 
@@ -158,7 +158,7 @@ is that all the layout algorithm needs to do when laying out children, is:
   for each unfinished child. Block break tokens form a tree. Children are found
   in [BlockBreakToken::ChildBreakTokens()](ng_block_break_token.h). These will
   need to be resumed and laid out by passing the corresponding child break token
-  to [LayoutInputNode::Layout()](ng_layout_input_node.h). When done with all
+  to [LayoutInputNode::Layout()](../layout_input_node.h). When done with all
   the incoming child break tokens, and as long as we didn't break again, proceed
   with the consecutive siblings of the node associated with the last incoming
   child break token.
@@ -230,7 +230,7 @@ fragments can be retrieved from
 
 As mentioned earlier, normally the right thing to do before performing block
 fragmentation steps is to check if
-[GetConstraintSpace().HasBlockFragmentation()](ng_constraint_space.h) returns
+[GetConstraintSpace().HasBlockFragmentation()](../constraint_space.h) returns
 true, but there are situations where we may already have generated fragments
 from a node, but need to stop it from fragmenting any further. This happens when
 overflow is clipped

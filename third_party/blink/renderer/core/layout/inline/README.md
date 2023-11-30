@@ -370,12 +370,12 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [UAX#9 Resolving Embedding Levels]: http://www.unicode.org/reports/tr9/#Resolving_Embedding_Levels
 [UAX#9 Reordering Resolved Levels]: http://www.unicode.org/reports/tr9/#Reordering_Resolved_Levels
 
-[BaselineAlgorithmType]: ../ng/ng_constraint_space.h
+[BaselineAlgorithmType]: ../constraint_space.h
 [BidiParagraph]: ../../../platform/text/bidi_paragraph.h
-[BlockNode]: ../ng/ng_block_node.h
+[BlockNode]: ../block_node.h
 [BoxFragmentBuilder]: ../ng/ng_box_fragment_builder.h
-[ConstraintSpace]: ../ng/ng_constraint_space.h
-[ConstraintSpaceBuilder]: ../ng/ng_constraint_space_builder.h
+[ConstraintSpace]: ../constraint_space.h
+[ConstraintSpaceBuilder]: ../constraint_space_builder.h
 [FontBaseline]: ../../../platform/fonts/font_baseline.h
 [FragmentItem]: ng_fragment_item.h
 [FragmentItems]: ng_fragment_items.h
@@ -384,7 +384,7 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [InlineItemResult]: ng_inline_item_result.h
 [InlineLayoutAlgorithm]: ng_inline_layout_algorithm.h
 [InlineNode]: ng_inline_node.h
-[LayoutInputNode]: ../ng/ng_layout_input_node.h
+[LayoutInputNode]: ../layout_input_node.h
 [LineBreaker]: ng_line_breaker.h
 [LogicalBoxFragment]: ../ng/ng_box_fragment.h
 [LogicalLineItem]: ng_logical_line_item.h

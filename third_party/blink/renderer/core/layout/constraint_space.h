@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_CONSTRAINT_SPACE_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_CONSTRAINT_SPACE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_CONSTRAINT_SPACE_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_CONSTRAINT_SPACE_H_
 
 #include "base/check_op.h"
 #include "base/notreached.h"
@@ -1667,4 +1667,4 @@ inline std::ostream& operator<<(std::ostream& stream,
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_CONSTRAINT_SPACE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_CONSTRAINT_SPACE_H_

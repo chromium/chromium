@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_SPACE_UTILS_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_SPACE_UTILS_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SPACE_UTILS_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SPACE_UTILS_H_
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_input_node.h"
+#include "third_party/blink/renderer/core/layout/layout_input_node.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 
@@ -50,4 +50,4 @@ bool ShouldBlockContainerChildStretchAutoInlineSize(const LayoutInputNode&);
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_SPACE_UTILS_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SPACE_UTILS_H_

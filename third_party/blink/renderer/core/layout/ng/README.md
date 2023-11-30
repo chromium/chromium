@@ -17,16 +17,16 @@ as well). For each different type of layout, we have a
 The input to an [NGLayoutAlgorithm](ng_layout_algorithm.h) is the same tuple
 for every kind of layout:
 
- - The [BlockNode](ng_block_node.h) which we are currently performing layout for. The
+ - The [BlockNode](../block_node.h) which we are currently performing layout for. The
    following information is accessed:
 
    - The [ComputedStyle](../../style/ComputedStyle.h) for the node which we are
      currently performing laying for.
 
-   - The list of children [BlockNode](ng_block_node.h)es to perform layout upon, and their
+   - The list of children [BlockNode](../block_node.h)es to perform layout upon, and their
      respective style objects.
 
- - The [ConstraintSpace](ng_constraint_space.h) which represents the "space"
+ - The [ConstraintSpace](../constraint_space.h) which represents the "space"
    in which the current layout should produce a
    [PhysicalFragment](ng_physical_fragment.h).
 
@@ -79,7 +79,7 @@ document](https://docs.google.com/document/d/1RjH_Ofa8O_ucGvaDCEgsBVECPqUTiQKR3z
 Here's how it works:
 
 * We store the input constraint space and the resulting fragment on the
-  [LayoutNGBlockFlow](layout_ng_block_flow.h). However, we only do that if
+  [LayoutNGBlockFlow](../layout_ng_block_flow.h). However, we only do that if
   we have no break token to simplify the initial implementation. We call
   `LayoutNGBlockFlow::SetCachedLayoutResult` from `BlockNode::Layout`.
 * Once cached, `BlockNode::Layout` checks at the beginning if we already

@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/exclusions/layout_opportunity.h"
 
+#include "third_party/blink/renderer/core/layout/constraint_space.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape_outside_info.h"
 
 namespace blink {
