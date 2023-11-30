@@ -275,13 +275,6 @@ class WebAppUiManager {
       content::WebContents* web_contents,
       const std::string& launch_name) = 0;
 
-  // Creates the IPH bubble for apps that are launched via link capturing being
-  // enabled.
-  virtual void MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
-      content::WebContents* web_contents,
-      Profile* profile,
-      const std::string& app_id) = 0;
-
  private:
   base::ObserverList<WebAppUiManagerObserver, /*check_empty=*/true> observers_;
 

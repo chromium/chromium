@@ -232,9 +232,4 @@ void FakeWebAppUiManager::MaybeCreateEnableSupportedLinksInfobar(
     content::WebContents* web_contents,
     const std::string& launch_name) {}
 
-void FakeWebAppUiManager::MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
-    content::WebContents* web_contents,
-    Profile* profile,
-    const std::string& app_id) {}
-
 }  // namespace web_app
