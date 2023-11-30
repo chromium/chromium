@@ -1502,7 +1502,7 @@ class StartSurfaceMediator
         // If the single tab switcher is shown and the current selected tab is a new tab page, we
         // shouldn't show the tab switcher layout on Start.
         boolean shouldShowTabCarousel =
-                isVisible && !(isSingleTabSwitcher() && isCurrentSelectedTabNTP());
+                isVisible && !(isSingleTabSwitcher() && isCurrentSelectedTabNtp());
 
         if (shouldShowTabCarousel == mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE)) return;
 
@@ -1626,7 +1626,7 @@ class StartSurfaceMediator
         }
     }
 
-    private boolean isCurrentSelectedTabNTP() {
+    private boolean isCurrentSelectedTabNtp() {
         Tab currentTab = mTabModelSelector.getCurrentTab();
         return mTabModelSelector.isTabStateInitialized()
                         && currentTab != null

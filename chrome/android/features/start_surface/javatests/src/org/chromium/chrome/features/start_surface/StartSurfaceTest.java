@@ -449,7 +449,7 @@ public class StartSurfaceTest {
     @CommandLineFlags.Add({
         START_SURFACE_TEST_BASE_PARAMS + "hide_switch_when_no_incognito_tabs/false"
     })
-    public void testCreateNewTab_OpenNTPInsteadOfStart() {
+    public void testCreateNewTab_OpenNtpInsteadOfStart() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForTabModel(cta);
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
@@ -477,7 +477,7 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    public void testHomeButton_OpenNTPInsteadOfStart() {
+    public void testHomeButton_OpenNtpInsteadOfStart() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForTabModel(cta);
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);

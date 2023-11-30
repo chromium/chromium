@@ -333,7 +333,7 @@ public class StatusIndicatorTest {
 
     @Test
     @MediumTest
-    public void testShowAndHideOnNTP() {
+    public void testShowAndHideOnNtp() {
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
         NewTabPageTestUtils.waitForNtpLoaded(tab);

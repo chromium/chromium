@@ -61,7 +61,7 @@ public class TabReparentingControllerTest {
         }
 
         @Override
-        public boolean isNTPUrl(GURL url) {
+        public boolean isNtpUrl(GURL url) {
             return UrlConstants.NTP_NON_NATIVE_URL.equals(url.getSpec())
                     || UrlConstants.NTP_URL.equals(url.getSpec());
         }

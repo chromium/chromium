@@ -77,7 +77,7 @@ public final class FeedManagementTest {
 
     @Test
     @MediumTest
-    public void launchNTP_launchFeedManagement() throws IOException, InterruptedException {
+    public void launchNtp_launchFeedManagement() throws IOException, InterruptedException {
         // The web feed requires login to enable, so we must log in first.
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         // Load the NTP.
@@ -90,7 +90,7 @@ public final class FeedManagementTest {
 
     @Test
     @MediumTest
-    public void launchNTP_launchActivitySettings() throws IOException, InterruptedException {
+    public void launchNtp_launchActivitySettings() throws IOException, InterruptedException {
         // The web feed requires login to enable, so we must log in first.
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         // Load the NTP.

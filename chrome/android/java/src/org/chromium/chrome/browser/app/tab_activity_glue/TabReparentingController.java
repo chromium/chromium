@@ -31,8 +31,10 @@ public class TabReparentingController {
         /** Gets a {@link TabModelSelector} which is used to add the tab. */
         TabModelSelector getTabModelSelector();
 
-        /** @return Whether the given Url is an NTP url, exists solely to support unit testing. */
-        boolean isNTPUrl(GURL url);
+        /**
+         * @return Whether the given Url is an NTP url, exists solely to support unit testing.
+         */
+        boolean isNtpUrl(GURL url);
     }
 
     private static final String TAG =
@@ -92,7 +94,7 @@ public class TabReparentingController {
             }
             // Intentionally skip new tab pages and allow them to reload and restore scroll
             // state themselves.
-            if (mDelegate.isNTPUrl(tab.getUrl())) continue;
+            if (mDelegate.isNtpUrl(tab.getUrl())) continue;
 
             TabReparentingParams params = new TabReparentingParams(tab, null);
             mAsyncTabParamsManager.add(tab.getId(), params);

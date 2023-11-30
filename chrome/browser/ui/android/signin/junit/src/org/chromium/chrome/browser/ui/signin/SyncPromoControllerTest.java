@@ -204,7 +204,7 @@ public class SyncPromoControllerTest {
                 firstShownTime, lastShownTime, /* signinPromoResetAfterHours= */ -1);
         Assert.assertFalse(mSyncPromoController.canShowSyncPromo());
 
-        SyncPromoController.resetNTPSyncPromoLimitsIfHiddenForTooLong();
+        SyncPromoController.resetNtpSyncPromoLimitsIfHiddenForTooLong();
 
         Assert.assertFalse(mSyncPromoController.canShowSyncPromo());
         Assert.assertEquals(
@@ -231,7 +231,7 @@ public class SyncPromoControllerTest {
         disableNTPSyncPromoBySettingLimits(firstShownTime, lastShownTime, RESET_AFTER_HOURS);
         Assert.assertFalse(mSyncPromoController.canShowSyncPromo());
 
-        SyncPromoController.resetNTPSyncPromoLimitsIfHiddenForTooLong();
+        SyncPromoController.resetNtpSyncPromoLimitsIfHiddenForTooLong();
 
         Assert.assertFalse(mSyncPromoController.canShowSyncPromo());
         Assert.assertEquals(
@@ -258,7 +258,7 @@ public class SyncPromoControllerTest {
         disableNTPSyncPromoBySettingLimits(firstShownTime, lastShownTime, RESET_AFTER_HOURS);
         Assert.assertFalse(mSyncPromoController.canShowSyncPromo());
 
-        SyncPromoController.resetNTPSyncPromoLimitsIfHiddenForTooLong();
+        SyncPromoController.resetNtpSyncPromoLimitsIfHiddenForTooLong();
 
         Assert.assertTrue(mSyncPromoController.canShowSyncPromo());
         Assert.assertEquals(

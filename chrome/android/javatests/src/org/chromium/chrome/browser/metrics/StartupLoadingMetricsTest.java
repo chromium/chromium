@@ -266,7 +266,7 @@ public class StartupLoadingMetricsTest {
      */
     @Test
     @LargeTest
-    public void testNTPNotRecorded() throws Exception {
+    public void testNtpNotRecorded() throws Exception {
         runAndWaitForPageLoadMetricsRecorded(
                 () -> mTabbedActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL));
         assertHistogramsRecordedWithForegroundStart(0, TABBED_SUFFIX);

@@ -1476,7 +1476,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             boolean noRestoreState =
                     CommandLine.getInstance().hasSwitch(ChromeSwitches.NO_RESTORE_STATE);
             boolean shouldShowNtpAsHomeSurfaceAtStartup = false;
-            final AtomicBoolean isActiveUrlNTP = new AtomicBoolean(false);
+            final AtomicBoolean isActiveUrlNtp = new AtomicBoolean(false);
             if (noRestoreState) {
                 // Clear the state files because they are inconsistent and useless from now on.
                 mTabModelOrchestrator.clearState();
@@ -1502,7 +1502,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                 mLastActiveTabUrl = url;
                                 if (UrlUtilities.isNtpUrl(url)) {
                                     assert !mTabModelSelector.isIncognitoSelected();
-                                    isActiveUrlNTP.set(true);
+                                    isActiveUrlNtp.set(true);
                                 }
                             };
                 }
@@ -1559,7 +1559,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 // is a NTP, we will reuse it to show the home surface UI. Otherwise, we'll create
                 // one, and set it as the active Tab. |mLastActiveTabUrl| is null when there isn't
                 // any Tab.
-                if (!isActiveUrlNTP.get() && mLastActiveTabUrl != null) {
+                if (!isActiveUrlNtp.get() && mLastActiveTabUrl != null) {
                     ReturnToChromeUtil.createNewTabAndShowHomeSurfaceUi(
                             getTabCreator(false),
                             mHomeSurfaceTracker,
@@ -2372,10 +2372,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     protected Pair<ChromeTabCreator, ChromeTabCreator> createTabCreators() {
-        OverviewNtpCreator overviewNTPCreator = null;
+        OverviewNtpCreator overviewNtpCreator = null;
 
         if (ReturnToChromeUtil.isStartSurfaceEnabled(this)) {
-            overviewNTPCreator =
+            overviewNtpCreator =
                     new OverviewNtpCreator() {
                         @Override
                         public boolean handleCreateNtpIfNeeded(
@@ -2384,7 +2384,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                 Tab parentTab,
                                 @NewTabPageLaunchOrigin int launchOrigin) {
                             boolean shouldShowStart =
-                                    showStartSurfaceHomeForNTP(
+                                    showStartSurfaceHomeForNtp(
                                             isNtp, incognito, parentTab, launchOrigin);
                             if (shouldShowStart) {
                                 mStartSurfaceParentTabSupplier.set(parentTab);
@@ -2400,7 +2400,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         this::getTabDelegateFactory,
                         getProfileProviderSupplier(),
                         false,
-                        overviewNTPCreator,
+                        overviewNtpCreator,
                         AsyncTabParamsManagerSingleton.getInstance(),
                         getTabModelSelectorSupplier(),
                         getCompositorViewHolderSupplier(),
@@ -2411,7 +2411,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         this::getTabDelegateFactory,
                         getProfileProviderSupplier(),
                         true,
-                        overviewNTPCreator,
+                        overviewNtpCreator,
                         AsyncTabParamsManagerSingleton.getInstance(),
                         getTabModelSelectorSupplier(),
                         getCompositorViewHolderSupplier(),
@@ -3290,12 +3290,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     /**
      * @return Whether opening a new tab is handled by the Start surface.
      */
-    private boolean showStartSurfaceHomeForNTP(
-            boolean isNTP,
+    private boolean showStartSurfaceHomeForNtp(
+            boolean isNtp,
             boolean incognito,
             Tab parentTab,
             @NewTabPageLaunchOrigin int launchOrigin) {
-        if (!isNTP
+        if (!isNtp
                 || !ReturnToChromeUtil.shouldShowStartSurfaceHomeAsNewTab(
                         this, incognito, isTablet())) {
             return false;

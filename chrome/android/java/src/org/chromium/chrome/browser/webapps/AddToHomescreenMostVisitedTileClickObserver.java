@@ -41,7 +41,7 @@ public class AddToHomescreenMostVisitedTileClickObserver implements MostVisitedT
                         new EmptyTabObserver() {
                             @Override
                             public void onPageLoadFinished(Tab tab, GURL url) {
-                                if (isNTP(tab)) {
+                                if (isNtp(tab)) {
                                     // If we are on NTP, add ourselves as an observer for most
                                     // visited tiles.
                                     NewTabPage ntp = (NewTabPage) tab.getNativePage();
@@ -73,13 +73,13 @@ public class AddToHomescreenMostVisitedTileClickObserver implements MostVisitedT
     }
 
     private void removeObserver(Tab tab) {
-        if (!isNTP(tab)) return;
+        if (!isNtp(tab)) return;
 
         NewTabPage ntp = (NewTabPage) tab.getNativePage();
         ntp.removeMostVisitedTileClickObserver(this);
     }
 
-    private boolean isNTP(Tab tab) {
+    private boolean isNtp(Tab tab) {
         return tab != null && tab.getNativePage() instanceof NewTabPage;
     }
 }

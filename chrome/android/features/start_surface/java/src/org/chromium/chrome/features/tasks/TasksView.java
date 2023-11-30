@@ -262,7 +262,7 @@ public class TasksView extends CoordinatorLayoutForPointer {
         // Inflate the correct cookie/tracking protection card.
         ViewStub cardStub = findViewById(R.id.cookie_card_stub);
         if (cardStub == null) return;
-        if (shouldShowTrackingProtectionNTP()) {
+        if (shouldShowTrackingProtectionNtp()) {
             cardStub.setLayoutResource(
                     isIncognitoNtpRevampEnabled
                             ? R.layout.revamped_incognito_tracking_protection_card
@@ -529,7 +529,7 @@ public class TasksView extends CoordinatorLayoutForPointer {
         mHeaderView.setBackgroundColor(backgroundColor);
     }
 
-    boolean shouldShowTrackingProtectionNTP() {
+    boolean shouldShowTrackingProtectionNtp() {
         Profile profile =
                 Profile.getLastUsedRegularProfile()
                         .getPrimaryOTRProfile(/* createIfNeeded= */ true);

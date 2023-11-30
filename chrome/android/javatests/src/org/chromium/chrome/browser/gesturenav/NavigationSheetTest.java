@@ -297,7 +297,7 @@ public class NavigationSheetTest {
                     for (int i = 0; i < controller.mHistory.getEntryCount(); i++) {
                         ListItem item = (ListItem) listview.getAdapter().getItem(i);
                         String label = item.model.get(ItemProperties.LABEL);
-                        String incognitoNTPText =
+                        String incognitoNtpText =
                                 mActivityTestRule
                                         .getActivity()
                                         .getResources()
@@ -307,7 +307,7 @@ public class NavigationSheetTest {
                                         .getActivity()
                                         .getResources()
                                         .getString(R.string.show_full_history);
-                        if (label.equals(incognitoNTPText)) {
+                        if (label.equals(incognitoNtpText)) {
                             doesNewIncognitoTabItemPresent = true;
                         } else if (label.equals(fullHistoryText)) {
                             doesShowFullHistoryItemPresent = true;
@@ -333,7 +333,7 @@ public class NavigationSheetTest {
                     for (int i = 0; i < controller.mHistory.getEntryCount(); i++) {
                         ListItem item = (ListItem) listview.getAdapter().getItem(i);
                         String label = item.model.get(ItemProperties.LABEL);
-                        String regularNTPText =
+                        String regularNtpText =
                                 mActivityTestRule
                                         .getActivity()
                                         .getResources()
@@ -343,7 +343,7 @@ public class NavigationSheetTest {
                                         .getActivity()
                                         .getResources()
                                         .getString(R.string.show_full_history);
-                        if (label.equals(regularNTPText)) {
+                        if (label.equals(regularNtpText)) {
                             doesNewTabItemPresent = true;
                         } else if (label.equals(fullHistoryText)) {
                             doesShowFullHisotryItemPresent = true;

@@ -129,7 +129,7 @@ public class IdentityDiscControllerTest {
         ViewUtils.waitForVisibleView(allOf(withId(R.id.optional_toolbar_button), isDisplayed()));
 
         // Identity Disc should be hidden on navigation away from NTP.
-        leaveNTP();
+        leaveNtp();
         onView(withId(R.id.optional_toolbar_button))
                 .check(
                         matches(
@@ -380,7 +380,7 @@ public class IdentityDiscControllerTest {
         verifyNoMoreInteractions(mTracker);
     }
 
-    private void leaveNTP() {
+    private void leaveNtp() {
         mActivityTestRule.loadUrl(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         ChromeTabUtils.waitForTabPageLoaded(mTab, ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
     }

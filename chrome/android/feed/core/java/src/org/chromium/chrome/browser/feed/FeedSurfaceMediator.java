@@ -831,7 +831,7 @@ public class FeedSurfaceMediator
      * @return Whether the SignPromo should be visible.
      */
     private boolean shouldShowSigninPromo() {
-        SyncPromoController.resetNTPSyncPromoLimitsIfHiddenForTooLong();
+        SyncPromoController.resetNtpSyncPromoLimitsIfHiddenForTooLong();
         SyncPromoController promoController =
                 new SyncPromoController(
                         mProfile,

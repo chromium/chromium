@@ -411,7 +411,7 @@ public class StartSurfaceMediatorUnitTest {
     }
 
     @Test
-    public void hideTabCarouselWhenClosingAndSelectingNTPTab() {
+    public void hideTabCarouselWhenClosingAndSelectingNtpTab() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
@@ -434,9 +434,9 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(true));
 
-        Tab NTPTab = mock(Tab.class);
-        doReturn(JUnitTestGURLs.NTP_URL).when(NTPTab).getUrl();
-        mTabModelObserverCaptor.getValue().didSelectTab(NTPTab, TabSelectionType.FROM_CLOSE, 2);
+        Tab ntpTab = mock(Tab.class);
+        doReturn(JUnitTestGURLs.NTP_URL).when(ntpTab).getUrl();
+        mTabModelObserverCaptor.getValue().didSelectTab(ntpTab, TabSelectionType.FROM_CLOSE, 2);
         assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(false));
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(false));
@@ -1507,7 +1507,7 @@ public class StartSurfaceMediatorUnitTest {
     }
 
     @Test
-    public void hideSingleTabSwitcherWhenCurrentSelectedTabIsNTP() {
+    public void hideSingleTabSwitcherWhenCurrentSelectedTabIsNtp() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();

@@ -573,7 +573,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @MediumTest
     @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    public void testGridToTabToCurrentNTP(boolean isStartSurfaceRefactorEnabled)
+    public void testGridToTabToCurrentNtp(boolean isStartSurfaceRefactorEnabled)
             throws InterruptedException {
         prepareTabs(1, 0, NTP_URL);
         testGridToTab(false, false);
@@ -583,7 +583,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @MediumTest
     @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    public void testGridToTabToOtherNTP(boolean isStartSurfaceRefactorEnabled)
+    public void testGridToTabToOtherNtp(boolean isStartSurfaceRefactorEnabled)
             throws InterruptedException {
         prepareTabs(2, 0, NTP_URL);
         testGridToTab(true, false);

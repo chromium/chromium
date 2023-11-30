@@ -129,7 +129,7 @@ public class SyncPromoController {
      * {@link ChromePreferenceKeys#SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME} and {@link
      * ChromePreferenceKeys#SIGNIN_PROMO_NTP_LAST_SHOWN_TIME} to allow the promo card to show again.
      */
-    public static void resetNTPSyncPromoLimitsIfHiddenForTooLong() {
+    public static void resetNtpSyncPromoLimitsIfHiddenForTooLong() {
         final long currentTime = System.currentTimeMillis();
         final long resetAfterMs = getNTPSyncPromoResetAfterMillis();
         final long lastShownTime =
