@@ -34,6 +34,14 @@ constexpr CGFloat kAnimationRotation = 90 * M_PI / 180;
 constexpr NSString* const kAnimationSparkleFrames = @"set_up_list_sparkle%d";
 constexpr int kAnimationSparkleFrameCount = 36;
 
+// Returns the size that the icons should be.
+CGFloat IconSize(BOOL compact_layout) {
+  if (compact_layout) {
+    return kCompactIconSize;
+  }
+  return IsMagicStackEnabled() ? kMagicStackIconSize : kIconSize;
+}
+
 // Returns a UIImageView for the given SF Symbol, and with a color named
 // `colorName`.
 UIImageView* IconForSymbol(NSString* symbol,
@@ -49,11 +57,8 @@ UIImageView* IconForSymbol(NSString* symbol,
   UIImage* image = DefaultSymbolWithConfiguration(symbol, config);
   UIImageView* icon = [[UIImageView alloc] initWithImage:image];
   icon.translatesAutoresizingMaskIntoConstraints = NO;
-  CGFloat nonCompactIconWidth =
-      IsMagicStackEnabled() ? kMagicStackIconSize : kIconSize;
-  CGFloat iconWidth = compact_layout ? kCompactIconSize : nonCompactIconWidth;
   [NSLayoutConstraint activateConstraints:@[
-    [icon.widthAnchor constraintEqualToConstant:iconWidth],
+    [icon.widthAnchor constraintEqualToConstant:IconSize(compact_layout)],
     [icon.heightAnchor constraintEqualToAnchor:icon.widthAnchor],
   ]];
   return icon;
@@ -67,9 +72,8 @@ UIView* IconInSquareContainer(UIImageView* icon, NSString* color) {
 
   [square_view addSubview:icon];
   AddSameCenterConstraints(icon, square_view);
-  CGFloat iconWidth = IsMagicStackEnabled() ? kMagicStackIconSize : kIconSize;
   [NSLayoutConstraint activateConstraints:@[
-    [square_view.widthAnchor constraintEqualToConstant:iconWidth],
+    [square_view.widthAnchor constraintEqualToConstant:IconSize(NO)],
     [square_view.heightAnchor constraintEqualToAnchor:square_view.widthAnchor],
   ]];
   return square_view;
@@ -77,38 +81,15 @@ UIView* IconInSquareContainer(UIImageView* icon, NSString* color) {
 
 UIImageView* DefaultBrowserIcon(BOOL compact_layout) {
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-  UIImageView* container = [[UIImageView alloc] init];
-  container.translatesAutoresizingMaskIntoConstraints = NO;
-  // The custom symbol Chrome icon has the circle around the blue center as
-  // transparent. We can make it appear white by adding a white circle
-  // behind it.
-  UIImageView* circle = [[UIImageView alloc]
-      initWithImage:DefaultSymbolWithPointSize(kCircleFillSymbol,
-                                               kSymbolPointSize)];
-  circle.tintColor = [UIColor whiteColor];
-  circle.translatesAutoresizingMaskIntoConstraints = NO;
-  [container addSubview:circle];
-  AddSameCenterConstraints(circle, container);
-  // Create the main icon view.
   UIImage* image = MakeSymbolMulticolor(
-      CustomSymbolWithPointSize(kChromeSymbol, kSymbolPointSize));
+      CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kSymbolPointSize));
   UIImageView* icon = [[UIImageView alloc] initWithImage:image];
   icon.translatesAutoresizingMaskIntoConstraints = NO;
-  [container addSubview:icon];
-  AddSameConstraints(icon, container);
-  // Set the widths.
-  CGFloat nonCompactIconWidth =
-      IsMagicStackEnabled() ? kMagicStackIconSize : kIconSize;
-  CGFloat icon_width = compact_layout ? kCompactIconSize : nonCompactIconWidth;
-  // The white background circle must be smaller so that the edges don't show.
-  CGFloat white_background_width = icon_width - 2;
   [NSLayoutConstraint activateConstraints:@[
-    [container.widthAnchor constraintEqualToConstant:icon_width],
-    [container.heightAnchor constraintEqualToAnchor:container.widthAnchor],
-    [circle.widthAnchor constraintEqualToConstant:white_background_width],
-    [circle.heightAnchor constraintEqualToAnchor:circle.widthAnchor],
+    [icon.widthAnchor constraintEqualToConstant:IconSize(compact_layout)],
+    [icon.heightAnchor constraintEqualToAnchor:icon.widthAnchor],
   ]];
-  return container;
+  return icon;
 #else
   return IconForSymbol(kDefaultBrowserSymbol, compact_layout);
 #endif
@@ -163,9 +144,8 @@ UIView* IconInSquare(NSString* symbol,
   symbol_view.translatesAutoresizingMaskIntoConstraints = NO;
   [square_view addSubview:symbol_view];
   AddSameCenterConstraints(symbol_view, square_view);
-  CGFloat iconWidth = IsMagicStackEnabled() ? kMagicStackIconSize : kIconSize;
   [NSLayoutConstraint activateConstraints:@[
-    [square_view.widthAnchor constraintEqualToConstant:iconWidth],
+    [square_view.widthAnchor constraintEqualToConstant:IconSize(NO)],
     [square_view.heightAnchor constraintEqualToAnchor:square_view.widthAnchor],
   ]];
   return square_view;
