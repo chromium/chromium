@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/ash/common/assert.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
@@ -12,23 +12,18 @@ import {AllowedPaths, VolumeType} from './volume_manager_types.js';
 
 /**
  * Create a new MockVolumeManager for each test fixture.
- * @return {!MockVolumeManager}
  */
-function createMockVolumeManager() {
+function createMockVolumeManager(): MockVolumeManager {
   // Create mock volume manager.
   const volumeManager = new MockVolumeManager();
 
   // Patch its addEventListener, removeEventListener methods to make them log
   // (instead of throw) "not implemented", since those throw events break the
   // FilteredVolumeManager initialization code in tests.
-  // @ts-ignore: error TS6133: 'handler' is declared but its value is never
-  // read.
-  volumeManager.addEventListener = (type, handler) => {
+  volumeManager.addEventListener = (_type, _handler) => {
     console.log('MockVolumeManager.addEventListener not implemented');
   };
-  // @ts-ignore: error TS6133: 'handler' is declared but its value is never
-  // read.
-  volumeManager.removeEventListener = (type, handler) => {
+  volumeManager.removeEventListener = (_type, _handler) => {
     console.log('MockVolumeManager.removeEventListener not implemented');
   };
 
@@ -37,9 +32,8 @@ function createMockVolumeManager() {
 
 /**
  * Tests FilteredVolumeManager default volume filter.
- * @param {()=>void} done
  */
-export function testVolumeDefaultFilter(done) {
+export function testVolumeDefaultFilter() {
   // Create mock volume manager.
   const volumeManager = createMockVolumeManager();
 
@@ -121,16 +115,13 @@ export function testVolumeDefaultFilter(done) {
     // Check: the DOCUMENTS_PROVIDER volume should be a normal volume.
     assertEquals('Documents provider normal volume', info.label);
     assertEquals('documents-provider-path', info.devicePath);
-
-    done();
   });
 }
 
 /**
  * Tests FilteredVolumeManager 'fusebox-only' volume filter.
- * @param {()=>void} done
  */
-export function testVolumeFuseboxOnlyFilter(done) {
+export function testVolumeFuseboxOnlyFilter() {
   // Create mock volume manager.
   const volumeManager = createMockVolumeManager();
 
@@ -204,16 +195,13 @@ export function testVolumeFuseboxOnlyFilter(done) {
     assertEquals('MTP fusebox volume', info.label);
     assertEquals('fusebox/mtp-path', info.devicePath);
     assertEquals('fusebox', info.diskFileSystemType);
-
-    done();
   });
 }
 
 /**
  * Tests FilteredVolumeManager 'media-store-files-only' volume filter.
- * @param {()=>void} done
  */
-export function testVolumeMediaStoreFilesOnlyFilter(done) {
+export function testVolumeMediaStoreFilesOnlyFilter() {
   // Create mock volume manager.
   const volumeManager = createMockVolumeManager();
 
@@ -307,16 +295,13 @@ export function testVolumeMediaStoreFilesOnlyFilter(done) {
     info = filteredVolumeManager.volumeInfoList.item(1);
     assert(info, 'volume[1] REMOVABLE expected');
     assertEquals(VolumeType.REMOVABLE, info.volumeType);
-
-    done();
   });
 }
 
 /**
  * Tests the disabled volume related functions.
- * @param {()=>void} done
  */
-export function testDisabledVolumes(done) {
+export function testDisabledVolumes() {
   // Create mock volume manager.
   const volumeManager = createMockVolumeManager();
 
@@ -363,7 +348,5 @@ export function testDisabledVolumes(done) {
 
     // Check: isDisabled() should return false for REMOVABLE.
     assertFalse(filteredVolumeManager.isDisabled(VolumeType.REMOVABLE));
-
-    done();
   });
 }

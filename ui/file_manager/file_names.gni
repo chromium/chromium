@@ -415,6 +415,8 @@ ts_templates = [
 ]
 
 ts_test_files = [
+  "file_manager/common/js/filtered_volume_manager_unittest.ts",
+
   # 3-line header to avoid conflict.
   # Don't remove this.
   # These lines will be removed at the end of the TS migration.
@@ -608,7 +610,6 @@ unittest_files = [
   # Common:
   "file_manager/common/js/array_data_model_unittest.js",
   "file_manager/common/js/files_app_entry_types_unittest.js",
-  "file_manager/common/js/filtered_volume_manager_unittest.js",
   "file_manager/common/js/test_error_reporting.js",
   "file_manager/common/js/unittest_util.js",
 
