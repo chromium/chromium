@@ -22,7 +22,6 @@ static_js_files = [
 
   # Files Common:
   "file_manager/common/js/array_data_model.js",
-  "file_manager/common/js/glitch.js",
   "file_manager/common/js/files_app_entry_types.js",
 
   "file_manager/common/js/filtered_volume_manager.js",
@@ -140,6 +139,7 @@ ts_files = [
   "file_manager/common/js/file_types_base.ts",
   "file_manager/common/js/files_app_state.ts",
   "file_manager/common/js/flags.ts",
+  "file_manager/common/js/glitch.ts",
   "file_manager/common/js/icon_util.ts",
   "file_manager/common/js/lru_cache.ts",
   "file_manager/common/js/metrics.ts",
