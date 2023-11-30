@@ -8207,6 +8207,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "wallpaper-search-settings-visibility",
+    "owners": [ "pauladedeji@gooogle.com","tbansal@chromium.org", "tiborg@chromium.org" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "web-app-dedupe-install-urls",
     "owners": [ "alancutter@chromium.org", "desktop-pwas-team@google.com" ],
     "expiry_milestone": 122

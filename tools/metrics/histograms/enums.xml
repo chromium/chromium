@@ -36482,6 +36482,7 @@ from previous Chrome versions.
   <int value="-192919826" label="ViewsSimplifiedFullscreenUI:enabled"/>
   <int value="-192433738" label="AutofillEnableCardBenefits:enabled"/>
   <int value="-192389983" label="NoStatePrefetch:enabled"/>
+  <int value="-191329924" label="WallpaperSearchSettingsVisibility:disabled"/>
   <int value="-190723154" label="AppLaunchAutomation:enabled"/>
   <int value="-190449995" label="CommerceLocalPDPDetection:enabled"/>
   <int value="-189478545" label="ArcCustomTabsExperiment:enabled"/>
@@ -39982,6 +39983,7 @@ from previous Chrome versions.
   <int value="1478075250" label="QuickAnswersTextAnnotator:disabled"/>
   <int value="1478461926" label="GlobalMediaControlsPictureInPicture:enabled"/>
   <int value="1479248574" label="disable-voice-input"/>
+  <int value="1480073052" label="WallpaperSearchSettingsVisibility:enabled"/>
   <int value="1480507924" label="EnableNetworkingInDiagnosticsApp:enabled"/>
   <int value="1480940805"
       label="AblateSendPendingAccessibilityEvents:disabled"/>
