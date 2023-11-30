@@ -429,7 +429,6 @@ export class FileManager extends EventTarget {
     /** @private @type {!Store} */
     this.store_ = getStore();
 
-    /** @suppress {checkTypes} */
     (function() {
       ColorChangeUpdater.forDocument().start();
     })();

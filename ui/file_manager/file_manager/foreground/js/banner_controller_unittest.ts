@@ -977,7 +977,6 @@ export async function testMultipleWinningBannersOnlyTopPriorityShown() {
 
 /**
  * Test that a banner with timeLimit set hides after the defined time limit.
- * @suppress {accessControls} to call updateTimeLimit on BannerController.
  */
 export async function testTimeLimitReachedHidesBanner() {
   controller.setWarningBannersInOrder([testWarningBanners[0]!.tagName]);
@@ -1015,7 +1014,6 @@ export async function testTimeLimitReachedHidesBanner() {
 /**
  * Test that the constant Banner.INFINITE_TIME allows the banner to display for
  * a super long time.
- * @suppress {accessControls} to call updateTimeLimit on BannerController.
  */
 export async function testInfiniteTimeLimitWorks() {
   controller.setWarningBannersInOrder([testWarningBanners[0]!.tagName]);
@@ -1114,7 +1112,6 @@ export async function testBannersAreUpdatedOnDismissClick() {
 /**
  * Test that custom filters can be attached to banners in the event specific
  * logic needs to be ran for individual banners.
- * @suppress {accessControls} to call registerCustomBannerFilter.
  */
 export async function testCustomFiltersCanBeAttached() {
   // Add 1 educational banner and 1 warning banner.
@@ -1155,7 +1152,6 @@ export async function testCustomFiltersCanBeAttached() {
 
 /**
  * Test that custom filters interact with other configuration elements.
- * @suppress {accessControls} to call registerCustomBannerFilter.
  */
 export async function testCustomFiltersInteract() {
   // Add 2 educational banners and 1 warning banner.
@@ -1219,7 +1215,6 @@ export async function testCustomFiltersInteract() {
 /**
  * Test that custom banners receive their requested context when the filter
  * function is executed.
- * @suppress {accessControls} to call registerCustomBannerFilter.
  */
 export async function testCustomContextIsReceivedByBanner() {
   // Add 1 warning banner.
@@ -1259,7 +1254,6 @@ export async function testCustomContextIsReceivedByBanner() {
 /**
  * Test that if multiple filters are registered to a single banner, only the
  * winning filter has their associated context passed to the banner.
- * @suppress {accessControls} to call registerCustomBannerFilter.
  */
 export async function testWinningFilterContextIsPassed() {
   // Add 1 warning banner.

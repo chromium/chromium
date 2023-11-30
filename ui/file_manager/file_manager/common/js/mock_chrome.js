@@ -7,7 +7,6 @@
  * @param {!Object} mockChrome
  */
 export function installMockChrome(mockChrome) {
-  /** @suppress {const|checkTypes} */
   // @ts-ignore: error TS2739: Type '{}' is missing the following properties
   // from type 'typeof chrome': fileManagerPrivate, metricsPrivate, runtime,
   // tabs
@@ -41,7 +40,6 @@ export class MockCommandLinePrivate {
     // @ts-ignore: error TS2339: Property 'commandLinePrivate' does not exist on
     // type 'typeof chrome'.
     if (!chrome.commandLinePrivate) {
-      /** @suppress {checkTypes, const} */
       // @ts-ignore: error TS2339: Property 'commandLinePrivate' does not exist
       // on type 'typeof chrome'.
       chrome.commandLinePrivate = {};
@@ -75,17 +73,14 @@ export class MockChromeStorageAPI {
     /** @type {Object<?>} */
     this.state = {};
 
-    /** @suppress {const} */
     // @ts-ignore: error TS2739: Type '{}' is missing the following properties
     // from type 'typeof chrome': fileManagerPrivate, metricsPrivate, runtime,
     // tabs
     window.chrome = window.chrome || {};
-    /** @suppress {const} */
     // @ts-ignore: error TS2739: Type '{}' is missing the following properties
     // from type 'typeof runtime': getURL, getManifest, lastError, id,
     // onMessageExternal
     window.chrome.runtime = window.chrome.runtime || {};  // For lastError.
-    /** @suppress {checkTypes, const} */
     // @ts-ignore: error TS2339: Property 'storage' does not exist on type
     // 'typeof chrome'.
     window.chrome.storage = {
@@ -157,36 +152,29 @@ export class MockChromeFileManagerPrivateDirectoryChanged {
      */
     this.driveQuotaMetadata_ = undefined;
 
-    /** @suppress {const} */
     // @ts-ignore: error TS2739: Type '{}' is missing the following properties
     // from type 'typeof chrome': fileManagerPrivate, metricsPrivate, runtime,
     // tabs
     window.chrome = window.chrome || {};
 
-    /** @suppress {const} */
     // @ts-ignore: error TS2740: Type '{}' is missing the following properties
     // from type 'typeof fileManagerPrivate': setPreferences,
     // getDriveConnectionState, PreferencesChange, DriveConnectionStateType, and
     // 186 more.
     window.chrome.fileManagerPrivate = window.chrome.fileManagerPrivate || {};
 
-    /** @suppress {const} */
     window.chrome.fileManagerPrivate.onDirectoryChanged =
         window.chrome.fileManagerPrivate.onDirectoryChanged || {};
 
-    /** @suppress {const} */
     window.chrome.fileManagerPrivate.onDirectoryChanged.addListener =
         this.addListener_.bind(this);
 
-    /** @suppress {const} */
     window.chrome.fileManagerPrivate.onDirectoryChanged.removeListener =
         this.removeListener_.bind(this);
 
-    /** @suppress {const} */
     window.chrome.fileManagerPrivate.getSizeStats =
         this.getSizeStats_.bind(this);
 
-    /** @suppress {const} */
     window.chrome.fileManagerPrivate.getDriveQuotaMetadata =
         this.getDriveQuotaMetadata_.bind(this);
 

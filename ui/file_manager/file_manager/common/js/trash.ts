@@ -6,9 +6,6 @@
  * @fileoverview Trash implementation is based on
  * https://specifications.freedesktop.org/trash-spec/trashspec-1.0.html.
  *
- * This file is checked via TS, so we suppress Closure checks.
- * @suppress {checkTypes}
- *
  * When you move /dir/hello.txt to trash, you get:
  *  .Trash/files/hello.txt
  *  .Trash/info/hello.trashinfo

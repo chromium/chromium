@@ -30,7 +30,6 @@ import {type TreeItemCollapsedEvent, type TreeItemExpandedEvent, XfTreeItem} fro
 
 /**
  * @fileoverview The Directory Tree aka Navigation Tree.
- * @suppress {checkTypes} TS already checks this file.
  */
 
 const NAVIGATION_TYPES_WITHOUT_CHILDREN = new Set([

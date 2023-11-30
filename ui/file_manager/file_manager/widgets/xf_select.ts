@@ -4,8 +4,6 @@
 
 /**
  * @fileoverview xf-select element which is ChromeOS <select>..</select>.
- * Disable type checking for closure, as it is done by the typescript compiler.
- * @suppress{missingProperties}
  */
 
 import {AnchorAlignment, CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';

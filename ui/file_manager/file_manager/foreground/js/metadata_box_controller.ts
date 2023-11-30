@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * This file is checked via TS, so we suppress Closure checks.
- * @suppress {checkTypes}
- */
-
 import {isDirectoryEntry, isSameEntry, unwrapEntry} from '../../common/js/entry_utils.js';
 import {getType} from '../../common/js/file_type.js';
 import {strf} from '../../common/js/translations.js';

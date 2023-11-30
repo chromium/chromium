@@ -8,13 +8,11 @@ import {InstallLinuxPackageDialog} from './install_linux_package_dialog.js';
 
 export function testInstallButtonHiddenUntilInfoReady() {
   // Polyfill chrome.app.window.current().
-  /** @suppress {checkTypes,const} */
   // @ts-ignore: error TS2339: Property 'app' does not exist on type 'typeof
   // chrome'.
   chrome.app = {window: {current: () => null}};
 
   let getInfoCallback;
-  /** @suppress {checkTypes,const} */
   // @ts-ignore: error TS2740: Type '{ getLinuxPackageInfo: (entry:
   // FileSystemEntry, callback: (arg0: LinuxPackageInfo) => void) => void; }' is
   // missing the following properties from type 'typeof fileManagerPrivate':

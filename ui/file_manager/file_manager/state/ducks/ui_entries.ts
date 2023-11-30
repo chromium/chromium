@@ -13,7 +13,6 @@ import {getEntry, getFileData} from '../store.js';
 
 /**
  * @fileoverview UI entries slice of the store.
- * @suppress {checkTypes}
  *
  * UI entries represents entries shown on UI only (aka FakeEntry, e.g.
  * Recents/Trash/Google Drive wrapper), they don't have a real entry backup in

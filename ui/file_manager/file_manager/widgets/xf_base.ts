@@ -4,7 +4,6 @@
 
 /**
  * @fileoverview A base class for all Files app(xf) widgets.
- * @suppress {checkTypes} closure can't recognize LitElement
  */
 
 import '../common/js/tslib_shim.js';

@@ -1236,10 +1236,6 @@ test.util.executeTestMessage = (request, sendResponse) => {
 /**
  * Returns the MetadataStats collected in MetadataModel, it will be serialized
  * as a plain object when sending to test extension.
- *
- * @suppress {missingProperties} metadataStats is only defined for foreground
- *   Window so it isn't visible in the background. Here it will return as JSON
- *   object to test extension.
  */
 // @ts-ignore: error TS7006: Parameter 'contentWindow' implicitly has an 'any'
 // type.
@@ -1253,8 +1249,6 @@ test.util.sync.getMetadataStats = contentWindow => {
  *
  * @param {Array<String>} properties Content metadata properties to get.
  * @param {function(*):void} callback Callback with metadata results returned.
- * @suppress {missingProperties} getContentMetadata isn't visible in the
- * background window.
  */
 // @ts-ignore: error TS7006: Parameter 'contentWindow' implicitly has an 'any'
 // type.
@@ -1347,8 +1341,6 @@ test.util.sync.recordEnumMetric = (name, value, validValues) => {
 
 /**
  * Tells background page progress center to never notify a completed operation.
- * @suppress {checkTypes} Remove suppress when migrating Files app. This is only
- *     used for Files app.
  */
 test.util.sync.progressCenterNeverNotifyCompleted = () => {
   // @ts-ignore: error TS2339: Property 'background' does not exist on type
@@ -1360,10 +1352,7 @@ test.util.sync.progressCenterNeverNotifyCompleted = () => {
 /**
  * Waits for the background page to initialize.
  * @param {function():void} callback Callback function called when background
- *     page
- *      has finished initializing.
- * @suppress {missingProperties}: ready() isn't available for Audio and Video
- * Player.
+ *     page has finished initializing.
  */
 test.util.async.waitForBackgroundReady = callback => {
   // @ts-ignore: error TS2339: Property 'background' does not exist on type
@@ -1378,10 +1367,7 @@ test.util.async.waitForBackgroundReady = callback => {
  * @param {Window} contentWindow Window to be tested.
  * @param {string} bannerTagName Tag name of the banner to isolate.
  * @param {function(boolean):void} callback Callback function to be called with
- *     a
- *    boolean indicating success or failure.
- * @suppress {missingProperties} banners is only defined for foreground
- *    Window so it isn't visible in the background.
+ *     a boolean indicating success or failure.
  */
 test.util.async.isolateBannerForTesting =
     async (contentWindow, bannerTagName, callback) => {
@@ -1404,10 +1390,7 @@ test.util.async.isolateBannerForTesting =
  *
  * @param {Window} contentWindow Window the banner controller exists.
  * @param {function(boolean):void} callback Callback function to be called with
- *     a
- *    boolean indicating success or failure.
- * @suppress {missingProperties} banners is only defined for foreground
- *    Window so it isn't visible in the background.
+ *     a boolean indicating success or failure.
  */
 test.util.async.disableBannersForTesting = async (contentWindow, callback) => {
   try {
@@ -1427,10 +1410,7 @@ test.util.async.disableBannersForTesting = async (contentWindow, callback) => {
  *
  * @param {Window} contentWindow Window the banner controller exists.
  * @param {function(boolean):void} callback Callback function to be called with
- *     a
- *    boolean indicating success or failure.
- * @suppress {missingProperties} nudgeContainer is only defined for foreground
- *    Window so it isn't visible in the background.
+ *     a boolean indicating success or failure.
  */
 test.util.async.disableNudgeExpiry = async (contentWindow, callback) => {
   // @ts-ignore: error TS2339: Property 'ui_' does not exist on type

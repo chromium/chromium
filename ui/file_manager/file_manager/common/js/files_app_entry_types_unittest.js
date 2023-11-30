@@ -173,7 +173,6 @@ export function testEntryFindIndex() {
 /**
  * Tests VolumeEntry's methods findIndexByVolumeInfo, removeByVolumeType,
  * removeAllByRootType, removeChildEntry.
- * @suppress {accessControls} to be able to access private properties.
  */
 export function testVolumeEntryFindIndex() {
   const fakeRootEntry = createFakeDisplayRoot();

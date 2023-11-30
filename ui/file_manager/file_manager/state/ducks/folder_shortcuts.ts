@@ -9,11 +9,6 @@ import {getEntry} from '../store.js';
 
 import {cacheEntries} from './all_entries.js';
 
-/**
- * @fileoverview Folder shortcuts slice of the store.
- * @suppress {checkTypes}
- */
-
 const slice = new Slice<State, State['folderShortcuts']>('folderShortcuts');
 export {slice as folderShortcutsSlice};
 

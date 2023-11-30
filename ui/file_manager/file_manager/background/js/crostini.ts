@@ -4,8 +4,6 @@
 
 /**
  * @fileoverview Handles shares for Crostini VMs.
- * Disable type checking for closure, as it is done by the typescript compiler.
- * @suppress {checkTypes}
  */
 
 import {assert} from 'chrome://resources/ash/common/assert.js';

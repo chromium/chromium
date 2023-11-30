@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * This file is checked via TS, so we suppress Closure checks.
- * @suppress {checkTypes}
- */
-
 import {str} from '../../../../common/js/translations.js';
 import {RootType} from '../../../../common/js/volume_manager_types.js';
 import {constants} from '../../constants.js';

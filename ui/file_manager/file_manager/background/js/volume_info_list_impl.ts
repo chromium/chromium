@@ -4,8 +4,6 @@
 
 /**
  * @fileoverview The container of the VolumeInfo for each mounted volume.
- * Disable type checking for closure, as it is done by the typescript compiler.
- * @suppress {checkTypes}
  */
 
 import {ArrayDataModel} from '../../common/js/array_data_model.js';

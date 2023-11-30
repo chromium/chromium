@@ -28,7 +28,6 @@ import {driveRootEntryListKey, myFilesEntryListKey, recentRootKey} from './volum
 
 /**
  * @fileoverview Entries slice of the store.
- * @suppress {checkTypes} TS already checks this file.
  */
 
 const slice = new Slice<State, State['allEntries']>('allEntries');

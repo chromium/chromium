@@ -19,7 +19,6 @@ import {updateDeviceConnectionState} from './device.js';
 
 /**
  * @fileoverview Volumes slice of the store.
- * @suppress {checkTypes}
  */
 
 const slice = new Slice<State, State['volumes']>('volumes');

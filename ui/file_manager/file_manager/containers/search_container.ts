@@ -23,12 +23,6 @@ import {OptionKind, SEARCH_OPTIONS_CHANGED, type SearchOptionsChangedEvent, XfSe
 import type {XfOption} from '../widgets/xf_select.js';
 
 /**
- * @fileoverview
- * This file is checked via TS, so we suppress Closure checks.
- * @suppress {checkTypes}
- */
-
-/**
  * Defines the possible states of the query input widget. This is a widget with
  * a search button, text input and clear button. By default, the widget is
  * closed. When active, it is open. Due to CSS transitions it has two

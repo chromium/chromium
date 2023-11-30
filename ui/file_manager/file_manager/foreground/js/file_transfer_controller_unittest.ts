@@ -156,9 +156,6 @@ export function setUp() {
 
 /**
  * Tests isDocumentWideEvent_.
- *
- * @suppress {accessControls} To be able to access private method
- * isDocumentWideEvent_
  */
 export function testIsDocumentWideEvent() {
   const input = document.querySelector<HTMLInputElement>('#free-text')!;

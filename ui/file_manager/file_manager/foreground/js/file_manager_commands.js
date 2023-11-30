@@ -1689,9 +1689,6 @@ CommandHandler.COMMANDS_['move-to-trash'] = deleteCommand;
 
 /**
  * Restores selected files from trash.
- *
- * @suppress {invalidCasts} See FilesAppEntry in files_app_entry_interfaces.js
- * for explanation of why FilesAppEntry cannot extend Entry.
  */
 CommandHandler
     // @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only

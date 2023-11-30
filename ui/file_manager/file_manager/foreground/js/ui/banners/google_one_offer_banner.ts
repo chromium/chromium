@@ -5,8 +5,6 @@
 /**
  * @fileoverview The Google One banner highlights the benefit for Chromebook
  * users when navigating to Drive.
- * Disable type checking for closure, as it is done by the typescript compiler.
- * @suppress {checkTypes}
  */
 
 import {recordUserAction} from '../../../../common/js/metrics.js';

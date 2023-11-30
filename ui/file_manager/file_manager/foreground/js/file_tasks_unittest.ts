@@ -548,7 +548,6 @@ export function testGetViewFileType() {
 /**
  * Checks that the progress center is properly updated when mounting archives
  * successfully.
- * @suppress {visibility}
  */
 export async function testMountArchiveAndChangeDirectoryNotificationSuccess(
     done: () => void) {
@@ -592,7 +591,6 @@ export async function testMountArchiveAndChangeDirectoryNotificationSuccess(
 /**
  * Checks that the progress center is properly updated when mounting an archive
  * resolves with an error.
- * @suppress {visibility}
  */
 export async function
 testMountArchiveAndChangeDirectoryNotificationInvalidArchive(done: () => void) {
@@ -631,7 +629,6 @@ testMountArchiveAndChangeDirectoryNotificationInvalidArchive(done: () => void) {
 /**
  * Checks that the progress center is properly updated when the password prompt
  * for an encrypted archive is canceled.
- * @suppress {visibility}
  */
 export async function
 testMountArchiveAndChangeDirectoryNotificationCancelPassword(done: () => void) {
@@ -675,7 +672,6 @@ testMountArchiveAndChangeDirectoryNotificationCancelPassword(done: () => void) {
 /**
  * Checks that the progress center is properly updated when mounting an
  * encrypted archive.
- * @suppress {visibility}
  */
 export async function
 testMountArchiveAndChangeDirectoryNotificationEncryptedArchive(

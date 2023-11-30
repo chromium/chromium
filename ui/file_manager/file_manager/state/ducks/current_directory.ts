@@ -20,7 +20,6 @@ import {cacheEntries} from './all_entries.js';
 
 /**
  * @fileoverview Current directory slice of the store.
- * @suppress {checkTypes}
  */
 
 const slice = new Slice<State, State['currentDirectory']>('currentDirectory');

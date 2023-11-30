@@ -15,7 +15,6 @@ import {getEntry, getFileData} from '../store.js';
 
 /**
  * @fileoverview Navigation slice of the store.
- * @suppress {checkTypes}
  */
 
 const slice = new Slice<State, State['navigation']>('navigation');

@@ -617,8 +617,6 @@ export class FileManagerUI {
   /**
    * TODO(hirono): Merge the method into initAdditionalUI.
    * @param {!(DirectoryTree|DirectoryTreeContainer)} directoryTree
-   *
-   * @suppress {checkTypes} closure can't cast Element to XfTree.
    */
   initDirectoryTree(directoryTree) {
     if (isNewDirectoryTreeEnabled()) {

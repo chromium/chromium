@@ -65,16 +65,11 @@ const entry6 = new MockEntry(fileSystem, '/Test6.jpg');
 
 export function setUp() {
   currentVolumeType = ListThumbnailLoader.TEST_VOLUME_TYPE;
-  /** @suppress {const} */
   ListThumbnailLoader.CACHE_SIZE = 5;
-  /** @suppress {const} */
   ListThumbnailLoader.numOfMaxActiveTasksForTest = 2;
 
-  /** @suppress {const} */
   MockThumbnailLoader.errorUrls = [];
-  /** @suppress {const} */
   MockThumbnailLoader.testImageWidth = 160;
-  /** @suppress {const} */
   MockThumbnailLoader.testImageHeight = 160;
 
   // Create an image dataURL for testing.
@@ -91,7 +86,6 @@ export function setUp() {
   /** @const @type {string} */
   const testImageDataUrl = canvas.toDataURL('image/jpeg', 0.5);
 
-  /** @suppress {const} */
   MockThumbnailLoader.testImageDataUrl = testImageDataUrl;
 
   getCallbacks = {};
@@ -131,7 +125,6 @@ export function setUp() {
     }
   }
 
-  /** @suppress {checkTypes} */
   directoryModel = /** @type {!DirectoryModel} */ (new TestDirectoryModel());
 
   const fakeVolumeManager =

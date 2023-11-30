@@ -5,7 +5,6 @@
 /**
  * @fileoverview Maintains the state of the `<xf-cloud-panel>` and ensures the
  * information is passed to it appropriately.
- * @suppress {checkTypes} TS already checks this file.
  */
 
 import {canBulkPinningCloudPanelShow} from '../common/js/util.js';

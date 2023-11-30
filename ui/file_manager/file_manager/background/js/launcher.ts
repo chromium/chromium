@@ -7,12 +7,6 @@ import type {FilesAppState} from '../../common/js/files_app_state.js';
 import {AppWindowWrapper} from './app_window_wrapper.js';
 
 /**
- * @fileoverview
- * This file is checked via TS, so we suppress Closure checks.
- * @suppress {checkTypes}
-*/
-
-/**
  * Prefix for the file manager window ID.
  */
 const FILES_ID_PREFIX = 'files#';

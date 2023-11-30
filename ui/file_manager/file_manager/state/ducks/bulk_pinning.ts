@@ -7,7 +7,6 @@ import {Slice} from '../../lib/base_store.js';
 
 /**
  * @fileoverview Bulk pinning slice of the store.
- * @suppress {checkTypes}
  *
  * BulkPinProgress is the current state of files that are being pinned when the
  * BulkPinning feature is enabled. During bulk pinning, all the users items in

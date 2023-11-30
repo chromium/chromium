@@ -167,7 +167,6 @@ class UserDomError extends DOMError {
   /**
    * @param name Error name for the file error.
    * @param {string=} message Optional message for this error.
-   * @suppress {checkTypes} Closure externs for DOMError doesn't have
    * constructor with 1 arg.
    */
   constructor(name: string, message?: string) {
