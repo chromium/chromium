@@ -19,10 +19,12 @@ follows with contacts). This can help prevent being reverted. Instructions for u
 pinpoint are at the end of this document.
 
 This policy applies to the competitive benchmarks: JetStream,
-MotionMark, and Speedometer. At this time, this policy applies to
-bots running MacOS with Apple Silicon. Each of these benchmarks
-consists of a number of subtests. There are thresholds for both the test, and
-subtest.
+MotionMark, and Speedometer. For Speedometer specifically, the policy applies
+to both, the current (as of Nov 2023) stable version 2 and the work in progress
+version 3. We expect Speedometer 3 to be fully released early 2024. At this
+time, this policy applies to bots running MacOS with Apple Silicon. Each of
+these benchmarks consists of a number of subtests. There are thresholds for
+both the test, and subtest.
 
 | Benchmark   | Owner                  | Overall Threshold | Subtest Threshold |
 |-------------|------------------------|-------------------|-------------------|
@@ -68,6 +70,7 @@ following table suggests what to enter for the benchmark and story fields:
 |-------------|-----------------------------|----------------------------|
 | Jestream    | Jetstream2                  | Jetstream2                 |
 | Speedometer | speedometer2                | Speedometer2               |
+|             | speedometer3                | Speedometer3               |
 | MotionMark  | rendering.desktop.notracing | motionmark_ramp_composite  |
 
 The only other field you should need to fill in is the "Exp patch" field. Put your URL of your
