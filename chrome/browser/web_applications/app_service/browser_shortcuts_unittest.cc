@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/test/base/testing_profile.h"
@@ -33,6 +34,7 @@
 
 namespace {
 const char kUrl[] = "https://example.com/";
+const char kIconUrl[] = "https://example.com/icon";
 }
 
 namespace web_app {
@@ -48,7 +50,8 @@ class BrowserShortcutsTest : public testing::Test,
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
-  std::string CreateShortcut(const std::string& shortcut_name) {
+  std::string CreateShortcut(const std::string& shortcut_name,
+                             bool with_icon = false) {
     const GURL kAppUrl(kUrl);
 
     // Create a web app entry without scope, which would be recognised
@@ -56,6 +59,13 @@ class BrowserShortcutsTest : public testing::Test,
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->title = base::UTF8ToUTF16(shortcut_name);
     web_app_info->start_url = kAppUrl;
+
+    if (with_icon) {
+      const GeneratedIconsInfo icon_info(
+          IconPurpose::ANY, {web_app::icon_size::k32}, {SK_ColorBLACK});
+      web_app::AddIconsToWebAppInstallInfo(web_app_info.get(), GURL(kIconUrl),
+                                           {icon_info});
+    }
 
     std::string app_id =
         test::InstallWebApp(profile(), std::move(web_app_info),
@@ -187,7 +197,7 @@ TEST_F(BrowserShortcutsTest, PublishNewBrowserShortcut) {
 
   const std::string kShortcutName = "Shortcut";
 
-  auto local_shortcut_id = CreateShortcut(kShortcutName);
+  auto local_shortcut_id = CreateShortcut(kShortcutName, /*with_icon = */ true);
   apps::ShortcutId expected_shortcut_id =
       apps::GenerateShortcutId(app_constants::kChromeAppId, local_shortcut_id);
 
@@ -210,7 +220,7 @@ TEST_F(BrowserShortcutsTest, PublishNewBrowserShortcut) {
   EXPECT_TRUE(stored_shortcut->icon_key.has_value());
   EXPECT_EQ(
       stored_shortcut->icon_key->icon_effects,
-      apps::IconEffects::kRoundCorners | apps::IconEffects::kCrOsStandardMask);
+      apps::IconEffects::kRoundCorners | apps::IconEffects::kCrOsStandardIcon);
 }
 
 TEST_F(BrowserShortcutsTest, LaunchShortcut) {
