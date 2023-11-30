@@ -492,6 +492,11 @@ class NATIVE_THEME_EXPORT NativeTheme {
   // Returns the user's current page colors.
   virtual PageColors GetPageColors() const;
 
+  // Calculates and returns the current user preferred color scheme. The
+  // base behavior is to set preferred color scheme to light or dark depending
+  // on the state of dark mode.
+  virtual PreferredColorScheme CalculatePreferredColorScheme() const;
+
   // Returns the OS-level user preferred color scheme. See the comment for
   // CalculatePreferredColorScheme() for details on how preferred color scheme
   // is calculated.
@@ -591,18 +596,6 @@ class NATIVE_THEME_EXPORT NativeTheme {
       bool should_only_use_dark_colors,
       ui::SystemTheme system_theme = ui::SystemTheme::kDefault);
   virtual ~NativeTheme();
-
-  // Calculates and returns the current user preferred color scheme. The
-  // base behavior is to set preferred color scheme to light or dark depending
-  // on the state of dark mode.
-  //
-  // Some platforms override this behavior. On Windows, for example, we also
-  // look at the high contrast setting. If high contrast is enabled, the
-  // preferred color scheme calculation will ignore the state of dark mode.
-  // Instead, preferred color scheme will be light, or dark depending on the OS
-  // high contrast theme. If high contrast is off, the preferred color scheme
-  // calculation will follow the default behavior.
-  virtual PreferredColorScheme CalculatePreferredColorScheme() const;
 
   // Calculates and returns the current user preferred contrast.
   virtual PreferredContrast CalculatePreferredContrast() const;

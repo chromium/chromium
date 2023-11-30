@@ -19,7 +19,8 @@ class NATIVE_THEME_EXPORT NativeThemeAura : public NativeThemeBase {
 
   NativeThemeAura(bool use_overlay_scrollbars,
                   bool should_only_use_dark_colors,
-                  ui::SystemTheme system_theme = ui::SystemTheme::kDefault);
+                  ui::SystemTheme system_theme = ui::SystemTheme::kDefault,
+                  bool configure_web_instance = false);
 
   NativeThemeAura(const NativeThemeAura&) = delete;
   NativeThemeAura& operator=(const NativeThemeAura&) = delete;
@@ -30,6 +31,7 @@ class NATIVE_THEME_EXPORT NativeThemeAura : public NativeThemeBase {
 
   // Overridden from NativeTheme:
   SkColor4f FocusRingColorForBaseColor(SkColor4f base_color) const override;
+  void ConfigureWebInstance() override;
 
   // NativeThemeBase:
   void PaintMenuPopupBackground(
@@ -88,6 +90,11 @@ class NATIVE_THEME_EXPORT NativeThemeAura : public NativeThemeBase {
                                      const cc::PaintFlags& flags);
 
   bool use_overlay_scrollbars_;
+
+  // Used to notify the web native theme of changes to dark mode, high
+  // contrast, preferred color scheme, and preferred contrast.
+  std::unique_ptr<NativeTheme::ColorSchemeNativeThemeObserver>
+      color_scheme_observer_;
 };
 
 }  // namespace ui

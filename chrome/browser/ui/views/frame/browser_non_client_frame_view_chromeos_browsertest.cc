@@ -239,17 +239,12 @@ class BrowserNonClientFrameViewChromeOSThemeChangeTest
   // Toggles the color mode, triggering propagation of theme change events.
   void ToggleColorMode() {
     auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-    auto* native_theme_web = ui::NativeTheme::GetInstanceForWeb();
 
-    const bool is_dark_mode_enabled = native_theme->ShouldUseDarkColors();
-
-    native_theme->set_use_dark_colors(!is_dark_mode_enabled);
-    native_theme_web->set_preferred_color_scheme(
-        is_dark_mode_enabled ? ui::NativeTheme::PreferredColorScheme::kLight
-                             : ui::NativeTheme::PreferredColorScheme::kDark);
+    native_theme->set_use_dark_colors(!native_theme->ShouldUseDarkColors());
+    native_theme->set_preferred_color_scheme(
+        native_theme->CalculatePreferredColorScheme());
 
     native_theme->NotifyOnNativeThemeUpdated();
-    native_theme_web->NotifyOnNativeThemeUpdated();
   }
 
   // Installs the web app under test, blocking until installation is complete,

@@ -216,6 +216,12 @@ NativeTheme::PageColors NativeTheme::GetPageColors() const {
   return page_colors_;
 }
 
+NativeTheme::PreferredColorScheme NativeTheme::CalculatePreferredColorScheme()
+    const {
+  return ShouldUseDarkColors() ? NativeTheme::PreferredColorScheme::kDark
+                               : NativeTheme::PreferredColorScheme::kLight;
+}
+
 NativeTheme::PreferredColorScheme NativeTheme::GetPreferredColorScheme() const {
   return preferred_color_scheme_;
 }
@@ -252,12 +258,6 @@ bool NativeTheme::IsForcedHighContrast() {
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceHighContrast);
   return kIsForcedHighContrast;
-}
-
-NativeTheme::PreferredColorScheme NativeTheme::CalculatePreferredColorScheme()
-    const {
-  return ShouldUseDarkColors() ? NativeTheme::PreferredColorScheme::kDark
-                               : NativeTheme::PreferredColorScheme::kLight;
 }
 
 NativeTheme::PreferredContrast NativeTheme::CalculatePreferredContrast() const {
@@ -335,16 +335,43 @@ void NativeTheme::ColorSchemeNativeThemeObserver::OnNativeThemeUpdated(
   bool inverted_colors = observed_theme->GetInvertedColors();
   bool notify_observers = false;
 
-  if (theme_to_update_->GetPageColors() != page_colors) {
-    theme_to_update_->set_page_colors(page_colors);
-    notify_observers = true;
+  const auto default_page_colors =
+      forced_colors ? PageColors::kHighContrast : PageColors::kOff;
+  if (page_colors != default_page_colors) {
+    if (page_colors == PageColors::kOff) {
+      forced_colors = false;
+      preferred_contrast = PreferredContrast::kNoPreference;
+    } else {
+      // Set other states based on the selected theme (i.e. `kDusk`, `kDesert`,
+      // `kBlack`, or `kWhite`). This block is only executed when one of these
+      // themes is chosen. `kHighContrast` is not a valid theme here, as it is
+      // only available in forced colors mode.
+      CHECK_GE(page_colors, ui::NativeTheme::PageColors::kDusk);
+      CHECK_LE(page_colors, ui::NativeTheme::PageColors::kWhite);
+      CHECK_NE(page_colors, ui::NativeTheme::PageColors::kHighContrast);
+      bool is_dark_color =
+          page_colors == PageColors::kBlack || page_colors == PageColors::kDusk;
+      PreferredColorScheme page_colors_theme_scheme =
+          is_dark_color ? PreferredColorScheme::kDark
+                        : PreferredColorScheme::kLight;
+
+      forced_colors = true;
+      should_use_dark_colors = is_dark_color;
+      preferred_color_scheme = page_colors_theme_scheme;
+      preferred_contrast = PreferredContrast::kMore;
+    }
   }
+
   if (theme_to_update_->ShouldUseDarkColors() != should_use_dark_colors) {
     theme_to_update_->set_use_dark_colors(should_use_dark_colors);
     notify_observers = true;
   }
   if (theme_to_update_->InForcedColorsMode() != forced_colors) {
     theme_to_update_->set_forced_colors(forced_colors);
+    notify_observers = true;
+  }
+  if (theme_to_update_->GetPageColors() != page_colors) {
+    theme_to_update_->set_page_colors(page_colors);
     notify_observers = true;
   }
   if (theme_to_update_->GetPreferredColorScheme() != preferred_color_scheme) {
@@ -366,6 +393,8 @@ void NativeTheme::ColorSchemeNativeThemeObserver::OnNativeThemeUpdated(
     notify_observers = true;
   }
 
+  // TODO(samomekarajr): Take this out when fully migrated to the color
+  // pipeline.
   const auto& system_colors = observed_theme->GetSystemColors();
   if (theme_to_update_->HasDifferentSystemColors(system_colors)) {
     theme_to_update_->set_system_colors(system_colors);
