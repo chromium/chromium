@@ -133,9 +133,8 @@ class BASE_EXPORT TRIVIAL_ABI BindStateHolder {
 
   void Reset();
 
-  bool operator==(const BindStateHolder& other) const {
-    return bind_state_ == other.bind_state_;
-  }
+  friend bool operator==(const BindStateHolder&,
+                         const BindStateHolder&) = default;
 
   const scoped_refptr<BindStateBase>& bind_state() const { return bind_state_; }
 

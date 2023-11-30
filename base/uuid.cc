@@ -156,30 +156,6 @@ const std::string& Uuid::AsLowercaseString() const {
   return lowercase_;
 }
 
-bool Uuid::operator==(const Uuid& other) const {
-  return AsLowercaseString() == other.AsLowercaseString();
-}
-
-bool Uuid::operator!=(const Uuid& other) const {
-  return !(*this == other);
-}
-
-bool Uuid::operator<(const Uuid& other) const {
-  return AsLowercaseString() < other.AsLowercaseString();
-}
-
-bool Uuid::operator<=(const Uuid& other) const {
-  return *this < other || *this == other;
-}
-
-bool Uuid::operator>(const Uuid& other) const {
-  return !(*this <= other);
-}
-
-bool Uuid::operator>=(const Uuid& other) const {
-  return !(*this < other);
-}
-
 std::ostream& operator<<(std::ostream& out, const Uuid& uuid) {
   return out << uuid.AsLowercaseString();
 }

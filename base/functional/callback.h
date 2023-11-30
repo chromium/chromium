@@ -322,12 +322,8 @@ class TRIVIAL_ABI RepeatingCallback<R(Args...)> {
   bool MaybeValid() const { return holder_.MaybeValid(); }
 
   // Equality operators: two `RepeatingCallback`'s are equal
-  bool operator==(const RepeatingCallback& other) const {
-    return holder_ == other.holder_;
-  }
-  bool operator!=(const RepeatingCallback& other) const {
-    return !operator==(other);
-  }
+  friend bool operator==(const RepeatingCallback&,
+                         const RepeatingCallback&) = default;
 
   // Resets this to null.
   REINITIALIZES_AFTER_MOVE void Reset() { holder_.Reset(); }

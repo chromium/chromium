@@ -72,8 +72,7 @@ class BASE_EXPORT MemoryMappedFile {
   struct BASE_EXPORT Region {
     static const Region kWholeFile;
 
-    bool operator==(const Region& other) const;
-    bool operator!=(const Region& other) const;
+    friend bool operator==(const Region&, const Region&) = default;
 
     // Start of the region (measured in bytes from the beginning of the file).
     int64_t offset;

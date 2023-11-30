@@ -61,7 +61,7 @@ class BASE_EXPORT CurrentThread {
   CurrentThread(CurrentThread&& other) = default;
   CurrentThread& operator=(const CurrentThread& other) = default;
 
-  bool operator==(const CurrentThread& other) const;
+  friend bool operator==(const CurrentThread&, const CurrentThread&) = default;
 
   // Returns a proxy object to interact with the Task related APIs for the
   // current thread. It must only be used on the thread it was obtained.
