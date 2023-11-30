@@ -8,11 +8,11 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/strings/string_piece.h"
 #include "mojo/public/cpp/base/byte_string_mojom_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/bindings/union_traits.h"
@@ -38,12 +38,12 @@ struct COMPONENT_EXPORT(NETWORK_CPP_STRUCTURED_HEADERS)
     return item.GetDecimal();
   }
 
-  static base::StringPiece string_value(
+  static std::string_view string_value(
       const net::structured_headers::Item& item) {
     return item.GetString();
   }
 
-  static base::StringPiece token_value(
+  static std::string_view token_value(
       const net::structured_headers::Item& item) {
     return item.GetString();
   }
@@ -65,7 +65,7 @@ template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_STRUCTURED_HEADERS)
     StructTraits<network::mojom::StructuredHeadersParameterDataView,
                  std::pair<std::string, net::structured_headers::Item>> {
-  static base::StringPiece key(
+  static std::string_view key(
       const std::pair<std::string, net::structured_headers::Item>& param) {
     return param.first;
   }

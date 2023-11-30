@@ -6,8 +6,8 @@
 #define SERVICES_NETWORK_TRUST_TOKENS_BORINGSSL_TRUST_TOKEN_REDEMPTION_CRYPTOGRAPHER_H_
 
 #include <memory>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "services/network/trust_tokens/trust_token_request_redemption_helper.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -32,7 +32,7 @@ class BoringsslTrustTokenRedemptionCryptographer
       TrustToken token,
       const url::Origin& top_level_origin) override;
   absl::optional<std::string> ConfirmRedemption(
-      base::StringPiece response_header) override;
+      std::string_view response_header) override;
 
  private:
   // Maintains Trust Tokens protocol state.

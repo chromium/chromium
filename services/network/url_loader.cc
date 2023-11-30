@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -1963,7 +1964,7 @@ void URLLoader::DidRead(int num_bytes,
       if (data_length > net::kMaxBytesToSniff)
         data_length = net::kMaxBytesToSniff;
 
-      base::StringPiece data(pending_write_->buffer(), data_length);
+      std::string_view data(pending_write_->buffer(), data_length);
       bool stop_sniffing_after_processing_current_data =
           (num_bytes <= 0 ||
            pending_write_buffer_offset_ >= net::kMaxBytesToSniff);

@@ -27,7 +27,7 @@ namespace network {
 
 namespace {
 
-base::Value::Dict CreateLogValue(base::StringPiece outcome) {
+base::Value::Dict CreateLogValue(std::string_view outcome) {
   return base::Value::Dict().Set("outcome", outcome);
 }
 
@@ -35,7 +35,7 @@ base::Value::Dict CreateLogValue(base::StringPiece outcome) {
 enum NetLogOp { kBegin, kFinalize };
 void LogOutcome(const net::NetLogWithSource& log,
                 NetLogOp begin_or_finalize,
-                base::StringPiece outcome) {
+                std::string_view outcome) {
   log.EndEvent(
       begin_or_finalize == kBegin
           ? net::NetLogEventType::TRUST_TOKEN_OPERATION_BEGIN_REDEMPTION

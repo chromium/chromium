@@ -4,6 +4,8 @@
 
 #include "services/network/trust_tokens/trust_token_request_helper_factory.h"
 
+#include <string_view>
+
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -156,7 +158,7 @@ TEST_F(TrustTokenRequestHelperFactoryTest, UnsuitableTopFrameOrigin) {
 
 TEST_F(TrustTokenRequestHelperFactoryTest, ForbiddenHeaders) {
   base::HistogramTester histogram_tester;
-  for (const base::StringPiece& header : TrustTokensRequestHeaders()) {
+  for (const std::string_view& header : TrustTokensRequestHeaders()) {
     std::unique_ptr<net::URLRequest> my_request = CreateSuitableRequest();
     my_request->SetExtraRequestHeaderByName(std::string(header), " ",
                                             /*overwrite=*/true);

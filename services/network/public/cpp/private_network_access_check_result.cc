@@ -6,7 +6,6 @@
 
 #include <ostream>
 
-#include "base/strings/string_piece.h"
 #include "services/network/public/mojom/cors.mojom-shared.h"
 
 namespace network {
@@ -15,7 +14,7 @@ using mojom::CorsError;
 
 using Result = PrivateNetworkAccessCheckResult;
 
-base::StringPiece PrivateNetworkAccessCheckResultToStringPiece(Result result) {
+std::string_view PrivateNetworkAccessCheckResultToStringPiece(Result result) {
   switch (result) {
     case Result::kAllowedMissingClientSecurityState:
       return "allowed-missing-client-security-state";

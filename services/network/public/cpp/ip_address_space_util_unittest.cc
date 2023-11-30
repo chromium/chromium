@@ -170,7 +170,7 @@ TEST(IPAddressSpaceTest, IPEndPointToIPAddressSpaceV4Localhost) {
             IPAddressSpace::kPublic);
 }
 
-IPAddress ParseIPAddress(base::StringPiece str) {
+IPAddress ParseIPAddress(std::string_view str) {
   IPAddress address;
   EXPECT_TRUE(address.AssignFromIPLiteral(str))
       << "Failed to parse IP address: " << str;

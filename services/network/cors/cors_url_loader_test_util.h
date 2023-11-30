@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -312,9 +313,9 @@ class CorsURLLoaderTestBase : public testing::Test {
 
   static net::RedirectInfo CreateRedirectInfo(
       int status_code,
-      base::StringPiece method,
+      std::string_view method,
       const GURL& url,
-      base::StringPiece referrer = base::StringPiece(),
+      std::string_view referrer = std::string_view(),
       net::ReferrerPolicy referrer_policy = net::ReferrerPolicy::NO_REFERRER,
       net::SiteForCookies site_for_cookies = net::SiteForCookies());
 

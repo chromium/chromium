@@ -9,7 +9,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"
@@ -29,7 +28,7 @@ namespace {
 // Parses a single key label. If |in| is the string representation of an integer
 // in in the representable range of uint32_t, returns true. Otherwise, returns
 // false.
-bool ParseSingleKeyLabel(base::StringPiece in) {
+bool ParseSingleKeyLabel(std::string_view in) {
   uint64_t key_label_in_uint64;
   if (!base::StringToUint64(in, &key_label_in_uint64))
     return false;
@@ -168,7 +167,7 @@ mojom::TrustTokenKeyCommitmentResultPtr& commitment(Entry& e) {
 }  // namespace
 
 mojom::TrustTokenKeyCommitmentResultPtr TrustTokenKeyCommitmentParser::Parse(
-    base::StringPiece response_body) {
+    std::string_view response_body) {
   absl::optional<base::Value> maybe_value =
       base::JSONReader::Read(response_body);
   if (!maybe_value)
@@ -180,7 +179,7 @@ mojom::TrustTokenKeyCommitmentResultPtr TrustTokenKeyCommitmentParser::Parse(
 std::unique_ptr<base::flat_map<SuitableTrustTokenOrigin,
                                mojom::TrustTokenKeyCommitmentResultPtr>>
 TrustTokenKeyCommitmentParser::ParseMultipleIssuers(
-    base::StringPiece response_body) {
+    std::string_view response_body) {
   absl::optional<base::Value> maybe_value =
       base::JSONReader::Read(response_body);
   if (!maybe_value)

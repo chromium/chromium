@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_PUBLIC_CPP_HOST_RESOLVER_MOJOM_TRAITS_H_
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -36,7 +37,7 @@ class COMPONENT_EXPORT(NETWORK_CPP_HOST_RESOLVER)
     StructTraits<network::mojom::DnsOverHttpsServerConfigDataView,
                  net::DnsOverHttpsServerConfig> {
  public:
-  static base::StringPiece server_template(
+  static std::string_view server_template(
       const net::DnsOverHttpsServerConfig& server) {
     return server.server_template();
   }

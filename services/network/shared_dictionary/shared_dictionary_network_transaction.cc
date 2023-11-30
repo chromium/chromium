@@ -5,6 +5,7 @@
 #include "services/network/shared_dictionary/shared_dictionary_network_transaction.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -67,7 +68,7 @@ class ProxyingSourceStream : public net::SourceStream {
 };
 
 void AddAcceptEncoding(net::HttpRequestHeaders* request_headers,
-                       base::StringPiece encoding_header) {
+                       std::string_view encoding_header) {
   std::string accept_encoding;
   request_headers->SetHeader(
       net::HttpRequestHeaders::kAcceptEncoding,

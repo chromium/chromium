@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -144,7 +145,7 @@ class TrustTokenStore {
   // tokens issued against non-current keys.
   virtual void AddTokens(const SuitableTrustTokenOrigin& issuer,
                          base::span<const std::string> token_bodies,
-                         base::StringPiece issuing_key);
+                         std::string_view issuing_key);
 
   // Returns the number of tokens stored for |issuer|.
   [[nodiscard]] virtual int CountTokens(const SuitableTrustTokenOrigin& issuer);

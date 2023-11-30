@@ -8,7 +8,6 @@
 
 #include "base/base64.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "services/network/trust_tokens/boringssl_trust_token_state.h"
 #include "services/network/trust_tokens/scoped_boringssl_bytes.h"
@@ -33,7 +32,7 @@ bool BoringsslVerificationCryptographer::Initialize(
   return !!state_;
 }
 
-bool BoringsslVerificationCryptographer::AddKey(base::StringPiece key) {
+bool BoringsslVerificationCryptographer::AddKey(std::string_view key) {
   if (!state_) {
     return false;
   }
@@ -50,7 +49,7 @@ bool BoringsslVerificationCryptographer::AddKey(base::StringPiece key) {
 }
 
 absl::optional<std::string> BoringsslVerificationCryptographer::BeginIssuance(
-    base::StringPiece message) {
+    std::string_view message) {
   if (!state_) {
     return absl::nullopt;
   }
@@ -70,7 +69,7 @@ absl::optional<std::string> BoringsslVerificationCryptographer::BeginIssuance(
 
 absl::optional<std::string>
 BoringsslVerificationCryptographer::ConfirmIssuanceAndBeginRedemption(
-    base::StringPiece response_header) {
+    std::string_view response_header) {
   if (!state_) {
     return absl::nullopt;
   }

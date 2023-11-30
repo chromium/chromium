@@ -43,7 +43,7 @@ class FixedKeyCommitmentParser
     : public TrustTokenKeyCommitmentController::Parser {
  public:
   mojom::TrustTokenKeyCommitmentResultPtr Parse(
-      base::StringPiece response_body) override {
+      std::string_view response_body) override {
     return DeterministicallyReturnedValue();
   }
   static mojom::TrustTokenKeyCommitmentResultPtr
@@ -57,7 +57,7 @@ class FixedKeyCommitmentParser
 class FailingKeyCommitmentParser
     : public TrustTokenKeyCommitmentController::Parser {
   mojom::TrustTokenKeyCommitmentResultPtr Parse(
-      base::StringPiece response_body) override {
+      std::string_view response_body) override {
     return nullptr;
   }
 };

@@ -4,6 +4,8 @@
 
 #include "services/network/public/cpp/simple_host_resolver.h"
 
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
@@ -21,7 +23,7 @@
 namespace network {
 namespace {
 
-net::IPEndPoint CreateExpectedEndPoint(base::StringPiece address,
+net::IPEndPoint CreateExpectedEndPoint(std::string_view address,
                                        uint16_t port) {
   net::IPAddress ip_address;
   CHECK(ip_address.AssignFromIPLiteral(address));
@@ -29,7 +31,7 @@ net::IPEndPoint CreateExpectedEndPoint(base::StringPiece address,
 }
 
 std::string CreateMappingRules(
-    std::vector<std::pair<base::StringPiece, base::StringPiece>>
+    std::vector<std::pair<std::string_view, std::string_view>>
         host_ip_address_pairs) {
   std::vector<std::string> map_rules;
   for (auto [host, ip_address] : host_ip_address_pairs) {
@@ -45,7 +47,7 @@ class MockNetworkContext : public TestNetworkContextWithHostResolver {
       : TestNetworkContextWithHostResolver(std::move(host_resolver)) {}
 
   static std::unique_ptr<MockNetworkContext> CreateNetworkContext(
-      base::StringPiece host_mapping_rules) {
+      std::string_view host_mapping_rules) {
     return std::make_unique<MockNetworkContext>(
         net::HostResolver::CreateStandaloneResolver(
             net::NetLog::Get(), /*options=*/absl::nullopt, host_mapping_rules,

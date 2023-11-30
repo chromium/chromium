@@ -89,7 +89,7 @@ class MockCryptographer
                                   const url::Origin& top_level_origin));
 
   MOCK_METHOD1(ConfirmRedemption,
-               absl::optional<std::string>(base::StringPiece response_header));
+               absl::optional<std::string>(std::string_view response_header));
 };
 
 }  // namespace

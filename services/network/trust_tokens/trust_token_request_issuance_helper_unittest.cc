@@ -95,11 +95,11 @@ class MockCryptographer
   MOCK_METHOD2(Initialize,
                bool(mojom::TrustTokenProtocolVersion issuer_configured_version,
                     int issuer_configured_batch_size));
-  MOCK_METHOD1(AddKey, bool(base::StringPiece key));
+  MOCK_METHOD1(AddKey, bool(std::string_view key));
   MOCK_METHOD1(BeginIssuance, absl::optional<std::string>(size_t num_tokens));
   MOCK_METHOD1(
       ConfirmIssuance,
-      std::unique_ptr<UnblindedTokens>(base::StringPiece response_header));
+      std::unique_ptr<UnblindedTokens>(std::string_view response_header));
 };
 
 class MockExpiryDelegate : public TrustTokenStore::RecordExpiryDelegate {

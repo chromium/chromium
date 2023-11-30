@@ -4,8 +4,9 @@
 
 #include "services/network/private_network_access_checker.h"
 
+#include <string_view>
+
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "net/base/ip_address.h"
@@ -29,7 +30,7 @@ namespace {
 
 using Result = PrivateNetworkAccessCheckResult;
 
-constexpr base::StringPiece kCheckResultHistogramName =
+constexpr std::string_view kCheckResultHistogramName =
     "Security.PrivateNetworkAccess.CheckResult";
 
 constexpr char kNoAcceptChFrame[] = "";

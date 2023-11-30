@@ -5,6 +5,7 @@
 #include "services/network/sct_auditing/sct_auditing_handler.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/feature_list.h"
@@ -314,7 +315,7 @@ TEST_F(SCTAuditingHandlerTest, ReportsOnlyIncludesValidSCTs) {
     for (auto& sct_and_status :
          reporter.second->report()->certificate_report(0).included_sct()) {
       // Decode the SCT and check that only the valid SCT was included.
-      base::StringPiece encoded_sct(sct_and_status.serialized_sct());
+      std::string_view encoded_sct(sct_and_status.serialized_sct());
       scoped_refptr<net::ct::SignedCertificateTimestamp> decoded_sct;
       ASSERT_TRUE(net::ct::DecodeSignedCertificateTimestamp(&encoded_sct,
                                                             &decoded_sct));

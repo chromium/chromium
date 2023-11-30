@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -413,7 +414,7 @@ class HostResolverFactory final : public net::HostResolver::Factory {
 
   std::unique_ptr<net::HostResolver> CreateResolver(
       net::HostResolverManager* manager,
-      base::StringPiece host_mapping_rules,
+      std::string_view host_mapping_rules,
       bool enable_caching) override {
     DCHECK(resolver_);
     return std::move(resolver_);
@@ -423,7 +424,7 @@ class HostResolverFactory final : public net::HostResolver::Factory {
   std::unique_ptr<net::HostResolver> CreateStandaloneResolver(
       net::NetLog* net_log,
       const net::HostResolver::ManagerOptions& options,
-      base::StringPiece host_mapping_rules,
+      std::string_view host_mapping_rules,
       bool enable_caching) override {
     NOTREACHED();
     return nullptr;
@@ -496,7 +497,7 @@ class NetworkContextTest : public testing::Test {
 
   // Looks up a value with the given name from the NetworkContext's
   // TransportSocketPool info dictionary.
-  int GetSocketPoolInfo(NetworkContext* context, base::StringPiece name) {
+  int GetSocketPoolInfo(NetworkContext* context, std::string_view name) {
     return context->url_request_context()
         ->http_transaction_factory()
         ->GetSession()
@@ -4118,7 +4119,7 @@ class TestResolverFactory : public net::HostResolver::Factory {
 
   std::unique_ptr<net::HostResolver> CreateResolver(
       net::HostResolverManager* manager,
-      base::StringPiece host_mapping_rules,
+      std::string_view host_mapping_rules,
       bool enable_caching) override {
     DCHECK(host_mapping_rules.empty());
     auto resolve_context = std::make_unique<net::ResolveContext>(
@@ -4132,7 +4133,7 @@ class TestResolverFactory : public net::HostResolver::Factory {
   std::unique_ptr<net::HostResolver> CreateStandaloneResolver(
       net::NetLog* net_log,
       const net::HostResolver::ManagerOptions& options,
-      base::StringPiece host_mapping_rules,
+      std::string_view host_mapping_rules,
       bool enable_caching) override {
     DCHECK(host_mapping_rules.empty());
     std::unique_ptr<net::ContextHostResolver> resolver =

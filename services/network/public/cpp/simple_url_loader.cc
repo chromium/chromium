@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -20,7 +21,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -1202,7 +1202,7 @@ class DownloadAsStreamBodyHandler : public BodyHandler,
     base::WeakPtr<DownloadAsStreamBodyHandler> weak_this(
         weak_ptr_factory_.GetWeakPtr());
     stream_consumer_->OnDataReceived(
-        base::StringPiece(data, length),
+        std::string_view(data, length),
         base::BindOnce(&DownloadAsStreamBodyHandler::Resume,
                        weak_ptr_factory_.GetWeakPtr()));
     // Protect against deletion.

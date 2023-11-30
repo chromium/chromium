@@ -7,11 +7,11 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/json/json_string_value_serializer.h"
-#include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_test_util.h"
@@ -39,7 +39,7 @@ class TestURLRequestMaker {
   TestURLRequestMaker& operator=(const TestURLRequestMaker&) = delete;
 
   // Constructs and returns a URLRequest with destination |spec|.
-  std::unique_ptr<net::URLRequest> MakeURLRequest(base::StringPiece spec);
+  std::unique_ptr<net::URLRequest> MakeURLRequest(std::string_view spec);
 
  protected:
   net::TestDelegate delegate_;
@@ -65,7 +65,7 @@ class TrustTokenRequestHelperTest : public ::testing::Test {
 
   TestURLRequestMaker request_maker_;
 
-  std::unique_ptr<net::URLRequest> MakeURLRequest(base::StringPiece spec) {
+  std::unique_ptr<net::URLRequest> MakeURLRequest(std::string_view spec) {
     return request_maker_.MakeURLRequest(spec);
   }
 
@@ -216,7 +216,7 @@ const TrustTokenTestParameters kSigningTrustTokenTestParameters[]{
 //      }})
 //   =  R"( { "https://issuer.com": { "batchsize": 5 } } )"
 std::string WrapKeyCommitmentsForIssuers(
-    base::flat_map<url::Origin, base::StringPiece> issuers_and_commitments);
+    base::flat_map<url::Origin, std::string_view> issuers_and_commitments);
 
 }  // namespace network
 

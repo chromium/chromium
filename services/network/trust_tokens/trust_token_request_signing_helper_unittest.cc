@@ -7,6 +7,7 @@
 #include <iterator>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base64.h"
@@ -66,7 +67,7 @@ MATCHER_P2(Header,
   return Matches(other_matcher)(header);
 }
 
-SuitableTrustTokenOrigin CreateSuitableOriginOrDie(base::StringPiece spec) {
+SuitableTrustTokenOrigin CreateSuitableOriginOrDie(std::string_view spec) {
   absl::optional<SuitableTrustTokenOrigin> maybe_origin =
       SuitableTrustTokenOrigin::Create(GURL(spec));
   CHECK(maybe_origin) << "Failed to create a SuitableTrustTokenOrigin!";
@@ -74,7 +75,7 @@ SuitableTrustTokenOrigin CreateSuitableOriginOrDie(base::StringPiece spec) {
 }
 
 bool ExtractRedemptionRecordsFromHeader(
-    base::StringPiece sec_redemption_record_header,
+    std::string_view sec_redemption_record_header,
     std::map<SuitableTrustTokenOrigin, std::string>*
         redemption_records_per_issuer_out,
     std::string* error_out) {

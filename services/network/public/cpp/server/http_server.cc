@@ -76,7 +76,7 @@ void HttpServer::AcceptWebSocket(
 
 void HttpServer::SendOverWebSocket(
     int connection_id,
-    base::StringPiece data,
+    std::string_view data,
     net::NetworkTrafficAnnotationTag traffic_annotation) {
   HttpConnection* connection = FindConnection(connection_id);
   if (connection == NULL)

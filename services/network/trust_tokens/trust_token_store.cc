@@ -164,9 +164,9 @@ void TrustTokenStore::PruneStaleIssuerState(
     const SuitableTrustTokenOrigin& issuer,
     const std::vector<mojom::TrustTokenVerificationKeyPtr>& keys) {
   DCHECK([&keys]() {
-    std::set<base::StringPiece> unique_keys;
+    std::set<std::string_view> unique_keys;
     for (const auto& key : keys)
-      unique_keys.insert(base::StringPiece(key->body));
+      unique_keys.insert(std::string_view(key->body));
     return unique_keys.size() == keys.size();
   }());
 
@@ -190,7 +190,7 @@ void TrustTokenStore::PruneStaleIssuerState(
 
 void TrustTokenStore::AddTokens(const SuitableTrustTokenOrigin& issuer,
                                 base::span<const std::string> token_bodies,
-                                base::StringPiece issuing_key) {
+                                std::string_view issuing_key) {
   auto config = persister_->GetIssuerConfig(issuer);
   if (!config)
     config = std::make_unique<TrustTokenIssuerConfig>();

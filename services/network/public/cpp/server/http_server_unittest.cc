@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -145,7 +146,7 @@ class TestHttpClient {
     DCHECK_LE(0, body_size);
     auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
         net::HttpUtil::AssembleRawHeaders(
-            base::StringPiece(response.data(), end_of_headers)));
+            std::string_view(response.data(), end_of_headers)));
     return body_size >= headers->GetContentLength();
   }
 

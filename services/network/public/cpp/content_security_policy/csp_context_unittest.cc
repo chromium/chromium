@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include <set>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -27,7 +27,7 @@ class CSPContextTest : public CSPContext {
     scheme_to_bypass_.insert(scheme);
   }
 
-  bool SchemeShouldBypassCSP(const base::StringPiece& scheme) override {
+  bool SchemeShouldBypassCSP(const std::string_view& scheme) override {
     return scheme_to_bypass_.count(std::string(scheme));
   }
 

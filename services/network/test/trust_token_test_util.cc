@@ -25,7 +25,7 @@ TestURLRequestMaker::TestURLRequestMaker() {
 TestURLRequestMaker::~TestURLRequestMaker() = default;
 
 std::unique_ptr<net::URLRequest> TestURLRequestMaker::MakeURLRequest(
-    base::StringPiece spec) {
+    std::string_view spec) {
   return context_->CreateRequest(GURL(spec),
                                  net::RequestPriority::DEFAULT_PRIORITY,
                                  &delegate_, TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -166,7 +166,7 @@ SerializeTrustTokenParametersAndConstructExpectation(
 }
 
 std::string WrapKeyCommitmentsForIssuers(
-    base::flat_map<url::Origin, base::StringPiece> issuers_and_commitments) {
+    base::flat_map<url::Origin, std::string_view> issuers_and_commitments) {
   base::Value::Dict to_serialize;
   for (const auto& [issuer, commitment] : issuers_and_commitments) {
     // guard against accidentally passing an origin without a unique

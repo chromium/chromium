@@ -4,6 +4,8 @@
 
 #include "services/network/public/cpp/net_ipc_param_traits.h"
 
+#include <string_view>
+
 #include "ipc/ipc_message_utils.h"
 #include "ipc/ipc_mojo_param_traits.h"
 #include "ipc/ipc_platform_file.h"
@@ -76,7 +78,7 @@ void ParamTraits<net::HashValue>::Write(base::Pickle* m, const param_type& p) {
 bool ParamTraits<net::HashValue>::Read(const base::Pickle* m,
                                        base::PickleIterator* iter,
                                        param_type* r) {
-  base::StringPiece encoded;
+  std::string_view encoded;
   return iter->ReadStringPiece(&encoded) && r->FromString(encoded);
 }
 

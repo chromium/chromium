@@ -5,12 +5,12 @@
 #include "services/network/test/trust_token_test_server_handler_registration.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "net/http/http_request_headers.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -39,7 +39,7 @@ MakeTrustTokenFailureResponse() {
 // Constructs and returns an HTTP response bearing the given base64-encoded
 // Trust Tokens issuance or redemption protocol response message.
 std::unique_ptr<net::test_server::HttpResponse> MakeTrustTokenResponse(
-    base::StringPiece contents) {
+    std::string_view contents) {
   CHECK([&]() {
     std::string temp;
     return base::Base64Decode(contents, &temp);

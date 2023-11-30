@@ -44,7 +44,7 @@ class HostResolverFactory final : public net::HostResolver::Factory {
 
   std::unique_ptr<net::HostResolver> CreateResolver(
       net::HostResolverManager* manager,
-      base::StringPiece host_mapping_rules,
+      std::string_view host_mapping_rules,
       bool enable_caching) override {
     DCHECK(resolver_);
     return std::move(resolver_);
@@ -54,7 +54,7 @@ class HostResolverFactory final : public net::HostResolver::Factory {
   std::unique_ptr<net::HostResolver> CreateStandaloneResolver(
       net::NetLog* net_log,
       const net::HostResolver::ManagerOptions& options,
-      base::StringPiece host_mapping_rules,
+      std::string_view host_mapping_rules,
       bool enable_caching) override {
     NOTREACHED();
     return nullptr;
@@ -298,7 +298,7 @@ quic::ParsedQuicVersion GetTestVersion() {
   return version;
 }
 
-class WebTransportTest : public testing::TestWithParam<base::StringPiece> {
+class WebTransportTest : public testing::TestWithParam<std::string_view> {
  public:
   WebTransportTest()
       : WebTransportTest(
@@ -366,7 +366,7 @@ class WebTransportTest : public testing::TestWithParam<base::StringPiece> {
                        std::move(fingerprints), std::move(handshake_client));
   }
 
-  GURL GetURL(base::StringPiece suffix) {
+  GURL GetURL(std::string_view suffix) {
     int port = http_server_->server_address().port();
     return GURL(base::StrCat(
         {"https://test.example.com:", base::NumberToString(port), suffix}));

@@ -117,7 +117,7 @@ WebSocket::ParseResult WebSocket::Read(std::string* message) {
     return FRAME_ERROR;
   }
   const std::string& read_buf = connection_->read_buf();
-  base::StringPiece frame(read_buf);
+  std::string_view frame(read_buf);
   int bytes_consumed = 0;
   const ParseResult result =
       encoder_->DecodeFrame(frame, &bytes_consumed, message);
@@ -134,7 +134,7 @@ WebSocket::ParseResult WebSocket::Read(std::string* message) {
 }
 
 void WebSocket::Send(
-    base::StringPiece message,
+    std::string_view message,
     net::WebSocketFrameHeader::OpCodeEnum op_code,
     const net::NetworkTrafficAnnotationTag traffic_annotation) {
   if (closed_)

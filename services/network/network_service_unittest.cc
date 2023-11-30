@@ -5,6 +5,7 @@
 #include "services/network/network_service.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/base64.h"
@@ -699,7 +700,7 @@ TEST_F(NetworkServiceTest, DnsOverHttpsEnableDisable) {
 
 TEST_F(NetworkServiceTest, DisableDohUpgradeProviders) {
   auto FindProviderFeature =
-      [](base::StringPiece provider) -> base::test::FeatureRef {
+      [](std::string_view provider) -> base::test::FeatureRef {
     const auto it =
         base::ranges::find(net::DohProviderEntry::GetList(), provider,
                            &net::DohProviderEntry::provider);

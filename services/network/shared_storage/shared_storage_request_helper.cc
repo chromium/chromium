@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "net/http/structured_headers.h"
 #include "net/url_request/url_request.h"
@@ -180,7 +179,7 @@ void SharedStorageRequestHelper::UpdateSharedStorageWritableEligible(
 }
 
 bool SharedStorageRequestHelper::ProcessResponse(net::URLRequest& request,
-                                                 base::StringPiece value,
+                                                 std::string_view value,
                                                  base::OnceClosure done) {
   DCHECK(observer_);
   DCHECK(done);

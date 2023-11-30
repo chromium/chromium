@@ -4,8 +4,9 @@
 
 #include "services/network/public/cpp/cross_origin_opener_policy_parser.h"
 
+#include <string_view>
+
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
@@ -30,7 +31,7 @@ constexpr char kReportTo[] = "report-to";
 // parsed values from |header|.
 // Note: if |header| is invalid, |value|, |soap_by_default_value| and
 // |endpoint| will not be modified.
-void ParseHeader(base::StringPiece header_value,
+void ParseHeader(std::string_view header_value,
                  mojom::CrossOriginOpenerPolicyValue* value,
                  mojom::CrossOriginOpenerPolicyValue* soap_by_default_value,
                  absl::optional<std::string>* endpoint) {

@@ -5,6 +5,8 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_CONTENT_SECURITY_POLICY_CSP_CONTEXT_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_CONTENT_SECURITY_POLICY_CSP_CONTEXT_H_
 
+#include <string_view>
+
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 
@@ -84,7 +86,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) CSPContext {
 
   // This is declared virtual only so that it can be overridden for unit
   // testing.
-  virtual bool SchemeShouldBypassCSP(const base::StringPiece& scheme);
+  virtual bool SchemeShouldBypassCSP(const std::string_view& scheme);
 };
 
 }  // namespace network
