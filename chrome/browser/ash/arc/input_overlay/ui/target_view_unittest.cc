@@ -72,6 +72,14 @@ class TargetViewTest : public OverlayViewTestBase {
   }
 };
 
+TEST_F(TargetViewTest, TestInitialCursorLocation) {
+  PressAddButton();
+  auto* target_view = GetTargetView();
+  EXPECT_TRUE(target_view);
+  EXPECT_EQ(target_view->GetBoundsInScreen().CenterPoint(),
+            aura::Env::GetInstance()->last_mouse_location());
+}
+
 TEST_F(TargetViewTest, TestMouseSupport) {
   // Enter into the button placement mode and check mouse hover move and click.
   PressAddButton();

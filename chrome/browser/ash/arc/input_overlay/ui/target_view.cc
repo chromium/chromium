@@ -125,11 +125,20 @@ void TargetView::OnCenterChanged() {
   SchedulePaint();
 }
 
+void TargetView::MoveCursorToViewCenter() {
+  auto* widget = GetWidget();
+  DCHECK(widget);
+  auto* window = widget->GetNativeWindow();
+  DCHECK(window);
+  window->MoveCursorTo(bounds().CenterPoint());
+}
+
 void TargetView::VisibilityChanged(views::View* starting_from,
                                    bool is_visible) {
   if (is_visible) {
     UpdateWidgetBounds();
     RequestFocus();
+    MoveCursorToViewCenter();
   }
 }
 

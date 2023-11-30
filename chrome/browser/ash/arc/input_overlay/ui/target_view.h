@@ -43,6 +43,9 @@ class TargetView : public views::View {
   // Called when `center_` is updated.
   void OnCenterChanged();
 
+  // Sets cursor intial position when this view shows up.
+  void MoveCursorToViewCenter();
+
   // views::View:
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
