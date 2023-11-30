@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/android_autofill/browser/android_autofill_bridge_factory.h"
 #include "components/android_autofill/browser/android_autofill_features.h"
@@ -50,6 +51,7 @@ using ::testing::ResultOf;
 using ::testing::UnorderedElementsAre;
 using ::testing::WithArg;
 using FieldInfo = AutofillProviderAndroidBridge::FieldInfo;
+using PrefillRequestState = AutofillProviderAndroid::PrefillRequestState;
 using test::CreateFormDataForFrame;
 using test::CreateTestCreditCardFormData;
 using test::CreateTestFormField;
@@ -291,6 +293,30 @@ TEST_F(AutofillProviderAndroidTest, OnAskForValuesToFillStartsSession) {
                            /*has_server_predictions=*/false));
   android_autofill_manager().SimulateOnAskForValuesToFill(form,
                                                           form.fields.front());
+}
+
+// Tests that a metric is emitted if prefill requests are supported and there
+// was not enough time to send a prefill request.
+TEST_F(AutofillProviderAndroidTest,
+       OnAskForValuesToFillRecordsPrefillRequestStateUmaMetric) {
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SdkVersion::SDK_VERSION_U) {
+    GTEST_SKIP();
+  }
+
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAndroidAutofillPrefillRequestsForLoginForms);
+
+  FormData form =
+      CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
+  android_autofill_manager().SimulateOnAskForValuesToFill(form,
+                                                          form.fields.front());
+  histogram_tester.ExpectUniqueSample(
+      AutofillProviderAndroid::kPrefillRequestStateUma,
+      PrefillRequestState::kRequestNotSentNoTime, 1);
 }
 
 // Tests that a focus change within the form of an ongoing autofill session
@@ -583,7 +609,7 @@ TEST_F(AutofillProviderAndroidTest, NoPrefillRequestWithoutFeature) {
       form.global_id());
 }
 
-// Tests that no prefill request is if there is already an ongoing Autofill
+// Tests that no prefill request is sent if there is already an ongoing Autofill
 // session.
 TEST_F(AutofillProviderAndroidTest, NoPrefillRequestIfOngoingSession) {
   if (base::android::BuildInfo::GetInstance()->sdk_int() <
@@ -591,37 +617,42 @@ TEST_F(AutofillProviderAndroidTest, NoPrefillRequestIfOngoingSession) {
     GTEST_SKIP();
   }
 
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       features::kAndroidAutofillPrefillRequestsForLoginForms);
 
-  FormData pi_form = CreateFormDataForFrame(
-      CreateTestPersonalInformationFormData(), main_frame_token());
-  android_autofill_manager().OnFormsSeen({pi_form}, /*removed_forms=*/{});
+  FormData login_form1 =
+      CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
+  android_autofill_manager().OnFormsSeen({login_form1}, /*removed_forms=*/{});
   EXPECT_CALL(provider_bridge(), StartAutofillSession);
   android_autofill_manager().SimulateOnAskForValuesToFill(
-      pi_form, pi_form.fields.front());
+      login_form1, login_form1.fields.front());
+  histogram_tester.ExpectUniqueSample(
+      AutofillProviderAndroid::kPrefillRequestStateUma,
+      PrefillRequestState::kRequestNotSentNoTime, 1);
 
-  FormData login_form =
+  FormData login_form2 =
       CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
-  android_autofill_manager().OnFormsSeen({login_form}, /*removed_forms=*/{});
+  android_autofill_manager().OnFormsSeen({login_form2}, /*removed_forms=*/{});
   ASSERT_TRUE(
-      android_autofill_manager().FindCachedFormById(login_form.global_id()));
+      android_autofill_manager().FindCachedFormById(login_form2.global_id()));
 
   // No prefill request is ever sent.
   EXPECT_CALL(provider_bridge(), SendPrefillRequest).Times(0);
   android_autofill_manager().SimulatePropagateAutofillPredictions(
-      login_form.global_id());
+      login_form2.global_id());
 }
 
-// Tests that no prefill request is if there is already an ongoing Autofill
-// session.
+// Tests that no prefill request is sent if there has already been another
+// prefill request.
 TEST_F(AutofillProviderAndroidTest, NoSecondPrefillRequest) {
   if (base::android::BuildInfo::GetInstance()->sdk_int() <
       base::android::SdkVersion::SDK_VERSION_U) {
     GTEST_SKIP();
   }
 
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       features::kAndroidAutofillPrefillRequestsForLoginForms);
@@ -649,6 +680,12 @@ TEST_F(AutofillProviderAndroidTest, NoSecondPrefillRequest) {
   EXPECT_CALL(provider_bridge(), SendPrefillRequest).Times(0);
   android_autofill_manager().SimulatePropagateAutofillPredictions(
       login_form2.global_id());
+
+  android_autofill_manager().SimulateOnAskForValuesToFill(
+      login_form2, login_form2.fields.front());
+  histogram_tester.ExpectUniqueSample(
+      AutofillProviderAndroid::kPrefillRequestStateUma,
+      PrefillRequestState::kRequestNotSentMaxNumberReached, 1);
 }
 
 // Tests that the session id used in a prefill request is also used for starting
@@ -694,6 +731,7 @@ TEST_F(AutofillProviderAndroidTest,
     GTEST_SKIP();
   }
 
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       features::kAndroidAutofillPrefillRequestsForLoginForms);
@@ -726,6 +764,9 @@ TEST_F(AutofillProviderAndroidTest,
 
   // A new session id is used to start the Autofill session.
   EXPECT_NE(cache_session_id, autofill_session_id);
+  histogram_tester.ExpectUniqueSample(
+      AutofillProviderAndroid::kPrefillRequestStateUma,
+      PrefillRequestState::kRequestSentFormChanged, 1);
 }
 
 // Tests that the session id used in a prefill request is only used once to

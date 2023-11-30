@@ -11,7 +11,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/feature_list.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/android_autofill/browser/android_autofill_bridge_factory.h"
 #include "components/android_autofill/browser/android_autofill_features.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"
@@ -46,6 +46,34 @@ constexpr int kMinimumSdkVersionForPrefillRequests =
     base::android::SdkVersion::SDK_VERSION_U;
 
 constexpr base::TimeDelta kKeyboardSuppressionTimeout = base::Seconds(1);
+
+// Returns whether we should attempt to cache provider responses for this form.
+// Currently, that is the case iff we diagnose it to be a login form.
+bool ShouldCacheForm(const FormStructure& form_structure) {
+  // Transform the predictions data to a format the `FormDataParser` can handle
+  // and parse the form.
+  FormData form_data = form_structure.ToFormData();
+  auto autofill_predictions =
+      base::MakeFlatMap<FieldGlobalId, AutofillType::ServerPrediction>(
+          form_structure, /*comp=*/{},
+          /*proj=*/[](const std::unique_ptr<AutofillField>& field) {
+            return std::make_pair(field->global_id(),
+                                  AutofillType::ServerPrediction(*field));
+          });
+  password_manager::FormDataParser parser;
+  // The driver id is irrelevant here because it would only be used by password
+  // manager logic that handles the `PasswordForm` returned by the parser.
+  // Therefore we pass a dummy a value.
+  parser.set_predictions(password_manager::ConvertToFormPredictions(
+      /*driver_id=*/0, form_data, autofill_predictions));
+  // On Chrome, the parser can use stored usernames to identify a filled
+  // username field by the value it contains. Since we do not have access to
+  // credentials, we leave it empty.
+  std::unique_ptr<password_manager::PasswordForm> pw_form =
+      parser.Parse(form_data, password_manager::FormDataParser::Mode::kFilling,
+                   /*stored_usernames=*/{});
+  return pw_form && pw_form->IsLikelyLoginForm();
+}
 
 }  // namespace
 
@@ -156,8 +184,10 @@ void AutofillProviderAndroid::StartNewSession(AndroidAutofillManager* manager,
   // - The cached form is similar to the current form - i.e. it consists of the
   //   same DOM elements as the cached form and their attributes have not
   //   changed substantially enough - see `FormDataAndroid::SimilarFormAs`.
-  const bool use_id_of_cached_form = cached_form_ && !has_used_cached_form_ &&
-                                     cached_form_->SimilarFormAs(form);
+  const bool is_similar_to_cached_form =
+      cached_form_ && cached_form_->SimilarFormAs(form);
+  const bool use_id_of_cached_form =
+      is_similar_to_cached_form && !has_used_cached_form_;
   form_ = std::make_unique<FormDataAndroid>(
       form,
       use_id_of_cached_form ? cached_form_->session_id() : CreateSessionId());
@@ -174,13 +204,52 @@ void AutofillProviderAndroid::StartNewSession(AndroidAutofillManager* manager,
   manager_ = manager->GetWeakPtrToLeafClass();
 
   // Set the field type predictions in `form_`.
-  if (FormStructure* form_structure =
-          manager->FindCachedFormById(form.global_id())) {
+  FormStructure* form_structure = manager->FindCachedFormById(form.global_id());
+  if (form_structure) {
     form_->UpdateFieldTypes(*form_structure);
   }
   field_info.bounds = ToClientAreaBound(bounding_box);
-  // TODO(crbug.com/1502108): Only set to true once there is confirmation that
-  // the bottom sheet has been shown.
+
+  [&] {
+    // Metrics for prefill requests are only emitted if this is the first time
+    // a cached form is focused - hence the use of `is_similar_to_cached_form`.
+    if (!ArePrefillRequestsSupported() || is_similar_to_cached_form) {
+      return;
+    }
+
+    // We sent a cache request for this form element, but the form (or its
+    // members) have changed since then.
+    if (cached_form_ && cached_form_->form().global_id() == form.global_id()) {
+      base::UmaHistogramEnumeration(
+          kPrefillRequestStateUma,
+          PrefillRequestState::kRequestSentFormChanged);
+      return;
+    }
+
+    // Prefill request state metrics are for forms that we would have cached.
+    if (!form_structure || !ShouldCacheForm(*form_structure)) {
+      return;
+    }
+
+    if (cached_form_) {
+      // We would have cached the form, but another cache request had already
+      // been sent.
+      base::UmaHistogramEnumeration(
+          kPrefillRequestStateUma,
+          PrefillRequestState::kRequestNotSentMaxNumberReached);
+      return;
+    }
+
+    // If we reach this point, we know that a) we would have cached the form and
+    // b) no other cache request has been sent. That means that we did not
+    // receive the predictions for this form in time.
+    base::UmaHistogramEnumeration(kPrefillRequestStateUma,
+                                  PrefillRequestState::kRequestNotSentNoTime);
+  }();
+
+  // TODO(crbug.com/1502097): Add metrics for the cases in which we attempt
+  // to show a bottom sheet.
+
   has_used_cached_form_ = true;
   bridge_->StartAutofillSession(
       *form_, field_info, manager->has_server_prediction(form.global_id()));
@@ -367,7 +436,7 @@ void AutofillProviderAndroid::OnDidFillAutofillFormData(
     base::TimeTicks timestamp) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (manager != manager_.get() || !IsIdOfLinkedForm(form.global_id())) {
-    UMA_HISTOGRAM_BOOLEAN(
+    base::UmaHistogramBoolean(
         "Autofill.WebView.OnDidFillAutofillFormDataEarlyReturnReason",
         manager == manager_.get());
     return;
@@ -533,43 +602,14 @@ void AutofillProviderAndroid::MaybeSendPrefillRequest(
     return;
   }
 
-  // Check whether the form is likely to be a login form.
   const FormStructure* const form_structure =
       manager.FindCachedFormById(form_id);
-  if (!form_structure) {
+  if (!form_structure || !ShouldCacheForm(*form_structure)) {
     return;
   }
 
-  // Transform the predictions data to a format the `FormDataParser` can handle
-  // and parse the form.
-  FormData form_data = form_structure->ToFormData();
-  auto autofill_predictions =
-      base::MakeFlatMap<FieldGlobalId, AutofillType::ServerPrediction>(
-          *form_structure, /*comp=*/{},
-          /*proj=*/[](const std::unique_ptr<AutofillField>& field) {
-            return std::make_pair(field->global_id(),
-                                  AutofillType::ServerPrediction(*field));
-          });
-  password_manager::FormDataParser parser;
-  // The driver id is irrelevant here because it would only be used by password
-  // manager logic that handles the `PasswordForm` returned by the parser.
-  // Therefore we pass a dummy a value.
-  parser.set_predictions(password_manager::ConvertToFormPredictions(
-      /*driver_id=*/0, form_data, autofill_predictions));
-  // On Chrome, the parser can use stored usernames to identify a filled
-  // username field by the value it contains. Since we do not have access to
-  // credentials, we leave it empty.
-  std::unique_ptr<password_manager::PasswordForm> password_form =
-      parser.Parse(form_data, password_manager::FormDataParser::Mode::kFilling,
-                   /*stored_usernames=*/{});
-  // Currently, prefill requests are limited to likely login forms for
-  // simplicity - these are the most common use cases on WebView.
-  if (!password_form || !password_form->IsLikelyLoginForm()) {
-    return;
-  }
-
-  cached_form_ =
-      std::make_unique<FormDataAndroid>(form_data, CreateSessionId());
+  cached_form_ = std::make_unique<FormDataAndroid>(form_structure->ToFormData(),
+                                                   CreateSessionId());
   cached_form_->UpdateFieldTypes(*form_structure);
   bridge_->SendPrefillRequest(*cached_form_);
 }

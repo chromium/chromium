@@ -28,6 +28,34 @@ class AutofillProviderAndroid : public AutofillProvider,
                                 public AutofillProviderAndroidBridge::Delegate,
                                 public content::WebContentsObserver {
  public:
+  // Used as a metric that describes the state of a prefill requests. It is
+  // emitted for every form deemed suitable for prefill requests prefill
+  // requests are supported on this Android version (U+).
+  enum class PrefillRequestState {
+    // A prefill request was sent, a view structure was requested and provided
+    // and a bottom sheet was shown.
+    kRequestSentStructureProvidedBottomSheetShown = 0,
+    // A prefill request was sent and a view structure was requested and
+    // provided, but no bottom sheet was shown.
+    kRequestSentStructureProvidedBottomSheetNotShown = 1,
+    // A prefill request was sent, but no view structure was requested by the
+    // framework.
+    kRequestSentStructureNotProvided = 2,
+    // A prefill request was sent, but the form changed substantially between
+    // sending the cache request and the focus event on the form.
+    kRequestSentFormChanged = 3,
+    // A prefill request was not sent because the maximum number of prefill
+    // requests (currently 1 per session) had already been reached.
+    kRequestNotSentMaxNumberReached = 4,
+    // A prefill request was not sent because there was no time - the form was
+    // only analyzed to be cacheable when a session had already been started.
+    kRequestNotSentNoTime = 5,
+    kMaxValue = kRequestNotSentNoTime
+  };
+
+  static constexpr char kPrefillRequestStateUma[] =
+      "Autofill.WebView.PrefillRequestState";
+
   static void CreateForWebContents(content::WebContents* web_contents);
 
   static AutofillProviderAndroid* FromWebContents(

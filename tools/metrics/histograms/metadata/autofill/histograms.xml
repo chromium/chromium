@@ -5579,6 +5579,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.WebView.PrefillRequestState"
+    enum="AndroidAutofillPrefillRequestState" expires_after="2024-10-31">
+  <owner>jkeitel@google.com</owner>
+  <owner>jihadghanna@google.com</owner>
+  <owner>elabadysayed@chromium.org</owner>
+  <summary>
+    Records the state of a prefill request (was a request sent, was it answered,
+    was a bottom sheet shown) for a form that was deemed cacheable. Emitted
+    whenever OnAskForValuesToFill is triggered on a cacheable form.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.WebView.Provider.PackageName"
     enum="AutofillProviderPackageName" expires_after="2024-05-23">
   <owner>alexmitra@chromium.org</owner>

@@ -1379,6 +1379,24 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="kPreconnect"/>
 </enum>
 
+<enum name="AndroidAutofillPrefillRequestState">
+  <summary>
+    Describes the state of a prefill request for a given, cacheable, form.
+  </summary>
+  <int value="0"
+      label="Prefill request sent, view structure provided, bottom sheet
+             shown."/>
+  <int value="1"
+      label="Prefill request sent, view structure provided, bottom sheet not
+             shown."/>
+  <int value="2" label="Prefill request sent, view structure not provided."/>
+  <int value="3" label="Prefill request sent but form changed."/>
+  <int value="4"
+      label="Prefill request not sent - maximum number of prefill requests
+             reached."/>
+  <int value="5" label="Prefill request not sent - not enough time."/>
+</enum>
+
 <enum name="AndroidEvictionReason">
   <int value="0" label="TabUnusedTooLong"/>
   <int value="1" label="TabUnusedInSession"/>
