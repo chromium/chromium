@@ -65,6 +65,7 @@ class MEDIA_GPU_EXPORT InputQueue : public BaseQueue {
                                  size_t length,
                                  uint32_t frame_id);
   bool PrepareBuffers() override;
+  void Reclaim();
 
  private:
   bool SetupFormat(const gfx::Size resolution);

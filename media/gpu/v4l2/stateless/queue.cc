@@ -5,6 +5,7 @@
 #include "media/gpu/v4l2/stateless/queue.h"
 
 #include "base/containers/contains.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "media/gpu/macros.h"
 
@@ -155,6 +156,30 @@ bool InputQueue::SetupFormat(const gfx::Size resolution) {
 bool InputQueue::PrepareBuffers() {
   DVLOGF(4);
   return AllocateBuffers(kNumberInputPlanes);
+}
+
+void InputQueue::Reclaim() {
+  DVLOGF(4) << Description();
+  CHECK(device_);
+
+  // There may be more than one buffer available. Keep trying to dequeue buffers
+  // until there aren't anymore.
+  while (true) {
+    auto buffer =
+        device_->DequeueBuffer(buffer_type_, memory_type_, kNumberInputPlanes);
+    if (!buffer) {
+      return;
+    }
+
+    const uint32_t index = buffer->GetIndex();
+    DVLOGF(3) << "#" << index << " returned, now "
+              << free_buffer_indices_.size() + 1 << " " << Description()
+              << " available.";
+    if (!free_buffer_indices_.insert(index).second) {
+      // There is no way that a reclaimed buffer is already present in the list.
+      NOTREACHED();
+    }
+  }
 }
 
 bool InputQueue::SubmitCompressedFrameData(void* ctrls,

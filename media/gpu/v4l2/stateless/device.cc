@@ -115,6 +115,17 @@ void BufferToV4L2Buffer(struct v4l2_buffer* v4l2_buffer, const Buffer& buffer) {
   }
 }
 
+std::string BufferTypeString(const BufferType buffer_type) {
+  switch (buffer_type) {
+    case BufferType::kCompressedData:
+      return "compressed data";
+    case BufferType::kRawFrames:
+      return "raw frames";
+    case BufferType::kInvalid:
+      return "INVALID";
+  }
+}
+
 using v4l2_enum_type = decltype(V4L2_PIX_FMT_H264);
 // Correspondence from V4L2 codec described as a pixel format to a Control ID.
 static const std::map<v4l2_enum_type, v4l2_enum_type>
@@ -461,6 +472,28 @@ bool Device::QueueBuffer(const Buffer& buffer,
   DVLOGF(4) << V4L2BufferToString(v4l2_buffer);
 
   return (IoctlDevice(VIDIOC_QBUF, &v4l2_buffer) == kIoctlOk);
+}
+
+// VIDIOC_DQBUF
+absl::optional<Buffer> Device::DequeueBuffer(BufferType buffer_type,
+                                             MemoryType memory_type,
+                                             uint32_t num_planes) {
+  DVLOGF(4) << BufferTypeString(buffer_type);
+  struct v4l2_buffer v4l2_buffer;
+  struct v4l2_plane v4l2_planes[VIDEO_MAX_PLANES];
+  memset(&v4l2_buffer, 0, sizeof(v4l2_buffer));
+  memset(v4l2_planes, 0, sizeof(v4l2_planes));
+  v4l2_buffer.m.planes = v4l2_planes;
+
+  v4l2_buffer.length = num_planes;
+  v4l2_buffer.type = BufferTypeToV4L2(buffer_type);
+  v4l2_buffer.memory = MemoryTypeToV4L2(memory_type);
+
+  if (IoctlDevice(VIDIOC_DQBUF, &v4l2_buffer) != kIoctlOk) {
+    return absl::nullopt;
+  }
+
+  return V4L2BufferToBuffer(v4l2_buffer);
 }
 
 // VIDIOC_ENUM_FRAMESIZES

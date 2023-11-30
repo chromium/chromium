@@ -218,6 +218,9 @@ bool V4L2StatelessVideoDecoder::SubmitFrame(void* ctrls,
     output_queue_->StartStreaming();
   }
 
+  // Reclaim input buffers that are done being processed.
+  input_queue_->Reclaim();
+
   DVLOGF(2) << "Submitting compressed frame " << frame_id << " to be decoded.";
   return input_queue_->SubmitCompressedFrameData(ctrls, data, size, frame_id);
 }

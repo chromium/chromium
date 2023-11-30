@@ -159,6 +159,11 @@ class MEDIA_GPU_EXPORT Device : public base::RefCountedThreadSafe<Device> {
   // processing.
   bool QueueBuffer(const Buffer& buffer, const base::ScopedFD& request_fd);
 
+  // Used during frame processing on a per frame basis.
+  absl::optional<Buffer> DequeueBuffer(BufferType buffer_type,
+                                       MemoryType memory_type,
+                                       uint32_t num_planes);
+
   // Query the driver for the smallest and largest uncompressed frame sizes that
   // are supported using the VIDIOC_ENUM_FRAMESIZES ioctl.
   std::pair<gfx::Size, gfx::Size> GetFrameResolutionRange(VideoCodec codec);
