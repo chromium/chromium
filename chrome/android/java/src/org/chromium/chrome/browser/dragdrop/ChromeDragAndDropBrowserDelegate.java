@@ -90,7 +90,10 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
         if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
             intent =
                     DragAndDropLauncherActivity.getLinkLauncherIntent(
-                            mContext, urlString, /* windowId= */ null);
+                            mContext,
+                            urlString,
+                            MultiWindowUtils.getInstanceIdForLinkIntent(
+                                    ContextUtils.activityFromContext(mContext)));
         }
         return intent;
     }

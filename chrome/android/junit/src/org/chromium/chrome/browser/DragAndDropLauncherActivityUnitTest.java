@@ -25,6 +25,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link DragAndDropLauncherActivity}. */
@@ -46,7 +47,9 @@ public class DragAndDropLauncherActivityUnitTest {
 
     @Test
     public void testGetLinkLauncherIntent_defaultWindowId() {
-        Intent intent = DragAndDropLauncherActivity.getLinkLauncherIntent(mContext, mLinkUrl, null);
+        Intent intent =
+                DragAndDropLauncherActivity.getLinkLauncherIntent(
+                        mContext, mLinkUrl, MultiWindowUtils.INVALID_INSTANCE_ID);
         assertEquals(
                 "The intent action should be DragAndDropLauncherActivity.ACTION_DRAG_DROP_VIEW.",
                 DragAndDropLauncherActivity.ACTION_DRAG_DROP_VIEW,
@@ -80,7 +83,9 @@ public class DragAndDropLauncherActivityUnitTest {
 
     @Test
     public void testIsIntentValid_invalidIntentAction() {
-        Intent intent = DragAndDropLauncherActivity.getLinkLauncherIntent(mContext, mLinkUrl, null);
+        Intent intent =
+                DragAndDropLauncherActivity.getLinkLauncherIntent(
+                        mContext, mLinkUrl, MultiWindowUtils.INVALID_INSTANCE_ID);
         intent.setAction(Intent.ACTION_VIEW);
         exception.expect(AssertionError.class);
         exception.expectMessage("The intent action is invalid.");
@@ -90,7 +95,9 @@ public class DragAndDropLauncherActivityUnitTest {
 
     @Test
     public void testIsIntentValid_missingIntentCreationTimestamp() {
-        Intent intent = DragAndDropLauncherActivity.getLinkLauncherIntent(mContext, mLinkUrl, null);
+        Intent intent =
+                DragAndDropLauncherActivity.getLinkLauncherIntent(
+                        mContext, mLinkUrl, MultiWindowUtils.INVALID_INSTANCE_ID);
         DragAndDropLauncherActivity.setLinkIntentCreationTimestampMs(null);
         Assert.assertFalse(
                 "The intent creation timestamp is missing.",

@@ -38,6 +38,7 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -65,6 +66,8 @@ public class MultiWindowUtils implements ActivityStateListener {
     public static final int INVALID_TASK_ID = -1; // Defined in android.app.ActivityTaskManager.
 
     private static MultiWindowUtils sInstance = new MultiWindowUtils();
+
+    private static Integer sMaxInstancesForTesting;
 
     private final boolean mMultiInstanceApi31Enabled;
 
@@ -145,9 +148,11 @@ public class MultiWindowUtils implements ActivityStateListener {
     }
 
     public static int getMaxInstances() {
-        return isMultiInstanceApi31Enabled()
-                ? TabWindowManager.MAX_SELECTORS_S
-                : TabWindowManager.MAX_SELECTORS_LEGACY;
+        return sMaxInstancesForTesting != null
+                ? sMaxInstancesForTesting
+                : (isMultiInstanceApi31Enabled()
+                        ? TabWindowManager.MAX_SELECTORS_S
+                        : TabWindowManager.MAX_SELECTORS_LEGACY);
     }
 
     /** Returns the singleton instance of MultiWindowUtils. */
@@ -789,9 +794,33 @@ public class MultiWindowUtils implements ActivityStateListener {
         MultiInstanceManagerApi31.launchIntentInInstance(intent, instanceId);
     }
 
+    /**
+     * @param activity The {@link Activity} associated with the current context.
+     * @return The instance ID of the Chrome window where the link intent will be launched.
+     *     INVALID_INSTANCE_ID will be returned if fewer than the maximum number of instances are
+     *     open. The instance ID associated with the specified, valid activity will be returned if
+     *     the maximum number of instances is open.
+     */
+    public static int getInstanceIdForLinkIntent(Activity activity) {
+        // INVALID_INSTANCE_ID indicates that a new instance will be used to launch the link intent.
+        if (getInstanceCount() < getMaxInstances()) return INVALID_INSTANCE_ID;
+        int windowId = TabWindowManagerSingleton.getInstance().getIndexForWindow(activity);
+        assert windowId != INVALID_INSTANCE_ID
+                : "A valid instance ID was not found for the specified activity.";
+        return windowId;
+    }
+
     public static void setInstanceForTesting(MultiWindowUtils instance) {
         var oldValue = sInstance;
         sInstance = instance;
         ResettersForTesting.register(() -> sInstance = oldValue);
+    }
+
+    public static void setMaxInstancesForTesting(int maxInstances) {
+        sMaxInstancesForTesting = maxInstances;
+        ResettersForTesting.register(
+                () -> {
+                    sMaxInstancesForTesting = null;
+                });
     }
 }

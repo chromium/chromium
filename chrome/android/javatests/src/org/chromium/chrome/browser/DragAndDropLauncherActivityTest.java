@@ -29,7 +29,6 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UserActionTester;
-import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -80,7 +79,7 @@ public class DragAndDropLauncherActivityTest {
     @Test
     @LargeTest
     public void testDragAndDropLauncherActivity_createNewTabbedActivity() throws Exception {
-        Intent intent = createLinkDragDropIntent(mLinkUrl, null);
+        Intent intent = createLinkDragDropIntent(mLinkUrl, MultiWindowUtils.INVALID_INSTANCE_ID);
         ChromeTabbedActivity lastAccessedActivity =
                 ApplicationTestUtils.waitForActivityWithClass(
                         ChromeTabbedActivity.class,
@@ -130,18 +129,17 @@ public class DragAndDropLauncherActivityTest {
         // the last accessed instance. Actual max # of instances will not be created as this would
         // cause a significant overhead for testing this scenario where a link is opened in an
         // existing instance.
-        Intent intent = createLinkDragDropIntent(mLinkUrl, null);
+        Intent intent = createLinkDragDropIntent(mLinkUrl, MultiWindowUtils.INVALID_INSTANCE_ID);
         ChromeTabbedActivity lastAccessedActivity =
                 ApplicationTestUtils.waitForActivityWithClass(
                         ChromeTabbedActivity.class,
                         Stage.CREATED,
                         () -> mContext.startActivity(intent));
         mActivityTestRule.setActivity(lastAccessedActivity);
+        MultiWindowUtils.setMaxInstancesForTesting(2);
         int lastAccessedInstanceId =
                 TestThreadUtils.runOnUiThreadBlocking(
-                        () ->
-                                TabWindowManagerSingleton.getInstance()
-                                        .getIndexForWindow(lastAccessedActivity));
+                        () -> MultiWindowUtils.getInstanceIdForLinkIntent(lastAccessedActivity));
         addTabModelSelectorObserver(lastAccessedActivity);
 
         // Simulate an attempt to open a new window from a dragged link intent when max instances
@@ -177,7 +175,7 @@ public class DragAndDropLauncherActivityTest {
     @LargeTest
     public void testDragAndDropLauncherActivity_invalidIntentCreationTimestamp() throws Exception {
         DragAndDropLauncherActivity.setLinkDropTimeoutMsForTesting(500L);
-        Intent intent = createLinkDragDropIntent(mLinkUrl, null);
+        Intent intent = createLinkDragDropIntent(mLinkUrl, MultiWindowUtils.INVALID_INSTANCE_ID);
         Thread.sleep(DragAndDropLauncherActivity.getLinkDropTimeoutMs() + 1);
         mContext.startActivity(intent);
         // Verify that no new Chrome instance is created.

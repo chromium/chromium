@@ -356,6 +356,30 @@ public class MultiWindowUtilsUnitTest {
                 instanceId);
     }
 
+    @Test
+    @Config(sdk = 31)
+    public void testGetInstanceIdForLinkIntent_LessThanMaxInstancesOpen()
+            throws NameNotFoundException {
+        initializeForMultiInstanceApi31();
+        when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);
+        when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
+
+        int maxInstances = MultiWindowUtils.getMaxInstances();
+        // Simulate opening of 1 less than the max number of instances. #writeInstanceInfo will
+        // update the access time for IDs 0 -> |maxInstances - 2| in increasing order of recency.
+        for (int i = 0; i < maxInstances - 1; i++) {
+            ShadowMultiInstanceManagerApi31.updateWindowIdsOfRunningTabbedActivities(i, false);
+            writeInstanceInfo(i, URL_1, /* tabCount= */ 3, /* incognitoTabCount= */ 0, i);
+        }
+
+        int instanceId = MultiWindowUtils.getInstanceIdForLinkIntent(mock(Activity.class));
+        assertEquals(
+                "Instance ID for link intent should be INVALID_INSTANCE_ID when fewer than the max"
+                        + " number of instances are open.",
+                MultiWindowUtils.INVALID_INSTANCE_ID,
+                instanceId);
+    }
+
     private void writeInstanceInfo(
             int instanceId, String url, int tabCount, int incognitoTabCount, int taskId) {
         MultiInstanceManagerApi31.writeUrl(instanceId, url);

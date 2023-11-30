@@ -65,13 +65,11 @@ public class DragAndDropLauncherActivity extends Activity {
      *
      * @param context The context used to retrieve the package name.
      * @param urlString The link URL string.
-     * @param windowId The window ID of the Chrome window in which the link will be opened, {@code
-     *         null} if there is no preference.
+     * @param windowId The window ID of the Chrome window in which the link will be opened,
+     *     |MultiWindowUtils.INVALID_INSTANCE_ID| if there is no preference.
      * @return The intent that will be used to create a new Chrome instance from a dragged link.
      */
-    public static Intent getLinkLauncherIntent(
-            Context context, String urlString, Integer windowId) {
-        windowId = windowId == null ? MultiWindowUtils.getInstanceIdForViewIntent(true) : windowId;
+    public static Intent getLinkLauncherIntent(Context context, String urlString, int windowId) {
         Intent intent =
                 MultiWindowUtils.createNewWindowIntent(
                         context.getApplicationContext(),
