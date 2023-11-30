@@ -507,6 +507,11 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 #pragma mark - URLDragDataSource
 
 - (URLInfo*)URLInfoForView:(UIView*)view {
+  // Disable drag and drop when the omnibox is focused, as it interferes with
+  // text interactions like moving the cursor (crbug.com/1502538).
+  if ([self isOmniboxFirstResponder]) {
+    return nil;
+  }
   return [[URLInfo alloc]
       initWithURL:self.webState->GetVisibleURL()
             title:base::SysUTF16ToNSString(self.webState->GetTitle())];
