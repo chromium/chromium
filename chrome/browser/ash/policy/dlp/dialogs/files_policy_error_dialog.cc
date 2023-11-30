@@ -126,7 +126,12 @@ void FilesPolicyErrorDialog::MaybeAddConfidentialRows() {
 
   // Single error dialog.
   if (sections_.size() == 1) {
-    for (const auto& file : sections_.front().files) {
+    const auto& section = sections_.front();
+    for (const auto& url : section.learn_more_urls) {
+      files_dialog_utils::AddLearnMoreLink(
+          l10n_util::GetStringUTF16(IDS_LEARN_MORE), url, upper_panel_);
+    }
+    for (const auto& file : section.files) {
       AddConfidentialRow(file.icon, file.title);
     }
     return;
