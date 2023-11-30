@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/media/capture/mouse_cursor_overlay_controller.h"
 #include "content/browser/media/capture/web_contents_video_capture_device.h"
@@ -17,6 +18,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
+#include "media/base/media_switches.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_feedback.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -387,6 +389,9 @@ TEST_F(WebContentsFrameTrackerTest,
 }
 
 TEST_F(WebContentsFrameTrackerTest, SetsScaleOverride) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWebContentsCaptureHiDpi);
+
   StartTrackerOnUIThread(kSize1080p);
   RunAllTasksUntilIdle();
 
@@ -444,6 +449,9 @@ TEST_F(WebContentsFrameTrackerTest, SetsScaleOverride) {
 }
 
 TEST_F(WebContentsFrameTrackerTest, SettingScaleFactorMaintainsStableCapture) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWebContentsCaptureHiDpi);
+
   StartTrackerOnUIThread(kSize1080p);
   RunAllTasksUntilIdle();
 
@@ -459,6 +467,9 @@ TEST_F(WebContentsFrameTrackerTest, SettingScaleFactorMaintainsStableCapture) {
 }
 
 TEST_F(WebContentsFrameTrackerTest, HighDpiIsRoundedIfBetweenBounds) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWebContentsCaptureHiDpi);
+
   StartTrackerOnUIThread(kSize1080p);
   RunAllTasksUntilIdle();
 
@@ -469,6 +480,9 @@ TEST_F(WebContentsFrameTrackerTest, HighDpiIsRoundedIfBetweenBounds) {
 }
 
 TEST_F(WebContentsFrameTrackerTest, HighDpiIsRoundedIfBetweenDifferentBounds) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWebContentsCaptureHiDpi);
+
   StartTrackerOnUIThread(kSize1080p);
   RunAllTasksUntilIdle();
 
@@ -479,6 +493,9 @@ TEST_F(WebContentsFrameTrackerTest, HighDpiIsRoundedIfBetweenDifferentBounds) {
 }
 
 TEST_F(WebContentsFrameTrackerTest, HighDpiIsRoundedToMinimum) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWebContentsCaptureHiDpi);
+
   StartTrackerOnUIThread(kSize1080p);
   RunAllTasksUntilIdle();
 
@@ -489,6 +506,9 @@ TEST_F(WebContentsFrameTrackerTest, HighDpiIsRoundedToMinimum) {
 }
 
 TEST_F(WebContentsFrameTrackerTest, HighDpiIsRoundedToMaximum) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWebContentsCaptureHiDpi);
+
   StartTrackerOnUIThread(kSize1080p);
   RunAllTasksUntilIdle();
 
@@ -498,6 +518,9 @@ TEST_F(WebContentsFrameTrackerTest, HighDpiIsRoundedToMaximum) {
 }
 
 TEST_F(WebContentsFrameTrackerTest, HighDpiScalingIsStable) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWebContentsCaptureHiDpi);
+
   StartTrackerOnUIThread(kSize1080p);
   RunAllTasksUntilIdle();
 
@@ -525,6 +548,9 @@ TEST_F(WebContentsFrameTrackerTest, HighDpiScalingIsStable) {
 }
 
 TEST_F(WebContentsFrameTrackerTest, HighDpiAdjustsForResourceUtilization) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWebContentsCaptureHiDpi);
+
   StartTrackerOnUIThread(kSize1080p);
   RunAllTasksUntilIdle();
 
@@ -561,6 +587,9 @@ TEST_F(WebContentsFrameTrackerTest, HighDpiAdjustsForResourceUtilization) {
 }
 
 TEST_F(WebContentsFrameTrackerTest, HighDpiAdjustsForMaxPixelRate) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWebContentsCaptureHiDpi);
+
   StartTrackerOnUIThread(kSize1080p);
   RunAllTasksUntilIdle();
 

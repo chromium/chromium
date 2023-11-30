@@ -111,6 +111,7 @@ struct TestConfigForSelectAllScreens {
 };
 
 struct TestConfigForHiDpi {
+  bool enable_hidpi;
   int constraint_width;
   int constraint_height;
 };
@@ -931,11 +932,19 @@ class GetDisplayMediaHiDpiBrowserTest
   static constexpr int kBrowserWindowWidth = 800;
   static constexpr int kBrowserWindowHeight = 600;
 
+  bool enable_hidpi() const { return test_config_.enable_hidpi; }
   int constraint_width() const { return test_config_.constraint_width; }
   int constraint_height() const { return test_config_.constraint_height; }
 
   void SetUpInProcessBrowserTestFixture() override {
+    if (enable_hidpi()) {
+      feature_list_.InitAndEnableFeature(media::kWebContentsCaptureHiDpi);
+    } else {
+      feature_list_.InitAndDisableFeature(media::kWebContentsCaptureHiDpi);
+    }
+
     WebRtcTestBase::SetUpInProcessBrowserTestFixture();
+
     DetectErrorsInJavaScript();
   }
 
@@ -1002,6 +1011,7 @@ class GetDisplayMediaHiDpiBrowserTest
         .ExtractString();
   }
 
+  base::test::ScopedFeatureList feature_list_;
   const TestConfigForHiDpi test_config_;
   raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> tab_ = nullptr;
 };
@@ -1039,8 +1049,9 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaHiDpiBrowserTest, Capture) {
   // If the video size is higher resolution than the browser window
   // size, expect that HiDPI mode should be active. This requires
   // the feature to be enabled.
-  const bool expect_hidpi = constraint_width() > kBrowserWindowWidth &&
-                            constraint_height() > kBrowserWindowHeight;
+  bool expect_hidpi = enable_hidpi() &&
+                      constraint_width() > kBrowserWindowWidth &&
+                      constraint_height() > kBrowserWindowHeight;
 
   double device_pixel_ratio = GetDevicePixelRatio();
   if (expect_hidpi) {
@@ -1059,9 +1070,14 @@ INSTANTIATE_TEST_SUITE_P(
     // (cf. kBrowserWindowWidth and kBrowserWindowHeight in
     // GetDisplayMediaHiDpiBrowserTest above), and the large sizes must be
     // significantly larger than the browser window size.
-    testing::Values(TestConfigForHiDpi{/*constraint_width=*/640,
+    testing::Values(TestConfigForHiDpi{/*enable_hidpi=*/false,
+                                       /*constraint_width=*/3840,
+                                       /*constraint_height=*/2160},
+                    TestConfigForHiDpi{/*enable_hidpi=*/true,
+                                       /*constraint_width=*/640,
                                        /*constraint_height=*/480},
-                    TestConfigForHiDpi{/*constraint_width=*/3840,
+                    TestConfigForHiDpi{/*enable_hidpi=*/true,
+                                       /*constraint_width=*/3840,
                                        /*constraint_height=*/2160}));
 #endif
 

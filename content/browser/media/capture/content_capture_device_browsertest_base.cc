@@ -79,9 +79,7 @@ gfx::Size ContentCaptureDeviceBrowserTestBase::GetExpectedSourceSize() {
 
 media::VideoCaptureParams
 ContentCaptureDeviceBrowserTestBase::SnapshotCaptureParams() {
-  // TODO(crbug.com/1504337): Test with capture sizes greater than the content
-  // size to exercise HiDPI.
-  constexpr gfx::Size kMaxCaptureSize = gfx::Size(200, 200);
+  constexpr gfx::Size kMaxCaptureSize = gfx::Size(320, 320);
   constexpr int kMaxFramesPerSecond = 60;
 
   gfx::Size capture_size = kMaxCaptureSize;

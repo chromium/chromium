@@ -8171,6 +8171,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsLinux | kOsMac | kOsWin | kOsCrOS | kOsAndroid,
      FEATURE_VALUE_TYPE(net::features::kUseDnsHttpsSvcbAlpn)},
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"hidpi-capture", flag_descriptions::kWebContentsCaptureHiDpiName,
+     flag_descriptions::kWebContentsCaptureHiDpiDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(media::kWebContentsCaptureHiDpi)},
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_ANDROID)
     {"web-otp-backend", flag_descriptions::kWebOtpBackendName,
      flag_descriptions::kWebOtpBackendDescription, kOsAndroid,
