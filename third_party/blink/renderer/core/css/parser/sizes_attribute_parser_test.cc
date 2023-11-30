@@ -247,7 +247,7 @@ TEST_F(SizesAttributeParserTest, AutoSizesLazyImgZeroWidth) {
   SizesAttributeParser parser(GetTestMediaValues(), "auto", nullptr, img);
 
   ASSERT_TRUE(parser.IsAuto());
-  ASSERT_EQ(500, parser.Size());
+  ASSERT_EQ(0, parser.Size());
 }
 
 TEST_F(SizesAttributeParserTest, AutoSizesLazyImgSmallPositiveWidth) {

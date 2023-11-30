@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
 #include "third_party/blink/renderer/core/style/content_data.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
 #include "third_party/blink/renderer/platform/network/mime/content_type.h"
@@ -116,7 +117,7 @@ HTMLImageElement::HTMLImageElement(Document& document, bool created_by_parser)
       is_ad_related_(false),
       is_lcp_element_(false),
       is_changed_shortly_after_mouseover_(false),
-      has_sizes_attribute_in_img_or_sibling_(false) {
+      is_auto_sized_(false) {
   if (base::FeatureList::IsEnabled(features::kLCPScriptObserver)) {
     if (LocalFrame* frame = document.GetFrame()) {
       if (LCPCriticalPathPredictor* lcpp = frame->GetLCPP()) {
@@ -136,6 +137,7 @@ void HTMLImageElement::Trace(Visitor* visitor) const {
   visitor->Trace(listener_);
   visitor->Trace(form_);
   visitor->Trace(source_);
+
   HTMLElement::Trace(visitor);
 }
 
@@ -293,6 +295,7 @@ void HTMLImageElement::SetBestFitURLAndDPRFromImageCandidate(
   } else if (!candidate.SrcOrigin()) {
     UseCounter::Count(GetDocument(), WebFeature::kSrcsetXDescriptor);
   }
+
   if (auto* layout_image = DynamicTo<LayoutImage>(GetLayoutObject())) {
     layout_image->SetImageDevicePixelRatio(image_device_pixel_ratio_);
 
@@ -307,6 +310,12 @@ void HTMLImageElement::SetBestFitURLAndDPRFromImageCandidate(
     GetDocument().GetMediaQueryMatcher().AddViewportListener(listener_);
   } else if (listener_) {
     GetDocument().GetMediaQueryMatcher().RemoveViewportListener(listener_);
+  }
+
+  if (is_auto_sized_ && HasLazyLoadingAttribute()) {
+    GetDocument().ObserveForLazyLoadedAutoSizedImg(this);
+  } else {
+    GetDocument().UnobserveForLazyLoadedAutoSizedImg(this);
   }
 }
 
@@ -357,6 +366,7 @@ void HTMLImageElement::ParseAttribute(
     LoadingAttributeValue loading = GetLoadingAttributeValue(params.new_value);
     if (loading == LoadingAttributeValue::kEager ||
         (loading == LoadingAttributeValue::kAuto)) {
+      GetDocument().UnobserveForLazyLoadedAutoSizedImg(this);
       GetImageLoader().LoadDeferredImage();
     }
   } else if (name == html_names::kFetchpriorityAttr) {
@@ -446,6 +456,10 @@ bool HTMLImageElement::SupportedImageType(
 bool HTMLImageElement::HasLazyLoadingAttribute() const {
   return GetLoadingAttributeValue(FastGetAttribute(html_names::kLoadingAttr)) ==
          LoadingAttributeValue::kLazy;
+}
+
+bool HTMLImageElement::HasSizesAttribute() const {
+  return FastHasAttribute(html_names::kSizesAttr);
 }
 
 // http://picture.responsiveimages.org/#update-source-set
@@ -829,6 +843,12 @@ bool HTMLImageElement::complete() const {
   return GetImageLoader().ImageComplete();
 }
 
+void HTMLImageElement::OnResize() {
+  if (is_auto_sized_ && HasLazyLoadingAttribute()) {
+    SelectSourceURL(ImageLoader::kUpdateSizeChanged);
+  }
+}
+
 void HTMLImageElement::DidMoveToNewDocument(Document& old_document) {
   GetImageLoader().ElementDidMoveToNewDocument();
   HTMLElement::DidMoveToNewDocument(old_document);
@@ -880,22 +900,47 @@ gfx::SizeF HTMLImageElement::DefaultDestinationSize(
   return gfx::SizeF(size);
 }
 
-static bool SourceSizeValue(const Element* element,
-                            Document& current_document,
-                            float& source_size) {
+struct SourceSizeValueResult {
+  bool has_attribute{};
+  float value{};
+  bool is_auto{};
+};
+
+static SourceSizeValueResult SourceSizeValue(const Element* element,
+                                             Document& current_document) {
+  SourceSizeValueResult result;
+
+  auto* img = DynamicTo<HTMLImageElement>(element);
+  if (auto* picture_parent =
+          DynamicTo<HTMLPictureElement>(element->parentNode())) {
+    img = DynamicTo<HTMLImageElement>(picture_parent->lastChild());
+  }
+
   String sizes = element->FastGetAttribute(html_names::kSizesAttr);
-  bool exists = !sizes.IsNull();
-  if (exists) {
+  if (sizes.IsNull() && img != element && img && img->AllowAutoSizes() &&
+      img->FastGetAttribute(html_names::kSizesAttr)
+          .StartsWithIgnoringASCIICase("auto")) {
+    // Spec:
+    // https://html.spec.whatwg.org/#the-source-element
+    // If the img element allows auto-sizes, then the sizes attribute can be
+    // omitted on previous sibling source elements. In such cases, it is
+    // equivalent to specifying auto.
+    sizes = "auto";
+  }
+  result.has_attribute = !sizes.IsNull();
+  if (result.has_attribute) {
     UseCounter::Count(current_document, WebFeature::kSizes);
   }
 
-  SizesAttributeParser parser(MediaValuesDynamic::Create(current_document),
-                              sizes, current_document.GetExecutionContext());
+  SizesAttributeParser sizes_attribute_parser{
+      MediaValuesDynamic::Create(current_document), sizes,
+      current_document.GetExecutionContext(), img};
 
-  source_size = parser.Size();
+  result.value = sizes_attribute_parser.Size();
+  result.is_auto = sizes_attribute_parser.IsAuto();
 
-  if (parser.IsAuto()) {
-    if (auto* img = DynamicTo<HTMLImageElement>(element)) {
+  if (result.is_auto) {
+    if (img) {
       if (img->HasLazyLoadingAttribute()) {
         UseCounter::Count(current_document, WebFeature::kAutoSizesLazy);
       } else {
@@ -904,25 +949,34 @@ static bool SourceSizeValue(const Element* element,
     }
   }
 
-  return exists;
+  return result;
 }
 
 absl::optional<float> HTMLImageElement::GetResourceWidth() const {
   absl::optional<float> resource_width;
-  float width_value;
   Element* element = source_.Get();
-  if (SourceSizeValue(element ? element : this, GetDocument(), width_value)) {
-    resource_width = width_value;
+  const SourceSizeValueResult source_size_val_res =
+      SourceSizeValue(element ? element : this, GetDocument());
+  if (source_size_val_res.has_attribute) {
+    resource_width = source_size_val_res.value;
   }
+
   return resource_width;
 }
 
 float HTMLImageElement::SourceSize(Element& element) {
-  float value;
-  // We only care if the sizes attribute exist here for use counter purposes..
-  has_sizes_attribute_in_img_or_sibling_ =
-      SourceSizeValue(&element, GetDocument(), value);
-  return value;
+  const SourceSizeValueResult source_size_val_res =
+      SourceSizeValue(&element, GetDocument());
+
+  is_auto_sized_ = source_size_val_res.is_auto;
+
+  if (is_auto_sized_ && HasLazyLoadingAttribute()) {
+    GetDocument().ObserveForLazyLoadedAutoSizedImg(this);
+  } else {
+    GetDocument().UnobserveForLazyLoadedAutoSizedImg(this);
+  }
+
+  return source_size_val_res.value;
 }
 
 void HTMLImageElement::ForceReload() const {
@@ -939,8 +993,10 @@ void HTMLImageElement::SelectSourceURL(
   HTMLSourceElement* old_source = source_;
   ImageCandidate candidate = FindBestFitImageFromPictureParent();
   if (candidate.IsEmpty()) {
+    const float source_size{SourceSize(*this)};
+
     candidate = BestFitSourceForImageAttributes(
-        GetDocument().DevicePixelRatio(), SourceSize(*this),
+        GetDocument().DevicePixelRatio(), source_size,
         FastGetAttribute(html_names::kSrcAttr),
         FastGetAttribute(html_names::kSrcsetAttr), &GetDocument());
   }
@@ -1012,7 +1068,7 @@ void HTMLImageElement::SetAutoSizesUsecounter() {
   if (listener_ && HasLazyLoadingAttribute()) {
     UseCounter::Count(
         GetDocument(),
-        has_sizes_attribute_in_img_or_sibling_
+        HasSizesAttribute()
             ? WebFeature::kViewportDependentLazyLoadedImageWithSizesAttribute
             : WebFeature::
                   kViewportDependentLazyLoadedImageWithoutSizesAttribute);

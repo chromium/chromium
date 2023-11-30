@@ -187,6 +187,7 @@ class HTMLDialogElement;
 class HTMLElement;
 class HTMLFrameOwnerElement;
 class HTMLHeadElement;
+class HTMLImageElement;
 class HTMLLinkElement;
 class HTMLMetaElement;
 class HitTestRequest;
@@ -1971,6 +1972,9 @@ class CORE_EXPORT Document : public ContainerNode,
   void ObserveForIntrinsicSize(Element* element);
   void UnobserveForIntrinsicSize(Element* element);
 
+  void ObserveForLazyLoadedAutoSizedImg(HTMLImageElement* img);
+  void UnobserveForLazyLoadedAutoSizedImg(HTMLImageElement* img);
+
   // Returns true if motion should be forcibly reduced in animations on this
   // document. This returns true if all of the following conditions are true:
   // 1. The user prefers reduced motion.
@@ -2249,6 +2253,8 @@ class CORE_EXPORT Document : public ContainerNode,
   void FetchDictionaryFromLinkHeader();
 
   Resource* GetPendingLinkPreloadForTesting(const KURL&);
+
+  ResizeObserver& GetLazyLoadedAutoSizedImgObserver();
 
   const DocumentToken token_;
 
@@ -2720,6 +2726,9 @@ class CORE_EXPORT Document : public ContainerNode,
   HeapVector<Member<HTMLMetaElement>> meta_theme_color_elements_;
 
   Member<ResizeObserver> intrinsic_size_observer_;
+
+  // Watches lazy loaded auto sized img elements for resizes.
+  Member<ResizeObserver> lazy_loaded_auto_sized_img_observer_;
 
   // Whether any resource loads that block printing are happening.
   bool loading_for_print_ = false;

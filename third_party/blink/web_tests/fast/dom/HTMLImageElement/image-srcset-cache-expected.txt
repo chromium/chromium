@@ -1,0 +1,7 @@
+PASS testImg.currentSrc.endsWith("blue_rect.jpg") is true
+PASS testImg.currentSrc.endsWith("image-set-4x.png") is true
+PASS testImg.currentSrc.endsWith("image-set-4x.png") is true
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

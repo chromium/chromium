@@ -412,10 +412,11 @@ static unsigned AvoidDownloadIfHigherDensityResourceIsInCache(
   for (unsigned i = image_candidates.size() - 1; i > winner; --i) {
     KURL url = document->CompleteURL(
         StripLeadingAndTrailingHTMLSpaces(image_candidates[i]->Url()));
-    if (MemoryCache::Get()->ResourceForURL(
-            url, document->Fetcher()->GetCacheIdentifier(url)) ||
-        url.ProtocolIsData())
+    auto* resource = MemoryCache::Get()->ResourceForURL(
+        url, document->Fetcher()->GetCacheIdentifier(url));
+    if ((resource && resource->IsLoaded()) || url.ProtocolIsData()) {
       return i;
+    }
   }
   return winner;
 }

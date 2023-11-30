@@ -141,10 +141,7 @@ float SizesAttributeParser::EffectiveSize() {
   // img allows auto-sizes, then set size to the concrete object size width of
   // img, in CSS pixels.
   if (is_auto_ && img_ && img_->IsBeingRendered() && img_->AllowAutoSizes()) {
-    auto layout_box_width = img_->LayoutBoxWidth();
-    if (layout_box_width != 0) {
-      return layout_box_width;
-    }
+    return img_->LayoutBoxWidth();
   }
 
   // 4. Return 100vw.
