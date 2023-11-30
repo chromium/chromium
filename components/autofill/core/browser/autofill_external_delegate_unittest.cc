@@ -88,20 +88,15 @@ constexpr std::string_view kPlusAddressSuggestionMetric =
     "Autofill.PlusAddresses.Suggestion.Events";
 
 // Creates a `PopupItemdId::kFieldByFieldFilling` suggestion.
-// `profile_guid` is used to set `Suggestion::payload` as
-// `Suggestion::Guid(profile_guid)`. This method also sets the
-// `Suggestion::field_by_field_filling_type_used` to a default value of
-// `NAME_FIRST`, which means that selecting this suggestion will fill the field
-// with `NAME_FIRST` information stored in the profile that has `guid`.
-Suggestion CreateFieldByFieldFillingSuggestion(
-    const std::string& profile_guid) {
-  Suggestion suggestion = test::CreateAutofillSuggestion(
-      PopupItemId::kFieldByFieldFilling, u"field by field",
-      Suggestion::Guid(profile_guid));
-  // This is an arbitrary type. The delegate asserts the existence of
-  // `field_by_field_filling_type_used` for
-  // `PopupItemId::kFieldByFieldFilling` suggestions.
-  suggestion.field_by_field_filling_type_used = std::optional(NAME_FIRST);
+// `guid` is used to set `Suggestion::payload` as
+// `Suggestion::Guid(guid)`. This method also sets the
+// `Suggestion::field_by_field_filling_type_used` to `fbf_type_used`.
+Suggestion CreateFieldByFieldFillingSuggestion(const std::string& guid,
+                                               ServerFieldType fbf_type_used) {
+  Suggestion suggestion =
+      test::CreateAutofillSuggestion(PopupItemId::kFieldByFieldFilling,
+                                     u"field by field", Suggestion::Guid(guid));
+  suggestion.field_by_field_filling_type_used = std::optional(fbf_type_used);
   return suggestion;
 }
 
@@ -1163,7 +1158,7 @@ TEST_P(FillingMethodMetricsUnitTest, RecordFillingMethodForPopupType) {
   pdm().AddProfile(profile);
   const Suggestion suggestion =
       params.popup_item_id == PopupItemId::kFieldByFieldFilling
-          ? CreateFieldByFieldFillingSuggestion(profile.guid())
+          ? CreateFieldByFieldFillingSuggestion(profile.guid(), NAME_FIRST)
           : test::CreateAutofillSuggestion(params.popup_item_id);
   manager().OnFormsSeen({queried_form_}, {});
   base::HistogramTester histogram_tester;
@@ -1216,7 +1211,7 @@ TEST_P(GroupFillingUnitTest, GroupFillingTests_FillAndPreview) {
   pdm().AddProfile(profile);
   const Suggestion suggestion =
       params.popup_item_id == PopupItemId::kFieldByFieldFilling
-          ? CreateFieldByFieldFillingSuggestion(profile.guid())
+          ? CreateFieldByFieldFillingSuggestion(profile.guid(), NAME_FIRST)
           : test::CreateAutofillSuggestion(params.popup_item_id, u"baz foo",
                                            Suggestion::Guid(profile.guid()));
   auto expected_source =
@@ -1380,9 +1375,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   const AutofillProfile profile = test::GetFullProfile();
   pdm().AddProfile(profile);
   Suggestion suggestion =
-      test::CreateAutofillSuggestion(PopupItemId::kFieldByFieldFilling, u"Jon",
-                                     Suggestion::Guid(profile.guid()));
-  suggestion.field_by_field_filling_type_used = std::optional(NAME_FIRST);
+      CreateFieldByFieldFillingSuggestion(profile.guid(), NAME_FIRST);
   IssueOnQuery();
   manager().OnFormsSeen({queried_form_}, {});
   base::HistogramTester histogram_tester;
@@ -1401,9 +1394,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   const AutofillProfile profile = test::GetFullProfile();
   pdm().AddProfile(profile);
   Suggestion suggestion =
-      test::CreateAutofillSuggestion(PopupItemId::kFieldByFieldFilling, u"Jon",
-                                     Suggestion::Guid(profile.guid()));
-  suggestion.field_by_field_filling_type_used = std::optional(NAME_FIRST);
+      CreateFieldByFieldFillingSuggestion(profile.guid(), NAME_FIRST);
   IssueOnQuery();
   manager().OnFormsSeen({queried_form_}, {});
   base::HistogramTester histogram_tester;
@@ -1421,10 +1412,8 @@ TEST_F(AutofillExternalDelegateUnitTest,
        FieldByFieldFilling_PreviewCreditCard) {
   const CreditCard local_card = test::GetCreditCard();
   pdm().AddCreditCard(local_card);
-  Suggestion suggestion = test::CreateAutofillSuggestion(
-      PopupItemId::kFieldByFieldFilling, u"Name on card",
-      Suggestion::Guid(local_card.guid()));
-  suggestion.field_by_field_filling_type_used = CREDIT_CARD_NAME_FULL;
+  Suggestion suggestion = CreateFieldByFieldFillingSuggestion(
+      local_card.guid(), CREDIT_CARD_NAME_FULL);
   IssueOnQuery();
   manager().OnFormsSeen({queried_form_}, {});
 
@@ -1440,10 +1429,8 @@ TEST_F(AutofillExternalDelegateUnitTest,
 TEST_F(AutofillExternalDelegateUnitTest, FieldByFieldFilling_FillCreditCard) {
   const CreditCard local_card = test::GetCreditCard();
   pdm().AddCreditCard(local_card);
-  Suggestion suggestion = test::CreateAutofillSuggestion(
-      PopupItemId::kFieldByFieldFilling, u"Name on card",
-      Suggestion::Guid(local_card.guid()));
-  suggestion.field_by_field_filling_type_used = CREDIT_CARD_NAME_FULL;
+  Suggestion suggestion = CreateFieldByFieldFillingSuggestion(
+      local_card.guid(), CREDIT_CARD_NAME_FULL);
   IssueOnQuery();
   manager().OnFormsSeen({queried_form_}, {});
 
@@ -1522,7 +1509,7 @@ TEST_P(GetLastFieldTypesToFillUnitTest, LastFieldTypesToFillForSection) {
   ON_CALL(pdm(), IsAutofillProfileEnabled).WillByDefault(Return(true));
   const Suggestion suggestion =
       params.popup_item_id == PopupItemId::kFieldByFieldFilling
-          ? CreateFieldByFieldFillingSuggestion(profile.guid())
+          ? CreateFieldByFieldFillingSuggestion(profile.guid(), NAME_FIRST)
           : test::CreateAutofillSuggestion(params.popup_item_id);
 
   if (!params.is_preview) {
@@ -1915,7 +1902,8 @@ TEST_F(AutofillExternalDelegateUnitTest,
   pdm().AddProfile(profile);
   IssueOnQuery();
   manager().OnFormsSeen({queried_form_}, {});
-  Suggestion suggestion = CreateFieldByFieldFillingSuggestion(profile.guid());
+  Suggestion suggestion =
+      CreateFieldByFieldFillingSuggestion(profile.guid(), NAME_FIRST);
   EXPECT_CALL(client(),
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
   EXPECT_CALL(
@@ -1940,7 +1928,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   IssueOnQuery();
   manager().OnFormsSeen({queried_form_}, {});
   external_delegate().DidAcceptSuggestion(
-      CreateFieldByFieldFillingSuggestion(profile.guid()),
+      CreateFieldByFieldFillingSuggestion(profile.guid(), NAME_FIRST),
       SuggestionPosition{.row = 0}, kDefaultTriggerSource);
   const std::vector<AutofillField::FieldLogEventType>& log_events =
       get_triggering_autofill_field()->field_log_events();
