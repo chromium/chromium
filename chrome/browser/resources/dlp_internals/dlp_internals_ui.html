@@ -91,8 +91,7 @@
                         <th>Level</th>
                         <th>URL</th>
                       </tr>
-                      <template is="dom-repeat"
-                      items="[[item.restrictionsInfo]]">
+                      <template is="dom-repeat" items="[[item.restrictionsInfo]]">
                         <tr>
                           <td>
                             [[contentRestrictionToString(item.restriction)]]
@@ -111,22 +110,30 @@
     </div>
 
     <div class="tabpanel" id="files">
-      <table>
-        <tr>
-          <th>inode</th>
-          <th>Creation Time</th>
-          <th>Source URL</th>
-          <th>Referrer URL</th>
-        </tr>
-        <template is="dom-repeat" items="[[filesEntries_]]">
+        <table>
           <tr>
-            <td>[[item.inode]]</td>
-            <td>[[creationTimeToString(item.crtime)]]</td>
-            <td>[[item.sourceUrl]]</td>
-            <td>[[item.referrerUrl]]</td>
+            <th>inode</th>
+            <th>Creation Time</th>
+            <th>Source URL</th>
+            <th>Referrer URL</th>
           </tr>
-        </template>
-      </table>
+          <template is="dom-repeat" items="[[filesEntries_]]">
+            <tr>
+              <td>[[item.inode]]</td>
+              <td>[[creationTimeToString(item.crtime)]]</td>
+              <td>[[item.sourceUrl]]</td>
+              <td>[[item.referrerUrl]]</td>
+            </tr>
+          </template>
+        </table>
+      <div>
+        <p>Select a file from Downloads to calculate its inode number</p>
+        <label>
+          <input type="file" accept="any" on-input="onFileSelected">
+        </label>
+        <p>inode number: [[selectedFileInode_]]</p>
+        <span></span>
+      </div>
     </div>
 
     <div class="tabpanel" id="reporting">

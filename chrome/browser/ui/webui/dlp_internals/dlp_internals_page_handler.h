@@ -43,6 +43,8 @@ class DlpInternalsPageHandler
       override;
   void GetFilesDatabaseEntries(
       GetFilesDatabaseEntriesCallback callback) override;
+  void GetFileInode(const std::string& file_name,
+                    GetFileInodeCallback callback) override;
 
   // DlpReportingManager::Observer
   void OnReportEvent(DlpPolicyEvent event) override;

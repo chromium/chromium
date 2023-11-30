@@ -4,13 +4,18 @@
 
 #include "chrome/browser/ui/webui/dlp_internals/dlp_internals_page_handler.h"
 
+#include <sys/stat.h>
+
 #include "base/check.h"
+#include "base/files/file_path.h"
+#include "base/path_service.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/dlp_internals/dlp_internals.mojom.h"
+#include "chrome/common/chrome_paths.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "components/enterprise/data_controls/dlp_policy_event.pb.h"
 #include "components/enterprise/data_controls/rule.h"
@@ -277,6 +282,21 @@ void DlpInternalsPageHandler::GetFilesDatabaseEntries(
   chromeos::DlpClient::Get()->GetDatabaseEntries(
       base::BindOnce(&DlpInternalsPageHandler::ProcessDatabaseEntries,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void DlpInternalsPageHandler::GetFileInode(const std::string& file_name,
+                                           GetFileInodeCallback callback) {
+  base::FilePath downloads_path;
+  base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS_SAFE, &downloads_path);
+  auto file_path = downloads_path.Append(file_name);
+
+  struct stat file_stats;
+  if (stat(file_path.value().c_str(), &file_stats) != 0) {
+    std::move(callback).Run(0);
+    return;
+  }
+
+  std::move(callback).Run(file_stats.st_ino);
 }
 
 void DlpInternalsPageHandler::OnReportEvent(DlpPolicyEvent event) {

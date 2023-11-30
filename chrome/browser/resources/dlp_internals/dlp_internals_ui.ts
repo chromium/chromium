@@ -82,6 +82,9 @@ class DlpInternalsUi extends PolymerElement {
   // Files Database Entries.
   private filesEntries_: FileDatabaseEntry[] = [];
 
+  // Selected file inode number.
+  private selectedFileInode_: bigint;
+
   private readonly pageHandler_: PageHandlerInterface;
   private readonly reportingObserver_: ReportingObserverReceiver;
 
@@ -254,6 +257,21 @@ class DlpInternalsUi extends PolymerElement {
       return timestamp.toLocaleString();
     }
     return 'undefined';
+  }
+
+  private onFileSelected(e: Event) {
+    const selectedFile = (e.target as HTMLInputElement).value;
+    this.pageHandler_.getFileInode(selectedFile.replace('C:\\fakepath\\', ''))
+        .then((value: {inode: bigint|null}) => {
+          if (value.inode) {
+            this.selectedFileInode_ = value.inode;
+          } else {
+            this.selectedFileInode_ = BigInt(0);
+          }
+        })
+        .catch((e: object) => {
+          console.warn(`getFileInode failed: ${JSON.stringify(e)}`);
+        });
   }
 }
 
