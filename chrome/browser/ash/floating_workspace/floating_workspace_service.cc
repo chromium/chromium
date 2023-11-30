@@ -561,6 +561,16 @@ bool FloatingWorkspaceService::IsCurrentDeskSameAsPrevious(
   if (!previously_captured_desk_template_) {
     return false;
   }
+
+  // If the last user activity was before the last uploaded template, then it is
+  // very likely that the current captured desk is done due to changing urls for
+  // the same window (caused by things like auth protection on gmail app when
+  // certs aren't installed).
+  if (ui::UserActivityDetector::Get()->last_activity_time() <=
+      last_uploaded_timeticks_) {
+    return true;
+  }
+
   const auto& previous_app_id_to_app_launch_list =
       previously_captured_desk_template_->desk_restore_data()
           ->app_id_to_launch_list();
@@ -678,7 +688,7 @@ void FloatingWorkspaceService::UploadFloatingWorkspaceTemplateToDeskModel(
   // Upload and save the template.
   auto* active_user = user_manager::UserManager::Get()->GetActiveUser();
   auto* user_profile = ProfileHelper::Get()->GetProfileByUser(active_user);
-  // Do not upload if the activer user profile doesn't match the logged in user
+  // Do not upload if the active user profile doesn't match the logged in user
   // profile.
   if (user_profile != profile_) {
     return;
@@ -693,6 +703,7 @@ void FloatingWorkspaceService::OnTemplateUploaded(
     desks_storage::DeskModel::AddOrUpdateEntryStatus status,
     std::unique_ptr<DeskTemplate> new_entry) {
   previously_captured_desk_template_ = std::move(new_entry);
+  last_uploaded_timeticks_ = base::TimeTicks::Now();
   floating_workspace_metrics_util::
       RecordFloatingWorkspaceV2TemplateUploadStatusHistogram(status);
   VLOG(1) << "Desk template uploaded successfully.";
@@ -879,7 +890,8 @@ void FloatingWorkspaceService::MaybeSignOutOfCurrentSession() {
   if (latest_floating_workspace->client_cache_guid() !=
           desk_sync_service_->GetDeskModel()->GetCacheGuid() &&
       latest_floating_workspace->GetLastUpdatedTime() >
-          initialization_time_ + time_delta +
+          initialization_time_ +
+              (time_delta.is_positive() ? time_delta : base::Seconds(0)) +
               ash::features::kFloatingWorkspaceV2PeriodicJobIntervalInSeconds
                   .Get()) {
     VLOG(1) << "Another device uploaded a template, logging out.";

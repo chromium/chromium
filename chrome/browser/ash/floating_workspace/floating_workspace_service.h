@@ -270,6 +270,9 @@ class FloatingWorkspaceService : public KeyedService,
   // Time when we first received `kUpToDate` status from `sync_service_`
   absl::optional<base::TimeTicks> first_uptodate_download_timeticks_;
 
+  // Time when the last template was uploaded.
+  base::TimeTicks last_uploaded_timeticks_;
+
   // Timer used for periodic capturing and uploading.
   base::RepeatingTimer timer_;
 
