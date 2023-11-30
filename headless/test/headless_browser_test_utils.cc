@@ -92,28 +92,28 @@ void WaitForLoadAndGainFocus(HeadlessWebContents* web_contents) {
 ///////////////////////////////////////////////////////////////////////
 // base::Value::Dict helpers.
 
-std::string DictString(const base::Value::Dict& dict, base::StringPiece path) {
+std::string DictString(const base::Value::Dict& dict, std::string_view path) {
   const std::string* result = dict.FindStringByDottedPath(path);
   CHECK(result) << "Missing value for '" << path << "' in:\n"
                 << dict.DebugString();
   return *result;
 }
 
-int DictInt(const base::Value::Dict& dict, base::StringPiece path) {
+int DictInt(const base::Value::Dict& dict, std::string_view path) {
   std::optional<int> result = dict.FindIntByDottedPath(path);
   CHECK(result) << "Missing value for '" << path << "' in:\n"
                 << dict.DebugString();
   return *result;
 }
 
-bool DictBool(const base::Value::Dict& dict, base::StringPiece path) {
+bool DictBool(const base::Value::Dict& dict, std::string_view path) {
   std::optional<bool> result = dict.FindBoolByDottedPath(path);
   CHECK(result) << "Missing value for '" << path << "' in:\n"
                 << dict.DebugString();
   return *result;
 }
 
-bool DictHas(const base::Value::Dict& dict, base::StringPiece path) {
+bool DictHas(const base::Value::Dict& dict, std::string_view path) {
   return dict.FindByDottedPath(path) != nullptr;
 }
 

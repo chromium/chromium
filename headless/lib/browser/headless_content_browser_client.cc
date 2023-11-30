@@ -5,6 +5,7 @@
 #include "headless/lib/browser/headless_content_browser_client.h"
 
 #include <string>
+#include <string_view>
 #include <unordered_set>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "base/i18n/rtl.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "components/embedder_support/switches.h"
@@ -213,7 +213,7 @@ void HeadlessContentBrowserClient::AppendExtraCommandLineSwitches(
           HeadlessBrowserContextImpl::From(
               render_process_host->GetBrowserContext());
 
-      std::vector<base::StringPiece> languages = base::SplitStringPiece(
+      std::vector<std::string_view> languages = base::SplitStringPiece(
           headless_browser_context_impl->options()->accept_language(), ",",
           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
       if (!languages.empty()) {

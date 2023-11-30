@@ -6,8 +6,8 @@
 #define HEADLESS_TEST_HEADLESS_BROWSER_TEST_UTILS_H_
 
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "net/base/net_errors.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -47,7 +47,7 @@ void WaitForLoadAndGainFocus(HeadlessWebContents* web_contents);
 
 // Convenience function to create a single key/value Dict.
 template <typename T>
-base::Value::Dict Param(base::StringPiece key, T&& value) {
+base::Value::Dict Param(std::string_view key, T&& value) {
   base::Value::Dict param;
   param.Set(key, std::move(value));
   return param;
@@ -55,10 +55,10 @@ base::Value::Dict Param(base::StringPiece key, T&& value) {
 
 // Convenience functions to retrieve values from a base::Value::Dict and
 // CHECK fail if the specified path is not found.
-std::string DictString(const base::Value::Dict& dict, base::StringPiece path);
-int DictInt(const base::Value::Dict& dict, base::StringPiece path);
-bool DictBool(const base::Value::Dict& dict, base::StringPiece path);
-bool DictHas(const base::Value::Dict& dict, base::StringPiece path);
+std::string DictString(const base::Value::Dict& dict, std::string_view path);
+int DictInt(const base::Value::Dict& dict, std::string_view path);
+bool DictBool(const base::Value::Dict& dict, std::string_view path);
+bool DictHas(const base::Value::Dict& dict, std::string_view path);
 
 // A custom GMock matcher which matches if a base::Value::Dict has
 // a path |path| that is equal to |value|.

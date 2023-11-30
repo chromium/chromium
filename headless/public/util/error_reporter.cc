@@ -29,7 +29,7 @@ void ErrorReporter::SetName(const char* name) {
   path_.back() = name;
 }
 
-void ErrorReporter::AddError(base::StringPiece description) {
+void ErrorReporter::AddError(std::string_view description) {
   std::stringstream error;
   for (size_t i = 0; i < path_.size(); i++) {
     if (!path_[i]) {
