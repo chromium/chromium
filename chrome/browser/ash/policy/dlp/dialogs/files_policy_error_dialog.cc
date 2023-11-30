@@ -19,6 +19,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/flex_layout.h"
+#include "ui/views/view_class_properties.h"
 
 namespace policy {
 namespace {
@@ -237,9 +239,14 @@ void FilesPolicyErrorDialog::AddBlockedFilesSection(
   DCHECK(scroll_view_container_);
   views::View* row =
       scroll_view_container_->AddChildView(std::make_unique<views::View>());
-  row->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets::TLBR(10, 16, 10, 16), 0));
+
+  // Place title_label below into a FlexLayout which handles multi-line labels
+  // properly.
+  auto layout_manager = std::make_unique<views::FlexLayout>();
+  layout_manager
+      ->SetDefault(views::kMarginsKey, gfx::Insets::TLBR(10, 16, 10, 16))
+      .SetOrientation(views::LayoutOrientation::kVertical);
+  row->SetLayoutManager(std::move(layout_manager));
 
   views::Label* title_label = AddRowTitle(section.message, row);
   title_label->SetID(section.view_id);
