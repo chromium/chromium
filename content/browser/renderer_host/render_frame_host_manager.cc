@@ -2837,6 +2837,14 @@ bool RenderFrameHostManager::InitializeMainRenderFrameForImmediateUse() {
     // case.
     render_frame_host_->ReinitializeDocumentAssociatedDataForReuseAfterCrash(
         /* passkey */ {});
+
+    // Since it's possible for the now reinitialized main frame to create new
+    // sub-frames/windows we need to also reinitialize the
+    // RuntimeFeatureStateDocumentData, since those new frames/windows will
+    // query it on their creation.
+
+    RuntimeFeatureStateDocumentData::CreateForCurrentDocument(
+        render_frame_host_.get(), blink::RuntimeFeatureStateContext());
   }
 
   if (!ReinitializeMainRenderFrame(render_frame_host_.get())) {

@@ -4351,7 +4351,7 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
     // RuntimeFeatureStateReadContext.
     RuntimeFeatureStateDocumentData* rfs_document_data_from_creator =
         RuntimeFeatureStateDocumentData::GetForCurrentDocument(creator_frame);
-    DCHECK(rfs_document_data_from_creator);
+    CHECK(rfs_document_data_from_creator);
     RuntimeFeatureStateDocumentData::CreateForCurrentDocument(
         this,
         rfs_document_data_from_creator->runtime_feature_state_read_context());
