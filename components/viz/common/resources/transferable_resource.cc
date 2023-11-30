@@ -11,12 +11,14 @@ namespace viz {
 // static
 TransferableResource TransferableResource::MakeSoftware(
     const SharedBitmapId& id,
+    const gpu::SyncToken& sync_token,
     const gfx::Size& size,
     SharedImageFormat format,
     ResourceSource source) {
   TransferableResource r;
   r.is_software = true;
   r.mailbox_holder.mailbox = id;
+  r.mailbox_holder.sync_token = sync_token;
   r.size = size;
   r.format = format;
   r.resource_source = source;

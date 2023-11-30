@@ -519,7 +519,7 @@ void PopulateTransferableResources(CompositorFrame& frame) {
         // Adds a TransferableResource the first time seeing a ResourceId.
         if (resources_added.insert(resource_id).second) {
           frame.resource_list.push_back(TransferableResource::MakeSoftware(
-              SharedBitmap::GenerateId(), quad->rect.size(),
+              SharedBitmap::GenerateId(), gpu::SyncToken(), quad->rect.size(),
               SinglePlaneFormat::kRGBA_8888));
           frame.resource_list.back().id = resource_id;
         }

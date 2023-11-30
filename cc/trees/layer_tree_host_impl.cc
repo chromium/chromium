@@ -4776,8 +4776,11 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
   } else {
     layer_tree_frame_sink_->DidAllocateSharedBitmap(std::move(shm.region),
                                                     shared_bitmap_id);
+    auto* sii = layer_tree_frame_sink_->shared_image_interface();
+    gpu::SyncToken sync_token =
+        sii ? sii->GenVerifiedSyncToken() : gpu::SyncToken();
     transferable = viz::TransferableResource::MakeSoftware(
-        shared_bitmap_id, upload_size, format,
+        shared_bitmap_id, sync_token, upload_size, format,
         viz::TransferableResource::ResourceSource::kUI);
   }
   transferable.color_space = color_space;

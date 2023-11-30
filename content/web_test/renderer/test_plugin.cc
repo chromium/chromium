@@ -380,7 +380,7 @@ bool TestPlugin::PrepareTransferableResource(
                                                  shared_bitmap_);
 
     *resource = viz::TransferableResource::MakeSoftware(
-        shared_bitmap_->id(), shared_bitmap_->size(),
+        shared_bitmap_->id(), gpu::SyncToken(), shared_bitmap_->size(),
         viz::SinglePlaneFormat::kRGBA_8888);
     *release_callback =
         base::BindOnce(&ReleaseSharedMemory, std::move(shared_bitmap_),

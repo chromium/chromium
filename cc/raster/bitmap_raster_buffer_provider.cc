@@ -20,6 +20,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/trees/layer_tree_frame_sink.h"
+#include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -53,9 +54,10 @@ base::UnsafeSharedMemoryRegion AllocateSharedMemory(
 class BitmapSoftwareBacking : public ResourcePool::SoftwareBacking {
  public:
   ~BitmapSoftwareBacking() override {
-    if (frame_sink->shared_image_interface()) {
+    if (shared_bitmap_id.IsSharedImage()) {
+      DCHECK(frame_sink->shared_image_interface());
       frame_sink->shared_image_interface()->DestroySharedImage(
-          gpu::SyncToken(), std::move(shared_image));
+          mailbox_sync_token, std::move(shared_image));
     } else {
       frame_sink->DidDeleteSharedBitmap(shared_bitmap_id);
     }
@@ -82,12 +84,11 @@ class BitmapRasterBufferImpl : public RasterBuffer {
   BitmapRasterBufferImpl(const gfx::Size& size,
                          const gfx::ColorSpace& color_space,
                          BitmapSoftwareBacking* backing,
-                         void* pixels,
                          uint64_t resource_content_id,
                          uint64_t previous_content_id)
       : resource_size_(size),
         color_space_(color_space),
-        pixels_(pixels),
+        pixels_(backing->mapping.memory()),
         resource_has_previous_content_(
             resource_content_id && resource_content_id == previous_content_id),
         backing_(backing) {}
@@ -119,6 +120,13 @@ class BitmapRasterBufferImpl : public RasterBuffer {
         pixels_, format, resource_size_, stride, raster_source,
         raster_full_rect, playback_rect, transform, color_space_,
         /*gpu_compositing=*/false, playback_settings);
+
+    auto* shared_image_interface =
+        backing_->frame_sink->shared_image_interface();
+    if (shared_image_interface) {
+      backing_->mailbox_sync_token =
+          shared_image_interface->GenVerifiedSyncToken();
+    }
   }
 
   bool SupportsBackgroundThreadPriority() const override { return true; }
@@ -198,8 +206,7 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
       static_cast<BitmapSoftwareBacking*>(resource.software_backing());
 
   return std::make_unique<BitmapRasterBufferImpl>(
-      size, color_space, backing, backing->mapping.memory(),
-      resource_content_id, previous_content_id);
+      size, color_space, backing, resource_content_id, previous_content_id);
 }
 
 void BitmapRasterBufferProvider::Flush() {}

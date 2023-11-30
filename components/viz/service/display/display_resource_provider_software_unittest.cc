@@ -92,8 +92,8 @@ TEST_F(DisplayResourceProviderSoftwareTest, ReadSoftwareResources) {
   SharedBitmapId shared_bitmap_id = CreateAndFillSharedBitmap(
       shared_bitmap_manager_.get(), size, format, kBadBeef);
 
-  auto resource =
-      TransferableResource::MakeSoftware(shared_bitmap_id, size, format);
+  auto resource = TransferableResource::MakeSoftware(
+      shared_bitmap_id, gpu::SyncToken(), size, format);
 
   MockReleaseCallback release;
   ResourceId resource_id = child_resource_provider_->ImportResource(

@@ -115,7 +115,10 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
         uint64_t tracing_process_id,
         int importance) const = 0;
 
+    // Mailbox
     viz::SharedBitmapId shared_bitmap_id;
+
+    gpu::SyncToken mailbox_sync_token;
   };
 
   // Scoped move-only object returned when getting a resource from the pool.

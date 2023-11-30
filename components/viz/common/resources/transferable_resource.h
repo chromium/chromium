@@ -74,6 +74,7 @@ struct VIZ_COMMON_EXPORT TransferableResource {
 
   static TransferableResource MakeSoftware(
       const SharedBitmapId& id,
+      const gpu::SyncToken& sync_token,
       const gfx::Size& size,
       SharedImageFormat format,
       ResourceSource source = ResourceSource::kUnknown);

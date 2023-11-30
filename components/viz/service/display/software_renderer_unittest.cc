@@ -93,8 +93,8 @@ class SoftwareRendererTest : public testing::Test {
 
     // Makes a resource id that refers to the registered SharedBitmapId.
     return child_resource_provider_->ImportResource(
-        TransferableResource::MakeSoftware(shared_bitmap_id, size,
-                                           SinglePlaneFormat::kRGBA_8888),
+        TransferableResource::MakeSoftware(shared_bitmap_id, gpu::SyncToken(),
+                                           size, SinglePlaneFormat::kRGBA_8888),
         base::DoNothing());
   }
 

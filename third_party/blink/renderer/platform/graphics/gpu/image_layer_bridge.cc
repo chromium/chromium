@@ -235,7 +235,7 @@ bool ImageLayerBridge::PrepareTransferableResource(
       return false;
 
     *out_resource = viz::TransferableResource::MakeSoftware(
-        registered.bitmap->id(), size, format,
+        registered.bitmap->id(), gpu::SyncToken(), size, format,
         viz::TransferableResource::ResourceSource::kImageLayerBridge);
     out_resource->color_space = sk_image->colorSpace()
                                     ? gfx::ColorSpace(*sk_image->colorSpace())

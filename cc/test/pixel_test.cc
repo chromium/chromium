@@ -247,7 +247,8 @@ viz::ResourceId PixelTest::AllocateAndFillSoftwareResource(
 
   return child_resource_provider_->ImportResource(
       viz::TransferableResource::MakeSoftware(
-          shared_bitmap_id, size, viz::SinglePlaneFormat::kRGBA_8888),
+          shared_bitmap_id, gpu::SyncToken(), size,
+          viz::SinglePlaneFormat::kRGBA_8888),
       base::DoNothing());
 }
 

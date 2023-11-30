@@ -338,7 +338,8 @@ bool ResourcePool::PrepareForExport(
           viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted;
   } else {
     transferable = viz::TransferableResource::MakeSoftware(
-        resource->software_backing()->shared_bitmap_id, resource->size(),
+        resource->software_backing()->shared_bitmap_id,
+        resource->software_backing()->mailbox_sync_token, resource->size(),
         resource->format(), resource_source);
   }
   transferable.color_space = resource->color_space();
