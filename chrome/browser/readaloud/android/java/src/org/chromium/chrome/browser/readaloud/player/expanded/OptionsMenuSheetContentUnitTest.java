@@ -119,5 +119,7 @@ public class OptionsMenuSheetContentUnitTest {
         mContent.notifySheetClosed(mContent.getVoiceMenu());
 
         verify(mHandler).onVoiceMenuClosed();
+        // Options menu should show again.
+        verify(mBottomSheetController).requestShowContent(eq(mContent), eq(true));
     }
 }

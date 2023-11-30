@@ -102,6 +102,9 @@ class OptionsMenuSheetContent extends MenuSheetContent {
         if (closingContent == mVoiceSheet && mHandler != null) {
             mHandler.onVoiceMenuClosed();
         }
+        if (mVoiceSheet != null) {
+            mVoiceSheet.notifySheetClosed(closingContent);
+        }
     }
 
     @Nullable

@@ -254,5 +254,6 @@ public class ExpandedPlayerSheetContentUnitTest {
     public void testNotifySheetClosed() {
         mContent.notifySheetClosed(mContent);
         verify(mOptionsMenu).notifySheetClosed(eq(mContent));
+        verify(mSpeedMenu).notifySheetClosed(eq(mContent));
     }
 }
