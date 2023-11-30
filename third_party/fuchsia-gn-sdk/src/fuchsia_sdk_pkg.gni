@@ -52,7 +52,7 @@ template("fuchsia_sdk_pkg") {
     if (defined(invoker.sdk_dist_dir)) {
       sdk_dist_dir = invoker.sdk_dist_dir
     } else {
-      sdk_dist_dir = "${fuchsia_sdk}/arch/${target_cpu}/dist"
+      sdk_dist_dir = "${fuchsia_sdk}/obj/${target_cpu}-api-${fuchsia_target_api_level}/dist"
     }
 
     copy("${target_name}_dist_libs") {
