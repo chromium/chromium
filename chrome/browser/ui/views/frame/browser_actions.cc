@@ -101,11 +101,11 @@ void BrowserActions::InitializeBrowserActions() {
                               IDS_READ_LATER_TITLE, kReadingListIcon,
                               kActionSidePanelShowReadingList,
                               &(browser_.get()), true),
-              SidePanelAction(
-                  SidePanelEntryId::kAboutThisSite,
-                  IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE,
-                  PageInfoViewFactory::GetAboutThisSiteColorVectorIcon(),
-                  kActionSidePanelShowAboutThisSite, &(browser_.get()), false),
+              SidePanelAction(SidePanelEntryId::kAboutThisSite,
+                              IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE,
+                              PageInfoViewFactory::GetAboutThisSiteVectorIcon(),
+                              kActionSidePanelShowAboutThisSite,
+                              &(browser_.get()), false),
               SidePanelAction(SidePanelEntryId::kCustomizeChrome,
                               IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE,
                               vector_icons::kEditChromeRefreshIcon,
@@ -168,7 +168,6 @@ void BrowserActions::InitializeBrowserActions() {
             browser_->profile(),
             /*include_runtime_checks=*/false)) {
       actions::ActionItem* companion_action_item =
-
           root_action_item_->AddChild(
               SidePanelAction(
                   SidePanelEntryId::kSearchCompanion,
