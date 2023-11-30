@@ -6,6 +6,7 @@
 load("//lib/builders.star", "os", "reclient")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 
 try_.defaults.set(
     executable = try_.DEFAULT_EXECUTABLE,
@@ -29,6 +30,15 @@ try_.builder(
         "ci/linux-arm64-rel-cft",
     ],
     os = os.LINUX_DEFAULT,
+    gn_args = gn_args.config(
+        configs = [
+            "release_try_builder",
+            "reclient",
+            "no_symbols",
+            "chrome_for_testing",
+            "arm64",
+        ],
+    ),
 )
 
 try_.builder(
@@ -37,6 +47,16 @@ try_.builder(
         "ci/linux-rel-cft",
     ],
     os = os.LINUX_DEFAULT,
+    gn_args = gn_args.config(
+        configs = [
+            "release_try_builder",
+            "reclient",
+            "no_symbols",
+            "use_dummy_lastchange",
+            "devtools_do_typecheck",
+            "chrome_for_testing",
+        ],
+    ),
 )
 
 try_.builder(
@@ -46,6 +66,14 @@ try_.builder(
     ],
     cores = None,
     os = os.MAC_DEFAULT,
+    gn_args = gn_args.config(
+        configs = [
+            "release_try_builder",
+            "reclient",
+            "no_symbols",
+            "chrome_for_testing",
+        ],
+    ),
 )
 
 try_.builder(
@@ -55,4 +83,15 @@ try_.builder(
     ],
     os = os.WINDOWS_DEFAULT,
     execution_timeout = 6 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "release_try_builder",
+            "reclient",
+            # TODO(crbug.com/1004523) Delete this once coverage mode is enabled
+            # on the standard Windows trybot and the dedicated coverage trybot
+            # is no longer needed.
+            "no_resource_allowlisting",
+            "chrome_for_testing",
+        ],
+    ),
 )

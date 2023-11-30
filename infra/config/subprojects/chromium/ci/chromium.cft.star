@@ -8,6 +8,7 @@ load("//lib/builder_health_indicators.star", "health_spec")
 load("//lib/builders.star", "os", "reclient", "sheriff_rotations")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -57,6 +58,15 @@ ci.builder(
         short_name = "mac-rel-cft",
     ),
     contact_team_email = "browser-automation-staff@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "chrome_for_testing",
+            "chrome_with_codecs",
+        ],
+    ),
 )
 
 ci.builder(
@@ -71,6 +81,16 @@ ci.builder(
         short_name = "linux-arm64-rel-cft",
     ),
     contact_team_email = "browser-automation-staff@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "chrome_for_testing",
+            "chrome_with_codecs",
+            "arm64",
+        ],
+    ),
 )
 
 ci.builder(
@@ -84,6 +104,15 @@ ci.builder(
         short_name = "linux-rel-cft",
     ),
     contact_team_email = "browser-automation-staff@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "chrome_for_testing",
+            "chrome_with_codecs",
+        ],
+    ),
 )
 
 ci.builder(
@@ -98,4 +127,13 @@ ci.builder(
     ),
     contact_team_email = "browser-automation-staff@google.com",
     execution_timeout = 6 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "chrome_for_testing",
+            "chrome_with_codecs",
+        ],
+    ),
 )

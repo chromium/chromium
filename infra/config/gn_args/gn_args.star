@@ -265,6 +265,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    "chrome_for_testing",
+    args = {
+        "is_chrome_for_testing": True,
+    },
+)
+
+gn_args.config(
     "chrome_with_codecs",
     args = {
         "proprietary_codecs": True,

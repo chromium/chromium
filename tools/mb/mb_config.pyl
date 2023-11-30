@@ -98,13 +98,6 @@
       'win32-official': 'x86_official_optimize_reclient',
     },
 
-    'chromium.cft': {
-      'linux-arm64-rel-cft': 'release_bot_minimal_symbols_chrome_for_testing_reclient_arm64',
-      'linux-rel-cft': 'release_bot_minimal_symbols_chrome_for_testing_reclient',
-      'mac-rel-cft': 'release_bot_minimal_symbols_chrome_for_testing_reclient',
-      'win-rel-cft': 'release_bot_minimal_symbols_chrome_for_testing_reclient',
-    },
-
     'chromium.clang': {
       'ToTLinuxOfficial': 'clang_tot_official',
       'ToTMacOfficial': 'mac_clang_tot_official',
@@ -612,13 +605,6 @@
       'gpu-fyi-try-android-r-pixel-4-32': 'gpu_tests_android_release_trybot_reclient',
       'gpu-try-android-m-nexus-5x-64': 'gpu_tests_android_release_trybot_arm64_reclient',
       'linux_android_dbg_ng': 'android_debug_bot',
-    },
-
-    'tryserver.chromium.cft': {
-      'linux-arm64-rel-cft': 'release_trybot_no_symbols_chrome_for_testing_reclient_arm64',
-      'linux-rel-cft': 'release_trybot_no_symbols_use_dummy_lastchange_do_typecheck_chrome_for_testing_reclient',
-      'mac-rel-cft': 'release_trybot_no_symbols_mac_chrome_for_testing_reclient',
-      'win-rel-cft': 'release_trybot_resource_allowlisting_chrome_for_testing_reclient',
     },
 
     'tryserver.chromium.chromiumos': {
@@ -1914,14 +1900,6 @@
       'release_bot', 'minimal_symbols',
     ],
 
-    'release_bot_minimal_symbols_chrome_for_testing_reclient': [
-      'release_bot_reclient', 'minimal_symbols', 'chrome_for_testing', 'chrome_with_codecs',
-    ],
-
-    'release_bot_minimal_symbols_chrome_for_testing_reclient_arm64': [
-      'release_bot_reclient', 'minimal_symbols', 'chrome_for_testing', 'chrome_with_codecs', 'arm64',
-    ],
-
     'release_bot_minimal_symbols_no_com_init_hooks_with_codecs_reclient': [
       'release_bot_reclient', 'minimal_symbols', 'no_com_init_hooks', 'chrome_with_codecs'
     ],
@@ -1978,28 +1956,8 @@
       'release_trybot_minimal_symbols', 'tsan'
     ],
 
-    'release_trybot_no_symbols_chrome_for_testing_reclient_arm64': [
-      'release_trybot_reclient', 'no_symbols', 'chrome_for_testing', 'arm64',
-    ],
-
-    'release_trybot_no_symbols_mac_chrome_for_testing_reclient': [
-      'release_trybot_reclient', 'no_symbols', 'chrome_for_testing',
-    ],
-
-    'release_trybot_no_symbols_use_dummy_lastchange_do_typecheck_chrome_for_testing_reclient': [
-      'release_trybot_reclient', 'no_symbols', 'use_dummy_lastchange',
-      'devtools_do_typecheck', 'chrome_for_testing',
-    ],
-
     'release_trybot_reclient': [
       'release_trybot_reclient',
-    ],
-
-    # TODO(crbug.com/1004523) Delete this once coverage mode is enabled on the
-    # standard Windows trybot and the dedicated coverage trybot is no longer
-    # needed.
-    'release_trybot_resource_allowlisting_chrome_for_testing_reclient': [
-      'release_trybot_reclient', 'no_resource_allowlisting', 'chrome_for_testing',
     ],
 
     'release_trybot_tsan': [
@@ -2172,10 +2130,6 @@
 
     'chrome_branded': {
       'gn_args': 'is_chrome_branded=true'
-    },
-
-    'chrome_for_testing': {
-      'gn_args': 'is_chrome_for_testing=true'
     },
 
     'chrome_with_codecs': {

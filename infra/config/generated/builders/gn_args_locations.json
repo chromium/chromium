@@ -81,6 +81,12 @@
     "mac-build-perf-siso": "build/mac-build-perf-siso/gn-args.json",
     "win-build-perf-developer": "build/win-build-perf-developer/gn-args.json"
   },
+  "chromium.cft": {
+    "linux-arm64-rel-cft": "ci/linux-arm64-rel-cft/gn-args.json",
+    "linux-rel-cft": "ci/linux-rel-cft/gn-args.json",
+    "mac-rel-cft": "ci/mac-rel-cft/gn-args.json",
+    "win-rel-cft": "ci/win-rel-cft/gn-args.json"
+  },
   "chromium.chromiumos": {
     "chromeos-amd64-generic-asan-rel": "ci/chromeos-amd64-generic-asan-rel/gn-args.json",
     "chromeos-amd64-generic-cfi-thin-lto-rel": "ci/chromeos-amd64-generic-cfi-thin-lto-rel/gn-args.json",
@@ -447,6 +453,12 @@
     "mac-angle-chromium-try": "try/mac-angle-chromium-try/gn-args.json",
     "win-angle-chromium-x64-try": "try/win-angle-chromium-x64-try/gn-args.json",
     "win-angle-chromium-x86-try": "try/win-angle-chromium-x86-try/gn-args.json"
+  },
+  "tryserver.chromium.cft": {
+    "linux-arm64-rel-cft": "try/linux-arm64-rel-cft/gn-args.json",
+    "linux-rel-cft": "try/linux-rel-cft/gn-args.json",
+    "mac-rel-cft": "try/mac-rel-cft/gn-args.json",
+    "win-rel-cft": "try/win-rel-cft/gn-args.json"
   },
   "tryserver.chromium.chromiumos": {
     "chromeos-amd64-generic-asan-rel": "try/chromeos-amd64-generic-asan-rel/gn-args.json",
