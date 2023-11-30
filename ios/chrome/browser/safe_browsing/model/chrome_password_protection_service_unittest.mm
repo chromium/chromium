@@ -25,7 +25,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/protocol/gaia_password_reuse.pb.h"
 #import "components/sync_user_events/fake_user_event_service.h"
-#import "ios/chrome/browser/history/history_service_factory.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_metrics_collector_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"

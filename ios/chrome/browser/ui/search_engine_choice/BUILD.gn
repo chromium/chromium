@@ -61,7 +61,7 @@ source_set("unit_tests") {
     "//components/strings",
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/favicon",
-    "//ios/chrome/browser/history",
+    "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/promos_manager:test_support",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/browser/test:test_support",

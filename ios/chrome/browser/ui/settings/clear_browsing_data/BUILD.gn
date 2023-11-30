@@ -36,7 +36,7 @@ source_set("clear_browsing_data") {
     "//ios/chrome/browser/discover_feed",
     "//ios/chrome/browser/discover_feed:discover_feed_factory",
     "//ios/chrome/browser/feature_engagement/model",
-    "//ios/chrome/browser/history",
+    "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/intents:intents_donation_helper",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/search_engines/model",

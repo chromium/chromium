@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/history/top_sites_factory.h"
+#include "ios/chrome/browser/history/model/top_sites_factory.h"
 
 #include <memory>
 
@@ -14,8 +14,8 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
-#include "ios/chrome/browser/history/history_service_factory.h"
-#include "ios/chrome/browser/history/history_utils.h"
+#include "ios/chrome/browser/history/model/history_service_factory.h"
+#include "ios/chrome/browser/history/model/history_utils.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #include "ios/web/public/thread/web_thread.h"
 

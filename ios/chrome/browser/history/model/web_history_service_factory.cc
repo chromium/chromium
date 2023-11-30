@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/history/web_history_service_factory.h"
+#include "ios/chrome/browser/history/model/web_history_service_factory.h"
 
 #include "base/no_destructor.h"
 #include "components/history/core/browser/web_history_service.h"

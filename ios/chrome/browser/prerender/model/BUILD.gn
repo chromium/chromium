@@ -37,7 +37,7 @@ source_set("model") {
     "//ios/chrome/browser/crash_report/model:model_internal",
     "//ios/chrome/browser/download/model:mime_types",
     "//ios/chrome/browser/geolocation/model",
-    "//ios/chrome/browser/history:tab_helper",
+    "//ios/chrome/browser/history/model:tab_helper",
     "//ios/chrome/browser/itunes_urls/model",
     "//ios/chrome/browser/net",
     "//ios/chrome/browser/ntp/model:util",

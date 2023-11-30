@@ -300,7 +300,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/find_in_page/model",
     "//ios/chrome/browser/find_in_page/model:util",
-    "//ios/chrome/browser/history",
+    "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/lens/model",
     "//ios/chrome/browser/metrics/model:metrics_browser_agent",
     "//ios/chrome/browser/ntp/model",

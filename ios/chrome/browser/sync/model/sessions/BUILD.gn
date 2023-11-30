@@ -13,7 +13,7 @@ source_set("sessions") {
     "//components/keyed_service/core",
     "//components/sync",
     "//components/sync_sessions",
-    "//ios/chrome/browser/history",
+    "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/web_state_list",

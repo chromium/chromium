@@ -214,7 +214,7 @@ source_set("test_fixture") {
     "//base",
     "//base/test:test_support",
     "//components/unified_consent",
-    "//ios/chrome/browser/history",
+    "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/sessions:fake",

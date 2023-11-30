@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/history/history_utils.h"
+#include "ios/chrome/browser/history/model/history_utils.h"
 
 #include "components/dom_distiller/core/url_constants.h"
 #include "ios/chrome/browser/shared/model/url/chrome_url_constants.h"

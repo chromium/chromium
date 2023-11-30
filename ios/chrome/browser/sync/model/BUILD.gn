@@ -70,7 +70,7 @@ source_set("model") {
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/gcm/model",
     "//ios/chrome/browser/gcm/model/instance_id",
-    "//ios/chrome/browser/history",
+    "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/invalidation/model",
     "//ios/chrome/browser/metrics/model:google_groups_updater",
     "//ios/chrome/browser/passwords/model:sharing_factory",
@@ -101,7 +101,7 @@ source_set("model") {
     "//url",
   ]
   allow_circular_includes_from = [
-    "//ios/chrome/browser/history",
+    "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/passwords/model:store_factory",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/signin/model",
@@ -182,7 +182,7 @@ source_set("unit_tests") {
     "//components/supervised_user/core/common:buildflags",
     "//components/sync",
     "//ios/chrome/browser/favicon",
-    "//ios/chrome/browser/history",
+    "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/webdata_services/model",

@@ -3,7 +3,7 @@ include_rules = [
   "+components/commerce/core/proto",
   "+components/session_proto_db",
   "+components/commerce/ios/browser",
-  "+ios/chrome/browser/history",
+  "+ios/chrome/browser/history/model",
   "+ios/chrome/browser/power_bookmarks/model",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/sync/model",

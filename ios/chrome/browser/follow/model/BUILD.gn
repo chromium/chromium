@@ -66,7 +66,7 @@ source_set("tab_helper") {
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/follow/model:enums",
     "//ios/chrome/browser/follow/model:utils",
-    "//ios/chrome/browser/history",
+    "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/public/features",

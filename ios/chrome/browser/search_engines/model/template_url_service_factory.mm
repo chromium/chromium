@@ -11,7 +11,7 @@
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/search_engines/default_search_manager.h"
 #import "components/search_engines/template_url_service.h"
-#import "ios/chrome/browser/history/history_service_factory.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_client_impl.h"
 #import "ios/chrome/browser/search_engines/model/ui_thread_search_terms_data.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"

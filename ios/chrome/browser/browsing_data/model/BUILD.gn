@@ -57,7 +57,7 @@ source_set("model") {
     "//ios/chrome/browser/browser_state/model:ios_thread",
     "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/external_files/model",
-    "//ios/chrome/browser/history",
+    "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/https_upgrades/model",
     "//ios/chrome/browser/language/model",
     "//ios/chrome/browser/optimization_guide/model",

@@ -35,7 +35,7 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync_user_events/user_event_service.h"
 #import "components/variations/service/variations_service.h"
-#import "ios/chrome/browser/history/history_service_factory.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/user_population_helper.h"

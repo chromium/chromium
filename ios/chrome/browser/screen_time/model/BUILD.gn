@@ -31,7 +31,7 @@ if (ios_enable_screen_time) {
       "//components/history/core/browser",
       "//components/keyed_service/core",
       "//components/keyed_service/ios",
-      "//ios/chrome/browser/history",
+      "//ios/chrome/browser/history/model",
       "//ios/chrome/browser/shared/model/browser_state",
       "//net",
     ]

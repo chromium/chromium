@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/history/history_client_impl.h"
+#include "ios/chrome/browser/history/model/history_client_impl.h"
 
 #include <set>
 
@@ -14,8 +14,8 @@
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/model_loader.h"
 #include "components/history/core/browser/history_service.h"
-#include "ios/chrome/browser/history/history_backend_client_impl.h"
-#include "ios/chrome/browser/history/history_utils.h"
+#include "ios/chrome/browser/history/model/history_backend_client_impl.h"
+#include "ios/chrome/browser/history/model/history_utils.h"
 #include "url/gurl.h"
 
 HistoryClientImpl::HistoryClientImpl(

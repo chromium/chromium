@@ -7,7 +7,7 @@
 #import "base/metrics/field_trial_params.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/url_formatter/url_formatter.h"
-#import "ios/chrome/browser/history/history_tab_helper.h"
+#import "ios/chrome/browser/history/model/history_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
