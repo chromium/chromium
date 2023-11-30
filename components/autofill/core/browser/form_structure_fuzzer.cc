@@ -8,12 +8,14 @@
 #include <fuzzer/FuzzedDataProvider.h>
 
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include "base/at_exit.h"
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/path_service.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_fuzzed_producer.h"
@@ -53,6 +55,14 @@ struct TestCase {
 
 TestCase* test_case = new TestCase();
 
+GeoIpCountryCode GenerateGeoIpCountryCode(FuzzedDataProvider& data_provider) {
+  char chars[2];
+  for (auto& letter : chars) {
+    letter = data_provider.ConsumeIntegralInRange('A', 'Z');
+  }
+  return GeoIpCountryCode(std::string(std::begin(chars), std::end(chars)));
+}
+
 }  // namespace
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
@@ -60,7 +70,17 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   FormData form_data = GenerateFormData(data_provider);
 
   FormStructure form_structure(form_data);
-  form_structure.SetFieldTypesFromAutocompleteAttribute();
+  form_structure.DetermineHeuristicTypes(
+      GenerateGeoIpCountryCode(data_provider),
+      /*form_interactions_ukm_logger=*/nullptr,
+      /*log_manager=*/nullptr);
+  std::ignore = form_structure.IsAutofillable();
+  std::ignore = form_structure.IsCompleteCreditCardForm();
+  std::ignore = form_structure.ShouldBeParsed();
+  std::ignore = form_structure.ShouldRunHeuristics();
+  std::ignore = form_structure.ShouldRunHeuristicsForSingleFieldForms();
+  std::ignore = form_structure.ShouldBeQueried();
+  std::ignore = form_structure.ShouldBeUploaded();
   return 0;
 }
 
