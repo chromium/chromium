@@ -265,7 +265,6 @@ bool {{proxy_name}}::{{method.name}}(
   const bool is_urgent = mojo::UrgentMessageScope::IsInUrgentScope();
 {%    else %}
   const bool is_urgent = false;
-  DCHECK(!mojo::UrgentMessageScope::IsInUrgentScope());
 {%-   endif %}
 {%-   if method|method_supports_lazy_serialization %}
   const bool kSerialize = receiver_->PrefersSerializedMessages();
@@ -330,7 +329,6 @@ void {{proxy_name}}::{{method.name}}(
   const bool is_urgent = mojo::UrgentMessageScope::IsInUrgentScope();
 {%    else %}
   const bool is_urgent = false;
-  DCHECK(!mojo::UrgentMessageScope::IsInUrgentScope());
 {%-   endif %}
 {%-   if method|method_supports_lazy_serialization %}
   const bool kSerialize = receiver_->PrefersSerializedMessages();

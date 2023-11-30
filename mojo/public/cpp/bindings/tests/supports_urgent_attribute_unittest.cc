@@ -95,6 +95,16 @@ TEST_P(SupportsUrgentAttributeTest, TestAttribute) {
   EXPECT_EQ(unowned_filter->num_urgent_messages(), 1u);
   EXPECT_EQ(unowned_filter->num_non_urgent_messages(), 2u);
 
+  {
+    UrgentMessageScope scope;
+    remote->MaybeUrgentMessage();
+    remote->NonUrgentMessage();
+  }
+  remote.FlushForTesting();
+
+  EXPECT_EQ(unowned_filter->num_urgent_messages(), 2u);
+  EXPECT_EQ(unowned_filter->num_non_urgent_messages(), 3u);
+
   unowned_filter = nullptr;
 }
 
