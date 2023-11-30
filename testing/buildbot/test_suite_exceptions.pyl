@@ -4429,6 +4429,11 @@
         # shards.
         'retry_only_failed_tests': True,
       },
+      'Mac ASan 64 Tests (1)': {
+        'swarming': {
+          'shards': 2,
+        },
+      },
       'Mac13 Tests': {
         'swarming': {
           'shards': 2,
