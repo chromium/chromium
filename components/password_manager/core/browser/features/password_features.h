@@ -127,6 +127,12 @@ inline constexpr base::FeatureParam<PasswordGenerationVariation>
         &kPasswordGenerationExperiment, "password_generation_variation",
         PasswordGenerationVariation::kTrustedAdvice,
         &kPasswordGenerationExperimentVariationOption};
+
+inline constexpr base::FeatureParam<std::string>
+    kPasswordGenerationExperimentSurveyTriggerId{
+        &kPasswordGenerationExperiment,
+        "PasswordGenerationExperimentSurveyTriggedId", /*default_value=*/""};
+
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace password_manager::features

@@ -11,6 +11,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/common/chrome_features.h"
+#include "components/password_manager/core/browser/features/password_features.h"  // nogncheck
 #include "components/performance_manager/public/features.h"         // nogncheck
 #include "components/permissions/constants.h"                       // nogncheck
 #include "components/safe_browsing/core/common/features.h"          // nogncheck
@@ -48,6 +49,8 @@ constexpr char kHatsSurveyTriggerRedWarning[] = "red-warning";
 constexpr char kHatsSurveyTriggerSettings[] = "settings";
 constexpr char kHatsSurveyTriggerSettingsPrivacy[] = "settings-privacy";
 constexpr char kHatsSurveyTriggerSettingsSecurity[] = "settings-security";
+constexpr char kHatsSurveyTriggerSuggestedPasswordsExperiment[] =
+    "suggested-passwords-experiment";
 constexpr char kHatsSurveyTriggerTrackingProtectionControlImmediate[] =
     "tracking-protection-control-immediate";
 constexpr char kHatsSurveyTriggerTrackingProtectionTreatmentImmediate[] =
@@ -489,6 +492,14 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       std::vector<std::string>{
           safe_browsing::kFlaggedUrl, safe_browsing::kMainFrameUrl,
           safe_browsing::kReferrerUrl, safe_browsing::kUserActivityWithUrls});
+
+  // Suggested passwords experiment surveys.
+  survey_configs.emplace_back(
+      &password_manager::features::kPasswordGenerationExperiment,
+      kHatsSurveyTriggerSuggestedPasswordsExperiment,
+      password_manager::features::kPasswordGenerationExperimentSurveyTriggerId
+          .Get(),
+      std::vector<std::string>{"Suggested password accepted"});
 
 #else
   survey_configs.emplace_back(&chrome::android::kChromeSurveyNextAndroid,

@@ -35,6 +35,7 @@ extern const char kHatsSurveyTriggerPrivacySandbox[];
 extern const char kHatsSurveyTriggerRedWarning[];
 extern const char kHatsSurveyTriggerSettings[];
 extern const char kHatsSurveyTriggerSettingsPrivacy[];
+extern const char kHatsSurveyTriggerSuggestedPasswordsExperiment[];
 extern const char kHatsSurveyTriggerTrackingProtectionControlImmediate[];
 extern const char kHatsSurveyTriggerTrackingProtectionTreatmentImmediate[];
 extern const char kHatsSurveyTriggerTrackingProtectionControlDelayed[];
