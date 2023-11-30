@@ -296,14 +296,9 @@ static void MaybeEncodeTextContent(const String& text_content,
     *result =
         Base64Encode(base::as_bytes(base::make_span(buffer_data, buffer_size)));
     *base64_encoded = true;
-  } else if (text_content.IsNull()) {
+  } else {
     *result = "";
     *base64_encoded = false;
-  } else {
-    DCHECK(!text_content.Is8Bit());
-    *result = Base64Encode(
-        base::as_bytes(base::make_span(StringUTF8Adaptor(text_content))));
-    *base64_encoded = true;
   }
 }
 
