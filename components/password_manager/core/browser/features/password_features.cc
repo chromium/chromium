@@ -51,7 +51,7 @@ BASE_FEATURE(kEnablePasswordsAccountStorage,
 // affiliated website.
 BASE_FEATURE(kFillingAcrossAffiliatedWebsitesAndroid,
              "FillingAcrossAffiliatedWebsitesAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables reading credentials from SharedPreferences.
 BASE_FEATURE(kFetchGaiaHashOnSignIn,
              "FetchGaiaHashOnSignIn",

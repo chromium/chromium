@@ -7124,21 +7124,6 @@
             ]
         }
     ],
-    "FillingAcrossAffiliatedWebsitesAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FillingAcrossAffiliatedWebsitesAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "FilteringScrollPrediction": [
         {
             "platforms": [
