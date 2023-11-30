@@ -21,7 +21,7 @@ build_webui("build") {
 
   web_component_files = [
     "confirmation_page.ts",
-    "feedback_flow.js",
+    "feedback_flow.ts",
     "file_attachment.ts",
     "help_content.js",
     "search_page.js",
@@ -42,6 +42,8 @@ build_webui("build") {
   mojo_files = [ "$root_gen_dir/mojom-webui/ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom-webui.js" ]
 
   mojo_files_deps = [ "//ash/webui/os_feedback_ui/mojom:mojom_webui_js" ]
+
+  ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
 
   ts_deps = [
     "//ash/webui/common/resources:build_ts",

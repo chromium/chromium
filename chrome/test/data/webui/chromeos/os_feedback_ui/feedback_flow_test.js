@@ -77,7 +77,7 @@ suite('FeedbackFlowTestSuite', () => {
   function getFeedbackContext_() {
     assertTrue(!!page);
 
-    return page.feedbackContext_;
+    return page.feedbackContext;
   }
 
   /** @return {!SearchPageElement} */
