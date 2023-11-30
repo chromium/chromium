@@ -9450,8 +9450,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTest, DisplayOrientationChangeTest) {
           const auto compute_divider_position_ratio = [this]() {
             const display::Display& display =
                 display::Screen::GetScreen()->GetPrimaryDisplay();
-            const bool is_horizontal =
-                SplitViewController::IsLayoutHorizontal(display);
+            const bool is_horizontal = IsLayoutHorizontal(display);
             const gfx::Rect work_area = display.work_area();
             const int size =
                 is_horizontal ? work_area.width() : work_area.height();

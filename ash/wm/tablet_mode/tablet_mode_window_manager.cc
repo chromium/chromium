@@ -603,8 +603,8 @@ int TabletModeWindowManager::CalculateCarryOverDividerPosition(
       right_window ? GetWindowBoundsInScreen(right_window, clamshell_to_tablet)
                    : gfx::Rect();
 
-  const bool horizontal = SplitViewController::IsLayoutHorizontal(display);
-  const bool primary = SplitViewController::IsLayoutPrimary(display);
+  const bool horizontal = IsLayoutHorizontal(display);
+  const bool primary = IsLayoutPrimary(display);
 
   // We need to expand (or shrink) the width of the snapped windows by the half
   // of the divider width when to-clamshell (or to-tablet) transition happens

@@ -946,16 +946,14 @@ SplitViewController::SnapPosition OverviewWindowDragController::GetSnapPosition(
   if (!split_view_controller->CanSnapWindow(item_->GetWindow()))
     return SplitViewController::SnapPosition::kNone;
   if (split_view_controller->InSplitViewMode()) {
-    const int position =
-        base::ClampRound(SplitViewController::IsLayoutHorizontal(root_window)
-                             ? location_in_screen.x() - area.x()
-                             : location_in_screen.y() - area.y());
+    const int position = base::ClampRound(
+        IsLayoutHorizontal(root_window) ? location_in_screen.x() - area.x()
+                                        : location_in_screen.y() - area.y());
     SplitViewController::SnapPosition default_snap_position =
         split_view_controller->default_snap_position();
     // If we're trying to snap to a position that already has a snapped window:
     const bool is_default_snap_position_left_or_top =
-        SplitViewController::IsPhysicalLeftOrTop(default_snap_position,
-                                                 root_window);
+        IsPhysicalLeftOrTop(default_snap_position, root_window);
     const bool is_drag_position_left_or_top =
         position < split_view_controller->divider_position();
     if (is_default_snap_position_left_or_top == is_drag_position_left_or_top)

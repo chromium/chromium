@@ -285,7 +285,7 @@ bool TabDragDropDelegate::ShouldPreventSnapToTheEdge(
   SplitViewController* const split_view_controller =
       SplitViewController::Get(source_window_);
   return !split_view_controller->InSplitViewMode() &&
-         split_view_controller->IsLayoutHorizontal(source_window_) &&
+         IsLayoutHorizontal(source_window_) &&
          location_in_screen.y() <
              Shell::Get()->shell_delegate()->GetBrowserWebUITabStripHeight();
 }

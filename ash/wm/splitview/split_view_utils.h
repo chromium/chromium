@@ -142,7 +142,8 @@ void ShowAppCannotSnapToast();
 // ignoring any properties of the window itself. The |root_window| is of the
 // current screen. |initial_location_in_screen| is the location at drag start if
 // the drag began in |root_window|, and is empty otherwise. To be snappable
-// (meaning the return value is not |SplitViewController::SnapPosition::kNone|),
+// (meaning the return value is not
+// |SplitViewController::SplitViewController::SnapPosition::kNone|),
 // |location_in_screen| must be either inside |snap_distance_from_edge| or
 // dragged toward the edge for at least |minimum_drag_distance| distance until
 // it's dragged into a suitable edge of the work area of |root_window| (i.e.,
@@ -159,7 +160,8 @@ SplitViewController::SnapPosition GetSnapPositionForLocation(
 
 // Returns the desired snap position. To be snappable, |window| must 1)
 // satisfy |SplitViewController::CanSnapWindow| for |root_window|, and
-// 2) be snappable according to |GetSnapPositionForLocation| above.
+// 2) be snappable according to
+// |GetSnapPositionForLocation| above.
 // |initial_location_in_screen| is the window location at drag start in
 // its initial window. Otherwise, the arguments are the same as above.
 ASH_EXPORT SplitViewController::SnapPosition GetSnapPosition(
@@ -171,6 +173,53 @@ ASH_EXPORT SplitViewController::SnapPosition GetSnapPosition(
     int minimum_drag_distance,
     int horizontal_edge_inset,
     int vertical_edge_inset);
+
+bool IsInTabletMode();
+
+// The return values of these two functions together indicate what actual
+// positions correspond to |PRIMARY| and |SECONDARY|:
+// |IsLayoutHorizontal|  |IsLayoutPrimary|    |PRIMARY|           |SECONDARY|
+// --------------------------------------------------------------------------
+// true                  true                   left                 right
+// true                  false                  right                left
+// false                 true                   top                  bottom
+// false                 false                  bottom               top
+// In both clamshell and tablet mode, these functions return values based on
+// display orientation. |window| is used to find the nearest display to check
+// if the display layout is horizontal and is primary or not.
+ASH_EXPORT bool IsLayoutHorizontal(aura::Window* window);
+ASH_EXPORT bool IsLayoutHorizontal(const display::Display& display);
+ASH_EXPORT bool IsLayoutPrimary(aura::Window* window);
+ASH_EXPORT bool IsLayoutPrimary(const display::Display& display);
+
+// Returns true if |position| actually signifies a left or top position,
+// according to the return values of |IsLayoutHorizontal| and
+// |IsLayoutPrimary|. Physical position refers to the position of the window
+// on the display that is held upward.
+ASH_EXPORT bool IsPhysicalLeftOrTop(SplitViewController::SnapPosition position,
+                                    aura::Window* window);
+ASH_EXPORT bool IsPhysicalLeftOrTop(SplitViewController::SnapPosition position,
+                                    const display::Display& display);
+
+// Returns the maximum value of the `divider_position_`, which is the width of
+// the current display's work area bounds in landscape orientation, or height
+// of the current display's work area bounds in portrait orientation.
+int GetDividerPositionUpperLimit(aura::Window* root_window);
+
+// Returns the minimum length of the window according to the screen orientation.
+int GetMinimumWindowLength(aura::Window* window, bool horizontal);
+
+// Returns the bounds of a snapped window at `snap_position`, where
+// `divider_position` is the end of the primary window width, `divider_width` is
+// the width of the split view divider if any exists, and
+// `is_resizing_with_divider`, if true and in tablet mode, will determine the
+// bounds based on the window's minimum size.
+gfx::Rect CalculateSnappedWindowBoundsInScreen(
+    SplitViewController::SnapPosition snap_position,
+    aura::Window* window_for_minimum_size,
+    int divider_position,
+    int divider_width,
+    bool is_resizing_with_divider);
 
 // Returns true if the snap group is enabled in clamshell mode. The
 // `split_view_divider_` will show to indicate that the two windows are in a
