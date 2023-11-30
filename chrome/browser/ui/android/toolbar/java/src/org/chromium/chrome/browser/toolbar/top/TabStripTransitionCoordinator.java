@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.top;
 
 import android.content.ComponentCallbacks;
 import android.content.res.Configuration;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.View.OnLayoutChangeListener;
@@ -13,8 +14,8 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.CallbackController;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
@@ -26,6 +27,9 @@ import org.chromium.ui.base.ViewUtils;
 
 /** Subclass used to manage tab strip visibility and height presents. */
 public class TabStripTransitionCoordinator implements ComponentCallbacks {
+    // Delay to kickoff the transition to avoid frame drops while application is too busy when the
+    // configuration changed.
+    private static final int TRANSITION_DELAY_MS = 500;
 
     /** Observes height of tab strip that could change during run time. */
     public interface TabStripHeightObserver {
@@ -37,6 +41,8 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
 
     private final ObserverList<TabStripHeightObserver> mTabStripHeightObservers =
             new ObserverList<>();
+    private final CallbackController mCallbackController = new CallbackController();
+    private final Handler mHandler = new Handler();
     private final BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
     private final View mControlContainer;
     private final View mToolbarLayout;
@@ -46,6 +52,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
     private boolean mTabStripVisible;
     private @Nullable BrowserControlsStateProvider.Observer mBrowserControlsObserver;
     private @Nullable OnLayoutChangeListener mOnLayoutChangedListener;
+    private @Nullable Runnable mLastTransitionTask;
 
     /**
      * Create the coordinator managing transitions for when showing / hiding the tab strip.
@@ -90,19 +97,24 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
             mBrowserControlsVisibilityManager.removeObserver(mBrowserControlsObserver);
             mBrowserControlsObserver = null;
         }
+        mCallbackController.destroy();
         mTabStripHeightObservers.clear();
     }
 
     @Override
     public void onConfigurationChanged(@NonNull Configuration configuration) {
-        maybeUpdateTabStripVisibility();
+        if (mLastTransitionTask != null) {
+            mHandler.removeCallbacks(mLastTransitionTask);
+        }
+        mLastTransitionTask =
+                mCallbackController.makeCancelable(this::maybeUpdateTabStripVisibility);
+        mHandler.postDelayed(mLastTransitionTask, TRANSITION_DELAY_MS);
     }
 
     @Override
     public void onLowMemory() {}
 
-    @VisibleForTesting
-    void maybeUpdateTabStripVisibility() {
+    private void maybeUpdateTabStripVisibility() {
         DisplayMetrics displayMetrics = mControlContainer.getResources().getDisplayMetrics();
         int width = displayMetrics.widthPixels;
         boolean showTabStrip =
