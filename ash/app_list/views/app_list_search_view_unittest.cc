@@ -544,86 +544,6 @@ TEST_P(SearchResultImageViewTest, PulsingBlocksShowWhenNoResultIcon) {
   client->set_search_callback(TestAppListClient::SearchCallback());
 }
 
-TEST_P(SearchResultImageViewTest, SearchNotifierController) {
-  GetAppListTestHelper()->ShowAppList();
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  auto* notifier_controller = GetSearchView()->search_notifier_controller();
-  EXPECT_EQ(notifier_controller->GetPrivacyNoticeShownCount(prefs), 0);
-  EXPECT_TRUE(notifier_controller->ShouldShowPrivacyNotice());
-  EXPECT_FALSE(IsImageSearchEnabled(prefs));
-
-  // Press a character key to open the search.
-  PressAndReleaseKey(ui::VKEY_A);
-  EXPECT_TRUE(GetSearchPage()->GetVisible());
-  EXPECT_EQ(notifier_controller->GetPrivacyNoticeShownCount(prefs), 1);
-  EXPECT_TRUE(notifier_controller->ShouldShowPrivacyNotice());
-  // The search notifier shows for the first time.
-  auto* search_notifier = GetSearchView()->search_notifier_view();
-  ASSERT_TRUE(search_notifier);
-  EXPECT_TRUE(search_notifier->GetVisible());
-
-  PressAndReleaseKey(ui::VKEY_BACK);
-  EXPECT_FALSE(GetSearchPage()->GetVisible());
-  EXPECT_EQ(notifier_controller->GetPrivacyNoticeShownCount(prefs), 1);
-
-  // The search notifier shows for the second time.
-  PressAndReleaseKey(ui::VKEY_A);
-  EXPECT_TRUE(GetSearchPage()->GetVisible());
-  EXPECT_EQ(notifier_controller->GetPrivacyNoticeShownCount(prefs), 2);
-  EXPECT_TRUE(notifier_controller->ShouldShowPrivacyNotice());
-  EXPECT_TRUE(search_notifier->GetVisible());
-
-  PressAndReleaseKey(ui::VKEY_BACK);
-  EXPECT_FALSE(GetSearchPage()->GetVisible());
-  EXPECT_EQ(notifier_controller->GetPrivacyNoticeShownCount(prefs), 2);
-
-  // The search notifier shows for the third time.
-  PressAndReleaseKey(ui::VKEY_A);
-  EXPECT_TRUE(GetSearchPage()->GetVisible());
-  EXPECT_EQ(notifier_controller->GetPrivacyNoticeShownCount(prefs), 3);
-  EXPECT_TRUE(notifier_controller->ShouldShowPrivacyNotice());
-  EXPECT_TRUE(search_notifier->GetVisible());
-
-  PressAndReleaseKey(ui::VKEY_BACK);
-  EXPECT_FALSE(GetSearchPage()->GetVisible());
-  EXPECT_EQ(notifier_controller->GetPrivacyNoticeShownCount(prefs), 3);
-
-  // The search notifier should not show more than 3 times.
-  PressAndReleaseKey(ui::VKEY_A);
-  EXPECT_TRUE(GetSearchPage()->GetVisible());
-  EXPECT_EQ(notifier_controller->GetPrivacyNoticeShownCount(prefs), 4);
-  EXPECT_FALSE(notifier_controller->ShouldShowPrivacyNotice());
-  EXPECT_FALSE(GetSearchView()->search_notifier_view());
-  EXPECT_TRUE(IsImageSearchEnabled(prefs));
-}
-
-TEST_P(SearchResultImageViewTest, AcceptingPrivacyNoticeRemovesIt) {
-  GetAppListTestHelper()->ShowAppList();
-
-  auto* search_notifier_controller =
-      GetSearchView()->search_notifier_controller();
-  EXPECT_TRUE(search_notifier_controller->ShouldShowPrivacyNotice());
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  EXPECT_FALSE(IsImageSearchEnabled(prefs));
-
-  // Press a character key to open the search.
-  PressAndReleaseKey(ui::VKEY_A);
-  EXPECT_TRUE(GetSearchPage()->GetVisible());
-  auto* search_notifier = GetSearchView()->search_notifier_view();
-  ASSERT_TRUE(search_notifier);
-  EXPECT_TRUE(search_notifier->GetVisible());
-
-  // Accept the privacy notice.
-  LeftClickOn(search_notifier->toast_button());
-
-  // The privacy notice should not be shown again after accepted.
-  EXPECT_FALSE(GetSearchView()->search_notifier_view());
-  EXPECT_FALSE(search_notifier_controller->ShouldShowPrivacyNotice());
-  EXPECT_TRUE(IsImageSearchEnabled(prefs));
-}
-
 TEST_P(SearchResultImageViewTest, SearchCategoryMenuItemToggleTest) {
   base::HistogramTester histogram_tester;
   GetAppListTestHelper()->ShowAppList();
@@ -795,13 +715,6 @@ TEST_P(SearchResultImageViewTest, ResultSelectionCycle) {
 
   // Press a key to start a search.
   PressAndReleaseKey(ui::VKEY_A);
-
-  // Focus cycle with search notifier will be done in
-  // ResultSelectionCycleWithSearchNotifier. Remove it here.
-  auto* search_notifier = GetSearchView()->search_notifier_view();
-  EXPECT_TRUE(search_notifier);
-  LeftClickOn(search_notifier->toast_button());
-  EXPECT_FALSE(GetSearchView()->search_notifier_view());
   SearchModel::SearchResults* results = test_helper->GetSearchResults();
 
   // Create categorized app results.
@@ -861,66 +774,6 @@ TEST_P(SearchResultImageViewTest, ResultSelectionCycle) {
   ASSERT_TRUE(controller->selected_result());
   EXPECT_EQ(controller->selected_location_details()->result_index,
             kDefaultSearchItems - 1);
-}
-
-// Tests that key traversal correctly cycles between the list of results and
-// search box buttons.
-TEST_P(SearchResultImageViewTest, ResultSelectionCycleWithSearchNotifier) {
-  auto* test_helper = GetAppListTestHelper();
-  test_helper->ShowAppList();
-  EXPECT_FALSE(GetSearchView()->CanSelectSearchResults());
-
-  // Press a key to start a search.
-  PressAndReleaseKey(ui::VKEY_A);
-  SearchModel::SearchResults* results = test_helper->GetSearchResults();
-
-  // Create categorized app results.
-  AppListModelProvider::Get()->search_model()->DeleteAllResults();
-  test_helper->GetOrderedResultCategories()->push_back(
-      AppListSearchResultCategory::kApps);
-  SetUpSearchResults(results, 1, /*new_result_count=*/2, 100, false,
-                     SearchResult::Category::kApps);
-
-  std::vector<SearchResultContainerView*> result_containers =
-      GetSearchView()->result_container_views_for_test();
-  for (auto* container : result_containers) {
-    EXPECT_TRUE(container->RunScheduledUpdateForTest());
-  }
-
-  // When the search starts, the first result view is selected.
-  EXPECT_TRUE(GetSearchView()->CanSelectSearchResults());
-  ResultSelectionController* controller =
-      GetSearchView()->result_selection_controller_for_test();
-  EXPECT_EQ(controller->selected_location_details()->result_index, 0);
-
-  // When search notifier exists, move the focus to it by pressing up from the
-  // first search result.
-  PressAndReleaseKey(ui::VKEY_UP);
-  auto* search_notifier = GetSearchView()->search_notifier_view();
-  EXPECT_FALSE(controller->selected_result());
-  EXPECT_TRUE(search_notifier->toast_button()->HasFocus());
-
-  // Pressing left and right won't change the focus on the search notifier.
-  PressAndReleaseKey(ui::VKEY_LEFT);
-  EXPECT_TRUE(search_notifier->toast_button()->HasFocus());
-  PressAndReleaseKey(ui::VKEY_RIGHT);
-  EXPECT_TRUE(search_notifier->toast_button()->HasFocus());
-
-  // The previous view to focus is the close button.
-  PressAndReleaseKey(ui::VKEY_UP);
-  EXPECT_FALSE(controller->selected_result());
-  EXPECT_TRUE(GetSearchBoxView()->close_button()->HasFocus());
-
-  // Pressing down from the close button goes back to the search notifier.
-  PressAndReleaseKey(ui::VKEY_DOWN);
-  EXPECT_FALSE(controller->selected_result());
-  EXPECT_TRUE(search_notifier->toast_button()->HasFocus());
-
-  // Return the focus back to the search box and select the first result from
-  // the search notifier.
-  PressAndReleaseKey(ui::VKEY_DOWN);
-  EXPECT_TRUE(GetSearchBoxView()->search_box()->HasFocus());
-  EXPECT_EQ(controller->selected_location_details()->result_index, 0);
 }
 
 TEST_P(SearchViewClamshellAndTabletTest, AnimateSearchResultView) {

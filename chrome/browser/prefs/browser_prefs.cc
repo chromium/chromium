@@ -982,6 +982,12 @@ constexpr char kPasswordChangeSuccessTrackerFlows[] =
 constexpr char kPasswordChangeSuccessTrackerVersion[] =
     "password_manager.password_change_success_tracker.version";
 
+// Deprecated 11/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kImageSearchPrivacyNotice[] =
+    "ash.launcher.image_search_privacy_notice";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1393,6 +1399,11 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 11/2023.
   registry->RegisterListPref(kPasswordChangeSuccessTrackerFlows);
   registry->RegisterIntegerPref(kPasswordChangeSuccessTrackerVersion, 0);
+
+  // Deprecated 11/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterDictionaryPref(kImageSearchPrivacyNotice);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2618,6 +2629,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs) {
   // Deprecated 11/2023.
   profile_prefs->ClearPref(kPasswordChangeSuccessTrackerFlows);
   profile_prefs->ClearPref(kPasswordChangeSuccessTrackerVersion);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Deprecated 11/2023
+  profile_prefs->ClearPref(kImageSearchPrivacyNotice);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

@@ -2312,15 +2312,6 @@ Style notes:
       <message name="IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_WEBSITES_TOOLTIP" desc="The tooltip text of the website menu item in the search category filter menu that shows what search results the category includes.">
         Websites including pages you've visited and open pages
       </message>
-      <message name="IDS_ASH_SEARCH_IMAGE_SEARCH_PRIVACY_NOTICE_TITLE" desc="The title of the search privacy notice that guides users to search their image files by the content of the image.">
-        Find your images by the content
-      </message>
-      <message name="IDS_ASH_SEARCH_IMAGE_SEARCH_PRIVACY_NOTICE_CONTENT" desc="The content of the search privacy notice that guides users to search their image files by the content of the image. Sunset and tree are two of the examples for users to try.">
-        Try searching "sunset" or "tree" instead of the file name. You can turn off image search in the search bar.
-      </message>
-      <message name="IDS_ASH_SEARCH_IMAGE_SEARCH_PRIVACY_NOTICE_ACCESSIBILITY_GUIDANCE" desc="The accessibility guidance in the launcher search to guide users to move focus to the search privacy notice.">
-        Press shift plus tab to learn more
-      </message>
       <message name="IDS_ASH_SEARCH_RESULT_SEPARATOR" desc="Separator between the title and details text in ash search result view.">
         ''' - '''
       </message>

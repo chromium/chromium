@@ -52,7 +52,6 @@ void AppListBubbleSearchPage::VisibilityChanged(View* starting_from,
     if (search_view_->search_notifier_view() &&
         !notifier_controller->ShouldShowPrivacyNotice()) {
       search_view_->RemoveSearchNotifierView();
-      notifier_controller->EnableImageSearch();
     }
   }
 }

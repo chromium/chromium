@@ -566,15 +566,6 @@ void AppListTestApi::DisableAppListNudge(bool disable) {
   AppListNudgeController::SetReorderNudgeDisabledForTest(disable);
 }
 
-void AppListTestApi::DisableSearchNotifier(bool disable) {
-  auto* prefs =
-      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  ScopedDictPrefUpdate pref_update(prefs,
-                                   ash::prefs::kImageSearchPrivacyNotice);
-  // Accept the notifier to disable it.
-  pref_update->Set("accepted", disable);
-}
-
 void AppListTestApi::SetContinueSectionPrivacyNoticeAccepted() {
   AppListNudgeController::SetPrivacyNoticeAcceptedForTest(true);
 }
