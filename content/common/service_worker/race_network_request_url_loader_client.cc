@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "content/common/features.h"
@@ -580,6 +581,12 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteWriteData(
     void* write_buffer,
     const void* read_buffer,
     uint32_t num_bytes_to_consume) {
+  SCOPED_CRASH_KEY_NUMBER("SWRace", "physical_memory_mb",
+                          base::SysInfo::AmountOfPhysicalMemoryMB());
+  SCOPED_CRASH_KEY_NUMBER("SWRace", "available_physical_memory_mb",
+                          base::SysInfo::AmountOfAvailablePhysicalMemory());
+  SCOPED_CRASH_KEY_NUMBER("SWRace", "is_lowend_device",
+                          base::SysInfo::IsLowEndDevice());
   CHECK_GE(data_pipe_buffer_size_, num_bytes_to_consume);
   memcpy(write_buffer, read_buffer, num_bytes_to_consume);
   MojoResult result =
