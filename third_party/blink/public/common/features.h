@@ -932,6 +932,8 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kPrivateAggregationApiMultipleCloudProviders);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrivateNetworkAccessNullIpAddress);
+
 // If set, HTMLDocumentParser processes data immediately rather than after a
 // delay. This is further controlled by the feature params starting with the
 // same name. Also note that this only applies to uses that are normally

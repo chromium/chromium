@@ -1515,6 +1515,10 @@ BASE_FEATURE(kPrivateAggregationApiMultipleCloudProviders,
              "PrivateAggregationApiMultipleCloudProviders",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrivateNetworkAccessNullIpAddress,
+             "PrivateNetworkAccessNullIpAddress",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kProcessHtmlDataImmediately,
              "ProcessHtmlDataImmediately",
              base::FEATURE_DISABLED_BY_DEFAULT);
