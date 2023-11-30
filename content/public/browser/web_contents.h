@@ -590,9 +590,9 @@ class WebContents : public PageNavigator,
   virtual void SetAlwaysSendSubresourceNotifications() = 0;
   virtual bool GetSendSubresourceNotification() = 0;
 
-  // Set the accessibility mode so that accessibility events are forwarded
-  // to each WebContentsObserver.
-  virtual void EnableWebContentsOnlyAccessibilityMode() = 0;
+  // Adds accessibility mode. If accessibility is already enabled, it will be
+  // reset, i.e., the full accessibility tree will be sent to the observers.
+  virtual void EnableAccessibilityMode(ui::AXMode mode) = 0;
 
   // Returns true only if the WebContentsObserver accessibility mode is
   // enabled.

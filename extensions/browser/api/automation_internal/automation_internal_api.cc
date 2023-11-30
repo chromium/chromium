@@ -384,7 +384,7 @@ class AutomationWebContentsObserver
   void ExtensionListenerAdded() override {
     // This call resets accessibility.
     if (web_contents()) {
-      web_contents()->EnableWebContentsOnlyAccessibilityMode();
+      web_contents()->EnableAccessibilityMode(ui::kAXModeWebContentsOnly);
 
       // On ChromeOS Ash, the automation api is the native accessibility api.
       // For the purposes of tracking web contents accessibility like other
@@ -481,7 +481,7 @@ std::optional<std::string> AutomationInternalEnableTreeFunction::EnableTree(
   // Only call this if this is the root of a frame tree, to avoid resetting
   // the accessibility state multiple times.
   if (render_frame_host->IsInPrimaryMainFrame()) {
-    contents->EnableWebContentsOnlyAccessibilityMode();
+    contents->EnableAccessibilityMode(ui::kAXModeWebContentsOnly);
   }
 
   return std::nullopt;

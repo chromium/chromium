@@ -397,7 +397,7 @@ void ReadAnythingUntrustedPageHandler::OnActiveWebContentsChanged() {
   // TODO(crbug.com/1266555): Only enable kReadAnythingAXMode while still
   // causing the reset.
   if (web_contents) {
-    web_contents->EnableWebContentsOnlyAccessibilityMode();
+    web_contents->EnableAccessibilityMode(ui::kAXModeWebContentsOnly);
   }
   OnActiveAXTreeIDChanged();
 }
@@ -477,7 +477,11 @@ void ReadAnythingUntrustedPageHandler::EnablePDFContentAccessibility(
       contents->GetPrimaryMainFrame()->GetLastCommittedOrigin()));
   pdf_observer_ = std::make_unique<ReadAnythingWebContentsObserver>(
       weak_factory_.GetSafeRef(), contents);
-  contents->EnableWebContentsOnlyAccessibilityMode();
+
+  // Enable accessibility to receive events (data) from PDF. kPDFOcr is needed
+  // for inaccessible PDFs. Reset accessibility to get the new updated trees.
+  contents->EnableAccessibilityMode(ui::kAXModeWebContentsOnly |
+                                    ui::AXMode::kPDFOcr);
 
   // Trigger distillation.
   OnActiveAXTreeIDChanged(true);

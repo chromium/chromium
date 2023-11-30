@@ -371,7 +371,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool ShouldOverrideUserAgentForRendererInitiatedNavigation() override;
   void SetAlwaysSendSubresourceNotifications() override;
   bool GetSendSubresourceNotification() override;
-  void EnableWebContentsOnlyAccessibilityMode() override;
+  void EnableAccessibilityMode(ui::AXMode mode) override;
   bool IsWebContentsOnlyAccessibilityModeForTesting() override;
   bool IsFullAccessibilityModeForTesting() override;
   const std::u16string& GetTitle() override;

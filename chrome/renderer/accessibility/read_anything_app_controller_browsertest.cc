@@ -641,6 +641,28 @@ TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_IncorrectlyFormattedPDF) {
   EXPECT_EQ("p", GetHtmlTag(5));
 }
 
+TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_InaccessiblePDF) {
+  ui::AXTreeID pdf_iframe_tree_id = SetUpPdfTrees();
+
+  // Send pdf iframe update with html tags to test.
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update, pdf_iframe_tree_id);
+  update.nodes.resize(2);
+  update.root_id = 1;
+  update.nodes[0].id = 1;
+  update.nodes[0].child_ids = {2};
+  update.nodes[1].id = 2;
+  update.nodes[0].role = ax::mojom::Role::kPdfRoot;
+  update.nodes[1].role = ax::mojom::Role::kContentInfo;
+  update.nodes[1].SetName(string_constants::kPDFPageEnd);
+  update.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
+  AccessibilityEventReceived({update});
+
+  OnAXTreeDistilled({});
+  EXPECT_CALL(page_handler_, EnablePDFContentAccessibility).Times(1);
+  EXPECT_EQ("br", GetHtmlTag(2));
+}
+
 TEST_F(ReadAnythingAppControllerTest, GetTextContent_NoSelection) {
   std::string text_content = "Hello";
   std::string missing_text_content = "";

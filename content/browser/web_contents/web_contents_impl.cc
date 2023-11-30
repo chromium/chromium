@@ -2121,9 +2121,8 @@ bool WebContentsImpl::ShouldOverrideUserAgentForRendererInitiatedNavigation() {
   return false;
 }
 
-void WebContentsImpl::EnableWebContentsOnlyAccessibilityMode() {
-  OPTIONAL_TRACE_EVENT0(
-      "content", "WebContentsImpl::EnableWebContentsOnlyAccessibilityMode");
+void WebContentsImpl::EnableAccessibilityMode(ui::AXMode mode) {
+  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::EnableAccessibilityMode");
   // If accessibility is already enabled, we'll need to force a reset
   // in order to ensure new observers of accessibility events get the
   // full accessibility tree from scratch.
@@ -2132,7 +2131,7 @@ void WebContentsImpl::EnableWebContentsOnlyAccessibilityMode() {
   ui::AXMode desired_mode =
       GetContentClient()->browser()->GetAXModeForBrowserContext(
           GetBrowserContext());
-  desired_mode |= ui::kAXModeWebContentsOnly;
+  desired_mode |= mode;
   AddAccessibilityMode(desired_mode);
 
   // Accessibility mode updates include speculative RFH's as well as any inner

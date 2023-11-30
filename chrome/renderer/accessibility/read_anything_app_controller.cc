@@ -952,6 +952,13 @@ std::string ReadAnythingAppController::GetHtmlTagForPDF(
       return "";
     case ax::mojom::Role::kHeading:
       return GetHeadingHtmlTagForPDF(ax_node, html_tag);
+    // Add a line break after each page of an inaccessible PDF for readability
+    // since there is no other formatting included in the OCR output.
+    case ax::mojom::Role::kContentInfo:
+      if (ax_node->GetTextContentUTF8() == string_constants::kPDFPageEnd) {
+        return "br";
+      }
+      ABSL_FALLTHROUGH_INTENDED;
     default:
       return html_tag;
   }

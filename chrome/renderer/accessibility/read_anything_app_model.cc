@@ -533,8 +533,33 @@ bool ReadAnythingAppModel::IsNodeIgnoredForReadAnything(
     ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = GetAXNode(ax_node_id);
   DCHECK(ax_node);
-  // Ignore interactive elements, except for text fields.
   ax::mojom::Role role = ax_node->GetRole();
+
+  // PDFs processed with OCR have additional nodes that mark the start and end
+  // of a page. The start of a page is indicated with a kBanner node that has a
+  // child static text node. Ignore both. The end of a page is indicated with a
+  // kContentInfo node that has a child static text node. Ignore the static text
+  // node but keep the kContentInfo so a line break can be inserted in between
+  // pages in GetHtmlTagForPDF.
+  if (is_pdf_) {
+    // The text content of the aforementioned kBanner or kContentInfo nodes is
+    // the same as the text content of its child static text node.
+    std::string text = ax_node->GetTextContentUTF8();
+    ui::AXNode* parent = ax_node->GetParent();
+
+    bool is_start_or_end_static_text_node =
+        parent && ((parent->GetRole() == ax::mojom::Role::kBanner &&
+                    text == string_constants::kPDFPageStart) ||
+                   (parent->GetRole() == ax::mojom::Role::kContentInfo &&
+                    text == string_constants::kPDFPageEnd));
+    if ((role == ax::mojom::Role::kBanner &&
+         text == string_constants::kPDFPageStart) ||
+        is_start_or_end_static_text_node) {
+      return true;
+    }
+  }
+
+  // Ignore interactive elements, except for text fields.
   return (ui::IsControl(role) && !ui::IsTextField(role)) || ui::IsSelect(role);
 }
 
