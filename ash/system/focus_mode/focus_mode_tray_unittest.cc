@@ -9,14 +9,25 @@
 #include "ash/shell.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/status_area_widget_test_helper.h"
+#include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/compositor/layer_animator.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/views/controls/button/image_button.h"
 
 namespace ash {
 
+namespace {
+
+constexpr base::TimeDelta kStartAnimationDelay = base::Milliseconds(300);
+
+}  // namespace
+
 class FocusModeTrayTest : public AshTestBase {
  public:
-  FocusModeTrayTest() = default;
+  FocusModeTrayTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~FocusModeTrayTest() override = default;
 
   // AshTestBase:
@@ -31,6 +42,14 @@ class FocusModeTrayTest : public AshTestBase {
   void TearDown() override {
     focus_mode_tray_ = nullptr;
     AshTestBase::TearDown();
+  }
+
+  TrayBubbleView* GetBubbleView() {
+    return focus_mode_tray_->bubble_->bubble_view();
+  }
+
+  FocusModeTray::TaskItemView* GetTaskItemView() {
+    return focus_mode_tray_->task_item_view_.get();
   }
 
  protected:
@@ -97,4 +116,45 @@ TEST_F(FocusModeTrayTest, ClickActivateDeactivate) {
   event_generator->ClickLeftButton();
   EXPECT_FALSE(focus_mode_tray_->is_active());
 }
+
+// Tests that when the user clicks the radio button to mark a selected task as
+// completed, `TaskItemView` will be animated to be removed from the bubble
+// view.
+TEST_F(FocusModeTrayTest, MarkTaskAsCompleted) {
+  // Enable animations.
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  FocusModeController* controller = FocusModeController::Get();
+  controller->set_selected_task_title(u"make a travel plan");
+
+  //  Start focus mode and click the tray to activate the button.
+  controller->ToggleFocusMode();
+  LeftClickOn(focus_mode_tray_);
+  EXPECT_TRUE(focus_mode_tray_->is_active());
+
+  // A `TaskItemView` will be created because we have a selected task.
+  EXPECT_TRUE(GetTaskItemView());
+
+  const auto* const radio_button = focus_mode_tray_->GetRadioButtonForTesting();
+  EXPECT_TRUE(radio_button);
+
+  // Click the radio button to mark the selected task as completed.
+  LeftClickOn(radio_button);
+
+  task_environment()->FastForwardBy(kStartAnimationDelay);
+
+  auto* bubble_view = GetBubbleView();
+  ui::Layer* bubble_view_layer = bubble_view->layer();
+
+  auto* animator = bubble_view_layer->GetAnimator();
+  EXPECT_TRUE(animator &&
+              animator->IsAnimatingProperty(
+                  ui::LayerAnimationElement::AnimatableProperty::BOUNDS));
+  // Layer top edge animates down.
+  EXPECT_GT(bubble_view_layer->bounds().y(), bubble_view->y());
+  // `task_item_view` will be removed at the start of the animation.
+  EXPECT_FALSE(GetTaskItemView());
+}
+
 }  // namespace ash
