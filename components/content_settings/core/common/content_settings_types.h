@@ -11,7 +11,7 @@
 // A particular type of content to care about. We give the user various types
 // of controls over each of these.
 // When adding/removing values from this enum, be sure to update the
-// kHistogramValue array in content_settings.cc as well.
+// kHistogramValue array in c/c/c/browser/content_settings_uma_util.cc as well.
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.content_settings
 enum class ContentSettingsType : int32_t {
