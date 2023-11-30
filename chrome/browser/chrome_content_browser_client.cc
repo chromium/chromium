@@ -5597,7 +5597,7 @@ ChromeContentBrowserClient::MaybeCreateSafeBrowsingURLLoaderThrottle(
                              hash_realtime_selection);
 
     return safe_browsing::BrowserURLLoaderThrottle::Create(
-        base::BindOnce(
+        base::BindRepeating(
             &ChromeContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate,
             base::Unretained(this),
             safe_browsing::IsSafeBrowsingEnabled(*profile->GetPrefs()),

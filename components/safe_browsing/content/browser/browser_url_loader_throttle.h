@@ -45,6 +45,29 @@ class AsyncCheckTracker;
 // the load if any URLs turn out to be bad.
 class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
  public:
+  // Helper class to perform whether the check can be skipped on the SB thread.
+  class SkipCheckCheckerOnSB
+      : public base::SupportsWeakPtr<
+            BrowserURLLoaderThrottle::SkipCheckCheckerOnSB> {
+   public:
+    using OnCompleteCheckCallback =
+        base::OnceCallback<void(bool /* should_skip */)>;
+
+    SkipCheckCheckerOnSB(UrlCheckerOnSB::GetDelegateCallback delegate_getter,
+                         int frame_tree_node_id);
+    ~SkipCheckCheckerOnSB();
+
+    void CheckOriginalUrl(OnCompleteCheckCallback callback,
+                          const GURL& url,
+                          bool originated_from_service_worker);
+    void CheckRedirectUrl(OnCompleteCheckCallback callback);
+
+   private:
+    UrlCheckerOnSB::GetDelegateCallback delegate_getter_;
+    int frame_tree_node_id_;
+    bool should_skip_checks_ = false;
+  };
+
   static std::unique_ptr<BrowserURLLoaderThrottle> Create(
       UrlCheckerOnSB::GetDelegateCallback delegate_getter,
       const base::RepeatingCallback<content::WebContents*()>&
@@ -91,6 +114,18 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
       base::WeakPtr<PingManager> ping_manager,
       hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
       base::WeakPtr<AsyncCheckTracker> async_check_tracker);
+
+  void OnSkipCheckCompleteOnOriginalUrl(
+      const net::HttpRequestHeaders& headers,
+      int load_flags,
+      network::mojom::RequestDestination request_destination,
+      bool has_user_gesture,
+      const GURL& url,
+      const std::string& method,
+      bool should_skip);
+  void OnSkipCheckCompleteOnRedirectUrl(const GURL& url,
+                                        const std::string& method,
+                                        bool should_skip);
 
   // |slow_check| indicates whether it reports the result of a slow check.
   // (Please see comments of UrlCheckerOnSB::OnCheckUrlResult() for what slow
@@ -142,6 +177,9 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   base::TimeDelta total_delay_;
 
   std::unique_ptr<UrlCheckerOnSB> sync_sb_checker_;
+
+  // Used to decide whether the check can be skipped on the SB thread.
+  std::unique_ptr<SkipCheckCheckerOnSB> skip_check_checker_;
 
   // Metric suffix for the URL lookup service.
   std::string url_lookup_service_metric_suffix_;

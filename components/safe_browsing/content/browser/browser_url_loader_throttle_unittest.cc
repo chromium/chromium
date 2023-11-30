@@ -292,7 +292,7 @@ class SBBrowserUrlLoaderThrottleTest : public ::testing::Test {
   }
 
   void SetUpTest(bool url_real_time_lookup_enabled = false) {
-    auto url_checker_delegate_getter = base::BindOnce(
+    auto url_checker_delegate_getter = base::BindRepeating(
         [](SBBrowserUrlLoaderThrottleTest* test) {
           return test->GetUrlCheckerDelegate();
         },

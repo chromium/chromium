@@ -639,7 +639,7 @@ AwContentBrowserClient::CreateURLLoaderThrottles(
           : HashRealTimeSelection::kNone;
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> result;
   result.push_back(safe_browsing::BrowserURLLoaderThrottle::Create(
-      base::BindOnce(
+      base::BindRepeating(
           [](AwContentBrowserClient* client) {
             return client->GetSafeBrowsingUrlCheckerDelegate();
           },
@@ -702,7 +702,7 @@ AwContentBrowserClient::CreateURLLoaderThrottlesForKeepAlive(
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> result;
 
   result.push_back(safe_browsing::BrowserURLLoaderThrottle::Create(
-      base::BindOnce(
+      base::BindRepeating(
           [](AwContentBrowserClient* client) {
             return client->GetSafeBrowsingUrlCheckerDelegate();
           },

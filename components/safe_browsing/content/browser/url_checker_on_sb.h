@@ -46,12 +46,10 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
       SafeBrowsingUrlCheckerImpl::PerformedCheck /* performed_check */,
       bool /* did_check_url_real_time_allowlist */)>;
 
-  using OnSkipChecksCallback = base::RepeatingCallback<void()>;
-
   using OnNotifySlowCheckCallback = base::RepeatingCallback<void()>;
 
   using GetDelegateCallback =
-      base::OnceCallback<scoped_refptr<UrlCheckerDelegate>()>;
+      base::RepeatingCallback<scoped_refptr<UrlCheckerDelegate>()>;
 
   using NativeUrlCheckNotifier = base::OnceCallback<void(
       bool /* proceed */,
@@ -64,7 +62,6 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
       int frame_tree_node_id,
       base::RepeatingCallback<content::WebContents*()> web_contents_getter,
       OnCompleteCheckCallback complete_callback,
-      OnSkipChecksCallback skip_checks_callback,
       OnNotifySlowCheckCallback slow_check_callback,
       bool url_real_time_lookup_enabled,
       bool can_urt_check_subresource_url,
@@ -79,13 +76,11 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
 
   ~UrlCheckerOnSB();
 
-  // Starts the initial safe browsing check. This check and future checks may
-  // be skipped after checking with the UrlCheckerDelegate.
+  // Starts the initial safe browsing check.
   void Start(const net::HttpRequestHeaders& headers,
              int load_flags,
              network::mojom::RequestDestination request_destination,
              bool has_user_gesture,
-             bool originated_from_service_worker,
              const GURL& url,
              const std::string& method);
 
@@ -129,9 +124,7 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
       mechanism_experimenter_;
   base::RepeatingCallback<content::WebContents*()> web_contents_getter_;
   OnCompleteCheckCallback complete_callback_;
-  OnSkipChecksCallback skip_checks_callback_;
   OnNotifySlowCheckCallback slow_check_callback_;
-  bool skip_checks_ = false;
   bool url_real_time_lookup_enabled_ = false;
   bool can_urt_check_subresource_url_ = false;
   bool can_check_db_ = true;

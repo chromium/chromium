@@ -30,7 +30,6 @@ UrlCheckerOnSB::UrlCheckerOnSB(
     int frame_tree_node_id,
     base::RepeatingCallback<content::WebContents*()> web_contents_getter,
     OnCompleteCheckCallback complete_callback,
-    OnSkipChecksCallback skip_checks_callback,
     OnNotifySlowCheckCallback slow_check_callback,
     bool url_real_time_lookup_enabled,
     bool can_urt_check_subresource_url,
@@ -46,7 +45,6 @@ UrlCheckerOnSB::UrlCheckerOnSB(
       frame_tree_node_id_(frame_tree_node_id),
       web_contents_getter_(web_contents_getter),
       complete_callback_(std::move(complete_callback)),
-      skip_checks_callback_(std::move(skip_checks_callback)),
       slow_check_callback_(std::move(slow_check_callback)),
       url_real_time_lookup_enabled_(url_real_time_lookup_enabled),
       can_urt_check_subresource_url_(can_urt_check_subresource_url),
@@ -79,7 +77,6 @@ void UrlCheckerOnSB::Start(
     int load_flags,
     network::mojom::RequestDestination request_destination,
     bool has_user_gesture,
-    bool originated_from_service_worker,
     const GURL& url,
     const std::string& method) {
   DCHECK_CURRENTLY_ON(
@@ -88,21 +85,6 @@ void UrlCheckerOnSB::Start(
           : content::BrowserThread::IO);
   scoped_refptr<UrlCheckerDelegate> url_checker_delegate =
       std::move(delegate_getter_).Run();
-  skip_checks_ =
-      !url_checker_delegate ||
-      url_checker_delegate->ShouldSkipRequestCheck(
-          url, frame_tree_node_id_,
-          /*render_process_id=*/content::ChildProcessHost::kInvalidUniqueID,
-          /*render_frame_token=*/std::nullopt, originated_from_service_worker);
-  if (skip_checks_) {
-    if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-      skip_checks_callback_.Run();
-    } else {
-      content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(skip_checks_callback_));
-    }
-    return;
-  }
 
   if (is_mechanism_experiment_allowed_ &&
       request_destination == network::mojom::RequestDestination::kDocument) {
@@ -136,16 +118,6 @@ void UrlCheckerOnSB::CheckUrl(const GURL& url, const std::string& method) {
       base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
           ? content::BrowserThread::UI
           : content::BrowserThread::IO);
-  if (skip_checks_) {
-    if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-      skip_checks_callback_.Run();
-    } else {
-      content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(skip_checks_callback_));
-    }
-    return;
-  }
-
   DCHECK(url_checker_);
   url_checker_->CheckUrl(url, method,
                          base::BindOnce(&UrlCheckerOnSB::OnCheckUrlResult,
