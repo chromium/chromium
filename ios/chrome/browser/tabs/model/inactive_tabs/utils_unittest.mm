@@ -242,6 +242,12 @@ TEST_F(InactiveTabsUtilsTest, InactiveTabStaysInactive) {
 
 // Restore all inactive tab.
 TEST_F(InactiveTabsUtilsTest, RestoreAllInactive) {
+  // RestoreAllInactive checks that it is called when the feature is disabled,
+  // either via the flag, or via the user pref. Disable in both places.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kTabInactivityThreshold);
+  local_state_.Get()->SetInteger(prefs::kInactiveTabsTimeThreshold, -1);
+
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
   WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();
 
@@ -379,8 +385,11 @@ TEST_F(InactiveTabsUtilsTest, ComplicatedMove) {
 // Ensure that restore function is working with complicated lists (multiple
 // tabs, un-ordered, pinned tabs).
 TEST_F(InactiveTabsUtilsTest, ComplicatedRestore) {
+  // RestoreAllInactive checks that it is called when the feature is disabled,
+  // either via the flag, or via the user pref. Disable in both places.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(kTabInactivityThreshold);
+  local_state_.Get()->SetInteger(prefs::kInactiveTabsTimeThreshold, -1);
 
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
   WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();
@@ -558,6 +567,12 @@ TEST_F(InactiveTabsUtilsTest, EnsurePreferencePriority) {
 // Checks that Inactive Tabs migration method RestoreAllInactiveTabs filters out
 // duplicates across browsers.
 TEST_F(InactiveTabsUtilsTest, RestoreAllInactiveTabsRemovesCrossDuplicates) {
+  // RestoreAllInactive checks that it is called when the feature is disabled,
+  // either via the flag, or via the user pref. Disable in both places.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kTabInactivityThreshold);
+  local_state_.Get()->SetInteger(prefs::kInactiveTabsTimeThreshold, -1);
+
   // Create known identifiers and last_active_time.
   const web::WebStateID unique_identifier = web::WebStateID::NewUnique();
   const base::Time last_active_time = base::Time::Now();

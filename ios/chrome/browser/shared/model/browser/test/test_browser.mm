@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 
 TestBrowser::TestBrowser(
     ChromeBrowserState* browser_state,
@@ -90,7 +91,12 @@ Browser* TestBrowser::GetInactiveBrowser() {
 }
 
 Browser* TestBrowser::CreateInactiveBrowser() {
-  NOTREACHED_NORETURN();
+  inactive_browser_ =
+      std::make_unique<TestBrowser>(browser_state_, scene_state_);
+  SnapshotBrowserAgent::CreateForBrowser(inactive_browser_.get());
+  SnapshotBrowserAgent::FromBrowser(inactive_browser_.get())
+      ->SetSessionID("some_id");
+  return inactive_browser_.get();
 }
 
 void TestBrowser::DestroyInactiveBrowser() {

@@ -8719,28 +8719,6 @@
             ]
         }
     ],
-    "IOSInactiveTabs": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "NoCount-TwoWeeks",
-                    "params": {
-                        "variant": "tab-inactivity-threshold-two-weeks"
-                    },
-                    "enable_features": [
-                        "TabInactivityThreshold"
-                    ],
-                    "disable_features": [
-                        "InactiveTabsMoveLimit",
-                        "ShowInactiveTabsCount"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSIncognitoDownloadsWarning": [
         {
             "platforms": [

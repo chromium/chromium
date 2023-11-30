@@ -58,6 +58,7 @@ class TestBrowser final : public Browser {
   std::unique_ptr<WebStateListDelegate> web_state_list_delegate_;
   std::unique_ptr<WebStateList> web_state_list_;
   __strong CommandDispatcher* command_dispatcher_ = nil;
+  std::unique_ptr<TestBrowser> inactive_browser_;
   base::ObserverList<BrowserObserver, /* check_empty= */ true> observers_;
 
   // Needs to be the last member field to ensure all weak pointers are
