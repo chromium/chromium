@@ -65,6 +65,20 @@ void RecordCaptureModeRecordingDurationInternal(
                                  /*buckets=*/50);
 }
 
+// Records capture mode education nudge actions, if the corresponding nudges
+// were shown within a particular timeframe or the current session.
+void MaybeRecordCaptureModeEducationNudgeActions() {
+  // Nudge action metrics are only recorded if the corresponding nudge was
+  // shown, so we can trigger all three arms here.
+  auto* nudge_manager = AnchoredNudgeManager::Get();
+  nudge_manager->MaybeRecordNudgeAction(
+      NudgeCatalogName::kCaptureModeEducationShortcutNudge);
+  nudge_manager->MaybeRecordNudgeAction(
+      NudgeCatalogName::kCaptureModeEducationShortcutTutorial);
+  nudge_manager->MaybeRecordNudgeAction(
+      NudgeCatalogName::kCaptureModeEducationQuickSettingsNudge);
+}
+
 }  // namespace
 
 void RecordEndRecordingReason(EndRecordingReason reason) {
@@ -114,11 +128,8 @@ void RecordCaptureModeEntryType(CaptureModeEntryType entry_type) {
       BuildHistogramName(kEntryPointHistogramRootWord, /*behavior=*/nullptr,
                          /*append_ui_mode_suffix=*/true),
       entry_type);
-  // Record nudge-related metrics.
-  if (entry_type == CaptureModeEntryType::kAccelTakePartialScreenshot) {
-    AnchoredNudgeManager::Get()->MaybeRecordNudgeAction(
-        NudgeCatalogName::kCaptureModeEducationShortcutNudge);
-  }
+
+  MaybeRecordCaptureModeEducationNudgeActions();
 }
 
 void RecordCaptureModeRecordingDuration(base::TimeDelta recording_duration,

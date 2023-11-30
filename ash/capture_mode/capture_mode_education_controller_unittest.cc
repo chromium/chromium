@@ -90,7 +90,7 @@ class CaptureModeEducationControllerTest : public AshTestBase {
     EXPECT_TRUE(nudge->GetVisible());
   }
 
-  // Starts a capture session using the screenshort shortcut, and verifies that
+  // Starts a capture session using the screenshot shortcut, and verifies that
   // the nudge and tutorial are both closed. Stops the session afterwards.
   void StartSessionAndCheckEducationClosed() {
     // Use the screenshot shortcut to start a capture session.
@@ -291,11 +291,21 @@ TEST_F(CaptureModeEducationShortcutNudgeTest, ShortcutNudgeMetrics) {
       kNudgeTimeToActionWithinSession,
       NudgeCatalogName::kCaptureModeEducationShortcutNudge, 0);
 
-  ActivateNudgeAndCheckVisibility();
+  // The other nudge buckets should be empty as well.
+  histogram_tester.ExpectBucketCount(
+      kNudgeTimeToActionWithin1m,
+      NudgeCatalogName::kCaptureModeEducationShortcutTutorial, 0);
+  histogram_tester.ExpectBucketCount(
+      kNudgeTimeToActionWithin1m,
+      NudgeCatalogName::kCaptureModeEducationQuickSettingsNudge, 0);
 
+  ActivateNudgeAndCheckVisibility();
   // Attempt to use the screenshot shortcut as soon as possible.
   PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1,
                      ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
+  auto* capture_mode_controller = CaptureModeController::Get();
+  ASSERT_TRUE(capture_mode_controller->IsActive());
+  capture_mode_controller->Stop();
 
   // The buckets do not cascade, so a nudge that has been activated within 1m
   // will not show up in the `kNudgeTimeToActionWithin1h` bucket or session
@@ -310,17 +320,23 @@ TEST_F(CaptureModeEducationShortcutNudgeTest, ShortcutNudgeMetrics) {
       kNudgeTimeToActionWithinSession,
       NudgeCatalogName::kCaptureModeEducationShortcutNudge, 0);
 
-  // Close the capture session and nudge, and advance the clock so we can show
-  // the nudge again.
-  CaptureModeController::Get()->Stop();
-  CancelNudge(kCaptureModeNudgeId);
-  ActivateNudgeAndCheckVisibility();
+  // The other nudge buckets should still be empty.
+  histogram_tester.ExpectBucketCount(
+      kNudgeTimeToActionWithin1m,
+      NudgeCatalogName::kCaptureModeEducationShortcutTutorial, 0);
+  histogram_tester.ExpectBucketCount(
+      kNudgeTimeToActionWithin1m,
+      NudgeCatalogName::kCaptureModeEducationQuickSettingsNudge, 0);
 
+  ActivateNudgeAndCheckVisibility();
   // Attempt to use the screenshot shortcut after more than 1 minute, but less
   // than 1 hour.
   task_environment()->FastForwardBy(base::Minutes(30));
   PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1,
                      ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
+  ASSERT_TRUE(capture_mode_controller->IsActive());
+  capture_mode_controller->Stop();
+
   histogram_tester.ExpectBucketCount(
       kNudgeTimeToActionWithin1m,
       NudgeCatalogName::kCaptureModeEducationShortcutNudge, 1);
@@ -331,16 +347,14 @@ TEST_F(CaptureModeEducationShortcutNudgeTest, ShortcutNudgeMetrics) {
       kNudgeTimeToActionWithinSession,
       NudgeCatalogName::kCaptureModeEducationShortcutNudge, 0);
 
-  // Close the capture session and nudge, and advance the clock so we can show
-  // the nudge again.
-  CaptureModeController::Get()->Stop();
-  CancelNudge(kCaptureModeNudgeId);
   ActivateNudgeAndCheckVisibility();
-
   // Attempt to use the screenshot shortcut after more than 1 hour.
   task_environment()->FastForwardBy(base::Hours(2));
   PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1,
                      ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
+  ASSERT_TRUE(capture_mode_controller->IsActive());
+  capture_mode_controller->Stop();
+
   histogram_tester.ExpectBucketCount(
       kNudgeTimeToActionWithin1m,
       NudgeCatalogName::kCaptureModeEducationShortcutNudge, 1);
@@ -398,6 +412,48 @@ TEST_F(CaptureModeEducationShortcutTutorialTest, DialogOpensAndCloses) {
   StartSessionAndCheckEducationClosed();
 }
 
+// Tests that metrics relating to the shortcut tutorial (Arm 2) are properly
+// recorded.
+TEST_F(CaptureModeEducationShortcutTutorialTest, ShortcutTutorialMetrics) {
+  base::HistogramTester histogram_tester;
+
+  // For this test, we do not care about pref limits.
+  SkipNudgePrefs();
+
+  // The nudge has not been activated, so all related buckets should be at 0.
+  Shell::Get()->anchored_nudge_manager()->ResetNudgeRegistryForTesting();
+  histogram_tester.ExpectBucketCount(
+      kNudgeTimeToActionWithin1m,
+      NudgeCatalogName::kCaptureModeEducationShortcutTutorial, 0);
+
+  // The other nudge buckets should be empty as well.
+  histogram_tester.ExpectBucketCount(
+      kNudgeTimeToActionWithin1m,
+      NudgeCatalogName::kCaptureModeEducationShortcutNudge, 0);
+  histogram_tester.ExpectBucketCount(
+      kNudgeTimeToActionWithin1m,
+      NudgeCatalogName::kCaptureModeEducationQuickSettingsNudge, 0);
+
+  ActivateNudgeAndCheckVisibility();
+
+  // Attempt to use the screenshot shortcut as soon as possible.
+  PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1,
+                     ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
+
+  // The nudge bucket should now show a user action.
+  histogram_tester.ExpectBucketCount(
+      kNudgeTimeToActionWithin1m,
+      NudgeCatalogName::kCaptureModeEducationShortcutTutorial, 1);
+
+  // The other nudge buckets should still be empty.
+  histogram_tester.ExpectBucketCount(
+      kNudgeTimeToActionWithin1m,
+      NudgeCatalogName::kCaptureModeEducationShortcutNudge, 0);
+  histogram_tester.ExpectBucketCount(
+      kNudgeTimeToActionWithin1m,
+      NudgeCatalogName::kCaptureModeEducationQuickSettingsNudge, 0);
+}
+
 // Test fixture to verify the behaviour of Arm 3, the settings nudge.
 class CaptureModeEducationQuickSettingsNudgeTest
     : public CaptureModeEducationControllerTest {
@@ -448,6 +504,47 @@ TEST_F(CaptureModeEducationQuickSettingsNudgeTest, NudgeLocation) {
   // TODO(hewer): Test shelf in vertical positions.
 
   CaptureModeEducationControllerTest::SetOverrideClock(nullptr);
+}
+
+// Tests that metrics relating to the settings nudge (Arm 3) are properly
+// recorded.
+TEST_F(CaptureModeEducationQuickSettingsNudgeTest, SettingsNudgeMetrics) {
+  base::HistogramTester histogram_tester;
+
+  // For this test, we do not care about pref limits.
+  SkipNudgePrefs();
+
+  // The nudge has not been activated, so all related buckets should be at 0.
+  Shell::Get()->anchored_nudge_manager()->ResetNudgeRegistryForTesting();
+  histogram_tester.ExpectBucketCount(
+      kNudgeTimeToActionWithin1m,
+      NudgeCatalogName::kCaptureModeEducationQuickSettingsNudge, 0);
+
+  // The other nudge buckets should be empty as well.
+  histogram_tester.ExpectBucketCount(
+      kNudgeTimeToActionWithin1m,
+      NudgeCatalogName::kCaptureModeEducationShortcutNudge, 0);
+  histogram_tester.ExpectBucketCount(
+      kNudgeTimeToActionWithin1m,
+      NudgeCatalogName::kCaptureModeEducationShortcutTutorial, 0);
+
+  ActivateNudgeAndCheckVisibility();
+
+  // Attempt to use the screenshot shortcut as soon as possible.
+  PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1,
+                     ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
+
+  histogram_tester.ExpectBucketCount(
+      kNudgeTimeToActionWithin1m,
+      NudgeCatalogName::kCaptureModeEducationQuickSettingsNudge, 1);
+
+  // The other nudge buckets should still be empty.
+  histogram_tester.ExpectBucketCount(
+      kNudgeTimeToActionWithin1m,
+      NudgeCatalogName::kCaptureModeEducationShortcutNudge, 0);
+  histogram_tester.ExpectBucketCount(
+      kNudgeTimeToActionWithin1m,
+      NudgeCatalogName::kCaptureModeEducationShortcutTutorial, 0);
 }
 
 }  // namespace ash
