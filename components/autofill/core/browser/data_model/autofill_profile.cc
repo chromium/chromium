@@ -221,6 +221,39 @@ void GetFieldsForDistinguishingProfiles(
   }
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// Constructs an AutofillProfile using the provided `existing_profile` as a
+// foundation. In case that the `existing_profile` is invalid, an empty profile
+// with a unique identifier (GUID) corresponding to the Java profile
+// (`jprofile`) is initialized.
+AutofillProfile CreateStarterProfile(
+    const base::android::JavaParamRef<jobject>& jprofile,
+    JNIEnv* env,
+    const AutofillProfile* existing_profile) {
+  std::string guid =
+      ConvertJavaStringToUTF8(Java_AutofillProfile_getGUID(env, jprofile));
+  if (!existing_profile) {
+    AutofillProfile::Source source = static_cast<AutofillProfile::Source>(
+        Java_AutofillProfile_getSource(env, jprofile));
+    AddressCountryCode country_code =
+        AddressCountryCode(ConvertJavaStringToUTF8(
+            Java_AutofillProfile_getCountryCode(env, jprofile)));
+    AutofillProfile profile = AutofillProfile(source, country_code);
+    // Only set the guid if CreateStartProfile is called on an existing profile
+    // (java guid not empty). Otherwise, keep the generated one.
+    // TODO(crbug.com/1484006): `guid` should be always empty when existing
+    // profile is not set. CHECK should be added when this condition holds.
+    if (!guid.empty()) {
+      profile.set_guid(guid);
+    }
+    return profile;
+  }
+
+  CHECK_EQ(existing_profile->guid(), guid);
+  return *existing_profile;
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace
 
 AutofillProfile::AutofillProfile(AddressCountryCode country_code)
@@ -318,25 +351,8 @@ AutofillProfile AutofillProfile::CreateFromJavaObject(
     const AutofillProfile* existing_profile,
     const std::string& app_locale) {
   JNIEnv* env = base::android::AttachCurrentThread();
-
-  AutofillProfile profile;
-  if (!existing_profile) {
-    profile = AutofillProfile(static_cast<AutofillProfile::Source>(
-        Java_AutofillProfile_getSource(env, jprofile)));
-    // Only set the guid if it is an existing profile (java guid not empty).
-    // Otherwise, keep the generated one.
-    std::string guid =
-        ConvertJavaStringToUTF8(Java_AutofillProfile_getGUID(env, jprofile));
-    // TODO(crbug.com/1484006): `guid` should be always empty when existing
-    // profile is not set. CHECK should be added when this condition holds.
-    if (!guid.empty()) {
-      profile.set_guid(guid);
-    }
-  } else {
-    profile = *existing_profile;
-    CHECK_EQ(profile.guid(), ConvertJavaStringToUTF8(
-                                 Java_AutofillProfile_getGUID(env, jprofile)));
-  }
+  AutofillProfile profile =
+      CreateStarterProfile(jprofile, env, existing_profile);
 
   std::vector<int> field_types;
   base::android::JavaIntArrayToIntVector(

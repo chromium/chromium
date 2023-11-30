@@ -404,6 +404,7 @@ public class AutofillProfile {
         return getInfoStatus(ServerFieldType.ADDRESS_HOME_SORTING_CODE);
     }
 
+    @CalledByNative
     public String getCountryCode() {
         return getInfo(ServerFieldType.ADDRESS_HOME_COUNTRY);
     }
