@@ -197,7 +197,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   aura::Window* root_window() { return root_window_; }
   aura::Window* primary_window() { return primary_window_; }
   aura::Window* secondary_window() { return secondary_window_; }
-  int divider_position() const { return divider_position_; }
+
   State state() const { return state_; }
   SnapPosition default_snap_position() const { return default_snap_position_; }
   SplitViewDivider* split_view_divider() { return split_view_divider_.get(); }
@@ -206,6 +206,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
     return split_view_metrics_controller_.get();
   }
   aura::Window* to_be_activated_window() { return to_be_activated_window_; }
+  int divider_position() const;
 
   // Returns true if the divider is resizing (not animating) in tablet mode
   // split view, or between two windows in Snap Groups.

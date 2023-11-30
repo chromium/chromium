@@ -41,7 +41,7 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
     kFast,
   };
 
-  explicit SplitViewDivider(LayoutDividerController* controller);
+  SplitViewDivider(LayoutDividerController* controller, int divider_position);
   SplitViewDivider(const SplitViewDivider&) = delete;
   SplitViewDivider& operator=(const SplitViewDivider&) = delete;
   ~SplitViewDivider() override;
@@ -122,7 +122,7 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
  private:
   friend class SplitViewController;
 
-  void CreateDividerWidget();
+  void CreateDividerWidget(int divider_position);
 
   // Returns the root window of `divider_widget_`.
   aura::Window* GetRootWindow() const;

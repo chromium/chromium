@@ -577,6 +577,13 @@ SplitViewController::~SplitViewController() {
   EndSplitView(EndReason::kRootWindowDestroyed);
 }
 
+int SplitViewController::divider_position() const {
+  // TODO(b/308819668): Temporary check. Remove this entire function when
+  // `divider_position_` is moved to `SplitViewDivider`.
+  CHECK(split_view_divider_);
+  return divider_position_;
+}
+
 bool SplitViewController::IsResizingWithDivider() const {
   return split_view_divider_ && split_view_divider_->is_resizing_with_divider();
 }
@@ -888,7 +895,8 @@ void SplitViewController::AttachSnappingWindow(
 
   if (split_view_type_ == SplitViewType::kTabletType && !split_view_divider_) {
     // `split_view_divider_` must be created after we start observing windows.
-    split_view_divider_ = std::make_unique<SplitViewDivider>(this);
+    split_view_divider_ =
+        std::make_unique<SplitViewDivider>(this, divider_position_);
   }
 
   if (split_view_divider_) {
@@ -1730,7 +1738,8 @@ void SplitViewController::OnTabletModeStarted() {
   if (InSplitViewMode()) {
     divider_position_ = GetClosestFixedDividerPosition();
     if (!split_view_divider_) {
-      split_view_divider_ = std::make_unique<SplitViewDivider>(this);
+      split_view_divider_ =
+          std::make_unique<SplitViewDivider>(this, divider_position_);
     }
 
     UpdateSnappedWindowsAndDividerBounds();
@@ -2059,7 +2068,8 @@ void SplitViewController::MaybeEndOverviewOnWindowResize(aura::Window* window) {
 void SplitViewController::CreateSplitViewDividerInClamshell() {
   CHECK(InClamshellSplitViewMode());
   divider_position_ = GetClosestFixedDividerPosition();
-  split_view_divider_ = std::make_unique<SplitViewDivider>(this);
+  split_view_divider_ =
+      std::make_unique<SplitViewDivider>(this, divider_position_);
   UpdateSnappedWindowsAndDividerBounds();
   // No need to notify observers, since the divider is only created between two
   // windows.

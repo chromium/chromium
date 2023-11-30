@@ -91,6 +91,7 @@
 #include "base/test/to_vector.h"
 #include "base/time/time.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
@@ -9326,7 +9327,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTest,
       window1.get(), SplitViewController::SnapPosition::kPrimary);
   ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(),
                                      window1.get());
-  int divider_position = split_view_controller()->divider_position();
+  int divider_position = window1->GetBoundsInScreen().width();
   generator.MoveMouseTo(divider_position, 10);
   divider_position = 300;
   generator.DragMouseTo(divider_position, 10);
@@ -9439,6 +9440,8 @@ TEST_F(SplitViewOverviewSessionInClamshellTest, DisplayOrientationChangeTest) {
   ToggleOverview();
   split_view_controller()->SnapWindow(
       split_view_window.get(), SplitViewController::SnapPosition::kPrimary);
+  WindowState* window_state = WindowState::Get(split_view_window.get());
+  absl::optional<float> default_snap_ratio = window_state->snap_ratio();
   const auto test_many_orientation_changes =
       [this](const std::string& description) {
         SCOPED_TRACE(description);
@@ -9446,7 +9449,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTest, DisplayOrientationChangeTest) {
              {display::Display::ROTATE_270, display::Display::ROTATE_180,
               display::Display::ROTATE_90, display::Display::ROTATE_0,
               display::Display::ROTATE_180, display::Display::ROTATE_0}) {
-          const auto compute_divider_position_ratio = [this]() {
+          const auto compute_window_snap_ratio = [this]() {
             const display::Display& display =
                 display::Screen::GetScreen()->GetPrimaryDisplay();
             const bool is_horizontal =
@@ -9454,28 +9457,28 @@ TEST_F(SplitViewOverviewSessionInClamshellTest, DisplayOrientationChangeTest) {
             const gfx::Rect work_area = display.work_area();
             const int size =
                 is_horizontal ? work_area.width() : work_area.height();
-            return static_cast<float>(
-                       split_view_controller()->divider_position()) /
-                   static_cast<float>(size);
+            const gfx::Rect window_bounds(split_view_controller()
+                                              ->GetDefaultSnappedWindow()
+                                              ->GetBoundsInScreen());
+            const int window_size =
+                is_horizontal ? window_bounds.width() : window_bounds.height();
+            return static_cast<float>(window_size) / static_cast<float>(size);
           };
-          const float before = compute_divider_position_ratio();
+          const float before = compute_window_snap_ratio();
           Shell::Get()->display_manager()->SetDisplayRotation(
               display::Screen::GetScreen()->GetPrimaryDisplay().id(), rotation,
               display::Display::RotationSource::ACTIVE);
-          const float after = compute_divider_position_ratio();
+          const float after = compute_window_snap_ratio();
           EXPECT_NEAR(before, after, 0.001f);
         }
       };
-  EXPECT_EQ(split_view_controller()->GetDefaultDividerPosition(),
-            split_view_controller()->divider_position());
+  EXPECT_EQ(default_snap_ratio, window_state->snap_ratio());
   test_many_orientation_changes("centered divider");
-  EXPECT_EQ(split_view_controller()->GetDefaultDividerPosition(),
-            split_view_controller()->divider_position());
+  EXPECT_EQ(default_snap_ratio, window_state->snap_ratio());
   ui::test::EventGenerator(Shell::GetPrimaryRootWindow(),
                            split_view_window.get())
       .DragMouseBy(50, 50);
-  EXPECT_NE(split_view_controller()->GetDefaultDividerPosition(),
-            split_view_controller()->divider_position());
+  EXPECT_NE(default_snap_ratio, window_state->snap_ratio());
   test_many_orientation_changes("off-center divider");
 }
 

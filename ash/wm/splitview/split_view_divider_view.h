@@ -49,6 +49,7 @@ class SplitViewDividerView : public views::View,
 
   void OnResizeStatusChanged();
 
+  // TODO(b/314018158): Replace with `LayoutDividerController`.
   raw_ptr<SplitViewController, DanglingUntriaged | ExperimentalAsh>
       split_view_controller_;
   raw_ptr<SplitViewDividerHandlerView, ExperimentalAsh> divider_handler_view_ =

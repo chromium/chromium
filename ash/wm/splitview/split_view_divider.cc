@@ -52,16 +52,19 @@ gfx::Rect GetWorkAreaBoundsInScreen(aura::Window* window) {
 
 }  // namespace
 
-SplitViewDivider::SplitViewDivider(LayoutDividerController* controller)
+SplitViewDivider::SplitViewDivider(LayoutDividerController* controller,
+                                   int divider_position)
     : controller_(controller) {
   // Observe currently snapped windows.
   for (aura::Window* window : controller_->GetLayoutWindows()) {
     AddObservedWindow(window);
   }
 
+  CHECK_GE(observed_windows_.size(), 1u);
+
   // Create the divider widget after adding observed windows which the parent
   // container of the divider will depend on.
-  CreateDividerWidget();
+  CreateDividerWidget(divider_position);
 }
 
 SplitViewDivider::~SplitViewDivider() {
@@ -318,13 +321,12 @@ void SplitViewDivider::OnTransientChildRemoved(aura::Window* window,
   StopObservingTransientChild(transient);
 }
 
-void SplitViewDivider::CreateDividerWidget() {
+void SplitViewDivider::CreateDividerWidget(int divider_position) {
   CHECK(!divider_widget_);
   // Native widget owns this widget.
   divider_widget_ = new views::Widget;
   divider_widget_->set_focus_on_creation(false);
   aura::Window* parent_container = nullptr;
-  CHECK_GE(observed_windows_.size(), 1u);
   aura::Window* top_window = window_util::GetTopMostWindow(observed_windows_);
   CHECK(top_window);
   parent_container = top_window->parent();
@@ -333,12 +335,16 @@ void SplitViewDivider::CreateDividerWidget() {
       CreateWidgetInitParams(parent_container, "SplitViewDivider"));
   divider_widget_->SetVisibilityAnimationTransition(
       views::Widget::ANIMATE_NONE);
-  // TODO(sophiewen|michelefan): Remove `SplitViewController` from
+  // TODO(b/314018158): Remove `SplitViewController` from
   // `SplitViewDividerView`.
   divider_view_ =
       divider_widget_->SetContentsView(std::make_unique<SplitViewDividerView>(
           SplitViewController::Get(top_window->GetRootWindow()), this));
-  divider_widget_->SetBounds(GetDividerBoundsInScreen(/*is_dragging=*/false));
+  divider_widget_->SetBounds(GetDividerBoundsInScreen(
+      /*work_area_bounds_in_screen=*/GetWorkAreaBoundsInScreen(
+          observed_windows_.front()),
+      /*landscape=*/IsCurrentScreenOrientationLandscape(), divider_position,
+      /*is_dragging=*/false));
   auto* divider_widget_native_window = divider_widget_->GetNativeWindow();
   divider_widget_native_window->SetProperty(kLockedToRootKey, true);
 
