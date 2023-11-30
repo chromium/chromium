@@ -66,7 +66,7 @@ _COUNT_THRESHOLD = 50
 @functools.lru_cache()
 def parse_testharness_baseline(content_text: str) -> List[TestharnessLine]:
     # Leading and trailing white spaces are accepted.
-    raw_lines = iter(content_text.strip().splitlines())
+    raw_lines = iter(content_text.strip().split('\n'))
     next_line = next(raw_lines, None)
     lines = []
     while next_line is not None:

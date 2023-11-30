@@ -280,6 +280,21 @@ class TestResultCheckerTest(unittest.TestCase):
         self.assertIsNone(results[5].subtest)
         self.assertIsNone(results[5].message)
 
+    def test_parse_testharness_baseline_other_newlines(self):
+        _, subtest, _ = testharness_results.parse_testharness_baseline(
+            textwrap.dedent("""\
+                This is a testharness.js-based test.
+                [FAIL] not line breaks: \v \f \x1c \x1e \x85
+                  assert_true: not line breaks: \u2028 \u2029
+                Harness: the test ran to completion.
+                """))
+        self.assertEqual(subtest.line_type, LineType.SUBTEST)
+        self.assertEqual(subtest.statuses, {Status.FAIL})
+        self.assertEqual(subtest.subtest,
+                         'not line breaks: \v \f \x1c \x1e \x85')
+        self.assertEqual(subtest.message,
+                         'assert_true: not line breaks: \u2028 \u2029')
+
     def test_format_testharness_baseline(self):
         lines = [
             TestharnessLine(LineType.CONSOLE_WARNING,
