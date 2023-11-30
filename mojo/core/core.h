@@ -101,7 +101,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Core {
   // connections.
   void ConnectIsolated(ConnectionParams connection_params,
                        const ports::PortRef& port,
-                       base::StringPiece connection_name);
+                       std::string_view connection_name);
 
   MojoHandle AddDispatcher(scoped_refptr<Dispatcher> dispatcher);
 

@@ -587,7 +587,7 @@ TEST_F(MessageTest, ForceSerializeMessageWithContext) {
                                &extracted_handle, &num_handles));
   EXPECT_EQ(std::string(kTestMessageWithContext1).size(), num_bytes);
   EXPECT_EQ(std::string(kTestMessageWithContext1),
-            base::StringPiece(static_cast<char*>(buffer), num_bytes));
+            std::string_view(static_cast<char*>(buffer), num_bytes));
 
   // Confirm that the handle we extracted from the serialized message is still
   // connected to the same peer, despite the fact that its handle value may have

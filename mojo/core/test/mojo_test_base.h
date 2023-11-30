@@ -145,12 +145,12 @@ class MojoTestBase : public testing::Test {
   // Maps a buffer, writes some data into it, and unmaps it.
   static void WriteToBuffer(MojoHandle h,
                             size_t offset,
-                            const base::StringPiece& s);
+                            const std::string_view& s);
 
   // Maps a buffer, tests the value of some of its contents, and unmaps it.
   static void ExpectBufferContents(MojoHandle h,
                                    size_t offset,
-                                   const base::StringPiece& s);
+                                   const std::string_view& s);
 
   //////// Data pipe test utilities /////////
 

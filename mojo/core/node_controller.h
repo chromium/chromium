@@ -104,7 +104,7 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
   // the corresponding port in the peer node.
   void ConnectIsolated(ConnectionParams connection_params,
                        const ports::PortRef& port,
-                       base::StringPiece connection_name);
+                       std::string_view connection_name);
 
   // Sets a port's observer. If |observer| is null the port's current observer
   // is removed.
@@ -173,7 +173,7 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
     IsolatedConnection(IsolatedConnection&& other);
     IsolatedConnection(scoped_refptr<NodeChannel> channel,
                        const ports::PortRef& local_port,
-                       base::StringPiece name);
+                       std::string_view name);
     ~IsolatedConnection();
 
     IsolatedConnection& operator=(const IsolatedConnection& other);

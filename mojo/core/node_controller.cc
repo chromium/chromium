@@ -275,7 +275,7 @@ void NodeController::AcceptBrokerClientInvitation(
 
 void NodeController::ConnectIsolated(ConnectionParams connection_params,
                                      const ports::PortRef& port,
-                                     base::StringPiece connection_name) {
+                                     std::string_view connection_name) {
   io_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&NodeController::ConnectIsolatedOnIOThread,
@@ -1494,7 +1494,7 @@ NodeController::IsolatedConnection::IsolatedConnection(
 NodeController::IsolatedConnection::IsolatedConnection(
     scoped_refptr<NodeChannel> channel,
     const ports::PortRef& local_port,
-    base::StringPiece name)
+    std::string_view name)
     : channel(std::move(channel)), local_port(local_port), name(name) {}
 
 NodeController::IsolatedConnection::~IsolatedConnection() = default;

@@ -26,9 +26,9 @@ class MOJO_SYSTEM_IMPL_EXPORT InvitationDispatcher : public Dispatcher {
   // Dispatcher:
   Type GetType() const override;
   MojoResult Close() override;
-  MojoResult AttachMessagePipe(base::StringPiece name,
+  MojoResult AttachMessagePipe(std::string_view name,
                                ports::PortRef remote_peer_port) override;
-  MojoResult ExtractMessagePipe(base::StringPiece name,
+  MojoResult ExtractMessagePipe(std::string_view name,
                                 MojoHandle* message_pipe_handle) override;
 
   using PortMapping = base::flat_map<std::string, ports::PortRef>;

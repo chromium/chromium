@@ -45,7 +45,7 @@ class TestMessage : public UserMessage {
  public:
   static const TypeInfo kUserMessageTypeInfo;
 
-  TestMessage(const base::StringPiece& payload)
+  TestMessage(const std::string_view& payload)
       : UserMessage(&kUserMessageTypeInfo), payload_(payload) {}
   ~TestMessage() override = default;
 
@@ -57,14 +57,14 @@ class TestMessage : public UserMessage {
 
 const UserMessage::TypeInfo TestMessage::kUserMessageTypeInfo = {};
 
-ScopedMessage NewUserMessageEvent(const base::StringPiece& payload,
+ScopedMessage NewUserMessageEvent(const std::string_view& payload,
                                   size_t num_ports) {
   auto event = std::make_unique<UserMessageEvent>(num_ports);
   event->AttachMessage(std::make_unique<TestMessage>(payload));
   return event;
 }
 
-bool MessageEquals(const ScopedMessage& message, const base::StringPiece& s) {
+bool MessageEquals(const ScopedMessage& message, const std::string_view& s) {
   return message->GetMessage<TestMessage>()->payload() == s;
 }
 

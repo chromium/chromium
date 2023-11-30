@@ -52,7 +52,7 @@ class CoreIpczTest : public test::MojoTestBase {
     }
   }
 
-  MojoMessageHandle CreateMessage(base::StringPiece contents,
+  MojoMessageHandle CreateMessage(std::string_view contents,
                                   base::span<MojoHandle> handles = {}) {
     MojoMessageHandle message;
     EXPECT_EQ(MOJO_RESULT_OK, mojo().CreateMessage(nullptr, &message));
@@ -137,7 +137,7 @@ class CoreIpczTest : public test::MojoTestBase {
     };
   }
 
-  void WriteToMessagePipe(MojoHandle pipe, base::StringPiece contents) {
+  void WriteToMessagePipe(MojoHandle pipe, std::string_view contents) {
     MojoMessageHandle message = CreateMessage(contents);
     EXPECT_EQ(MOJO_RESULT_OK, mojo().WriteMessage(pipe, message, nullptr));
   }
@@ -275,7 +275,7 @@ TEST_F(CoreIpczTest, BasicMessageUsage) {
   MojoHandle a, b;
   EXPECT_EQ(MOJO_RESULT_OK, mojo().CreateMessagePipe(nullptr, &a, &b));
 
-  constexpr base::StringPiece kMessage = "hellllooooo";
+  constexpr std::string_view kMessage = "hellllooooo";
   MojoMessageHandle message = CreateMessage(kMessage, {&b, 1u});
 
   void* buffer;
@@ -292,7 +292,7 @@ TEST_F(CoreIpczTest, BasicMessageUsage) {
             mojo().GetMessageData(message, &options, &buffer, &num_bytes,
                                   nullptr, nullptr));
   EXPECT_EQ(kMessage,
-            base::StringPiece(static_cast<const char*>(buffer), num_bytes));
+            std::string_view(static_cast<const char*>(buffer), num_bytes));
 
   b = MOJO_HANDLE_INVALID;
   uint32_t num_handles = 1;
@@ -316,7 +316,7 @@ TEST_F(CoreIpczTest, MessageDestruction) {
   MojoHandle a, b;
   EXPECT_EQ(MOJO_RESULT_OK, mojo().CreateMessagePipe(nullptr, &a, &b));
 
-  constexpr base::StringPiece kMessage = "hellllooooo";
+  constexpr std::string_view kMessage = "hellllooooo";
   MojoMessageHandle message = CreateMessage(kMessage, {&b, 1u});
 
   // Destroying the message must also close the attached pipe.
@@ -340,7 +340,7 @@ TEST_F(CoreIpczTest, MessagePipes) {
   MojoMessageHandle message;
   EXPECT_EQ(MOJO_RESULT_SHOULD_WAIT, mojo().ReadMessage(a, nullptr, &message));
 
-  constexpr base::StringPiece kMessage = "bazongo";
+  constexpr std::string_view kMessage = "bazongo";
   EXPECT_EQ(MOJO_RESULT_OK,
             mojo().WriteMessage(a, CreateMessage(kMessage), nullptr));
 
@@ -480,7 +480,7 @@ TEST_F(CoreIpczTest, WrapPlatformHandle) {
 }
 
 TEST_F(CoreIpczTest, BasicSharedBuffer) {
-  const base::StringPiece kContents = "steamed hams";
+  const std::string_view kContents = "steamed hams";
   MojoHandle buffer;
   EXPECT_EQ(MOJO_RESULT_OK,
             mojo().CreateSharedBuffer(kContents.size(), nullptr, &buffer));
@@ -536,8 +536,8 @@ TEST_F(CoreIpczTest, BasicSharedBuffer) {
   EXPECT_EQ(MOJO_RESULT_OK,
             mojo().MapBuffer(readonly_buffer, 0, kContents.size(), nullptr,
                              &address));
-  EXPECT_EQ(kContents, base::StringPiece(static_cast<const char*>(address),
-                                         kContents.size()));
+  EXPECT_EQ(kContents, std::string_view(static_cast<const char*>(address),
+                                        kContents.size()));
   EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(readonly_buffer));
 }
 
@@ -615,7 +615,7 @@ TEST_F(CoreIpczTest, DataPipeReadWriteQeury) {
       .struct_size = sizeof(write_options),
       .flags = MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
   };
-  constexpr base::StringPiece kTestMessage = "hello, world!";
+  constexpr std::string_view kTestMessage = "hello, world!";
   uint32_t num_bytes = static_cast<uint32_t>(kTestMessage.size());
   EXPECT_EQ(
       MOJO_RESULT_OUT_OF_RANGE,
@@ -657,7 +657,7 @@ TEST_F(CoreIpczTest, DataPipeReadWriteQeury) {
   num_bytes = std::size(buffer);
   EXPECT_EQ(MOJO_RESULT_OK,
             mojo().ReadData(c, &read_options, buffer, &num_bytes));
-  EXPECT_EQ("hello", base::StringPiece(buffer, num_bytes));
+  EXPECT_EQ("hello", std::string_view(buffer, num_bytes));
   CheckSignals(c, {.satisfied = MOJO_HANDLE_SIGNAL_READABLE});
 
   // Discard does not require a buffer and copies no data, but it does consume
@@ -680,7 +680,7 @@ TEST_F(CoreIpczTest, DataPipeReadWriteQeury) {
   num_bytes = 3;
   EXPECT_EQ(MOJO_RESULT_OK,
             mojo().ReadData(c, &read_options, buffer, &num_bytes));
-  EXPECT_EQ("ell", base::StringPiece(buffer, num_bytes));
+  EXPECT_EQ("ell", std::string_view(buffer, num_bytes));
   CheckSignals(c, {.satisfied = MOJO_HANDLE_SIGNAL_READABLE});
 
   // Finally, default options allow for short reads.
@@ -691,7 +691,7 @@ TEST_F(CoreIpczTest, DataPipeReadWriteQeury) {
             mojo().ReadData(c, &read_options, bigger_buffer, &num_bytes));
   CheckSignals(c, {.not_satisfied = MOJO_HANDLE_SIGNAL_READABLE});
 
-  EXPECT_EQ("o", base::StringPiece(bigger_buffer, num_bytes));
+  EXPECT_EQ("o", std::string_view(bigger_buffer, num_bytes));
 
   EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(p));
   CheckSignals(c, {.not_satisfiable = MOJO_HANDLE_SIGNAL_READABLE |
@@ -709,7 +709,7 @@ TEST_F(CoreIpczTest, DataPipeTwoPhase) {
   };
   EXPECT_EQ(MOJO_RESULT_OK, mojo().CreateDataPipe(&options, &p, &c));
 
-  const base::StringPiece kTestMessage = "hello, world!";
+  const std::string_view kTestMessage = "hello, world!";
 
   void* buffer;
   uint32_t num_bytes = static_cast<uint32_t>(kTestMessage.size());
@@ -726,7 +726,7 @@ TEST_F(CoreIpczTest, DataPipeTwoPhase) {
             mojo().BeginReadData(c, nullptr, &in_buffer, &num_bytes));
   EXPECT_EQ(5u, num_bytes);
   EXPECT_EQ("hello",
-            base::StringPiece(static_cast<const char*>(in_buffer), num_bytes));
+            std::string_view(static_cast<const char*>(in_buffer), num_bytes));
 
   EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(p));
   EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(c));
@@ -734,9 +734,9 @@ TEST_F(CoreIpczTest, DataPipeTwoPhase) {
 
 #if BUILDFLAG(USE_BLINK)
 
-constexpr base::StringPiece kAttachmentName = "interesting pipe name";
+constexpr std::string_view kAttachmentName = "interesting pipe name";
 
-constexpr base::StringPiece kTestMessages[] = {
+constexpr std::string_view kTestMessages[] = {
     "hello hello",
     "i don't know why you say goodbye",
     "actually nvm i do",
@@ -852,7 +852,7 @@ TEST_F(CoreIpczTest, InvitationMultipleAttachments) {
       });
 }
 
-constexpr base::StringPiece kDataPipeMessage = "hello, world!";
+constexpr std::string_view kDataPipeMessage = "hello, world!";
 constexpr size_t kDataPipeCapacity = 8;
 static_assert(kDataPipeCapacity < kDataPipeMessage.size(),
               "Test requires a data pipe smaller than the test message.");
