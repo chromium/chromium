@@ -171,6 +171,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="Autofill.ServerCardUnmaskFlowType">
+  <variant name="DeviceUnlock" summary="Device unlock authentication"/>
   <variant name="Fido" summary="FIDO authentication only"/>
   <variant name="Otp" summary="OTP auth only"/>
   <variant name="OtpFallbackFromFido"

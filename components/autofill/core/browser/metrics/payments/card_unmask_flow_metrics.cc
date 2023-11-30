@@ -39,6 +39,9 @@ void LogServerCardUnmaskResult(
     case ServerCardUnmaskFlowType::kRiskBased:
       flow_type_suffix = ".RiskBased";
       break;
+    case ServerCardUnmaskFlowType::kDeviceUnlock:
+      flow_type_suffix = ".DeviceUnlock";
+      break;
   }
 
   base::UmaHistogramEnumeration(

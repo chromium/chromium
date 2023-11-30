@@ -55,7 +55,9 @@ enum class ServerCardUnmaskFlowType {
   kOtpFallbackFromFido = 3,
   // Risk-based auth with no challenge involved.
   kRiskBased = 4,
-  kMaxValue = kRiskBased,
+  // Device unlock auth was offered.
+  kDeviceUnlock = 5,
+  kMaxValue = kDeviceUnlock,
 };
 
 void LogServerCardUnmaskAttempt(AutofillClient::PaymentsRpcCardType card_type);

@@ -1578,12 +1578,17 @@ void CreditCardAccessManager::OnDeviceAuthenticationResponseForFilling(
           : autofill_metrics::MandatoryReauthAuthenticationFlowEvent::
                 kFlowFailed);
   CHECK(card);
+  autofill_metrics::LogServerCardUnmaskResult(
+      successful_auth
+          ? autofill_metrics::ServerCardUnmaskResult::kAuthenticationUnmasked
+          : autofill_metrics::ServerCardUnmaskResult::kAuthenticationError,
+      card->record_type(),
+      autofill_metrics::ServerCardUnmaskFlowType::kDeviceUnlock);
+
   std::move(on_credit_card_fetched_callback_)
       .Run(successful_auth ? CreditCardFetchResult::kSuccess
                            : CreditCardFetchResult::kTransientError,
            card);
-  // TODO(crbug.com/1427216): Add logging for the payments autofill device
-  // authentication flow.
   // `accessor->OnCreditCardFetched()` makes a copy of `card` and `cvc` before
   // it asynchronously fills them into the form. Thus we can safely call
   // `Reset()` here, and we should as from this class' point of view the
