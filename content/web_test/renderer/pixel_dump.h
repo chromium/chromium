@@ -17,9 +17,10 @@ class WebLocalFrame;
 namespace content {
 
 // Goes through a test-only path to dump the frame's pixel output as if it was
-// printed.
+// printed. Page size and margins are in CSS pixels.
 SkBitmap PrintFrameToBitmap(blink::WebLocalFrame* web_frame,
-                            const gfx::Size& page_size_in_pixels,
+                            const gfx::Size& page_size,
+                            int default_margins,
                             const printing::PageRanges& pages);
 
 }  // namespace content

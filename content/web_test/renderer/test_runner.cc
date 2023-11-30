@@ -98,14 +98,12 @@ namespace {
 
 // TODO(https://github.com/web-platform-tests/wpt/issues/40788): According to
 // http://web-platform-tests.org/writing-tests/print-reftests.html the default
-// page size for print reftests is 5 by 3 inches. But that doesn't match the
-// expectations of existing tests. The WPT test
-// infrastructure/reftest/reftest_match-print.html assumes that the page height
-// is 2in, not 3in. Apparently, there's a secret margin of 0.5 inches being
-// assumed, or something. So use 4 by 2 inches. There are 96 CSS pixels per
-// inch, so multiply by that.
-const int kWPTPrintWidth = 4 * 96;
-const int kWPTPrintHeight = 2 * 96;
+// page size for print reftests is 5 by 3 inches. Margins are not mentioned, but
+// there are tests that expect them to be 0.5in. Firefox also does this. There
+// are 96 CSS pixels per inch, so multiply by that.
+const int kWPTPrintWidth = 5 * 96;
+const int kWPTPrintHeight = 3 * 96;
+const int kWPTPrintMargins = 96 / 2;
 
 // A V8 callback with bound arguments, and the ability to pass additional
 // arguments at time of calling Run().
@@ -1959,9 +1957,9 @@ void TestRunnerBindings::CapturePrintingPixelsThen(
   if (invalid_)
     return;
   blink::WebLocalFrame* frame = GetWebFrame();
-  SkBitmap bitmap =
-      PrintFrameToBitmap(frame, runner_->GetPrintingPageSize(frame),
-                         runner_->GetPrintingPageRanges(frame));
+  SkBitmap bitmap = PrintFrameToBitmap(
+      frame, runner_->GetPrintingPageSize(frame), runner_->GetPrintingMargin(),
+      runner_->GetPrintingPageRanges(frame));
 
   v8::Isolate* isolate = frame->GetAgentGroupScheduler()->Isolate();
   v8::HandleScope handle_scope(isolate);
@@ -2539,6 +2537,10 @@ gfx::Size TestRunner::GetPrintingPageSize(blink::WebLocalFrame* frame) const {
   return widget->Size();
 }
 
+int TestRunner::GetPrintingMargin() const {
+  return web_test_runtime_flags_.printing_margin();
+}
+
 static std::string GetPageRangesStringFromMetadata(
     blink::WebLocalFrame* frame) {
   blink::WebElementCollection meta_iter =
@@ -2642,6 +2644,7 @@ SkBitmap TestRunner::DumpPixelsInRenderer(blink::WebLocalFrame* main_frame) {
       target_frame = frame_to_print->ToWebLocalFrame();
   }
   return PrintFrameToBitmap(target_frame, GetPrintingPageSize(target_frame),
+                            GetPrintingMargin(),
                             GetPrintingPageRanges(target_frame));
 #else
   NOTREACHED();
@@ -3024,6 +3027,7 @@ void TestRunner::SetMainWindowAndTestConfiguration(
     SetPrinting();
     view->GetSettings()->SetShouldPrintBackgrounds(true);
     SetPrintingSize(kWPTPrintWidth, kWPTPrintHeight);
+    SetPrintingMargin(kWPTPrintMargins);
   }
 
   view->GetSettings()->SetV8CacheOptions(
@@ -3256,6 +3260,11 @@ void TestRunner::SetPrintingForFrame(const std::string& frame_name) {
 void TestRunner::SetPrintingSize(int width, int height) {
   web_test_runtime_flags_.set_printing_width(width);
   web_test_runtime_flags_.set_printing_height(height);
+  OnWebTestRuntimeFlagsChanged();
+}
+
+void TestRunner::SetPrintingMargin(int size) {
+  web_test_runtime_flags_.set_printing_margin(size);
   OnWebTestRuntimeFlagsChanged();
 }
 

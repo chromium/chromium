@@ -22,6 +22,7 @@ void WebTestRuntimeFlags::Reset() {
   set_printing_frame("");
   set_printing_width(0);
   set_printing_height(0);
+  set_printing_margin(0);
 
   set_policy_delegate_enabled(false);
   set_policy_delegate_is_permissive(false);

@@ -3522,7 +3522,6 @@ crbug.com/1191124 external/wpt/css/css-multicol/spanner-fragmentation-012.html [
 crbug.com/1224888 external/wpt/css/css-multicol/spanner-in-opacity.html [ Failure ]
 crbug.com/1494847 external/wpt/css/css-page/layers-002-print.html [ Failure ]
 crbug.com/1494847 external/wpt/css/css-page/layers-003-print.html [ Failure ]
-crbug.com/1494847 external/wpt/css/css-page/layers-004-print.html [ Failure ]
 crbug.com/1494858 external/wpt/css/css-page/page-name-abspos-002-print.html [ Failure ]
 crbug.com/1494838 external/wpt/css/css-page/page-name-canvas-003-print.html [ Failure ]
 crbug.com/1494838 external/wpt/css/css-page/page-name-canvas-004-print.html [ Failure ]
@@ -3532,7 +3531,6 @@ crbug.com/1494858 external/wpt/css/css-page/page-name-flex-004-print.html [ Fail
 crbug.com/1494838 external/wpt/css/css-page/page-name-img-003-print.html [ Failure ]
 crbug.com/1494838 external/wpt/css/css-page/page-name-img-004-print.html [ Failure ]
 crbug.com/1494847 external/wpt/css/css-page/page-name-margin-001-print.html [ Failure ]
-crbug.com/1494847 external/wpt/css/css-page/page-name-margin-002-print.html [ Failure ]
 crbug.com/1494863 external/wpt/css/css-page/page-name-zero-height-001-print.html [ Failure ]
 crbug.com/1494847 external/wpt/css/css-page/pseudo-first-margin-001-print.html [ Failure ]
 crbug.com/1494847 external/wpt/css/css-page/pseudo-first-margin-002-print.html [ Failure ]
@@ -5680,7 +5678,6 @@ crbug.com/1090628 external/wpt/html/browsers/windows/iframe-cross-origin-print.s
 crbug.com/1090628 external/wpt/html/browsers/windows/iframe-cross-origin-scaled-print.sub.html [ Failure ]
 crbug.com/1090628 external/wpt/infrastructure/reftest/reftest_match_fail-print.html [ Failure ]
 crbug.com/1090628 external/wpt/infrastructure/reftest/reftest_mismatch_fail-print.html [ Failure ]
-crbug.com/1090628 external/wpt/infrastructure/reftest/reftest_mismatch_page_margins-print.html [ Failure ]
 crbug.com/1090628 external/wpt/css/printing/fragmented-inline-block-002-print.html [ Failure ]
 crbug.com/1487479 external/wpt/css/printing/remote-origin-iframe-print.html [ Failure ]
 
