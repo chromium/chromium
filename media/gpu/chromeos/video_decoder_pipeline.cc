@@ -391,7 +391,9 @@ void VideoDecoderPipeline::DestroyAsync(
 
 VideoDecoderType VideoDecoderPipeline::GetDecoderType() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
-  // TODO(mcasas): query |decoder_| instead.
+  // TODO(mcasas): query |decoder_| instead. This is difficult because it can
+  // only be accessed on |decoder_sequence_checker_|: this method is supposed
+  // to be synchronous.
 
   if (uses_oop_video_decoder_) {
     return VideoDecoderType::kOutOfProcess;
@@ -415,8 +417,16 @@ bool VideoDecoderPipeline::IsPlatformDecoder() const {
 int VideoDecoderPipeline::GetMaxDecodeRequests() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
-  // TODO(mcasas): query |decoder_| instead.
-  // This value comes from the number of buffers in the input queue in
+  // TODO(mcasas): query |decoder_| instead. This is difficult because it can
+  // only be accessed on |decoder_sequence_checker_|: this method is supposed
+  // to be synchronous.
+
+#if BUILDFLAG(USE_V4L2_CODEC)
+  if (base::FeatureList::IsEnabled(kV4L2FlatStatefulVideoDecoder)) {
+    return 4;
+  }
+#endif
+  // This value comes from the (large) number of buffers in the input queue in
   // V4L2VideoDecoder.
   return 8;
 }
