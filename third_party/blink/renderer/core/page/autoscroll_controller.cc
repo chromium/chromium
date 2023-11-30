@@ -374,7 +374,7 @@ void AutoscrollController::StartMiddleClickAutoscroll(
   bool can_propagate_vertically = true;
   bool can_propagate_horizontally = true;
 
-  LayoutObject* layout_object = scrollable->GetNode()->GetLayoutObject();
+  LayoutObject* layout_object = scrollable;
 
   while (layout_object && !(can_scroll_horizontally && can_scroll_vertically)) {
     if (LayoutBox* layout_box = DynamicTo<LayoutBox>(layout_object)) {
