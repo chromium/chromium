@@ -147,6 +147,10 @@
     'arc_auth': {
       'filepath': 'chrome/browser/ash/arc/auth'
     },
+    'arc_compat_mode': {
+      'filepath': 'ash/components/arc/compat_mode/|' \
+                  'arc_compat_mode|resize_lock',
+    },
     'arc_fileapi': {
       'filepath': 'chrome/browser/ash/arc/fileapi'
     },
@@ -1141,6 +1145,9 @@
                   'chromeos/ash/components/dbus/fwupd/|' \
                   'chromeos/ash/components/fwupd/',
     },
+    'float': {
+      'filepath': 'ash/wm/float/'
+    },
     'freetype_update': {
       'filepath': 'third_party/freetype/README.chromium',
     },
@@ -1998,6 +2005,9 @@
                   '|third_party/hunspell/'\
                   '|third_party/hunspell_dictionaries/',
     },
+    'splitview': {
+      'filepath': 'ash/wm/splitview/'
+    },
     'startup': {
       'filepath': 'chrome/browser/ui/startup/',
     },
@@ -2324,6 +2334,12 @@
     'windows_sandboxing': {
       'filepath': 'sandbox/win/',
     },
+    'wm_state': {
+      'filepath': 'ash/wm/base_state.*|' \
+                  'ash/wm/client_controlled_state.*|' \
+                  'ash/wm/default_state.*|' \
+                  'ash/wm/tablet_mode/tablet_mode_window_state.*'
+    },
     'wpt_tools': {
       'filepath': 'third_party/blink/web_tests/external/wpt/tools/',
     },
@@ -2420,6 +2436,7 @@
     'arc': ['hidehiko+watch@chromium.org',
             'arc-reviews+chromium@google.com'],
     'arc_auth': ['khmel+watch@chromium.org'],
+    'arc_compat_mode': ['toshikikikuchi+watch-compat@chromium.org'],
     'arc_fileapi': ['alanding+watch@chromium.org',
                     'djacobo+watch@chromium.org'],
     'arc_ime': ['yhanada+watch@chromium.org'],
@@ -2837,6 +2854,7 @@
     'firmware_update': ['zentaro+firmware-watch@chromium.org',
                         'jimmyxgong+firmware-watch@chromium.org',
                         'michaelcheco+firmware-watch@google.com'],
+    'float': ['toshikikikuchi+watch-float@chromium.org'],
     'freetype_update': ['drott+watch@chromium.org',
                         'thestig@chromium.org'],
     'fsp': ['mtomasz+watch@chromium.org'],
@@ -3165,6 +3183,7 @@
                                 'sullivan@chromium.org'],
     'spellcheck': ['rlp+watch@chromium.org',
                    'rouslan+spell@chromium.org'],
+    'splitview': ['toshikikikuchi+watch-splitview@chromium.org'],
     'startup': ['cmfcmf+watch@chromium.org',
                 'nicolaso+watch@chromium.org',
                 'ydago+watch@chromium.org'],
@@ -3299,6 +3318,7 @@
     'website_settings': ['dullweber+watch@chromium.org',
                          'msramek+watch@chromium.org'],
     'windows_sandboxing': ['wfh+watch@chromium.org'],
+    'wm_state': ['toshikikikuchi+watch-state@chromium.org'],
     'wpt_tools': ['lpz+watch@chromium.org'],
     'x11': ['sadrul@chromium.org'],
     'zlib': ['cblume+zlib@chromium.org'],
