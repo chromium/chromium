@@ -5504,9 +5504,6 @@ crbug.com/1318695 http/tests/devtools/elements/highlight/highlight-multiple-css-
 crbug.com/1282966 http/tests/security/mixedContent/insecure-plugin-in-iframe.html [ Failure Pass ]
 crbug.com/1318952 http/tests/inspector-protocol/fetch/fetch-samesite-cookies.js [ Failure Pass ]
 
-# Temporarily disabled to unblock https://crrev.com/c/5063940
-crbug.com/1505512 http/tests/devtools/oopif/oopif-storage.js [ Failure Pass ]
-
 # Sheriff 2022-04-25
 crbug.com/1319320 rootscroller/root-scroller-apply-filter-to-parent.html [ Failure Pass ]
 
