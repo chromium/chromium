@@ -115,7 +115,10 @@ public class PrivacySandboxBridgeTest {
     @Nullable
     private List<String> getFledgeJoiningEtlds() {
         PayloadCallbackHelper<List<String>> callbackHelper = new PayloadCallbackHelper<>();
-        PrivacySandboxBridge.getFledgeJoiningEtldPlusOneForDisplay(callbackHelper::notifyCalled);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        PrivacySandboxBridge.getFledgeJoiningEtldPlusOneForDisplay(
+                                callbackHelper::notifyCalled));
         return callbackHelper.getOnlyPayloadBlocking();
     }
 
@@ -124,7 +127,7 @@ public class PrivacySandboxBridgeTest {
     public void testGetFledgeJoiningEtldPlusOneForDisplay() {
         // Check that this function returns a valid list. We currently can't control from the Java
         // side what they actually return, so just check that it is not null and there is no crash.
-        TestThreadUtils.runOnUiThreadBlocking(() -> assertNotNull(getFledgeJoiningEtlds()));
+        assertNotNull(getFledgeJoiningEtlds());
     }
 
     @Test
