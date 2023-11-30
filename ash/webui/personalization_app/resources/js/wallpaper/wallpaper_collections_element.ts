@@ -224,8 +224,7 @@ function getSeaPenTile(): SeaPenTile {
     id: kSeaPenId,
     name: 'Sea Pen',
     type: TileType.SEA_PEN,
-    // TODO(b/299359804): Replace with the real preview.
-    preview: [{url: 'chrome://personalization/images/google_photos.svg'}],
+    preview: [{url: 'chrome://personalization/images/sea_pen_tile.svg'}],
   };
 }
 

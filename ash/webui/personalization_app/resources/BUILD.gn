@@ -40,6 +40,7 @@ build_webui("build") {
     "images/no_google_photos_images.svg",
     "images/no_google_photos_images_dark.svg",
     "images/slideshow.png",
+    "images/sea_pen_tile.svg",
 
     "css/base.css",
   ]
