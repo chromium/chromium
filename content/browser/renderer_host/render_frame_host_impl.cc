@@ -9266,13 +9266,6 @@ void RenderFrameHostImpl::HandleAXLocationChanges(
   delegate_->AccessibilityLocationChangesReceived(details);
 }
 
-media::MediaMetricsProvider::RecordAggregateWatchTimeCallback
-RenderFrameHostImpl::GetRecordAggregateWatchTimeCallback() {
-  // The URL used for UKM must always be the top level frame.
-  return delegate_->GetRecordAggregateWatchTimeCallback(
-      GetOutermostMainFrame()->GetLastCommittedURL());
-}
-
 void RenderFrameHostImpl::ResetWaitingState() {
   // We don't allow resetting waiting state when the RenderFrameHost is either
   // in BackForwardCache or in pending deletion state, as we don't allow
@@ -11721,9 +11714,6 @@ void RenderFrameHostImpl::BindMediaMetricsProviderReceiver(
                 ->GetLearningSession();
           },
           weak_ptr_factory_.GetWeakPtr()),
-      base::BindRepeating(
-          &RenderFrameHostImpl::GetRecordAggregateWatchTimeCallback,
-          base::Unretained(this)),
       std::move(is_shutting_down_cb), std::move(receiver));
 }
 

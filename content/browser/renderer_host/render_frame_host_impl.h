@@ -994,9 +994,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return !is_main_frame() && is_local_root();
   }
 
-  media::MediaMetricsProvider::RecordAggregateWatchTimeCallback
-  GetRecordAggregateWatchTimeCallback();
-
   // The unique ID of the latest NavigationEntry that this RenderFrameHost is
   // showing. This may change even when this frame hasn't committed a page,
   // such as for a new subframe navigation in a different frame.

@@ -746,9 +746,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void OnFrameIsCapturingMediaStreamChanged(
       RenderFrameHostImpl* host,
       bool is_capturing_media_stream) override;
-  media::MediaMetricsProvider::RecordAggregateWatchTimeCallback
-  GetRecordAggregateWatchTimeCallback(
-      const GURL& page_main_frame_last_committed_url) override;
   std::vector<FrameTreeNode*> GetUnattachedOwnedNodes(
       RenderFrameHostImpl* owner) override;
   void RegisterProtocolHandler(RenderFrameHostImpl* source,

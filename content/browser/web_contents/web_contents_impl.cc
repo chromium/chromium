@@ -9775,33 +9775,6 @@ void WebContentsImpl::OnFrameIsCapturingMediaStreamChanged(
       is_capturing_media_stream);
 }
 
-media::MediaMetricsProvider::RecordAggregateWatchTimeCallback
-WebContentsImpl::GetRecordAggregateWatchTimeCallback(
-    const GURL& page_main_frame_last_committed_url) {
-  OPTIONAL_TRACE_EVENT0("content",
-                        "WebContentsImpl::RecordAggregateWatchTimeCallback");
-  if (!delegate_ || !delegate_->GetDelegateWeakPtr()) {
-    return base::DoNothing();
-  }
-
-  return base::BindRepeating(
-      [](base::WeakPtr<WebContentsDelegate> delegate,
-         GURL page_main_frame_last_committed_url,
-         base::TimeDelta total_watch_time, base::TimeDelta time_stamp,
-         bool has_video, bool has_audio) {
-        content::MediaPlayerWatchTime watch_time(
-            page_main_frame_last_committed_url,
-            page_main_frame_last_committed_url.DeprecatedGetOriginAsURL(),
-            total_watch_time, time_stamp, has_video, has_audio);
-
-        // Save the watch time if the delegate is still alive.
-        if (delegate) {
-          delegate->MediaWatchTimeChanged(watch_time);
-        }
-      },
-      delegate_->GetDelegateWeakPtr(), page_main_frame_last_committed_url);
-}
-
 // Cf. `GetProspectiveOuterDocument` which applies to the same situation, but is
 // for ascending.
 std::vector<FrameTreeNode*> WebContentsImpl::GetUnattachedOwnedNodes(

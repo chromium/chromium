@@ -33,10 +33,6 @@
 
 using UkmEntry = ukm::builders::Media_BasicPlayback;
 
-namespace content {
-class RenderFrameHostDelegate;
-}  // namespace content
-
 namespace media {
 
 constexpr char kTestOrigin[] = "https://test.google.com/";
@@ -70,9 +66,6 @@ class WatchTimeRecorderTest : public testing::Test {
         MediaMetricsProvider::FrameStatus::kTopFrame, GetSourceId(),
         learning::FeatureValue(0), VideoDecodePerfHistory::SaveCallback(),
         MediaMetricsProvider::GetLearningSessionCallback(),
-        base::BindRepeating(
-            &WatchTimeRecorderTest::GetRecordAggregateWatchTimeCallback,
-            base::Unretained(this)),
         base::BindRepeating(&WatchTimeRecorderTest::IsShuttingDown,
                             base::Unretained(this)),
         provider_.BindNewPipeAndPassReceiver());
@@ -189,17 +182,6 @@ class WatchTimeRecorderTest : public testing::Test {
   }
 
   ukm::SourceId GetSourceId() { return source_id_; }
-
-  MediaMetricsProvider::RecordAggregateWatchTimeCallback
-  GetRecordAggregateWatchTimeCallback() {
-    return base::BindRepeating(
-        [](base::WeakPtr<content::RenderFrameHostDelegate> delegate,
-           GURL last_committed_url, base::TimeDelta total_watch_time,
-           base::TimeDelta time_stamp, bool has_video, bool has_audio) {
-          // Do nothing as this mock callback will never be called.
-        },
-        nullptr, GURL());
-  }
 
   MOCK_METHOD(bool, IsShuttingDown, ());
   MOCK_METHOD0(GetCurrentMediaTime, base::TimeDelta());

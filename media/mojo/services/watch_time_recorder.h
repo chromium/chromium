@@ -16,24 +16,16 @@
 #include "media/mojo/mojom/watch_time_recorder.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "url/gurl.h"
 
 namespace media {
 
 // See mojom::WatchTimeRecorder for documentation.
 class MEDIA_MOJO_EXPORT WatchTimeRecorder : public mojom::WatchTimeRecorder {
  public:
-  using RecordAggregateWatchTimeCallback =
-      base::OnceCallback<void(base::TimeDelta total_watch_time,
-                              base::TimeDelta time_stamp,
-                              bool has_video,
-                              bool has_audio)>;
-
   WatchTimeRecorder(mojom::PlaybackPropertiesPtr properties,
                     ukm::SourceId source_id,
                     bool is_top_frame,
-                    uint64_t player_id,
-                    RecordAggregateWatchTimeCallback record_playback_cb);
+                    uint64_t player_id);
 
   WatchTimeRecorder(const WatchTimeRecorder&) = delete;
   WatchTimeRecorder& operator=(const WatchTimeRecorder&) = delete;
@@ -54,7 +46,6 @@ class MEDIA_MOJO_EXPORT WatchTimeRecorder : public mojom::WatchTimeRecorder {
   void UpdateUnderflowCount(int32_t total_count) override;
   void UpdateUnderflowDuration(int32_t total_completed_count,
                                base::TimeDelta total_duration) override;
-  void OnCurrentTimestampChanged(base::TimeDelta current_timestamp) override;
 
  private:
   // Records a UKM event based on |aggregate_watch_time_info_|; only recorded
@@ -128,9 +119,7 @@ class MEDIA_MOJO_EXPORT WatchTimeRecorder : public mojom::WatchTimeRecorder {
 
   PipelineStatusCodes pipeline_status_ = PIPELINE_OK;
   base::TimeDelta duration_ = kNoTimestamp;
-  base::TimeDelta last_timestamp_ = kNoTimestamp;
   absl::optional<bool> autoplay_initiated_;
-  RecordAggregateWatchTimeCallback record_playback_cb_;
 };
 
 }  // namespace media

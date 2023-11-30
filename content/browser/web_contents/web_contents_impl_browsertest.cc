@@ -5990,15 +5990,6 @@ IN_PROC_BROWSER_TEST_F(WebContentsFencedFrameBrowserTest,
     video.play();
   )"));
 
-  // Get a watch time callback from `fenced_frame`.
-  media::MediaMetricsProvider::RecordAggregateWatchTimeCallback
-      record_playback_cb = static_cast<RenderFrameHostImpl*>(fenced_frame)
-                               ->GetRecordAggregateWatchTimeCallback();
-  std::move(record_playback_cb)
-      .Run(base::TimeDelta(), base::TimeDelta(), true, true);
-  // Check if the URL is from the top level frame.
-  DCHECK_EQ(top_url, delegate.watch_time().url);
-
   base::RunLoop run_loop;
   test_recorder.SetOnAddEntryCallback(UkmEntry::kEntryName,
                                       run_loop.QuitClosure());

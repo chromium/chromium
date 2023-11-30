@@ -50,7 +50,6 @@ MediaMetricsProvider::MediaMetricsProvider(
     learning::FeatureValue origin,
     VideoDecodePerfHistory::SaveCallback save_cb,
     GetLearningSessionCallback learning_session_cb,
-    RecordAggregateWatchTimeCallback record_playback_cb,
     IsShuttingDownCallback is_shutting_down_cb)
     : player_id_(g_player_id++),
       is_top_frame_(is_top_frame == FrameStatus::kTopFrame),
@@ -58,7 +57,6 @@ MediaMetricsProvider::MediaMetricsProvider(
       origin_(origin),
       save_cb_(std::move(save_cb)),
       learning_session_cb_(std::move(learning_session_cb)),
-      record_playback_cb_(std::move(record_playback_cb)),
       is_shutting_down_cb_(std::move(is_shutting_down_cb)),
       uma_info_(is_incognito == BrowsingMode::kIncognito) {}
 
@@ -189,14 +187,12 @@ void MediaMetricsProvider::Create(
     learning::FeatureValue origin,
     VideoDecodePerfHistory::SaveCallback save_cb,
     GetLearningSessionCallback learning_session_cb,
-    GetRecordAggregateWatchTimeCallback get_record_playback_cb,
     IsShuttingDownCallback is_shutting_down_cb,
     mojo::PendingReceiver<mojom::MediaMetricsProvider> receiver) {
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<MediaMetricsProvider>(
           is_incognito, is_top_frame, source_id, origin, std::move(save_cb),
           std::move(learning_session_cb),
-          std::move(get_record_playback_cb).Run(),
           std::move(is_shutting_down_cb)),
       std::move(receiver));
 }
@@ -321,8 +317,7 @@ void MediaMetricsProvider::AcquireWatchTimeRecorder(
 
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WatchTimeRecorder>(std::move(properties), source_id_,
-                                          is_top_frame_, player_id_,
-                                          record_playback_cb_),
+                                          is_top_frame_, player_id_),
       std::move(receiver));
 }
 

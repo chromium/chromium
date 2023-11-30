@@ -54,9 +54,6 @@ class MediaMetricsProviderTest : public testing::Test {
         GetSourceId(), learning::FeatureValue(0),
         VideoDecodePerfHistory::SaveCallback(),
         MediaMetricsProvider::GetLearningSessionCallback(),
-        base::BindRepeating(
-            &MediaMetricsProviderTest::GetRecordAggregateWatchTimeCallback,
-            base::Unretained(this)),
         base::BindRepeating(&MediaMetricsProviderTest::IsShuttingDown,
                             base::Unretained(this)),
         provider_.BindNewPipeAndPassReceiver());
@@ -64,11 +61,6 @@ class MediaMetricsProviderTest : public testing::Test {
   }
 
   ukm::SourceId GetSourceId() { return source_id_; }
-
-  MediaMetricsProvider::RecordAggregateWatchTimeCallback
-  GetRecordAggregateWatchTimeCallback() {
-    return base::NullCallback();
-  }
 
   MOCK_METHOD(bool, IsShuttingDown, ());
 

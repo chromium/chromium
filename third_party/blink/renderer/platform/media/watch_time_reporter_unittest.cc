@@ -247,10 +247,6 @@ class WatchTimeReporterTest
                                         video_frames_dropped);
     }
 
-    void OnCurrentTimestampChanged(base::TimeDelta duration) override {
-      parent_->OnCurrentTimestampChanged(duration);
-    }
-
    private:
     raw_ptr<WatchTimeReporterTest, ExperimentalRenderer> parent_;
   };
@@ -651,7 +647,6 @@ class WatchTimeReporterTest
   MOCK_METHOD1(OnSetAutoplayInitiated, void(bool));
   MOCK_METHOD1(OnDurationChanged, void(base::TimeDelta));
   MOCK_METHOD2(OnUpdateVideoDecodeStats, void(uint32_t, uint32_t));
-  MOCK_METHOD1(OnCurrentTimestampChanged, void(base::TimeDelta));
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

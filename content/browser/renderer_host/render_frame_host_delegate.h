@@ -533,10 +533,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // the given offset (ie, -1 will return the "back" item).
   virtual bool IsAllowedToGoToEntryAtOffset(int32_t offset);
 
-  virtual media::MediaMetricsProvider::RecordAggregateWatchTimeCallback
-  GetRecordAggregateWatchTimeCallback(
-      const GURL& page_main_frame_last_committed_url);
-
   // Determines if a clipboard paste using |data| of type |data_type| is allowed
   // in this renderer frame.  Possible data types supported for paste can be
   // seen in the ClipboardHostImpl class.  Text based formats will use the

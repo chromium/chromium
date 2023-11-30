@@ -8,7 +8,6 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
-#include "base/functional/callback.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
@@ -66,12 +65,10 @@ WatchTimeRecorder::WatchTimeUkmRecord::WatchTimeUkmRecord(
 
 WatchTimeRecorder::WatchTimeUkmRecord::~WatchTimeUkmRecord() = default;
 
-WatchTimeRecorder::WatchTimeRecorder(
-    mojom::PlaybackPropertiesPtr properties,
-    ukm::SourceId source_id,
-    bool is_top_frame,
-    uint64_t player_id,
-    RecordAggregateWatchTimeCallback record_playback_cb)
+WatchTimeRecorder::WatchTimeRecorder(mojom::PlaybackPropertiesPtr properties,
+                                     ukm::SourceId source_id,
+                                     bool is_top_frame,
+                                     uint64_t player_id)
     : properties_(std::move(properties)),
       source_id_(source_id),
       is_top_frame_(is_top_frame),
@@ -91,8 +88,7 @@ WatchTimeRecorder::WatchTimeRecorder(
             kRebuffersCountAudioVideoMse, kDiscardedWatchTimeAudioVideoMse},
            {WatchTimeKey::kAudioVideoEme,
             kMeanTimeBetweenRebuffersAudioVideoEme,
-            kRebuffersCountAudioVideoEme, kDiscardedWatchTimeAudioVideoEme}}),
-      record_playback_cb_(std::move(record_playback_cb)) {}
+            kRebuffersCountAudioVideoEme, kDiscardedWatchTimeAudioVideoEme}}) {}
 
 WatchTimeRecorder::~WatchTimeRecorder() {
   FinalizeWatchTime({});
@@ -311,11 +307,6 @@ void WatchTimeRecorder::UpdateUnderflowDuration(
   underflow_duration_ = total_duration;
 }
 
-void WatchTimeRecorder::OnCurrentTimestampChanged(
-    base::TimeDelta current_timestamp) {
-  last_timestamp_ = current_timestamp;
-}
-
 void WatchTimeRecorder::RecordUkmPlaybackData() {
   // UKM may be unavailable in content_shell or other non-chrome/ builds; it
   // may also be unavailable if browser shutdown has started; so this may be a
@@ -342,7 +333,6 @@ void WatchTimeRecorder::RecordUkmPlaybackData() {
 
   base::flat_set<AudioCodecProfile> aac_profiles;
 
-  base::TimeDelta total_foreground_audible_watch_time;
   for (auto& ukm_record : ukm_records_) {
     ukm::builders::Media_BasicPlayback builder(source_id_);
 
@@ -367,11 +357,6 @@ void WatchTimeRecorder::RecordUkmPlaybackData() {
         // Only one of these keys should be present.
         DCHECK(!recorded_all_metric);
         recorded_all_metric = true;
-
-        // We should only add to the total watchtime if we were not in the
-        // background and not muted.
-        if (!properties_->is_muted && !properties_->is_background)
-          total_foreground_audible_watch_time += kv.second;
 
         builder.SetWatchTime(kv.second.InMilliseconds());
         if (ukm_record.total_underflow_count) {
@@ -467,12 +452,6 @@ void WatchTimeRecorder::RecordUkmPlaybackData() {
   if (ShouldRecordUma() && !aac_profiles.empty()) {
     for (auto profile : aac_profiles)
       base::UmaHistogramEnumeration("Media.AudioCodecProfile.AAC", profile);
-  }
-
-  if (total_foreground_audible_watch_time.is_positive()) {
-    std::move(record_playback_cb_)
-        .Run(total_foreground_audible_watch_time, last_timestamp_,
-             properties_->has_video, properties_->has_audio);
   }
 
   ukm_records_.clear();

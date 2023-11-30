@@ -135,12 +135,6 @@ std::vector<FrameTreeNode*> RenderFrameHostDelegate::GetUnattachedOwnedNodes(
   return {};
 }
 
-media::MediaMetricsProvider::RecordAggregateWatchTimeCallback
-RenderFrameHostDelegate::GetRecordAggregateWatchTimeCallback(
-    const GURL& page_main_frame_last_committed_url) {
-  return base::NullCallback();
-}
-
 void RenderFrameHostDelegate::IsClipboardPasteContentAllowed(
     const GURL& url,
     const ui::ClipboardFormatType& data_type,
