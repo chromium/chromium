@@ -438,7 +438,7 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
     }
 
     // Reorder tabs.
-    [self.consumer moveItemWithID:tabInfo.tabID toIndex:destinationIndex];
+    [self moveItemWithID:tabInfo.tabID toIndex:destinationIndex];
     return;
   }
   base::UmaHistogramEnumeration(kUmaPinnedViewDragOrigin,
