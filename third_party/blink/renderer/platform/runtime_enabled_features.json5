@@ -4237,7 +4237,7 @@
     {
       // https://wicg.github.io/web-preferences-api/
       name: "WebPreferences",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "WebPrinting",
