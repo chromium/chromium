@@ -21,7 +21,6 @@
 @interface WhatsNewMediator ()
 
 @property(nonatomic, strong) NSMutableArray<WhatsNewItem*>* chromeTipEntries;
-@property(nonatomic, strong) WhatsNewItem* useChromeByDefaultEntry;
 
 @end
 
@@ -36,11 +35,6 @@
     // Serialize What's New Chrome Tips
     self.chromeTipEntries = [[NSMutableArray alloc] init];
     for (WhatsNewItem* item in WhatsNewChromeTipEntries(WhatsNewFilePath())) {
-      // Save use chrome by default entry separately.
-      if (item.type == WhatsNewType::kUseChromeByDefault) {
-        self.useChromeByDefaultEntry = item;
-        continue;
-      }
       [self.chromeTipEntries addObject:item];
     }
   }
@@ -94,7 +88,7 @@
 }
 
 - (void)didTapInstructions:(WhatsNewType)type {
-  const char* type_str = WhatsNewTypeToStringM116(type);
+  const char* type_str = WhatsNewTypeToString(type);
   if (!type_str) {
     return;
   }
@@ -128,18 +122,11 @@
 
 #pragma mark Private
 
-// Returns a `WhatsNewItem` representing a highlighted chrome tip. By default,
-// it will be the `WhatsNewType::kUseChromeByDefault` otherwise it will choose a
-// random chrome tip.
+// Returns a `WhatsNewItem` representing a highlighted chrome tip.
 - (WhatsNewItem*)whatsNewChromeTipItem {
-  // Return a random chrome tip if chrome is already the default browser or if
-  // What's New M116 is enabled.
-  if (IsChromeLikelyDefaultBrowser() || IsWhatsNewM116Enabled()) {
-    int entryIndex = arc4random_uniform(self.chromeTipEntries.count);
-    return self.chromeTipEntries[entryIndex];
-  }
-
-  return self.useChromeByDefaultEntry;
+  // Return a random chrome tip.
+  int entryIndex = arc4random_uniform(self.chromeTipEntries.count);
+  return self.chromeTipEntries[entryIndex];
 }
 
 // Returns an Array of `WhatsNewItem` features.

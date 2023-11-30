@@ -4167,9 +4167,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_WHATS_NEW_FEATURE_SEARCH_TABS_STEP_2" desc="Text of the row indicating the second step of Search Tabs in What's New. [iOS only]">
         At the Top of the Screen, Tap the Search Icon
       </message>
-      <message name="IDS_IOS_WHATS_NEW_FEATURE_SEARCH_TABS_STEP_3" desc="Text of the row indicating the third step of Search Tabs in What's New. [iOS only]">
-        Enter a Word or Phrase
-      </message>
       <message name="IDS_IOS_WHATS_NEW_FEATURE_NEW_MENU_TITLE" desc="New Menu title displayed in What's New. [iOS only]">
         Explore the New Menu
       </message>
@@ -4182,36 +4179,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_WHATS_NEW_FEATURE_NEW_MENU_STEP_2" desc="Text of the row indicating the second step of New Menu in What's New. [iOS only]">
         Explore the options in the menu bar
       </message>
-      <message name="IDS_IOS_WHATS_NEW_FEATURE_SHARE_HIGHLIGHT_TITLE" desc="Share Highlight title displayed in What's New. [iOS only]">
-        Share Highlight
-      </message>
-      <message name="IDS_IOS_WHATS_NEW_FEATURE_SHARE_HIGHLIGHT_SUBTITLE" desc="Share Highlight subtitle displayed in What's New. [iOS only]">
-        Create and share a direct link to part of a page you've highlighted.
-      </message>
-      <message name="IDS_IOS_WHATS_NEW_FEATURE_SHARE_HIGHLIGHT_STEP_1" desc="Text of the row indicating the first step of Share Highlight in What's New. [iOS only]">
-        Highlight Text on a Site
-      </message>
-      <message name="IDS_IOS_WHATS_NEW_FEATURE_SHARE_HIGHLIGHT_STEP_2" desc="Text of the row indicating the second step of Share Highlight in What's New. [iOS only]">
-        Tap Create Link in the Context Menu
-      </message>
-      <message name="IDS_IOS_WHATS_NEW_FEATURE_SHARE_HIGHLIGHT_STEP_3" desc="Text of the row indicating the third step of Share Highlight in What's New. [iOS only]">
-        Share the Link
-      </message>
-      <message name="IDS_IOS_WHATS_NEW_FEATURE_ADD_PASSWORDS_MANUALLY_TITLE" desc="Add Passwords Manually title displayed in What's New. [iOS only]">
-        Add Passwords Manually
-      </message>
-      <message name="IDS_IOS_WHATS_NEW_FEATURE_ADD_PASSWORDS_MANUALLY_SUBTITLE" desc="Add Passwords Manually subtitle displayed in What's New. [iOS only]">
-        Easily add site passwords to Google Password Manager anytime.
-      </message>
-      <message name="IDS_IOS_WHATS_NEW_FEATURE_ADD_PASSWORDS_MANUALLY_STEP_1" desc="Text of the row indicating the first step of Share Highlight in What's New. [iOS only]">
-        Open Chrome Settings
-      </message>
-      <message name="IDS_IOS_WHATS_NEW_FEATURE_ADD_PASSWORDS_MANUALLY_STEP_2" desc="Text of the row indicating the second step of Share Highlight in What's New. [iOS only]">
-        Tap Passwords Manager Then Tap Add
-      </message>
-      <message name="IDS_IOS_WHATS_NEW_FEATURE_ADD_PASSWORDS_MANUALLY_STEP_3" desc="Text of the row indicating the third step of Share Highlight in What's New. [iOS only]">
-        Enter Site and Password, Then Save
-      </message>
       <message name="IDS_IOS_WHATS_CHROME_TIP_CHROME_DEFAULT_TITLE" desc="Use Chrome By Default title displayed in What's New. [iOS only]">
         Use Chrome By Default
       </message>
@@ -4223,15 +4190,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_CHROME_DEFAULT_STEP_2" desc="Text of the row indicating the second step of Use Chrome By Default in What's New. [iOS only]">
         Tap Default Browser App
-      </message>
-      <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_CHROME_DEFAULT_STEP_3" desc="Text of the row indicating the third step of Use Chrome By Default in What's New. [iOS only]">
-        Select Chrome
-      </message>
-      <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_TITLE" desc="Passwords In Other Apps title displayed in What's New. [iOS only]">
-        Passwords in Other Apps
-      </message>
-      <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_SUBTITLE" desc="Passwords In Other Apps subtitle displayed in What's New. [iOS only]">
-        You can use the passwords you saved to Google Password Manager in other apps on your iPhone.
       </message>
       <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_STEP_1" desc="Text of the row indicating the first step of Passwords In Other Apps in What's New. [iOS only]">
         Open AutoFill Password Settings
@@ -4250,21 +4208,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_STEP_2" desc="Text of the row indicating the second step of Passwords In Other Apps in What's New. [iOS only]">
         Select Chrome
-      </message>
-      <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_AUTOFILL_TITLE" desc="Autofill title displayed in What's New. [iOS only]">
-        Autofill
-      </message>
-      <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_AUTOFILL_SUBTITLE" desc="Autofill subtitle displayed in What's New. [iOS only]">
-        Save passwords, payment methods, and addresses for Chrome to autofill later.
-      </message>
-      <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_AUTOFILL_STEP_1" desc="Text of the row indicating the first step of Autofill in What's New. [iOS only]">
-        Open Chrome Settings
-      </message>
-      <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_AUTOFILL_STEP_2" desc="Text of the row indicating the second step of Autofill in What's New. [iOS only]">
-        Open Passwords, Payment Methods, or Address and More
-      </message>
-      <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_AUTOFILL_STEP_3" desc="Text of the row indicating the third step of Autofill in What's New. [iOS only]">
-        Tap Add then Enter Your Info
       </message>
       <message name="IDS_IOS_WHATS_NEW_INCOGNITO_TABS_FROM_OTHER_APPS_TITLE" desc="Open in incognito tabs from other apps title displayed in What's New. [iOS only]">
         Open links from other apps in Incognito

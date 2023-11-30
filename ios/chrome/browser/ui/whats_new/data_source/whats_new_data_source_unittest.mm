@@ -130,7 +130,6 @@ TEST_F(WhatsNewDataSourceTest, TestChromeTipEntries) {
 // the test file.
 TEST_F(WhatsNewDataSourceTest, TestConstructionOfWhatsNewItemM116) {
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(kWhatsNewIOSM116);
   base::FilePath test_path;
   test_path = GetTestDataPath();
   NSString* path = base::SysUTF8ToNSString(test_path.value().c_str());

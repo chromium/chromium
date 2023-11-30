@@ -78,7 +78,7 @@ def CleanUpFeaturesPlist() -> None:
   """
     whats_new_plist_file = os.path.join(
         BASE_DIR, '../ios/chrome/browser/ui/whats_new/data_source/'
-        'resources/whats_new_entries_m116.plist')
+        'resources/whats_new_entries.plist')
     with open(whats_new_plist_file, 'rb') as file:
         plist_data = plistlib.load(file)
         plist_data['Features'] = []
@@ -88,7 +88,7 @@ def CleanUpFeaturesPlist() -> None:
 
 def UpdateWhatsNewPlist(feature_dict: dict[str, str],
                         feature_type: int) -> None:
-    """Updates whats_new_entries_m116.plist with the new feature entry.
+    """Updates whats_new_entries.plist with the new feature entry.
 
   Args:
       feature_dict: Data for the new What's New feature.
@@ -116,7 +116,7 @@ def UpdateWhatsNewPlist(feature_dict: dict[str, str],
     }
     whats_new_plist_file = os.path.join(
         BASE_DIR, '../ios/chrome/browser/ui/whats_new/data_source/'
-        'resources/whats_new_entries_m116.plist')
+        'resources/whats_new_entries.plist')
     with open(whats_new_plist_file, 'rb') as file:
         plist_data = plistlib.load(file)
         plist_data['Features'].append(new_entry)

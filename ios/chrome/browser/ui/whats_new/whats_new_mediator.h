@@ -15,7 +15,7 @@ class UrlLoadingBrowserAgent;
 
 // Mediator between the Model and the UI.
 // What's New mediator between `WhatsNewModel` and the view layers
-// `WhatsNewTableViewController` and `WhatsNewDetailViewController`.
+// `WhatsNewTableViewController`.
 @interface WhatsNewMediator
     : NSObject <WhatsNewDetailViewActionHandler, WhatsNewTableViewActionHandler>
 

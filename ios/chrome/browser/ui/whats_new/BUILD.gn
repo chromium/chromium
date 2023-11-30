@@ -9,8 +9,6 @@ source_set("whats_new") {
     "whats_new_detail_coordinator.h",
     "whats_new_detail_coordinator.mm",
     "whats_new_detail_view_action_handler.h",
-    "whats_new_detail_view_controller.h",
-    "whats_new_detail_view_controller.mm",
     "whats_new_detail_view_delegate.h",
     "whats_new_instructions_coordinator.h",
     "whats_new_instructions_coordinator.mm",
