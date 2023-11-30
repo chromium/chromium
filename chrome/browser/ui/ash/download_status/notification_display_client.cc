@@ -7,6 +7,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -32,6 +34,31 @@ constexpr char kNotificationNotifierId[] =
 
 constexpr char kNotificationOrigin[] = "chrome://downloads";
 
+// DownloadNotificationDelegate ------------------------------------------------
+
+class DownloadNotificationDelegate
+    : public message_center::NotificationDelegate {
+ public:
+  explicit DownloadNotificationDelegate(
+      base::RepeatingClosure on_closed_by_user_closure)
+      : on_closed_by_user_closure_(std::move(on_closed_by_user_closure)) {}
+  DownloadNotificationDelegate(const DownloadNotificationDelegate&) = delete;
+  DownloadNotificationDelegate& operator=(const DownloadNotificationDelegate&) =
+      delete;
+
+ private:
+  // message_center::NotificationDelegate:
+  ~DownloadNotificationDelegate() override = default;
+  void Close(bool by_user) override {
+    if (by_user) {
+      on_closed_by_user_closure_.Run();
+    }
+  }
+
+  // Runs when the observed notification is closed by user.
+  base::RepeatingClosure on_closed_by_user_closure_;
+};
+
 // Helpers ---------------------------------------------------------------------
 
 // NOTE: This function returns a non-empty string indicating the notification
@@ -52,8 +79,10 @@ NotificationDisplayClient::~NotificationDisplayClient() = default;
 void NotificationDisplayClient::AddOrUpdate(
     const std::string& guid,
     const DisplayMetadata& display_metadata) {
-  // TODO(http://b/310691284): Avoid showing a notification if it has been
-  // closed.
+  // Do not show the notification if it has been closed by user.
+  if (base::Contains(notifications_closed_by_user_guids_, guid)) {
+    return;
+  }
 
   message_center::RichNotificationData rich_notification_data;
   rich_notification_data.should_make_spoken_feedback_for_popup_updates = false;
@@ -75,18 +104,39 @@ void NotificationDisplayClient::AddOrUpdate(
           kNotificationNotifierId,
           NotificationCatalogName::kDownloadNotification),
       rich_notification_data,
-      base::MakeRefCounted<message_center::NotificationDelegate>());
+      base::MakeRefCounted<DownloadNotificationDelegate>(base::BindRepeating(
+          &NotificationDisplayClient::OnNotificationClosedByUser,
+          weak_ptr_factory_.GetWeakPtr(), guid)));
   notification.set_fullscreen_visibility(
       message_center::FullscreenVisibility::OVER_USER);
 
   NotificationDisplayService::GetForProfile(profile())->Display(
       NotificationHandler::Type::TRANSIENT, notification,
       /*metadata=*/nullptr);
+
+  // TODO(http://b/306459683): Change this code after `DisplayMetadata` uses a
+  // data structure to represent download progress.
+  if (const absl::optional<int64_t>& received_bytes =
+          display_metadata.received_bytes;
+      received_bytes > 0 && received_bytes == display_metadata.total_bytes) {
+    // The download associated with `guid` completes. We no longer anticipate
+    // receiving download updates. Therefore, remove `guid` from the collection.
+    notifications_closed_by_user_guids_.erase(guid);
+  }
 }
 
 void NotificationDisplayClient::Remove(const std::string& guid) {
+  // The download associated with `guid` is removed. We no longer anticipate
+  // receiving download updates. Therefore, remove `guid` from the collection.
+  notifications_closed_by_user_guids_.erase(guid);
+
   NotificationDisplayService::GetForProfile(profile())->Close(
       NotificationHandler::Type::TRANSIENT, GetNotificationIdFromGuid(guid));
+}
+
+void NotificationDisplayClient::OnNotificationClosedByUser(
+    const std::string& guid) {
+  notifications_closed_by_user_guids_.insert(guid);
 }
 
 }  // namespace ash::download_status

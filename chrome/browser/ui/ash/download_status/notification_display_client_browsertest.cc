@@ -7,6 +7,14 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/root_window_controller.h"
+#include "ash/shelf/shelf.h"
+#include "ash/shell.h"
+#include "ash/system/message_center/ash_message_popup_collection.h"
+#include "ash/system/message_center/ash_notification_view.h"
+#include "ash/system/notification_center/notification_center_tray.h"
+#include "ash/system/status_area_widget.h"
+#include "ash/test/view_drawn_waiter.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -15,7 +23,10 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
+#include "chrome/browser/notifications/profile_notification.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/ash_test_util.h"
 #include "chrome/browser/ui/ash/download_status/display_test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
@@ -23,6 +34,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/views/message_popup_view.h"
+#include "ui/message_center/views/notification_control_buttons_view.h"
 
 namespace ash::download_status {
 
@@ -152,6 +165,64 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, CompleteDownload) {
   download->state = crosapi::mojom::DownloadState::kComplete;
   Update(download->Clone());
   EXPECT_THAT(GetDisplayedNotificationIds(), Contains(notification_id));
+}
+
+// Verifies that a download notification should not show again if it has been
+// closed by user.
+IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
+                       DoNotShowAfterCloseByUser) {
+  std::string notification_id;
+  EXPECT_CALL(service_observer(), OnNotificationDisplayed)
+      .WillOnce(WithArg<0>(
+          [&notification_id](const message_center::Notification& notification) {
+            notification_id = notification.id();
+          }));
+  Profile* const profile = ProfileManager::GetActiveUserProfile();
+  crosapi::mojom::DownloadStatusPtr download =
+      CreateInProgressDownloadStatus(profile, /*received_bytes=*/0,
+                                     /*target_bytes=*/1024);
+  Update(download->Clone());
+  Mock::VerifyAndClearExpectations(&service_observer());
+
+  // Wait until `popup_collection` becomes idle.
+  AshMessagePopupCollection* const popup_collection =
+      Shell::GetPrimaryRootWindowController()
+          ->shelf()
+          ->GetStatusAreaWidget()
+          ->notification_center_tray()
+          ->popup_collection();
+  base::test::TestFuture<void> future;
+  popup_collection->SetAnimationIdleClosureForTest(future.GetCallback());
+  future.Get();
+
+  // NOTE: The notification ID associated with the view differs from
+  // `notification_id` as it incorporates the profile ID.
+  message_center::MessagePopupView* const popup_view =
+      popup_collection->GetPopupViewForNotificationID(
+          ProfileNotification::GetProfileNotificationId(
+              notification_id, ProfileNotification::GetProfileID(profile)));
+  ASSERT_TRUE(popup_view);
+  message_center::MessageView* const message_view = popup_view->message_view();
+  ASSERT_TRUE(message_view);
+
+  // Move mouse to `message_view` until `close_button` shows and then click
+  // `close_button` to remove the notification associated with
+  // `notification_id`.
+  test::MoveMouseTo(message_view);
+  views::View* const close_button =
+      views::AsViewClass<AshNotificationView>(message_view)
+          ->control_buttons_view_for_test()
+          ->close_button();
+  ViewDrawnWaiter().Wait(close_button);
+  test::Click(close_button, ui::EF_NONE);
+
+  // The notification associated with `notification_id` should not display.
+  EXPECT_THAT(GetDisplayedNotificationIds(), Not(Contains(notification_id)));
+
+  // Update the same notification after closing. The closed notification should
+  // not show again.
+  Update(download->Clone());
+  EXPECT_THAT(GetDisplayedNotificationIds(), Not(Contains(notification_id)));
 }
 
 // Verifies that when an in-progress download is interrupted, its notification
