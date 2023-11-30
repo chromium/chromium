@@ -109,6 +109,10 @@ struct Suggestion {
              Icon icon,
              PopupItemId popup_item_id);
   Suggestion(base::StringPiece main_text,
+             std::vector<std::vector<Text>> labels,
+             Icon icon,
+             PopupItemId popup_item_id);
+  Suggestion(base::StringPiece main_text,
              base::StringPiece minor_text,
              base::StringPiece label,
              Icon icon,

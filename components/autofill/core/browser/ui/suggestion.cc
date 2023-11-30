@@ -53,6 +53,15 @@ Suggestion::Suggestion(base::StringPiece main_text,
 }
 
 Suggestion::Suggestion(base::StringPiece main_text,
+                       std::vector<std::vector<Text>> labels,
+                       Icon icon,
+                       PopupItemId popup_item_id)
+    : popup_item_id(popup_item_id),
+      main_text(base::UTF8ToUTF16(main_text), Text::IsPrimary(true)),
+      labels(std::move(labels)),
+      icon(icon) {}
+
+Suggestion::Suggestion(base::StringPiece main_text,
                        base::StringPiece minor_text,
                        base::StringPiece label,
                        Icon icon,
