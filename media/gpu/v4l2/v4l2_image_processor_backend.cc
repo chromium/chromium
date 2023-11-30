@@ -27,7 +27,6 @@
 #include "media/base/color_plane_layout.h"
 #include "media/base/media_util.h"
 #include "media/base/scopedfd_helper.h"
-#include "media/base/status.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
@@ -36,8 +35,6 @@
 namespace media {
 
 namespace {
-
-const char kImageProcessorTraceName[] = "V4L2ImageProcessorBackend";
 
 absl::optional<gfx::GpuMemoryBufferHandle> CreateHandle(
     const VideoFrame* frame) {
@@ -863,12 +860,6 @@ void V4L2ImageProcessorBackend::Dequeue() {
     }
 
     const auto timestamp = job_record->input_frame->timestamp();
-    auto iter = buffer_tracers_.find(timestamp);
-    if (iter != buffer_tracers_.end()) {
-      iter->second->EndTrace(DecoderStatus::Codes::kOk);
-      buffer_tracers_.erase(iter);
-    }
-
     output_frame->set_timestamp(timestamp);
     output_frame->set_color_space(job_record->input_frame->ColorSpace());
 
@@ -942,10 +933,6 @@ bool V4L2ImageProcessorBackend::EnqueueInputRecord(
             << job_record->input_frame->timestamp().InMilliseconds()
             << " to device.";
 
-  const auto timestamp = job_record->input_frame->timestamp();
-  buffer_tracers_[timestamp] =
-      std::make_unique<ScopedDecodeTrace>(kImageProcessorTraceName,
-                                          /*is_key_frame=*/false, timestamp);
   return true;
 }
 
