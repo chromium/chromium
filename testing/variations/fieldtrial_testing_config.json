@@ -10825,8 +10825,8 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
-                    "enable_features": [
+                    "name": "Disabled_20231128",
+                    "disable_features": [
                         "NoAppCompatClearInChildren"
                     ]
                 }
