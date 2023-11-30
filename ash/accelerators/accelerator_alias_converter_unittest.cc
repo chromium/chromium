@@ -790,6 +790,17 @@ INSTANTIATE_TEST_SUITE_P(
         {ui::Accelerator{ui::VKEY_NEXT, ui::EF_NONE},
          ui::Accelerator{ui::VKEY_DOWN, ui::EF_ALT_DOWN}},
 
+        // The following should not perform an alias since Alt is part of the
+        // original accelerator.
+        {ui::Accelerator{ui::VKEY_DELETE, ui::EF_ALT_DOWN}, absl::nullopt},
+
+        {ui::Accelerator{ui::VKEY_HOME, ui::EF_ALT_DOWN}, absl::nullopt},
+
+        {ui::Accelerator{ui::VKEY_PRIOR, ui::EF_ALT_DOWN}, absl::nullopt},
+
+        {ui::Accelerator{ui::VKEY_END, ui::EF_ALT_DOWN}, absl::nullopt},
+
+        {ui::Accelerator{ui::VKEY_NEXT, ui::EF_ALT_DOWN}, absl::nullopt},
     }));
 
 TEST_P(SixPackAliasAltTest, CheckSixPackAliasAlt) {
@@ -818,8 +829,14 @@ TEST_P(SixPackAliasAltTest, CheckSixPackAliasAlt) {
 
   std::vector<ui::Accelerator> accelerator_alias =
       accelerator_alias_converter_.CreateAcceleratorAlias(accelerator_);
-  EXPECT_EQ(1u, accelerator_alias.size());
-  EXPECT_EQ(expected_accelerators_, accelerator_alias[0]);
+
+  if (expected_accelerators_.has_value()) {
+    // Accelerator has valid a remapping.
+    EXPECT_EQ(1u, accelerator_alias.size());
+    EXPECT_EQ(expected_accelerators_, accelerator_alias[0]);
+  } else {
+    EXPECT_EQ(0u, accelerator_alias.size());
+  }
 }
 
 class SixPackAliasSearchTest

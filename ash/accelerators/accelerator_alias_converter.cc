@@ -418,10 +418,7 @@ std::optional<ui::Accelerator> AcceleratorAliasConverter::CreateTopRowAliases(
 std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateSixPackAliases(
     const ui::Accelerator& accelerator,
     std::optional<int> device_id) const {
-  // For all |six_pack_keys|, avoid remapping if [Search] is part of the
-  // original accelerator.
-  if (accelerator.IsCmdDown() ||
-      !::features::IsImprovedKeyboardShortcutsEnabled() ||
+  if (!::features::IsImprovedKeyboardShortcutsEnabled() ||
       !ui::KeyboardCapability::IsSixPackKey(accelerator.key_code())) {
     return std::vector<ui::Accelerator>();
   }
@@ -447,6 +444,15 @@ std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateSixPackAliases(
       GetSixPackShortcutModifier(accel_key_code, device_id);
 
   if (six_pack_shortcut_modifier == ui::mojom::SixPackShortcutModifier::kNone) {
+    return std::vector<ui::Accelerator>();
+  }
+
+  // For all |six_pack_keys|, avoid remapping if the six-pack remap modifier
+  // (Search or Alt) is part of the original accelerator.
+  const bool is_search_remap =
+      six_pack_shortcut_modifier == ui::mojom::SixPackShortcutModifier::kSearch;
+  if ((is_search_remap && accelerator.IsCmdDown()) ||
+      (!is_search_remap && accelerator.IsAltDown())) {
     return std::vector<ui::Accelerator>();
   }
 
