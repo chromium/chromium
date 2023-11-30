@@ -3,19 +3,22 @@
 
 set noparent
 
-# Reviewers (in CET):
+# Reviewers in JST (GMT+9)
+erikchen@chromium.org
+
+# Reviewers in CET (GMT+1)
 alexilin@chromium.org
 blundell@chromium.org
 droger@chromium.org
 treib@chromium.org
 vasilii@chromium.org
 
-# Reviewers (in EST):
+# Reviewers in EST (GMT-5)
 avi@chromium.org
 thakis@chromium.org
 yfriedman@chromium.org
 
-# Reviewers (in PST):
+# Reviewers in PST (GMT-8)
 dtrainor@chromium.org
 nyquist@chromium.org
 sky@chromium.org
