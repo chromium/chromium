@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/views/controls/button/button.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -42,7 +42,7 @@ class ASH_EXPORT VcEffectState {
   VcEffectState(const gfx::VectorIcon* icon,
                 const std::u16string& label_text,
                 int accessible_name_id,
-                views::Button::PressedCallback button_callback,
+                base::RepeatingClosure button_callback,
                 std::optional<int> state_value = std::nullopt);
 
   VcEffectState(const VcEffectState&) = delete;
@@ -54,7 +54,7 @@ class ASH_EXPORT VcEffectState {
   const gfx::VectorIcon* icon() const { return icon_; }
   const std::u16string& label_text() const { return label_text_; }
   int accessible_name_id() const { return accessible_name_id_; }
-  const views::Button::PressedCallback& button_callback() const {
+  const base::RepeatingClosure& button_callback() const {
     return button_callback_;
   }
 
@@ -72,7 +72,7 @@ class ASH_EXPORT VcEffectState {
   // Callback that's bound to the delegate's `OnEffectActivated` function,
   // with the effect's ID and the actual (integer) value (e.g.
   // kBackgroundBlurMedium) member as arguments.
-  views::Button::PressedCallback button_callback_;
+  base::RepeatingClosure button_callback_;
 
   // The state value.
   std::optional<int> state_value_;

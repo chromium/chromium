@@ -77,15 +77,13 @@ SetValueEffectSlider::SetValueEffectSlider(const VcHostedEffect* effect)
     auto* slider_button =
         tab_slider->AddButton(std::make_unique<IconLabelSliderButton>(
             base::BindRepeating(
-                [](const VcHostedEffect* effect, const VcEffectState* state,
-                   const ui::Event& event) {
+                [](const VcHostedEffect* effect, const VcEffectState* state) {
                   if (effect->delegate()) {
                     effect->delegate()->RecordMetricsForSetValueEffectOnClick(
                         effect->id(), state->state_value().value());
                   }
 
-                  auto callback = state->button_callback();
-                  callback.Run(event);
+                  state->button_callback().Run();
                 },
                 base::Unretained(effect), base::Unretained(state)),
             state->icon(), state->label_text()));

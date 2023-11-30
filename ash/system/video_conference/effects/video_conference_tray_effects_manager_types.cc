@@ -14,7 +14,7 @@ namespace ash {
 VcEffectState::VcEffectState(const gfx::VectorIcon* icon,
                              const std::u16string& label_text,
                              int accessible_name_id,
-                             views::Button::PressedCallback button_callback,
+                             base::RepeatingClosure button_callback,
                              std::optional<int> state_value)
     : icon_(icon),
       label_text_(label_text),
