@@ -3,76 +3,64 @@
 // found in the LICENSE file.
 
 import {ByteOrder, ByteReader} from './byte_reader.js';
-import {ImageParser, MetadataParser} from './metadata_parser.js';
+import {ParserMetadata} from './metadata_item.js';
+import {ImageParser, MetadataParser, MetadataParserLogger} from './metadata_parser.js';
 
 /**
  * Base class for image metadata parsers that only need to look at a short
  * fragment at the start of the file.
- * @abstract
  */
-export class SimpleImageParser extends ImageParser {
+export abstract class SimpleImageParser extends ImageParser {
   /**
-   * @param {!import("./metadata_parser.js").MetadataParserLogger}
-   *     parent Parent object.
-   * @param {string} type Image type.
-   * @param {!RegExp} urlFilter RegExp to match URLs.
-   * @param {number} headerSize Size of header.
+   * @param parent Parent object.
+   * @param type Image type.
+   * @param urlFilter RegExp to match URLs.
+   * @param headerSize Size of header.
    */
-  constructor(parent, type, urlFilter, headerSize) {
+  constructor(
+      parent: MetadataParserLogger, type: string, urlFilter: RegExp,
+      public readonly headerSize: number) {
     super(parent, type, urlFilter);
-    /** @public @const @type {number} */
-    this.headerSize = headerSize;
   }
 
   /**
-   * @param {File} file File to be parses.
-   * @param {Object} metadata Metadata object of the file.
-   * @param {function(Object):void} callback Success callback.
-   * @param {function(string):void} errorCallback Error callback.
+   * @param file File to be parsed.
+   * @param metadata Metadata object of the file.
+   * @param callback Success callback.
+   * @param errorCallback Error callback.
    */
-  parse(file, metadata, callback, errorCallback) {
+  parse(
+      file: File, metadata: ParserMetadata,
+      callback: (metadata: ParserMetadata) => void,
+      errorCallback: (error: string) => void) {
     const self = this;
-    // @ts-ignore: error TS6133: 'file' is declared but its value is never read.
-    MetadataParser.readFileBytes(file, 0, this.headerSize, (file, br) => {
+    MetadataParser.readFileBytes(file, 0, this.headerSize, (_file, br) => {
       try {
         self.parseHeader(metadata, br);
         callback(metadata);
       } catch (e) {
-        // @ts-ignore: error TS18046: 'e' is of type 'unknown'.
-        errorCallback(e.toString());
+        errorCallback(e!.toString());
       }
     }, errorCallback);
   }
 
   /**
    * Parse header of an image. Inherited class must implement this.
-   * @abstract
-   * @param {Object} metadata Dictionary to store the parsed metadata.
-   * @param {ByteReader} byteReader Reader for header binary data.
+   * @param metadata Dictionary to store the parsed metadata.
+   * @param byteReader Reader for header binary data.
    */
-  // @ts-ignore: error TS6133: 'byteReader' is declared but its value is never
-  // read.
-  parseHeader(metadata, byteReader) {}
+  abstract parseHeader(metadata: ParserMetadata, byteReader: ByteReader): void;
 }
 
 /**
  * Parser for the header of png files.
- * @final
  */
 export class PngParser extends SimpleImageParser {
-  /**
-   * @param {!import("./metadata_parser.js").MetadataParserLogger}
-   *    parent Parent object.
-   */
-  constructor(parent) {
+  constructor(parent: MetadataParserLogger) {
     super(parent, 'png', /\.png$/i, 24);
   }
 
-  /**
-   * @override
-   */
-  // @ts-ignore: error TS7006: Parameter 'br' implicitly has an 'any' type.
-  parseHeader(metadata, br) {
+  override parseHeader(metadata: ParserMetadata, br: ByteReader) {
     br.setByteOrder(ByteOrder.BIG_ENDIAN);
 
     const signature = br.readString(8);
@@ -93,22 +81,13 @@ export class PngParser extends SimpleImageParser {
 
 /**
  * Parser for the header of bmp files.
- * @final
  */
 export class BmpParser extends SimpleImageParser {
-  /**
-   * @param {!import("./metadata_parser.js").MetadataParserLogger}
-   *    parent Parent object.
-   */
-  constructor(parent) {
+  constructor(parent: MetadataParserLogger) {
     super(parent, 'bmp', /\.bmp$/i, 28);
   }
 
-  /**
-   * @override
-   */
-  // @ts-ignore: error TS7006: Parameter 'br' implicitly has an 'any' type.
-  parseHeader(metadata, br) {
+  override parseHeader(metadata: ParserMetadata, br: ByteReader) {
     br.setByteOrder(ByteOrder.LITTLE_ENDIAN);
 
     const signature = br.readString(2);
@@ -124,22 +103,13 @@ export class BmpParser extends SimpleImageParser {
 
 /**
  * Parser for the header of gif files.
- * @final
  */
 export class GifParser extends SimpleImageParser {
-  /**
-   * @param {!import("./metadata_parser.js").MetadataParserLogger}
-   *    parent Parent object.
-   */
-  constructor(parent) {
+  constructor(parent: MetadataParserLogger) {
     super(parent, 'gif', /\.Gif$/i, 10);
   }
 
-  /**
-   * @override
-   */
-  // @ts-ignore: error TS7006: Parameter 'br' implicitly has an 'any' type.
-  parseHeader(metadata, br) {
+  override parseHeader(metadata: ParserMetadata, br: ByteReader) {
     br.setByteOrder(ByteOrder.LITTLE_ENDIAN);
 
     const signature = br.readString(6);
@@ -154,22 +124,13 @@ export class GifParser extends SimpleImageParser {
 
 /**
  * Parser for the header of webp files.
- * @final
  */
 export class WebpParser extends SimpleImageParser {
-  /**
-   * @param {!import("./metadata_parser.js").MetadataParserLogger}
-   *     parent Parent object.
-   */
-  constructor(parent) {
+  constructor(parent: MetadataParserLogger) {
     super(parent, 'webp', /\.webp$/i, 30);
   }
 
-  /**
-   * @override
-   */
-  // @ts-ignore: error TS7006: Parameter 'br' implicitly has an 'any' type.
-  parseHeader(metadata, br) {
+  override parseHeader(metadata: ParserMetadata, br: ByteReader) {
     br.setByteOrder(ByteOrder.LITTLE_ENDIAN);
 
     const riffSignature = br.readString(4);
@@ -231,23 +192,13 @@ export class WebpParser extends SimpleImageParser {
 
 /**
  * Parser for the header of .ico icon files.
- * @final
  */
 export class IcoParser extends SimpleImageParser {
-  /**
-   * @param {!import("./metadata_parser.js").MetadataParserLogger}
-   *    parent Parent metadata dispatcher object.
-   */
-  constructor(parent) {
+  constructor(parent: MetadataParserLogger) {
     super(parent, 'ico', /\.ico$/i, 8);
   }
 
-  /**
-   * @override
-   */
-  // @ts-ignore: error TS7006: Parameter 'byteReader' implicitly has an 'any'
-  // type.
-  parseHeader(metadata, byteReader) {
+  override parseHeader(metadata: ParserMetadata, byteReader: ByteReader) {
     byteReader.setByteOrder(ByteOrder.LITTLE_ENDIAN);
 
     const signature = byteReader.readString(4);
