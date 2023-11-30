@@ -327,6 +327,10 @@ bool IsODFSMounted(Profile* profile);
 bool IsODFSInstalled(Profile* profile);
 bool IsOfficeWebAppInstalled(Profile* profile);
 
+// Returns true if url refers to an entry on any current mount provided by the
+// ODFS file system provider.
+bool UrlIsOnODFS(Profile* profile, const storage::FileSystemURL& url);
+
 // Get ODFS metadata as actions by doing a special GetActions request (for the
 // root directory) and return the actions to |OnODFSMetadataActions| which will
 // be converted to |ODFSMetadata| and passed to |callback|.

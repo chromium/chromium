@@ -617,21 +617,6 @@ bool ShouldFixUpOffice(Profile* profile, const CloudProvider cloud_provider) {
          !(IsODFSMounted(profile) && IsOfficeWebAppInstalled(profile));
 }
 
-bool UrlIsOnODFS(Profile* profile, const FileSystemURL& url) {
-  ash::file_system_provider::util::FileSystemURLParser parser(url);
-  if (!parser.Parse()) {
-    return false;
-  }
-
-  file_system_provider::ProviderId provider_id =
-      file_system_provider::ProviderId::CreateFromExtensionId(
-          extension_misc::kODFSExtensionId);
-  if (parser.file_system()->GetFileSystemInfo().provider_id() != provider_id) {
-    return false;
-  }
-  return true;
-}
-
 bool UrlIsOnAndroidOneDrive(Profile* profile, const FileSystemURL& url) {
   std::string authority;
   std::string root_document_id;

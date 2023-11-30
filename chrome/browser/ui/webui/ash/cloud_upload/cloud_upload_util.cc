@@ -236,6 +236,21 @@ bool IsOfficeWebAppInstalled(Profile* profile) {
   return installed;
 }
 
+bool UrlIsOnODFS(Profile* profile, const FileSystemURL& url) {
+  ash::file_system_provider::util::FileSystemURLParser parser(url);
+  if (!parser.Parse()) {
+    return false;
+  }
+
+  file_system_provider::ProviderId provider_id =
+      file_system_provider::ProviderId::CreateFromExtensionId(
+          extension_misc::kODFSExtensionId);
+  if (parser.file_system()->GetFileSystemInfo().provider_id() != provider_id) {
+    return false;
+  }
+  return true;
+}
+
 // Convert |actions| to |ODFSMetadata| and pass the result to |callback|.
 // The action id's for the metadata are HIDDEN_ONEDRIVE_USER_EMAIL and
 // HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED.
