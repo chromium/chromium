@@ -56,8 +56,10 @@ struct ShortcutInfo {
   // Creates a ShortcutInfo struct suitable for adding a shortcut to the home
   // screen.
   static std::unique_ptr<ShortcutInfo> CreateShortcutInfo(
+      const GURL& url,
       const GURL& manifest_url,
       const blink::mojom::Manifest& manifest,
+      const mojom::WebPageMetadata& web_page_metadata,
       const GURL& primary_icon_url,
       bool primary_icon_maskable);
 

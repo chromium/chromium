@@ -55,6 +55,48 @@ class ShortcutInfoTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+TEST_F(ShortcutInfoTest, Constructor) {
+  GURL test_url("https://example.com/path/start");
+  ShortcutInfo info(test_url);
+
+  EXPECT_EQ(test_url, info.url);
+  EXPECT_EQ(test_url, info.manifest_id);
+  EXPECT_EQ("https://example.com/path/", info.scope.spec());
+  EXPECT_EQ(GURL(), info.manifest_url);
+}
+
+TEST_F(ShortcutInfoTest, CreateShortcutInfo) {
+  GURL test_url("https://example.com/path/url1");
+
+  webapps::mojom::WebPageMetadataPtr metadata =
+      webapps::mojom::WebPageMetadata::New();
+  metadata->application_name = u"new title";
+  metadata->application_url = GURL("https://example.com/path/application-url");
+
+  manifest_.display = blink::mojom::DisplayMode::kFullscreen;
+  manifest_.has_theme_color = true;
+  manifest_.theme_color = 0xffcc0000;
+  manifest_.id = GURL("https://example.com/path/id");
+
+  GURL manifest_url("https://example.com/manifest_url");
+  GURL icon_url("https://example.com/icon");
+
+  std::unique_ptr<ShortcutInfo> info = ShortcutInfo::CreateShortcutInfo(
+      test_url, manifest_url, manifest_, *metadata, icon_url, true);
+
+  EXPECT_EQ(metadata->application_url, info->url);
+  EXPECT_EQ(metadata->application_name, info->name);
+  EXPECT_EQ(metadata->application_name, info->short_name);
+  EXPECT_EQ(metadata->application_name, info->user_title);
+  EXPECT_EQ(manifest_.display, info->display);
+  EXPECT_EQ(manifest_.theme_color, info->theme_color);
+  EXPECT_EQ(manifest_.id, info->manifest_id);
+  EXPECT_EQ(manifest_url, info->manifest_url);
+  EXPECT_EQ(icon_url, info->best_primary_icon_url);
+  EXPECT_TRUE(info->is_primary_icon_maskable);
+  EXPECT_EQ("https://example.com/path/", info->scope.spec());
+}
+
 TEST_F(ShortcutInfoTest, AllAttributesUpdate) {
   info_.name = u"old name";
   manifest_.name = u"new name";
@@ -123,7 +165,7 @@ TEST_F(ShortcutInfoTest, UpdateFromWebPageMetadata) {
   ASSERT_EQ(metadata->application_name, info_.short_name);
   ASSERT_EQ(metadata->description, info_.description);
   ASSERT_EQ(metadata->application_url, info_.url);
-  ASSERT_EQ(metadata->application_url, info_.scope);
+  ASSERT_EQ(GURL("https://new.com/"), info_.scope);
   ASSERT_EQ(blink::mojom::DisplayMode::kStandalone, info_.display);
 }
 
