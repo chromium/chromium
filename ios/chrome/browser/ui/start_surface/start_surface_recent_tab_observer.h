@@ -24,13 +24,17 @@ class StartSurfaceRecentTabObserver : public base::CheckedObserver {
 
   ~StartSurfaceRecentTabObserver() override;
 
-  // Notifies the receiver that the most recent tab was removed.
+  // Notifies the receiver that the most recent tab (linked to `web_state`) was
+  // removed.
   virtual void MostRecentTabRemoved(web::WebState* web_state) {}
   // Notifies the receiver that the favicon for the current page of the most
-  // recent tab was updated to `image`.
-  virtual void MostRecentTabFaviconUpdated(UIImage* image) {}
-
-  virtual void MostRecentTabTitleUpdated(const std::u16string& title) {}
+  // recent tab (linked to `web_state`) was updated to `image`.
+  virtual void MostRecentTabFaviconUpdated(web::WebState* web_state,
+                                           UIImage* image) {}
+  // Notifies the receiver that the title for the current page of the most
+  // recent tab (linked to `web_state`) was updated to `title`.
+  virtual void MostRecentTabTitleUpdated(web::WebState* web_state,
+                                         const std::u16string& title) {}
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_START_SURFACE_START_SURFACE_RECENT_TAB_OBSERVER_H_

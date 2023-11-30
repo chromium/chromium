@@ -41,6 +41,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "components/url_formatter/elide_url.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
@@ -454,7 +455,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 - (void)configureMostRecentTabItemWithWebState:(web::WebState*)webState
                                      timeLabel:(NSString*)timeLabel {
-  //  The most recent tab tile is part of the tab resume feature.
+  // The most recent tab tile is replaced by the tab resume feature.
   if (IsTabResumptionEnabled()) {
     return;
   }
@@ -474,8 +475,9 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
       self.returnToRecentTabItem.icon = favicon.ToUIImage();
     }
   }
+  const GURL& URL = webState->GetLastCommittedURL();
   if (!self.returnToRecentTabItem.icon) {
-    driver->FetchFavicon(webState->GetLastCommittedURL(), false);
+    driver->FetchFavicon(URL, false);
   }
 
   self.returnToRecentTabItem.title =
@@ -483,6 +485,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   self.returnToRecentTabItem.subtitle = [self
       constructReturnToRecentTabSubtitleWithPageTitle:base::SysUTF16ToNSString(
                                                           webState->GetTitle())
+                                               forURL:URL
                                            timeString:timeLabel];
   self.showMostRecentTabStartSurfaceTile = YES;
   [self.consumer
@@ -696,15 +699,15 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   [self.contentSuggestionsMetricsRecorder recordTabResumptionTabOpened];
   [IntentDonationHelper donateIntent:IntentType::kOpenLatestTab];
   [self hideRecentTabTile];
-  WebStateList* web_state_list = self.browser->GetWebStateList();
-  web::WebState* web_state =
+  WebStateList* webStateList = self.browser->GetWebStateList();
+  web::WebState* webState =
       StartSurfaceRecentTabBrowserAgent::FromBrowser(self.browser)
           ->most_recent_tab();
-  if (!web_state) {
+  if (!webState) {
     return;
   }
-  int index = web_state_list->GetIndexOfWebState(web_state);
-  web_state_list->ActivateWebStateAt(index);
+  int index = webStateList->GetIndexOfWebState(webState);
+  webStateList->ActivateWebStateAt(index);
 }
 
 - (void)openTabResumptionItem {
@@ -787,7 +790,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 #pragma mark - StartSurfaceRecentTabObserving
 
-- (void)mostRecentTabWasRemoved:(web::WebState*)web_state {
+- (void)mostRecentTabWasRemoved:(web::WebState*)webState {
   if (IsTabResumptionEnabled() && _tabResumptionItem) {
     [self hideTabResumption];
   } else {
@@ -795,7 +798,8 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   }
 }
 
-- (void)mostRecentTabFaviconUpdatedWithImage:(UIImage*)image {
+- (void)mostRecentTab:(web::WebState*)webState
+    faviconUpdatedWithImage:(UIImage*)image {
   if (self.returnToRecentTabItem) {
     self.returnToRecentTabItem.icon = image;
     [self.consumer
@@ -803,13 +807,17 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   }
 }
 
-- (void)mostRecentTabTitleWasUpdated:(NSString*)title {
+- (void)mostRecentTab:(web::WebState*)webState
+      titleWasUpdated:(NSString*)title {
   if (self.returnToRecentTabItem) {
     SceneState* scene = self.browser->GetSceneState();
-    NSString* time_label = GetRecentTabTileTimeLabelForSceneState(scene);
-    self.returnToRecentTabItem.subtitle =
-        [self constructReturnToRecentTabSubtitleWithPageTitle:title
-                                                   timeString:time_label];
+    NSString* timeLabel = GetRecentTabTileTimeLabelForSceneState(scene);
+    self.returnToRecentTabItem.subtitle = [self
+        constructReturnToRecentTabSubtitleWithPageTitle:title
+                                                 forURL:
+                                                     webState
+                                                         ->GetLastCommittedURL()
+                                             timeString:timeLabel];
     [self.consumer
         updateReturnToRecentTabTileWithConfig:self.returnToRecentTabItem];
   }
@@ -1169,10 +1177,25 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   [self.dispatcher showSnackbarMessage:message];
 }
 
+// Creates a string containing the title and the time string.
+// If `title` is empty, use the `URL` instead.
 - (NSString*)constructReturnToRecentTabSubtitleWithPageTitle:
                  (NSString*)pageTitle
+                                                      forURL:(const GURL&)URL
                                                   timeString:(NSString*)time {
-  return [NSString stringWithFormat:@"%@%@", pageTitle, time];
+  NSString* title = pageTitle;
+  if (![title length]) {
+    title = [self displayableURLFromURL:URL];
+  }
+  return [NSString stringWithFormat:@"%@%@", title, time];
+}
+
+// Formats the URL to be displayed in the recent tabs card.
+- (NSString*)displayableURLFromURL:(const GURL&)URL {
+  return base::SysUTF16ToNSString(
+      url_formatter::
+          FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+              URL));
 }
 
 - (BOOL)shouldShowWhatsNewActionItem {

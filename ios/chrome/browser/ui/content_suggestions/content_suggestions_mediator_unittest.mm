@@ -57,6 +57,7 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/parcel_tracking_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/query_suggestion_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
@@ -74,6 +75,7 @@
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -337,7 +339,50 @@ TEST_F(ContentSuggestionsMediatorTest, TestOpenMostVisited) {
       url_loader_->last_params.web_params.transition_type));
 }
 
+// Tests that MostRecentTab can be opened and that its title is correct when
+// tab has a title.
 TEST_F(ContentSuggestionsMediatorTest, TestOpenMostRecentTab) {
+  // Create non-NTP WebState
+  auto web_state = CreateWebState("http://chromium.org");
+  web_state->SetTitle(u"title");
+  int recent_tab_index = web_state_list_->InsertWebState(
+      0, std::move(web_state), WebStateList::INSERT_ACTIVATE, WebStateOpener());
+  favicon::WebFaviconDriver::CreateForWebState(
+      web_state_list_->GetActiveWebState(),
+      /*favicon_service=*/nullptr);
+  StartSurfaceRecentTabBrowserAgent* browser_agent =
+      StartSurfaceRecentTabBrowserAgent::FromBrowser(browser_.get());
+  browser_agent->SaveMostRecentTab();
+  // Create NTP
+  web_state_list_->InsertWebState(1, CreateWebState("chrome://newtab"),
+                                  WebStateList::INSERT_ACTIVATE,
+                                  WebStateOpener());
+  web::WebState* ntp_web_state = web_state_list_->GetActiveWebState();
+  mediator_.webState = ntp_web_state;
+  NewTabPageTabHelper::FromWebState(ntp_web_state)->SetShowStartSurface(true);
+
+  OCMExpect([consumer_
+      updateReturnToRecentTabTileWithConfig:
+          [OCMArg
+              checkWithBlock:^(ContentSuggestionsReturnToRecentTabItem* item) {
+                EXPECT_NSEQ(@"title - 12 hours ago", item.subtitle);
+                return YES;
+              }]]);
+  [mediator_
+      configureMostRecentTabItemWithWebState:browser_agent->most_recent_tab()
+                                   timeLabel:@"12 hours ago"];
+
+  OCMExpect([consumer_ hideReturnToRecentTabTile]);
+  OCMExpect([mediator_.NTPMetricsDelegate recentTabTileOpened]);
+
+  [mediator_ openMostRecentTab];
+  // Verify the most recent tab was opened.
+  EXPECT_EQ(recent_tab_index, web_state_list_->active_index());
+}
+
+// Tests that MostRecentTab can be opened and that its title is correct when
+// tab has a no title.
+TEST_F(ContentSuggestionsMediatorTest, TestOpenMostRecentTabNoTitle) {
   // Create non-NTP WebState
   int recent_tab_index = web_state_list_->InsertWebState(
       0, CreateWebState("http://chromium.org"), WebStateList::INSERT_ACTIVATE,
@@ -356,7 +401,13 @@ TEST_F(ContentSuggestionsMediatorTest, TestOpenMostRecentTab) {
   mediator_.webState = ntp_web_state;
   NewTabPageTabHelper::FromWebState(ntp_web_state)->SetShowStartSurface(true);
 
-  OCMExpect([consumer_ showReturnToRecentTabTileWithConfig:[OCMArg any]]);
+  OCMExpect([consumer_
+      updateReturnToRecentTabTileWithConfig:
+          [OCMArg
+              checkWithBlock:^(ContentSuggestionsReturnToRecentTabItem* item) {
+                EXPECT_NSEQ(@"chromium.org - 12 hours ago", item.subtitle);
+                return YES;
+              }]]);
   [mediator_
       configureMostRecentTabItemWithWebState:browser_agent->most_recent_tab()
                                    timeLabel:@"12 hours ago"];
@@ -386,10 +437,11 @@ TEST_F(ContentSuggestionsMediatorTest, TestStartSurfaceRecentTabObserving) {
                                   WebStateOpener());
   web::WebState* web_state = browser_agent->most_recent_tab();
   [mediator_ configureMostRecentTabItemWithWebState:web_state
-                                          timeLabel:@"12 hours ago"];
+                                          timeLabel:@" - 12 hours ago"];
 
   OCMExpect([consumer_ updateReturnToRecentTabTileWithConfig:[OCMArg any]]);
-  [mediator_ mostRecentTabFaviconUpdatedWithImage:[[UIImage alloc] init]];
+  [mediator_ mostRecentTab:web_state
+      faviconUpdatedWithImage:[[UIImage alloc] init]];
 
   OCMExpect([consumer_ hideReturnToRecentTabTile]);
   [mediator_ mostRecentTabWasRemoved:web_state];

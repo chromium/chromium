@@ -123,7 +123,8 @@ void StartSurfaceRecentTabBrowserAgent::OnFaviconUpdated(
     gfx::Image favicon = driver->GetFavicon();
     if (!favicon.IsEmpty()) {
       for (auto& observer : observers_) {
-        observer.MostRecentTabFaviconUpdated(favicon.ToUIImage());
+        observer.MostRecentTabFaviconUpdated(most_recent_tab_,
+                                             favicon.ToUIImage());
       }
     }
   }
@@ -131,6 +132,6 @@ void StartSurfaceRecentTabBrowserAgent::OnFaviconUpdated(
 
 void StartSurfaceRecentTabBrowserAgent::TitleWasSet(web::WebState* web_state) {
   for (auto& observer : observers_) {
-    observer.MostRecentTabTitleUpdated(web_state->GetTitle());
+    observer.MostRecentTabTitleUpdated(web_state, web_state->GetTitle());
   }
 }
