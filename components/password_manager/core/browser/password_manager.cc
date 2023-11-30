@@ -489,6 +489,8 @@ void PasswordManager::DidNavigateMainFrame(bool form_may_be_submitted) {
   }
   form_managers_.clear();
 
+  // TODO(crbug/1470586): Decide on whether to keep or clean-up calls of
+  // `TryToFindPredictionsToPossibleUsernames`.
   TryToFindPredictionsToPossibleUsernames();
   predictions_.clear();
   store_password_called_ = false;
@@ -529,6 +531,8 @@ void PasswordManager::DropFormManagers() {
   form_managers_.clear();
   owned_submitted_form_manager_.reset();
   visible_forms_data_.clear();
+  // TODO(crbug/1470586): Decide on whether to keep or clean-up calls of
+  // `TryToFindPredictionsToPossibleUsernames`.
   TryToFindPredictionsToPossibleUsernames();
   predictions_.clear();
 }
@@ -651,11 +655,21 @@ void PasswordManager::OnUserModifiedNonPasswordField(
     bool is_likely_otp) {
   // |driver| might be empty on iOS or in tests.
   int driver_id = driver ? driver->GetId() : 0;
-  possible_usernames_.Put(
-      PossibleUsernameFieldIdentifier(driver_id, renderer_id),
-      PossibleUsernameData(GetSignonRealm(driver->GetLastCommittedURL()),
-                           renderer_id, value, base::Time::Now(), driver_id,
-                           autocomplete_attribute_has_username, is_likely_otp));
+
+  // Add user modified text field as a username candidate outside of the
+  // password form.
+  auto it = possible_usernames_.Get({driver_id, renderer_id});
+  if (it != possible_usernames_.end()) {
+    it->second.value = value;
+    it->second.last_change = base::Time::Now();
+  } else {
+    possible_usernames_.Put(
+        PossibleUsernameFieldIdentifier(driver_id, renderer_id),
+        PossibleUsernameData(GetSignonRealm(driver->GetLastCommittedURL()),
+                             renderer_id, value, base::Time::Now(), driver_id,
+                             autocomplete_attribute_has_username,
+                             is_likely_otp));
+  }
 
   if (base::FeatureList::IsEnabled(
           password_manager::features::kForgotPasswordFormSupport)) {
@@ -828,6 +842,8 @@ PasswordFormManager* PasswordManager::ProvisionallySaveForm(
     return nullptr;
   }
 
+  // TODO(crbug/1470586): Decide on whether to keep or clean-up calls of
+  // `TryToFindPredictionsToPossibleUsernames`.
   TryToFindPredictionsToPossibleUsernames();
   if (!matched_manager->ProvisionallySave(submitted_form, driver,
                                           &possible_usernames_)) {
@@ -1295,6 +1311,7 @@ void PasswordManager::ProcessAutofillPredictions(
   if (FieldInfoManager* field_info_manager = client_->GetFieldInfoManager()) {
     field_info_manager->ProcessServerPredictions(predictions_);
   }
+  TryToFindPredictionsToPossibleUsernames();
 
   // Create or update the `PasswordFormManager` corresponding to `form`.
   PasswordFormManager* manager =

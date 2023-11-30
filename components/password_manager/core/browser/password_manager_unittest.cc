@@ -4450,6 +4450,45 @@ TEST_F(PasswordManagerTest, UsernameFirstFlowSavingWithoutServerPredictions) {
                                ElementsAre(FormMatches(saved_form)))));
 }
 
+// Tests that LRU cache entries storing username candidates outside of the
+// password form are not cleared up after user keystroke.
+TEST_F(PasswordManagerTest, UsernameFirstFlowKeepServerPredictions) {
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(test_form_url_))
+      .WillRepeatedly(Return(true));
+
+  // Simulate the user typed in a username form.
+  PasswordForm username_form(MakeSimpleFormWithOnlyUsernameField());
+  std::u16string username = u"newusername@gmail.com";
+  EXPECT_CALL(driver_, GetLastCommittedURL)
+      .WillRepeatedly(ReturnRef(username_form.url));
+  manager()->OnUserModifiedNonPasswordField(
+      &driver_, username_form.form_data.fields[0].unique_renderer_id,
+      /*value=*/username,
+      /*autocomplete_attribute_has_username=*/false,
+      /*is_likely_otp=*/false);
+  // Received server prediction.
+  manager()->ProcessAutofillPredictions(
+      &driver_, username_form.form_data,
+      CreateServerPredictions(username_form.form_data,
+                              {{0, ServerFieldType::SINGLE_USERNAME}},
+                              /*is_override=*/false));
+
+  // User modifies the string further.
+  username = u"newusername+spam@gmail.com";
+  manager()->OnUserModifiedNonPasswordField(
+      &driver_, username_form.form_data.fields[0].unique_renderer_id,
+      /*value=*/username,
+      /*autocomplete_attribute_has_username=*/false,
+      /*is_likely_otp=*/false);
+
+  // Check that server predictions are written to the candidate and kept.
+  ASSERT_FALSE(manager()->possible_usernames().empty());
+  EXPECT_TRUE(manager()
+                  ->possible_usernames()
+                  .begin()
+                  ->second.HasSingleUsernameServerPrediction());
+}
+
 // Tests that Password Manager's behavior on usernames outside of the password
 // form can be controlled by Finch config param. Modifies LRU cache's size that
 // stores possible single usernames by a finch param. Then, single username
