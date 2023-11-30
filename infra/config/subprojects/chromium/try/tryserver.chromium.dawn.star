@@ -294,7 +294,9 @@ try_.builder(
     mirrors = [
         "ci/Dawn Mac arm64 DEPS Release (Apple M2)",
     ],
-    pool = "luci.chromium.gpu.mac.arm64.apple.m2.try",
+    # TODO(crbug.com/1435476): Switch to a dedicated M2 pool once we have
+    # allocated machines.
+    pool = "luci.chromium.gpu.mac.arm64.apple.m1.try",
     builderless = True,
     os = os.MAC_ANY,
     gn_args = "ci/Dawn Mac arm64 DEPS Release (Apple M2)",
@@ -308,7 +310,9 @@ try_.builder(
     mirrors = [
         "ci/Dawn Mac arm64 Release (Apple M2)",
     ],
-    pool = "luci.chromium.gpu.mac.arm64.apple.m2.try",
+    # TODO(crbug.com/1435476): Switch to a dedicated M2 pool once we have
+    # allocated machines.
+    pool = "luci.chromium.gpu.mac.arm64.apple.m1.try",
     builderless = True,
     os = os.MAC_ANY,
     gn_args = "ci/Dawn Mac arm64 Release (Apple M2)",
