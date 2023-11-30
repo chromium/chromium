@@ -181,14 +181,24 @@ void PDFExtensionTestBase::SimulateMouseClickAt(
     int modifiers,
     blink::WebMouseEvent::Button button,
     const gfx::Point& point_in_guest) {
-  auto* guest_main_frame = guest->GetGuestMainFrame();
-  content::WaitForHitTestData(guest_main_frame);
+  SimulateMouseClickAt(guest->GetGuestMainFrame(),
+                       guest->embedder_web_contents(), modifiers, button,
+                       point_in_guest);
+}
+
+void PDFExtensionTestBase::SimulateMouseClickAt(
+    content::RenderFrameHost* extension_host,
+    content::WebContents* contents,
+    int modifiers,
+    blink::WebMouseEvent::Button button,
+    const gfx::Point& point_in_extension) {
+  content::WaitForHitTestData(extension_host);
 
   const gfx::Point point_in_root_coords =
-      guest_main_frame->GetView()->TransformPointToRootCoordSpace(
-          point_in_guest);
-  content::SimulateMouseClickAt(guest->embedder_web_contents(), modifiers,
-                                button, point_in_root_coords);
+      extension_host->GetView()->TransformPointToRootCoordSpace(
+          point_in_extension);
+  content::SimulateMouseClickAt(contents, modifiers, button,
+                                point_in_root_coords);
 }
 
 bool PDFExtensionTestBase::UseOopif() const {

@@ -67,9 +67,11 @@ source_set("pdf_extension_test_utils") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ui",
+    "//chrome/common",
     "//content/public/browser",
     "//content/test:test_support",
     "//extensions/browser",
+    "//pdf:features",
     "//testing/gtest",
   ]
 }
