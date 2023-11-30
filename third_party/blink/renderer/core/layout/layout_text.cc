@@ -1081,13 +1081,7 @@ PhysicalRect LayoutText::LocalSelectionVisualRect() const {
     return rect;
   }
 
-  const LayoutTextSelectionStatus& selection_status =
-      frame_selection.ComputeLayoutSelectionStatus(*this);
-  const unsigned start_pos = selection_status.start;
-  const unsigned end_pos = selection_status.end;
-  DCHECK_LE(start_pos, end_pos);
-  DeprecatedLayoutRect rect;
-  return FlipForWritingMode(rect);
+  return PhysicalRect();
 }
 
 void LayoutText::InvalidateVisualOverflow() {
