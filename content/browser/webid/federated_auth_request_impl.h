@@ -167,6 +167,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   };
   DialogType GetDialogType() const { return dialog_type_; }
 
+  enum IdentitySelectionType { kExplicit, kAutoWidget };
+
   void AcceptAccountsDialogForDevtools(const GURL& config_url,
                                        const IdentityRequestAccount& account);
   void DismissAccountsDialogForDevtools(bool should_embargo);
@@ -469,6 +471,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   DialogType dialog_type_ = kNone;
   MediationRequirement mediation_requirement_;
+  IdentitySelectionType identity_selection_type_ = kExplicit;
 
   std::unique_ptr<DigitalCredentialProvider> digital_credential_provider_;
   RequestTokenCallback digital_credential_request_callback_;

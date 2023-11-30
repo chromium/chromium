@@ -1502,12 +1502,15 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
       base::BindOnce(&FederatedAuthRequestImpl::CompleteRequestWithError,
                      weak_ptr_factory_.GetWeakPtr()));
 
+  identity_selection_type_ =
+      dialog_type_ == kAutoReauth ? kAutoWidget : kExplicit;
   // TODO(crbug.com/1382863): Handle UI where some IDPs are successful and some
   // IDPs are failing in the multi IDP case.
   request_dialog_controller_->ShowAccountsDialog(
       GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
       idp_data_for_display_,
-      (dialog_type_ == kAutoReauth) ? SignInMode::kAuto : SignInMode::kExplicit,
+      identity_selection_type_ == kExplicit ? SignInMode::kExplicit
+                                            : SignInMode::kAuto,
       show_auto_reauthn_checkbox,
       base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -1518,7 +1521,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
                      weak_ptr_factory_.GetWeakPtr()));
   devtools_instrumentation::OnFedCmDialogShown(&render_frame_host());
 
-  if (dialog_type_ != kAutoReauth) {
+  if (identity_selection_type_ == kExplicit) {
     // We omit recording the accounts dialog shown metric for auto re-authn
     // because the metric is used to detect IDPs flashing UI. Auto re-authn
     // verifying UI cannot be flashed since it is destroyed automatically after
@@ -1809,7 +1812,7 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
     return;
   }
 
-  if (dialog_type_ == kAutoReauth) {
+  if (identity_selection_type_ != kExplicit) {
     // Embargo auto re-authn to mitigate a deadloop where an auto
     // re-authenticated user gets auto re-authenticated again soon after logging
     // out of the active session.
@@ -1835,7 +1838,7 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
       idp_info.endpoints.token, account_id_,
       ComputeUrlEncodedTokenPostData(
           idp_info.provider->config->client_id, idp_info.provider->nonce,
-          account_id, is_sign_in, dialog_type_ == kAutoReauth,
+          account_id, is_sign_in, identity_selection_type_ == kAutoWidget,
           idp_info.provider->scope, idp_info.provider->responseType,
           idp_info.provider->params),
       base::BindOnce(&FederatedAuthRequestImpl::OnTokenResponseReceived,
@@ -2149,7 +2152,7 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
       // sharing permission OR the IdP is exempted with 3PC access. Either way
       // we shouldn't explicitly grant permission here.
       CHECK(!account_id_.empty());
-      if (dialog_type_ != kAutoReauth) {
+      if (identity_selection_type_ == kExplicit) {
         permission_delegate_->GrantSharingPermission(
             origin(), GetEmbeddingOrigin(), url::Origin::Create(idp_config_url),
             account_id_);
@@ -2262,7 +2265,7 @@ void FederatedAuthRequestImpl::CompleteRequest(
   }
 
   bool is_auto_selected =
-      IsFedCmAutoSelectedFlagEnabled() && dialog_type_ == kAutoReauth;
+      IsFedCmAutoSelectedFlagEnabled() && identity_selection_type_ != kExplicit;
 
   CleanUp();
 
@@ -2332,6 +2335,7 @@ void FederatedAuthRequestImpl::CleanUp() {
   config_url_ = GURL();
   token_error_ = absl::nullopt;
   dialog_type_ = kNone;
+  identity_selection_type_ = kExplicit;
 }
 
 void FederatedAuthRequestImpl::AddDevToolsIssue(
