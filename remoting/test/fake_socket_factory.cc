@@ -20,8 +20,10 @@
 #include "base/time/time.h"
 #include "net/base/io_buffer.h"
 #include "remoting/base/leaky_bucket.h"
+#include "third_party/webrtc/api/units/timestamp.h"
 #include "third_party/webrtc/media/base/rtp_utils.h"
 #include "third_party/webrtc/rtc_base/async_packet_socket.h"
+#include "third_party/webrtc/rtc_base/network/received_packet.h"
 #include "third_party/webrtc/rtc_base/socket.h"
 #include "third_party/webrtc/rtc_base/time_utils.h"
 
@@ -99,7 +101,9 @@ void FakeUdpSocket::ReceivePacket(const rtc::SocketAddress& from,
                                   const rtc::SocketAddress& to,
                                   const scoped_refptr<net::IOBuffer>& data,
                                   int data_size) {
-  SignalReadPacket(this, data->data(), data_size, from, rtc::TimeMicros());
+  NotifyPacketReceived(
+      rtc::ReceivedPacket(rtc::MakeArrayView(data->bytes(), data_size), from,
+                          webrtc::Timestamp::Micros(rtc::TimeMicros())));
 }
 
 rtc::SocketAddress FakeUdpSocket::GetLocalAddress() const {

@@ -400,8 +400,9 @@ bool StreamPacketSocket::HandleReadResult(int result) {
     auto packet = packet_processor_->Unpack(
         head + pos, read_buffer_->offset() - pos, &bytes_consumed);
     if (packet) {
-      SignalReadPacket(this, packet->data(), packet->size(), GetRemoteAddress(),
-                       rtc::TimeMicros());
+      NotifyPacketReceived(rtc::ReceivedPacket(
+          rtc::MakeArrayView(packet->bytes(), packet->size()),
+          GetRemoteAddress(), webrtc::Timestamp::Micros(rtc::TimeMicros())));
     }
     if (!bytes_consumed) {
       break;
