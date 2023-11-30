@@ -41,6 +41,10 @@ class PasswordGenerationPopupController
   // Returns the email of current primary account. Returns empty string if no
   // account is signed in.
   virtual std::u16string GetPrimaryAccountEmail() = 0;
+
+  // Returns whether `kNudgePassword` Desktop experiment is enabled and whether
+  // it was not rejected enough times already.
+  virtual bool ShouldShowNudgePassword() const = 0;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // Accessors

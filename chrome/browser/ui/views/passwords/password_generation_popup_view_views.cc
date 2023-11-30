@@ -528,10 +528,7 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
   const int kHorizontalMargin =
       provider->GetDistanceMetric(DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
 
-  if (controller_->state() ==
-          PasswordGenerationPopupController::kOfferGeneration &&
-      password_manager::features::kPasswordGenerationExperimentVariationParam
-              .Get() == PasswordGenerationVariation::kNudgePassword) {
+  if (controller_->ShouldShowNudgePassword()) {
     auto* nudge_password_view =
         AddChildView(CreateNudgePasswordView(controller_));
     nudge_password_view->SetBorder(views::CreateEmptyBorder(
@@ -603,8 +600,7 @@ void PasswordGenerationPopupViewViews::GetAccessibleNodeData(
 }
 
 gfx::Size PasswordGenerationPopupViewViews::CalculatePreferredSize() const {
-  if (password_manager::features::kPasswordGenerationExperimentVariationParam
-          .Get() == PasswordGenerationVariation::kNudgePassword) {
+  if (controller_->ShouldShowNudgePassword()) {
     int width = std::min(views::View::CalculatePreferredSize().width(),
                          kPasswordGenerationMaxWidth);
     return gfx::Size(width, GetHeightForWidth(width));

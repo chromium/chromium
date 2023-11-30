@@ -357,6 +357,8 @@ void PasswordManager::RegisterProfilePrefs(
                                 0);
 #endif  // BUILDFLAG(IS_IOS)
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+  registry->RegisterIntegerPref(
+      prefs::kPasswordGenerationNudgePasswordDismissCount, 0);
   registry->RegisterListPref(prefs::kPasswordManagerPromoCardsList);
 #endif  // BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   registry->RegisterBooleanPref(prefs::kPasswordSharingEnabled, true);

@@ -47,6 +47,7 @@ struct PasswordGenerationUIData;
 
 class PasswordGenerationPopupObserver;
 class PasswordGenerationPopupView;
+class PrefService;
 
 // This class controls a PasswordGenerationPopupView. It is responsible for
 // determining the location of the popup, handling keypress events while the
@@ -78,7 +79,8 @@ class PasswordGenerationPopupControllerImpl
       const base::WeakPtr<password_manager::PasswordManagerDriver>& driver,
       PasswordGenerationPopupObserver* observer,
       content::WebContents* web_contents,
-      content::RenderFrameHost* frame);
+      content::RenderFrameHost* frame,
+      PrefService* pref_service);
 
   PasswordGenerationPopupControllerImpl(
       const PasswordGenerationPopupControllerImpl&) = delete;
@@ -137,7 +139,8 @@ class PasswordGenerationPopupControllerImpl
       const base::WeakPtr<password_manager::PasswordManagerDriver>& driver,
       PasswordGenerationPopupObserver* observer,
       content::WebContents* web_contents,
-      content::RenderFrameHost* frame);
+      content::RenderFrameHost* frame,
+      PrefService* pref_service);
 
  private:
   class KeyPressRegistrator;
@@ -149,30 +152,32 @@ class PasswordGenerationPopupControllerImpl
     kEditPassword = 2,
   };
 
-  // PasswordGenerationPopupController implementation:
+  // AutofillPopupViewDelegate implementation:
   void Hide(autofill::PopupHidingReason) override;
   void ViewDestroyed() override;
-  void SelectionCleared() override;
-  void SetSelected() override;
-  void EditPasswordClicked() override;
-  void EditPasswordHovered(bool hovered) override;
-#if !BUILDFLAG(IS_ANDROID)
-  std::u16string GetPrimaryAccountEmail() override;
-#endif  // !BUILDFLAG(IS_ANDROID)
-  void PasswordAccepted() override;
   gfx::NativeView container_view() const override;
   content::WebContents* GetWebContents() const override;
   const gfx::RectF& element_bounds() const override;
   base::i18n::TextDirection GetElementTextDirection() const override;
 
-  void HideImpl();
-
+  // PasswordGenerationPopupController implementation:
+  void PasswordAccepted() override;
+  void SetSelected() override;
+  void SelectionCleared() override;
+  void EditPasswordClicked() override;
+  void EditPasswordHovered(bool hovered) override;
+#if !BUILDFLAG(IS_ANDROID)
+  std::u16string GetPrimaryAccountEmail() override;
+  bool ShouldShowNudgePassword() const override;
+#endif  // !BUILDFLAG(IS_ANDROID)
   GenerationUIState state() const override;
   bool password_selected() const override;
   bool edit_password_selected() const override;
   const std::u16string& password() const override;
   std::u16string SuggestedText() const override;
   const std::u16string& HelpText() const override;
+
+  void HideImpl();
 
   bool HandleKeyPressEvent(const content::NativeWebKeyboardEvent& event);
   bool HandleNudgePasswordKeyPressEvent(
@@ -194,6 +199,9 @@ class PasswordGenerationPopupControllerImpl
 
   // May be NULL.
   const raw_ptr<PasswordGenerationPopupObserver> observer_;
+
+  // Contains information about user prefs.
+  const raw_ptr<PrefService> pref_service_;
 
   // Signature of the form for which password generation is triggered.
   const autofill::FormSignature form_signature_;

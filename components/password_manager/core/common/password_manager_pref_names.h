@@ -258,6 +258,11 @@ extern const char kAccountStorageNewFeatureIconImpressions[];
 #endif  // BUILDFLAG(IS_IOS)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+// How many times in a row the password generation popup in `kNudgePassword`
+// experiment was dismissed by the user. The counter resets when the user
+// accepts password generation.
+extern const char kPasswordGenerationNudgePasswordDismissCount[];
+
 // A list of available promo cards with related information which are displayed
 // in the Password Manager UI.
 extern const char kPasswordManagerPromoCardsList[];
