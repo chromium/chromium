@@ -7,6 +7,7 @@ load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "os", "reclient")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -54,6 +55,16 @@ ci.builder(
         short_name = "asan lsan",
     ),
     execution_timeout = 6 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "asan",
+            "lsan",
+            "fail_on_san_warnings",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
+    ),
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
@@ -86,6 +97,14 @@ ci.builder(
         short_name = "msan",
     ),
     execution_timeout = 6 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "msan",
+            "fail_on_san_warnings",
+            "release_builder",
+            "reclient",
+        ],
+    ),
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
@@ -112,6 +131,15 @@ ci.builder(
         short_name = "tsan",
     ),
     execution_timeout = 4 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "tsan",
+            "disable_nacl",
+            "fail_on_san_warnings",
+            "release_builder",
+            "reclient",
+        ],
+    ),
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
@@ -138,6 +166,13 @@ ci.builder(
         short_name = "fyi",
     ),
     execution_timeout = 6 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "ubsan_no_recover",
+            "release_builder",
+            "reclient",
+        ],
+    ),
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
@@ -167,5 +202,15 @@ ci.builder(
         short_name = "lsan",
     ),
     execution_timeout = 12 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "asan",
+            "lsan",
+            "dcheck_always_on",
+            "disable_nacl",
+            "release_builder",
+            "reclient",
+        ],
+    ),
     reclient_jobs = reclient.jobs.DEFAULT,
 )

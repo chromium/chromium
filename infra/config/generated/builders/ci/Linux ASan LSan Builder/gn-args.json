@@ -1,0 +1,13 @@
+{
+  "gn_args": {
+    "dcheck_always_on": true,
+    "fail_on_san_warnings": true,
+    "is_asan": true,
+    "is_component_build": false,
+    "is_debug": false,
+    "is_lsan": true,
+    "symbol_level": 1,
+    "use_dummy_lastchange": true,
+    "use_remoteexec": true
+  }
+}

@@ -10,6 +10,7 @@ load("//lib/builder_health_indicators.star", "health_spec")
 load("//lib/builders.star", "os", "reclient", "sheriff_rotations", "xcode")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -72,6 +73,16 @@ linux_memory_builder(
         short_name = "bld",
     ),
     cq_mirrors_console_view = "mirrors",
+    gn_args = gn_args.config(
+        configs = [
+            "asan",
+            "lsan",
+            "fail_on_san_warnings",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
+    ),
 )
 
 linux_memory_builder(
@@ -126,6 +137,14 @@ linux_memory_builder(
         short_name = "bld",
     ),
     cq_mirrors_console_view = "mirrors",
+    gn_args = gn_args.config(
+        configs = [
+            "tsan",
+            "disable_nacl",
+            "release_builder",
+            "reclient",
+        ],
+    ),
 )
 
 linux_memory_builder(
@@ -151,6 +170,18 @@ linux_memory_builder(
     ),
     # TODO(thakis): Remove once https://crbug.com/927738 is resolved.
     execution_timeout = 5 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "cfi_full",
+            "cfi_icall",
+            "cfi_diag",
+            "thin_lto",
+            "release",
+            "static",
+            "dcheck_always_on",
+            "reclient",
+        ],
+    ),
 )
 
 linux_memory_builder(
@@ -182,6 +213,16 @@ linux_memory_builder(
     # TODO(crbug.com/1030593): Builds take more than 3 hours sometimes. Remove
     # once the builds are faster.
     execution_timeout = 6 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "asan",
+            "lsan",
+            "chromeos",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
+    ),
 )
 
 linux_memory_builder(
@@ -242,6 +283,14 @@ linux_memory_builder(
         short_name = "bld",
     ),
     execution_timeout = 4 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "chromeos",
+            "msan",
+            "release_builder",
+            "reclient",
+        ],
+    ),
 )
 
 linux_memory_builder(
@@ -302,6 +351,13 @@ linux_memory_builder(
         category = "linux|msan",
         short_name = "bld",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "msan",
+            "release_builder",
+            "reclient",
+        ],
+    ),
 )
 
 linux_memory_builder(
@@ -360,6 +416,17 @@ linux_memory_builder(
         category = "lacros|asan",
         short_name = "asan",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "asan",
+            "lsan",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+            "lacros_on_linux",
+            "also_build_ash_chrome",
+        ],
+    ),
 )
 
 ci.builder(
@@ -387,6 +454,16 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "mac",
         short_name = "bld",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "asan",
+            "minimal_symbols",
+            "disable_nacl",
+            "release_builder",
+            "reclient",
+            "dcheck_always_on",
+        ],
     ),
 )
 
@@ -470,6 +547,14 @@ ci.builder(
         category = "linux|webkit",
         short_name = "asn",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "asan",
+            "lsan",
+            "release_builder_blink",
+            "reclient",
+        ],
+    ),
 )
 
 ci.builder(
@@ -493,6 +578,12 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "linux|webkit",
         short_name = "lk",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder_blink",
+            "reclient",
+        ],
     ),
 )
 
@@ -522,6 +613,13 @@ ci.builder(
         category = "linux|webkit",
         short_name = "msn",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "msan",
+            "release_builder_blink",
+            "reclient",
+        ],
+    ),
 )
 
 ci.builder(
@@ -547,6 +645,17 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "android",
         short_name = "asn",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "clang",
+            "asan",
+            "release_builder",
+            "reclient",
+            "strip_debug_info",
+            "minimal_symbols",
+        ],
     ),
 )
 
@@ -574,6 +683,14 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "linux|ubsan",
         short_name = "vpt",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "ubsan_vptr",
+            "ubsan_vptr_no_recover_hack",
+            "release_builder",
+            "reclient",
+        ],
     ),
     reclient_jobs = reclient.jobs.DEFAULT,
 )
@@ -604,6 +721,17 @@ ci.builder(
     # This builder is normally using 2.5 hours to run with a cached builder. And
     # 1.5 hours additional setup time without cache, https://crbug.com/1311134.
     execution_timeout = 5 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "asan",
+            "fuzzer",
+            "static",
+            "v8_heap",
+            "minimal_symbols",
+            "release_builder",
+            "reclient",
+        ],
+    ),
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
@@ -636,6 +764,16 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "iOS",
         short_name = "asn",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "ios_simulator",
+            "x64",
+            "release_builder",
+            "reclient",
+            "asan",
+            "xctest",
+        ],
     ),
     xcode = xcode.x15main,
 )

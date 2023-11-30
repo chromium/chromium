@@ -204,19 +204,6 @@
       "use_remoteexec": true
     }
   },
-  "ios-asan": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "enable_run_ios_unittests_with_xctest": true,
-      "is_asan": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "target_cpu": "x64",
-      "target_environment": "simulator",
-      "target_os": "ios",
-      "use_remoteexec": true
-    }
-  },
   "ios-blink-dbg-fyi": {
     "gn_args": {
       "dcheck_always_on": true,
@@ -515,16 +502,6 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_remoteexec": true
-    }
-  },
-  "mac_chromium_asan_rel_ng": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "enable_nacl": false,
-      "is_asan": true,
-      "is_component_build": false,
-      "is_debug": false,
       "use_remoteexec": true
     }
   },

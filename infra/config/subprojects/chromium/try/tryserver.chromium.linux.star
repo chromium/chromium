@@ -39,6 +39,12 @@ try_.builder(
     mirrors = [
         "ci/WebKit Linux Leak",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "release_try_builder",
+            "reclient",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -129,6 +135,7 @@ try_.builder(
     mirrors = [
         "ci/linux-exp-asan-lsan-fyi-rel",
     ],
+    gn_args = "ci/linux-exp-asan-lsan-fyi-rel",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -139,6 +146,7 @@ try_.builder(
     mirrors = [
         "ci/linux-exp-msan-fyi-rel",
     ],
+    gn_args = "ci/linux-exp-msan-fyi-rel",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -337,6 +345,7 @@ try_.builder(
     mirrors = [
         "ci/linux-ubsan-fyi-rel",
     ],
+    gn_args = "ci/linux-ubsan-fyi-rel",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -378,6 +387,7 @@ try_.builder(
     mirrors = [
         "ci/WebKit Linux ASAN",
     ],
+    gn_args = "ci/WebKit Linux ASAN",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -389,6 +399,13 @@ try_.builder(
     # At this time, MSan is only compatibly with Focal. See
     # //docs/linux/instrumented_libraries.md.
     os = os.LINUX_FOCAL,
+    gn_args = gn_args.config(
+        configs = [
+            "msan",
+            "release_builder",
+            "reclient",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -486,6 +503,7 @@ try_.orchestrator_builder(
         "chromium.compilator_can_outlive_parent": 100,
         "chromium.skip_successful_tests": 50,
     },
+    gn_args = "ci/Linux ASan LSan Builder",
     main_list_view = "try",
     tryjob = try_.job(),
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
@@ -536,6 +554,12 @@ try_.builder(
     ssd = True,
     # TODO(thakis): Remove once https://crbug.com/927738 is resolved.
     execution_timeout = 7 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Linux CFI",
+            "use_dummy_lastchange",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     tryjob = try_.job(
         location_filters = [
@@ -566,6 +590,7 @@ try_.builder(
     # TODO(crbug/1144484): Remove this timeout once we figure out the
     # regression in compiler or toolchain.
     execution_timeout = 7 * time.hour,
+    gn_args = "ci/Linux Chromium OS ASan LSan Builder",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
 
@@ -580,6 +605,7 @@ try_.builder(
     # //docs/linux/instrumented_libraries.md.
     os = os.LINUX_FOCAL,
     ssd = True,
+    gn_args = "ci/Linux ChromiumOS MSan Builder",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
 
@@ -698,6 +724,10 @@ try_.builder(
     # //docs/linux/instrumented_libraries.md.
     os = os.LINUX_FOCAL,
     execution_timeout = 6 * time.hour,
+    # This is intentionally a release_bot and not a release_trybot;
+    # enabling DCHECKs seems to cause flaky failures that don't show up
+    # on the continuous builder.
+    gn_args = "ci/Linux MSan Builder",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
 
@@ -714,6 +744,13 @@ try_.orchestrator_builder(
         "chromium.add_one_test_shard": 10,
         "chromium.skip_successful_tests": 50,
     },
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Linux TSan Builder",
+            "release_try_builder",
+            "minimal_symbols",
+        ],
+    ),
     main_list_view = "try",
     tryjob = try_.job(),
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
@@ -760,6 +797,9 @@ try_.builder(
     mirrors = [
         "ci/linux-ubsan-vptr",
     ],
+    # This is intentionally a release_bot and not a release_trybot to match
+    # the CI configuration, where no debug builder exists.
+    gn_args = "ci/linux-ubsan-vptr",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -770,6 +810,7 @@ try_.builder(
     ],
     cores = 16,
     ssd = True,
+    gn_args = "ci/linux-lacros-asan-lsan-rel",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
 

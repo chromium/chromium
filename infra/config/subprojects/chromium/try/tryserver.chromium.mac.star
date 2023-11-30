@@ -399,6 +399,15 @@ try_.builder(
         "ci/Mac ASan 64 Builder",
         "ci/Mac ASan 64 Tests (1)",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "asan",
+            "dcheck_always_on",
+            "disable_nacl",
+            "release_builder",
+            "reclient",
+        ],
+    ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
 
@@ -495,6 +504,7 @@ ios_builder(
     mirrors = [
         "ci/ios-asan",
     ],
+    gn_args = "ci/ios-asan",
 )
 
 ios_builder(

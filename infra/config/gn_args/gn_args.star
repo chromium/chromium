@@ -521,6 +521,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    "fail_on_san_warnings",
+    args = {
+        "fail_on_san_warnings": True,
+    },
+)
+
+gn_args.config(
     "ffmpeg_branding_chrome",
     args = {
         "ffmpeg_branding": "Chrome",
@@ -989,6 +996,16 @@ gn_args.config(
     args = {
         "is_ubsan": True,
     },
+)
+
+gn_args.config(
+    "ubsan_no_recover",
+    args = {
+        "is_ubsan_no_recover": True,
+    },
+    configs = [
+        "ubsan",
+    ],
 )
 
 gn_args.config(

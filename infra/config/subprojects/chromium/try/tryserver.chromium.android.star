@@ -221,10 +221,17 @@ try_.compilator_builder(
     siso_enabled = True,
 )
 
-# TODO(crbug.com/1367523): Reeanble this builder once the reboot issue is resolved.
+# TODO(crbug.com/1367523): Reenable this builder once the reboot issue is resolved.
 # try_.builder(
 #     name = "android-asan",
 #     mirrors = ["ci/android-asan"],
+#     gn_args = gn_args.config(
+#         configs = [
+#             "ci/android-asan",
+#             "release_try_builder",
+#             "minimal_symbols",
+#         ],
+#     ),
 #     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 # )
 

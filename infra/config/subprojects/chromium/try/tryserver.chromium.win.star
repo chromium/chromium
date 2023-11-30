@@ -49,6 +49,7 @@ try_.builder(
     cores = 16,
     ssd = True,
     execution_timeout = 9 * time.hour,
+    gn_args = "ci/win-asan",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
 

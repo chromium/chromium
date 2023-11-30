@@ -1,0 +1,11 @@
+{
+  "gn_args": {
+    "dcheck_always_on": true,
+    "enable_nacl": false,
+    "is_asan": true,
+    "is_component_build": false,
+    "is_debug": false,
+    "symbol_level": 1,
+    "use_remoteexec": true
+  }
+}

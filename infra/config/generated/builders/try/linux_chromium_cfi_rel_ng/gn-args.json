@@ -1,0 +1,14 @@
+{
+  "gn_args": {
+    "dcheck_always_on": true,
+    "is_cfi": true,
+    "is_component_build": false,
+    "is_debug": false,
+    "use_cfi_cast": true,
+    "use_cfi_diag": true,
+    "use_cfi_icall": true,
+    "use_dummy_lastchange": true,
+    "use_remoteexec": true,
+    "use_thin_lto": true
+  }
+}
