@@ -15,7 +15,7 @@
 #include "base/types/strong_alias.h"
 #include "base/uuid.h"
 #include "base/values.h"
-#include "components/attribution_reporting/source_registration_time_config.mojom.h"
+#include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
@@ -66,11 +66,10 @@ class CONTENT_EXPORT AttributionReport {
   };
 
   struct CONTENT_EXPORT CommonAggregatableData {
-    CommonAggregatableData(
-        absl::optional<attribution_reporting::SuitableOrigin>
-            aggregation_coordinator_origin,
-        absl::optional<std::string> verification_token,
-        attribution_reporting::mojom::SourceRegistrationTimeConfig);
+    CommonAggregatableData(absl::optional<attribution_reporting::SuitableOrigin>
+                               aggregation_coordinator_origin,
+                           absl::optional<std::string> verification_token,
+                           attribution_reporting::AggregatableTriggerConfig);
     CommonAggregatableData();
     CommonAggregatableData(const CommonAggregatableData&);
     CommonAggregatableData(CommonAggregatableData&&);
@@ -96,9 +95,8 @@ class CONTENT_EXPORT AttributionReport {
     // verification.
     absl::optional<std::string> verification_token;
 
-    attribution_reporting::mojom::SourceRegistrationTimeConfig
-        source_registration_time_config = attribution_reporting::mojom::
-            SourceRegistrationTimeConfig::kInclude;
+    attribution_reporting::AggregatableTriggerConfig
+        aggregatable_trigger_config;
 
     // When adding new members, the corresponding `operator==()` definition in
     // `attribution_test_utils.h` should also be updated.

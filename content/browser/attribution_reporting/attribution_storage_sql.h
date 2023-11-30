@@ -386,6 +386,10 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
                                      const AttributionTrigger&)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
+  base::Time GetAggregatableReportTime(const AttributionTrigger&,
+                                       base::Time trigger_time) const
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
   // If set, database errors will not crash the client when run in debug mode.
   bool ignore_errors_for_testing_ = false;
 

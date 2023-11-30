@@ -9868,6 +9868,10 @@ Called by update_net_error_codes.py.-->
       label="aggregatable_source_registration_time has unknown value"/>
   <int value="36"
       label="Filters is using a reserved key (starts with &quot;_&quot;)"/>
+  <int value="37" label="trigger_context_id value is invalid"/>
+  <int value="38"
+      label="trigger_context_id disallowed for
+             aggregatable_source_registration_time"/>
 </enum>
 
 <enum name="ConversionTriggerVerificationGetHeadersStatus">

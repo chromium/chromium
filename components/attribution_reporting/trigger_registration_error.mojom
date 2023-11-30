@@ -45,4 +45,7 @@ enum TriggerRegistrationError {
 
   kAggregatableSourceRegistrationTimeWrongType = 34,
   kAggregatableSourceRegistrationTimeUnknownValue = 35,
+
+  kTriggerContextIdInvalidValue = 37,
+  kTriggerContextIdInvalidSourceRegistrationTimeConfig = 38,
 };

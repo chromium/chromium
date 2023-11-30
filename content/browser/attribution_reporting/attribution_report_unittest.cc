@@ -276,11 +276,16 @@ TEST(AttributionReportTest, NullAggregatableReport) {
       "key_id": "key",
       "payload": "ABCD1234"
     }],
-    "shared_info":"example_shared_info"
+    "shared_info":"example_shared_info",
+    "trigger_context_id":"123"
   })json");
 
   AttributionReport report = ReportBuilder(AttributionInfoBuilder().Build(),
                                            SourceBuilder().BuildStored())
+                                 .SetSourceRegistrationTimeConfig(
+                                     attribution_reporting::mojom::
+                                         SourceRegistrationTimeConfig::kExclude)
+                                 .SetTriggerContextId("123")
                                  .BuildNullAggregatable();
   EXPECT_EQ(report.ReportURL(),
             GURL("https://report.test/.well-known/attribution-reporting/"
@@ -288,6 +293,48 @@ TEST(AttributionReportTest, NullAggregatableReport) {
 
   auto& data =
       absl::get<AttributionReport::NullAggregatableData>(report.data());
+  data.common_data.assembled_report =
+      AggregatableReport({AggregatableReport::AggregationServicePayload(
+                             /*payload=*/kABCD1234AsBytes,
+                             /*key_id=*/"key",
+                             /*debug_cleartext_payload=*/absl::nullopt)},
+                         "example_shared_info",
+                         /*debug_key=*/absl::nullopt,
+                         /*additional_fields=*/{},
+                         /*aggregation_coordinator_origin=*/absl::nullopt);
+
+  EXPECT_THAT(report.ReportBody(), IsJson(expected));
+}
+
+TEST(AttributionReportTest, ReportBody_AggregatableAttributionReport) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      ::aggregation_service::kAggregationServiceMultipleCloudProviders,
+      {{"aws_cloud", "https://aws.example.test"}});
+
+  base::Value::Dict expected = base::test::ParseJsonDict(R"json({
+    "aggregation_coordinator_origin": "https://aws.example.test",
+    "aggregation_service_payloads": [{
+      "key_id": "key",
+      "payload": "ABCD1234"
+    }],
+    "shared_info": "example_shared_info",
+    "trigger_context_id": "123"
+  })json");
+
+  AttributionReport report =
+      ReportBuilder(AttributionInfoBuilder().Build(),
+                    SourceBuilder().BuildStored())
+          .SetSourceRegistrationTimeConfig(
+              attribution_reporting::mojom::SourceRegistrationTimeConfig::
+                  kExclude)
+          .SetTriggerContextId("123")
+          .SetAggregatableHistogramContributions(
+              {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
+          .BuildAggregatableAttribution();
+
+  auto& data =
+      absl::get<AttributionReport::AggregatableAttributionData>(report.data());
   data.common_data.assembled_report =
       AggregatableReport({AggregatableReport::AggregationServicePayload(
                              /*payload=*/kABCD1234AsBytes,

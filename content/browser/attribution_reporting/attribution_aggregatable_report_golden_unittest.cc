@@ -453,6 +453,23 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
        .cleartext_payloads_file = "report_8_cleartext_payloads.json"},
       {.report =
            ReportBuilder(
+               AttributionInfoBuilder().Build(),
+               SourceBuilder(
+                   base::Time::FromMillisecondsSinceUnixEpoch(1234483200000))
+                   .BuildStored())
+               .SetAggregatableHistogramContributions(
+                   {AggregatableHistogramContribution(/*key=*/0, /*value=*/1)})
+               .SetReportTime(
+                   base::Time::FromMillisecondsSinceUnixEpoch(1234486400000))
+               .SetSourceRegistrationTimeConfig(
+                   attribution_reporting::mojom::SourceRegistrationTimeConfig::
+                       kExclude)
+               .SetTriggerContextId("example")
+               .BuildAggregatableAttribution(),
+       .report_file = "report_9.json",
+       .cleartext_payloads_file = "report_9_cleartext_payloads.json"},
+      {.report =
+           ReportBuilder(
                AttributionInfoBuilder().SetDebugKey(456).Build(),
                SourceBuilder(
                    base::Time::FromMillisecondsSinceUnixEpoch(1234483200000))
@@ -574,6 +591,24 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                      .BuildNullAggregatable(),
        .report_file = "report_gcp_8.json",
        .cleartext_payloads_file = "report_gcp_8_cleartext_payloads.json"},
+      {.report =
+           ReportBuilder(
+               AttributionInfoBuilder().Build(),
+               SourceBuilder(
+                   base::Time::FromMillisecondsSinceUnixEpoch(1234483200000))
+                   .BuildStored())
+               .SetAggregatableHistogramContributions(
+                   {AggregatableHistogramContribution(/*key=*/0, /*value=*/1)})
+               .SetReportTime(
+                   base::Time::FromMillisecondsSinceUnixEpoch(1234486400000))
+               .SetSourceRegistrationTimeConfig(
+                   attribution_reporting::mojom::SourceRegistrationTimeConfig::
+                       kExclude)
+               .SetTriggerContextId("example")
+               .SetAggregationCoordinatorOrigin(kGcpCoordinatorOrigin)
+               .BuildAggregatableAttribution(),
+       .report_file = "report_gcp_9.json",
+       .cleartext_payloads_file = "report_gcp_9_cleartext_payloads.json"},
   };
 
   for (auto& test_case : kTestCases) {

@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
+#include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
@@ -125,6 +126,14 @@ std::ostream& operator<<(std::ostream& out,
     return out << "(end)";
   }
   return out << "{" << (*it).first << ", " << (*it).second << "}";
+}
+
+std::ostream& operator<<(
+    std::ostream& out,
+    const AggregatableTriggerConfig& aggregatable_trigger_config) {
+  base::Value::Dict dict;
+  aggregatable_trigger_config.Serialize(dict);
+  return out << dict;
 }
 
 }  // namespace attribution_reporting

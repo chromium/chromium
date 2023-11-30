@@ -18,6 +18,7 @@ class TimeDelta;
 
 namespace attribution_reporting {
 
+class AggregatableTriggerConfig;
 class AggregatableTriggerData;
 class AggregatableValues;
 class AggregationKeys;
@@ -69,6 +70,8 @@ std::ostream& operator<<(std::ostream&, const TriggerSpec&);
 std::ostream& operator<<(std::ostream&, const TriggerSpecs&);
 
 std::ostream& operator<<(std::ostream&, const TriggerSpecs::const_iterator&);
+
+std::ostream& operator<<(std::ostream&, const AggregatableTriggerConfig&);
 
 }  // namespace attribution_reporting
 

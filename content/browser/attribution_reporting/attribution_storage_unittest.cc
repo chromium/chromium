@@ -10,6 +10,7 @@
 #include <functional>
 #include <limits>
 #include <memory>
+#include <string>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -27,6 +28,7 @@
 #include "base/time/time.h"
 #include "components/aggregation_service/features.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
+#include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
@@ -2441,7 +2443,7 @@ TEST_F(AttributionStorageTest, AggregatableDedupKeysFiltering) {
           /*event_triggers=*/{}, aggregatable_trigger_data, aggregatable_values,
           /*debug_reporting=*/false,
           /*aggregation_coordinator_origin=*/absl::nullopt,
-          attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude),
+          attribution_reporting::AggregatableTriggerConfig()),
       /*destination_origin=*/origin, /*verifications=*/{},
       /*is_within_fenced_frame=*/false);
 
@@ -2564,8 +2566,7 @@ TEST_F(AttributionStorageTest, AggregatableDedupKeysFiltering) {
             aggregatable_values,
             /*debug_reporting=*/false,
             /*aggregation_coordinator_origin=*/absl::nullopt,
-            attribution_reporting::mojom::SourceRegistrationTimeConfig::
-                kInclude),
+            attribution_reporting::AggregatableTriggerConfig()),
         /*destination_origin=*/origin, /*verifications=*/{},
         /*is_within_fenced_frame=*/false);
 
@@ -3302,8 +3303,7 @@ TEST_F(AttributionStorageTest, NoMatchingTriggerData_ReturnsError) {
               attribution_reporting::AggregatableValues(),
               /*debug_reporting=*/false,
               /*aggregation_coordinator_origin=*/absl::nullopt,
-              attribution_reporting::mojom::SourceRegistrationTimeConfig::
-                  kInclude),
+              attribution_reporting::AggregatableTriggerConfig()),
           /*destination_origin=*/origin,
           /*verifications=*/{},
           /*is_within_fenced_frame=*/false)));
@@ -3388,8 +3388,7 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
                     attribution_reporting::AggregatableValues(),
                     /*debug_reporting=*/false,
                     /*aggregation_coordinator_origin=*/absl::nullopt,
-                    attribution_reporting::mojom::SourceRegistrationTimeConfig::
-                        kInclude),
+                    attribution_reporting::AggregatableTriggerConfig()),
                 /*destination_origin=*/origin,
                 /*verifications=*/{},
                 /*is_within_fenced_frame=*/false)));
@@ -3443,7 +3442,7 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
           aggregatable_trigger_data, aggregatable_values,
           /*debug_reporting=*/false,
           /*aggregation_coordinator_origin=*/absl::nullopt,
-          attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude),
+          attribution_reporting::AggregatableTriggerConfig()),
       /*destination_origin=*/origin, /*verifications=*/{},
       /*is_within_fenced_frame=*/false);
 
@@ -3462,7 +3461,7 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
           aggregatable_trigger_data, aggregatable_values,
           /*debug_reporting=*/false,
           /*aggregation_coordinator_origin=*/absl::nullopt,
-          attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude),
+          attribution_reporting::AggregatableTriggerConfig()),
       /*destination_origin=*/origin, /*verifications=*/{},
       /*is_within_fenced_frame=*/false);
 
@@ -3477,7 +3476,7 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
           aggregatable_trigger_data, aggregatable_values,
           /*debug_reporting=*/false,
           /*aggregation_coordinator_origin=*/absl::nullopt,
-          attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude),
+          attribution_reporting::AggregatableTriggerConfig()),
       /*destination_origin=*/origin,
       /*verifications=*/{},
       /*is_within_fenced_frame=*/false);
@@ -3497,7 +3496,7 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
           aggregatable_trigger_data, aggregatable_values,
           /*debug_reporting=*/false,
           /*aggregation_coordinator_origin=*/absl::nullopt,
-          attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude),
+          attribution_reporting::AggregatableTriggerConfig()),
       /*destination_origin=*/origin, /*verifications=*/{},
       /*is_within_fenced_frame=*/false);
 
@@ -4019,6 +4018,61 @@ TEST_F(AttributionStorageTest, EventLevelDedupBeforeWindowCheck) {
   ASSERT_EQ(AttributionTrigger::EventLevelResult::kDeduplicated,
             MaybeCreateAndStoreEventLevelReport(
                 TriggerBuilder().SetDedupKey(11).Build()));
+}
+
+TEST_F(AttributionStorageTest,
+       AttributionAggregatableReportWithTriggerContextId_RoundTrip) {
+  storage()->StoreSource(TestAggregatableSourceProvider().GetBuilder().Build());
+
+  base::Time report_time = base::Time::Now();
+
+  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
+                  DefaultAggregatableTriggerBuilder()
+                      .SetSourceRegistrationTimeConfig(
+                          attribution_reporting::mojom::
+                              SourceRegistrationTimeConfig::kExclude)
+                      .SetTriggerContextId("123")
+                      .Build(/*generate_event_trigger_data=*/false)),
+              AllOf(CreateReportAggregatableStatusIs(
+                        AttributionTrigger::AggregatableResult::kSuccess),
+                    NewAggregatableReportIs(Optional(AllOf(
+                        AggregatableAttributionDataIs(
+                            TriggerContextIdIs(Optional(std::string("123")))),
+                        ReportTimeIs(report_time))))));
+  EXPECT_THAT(
+      storage()->GetAttributionReports(/*max_report_time=*/base::Time::Max()),
+      ElementsAre(AllOf(AggregatableAttributionDataIs(
+                            TriggerContextIdIs(Optional(std::string("123")))),
+                        ReportTimeIs(report_time))));
+}
+
+TEST_F(AttributionStorageTest,
+       NullAggregatableReportWithTriggerContextId_RoundTrip) {
+  base::Time now = base::Time::Now();
+  base::Time source_time = now - base::Days(1);
+  base::Time report_time = now;
+
+  delegate()->set_null_aggregatable_reports(
+      {AttributionStorageDelegate::NullAggregatableReport{
+          .fake_source_time = source_time,
+      }});
+  auto result = storage()->MaybeCreateAndStoreReport(
+      DefaultAggregatableTriggerBuilder()
+          .SetSourceRegistrationTimeConfig(
+              attribution_reporting::mojom::SourceRegistrationTimeConfig::
+                  kExclude)
+          .SetTriggerContextId("123")
+          .Build());
+  delegate()->set_null_aggregatable_reports({});
+
+  ASSERT_TRUE(result.min_null_aggregatable_report_time().has_value());
+  EXPECT_EQ(*result.min_null_aggregatable_report_time(), report_time);
+
+  EXPECT_THAT(
+      storage()->GetAttributionReports(/*max_report_time=*/base::Time::Max()),
+      ElementsAre(AllOf(NullAggregatableDataIs(
+                            TriggerContextIdIs(Optional(std::string("123")))),
+                        ReportTimeIs(report_time))));
 }
 
 }  // namespace content

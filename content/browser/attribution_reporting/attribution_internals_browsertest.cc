@@ -17,12 +17,12 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
+#include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
-#include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
@@ -1202,8 +1202,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                 {{"a", 123}, {"b", 456}}),
             /*debug_reporting=*/false,
             /*aggregation_coordinator_origin=*/absl::nullopt,
-            attribution_reporting::mojom::SourceRegistrationTimeConfig::
-                kInclude),
+            attribution_reporting::AggregatableTriggerConfig()),
         *SuitableOrigin::Deserialize("https://d.test"),
         std::move(verifications),
         /*is_within_fenced_frame=*/false);

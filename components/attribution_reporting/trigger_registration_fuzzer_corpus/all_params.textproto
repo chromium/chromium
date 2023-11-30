@@ -394,4 +394,12 @@ object_value {
       }
     }
   }
+  field {
+    name: "trigger_context_id"
+    value {
+      string_value {
+        value: "example"
+      }
+    }
+  }
 }

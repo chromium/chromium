@@ -115,11 +115,19 @@ TEST_P(AttributionInteropTest, HasExpectedOutput) {
   AttributionConfig config = GetConfig();
   base::Value::Dict dict = base::test::ParseJsonDictFromFile(GetParam());
 
-  base::test::ScopedFeatureList scoped_feature_list;
+  std::vector<base::test::FeatureRef> enabled_features;
   if (dict.FindBool("needs_trigger_config").value_or(false)) {
-    scoped_feature_list.InitAndEnableFeature(
+    enabled_features.emplace_back(
         attribution_reporting::features::kAttributionReportingTriggerConfig);
   }
+  if (dict.FindBool("needs_trigger_context_id").value_or(false)) {
+    enabled_features.emplace_back(
+        attribution_reporting::features::kAttributionReportingTriggerContextId);
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(enabled_features,
+                                       /*disabled_features=*/{});
 
   if (const base::Value* api_config = dict.Find("api_config")) {
     ASSERT_TRUE(api_config->is_dict());

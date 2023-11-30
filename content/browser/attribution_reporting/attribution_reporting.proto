@@ -61,6 +61,7 @@ message AttributionCommonAggregatableMetadata {
   optional string verification_token = 2;
   optional SourceRegistrationTimeConfig source_registration_time_config = 3;
   optional string coordinator_origin = 4;
+  optional string trigger_context_id = 5;
 
   reserved 1;
   reserved "coordinator";

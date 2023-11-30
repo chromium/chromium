@@ -36,6 +36,7 @@
 #include "base/types/expected_macros.h"
 #include "base/uuid.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
+#include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
@@ -2822,7 +2823,7 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
   }
 
   base::Time report_time =
-      delegate_->GetAggregatableReportTime(attribution_info.time);
+      GetAggregatableReportTime(trigger, attribution_info.time);
 
   report = AttributionReport(
       attribution_info, AttributionReport::Id(kUnsetRecordId), report_time,
@@ -2832,7 +2833,7 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
           AttributionReport::CommonAggregatableData(
               trigger_registration.aggregation_coordinator_origin,
               /*verification_token=*/absl::nullopt,
-              trigger_registration.source_registration_time_config),
+              trigger_registration.aggregatable_trigger_config),
           std::move(contributions), source));
 
   return AggregatableResult::kSuccess;
@@ -2966,7 +2967,7 @@ bool AttributionStorageSql::GenerateNullAggregatableReportsAndStoreReports(
             trigger, attribution_info.time, attributed_source_time);
     for (const auto& null_aggregatable_report : null_aggregatable_reports) {
       base::Time report_time =
-          delegate_->GetAggregatableReportTime(attribution_info.time);
+          GetAggregatableReportTime(trigger, attribution_info.time);
       min_null_aggregatable_report_time = AttributionReport::MinReportTime(
           min_null_aggregatable_report_time, report_time);
       reports.emplace_back(
@@ -2977,7 +2978,7 @@ bool AttributionStorageSql::GenerateNullAggregatableReportsAndStoreReports(
               AttributionReport::CommonAggregatableData(
                   trigger.registration().aggregation_coordinator_origin,
                   /*verification_token=*/absl::nullopt,
-                  trigger.registration().source_registration_time_config),
+                  trigger.registration().aggregatable_trigger_config),
               trigger.reporting_origin(),
               null_aggregatable_report.fake_source_time));
     }
@@ -3047,6 +3048,17 @@ void AttributionStorageSql::AssignTriggerVerificationData(
             }},
         report.data());
   }
+}
+
+base::Time AttributionStorageSql::GetAggregatableReportTime(
+    const AttributionTrigger& trigger,
+    base::Time trigger_time) const {
+  if (trigger.registration()
+          .aggregatable_trigger_config.trigger_context_id()
+          .has_value()) {
+    return trigger_time;
+  }
+  return delegate_->GetAggregatableReportTime(trigger_time);
 }
 
 std::set<AttributionDataModel::DataKey>

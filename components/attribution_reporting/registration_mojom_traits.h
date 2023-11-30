@@ -14,6 +14,7 @@
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
+#include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
@@ -349,7 +350,13 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
   static attribution_reporting::mojom::SourceRegistrationTimeConfig
   source_registration_time_config(
       const attribution_reporting::TriggerRegistration& trigger) {
-    return trigger.source_registration_time_config;
+    return trigger.aggregatable_trigger_config
+        .source_registration_time_config();
+  }
+
+  static const absl::optional<std::string>& trigger_context_id(
+      const attribution_reporting::TriggerRegistration& trigger) {
+    return trigger.aggregatable_trigger_config.trigger_context_id();
   }
 
   static bool Read(

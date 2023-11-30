@@ -189,6 +189,10 @@ struct TriggerRegistration {
   // Specifies whether to include source registration time in aggregatable
   // reports.
   SourceRegistrationTimeConfig source_registration_time_config;
+
+  // Specifies the context ID associated with the trigger. The context ID
+  // cannot be empty or longer than 64 bytes.
+  string? trigger_context_id;
 };
 
 // Represents a source or trigger registration item that will be passed to the OS, if supported.

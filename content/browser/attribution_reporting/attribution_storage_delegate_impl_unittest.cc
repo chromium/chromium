@@ -36,6 +36,7 @@ using ::testing::Ge;
 using ::testing::IsEmpty;
 using ::testing::Le;
 using ::testing::Lt;
+using ::testing::SizeIs;
 
 // This is more comprehensively tested in
 // //components/attribution_reporting/event_report_windows_unittest.cc.
@@ -225,6 +226,26 @@ TEST(AttributionStorageDelegateImplTest,
                       /*attributed_source_time=*/absl::nullopt)
                   .size(),
               Le(1u));
+
+  EXPECT_THAT(AttributionStorageDelegateImpl().GetNullAggregatableReports(
+                  trigger, /*trigger_time=*/base::Time::Now(),
+                  /*attributed_source_time=*/base::Time::Now() - base::Days(1)),
+              IsEmpty());
+}
+
+TEST(AttributionStorageDelegateImplTest,
+     NullAggregatableReports_WithTriggerContextId) {
+  const auto trigger = TriggerBuilder()
+                           .SetSourceRegistrationTimeConfig(
+                               attribution_reporting::mojom::
+                                   SourceRegistrationTimeConfig::kExclude)
+                           .SetTriggerContextId("123")
+                           .Build();
+
+  EXPECT_THAT(AttributionStorageDelegateImpl().GetNullAggregatableReports(
+                  trigger, /*trigger_time=*/base::Time::Now(),
+                  /*attributed_source_time=*/absl::nullopt),
+              SizeIs(1u));
 
   EXPECT_THAT(AttributionStorageDelegateImpl().GetNullAggregatableReports(
                   trigger, /*trigger_time=*/base::Time::Now(),

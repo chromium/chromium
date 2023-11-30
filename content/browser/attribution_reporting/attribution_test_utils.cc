@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
+#include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_report_windows.h"
@@ -358,6 +359,12 @@ TriggerBuilder& TriggerBuilder::SetAggregatableDedupKeyFilterPair(
   return *this;
 }
 
+TriggerBuilder& TriggerBuilder::SetTriggerContextId(
+    std::string trigger_context_id) {
+  trigger_context_id_ = std::move(trigger_context_id);
+  return *this;
+}
+
 AttributionTrigger TriggerBuilder::Build(
     bool generate_event_trigger_data) const {
   std::vector<attribution_reporting::EventTriggerData> event_triggers;
@@ -376,7 +383,9 @@ AttributionTrigger TriggerBuilder::Build(
               aggregatable_dedup_key_filter_pair_)},
           std::move(event_triggers), aggregatable_trigger_data_,
           aggregatable_values_, debug_reporting_,
-          aggregation_coordinator_origin_, source_registration_time_config_),
+          aggregation_coordinator_origin_,
+          *attribution_reporting::AggregatableTriggerConfig::Create(
+              source_registration_time_config_, trigger_context_id_)),
       destination_origin_, verifications_, is_within_fenced_frame_);
 }
 
@@ -460,6 +469,12 @@ ReportBuilder& ReportBuilder::SetSourceRegistrationTimeConfig(
   return *this;
 }
 
+ReportBuilder& ReportBuilder::SetTriggerContextId(
+    std::string trigger_context_id) {
+  trigger_context_id_ = std::move(trigger_context_id);
+  return *this;
+}
+
 AttributionReport ReportBuilder::Build() const {
   return AttributionReport(
       attribution_info_, report_id_, report_time_,
@@ -476,7 +491,8 @@ AttributionReport ReportBuilder::BuildAggregatableAttribution() const {
       AttributionReport::AggregatableAttributionData(
           AttributionReport::CommonAggregatableData(
               aggregation_coordinator_origin_, verification_token_,
-              source_registration_time_config_),
+              *attribution_reporting::AggregatableTriggerConfig::Create(
+                  source_registration_time_config_, trigger_context_id_)),
           contributions_, source_));
 }
 
@@ -488,7 +504,8 @@ AttributionReport ReportBuilder::BuildNullAggregatable() const {
       AttributionReport::NullAggregatableData(
           AttributionReport::CommonAggregatableData(
               aggregation_coordinator_origin_, verification_token_,
-              source_registration_time_config_),
+              *attribution_reporting::AggregatableTriggerConfig::Create(
+                  source_registration_time_config_, trigger_context_id_)),
           source_.common_info().reporting_origin(), source_.source_time()));
 }
 
@@ -525,7 +542,7 @@ bool operator==(const AttributionReport::CommonAggregatableData& a,
   const auto tie = [](const AttributionReport::CommonAggregatableData& data) {
     return std::make_tuple(data.verification_token,
                            data.aggregation_coordinator_origin,
-                           data.source_registration_time_config);
+                           data.aggregatable_trigger_config);
   };
   return tie(a) == tie(b);
 }
@@ -730,8 +747,8 @@ std::ostream& operator<<(
     out << "(null)";
   }
 
-  return out << ",source_registration_time_config="
-             << data.source_registration_time_config << "}";
+  return out << ",aggregatable_trigger_config="
+             << data.aggregatable_trigger_config << "}";
 }
 
 std::ostream& operator<<(

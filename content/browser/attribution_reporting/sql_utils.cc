@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "components/aggregation_service/features.h"
+#include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/event_report_windows.h"
@@ -59,7 +60,7 @@ void SerializeCommonAggregatableData(
     msg.set_verification_token(*verification_token);
   }
 
-  switch (data.source_registration_time_config) {
+  switch (data.aggregatable_trigger_config.source_registration_time_config()) {
     case SourceRegistrationTimeConfig::kInclude:
       msg.set_source_registration_time_config(
           proto::AttributionCommonAggregatableMetadata::INCLUDE);
@@ -68,6 +69,12 @@ void SerializeCommonAggregatableData(
       msg.set_source_registration_time_config(
           proto::AttributionCommonAggregatableMetadata::EXCLUDE);
       break;
+  }
+
+  if (const auto& trigger_context_id =
+          data.aggregatable_trigger_config.trigger_context_id();
+      trigger_context_id.has_value()) {
+    msg.set_trigger_context_id(*trigger_context_id);
   }
 }
 
@@ -91,14 +98,14 @@ void SerializeCommonAggregatableData(
         std::move(aggregation_coordinator_origin);
   }
 
+  SourceRegistrationTimeConfig source_registration_time_config;
+
   switch (msg.source_registration_time_config()) {
     case proto::AttributionCommonAggregatableMetadata::INCLUDE:
-      data.source_registration_time_config =
-          SourceRegistrationTimeConfig::kInclude;
+      source_registration_time_config = SourceRegistrationTimeConfig::kInclude;
       break;
     case proto::AttributionCommonAggregatableMetadata::EXCLUDE:
-      data.source_registration_time_config =
-          SourceRegistrationTimeConfig::kExclude;
+      source_registration_time_config = SourceRegistrationTimeConfig::kExclude;
       break;
     default:
       return false;
@@ -107,6 +114,20 @@ void SerializeCommonAggregatableData(
   if (msg.has_verification_token()) {
     data.verification_token = msg.verification_token();
   }
+
+  absl::optional<std::string> trigger_context_id;
+  if (msg.has_trigger_context_id()) {
+    trigger_context_id = msg.trigger_context_id();
+  }
+
+  auto aggregatable_trigger_config =
+      attribution_reporting::AggregatableTriggerConfig::Create(
+          source_registration_time_config, trigger_context_id);
+  if (!aggregatable_trigger_config.has_value()) {
+    return false;
+  }
+
+  data.aggregatable_trigger_config = std::move(*aggregatable_trigger_config);
 
   return true;
 }

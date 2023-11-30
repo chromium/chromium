@@ -208,6 +208,8 @@ class TriggerBuilder {
 
   TriggerBuilder& SetFilterPair(attribution_reporting::FilterPair filter_pair);
 
+  TriggerBuilder& SetTriggerContextId(std::string trigger_context_id);
+
   AttributionTrigger Build(bool generate_event_trigger_data = true) const;
 
  private:
@@ -231,6 +233,7 @@ class TriggerBuilder {
   attribution_reporting::mojom::SourceRegistrationTimeConfig
       source_registration_time_config_ =
           attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude;
+  absl::optional<std::string> trigger_context_id_;
 };
 
 // Helper class to construct an `AttributionInfo` for tests using default data.
@@ -284,6 +287,8 @@ class ReportBuilder {
   ReportBuilder& SetVerificationToken(
       absl::optional<std::string> verification_token);
 
+  ReportBuilder& SetTriggerContextId(std::string trigger_context_id);
+
   AttributionReport Build() const;
 
   AttributionReport BuildAggregatableAttribution() const;
@@ -306,6 +311,7 @@ class ReportBuilder {
   attribution_reporting::mojom::SourceRegistrationTimeConfig
       source_registration_time_config_ =
           attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude;
+  absl::optional<std::string> trigger_context_id_;
 };
 
 bool operator==(const StoredSource&, const StoredSource&);
@@ -520,8 +526,15 @@ MATCHER_P(AggregationCoordinatorOriginIs, matcher, "") {
 
 MATCHER_P(SourceRegistrationTimeConfigIs, matcher, "") {
   return ExplainMatchResult(matcher,
-                            arg.common_data.source_registration_time_config,
+                            arg.common_data.aggregatable_trigger_config
+                                .source_registration_time_config(),
                             result_listener);
+}
+
+MATCHER_P(TriggerContextIdIs, matcher, "") {
+  return ExplainMatchResult(
+      matcher, arg.common_data.aggregatable_trigger_config.trigger_context_id(),
+      result_listener);
 }
 
 // `CreateReportResult` matchers

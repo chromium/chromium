@@ -17,6 +17,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
@@ -162,7 +163,8 @@ absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
 
   base::Value::Dict additional_fields;
   std::string serialized_source_time;
-  switch (common_aggregatable_data->source_registration_time_config) {
+  switch (common_aggregatable_data->aggregatable_trigger_config
+              .source_registration_time_config()) {
     case attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude:
       serialized_source_time =
           SerializeTimeRoundedDownToWholeDayInSeconds(source_time);

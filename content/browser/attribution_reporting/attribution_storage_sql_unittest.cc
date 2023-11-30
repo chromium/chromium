@@ -116,6 +116,7 @@ struct AttributionAggregatableMetadataRecord {
       proto::AttributionCommonAggregatableMetadata_SourceRegistrationTimeConfig>
       source_registration_time_config =
           proto::AttributionCommonAggregatableMetadata::INCLUDE;
+  absl::optional<std::string> trigger_context_id;
 };
 
 struct AttributionNullAggregatableMetadataRecord {
@@ -125,6 +126,7 @@ struct AttributionNullAggregatableMetadataRecord {
       proto::AttributionCommonAggregatableMetadata_SourceRegistrationTimeConfig>
       source_registration_time_config =
           proto::AttributionCommonAggregatableMetadata::INCLUDE;
+  absl::optional<std::string> trigger_context_id;
 };
 
 std::string CreateSerializedFilterData(
@@ -190,6 +192,11 @@ std::string SerializeReportMetadata(
         *record.source_registration_time_config);
   }
 
+  if (record.trigger_context_id.has_value()) {
+    msg.mutable_common_data()->set_trigger_context_id(
+        *record.trigger_context_id);
+  }
+
   std::string str;
   bool success = msg.SerializeToString(&str);
   CHECK(success);
@@ -212,6 +219,11 @@ std::string SerializeReportMetadata(
   if (record.source_registration_time_config) {
     msg.mutable_common_data()->set_source_registration_time_config(
         *record.source_registration_time_config);
+  }
+
+  if (record.trigger_context_id.has_value()) {
+    msg.mutable_common_data()->set_trigger_context_id(
+        *record.trigger_context_id);
   }
 
   std::string str;
@@ -1987,6 +1999,24 @@ TEST_P(AttributionStorageSqlTest,
               },
           .valid = false,
       },
+      {
+          .desc = "invalid_trigger_context_id",
+          .record =
+              AttributionAggregatableMetadataRecord{
+                  .contributions =
+                      {
+                          AttributionAggregatableMetadataRecord::Contribution{
+                              .high_bits = 1,
+                              .low_bits = 2,
+                              .value = 3,
+                          },
+                      },
+                  .source_registration_time_config =
+                      proto::AttributionCommonAggregatableMetadata::INCLUDE,
+                  .trigger_context_id = "123",
+              },
+          .valid = false,
+      },
   };
 
   base::test::ScopedFeatureList scoped_feature_list(
@@ -2085,6 +2115,17 @@ TEST_P(AttributionStorageSqlTest,
                   .fake_source_time = 12345678900,
                   .coordinator_origin =
                       url::Origin::Create(GURL("http://a.test")),
+              },
+          .valid = false,
+      },
+      {
+          .desc = "invalid_trigger_context_id",
+          .record =
+              AttributionNullAggregatableMetadataRecord{
+                  .fake_source_time = 12345678900,
+                  .source_registration_time_config =
+                      proto::AttributionCommonAggregatableMetadata::INCLUDE,
+                  .trigger_context_id = "123",
               },
           .valid = false,
       },
