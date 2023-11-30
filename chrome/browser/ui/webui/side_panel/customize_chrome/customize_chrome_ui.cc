@@ -13,6 +13,8 @@
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/search/background/wallpaper_search/wallpaper_search_background_manager.h"
@@ -31,6 +33,7 @@
 #include "chrome/grit/side_panel_customize_chrome_resources_map.h"
 #include "chrome/grit/side_panel_shared_resources.h"
 #include "chrome/grit/side_panel_shared_resources_map.h"
+#include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
@@ -72,10 +75,12 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
           NewTabPageUI::IsDriveModuleEnabledForProfile(profile_))),
       page_factory_receiver_(this),
       id_(RandInt64()) {
-  if (base::FeatureList::IsEnabled(
+  const bool wallpaper_search_flags_enabled =
+      base::FeatureList::IsEnabled(
           ntp_features::kCustomizeChromeWallpaperSearch) &&
       base::FeatureList::IsEnabled(
-          optimization_guide::features::kOptimizationGuideModelExecution)) {
+          optimization_guide::features::kOptimizationGuideModelExecution);
+  if (wallpaper_search_flags_enabled) {
     wallpaper_search_background_manager_ =
         std::make_unique<WallpaperSearchBackgroundManager>(profile_);
   }
@@ -186,12 +191,16 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
           ntp_features::kCustomizeChromeSidePanelExtensionsCard) &&
           features::IsChromeWebuiRefresh2023());
 
+  OptimizationGuideKeyedService* optimization_guide_keyed_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
   source->AddBoolean(
       "wallpaperSearchEnabled",
-      base::FeatureList::IsEnabled(
-          ntp_features::kCustomizeChromeWallpaperSearch) &&
-          base::FeatureList::IsEnabled(
-              optimization_guide::features::kOptimizationGuideModelExecution));
+      wallpaper_search_flags_enabled &&
+          (optimization_guide_keyed_service &&
+           optimization_guide_keyed_service
+               ->ShouldFeatureBeCurrentlyEnabledForUser(
+                   optimization_guide::proto::ModelExecutionFeature::
+                       MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH)));
 
   webui::SetupChromeRefresh2023(source);
 

@@ -110,7 +110,15 @@ class WallpaperSearchInteractiveTest : public InteractiveBrowserTest {
                  NavigateWebContents(kNewTabPageElementId,
                                      GURL(chrome::kChromeUINewTabPageURL)),
                  WaitForWebContentsReady(kNewTabPageElementId,
-                                         GURL(chrome::kChromeUINewTabPageURL)));
+                                         GURL(chrome::kChromeUINewTabPageURL)),
+                 Do([this]() {
+                   ON_CALL(
+                       mock_optimization_guide_keyed_service(),
+                       ShouldFeatureBeCurrentlyEnabledForUser(
+                           optimization_guide::proto::ModelExecutionFeature::
+                               MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH))
+                       .WillByDefault(testing::Return(true));
+                 }));
   }
 
   InteractiveTestApi::MultiStep OpenCustomizeChromeAt(

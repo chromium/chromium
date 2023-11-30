@@ -129,7 +129,8 @@ class OptimizationGuideKeyedService
   // Returns true if the `feature` should be currently enabled for this user.
   // Note that the return value here may not match the feature enable state on
   // chrome settings page since the latter takes effect on browser restart.
-  bool ShouldFeatureBeCurrentlyEnabledForUser(
+  // Virtualized for testing.
+  virtual bool ShouldFeatureBeCurrentlyEnabledForUser(
       optimization_guide::proto::ModelExecutionFeature feature) const;
 
   // Adds `observer` which can observe the change in feature settings.
