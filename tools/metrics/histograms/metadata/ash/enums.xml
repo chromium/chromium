@@ -1330,6 +1330,7 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="Exiting overview in tests"/>
   <int value="21" label="DEPRECATED: Showing glanceables"/>
   <int value="22" label="Exiting overview due to window deactivation"/>
+  <int value="23" label="Window restored from previous session"/>
 </enum>
 
 <enum name="OverviewStartAction">

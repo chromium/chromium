@@ -19,6 +19,7 @@
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
+#include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_restore/informed_restore_dialog.h"
 #include "ash/wm/window_restore/window_restore_util.h"
@@ -334,11 +335,20 @@ void WindowRestoreController::OnAppLaunched(aura::Window* window) {
 }
 
 void WindowRestoreController::OnWidgetInitialized(views::Widget* widget) {
-  DCHECK(widget);
+  CHECK(widget);
 
   aura::Window* window = widget->GetNativeWindow();
-  if (window->GetProperty(app_restore::kParentToHiddenContainerKey))
+  if (window->GetProperty(app_restore::kParentToHiddenContainerKey)) {
     return;
+  }
+
+  // Windows with restore window key less than -1 are launched from desk
+  // templates or saved desks; we want to stay in overview for these. Windows
+  // with restore window key more than -1 are launched from full restore and we
+  // want to end overview for these.
+  if (window->GetProperty(app_restore::kRestoreWindowIdKey) > -1) {
+    OverviewController::Get()->EndOverview(OverviewEndAction::kFullRestore);
+  }
 
   UpdateAndObserveWindow(window);
 

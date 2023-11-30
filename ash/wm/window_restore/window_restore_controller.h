@@ -70,6 +70,10 @@ class ASH_EXPORT WindowRestoreController
       aura::Window* window,
       const std::vector<aura::Window*>& windows);
 
+  const aura::Window* to_be_snapped_window() const {
+    return to_be_snapped_window_;
+  }
+
   // Calls SaveWindowImpl for |window_state|. The activation index will be
   // calculated in SaveWindowImpl.
   void SaveWindow(WindowState* window_state);
@@ -112,10 +116,6 @@ class ASH_EXPORT WindowRestoreController
                                intptr_t old) override;
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
   void OnWindowDestroying(aura::Window* window) override;
-
-  const aura::Window* to_be_snapped_window() const {
-    return to_be_snapped_window_;
-  }
 
  private:
   friend class WindowRestoreControllerTest;
