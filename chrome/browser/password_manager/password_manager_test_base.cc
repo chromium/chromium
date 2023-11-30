@@ -32,6 +32,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_store/password_store_results_observer.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -389,26 +390,6 @@ void BubbleObserver::WaitForSaveUnsyncedCredentialsPrompt() const {
       password_manager::ui::WILL_DELETE_UNSYNCED_ACCOUNT_PASSWORDS_STATE);
 }
 
-PasswordStoreResultsObserver::PasswordStoreResultsObserver() = default;
-PasswordStoreResultsObserver::~PasswordStoreResultsObserver() = default;
-
-void PasswordStoreResultsObserver::OnGetPasswordStoreResults(
-    std::vector<std::unique_ptr<password_manager::PasswordForm>> results) {
-  results_ = std::move(results);
-  run_loop_.Quit();
-}
-
-base::WeakPtr<password_manager::PasswordStoreConsumer>
-PasswordStoreResultsObserver::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
-std::vector<std::unique_ptr<password_manager::PasswordForm>>
-PasswordStoreResultsObserver::WaitForResults() {
-  run_loop_.Run();
-  return std::move(results_);
-}
-
 PasswordManagerBrowserTestBase::PasswordManagerBrowserTestBase()
     : https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS),
       web_contents_(nullptr) {}
@@ -491,7 +472,7 @@ void PasswordManagerBrowserTestBase::WaitForPasswordStore(Browser* browser) {
   scoped_refptr<password_manager::PasswordStoreInterface>
       profile_password_store = ProfilePasswordStoreFactory::GetForProfile(
           browser->profile(), ServiceAccessType::IMPLICIT_ACCESS);
-  PasswordStoreResultsObserver profile_syncer;
+  password_manager::PasswordStoreResultsObserver profile_syncer;
   profile_password_store->GetAllLoginsWithAffiliationAndBrandingInformation(
       profile_syncer.GetWeakPtr());
   profile_syncer.WaitForResults();
@@ -500,7 +481,7 @@ void PasswordManagerBrowserTestBase::WaitForPasswordStore(Browser* browser) {
       account_password_store = AccountPasswordStoreFactory::GetForProfile(
           browser->profile(), ServiceAccessType::IMPLICIT_ACCESS);
   if (account_password_store) {
-    PasswordStoreResultsObserver account_syncer;
+    password_manager::PasswordStoreResultsObserver account_syncer;
     account_password_store->GetAllLoginsWithAffiliationAndBrandingInformation(
         account_syncer.GetWeakPtr());
     account_syncer.WaitForResults();

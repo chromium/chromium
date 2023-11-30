@@ -20,10 +20,6 @@
 
 class ManagePasswordsUIController;
 
-namespace password_manager {
-struct PasswordForm;
-}  // namespace password_manager
-
 // Checks the save password prompt for a specified WebContents and allows
 // accepting saving passwords through it.
 class BubbleObserver {
@@ -102,34 +98,6 @@ class BubbleObserver {
 
  private:
   const raw_ptr<ManagePasswordsUIController> passwords_ui_controller_;
-};
-
-// A helper class that synchronously waits until the password store handles a
-// GetLogins() request.
-class PasswordStoreResultsObserver
-    : public password_manager::PasswordStoreConsumer {
- public:
-  PasswordStoreResultsObserver();
-
-  PasswordStoreResultsObserver(const PasswordStoreResultsObserver&) = delete;
-  PasswordStoreResultsObserver& operator=(const PasswordStoreResultsObserver&) =
-      delete;
-
-  ~PasswordStoreResultsObserver() override;
-
-  // Waits for OnGetPasswordStoreResults() and returns the result.
-  std::vector<std::unique_ptr<password_manager::PasswordForm>> WaitForResults();
-
-  base::WeakPtr<PasswordStoreConsumer> GetWeakPtr();
-
- private:
-  void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<password_manager::PasswordForm>> results)
-      override;
-
-  base::RunLoop run_loop_;
-  std::vector<std::unique_ptr<password_manager::PasswordForm>> results_;
-  base::WeakPtrFactory<PasswordStoreResultsObserver> weak_ptr_factory_{this};
 };
 
 class PasswordManagerBrowserTestBase : public CertVerifierBrowserTest {

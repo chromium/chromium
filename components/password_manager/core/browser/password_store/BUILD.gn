@@ -115,6 +115,8 @@ static_library("test_support") {
     "mock_password_store_interface.h",
     "mock_smart_bubble_stats_store.cc",
     "mock_smart_bubble_stats_store.h",
+    "password_store_results_observer.cc",
+    "password_store_results_observer.h",
     "test_password_store.cc",
     "test_password_store.h",
   ]

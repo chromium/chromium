@@ -41,6 +41,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_results_observer.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -337,7 +338,7 @@ class PasswordManagerSyncTest : public SyncTest {
   GetAllLoginsFromProfilePasswordStore() {
     scoped_refptr<password_manager::PasswordStoreInterface> password_store =
         passwords_helper::GetProfilePasswordStoreInterface(0);
-    PasswordStoreResultsObserver syncer;
+    password_manager::PasswordStoreResultsObserver syncer;
     password_store->GetAllLoginsWithAffiliationAndBrandingInformation(
         syncer.GetWeakPtr());
     return syncer.WaitForResults();
@@ -349,7 +350,7 @@ class PasswordManagerSyncTest : public SyncTest {
   GetAllLoginsFromAccountPasswordStore() {
     scoped_refptr<password_manager::PasswordStoreInterface> password_store =
         passwords_helper::GetAccountPasswordStoreInterface(0);
-    PasswordStoreResultsObserver syncer;
+    password_manager::PasswordStoreResultsObserver syncer;
     password_store->GetAllLoginsWithAffiliationAndBrandingInformation(
         syncer.GetWeakPtr());
     return syncer.WaitForResults();
