@@ -123,7 +123,7 @@ public final class VoiceToolbarButtonControllerTest {
     @Test
     @MediumTest
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
-    public void testVoiceButtonInToolbarIsDisabledOnNTP() {
+    public void testVoiceButtonInToolbarIsDisabledOnNtp() {
         // Ensure the button starts visible.
         ViewUtils.waitForVisibleView(
                 allOf(

@@ -953,7 +953,7 @@ public class ToolbarPhoneTest {
     public void testLocationBarBackgroundChangedWithStartSurfaceState() {
         // Test updating the location bar background when entering the search page from the Start
         // Surface.
-        assertEquals(false, mToolbar.isLocationBarShownInNTP());
+        assertEquals(false, mToolbar.isLocationBarShownInNtp());
         mToolbar.setLocationBarBackgroundDrawableForTesting(mLocationbarBackgroundDrawable);
         mToolbar.setIsShowingStartSurfaceHomepageForTesting(true);
         TestThreadUtils.runOnUiThreadBlocking(
@@ -969,7 +969,7 @@ public class ToolbarPhoneTest {
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
         NewTabPageTestUtils.waitForNtpLoaded(tab);
-        assertEquals(true, mToolbar.isLocationBarShownInNTP());
+        assertEquals(true, mToolbar.isLocationBarShownInNtp());
         mToolbar.setNtpSearchBoxBackgroundForTesting(mNtpSearchBoxDrawable);
         mToolbar.setIsShowingStartSurfaceHomepageForTesting(true);
         TestThreadUtils.runOnUiThreadBlocking(
@@ -980,7 +980,7 @@ public class ToolbarPhoneTest {
 
         // Test updating the location bar background when entering the New Tab Page from the Start
         // Surface when NtpSearchBoxDrawable hasn't been constructed.
-        assertEquals(true, mToolbar.isLocationBarShownInNTP());
+        assertEquals(true, mToolbar.isLocationBarShownInNtp());
         mToolbar.setNtpSearchBoxBackgroundForTesting(null);
         mToolbar.setIsShowingStartSurfaceHomepageForTesting(true);
         TestThreadUtils.runOnUiThreadBlocking(
@@ -1005,14 +1005,14 @@ public class ToolbarPhoneTest {
                                 R.dimen.home_surface_background_color_elevation),
                         0);
 
-        assertEquals(false, mToolbar.isLocationBarShownInNTP());
+        assertEquals(false, mToolbar.isLocationBarShownInNtp());
         assertNotEquals(expectColor, toolbarBackgroundDrawable.getColor());
 
         // Load the new tab page.
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
         NewTabPageTestUtils.waitForNtpLoaded(tab);
-        assertEquals(true, mToolbar.isLocationBarShownInNTP());
+        assertEquals(true, mToolbar.isLocationBarShownInNtp());
         assertEquals(expectColor, toolbarBackgroundDrawable.getColor());
 
         // Focus on the Omnibox.
@@ -1035,7 +1035,7 @@ public class ToolbarPhoneTest {
                 mToolbar.getResources()
                         .getDimensionPixelOffset(R.dimen.location_bar_url_action_offset);
 
-        assertEquals(false, mToolbar.isLocationBarShownInNTP());
+        assertEquals(false, mToolbar.isLocationBarShownInNtp());
         assertEquals(View.INVISIBLE, iconBackground.getVisibility());
         assertEquals(
                 expectedEndMarginBeforePolish,
@@ -1045,7 +1045,7 @@ public class ToolbarPhoneTest {
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
         NewTabPageTestUtils.waitForNtpLoaded(tab);
-        assertEquals(true, mToolbar.isLocationBarShownInNTP());
+        assertEquals(true, mToolbar.isLocationBarShownInNtp());
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mToolbar.setNtpSearchBoxScrollFractionForTesting(1);

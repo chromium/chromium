@@ -1111,7 +1111,7 @@ public class ToolbarPhone extends ToolbarLayout
         TraceEvent.begin("ToolbarPhone.updateLocationBarLayoutForExpansionAnimation");
         if (isInTabSwitcherMode()) return;
 
-        boolean isLocationBarShownInNTP = isLocationBarShownInNTP();
+        boolean isLocationBarShownInNtp = isLocationBarShownInNtp();
         FrameLayout.LayoutParams locationBarLayoutParams =
                 mLocationBar.getPhoneCoordinator().getFrameLayoutParams();
         int currentLeftMargin = locationBarLayoutParams.leftMargin;
@@ -1169,7 +1169,7 @@ public class ToolbarPhone extends ToolbarLayout
             getToolbarDataProvider()
                     .getNewTabPageDelegate()
                     .setUrlFocusChangeAnimationPercent(mUrlFocusChangeFraction);
-            if (isLocationBarShownInNTP
+            if (isLocationBarShownInNtp
                     && !getToolbarDataProvider().isInOverviewAndShowingOmnibox()) {
                 updateNtpTransitionAnimation();
             } else {
@@ -1210,8 +1210,8 @@ public class ToolbarPhone extends ToolbarLayout
             // focused. When the fake omnibox is scrolled, the color should not change.
             if (((mShouldShowModernizeVisualUpdate && mLocationBar.getPhoneCoordinator().hasFocus())
                             || (mIsSurfacePolishEnabled
-                                    ? (!isLocationBarShownInNTP && !mIsShowingStartSurfaceHomepage)
-                                    : !isLocationBarShownInNTP))
+                                    ? (!isLocationBarShownInNtp && !mIsShowingStartSurfaceHomepage)
+                                    : !isLocationBarShownInNtp))
                     && mTabSwitcherState == STATIC_TAB) {
                 @ColorInt int defaultColor = getToolbarDefaultColor();
                 @ColorInt
@@ -1497,7 +1497,7 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     private void setAncestorsShouldClipChildren(boolean clip) {
-        if (!isLocationBarShownInNTP()) return;
+        if (!isLocationBarShownInNtp()) return;
 
         ViewUtils.setAncestorsShouldClipChildren(this, clip);
     }
@@ -1731,7 +1731,7 @@ public class ToolbarPhone extends ToolbarLayout
             if ((profile == null
                             || SearchEngineUtils.getForProfile(profile)
                                     .shouldShowSearchEngineLogo())
-                    && isLocationBarShownInNTP()
+                    && isLocationBarShownInNtp()
                     && urlHasFocus()
                     && mUrlFocusChangeInProgress) {
                 if (locationBarDirection == LAYOUT_DIRECTION_RTL) {
@@ -2139,7 +2139,7 @@ public class ToolbarPhone extends ToolbarLayout
                                 mIsSurfacePolishOmniboxColorEnabled
                                         ? R.drawable.home_surface_search_box_background_colorful
                                         : R.drawable.home_surface_search_box_background_neutral);
-            } else if (isLocationBarShownInNTP()) {
+            } else if (isLocationBarShownInNtp()) {
                 // Update the location bar background when entering the New Tab Page from the Start
                 // Surface.
                 if (mNtpSearchBoxBackground != null) {
@@ -2318,7 +2318,7 @@ public class ToolbarPhone extends ToolbarLayout
                         URL_CLEAR_FOCUS_MENU_DELAY_MS,
                         1);
 
-        if (isLocationBarShownInNTP() && mNtpSearchBoxScrollFraction == 0f) return;
+        if (isLocationBarShownInNtp() && mNtpSearchBoxScrollFraction == 0f) return;
 
         if (mToolbarShadow != null) {
             animator = ObjectAnimator.ofFloat(mToolbarShadow, ALPHA, 1);
@@ -2354,7 +2354,7 @@ public class ToolbarPhone extends ToolbarLayout
         if (hasFocus) {
             mDropdownListScrolled = false;
             mActiveLocationBarBackground = mLocationBarBackground;
-        } else if (isLocationBarShownInNTP()) {
+        } else if (isLocationBarShownInNtp()) {
             updateToNtpBackground();
         }
     }
@@ -2612,12 +2612,12 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     @VisibleForTesting
-    boolean isLocationBarShownInNTP() {
+    boolean isLocationBarShownInNtp() {
         return getToolbarDataProvider().getNewTabPageDelegate().isLocationBarShown();
     }
 
     private boolean isLocationBarCurrentlyShown() {
-        return !isLocationBarShownInNTP() || mUrlExpansionFraction > 0;
+        return !isLocationBarShownInNtp() || mUrlExpansionFraction > 0;
     }
 
     @Override
@@ -2661,7 +2661,7 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     private @VisualState int computeVisualState() {
-        if (isLocationBarShownInNTP()) return VisualState.NEW_TAB_NORMAL;
+        if (isLocationBarShownInNtp()) return VisualState.NEW_TAB_NORMAL;
         if (isIncognito()) return VisualState.INCOGNITO;
         if (getToolbarDataProvider().isUsingBrandColor()) return VisualState.BRAND_COLOR;
         return VisualState.NORMAL;
@@ -2835,7 +2835,7 @@ public class ToolbarPhone extends ToolbarLayout
 
         // We update the alpha before comparing the visual state as we need to change
         // its value when entering and exiting TabSwitcher mode.
-        if (isLocationBarShownInNTP() && inOrEnteringStaticTab) {
+        if (isLocationBarShownInNtp() && inOrEnteringStaticTab) {
             updateNtpTransitionAnimation();
         }
 
@@ -2867,7 +2867,7 @@ public class ToolbarPhone extends ToolbarLayout
                     new BooleanSupplier() {
                         @Override
                         public boolean getAsBoolean() {
-                            boolean transitioningAwayFromLocationBarInNTP =
+                            boolean transitioningAwayFromLocationBarInNtp =
                                     getToolbarDataProvider()
                                             .getNewTabPageDelegate()
                                             .transitioningAwayFromLocationBar();
@@ -2877,7 +2877,7 @@ public class ToolbarPhone extends ToolbarLayout
                             return mTabSwitcherState == STATIC_TAB
                                     && !mUrlFocusChangeInProgress
                                     && !urlHasFocus()
-                                    && !transitioningAwayFromLocationBarInNTP
+                                    && !transitioningAwayFromLocationBarInNtp
                                     && !isInOverviewAndShowingOmnibox;
                         }
                     };
@@ -3129,11 +3129,11 @@ public class ToolbarPhone extends ToolbarLayout
         // For LTR, the value is negative because we are making space on the left-hand side.
         // For RTL, the value is positive because we are pushing the icon further to the
         // right-hand side.
-        int offset = statusCoordinator.getStatusIconWidth() - getAdditionalOffsetForNTP();
+        int offset = statusCoordinator.getStatusIconWidth() - getAdditionalOffsetForNtp();
         return mLocationBar.isLayoutRtl() ? offset : -offset;
     }
 
-    private int getAdditionalOffsetForNTP() {
+    private int getAdditionalOffsetForNtp() {
         return getResources().getDimensionPixelSize(R.dimen.fake_search_box_lateral_padding)
                 - getResources()
                         .getDimensionPixelSize(

@@ -147,7 +147,7 @@ public class ToolbarTest {
     @Test
     @MediumTest
     @DisabledTest(message = "https://crbug.com/1230091")
-    public void testNTPNavigatesToErrorPageOnDisconnectedNetwork() {
+    public void testNtpNavigatesToErrorPageOnDisconnectedNetwork() {
         EmbeddedTestServer testServer =
                 EmbeddedTestServer.createAndStartServer(
                         ApplicationProvider.getApplicationContext());
