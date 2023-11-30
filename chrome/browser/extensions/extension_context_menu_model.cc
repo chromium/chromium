@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/extensions/extension_side_panel_utils.h"
+#include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
@@ -515,10 +516,22 @@ void ExtensionContextMenuModel::OnMenuWillShow(ui::SimpleMenuModel* menu) {
 }
 
 void ExtensionContextMenuModel::MenuClosed(ui::SimpleMenuModel* menu) {
+  // `action_taken_` can be deleted when the extensions toggle menu is closed.
   if (action_taken_) {
     ContextMenuAction action = *action_taken_;
+    bool was_side_panel_action_taken =
+        action_taken_ == ContextMenuAction::kToggleSidePanelVisibility;
     UMA_HISTOGRAM_ENUMERATION("Extensions.ContextMenuAction", action);
+
+    // Clear out the action to avoid any possible UAF if we close the parent
+    // menu.
     action_taken_ = absl::nullopt;
+    if (source_ == ContextMenuSource::kMenuItem &&
+        was_side_panel_action_taken) {
+      browser_->window()->GetExtensionsContainer()->CloseOverflowMenuIfOpen();
+      // WARNING: The overflow menu was the parent for this menu, so it's
+      // possible `this` is now deleted.
+    }
   }
 }
 
