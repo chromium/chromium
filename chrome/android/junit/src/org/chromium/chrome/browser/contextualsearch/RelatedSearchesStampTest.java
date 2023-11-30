@@ -79,33 +79,11 @@ public class RelatedSearchesStampTest {
     }
 
     /**
-     * Sets whether the config specifies that the user needs permissions for sending content in
-     * order to get any Related Searches.
-     */
-    private void setNeedsContent(boolean needsContent) {
-        mFeatureListValues.addFieldTrialParamOverride(
-                ChromeFeatureList.RELATED_SEARCHES,
-                ContextualSearchFieldTrial.RELATED_SEARCHES_NEEDS_CONTENT_PARAM_NAME,
-                "" + needsContent);
-    }
-
-    /**
      * Sets whether the user has allowed sending the URL (has enabled "Make search and browsing
      * better").
      */
     private void setCanSendUrl(boolean canSend) {
         mPolicy.overrideAllowSendingPageUrlForTesting(canSend);
-    }
-
-    /**
-     * Sets whether the config specifies that the user needs permissions for sending the URL in
-     * order to get any Related Searches.
-     */
-    private void setNeedsUrl(boolean needsUrl) {
-        mFeatureListValues.addFieldTrialParamOverride(
-                ChromeFeatureList.RELATED_SEARCHES,
-                ContextualSearchFieldTrial.RELATED_SEARCHES_NEEDS_URL_PARAM_NAME,
-                "" + needsUrl);
     }
 
     /**
@@ -140,8 +118,6 @@ public class RelatedSearchesStampTest {
     private void setStandardExperimentRequirements() {
         // For experimentation we currently require all users have all the permissions
         // for all experiment arms, and we restrict the language to English-only.
-        setNeedsUrl(true);
-        setNeedsContent(true);
         setSupportAllLanguage(false);
         setLanguageAllowlist(ENGLISH);
     }
@@ -186,32 +162,6 @@ public class RelatedSearchesStampTest {
                         + "expected launch configuration!",
                 mStamp.getRelatedSearchesStamp(GERMAN),
                 is(EXPECTED_DEFAULT_STAMP));
-    }
-
-    @Test
-    @Feature({"RelatedSearches", "RelatedSearchesStamp"})
-    public void testGetStampUrlOnlyLaunchConfig() {
-        setStandardLaunchConfiguration(CONFIG_STAMP_URL_ONLY);
-        setNeedsContent(false);
-        setCanSendContent(false);
-        assertThat(
-                "Non English pages are not generating the expected stamp to track usage for a "
-                        + "URL-only launch configuration!",
-                mStamp.getRelatedSearchesStamp(GERMAN),
-                is(CONFIG_STAMP_URL_ONLY));
-    }
-
-    @Test
-    @Feature({"RelatedSearches", "RelatedSearchesStamp"})
-    public void testGetStampContentOnlyLaunchConfig() {
-        setStandardLaunchConfiguration(CONFIG_STAMP_CONTENT_ONLY);
-        setNeedsUrl(false);
-        setCanSendUrl(false);
-        assertThat(
-                "Non English pages are not generating the expected stamp to track usage for a "
-                        + "content-only launch configuration!",
-                mStamp.getRelatedSearchesStamp(GERMAN),
-                is(CONFIG_STAMP_CONTENT_ONLY));
     }
 
     @Test

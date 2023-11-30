@@ -118,8 +118,8 @@ class RelatedSearchesStamp {
      */
     boolean isQualifiedForRelatedSearches(String basePageLanguage) {
         return isLanguageQualified(basePageLanguage)
-                && canSendUrlIfNeeded()
-                && canSendContentIfNeeded();
+                && mPolicy.hasSendUrlPermissions()
+                && mPolicy.isContextualSearchFullyEnabled();
     }
 
     /**
@@ -162,43 +162,6 @@ class RelatedSearchesStamp {
     private boolean isLanguageQualified(String basePageLanguage) {
         String allowedLanguages = getAllowedLanguages();
         return TextUtils.isEmpty(allowedLanguages) || allowedLanguages.contains(basePageLanguage);
-    }
-
-    /**
-     * @return whether the user's privacy setting for URL sending satisfies the configured
-     *         requirement.
-     */
-    private boolean canSendUrlIfNeeded() {
-        return !isRelatedSearchesUrlNeeded() || mPolicy.hasSendUrlPermissions();
-    }
-
-    /**
-     * @return whether the user's privacy setting for page content sending satisfies the configured
-     *         requirement.
-     */
-    private boolean canSendContentIfNeeded() {
-        return !isRelatedSearchesContentNeeded() || mPolicy.isContextualSearchFullyEnabled();
-    }
-
-    /** @return whether the runtime configuration has a URL sending permissions requirement. */
-    private boolean isRelatedSearchesUrlNeeded() {
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.RELATED_SEARCHES,
-                        ContextualSearchFieldTrial.RELATED_SEARCHES_NEEDS_URL_PARAM_NAME,
-                        true)
-                || mPolicy.isMissingRelatedSearchesConfiguration();
-    }
-
-    /**
-     * @return whether the runtime configuration has a page content sending permissions
-     *         requirement.
-     */
-    private boolean isRelatedSearchesContentNeeded() {
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.RELATED_SEARCHES,
-                        ContextualSearchFieldTrial.RELATED_SEARCHES_NEEDS_CONTENT_PARAM_NAME,
-                        true)
-                || mPolicy.isMissingRelatedSearchesConfiguration();
     }
 
     /**

@@ -544,12 +544,6 @@ class ContextualSearchPolicy {
         return ContextualSearchFieldTrial.isRelatedSearchesParamEnabled(paramName);
     }
 
-    /** @return whether we're missing the Related Searches configuration stamp. */
-    boolean isMissingRelatedSearchesConfiguration() {
-        return TextUtils.isEmpty(
-                ContextualSearchFieldTrial.getRelatedSearchesExperimentConfigurationStamp());
-    }
-
     // --------------------------------------------------------------------------------------------
     // Testing helpers.
     // --------------------------------------------------------------------------------------------

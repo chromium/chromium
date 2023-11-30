@@ -22,8 +22,6 @@ public class ContextualSearchFieldTrial {
     // Related Searches FieldTrial and parameter names.
     // ==========================================================================================
     // Params used elsewhere but gathered here since they may be present in FieldTrial configs.
-    static final String RELATED_SEARCHES_NEEDS_URL_PARAM_NAME = "needs_url";
-    static final String RELATED_SEARCHES_NEEDS_CONTENT_PARAM_NAME = "needs_content";
     // A comma-separated list of lower-case ISO 639 language codes.
     static final String RELATED_SEARCHES_LANGUAGE_ALLOWLIST_PARAM_NAME = "language_allowlist";
     static final String RELATED_SEARCHES_LANGUAGE_DEFAULT_ALLOWLIST = "en";
