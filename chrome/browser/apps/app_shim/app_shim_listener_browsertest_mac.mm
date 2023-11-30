@@ -91,6 +91,7 @@ class TestShimClient : public chrome::mojom::AppShim {
  private:
   void OnShimConnectedDone(
       chrome::mojom::AppShimLaunchResult result,
+      variations::VariationsCommandLine feature_state,
       mojo::PendingReceiver<chrome::mojom::AppShim> app_shim_receiver) {
     shim_receiver_.Bind(std::move(app_shim_receiver));
   }

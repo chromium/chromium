@@ -26,7 +26,7 @@ TEST(VariationsCommandLineTest, TestGetVariationsCommandLine) {
   scoped_feature_list.InitFromCommandLine(enable_feature_list,
                                           disable_feature_list);
 
-  std::string output = GetVariationsCommandLine();
+  std::string output = VariationsCommandLine::GetForCurrentProcess().ToString();
   EXPECT_NE(output.find(trial_list), std::string::npos);
   EXPECT_NE(output.find(param_list), std::string::npos);
   EXPECT_NE(output.find(enable_feature_list), std::string::npos);

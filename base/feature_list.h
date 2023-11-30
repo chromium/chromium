@@ -16,6 +16,7 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list_buildflags.h"
 #include "base/gtest_prod_util.h"
@@ -458,6 +459,16 @@ class BASE_EXPORT FeatureList {
   // a look at using base/test/scoped_feature_list.h instead.
   static void SetInstance(std::unique_ptr<FeatureList> instance);
 
+  // Registers the given `instance` to be the temporary singleton feature list
+  // for this process. While the given `instance` is the singleton feature list,
+  // only the state of features matching `allowed_feature_names` can be checked.
+  // Attempting to query other feature will behave as if no feature list was set
+  // at all. It is expected that this instance is replaced using `SetInstance`
+  // with an instance without limitations as soon as practical.
+  static void SetEarlyAccessInstance(
+      std::unique_ptr<FeatureList> instance,
+      base::flat_set<std::string> allowed_feature_names);
+
   // Clears the previously-registered singleton instance for tests and returns
   // the old instance.
   // Note: Most tests should never call this directly. Instead consider using
@@ -481,6 +492,17 @@ class BASE_EXPORT FeatureList {
   static void FailOnFeatureAccessWithoutFeatureList();
 
   void SetCachingContextForTesting(uint16_t caching_context);
+
+  // Returns the first feature that was accessed before a FeatureList was
+  // registered that allows accessing the feature.
+  static const Feature* GetEarlyAccessedFeatureForTesting();
+
+  // Resets the state of the early feature access tracker.
+  static void ResetEarlyFeatureAccessTrackerForTesting();
+
+  // Adds a feature to the early allowed feature access list for tests. Should
+  // only be called on a FeatureList that was set with SetEarlyAccessInstance().
+  void AddEarlyAllowedFeatureForTesting(std::string feature_name);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FeatureListTest, CheckFeatureIdentity);
@@ -583,6 +605,14 @@ class BASE_EXPORT FeatureList {
   // doesn't modify externally visible state.
   bool CheckFeatureIdentity(const Feature& feature) const;
 
+  // Returns true if this feature list was set with SetEarlyAccessInstance().
+  bool IsEarlyAccessInstance() const;
+
+  // Returns if this feature list instance allows access to the given feature.
+  // If a this feature list was set with SetEarlyAccessInstance(), only the
+  // features in `allowed_feature_names_` can be checked.
+  bool AllowFeatureAccess(const Feature& feature) const;
+
   // Map from feature name to an OverrideEntry struct for the feature, if it
   // exists.
   base::flat_map<std::string, OverrideEntry> overrides_;
@@ -612,6 +642,12 @@ class BASE_EXPORT FeatureList {
   // in the `Feature` object is populated and valid. See the comment on
   // `base::Feature::cached_value` for more details.
   uint16_t caching_context_ = 1;
+
+  // If this instance was set with SetEarlyAccessInstance(), this set contains
+  // the names of the features whose state is allowed to be checked. Attempting
+  // to check the state of a feature not on this list will behave as if no
+  // feature list was initialized at all.
+  base::flat_set<std::string> allowed_feature_names_;
 };
 
 }  // namespace base

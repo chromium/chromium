@@ -90,4 +90,10 @@ void FieldTrialParamAssociator::ClearAllCachedParamsForTesting() {
   field_trial_params_.clear();
 }
 
+void FieldTrialParamAssociator::ClearAllCachedParams(
+    PassKey<AppShimController>) {
+  AutoLock scoped_lock(lock_);
+  field_trial_params_.clear();
+}
+
 }  // namespace base

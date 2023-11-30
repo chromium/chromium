@@ -33,6 +33,7 @@ source_set("app_shim") {
     "//chrome/services/mac_notifications",
     "//components/crash/core/app",
     "//components/remote_cocoa/app_shim",
+    "//components/variations/field_trial_config",
     "//content/public/browser",
     "//ipc",
     "//mojo/core/embedder",
