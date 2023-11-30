@@ -231,26 +231,34 @@ template("generate_jni_registration") {
 
 # JNI target implementation. See generate_jni or generate_jar_jni for usage.
 template("generate_jni_impl") {
-  forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
   public_configs = []
   if (!defined(invoker.use_chromium_base) || invoker.use_chromium_base) {
     public_configs += [ "//third_party/jni_zero:use_chromium_base_define" ]
   }
+  _jni_zero_action_target_name = target_name + "__action"
   if (current_toolchain != default_toolchain && target_os == "android") {
     # Rather than regenerating .h files in secondary toolchains, re-use the
     # ones from the primary toolchain by depending on it and adding the
     # root gen directory to the include paths.
     # https://crbug.com/1369398
     group(target_name) {
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       not_needed(invoker, "*")
-      public_deps = [ ":$target_name($default_toolchain)" ]
       public_configs +=
           [ "//third_party/jni_zero:jni_include_dir($default_toolchain)" ]
+
+      # Depending on the action name to avoid cross-toolchain native deps.
+      public_deps = [ ":$_jni_zero_action_target_name($default_toolchain)" ]
+      deps = [ "//third_party/jni_zero:jni_zero_utils" ]
+      metadata = {
+        shared_libraries_barrier = []
+      }
     }
   } else {
-    _invoke_jni_zero(target_name) {
+    _final_target_name = target_name
+    _invoke_jni_zero(_jni_zero_action_target_name) {
       _subdir = rebase_path(target_gen_dir, root_gen_dir)
-      _jni_output_dir = "$jni_headers_dir/$_subdir/$target_name"
+      _jni_output_dir = "$jni_headers_dir/$_subdir/$_final_target_name"
       if (defined(invoker.jni_generator_include)) {
         _jni_generator_include = invoker.jni_generator_include
         _jni_generator_include_deps = []
@@ -282,11 +290,6 @@ template("generate_jni_impl") {
       public_deps += _jni_generator_include_deps
 
       public_configs += [ "//third_party/jni_zero:jni_include_dir" ]
-
-      if (defined(visibility)) {
-        # Allow dependency on ourselves from secondary toolchain.
-        visibility += [ ":$target_name" ]
-      }
 
       inputs = []
       outputs = []
@@ -331,7 +334,9 @@ template("generate_jni_impl") {
         }
       } else {
         assert(defined(invoker.sources))
-        _srcjar_output = "$target_gen_dir/$target_name.srcjar"
+
+        # Using final_target_name to make srcjar_deps work.
+        _srcjar_output = "$target_gen_dir/$_final_target_name.srcjar"
         args += [
           "--srcjar-path",
           rebase_path(_srcjar_output, root_build_dir),
@@ -369,6 +374,18 @@ template("generate_jni_impl") {
 
       foreach(_input, _input_args) {
         args += [ "--input-file=$_input" ]
+      }
+    }
+
+    # This group exists to allow for users of generate_jni() to get our object
+    # files included in their executables without explicitly depending on our
+    # targets in jni_zero/BUILD.gn.
+    group(_final_target_name) {
+      deps = [ "//third_party/jni_zero:jni_zero_utils" ]
+      public_deps = [ ":$_jni_zero_action_target_name" ]
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+      if (defined(visibility)) {
+        visibility += [ ":$target_name" ]
       }
     }
   }
