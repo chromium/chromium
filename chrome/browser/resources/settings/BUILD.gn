@@ -18,6 +18,8 @@ build_webui("build") {
     "images/ad_privacy_banner.svg",
     "images/cookies_banner_dark.svg",
     "images/cookies_banner.svg",
+    "images/cvc.svg",
+    "images/cvc_amex.svg",
     "images/googleg_standard_clr_32px.svg",
     "images/iban.svg",
     "images/password_check_neutral_dark.svg",

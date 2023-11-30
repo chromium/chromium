@@ -14,6 +14,14 @@
         width: 70px;
       }
 
+      #cvcInput {
+        width: 132px;
+      }
+
+      #cvcImage {
+        margin-inline-start: 10px;
+      }
+
       #saved-to-this-device-only-label {
         /* Overall space between input fields, including space between
            nicknameInput and saved-to-this-device text, between
@@ -97,7 +105,20 @@
           </template>
         </select>
         <div id="expiredError">$i18n{creditCardExpired}</div>
-        <!-- Place cardholder name field and nickname field after expiration.-->
+        <template is="dom-if"
+            if="[[checkIfCvcStorageIsAvailable_(
+                  prefs.autofill.payment_cvc_storage.value,
+                  cvcStorageAvailable_)]]">
+          <cr-input id="cvcInput" label="$i18n{creditCardCvcInputTitle}"
+              placeholder="$i18n{creditCardCvcInputPlaceholder}"
+              value="{{cvc_}}">
+            <img slot="suffix" id="cvcImage"
+                src="[[getCvcImageSource_(cardNumber_)]]"
+                title="[[getCvcImageTooltip_(cardNumber_)]]">
+            </img>
+          </cr-input>
+        </template>
+        <!-- Place cardholder name field and nickname field after CVC input.-->
         <cr-input id="nameInput" label="$i18n{creditCardName}"
             value="{{name_}}" spellcheck="false">
         </cr-input>

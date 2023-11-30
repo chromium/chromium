@@ -515,6 +515,18 @@
   <message name="IDS_SETTINGS_CREDIT_CARD_NICKNAME_INVALID" desc="The error message that is shown when user uses digit numbers in credit card nickname">
     Nickname can’t include numbers
   </message>
+  <message name="IDS_SETTINGS_CREDIT_CARD_CVC_TITLE" desc="The title for the input that lets users enter the CVC/security code of the credit card.">
+    Security code
+  </message>
+  <message name="IDS_SETTINGS_CREDIT_CARD_CVC_IMAGE_TITLE" desc="The text shown in a tool-tip when the user hovers over the helper image that guides the user when entering their credit card CVC/security code.">
+    Your security code is on the back of your card
+  </message>
+  <message name="IDS_SETTINGS_CREDIT_CARD_CVC_IMAGE_TITLE_AMEX" desc="The text shown in a tool-tip when the user hovers over the helper image that guides the user when entering their credit card CVC/security code for AmEx cards.">
+    Your security code is on the front of your card
+  </message>
+  <message name="IDS_SETTINGS_CREDIT_CARD_CVC_PLACEHOLDER" desc="The placeholder text for the input that lets users enter the CVC/security code of the credit card, letting users know that this field is optional.">
+    Optional
+  </message>
   <message name="IDS_SETTINGS_ADD_PAYMENT_METHODS" desc="The (accessibility) label that appears in the drop-down button for adding either an IBAN (International Bank Account Number), or a credit/debit card.">
     Add payment methods
   </message>
