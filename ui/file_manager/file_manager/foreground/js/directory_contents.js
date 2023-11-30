@@ -1621,7 +1621,7 @@ export class DirectoryContents extends EventTarget {
   }
 
   /**
-   * @param {!Array<!Entry>} entries Files.
+   * @param {!Array<!Entry|!FilesAppEntry>} entries Files.
    * @param {boolean} refresh True to refresh metadata, or false to use cached
    *     one.
    * @param {function(Object):void} callback Callback on done.

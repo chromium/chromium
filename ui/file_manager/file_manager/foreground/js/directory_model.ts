@@ -8,17 +8,20 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {Aggregator, AsyncQueue} from '../../common/js/async_util.js';
 import {isModal} from '../../common/js/dialog_type.js';
-import {convertURLsToEntries, entriesToURLs, isFakeEntry, isGuestOs, isNativeEntry, isOneDriveId, isRecentRootType, isSameEntry, urlToEntry} from '../../common/js/entry_utils.js';
-import {EntryList, GuestOsPlaceholder, VolumeEntry} from '../../common/js/files_app_entry_types.js';
+import {convertURLsToEntries, entriesToURLs, getRootType, isFakeEntry, isGuestOs, isNativeEntry, isOneDriveId, isRecentRootType, isSameEntry, urlToEntry} from '../../common/js/entry_utils.js';
+import type {GuestOsPlaceholder} from '../../common/js/files_app_entry_types.js';
 import {isDlpEnabled, isDriveFsBulkPinningEnabled} from '../../common/js/flags.js';
 import {recordMediumCount, recordUserAction} from '../../common/js/metrics.js';
 import {getEntryLabel} from '../../common/js/translations.js';
 import {testSendMessage} from '../../common/js/util.js';
-import {getVolumeTypeFromRootType, isNative, RootType, Source, VolumeType} from '../../common/js/volume_manager_types.js';
-import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {FileSystemType, getVolumeTypeFromRootType, isNative, RootType, Source, VolumeType} from '../../common/js/volume_manager_types.js';
+import type {ArrayDataModelSpliceEvent} from '../../definitions/array_data_model_splice_event.js';
+import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {PropStatus, SearchLocation, SearchOptions, State, Volume, VolumeId} from '../../externs/ts/state.js';
-// @ts-ignore: error TS6133: 'Store' is declared but its value is never read.
-import {Store} from '../../externs/ts/store.js';
+import type {SearchData} from '../../externs/ts/state.js';
+import type {Store} from '../../externs/ts/store.js';
+import type {VolumeInfo} from '../../externs/volume_info.js';
+import type {VolumeManager} from '../../externs/volume_manager.js';
 import {getMyFiles} from '../../state/ducks/all_entries.js';
 import {changeDirectory} from '../../state/ducks/current_directory.js';
 import {clearSearch, getDefaultSearchOptions, updateSearch} from '../../state/ducks/search.js';
@@ -27,11 +30,33 @@ import {getFileData, getStore, getVolume} from '../../state/store.js';
 import {constants} from './constants.js';
 import {ContentScanner, CrostiniMounter, DirectoryContents, DirectoryContentScanner, DriveMetadataSearchContentScanner, FileFilter, FileListContext, GuestOsMounter, MediaViewContentScanner, RecentContentScanner, SearchV2ContentScanner, TrashContentScanner} from './directory_contents.js';
 import {FileListModel} from './file_list_model.js';
-import {FileWatcher} from './file_watcher.js';
-import {MetadataModel} from './metadata/metadata_model.js';
+import {FileWatcher, type WatcherDirectoryChangedEvent} from './file_watcher.js';
+import type {MetadataModel} from './metadata/metadata_model.js';
 import {FileListSelectionModel, FileListSingleSelectionModel} from './ui/file_list_selection_model.js';
-import {ListSelectionModel} from './ui/list_selection_model.js';
-import {ListSingleSelectionModel} from './ui/list_single_selection_model.js';
+import type {ListSelectionModel} from './ui/list_selection_model.js';
+import type {ListSingleSelectionModel} from './ui/list_single_selection_model.js';
+
+/**
+ * Used to track asynchronous directory change use like:
+ * const tracker = directoryModel.createDirectoryChangeTracker();
+ * tracker.start();
+ * try {
+ *    ... async code here ...
+ *    if (tracker.hasChanged) {
+ *      // This code shouldn't continue anymore.
+ *    }
+ * } finally {
+ *     tracker.stop();
+ * }
+ */
+export interface DirectoryChangeTracker {
+  start(): void;
+  stop(): void;
+  // Indicates that another directory change has occurred since start(). The
+  // change tracker that sees a `hasChanged=true` should not proceed to change
+  // the directory, because they became stale.
+  hasChanged: boolean;
+}
 
 // If directory files changes too often, don't rescan directory more than once
 // per specified interval
@@ -45,14 +70,11 @@ const SHORT_RESCAN_INTERVAL = 100;
  * between V1 and V2 versions of search, when the user searches in Recent, and
  * uses Recent as location, we reuse the Recent scanner. Otherwise, the true
  * search scanner is used.
- * @param {!DirectoryEntry|!FilesAppEntry} entry Directory entry.
- * @param {SearchOptions=} options search options.
- * @private
  */
-function isRecentScan(entry, options) {
-  // @ts-ignore: error TS2339: Property 'rootType' does not exist on type
-  // 'FileSystemDirectoryEntry | FilesAppEntry'.
-  if (isRecentRootType(entry.rootType)) {
+function isRecentScan(
+    entry: DirectoryEntry|FilesAppEntry,
+    options?: SearchOptions): entry is FakeEntry {
+  if (isRecentRootType(getRootType(entry))) {
     // Potential search in Recents. However, if options are present and are
     // indicating that the user wishes to scan current entry, still use Recent
     // scanner.
@@ -66,11 +88,10 @@ function isRecentScan(entry, options) {
 /**
  * Helper function that determines the category of files we are looking for
  * based on the fake entry, query and options.
- * @param {!FakeEntry} entry
- * @param {string|undefined} query
- * @param {!SearchOptions|undefined} options
  */
-function getFileCategory(entry, query, options) {
+function getFileCategory(
+    entry: FakeEntry, query: string|undefined,
+    options: SearchOptions|undefined) {
   if (query) {
     if (options) {
       return options.fileCategory;
@@ -83,55 +104,51 @@ function getFileCategory(entry, query, options) {
  * Data model of the file manager.
  */
 export class DirectoryModel extends EventTarget {
+  private fileListSelection_: FileListSingleSelectionModel|
+      FileListSelectionModel;
+  private runningScan_: DirectoryContents|null = null;
+  private pendingScan_: boolean|null = null;
+  private pendingRescan_: boolean|null = null;
+  private rescanTime_: number|null = null;
+  private rescanTimeoutId_?: number;
+  private changeDirectorySequence_ = 0;
+  private cachedSearch_: SearchData|undefined|{} = {};
+  private scanFailures_ = 0;
+  private onSearchCompleted_: ((e: Event) => void)|null = null;
+  private ignoreCurrentDirectoryDeletion_ = false;
+  private directoryChangeQueue_ = new AsyncQueue();
   /**
-   * @param {boolean} singleSelection True if only one file could be selected
-   *                                  at the time.
-   * @param {FileFilter} fileFilter Instance of FileFilter.
-   * @param {!MetadataModel} metadataModel Metadata model.
-   *     service.
-   * @param {!import('../../externs/volume_manager.js').VolumeManager}
-   *     volumeManager The volume manager.
+   * Number of running directory change trackers.
    */
-  constructor(singleSelection, fileFilter, metadataModel, volumeManager) {
+  private numChangeTrackerRunning_ = 0;
+  private rescanAggregator_ =
+      new Aggregator(this.rescanSoon.bind(this, true), 500);
+  private currentFileListContext_: FileListContext;
+  private currentDirContents_: DirectoryContents;
+  private emptyFileList_: FileListModel;
+  private fileWatcher_ = new FileWatcher();
+  private lastSearchQuery_ = '';
+  private volumes_: (Record<VolumeId, Volume>)|null = null;
+  private store_: Store;
+
+  /**
+   * @param singleSelection True if only one file could be selected at the time.
+   */
+  constructor(
+      singleSelection: boolean, private fileFilter_: FileFilter,
+      private metadataModel_: MetadataModel,
+      private volumeManager_: VolumeManager) {
     super();
 
     this.fileListSelection_ = singleSelection ?
         new FileListSingleSelectionModel() :
         new FileListSelectionModel();
 
-    this.runningScan_ = null;
-    this.pendingScan_ = null;
-    this.pendingRescan_ = null;
-    this.rescanTime_ = null;
-    this.scanFailures_ = 0;
-    this.changeDirectorySequence_ = 0;
-    this.cachedSearch_ = {};
-
-    /** @private @type {?function(Event): void} */
-    this.onSearchCompleted_ = null;
-
-    /**
-     * @private @type {boolean}
-     */
-    this.ignoreCurrentDirectoryDeletion_ = false;
-
-    this.directoryChangeQueue_ = new AsyncQueue();
-
-    /**
-     * Number of running directory change trackers.
-     * @private @type {number}
-     */
-    this.numChangeTrackerRunning_ = 0;
-
-    this.rescanAggregator_ =
-        new Aggregator(this.rescanSoon.bind(this, true), 500);
-
-    this.fileFilter_ = fileFilter;
     this.fileFilter_.addEventListener(
         'changed', this.onFilterChanged_.bind(this));
 
-    this.currentFileListContext_ =
-        new FileListContext(fileFilter, metadataModel, volumeManager);
+    this.currentFileListContext_ = new FileListContext(
+        this.fileFilter_, this.metadataModel_, this.volumeManager_);
     this.currentDirContents_ = new DirectoryContents(
         this.currentFileListContext_, false, undefined, () => {
           return new DirectoryContentScanner(undefined);
@@ -139,56 +156,37 @@ export class DirectoryModel extends EventTarget {
 
     /**
      * Empty file list which is used as a dummy for inactive view of file list.
-     * @private @type {!FileListModel}
      */
-    this.emptyFileList_ = new FileListModel(metadataModel);
+    this.emptyFileList_ = new FileListModel(this.metadataModel_);
 
-    this.metadataModel_ = metadataModel;
-
-    this.volumeManager_ = volumeManager;
     this.volumeManager_.volumeInfoList.addEventListener(
-        'splice', this.onVolumeInfoListUpdated_.bind(this));
+        'splice', this.onVolumeInfoListUpdated_.bind(this) as EventListener);
 
-    /**
-     * File watcher.
-     * @private @type {!FileWatcher}
-     * @const
-     */
-    this.fileWatcher_ = new FileWatcher();
     this.fileWatcher_.addEventListener(
         'watcher-directory-changed',
         this.onWatcherDirectoryChanged_.bind(this));
     // For non-watchable directories (e.g. FakeEntry) and volumes (MTP) we need
     // to subscribe to the IOTask and manually refresh.
     chrome.fileManagerPrivate.onIOTaskProgressStatus.addListener(
-        this.updateFileListAfterIOTask_.bind(this));
+        this.updateFileListAfterIoTask_.bind(this));
 
-    /** @private @type {string} */
-    this.lastSearchQuery_ = '';
-
-    /** @private @type {?Record<!VolumeId, !Volume>} */
-    this.volumes_ = null;
-
-    /** @private @type {!Store} */
     this.store_ = getStore();
     this.store_.subscribe(this);
   }
 
-  /** @param {!State} state latest state from the store. */
-  onStateChanged(state) {
+  onStateChanged(state: State) {
     this.handleDirectoryState_(state);
     this.handleSearchState_(state);
   }
 
   /**
    * Handles the current directory slice of the store's state.
-   * @param {!State} state latest state from the store.
-   * @private
+   * @param state latest state from the store.
    */
-  handleDirectoryState_(state) {
+  private handleDirectoryState_(state: State) {
     const currentEntry = this.getCurrentDirEntry();
     const currentURL = currentEntry ? currentEntry.toURL() : null;
-    let newURL = state.currentDirectory ? state.currentDirectory.key : null;
+    const newURL = state.currentDirectory ? state.currentDirectory.key : null;
 
     // Observe volume changes.
     if (this.volumes_ !== state.volumes) {
@@ -196,17 +194,15 @@ export class DirectoryModel extends EventTarget {
       this.volumes_ = state.volumes;
     }
 
-    // If the directory is the same, ignore it.
-    if (currentURL === newURL) {
+    // If the directory is the same or the newURL is null, ignore it.
+    if (currentURL === newURL || !newURL) {
       return;
     }
 
     // When something changed the current directory status to STARTED, Here we
     // initiate the actual change and will update to SUCCESS at the end.
     if (state.currentDirectory?.status === PropStatus.STARTED) {
-      newURL = /** @type {string} */ (newURL);
-      const entry =
-          state.allEntries[newURL] ? state.allEntries[newURL]?.entry : null;
+      const entry = state.allEntries[newURL!]?.entry ?? null;
 
       if (!entry) {
         // TODO(lucmult): Fix potential race condition in this await/then.
@@ -216,23 +212,21 @@ export class DirectoryModel extends EventTarget {
             return;
           }
           // Initiate the directory change.
-          this.changeDirectoryEntry(/** @type {!DirectoryEntry} */ (entry));
+          this.changeDirectoryEntry(entry as DirectoryEntry);
         });
         return;
       }
 
       // Initiate the directory change.
-      this.changeDirectoryEntry(/** @type {!DirectoryEntry} */ (entry));
+      this.changeDirectoryEntry(entry as DirectoryEntry);
     }
   }
 
   /**
    * Reacts to changes in the search state of the store. If the search changed
    * and the query is not empty, this method triggers a new directory search.
-   * @param {!State} state
-   * @private
    */
-  handleSearchState_(state) {
+  private handleSearchState_(state: State) {
     const currentEntry = this.getCurrentDirEntry();
     // Do not handle any search state until we have the current directory set.
     // Requests to handle current search state may be triggered by the files app
@@ -248,8 +242,6 @@ export class DirectoryModel extends EventTarget {
 
     // Cache the last received search state for future comparisons.
     const lastSearch = this.cachedSearch_;
-    // @ts-ignore: error TS2322: Type 'SearchData | undefined' is not assignable
-    // to type '{}'.
     this.cachedSearch_ = search;
 
     // We change the search state (STARTED, SUCCESS, etc.) so only trigger
@@ -257,11 +249,8 @@ export class DirectoryModel extends EventTarget {
     if (!search) {
       return;
     }
-    // @ts-ignore: error TS2339: Property 'query' does not exist on type '{}'.
-    if (!lastSearch || lastSearch.query !== search.query ||
-        // @ts-ignore: error TS2339: Property 'options' does not exist on type
-        // '{}'.
-        lastSearch.options !== search.options) {
+    if (!lastSearch || (lastSearch as SearchData).query !== search.query ||
+        (lastSearch as SearchData).options !== search.options) {
       const dialogType = state.launchParams.dialogType;
       if (dialogType) {
         recordUserAction(
@@ -275,37 +264,35 @@ export class DirectoryModel extends EventTarget {
   /**
    * Disposes the directory model by removing file watchers.
    */
-  dispose() {
+  dispose(): void {
     this.fileWatcher_.dispose();
   }
 
   /**
-   * @return {FileListModel} Files in the current directory.
+   * @return Files in the current directory.
    */
-  getFileList() {
+  getFileList(): FileListModel {
     return this.currentFileListContext_.fileList;
   }
 
   /**
-   * @return {!FileListModel} File list which is always empty.
+   * @return File list which is always empty.
    */
-  getEmptyFileList() {
+  getEmptyFileList(): FileListModel {
     return this.emptyFileList_;
   }
 
   /**
-   * @return {!FileListSelectionModel|!FileListSingleSelectionModel} Selection
-   * in the fileList.
+   * @return Selection in the fileList.
    */
-  getFileListSelection() {
+  getFileListSelection(): FileListSelectionModel|FileListSingleSelectionModel {
     return this.fileListSelection_;
   }
 
   /**
    * Obtains current volume information.
-   * @return {import('../../externs/volume_info.js').VolumeInfo|null}
    */
-  getCurrentVolumeInfo() {
+  getCurrentVolumeInfo(): VolumeInfo|null {
     const entry = this.getCurrentDirEntry();
     if (!entry) {
       return null;
@@ -314,10 +301,9 @@ export class DirectoryModel extends EventTarget {
   }
 
   /**
-   * @return {?RootType} Root type of current root, or null
-   *     if not found.
+   * @return Root type of current root, or null if not found.
    */
-  getCurrentRootType() {
+  getCurrentRootType(): RootType|null {
     const entry = this.currentDirContents_.getDirectoryEntry();
     if (!entry) {
       return null;
@@ -333,17 +319,16 @@ export class DirectoryModel extends EventTarget {
 
   /**
    * Metadata property names that are expected to be Prefetched.
-   * @return {!Array<string>}
    */
-  getPrefetchPropertyNames() {
+  getPrefetchPropertyNames(): string[] {
     return this.currentFileListContext_.prefetchPropertyNames;
   }
 
   /**
-   * @return {boolean} True if the current directory is read only. If there is
-   *     no entry set, then returns true.
+   * @return True if the current directory is read only. If there is no entry
+   *     set, then returns true.
    */
-  isReadOnly() {
+  isReadOnly(): boolean {
     const currentDirEntry = this.getCurrentDirEntry();
     if (currentDirEntry) {
       const locationInfo = this.volumeManager_.getLocationInfo(currentDirEntry);
@@ -355,72 +340,60 @@ export class DirectoryModel extends EventTarget {
   }
 
   /**
-   * @return {boolean} True if entries in the current directory can be deleted.
-   *     Similar to !isReadOnly() except that we allow items in the read-only
-   *     Trash root to be deleted. If there is no entry set, then returns false.
+   * @return True if entries in the current directory can be deleted. Similar to
+   *     !isReadOnly() except that we allow items in the read-only Trash root to
+   *     be deleted. If there is no entry set, then returns false.
    */
-  canDeleteEntries() {
+  canDeleteEntries(): boolean {
     const currentDirEntry = this.getCurrentDirEntry();
-    if (currentDirEntry &&
-        // @ts-ignore: error TS2339: Property 'rootType' does not exist on type
-        // 'FileSystemDirectoryEntry | FilesAppDirEntry | FakeEntry'.
-        currentDirEntry.rootType === RootType.TRASH) {
+    if (currentDirEntry && getRootType(currentDirEntry) === RootType.TRASH) {
       return true;
     }
     return !this.isReadOnly();
   }
 
   /**
-   * @return {boolean} True if the a scan is active.
+   * @return True if the a scan is active.
    */
-  isScanning() {
+  isScanning(): boolean {
     return this.currentDirContents_.isScanning();
   }
 
   /**
-   * @return {boolean} True if search is in progress.
+   * @return True if search is in progress.
    */
-  isSearching() {
+  isSearching(): boolean {
     return this.currentDirContents_.isSearch();
   }
 
   /**
-   * @return {boolean} True if it's on Drive.
+   * @return True if it's on Drive.
    */
-  isOnDrive() {
+  isOnDrive(): boolean {
     return this.isCurrentRootVolumeType_(VolumeType.DRIVE);
   }
 
   /**
-   * @return {boolean} True if it's on MTP volume.
+   * @return True if the current volume is provided by FuseBox.
    */
-  isOnMTP() {
-    return this.isCurrentRootVolumeType_(VolumeType.MTP);
-  }
-
-  /**
-   * @return {boolean} True if the current volume is provided by FuseBox.
-   */
-  isOnFuseBox() {
+  isOnFuseBox(): boolean {
     const info = this.getCurrentVolumeInfo();
-    return info ?
-        /** @type {string} */ (info.diskFileSystemType) === 'fusebox' :
-        false;
+    return info ? info.diskFileSystemType === FileSystemType.FUSEBOX : false;
   }
 
   /**
-   * @return {boolean} True if it's on a Linux native volume.
+   * @return True if it's on a Linux native volume.
    */
-  isOnNative() {
+  isOnNative(): boolean {
     const rootType = this.getCurrentRootType();
     return rootType != null && !isRecentRootType(rootType) &&
         isNative(getVolumeTypeFromRootType(rootType));
   }
 
   /**
-   * @return {boolean} True if the current volume is blocked by DLP.
+   * @return True if the current volume is blocked by DLP.
    */
-  isDlpBlocked() {
+  isDlpBlocked(): boolean {
     if (!isDlpEnabled()) {
       return false;
     }
@@ -429,12 +402,10 @@ export class DirectoryModel extends EventTarget {
   }
 
   /**
-   * @param {VolumeType} volumeType Volume Type
-   * @return {boolean} True if current root volume type is equal to specified
-   *     volume type.
-   * @private
+   * @param volumeType Volume Type
+   * @return True if current root volume type is equal to specified volume type.
    */
-  isCurrentRootVolumeType_(volumeType) {
+  private isCurrentRootVolumeType_(volumeType: VolumeType): boolean {
     const rootType = this.getCurrentRootType();
     return rootType != null && !isRecentRootType(rootType) &&
         getVolumeTypeFromRootType(rootType) === volumeType;
@@ -445,12 +416,12 @@ export class DirectoryModel extends EventTarget {
    * If updateFunc returns true, it force to dispatch the change event even if
    * the selection index is not changed.
    *
-   * @param {ListSelectionModel|ListSingleSelectionModel} selection
-   *     Selection to be updated.
-   * @param {function(): boolean} updateFunc Function updating the selection.
-   * @private
+   * @param selection Selection to be updated.
+   * @param updateFunc Function updating the selection.
    */
-  updateSelectionAndPublishEvent_(selection, updateFunc) {
+  private updateSelectionAndPublishEvent_(
+      selection: ListSelectionModel|ListSingleSelectionModel,
+      updateFunc: () => boolean) {
     // Begin change.
     selection.beginChange();
 
@@ -481,23 +452,17 @@ export class DirectoryModel extends EventTarget {
    * Sets to ignore current directory deletion. This method is used to prevent
    * going up to the volume root with the deletion of current directory by
    * rename operation in directory tree.
-   * @param {boolean} value True to ignore current directory deletion.
+   * @param value True to ignore current directory deletion.
    */
-  setIgnoringCurrentDirectoryDeletion(value) {
+  setIgnoringCurrentDirectoryDeletion(value: boolean) {
     this.ignoreCurrentDirectoryDeletion_ = value;
   }
 
   /**
    * Invoked when a change in the directory is detected by the watcher.
-   * @param {Event} event Event object.
-   * @private
+   * @param event Event object.
    */
-  onWatcherDirectoryChanged_(event) {
-    const customEvent =
-        /**
-           @type {import('./file_watcher.js').WatcherDirectoryChangedEvent}>}
-         */
-        (event);
+  private onWatcherDirectoryChanged_(event: WatcherDirectoryChangedEvent) {
     const directoryEntry = this.getCurrentDirEntry();
 
     if (!this.ignoreCurrentDirectoryDeletion_ && directoryEntry) {
@@ -505,6 +470,7 @@ export class DirectoryModel extends EventTarget {
       // directory.
       directoryEntry.getDirectory(
           directoryEntry.fullPath, {create: false}, () => {}, async () => {
+            assert(directoryEntry);
             const volumeInfo =
                 this.volumeManager_.getVolumeInfo(directoryEntry);
             if (volumeInfo) {
@@ -514,14 +480,10 @@ export class DirectoryModel extends EventTarget {
           });
     }
 
-    if (customEvent.detail?.changedFiles) {
-      // @ts-ignore: error TS7034: Variable 'addedOrUpdatedFileUrls' implicitly
-      // has type 'any[]' in some locations where its type cannot be determined.
-      const addedOrUpdatedFileUrls = [];
-      // @ts-ignore: error TS7034: Variable 'deletedFileUrls' implicitly has
-      // type 'any[]' in some locations where its type cannot be determined.
-      let deletedFileUrls = [];
-      customEvent.detail.changedFiles.forEach(change => {
+    if (event.detail?.changedFiles) {
+      const addedOrUpdatedFileUrls: string[] = [];
+      let deletedFileUrls: string[] = [];
+      event.detail.changedFiles.forEach(change => {
         if (change.changes.length === 1 && change.changes[0] === 'delete') {
           deletedFileUrls.push(change.url);
         } else {
@@ -529,12 +491,8 @@ export class DirectoryModel extends EventTarget {
         }
       });
 
-      // @ts-ignore: error TS7005: Variable 'addedOrUpdatedFileUrls' implicitly
-      // has an 'any[]' type.
       convertURLsToEntries(addedOrUpdatedFileUrls)
           .then(result => {
-            // @ts-ignore: error TS7005: Variable 'deletedFileUrls' implicitly
-            // has an 'any[]' type.
             deletedFileUrls = deletedFileUrls.concat(result.failureUrls);
 
             // Passing the resolved entries and failed URLs as the removed
@@ -558,13 +516,11 @@ export class DirectoryModel extends EventTarget {
 
   /**
    * Invoked when filters are changed.
-   * @private
    */
-  async onFilterChanged_() {
+  private async onFilterChanged_() {
     const currentDirectory = this.getCurrentDirEntry();
     if (currentDirectory && isNativeEntry(currentDirectory) &&
-        !this.fileFilter_.filter(
-            /** @type {!DirectoryEntry} */ (currentDirectory))) {
+        !this.fileFilter_.filter(currentDirectory)) {
       // If the current directory should be hidden in the new filter setting,
       // change the current directory to the current volume's root.
       const volumeInfo = this.volumeManager_.getVolumeInfo(currentDirectory);
@@ -579,10 +535,9 @@ export class DirectoryModel extends EventTarget {
 
   /**
    * Invoked when volumes have been modified in the state.
-   * @param {!State} state latest state from the store.
-   * @private
+   * @param state latest state from the store.
    */
-  onStateVolumeChanged_(state) {
+  private onStateVolumeChanged_(state: State) {
     if (!state.currentDirectory) {
       return;
     }
@@ -594,44 +549,26 @@ export class DirectoryModel extends EventTarget {
         continue;
       }
       const currentDirectoryFileData =
-          // @ts-ignore: error TS18048: 'state.currentDirectory' is possibly
-          // 'undefined'.
           getFileData(state, state.currentDirectory.key);
       const currentDirectoryOnOdfs =
           isOneDriveId(getVolume(state, currentDirectoryFileData)?.providerId);
       if (currentDirectoryOnOdfs) {
-        const {myFilesEntry} = /**
-                                  @type {{myFilesVolume: (Volume|null),
-                                      myFilesEntry: (VolumeEntry|EntryList)}}
-                                */
-            (getMyFiles(state));
+        const {myFilesEntry} = getMyFiles(state);
         const myFilesRootKey = myFilesEntry.toURL();
         this.store_.dispatch(changeDirectory({toKey: myFilesRootKey}));
       }
     }
   }
 
-  /**
-   * Returns the filter.
-   * @return {FileFilter} The file filter.
-   */
-  getFileFilter() {
+  getFileFilter(): FileFilter {
     return this.fileFilter_;
   }
 
-  /**
-   * @return {DirectoryEntry|FakeEntry|FilesAppDirEntry|undefined} Current
-   *     directory.
-   */
-  getCurrentDirEntry() {
+  getCurrentDirEntry(): DirectoryEntry|FakeEntry|FilesAppDirEntry|undefined {
     return this.currentDirContents_.getDirectoryEntry();
   }
 
-  /**
-   * @public
-   * @return {string}
-   */
-  getCurrentDirName() {
+  getCurrentDirName(): string {
     const dirEntry = this.getCurrentDirEntry();
     if (!dirEntry) {
       return '';
@@ -642,10 +579,9 @@ export class DirectoryModel extends EventTarget {
   }
 
   /**
-   * @return {Array<Entry>} Array of selected entries.
-   * @private
+   * @return Array of selected entries.
    */
-  getSelectedEntries_() {
+  private getSelectedEntries_(): Entry[] {
     const indexes = this.fileListSelection_.selectedIndexes;
     const fileList = this.getFileList();
     if (fileList) {
@@ -655,10 +591,9 @@ export class DirectoryModel extends EventTarget {
   }
 
   /**
-   * @param {Array<Entry>} value List of selected entries.
-   * @private
+   * @param value List of selected entries.
    */
-  setSelectedEntries_(value) {
+  private setSelectedEntries_(value: Entry[]) {
     const indexes = [];
     const fileList = this.getFileList();
     const urls = entriesToURLs(value);
@@ -672,26 +607,20 @@ export class DirectoryModel extends EventTarget {
   }
 
   /**
-   * @return {Entry} Lead entry.
-   * @private
+   * @return Lead entry.
    */
-  getLeadEntry_() {
+  private getLeadEntry_(): Entry {
     const index = this.fileListSelection_.leadIndex;
-    // @ts-ignore: error TS2322: Type 'FileSystemEntry | null' is not assignable
-    // to type 'FileSystemEntry'.
-    return index >= 0 ?
-        /** @type {Entry} */ (this.getFileList().item(index)) :
-        null;
+    return index >= 0 ? this.getFileList().item(index) : null;
   }
 
   /**
-   * @param {Entry} value The new lead entry.
-   * @private
+   * @param value The new lead entry.
    */
-  setLeadEntry_(value) {
+  private setLeadEntry_(value: Entry) {
     const fileList = this.getFileList();
     for (let i = 0; i < fileList.length; i++) {
-      if (isSameEntry(/** @type {Entry} */ (fileList.item(i)), value)) {
+      if (isSameEntry(fileList.item(i), value)) {
         this.fileListSelection_.leadIndex = i;
         return;
       }
@@ -700,26 +629,24 @@ export class DirectoryModel extends EventTarget {
 
   /**
    * Schedule rescan with short delay.
-   * @param {boolean} refresh True to refresh metadata, or false to use cached
-   *     one.
-   * @param {boolean=} invalidateCache True to invalidate the backend scanning
-   *     result cache. This param only works if the corresponding backend
-   *     scanning supports cache.
+   * @param refresh True to refresh metadata, or false to use cached one.
+   * @param invalidateCache True to invalidate the backend scanning result
+   *     cache. This param only works if the corresponding backend scanning
+   *     supports cache.
    */
-  rescanSoon(refresh, invalidateCache = false) {
+  rescanSoon(refresh: boolean, invalidateCache: boolean = false) {
     this.scheduleRescan(SHORT_RESCAN_INTERVAL, refresh, invalidateCache);
   }
 
   /**
    * Schedule rescan with delay. Designed to handle directory change
    * notification.
-   * @param {boolean} refresh True to refresh metadata, or false to use cached
-   *     one.
-   * @param {boolean=} invalidateCache True to invalidate the backend scanning
-   *     result cache. This param only works if the corresponding backend
-   *     scanning supports cache.
+   * @param refresh True to refresh metadata, or false to use cached one.
+   * @param invalidateCache True to invalidate the backend scanning result
+   *     cache. This param only works if the corresponding backend scanning
+   *     supports cache.
    */
-  rescanLater(refresh, invalidateCache = false) {
+  rescanLater(refresh: boolean, invalidateCache: boolean = false) {
     this.scheduleRescan(SIMULTANEOUS_RESCAN_INTERVAL, refresh, invalidateCache);
   }
 
@@ -727,14 +654,14 @@ export class DirectoryModel extends EventTarget {
    * Schedule rescan with delay. If another rescan has been scheduled does
    * nothing. File operation may cause a few notifications what should cause
    * a single refresh.
-   * @param {number} delay Delay in ms after which the rescan will be performed.
-   * @param {boolean} refresh True to refresh metadata, or false to use cached
-   *     one.
-   * @param {boolean=} invalidateCache True to invalidate the backend scanning
-   *     result cache. This param only works if the corresponding backend
-   *     scanning supports cache.
+   * @param delay Delay in ms after which the rescan will be performed.
+   * @param refresh True to refresh metadata, or false to use cached one.
+   * @param invalidateCache True to invalidate the backend scanning result
+   *     cache. This param only works if the corresponding backend scanning
+   *     supports cache.
    */
-  scheduleRescan(delay, refresh, invalidateCache = false) {
+  scheduleRescan(
+      delay: number, refresh: boolean, invalidateCache: boolean = false) {
     if (this.rescanTime_) {
       if (this.rescanTime_ <= Date.now() + delay) {
         return;
@@ -746,7 +673,7 @@ export class DirectoryModel extends EventTarget {
 
     this.rescanTime_ = Date.now() + delay;
     this.rescanTimeoutId_ = setTimeout(() => {
-      this.rescanTimeoutId_ = null;
+      this.rescanTimeoutId_ = undefined;
       if (sequence === this.changeDirectorySequence_) {
         this.rescan(refresh, invalidateCache);
       }
@@ -755,13 +682,12 @@ export class DirectoryModel extends EventTarget {
 
   /**
    * Cancel a rescan on timeout if it is scheduled.
-   * @private
    */
-  clearRescanTimeout_() {
+  private clearRescanTimeout_() {
     this.rescanTime_ = null;
     if (this.rescanTimeoutId_) {
       clearTimeout(this.rescanTimeoutId_);
-      this.rescanTimeoutId_ = null;
+      this.rescanTimeoutId_ = undefined;
     }
   }
 
@@ -773,13 +699,12 @@ export class DirectoryModel extends EventTarget {
    *
    * This should be to scan the contents of current directory (or search).
    *
-   * @param {boolean} refresh True to refresh metadata, or false to use cached
-   *     one.
-   * @param {boolean=} invalidateCache True to invalidate the backend scanning
-   *     result cache. This param only works if the corresponding backend
-   *     scanning supports cache.
+   * @param refresh True to refresh metadata, or false to use cached one.
+   * @param invalidateCache True to invalidate the backend scanning result
+   *     cache. This param only works if the corresponding backend scanning
+   *     supports cache.
    */
-  rescan(refresh, invalidateCache = false) {
+  rescan(refresh: boolean, invalidateCache: boolean = false) {
     this.clearRescanTimeout_();
     if (this.runningScan_) {
       this.pendingRescan_ = true;
@@ -811,13 +736,13 @@ export class DirectoryModel extends EventTarget {
    *
    * This should be used when changing directory or initiating a new search.
    *
-   * @param {DirectoryContents} newDirContents New DirectoryContents instance to
-   *     replace currentDirContents_.
-   * @param {function(boolean):void} callback Callback with result. True if the
-   *     scan is completed successfully, false if the scan is failed.
-   * @private
+   * @param newDirContents New DirectoryContents instance to replace
+   *     currentDirContents_.
+   * @param callback Callback with result. True if the scan is completed
+   *     successfully, false if the scan is failed.
    */
-  clearAndScan_(newDirContents, callback) {
+  private clearAndScan_(
+      newDirContents: DirectoryContents, callback: (result: boolean) => void) {
     if (this.currentDirContents_.isScanning()) {
       this.currentDirContents_.cancelScan();
     }
@@ -847,8 +772,7 @@ export class DirectoryModel extends EventTarget {
       callback(true);
     };
 
-    /** @param {DOMError} error error. */
-    const onFailed = error => {
+    const onFailed = (error: DOMError) => {
       if (cancelled) {
         return;
       }
@@ -905,9 +829,6 @@ export class DirectoryModel extends EventTarget {
       }
       if (!isFakeEntry(currentEntry)) {
         this.metadataModel_.get(
-            // @ts-ignore: error TS2322: Type 'FileSystemDirectoryEntry |
-            // FilesAppDirEntry | FakeEntry' is not assignable to type
-            // 'FileSystemEntry'.
             [currentEntry],
             constants.LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES.concat(
                 constants.DLP_METADATA_PREFETCH_PROPERTY_NAMES));
@@ -915,7 +836,6 @@ export class DirectoryModel extends EventTarget {
     }
 
     // Clear the table, and start scanning.
-    // @ts-ignore: error TS2555: Expected at least 3 arguments, but got 2.
     fileList.splice(0, fileList.length);
     dispatchSimpleEvent(this, 'scan-started');
     this.scan_(
@@ -944,11 +864,10 @@ export class DirectoryModel extends EventTarget {
 
   /**
    * Adds/removes/updates items of file list.
-   * @param {Array<Entry>} changedEntries Entries of updated/added files.
-   * @param {Array<string>} removedUrls URLs of removed files.
-   * @private
+   * @param changedEntries Entries of updated/added files.
+   * @param removedUrls URLs of removed files.
    */
-  partialUpdate_(changedEntries, removedUrls) {
+  private partialUpdate_(changedEntries: Entry[], removedUrls: string[]) {
     // This update should be included in the current running update.
     if (this.pendingScan_) {
       return;
@@ -1003,27 +922,27 @@ export class DirectoryModel extends EventTarget {
    * Perform a directory contents scan. Should be called only from rescan() and
    * clearAndScan_().
    *
-   * @param {DirectoryContents} dirContents DirectoryContents instance on which
-   *     the scan will be run.
-   * @param {boolean} refresh True to refresh metadata, or false to use cached
-   *     one.
-   * @param {boolean} invalidateCache True to invalidate scanning result cache.
-   * @param {function():void} successCallback Callback on success.
-   * @param {function(DOMError):void} failureCallback Callback on failure.
-   * @param {function():void} updatedCallback Callback on update. Only on the
-   *     last update, {@code successCallback} is called instead of this.
-   * @param {function():void} cancelledCallback Callback on cancel.
-   * @private
+   * @param dirContents DirectoryContents instance on which the scan will be
+   *     run.
+   * @param refresh True to refresh metadata, or false to use cached one.
+   * @param invalidateCache True to invalidate scanning result cache.
+   * @param successCallback Callback on success.
+   * @param failureCallback Callback on failure.
+   * @param updatedCallback Callback on update. Only on the last update,
+   *     successCallback is called instead of this.
+   * @param cancelledCallback Callback on cancel.
    */
-  scan_(
-      dirContents, refresh, invalidateCache, successCallback, failureCallback,
-      updatedCallback, cancelledCallback) {
+  private scan_(
+      dirContents: DirectoryContents, refresh: boolean,
+      invalidateCache: boolean, successCallback: VoidCallback,
+      failureCallback: (error: DOMError) => void, updatedCallback: VoidCallback,
+      cancelledCallback: VoidCallback) {
     /**
      * Runs pending scan if there is one.
      *
-     * @return {boolean} Did pending scan exist.
+     * @return Did pending scan exist.
      */
-    const maybeRunPendingRescan = () => {
+    const maybeRunPendingRescan = (): boolean => {
       if (this.pendingRescan_) {
         this.rescanSoon(refresh);
         this.pendingRescan_ = false;
@@ -1060,29 +979,30 @@ export class DirectoryModel extends EventTarget {
       maybeRunPendingRescan();
     };
 
-    // @ts-ignore: error TS7006: Parameter 'event' implicitly has an 'any' type.
-    const onFailure = event => {
-      onFinished();
+    const onFailure =
+        ((event: CustomEvent<{error: DOMError}>) => {
+          onFinished();
 
-      this.runningScan_ = null;
-      this.scanFailures_++;
-      failureCallback(event.detail.error);
+          this.runningScan_ = null;
+          this.scanFailures_++;
+          failureCallback(event.detail.error);
 
-      if (maybeRunPendingRescan()) {
-        return;
-      }
+          if (maybeRunPendingRescan()) {
+            return;
+          }
 
-      // Do not rescan for Guest OS (including Crostini) errors.
-      // TODO(crbug/1293229): Guest OS currently reuses the Crostini error
-      // string, but once it gets its own strings this needs to include both.
-      if (event.detail.error.name === constants.CROSTINI_CONNECT_ERR) {
-        return;
-      }
+          // Do not rescan for Guest OS (including Crostini) errors.
+          // TODO(crbug/1293229): Guest OS currently reuses the Crostini error
+          // string, but once it gets its own strings this needs to include
+          // both.
+          if (event.detail.error.name === constants.CROSTINI_CONNECT_ERR) {
+            return;
+          }
 
-      if (this.scanFailures_ <= 1) {
-        this.rescanLater(refresh);
-      }
-    };
+          if (this.scanFailures_ <= 1) {
+            this.rescanLater(refresh);
+          }
+        }) as EventListenerOrEventListenerObject;
 
     const onCancelled = () => {
       onFinished();
@@ -1099,11 +1019,10 @@ export class DirectoryModel extends EventTarget {
   }
 
   /**
-   * @param {DirectoryContents} dirContents DirectoryContents instance. This
-   *     must be a different instance from this.currentDirContents_.
-   * @private
+   * @param dirContents DirectoryContents instance. This must be a different
+   *     instance from this.currentDirContents_.
    */
-  replaceDirectoryContents_(dirContents) {
+  private replaceDirectoryContents_(dirContents: DirectoryContents) {
     console.assert(
         this.currentDirContents_ !== dirContents,
         'Give directory contents instance must be different from current one.');
@@ -1117,9 +1036,6 @@ export class DirectoryModel extends EventTarget {
       const leadEntry = this.getLeadEntry_();
       const isCheckSelectMode = this.fileListSelection_.getCheckSelectMode();
 
-      // @ts-ignore: error TS6133: 'previousDirContents' is declared but its
-      // value is never read.
-      const previousDirContents = this.currentDirContents_;
       this.currentDirContents_ = dirContents;
       this.currentDirContents_.replaceContextFileList();
 
@@ -1151,41 +1067,24 @@ export class DirectoryModel extends EventTarget {
   }
 
   /**
-   * @param {Entry} entry The entry to be searched.
-   * @return {number} The index in the fileList, or -1 if not found.
-   * @private
-   */
-  // @ts-ignore: error TS6133: 'findIndexByEntry_' is declared but its value is
-  // never read.
-  findIndexByEntry_(entry) {
-    const fileList = this.getFileList();
-    for (let i = 0; i < fileList.length; i++) {
-      if (isSameEntry(/** @type {Entry} */ (fileList.item(i)), entry)) {
-        return i;
-      }
-    }
-    return -1;
-  }
-
-  /**
    * Called when rename is done successfully.
    * Note: conceptually, DirectoryModel should work without this, because
    * entries can be renamed by other systems anytime and the Files app should
    * reflect it correctly.
    * TODO(hidehiko): investigate more background, and remove this if possible.
    *
-   * @param {!Entry} oldEntry The old entry.
-   * @param {!Entry} newEntry The new entry.
-   * @return {!Promise<void>} Resolves on completion.
+   * @param oldEntry The old entry.
+   * @param newEntry The new entry.
+   * @return Resolves on completion.
    */
-  onRenameEntry(oldEntry, newEntry) {
+  onRenameEntry(oldEntry: Entry, newEntry: Entry|FilesAppEntry): Promise<void> {
     return new Promise(resolve => {
       this.currentDirContents_.prefetchMetadata([newEntry], true, () => {
         // If the current directory is the old entry, then quietly change to the
         // new one.
         if (isSameEntry(oldEntry, this.getCurrentDirEntry())) {
           this.changeDirectoryEntry(
-              /** @type {!DirectoryEntry|!FilesAppDirEntry} */ (newEntry));
+              newEntry as DirectoryEntry | FilesAppDirEntry);
         }
 
         // Replace the old item with the new item. oldEntry instance itself may
@@ -1226,12 +1125,13 @@ export class DirectoryModel extends EventTarget {
 
   /**
    * Updates data model and selects new directory.
-   * @param {!DirectoryEntry} newDirectory Directory entry to be selected.
-   * @return {!Promise<void>} A promise which is resolved when new directory is
-   *     selected. If current directory has changed during the operation, this
-   *     will be rejected.
+   * @param newDirectory Directory entry to be selected.
+   * @return A promise which is resolved when new directory is selected. If
+   *     current directory has changed during the operation, this will be
+   *     rejected.
    */
-  async updateAndSelectNewDirectory(newDirectory) {
+  async updateAndSelectNewDirectory(newDirectory: DirectoryEntry):
+      Promise<void> {
     // Refresh the cache.
     this.metadataModel_.notifyEntriesCreated([newDirectory]);
     const dirContents = this.currentDirContents_;
@@ -1261,9 +1161,8 @@ export class DirectoryModel extends EventTarget {
 
   /**
    * Gets the current MyFilesEntry.
-   * @return {FilesAppDirEntry} myFilesEntry
    */
-  getMyFiles() {
+  getMyFiles(): FilesAppDirEntry {
     const {myFilesEntry} = getMyFiles(getStore().getState());
     return myFilesEntry;
   }
@@ -1279,12 +1178,12 @@ export class DirectoryModel extends EventTarget {
    * activateDirectoryEntry instead of this, which is higher-level function and
    * cares about the selection.
    *
-   * @param {!DirectoryEntry|!FilesAppDirEntry} dirEntry The entry of the new
-   *     directory to be opened.
-   * @param {function(boolean)=} opt_callback Executed if the directory loads
-   *     successfully.
+   * @param dirEntry The entry of the new directory to be opened.
+   * @param callback Executed if the directory loads successfully.
    */
-  changeDirectoryEntry(dirEntry, opt_callback) {
+  changeDirectoryEntry(
+      dirEntry: DirectoryEntry|FilesAppDirEntry,
+      callback?: (result: boolean) => void) {
     // Increment the sequence value.
     const sequence = ++this.changeDirectorySequence_;
     this.stopActiveSearch_();
@@ -1321,8 +1220,8 @@ export class DirectoryModel extends EventTarget {
       this.clearAndScan_(newDirectoryContents, result => {
         // Calls the callback of the method and inform it about success or lack
         // of thereof.
-        if (opt_callback) {
-          opt_callback(result);
+        if (callback) {
+          callback(result);
         }
         // Notify that the current task of this.directoryChangeQueue_
         // is completed.
@@ -1355,13 +1254,8 @@ export class DirectoryModel extends EventTarget {
         this.clearLastSearchQuery();
       }
       // Notify the Store that the new directory has successfully changed.
-      this.store_.dispatch(
-          // @ts-ignore: error TS2345: Argument of type '{ to:
-          // FileSystemDirectoryEntry | FilesAppDirEntry; status: string; }' is
-          // not assignable to parameter of type '{ to?:
-          // FileSystemDirectoryEntry | FilesAppDirEntry | undefined; toKey:
-          // string; status?: string | undefined; }'.
-          changeDirectory({to: dirEntry, status: PropStatus.SUCCESS}));
+      this.store_.dispatch(changeDirectory(
+          {to: dirEntry, toKey: dirEntry.toURL(), status: PropStatus.SUCCESS}));
     });
   }
 
@@ -1372,12 +1266,11 @@ export class DirectoryModel extends EventTarget {
    *    directory.
    *  - Clears the selection, if the given directory is the current directory.
    *
-   * @param {!DirectoryEntry|!FilesAppDirEntry} dirEntry The entry of the new
-   *     directory to be opened.
-   * @param {function()=} opt_callback Executed if the directory loads
-   *     successfully.
+   * @param dirEntry The entry of the new directory to be opened.
+   * @param callback Executed if the directory loads successfully.
    */
-  activateDirectoryEntry(dirEntry, opt_callback) {
+  activateDirectoryEntry(
+      dirEntry: DirectoryEntry|FilesAppDirEntry, callback?: VoidCallback) {
     const currentDirectoryEntry = this.getCurrentDirEntry();
     if (currentDirectoryEntry && isSameEntry(dirEntry, currentDirectoryEntry)) {
       // On activating the current directory, clear the selection on the
@@ -1385,7 +1278,7 @@ export class DirectoryModel extends EventTarget {
       this.clearSelection();
     } else {
       // Otherwise, changes the current directory.
-      this.changeDirectoryEntry(dirEntry, opt_callback);
+      this.changeDirectoryEntry(dirEntry, callback);
     }
   }
 
@@ -1400,9 +1293,9 @@ export class DirectoryModel extends EventTarget {
    * Creates an object which could say whether directory has changed while it
    * has been active or not. Designed for long operations that should be
    * cancelled if the used change current directory.
-   * @return {!DirectoryChangeTracker} Created object.
+   * @return Created object.
    */
-  createDirectoryChangeTracker() {
+  createDirectoryChangeTracker(): DirectoryChangeTracker {
     const tracker = {
       dm_: this,
       active_: false,
@@ -1427,9 +1320,7 @@ export class DirectoryModel extends EventTarget {
         }
       },
 
-      // @ts-ignore: error TS7006: Parameter 'event' implicitly has an 'any'
-      // type.
-      onDirectoryChange_: function(event) {
+      onDirectoryChange_: function(_event: Event) {
         tracker.stop();
         tracker.hasChanged = true;
       },
@@ -1438,9 +1329,9 @@ export class DirectoryModel extends EventTarget {
   }
 
   /**
-   * @param {Entry} entry Entry to be selected.
+   * @param entry Entry to be selected.
    */
-  selectEntry(entry) {
+  selectEntry(entry: Entry) {
     const fileList = this.getFileList();
     for (let i = 0; i < fileList.length; i++) {
       if (fileList.item(i).toURL() === entry.toURL()) {
@@ -1451,9 +1342,9 @@ export class DirectoryModel extends EventTarget {
   }
 
   /**
-   * @param {Array<Entry>} entries Array of entries.
+   * @param entries Array of entries.
    */
-  selectEntries(entries) {
+  selectEntries(entries: Entry[]) {
     // URLs are needed here, since we are comparing Entries by URLs.
     const urls = entriesToURLs(entries);
     const fileList = this.getFileList();
@@ -1468,10 +1359,9 @@ export class DirectoryModel extends EventTarget {
   }
 
   /**
-   * @param {number} index Index of file.
+   * @param index Index of file.
    */
-  selectIndex(index) {
-    // this.focusCurrentList_();
+  selectIndex(index: number) {
     if (index >= this.getFileList().length) {
       return;
     }
@@ -1482,15 +1372,10 @@ export class DirectoryModel extends EventTarget {
 
   /**
    * Handles update of VolumeInfoList.
-   * @param {Event} event Event of VolumeInfoList's 'splice'.
-   * @private
+   * @param event Event of VolumeInfoList's 'splice'.
    */
-  onVolumeInfoListUpdated_(event) {
-    const
-        spliceEventDetail = /**
-                                @type {import('../../definitions/array_data_model_splice_event.js').ArrayDataModelSpliceEvent}
-                                  */
-        (event).detail;
+  private onVolumeInfoListUpdated_(event: ArrayDataModelSpliceEvent) {
+    const spliceEventDetail = event.detail;
     // Fallback to the default volume's root if the current volume is unmounted.
     if (this.hasCurrentDirEntryBeenUnmounted_(spliceEventDetail.removed)) {
       this.volumeManager_.getDefaultDisplayRoot((displayRoot) => {
@@ -1517,9 +1402,7 @@ export class DirectoryModel extends EventTarget {
     if (this.getCurrentRootType() === RootType.DRIVE_FAKE_ROOT) {
       for (const newVolume of spliceEventDetail.added) {
         if (newVolume.volumeType === VolumeType.DRIVE) {
-          // @ts-ignore: error TS7006: Parameter 'displayRoot' implicitly has an
-          // 'any' type.
-          newVolume.resolveDisplayRoot().then((displayRoot) => {
+          newVolume.resolveDisplayRoot().then((displayRoot: DirectoryEntry) => {
             this.changeDirectoryEntry(displayRoot);
           });
         }
@@ -1536,9 +1419,7 @@ export class DirectoryModel extends EventTarget {
     //   Note, that this is a temporary solution for https://crbug.com/427776.
     // * Crostini is mounted, redirect if it is the currently selected dir.
     if (!currentDir ||
-        // @ts-ignore: error TS2339: Property 'isFocused' does not exist on type
-        // 'Window & typeof globalThis'.
-        (window.isFocused() &&
+        (window.isFocused && window.isFocused() &&
          spliceEventDetail.added[0].volumeType === VolumeType.PROVIDED &&
          spliceEventDetail.added[0].source === Source.FILE) ||
         (spliceEventDetail.added[0].volumeType === VolumeType.CROSTINI &&
@@ -1549,29 +1430,27 @@ export class DirectoryModel extends EventTarget {
          this.getCurrentRootType() === RootType.GUEST_OS)) {
       // Resolving a display root on FSP volumes is instant, despite the
       // asynchronous call.
-      // @ts-ignore: error TS7006: Parameter 'displayRoot' implicitly has an
-      // 'any' type.
-      spliceEventDetail.added[0].resolveDisplayRoot().then((displayRoot) => {
-        // Only change directory if "currentDir" hasn't changed during the
-        // display root resolution and if there isn't a directory change in
-        // progress, because other part of the system will eventually change the
-        // directory.
-        if (currentDir === this.getCurrentDirEntry() &&
-            this.numChangeTrackerRunning_ === 0) {
-          this.changeDirectoryEntry(spliceEventDetail.added[0].displayRoot);
-        }
-      });
+      spliceEventDetail.added[0].resolveDisplayRoot().then(
+          (_displayRoot: DirectoryEntry) => {
+            // Only change directory if "currentDir" hasn't changed during the
+            // display root resolution and if there isn't a directory change in
+            // progress, because other part of the system will eventually change
+            // the directory.
+            if (currentDir === this.getCurrentDirEntry() &&
+                this.numChangeTrackerRunning_ === 0) {
+              this.changeDirectoryEntry(spliceEventDetail.added[0].displayRoot);
+            }
+          });
     }
   }
 
   /**
    * Returns whether the current directory entry has been unmounted.
    *
-   * @param {!Array<!import('../../externs/volume_info.js').VolumeInfo>}
-   *     removedVolumes The removed volumes.
-   * @private
+   * @param removedVolumes The removed volumes.
    */
-  hasCurrentDirEntryBeenUnmounted_(removedVolumes) {
+  private hasCurrentDirEntryBeenUnmounted_(removedVolumes: VolumeInfo[]):
+      boolean {
     const entry = this.getCurrentDirEntry();
     if (!entry) {
       return false;
@@ -1583,8 +1462,7 @@ export class DirectoryModel extends EventTarget {
 
     const rootType = this.getCurrentRootType();
     for (const volume of removedVolumes) {
-      // @ts-ignore: error TS2538: Type 'null' cannot be used as an index type.
-      if (volume.fakeEntries[rootType]) {
+      if (rootType && volume.fakeEntries[rootType]) {
         return true;
       }
       // The removable root is selected and one of its child partitions has been
@@ -1599,26 +1477,18 @@ export class DirectoryModel extends EventTarget {
   /**
    * Returns true if directory search should be used for the entry and query.
    *
-   * @param {!DirectoryEntry|!FilesAppEntry} entry Directory entry.
-   * @param {string=} query Search query string.
-   * @return {boolean} True if directory search should be used for the entry
-   *     and query.
+   * @param entry Directory entry.
+   * @param query Search query string.
+   * @return True if directory search should be used for the entry and query.
    */
-  isSearchDirectory(entry, query) {
-    // @ts-ignore: error TS2339: Property 'rootType' does not exist on type
-    // 'FileSystemDirectoryEntry | FilesAppEntry'.
-    if (isRecentRootType(entry.rootType) ||
-        // @ts-ignore: error TS2339: Property 'rootType' does not exist on type
-        // 'FileSystemDirectoryEntry | FilesAppEntry'.
-        entry.rootType == RootType.CROSTINI ||
-        // @ts-ignore: error TS2339: Property 'rootType' does not exist on type
-        // 'FileSystemDirectoryEntry | FilesAppEntry'.
-        entry.rootType == RootType.DRIVE_FAKE_ROOT) {
+  isSearchDirectory(entry: DirectoryEntry|FilesAppEntry, query?: string):
+      boolean {
+    const rootType = getRootType(entry);
+    if (isRecentRootType(rootType) || rootType == RootType.CROSTINI ||
+        rootType == RootType.DRIVE_FAKE_ROOT) {
       return true;
     }
-    // @ts-ignore: error TS2339: Property 'rootType' does not exist on type
-    // 'FileSystemDirectoryEntry | FilesAppEntry'.
-    if (entry.rootType == RootType.MY_FILES) {
+    if (rootType == RootType.MY_FILES) {
       return false;
     }
 
@@ -1638,60 +1508,48 @@ export class DirectoryModel extends EventTarget {
   /**
    * Creates scanner factory for the entry and query.
    *
-   * @param {!DirectoryEntry|!FilesAppEntry} entry Directory entry.
-   * @param {string=} query Search query string.
-   * @param {SearchOptions=} options search options.
-   * @return {function():ContentScanner} The factory to create ContentScanner
-   *     instance.
+   * @param entry Directory entry.
+   * @param query Search query string.
+   * @param options search options.
+   * @return The factory to create ContentScanner instance.
    */
-  createScannerFactory(entry, query, options) {
+  createScannerFactory(
+      entry: DirectoryEntry|FilesAppEntry, query?: string,
+      options?: SearchOptions): () => ContentScanner {
     const sanitizedQuery = (query || '').trimStart();
     const locationInfo = this.volumeManager_.getLocationInfo(entry);
 
     if (isRecentScan(entry, options)) {
-      const fakeEntry = /** @type {!FakeEntry} */ (entry);
       return () => {
         return new RecentContentScanner(
-            sanitizedQuery, 30, this.volumeManager_,
-            fakeEntry.sourceRestriction,
-            getFileCategory(fakeEntry, sanitizedQuery, options));
+            sanitizedQuery, 30, this.volumeManager_, entry.sourceRestriction,
+            getFileCategory(entry, sanitizedQuery, options));
       };
     }
     // TODO(b/271485133): Make sure the entry here is a fake entry, not real
     // volume entry.
-    // @ts-ignore: error TS2339: Property 'rootType' does not exist on type
-    // 'FileSystemDirectoryEntry | FilesAppEntry'.
-    if (entry.rootType == RootType.CROSTINI) {
+    const rootType = getRootType(entry);
+    if (rootType == RootType.CROSTINI) {
       return () => {
         return new CrostiniMounter();
       };
     }
-    // @ts-ignore: error TS2339: Property 'rootType' does not exist on type
-    // 'FileSystemDirectoryEntry | FilesAppEntry'.
-    if (entry.rootType == RootType.GUEST_OS) {
+    if (rootType == RootType.GUEST_OS) {
       return () => {
-        const placeholder = /** @type {!GuestOsPlaceholder} */ (entry);
-        return new GuestOsMounter(placeholder.guest_id);
+        return new GuestOsMounter((entry as GuestOsPlaceholder).guest_id);
       };
     }
-    // @ts-ignore: error TS2339: Property 'rootType' does not exist on type
-    // 'FileSystemDirectoryEntry | FilesAppEntry'.
-    if (entry.rootType == RootType.MY_FILES) {
+    if (rootType == RootType.MY_FILES) {
       return () => {
-        return new DirectoryContentScanner(
-            /** @type {!FilesAppDirEntry} */ (entry));
+        return new DirectoryContentScanner(entry as FilesAppDirEntry);
       };
     }
-    // @ts-ignore: error TS2339: Property 'rootType' does not exist on type
-    // 'FileSystemDirectoryEntry | FilesAppEntry'.
-    if (entry.rootType == RootType.DRIVE_FAKE_ROOT) {
+    if (rootType == RootType.DRIVE_FAKE_ROOT) {
       return () => {
         return new ContentScanner();
       };
     }
-    // @ts-ignore: error TS2339: Property 'rootType' does not exist on type
-    // 'FileSystemDirectoryEntry | FilesAppEntry'.
-    if (entry.rootType == RootType.TRASH) {
+    if (rootType == RootType.TRASH) {
       return () => {
         return new TrashContentScanner(this.volumeManager_);
       };
@@ -1705,16 +1563,13 @@ export class DirectoryModel extends EventTarget {
     }
     if (locationInfo && locationInfo.rootType == RootType.MEDIA_VIEW) {
       return () => {
-        return new MediaViewContentScanner(
-            /** @type {!DirectoryEntry} */ (entry));
+        return new MediaViewContentScanner(entry as DirectoryEntry);
       };
     }
     if (locationInfo && locationInfo.isRootEntry &&
         locationInfo.isSpecialSearchRoot) {
       // Drive special search.
-      // @ts-ignore: error TS7034: Variable 'searchType' implicitly has type
-      // 'any' in some locations where its type cannot be determined.
-      let searchType;
+      let searchType: chrome.fileManagerPrivate.SearchType;
       switch (locationInfo.rootType) {
         case RootType.DRIVE_OFFLINE:
           searchType = chrome.fileManagerPrivate.SearchType.OFFLINE;
@@ -1730,29 +1585,27 @@ export class DirectoryModel extends EventTarget {
           throw new Error('Unknown special search type.');
       }
       return () => {
-        // @ts-ignore: error TS7005: Variable 'searchType' implicitly has an
-        // 'any' type.
         return new DriveMetadataSearchContentScanner(searchType);
       };
     }
     // Local fetch or search.
     return () => {
-      return new DirectoryContentScanner(
-          /** @type {!DirectoryEntry} */ (entry));
+      return new DirectoryContentScanner(entry as DirectoryEntry);
     };
   }
 
   /**
    * Creates directory contents for the entry and query.
    *
-   * @param {FileListContext} context File list context.
-   * @param {!DirectoryEntry|!FilesAppDirEntry} entry Current directory.
-   * @param {string=} query Search query string.
-   * @param {SearchOptions=} options Search options.
-   * @return {!DirectoryContents} Directory contents.
-   * @private
+   * @param context File list context.
+   * @param entry Current directory.
+   * @param query Search query string.
+   * @param options Search options.
+   * @return Directory contents.
    */
-  createDirectoryContents_(context, entry, query, options) {
+  private createDirectoryContents_(
+      context: FileListContext, entry: DirectoryEntry|FilesAppDirEntry,
+      query?: string, options?: SearchOptions): DirectoryContents {
     const isSearch = this.isSearchDirectory(entry, query);
     const scannerFactory = this.createScannerFactory(entry, query, options);
     return new DirectoryContents(context, isSearch, entry, scannerFactory);
@@ -1760,9 +1613,9 @@ export class DirectoryModel extends EventTarget {
 
   /**
    * Gets the last search query.
-   * @return {string} the last search query.
+   * @return the last search query.
    */
-  getLastSearchQuery() {
+  getLastSearchQuery(): string {
     return this.lastSearchQuery_;
   }
 
@@ -1779,12 +1632,10 @@ export class DirectoryModel extends EventTarget {
    * over drive mount point. If the current directory is not on the drive, file
    * name search over current directory will be performed.
    *
-   * @param {string} query Query that will be searched for.
-   * @param {!SearchOptions} options Search options, such as file
-   *     type, etc.
-   * @private
+   * @param query Query that will be searched for.
+   * @param options Search options, such as file type, etc.
    */
-  search_(query, options) {
+  private search_(query: string, options: SearchOptions) {
     this.lastSearchQuery_ = query;
     this.stopActiveSearch_();
     const currentDirEntry = this.getCurrentDirEntry();
@@ -1819,18 +1670,15 @@ export class DirectoryModel extends EventTarget {
         return;
       }
 
-      this.store_.dispatch(
-          // @ts-ignore: error TS2345: Argument of type '{ query: string;
-          // status: string; }' is not assignable to parameter of type
-          // 'SearchData'.
-          updateSearch({query: query, status: PropStatus.STARTED}));
-      // @ts-ignore: error TS7019: Rest parameter 'args' implicitly has an
-      // 'any[]' type.
-      this.onSearchCompleted_ = (...args) => {
+      this.store_.dispatch(updateSearch(
+          {query: query, status: PropStatus.STARTED, options: undefined}));
+      this.onSearchCompleted_ = () => {
         // Notify the store-aware parts.
-        // @ts-ignore: error TS2345: Argument of type '{ status: string; }' is
-        // not assignable to parameter of type 'SearchData'.
-        this.store_.dispatch(updateSearch({status: PropStatus.SUCCESS}));
+        this.store_.dispatch(updateSearch({
+          status: PropStatus.SUCCESS,
+          query: undefined,
+          options: undefined,
+        }));
       };
       this.addEventListener('scan-completed', this.onSearchCompleted_);
       this.clearAndScan_(newDirContents, callback);
@@ -1840,9 +1688,8 @@ export class DirectoryModel extends EventTarget {
   /**
    * In case the search was active, remove listeners and send notifications on
    * its canceling.
-   * @private
    */
-  stopActiveSearch_() {
+  private stopActiveSearch_() {
     if (!this.isSearching()) {
       return;
     }
@@ -1857,19 +1704,17 @@ export class DirectoryModel extends EventTarget {
    * Update the file list when certain IO task is finished. To keep the file
    * list refresh for non-watchable fake directory entries and volumes, we need
    * to explicitly subscribe to the IO task status event, and manually refresh.
-   * @param {!chrome.fileManagerPrivate.ProgressStatus} event
-   * @private
    */
-  updateFileListAfterIOTask_(event) {
+  private updateFileListAfterIoTask_(
+      event: chrome.fileManagerPrivate.ProgressStatus) {
     let rescan = false;
-    /** @type {!Set<?RootType>} */
     const fakeDirectoryEntryRootTypes = new Set([
       RootType.RECENT,
       RootType.TRASH,
     ]);
     const currentRootType = this.getCurrentRootType();
     const currentVolumeInfo = this.getCurrentVolumeInfo();
-    if (fakeDirectoryEntryRootTypes.has(currentRootType)) {
+    if (currentRootType && fakeDirectoryEntryRootTypes.has(currentRootType)) {
       // Refresh if non-watchable fake directory entry.
       rescan = true;
     } else if (currentVolumeInfo && !currentVolumeInfo.watchable) {
@@ -1886,25 +1731,3 @@ export class DirectoryModel extends EventTarget {
     }
   }
 }
-
-/**
- * Used to track asynchronous directory change use like:
- * const tracker = directoryModel.createDirectoryChangeTracker();
- * tracker.start();
- * try {
- *    ... async code here ...
- *    if (tracker.hasChanged) {
- *      // This code shouldn't continue anymore.
- *    }
- * } finally {
- *     tracker.stop();
- * }
- * @typedef {{
- *   start: function():void,
- *   stop: function():void,
- *   hasChanged: boolean,
- * }}
- */
-// @ts-ignore: error TS7005: Variable 'DirectoryChangeTracker' implicitly has an
-// 'any' type.
-export let DirectoryChangeTracker;

@@ -23,6 +23,7 @@ export enum FileSystemType {
   EXT4 = 'ext4',
   ISO9660 = 'iso9660',
   UDF = 'udf',
+  FUSEBOX = 'fusebox',
 }
 
 
