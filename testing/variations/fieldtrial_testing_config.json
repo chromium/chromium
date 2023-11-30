@@ -12148,11 +12148,18 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Dogfood",
+                    "name": "Enabled_From_121_Dogfood",
                     "enable_features": [
                         "MantaService",
                         "OrcaDogfood",
                         "OrcaOnWorkspace"
+                    ]
+                },
+                {
+                    "name": "Enabled_Pre_121_Dogfood",
+                    "enable_features": [
+                        "MantaService",
+                        "OrcaDogfood"
                     ]
                 }
             ]
