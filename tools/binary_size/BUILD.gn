@@ -10,6 +10,7 @@ python_library("binary_size_trybot_py") {
   pydeps_file = "supersize.pydeps"
   data = [
     "diagnose_bloat.py",
+    "supersize.json",
     "trybot_commit_size_checker.py",
     "//build/android/resource_sizes.py",
   ]
