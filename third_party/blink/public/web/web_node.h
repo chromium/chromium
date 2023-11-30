@@ -110,8 +110,7 @@ class BLINK_EXPORT WebNode {
 
   bool IsInsideFocusableElementOrARIAWidget() const;
 
-  v8::Local<v8::Value> ToV8Value(v8::Local<v8::Object> creation_context,
-                                 v8::Isolate*);
+  v8::Local<v8::Value> ToV8Value(v8::Isolate*);
 
   int GetDomNodeId() const;
 

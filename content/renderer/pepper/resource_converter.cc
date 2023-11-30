@@ -144,8 +144,7 @@ bool ResourceHostToDOMFileSystem(
   blink::WebDOMFileSystem web_dom_file_system = blink::WebDOMFileSystem::Create(
       frame, blink_type, blink::WebString::FromUTF8(name), root_url,
       blink::WebDOMFileSystem::kSerializableTypeSerializable);
-  *dom_file_system =
-      web_dom_file_system.ToV8Value(context->Global(), context->GetIsolate());
+  *dom_file_system = web_dom_file_system.ToV8Value(context->GetIsolate());
   return true;
 }
 

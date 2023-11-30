@@ -141,8 +141,7 @@ v8::LocalVector<v8::Value> ConvertBitmapToV8(
   bool read = bitmap.readPixels(info, buffer.Data(), row_bytes, 0, 0);
   CHECK(read);
 
-  args.push_back(blink::WebArrayBufferConverter::ToV8Value(
-      &buffer, isolate->GetCurrentContext()->Global(), isolate));
+  args.push_back(blink::WebArrayBufferConverter::ToV8Value(&buffer, isolate));
   return args;
 }
 
