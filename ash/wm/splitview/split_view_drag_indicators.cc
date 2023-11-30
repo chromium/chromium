@@ -336,7 +336,8 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
   // changed.
   void Layout(bool animate) {
     // TODO(b/252514604): Attempt to simplify this logic.
-    const bool horizontal = IsLayoutHorizontal(GetWidget()->GetNativeWindow());
+    const bool horizontal =
+        SplitViewController::IsLayoutHorizontal(GetWidget()->GetNativeWindow());
     const int display_width = horizontal ? width() : height();
     const int display_height = horizontal ? height() : width();
     // Calculate the bounds of the two highlight regions.
@@ -403,7 +404,8 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
       if (!horizontal)
         other_bounds.Transpose();
 
-      if (IsPhysicalLeftOrTop(snap_position, dragged_window_)) {
+      if (SplitViewController::IsPhysicalLeftOrTop(snap_position,
+                                                   dragged_window_)) {
         left_highlight_bounds = preview_area_bounds;
         right_highlight_bounds = other_bounds;
         if (animate) {
@@ -441,7 +443,8 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
     } else if (GetSnapPosition(previous_window_dragging_state_) !=
                    SplitViewController::SnapPosition::kNone &&
                animate) {
-      if (IsPhysicalLeftOrTop(snap_position, dragged_window_)) {
+      if (SplitViewController::IsPhysicalLeftOrTop(snap_position,
+                                                   dragged_window_)) {
         left_highlight_animation_type =
             SPLITVIEW_ANIMATION_PREVIEW_AREA_SLIDE_OUT;
         right_highlight_animation_type =
@@ -512,7 +515,8 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
     if (snap_position == SplitViewController::SnapPosition::kNone) {
       preview_label_layer = nullptr;
       other_highlight_label_layer = nullptr;
-    } else if (IsPhysicalLeftOrTop(snap_position, dragged_window_)) {
+    } else if (SplitViewController::IsPhysicalLeftOrTop(snap_position,
+                                                        dragged_window_)) {
       preview_label_layer = left_rotated_view_->layer();
       other_highlight_label_layer = right_rotated_view_->layer();
       preview_label_transform = left_rotation;
@@ -540,7 +544,8 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
           0.5f * (highlight_width - other_highlight_width);
 
       // Positive (unchanged) for left or up; negative for right or down.
-      if (!IsPhysicalLeftOrTop(snap_position, dragged_window_)) {
+      if (!SplitViewController::IsPhysicalLeftOrTop(snap_position,
+                                                    dragged_window_)) {
         preview_label_delta = -preview_label_delta;
         other_highlight_label_delta = -other_highlight_label_delta;
       }

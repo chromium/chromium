@@ -11,7 +11,6 @@
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
-#include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_cue_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu.h"
@@ -704,7 +703,7 @@ TEST_F(TabletModeMultitaskMenuTest, ShowBottomMenuPortraitPrimary) {
       top_window.get(), SplitViewController::SnapPosition::kPrimary);
   split_view_controller->SnapWindow(
       bottom_window.get(), SplitViewController::SnapPosition::kSecondary);
-  EXPECT_FALSE(IsPhysicalLeftOrTop(
+  EXPECT_FALSE(split_view_controller->IsPhysicalLeftOrTop(
       SplitViewController::SnapPosition::kSecondary, bottom_window.get()));
   wm::ActivateWindow(bottom_window.get());
 
@@ -744,8 +743,8 @@ TEST_F(TabletModeMultitaskMenuTest, DISABLED_ShowBottomMenuPortraitSecondary) {
       bottom_window.get(), SplitViewController::SnapPosition::kPrimary);
   split_view_controller->SnapWindow(
       top_window.get(), SplitViewController::SnapPosition::kSecondary);
-  EXPECT_FALSE(IsPhysicalLeftOrTop(SplitViewController::SnapPosition::kPrimary,
-                                   bottom_window.get()));
+  EXPECT_FALSE(split_view_controller->IsPhysicalLeftOrTop(
+      SplitViewController::SnapPosition::kPrimary, bottom_window.get()));
   wm::ActivateWindow(bottom_window.get());
 
   // Event generation coordinates are relative to the natural origin, but
