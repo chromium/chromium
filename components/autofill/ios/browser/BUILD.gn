@@ -154,11 +154,6 @@ source_set("unit_tests") {
     "//third_party/ocmock",
     "//ui/gfx:test_support",
   ]
-
-  # TODO(crbug.com/1427365): Test currently fails on iOS blink.
-  if (is_ios && use_blink) {
-    sources -= [ "autofill_agent_unittests.mm" ]
-  }
 }
 
 bundle_data("autofill_test_bundle_data") {

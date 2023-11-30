@@ -87,12 +87,4 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/ocmock",
   ]
-
-  # TODO(crbug.com/1427365): Test currently fails on iOS blink.
-  if (is_ios && use_blink) {
-    sources -= [
-      "account_consistency_service_unittest.mm",
-      "active_state_manager_impl_unittest.mm",
-    ]
-  }
 }
