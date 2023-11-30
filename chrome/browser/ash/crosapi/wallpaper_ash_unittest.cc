@@ -32,14 +32,12 @@
 
 namespace crosapi {
 
-std::vector<uint8_t> CreateJpeg() {
-  constexpr int kWidth = 100;
-  constexpr int kHeight = 100;
+std::vector<uint8_t> CreateJpeg(int width = 100, int height = 100) {
   const SkColor kRed = SkColorSetRGB(255, 0, 0);
   constexpr int kQuality = 80;
 
   SkBitmap bitmap;
-  bitmap.allocN32Pixels(kWidth, kHeight);
+  bitmap.allocN32Pixels(width, height);
   bitmap.eraseColor(kRed);
 
   std::vector<uint8_t> jpg_data;
@@ -103,6 +101,26 @@ TEST_F(WallpaperAshTest, SetWallpaper) {
   crosapi::mojom::WallpaperSettingsPtr settings =
       crosapi::mojom::WallpaperSettings::New();
   settings->data = CreateJpeg();
+  test_wallpaper_controller_.SetCurrentUser(user_manager::StubAccountId());
+
+  base::RunLoop loop;
+  wallpaper_ash_.SetWallpaper(
+      std::move(settings), "extension_id", "extension_name",
+      base::BindLambdaForTesting(
+          [&loop](const crosapi::mojom::SetWallpaperResultPtr result) {
+            ASSERT_TRUE(result->is_thumbnail_data());
+            ASSERT_FALSE(result->get_thumbnail_data().empty());
+            loop.Quit();
+          }));
+  loop.Run();
+
+  ASSERT_EQ(1, test_wallpaper_controller_.get_third_party_wallpaper_count());
+}
+
+TEST_F(WallpaperAshTest, SetWallpaper1x1) {
+  crosapi::mojom::WallpaperSettingsPtr settings =
+      crosapi::mojom::WallpaperSettings::New();
+  settings->data = CreateJpeg(1, 1);
   test_wallpaper_controller_.SetCurrentUser(user_manager::StubAccountId());
 
   base::RunLoop loop;
