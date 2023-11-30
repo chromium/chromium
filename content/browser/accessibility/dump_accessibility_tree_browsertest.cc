@@ -3418,8 +3418,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityVar) {
   RunHtmlTest(FILE_PATH_LITERAL("var.html"));
 }
 
-// crbug.com/281952
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, DISABLED_AccessibilityVideo) {
+// TODO(https://crbug.com/1503945)
+// We only run the blink test intentionally, because the video will
+// not load on some bots leading to variations in the tree for the
+// platforms.
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityVideo) {
   RunHtmlTest(FILE_PATH_LITERAL("video.html"));
 }
 

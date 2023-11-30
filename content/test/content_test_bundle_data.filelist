@@ -4986,9 +4986,7 @@ data/accessibility/html/video-controls-expected-blink.txt
 data/accessibility/html/video-controls-expected-mac.txt
 data/accessibility/html/video-controls-expected-uia-win.txt
 data/accessibility/html/video-controls.html
-data/accessibility/html/video-expected-android.txt
-data/accessibility/html/video-expected-mac.txt
-data/accessibility/html/video-expected-win.txt
+data/accessibility/html/video-expected-blink.txt
 data/accessibility/html/video-text-only-expected-auralinux.txt
 data/accessibility/html/video-text-only-expected-fuchsia.txt
 data/accessibility/html/video-text-only-expected-mac.txt
