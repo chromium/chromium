@@ -141,6 +141,10 @@ class CONTENT_EXPORT TrustedSignals {
   // or all of the render URLs are missing, still succeeds, and GetSignals()
   // will populate them with nulls.
   //
+  // If non-empty, "&`trusted_bidding_signals_slot_size_param`" is appended to
+  // the end of the query string. It's expected to already be escaped if
+  // necessary.
+  //
   // There are no lifetime constraints of `url_loader_factory`.
   static std::unique_ptr<TrustedSignals> LoadBiddingSignals(
       network::mojom::URLLoaderFactory* url_loader_factory,
@@ -151,6 +155,7 @@ class CONTENT_EXPORT TrustedSignals {
       const std::string& hostname,
       const GURL& trusted_bidding_signals_url,
       absl::optional<uint16_t> experiment_group_id,
+      const std::string& trusted_bidding_signals_slot_size_param,
       scoped_refptr<AuctionV8Helper> v8_helper,
       LoadSignalsCallback load_signals_callback);
 

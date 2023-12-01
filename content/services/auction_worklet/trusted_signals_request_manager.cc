@@ -39,6 +39,7 @@ TrustedSignalsRequestManager::TrustedSignalsRequestManager(
     const url::Origin& top_level_origin,
     const GURL& trusted_signals_url,
     absl::optional<uint16_t> experiment_group_id,
+    const std::string& trusted_bidding_signals_slot_size_param,
     AuctionV8Helper* v8_helper)
     : type_(type),
       url_loader_factory_(url_loader_factory),
@@ -46,9 +47,16 @@ TrustedSignalsRequestManager::TrustedSignalsRequestManager(
       top_level_origin_(top_level_origin),
       trusted_signals_url_(trusted_signals_url),
       experiment_group_id_(experiment_group_id),
+      trusted_bidding_signals_slot_size_param_(
+          trusted_bidding_signals_slot_size_param),
       v8_helper_(v8_helper),
       auction_network_events_handler_(
-          std::move(auction_network_events_handler)) {}
+          std::move(auction_network_events_handler)) {
+  // `trusted_bidding_signals_slot_size_param` are only supported for
+  // Type::kBiddingSignals.
+  DCHECK(trusted_bidding_signals_slot_size_param.empty() ||
+         type_ == Type::kBiddingSignals);
+}
 
 TrustedSignalsRequestManager::~TrustedSignalsRequestManager() {
   // All outstanding Requests should have been destroyed before `this`.
@@ -124,7 +132,7 @@ void TrustedSignalsRequestManager::StartBatchedTrustedSignalsRequest() {
             auction_network_events_handler_),
         std::move(interest_group_names), std::move(keys),
         top_level_origin_.host(), trusted_signals_url_, experiment_group_id_,
-        v8_helper_,
+        trusted_bidding_signals_slot_size_param_, v8_helper_,
         base::BindOnce(&TrustedSignalsRequestManager::OnSignalsLoaded,
                        base::Unretained(this), batched_request));
     return;

@@ -101,6 +101,7 @@ class TrustedSignalsRequestManagerTest : public testing::Test {
             url::Origin::Create(GURL(kTopLevelOrigin)),
             trusted_signals_url_,
             /*experiment_group_id=*/absl::nullopt,
+            "trusted_bidding_signals_slot_size_param=foo",
             v8_helper_.get()),
         scoring_request_manager_(
             TrustedSignalsRequestManager::Type::kScoringSignals,
@@ -111,6 +112,7 @@ class TrustedSignalsRequestManagerTest : public testing::Test {
             url::Origin::Create(GURL(kTopLevelOrigin)),
             trusted_signals_url_,
             /*experiment_group_id=*/absl::nullopt,
+            /*trusted_bidding_signals_slot_size_param=*/"",
             v8_helper_.get()) {}
 
   ~TrustedSignalsRequestManagerTest() override {
@@ -255,12 +257,14 @@ class TrustedSignalsRequestManagerTest : public testing::Test {
 
 TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsError) {
   url_loader_factory_.AddResponse(
-      "https://url.test/?hostname=publisher&keys=key1&interestGroupNames=name1",
+      "https://url.test/?hostname=publisher&keys=key1&interestGroupNames=name1"
+      "&trusted_bidding_signals_slot_size_param=foo",
       kBaseBiddingJson, net::HTTP_NOT_FOUND);
   EXPECT_FALSE(FetchBiddingSignals({"name1"}, {{"key1"}}));
   EXPECT_EQ(
       "Failed to load "
-      "https://url.test/?hostname=publisher&keys=key1&interestGroupNames=name1 "
+      "https://url.test/?hostname=publisher&keys=key1&interestGroupNames=name1"
+      "&trusted_bidding_signals_slot_size_param=foo "
       "HTTP status = 404 Not Found.",
       error_msg_);
 
@@ -271,10 +275,12 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsError) {
               testing::ElementsAre(
                   "Sent URL: "
                   "https://url.test/"
-                  "?hostname=publisher&keys=key1&interestGroupNames=name1",
+                  "?hostname=publisher&keys=key1&interestGroupNames=name1"
+                  "&trusted_bidding_signals_slot_size_param=foo",
                   "Received URL: "
                   "https://url.test/"
-                  "?hostname=publisher&keys=key1&interestGroupNames=name1",
+                  "?hostname=publisher&keys=key1&interestGroupNames=name1"
+                  "&trusted_bidding_signals_slot_size_param=foo",
                   "Completion Status: net::ERR_HTTP_RESPONSE_CODE_FAILURE"));
 }
 
@@ -306,7 +312,8 @@ TEST_F(TrustedSignalsRequestManagerTest, ScoringSignalsError) {
 TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsBatchedRequestError) {
   url_loader_factory_.AddResponse(
       "https://url.test/?hostname=publisher"
-      "&keys=key1,key2&interestGroupNames=name1,name2",
+      "&keys=key1,key2&interestGroupNames=name1,name2"
+      "&trusted_bidding_signals_slot_size_param=foo",
       kBaseBiddingJson, net::HTTP_NOT_FOUND);
 
   base::RunLoop run_loop1;
@@ -330,7 +337,8 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsBatchedRequestError) {
   const char kExpectedError[] =
       "Failed to load "
       "https://url.test/"
-      "?hostname=publisher&keys=key1,key2&interestGroupNames=name1,name2 "
+      "?hostname=publisher&keys=key1,key2&interestGroupNames=name1,name2"
+      "&trusted_bidding_signals_slot_size_param=foo "
       "HTTP status = 404 Not Found.";
 
   run_loop1.Run();
@@ -348,9 +356,11 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsBatchedRequestError) {
       auction_network_events_handler_.GetObservedRequests(),
       testing::ElementsAre(
           "Sent URL: https://url.test/"
-          "?hostname=publisher&keys=key1,key2&interestGroupNames=name1,name2",
+          "?hostname=publisher&keys=key1,key2&interestGroupNames=name1,name2"
+          "&trusted_bidding_signals_slot_size_param=foo",
           "Received URL: https://url.test/"
-          "?hostname=publisher&keys=key1,key2&interestGroupNames=name1,name2",
+          "?hostname=publisher&keys=key1,key2&interestGroupNames=name1,name2"
+          "&trusted_bidding_signals_slot_size_param=foo",
           "Completion Status: net::ERR_HTTP_RESPONSE_CODE_FAILURE"));
 }
 
@@ -410,7 +420,8 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsOneRequestNullKeys) {
   scoped_refptr<TrustedSignals::Result> signals =
       FetchBiddingSignalsWithResponse(
           GURL("https://url.test/?hostname=publisher"
-               "&interestGroupNames=name1"),
+               "&interestGroupNames=name1"
+               "&trusted_bidding_signals_slot_size_param=foo"),
           kBaseBiddingJson, {"name1"},
           /*trusted_bidding_signals_keys=*/absl::nullopt);
   ASSERT_TRUE(signals);
@@ -426,7 +437,8 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsOneRequest) {
   scoped_refptr<TrustedSignals::Result> signals =
       FetchBiddingSignalsWithResponse(
           GURL("https://url.test/?hostname=publisher"
-               "&keys=key1,key2&interestGroupNames=name1"),
+               "&keys=key1,key2&interestGroupNames=name1"
+               "&trusted_bidding_signals_slot_size_param=foo"),
           kBaseBiddingJson, {"name1"}, kKeys);
   ASSERT_TRUE(signals);
   EXPECT_FALSE(error_msg_.has_value());
@@ -443,9 +455,11 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsOneRequest) {
   EXPECT_THAT(
       auction_network_events_handler_.GetObservedRequests(),
       testing::ElementsAre("Sent URL: https://url.test/?hostname=publisher"
-                           "&keys=key1,key2&interestGroupNames=name1",
+                           "&keys=key1,key2&interestGroupNames=name1"
+                           "&trusted_bidding_signals_slot_size_param=foo",
                            "Received URL: https://url.test/?hostname=publisher"
-                           "&keys=key1,key2&interestGroupNames=name1",
+                           "&keys=key1,key2&interestGroupNames=name1"
+                           "&trusted_bidding_signals_slot_size_param=foo",
                            "Completion Status: net::OK"));
 }
 
@@ -483,7 +497,8 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsSequentialRequests) {
   scoped_refptr<TrustedSignals::Result> signals1 =
       FetchBiddingSignalsWithResponse(
           GURL("https://url.test/?hostname=publisher&"
-               "keys=key1,key3&interestGroupNames=name1"),
+               "keys=key1,key3&interestGroupNames=name1"
+               "&trusted_bidding_signals_slot_size_param=foo"),
           R"({"keys":{"key1":1,"key3":3},
                       "perInterestGroupData":
                           {"name1": {"priorityVector": {"foo": 1}}}
@@ -501,7 +516,8 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsSequentialRequests) {
   scoped_refptr<TrustedSignals::Result> signals2 =
       FetchBiddingSignalsWithResponse(
           GURL("https://url.test/?hostname=publisher"
-               "&keys=key2,key3&interestGroupNames=name2"),
+               "&keys=key2,key3&interestGroupNames=name2"
+               "&trusted_bidding_signals_slot_size_param=foo"),
           R"({"keys":{"key2":[2],"key3":[3]},
               "perInterestGroupData":
                   {"name2": {"priorityVector": {"foo": 2}}}
@@ -598,12 +614,14 @@ TEST_F(TrustedSignalsRequestManagerTest,
   const std::vector<std::string> kKeys1{"key1", "key3"};
   const GURL kUrl1 = GURL(
       "https://url.test/?hostname=publisher"
-      "&keys=key1,key3&interestGroupNames=name1");
+      "&keys=key1,key3&interestGroupNames=name1"
+      "&trusted_bidding_signals_slot_size_param=foo");
 
   const std::vector<std::string> kKeys2{"key2", "key3"};
   const GURL kUrl2 = GURL(
       "https://url.test/?hostname=publisher"
-      "&keys=key2,key3&interestGroupNames=name2");
+      "&keys=key2,key3&interestGroupNames=name2"
+      "&trusted_bidding_signals_slot_size_param=foo");
 
   base::RunLoop run_loop1;
   scoped_refptr<TrustedSignals::Result> signals1;
@@ -771,7 +789,8 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsBatchedRequests) {
   AddBidderJsonResponse(&url_loader_factory_,
                         GURL("https://url.test/?hostname=publisher"
                              "&keys=key1,key2,key3"
-                             "&interestGroupNames=name1,name2"),
+                             "&interestGroupNames=name1,name2"
+                             "&trusted_bidding_signals_slot_size_param=foo"),
                         kBaseBiddingJson);
 
   base::RunLoop run_loop1;
@@ -926,7 +945,8 @@ TEST_F(TrustedSignalsRequestManagerTest, CancelOneRequest) {
   // created.
   AddBidderJsonResponse(&url_loader_factory_,
                         GURL("https://url.test/?hostname=publisher"
-                             "&keys=key2&interestGroupNames=name2"),
+                             "&keys=key2&interestGroupNames=name2"
+                             "&trusted_bidding_signals_slot_size_param=foo"),
                         kBaseBiddingJson);
 
   auto request1 = bidding_request_manager_.RequestBiddingSignals(
@@ -963,7 +983,8 @@ TEST_F(TrustedSignalsRequestManagerTest, CancelAllLiveRequests) {
   const std::vector<std::string> kKeys2{"key2"};
   const GURL kSignalsUrl = GURL(
       "https://url.test/?hostname=publisher"
-      "&keys=key1,key2&interestGroupNames=name1");
+      "&keys=key1,key2&interestGroupNames=name1"
+      "&trusted_bidding_signals_slot_size_param=foo");
 
   auto request1 = bidding_request_manager_.RequestBiddingSignals(
       {"name1"}, kKeys1, base::BindOnce(&NeverInvokedLoadSignalsCallback));
@@ -992,7 +1013,8 @@ TEST_F(TrustedSignalsRequestManagerTest, CancelOneLiveRequest) {
   const std::vector<std::string> kKeys2{"key2"};
   const GURL kSignalsUrl = GURL(
       "https://url.test/?hostname=publisher"
-      "&keys=key1,key2&interestGroupNames=name1,name2");
+      "&keys=key1,key2&interestGroupNames=name1,name2"
+      "&trusted_bidding_signals_slot_size_param=foo");
 
   auto request1 = bidding_request_manager_.RequestBiddingSignals(
       {"name1"}, kKeys1, base::BindOnce(&NeverInvokedLoadSignalsCallback));
@@ -1053,7 +1075,8 @@ TEST_F(TrustedSignalsRequestManagerTest, AutomaticallySendRequestsEnabled) {
       auction_network_events_handler_.CreateRemote(),
       /*automatically_send_requests=*/true,
       url::Origin::Create(GURL(kTopLevelOrigin)), trusted_signals_url_,
-      /*experiment_group_id=*/absl::nullopt, v8_helper_.get());
+      /*experiment_group_id=*/absl::nullopt,
+      /*trusted_bidding_signals_slot_size_param=*/"", v8_helper_.get());
 
   // Create one Request.
   base::RunLoop run_loop1;
@@ -1135,7 +1158,8 @@ TEST_F(TrustedSignalsRequestManagerTest,
       auction_network_events_handler_.CreateRemote(),
       /*automatically_send_requests=*/true,
       url::Origin::Create(GURL(kTopLevelOrigin)), trusted_signals_url_,
-      /*experiment_group_id=*/absl::nullopt, v8_helper_.get());
+      /*experiment_group_id=*/absl::nullopt,
+      /*trusted_bidding_signals_slot_size_param=*/"", v8_helper_.get());
 
   // Create one Request.
   auto request1 = bidding_request_manager.RequestBiddingSignals(
@@ -1194,7 +1218,8 @@ TEST_F(TrustedSignalsRequestManagerTest,
       auction_network_events_handler_.CreateRemote(),
       /*automatically_send_requests=*/true,
       url::Origin::Create(GURL(kTopLevelOrigin)), trusted_signals_url_,
-      /*experiment_group_id=*/absl::nullopt, v8_helper_.get());
+      /*experiment_group_id=*/absl::nullopt,
+      /*trusted_bidding_signals_slot_size_param=*/"", v8_helper_.get());
 
   // Create one Request.
   auto request1 = bidding_request_manager.RequestBiddingSignals(
@@ -1246,7 +1271,8 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingExperimentGroupIds) {
       auction_network_events_handler_.CreateRemote(),
       /*automatically_send_requests=*/false,
       url::Origin::Create(GURL(kTopLevelOrigin)), trusted_signals_url_,
-      /*experiment_group_id=*/934u, v8_helper_.get());
+      /*experiment_group_id=*/934u,
+      /*trusted_bidding_signals_slot_size_param=*/"", v8_helper_.get());
   AddBidderJsonResponse(
       &url_loader_factory_,
       GURL("https://url.test/"
@@ -1286,7 +1312,8 @@ TEST_F(TrustedSignalsRequestManagerTest, ScoringExperimentGroupIds) {
       auction_network_events_handler_.CreateRemote(),
       /*automatically_send_requests=*/false,
       url::Origin::Create(GURL(kTopLevelOrigin)), trusted_signals_url_,
-      /*experiment_group_id=*/344u, v8_helper_.get());
+      /*experiment_group_id=*/344u,
+      /*trusted_bidding_signals_slot_size_param=*/"", v8_helper_.get());
 
   AddJsonResponse(&url_loader_factory_,
                   GURL("https://url.test/?hostname=publisher"

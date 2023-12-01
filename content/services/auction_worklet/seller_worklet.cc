@@ -594,7 +594,9 @@ SellerWorklet::SellerWorklet(
                      auction_network_events_handler_),
                  /*automatically_send_requests=*/true, top_window_origin,
                  *trusted_scoring_signals_url,
-                 /*experiment_group_id=*/experiment_group_id, v8_helper_.get())
+                 /*experiment_group_id=*/experiment_group_id,
+                 /*trusted_bidding_signals_slot_size_param=*/std::string(),
+                 v8_helper_.get())
            : nullptr);
 
   v8_state_ = std::unique_ptr<V8State, base::OnTaskRunnerDeleter>(
