@@ -105,8 +105,8 @@ BLINK_EXPORT void ResetPluginCache(bool reload_pages = false);
 // performance and memory usage.
 BLINK_EXPORT void DecommitFreeableMemory();
 
-// Send memory pressure notification to worker thread isolate.
-BLINK_EXPORT void MemoryPressureNotificationToWorkerThreadIsolates(
+// Send memory pressure notification to isolates.
+BLINK_EXPORT void MemoryPressureNotificationToAllIsolates(
     v8::MemoryPressureLevel);
 
 // Send isolate background/foreground notification to worker thread isolates.

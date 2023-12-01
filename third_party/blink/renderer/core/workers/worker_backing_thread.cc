@@ -76,8 +76,15 @@ void RemoveForegroundedWorkerIsolate(v8::Isolate* isolate) {
 }  // namespace
 
 // Wrapper functions defined in third_party/blink/public/web/blink.h
-void MemoryPressureNotificationToWorkerThreadIsolates(
-    v8::MemoryPressureLevel level) {
+void MemoryPressureNotificationToAllIsolates(v8::MemoryPressureLevel level) {
+  Thread::MainThread()
+      ->Scheduler()
+      ->ToMainThreadScheduler()
+      ->ForEachMainThreadIsolate(WTF::BindRepeating(
+          [](v8::MemoryPressureLevel level, v8::Isolate* isolate) {
+            isolate->MemoryPressureNotification(level);
+          },
+          level));
   WorkerBackingThread::MemoryPressureNotificationToWorkerThreadIsolates(level);
 }
 
