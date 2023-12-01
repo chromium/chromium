@@ -28,9 +28,7 @@ bool IsHoldRequiredToExit(ExclusiveAccessBubbleType type) {
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION:
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_MOUSELOCK_EXIT_INSTRUCTION:
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_MOUSELOCK_EXIT_INSTRUCTION:
-      return false;
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE:
-      NOTREACHED();
       return false;
   }
   NOTREACHED();
@@ -148,8 +146,11 @@ std::u16string GetInstructionTextForType(ExclusiveAccessBubbleType type,
                        IDS_FULLSCREEN_PRESS_TO_SEE_DOWNLOADS_AND_EXIT,
                        accelerator);
     }
-    return l10n_util::GetStringFUTF16(IDS_FULLSCREEN_PRESS_TO_SEE_DOWNLOADS,
-                                      accelerator);
+    return IsHoldRequiredToExit(type)
+               ? l10n_util::GetStringFUTF16(
+                     IDS_FULLSCREEN_HOLD_TO_SEE_DOWNLOADS, accelerator)
+               : l10n_util::GetStringFUTF16(
+                     IDS_FULLSCREEN_PRESS_TO_SEE_DOWNLOADS, accelerator);
   }
 
   switch (type) {
