@@ -8,6 +8,7 @@ Note, this file will be executed in docker instance without vpython3, so we use
 python3 instead.
 """
 
+import json
 import logging
 import os
 import shutil
@@ -199,8 +200,17 @@ def main(action: str) -> int:
     serial_num = os.getenv('FUCHSIA_FASTBOOT_SERNUM')
     assert node_id is not None
     assert serial_num is not None
-    if action == 'check-health':
+    if action == 'health-check':
         if is_in_fuchsia(node_id) or is_in_fastboot(serial_num):
+            # Print out the json result without using logging to avoid any
+            # potential formatting issue.
+            print(
+                json.dumps([{
+                    'nodename': node_id,
+                    'state': 'healthy',
+                    'status_message': '',
+                    'dms_state': ''
+                }]))
             return 0
         logging.error('Cannot find node id %s or fastboot serial number %s',
                       node_id, serial_num)
