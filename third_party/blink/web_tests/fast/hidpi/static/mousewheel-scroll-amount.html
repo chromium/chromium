@@ -13,18 +13,20 @@
 
 <script>
 async function reset() {
-    document.scrollingElement.scrollTop = 0;
-    document.scrollingElement.scrollLeft = 0;
+    await waitForScrollReset(document.scrollingElement);
     await waitForCompositorCommit();
+}
+
+async function waitForWheelTickAndScroll(xTicks, yTicks, position) {
+  const scrollPromise = waitForScrollendEvent(document);
+  const gesturePromise = wheelTick(xTicks, yTicks, position);
+  return Promise.all([gesturePromise, scrollPromise]);
 }
 
 var position = {x: 20, y: 20};
 promise_test(async () => {
     await reset();
-    await wheelTick(0, 1, position);
-    await waitForAnimationEndTimeBased( () => {
-        return document.scrollingElement.scrollTop;
-    });
+    await waitForWheelTickAndScroll(0, 1, position);
     const {x: expectedScrollX, y: expectedScrollY} = 
         calculateExpectedScroll(document.scrollingElement, 0, pixelsPerTick());
     if (internals.runtimeFlags.fractionalScrollOffsetsEnabled) {
@@ -38,10 +40,7 @@ promise_test(async () => {
 
 promise_test(async () => {
     await reset();
-    await wheelTick(1, 0, position);
-    await waitForAnimationEndTimeBased( () => {
-        return document.scrollingElement.scrollLeft;
-    });
+    await waitForWheelTickAndScroll(1, 0, position);
     const {x: expectedScrollX, y: expectedScrollY} = 
         calculateExpectedScroll(document.scrollingElement, pixelsPerTick(), 0);
     if (internals.runtimeFlags.fractionalScrollOffsetsEnabled) {
@@ -55,10 +54,7 @@ promise_test(async () => {
 
 promise_test(async () => {
     await reset();
-    await wheelTick(0, 2, position);
-    await waitForAnimationEndTimeBased( () => {
-        return document.scrollingElement.scrollTop;
-    });
+    await waitForWheelTickAndScroll(0, 2, position);
     const {x: expectedScrollX, y: expectedScrollY} = 
         calculateExpectedScroll(document.scrollingElement, 0, pixelsPerTick() * 2);
     if (internals.runtimeFlags.fractionalScrollOffsetsEnabled) {
@@ -72,10 +68,7 @@ promise_test(async () => {
 
 promise_test(async () => {
     await reset();
-    await wheelTick(2, 0, position);
-    await waitForAnimationEndTimeBased( () => {
-        return document.scrollingElement.scrollLeft;
-    });
+    await waitForWheelTickAndScroll(2, 0, position);
     const {x: expectedScrollX, y: expectedScrollY} = 
         calculateExpectedScroll(document.scrollingElement, pixelsPerTick() * 2, 0);
     if (internals.runtimeFlags.fractionalScrollOffsetsEnabled) {
