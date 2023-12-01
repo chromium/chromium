@@ -6,6 +6,9 @@
 
 #include <memory>
 
+#include "third_party/blink/renderer/core/animation/css_color_interpolation_type.h"
+#include "third_party/blink/renderer/core/animation/interpolable_style_color.h"
+
 namespace blink {
 
 bool InterpolableNumber::Equals(const InterpolableValue& other) const {
@@ -63,6 +66,13 @@ void InterpolableList::Interpolate(const InterpolableValue& to,
   for (wtf_size_t i = 0; i < length(); i++) {
     DCHECK(values_[i]);
     DCHECK(to_list.values_[i]);
+    if (values_[i]->IsStyleColor() || to_list.values_[i]->IsStyleColor() ||
+        result_list.values_[i]->IsStyleColor()) {
+      CSSColorInterpolationType::EnsureInterpolableStyleColor(result_list, i);
+      InterpolableStyleColor::Interpolate(*values_[i], *(to_list.values_[i]),
+                                          progress, *(result_list.values_[i]));
+      continue;
+    }
     values_[i]->Interpolate(*(to_list.values_[i]), progress,
                             *(result_list.values_[i]));
   }

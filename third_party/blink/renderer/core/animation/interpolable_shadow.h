@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_INTERPOLABLE_SHADOW_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_INTERPOLABLE_SHADOW_H_
 
-#include <memory>
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/animation/interpolable_color.h"
 #include "third_party/blink/renderer/core/animation/interpolable_length.h"
@@ -85,6 +84,7 @@ class InterpolableShadow : public InterpolableValue {
   Member<InterpolableLength> y_;
   Member<InterpolableLength> blur_;
   Member<InterpolableLength> spread_;
+  // TODO(crbug.com/1500708): Handle unresolved-color-mix.
   Member<InterpolableColor> color_;
 
   ShadowStyle shadow_style_;
