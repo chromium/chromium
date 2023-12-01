@@ -787,13 +787,6 @@ void PeopleHandler::CloseSyncSetup() {
         sync_service->GetAuthError().state() == GoogleServiceAuthError::NONE) {
       DVLOG(1) << "Sync setup aborted by user action";
 
-      // If a custom passphrase user clicked "Cancel" while setting up sync,
-      // make sure that any passphrase entered by the user in the meantime is
-      // cleared.
-      if (sync_service->GetUserSettings()->IsUsingExplicitPassphrase()) {
-        sync_service->StopAndClear();
-      }
-
       // Revoke sync consent on desktop Chrome if they click cancel during
       // initial setup or close sync setup without confirming sync.
       IdentityManagerFactory::GetForProfile(profile_)
@@ -1014,7 +1007,12 @@ void PeopleHandler::PushSyncPrefs() {
   // We call IsPassphraseRequired() here, instead of calling
   // IsPassphraseRequiredForPreferredDataTypes(), because we want to show the
   // passphrase UI even if no encrypted data types are enabled.
-  args.Set("passphraseRequired", sync_user_settings->IsPassphraseRequired());
+  // IsInitialSyncFeatureSetupComplete()==false is special-cased to avoid that
+  // the user enters the custom passphrase before confirming they want to
+  // complete the sync setup flow.
+  args.Set("passphraseRequired",
+           sync_user_settings->IsPassphraseRequired() &&
+               sync_user_settings->IsInitialSyncFeatureSetupComplete());
 
   // Same as above, we call IsTrustedVaultKeyRequired() here instead of.
   // IsTrustedVaultKeyRequiredForPreferredDataTypes().

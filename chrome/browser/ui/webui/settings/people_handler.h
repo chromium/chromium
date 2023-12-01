@@ -75,12 +75,11 @@ class PeopleHandler : public SettingsPageUIHandler,
       DisplayConfigureWithEngineDisabledAndCancelAfterSigninSuccess);
   FRIEND_TEST_ALL_PREFIXES(
       PeopleHandlerTest,
-      DisplayConfigureWithEngineDisabledAndCancelAfterSigninSuccessWithCustomPassphrase);
-  FRIEND_TEST_ALL_PREFIXES(
-      PeopleHandlerTest,
       DisplayConfigureWithEngineDisabledAndSyncStartupCompleted);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest,
                            ShowSetupCustomPassphraseRequired);
+  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest,
+                           OngoingSetupCustomPassphraseRequired);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest,
                            ShowSetupTrustedVaultKeysRequired);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest, ShowSetupEncryptAll);
