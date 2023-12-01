@@ -158,11 +158,14 @@ class OptimizationGuideKeyedServiceBrowserTest
       : network_connection_tracker_(
             network::TestNetworkConnectionTracker::CreateInstance()) {
     // Enable visibility of tab organization feature.
-    scoped_feature_list_.InitWithFeatures(
-        {optimization_guide::features::kOptimizationHints,
-         optimization_guide::features::kOptimizationGuideModelExecution,
-         optimization_guide::features::internal::
-             kTabOrganizationSettingsVisibility},
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{optimization_guide::features::kOptimizationHints, {}},
+         {optimization_guide::features::kOptimizationGuideModelExecution, {}},
+         {optimization_guide::features::internal::kComposeSettingsVisibility,
+          {}},
+         {optimization_guide::features::internal::
+              kTabOrganizationSettingsVisibility,
+          {{"allow_unsigned_user", "true"}}}},
         {});
   }
 
@@ -739,17 +742,18 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
                            MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
 
-  // Visibility of tab organizer is enabled via finch but the feature is still
-  // not visible.
-  EXPECT_FALSE(
+  // Visibility of tab organizer is allowed for unsigned users.
+  EXPECT_TRUE(
       IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
                            MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
 
+  // Visibility of this feature is enabled via finch but the feature is still
+  // not visible.
   EXPECT_FALSE(
       IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
                            MODEL_EXECUTION_FEATURE_COMPOSE));
 
-  // MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION should now be visible after
+  // MODEL_EXECUTION_FEATURE_COMPOSE should now be visible after
   // sign-in.
   EnableSignIn();
 
@@ -761,16 +765,20 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
                            MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
 
-  EXPECT_FALSE(
+  EXPECT_TRUE(
       IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
                            MODEL_EXECUTION_FEATURE_COMPOSE));
 
 #if !BUILDFLAG(IS_CHROMEOS)
   // SignOut not supported on ChromeOS.
   SignOut();
-  EXPECT_FALSE(
+  // Tab Organizer is visible to unsigned users.
+  EXPECT_TRUE(
       IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
                            MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+  EXPECT_FALSE(
+      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
+                           MODEL_EXECUTION_FEATURE_COMPOSE));
 #endif
 }
 
@@ -789,7 +797,8 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
                            MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
 
-  EXPECT_FALSE(
+  // Visibility of compose is enabled via finch.
+  EXPECT_TRUE(
       IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
                            MODEL_EXECUTION_FEATURE_COMPOSE));
 
@@ -819,7 +828,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
                            MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
 
-  EXPECT_FALSE(
+  EXPECT_TRUE(
       IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
                            MODEL_EXECUTION_FEATURE_COMPOSE));
 
@@ -846,7 +855,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
                            MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
 
-  EXPECT_FALSE(
+  EXPECT_TRUE(
       IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
                            MODEL_EXECUTION_FEATURE_COMPOSE));
 }
@@ -1052,8 +1061,8 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       optimization_guide::proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_COMPOSE));
 
-  // Enable the main feature toggle. This should enable the tab organizer
-  // feature on restart.
+  // Enable the main feature toggle. This should enable the compose and tab
+  // organizer features on restart.
   auto* prefs = browser()->profile()->GetPrefs();
   prefs->SetInteger(
       optimization_guide::prefs::kModelExecutionMainToggleSettingState,
@@ -1062,7 +1071,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   // organizer feature should be enabled.
   EXPECT_EQ(0, wallpaper_search_observer
                    .count_received_prepare_to_enable_on_restart_notifications_);
-  EXPECT_EQ(0, compose_observer
+  EXPECT_EQ(1, compose_observer
                    .count_received_prepare_to_enable_on_restart_notifications_);
   EXPECT_EQ(
       1,
@@ -1082,7 +1091,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       optimization_guide::proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
 
-  EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
+  EXPECT_TRUE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
       optimization_guide::proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_COMPOSE));
 
@@ -1094,7 +1103,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
           optimization_guide::prefs::FeatureOptInState::kDisabled));
   EXPECT_EQ(0, wallpaper_search_observer
                    .count_received_prepare_to_enable_on_restart_notifications_);
-  EXPECT_EQ(0, compose_observer
+  EXPECT_EQ(1, compose_observer
                    .count_received_prepare_to_enable_on_restart_notifications_);
   EXPECT_EQ(
       1,

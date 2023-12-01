@@ -4,7 +4,9 @@
 
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
 
 namespace optimization_guide {
@@ -36,6 +38,27 @@ const base::Feature* GetFeatureToUseToCheckSettingsVisibility(
       NOTREACHED();
       return nullptr;
   }
+}
+
+base::flat_set<proto::ModelExecutionFeature>
+GetAllowedFeaturesForUnsignedUser() {
+  std::vector<proto::ModelExecutionFeature> allowed_features;
+  for (int i = proto::ModelExecutionFeature_MIN;
+       i <= proto::ModelExecutionFeature_MAX; ++i) {
+    proto::ModelExecutionFeature model_execution_feature =
+        static_cast<proto::ModelExecutionFeature>(i);
+    if (model_execution_feature ==
+        proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED) {
+      continue;
+    }
+    const auto* feature =
+        GetFeatureToUseToCheckSettingsVisibility(model_execution_feature);
+    if (GetFieldTrialParamByFeatureAsBool(*feature, "allow_unsigned_user",
+                                          false)) {
+      allowed_features.push_back(model_execution_feature);
+    }
+  }
+  return allowed_features;
 }
 
 }  // namespace internal

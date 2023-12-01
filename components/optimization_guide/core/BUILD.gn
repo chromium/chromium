@@ -488,6 +488,8 @@ source_set("unit_tests") {
 
   if (!is_fuchsia || !optimize_for_size) {
     sources += [
+      "model_execution/model_execution_features_controller_unittest.cc",
+      "model_execution/model_execution_features_unittest.cc",
       "model_execution/model_execution_fetcher_unittest.cc",
       "model_execution/model_execution_manager_unittest.cc",
       "model_execution/on_device_model_execution_config_interpreter_unittest.cc",
