@@ -51,6 +51,7 @@ struct COMPONENT_EXPORT(SHORTCUT) Shortcut {
   // - source: Source::kUser
   // - host_app_id: app_1
   // - local_id: shortcut_1
+  // - allow_removal: true
   std::string ToString() const;
   // Name of the shortcut.
   absl::optional<std::string> name;
@@ -73,6 +74,9 @@ struct COMPONENT_EXPORT(SHORTCUT) Shortcut {
   // Represents what icon should be loaded for this shortcut, icon key will
   // change if the icon has been updated from the publisher.
   absl::optional<IconKey> icon_key;
+
+  // Whether the shortcut publisher allows the shortcut to be removed by user.
+  absl::optional<bool> allow_removal;
 };
 
 // A view class to reduce the risk of lifetime issues by preventing

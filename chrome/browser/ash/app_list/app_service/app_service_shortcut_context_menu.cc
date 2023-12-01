@@ -70,9 +70,11 @@ void AppServiceShortcutContextMenu::GetMenuModel(
                        static_cast<ash::CommandId>(ash::CommandId::TOGGLE_PIN),
                        IDS_APP_LIST_CONTEXT_MENU_PIN);
 
-  AddContextMenuOption(menu_model.get(),
-                       static_cast<ash::CommandId>(ash::UNINSTALL),
-                       IDS_APP_LIST_REMOVE_SHORTCUT);
+  if (shortcut->allow_removal.value_or(true)) {
+    AddContextMenuOption(menu_model.get(),
+                         static_cast<ash::CommandId>(ash::UNINSTALL),
+                         IDS_APP_LIST_REMOVE_SHORTCUT);
+  }
 
   AddReorderMenuOption(menu_model.get());
 

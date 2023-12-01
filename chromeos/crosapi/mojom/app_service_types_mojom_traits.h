@@ -454,6 +454,10 @@ struct StructTraits<crosapi::mojom::AppShortcutDataView, apps::ShortcutPtr> {
 
   static apps::IconKeyPtr icon_key(const apps::ShortcutPtr& r);
 
+  static const absl::optional<bool>& allow_removal(const apps::ShortcutPtr& r) {
+    return r->allow_removal;
+  }
+
   static bool Read(crosapi::mojom::AppShortcutDataView data,
                    apps::ShortcutPtr* out);
 };

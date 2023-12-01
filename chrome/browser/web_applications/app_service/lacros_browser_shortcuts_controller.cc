@@ -215,6 +215,9 @@ void LacrosBrowserShortcutsController::MaybePublishBrowserShortcuts(
                         : apps::IconEffects::kCrOsStandardIcon;
     shortcut->icon_key = apps::IconKey(raw_icon_updated, icon_effects);
 
+    shortcut->allow_removal =
+        provider_->registrar_unsafe().CanUserUninstallWebApp(web_app->app_id());
+
     shortcuts.push_back(std::move(shortcut));
   }
   remote_publisher->PublishShortcuts(std::move(shortcuts), std::move(callback));

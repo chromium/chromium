@@ -1324,6 +1324,7 @@ bool StructTraits<crosapi::mojom::AppShortcutDataView, apps::ShortcutPtr>::Read(
   if (icon_key) {
     shortcut->icon_key = std::move(*icon_key);
   }
+  shortcut->allow_removal = data.allow_removal();
 
   *out = std::move(shortcut);
   return true;

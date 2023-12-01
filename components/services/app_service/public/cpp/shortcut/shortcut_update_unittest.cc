@@ -25,6 +25,7 @@ TEST_F(ShortcutUpdateTest, StateIsNonNull) {
   shortcut.shortcut_source = ShortcutSource::kDeveloper;
   shortcut.icon_key = IconKey();
   shortcut.icon_key->update_version = 100;
+  shortcut.allow_removal = true;
   ShortcutUpdate u(&shortcut, nullptr);
 
   EXPECT_EQ(u.HostAppId(), host_app_id_);
@@ -42,6 +43,9 @@ TEST_F(ShortcutUpdateTest, StateIsNonNull) {
   EXPECT_EQ(u.IconKey(), icon_key);
   EXPECT_FALSE(u.IconKeyChanged());
 
+  EXPECT_EQ(u.AllowRemoval(), true);
+  EXPECT_FALSE(u.AllowRemovalChanged());
+
   EXPECT_FALSE(u.ShortcutInitialized());
 }
 
@@ -51,6 +55,7 @@ TEST_F(ShortcutUpdateTest, DeltaIsNonNull) {
   shortcut.shortcut_source = ShortcutSource::kDeveloper;
   shortcut.icon_key = IconKey();
   shortcut.icon_key->update_version = false;
+  shortcut.allow_removal = true;
   ShortcutUpdate u(nullptr, &shortcut);
 
   EXPECT_EQ(u.HostAppId(), host_app_id_);
@@ -68,6 +73,9 @@ TEST_F(ShortcutUpdateTest, DeltaIsNonNull) {
   EXPECT_EQ(u.IconKey(), icon_key);
   EXPECT_TRUE(u.IconKeyChanged());
 
+  EXPECT_EQ(u.AllowRemoval(), true);
+  EXPECT_TRUE(u.AllowRemovalChanged());
+
   EXPECT_TRUE(u.ShortcutInitialized());
 }
 
@@ -77,12 +85,14 @@ TEST_F(ShortcutUpdateTest, StateAndDeltaAreNonNull) {
   shortcut_state.shortcut_source = ShortcutSource::kDeveloper;
   shortcut_state.icon_key = IconKey();
   shortcut_state.icon_key->update_version = 100;
+  shortcut_state.allow_removal = true;
 
   Shortcut shortcut_delta = Shortcut(host_app_id_, local_id_);
   shortcut_delta.name = "New name";
   shortcut_delta.shortcut_source = ShortcutSource::kUser;
   shortcut_delta.icon_key = IconKey(/*resource_id=*/1, /*icon_effects=*/1);
   shortcut_delta.icon_key->update_version = false;
+  shortcut_delta.allow_removal = false;
 
   ShortcutUpdate u(&shortcut_state, &shortcut_delta);
 
@@ -101,6 +111,9 @@ TEST_F(ShortcutUpdateTest, StateAndDeltaAreNonNull) {
   EXPECT_EQ(u.IconKey(), icon_key);
   EXPECT_TRUE(u.IconKeyChanged());
 
+  EXPECT_EQ(u.AllowRemoval(), false);
+  EXPECT_TRUE(u.AllowRemovalChanged());
+
   EXPECT_FALSE(u.ShortcutInitialized());
 }
 
@@ -110,6 +123,7 @@ TEST_F(ShortcutUpdateTest, Merge) {
   shortcut_state.shortcut_source = ShortcutSource::kDeveloper;
   shortcut_state.icon_key = IconKey();
   shortcut_state.icon_key->update_version = 100;
+  shortcut_state.allow_removal = true;
 
   Shortcut shortcut_delta = Shortcut(host_app_id_, local_id_);
   shortcut_delta.name = "New name";
@@ -117,6 +131,7 @@ TEST_F(ShortcutUpdateTest, Merge) {
   shortcut_delta.icon_key =
       IconKey(IconKey::kInvalidResourceId, IconEffects::kCrOsStandardIcon);
   shortcut_delta.icon_key->update_version = true;
+  shortcut_delta.allow_removal = false;
 
   ShortcutUpdate::Merge(&shortcut_state, &shortcut_delta);
 
@@ -129,6 +144,7 @@ TEST_F(ShortcutUpdateTest, Merge) {
   IconKey icon_key(IconKey::kInvalidResourceId, IconEffects::kCrOsStandardIcon);
   icon_key.update_version = 101;
   EXPECT_EQ(shortcut_state.icon_key, icon_key);
+  EXPECT_EQ(shortcut_state.allow_removal, false);
 }
 
 TEST_F(ShortcutUpdateTest, Equal) {

@@ -171,6 +171,7 @@ TEST_F(LacrosBrowserShortcutsControllerTest, PublishShortcuts) {
   EXPECT_EQ(
       fake_publisher()->get_deltas().back()->icon_key->icon_effects,
       apps::IconEffects::kRoundCorners | apps::IconEffects::kCrOsStandardMask);
+  EXPECT_TRUE(fake_publisher()->get_deltas().back()->allow_removal);
 
   auto local_id_2 = CreateWebAppBasedShortcut(
       GURL("https://www.another-example.com/"), u"another shortcut name",
@@ -190,6 +191,7 @@ TEST_F(LacrosBrowserShortcutsControllerTest, PublishShortcuts) {
   EXPECT_EQ(
       fake_publisher()->get_deltas().back()->icon_key->icon_effects,
       apps::IconEffects::kRoundCorners | apps::IconEffects::kCrOsStandardIcon);
+  EXPECT_TRUE(fake_publisher()->get_deltas().back()->allow_removal);
 }
 
 TEST_F(LacrosBrowserShortcutsControllerTest, WebAppNotPublished) {

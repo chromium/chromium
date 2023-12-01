@@ -21,6 +21,7 @@ TEST_F(ShortcutTest, CreateShortcut) {
   shortcut->shortcut_source = ShortcutSource::kUser;
   shortcut->icon_key = IconKey();
   shortcut->icon_key->update_version = 100;
+  shortcut->allow_removal = true;
 
   EXPECT_EQ(shortcut->shortcut_id, GenerateShortcutId(host_app_id, local_id));
   EXPECT_EQ(shortcut->name, "name");
@@ -30,6 +31,7 @@ TEST_F(ShortcutTest, CreateShortcut) {
   IconKey icon_key(0, 0);
   icon_key.update_version = 100;
   EXPECT_EQ(shortcut->icon_key, icon_key);
+  EXPECT_EQ(shortcut->allow_removal, true);
 }
 
 TEST_F(ShortcutTest, CloneShortcut) {
@@ -41,6 +43,7 @@ TEST_F(ShortcutTest, CloneShortcut) {
   shortcut->shortcut_source = ShortcutSource::kUser;
   shortcut->icon_key = IconKey();
   shortcut->icon_key->update_version = 100;
+  shortcut->allow_removal = true;
 
   auto cloned_shortcut = shortcut->Clone();
 
@@ -52,6 +55,7 @@ TEST_F(ShortcutTest, CloneShortcut) {
   IconKey icon_key;
   icon_key.update_version = 100;
   EXPECT_EQ(cloned_shortcut->icon_key, icon_key);
+  EXPECT_TRUE(cloned_shortcut->allow_removal);
 }
 
 TEST_F(ShortcutTest, CloneShortcutWithNoIconKey) {
@@ -61,6 +65,7 @@ TEST_F(ShortcutTest, CloneShortcutWithNoIconKey) {
   ShortcutId shortcut_id = shortcut->shortcut_id;
   shortcut->name = "name";
   shortcut->shortcut_source = ShortcutSource::kUser;
+  shortcut->allow_removal = true;
 
   auto cloned_shortcut = shortcut->Clone();
 
@@ -70,6 +75,7 @@ TEST_F(ShortcutTest, CloneShortcutWithNoIconKey) {
   EXPECT_EQ(cloned_shortcut->host_app_id, host_app_id);
   EXPECT_EQ(cloned_shortcut->local_id, local_id);
   EXPECT_EQ(cloned_shortcut->icon_key, absl::nullopt);
+  EXPECT_TRUE(cloned_shortcut->allow_removal);
 }
 
 }  // namespace apps

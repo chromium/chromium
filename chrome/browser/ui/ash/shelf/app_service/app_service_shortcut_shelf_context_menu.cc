@@ -64,9 +64,11 @@ void AppServiceShortcutShelfContextMenu::GetMenuModel(
   AddPinMenu(menu_model.get());
 
   // Remove shortcut.
-  AddContextMenuOption(menu_model.get(),
-                       static_cast<ash::CommandId>(ash::UNINSTALL),
-                       IDS_APP_LIST_REMOVE_SHORTCUT);
+  if (shortcut->allow_removal.value_or(true)) {
+    AddContextMenuOption(menu_model.get(),
+                         static_cast<ash::CommandId>(ash::UNINSTALL),
+                         IDS_APP_LIST_REMOVE_SHORTCUT);
+  }
 
   std::move(callback).Run(std::move(menu_model));
 }

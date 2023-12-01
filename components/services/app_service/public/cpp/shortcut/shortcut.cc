@@ -28,7 +28,8 @@ bool Shortcut::operator==(const Shortcut& rhs) const {
          this->host_app_id == rhs.host_app_id &&
          this->local_id == rhs.local_id && this->name == rhs.name &&
          this->shortcut_source == rhs.shortcut_source &&
-         this->icon_key == rhs.icon_key;
+         this->icon_key == rhs.icon_key &&
+         this->allow_removal == rhs.allow_removal;
 }
 
 std::unique_ptr<Shortcut> Shortcut::Clone() const {
@@ -39,7 +40,7 @@ std::unique_ptr<Shortcut> Shortcut::Clone() const {
   if (icon_key.has_value()) {
     shortcut->icon_key = std::move(*icon_key->Clone());
   }
-
+  shortcut->allow_removal = allow_removal;
   return shortcut;
 }
 
@@ -52,6 +53,9 @@ std::string Shortcut::ToString() const {
   out << "- shortcut_source: " << EnumToString(shortcut_source) << std::endl;
   out << "- host_app_id: " << host_app_id << std::endl;
   out << "- local_id: " << local_id << std::endl;
+  if (allow_removal.has_value()) {
+    out << "- allow_removal: " << allow_removal.value() << std::endl;
+  }
   return out.str();
 }
 

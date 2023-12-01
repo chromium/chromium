@@ -1266,6 +1266,7 @@ TEST(AppServiceTypesMojomTraitsTest, ShortcutRoundTrip) {
   input->icon_key =
       apps::IconKey(/*raw_icon_updated=*/true,
                     /*icon_effects=*/apps::IconEffects::kChromeBadge);
+  input->allow_removal = true;
 
   apps::ShortcutPtr output;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::AppShortcut>(
@@ -1281,6 +1282,7 @@ TEST(AppServiceTypesMojomTraitsTest, ShortcutRoundTrip) {
   EXPECT_EQ(output->icon_key->icon_effects, 2U);
   EXPECT_TRUE(absl::holds_alternative<bool>(output->icon_key->update_version));
   EXPECT_TRUE(absl::get<bool>(output->icon_key->update_version));
+  EXPECT_TRUE(output->allow_removal);
 }
 
 // Test that serialization and deserialization works with optional fields that

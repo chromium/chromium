@@ -103,6 +103,8 @@ void BrowserShortcuts::MaybePublishBrowserShortcut(const webapps::AppId& app_id,
                       ? apps::IconEffects::kCrOsStandardMask
                       : apps::IconEffects::kCrOsStandardIcon;
   shortcut->icon_key = apps::IconKey(raw_icon_updated, icon_effects);
+  shortcut->allow_removal =
+      provider_->registrar_unsafe().CanUserUninstallWebApp(web_app->app_id());
   apps::ShortcutPublisher::PublishShortcut(std::move(shortcut));
 }
 

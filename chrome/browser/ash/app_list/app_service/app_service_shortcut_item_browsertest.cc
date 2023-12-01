@@ -45,6 +45,7 @@
 #include "components/sync/test/fake_sync_change_processor.h"
 #include "components/sync/test/sync_change_processor_wrapper_for_test.h"
 #include "components/vector_icons/vector_icons.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -88,14 +89,17 @@ class AppServiceShortcutItemBrowserTest
 
   apps::ShortcutId CreateWebAppBasedShortcut(
       const GURL& shortcut_url,
-      const std::u16string& shortcut_name) {
+      const std::u16string& shortcut_name,
+      bool is_policy_install = false) {
     // Create web app based shortcut.
     auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->start_url = shortcut_url;
     web_app_info->title = shortcut_name;
     auto local_shortcut_id = web_app::test::InstallWebApp(
         profile(), std::move(web_app_info),
-        /*overwrite_existing_manifest_fields=*/true);
+        /*overwrite_existing_manifest_fields=*/true,
+        is_policy_install ? webapps::WebappInstallSource::EXTERNAL_POLICY
+                          : webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
     return apps::GenerateShortcutId(app_constants::kChromeAppId,
                                     local_shortcut_id);
   }
@@ -318,6 +322,29 @@ IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest, ContextMenuRemove) {
   content::RunAllTasksUntilIdle();
   item = model_updater->FindItem(shortcut_id.value());
   EXPECT_FALSE(item);
+}
+
+IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest,
+                       PolicyNoContextMenuRemove) {
+  GURL app_url = GURL("https://example.org/");
+  std::u16string shortcut_name = u"Example";
+  apps::ShortcutId shortcut_id = CreateWebAppBasedShortcut(
+      app_url, shortcut_name, /*is_policy_install = */ true);
+
+  AppListClientImpl* client = AppListClientImpl::GetInstance();
+  AppListModelUpdater* model_updater = test::GetModelUpdater(client);
+  ChromeAppListItem* item = model_updater->FindItem(shortcut_id.value());
+  ASSERT_TRUE(item);
+
+  base::test::TestFuture<std::unique_ptr<ui::SimpleMenuModel>> future;
+  item->GetContextMenuModel(ash::AppListItemContext::kNone,
+                            future.GetCallback());
+
+  std::unique_ptr<ui::SimpleMenuModel> menu_model = future.Take();
+
+  auto uninstall_command_index =
+      menu_model->GetIndexOfCommandId(ash::UNINSTALL);
+  EXPECT_FALSE(uninstall_command_index);
 }
 
 IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest, ContextMenuReorder) {

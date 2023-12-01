@@ -172,6 +172,7 @@ TEST_F(BrowserShortcutsTest, PublishExistingBrowserShortcut) {
   EXPECT_EQ(
       stored_shortcut->icon_key->icon_effects,
       apps::IconEffects::kRoundCorners | apps::IconEffects::kCrOsStandardMask);
+  EXPECT_TRUE(stored_shortcut->allow_removal);
 }
 
 TEST_F(BrowserShortcutsTest, WebAppNotPublishedAsShortcut) {
@@ -221,6 +222,7 @@ TEST_F(BrowserShortcutsTest, PublishNewBrowserShortcut) {
   EXPECT_EQ(
       stored_shortcut->icon_key->icon_effects,
       apps::IconEffects::kRoundCorners | apps::IconEffects::kCrOsStandardIcon);
+  EXPECT_TRUE(stored_shortcut->allow_removal);
 }
 
 TEST_F(BrowserShortcutsTest, LaunchShortcut) {
