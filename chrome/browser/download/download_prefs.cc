@@ -707,7 +707,7 @@ bool DownloadPrefs::PromptForDuplicateFile() const {
 #if BUILDFLAG(IS_ANDROID)
   return false;
 #else
-  return download::IsDownloadBubbleEnabled(profile_) &&
+  return download::IsDownloadBubbleEnabled() &&
          prompt_for_duplicate_file_.GetValue();
 #endif
 }

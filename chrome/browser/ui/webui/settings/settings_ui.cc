@@ -396,7 +396,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
   html_source->AddBoolean(
       "downloadBubblePartialViewControlledByPref",
-      download::IsDownloadBubbleEnabled(profile) &&
+      download::IsDownloadBubbleEnabled() &&
           download::IsDownloadBubblePartialViewControlledByPref());
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

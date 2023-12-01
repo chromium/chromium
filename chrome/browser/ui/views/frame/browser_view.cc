@@ -3048,8 +3048,7 @@ DownloadShelf* BrowserView::GetDownloadShelf() {
   // Don't show download shelf if download bubble is enabled, except that the
   // shelf is already showing (this can happen if prefs were changed at
   // runtime).
-  if (download::IsDownloadBubbleEnabled(browser_->profile()) &&
-      !download_shelf_) {
+  if (download::IsDownloadBubbleEnabled() && !download_shelf_) {
     return nullptr;
   }
   if (!download_shelf_) {

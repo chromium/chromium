@@ -1891,7 +1891,7 @@ void ChromeDownloadManagerDelegate::OnManagerInitialized() {
 #if !BUILDFLAG(IS_ANDROID)
 void ChromeDownloadManagerDelegate::ScheduleCancelForEphemeralWarning(
     const std::string& guid) {
-  if (!download::IsDownloadBubbleEnabled(profile_)) {
+  if (!download::IsDownloadBubbleEnabled()) {
     return;
   }
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -1917,7 +1917,7 @@ void ChromeDownloadManagerDelegate::CancelForEphemeralWarning(
 }
 
 void ChromeDownloadManagerDelegate::CancelAllEphemeralWarnings() {
-  if (!download::IsDownloadBubbleEnabled(profile_)) {
+  if (!download::IsDownloadBubbleEnabled()) {
     return;
   }
   content::DownloadManager::DownloadVector downloads;

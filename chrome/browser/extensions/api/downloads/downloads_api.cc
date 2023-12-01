@@ -1584,9 +1584,6 @@ ExtensionFunction::ResponseAction DownloadsSetShelfEnabledFunction::Run() {
 
   MaybeSetUiEnabled(service, incognito_service, extension(), params->enabled);
 
-  bool is_bubble_enabled = download::IsDownloadBubbleEnabled(
-      Profile::FromBrowserContext(browser_context()));
-
   BrowserList* browsers = BrowserList::GetInstance();
   if (browsers) {
     for (auto* browser : *browsers) {
@@ -1603,7 +1600,7 @@ ExtensionFunction::ResponseAction DownloadsSetShelfEnabledFunction::Run() {
       // using this API is still compatible with the new download bubble. This
       // API will eventually be deprecated (replaced by the SetUiOptions API
       // below).
-      if (is_bubble_enabled &&
+      if (download::IsDownloadBubbleEnabled() &&
           browser->window()->GetDownloadBubbleUIController()) {
         browser->window()->GetDownloadBubbleUIController()->HideDownloadUi();
       } else if (browser->window()->IsDownloadShelfVisible()) {
@@ -1643,9 +1640,6 @@ ExtensionFunction::ResponseAction DownloadsSetUiOptionsFunction::Run() {
 
   MaybeSetUiEnabled(service, incognito_service, extension(), options.enabled);
 
-  bool is_bubble_enabled = download::IsDownloadBubbleEnabled(
-      Profile::FromBrowserContext(browser_context()));
-
   BrowserList* browsers = BrowserList::GetInstance();
   if (browsers) {
     for (auto* browser : *browsers) {
@@ -1658,7 +1652,7 @@ ExtensionFunction::ResponseAction DownloadsSetUiOptionsFunction::Run() {
       if (!match_current_service || current_service->IsDownloadUiEnabled()) {
         continue;
       }
-      if (is_bubble_enabled &&
+      if (download::IsDownloadBubbleEnabled() &&
           browser->window()->GetDownloadBubbleUIController()) {
         browser->window()->GetDownloadBubbleUIController()->HideDownloadUi();
       } else if (browser->window()->IsDownloadShelfVisible()) {

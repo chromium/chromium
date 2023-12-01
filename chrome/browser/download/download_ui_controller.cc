@@ -193,7 +193,7 @@ class CrOSUIControllerDelegate : public DownloadUIController::Delegate {
   explicit CrOSUIControllerDelegate(content::DownloadManager* manager) {
     // Conditionally add the `DownloadBubbleUIControllerDelegate`.
     auto* profile = Profile::FromBrowserContext(manager->GetBrowserContext());
-    if (download::IsDownloadBubbleEnabled(profile)) {
+    if (download::IsDownloadBubbleEnabled()) {
       delegates_.emplace_back(
           std::make_unique<DownloadBubbleUIControllerDelegate>(profile));
       InitializeDownloadBubbleUpdateService(profile, manager);
@@ -264,7 +264,7 @@ DownloadUIController::DownloadUIController(content::DownloadManager* manager,
   if (!delegate_) {
     Profile* profile =
         Profile::FromBrowserContext(manager->GetBrowserContext());
-    if (download::IsDownloadBubbleEnabled(profile)) {
+    if (download::IsDownloadBubbleEnabled()) {
       delegate_ = std::make_unique<DownloadBubbleUIControllerDelegate>(profile);
       InitializeDownloadBubbleUpdateService(profile, manager);
     } else {

@@ -26,7 +26,6 @@
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -55,7 +54,6 @@
 #include "components/download/public/common/download_item.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/common/file_type_policies_test_util.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -4553,9 +4551,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 class DownloadExtensionBubbleEnabledTest : public DownloadExtensionTest {
  public:
-  DownloadExtensionBubbleEnabledTest() {
-    feature_list_.InitAndEnableFeature(safe_browsing::kDownloadBubble);
-  }
+  DownloadExtensionBubbleEnabledTest() = default;
 
   DownloadDisplay* GetDownloadToolbarButton() {
     return current_browser()
@@ -4564,9 +4560,6 @@ class DownloadExtensionBubbleEnabledTest : public DownloadExtensionTest {
         ->GetDownloadDisplayController()
         ->download_display_for_testing();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(DownloadExtensionBubbleEnabledTest, SetUiOptions) {

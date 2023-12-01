@@ -52,7 +52,6 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_search_api/safe_search_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/download_item_utils.h"
@@ -1815,9 +1814,6 @@ TEST_F(ChromeDownloadManagerDelegateTest,
 #if !BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ChromeDownloadManagerDelegateTest, ScheduleCancelForEphemeralWarning) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(safe_browsing::kDownloadBubble);
-
   std::unique_ptr<download::MockDownloadItem> download_item =
       CreateActiveDownloadItem(0);
   EXPECT_CALL(*download_item, GetDangerType())
@@ -1836,8 +1832,6 @@ TEST_F(ChromeDownloadManagerDelegateTest, ScheduleCancelForEphemeralWarning) {
 
 TEST_F(ChromeDownloadManagerDelegateTest,
        ScheduleCancelForEphemeralWarning_DownloadKept) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(safe_browsing::kDownloadBubble);
   std::unique_ptr<download::MockDownloadItem> download_item =
       CreateActiveDownloadItem(0);
   EXPECT_CALL(*download_item, GetDangerType())
@@ -1853,8 +1847,6 @@ TEST_F(ChromeDownloadManagerDelegateTest,
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(ChromeDownloadManagerDelegateTest, CancelAllEphemeralWarnings) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(safe_browsing::kDownloadBubble);
   std::vector<download::DownloadItem*> items;
   auto safe_item = CreateActiveDownloadItem(0);
   EXPECT_CALL(*safe_item, GetDangerType())

@@ -10,8 +10,7 @@
 namespace download {
 
 // Called when deciding whether to show the bubble or the old download shelf UI.
-// TODO(chlily): Remove unused profile arg.
-bool IsDownloadBubbleEnabled(Profile* profile);
+bool IsDownloadBubbleEnabled();
 
 // Called when deciding whether to show or hide the bubble.
 bool ShouldShowDownloadBubble(Profile* profile);

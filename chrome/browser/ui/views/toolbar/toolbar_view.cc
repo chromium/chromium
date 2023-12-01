@@ -278,7 +278,7 @@ void ToolbarView::Init() {
   size_animation_.Reset(1);
 
   std::unique_ptr<DownloadToolbarButtonView> download_button;
-  if (download::IsDownloadBubbleEnabled(browser_->profile())) {
+  if (download::IsDownloadBubbleEnabled()) {
     download_button =
         std::make_unique<DownloadToolbarButtonView>(browser_view_);
   }

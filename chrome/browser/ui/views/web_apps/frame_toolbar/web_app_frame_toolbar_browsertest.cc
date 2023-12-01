@@ -68,7 +68,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/permissions/permission_request_manager.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/webapps/services/web_app_origin_association/test/test_web_app_origin_association_fetcher.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_view_host.h"
@@ -842,9 +841,7 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
     }
   };
 
-  WebAppFrameToolbarBrowserTest_WindowControlsOverlay() {
-    scoped_feature_list_.InitAndEnableFeature(safe_browsing::kDownloadBubble);
-  }
+  WebAppFrameToolbarBrowserTest_WindowControlsOverlay() = default;
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -985,7 +982,6 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
   content::test::FencedFrameTestHelper fenced_frame_helper_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
 };
 

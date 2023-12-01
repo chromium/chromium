@@ -162,7 +162,7 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
                                static_cast<int>(HTCLIENT));
   }
 
-  if (download::IsDownloadBubbleEnabled(browser_view_->browser()->profile())) {
+  if (download::IsDownloadBubbleEnabled()) {
     download_button_ = AddChildView(
         std::make_unique<DownloadToolbarButtonView>(browser_view_));
     views::SetHitTestComponent(download_button_, static_cast<int>(HTCLIENT));
