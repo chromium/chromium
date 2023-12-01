@@ -27,6 +27,10 @@ class Sampler;
 // is enabled.
 class PeriodicCollector : public CollectorBase {
  public:
+  // Metrics name for reporting missing metric data to UMA.
+  static constexpr char kNoMetricDataMetricsName[] =
+      "Browser.ERP.MetricsReporting.PeriodicCollectorNoMetricData";
+
   // Start periodic collection after `init_delay`.
   PeriodicCollector(Sampler* sampler,
                     MetricReportQueue* metric_report_queue,

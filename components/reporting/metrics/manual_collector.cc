@@ -8,11 +8,13 @@
 #include <string>
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "components/reporting/metrics/collector_base.h"
 #include "components/reporting/metrics/metric_report_queue.h"
 #include "components/reporting/metrics/metric_reporting_controller.h"
 #include "components/reporting/metrics/reporting_settings.h"
 #include "components/reporting/metrics/sampler.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 
 namespace reporting {
 
@@ -38,7 +40,11 @@ void ManualCollector::OnMetricDataCollected(
     bool is_event_driven,
     absl::optional<MetricData> metric_data) {
   CheckOnSequence();
+  CHECK(metric_report_queue_);
   if (!metric_data.has_value()) {
+    base::UmaHistogramEnumeration(ManualCollector::kNoMetricDataMetricsName,
+                                  metric_report_queue_->GetDestination(),
+                                  Destination_MAX);
     return;
   }
   if (is_event_driven) {

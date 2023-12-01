@@ -27,6 +27,10 @@ class ReportingSettings;
 // setting is enabled.
 class OneShotCollector : public CollectorBase {
  public:
+  // Metrics name for reporting missing metric data to UMA.
+  static constexpr char kNoMetricDataMetricsName[] =
+      "Browser.ERP.MetricsReporting.OneShotCollectorNoMetricData";
+
   // Start observing the reporting setting immediately to start collection.
   OneShotCollector(
       Sampler* sampler,

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/reporting/metrics/collector_base.h"
 #include "components/reporting/metrics/fakes/fake_metric_report_queue.h"
@@ -53,6 +54,7 @@ class ManualCollectorTest : public testing::Test {
   std::unique_ptr<test::FakeReportingSettings> settings_;
   std::unique_ptr<test::FakeSampler> sampler_;
   std::unique_ptr<test::FakeMetricReportQueue> metric_report_queue_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(ManualCollectorTest, InitiallyEnabled) {
@@ -78,6 +80,8 @@ TEST_F(ManualCollectorTest, InitiallyEnabled) {
       metric_report_queue_->GetMetricDataReported();
 
   VerifyMetricData(metric_data_reported, is_event_driven);
+  histogram_tester_.ExpectTotalCount(ManualCollector::kNoMetricDataMetricsName,
+                                     /*expected_count=*/0);
 }
 
 TEST_F(ManualCollectorTest, InitiallyDisabled) {
@@ -113,6 +117,8 @@ TEST_F(ManualCollectorTest, InitiallyDisabled) {
       metric_report_queue_->GetMetricDataReported();
 
   VerifyMetricData(metric_data_reported, is_event_driven);
+  histogram_tester_.ExpectTotalCount(ManualCollector::kNoMetricDataMetricsName,
+                                     /*expected_count=*/0);
 }
 
 TEST_F(ManualCollectorTest, NoMetricData) {
@@ -132,6 +138,11 @@ TEST_F(ManualCollectorTest, NoMetricData) {
 
   EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(1));
   ASSERT_TRUE(metric_report_queue_->IsEmpty());
+  histogram_tester_.ExpectBucketCount(ManualCollector::kNoMetricDataMetricsName,
+                                      metric_report_queue_->GetDestination(),
+                                      /*expected_count=*/1);
+  histogram_tester_.ExpectTotalCount(ManualCollector::kNoMetricDataMetricsName,
+                                     /*expected_count=*/1);
 }
 
 TEST_F(ManualCollectorTest, DefaultEnabled) {
@@ -154,6 +165,8 @@ TEST_F(ManualCollectorTest, DefaultEnabled) {
       metric_report_queue_->GetMetricDataReported();
 
   VerifyMetricData(metric_data_reported, is_event_driven);
+  histogram_tester_.ExpectTotalCount(ManualCollector::kNoMetricDataMetricsName,
+                                     /*expected_count=*/0);
 }
 
 TEST_F(ManualCollectorTest, DefaultDisabled) {
@@ -169,6 +182,8 @@ TEST_F(ManualCollectorTest, DefaultDisabled) {
   // Shouldn't be able to call the sampler since setting is disabled
   EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(0));
   EXPECT_TRUE(metric_report_queue_->IsEmpty());
+  histogram_tester_.ExpectTotalCount(ManualCollector::kNoMetricDataMetricsName,
+                                     /*expected_count=*/0);
 }
 }  // namespace
 }  // namespace reporting

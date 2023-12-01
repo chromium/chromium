@@ -53,7 +53,7 @@ class MetricReportQueue {
   void Upload();
 
   // Retrieves the reporting destination configured with the `report_queue_`.
-  Destination GetDestination() const;
+  virtual Destination GetDestination() const;
 
  private:
   // Initiate upload of records with `priority_`.

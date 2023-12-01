@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -20,6 +21,7 @@
 #include "components/reporting/metrics/metric_report_queue.h"
 #include "components/reporting/metrics/metric_reporting_controller.h"
 #include "components/reporting/metrics/sampler.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
@@ -83,7 +85,11 @@ void PeriodicCollector::OnMetricDataCollected(
     bool is_event_driven,
     absl::optional<MetricData> metric_data) {
   CheckOnSequence();
+  CHECK(metric_report_queue_);
   if (!metric_data.has_value()) {
+    base::UmaHistogramEnumeration(PeriodicCollector::kNoMetricDataMetricsName,
+                                  metric_report_queue_->GetDestination(),
+                                  Destination_MAX);
     return;
   }
 

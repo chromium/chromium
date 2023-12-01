@@ -178,6 +178,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Browser.ERP.MetricsReporting.{MetricCollector}NoMetricData"
+    enum="EnterpriseCloudReportingDestination" expires_after="2024-11-22">
+  <owner>vshenvi@google.com</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    Recorded when {MetricCollector}::OnMetricDataCollected is triggered from
+    samplers with no metric data to report. It counts occurences of the
+    reporting destination configured with the collector's report queue.
+  </summary>
+  <token key="MetricCollector">
+    <variant name="ManualCollector"/>
+    <variant name="OneShotCollector"/>
+    <variant name="PeriodicCollector"/>
+  </token>
+</histogram>
+
 <histogram name="Browser.ERP.PsrResult" enum="EnterpriseReportingPsrResult"
     expires_after="2024-07-31">
   <owner>xuhong@chromium.org</owner>

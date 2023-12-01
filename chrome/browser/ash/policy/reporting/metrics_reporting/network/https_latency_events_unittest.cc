@@ -100,7 +100,9 @@ class FakeMetricReportingManagerDelegate
     if (event_type != EventType::kDevice ||
         destination != Destination::EVENT_METRIC ||
         priority != Priority::SLOW_BATCH) {
-      return nullptr;
+      // Return a fake metric report queue so we do not block initialization of
+      // other downstream metric reporting components.
+      return std::make_unique<test::FakeMetricReportQueue>();
     }
 
     return std::move(metric_report_queue_);
