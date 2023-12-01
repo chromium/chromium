@@ -13,5 +13,7 @@ extern NSString* const kSnippetSearchEngineIdentifierPrefix;
 extern NSString* const kSetAsDefaultSearchEngineIdentifier;
 // Search engine table view identifier.
 extern NSString* const kSearchEngineTableViewIdentifier;
+// `More` button accessibility identifier.
+extern NSString* const kSearchEngineMoreButtonIdentifier;
 
 #endif  // IOS_CHROME_BROWSER_UI_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_CONSTANTS_H_

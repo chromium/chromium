@@ -142,11 +142,12 @@
   [_mediator
       setSelectedItem:_searchEnginesTableViewController.searchEngines[row]];
   _viewController.didUserSelectARow = YES;
-  [_viewController enablePrimaryButton];
+  [_viewController updatePrimaryActionButton];
 }
 
 - (void)didReachBottom {
-  // Needs implementation.
+  _searchEnginesTableViewController.didReachBottom = YES;
+  [_viewController updatePrimaryActionButton];
 }
 
 #pragma mark - SearchEngineChoiceViewControllerDelegate

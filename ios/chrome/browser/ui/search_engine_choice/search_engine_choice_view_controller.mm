@@ -9,10 +9,12 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_constants.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/search_engine_choice_table_view_controller.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/button_util.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/device_util.h"
 #import "ios/chrome/common/ui/util/sdk_forward_declares.h"
 #import "net/base/mac/url_conversions.h"
@@ -96,9 +98,10 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
   return self;
 }
 
-- (void)enablePrimaryButton {
-  // TODO(b/312913025): Only enable it if the user has reached the bottom.
-  EnablePrimaryActionButton(_primaryButton);
+- (void)updatePrimaryActionButton {
+  UpdatePrimaryButton(_primaryButton,
+                      _searchEngineTableViewController.didReachBottom,
+                      self.didUserSelectARow);
 }
 
 #pragma mark - UIViewController
@@ -205,9 +208,12 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
   [self.view bringSubviewToFront:_separatorView];
   _separatorView.translatesAutoresizingMaskIntoConstraints = NO;
 
-  // TODO(b/312913025): Determine the button based on whether the choice screen
-  // is scrolled to the bottom or not.
-  _primaryButton = CreateDisabledPrimaryButton();
+  if (_searchEngineTableViewController.didReachBottom) {
+    _primaryButton = CreateDisabledPrimaryButton();
+  } else {
+    _primaryButton = CreateMorePrimaryButton();
+  }
+
   [self.view addSubview:_primaryButton];
   [_primaryButton addTarget:self
                      action:@selector(primaryButtonAction)
@@ -334,9 +340,11 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
 #pragma mark - Private
 
 - (void)primaryButtonAction {
-  // TODO(b/312913025): Determine the action based on whether the choice screen
-  // is scrolled to the bottom or not.
-  [self.actionDelegate didTapPrimaryButton];
+  if (_searchEngineTableViewController.didReachBottom) {
+    [self.actionDelegate didTapPrimaryButton];
+  } else {
+    [_searchEngineTableViewController scrollToBottom];
+  }
 }
 
 #pragma mark - UITextViewDelegate

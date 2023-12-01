@@ -10,3 +10,5 @@ NSString* const kSetAsDefaultSearchEngineIdentifier =
     @"SetAsDefaultSearchEngineIdentifier";
 NSString* const kSearchEngineTableViewIdentifier =
     @"SearchEngineTableViewIdentifier";
+NSString* const kSearchEngineMoreButtonIdentifier =
+    @"SearchEngineMoreButtonIdentifier";

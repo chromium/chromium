@@ -187,20 +187,10 @@ UIFont* GetTitleFontWithTraitCollection(UITraitCollection* trait_collection) {
 
 UIButton* CreateDisabledPrimaryButton() {
   UIButton* button = PrimaryActionButton(/*pointer_interaction_enabled=*/YES);
-  SetConfigurationTitle(
-      button, l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE));
   SetConfigurationFont(
       button, [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]);
-  UIButtonConfiguration* buttonConfiguration = button.configuration;
-  buttonConfiguration.background.backgroundColor =
-      [UIColor colorNamed:kTertiaryBackgroundColor];
-  buttonConfiguration.baseForegroundColor =
-      [UIColor colorNamed:kDisabledTintColor];
-  buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
-  button.configuration = buttonConfiguration;
+  UpdatePrimaryButton(button, /*didScrollToBottom=*/YES, /*didSelectARow=*/NO);
   button.translatesAutoresizingMaskIntoConstraints = NO;
-  button.enabled = NO;
-  button.accessibilityIdentifier = kSetAsDefaultSearchEngineIdentifier;
   return button;
 }
 
@@ -209,7 +199,6 @@ UIButton* CreateMorePrimaryButton() {
   UIButtonConfiguration* buttonConfiguration = button.configuration;
 
   NSDictionary* textAttributes = @{
-    NSForegroundColorAttributeName : [UIColor colorNamed:kSolidButtonTextColor],
     NSFontAttributeName :
         [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]
   };
@@ -238,23 +227,36 @@ UIButton* CreateMorePrimaryButton() {
                                  attributedStringWithAttachment:attachment]];
 
   buttonConfiguration.attributedTitle = attributedString;
-  buttonConfiguration.background.backgroundColor =
-      [UIColor colorNamed:kBlue600Color];
-  buttonConfiguration.baseForegroundColor =
-      [UIColor colorNamed:kSolidButtonTextColor];
   button.configuration = buttonConfiguration;
   button.translatesAutoresizingMaskIntoConstraints = NO;
   button.enabled = YES;
+  button.accessibilityIdentifier = kSearchEngineMoreButtonIdentifier;
 
   return button;
 }
 
-void EnablePrimaryActionButton(UIButton* button) {
+void UpdatePrimaryButton(UIButton* button,
+                         BOOL isConfirmButton,
+                         BOOL isEnabled) {
+  if (!isConfirmButton) {
+    return;
+  }
+
+  SetConfigurationTitle(
+      button, l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE));
   UIButtonConfiguration* buttonConfiguration = button.configuration;
-  buttonConfiguration.background.backgroundColor =
-      [UIColor colorNamed:kBlue600Color];
-  buttonConfiguration.baseForegroundColor =
-      [UIColor colorNamed:kSolidButtonTextColor];
+  if (isEnabled) {
+    buttonConfiguration.background.backgroundColor =
+        [UIColor colorNamed:kBlueColor];
+    buttonConfiguration.baseForegroundColor =
+        [UIColor colorNamed:kSolidButtonTextColor];
+  } else {
+    buttonConfiguration.background.backgroundColor =
+        [UIColor colorNamed:kTertiaryBackgroundColor];
+    buttonConfiguration.baseForegroundColor =
+        [UIColor colorNamed:kDisabledTintColor];
+  }
   button.configuration = buttonConfiguration;
-  button.enabled = YES;
+  button.enabled = isEnabled;
+  button.accessibilityIdentifier = kSetAsDefaultSearchEngineIdentifier;
 }
