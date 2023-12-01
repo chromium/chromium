@@ -32,9 +32,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -44,9 +42,8 @@ import java.util.Arrays;
 
 /** View tests for PasswordEditDialogWithDetailsView */
 @RunWith(BaseJUnit4ClassRunner.class)
-@EnableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
 @Batch(Batch.PER_CLASS)
-public class PasswordEditDialogWithDetailsViewTest {
+public class PasswordEditDialogViewTest {
     private static final String[] USERNAMES = {"user1", "user2", "user3"};
     private static final String INITIAL_USERNAME = "user2";
     private static final String CHANGED_USERNAME = "user21";
@@ -63,7 +60,7 @@ public class PasswordEditDialogWithDetailsViewTest {
 
     private static Activity sActivity;
 
-    private PasswordEditDialogWithDetailsView mDialogView;
+    private PasswordEditDialogView mDialogView;
     private AutoCompleteTextView mUsernamesView;
     private TextInputLayout mUsernameInputLayout;
     private TextInputEditText mPasswordView;
@@ -85,11 +82,11 @@ public class PasswordEditDialogWithDetailsViewTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mDialogView =
-                            (PasswordEditDialogWithDetailsView)
+                            (PasswordEditDialogView)
                                     sActivity
                                             .getLayoutInflater()
                                             .inflate(
-                                                    R.layout.password_edit_dialog_with_details,
+                                                    R.layout.password_edit_dialog,
                                                     null);
                     mUsernamesView = mDialogView.findViewById(R.id.username_view);
                     mUsernameInputLayout = mDialogView.findViewById(R.id.username_input_layout);

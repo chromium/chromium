@@ -24,12 +24,10 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -48,8 +46,7 @@ import java.util.List;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
-public class PasswordEditDialogWithDetailsRenderTest {
+public class PasswordEditDialogRenderTest {
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =
             Arrays.asList(
@@ -64,16 +61,16 @@ public class PasswordEditDialogWithDetailsRenderTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(0)
+                    .setRevision(1)
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
-    private PasswordEditDialogWithDetailsView mDialogView;
+    private PasswordEditDialogView mDialogView;
 
-    public PasswordEditDialogWithDetailsRenderTest(boolean nightModeEnabled) {
+    public PasswordEditDialogRenderTest(boolean nightModeEnabled) {
         NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
     }
@@ -85,12 +82,12 @@ public class PasswordEditDialogWithDetailsRenderTest {
         runOnUiThreadBlocking(
                 () -> {
                     mDialogView =
-                            (PasswordEditDialogWithDetailsView)
+                            (PasswordEditDialogView)
                                     mActivityTestRule
                                             .getActivity()
                                             .getLayoutInflater()
                                             .inflate(
-                                                    R.layout.password_edit_dialog_with_details,
+                                                    R.layout.password_edit_dialog,
                                                     null);
                     mActivityTestRule.getActivity().setContentView(mDialogView);
                     ChromeRenderTestRule.sanitize(mDialogView);
@@ -112,7 +109,7 @@ public class PasswordEditDialogWithDetailsRenderTest {
     @Feature({"RenderTest"})
     public void testLayoutIsCorrect() throws IOException {
         setupViewWithModel();
-        mRenderTestRule.render(mDialogView, "password_edit_dialog_with_details");
+        mRenderTestRule.render(mDialogView, "password_edit_dialog");
     }
 
     private void setupViewWithModel() {

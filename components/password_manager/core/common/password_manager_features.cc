@@ -81,10 +81,6 @@ BASE_FEATURE(kPasskeyManagementUsingAccountSettingsAndroid,
              "PasskeyManagementUsingAccountSettingsAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPasswordEditDialogWithDetails,
-             "PasswordEditDialogWithDetails_LAUNCHED",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the Password generation bottom sheet.
 BASE_FEATURE(kPasswordGenerationBottomSheet,
              "PasswordGenerationBottomSheet",

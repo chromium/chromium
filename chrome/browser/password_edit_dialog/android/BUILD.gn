@@ -30,8 +30,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogProperties.java",
     "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogView.java",
     "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogViewBinder.java",
-    "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogWithDetailsView.java",
-    "java/src/org/chromium/chrome/browser/password_edit_dialog/UsernameSelectionConfirmationView.java",
   ]
 
   deps = [
@@ -60,7 +58,6 @@ android_resources("java_resources") {
     "java/res/drawable/dropdown_arrow_down.xml",
     "java/res/layout/password_edit_dialog.xml",
     "java/res/layout/password_edit_dialog_dropdown_item.xml",
-    "java/res/layout/password_edit_dialog_with_details.xml",
     "java/res/values/dimens.xml",
   ]
 
@@ -97,9 +94,8 @@ android_library("unit_device_javatests") {
   testonly = true
 
   sources = [
-    "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogWithDetailsRenderTest.java",
-    "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogWithDetailsViewTest.java",
-    "java/src/org/chromium/chrome/browser/password_edit_dialog/UsernameSelectionConfirmationViewTest.java",
+    "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogRenderTest.java",
+    "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogViewTest.java",
   ]
 
   deps = [

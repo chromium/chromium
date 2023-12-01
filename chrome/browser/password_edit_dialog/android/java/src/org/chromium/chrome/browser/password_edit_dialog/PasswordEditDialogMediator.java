@@ -61,11 +61,6 @@ class PasswordEditDialogMediator implements ModalDialogProperties.Controller {
                         : mResources.getString(R.string.password_manager_save_button));
     }
 
-    /** Updates model's selected username index when it's changed in UI. */
-    void handleUsernameSelected(int selectedIndex) {
-        mDialogViewModel.set(PasswordEditDialogProperties.USERNAME_INDEX, selectedIndex);
-    }
-
     /**
      * Updates model's password when it's changed in UI.
      *
