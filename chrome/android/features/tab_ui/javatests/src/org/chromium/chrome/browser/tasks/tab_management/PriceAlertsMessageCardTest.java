@@ -192,6 +192,7 @@ public class PriceAlertsMessageCardTest {
     @MediumTest
     @CommandLineFlags.Add({BASE_PARAMS})
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    @DisabledTest(message = "crbug.com/1506776")
     public void testReviewMessage_AppNotificationsEnabled() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         mMockNotificationManager.setNotificationsEnabled(true);
