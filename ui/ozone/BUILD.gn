@@ -483,6 +483,8 @@ test("ozone_integration_tests") {
   deps += ozone_platform_integration_test_deps
 }
 
+# This is deprecated. Use //ui/base:ozone_buildflags instead.
+# TODO(crbug.com/1500494): Remove this.
 buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [

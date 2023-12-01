@@ -111,6 +111,7 @@ viz_static_library("test_support") {
     "//services/viz/privileged/mojom",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base:ozone_buildflags",
     "//ui/gfx/geometry",
     "//ui/gl",
     "//ui/latency:test_support",

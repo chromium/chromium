@@ -49,6 +49,7 @@ viz_component("host") {
     "//gpu/ipc/common",
     "//services/viz/privileged/mojom",
     "//ui/base",
+    "//ui/base:ozone_buildflags",
     "//ui/gfx",
   ]
 
