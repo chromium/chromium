@@ -561,6 +561,22 @@ crbug.com/1499775 external/wpt/html/semantics/embedded-content/the-img-element/i
 crbug.com/1499775 external/wpt/preload/preload-strict-dynamic.sub.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/webusb/usbDevice-iframe.https.html [ Pass Timeout ]
 
+# These tests fail when run with timeout multipler is 2
+crbug.com/1507050 external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/after-prepare-createHTMLDocument-fetch-error-external-classic.html [ Failure Pass ]
+crbug.com/1507050 external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/after-prepare-createHTMLDocument-fetch-error-external-module.html [ Failure Pass ]
+crbug.com/1507050 external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/after-prepare-createHTMLDocument-parse-error-external-classic.html [ Failure Pass ]
+crbug.com/1507050 external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/after-prepare-createHTMLDocument-parse-error-external-module.html [ Failure Pass ]
+crbug.com/1507050 external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/after-prepare-createHTMLDocument-success-external-classic.html [ Failure Pass ]
+crbug.com/1507050 external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/after-prepare-createHTMLDocument-success-external-module.html [ Failure Pass ]
+crbug.com/1507050 external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/after-prepare-iframe-fetch-error-external-classic.html [ Failure Pass ]
+crbug.com/1507050 external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/after-prepare-iframe-fetch-error-external-module.html [ Failure Pass ]
+crbug.com/1507050 external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/after-prepare-iframe-parse-error-external-classic.html [ Failure Pass ]
+crbug.com/1507050 external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/after-prepare-iframe-parse-error-external-module.html [ Failure Pass ]
+crbug.com/1507050 external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/after-prepare-iframe-parse-error-inline-classic.html [ Failure Pass ]
+crbug.com/1507050 external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/after-prepare-iframe-success-external-classic.html [ Failure Pass ]
+crbug.com/1507050 external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/after-prepare-iframe-success-external-module.html [ Failure Pass ]
+crbug.com/1507050 external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/after-prepare-iframe-success-inline-classic.html [ Failure Pass ]
+
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 external/wpt/webmessaging/message-channels/close-event/garbage-collected.tentative.any.html [ Timeout ]
 crbug.com/626703 external/wpt/webmessaging/message-channels/close-event/garbage-collected.tentative.any.worker.html [ Timeout ]

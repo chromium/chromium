@@ -1095,6 +1095,11 @@ if (use_blink && !is_cronet_build) {
         "--no-show-results",
         "--zero-tests-executed-ok",
       ]
+      if (dcheck_always_on) {
+        args += [ "--timeout-multiplier=2" ]
+      } else {
+        args += [ "--timeout-multiplier=1" ]
+      }
       data = [
         "//third_party/blink/web_tests/platform/linux-chrome/",
         "//third_party/blink/web_tests/ChromeTestExpectations",
