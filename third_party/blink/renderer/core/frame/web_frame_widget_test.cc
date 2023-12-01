@@ -1580,6 +1580,78 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsWithDifferentZoom) {
   }
 }
 
+TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreClippedInSubframe) {
+  base::test::ScopedFeatureList feature_list(
+      features::kReportVisibleLineBounds);
+  WebView().ResizeVisualViewport(gfx::Size(200, 200));
+  auto* widget = WebView().MainFrameViewWidget();
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+  SimRequest child_frame_resource("https://example.com/child_frame.html",
+                                  "text/html");
+  SimSubresourceRequest child_font_resource("https://example.com/Ahem.woff2",
+                                            "font/woff2");
+
+  LoadURL("https://example.com/test.html");
+  main_resource.Complete(
+      R"HTML(
+        <!doctype html>
+        <style>
+          html, body, iframe {
+            margin: 0;
+            padding: 0;
+            border: 0;
+          }
+        </style>
+        <div style='height: 100px;'></div>
+        <iframe src='https://example.com/child_frame.html'
+                id='child_frame' width='200px' height='100px'></iframe>)HTML");
+  Compositor().BeginFrame();
+
+  child_frame_resource.Complete(
+      R"HTML(
+      <!doctype html>
+      <style>
+        @font-face {
+          font-family: custom-font;
+          src: url(https://example.com/Ahem.woff2) format("woff2");
+        }
+        body {
+          margin: 0;
+          padding: 0;
+          zoom: 11;
+        }
+        .target {
+          font: 10px/1 custom-font, monospace;
+          margin: 0;
+          padding: 0;
+          border: none;
+        }
+      </style>
+      <input type='text' id='first' class='target' value='ABCD' />
+      <script>
+        first.focus();
+      </script>
+      )HTML");
+  Compositor().BeginFrame();
+
+  child_font_resource.Complete(
+      test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2"))
+          ->CopyAs<Vector<char>>());
+  Compositor().BeginFrame();
+
+  // The expected top value is 100 because of the spacer div in the main frame.
+  // The expected width is 40 * 11 = 440 but this should be clipped to the
+  // screen width which is 200px.
+  // The expected height is 10 * 11 = 110 but this should be clipped as to the
+  // screen height of 200px - 100px for the top of the bound.
+  Vector<gfx::Rect> expected(Vector({gfx::Rect(0, 100, 200, 100)}));
+  Vector<gfx::Rect>& actual = widget->GetVisibleLineBoundsOnScreen();
+  EXPECT_EQ(expected.size(), actual.size());
+  for (wtf_size_t i = 0; i < expected.size(); ++i) {
+    EXPECT_EQ(expected.at(i), actual.at(i));
+  }
+}
+
 class EventHandlingWebFrameWidgetSimTest : public SimTest {
  public:
   void SetUp() override {
