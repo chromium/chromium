@@ -23,6 +23,12 @@
 #include "ui/accessibility/platform/automation/automation_v8_bindings.h"
 #include "ui/accessibility/platform/automation/automation_v8_router.h"
 
+namespace v8 {
+template <typename T>
+class Local;
+class ObjectTemplate;
+}  // namespace v8
+
 namespace gin {
 class Arguments;
 }  // namespace gin
