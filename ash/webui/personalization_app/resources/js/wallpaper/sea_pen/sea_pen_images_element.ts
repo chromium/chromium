@@ -9,6 +9,7 @@
 
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import '../../../css/common.css.js';
+import './sparkle_placeholder_element.js';
 
 import {SeaPenThumbnail} from '../../../sea_pen.mojom-webui.js';
 import {WithPersonalizationStore} from '../../personalization_store.js';
@@ -66,7 +67,7 @@ export class SeaPenImagesElement extends WithPersonalizationStore {
   private shouldShowThumbnailPlaceholders_(
       thumbnailsLoading: boolean, thumbnails: SeaPenThumbnail[]|null): boolean {
     // Use placeholders before and during loading thumbnails.
-    return !thumbnails || thumbnailsLoading;
+    return !thumbnails && !thumbnailsLoading;
   }
 
   private shouldShowImageThumbnails_(

@@ -34,11 +34,22 @@
 </style>
 <!-- TODO(b/308200616): Add real text -->
 <h2 class="wallpaper-collections-heading">TBD Wallpapers</h2>
+<template is="dom-if" if="[[thumbnailsLoading_]]" restamp>
+  <iron-list class="thumbnail-placeholder-list" items="[[getPlaceholders_(4)]]" grid>
+    <template>
+      <div class="thumbnail-placeholder-container">
+        <sparkle-placeholder-element class="thumbnail-placeholder"
+            index="[[index]]">
+        </sparkle-placeholder-element>
+      </div>
+    </template>
+  </iron-list>
+</template>
 <template is="dom-if" if="[[shouldShowThumbnailPlaceholders_(thumbnailsLoading_, thumbnails_)]]">
   <iron-list class="thumbnail-placeholder-list" items="[[getPlaceholders_(4)]]" grid>
     <template>
       <div class="thumbnail-placeholder-container">
-        <div class$="[[getThumbnailPlaceholderClass_(thumbnailsLoading_)]]"></div>
+        <div class="thumbnail-placeholder"></div>
       </div>
     </template>
   </iron-list>

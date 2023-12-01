@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {SeaPenImagesElement} from 'chrome://personalization/js/personalization_app.js';
+import {SeaPenImagesElement, SparklePlaceholderElement} from 'chrome://personalization/js/personalization_app.js';
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -42,7 +42,7 @@ suite('SeaPenImagesElementTest', function() {
 
     const thumbnailPlaceholders =
         seaPenImagesElement.shadowRoot!.querySelectorAll(
-            '.thumbnail-placeholder');
+            'div:not([hidden]) .thumbnail-placeholder');
     assertEquals(
         4, thumbnailPlaceholders!.length,
         'should be 4 placeholders available.');
@@ -58,7 +58,9 @@ suite('SeaPenImagesElementTest', function() {
     await waitAfterNextRender(seaPenImagesElement);
 
     const loadingThumbnailPlaceholders =
-        seaPenImagesElement.shadowRoot!.querySelectorAll('.placeholder');
+        seaPenImagesElement.shadowRoot!
+            .querySelectorAll<SparklePlaceholderElement>(
+                'div:not([hidden]) sparkle-placeholder-element');
     assertEquals(
         4, loadingThumbnailPlaceholders!.length,
         'should be 4 loading placeholders available.');
