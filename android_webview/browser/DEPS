@@ -50,6 +50,7 @@ include_rules = [
   "+components/spellcheck/common",
   "+components/strings",
   "+components/tracing/common",
+  "+components/translate/core/common",
   "+components/url_formatter",
   "+components/url_matcher",
   "+components/user_prefs",
@@ -70,6 +71,7 @@ include_rules = [
   "-ipc/ipc_sync_message_filter.h",
 
   "+media/base/android",
+  "+media/base/media_switches.h",  # For media command line switches.
   "+media/mojo/buildflags.h",
 
   "+components/policy/policy_constants.h",

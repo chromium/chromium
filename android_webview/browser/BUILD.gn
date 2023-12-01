@@ -242,6 +242,7 @@ source_set("browser") {
     "//components/optimization_guide/core:bloomfilter",
     "//components/profile_metrics",
     "//components/strings:components_strings_grit",
+    "//components/translate/core/common",
     "//components/url_matcher",
 
     # Called via JNI in CrashpadMain
