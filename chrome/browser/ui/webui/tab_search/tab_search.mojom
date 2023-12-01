@@ -229,6 +229,9 @@ interface PageHandler {
   // Remove the tab from the tab organization.
   RemoveTabFromOrganization(int32 session_id, int32 organization_id, Tab tab);
 
+  // Clear the current tab organization session state.
+  ResetSession();
+
   // Save a user's preference for the state of the expandable 'Recently Closed'
   // list section.
   SaveRecentlyClosedExpandedPref(bool expanded);

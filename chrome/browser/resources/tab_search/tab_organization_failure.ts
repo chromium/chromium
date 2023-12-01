@@ -53,6 +53,13 @@ export class TabOrganizationFailureElement extends PolymerElement {
     }
   }
 
+  private onCheckNow_() {
+    this.dispatchEvent(new CustomEvent('check-now', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
   private onTipClick_() {
     this.dispatchEvent(new CustomEvent('tip-click', {
       bubbles: true,

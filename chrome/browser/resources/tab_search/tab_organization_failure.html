@@ -1,4 +1,9 @@
 <style include="tab-organization-shared-style">
+  cr-button {
+    align-self: flex-end;
+    width: fit-content;
+  }
+
   .footer {
     background-color: var(--color-bubble-footer-background);
     display: flex;
@@ -13,6 +18,9 @@
     <div class="tab-organization-header">[[getTitle_(error)]]</div>
     <div class="tab-organization-body">[[getBody_(error)]]</div>
   </div>
+  <cr-button class="action-button" on-click="onCheckNow_">
+    $i18n{checkNow}
+  </cr-button>
   <template is="dom-if" if="[[showFre]]">
     <div class="footer">
       <div class="tab-organization-body">

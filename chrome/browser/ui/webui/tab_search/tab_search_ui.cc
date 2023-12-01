@@ -69,6 +69,7 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"tabCount", IDS_TAB_SEARCH_TAB_COUNT},
       {"tabSearchTabName", IDS_TAB_SEARCH_TAB_NAME},
       // Tab organization UI strings
+      {"checkNow", IDS_TAB_ORGANIZATION_CHECK_NOW},
       {"createGroup", IDS_TAB_ORGANIZATION_CREATE_GROUP},
       {"dismiss", IDS_TAB_ORGANIZATION_DISMISS},
       {"failureBodyGeneric", IDS_TAB_ORGANIZATION_FAILURE_BODY_GENERIC},

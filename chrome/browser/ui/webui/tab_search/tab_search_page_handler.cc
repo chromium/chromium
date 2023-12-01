@@ -463,6 +463,19 @@ void TabSearchPageHandler::RemoveTabFromOrganization(
   }
 }
 
+void TabSearchPageHandler::ResetSession() {
+  Browser* browser = chrome::FindLastActive();
+  if (!browser) {
+    return;
+  }
+
+  if (!organization_service_) {
+    return;
+  }
+
+  organization_service_->ResetSessionForBrowser(browser);
+}
+
 void TabSearchPageHandler::SaveRecentlyClosedExpandedPref(bool expanded) {
   Profile::FromWebUI(web_ui_)->GetPrefs()->SetBoolean(
       tab_search_prefs::kTabSearchRecentlyClosedSectionExpanded, expanded);

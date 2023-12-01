@@ -33,6 +33,8 @@ export interface TabSearchApiProxy {
 
   requestTabOrganization(): void;
 
+  resetSession(): void;
+
   switchToTab(info: SwitchToTabInfo): void;
 
   getCallbackRouter(): PageCallbackRouter;
@@ -113,6 +115,10 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
 
   requestTabOrganization() {
     this.handler.requestTabOrganization();
+  }
+
+  resetSession() {
+    this.handler.resetSession();
   }
 
   switchToTab(info: SwitchToTabInfo) {

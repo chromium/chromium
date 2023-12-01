@@ -233,6 +233,10 @@ export class TabOrganizationPageElement extends PolymerElement {
         this.sessionId_, this.organizationId_, this.name_, this.tabs_);
   }
 
+  private onCheckNow_() {
+    this.apiProxy_.resetSession();
+  }
+
   private onTipClick_() {
     this.apiProxy_.startTabGroupTutorial();
   }
