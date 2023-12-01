@@ -40,6 +40,18 @@ void ScopedFileAccessDelegate::RequestDefaultFilesAccessIO(
 }
 
 // static
+void ScopedFileAccessDelegate::RequestFilesAccessForSystemIO(
+    const std::vector<base::FilePath>& files,
+    base::OnceCallback<void(ScopedFileAccess)> callback) {
+  if (request_files_access_for_system_io_callback_) {
+    request_files_access_for_system_io_callback_->Run(
+        files, std::move(callback), /*check_default=*/false);
+  } else {
+    std::move(callback).Run(ScopedFileAccess::Allowed());
+  }
+}
+
+// static
 ScopedFileAccessDelegate::RequestFilesAccessIOCallback
 ScopedFileAccessDelegate::GetCallbackForSystem() {
   return base::BindRepeating(

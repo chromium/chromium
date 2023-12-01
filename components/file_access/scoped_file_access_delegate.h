@@ -94,6 +94,13 @@ class COMPONENT_EXPORT(FILE_ACCESS) ScopedFileAccessDelegate {
       const std::vector<base::FilePath>& files,
       base::OnceCallback<void(ScopedFileAccess)> callback);
 
+  // Called from the IO thread. The method will switch to the UI thread and call
+  // RequestFilesAccessForSystem there. The `callback` is run on the IO thread
+  // with the gained file access token.
+  static void RequestFilesAccessForSystemIO(
+      const std::vector<base::FilePath>& files,
+      base::OnceCallback<void(ScopedFileAccess)> callback);
+
   // Calls base::ThreadPool::PostTaskAndReplyWithResult but `task` is run with
   // file access to `path`. The file access is hold until the call to `reply`
   // returns.
