@@ -30,7 +30,7 @@ namespace apps {
   }
 
 AppStorage::AppStorage(const base::FilePath& base_path,
-                       apps::AppRegistryCache& app_registry_cache,
+                       AppRegistryCache& app_registry_cache,
                        base::OnceCallback<void()> on_get_app_info_callback)
     : app_registry_cache_(app_registry_cache) {
   file_handler_ = base::MakeRefCounted<AppStorageFileHandler>(base_path);
@@ -52,7 +52,7 @@ AppStorage::AppStorage(const base::FilePath& base_path,
 
 AppStorage::~AppStorage() = default;
 
-void AppStorage::OnAppUpdate(const apps::AppUpdate& update) {
+void AppStorage::OnAppUpdate(const AppUpdate& update) {
   // If OnApps is in progress for the apps saved in the AppStorage file,
   // we can skip these updates, because the app info has been saved in the
   // AppStorage file.
@@ -67,8 +67,42 @@ void AppStorage::OnAppUpdate(const apps::AppUpdate& update) {
   MaybeSaveAppInfo();
 }
 
-void AppStorage::OnAppRegistryCacheWillBeDestroyed(
-    apps::AppRegistryCache* cache) {
+void AppStorage::OnAppsInitialized(const std::vector<AppPtr>& deltas,
+                                   apps::AppType app_type) {
+  // If OnApps is in progress for the apps saved in the AppStorage file,
+  // we can skip it, because `deltas` is come from the AppStorage file.
+  if (onapps_in_progress_) {
+    return;
+  }
+
+  std::set<std::string> app_ids;
+  for (const auto& app : deltas) {
+    app_ids.insert(app->app_id);
+  }
+
+  // Checks whether the apps of `app_type` in AppRegistryCache are included in
+  // `deltas`. If not, uninstall the app. This is used to remove the redundant
+  // apps saved in AppStorage, as the apps could be removed from other devices
+  // via sync.
+  std::vector<AppPtr> removed_apps;
+  app_registry_cache_->ForEachApp([&](const apps::AppUpdate& update) {
+    if (update.AppType() != app_type ||
+        base::Contains(app_ids, update.AppId())) {
+      return;
+    }
+
+    auto app = std::make_unique<App>(app_type, update.AppId());
+    app->readiness = Readiness::kUninstalledByNonUser;
+    removed_apps.push_back(std::move(app));
+  });
+
+  if (!removed_apps.empty()) {
+    app_registry_cache_->OnApps(std::move(removed_apps), AppType::kUnknown,
+                                /*should_notify_initialized=*/false);
+  }
+}
+
+void AppStorage::OnAppRegistryCacheWillBeDestroyed(AppRegistryCache* cache) {
   app_registry_cache_observer_.Reset();
 }
 
@@ -98,7 +132,7 @@ void AppStorage::OnGetAppInfoData(base::OnceCallback<void()> callback,
   }
 }
 
-bool AppStorage::IsAppChanged(const apps::AppUpdate& update) {
+bool AppStorage::IsAppChanged(const AppUpdate& update) {
   if (!update.Delta()) {
     return false;
   }

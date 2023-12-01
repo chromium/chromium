@@ -20,6 +20,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_effects.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace apps {
@@ -143,12 +144,17 @@ class AppStorageTest : public testing::Test {
         std::make_unique<base::RunLoop>());
   }
 
-  std::vector<AppPtr> CreateOneApp(AppType app_type,
-                                   const std::string& app_id) {
+  AppPtr CreateApp(AppType app_type, const std::string& app_id) {
     AppPtr app = std::make_unique<App>(app_type, app_id);
     app->readiness = kReadiness1;
     app->has_badge = false;
     app->paused = false;
+    return app;
+  }
+
+  std::vector<AppPtr> CreateOneApp(AppType app_type,
+                                   const std::string& app_id) {
+    AppPtr app = CreateApp(app_type, app_id);
     std::vector<AppPtr> apps;
     apps.push_back(std::move(app));
     return apps;
@@ -157,14 +163,11 @@ class AppStorageTest : public testing::Test {
   std::vector<AppPtr> CreateTwoApps() {
     std::vector<AppPtr> apps;
 
-    AppPtr app1 = std::make_unique<App>(kAppType1, kAppId1);
-    app1->readiness = kReadiness1;
+    AppPtr app1 = CreateApp(kAppType1, kAppId1);
     app1->name = kAppName1;
-    app1->has_badge = false;
-    app1->paused = false;
     apps.push_back(std::move(app1));
 
-    AppPtr app2 = std::make_unique<App>(kAppType2, kAppId2);
+    AppPtr app2 = CreateApp(kAppType2, kAppId2);
     app2->readiness = kReadiness2;
     app2->name = kAppName2;
     app2->short_name = kAppShortName1;
@@ -196,8 +199,6 @@ class AppStorageTest : public testing::Test {
     app2->show_in_management = true;
     app2->handles_intents = false;
     app2->allow_uninstall = false;
-    app2->has_badge = false;
-    app2->paused = false;
     app2->intent_filters.push_back(apps_util::MakeIntentFilterForUrlScope(
         GURL("https://www.google.com/abc")));
     app2->window_mode = WindowMode::kBrowser;
@@ -288,10 +289,11 @@ class AppStorageTest : public testing::Test {
                        bool should_verify_app_type_init = false) {
     // Create a new AppStorage to read the AppStorage file to verify the app has
     // been written correctly.
-    auto app_storage = std::make_unique<FakeAppStorage>(
+    app_storage_.reset();
+    app_storage_ = std::make_unique<FakeAppStorage>(
         tmp_dir().GetPath(), app_registry_cache_,
         std::make_unique<base::RunLoop>());
-    EXPECT_TRUE(IsEqual(apps, app_storage->GetAppInfo()));
+    EXPECT_TRUE(IsEqual(apps, app_storage_->GetAppInfo()));
 
     if (!should_verify_app_type_init) {
       return;
@@ -302,9 +304,9 @@ class AppStorageTest : public testing::Test {
       app_types.insert(app->app_type);
     }
 
-    EXPECT_EQ(app_types.size(), app_storage->GetAppTypeInfo().size());
+    EXPECT_EQ(app_types.size(), app_storage_->GetAppTypeInfo().size());
     for (AppType app_type : app_types) {
-      EXPECT_TRUE(base::Contains(app_storage->GetAppTypeInfo(), app_type));
+      EXPECT_TRUE(base::Contains(app_storage_->GetAppTypeInfo(), app_type));
     }
   }
 
@@ -312,7 +314,7 @@ class AppStorageTest : public testing::Test {
               apps::AppType app_type,
               bool should_notify_initialized) {
     app_registry_cache_.OnApps(std::move(deltas), app_type,
-                               /*should_notify_initialized=*/false);
+                               should_notify_initialized);
   }
 
   const base::ScopedTempDir& tmp_dir() { return tmp_dir_; }
@@ -581,7 +583,125 @@ TEST_F(AppStorageTest, UninstallApp) {
   app_storage()->WaitForSaveFinished(/*expect_app_count=*/1);
 
   auto apps3 = CreateOneApp(kAppType2, kAppId1);
-  VerifySavedApps(apps3, /*should_verify_app_type_init=*/true);
+  VerifySavedApps(apps3);
+}
+
+// Test AppStorageTest can remove the app when calling OnAppsInitialized to
+// clear uninstalled apps.
+TEST_F(AppStorageTest, ClearUnInstalledApps) {
+  CreateAppStorage();
+  EXPECT_TRUE(app_storage()->GetAppInfo().empty());
+
+  // Add 2 apps.
+  {
+    std::vector<AppPtr> apps;
+    apps.push_back(CreateApp(kAppType1, kAppId1));
+    apps.push_back(CreateApp(kAppType1, kAppId2));
+    AppPtr app = std::make_unique<App>(kAppType1, kAppId1);
+    app->name = kAppName2;
+    apps.push_back(std::move(app));
+    OnApps(std::move(apps), AppType::kUnknown,
+           /*should_notify_initialized=*/false);
+    app_storage()->WaitForSaveFinished(/*expect_app_count=*/2);
+  }
+
+  // Verify the apps are saved correctly.
+  {
+    std::vector<AppPtr> apps;
+    AppPtr app = CreateApp(kAppType1, kAppId1);
+    app->name = kAppName2;
+    apps.push_back(std::move(app));
+    apps.push_back(CreateApp(kAppType1, kAppId2));
+    VerifySavedApps(apps, /*should_verify_app_type_init=*/true);
+  }
+
+  // Add 1 app only to uninstall `kAppId2`.
+  auto apps1 = CreateOneApp(kAppType1, kAppId1);
+  apps1[0]->name = kAppName1;
+  OnApps(std::move(apps1), kAppType1,
+         /*should_notify_initialized=*/true);
+  app_registry_cache().ForOneApp(kAppId2, [&](const apps::AppUpdate& update) {
+    EXPECT_FALSE(apps_util::IsInstalled(update.Readiness()));
+  });
+  // The uninstalled app is still in AppRegistryCache, so the app count is 2.
+  app_storage()->WaitForSaveFinished(/*expect_app_count=*/2);
+
+  // Verify `kAppId2` has been removed from AppStorage.
+  auto apps2 = CreateOneApp(kAppType1, kAppId1);
+  apps2[0]->name = kAppName1;
+  app_registry_cache().ReinitializeForTesting();
+  VerifySavedApps(apps2);
+
+  // Publish the empty app list to uninstall `kAppId1`.
+  OnApps(std::vector<AppPtr>{}, kAppType1,
+         /*should_notify_initialized=*/true);
+  app_registry_cache().ForOneApp(kAppId1, [&](const apps::AppUpdate& update) {
+    EXPECT_FALSE(apps_util::IsInstalled(update.Readiness()));
+  });
+  // The uninstalled app is still in AppRegistryCache, so the app count is 2.
+  app_storage()->WaitForSaveFinished(/*expect_app_count=*/1);
+
+  // Verify `kAppId1` has been removed from AppStorage.
+  app_registry_cache().ReinitializeForTesting();
+  std::vector<AppPtr> apps3;
+  VerifySavedApps(apps3);
+}
+
+TEST_F(AppStorageTest, ClearUnInstalledMultipleApps) {
+  CreateAppStorage();
+  EXPECT_TRUE(app_storage()->GetAppInfo().empty());
+
+  // Add 3 apps.
+  {
+    std::vector<AppPtr> apps;
+    apps.push_back(CreateApp(kAppType1, kAppId1));
+    apps.push_back(CreateApp(kAppType1, kAppId2));
+    AppPtr app = std::make_unique<App>(kAppType1, kAppId1);
+    app->name = kAppName2;
+    apps.push_back(std::move(app));
+    apps.push_back(CreateApp(kAppType1, kAppId3));
+    OnApps(std::move(apps), kAppType1,
+           /*should_notify_initialized=*/false);
+    app_storage()->WaitForSaveFinished(/*expect_app_count=*/3);
+  }
+
+  // Verify the apps are saved correctly.
+  {
+    std::vector<AppPtr> apps;
+    AppPtr app = CreateApp(kAppType1, kAppId1);
+    app->name = kAppName2;
+    apps.push_back(std::move(app));
+    apps.push_back(CreateApp(kAppType1, kAppId2));
+    apps.push_back(CreateApp(kAppType1, kAppId3));
+    VerifySavedApps(apps, /*should_verify_app_type_init=*/true);
+  }
+
+  // Call ClearUnInstalledApps to uninstall `kAppId2`, `kAppId3`.
+  std::vector<AppPtr> apps1;
+  AppPtr app1 = CreateApp(kAppType1, kAppId1);
+  app1->name = kAppName2;
+  apps1.push_back(std::move(app1));
+  OnApps(std::move(apps1), kAppType1,
+         /*should_notify_initialized=*/true);
+  app_registry_cache().ForOneApp(kAppId2, [&](const apps::AppUpdate& update) {
+    EXPECT_FALSE(apps_util::IsInstalled(update.Readiness()));
+  });
+  app_registry_cache().ForOneApp(kAppId3, [&](const apps::AppUpdate& update) {
+    EXPECT_FALSE(apps_util::IsInstalled(update.Readiness()));
+  });
+  // The uninstalled app is still in AppRegistryCache, so the app count is 2.
+  app_storage()->WaitForSaveFinished(/*expect_app_count=*/3);
+
+  // Verify `kAppId2`, `kAppId3` have been removed from AppStorage.
+  app_registry_cache().ReinitializeForTesting();
+  std::vector<AppPtr> apps2;
+  AppPtr app2 = CreateApp(kAppType1, kAppId1);
+  app2->name = kAppName2;
+  apps2.push_back(std::move(app2));
+  VerifySavedApps(apps2);
+  EXPECT_EQ(kAppType1, app_registry_cache().GetAppType(kAppId1));
+  EXPECT_EQ(AppType::kUnknown, app_registry_cache().GetAppType(kAppId2));
+  EXPECT_EQ(AppType::kUnknown, app_registry_cache().GetAppType(kAppId3));
 }
 
 }  // namespace apps
