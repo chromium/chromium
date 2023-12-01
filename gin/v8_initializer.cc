@@ -426,6 +426,9 @@ void SetFlags(IsolateHolder::ScriptMode mode,
                          "--no-experimental-wasm-multi-memory");
   SetV8FlagsIfOverridden(features::kWebAssemblyTurboshaft, "--turboshaft-wasm",
                          "--no-turboshaft-wasm");
+  SetV8FlagsIfOverridden(features::kWebAssemblyTurboshaftInstructionSelection,
+                         "--turboshaft-wasm-instruction-selection-staged",
+                         "--no-turboshaft-wasm-instruction-selection-staged");
 
   if (js_command_line_flags.empty())
     return;

@@ -266,6 +266,10 @@ BASE_FEATURE(kWebAssemblyTurboshaft,
              "WebAssemblyTurboshaft",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kWebAssemblyTurboshaftInstructionSelection,
+             "WebAssemblyTurboshaftInstructionSelection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Feature for more aggressive code caching (https://crbug.com/v8/14411) and
 // three parameters to control caching behavior.
 BASE_FEATURE(kWebAssemblyMoreAggressiveCodeCaching,

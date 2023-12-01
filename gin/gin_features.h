@@ -71,6 +71,7 @@ GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyInlining);
 GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyGenericWrapper);
 GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyMultipleMemories);
 GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyTurboshaft);
+GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyTurboshaftInstructionSelection);
 
 // Feature for more aggressive code caching (https://crbug.com/v8/14411) and
 // three parameters to control caching behavior.
