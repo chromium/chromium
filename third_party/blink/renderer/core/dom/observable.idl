@@ -10,8 +10,8 @@ callback ObserverCompleteCallback = void ();
 
 dictionary Observer {
   ObserverCallback next;
-  ObserverCompleteCallback complete;
   ObserverCallback error;
+  ObserverCompleteCallback complete;
 };
 
 dictionary SubscribeOptions {

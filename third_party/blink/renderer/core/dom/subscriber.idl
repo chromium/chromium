@@ -7,8 +7,8 @@
 [Exposed=(Window,Worker), RuntimeEnabled=ObservableAPI]
 interface Subscriber {
   void next(any result);
-  [CallWith=ScriptState] void complete();
   [CallWith=ScriptState] void error(any error);
+  [CallWith=ScriptState] void complete();
   void addTeardown(VoidFunction teardown);
 
   readonly attribute boolean active;
