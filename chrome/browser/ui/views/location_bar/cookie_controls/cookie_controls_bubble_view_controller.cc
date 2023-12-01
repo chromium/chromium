@@ -77,6 +77,7 @@ CookieControlsBubbleViewController::CookieControlsBubbleViewController(
 
   bubble_view_->GetReloadingView()->SetVisible(false);
   bubble_view_->GetContentView()->SetVisible(true);
+  bubble_view_->GetContentView()->SetAccessibleRole(ax::mojom::Role::kAlert);
 }
 
 void CookieControlsBubbleViewController::OnUserClosedContentView() {
@@ -348,6 +349,8 @@ void CookieControlsBubbleViewController::OnToggleButtonPressed(
         "CookieControls.Bubble.BlockThirdPartyCookies"));
   }
   controller_->OnCookieBlockingEnabledForSite(!allow_third_party_cookies);
+  bubble_view_->GetContentView()->NotifyAccessibilityEvent(
+      ax::mojom::Event::kAlert, true);
 }
 
 void CookieControlsBubbleViewController::OnFeedbackButtonPressed() {

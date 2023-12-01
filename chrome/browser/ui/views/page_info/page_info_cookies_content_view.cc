@@ -512,6 +512,8 @@ void PageInfoCookiesContentView::OnToggleButtonPressed() {
   if (base::FeatureList::IsEnabled(content_settings::features::kUserBypassUI)) {
     presenter_->OnThirdPartyToggleClicked(
         /*block_third_party_cookies=*/!third_party_cookies_toggle_->GetIsOn());
+    third_party_cookies_container_->NotifyAccessibilityEvent(
+        ax::mojom::Event::kAlert, true);
   } else {
     presenter_->OnThirdPartyToggleClicked(
         /*block_third_party_cookies=*/blocking_third_party_cookies_toggle_
@@ -580,6 +582,7 @@ void PageInfoCookiesContentView::AddThirdPartyCookiesContainer() {
 
   third_party_cookies_container_ =
       AddChildView(std::make_unique<views::BoxLayoutView>());
+  third_party_cookies_container_->SetAccessibleRole(ax::mojom::Role::kAlert);
   third_party_cookies_container_->SetOrientation(
       views::BoxLayout::Orientation::kVertical);
   third_party_cookies_container_->SetVisible(false);
