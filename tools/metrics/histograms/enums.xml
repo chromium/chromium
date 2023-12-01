@@ -27858,30 +27858,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="IBAN suggestion selected (once)"/>
 </enum>
 
-<enum name="IcingContextReportingStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="GSA not available"/>
-  <int value="2" label="Sync not initialized"/>
-  <int value="3" label="Sync not syncing urls"/>
-  <int value="4" label="Sync no keystore passphrase"/>
-  <int value="5" label="Sync failed due to other reason (unexpected)"/>
-  <int value="6" label="Disabled on svelte devices"/>
-  <int value="7" label="No current tab found"/>
-  <int value="8" label="Current tab is incognito"/>
-  <int value="9" label="Invalid URL scheme"/>
-  <int value="10" label="Current tab ID doesn't match expected tab ID"/>
-  <int value="11" label="Duplicate title changed notification"/>
-  <int value="12" label="Connection to GMS failed"/>
-  <int value="13" label="Sync not ready at report time"/>
-  <int value="14" label="Not signed in at report time"/>
-  <int value="15" label="GSA account not present in Chrome"/>
-  <int value="16" label="GSA account doesn't match Chrome's"/>
-  <int value="17" label="GMS call result status is null"/>
-  <int value="18" label="GMS call result status is not successful"/>
-  <int value="19" label="Success with selection"/>
-  <int value="20" label="Duplicate entry"/>
-</enum>
-
 <enum name="IDBAction">
   <int value="0" label="BackingStoreOpenAttempt">
     Recorded when the there is an attempt to open the backing store from disk,

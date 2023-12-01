@@ -210,8 +210,6 @@ import org.chromium.components.policy.CombinedPolicyProvider;
 import org.chromium.components.policy.CombinedPolicyProvider.PolicyChangeListener;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.profile_metrics.BrowserProfileType;
-import org.chromium.components.sync.ModelType;
-import org.chromium.components.sync.PassphraseType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
@@ -1234,27 +1232,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             }
 
             return;
-        } else {
-            reportSyncStatus(syncService);
         }
 
         if (mSyncStateChangedListener == null && syncService != null) {
             mSyncStateChangedListener = () -> createContextReporterIfNeeded();
             syncService.addSyncStateChangedListener(mSyncStateChangedListener);
-        }
-    }
-
-    /** Records an appropriate status via UMA given the current sync status. */
-    private static void reportSyncStatus(@Nullable SyncService syncService) {
-        if (syncService == null || !syncService.isEngineInitialized()) {
-            ContextReporter.reportStatus(ContextReporter.STATUS_SYNC_NOT_INITIALIZED);
-        } else if (!syncService.getActiveDataTypes().contains(ModelType.HISTORY)) {
-            ContextReporter.reportStatus(ContextReporter.STATUS_SYNC_NOT_SYNCING_URLS);
-        } else if (syncService.getPassphraseType() != PassphraseType.KEYSTORE_PASSPHRASE
-                && syncService.getPassphraseType() != PassphraseType.TRUSTED_VAULT_PASSPHRASE) {
-            ContextReporter.reportStatus(ContextReporter.STATUS_SYNC_NOT_KEYSTORE_PASSPHRASE);
-        } else {
-            ContextReporter.reportStatus(ContextReporter.STATUS_SYNC_OTHER);
         }
     }
 
@@ -1504,10 +1486,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             DeferredStartupHandler.getInstance()
                     .addDeferredTask(
                             () -> {
-                                if (isActivityFinishingOrDestroyed()) return;
-                                if (!GSAState.getInstance().isGsaAvailable()) {
-                                    ContextReporter.reportStatus(
-                                            ContextReporter.STATUS_GSA_NOT_AVAILABLE);
+                                if (isActivityFinishingOrDestroyed()
+                                        || !GSAState.getInstance().isGsaAvailable()) {
                                     return;
                                 }
 

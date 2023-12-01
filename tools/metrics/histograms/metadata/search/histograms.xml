@@ -677,17 +677,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Search.IcingContextReportingStatus"
-    enum="IcingContextReportingStatus" expires_after="M77">
-  <owner>donnd@chromium.org</owner>
-  <summary>
-    Records the reason why a context report to Icing failed, every time Chrome
-    attemps to record the current context (tab switching, navigations, etc).
-    Also records reasons why context reporting might be disabled. Recorded on
-    Android only.
-  </summary>
-</histogram>
-
 <histogram name="Search.Image.Camera.Open" enum="CameraOpenEntryPoint"
     expires_after="2024-04-28">
   <owner>juanmojica@google.com</owner>
