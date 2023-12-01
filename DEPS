@@ -1576,7 +1576,7 @@ deps = {
   },
 
   'src/third_party/material_color_utilities/src': {
-      'url': Var('chromium_git') + '/external/github.com/material-foundation/material-color-utilities.git' + '@' + '234a000e507d586c20df6e3bf5b9e035bc5ce7b1',
+      'url': Var('chromium_git') + '/external/github.com/material-foundation/material-color-utilities.git' + '@' + 'bec7bab60e6431201a82761ea4482b98b54c2af9',
   },
 
   'src/third_party/material_design_icons/src': {
