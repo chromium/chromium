@@ -2339,6 +2339,17 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
                     nullptr);
     }
   }
+
+  if (policy.has_devicehardwarevideodecodingenabled()) {
+    const em::BooleanPolicyProto& container(
+        policy.devicehardwarevideodecodingenabled());
+    if (container.has_value()) {
+      policies->Set(key::kDeviceHardwareVideoDecodingEnabled,
+                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                    POLICY_SOURCE_CLOUD, base::Value(container.value()),
+                    nullptr);
+    }
+  }
 }
 
 }  // namespace
