@@ -555,6 +555,7 @@ void CollectAncestorRoles(
     case ax::mojom::Role::kDirectory:
       return NSAccessibilityListRole;
     case ax::mojom::Role::kDisclosureTriangle:
+    case ax::mojom::Role::kDisclosureTriangleGrouped:
       // If Mac supports AXExpandedChanged event with
       // NSAccessibilityDisclosureTriangleRole, We should update
       // ax::mojom::Role::kDisclosureTriangle mapping to

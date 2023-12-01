@@ -1,0 +1,16 @@
+[document web] focusable focused
+++[panel]
+++++[toggle button] name='the summary' expandable focusable
+++++++[static] name='the summary'
+++[section]
+++++[panel]
+++++++[toggle button] name='materials' expandable expanded focusable posinset:1 setsize:3
+++++++++[static] name='materials'
+++++++[paragraph]
+++++++++[static] name='Info about what it's made of.'
+++++[panel]
+++++++[toggle button] name='dimensions' expandable focusable posinset:2 setsize:3
+++++++++[static] name='dimensions'
+++++[panel]
+++++++[toggle button] name='origin' expandable focusable posinset:3 setsize:3
+++++++++[static] name='origin'

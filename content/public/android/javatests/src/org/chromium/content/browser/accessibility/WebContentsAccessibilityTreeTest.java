@@ -1478,6 +1478,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_details_name() {
+        performHtmlTest("details-name.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_dfn() {
         performHtmlTest("dfn.html");
     }

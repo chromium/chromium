@@ -3139,6 +3139,16 @@ data/accessibility/html/details-expected-fuchsia.txt
 data/accessibility/html/details-expected-mac.txt
 data/accessibility/html/details-expected-uia-win.txt
 data/accessibility/html/details-expected-win.txt
+data/accessibility/html/details-name-expected-android-assist-data.txt
+data/accessibility/html/details-name-expected-android-external.txt
+data/accessibility/html/details-name-expected-android.txt
+data/accessibility/html/details-name-expected-auralinux.txt
+data/accessibility/html/details-name-expected-blink.txt
+data/accessibility/html/details-name-expected-fuchsia.txt
+data/accessibility/html/details-name-expected-mac.txt
+data/accessibility/html/details-name-expected-uia-win.txt
+data/accessibility/html/details-name-expected-win.txt
+data/accessibility/html/details-name.html
 data/accessibility/html/details.html
 data/accessibility/html/dfn-expected-android-assist-data.txt
 data/accessibility/html/dfn-expected-android-external.txt

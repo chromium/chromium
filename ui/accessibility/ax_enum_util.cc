@@ -214,6 +214,8 @@ const char* ToString(ax::mojom::Role role) {
       return "directory";
     case ax::mojom::Role::kDisclosureTriangle:
       return "disclosureTriangle";
+    case ax::mojom::Role::kDisclosureTriangleGrouped:
+      return "disclosureTriangleGrouped";
     case ax::mojom::Role::kDocAbstract:
       return "docAbstract";
     case ax::mojom::Role::kDocAcknowledgments:
@@ -640,6 +642,8 @@ ax::mojom::Role StringToRole(const std::string& role) {
     return ax::mojom::Role::kDirectory;
   } else if (role == "kDisclosureTriangle") {
     return ax::mojom::Role::kDisclosureTriangle;
+  } else if (role == "kDisclosureTriangleGrouped") {
+    return ax::mojom::Role::kDisclosureTriangleGrouped;
   } else if (role == "kDocAbstract") {
     return ax::mojom::Role::kDocAbstract;
   } else if (role == "kDocAcknowledgments") {

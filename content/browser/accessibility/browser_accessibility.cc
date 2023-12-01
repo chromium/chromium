@@ -1620,6 +1620,7 @@ std::u16string BrowserAccessibility::GetLocalizedStringForRoleDescription()
     case ax::mojom::Role::kDirectory:
       return content_client->GetLocalizedString(IDS_AX_ROLE_DIRECTORY);
     case ax::mojom::Role::kDisclosureTriangle:
+    case ax::mojom::Role::kDisclosureTriangleGrouped:
       return content_client->GetLocalizedString(
           IDS_AX_ROLE_DISCLOSURE_TRIANGLE);
     case ax::mojom::Role::kDocument:

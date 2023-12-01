@@ -86,6 +86,7 @@
 #include "third_party/blink/renderer/core/html/forms/radio_input_type.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/core/html/html_details_element.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_dlist_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -1348,8 +1349,14 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
     ContainerNode* parent = LayoutTreeBuilderTraversal::Parent(*GetNode());
     if (ToHTMLSlotElementIfSupportsAssignmentOrNull(parent))
       parent = LayoutTreeBuilderTraversal::Parent(*parent);
-    if (parent && IsA<HTMLDetailsElement>(parent))
-      return ax::mojom::blink::Role::kDisclosureTriangle;
+    if (HTMLDetailsElement* parent_details =
+            DynamicTo<HTMLDetailsElement>(parent)) {
+      if (parent_details->GetName().empty()) {
+        return ax::mojom::blink::Role::kDisclosureTriangle;
+      } else {
+        return ax::mojom::blink::Role::kDisclosureTriangleGrouped;
+      }
+    }
     return ax::mojom::blink::Role::kGenericContainer;
   }
 

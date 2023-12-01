@@ -4776,6 +4776,7 @@ ax::mojom::blink::DefaultActionVerb AXObject::Action() const {
   switch (RoleValue()) {
     case ax::mojom::blink::Role::kButton:
     case ax::mojom::blink::Role::kDisclosureTriangle:
+    case ax::mojom::blink::Role::kDisclosureTriangleGrouped:
     case ax::mojom::blink::Role::kToggleButton:
       return ax::mojom::blink::DefaultActionVerb::kPress;
     case ax::mojom::blink::Role::kListBoxOption:
@@ -4816,6 +4817,7 @@ bool AXObject::SupportsARIAExpanded() const {
     case ax::mojom::blink::Role::kComboBoxMenuButton:
     case ax::mojom::blink::Role::kComboBoxSelect:
     case ax::mojom::blink::Role::kDisclosureTriangle:
+    case ax::mojom::blink::Role::kDisclosureTriangleGrouped:
     case ax::mojom::blink::Role::kListBox:
     case ax::mojom::blink::Role::kLink:
     case ax::mojom::blink::Role::kPopUpButton:
@@ -7102,6 +7104,7 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kDocNoteRef:
     case ax::mojom::blink::Role::kDocGlossRef:
     case ax::mojom::blink::Role::kDisclosureTriangle:
+    case ax::mojom::blink::Role::kDisclosureTriangleGrouped:
     case ax::mojom::blink::Role::kHeading:
     case ax::mojom::blink::Role::kLayoutTableCell:
     case ax::mojom::blink::Role::kLineBreak:

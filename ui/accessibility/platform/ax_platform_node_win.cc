@@ -930,6 +930,7 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
               UIA_WindowControlTypeId, L"dialog"};
 
     case ax::mojom::Role::kDisclosureTriangle:
+    case ax::mojom::Role::kDisclosureTriangleGrouped:
       return {UIALocalizationStrategy::kSupply, UIA_ButtonControlTypeId,
               L"button"};
 
@@ -6460,6 +6461,7 @@ int AXPlatformNodeWin::MSAARole() {
       return ROLE_SYSTEM_DIALOG;
 
     case ax::mojom::Role::kDisclosureTriangle:
+    case ax::mojom::Role::kDisclosureTriangleGrouped:
       return ROLE_SYSTEM_PUSHBUTTON;
 
     case ax::mojom::Role::kDirectory:
