@@ -44,6 +44,7 @@ namespace {
 actions::ActionItem::ActionItemBuilder SidePanelAction(
     SidePanelEntryId id,
     int title_id,
+    int tooltip_id,
     const gfx::VectorIcon& icon,
     actions::ActionId action_id,
     Browser* browser,
@@ -57,6 +58,7 @@ actions::ActionItem::ActionItemBuilder SidePanelAction(
                  SidePanelEntryKey(id), browser))
       .SetActionId(action_id)
       .SetText(l10n_util::GetStringUTF16(title_id))
+      .SetTooltipText(l10n_util::GetStringUTF16(tooltip_id))
       .SetImage(ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon,
                                                side_panel_icon_size))
       .SetProperty(actions::kActionItemPinnableKey, is_pinnable);
@@ -93,25 +95,29 @@ void BrowserActions::InitializeBrowserActions() {
           .AddChildren(
               SidePanelAction(
                   SidePanelEntryId::kBookmarks, IDS_BOOKMARK_MANAGER_TITLE,
+                  IDS_BOOKMARK_MANAGER_TITLE,
                   features::IsChromeRefresh2023()
                       ? kBookmarksSidePanelRefreshIcon
                       : kBookmarksSidePanelIcon,
                   kActionSidePanelShowBookmarks, &(browser_.get()), true),
               SidePanelAction(SidePanelEntryId::kReadingList,
-                              IDS_READ_LATER_TITLE, kReadingListIcon,
-                              kActionSidePanelShowReadingList,
+                              IDS_READ_LATER_TITLE, IDS_READ_LATER_TITLE,
+                              kReadingListIcon, kActionSidePanelShowReadingList,
                               &(browser_.get()), true),
               SidePanelAction(SidePanelEntryId::kAboutThisSite,
+                              IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE,
                               IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE,
                               PageInfoViewFactory::GetAboutThisSiteVectorIcon(),
                               kActionSidePanelShowAboutThisSite,
                               &(browser_.get()), false),
               SidePanelAction(SidePanelEntryId::kCustomizeChrome,
                               IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE,
+                              IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE,
                               vector_icons::kEditChromeRefreshIcon,
                               kActionSidePanelShowCustomizeChrome,
                               &(browser_.get()), false),
               SidePanelAction(SidePanelEntryId::kShoppingInsights,
+                              IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TITLE,
                               IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TITLE,
                               vector_icons::kShoppingBagIcon,
                               kActionSidePanelShowShoppingInsights,
@@ -124,6 +130,7 @@ void BrowserActions::InitializeBrowserActions() {
             SidePanelEntryId::kHistoryClusters,
             rename_journeys ? IDS_HISTORY_TITLE
                             : IDS_HISTORY_CLUSTERS_JOURNEYS_TAB_LABEL,
+            IDS_HISTORY_CLUSTERS_SHOW_SIDE_PANEL,
             vector_icons::kHistoryChromeRefreshIcon,
             kActionSidePanelShowHistoryCluster, &(browser_.get()), true)
             .Build());
@@ -132,7 +139,7 @@ void BrowserActions::InitializeBrowserActions() {
   if (features::IsReadAnythingEnabled()) {
     root_action_item_->AddChild(
         SidePanelAction(SidePanelEntryId::kReadAnything, IDS_READING_MODE_TITLE,
-                        kMenuBookChromeRefreshIcon,
+                        IDS_READING_MODE_TITLE, kMenuBookChromeRefreshIcon,
                         kActionSidePanelShowReadAnything, &(browser_.get()),
                         true)
             .Build());
@@ -141,14 +148,14 @@ void BrowserActions::InitializeBrowserActions() {
   if (user_notes::IsUserNotesEnabled()) {
     root_action_item_->AddChild(
         SidePanelAction(SidePanelEntryId::kUserNote, IDS_USER_NOTE_TITLE,
-                        kNoteOutlineIcon, kActionSidePanelShowUserNote,
-                        &(browser_.get()), true)
+                        IDS_USER_NOTE_TITLE, kNoteOutlineIcon,
+                        kActionSidePanelShowUserNote, &(browser_.get()), true)
             .Build());
   }
 
   if (base::FeatureList::IsEnabled(feed::kWebUiFeed)) {
     root_action_item_->AddChild(
-        SidePanelAction(SidePanelEntryId::kFeed, IDS_FEED_TITLE,
+        SidePanelAction(SidePanelEntryId::kFeed, IDS_FEED_TITLE, IDS_FEED_TITLE,
                         vector_icons::kFeedIcon, kActionSidePanelShowFeed,
                         &(browser_.get()), true)
             .Build());
@@ -158,8 +165,9 @@ void BrowserActions::InitializeBrowserActions() {
           performance_manager::features::kPerformanceControlsSidePanel)) {
     root_action_item_->AddChild(
         SidePanelAction(SidePanelEntryId::kPerformance, IDS_SHOW_PERFORMANCE,
-                        kHighEfficiencyIcon, kActionSidePanelShowPerformance,
-                        &(browser_.get()), true)
+                        IDS_SHOW_PERFORMANCE, kHighEfficiencyIcon,
+                        kActionSidePanelShowPerformance, &(browser_.get()),
+                        true)
             .Build());
   }
 
@@ -167,19 +175,19 @@ void BrowserActions::InitializeBrowserActions() {
     if (SearchCompanionSidePanelCoordinator::IsSupported(
             browser_->profile(),
             /*include_runtime_checks=*/false)) {
-      actions::ActionItem* companion_action_item =
-          root_action_item_->AddChild(
-              SidePanelAction(
-                  SidePanelEntryId::kSearchCompanion,
-                  IDS_SIDE_PANEL_COMPANION_TITLE,
+      actions::ActionItem* companion_action_item = root_action_item_->AddChild(
+          SidePanelAction(
+              SidePanelEntryId::kSearchCompanion,
+              IDS_SIDE_PANEL_COMPANION_TITLE,
+              IDS_SIDE_PANEL_COMPANION_TOOLBAR_TOOLTIP,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-                  vector_icons::
-                      kGoogleSearchCompanionMonochromeLogoChromeRefreshIcon,
+              vector_icons::
+                  kGoogleSearchCompanionMonochromeLogoChromeRefreshIcon,
 #else
-                  vector_icons::kSearchIcon,
+              vector_icons::kSearchIcon,
 #endif
-                  kActionSidePanelShowSearchCompanion, &(browser_.get()), true)
-                  .Build());
+              kActionSidePanelShowSearchCompanion, &(browser_.get()), true)
+              .Build());
 
       companion_action_item->SetVisible(
           SearchCompanionSidePanelCoordinator::IsSupported(
@@ -192,7 +200,7 @@ void BrowserActions::InitializeBrowserActions() {
   // lens side panel coordinator. They have default values here.
   root_action_item_->AddChild(
       SidePanelAction(SidePanelEntryId::kLens, IDS_LENS_DEFAULT_TITLE,
-                      vector_icons::kImageSearchIcon, kActionSidePanelShowLens,
-                      &(browser_.get()), false)
+                      IDS_LENS_DEFAULT_TITLE, vector_icons::kImageSearchIcon,
+                      kActionSidePanelShowLens, &(browser_.get()), false)
           .Build());
 }

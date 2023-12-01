@@ -71,6 +71,7 @@ void LensSidePanelCoordinator::UpdateActionItem() {
   if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
     actions::ActionItem* action_item = GetActionItem();
     action_item->SetText(GetComboboxLabel());
+    action_item->SetTooltipText(GetComboboxLabel());
     action_item->SetImage(GetFaviconImage());
   }
 }
