@@ -529,6 +529,10 @@ void Label::SetMaximumWidth(int max_width) {
   OnPropertyChanged(&max_width_, kPropertyEffectsPreferredSizeChanged);
 }
 
+void Label::SetUseLegacyPreferredSize(bool use_legacy) {
+  use_legacy_preferred_size_ = use_legacy;
+}
+
 void Label::SetMaximumWidthSingleLine(int max_width) {
   DCHECK(!GetMultiLine());
   if (max_width_single_line_ == max_width)
