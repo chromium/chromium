@@ -12080,6 +12080,24 @@
             ]
         }
     ],
+    "OptimizationPersonalizedHintsFetching": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "allowed_contexts": "CONTEXT_PAGE_INSIGHTS_HUB"
+                    },
+                    "enable_features": [
+                        "OptimizationPersonalizedHintsFetching"
+                    ]
+                }
+            ]
+        }
+    ],
     "OptionalToolbarButton": [
         {
             "platforms": [
