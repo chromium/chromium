@@ -4,8 +4,9 @@
 
 #include "services/webnn/dml/graph_impl.h"
 
-#include <string.h>
+#include <algorithm>
 #include <array>
+#include <limits>
 
 #include "base/bits.h"
 #include "base/check.h"
@@ -161,6 +162,8 @@ std::string OpTagToString(Operation::Tag tag) {
       return "element-wise unary";
     case Operation::Tag::kExpand:
       return "expand";
+    case Operation::Tag::kGather:
+      return "gather";
     case Operation::Tag::kGemm:
       return "gemm";
     case Operation::Tag::kLeakyRelu:
@@ -1462,6 +1465,86 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForExpand(
   return base::ok();
 }
 
+base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGather(
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::GatherPtr& gather,
+    GraphBuilder& graph_builder,
+    IdToNodeOutputMap& id_to_node_output_map) {
+  const NodeOutput* input =
+      GetNodeOutputForOperand(id_to_node_output_map, gather->input_operand_id);
+  auto input_tensor_desc = input->GetTensorDesc();
+
+  const NodeOutput* indices = GetNodeOutputForOperand(
+      id_to_node_output_map, gather->indices_operand_id);
+  auto indices_tensor_desc = indices->GetTensorDesc();
+  size_t indices_rank = indices_tensor_desc.GetDimensions().size();
+  if (base::MakeStrictNum(indices_rank) >
+      std::numeric_limits<uint32_t>::max()) {
+    return base::unexpected(
+        CreateError(mojom::Error::Code::kUnknownError,
+                    "The indices rank of gather operator is too large."));
+  }
+
+  uint64_t output_id = gather->output_operand_id;
+  const auto original_output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+  auto output_tensor_desc = original_output_tensor_desc;
+
+  size_t input_rank = input_tensor_desc.GetDimensions().size();
+  size_t output_rank = output_tensor_desc.GetDimensions().size();
+  size_t expanded_rank = std::max(input_rank, output_rank);
+  CHECK_GE(expanded_rank, indices_rank);
+
+  // Expand all tensor ranks to expanded_rank, which DML_GATHER_OPERATOR_DESC
+  // validation requires.
+  // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gather_operator_desc
+  input_tensor_desc.EnsureMinimumRank(expanded_rank,
+                                      TensorDesc::Alignment::kTrailing);
+  indices_tensor_desc.EnsureMinimumRank(expanded_rank,
+                                        TensorDesc::Alignment::kTrailing);
+  output_tensor_desc.EnsureMinimumRank(expanded_rank,
+                                       TensorDesc::Alignment::kTrailing);
+
+  auto expanded_axis =
+      base::MakeCheckedNum<size_t>(expanded_rank - input_rank) +
+      base::checked_cast<size_t>(gather->axis);
+  if (!expanded_axis.IsValid<uint32_t>()) {
+    return base::unexpected(
+        CreateError(mojom::Error::Code::kUnknownError,
+                    "The axis of gather operator is too large."));
+  }
+
+  // TODO(crbug.com/1273291): Include a DirectML documentation link and a
+  // Chromium test that validates the out-of-bounds indices handling.
+  //
+  // DirectML implementation for gather operator has already handled the
+  // indices tensor by clamping it in the shader to prevent out-of-bounds
+  // access.
+  DML_GATHER_OPERATOR_DESC gather_operator_desc{
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .IndicesTensor = &indices_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+      // The axis dimension of InputTensor to gather on.
+      .Axis = expanded_axis.ValueOrDie<uint32_t>(),
+      // The number of actual index dimensions within the IndicesTensor.
+      .IndexDimensions = base::checked_cast<uint32_t>(indices_rank)};
+
+  std::array<const NodeOutput*, 2> inputs = {input, indices};
+  const OperatorNode* gather_node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_GATHER, &gather_operator_desc, inputs);
+  if (!gather_node) {
+    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                        "Failed to create gather operator."));
+  }
+
+  const NodeOutput* output = graph_builder.CreateNodeOutput(
+      gather_node, std::move(original_output_tensor_desc), 0);
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
+
+  return base::ok();
+}
+
 // Creates a DirectML operator for the WebNN general matrix multiplication
 // (GEMM) of the expression alpha * A * B + beta * C.
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGemm(
@@ -2216,6 +2299,12 @@ void GraphImpl::CreateAndBuild(
       case Operation::Tag::kExpand: {
         create_operator_result = CreateOperatorNodeForExpand(
             id_to_operand_map, operation->get_expand(), graph_builder,
+            id_to_node_output_map);
+        break;
+      }
+      case mojom::Operation::Tag::kGather: {
+        create_operator_result = CreateOperatorNodeForGather(
+            id_to_operand_map, operation->get_gather(), graph_builder,
             id_to_node_output_map);
         break;
       }

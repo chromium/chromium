@@ -1063,6 +1063,51 @@ base::expected<Operand, std::string> ValidateResample2dAndInferOutput(
   return Operand(input.data_type, std::move(output_shape));
 }
 
+base::expected<Operand, std::string> ValidateGatherAndInferOutput(
+    const Operand& input,
+    const Operand& indices,
+    const uint32_t axis) {
+  const auto& input_dimensions = input.dimensions;
+  const auto input_rank = input_dimensions.size();
+  if (input_rank == 0) {
+    return base::unexpected("The input should not be a scalar.");
+  }
+
+  if (base::MakeStrictNum(input_rank) <= axis) {
+    return base::unexpected(
+        "The axis must be in the range [0, N-1] where N is the rank of input "
+        "tensor.");
+  }
+
+  if (!DataTypeConstraint::kGatherOperatorIndexDataTypes.Has(
+          indices.data_type)) {
+    return base::unexpected(base::StringPrintf(
+        "The indices type must be one of the %s types.",
+        DataTypeConstraintToString(
+            DataTypeConstraint::kGatherOperatorIndexDataTypes)
+            .c_str()));
+  }
+
+  const auto& indices_dimensions = indices.dimensions;
+  auto checked_output_rank =
+      base::MakeCheckedNum<size_t>(input_rank) - 1 + indices_dimensions.size();
+  if (!checked_output_rank.IsValid()) {
+    return base::unexpected("The output rank is too large.");
+  }
+
+  std::vector<uint32_t> output_shape;
+  output_shape.reserve(checked_output_rank.ValueOrDie());
+  for (size_t i = 0; i < input_rank; ++i) {
+    if (i == axis) {
+      base::ranges::copy(indices_dimensions, std::back_inserter(output_shape));
+    } else {
+      output_shape.push_back(input_dimensions[i]);
+    }
+  }
+
+  return Operand(input.data_type, std::move(output_shape));
+}
+
 GemmAttributes::GemmAttributes() = default;
 GemmAttributes::~GemmAttributes() = default;
 

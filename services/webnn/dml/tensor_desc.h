@@ -22,6 +22,13 @@ using Microsoft::WRL::ComPtr;
 // (DML_GRAPH_DESC).
 class TensorDesc final {
  public:
+  enum class Alignment {
+    // Align the elements to leading/left edge.
+    kLeading,
+    // Align the elements to trailing/right edge.
+    kTrailing,
+  };
+
   TensorDesc(DML_TENSOR_DATA_TYPE data_type, std::vector<uint32_t> dimensions);
   TensorDesc(DML_TENSOR_DATA_TYPE data_type,
              DML_TENSOR_FLAGS flags,
@@ -54,6 +61,10 @@ class TensorDesc final {
   // broadcasted dimensions and ignorable tails count.
   void BroadcastTo(base::span<const uint32_t> broadcasted_dims,
                    size_t ignorable_tails_count = 0);
+
+  // Add leading or trailing ones to dimensions and zeros to strides to ensure
+  // the tensor rank >= minimum_rank.
+  void EnsureMinimumRank(size_t minimum_rank, Alignment alignment);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WebNNTensorDescTest, CreateAndCopyTensorDescA);

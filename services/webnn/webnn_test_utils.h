@@ -195,6 +195,11 @@ class GraphInfoBuilder final {
 
   void BuildExpand(uint64_t input_operand_id, uint64_t output_operand_id);
 
+  void BuildGather(uint64_t input_operand_id,
+                   uint64_t indices_operand_id,
+                   uint64_t output_operand_id,
+                   uint32_t axis);
+
   // A `GemmAttributes` type should have the following members:
   // struct GemmAttributes {
   //   absl::optional<uint64_t> c_operand_id,

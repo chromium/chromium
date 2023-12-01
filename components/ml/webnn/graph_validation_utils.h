@@ -69,6 +69,11 @@ static constexpr DataTypeConstraintSet kSignedNumber = {
     Operand::DataType::kFloat32, Operand::DataType::kFloat16,
     Operand::DataType::kInt32, Operand::DataType::kInt8};
 
+// TODO(crbug.com/1273291): Add int64 and uint64 as index type. Spec issue:
+// https://github.com/webmachinelearning/webnn/pull/478
+static constexpr DataTypeConstraintSet kGatherOperatorIndexDataTypes = {
+    Operand::DataType::kInt32, Operand::DataType::kUint32};
+
 }  // namespace DataTypeConstraint
 
 std::string DataTypeConstraintToString(
@@ -349,6 +354,13 @@ base::expected<Operand, std::string> ValidateResample2dAndInferOutput(
     const absl::variant<base::span<const float>, base::span<const uint32_t>>&
         scales_or_sizes,
     base::span<const uint32_t> axes);
+
+// Validate and infer output information of gather operator defined in
+// WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-gather
+base::expected<Operand, std::string> ValidateGatherAndInferOutput(
+    const Operand& input,
+    const Operand& indices,
+    const uint32_t axis);
 
 // Validate gemm operator defined in WebIDL here
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-gemm

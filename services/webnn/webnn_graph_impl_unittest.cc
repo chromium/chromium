@@ -2259,6 +2259,121 @@ TEST_F(WebNNGraphImplTest, ExpandTest) {
   }
 }
 
+struct GatherTester {
+  OperandInfo input;
+  struct GatherAttributes {
+    OperandInfo indices;
+    uint32_t axis;
+  };
+  GatherAttributes attributes;
+  OperandInfo output;
+  bool expected;
+
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t indices_operand_id = builder.BuildInput(
+        "indices", attributes.indices.dimensions, attributes.indices.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildGather(input_operand_id, indices_operand_id, output_operand_id,
+                        attributes.axis);
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, GatherTest) {
+  {
+    // Test gather operator with 3-D input and 2-D indices.
+    GatherTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {3, 4, 5}},
+        .attributes = {.indices = {.type = mojom::Operand::DataType::kUint32,
+                                   .dimensions = {6, 7}},
+                       .axis = 1},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {3, 6, 7, 5}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the axis is too large.
+    GatherTester{
+        .input = {.type = mojom::Operand::DataType::kFloat16,
+                  .dimensions = {3, 4, 5}},
+        .attributes = {.indices = {.type = mojom::Operand::DataType::kUint32,
+                                   .dimensions = {6, 7}},
+                       .axis = 3},
+        .output = {.type = mojom::Operand::DataType::kFloat16,
+                   .dimensions = {3, 4, 5, 6, 7}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the indices data type is floating point.
+    GatherTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {3, 4, 5}},
+        .attributes = {.indices = {.type = mojom::Operand::DataType::kFloat16,
+                                   .dimensions = {6, 7}},
+                       .axis = 1},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {3, 6, 7, 5}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the output shapes are not expected.
+    GatherTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {3, 4, 5}},
+        .attributes = {.indices = {.type = mojom::Operand::DataType::kUint32,
+                                   .dimensions = {6, 7}},
+                       .axis = 1},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {3, 4, 6, 7, 5}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for output types don't match.
+    GatherTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {3, 4, 5}},
+        .attributes = {.indices = {.type = mojom::Operand::DataType::kUint32,
+                                   .dimensions = {6, 7}},
+                       .axis = 1},
+        .output = {.type = mojom::Operand::DataType::kFloat16,
+                   .dimensions = {3, 6, 7, 5}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the output is as same as the input.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {2, 3}, mojom::Operand::DataType::kFloat32);
+    uint64_t indices_operand_id =
+        builder.BuildInput("indices", {2}, mojom::Operand::DataType::kUint32);
+    builder.BuildGather(input_operand_id, indices_operand_id, input_operand_id,
+                        /*axis*/ 0);
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
+  }
+  {
+    // Test the invalid graph when the output is as same as the indices.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {3}, mojom::Operand::DataType::kUint32);
+    uint64_t indices_operand_id =
+        builder.BuildInput("indices", {3}, mojom::Operand::DataType::kUint32);
+    builder.BuildGather(input_operand_id, indices_operand_id,
+                        indices_operand_id, /*axis*/ 0);
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
+  }
+}
+
 struct GemmTester {
   OperandInfo a;
   OperandInfo b;

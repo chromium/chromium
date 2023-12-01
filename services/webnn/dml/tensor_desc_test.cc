@@ -157,4 +157,30 @@ TEST_F(WebNNTensorDescTest, Create0DTensorDescAndBroadcastTo0D) {
   EXPECT_EQ(tensor_desc.GetStrides(), (std::vector<uint32_t>{1}));
 }
 
+TEST_F(WebNNTensorDescTest, EnsureMinimumRank) {
+  // Test expanding the tensor from rank 3 to 5 in trailing alignment.
+  std::vector<uint32_t> dimensions_a = {3, 4, 5};
+  TensorDesc tensor_desc_a(DML_TENSOR_DATA_TYPE_INT32,
+                           DML_TENSOR_FLAG_OWNED_BY_DML, dimensions_a);
+
+  tensor_desc_a.EnsureMinimumRank(/*minimum_rank*/ 5,
+                                  TensorDesc::Alignment::kTrailing);
+  EXPECT_EQ(tensor_desc_a.GetDimensions(),
+            (std::vector<uint32_t>{1, 1, 3, 4, 5}));
+  EXPECT_EQ(tensor_desc_a.GetStrides(),
+            (std::vector<uint32_t>{0, 0, 20, 5, 1}));
+
+  // Test expanding the tensor from rank 4 to 8 in leading alignment.
+  std::vector<uint32_t> dimensions_b = {1, 2, 3, 4};
+  TensorDesc tensor_desc_b(DML_TENSOR_DATA_TYPE_FLOAT16,
+                           DML_TENSOR_FLAG_OWNED_BY_DML, dimensions_b);
+
+  tensor_desc_b.EnsureMinimumRank(/*minimum_rank*/ 8,
+                                  TensorDesc::Alignment::kLeading);
+  EXPECT_EQ(tensor_desc_b.GetDimensions(),
+            (std::vector<uint32_t>{1, 2, 3, 4, 1, 1, 1, 1}));
+  EXPECT_EQ(tensor_desc_b.GetStrides(),
+            (std::vector<uint32_t>{24, 12, 4, 1, 0, 0, 0, 0}));
+}
+
 }  // namespace webnn::dml

@@ -656,6 +656,29 @@ bool ValidateExpand(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
+bool ValidateGather(const IdToOperandMap& id_to_operand_map,
+                    const mojom::GatherPtr& gather) {
+  auto* input = GetMojoOperand(id_to_operand_map, gather->input_operand_id);
+  auto* output = GetMojoOperand(id_to_operand_map, gather->output_operand_id);
+  auto* indices = GetMojoOperand(id_to_operand_map, gather->indices_operand_id);
+  if (!input || !output || !indices || output == input || output == indices) {
+    // The gather operator is invalid.
+    return false;
+  }
+
+  auto validated_output = ValidateGatherAndInferOutput(
+      ConvertToComponentOperand(input), ConvertToComponentOperand(indices),
+      gather->axis);
+  if (!validated_output.has_value()) {
+    return false;
+  }
+  if (validated_output != ConvertToComponentOperand(output)) {
+    return false;
+  }
+
+  return true;
+}
+
 bool ValidateGemm(const IdToOperandMap& id_to_operand_map,
                   const mojom::GemmPtr& gemm) {
   auto* a = GetMojoOperand(id_to_operand_map, gemm->a_operand_id);
@@ -1057,6 +1080,8 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
                                       operation->get_element_wise_unary());
     case mojom::Operation::Tag::kExpand:
       return ValidateExpand(id_to_operand_map, operation->get_expand());
+    case mojom::Operation::Tag::kGather:
+      return ValidateGather(id_to_operand_map, operation->get_gather());
     case mojom::Operation::Tag::kGemm:
       return ValidateGemm(id_to_operand_map, operation->get_gemm());
     case mojom::Operation::Tag::kLeakyRelu:

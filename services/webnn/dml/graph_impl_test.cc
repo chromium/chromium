@@ -3335,6 +3335,175 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorReduce) {
   }
 }
 
+template <typename InputOutputType, typename IndicesType>
+struct GatherTester {
+  OperandInfo<InputOutputType> input;
+  OperandInfo<IndicesType> indices;
+  uint32_t axis;
+  OperandInfo<InputOutputType> output;
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t indices_operand_id =
+        builder.BuildInput("indices", indices.dimensions, indices.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildGather(input_operand_id, indices_operand_id, output_operand_id,
+                        axis);
+
+    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+    named_inputs.insert({"input", VectorToBigBuffer(input.values)});
+    named_inputs.insert({"indices", VectorToBigBuffer(indices.values)});
+    base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+
+    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                    named_outputs);
+
+    EXPECT_EQ(
+        BigBufferToVector<InputOutputType>(std::move(named_outputs["output"])),
+        output.values);
+  }
+};
+
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorGather) {
+  {
+    // Test gather with 1-D input, 1-D indices and axis = 0.
+    GatherTester<float, uint32_t>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {4},
+                  .values = {1, 2, 3, 4}},
+        .indices = {.type = mojom::Operand::DataType::kUint32,
+                    .dimensions = {5},
+                    .values = {2, 1, 3, 0, 1}},
+        .axis = 0,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {5},
+                   .values = {3, 2, 4, 1, 2}}}
+        .Test();
+  }
+  {
+    // Test gather with 2-D input, 2-D indices and axis = 1.
+    GatherTester<int32_t, uint32_t>{
+        .input = {.type = mojom::Operand::DataType::kInt32,
+                  .dimensions = {3, 3},
+                  // [[1 2 3]
+                  //  [4 5 6]
+                  //  [7 8 9]] with shape (3, 3)
+                  .values = {1, 2, 3, 4, 5, 6, 7, 8, 9}},
+        .indices = {.type = mojom::Operand::DataType::kUint32,
+                    .dimensions = {1, 2},
+                    .values = {0, 2}},
+        .axis = 1,
+        .output = {.type = mojom::Operand::DataType::kInt32,
+                   .dimensions = {3, 1, 2},
+                   // [[[1 3]]
+                   //  [[4 6]]
+                   //  [[7 9]]] with shape (3, 1, 2)
+                   .values = {1, 3, 4, 6, 7, 9}}}
+        .Test();
+  }
+  {
+    // Test gather with 4-D input, 1-D indices with negative index and axis = 1.
+    GatherTester<uint32_t, int32_t>{
+        .input = {.type = mojom::Operand::DataType::kUint32,
+                  .dimensions = {2, 2, 2, 2},
+                  // [[[[ 1  2]
+                  //    [ 3  4]]
+                  //   [[ 5  6]
+                  //    [ 7  8]]]
+                  //  [[[ 9 10]
+                  //    [11 12]]
+                  //   [[13 14]
+                  //    [15 16]]]] with shape (2, 2, 2, 2)
+                  .values = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+                             16}},
+        .indices = {.type = mojom::Operand::DataType::kInt32,
+                    .dimensions = {1},
+                    .values = {-1}},
+        .axis = 1,
+        .output = {.type = mojom::Operand::DataType::kUint32,
+                   .dimensions = {2, 1, 2, 2},
+                   // [[[[ 5  6]
+                   //    [ 7  8]]]
+                   //  [[[13 14]
+                   //    [15 16]]]] with shape (2, 1, 2, 2)
+                   .values = {5, 6, 7, 8, 13, 14, 15, 16}}}
+        .Test();
+  }
+  {
+    // Test gather with 6-D input, 0-D indices and axis = 5.
+    GatherTester<float, int32_t>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 1, 1, 1, 5},
+                  // [[[[[[1, 2, 3, 4, 5]]]]]] with shape (1, 1, 1, 1, 1, 5)
+                  .values = {1, 2, 3, 4, 5}},
+        .indices = {.type = mojom::Operand::DataType::kInt32,
+                    .dimensions = {},
+                    .values = {3}},
+        .axis = 5,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 1, 1, 1},
+                   // [[[[[4]]]]] with shape (1, 1, 1, 1, 1)
+                   .values = {4}}}
+        .Test();
+  }
+  {
+    // Test gather with 1-D input, 0-D indices and axis = 0.
+    GatherTester<int32_t, uint32_t>{
+        .input = {.type = mojom::Operand::DataType::kInt32,
+                  .dimensions = {3},
+                  .values = {1, 2, 3}},
+        .indices = {.type = mojom::Operand::DataType::kUint32,
+                    .dimensions = {},
+                    .values = {2}},
+        .axis = 0,
+        .output = {.type = mojom::Operand::DataType::kInt32,
+                   .dimensions = {},
+                   .values = {3}}}
+        .Test();
+  }
+  {
+    // Test gather with 2-D input, 2-D out-of-bound indices and axis = 1.
+    GatherTester<float, uint32_t>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {3, 3},
+                  // [[10 20 30]
+                  //  [40 50 60]
+                  //  [70 80 90]] with shape (3, 3)
+                  .values = {10, 20, 30, 40, 50, 60, 70, 80, 90}},
+        .indices = {.type = mojom::Operand::DataType::kUint32,
+                    .dimensions = {1, 2},
+                    .values = {0, 4}},
+        .axis = 1,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {3, 1, 2},
+                   // [[[10 50]]
+                   //  [[40 80]]
+                   //  [[70 90]]] with shape (3, 1, 2)
+                   .values = {10, 50, 40, 80, 70, 90}}}
+        .Test();
+  }
+  {
+    // Test gather with 1-D input, 2-D out-of-bound indices and axis = 0.
+    GatherTester<float, int32_t>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {4},
+                  .values = {0, 1, 2, 3}},
+        .indices = {.type = mojom::Operand::DataType::kInt32,
+                    .dimensions = {2, 5},
+                    .values = {0, 1, 2, 3, 4, -1, -2, -3, -4, -5}},
+        .axis = 0,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 5},
+                   // [[0 1 2 3 3]
+                   //  [3 2 1 0 3]] with shape (2, 5)
+                   .values = {0, 1, 2, 3, 3, 3, 2, 1, 0, 3}}}
+        .Test();
+  }
+}
+
 struct GemmAttributes {
   absl::optional<uint64_t> c_operand_id;
   // TODO(crbug.com/1273291): Add test cases for below attributes.

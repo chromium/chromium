@@ -197,6 +197,19 @@ void GraphInfoBuilder::BuildElementWiseUnary(mojom::ElementWiseUnary::Kind kind,
       mojom::Operation::NewElementWiseUnary(std::move(unary)));
 }
 
+void GraphInfoBuilder::BuildGather(uint64_t input_operand_id,
+                                   uint64_t indices_operand_id,
+                                   uint64_t output_operand_id,
+                                   uint32_t axis) {
+  mojom::GatherPtr gather = mojom::Gather::New();
+  gather->input_operand_id = input_operand_id;
+  gather->output_operand_id = output_operand_id;
+  gather->indices_operand_id = indices_operand_id;
+  gather->axis = axis;
+  graph_info_->operations.push_back(
+      mojom::Operation::NewGather(std::move(gather)));
+}
+
 void GraphInfoBuilder::BuildPrelu(uint64_t input_operand_id,
                                   uint64_t slope_operand_id,
                                   uint64_t output_operand_id) {
