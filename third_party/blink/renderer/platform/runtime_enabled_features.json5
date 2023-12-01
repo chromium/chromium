@@ -2205,7 +2205,7 @@
       // its init dictionary instead of a root margin.
       name: "LazyLoadScrollMargin",
       public: true,
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "LCPAnimatedImagesWebExposed",
