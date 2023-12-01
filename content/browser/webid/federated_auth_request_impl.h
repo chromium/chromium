@@ -111,10 +111,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Rejects the pending request if it has not been resolved naturally yet.
   void OnRejectRequest();
 
-  // This wrapper around FederatedIdentityApiPermissionContextDelegate ensures
-  // that we handle BLOCKED_THIRD_PARTY_COOKIES_BLOCKED correctly.
+  // Returns whether the API is enabled or not.
   FederatedIdentityApiPermissionContextDelegate::PermissionStatus
-  GetApiPermissionStatus(const url::Origin& idp_origin);
+  GetApiPermissionStatus();
 
   struct IdentityProviderGetInfo {
     IdentityProviderGetInfo(blink::mojom::IdentityProviderRequestOptionsPtr,

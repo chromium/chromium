@@ -766,11 +766,7 @@ void FederatedAuthRequestImpl::RequestToken(
   request_dialog_controller_ = CreateDialogController();
   start_time_ = base::TimeTicks::Now();
 
-  FederatedApiPermissionStatus permission_status =
-      GetApiPermissionStatus(url::Origin::Create(idp_get_params_ptrs[0]
-                                                     ->providers[0]
-                                                     ->get_federated()
-                                                     ->config->config_url));
+  FederatedApiPermissionStatus permission_status = GetApiPermissionStatus();
 
   absl::optional<TokenStatus> error_token_status;
   FederatedAuthRequestResult request_result =
@@ -1007,8 +1003,7 @@ void FederatedAuthRequestImpl::LogoutRps(
     return;
   }
 
-  if (GetApiPermissionStatus(origin()) !=
-      FederatedApiPermissionStatus::GRANTED) {
+  if (GetApiPermissionStatus() != FederatedApiPermissionStatus::GRANTED) {
     CompleteLogoutRequest(LogoutRpsStatus::kError);
     return;
   }
@@ -1329,6 +1324,19 @@ void FederatedAuthRequestImpl::OnFetchDataForIdpFailed(
 
 void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   if (!fetch_data_.pending_idps.empty()) {
+    return;
+  }
+
+  // The accounts fetch could be delayed for legitimate reasons. A user may be
+  // able to disable FedCM API (e.g. via settings or dismissing another FedCM UI
+  // on the same RP origin) before the browser receives the accounts response.
+  // We should exit early without showing any UI.
+  if (GetApiPermissionStatus() != FederatedApiPermissionStatus::GRANTED) {
+    CompleteRequestWithError(
+        FederatedAuthRequestResult::kErrorDisabledInSettings,
+        TokenStatus::kDisabledInSettings,
+        /*token_error=*/absl::nullopt,
+        /*should_delay_callback=*/true);
     return;
   }
 
@@ -1772,9 +1780,7 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
   // settings are changed while an existing FedCM UI is displayed. Ideally, we
   // should enforce this check before all requests but users typically won't
   // have time to disable the FedCM API in other types of requests.
-  url::Origin idp_origin = url::Origin::Create(idp_config_url);
-  if (GetApiPermissionStatus(idp_origin) !=
-      FederatedApiPermissionStatus::GRANTED) {
+  if (GetApiPermissionStatus() != FederatedApiPermissionStatus::GRANTED) {
     CompleteRequestWithError(
         FederatedAuthRequestResult::kErrorDisabledInSettings,
         TokenStatus::kDisabledInSettings,
@@ -2511,8 +2517,8 @@ void FederatedAuthRequestImpl::OnRejectRequest() {
                            /*should_delay_callback=*/false);
 }
 
-FederatedApiPermissionStatus FederatedAuthRequestImpl::GetApiPermissionStatus(
-    const url::Origin& idp_origin) {
+FederatedApiPermissionStatus
+FederatedAuthRequestImpl::GetApiPermissionStatus() {
   DCHECK(api_permission_delegate_);
   FederatedApiPermissionStatus status =
       api_permission_delegate_->GetApiPermissionStatus(GetEmbeddingOrigin());
@@ -2520,7 +2526,7 @@ FederatedApiPermissionStatus FederatedAuthRequestImpl::GetApiPermissionStatus(
   // status API is enabled, in general or through OT.
   if (status ==
           FederatedApiPermissionStatus::BLOCKED_THIRD_PARTY_COOKIES_BLOCKED &&
-      webid::GetIdpSigninStatusMode(render_frame_host(), idp_origin) ==
+      webid::GetIdpSigninStatusMode(render_frame_host(), url::Origin()) ==
           FedCmIdpSigninStatusMode::ENABLED) {
     status = FederatedApiPermissionStatus::GRANTED;
   }
