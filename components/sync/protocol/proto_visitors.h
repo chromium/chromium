@@ -291,7 +291,7 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillSpecifics& proto) {
 
 VISIT_PROTO_FIELDS(const sync_pb::AutofillWalletCredentialSpecifics& proto) {
   VISIT(instrument_id);
-  VISIT(cvc);
+  VISIT_SECRET(cvc);
   VISIT(last_updated_time_unix_epoch_millis);
 }
 
