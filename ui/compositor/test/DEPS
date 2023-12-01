@@ -15,3 +15,10 @@ include_rules = [
   "+ui/ozone",
   "+ui/platform_window",
 ]
+
+specific_include_rules = {
+  "in_process_context_factory\.h": [
+    "+gpu/command_buffer/service/shared_image/shared_image_manager.h",
+    "+gpu/command_buffer/service/sync_point_manager.h",
+  ],
+}

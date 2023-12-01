@@ -303,10 +303,13 @@ void PixelTest::SetUpSoftwareRenderer() {
       std::make_unique<viz::SoftwareOutputDevice>());
   output_surface_->BindToClient(output_surface_client_.get());
   shared_bitmap_manager_ = std::make_unique<viz::TestSharedBitmapManager>();
+  shared_image_manager_ = std::make_unique<gpu::SharedImageManager>();
+  sync_point_manager_ = std::make_unique<gpu::SyncPointManager>();
+
   auto resource_provider =
       std::make_unique<viz::DisplayResourceProviderSoftware>(
-          shared_bitmap_manager_.get(), /*shared_image_manager=*/nullptr,
-          /*sync_point_manager=*/nullptr);
+          shared_bitmap_manager_.get(), shared_image_manager_.get(),
+          sync_point_manager_.get());
   child_resource_provider_ = std::make_unique<viz::ClientResourceProvider>();
 
   auto renderer = std::make_unique<viz::SoftwareRenderer>(
