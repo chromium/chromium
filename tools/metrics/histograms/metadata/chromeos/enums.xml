@@ -168,7 +168,7 @@ chromium-metrics-reviews@google.com.
   <int value="114" label="ToggleWifi"/>
   <int value="115" label="TouchHudClear"/>
   <int value="116" label="TouchHudModeChange"/>
-  <int value="117" label="TouchFingerprintSensor111"/>
+  <int value="117" label="TouchFingerprintSensor1"/>
   <int value="118" label="TouchFingerprintSensor2"/>
   <int value="119" label="TouchFingerprintSensor3"/>
   <int value="120" label="Unpin"/>

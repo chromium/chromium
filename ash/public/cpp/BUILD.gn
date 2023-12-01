@@ -549,6 +549,11 @@ source_set("unit_tests") {
     "//ui/views",
     "//ui/views:test_support",
   ]
+
+  data = [
+    # Needed to make commit bots run unit_tests on enums.xml changes.
+    "//tools/metrics/histograms/metadata/chromeos/enums.xml",
+  ]
 }
 
 source_set("accelerator_actions") {

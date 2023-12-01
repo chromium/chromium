@@ -19,7 +19,7 @@ namespace ash {
 // tools/metrics/histograms/metadata/ash/histograms.xml.
 //
 // Please keep the ActionName in sync with the AcceleratorAction enum
-// in this file tools/metrics/histograms/enums.xml.
+// in this file tools/metrics/histograms/metadata/chromeos/enums.xml.
 //
 // Example:
 //

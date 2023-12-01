@@ -7,6 +7,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/hash/md5.h"
 #include "base/hash/md5_boringssl.h"
+#include "base/test/metrics/histogram_enum_reader.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -43,6 +44,25 @@ class AcceleratorActionsTest : public testing::Test {
 };
 
 }  // namespace
+
+// Tests that the AcceleratorAction enum in enums.xml exactly matches the
+// AcceleratorAction enum in C++ file.
+TEST_F(AcceleratorActionsTest, CheckHistogramEnum) {
+  const auto enums =
+      base::ReadEnumFromEnumsXml("AcceleratorAction", "chromeos");
+  ASSERT_TRUE(enums);
+  // The number of enums in the histogram entry should be equal to the number of
+  // enums in the C++ file.
+  EXPECT_EQ(enums->size(), kAcceleratorActionToName.size());
+
+  for (const auto& entry : *enums) {
+    // Check that the C++ file has a definition equal to the histogram file.
+    EXPECT_EQ(entry.second, kAcceleratorActionToName.find(entry.first)->second)
+        << "Enum entry name: " << entry.second
+        << " in enums.xml is different from enum entry name: "
+        << kAcceleratorActionToName.find(entry.first)->second << " in C++ file";
+  }
+}
 
 TEST_F(AcceleratorActionsTest, AcceleratorActionsHash) {
   const char kCommonMessage[] =
