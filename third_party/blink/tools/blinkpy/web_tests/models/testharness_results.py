@@ -57,7 +57,7 @@ _HARNESS_ERROR_FORMAT = ('harness_status.status = %s , '
 _HARNESS_ERROR_PATTERN = re.compile(
     re.escape(_HARNESS_ERROR_FORMAT) % ('(?P<status>.*)', '(?P<message>.*)'))
 _STATUS_UNION = '\s*(' + '|'.join(status.name for status in Status) + ')\s*'
-_SUBTEST_PATTERN = re.compile(rf'^\[{_STATUS_UNION}(\s{_STATUS_UNION})*\]')
+_SUBTEST_PATTERN = re.compile(rf'^\[{_STATUS_UNION}(\s{_STATUS_UNION})*\] ')
 _MESSAGE_PREFIX = ' ' * 2
 # Threshold at which a "Found [N] tests; ..." line will be written.
 _COUNT_THRESHOLD = 50
@@ -77,7 +77,10 @@ def parse_testharness_baseline(content_text: str) -> List[TestharnessLine]:
             subtest = _unescape(line[subtest_match.end():])
             message = None
             if next_line and next_line.startswith(_MESSAGE_PREFIX):
-                message = _unescape(next_line)
+                # This removes both `_MESSAGE_PREFIX` boundary and any
+                # additional whitespace that was part of the message:
+                # https://github.com/web-platform-tests/wpt/blob/3aff5f1e12d6dc20e333b3f8ae589d86c1ddaedb/tools/wptrunner/wptrunner/testrunner.py#L704
+                message = _unescape(next_line.strip())
                 next_line = next(raw_lines, None)
             lines.append(
                 TestharnessLine(LineType.SUBTEST, statuses, message, subtest))
@@ -100,7 +103,7 @@ def parse_testharness_baseline(content_text: str) -> List[TestharnessLine]:
                     message = maybe_match['message']
                     status_code = int(maybe_match['status'])
                     statuses = frozenset([Status(status_code)])
-            message = _unescape(message) if message else None
+            message = _unescape(message.lstrip()) if message else None
             lines.append(TestharnessLine(line_type, statuses, message))
     return lines
 
@@ -158,7 +161,7 @@ def format_testharness_baseline(lines: List[TestharnessLine]) -> str:
 
 
 def _parse_statuses(subtest_match: re.Match) -> FrozenSet[Status]:
-    start, end = len('['), subtest_match.end() - len(']')
+    start, end = len('['), subtest_match.end() - len('] ')
     return frozenset(Status[status.strip()]
                      for status in subtest_match.string[start:end].split())
 
@@ -184,7 +187,7 @@ def _escape(s: str) -> str:
 
 def _unescape(s: str) -> str:
     return _UNESCAPE_PATTERN.sub(
-        lambda match: _UNESCAPE_SUBSTITUTIONS[match[0]], s.lstrip())
+        lambda match: _UNESCAPE_SUBSTITUTIONS[match[0]], s)
 
 
 def is_all_pass_test_result(content_text: str) -> bool:

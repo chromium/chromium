@@ -237,8 +237,8 @@ class TestResultCheckerTest(unittest.TestCase):
             textwrap.dedent("""\
                 This is a testharness.js-based test.
                 Harness Error. harness_status.status = 1 , harness_status.message = ReferenceError: ShadowRealm is not defined
-                [PASS] Query "geolocation" permission
-                [ FAIL TIMEOUT ] Window interface: attribute\\n\\0\\r\\\\nevent
+                [PASS] \t Query "geolocation" permission
+                [ FAIL  TIMEOUT ] Window interface: attribute\\n\\0\\r\\\\nevent
                   assert_true: property should be enumerable\\n\\0\\r\\\\n  expected true got false
 
                 CONSOLE ERROR: Console error
@@ -259,7 +259,8 @@ class TestResultCheckerTest(unittest.TestCase):
 
         self.assertIs(results[2].line_type, LineType.SUBTEST)
         self.assertEqual(results[2].statuses, {Status.PASS})
-        self.assertEqual(results[2].subtest, 'Query "geolocation" permission')
+        self.assertEqual(results[2].subtest,
+                         '\t Query "geolocation" permission')
         self.assertIsNone(results[2].message)
 
         self.assertIs(results[3].line_type, LineType.SUBTEST)
@@ -285,7 +286,7 @@ class TestResultCheckerTest(unittest.TestCase):
             textwrap.dedent("""\
                 This is a testharness.js-based test.
                 [FAIL] not line breaks: \v \f \x1c \x1e \x85
-                  assert_true: not line breaks: \u2028 \u2029
+                  assert_true: not line breaks: \u2028 \u2029.
                 Harness: the test ran to completion.
                 """))
         self.assertEqual(subtest.line_type, LineType.SUBTEST)
@@ -293,7 +294,7 @@ class TestResultCheckerTest(unittest.TestCase):
         self.assertEqual(subtest.subtest,
                          'not line breaks: \v \f \x1c \x1e \x85')
         self.assertEqual(subtest.message,
-                         'assert_true: not line breaks: \u2028 \u2029')
+                         'assert_true: not line breaks: \u2028 \u2029.')
 
     def test_format_testharness_baseline(self):
         lines = [
