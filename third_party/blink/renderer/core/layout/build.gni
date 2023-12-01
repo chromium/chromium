@@ -131,7 +131,6 @@ blink_core_sources_layout = [
   "fragment_repeater.h",
   "fragmentainer_iterator.cc",
   "fragmentainer_iterator.h",
-  "fragmentation_context.h",
   "fragmentation_utils.cc",
   "fragmentation_utils.h",
   "frame_set_layout_data.h",
@@ -640,8 +639,6 @@ blink_core_sources_layout = [
   "traced_layout_object.cc",
   "traced_layout_object.h",
   "unpositioned_float.h",
-  "view_fragmentation_context.cc",
-  "view_fragmentation_context.h",
 ]
 
 if (is_mac) {

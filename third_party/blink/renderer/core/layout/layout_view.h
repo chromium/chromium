@@ -41,7 +41,6 @@ namespace blink {
 
 class LayoutViewTransitionRoot;
 class LocalFrameView;
-class ViewFragmentationContext;
 
 // LayoutView is the root of the layout tree and the Document's LayoutObject.
 //
@@ -184,10 +183,6 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
   void UpdateHitTestResult(HitTestResult&,
                            const PhysicalOffset&) const override;
 
-  ViewFragmentationContext* FragmentationContext() const {
-    NOT_DESTROYED();
-    return fragmentation_context_.Get();
-  }
   bool IsFragmentationContextRoot() const override;
 
   void SetDefaultPageDescription(const WebPrintPageDescription& description) {
@@ -392,8 +387,6 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
   // the scale factor and relayout, to fit more content, as an attempt to avoid
   // inline overflow.
   float page_scale_factor_ = 1.0;
-
-  Member<ViewFragmentationContext> fragmentation_context_;
 
   Member<LocalFrameView> frame_view_;
   unsigned layout_counter_count_ = 0;

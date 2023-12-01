@@ -33,7 +33,6 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/multi_column_fragmentainer_group.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
-#include "third_party/blink/renderer/core/layout/view_fragmentation_context.h"
 
 namespace blink {
 
@@ -55,7 +54,6 @@ LayoutMultiColumnFlowThread::~LayoutMultiColumnFlowThread() = default;
 void LayoutMultiColumnFlowThread::Trace(Visitor* visitor) const {
   visitor->Trace(last_set_worked_on_);
   LayoutFlowThread::Trace(visitor);
-  FragmentationContext::Trace(visitor);
 }
 
 LayoutMultiColumnFlowThread* LayoutMultiColumnFlowThread::CreateAnonymous(
@@ -527,23 +525,6 @@ LayoutMultiColumnFlowThread* LayoutMultiColumnFlowThread::EnclosingFlowThread(
     return nullptr;
   return To<LayoutMultiColumnFlowThread>(
       LocateFlowThreadContainingBlockOf(*MultiColumnBlockFlow(), constraint));
-}
-
-FragmentationContext*
-LayoutMultiColumnFlowThread::EnclosingFragmentationContext(
-    AncestorSearchConstraint constraint) const {
-  NOT_DESTROYED();
-  // If this multicol container is strictly unbreakable (due to having
-  // scrollbars, for instance), it's also strictly unbreakable in any outer
-  // fragmentation context. As such, what kind of fragmentation that goes on
-  // inside this multicol container is completely opaque to the ancestors.
-  if (constraint == kIsolateUnbreakableContainers &&
-      MultiColumnBlockFlow()->IsMonolithic()) {
-    return nullptr;
-  }
-  if (auto* enclosing_flow_thread = EnclosingFlowThread(constraint))
-    return enclosing_flow_thread;
-  return View()->FragmentationContext();
 }
 
 void LayoutMultiColumnFlowThread::SetColumnCountFromNG(unsigned column_count) {

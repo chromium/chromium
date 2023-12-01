@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/layout/multi_column_fragmentainer_group.h"
 
-#include "third_party/blink/renderer/core/layout/fragmentation_context.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_set.h"
@@ -39,9 +38,7 @@ LogicalOffset MultiColumnFragmentainerGroup::OffsetFromColumnSet() const {
 LayoutUnit
 MultiColumnFragmentainerGroup::BlockOffsetInEnclosingFragmentationContext()
     const {
-  return LogicalTop() + column_set_->LogicalTopFromMulticolContentEdge() +
-         column_set_->MultiColumnFlowThread()
-             ->BlockOffsetInEnclosingFragmentationContext();
+  return LogicalTop() + column_set_->LogicalTopFromMulticolContentEdge();
 }
 
 LayoutUnit MultiColumnFragmentainerGroup::LogicalHeightInFlowThreadAt(

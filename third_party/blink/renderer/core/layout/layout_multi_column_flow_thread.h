@@ -28,7 +28,6 @@
 
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/fragmentation_context.h"
 #include "third_party/blink/renderer/core/layout/layout_flow_thread.h"
 
 namespace blink {
@@ -141,9 +140,7 @@ enum class CoordinateSpaceConversion {
 //
 // There's also some documentation online:
 // https://www.chromium.org/developers/design-documents/multi-column-layout
-class CORE_EXPORT LayoutMultiColumnFlowThread final
-    : public LayoutFlowThread,
-      public FragmentationContext {
+class CORE_EXPORT LayoutMultiColumnFlowThread final : public LayoutFlowThread {
  public:
   ~LayoutMultiColumnFlowThread() override;
   void Trace(Visitor*) const override;
@@ -230,22 +227,9 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
 
   LayoutMultiColumnFlowThread* EnclosingFlowThread(
       AncestorSearchConstraint = kIsolateUnbreakableContainers) const;
-  FragmentationContext* EnclosingFragmentationContext(
-      AncestorSearchConstraint = kIsolateUnbreakableContainers) const;
-  LayoutUnit BlockOffsetInEnclosingFragmentationContext() const {
-    NOT_DESTROYED();
-    DCHECK(EnclosingFragmentationContext(kAnyAncestor));
-    return block_offset_in_enclosing_fragmentation_context_;
-  }
 
   void SetColumnCountFromNG(unsigned column_count);
   void FinishLayoutFromNG(LayoutUnit flow_thread_offset);
-
-  // Implementing FragmentationContext:
-  LayoutMultiColumnFlowThread* AssociatedFlowThread() final {
-    NOT_DESTROYED();
-    return this;
-  }
 
   const char* GetName() const override {
     NOT_DESTROYED();
@@ -300,11 +284,6 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
 
   // The used value of column-count
   unsigned column_count_;
-
-  // Cached block offset from this flow thread to the enclosing fragmentation
-  // context, if any. In
-  // the coordinate space of the enclosing fragmentation context.
-  LayoutUnit block_offset_in_enclosing_fragmentation_context_;
 
   bool all_columns_have_known_height_ = false;
 

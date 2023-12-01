@@ -54,7 +54,6 @@
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
-#include "third_party/blink/renderer/core/layout/view_fragmentation_context.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/root_scroller_controller.h"
@@ -140,7 +139,6 @@ LayoutView::~LayoutView() = default;
 
 void LayoutView::Trace(Visitor* visitor) const {
   visitor->Trace(frame_view_);
-  visitor->Trace(fragmentation_context_);
   visitor->Trace(svg_text_descendants_);
   visitor->Trace(hit_test_cache_);
   visitor->Trace(initial_containing_block_resize_handled_list_);
@@ -813,12 +811,6 @@ void LayoutView::UpdateLayout() {
   NOT_DESTROYED();
   if (ShouldUsePrintingLayout()) {
     intrinsic_logical_widths_ = LogicalWidth();
-    if (!fragmentation_context_) {
-      fragmentation_context_ =
-          MakeGarbageCollected<ViewFragmentationContext>(*this);
-    }
-  } else if (fragmentation_context_) {
-    fragmentation_context_.Clear();
   }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
