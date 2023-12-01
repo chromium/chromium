@@ -7,6 +7,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {ArrayDataModel} from '../../../common/js/array_data_model.js';
 import {boolAttrSetter, decorate, PropertyChangeEvent} from '../../../common/js/cr_ui.js';
+import {isNullOrUndefined} from '../../../common/js/util.js';
 import type {ArrayDataModelChangeEvent} from '../../../definitions/array_data_model_events.js';
 
 import {createListItem, ListItem} from './list_item.js';
@@ -744,7 +745,7 @@ export class List extends HTMLUListElement {
   }
 
   private handleDataModelChange_(event: ArrayDataModelChangeEvent) {
-    if (!event.detail.index) {
+    if (isNullOrUndefined(event.detail.index)) {
       return;
     }
     const eventIndex = event.detail.index;
