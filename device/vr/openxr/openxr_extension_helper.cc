@@ -153,7 +153,8 @@ bool OpenXrExtensionHelper::IsFeatureSupported(
       // (i.e. a click), so we need to also check that we have an extension
       // enabled that we can use to generate that.
       return IsExtensionSupported(XR_EXT_HAND_TRACKING_EXTENSION_NAME) &&
-             IsExtensionSupported(XR_MSFT_HAND_INTERACTION_EXTENSION_NAME);
+             (IsExtensionSupported(XR_EXT_HAND_INTERACTION_EXTENSION_NAME) ||
+              IsExtensionSupported(XR_MSFT_HAND_INTERACTION_EXTENSION_NAME));
     case device::mojom::XRSessionFeature::HIT_TEST:
       return IsExtensionSupported(XR_MSFT_SCENE_UNDERSTANDING_EXTENSION_NAME);
     case device::mojom::XRSessionFeature::SECONDARY_VIEWS:

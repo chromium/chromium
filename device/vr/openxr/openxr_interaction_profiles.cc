@@ -112,6 +112,10 @@ GetOpenXrInputProfilesMap() {
           // Vive Cosmos
           {OpenXrInteractionProfileType::kViveCosmos,
            {{"", {"htc-vive-cosmos", "generic-trigger-squeeze-thumbstick"}}}},
+
+          // EXT Hand Interaction
+          {OpenXrInteractionProfileType::kExtHand,
+           {{"", {"generic-hand-select-grasp", "generic-hand-select"}}}},
       });
   return *kInputProfilesMap;
 }
@@ -460,6 +464,29 @@ GetOpenXrControllerInteractionProfiles() {
                {OpenXrAxisType::kThumbstick, "/input/thumbstick"},
            }},
           // Vive Cosmos
+
+          // EXT Hands Profile
+          {OpenXrInteractionProfileType::kExtHand,
+           kExtHandInteractionProfilePath,
+           /*required_extension=*/XR_EXT_HAND_INTERACTION_EXTENSION_NAME,
+           GamepadMapping::kXrStandard,
+           /*common_button_maps=*/
+           {
+               {OpenXrButtonType::kTrigger,
+                {
+                    {OpenXrButtonActionType::kPress, "/input/pinch_ext/value"},
+                    {OpenXrButtonActionType::kValue, "/input/pinch_ext/value"},
+                }},
+               {OpenXrButtonType::kGrasp,
+                {
+                    {OpenXrButtonActionType::kPress, "/input/grasp_ext/value"},
+                    {OpenXrButtonActionType::kValue, "/input/grasp_ext/value"},
+                }},
+           },
+           /*left_button_maps=*/{},
+           /*right_button_maps=*/{},
+           /*axis_maps=*/{}},
+          // EXT Hands Profile
       });
   return *kOpenXrControllerInteractionProfiles;
 }

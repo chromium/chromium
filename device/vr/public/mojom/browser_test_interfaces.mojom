@@ -101,6 +101,7 @@ enum InteractionProfileType {
   kHPReverbG2,
   kHandSelectGrasp,
   kViveCosmos,
+  kExtHand,
   kInvalid,
 };
 

@@ -16,6 +16,7 @@ enum class OpenXrInteractionProfileType {
   kHPReverbG2 = 6,
   kHandSelectGrasp = 7,
   kViveCosmos = 8,
+  kExtHand = 9,
   kCount,
 };
 }

@@ -25,6 +25,8 @@ inline constexpr char kHandSelectGraspInteractionProfilePath[] =
     "/interaction_profiles/microsoft/hand_interaction";
 inline constexpr char kHTCViveCosmosInteractionProfilePath[] =
     "/interaction_profiles/htc/vive_cosmos_controller";
+inline constexpr char kExtHandInteractionProfilePath[] =
+    "/interaction_profiles/ext/hand_interaction_ext";
 }  // namespace device
 
 #endif  // DEVICE_VR_OPENXR_OPENXR_INTERACTION_PROFILE_PATHS_H_
