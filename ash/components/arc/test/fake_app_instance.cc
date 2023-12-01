@@ -483,6 +483,11 @@ void FakeAppInstance::GetAppCategory(const std::string& package_name,
   std::move(callback).Run(category);
 }
 
+void FakeAppInstance::SetAppLocale(const std::string& package_name,
+                                   const std::string& locale_tag) {
+  selected_locales_[package_name] = locale_tag;
+}
+
 void FakeAppInstance::LaunchIntentWithWindowInfo(
     const std::string& intent_uri,
     arc::mojom::WindowInfoPtr window_info) {

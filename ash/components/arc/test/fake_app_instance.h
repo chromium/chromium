@@ -171,6 +171,8 @@ class FakeAppInstance : public mojom::AppInstance {
                      IsInstallableCallback callback) override;
   void GetAppCategory(const std::string& package_name,
                       GetAppCategoryCallback callback) override;
+  void SetAppLocale(const std::string& package_name,
+                    const std::string& locale_tag) override;
 
   // Methods to reply messages.
   void SendRefreshAppList(const std::vector<mojom::AppInfoPtr>& apps);
@@ -260,6 +262,13 @@ class FakeAppInstance : public mojom::AppInstance {
     pkg_name_to_app_category_[std::string(pkg_name)] = category;
   }
 
+  const std::map<std::string, std::string>& selected_locales() const {
+    return selected_locales_;
+  }
+  std::string selected_locale(const std::string& package_name) {
+    return selected_locales_[package_name];
+  }
+
  private:
   using TaskIdToInfo = std::map<int32_t, std::unique_ptr<Request>>;
 
@@ -295,6 +304,8 @@ class FakeAppInstance : public mojom::AppInstance {
   std::map<std::string, mojom::AppCategory> pkg_name_to_app_category_;
 
   bool is_installable_ = false;
+
+  std::map<std::string, std::string> selected_locales_;
 
   // Keeps the binding alive so that calls to this class can be correctly
   // routed.

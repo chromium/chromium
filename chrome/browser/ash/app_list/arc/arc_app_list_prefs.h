@@ -60,6 +60,13 @@ namespace app_list::test {
 class ArcAppShortcutsSearchProviderTest;
 }  // namespace app_list::test
 
+// Indicates the source of updating package prefs.
+enum class UpdatePackagePrefsReason {
+  kOnPackageAdded,
+  kOnPackageModified,
+  kOnPackageListRefreshed
+};
+
 // Declares shareable ARC app specific preferences, that keep information
 // about app attributes (name, package_name, activity) and its state. This
 // information is used to pre-create non-ready app items while ARC bridge
@@ -592,7 +599,8 @@ class ArcAppListPrefs : public KeyedService,
                          const absl::optional<uint64_t> data_size_in_bytes,
                          const arc::mojom::AppCategory app_category);
   // Adds or updates local pref for given package.
-  void AddOrUpdatePackagePrefs(const arc::mojom::ArcPackageInfo& package);
+  void AddOrUpdatePackagePrefs(const arc::mojom::ArcPackageInfo& package,
+                               const UpdatePackagePrefsReason& update_reason);
   // Removes given package from local pref.
   void RemovePackageFromPrefs(const std::string& package_name);
 
