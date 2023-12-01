@@ -79,7 +79,6 @@ class CORE_EXPORT MessagePort : public EventTarget,
   void start();
   void close();
 
-  void OnConnectionError();
   void Entangle(MessagePortDescriptor, MessagePort*);
   void Entangle(MessagePortChannel);
   MessagePortChannel Disentangle();
