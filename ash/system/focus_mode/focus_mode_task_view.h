@@ -32,6 +32,8 @@ class ASH_EXPORT FocusModeTaskView : public views::BoxLayoutView {
   void SelectTask(const std::u16string& task_title);
 
  private:
+  friend class FocusModeTaskViewTest;
+
   class TaskTextfieldController;
 
   // TODO(b/306272008): Check off or deselect a task

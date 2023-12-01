@@ -8,7 +8,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/close_button.h"
 #include "ash/style/icon_button.h"
-#include "ash/style/system_textfield.h"
 #include "ash/style/system_textfield_controller.h"
 #include "ash/style/typography.h"
 #include "ash/system/focus_mode/focus_mode_chip_carousel.h"
