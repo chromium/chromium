@@ -33,6 +33,11 @@ class DocumentScanAsh : public mojom::DocumentScan {
                    OpenScannerCallback callback) override;
   void CloseScanner(const std::string& scanner_handle,
                     CloseScannerCallback callback) override;
+  void StartPreparedScan(const std::string& scanner_handle,
+                         mojom::StartScanOptionsPtr options,
+                         StartPreparedScanCallback callback) override;
+  void ReadScanData(const std::string& job_handle,
+                    ReadScanDataCallback callback) override;
 
  private:
   // This class supports any number of connections. This allows the client to

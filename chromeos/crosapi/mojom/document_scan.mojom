@@ -361,9 +361,51 @@ struct CloseScannerResponse {
   ScannerOperationResult result@1;
 };
 
+// Options for `StartPreparedScan()` that are not already specified via a
+// `ScannerOption`.  These tend to cover how the scanning framework itself works
+// as opposed to how a scanner works.
+[Stable]
+struct StartScanOptions {
+  // The desired MIME type for returned scans.
+  string format@0;
+};
+
+// The response from calling `StartPreparedScan()`.
+[Stable]
+struct StartPreparedScanResponse {
+  // The same scanner handle that was passed to `StartPreparedScan()`.
+  string scanner_handle@0;
+
+  // The backend's job start result.
+  ScannerOperationResult result@1;
+
+  // If result is kSuccess, this contains a handle that can be used to read scan
+  // data or cancel the scan.
+  string? job_handle@2;
+};
+
+// The response from calling `ReadScanData()`.
+[Stable]
+struct ReadScanDataResponse {
+  // The same job handle that was passed to `ReadScanData()`.
+  string job_handle@0;
+
+  // The backend's read result.
+  ScannerOperationResult result@1;
+
+  // If result is kSuccess, this contains the next chunk of data that was read.
+  // If result is kEof, this may contain the final chunk of data or may be
+  // empty.
+  array<int8>? data@2;
+
+  // If result is kSuccess, this contains the estimate of how much of the total
+  // scan data has been delivered so far, in the range 0-100.
+  uint32? estimated_completion@3;
+};
+
 // This interface is used to access scanners.
-// Next version: 3
-// Next method id: 5
+// Next version: 4
+// Next method id: 7
 [Stable, Uuid="f0c77c02-b5c1-4919-8218-3076ecad58db"]
 interface DocumentScan {
   // Returns the names of all available, de-duplicated scanners.
@@ -397,4 +439,16 @@ interface DocumentScan {
   // Close a scanner handle opened by `OpenScanner()`.
   [MinVersion=2]
   CloseScanner@4(string scanner_handle) => (CloseScannerResponse response);
+
+  // Starts a scan on a scanner opened by `OpenScanner()`.  The scanner's
+  // current options, set via `SetOptions()`, are used along with the `options`
+  // specified.  `StartScanOptions.format` must match an entry from the
+  // scanner's `ScannerInfo.image_formats` or an error result will be returned.
+  [MinVersion=3]
+  StartPreparedScan@5(string scanner_handle, StartScanOptions options)
+      => (StartPreparedScanResponse response);
+
+  // Reads the next chunk of scan data for a specific scan job.
+  [MinVersion=3]
+  ReadScanData@6(string job_handle) => (ReadScanDataResponse response);
 };

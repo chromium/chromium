@@ -34,6 +34,11 @@ class FakeDocumentScanAsh : public crosapi::mojom::DocumentScan {
                    OpenScannerCallback callback) override;
   void CloseScanner(const std::string& scanner_handle,
                     CloseScannerCallback callback) override;
+  void StartPreparedScan(const std::string& scanner_handle,
+                         crosapi::mojom::StartScanOptionsPtr options,
+                         StartPreparedScanCallback callback) override;
+  void ReadScanData(const std::string& job_handle,
+                    ReadScanDataCallback callback) override;
 
   void AddScanner(crosapi::mojom::ScannerInfoPtr scanner);
   void SetGetScannerNamesResponse(std::vector<std::string> scanner_names);

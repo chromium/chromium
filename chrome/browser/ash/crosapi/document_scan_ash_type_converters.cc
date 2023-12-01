@@ -446,4 +446,35 @@ TypeConverter<crosapi::mojom::CloseScannerResponsePtr,
   return output;
 }
 
+crosapi::mojom::StartPreparedScanResponsePtr
+TypeConverter<crosapi::mojom::StartPreparedScanResponsePtr,
+              lorgnette::StartPreparedScanResponse>::
+    Convert(const lorgnette::StartPreparedScanResponse& input) {
+  auto output = crosapi::mojom::StartPreparedScanResponse::New();
+  output->scanner_handle = input.scanner().token();
+  output->result =
+      ConvertTo<crosapi::mojom::ScannerOperationResult>(input.result());
+  if (input.has_job_handle()) {
+    output->job_handle = input.job_handle().token();
+  }
+  return output;
+}
+
+crosapi::mojom::ReadScanDataResponsePtr
+TypeConverter<crosapi::mojom::ReadScanDataResponsePtr,
+              lorgnette::ReadScanDataResponse>::
+    Convert(const lorgnette::ReadScanDataResponse& input) {
+  auto output = crosapi::mojom::ReadScanDataResponse::New();
+  output->job_handle = input.job_handle().token();
+  output->result =
+      ConvertTo<crosapi::mojom::ScannerOperationResult>(input.result());
+  if (input.has_data()) {
+    output->data.emplace(input.data().begin(), input.data().end());
+  }
+  if (input.has_estimated_completion()) {
+    output->estimated_completion = input.estimated_completion();
+  }
+  return output;
+}
+
 }  // namespace mojo

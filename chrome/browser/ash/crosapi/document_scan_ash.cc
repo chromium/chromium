@@ -142,6 +142,36 @@ void CloseScannerAdapter(
       mojom::CloseScannerResponse::From(response_in.value()));
 }
 
+void StartPreparedScanAdapter(
+    const std::string& scanner_handle,
+    DocumentScanAsh::StartPreparedScanCallback callback,
+    const absl::optional<lorgnette::StartPreparedScanResponse>& response_in) {
+  if (!response_in) {
+    auto response = mojom::StartPreparedScanResponse::New();
+    response->result = mojom::ScannerOperationResult::kInternalError;
+    response->scanner_handle = scanner_handle;
+    std::move(callback).Run(std::move(response));
+    return;
+  }
+  std::move(callback).Run(
+      mojom::StartPreparedScanResponse::From(response_in.value()));
+}
+
+void ReadScanDataAdapter(
+    const std::string& job_handle,
+    DocumentScanAsh::ReadScanDataCallback callback,
+    const absl::optional<lorgnette::ReadScanDataResponse>& response_in) {
+  if (!response_in) {
+    auto response = mojom::ReadScanDataResponse::New();
+    response->result = mojom::ScannerOperationResult::kInternalError;
+    response->job_handle = job_handle;
+    std::move(callback).Run(std::move(response));
+    return;
+  }
+  std::move(callback).Run(
+      mojom::ReadScanDataResponse::From(response_in.value()));
+}
+
 }  // namespace
 
 DocumentScanAsh::DocumentScanAsh() = default;
@@ -232,6 +262,45 @@ void DocumentScanAsh::CloseScanner(const std::string& scanner_handle,
       ->CloseScanner(std::move(request),
                      base::BindOnce(&CloseScannerAdapter, scanner_handle,
                                     std::move(callback)));
+}
+
+void DocumentScanAsh::StartPreparedScan(const std::string& scanner_handle,
+                                        mojom::StartScanOptionsPtr options,
+                                        StartPreparedScanCallback callback) {
+  if (!ash::features::IsAdvancedDocumentScanAPIEnabled()) {
+    auto response = mojom::StartPreparedScanResponse::New();
+    response->result = mojom::ScannerOperationResult::kUnsupported;
+    response->scanner_handle = scanner_handle;
+    std::move(callback).Run(std::move(response));
+    return;
+  }
+
+  lorgnette::StartPreparedScanRequest request;
+  request.mutable_scanner()->set_token(scanner_handle);
+  request.set_image_format(options->format);
+
+  ash::LorgnetteScannerManagerFactory::GetForBrowserContext(GetProfile())
+      ->StartPreparedScan(
+          request, base::BindOnce(&StartPreparedScanAdapter, scanner_handle,
+                                  std::move(callback)));
+}
+
+void DocumentScanAsh::ReadScanData(const std::string& job_handle,
+                                   ReadScanDataCallback callback) {
+  if (!ash::features::IsAdvancedDocumentScanAPIEnabled()) {
+    auto response = mojom::ReadScanDataResponse::New();
+    response->result = mojom::ScannerOperationResult::kUnsupported;
+    response->job_handle = job_handle;
+    std::move(callback).Run(std::move(response));
+    return;
+  }
+
+  lorgnette::ReadScanDataRequest request;
+  request.mutable_job_handle()->set_token(job_handle);
+
+  ash::LorgnetteScannerManagerFactory::GetForBrowserContext(GetProfile())
+      ->ReadScanData(request, base::BindOnce(&ReadScanDataAdapter, job_handle,
+                                             std::move(callback)));
 }
 
 }  // namespace crosapi
