@@ -308,8 +308,6 @@ void PaintOpReader::Read(PaintFlags* flags) {
   Read(&flags->width_);
   Read(&flags->miter_limit_);
 
-  Read(&flags->blend_mode_);
-
   ReadSimple(&flags->bitfields_uint_);
 
   ReadFlattenable(&flags->path_effect_, SkPathEffect::Deserialize,

@@ -56,10 +56,10 @@ class CC_PAINT_EXPORT PaintFlags {
     color_.fA = a;
   }
   ALWAYS_INLINE void setBlendMode(SkBlendMode mode) {
-    blend_mode_ = static_cast<uint32_t>(mode);
+    bitfields_.blend_mode_ = static_cast<uint32_t>(mode);
   }
   ALWAYS_INLINE SkBlendMode getBlendMode() const {
-    return static_cast<SkBlendMode>(blend_mode_);
+    return static_cast<SkBlendMode>(bitfields_.blend_mode_);
   }
   ALWAYS_INLINE bool isAntiAlias() const { return bitfields_.antialias_; }
   ALWAYS_INLINE void setAntiAlias(bool aa) { bitfields_.antialias_ = aa; }
@@ -215,7 +215,6 @@ class CC_PAINT_EXPORT PaintFlags {
   SkColor4f color_ = SkColors::kBlack;
   float width_ = 0.f;
   float miter_limit_ = 4.f;
-  uint32_t blend_mode_ = static_cast<uint32_t>(SkBlendMode::kSrcOver);
 
   struct PaintFlagsBitfields {
     uint32_t antialias_ : 1;
@@ -223,6 +222,7 @@ class CC_PAINT_EXPORT PaintFlags {
     uint32_t cap_type_ : 2;
     uint32_t join_type_ : 2;
     uint32_t style_ : 2;
+    uint32_t blend_mode_ : 5;
     uint32_t filter_quality_ : 2;
     uint32_t dynamic_range_limit_ : 2;
     // Specifies whether the compositor should use a dark mode filter when
