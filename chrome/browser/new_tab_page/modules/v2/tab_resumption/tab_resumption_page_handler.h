@@ -47,7 +47,7 @@ class TabResumptionPageHandler
 
   sync_sessions::OpenTabsUIDelegate* GetOpenTabsUIDelegate();
 
-  std::vector<history::mojom::SessionPtr> GetForeignSessions();
+  std::vector<history::mojom::TabPtr> GetForeignTabs();
 
  protected:
  private:

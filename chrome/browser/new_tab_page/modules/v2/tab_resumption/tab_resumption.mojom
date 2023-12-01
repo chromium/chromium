@@ -8,5 +8,5 @@ import "url/mojom/url.mojom";
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
   // Queries for tabs.
-  GetTabs() => (array<history.mojom.Session> sessions);
+  GetTabs() => (array<history.mojom.Tab> tabs);
 };

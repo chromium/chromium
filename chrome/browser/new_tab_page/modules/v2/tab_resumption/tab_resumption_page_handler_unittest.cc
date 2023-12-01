@@ -71,7 +71,7 @@ TEST_F(TabResumptionPageHandlerTest, GetTabs) {
   std::vector<std::unique_ptr<sync_sessions::SyncedSession>> sample_sessions;
   for (int i = 0; i < kSampleSessionsCount; i++) {
     sample_sessions.push_back(SampleSession(
-        "Test Name", ("Test Tag " + base::NumberToString(i)).c_str(), 3));
+        "Test Name", ("Test Tag " + base::NumberToString(i)).c_str(), 1, 1));
   }
 
   EXPECT_CALL(*mock_session_sync_service().GetOpenTabsUIDelegate(),
@@ -85,29 +85,23 @@ TEST_F(TabResumptionPageHandlerTest, GetTabs) {
             return true;
           }));
 
-  std::vector<history::mojom::SessionPtr> sessions_mojom;
+  std::vector<history::mojom::TabPtr> tabs_mojom;
   base::MockCallback<TabResumptionPageHandler::GetTabsCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
       .WillOnce(testing::Invoke(
-          [&sessions_mojom](
-              std::vector<history::mojom::SessionPtr> sessions_arg) {
-            sessions_mojom = std::move(sessions_arg);
+          [&tabs_mojom](std::vector<history::mojom::TabPtr> tabs_arg) {
+            tabs_mojom = std::move(tabs_arg);
           }));
   handler().GetTabs(callback.Get());
 
-  ASSERT_EQ(3u, sessions_mojom.size());
+  ASSERT_EQ(3u, tabs_mojom.size());
 
   for (unsigned int i = 0; i < kSampleSessionsCount; i++) {
-    const auto& session_mojom = sessions_mojom[i];
-    ASSERT_TRUE(session_mojom);
-    ASSERT_EQ("Test Tag " + base::NumberToString(i), session_mojom->tag);
-    ASSERT_EQ(3u, session_mojom->windows.size());
-    for (const auto& window : session_mojom->windows) {
-      auto tabs = std::move(window->tabs);
-      ASSERT_EQ(3u, tabs.size());
-      ASSERT_EQ(GURL(kSampleUrl), tabs[0]->url);
-    }
+    const auto& tab_mojom = tabs_mojom[i];
+    ASSERT_TRUE(tab_mojom);
+    ASSERT_EQ("Test Tag " + base::NumberToString(i), tab_mojom->session_tag);
+    ASSERT_EQ(GURL(kSampleUrl), tab_mojom->url);
   }
 }
 }  // namespace
