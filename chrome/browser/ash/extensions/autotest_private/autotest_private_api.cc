@@ -4305,22 +4305,7 @@ AutotestPrivateArcAppTracingStopAndAnalyzeFunction::Run() {
     return RespondNow(Error("No ARC performance tracing is available."));
   }
 
-  tracing->StopCustomTracing(base::BindOnce(
-      &AutotestPrivateArcAppTracingStopAndAnalyzeFunction::OnTracingResult,
-      this));
-  return did_respond() ? AlreadyResponded() : RespondLater();
-}
-
-void AutotestPrivateArcAppTracingStopAndAnalyzeFunction::OnTracingResult(
-    bool success,
-    double fps,
-    double commit_deviation,
-    double render_quality) {
-  Respond(WithArguments(base::Value::Dict()
-                            .Set("success", success)
-                            .Set("fps", fps)
-                            .Set("commitDeviation", commit_deviation)
-                            .Set("renderQuality", render_quality)));
+  return RespondNow(WithArguments(tracing->StopCustomTracing()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

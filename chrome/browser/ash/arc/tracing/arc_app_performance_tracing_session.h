@@ -6,8 +6,10 @@
 #define CHROME_BROWSER_ASH_ARC_TRACING_ARC_APP_PERFORMANCE_TRACING_SESSION_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -24,13 +26,22 @@ class Surface;
 
 namespace arc {
 
-class ArcAppPerformanceTracing;
-class ArcAppPerformanceTracingCustomSession;
+struct PerfTraceResult {
+  double fps, commit_deviation, render_quality;
+};
 
 // Implements Surface commit tracing for the target window.
 class ArcAppPerformanceTracingSession : public exo::SurfaceObserver {
  public:
-  explicit ArcAppPerformanceTracingSession(ArcAppPerformanceTracing* owner);
+  // Called when a trace is complete under one of the following conditions:
+  //   a. scheduled timed completion
+  //   b. error mid-trace
+  //   c. |Finish| method called
+  // The optional is empty iff the trace failed.
+  using DoneCallback =
+      base::OnceCallback<void(const std::optional<PerfTraceResult>&)>;
+
+  explicit ArcAppPerformanceTracingSession(aura::Window* window);
 
   ArcAppPerformanceTracingSession(const ArcAppPerformanceTracingSession&) =
       delete;
@@ -39,49 +50,40 @@ class ArcAppPerformanceTracingSession : public exo::SurfaceObserver {
 
   ~ArcAppPerformanceTracingSession() override;
 
-  // Performs initial scheduling of tracing based on session type.
-  virtual void Schedule() = 0;
-
-  // Casts this session to |ArcAppPerformanceTracingCustomSession|.
-  virtual ArcAppPerformanceTracingCustomSession* AsCustomSession();
-
   // exo::SurfaceObserver:
   void OnSurfaceDestroying(exo::Surface* surface) override;
   void OnCommit(exo::Surface* surface) override;
 
   // Fires tracing timeout for testing.
   void FireTimerForTesting();
+  // Returns the delay requested before starting the test the last time Schedule
+  // was called.
+  base::TimeDelta timer_delay_for_testing() const;
   // Add one more sample for testing.
   void OnCommitForTesting(const base::Time& timestamp);
 
   bool tracing_active() const { return tracing_active_; }
-  ArcAppPerformanceTracing* owner() { return owner_; }
-  const ArcAppPerformanceTracing* owner() const { return owner_; }
   const aura::Window* window() const { return window_; }
 
- protected:
-  // Called when tracing is done.
-  virtual void OnTracingDone(double fps,
-                             double commit_deviation,
-                             double render_quality) = 0;
-  virtual void OnTracingFailed() = 0;
-
   // Schedules tracing with a delay and for specific amount of time. If
-  // |tracing_period| is 0 then it means manual tracing and |StopAndAnalyze|
+  // |tracing_period| is 0 then it means manual tracing and |Finish|
   // should be called in order to get results.
-  void ScheduleInternal(bool detect_idles,
-                        const base::TimeDelta& start_delay,
-                        const base::TimeDelta& tracing_period);
+  void Schedule(bool detect_idles,
+                const base::TimeDelta& start_delay,
+                const base::TimeDelta& tracing_period,
+                DoneCallback on_done);
 
-  // Stops current tracing and analyzes results.
-  void StopAndAnalyzeInternal();
+  // Call to terminate the trace immediately. This will cause the DoneCallback
+  // to be called before returning, with either a successful or failed result.
+  void Finish();
 
  private:
   // Starts tracing by observing commits to the |exo::Surface| attached to the
   // current |window_|.
   void Start();
 
-  // Stops tracing for the current |window_|.
+  // Stops tracing for the current |window_|. This cleans up trace fields but
+  // does not invoke callbacks or analyze results.
   void Stop();
 
   // Handles the next commit update. This is unified handler for testing and
@@ -94,7 +96,6 @@ class ArcAppPerformanceTracingSession : public exo::SurfaceObserver {
   void Analyze(base::TimeDelta tracing_period);
 
   // Unowned pointers.
-  const raw_ptr<ArcAppPerformanceTracing, ExperimentalAsh> owner_;
   const raw_ptr<aura::Window, ExperimentalAsh> window_;
 
   // Used for automatic observer adding/removing.
@@ -120,6 +121,8 @@ class ArcAppPerformanceTracingSession : public exo::SurfaceObserver {
 
   // Indicates that tracing is in active state.
   bool tracing_active_ = false;
+
+  DoneCallback on_done_;
 };
 
 }  // namespace arc

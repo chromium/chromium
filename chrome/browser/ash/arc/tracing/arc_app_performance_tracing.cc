@@ -20,9 +20,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/arc/arc_package_syncable_service.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_shell_surface.h"
-#include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_custom_session.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_session.h"
-#include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_uma_session.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/app_restore/window_properties.h"
@@ -125,7 +123,7 @@ class AppToCategoryMapper {
 ArcAppPerformanceTracing::ArcAppPerformanceTracing(
     content::BrowserContext* context,
     ArcBridgeService* bridge)
-    : context_(context) {
+    : context_(context), weak_ptr_factory_(this) {
   // Not related tests may indirectly create this instance and helper might
   // not be set.
   if (exo::WMHelper::HasInstance())
@@ -184,26 +182,49 @@ void ArcAppPerformanceTracing::Shutdown() {
     exo::WMHelper::GetInstance()->RemoveActivationObserver(this);
 }
 
+void ArcAppPerformanceTracing::OnCustomTraceDone(
+    const std::optional<PerfTraceResult>& result) {
+  bool success = result.has_value();
+
+  custom_trace_result_.emplace(
+      base::Value::Dict()
+          .Set("success", success)
+          .Set("fps", success ? result->fps : 0)
+          .Set("commitDeviation", success ? result->commit_deviation : 0)
+          .Set("renderQuality", success ? result->render_quality : 0));
+}
+
 bool ArcAppPerformanceTracing::StartCustomTracing() {
   if (!arc_active_window_)
     return false;
 
-  session_ = std::make_unique<ArcAppPerformanceTracingCustomSession>(this);
-  session_->Schedule();
+  session_ =
+      std::make_unique<ArcAppPerformanceTracingSession>(arc_active_window_);
+
+  custom_trace_result_.reset();
+  session_->Schedule(
+      false /* detect_idles */, base::TimeDelta() /* start_delay */,
+      base::TimeDelta() /* tracing_period */,
+      base::BindOnce(&ArcAppPerformanceTracing::OnCustomTraceDone,
+                     weak_ptr_factory_.GetWeakPtr()));
   if (custom_session_ready_callback_)
     custom_session_ready_callback_.Run();
 
   return true;
 }
 
-void ArcAppPerformanceTracing::StopCustomTracing(
-    ResultCallback result_callback) {
-  if (!session_ || !session_->AsCustomSession()) {
-    std::move(result_callback).Run(false /* success */, 0, 0, 0);
-    return;
+base::Value::Dict ArcAppPerformanceTracing::StopCustomTracing() {
+  custom_trace_result_.reset();
+  if (session_ && session_->tracing_active()) {
+    session_->Finish();
+    DCHECK(custom_trace_result_.has_value());
   }
 
-  session_->AsCustomSession()->StopAndAnalyze(std::move(result_callback));
+  if (!custom_trace_result_.has_value()) {
+    OnCustomTraceDone(std::nullopt);
+  }
+
+  return *std::move(custom_trace_result_);
 }
 
 void ArcAppPerformanceTracing::OnWindowActivated(ActivationReason reason,
@@ -395,16 +416,6 @@ void ArcAppPerformanceTracing::OnGfxMetrics(const std::string& package_name,
                                jankiness);
 }
 
-bool ArcAppPerformanceTracing::WasReported(const std::string& category) const {
-  DCHECK(!category.empty());
-  return reported_categories_.count(category);
-}
-
-void ArcAppPerformanceTracing::SetReported(const std::string& category) {
-  DCHECK(!category.empty());
-  reported_categories_.insert(category);
-}
-
 void ArcAppPerformanceTracing::MaybeStartTracing() {
   if (session_) {
     // We are already tracing, ignore.
@@ -464,10 +475,9 @@ void ArcAppPerformanceTracing::MaybeStartTracing() {
     return;
   }
 
-  // Start tracing for |arc_active_window_|.
   session_ =
-      std::make_unique<ArcAppPerformanceTracingUmaSession>(this, category);
-  session_->Schedule();
+      std::make_unique<ArcAppPerformanceTracingSession>(arc_active_window_);
+  reporting_.Schedule(session_.get(), category);
 }
 
 void ArcAppPerformanceTracing::MaybeStopTracing() {

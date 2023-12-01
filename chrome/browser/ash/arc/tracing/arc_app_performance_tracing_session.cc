@@ -33,9 +33,8 @@ constexpr uint64_t kIdleThresholdFrames = 10;
 }  // namespace
 
 ArcAppPerformanceTracingSession::ArcAppPerformanceTracingSession(
-    ArcAppPerformanceTracing* owner)
-    : owner_(owner), window_(owner->active_window()) {
-  DCHECK(owner_);
+    aura::Window* window)
+    : window_(window) {
   DCHECK(window_);
 }
 
@@ -44,19 +43,16 @@ ArcAppPerformanceTracingSession::~ArcAppPerformanceTracingSession() {
   Stop();
 }
 
-ArcAppPerformanceTracingCustomSession*
-ArcAppPerformanceTracingSession::AsCustomSession() {
-  return nullptr;
-}
-
-void ArcAppPerformanceTracingSession::ScheduleInternal(
+void ArcAppPerformanceTracingSession::Schedule(
     bool detect_idles,
     const base::TimeDelta& start_delay,
-    const base::TimeDelta& tracing_period) {
+    const base::TimeDelta& tracing_period,
+    DoneCallback on_done) {
   DCHECK(!tracing_active_);
   DCHECK(!tracing_timer_.IsRunning());
   detect_idles_ = detect_idles;
   tracing_period_ = tracing_period;
+  on_done_ = std::move(on_done);
   if (start_delay.is_zero()) {
     Start();
     return;
@@ -66,7 +62,7 @@ void ArcAppPerformanceTracingSession::ScheduleInternal(
                                       base::Unretained(this)));
 }
 
-void ArcAppPerformanceTracingSession::StopAndAnalyzeInternal() {
+void ArcAppPerformanceTracingSession::Finish() {
   DCHECK(tracing_active_);
   Analyze(base::TimeTicks::Now() - tracing_start_);
 }
@@ -85,6 +81,11 @@ void ArcAppPerformanceTracingSession::OnCommit(exo::Surface* surface) {
 
 void ArcAppPerformanceTracingSession::FireTimerForTesting() {
   tracing_timer_.FireNow();
+}
+
+base::TimeDelta ArcAppPerformanceTracingSession::timer_delay_for_testing()
+    const {
+  return tracing_timer_.GetCurrentDelay();
 }
 
 void ArcAppPerformanceTracingSession::OnCommitForTesting(
@@ -145,7 +146,7 @@ void ArcAppPerformanceTracingSession::HandleCommit(
     if (display_frames_passed >= kIdleThresholdFrames) {
       // Idle is detected, try the next time.
       Stop();
-      OnTracingFailed();
+      std::move(on_done_).Run(std::nullopt);
       return;
     }
   }
@@ -158,7 +159,7 @@ void ArcAppPerformanceTracingSession::Analyze(base::TimeDelta tracing_period) {
   Stop();
 
   if (frame_deltas_.empty() || tracing_period <= base::TimeDelta()) {
-    OnTracingFailed();
+    std::move(on_done_).Run(std::nullopt);
     return;
   }
 
@@ -168,7 +169,7 @@ void ArcAppPerformanceTracingSession::Analyze(base::TimeDelta tracing_period) {
         base::Time::Now() - last_commit_timestamp_;
     if (last_frame_delta >= kTargetFrameTime * kIdleThresholdFrames) {
       // Current idle state is detected, try next time.
-      OnTracingFailed();
+      std::move(on_done_).Run(std::nullopt);
       return;
     }
   }
@@ -203,7 +204,8 @@ void ArcAppPerformanceTracingSession::Analyze(base::TimeDelta tracing_period) {
 
   const double fps = frame_deltas_.size() / tracing_period.InSecondsF();
 
-  OnTracingDone(fps, commit_deviation, render_quality);
+  std::move(on_done_).Run(
+      PerfTraceResult{fps, commit_deviation, render_quality});
 }
 
 }  // namespace arc

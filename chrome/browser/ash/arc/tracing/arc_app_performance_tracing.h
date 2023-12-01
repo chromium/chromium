@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -17,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
+#include "chrome/browser/ash/arc/tracing/uma_perf_reporting.h"
 #include "components/exo/surface_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/aura/window_observer.h"
@@ -47,10 +49,6 @@ class ArcAppPerformanceTracing : public KeyedService,
                                  public ArcAppListPrefs::Observer,
                                  public exo::SurfaceObserver {
  public:
-  using ResultCallback = base::OnceCallback<void(bool success,
-                                                 double fps,
-                                                 double commit_deviation,
-                                                 double render_quality)>;
   using CustomSessionReadyCallback = base::RepeatingCallback<void()>;
 
   ArcAppPerformanceTracing(content::BrowserContext* context,
@@ -80,7 +78,7 @@ class ArcAppPerformanceTracing : public KeyedService,
   // Starts custom tracing. Returns true if tracing was successfully started.
   bool StartCustomTracing();
   // Stops custom tracing and returns tracing results.
-  void StopCustomTracing(ResultCallback result_callback);
+  base::Value::Dict StopCustomTracing();
 
   // wm::ActivationChangeObserver:
   void OnWindowActivated(ActivationReason reason,
@@ -104,18 +102,8 @@ class ArcAppPerformanceTracing : public KeyedService,
 
   void HandleActiveAppRendered(base::Time timestamp);
 
-  // Returns true in case |category| was already reported in the current user's
-  // session.
-  bool WasReported(const std::string& category) const;
-  // Marks that |category| is reported in the current user's session.
-  void SetReported(const std::string& category);
-
   // Returns active tracing session or nullptr.
   ArcAppPerformanceTracingSession* session() { return session_.get(); }
-
-  // Returns currently active ARC window or null. It may or may not be currently
-  // profiled.
-  aura::Window* active_window() { return arc_active_window_; }
 
   static void EnsureFactoryBuilt();
 
@@ -177,9 +165,9 @@ class ArcAppPerformanceTracing : public KeyedService,
   // calculation.
   std::map<std::string, mojom::GfxMetrics> package_name_to_gfx_metrics_;
 
-  // Set of already reported ARC++ apps for the current session. Used to prevent
-  // capturing too frequently.
-  std::set<std::string> reported_categories_;
+  UmaPerfReporting reporting_;
+  std::optional<base::Value::Dict> custom_trace_result_;
+  void OnCustomTraceDone(const std::optional<PerfTraceResult>& result);
 
   // Keeps current active tracing session associated with |arc_active_window_|.
   std::unique_ptr<ArcAppPerformanceTracingSession> session_;
@@ -192,6 +180,8 @@ class ArcAppPerformanceTracing : public KeyedService,
 
   // Used for automatic observer adding/removing.
   std::unique_ptr<exo::ScopedSurface> scoped_surface_;
+
+  base::WeakPtrFactory<ArcAppPerformanceTracing> weak_ptr_factory_;
 };
 
 }  // namespace arc
