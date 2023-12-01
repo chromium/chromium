@@ -212,6 +212,10 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   // Indicates whether the session allows a ChromeOS admin to reconnect.
   bool SessionSupportsReconnections() const;
 
+  // Informs the client that the host is ready for reconnections. Sent over the
+  // signaling channel.
+  void SendReconnectSessionMessage() const;
+
   // Caller supplied fields.
   std::unique_ptr<ChromotingHostContext> host_context_;
   base::WeakPtr<It2MeHost::Observer> observer_;

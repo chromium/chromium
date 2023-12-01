@@ -74,5 +74,6 @@ const char kReconnectSupportId[] = "reconnectSupportId";
 const char kReconnectHostSecret[] = "reconnectHostSecret";
 const char kReconnectPrivateKey[] = "reconnectPrivateKey";
 const char kReconnectFtlDeviceId[] = "reconnectFtlDeviceId";
+const char kReconnectClientFtlAddress[] = "reconnectClientFtlAddress";
 
 }  // namespace remoting

@@ -78,6 +78,9 @@ class FakeIt2MeHost : public It2MeHost {
       reconnect_params.host_secret = "12345";
       reconnect_params.private_key = std::string(384, 'a');
       reconnect_params.ftl_device_id = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee";
+      reconnect_params.client_ftl_address =
+          "admin@enterprise.com"
+          "/chromoting_ftl_11111111-2222-3333-4444-555555555555";
       return reconnect_params;
     }
     return absl::nullopt;

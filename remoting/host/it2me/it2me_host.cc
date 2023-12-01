@@ -34,6 +34,7 @@
 #include "remoting/host/it2me/it2me_helpers.h"
 #include "remoting/host/it2me_desktop_environment.h"
 #include "remoting/host/passthrough_register_support_host_request.h"
+#include "remoting/proto/ftl/v1/chromoting_message.pb.h"
 #include "remoting/protocol/auth_util.h"
 #include "remoting/protocol/chromium_port_allocator_factory.h"
 #include "remoting/protocol/it2me_host_authenticator_factory.h"
@@ -42,6 +43,7 @@
 #include "remoting/protocol/transport_context.h"
 #include "remoting/protocol/validating_authenticator.h"
 #include "remoting/signaling/log_to_server.h"
+#include "remoting/signaling/signaling_address.h"
 #include "remoting/signaling/signaling_id_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -138,9 +140,26 @@ absl::optional<ReconnectParams> It2MeHost::CreateReconnectParams() const {
   reconnect_params->host_secret = host_secret_;
   reconnect_params->private_key = host_key_pair_->ToString();
   reconnect_params->ftl_device_id = ftl_device_id_;
+  reconnect_params->client_ftl_address = connecting_jid_;
 #endif
 
   return reconnect_params;
+}
+
+void It2MeHost::SendReconnectSessionMessage() const {
+  DCHECK(host_context_->network_task_runner()->BelongsToCurrentThread());
+
+  if (state_ != It2MeHostState::kReceivedAccessCode) {
+    // If the host state has changed since the task was posted, just bail early.
+    return;
+  }
+
+  ftl::ChromotingMessage crd_message;
+  crd_message.mutable_reconnect()->set_support_id(
+      reconnect_params_->support_id);
+  SignalingAddress signaling_address(reconnect_params_->client_ftl_address);
+
+  signal_strategy_->SendMessage(signaling_address, crd_message);
 }
 
 void It2MeHost::Connect(
@@ -689,6 +708,18 @@ void It2MeHost::OnReceivedSupportID(const std::string& support_id,
                                 observer_, access_code, lifetime));
 
   SetState(It2MeHostState::kReceivedAccessCode, ErrorCode::OK);
+
+  // If this host instance was started using |reconnect_params_| then send a
+  // signaling message to the client address from the previous connection to let
+  // it know that it needs to reconnect. The client address is regenerated for
+  // every connection (and reconnection) which is important because this message
+  // will only be delivered if the client hasn't already restarted the
+  // connection process.
+  if (reconnect_params_.has_value()) {
+    host_context_->network_task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(&It2MeHost::SendReconnectSessionMessage,
+                                  weak_factory_.GetWeakPtr()));
+  }
 }
 
 void It2MeHost::DisconnectOnNetworkThread(protocol::ErrorCode error_code) {

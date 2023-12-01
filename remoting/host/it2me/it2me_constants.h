@@ -119,6 +119,7 @@ extern const char kReconnectSupportId[];
 extern const char kReconnectHostSecret[];
 extern const char kReconnectPrivateKey[];
 extern const char kReconnectFtlDeviceId[];
+extern const char kReconnectClientFtlAddress[];
 
 }  // namespace remoting
 

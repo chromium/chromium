@@ -92,6 +92,7 @@ source_set("common") {
     "//remoting/host:common",
     "//remoting/host/base",
     "//remoting/host/native_messaging:native_messaging",
+    "//remoting/proto/ftl/v1:ftl_messages",
     "//remoting/protocol",
     "//remoting/resources",
     "//remoting/signaling",

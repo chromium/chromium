@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/uuid.h"
 #include "remoting/host/it2me/it2me_constants.h"
+#include "remoting/signaling/signaling_id_util.h"
 
 namespace remoting {
 
@@ -22,7 +23,8 @@ base::Value::Dict ReconnectParams::ToDict(const ReconnectParams& params) {
       .Set(kReconnectSupportId, params.support_id)
       .Set(kReconnectHostSecret, params.host_secret)
       .Set(kReconnectPrivateKey, params.private_key)
-      .Set(kReconnectFtlDeviceId, params.ftl_device_id);
+      .Set(kReconnectFtlDeviceId, params.ftl_device_id)
+      .Set(kReconnectClientFtlAddress, params.client_ftl_address);
 }
 
 ReconnectParams ReconnectParams::FromDict(const base::Value::Dict& dict) {
@@ -42,6 +44,11 @@ ReconnectParams ReconnectParams::FromDict(const base::Value::Dict& dict) {
   const std::string* ftl_device_id = dict.FindString(kReconnectFtlDeviceId);
   if (ftl_device_id) {
     params.ftl_device_id = *ftl_device_id;
+  }
+  const std::string* client_ftl_address =
+      dict.FindString(kReconnectClientFtlAddress);
+  if (client_ftl_address) {
+    params.client_ftl_address = *client_ftl_address;
   }
 
   DCHECK(params.IsValid());
@@ -75,6 +82,14 @@ bool ReconnectParams::IsValid() const {
     return false;
   } else if (!base::Uuid::ParseLowercase(ftl_device_id).is_valid()) {
     LOG(ERROR) << "Invalid ftl_device_id: " << ftl_device_id;
+    return false;
+  }
+
+  if (client_ftl_address.empty()) {
+    LOG(ERROR) << "Missing field: client_ftl_address";
+    return false;
+  } else if (!IsValidFtlSignalingId(client_ftl_address)) {
+    LOG(ERROR) << "Invalid client_ftl_address: " << client_ftl_address;
     return false;
   }
 
