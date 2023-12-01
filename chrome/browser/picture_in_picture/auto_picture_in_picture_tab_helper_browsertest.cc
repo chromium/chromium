@@ -223,6 +223,17 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
         *content::MediaSession::Get(web_contents));
     observer.WaitForPlaybackState(
         media_session::mojom::MediaPlaybackState::kPaused);
+    // Flush so that the tab helper has also found out about this.
+    content::MediaSession::FlushObserversForTesting(web_contents);
+  }
+
+  void WaitForMediaSessionPlaying(content::WebContents* web_contents) {
+    media_session::test::MockMediaSessionMojoObserver observer(
+        *content::MediaSession::Get(web_contents));
+    observer.WaitForPlaybackState(
+        media_session::mojom::MediaPlaybackState::kPlaying);
+    // Flush so that the tab helper has also found out about this.
+    content::MediaSession::FlushObserversForTesting(web_contents);
   }
 
   void WaitForAudioFocusGained() {
@@ -397,8 +408,10 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
                        OpensAndClosesVideoAutopip) {
   // Load a page that registers for autopip and start video playback.
   LoadAutoVideoPipPage(browser());
-  PlayVideo(browser()->tab_strip_model()->GetActiveWebContents());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(web_contents);
   WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
 
   SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/true,
                                         /*should_document_pip=*/false);
@@ -408,8 +421,10 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
                        OpensAndClosesDocumentAutopip) {
   // Load a page that registers for autopip and start video playback.
   LoadAutoDocumentPipPage(browser());
-  PlayVideo(browser()->tab_strip_model()->GetActiveWebContents());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(web_contents);
   WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
 
   SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/false,
                                         /*should_document_pip=*/true);
@@ -505,24 +520,34 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
                        DoesNotAutopipWhenPaused) {
   // Load a page that registers for autopip and start video playback.
+  LOG(ERROR) << "DEBUG: loading video page";
   LoadAutoVideoPipPage(browser());
   auto* original_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
+  LOG(ERROR) << "DEBUG: starting playback";
   PlayVideo(original_web_contents);
+  LOG(ERROR) << "DEBUG: waiting for audio focus";
   WaitForAudioFocusGained();
+  LOG(ERROR) << "DEBUG: waiting for playing";
+  WaitForMediaSessionPlaying(original_web_contents);
 
   // Pause the video.
+  LOG(ERROR) << "DEBUG: pausing playback";
   PauseVideo(original_web_contents);
+  LOG(ERROR) << "DEBUG: waiting for mediasession pause";
   WaitForMediaSessionPaused(original_web_contents);
 
   // There should not currently be a picture-in-picture window.
+  LOG(ERROR) << "DEBUG: checking in on expectations";
   EXPECT_FALSE(original_web_contents->HasPictureInPictureVideo());
   EXPECT_FALSE(original_web_contents->HasPictureInPictureDocument());
 
   // Open and switch to a new tab.
+  LOG(ERROR) << "DEBUG: opening a new tab";
   OpenNewTab(browser());
 
   // There should not be a picture-in-picture window.
+  LOG(ERROR) << "DEBUG: again checking in on expectations";
   EXPECT_FALSE(original_web_contents->HasPictureInPictureVideo());
   EXPECT_FALSE(original_web_contents->HasPictureInPictureDocument());
 }
@@ -532,8 +557,10 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   auto* window_manager = PictureInPictureWindowManager::GetInstance();
 
   LoadAutoVideoPipPage(browser());
-  PlayVideo(browser()->tab_strip_model()->GetActiveWebContents());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(web_contents);
   WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
   OpenNewTab(browser());
 
   // Use the setting helper as a proxy for "did return an overlay view", since
@@ -546,8 +573,10 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
                        OverlayViewRemovedWhenHidden) {
   // Load a page that registers for autopip and start video playback.
   LoadAutoVideoPipPage(browser());
-  PlayVideo(browser()->tab_strip_model()->GetActiveWebContents());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(web_contents);
   WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
 
   // Set content setting to CONTENT_SETTING_ASK.
   auto* original_web_contents =
@@ -872,6 +901,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   PlayVideo(original_web_contents);
   WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(original_web_contents);
 
   // There should not currently be a picture-in-picture window.
   EXPECT_FALSE(original_web_contents->HasPictureInPictureVideo());

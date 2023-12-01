@@ -218,6 +218,13 @@ const base::UnguessableToken& MediaSession::GetRequestIdFromWebContents(
 }
 
 // static
+void MediaSession::FlushObserversForTesting(WebContents* web_contents) {
+  DCHECK(web_contents);
+  MediaSessionImpl* session = MediaSessionImpl::FromWebContents(web_contents);
+  session->flush_observers_for_testing();  // IN-TEST
+}
+
+// static
 MediaSessionImpl* MediaSessionImpl::Get(WebContents* web_contents) {
   MediaSessionImpl* session = FromWebContents(web_contents);
   if (!session) {
