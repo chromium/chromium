@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <array>
 #include <compare>
+#include <functional>
 #include <initializer_list>
 #include <iterator>
 #include <type_traits>
@@ -15,7 +16,6 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/functional/not_fn.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/ranges/algorithm.h"
 
@@ -38,7 +38,7 @@ constexpr bool is_sorted_and_unique(const Range& range, Comp comp) {
   // Being unique implies that there are no adjacent elements that
   // compare equal. So this checks that each element is strictly less
   // than the element after it.
-  return ranges::adjacent_find(range, base::not_fn(comp)) == ranges::end(range);
+  return ranges::adjacent_find(range, std::not_fn(comp)) == ranges::end(range);
 }
 
 // Helper inspired by C++20's std::to_array to convert a C-style array to a
@@ -476,7 +476,7 @@ class flat_tree {
     std::stable_sort(first, last, value_comp());
 
     // lhs is already <= rhs due to sort, therefore !(lhs < rhs) <=> lhs == rhs.
-    auto equal_comp = base::not_fn(value_comp());
+    auto equal_comp = std::not_fn(value_comp());
     erase(std::unique(first, last, equal_comp), last);
   }
 

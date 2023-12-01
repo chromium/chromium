@@ -4,8 +4,9 @@
 
 #include "components/password_manager/core/browser/ui/weak_check_utility.h"
 
+#include <functional>
+
 #include "base/containers/cxx20_erase.h"
-#include "base/functional/not_fn.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
@@ -69,7 +70,7 @@ base::flat_set<std::u16string> BulkWeakCheck(
     base::flat_set<std::u16string> passwords) {
   base::UmaHistogramCounts1000("PasswordManager.WeakCheck.CheckedPasswords",
                                passwords.size());
-  base::EraseIf(passwords, base::not_fn(&IsWeak));
+  base::EraseIf(passwords, std::not_fn(&IsWeak));
   base::UmaHistogramCounts1000("PasswordManager.WeakCheck.WeakPasswords",
                                passwords.size());
   return passwords;
