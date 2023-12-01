@@ -11,10 +11,6 @@
 #import "build/blink_buildflags.h"
 #import "ios/web/public/session/proto/metadata.pb.h"
 
-// To get access to UseSessionSerializationOptimizations().
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
-
 #if BUILDFLAG(USE_BLINK)
 #import "ios/web/content/web_state/content_web_state.h"
 #else
@@ -39,7 +35,6 @@ std::unique_ptr<WebState> WebState::CreateWithStorageSession(
     const CreateParams& params,
     CRWSessionStorage* session_storage) {
   DCHECK(session_storage);
-  DCHECK(!features::UseSessionSerializationOptimizations());
   return std::make_unique<ConcreteWebStateType>(params, session_storage);
 }
 
@@ -50,7 +45,6 @@ std::unique_ptr<WebState> WebState::CreateWithStorage(
     proto::WebStateMetadataStorage metadata,
     WebStateStorageLoader storage_loader,
     NativeSessionFetcher session_fetcher) {
-  DCHECK(features::UseSessionSerializationOptimizations());
   return std::make_unique<ConcreteWebStateType>(
       browser_state, unique_identifier, std::move(metadata),
       std::move(storage_loader), std::move(session_fetcher));

@@ -17,9 +17,7 @@
 #import "base/task/sequenced_task_runner.h"
 #import "base/test/gmock_callback_support.h"
 #import "base/test/ios/wait_util.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/sessions/core/session_id.h"
-#import "ios/web/common/features.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/js_messaging/web_frames_manager_impl.h"
 #import "ios/web/navigation/navigation_context_impl.h"
@@ -781,10 +779,6 @@ TEST_F(WebStateImplTest, FaviconUpdateForSameDocumentNavigations) {
 // most recently restored session if no navigation item has been committed. Also
 // tests that re-restoring that session includes updated userData.
 TEST_F(WebStateImplTest, UncommittedRestoreSession) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {}, {features::kEnableSessionSerializationOptimizations});
-
   GURL url("http://test.com");
   CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
   session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
@@ -835,10 +829,6 @@ TEST_F(WebStateImplTest, UncommittedRestoreSession) {
 // most recently restored session if no navigation item has been committed. Also
 // tests that re-restoring that session includes updated userData.
 TEST_F(WebStateImplTest, UncommittedRestoreSessionOptimisedStorage) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kEnableSessionSerializationOptimizations}, {});
-
   GURL url("http://test.com");
   proto::WebStateStorage storage;
   proto::NavigationStorage* navigation_storage = storage.mutable_navigation();
@@ -877,10 +867,6 @@ TEST_F(WebStateImplTest, UncommittedRestoreSessionOptimisedStorage) {
 // Test that lastCommittedItemIndex is end-of-list when there's no defined
 // index, such as during a restore.
 TEST_F(WebStateImplTest, NoUncommittedRestoreSession) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {}, {features::kEnableSessionSerializationOptimizations});
-
   WebStateImpl web_state =
       WebStateImpl(WebState::CreateParams(GetBrowserState()));
 
@@ -894,10 +880,6 @@ TEST_F(WebStateImplTest, NoUncommittedRestoreSession) {
 // Test that lastCommittedItemIndex is end-of-list when there's no defined
 // index, such as during a restore.
 TEST_F(WebStateImplTest, NoUncommittedRestoreSessionOptimisedStorage) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kEnableSessionSerializationOptimizations}, {});
-
   WebStateImpl web_state =
       WebStateImpl(WebState::CreateParams(GetBrowserState()));
 
