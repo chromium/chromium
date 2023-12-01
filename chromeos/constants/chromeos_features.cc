@@ -282,6 +282,8 @@ bool IsJellyrollEnabled() {
   return IsJellyEnabled() && base::FeatureList::IsEnabled(kJellyroll);
 }
 
+// TODO:b/312592767 - Remove this function in favor of the equivalent ash
+// function.
 bool IsOrcaEnabled() {
   return base::FeatureList::IsEnabled(kOrca) ||
          base::FeatureList::IsEnabled(kOrcaDogfood);
