@@ -13880,6 +13880,7 @@
                         "AllowURNsInIframes",
                         "AttributionFencedFrameReportingBeacon",
                         "AttributionReportingCrossAppWeb",
+                        "AttributionReportingDeactivateAfterFilterMatch",
                         "BiddingAndScoringDebugReportingAPI",
                         "BrowsingTopics",
                         "FencedFrames",

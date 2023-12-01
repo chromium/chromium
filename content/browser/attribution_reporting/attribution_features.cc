@@ -20,7 +20,7 @@ BASE_FEATURE(kAttributionVerboseDebugReporting,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAttributionReportingDeactivateAfterFilterMatch,
-             "kAttributionReportingDeactivateAfterFilterMatch",
+             "AttributionReportingDeactivateAfterFilterMatch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace content
