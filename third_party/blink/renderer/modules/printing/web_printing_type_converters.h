@@ -10,6 +10,7 @@
 
 namespace blink {
 class WebPrinterAttributes;
+class WebPrintJobTemplateAttributes;
 }  // namespace blink
 
 namespace mojo {
@@ -19,6 +20,13 @@ struct TypeConverter<blink::WebPrinterAttributes*,
                      blink::mojom::blink::WebPrinterAttributesPtr> {
   static blink::WebPrinterAttributes* Convert(
       const blink::mojom::blink::WebPrinterAttributesPtr&);
+};
+
+template <>
+struct TypeConverter<blink::mojom::blink::WebPrintJobTemplateAttributesPtr,
+                     blink::WebPrintJobTemplateAttributes*> {
+  static blink::mojom::blink::WebPrintJobTemplateAttributesPtr Convert(
+      const blink::WebPrintJobTemplateAttributes*);
 };
 
 }  // namespace mojo

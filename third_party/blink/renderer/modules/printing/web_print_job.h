@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PRINTING_WEB_PRINT_JOB_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PRINTING_WEB_PRINT_JOB_H_
 
+#include "third_party/blink/public/mojom/printing/web_printing.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -18,7 +19,8 @@ class MODULES_EXPORT WebPrintJob : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit WebPrintJob(ExecutionContext* execution_context);
+  WebPrintJob(ExecutionContext* execution_context,
+              mojom::blink::WebPrintJobInfoPtr print_job_info);
   ~WebPrintJob() override;
 
   WebPrintJobAttributes* attributes() const { return attributes_; }

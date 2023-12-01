@@ -11,32 +11,6 @@
 #include "printing/backend/print_backend.h"
 #include "third_party/blink/public/mojom/printing/web_printing.mojom.h"
 
-namespace {
-// sides:
-using DuplexMode = printing::mojom::DuplexMode;
-using WebPrintingSides = blink::mojom::WebPrintingSides;
-}  // namespace
-
-namespace mojo {
-
-template <>
-struct TypeConverter<std::optional<WebPrintingSides>, DuplexMode> {
-  static std::optional<WebPrintingSides> Convert(const DuplexMode& duplex) {
-    switch (duplex) {
-      case DuplexMode::kSimplex:
-        return WebPrintingSides::kOneSided;
-      case DuplexMode::kLongEdge:
-        return WebPrintingSides::kTwoSidedLongEdge;
-      case DuplexMode::kShortEdge:
-        return WebPrintingSides::kTwoSidedShortEdge;
-      default:
-        return absl::nullopt;
-    }
-  }
-};
-
-}  // namespace mojo
-
 namespace printing {
 namespace {
 
@@ -85,15 +59,15 @@ void ProcessMultipleDocumentHandling(
 
 void ProcessSides(const PrinterSemanticCapsAndDefaults& caps,
                   blink::mojom::WebPrinterAttributes* attributes) {
-  attributes->sides_default =
-      mojo::ConvertTo<std::optional<WebPrintingSides>>(caps.duplex_default);
+  if (caps.duplex_default != mojom::DuplexMode::kUnknownDuplexMode) {
+    attributes->sides_default = caps.duplex_default;
+  }
   for (const auto& duplex : caps.duplex_modes) {
-    auto sides = mojo::ConvertTo<std::optional<WebPrintingSides>>(duplex);
-    if (!sides) {
+    if (duplex == mojom::DuplexMode::kUnknownDuplexMode) {
       mojo::ReportBadMessage("Unknown duplex enum value in duplex_modes!");
       return;
     }
-    attributes->sides_supported.push_back(*sides);
+    attributes->sides_supported.push_back(duplex);
   }
 
   if (!ValidateDefaultAgainstSupported(attributes->sides_default,

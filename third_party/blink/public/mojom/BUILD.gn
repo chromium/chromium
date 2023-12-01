@@ -5,6 +5,7 @@
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//printing/buildflags/buildflags.gni")
 import("//third_party/blink/public/public_features.gni")
 import("//third_party/blink/renderer/config.gni")
 
@@ -1019,18 +1020,40 @@ mojom("mojom_platform") {
           mojom = "blink.mojom.UserAgentMetadata"
           cpp = "::blink::UserAgentMetadata"
         },
-
         {
           mojom = "blink.mojom.UserAgentOverride"
           cpp = "::blink::UserAgentOverride"
         },
       ]
       traits_headers = [ "//third_party/blink/public/common/user_agent/user_agent_mojom_traits.h" ]
-
       traits_sources =
           [ "//third_party/blink/common/user_agent/user_agent_mojom_traits.cc" ]
     },
   ]
+  if (is_chromeos && use_cups) {
+    cpp_typemaps += [
+      {
+        types = [
+          {
+            mojom = "blink.mojom.WebPrintJobTemplateAttributes"
+            cpp = "::std::unique_ptr<::printing::PrintSettings>"
+            move_only = true
+            nullable_is_same_type = true
+          },
+          {
+            mojom = "blink.mojom.WebPrintingSides"
+            cpp = "::printing::mojom::DuplexMode"
+          },
+        ]
+        traits_headers =
+            [ "//chrome/browser/printing/web_api/web_printing_mojom_traits.h" ]
+        traits_sources =
+            [ "//chrome/browser/printing/web_api/web_printing_mojom_traits.cc" ]
+        traits_public_deps = [ "//printing" ]
+        traits_deps = [ "//printing/mojom" ]
+      },
+    ]
+  }
   blink_cpp_typemaps = [
     {
       types = [

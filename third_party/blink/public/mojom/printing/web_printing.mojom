@@ -4,6 +4,8 @@
 
 module blink.mojom;
 
+import "third_party/blink/public/mojom/blob/blob.mojom";
+
 enum WebPrintingMultipleDocumentHandling {
   kSeparateDocumentsCollatedCopies,
   kSeparateDocumentsUncollatedCopies
@@ -38,13 +40,38 @@ struct WebPrinterAttributes {
   array<WebPrintingSides> sides_supported;
 };
 
+struct WebPrintJobTemplateAttributes {
+  string job_name;
+
+  uint32 copies;
+  WebPrintingMultipleDocumentHandling? multiple_document_handling;
+  WebPrintingSides? sides;
+};
+
+struct WebPrintJobInfo {
+  string job_name;
+};
+
+enum WebPrintError {
+  kPrinterUnreachable,
+  kDocumentMalformed,
+  kPrintJobTemplateAttributesMismatch,
+};
+
+union WebPrintResult {
+  WebPrintJobInfo print_job_info;
+  WebPrintError error;
+};
+
 // Interface for interactions with a particular printer from the render process.
 // The implementation is responsible for checking access permissions.
 interface WebPrinter {
   // Fetches full attributes of this printer.
   FetchAttributes() => (WebPrinterAttributes? attributes);
 
-  // TODO(b/302505962): Add remaining methods.
+  // Sends a print job to a printer.
+  Print(pending_remote<blink.mojom.Blob> document,
+        WebPrintJobTemplateAttributes attributes) => (WebPrintResult result);
 };
 
 // Interface for accessing printers from the render process.

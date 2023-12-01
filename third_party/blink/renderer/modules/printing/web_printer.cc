@@ -10,10 +10,23 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_print_job_template_attributes.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_printer_attributes.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/fileapi/blob.h"
+#include "third_party/blink/renderer/modules/printing/web_print_job.h"
 #include "third_party/blink/renderer/modules/printing/web_printing_type_converters.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 
 namespace blink {
+
+namespace {
+bool ValidatePrintJobTemplateAttributes(
+    const WebPrintJobTemplateAttributes* pjt_attributes,
+    ExceptionState& exception_state) {
+  if (pjt_attributes->hasCopies() && pjt_attributes->copies() < 1) {
+    exception_state.ThrowTypeError("|copies| cannot be less than 1.");
+  }
+  return true;
+}
+}  // namespace
 
 WebPrinter::WebPrinter(ExecutionContext* execution_context,
                        mojom::blink::WebPrinterInfoPtr printer_info)
@@ -56,6 +69,35 @@ ScriptPromise WebPrinter::fetchAttributes(ScriptState* script_state,
   return fetch_attributes_resolver_->Promise();
 }
 
+ScriptPromise WebPrinter::printJob(
+    ScriptState* script_state,
+    const String& job_name,
+    const WebPrintDocumentDescription* document,
+    const WebPrintJobTemplateAttributes* pjt_attributes,
+    ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Context has shut down.");
+    return ScriptPromise();
+  }
+
+  if (!ValidatePrintJobTemplateAttributes(pjt_attributes, exception_state)) {
+    return ScriptPromise();
+  }
+
+  auto attributes =
+      mojo::ConvertTo<mojom::blink::WebPrintJobTemplateAttributesPtr>(
+          pjt_attributes);
+  attributes->job_name = job_name;
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
+  printer_->Print(document->data()->AsMojoBlob(), std::move(attributes),
+                  resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+                      &WebPrinter::OnPrint, WrapPersistent(this))));
+  return resolver->Promise();
+}
+
 void WebPrinter::OnFetchAttributes(
     ScriptPromiseResolver*,
     mojom::blink::WebPrinterAttributesPtr printer_attributes) {
@@ -75,14 +117,18 @@ void WebPrinter::OnFetchAttributes(
   fetch_attributes_resolver_ = nullptr;
 }
 
-ScriptPromise WebPrinter::printJob(
-    ScriptState* script_state,
-    const String& job_name,
-    const WebPrintDocumentDescription* document,
-    const WebPrintJobTemplateAttributes* attributes,
-    ExceptionState& exception_state) {
-  // TODO(b/302505962): Implement this.
-  return ScriptPromise();
+void WebPrinter::OnPrint(ScriptPromiseResolver* resolver,
+                         mojom::blink::WebPrintResultPtr result) {
+  if (result->is_error()) {
+    // TODO(b/302505962): Include returned error into the message.
+    resolver->RejectWithDOMException(DOMExceptionCode::kNetworkError,
+                                     "Something went wrong during printing.");
+    return;
+  }
+
+  auto* print_job = MakeGarbageCollected<WebPrintJob>(
+      resolver->GetExecutionContext(), std::move(result->get_print_job_info()));
+  resolver->Resolve(print_job);
 }
 
 }  // namespace blink

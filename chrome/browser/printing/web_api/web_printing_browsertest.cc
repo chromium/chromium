@@ -27,6 +27,7 @@ constexpr char kName[] = "name";
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 using testing::_;
+using testing::InSequence;
 using testing::NiceMock;
 #endif
 
@@ -92,6 +93,12 @@ class WebPrintingBrowserTest : public WebPrintingBrowserTestBase {
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 class WebPrintingBrowserTest : public WebPrintingBrowserTestBase {
  public:
+  void SetUpOnMainThread() override {
+    WebPrintingBrowserTestBase::SetUpOnMainThread();
+    printing_infra_helper_ =
+        std::make_unique<extensions::PrintingBackendInfrastructureHelper>();
+  }
+
   void CreatedBrowserMainParts(
       content::BrowserMainParts* browser_main_parts) override {
     WebPrintingBrowserTestBase::CreatedBrowserMainParts(browser_main_parts);
@@ -101,11 +108,16 @@ class WebPrintingBrowserTest : public WebPrintingBrowserTestBase {
 
  protected:
   NiceMock<MockLocalPrinter>& local_printer() { return local_printer_; }
+  extensions::PrintingBackendInfrastructureHelper& printing_infra_helper() {
+    return *printing_infra_helper_;
+  }
 
  private:
   NiceMock<MockLocalPrinter> local_printer_;
   mojo::Receiver<crosapi::mojom::LocalPrinter> local_printer_receiver_{
       &local_printer_};
+  std::unique_ptr<extensions::PrintingBackendInfrastructureHelper>
+      printing_infra_helper_;
 };
 #endif
 
@@ -119,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest, GetPrinters) {
           extensions::ConstructGetPrintersResponse(kId, kName)));
 #endif
 
-  constexpr base::StringPiece kGetPrintersScript = R"(
+  constexpr std::string_view kGetPrintersScript = R"(
     (async () => {
       try {
         const printers = await navigator.printing.getPrinters();
@@ -156,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest, FetchAttributes) {
 #endif
 
   // Keep in sync with extensions::ConstructPrinterCapabilities().
-  constexpr base::StringPiece kExpectedAttributes = R"({
+  constexpr std::string_view kExpectedAttributes = R"({
     "copiesDefault": 1,
     "copiesSupported": {
       "from": 1,
@@ -174,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest, FetchAttributes) {
     "sidesSupported": [ "one-sided" ]
   })";
 
-  constexpr base::StringPiece kFetchAttributesScript = R"(
+  constexpr std::string_view kFetchAttributesScript = R"(
     (async () => {
       const printers = await navigator.printing.getPrinters();
       return await printers[0].fetchAttributes();
@@ -182,11 +194,64 @@ IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest, FetchAttributes) {
   )";
 
   auto eval_result = EvalJs(app_frame(), kFetchAttributesScript);
-  ASSERT_TRUE(eval_result.error.empty()) << "Failed with " << eval_result.error;
+  ASSERT_THAT(eval_result, content::EvalJsResult::IsOk());
 
   const auto& attributes = eval_result.value.GetDict();
   EXPECT_THAT(attributes, base::test::DictionaryHasValues(
                               base::test::ParseJsonDict(kExpectedAttributes)));
+}
+
+IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest, Print) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  AddPrinterWithSemanticCaps(kId, kName,
+                             extensions::ConstructPrinterCapabilities());
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  InSequence s;
+
+  EXPECT_CALL(local_printer(), GetPrinters(_))
+      .WillOnce(base::test::RunOnceCallback<0>(
+          extensions::ConstructGetPrintersResponse(kId, kName)));
+
+  EXPECT_CALL(local_printer(), GetCapability(kId, _))
+      .WillOnce(base::test::RunOnceCallback<1>(
+          printing::PrinterWithCapabilitiesToMojom(
+              chromeos::Printer(kId),
+              *extensions::ConstructPrinterCapabilities())));
+
+  // Acknowledge print job creation so that the mojo callback doesn't hang.
+  EXPECT_CALL(local_printer(), CreatePrintJob(_, _))
+      .WillOnce(base::test::RunOnceCallback<1>());
+
+  printing_infra_helper()
+      .test_printing_context_factory()
+      .SetPrinterNameForSubsequentContexts(kId);
+#endif
+
+  constexpr std::string_view kPrintScript = R"(
+    (async () => {
+      const pdf = `%PDF-1.0
+1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj 2 0 ` +
+`obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj 3 0 ` +
+`obj<</Type/Page/MediaBox[0 0 3 3]>>endobj
+xref
+0 4
+0000000000 65535 f
+0000000010 00000 n
+0000000053 00000 n
+0000000102 00000 n
+trailer<</Size 4/Root 1 0 R>>
+startxref
+149
+%EOF`;
+
+    const pdfBlob = new Blob([pdf], {type: 'application/pdf'});
+    const printers = await navigator.printing.getPrinters();
+
+    const printJob = await printers[0].printJob("Title", { data: pdfBlob }, {});
+   })();
+  )";
+
+  ASSERT_THAT(EvalJs(app_frame(), kPrintScript), content::EvalJsResult::IsOk());
 }
 
 }  // namespace printing

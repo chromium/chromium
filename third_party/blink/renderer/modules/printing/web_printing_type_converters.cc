@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/printing/web_printing_type_converters.h"
 
 #include "third_party/blink/public/mojom/printing/web_printing.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_print_job_template_attributes.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_printer_attributes.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_printing_mime_media_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_printing_multiple_document_handling.h"
@@ -39,6 +40,20 @@ struct TypeConverter<V8Sides, MojomSides> {
 };
 
 template <>
+struct TypeConverter<MojomSides, V8Sides> {
+  static MojomSides Convert(const V8Sides& sides) {
+    switch (sides.AsEnum()) {
+      case V8Sides::Enum::kOneSided:
+        return MojomSides::kOneSided;
+      case V8Sides::Enum::kTwoSidedShortEdge:
+        return MojomSides::kTwoSidedShortEdge;
+      case V8Sides::Enum::kTwoSidedLongEdge:
+        return MojomSides::kTwoSidedLongEdge;
+    }
+  }
+};
+
+template <>
 struct TypeConverter<V8MultipleDocumentHandling,
                      MojomMultipleDocumentHandling> {
   static V8MultipleDocumentHandling Convert(
@@ -51,6 +66,21 @@ struct TypeConverter<V8MultipleDocumentHandling,
         return V8MultipleDocumentHandling(
             V8MultipleDocumentHandling::Enum::
                 kSeparateDocumentsUncollatedCopies);
+    }
+  }
+};
+
+template <>
+struct TypeConverter<MojomMultipleDocumentHandling,
+                     V8MultipleDocumentHandling> {
+  static MojomMultipleDocumentHandling Convert(
+      const V8MultipleDocumentHandling& mdh) {
+    switch (mdh.AsEnum()) {
+      case V8MultipleDocumentHandling::Enum::kSeparateDocumentsCollatedCopies:
+        return MojomMultipleDocumentHandling::kSeparateDocumentsCollatedCopies;
+      case V8MultipleDocumentHandling::Enum::kSeparateDocumentsUncollatedCopies:
+        return MojomMultipleDocumentHandling::
+            kSeparateDocumentsUncollatedCopies;
     }
   }
 };
@@ -90,6 +120,16 @@ void ProcessMultipleDocumentHandling(
           new_attributes.multiple_document_handling_supported));
 }
 
+void ProcessMultipleDocumentHandling(
+    const blink::WebPrintJobTemplateAttributes& pjt_attributes,
+    mojom::blink::WebPrintJobTemplateAttributes* attributes) {
+  if (pjt_attributes.hasMultipleDocumentHandling()) {
+    attributes->multiple_document_handling =
+        mojo::ConvertTo<MojomMultipleDocumentHandling>(
+            pjt_attributes.multipleDocumentHandling());
+  }
+}
+
 void ProcessSides(const mojom::blink::WebPrinterAttributes& new_attributes,
                   WebPrinterAttributes* current_attributes) {
   if (new_attributes.sides_default) {
@@ -99,6 +139,13 @@ void ProcessSides(const mojom::blink::WebPrinterAttributes& new_attributes,
   if (!new_attributes.sides_supported.empty()) {
     current_attributes->setSidesSupported(
         mojo::ConvertTo<Vector<V8Sides>>(new_attributes.sides_supported));
+  }
+}
+
+void ProcessSides(const blink::WebPrintJobTemplateAttributes& pjt_attributes,
+                  mojom::blink::WebPrintJobTemplateAttributes* attributes) {
+  if (pjt_attributes.hasSides()) {
+    attributes->sides = mojo::ConvertTo<MojomSides>(pjt_attributes.sides());
   }
 }
 
@@ -119,6 +166,19 @@ TypeConverter<blink::WebPrinterAttributes*,
   blink::ProcessDocumentFormat(*printer_attributes, attributes);
   blink::ProcessMultipleDocumentHandling(*printer_attributes, attributes);
   blink::ProcessSides(*printer_attributes, attributes);
+
+  return attributes;
+}
+
+blink::mojom::blink::WebPrintJobTemplateAttributesPtr
+TypeConverter<blink::mojom::blink::WebPrintJobTemplateAttributesPtr,
+              blink::WebPrintJobTemplateAttributes*>::
+    Convert(const blink::WebPrintJobTemplateAttributes* pjt_attributes) {
+  auto attributes = blink::mojom::blink::WebPrintJobTemplateAttributes::New();
+
+  attributes->copies = pjt_attributes->getCopiesOr(1);
+  blink::ProcessMultipleDocumentHandling(*pjt_attributes, attributes.get());
+  blink::ProcessSides(*pjt_attributes, attributes.get());
 
   return attributes;
 }
