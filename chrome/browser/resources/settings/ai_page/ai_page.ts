@@ -107,6 +107,15 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
     return this.getPref(SettingsAiPageFeaturePrefName.MAIN).value ===
         FeatureOptInState.ENABLED;
   }
+
+  private getTabOrganizationHrCssClass_(): string {
+    return this.showComposeControl_ ? 'hr' : '';
+  }
+
+  private getWallpaperSearchHrCssClass_(): string {
+    return this.showComposeControl_ || this.showTabOrganizationControl_ ? 'hr' :
+                                                                          '';
+  }
 }
 
 declare global {

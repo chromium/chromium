@@ -191,4 +191,72 @@ suite('ExperimentalAdvancedPage', function() {
     restartButton.click();
     return lifetimeBrowserProxy.whenCalled('restart');
   });
+
+  test('FeatureTogglesSeparators', () => {
+    // Asserts whether a separator is shown for each visible row.
+    function assertSeparatorsVisible(expected: boolean[]) {
+      const toggles =
+          page.shadowRoot!.querySelectorAll<SettingsToggleButtonElement>(
+              'iron-collapse settings-toggle-button:not([hidden])');
+
+      assertEquals(expected.length, toggles.length);
+      expected.forEach((visible, i) => {
+        assertEquals(visible, toggles[i]!.classList.contains('hr'));
+      });
+    }
+
+    // Case1: All rows visible.
+    loadTimeData.overrideValues({
+      showComposeControl: true,
+      showTabOrganizationControl: true,
+      showWallpaperSearchControl: true,
+    });
+    createPage();
+    assertSeparatorsVisible([false, true, true]);
+
+    // Case2: Row 0 hidden.
+    loadTimeData.overrideValues({
+      showComposeControl: false,
+      showTabOrganizationControl: true,
+      showWallpaperSearchControl: true,
+    });
+    createPage();
+    assertSeparatorsVisible([false, true]);
+
+    // Case3: Row 1 hidden.
+    loadTimeData.overrideValues({
+      showComposeControl: true,
+      showTabOrganizationControl: false,
+      showWallpaperSearchControl: true,
+    });
+    createPage();
+    assertSeparatorsVisible([false, true]);
+
+    // Case4: Row 2 hidden.
+    loadTimeData.overrideValues({
+      showComposeControl: true,
+      showTabOrganizationControl: true,
+      showWallpaperSearchControl: false,
+    });
+    createPage();
+    assertSeparatorsVisible([false, true]);
+
+    // Case5: Rows 0,1 hidden.
+    loadTimeData.overrideValues({
+      showComposeControl: false,
+      showTabOrganizationControl: false,
+      showWallpaperSearchControl: true,
+    });
+    createPage();
+    assertSeparatorsVisible([false]);
+
+    // Case6: Rows 0,2 hidden.
+    loadTimeData.overrideValues({
+      showComposeControl: false,
+      showTabOrganizationControl: true,
+      showWallpaperSearchControl: false,
+    });
+    createPage();
+    assertSeparatorsVisible([false]);
+  });
 });

@@ -30,6 +30,7 @@
         on-settings-boolean-control-change="onToggleChange_">
     </settings-toggle-button>
     <settings-toggle-button
+        class$="[[getTabOrganizationHrCssClass_(showComposeControl_)]]"
         hidden="[[!showTabOrganizationControl_]]"
         pref="{{prefs.optimization_guide.tab_organization_setting_state}}"
         numeric-unchecked-values="[[numericUncheckedValues_]]"
@@ -39,6 +40,8 @@
         on-settings-boolean-control-change="onToggleChange_">
     </settings-toggle-button>
     <settings-toggle-button
+        class$="[[getWallpaperSearchHrCssClass_(
+            showComposeControl_, showTabOrganizationControl_)]]"
         hidden="[[!showWallpaperSearchControl_]]"
         pref="{{prefs.optimization_guide.wallpaper_search_setting_state}}"
         numeric-unchecked-values="[[numericUncheckedValues_]]"
