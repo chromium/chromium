@@ -34,6 +34,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/prefs/pref_member.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -599,7 +600,8 @@ namespace shortcut_ui {
 AcceleratorConfigurationProvider::AcceleratorConfigurationProvider(
     PrefService* pref_service)
     : ash_accelerator_configuration_(
-          Shell::Get()->ash_accelerator_configuration()) {
+          Shell::Get()->ash_accelerator_configuration()),
+      sequenced_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   // Observe keyboard input method changes.
   input_method::InputMethodManager::Get()->AddObserver(this);
 
@@ -623,9 +625,9 @@ AcceleratorConfigurationProvider::AcceleratorConfigurationProvider(
     send_function_keys_pref_ = std::make_unique<BooleanPrefMember>();
     send_function_keys_pref_->Init(
         ash::prefs::kSendFunctionKeys, pref_service,
-        base::BindRepeating(
-            &AcceleratorConfigurationProvider::NotifyAcceleratorsUpdated,
-            base::Unretained(this)));
+        base::BindRepeating(&AcceleratorConfigurationProvider::
+                                ScheduleNotifyAcceleratorsUpdated,
+                            base::Unretained(this)));
   }
 
   ash_accelerator_configuration_->AddAcceleratorsUpdatedCallback(
@@ -854,7 +856,7 @@ void AcceleratorConfigurationProvider::InputMethodChanged(
     bool show_message) {
   // Accelerators are updated to match the current input method, e.g. positional
   // shortcuts.
-  NotifyAcceleratorsUpdated();
+  ScheduleNotifyAcceleratorsUpdated();
 }
 
 void AcceleratorConfigurationProvider::OnKeyboardConnected(
@@ -869,14 +871,14 @@ void AcceleratorConfigurationProvider::OnKeyboardDisconnected(
 
 void AcceleratorConfigurationProvider::OnKeyboardSettingsUpdated(
     const mojom::Keyboard& keyboard) {
-  NotifyAcceleratorsUpdated();
+  ScheduleNotifyAcceleratorsUpdated();
 }
 
 void AcceleratorConfigurationProvider::OnShortcutPolicyUpdated() {
   if (policy_updated_mojo_observer.is_bound()) {
     policy_updated_mojo_observer->OnCustomizationPolicyUpdated();
   }
-  NotifyAcceleratorsUpdated();
+  ScheduleNotifyAcceleratorsUpdated();
 }
 
 AcceleratorConfigurationProvider::AcceleratorConfigurationMap
@@ -1226,7 +1228,7 @@ void AcceleratorConfigurationProvider::UpdateKeyboards() {
   DCHECK(device_data_manager);
 
   connected_keyboards_ = device_data_manager->GetKeyboardDevices();
-  NotifyAcceleratorsUpdated();
+  ScheduleNotifyAcceleratorsUpdated();
 }
 
 void AcceleratorConfigurationProvider::InitializeNonConfigurableAccelerators(
@@ -1246,17 +1248,30 @@ void AcceleratorConfigurationProvider::InitializeNonConfigurableAccelerators(
       }
     }
   }
-  NotifyAcceleratorsUpdated();
+  ScheduleNotifyAcceleratorsUpdated();
 }
 
 void AcceleratorConfigurationProvider::OnAcceleratorsUpdated(
     mojom::AcceleratorSource source,
     const ActionIdToAcceleratorsMap& mapping) {
   accelerators_mapping_[source] = mapping;
-  NotifyAcceleratorsUpdated();
+  ScheduleNotifyAcceleratorsUpdated();
+}
+
+void AcceleratorConfigurationProvider::ScheduleNotifyAcceleratorsUpdated() {
+  if (!pending_notify_accelerators_updated_) {
+    pending_notify_accelerators_updated_ = true;
+    sequenced_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &AcceleratorConfigurationProvider::NotifyAcceleratorsUpdated,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void AcceleratorConfigurationProvider::NotifyAcceleratorsUpdated() {
+  pending_notify_accelerators_updated_ = false;
+
   AcceleratorConfigurationMap config_map = CreateConfigurationMap();
   if (accelerators_updated_mojo_observer_.is_bound()) {
     accelerators_updated_mojo_observer_->OnAcceleratorsUpdated(

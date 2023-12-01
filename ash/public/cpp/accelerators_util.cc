@@ -181,17 +181,15 @@ std::u16string KeycodeToKeyString(ui::KeyboardCode key_code,
       continue;
     }
 
+    if (key_code_to_compare != key_code) {
+      continue;
+    }
+
     const std::u16string key_string =
         base::UTF8ToUTF16(ui::KeycodeConverter::DomKeyToKeyString(dom_key));
     if (dom_key != ui::DomKey::UNIDENTIFIED) {
       AcceleratorKeycodeLookupCache::Get()->InsertOrAssign(key_code,
                                                            key_string);
-    }
-
-    // Even though this isn't what we're looking for, we should still populate
-    // the cache as we're iterating through the DomCode array.
-    if (key_code_to_compare != key_code) {
-      continue;
     }
 
     return key_string;
