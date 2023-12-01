@@ -575,6 +575,7 @@ TEST_F(DeskTemplateConversionTest, EnsureLacrosBrowserWindowsSavedProperly) {
   expected_browser_app_value.Set("tabs", std::move(expected_tab_list));
   expected_browser_app_value.Set("lacros_profile_id",
                                  base::NumberToString(kTestLacrosProfileId));
+  expected_browser_app_value.Set("app_id", app_constants::kChromeAppId);
 
   base::Value::List expected_app_list;
   expected_app_list.Append(std::move(expected_browser_app_value));
