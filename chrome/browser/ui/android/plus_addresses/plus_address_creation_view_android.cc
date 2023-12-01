@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
+#include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -72,10 +73,14 @@ void PlusAddressCreationViewAndroid::ShowInit(
       base::android::ConvertUTF16ToJavaString(
           env, l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT));
 
+  base::android::ScopedJavaLocalRef<jstring> j_manage_url =
+      base::android::ConvertUTF8ToJavaString(env,
+                                             kPlusAddressManagementUrl.Get());
+
   Java_PlusAddressCreationViewBridge_show(
       env, java_object_, j_title, j_formatted_description,
       j_proposed_plus_address_placeholder, j_plus_address_modal_ok,
-      j_plus_address_modal_cancel);
+      j_plus_address_modal_cancel, j_manage_url);
 }
 
 void PlusAddressCreationViewAndroid::OnConfirmRequested(

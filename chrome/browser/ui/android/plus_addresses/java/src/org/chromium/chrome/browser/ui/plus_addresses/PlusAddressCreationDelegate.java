@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.plus_addresses;
 
+import org.chromium.url.GURL;
+
 /** The set of operations that inform the C++ side of actions taken. */
 public interface PlusAddressCreationDelegate {
     public void onConfirmRequested();
@@ -13,4 +15,6 @@ public interface PlusAddressCreationDelegate {
     public void onCanceled();
 
     public void onPromptDismissed();
+
+    public void openManagementPage(GURL url);
 }

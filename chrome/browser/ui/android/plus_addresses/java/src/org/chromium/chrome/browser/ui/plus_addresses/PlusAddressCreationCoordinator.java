@@ -8,7 +8,9 @@ import android.app.Activity;
 
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.url.GURL;
 
 /** Coordinator of the plus address creation UI. */
 public class PlusAddressCreationCoordinator {
@@ -19,12 +21,14 @@ public class PlusAddressCreationCoordinator {
             BottomSheetController bottomSheetController,
             LayoutStateProvider layoutStateProvider,
             TabModel tabModel,
+            TabModelSelector tabModelSelector,
             PlusAddressCreationViewBridge bridge,
             String modalTitle,
             String plusAddressDescription,
             String proposedPlusAddressPlaceholder,
             String plusAddressModalOkText,
-            String plusAddressModalCancelText) {
+            String plusAddressModalCancelText,
+            GURL manageUrl) {
         PlusAddressCreationBottomSheetContent bottomSheetContent =
                 new PlusAddressCreationBottomSheetContent(
                         activity,
@@ -32,13 +36,15 @@ public class PlusAddressCreationCoordinator {
                         plusAddressDescription,
                         proposedPlusAddressPlaceholder,
                         plusAddressModalOkText,
-                        plusAddressModalCancelText);
+                        plusAddressModalCancelText,
+                        manageUrl);
         mMediator =
                 new PlusAddressCreationMediator(
                         bottomSheetContent,
                         bottomSheetController,
                         layoutStateProvider,
                         tabModel,
+                        tabModelSelector,
                         bridge);
     }
 

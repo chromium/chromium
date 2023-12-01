@@ -23,9 +23,11 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.url.GURL;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -38,6 +40,7 @@ public class PlusAddressCreationCoordinatorTest {
     private static final String MODAL_CANCEL = "cancel";
     private static final String MODAL_PROPOSED_PLUS_ADDRESS = "plus+1@plus.plus";
     private static final String MODAL_ERROR_MESSAGE = "error!";
+    private static final GURL MANAGE_URL = new GURL("manage.com");
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;
@@ -45,6 +48,7 @@ public class PlusAddressCreationCoordinatorTest {
     @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private PlusAddressCreationViewBridge mBridge;
     @Mock private PlusAddressCreationMediator mMediator;
+    @Mock private TabModelSelector mTabModelSelector;
 
     private MockTabModel mTabModel;
     private PlusAddressCreationCoordinator mCoordinator;
@@ -59,12 +63,14 @@ public class PlusAddressCreationCoordinatorTest {
                         mBottomSheetController,
                         mLayoutStateProvider,
                         mTabModel,
+                        mTabModelSelector,
                         mBridge,
                         MODAL_TITLE,
                         MODAL_PLUS_ADDRESS_DESCRIPTION,
                         MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER,
                         MODAL_OK,
-                        MODAL_CANCEL);
+                        MODAL_CANCEL,
+                        MANAGE_URL);
         mCoordinator.setMediatorForTesting(mMediator);
     }
 

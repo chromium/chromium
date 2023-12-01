@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.plus_addresses;
 
 import android.app.Activity;
 import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
 import android.text.style.TextAppearanceSpan;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.LoadingView;
+import org.chromium.ui.widget.TextViewWithClickableSpans;
+import org.chromium.url.GURL;
 
 /** Implements the content for the plus address creation bottom sheet. */
 public class PlusAddressCreationBottomSheetContent implements BottomSheetContent {
@@ -39,7 +42,8 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
             String plusAddressDescription,
             String proposedPlusAddressPlaceholder,
             String plusAddressModalOkText,
-            String plusAddressModalCancelText) {
+            String plusAddressModalCancelText,
+            GURL manageUrl) {
         View layout =
                 LayoutInflater.from(activity)
                         .inflate(R.layout.plus_address_creation_prompt, /* root= */ null);
@@ -54,18 +58,25 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
         TextView modalTitleView = mContentView.findViewById(R.id.plus_address_notice_title);
         modalTitleView.setText(modalTitle);
 
-        // TODO(crbug.com/1467623): Link to Plus Address account settings
-        NoUnderlineClickableSpan settingsLink = new NoUnderlineClickableSpan(activity, v -> {});
+        NoUnderlineClickableSpan settingsLink =
+                new NoUnderlineClickableSpan(
+                        activity,
+                        v -> {
+                            mDelegate.openManagementPage(manageUrl);
+                        });
         TextAppearanceSpan boldText =
                 new TextAppearanceSpan(activity, R.style.TextAppearance_TextMediumThick_Secondary);
+
         SpannableString spannableString =
                 SpanApplier.applySpans(
                         plusAddressDescription,
                         new SpanApplier.SpanInfo("<link>", "</link>", settingsLink),
                         new SpanApplier.SpanInfo("<b>", "</b>", boldText));
-        TextView plusAddressDescriptionView =
+
+        TextViewWithClickableSpans plusAddressDescriptionView =
                 mContentView.findViewById(R.id.plus_address_modal_explanation);
         plusAddressDescriptionView.setText(spannableString);
+        plusAddressDescriptionView.setMovementMethod(LinkMovementMethod.getInstance());
 
         TextView proposedPlusAddressView = mContentView.findViewById(R.id.proposed_plus_address);
         proposedPlusAddressView.setText(proposedPlusAddressPlaceholder);

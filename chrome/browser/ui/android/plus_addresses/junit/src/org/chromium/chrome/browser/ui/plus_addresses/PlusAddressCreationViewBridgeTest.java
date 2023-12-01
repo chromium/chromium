@@ -30,11 +30,13 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.layouts.LayoutManagerAppUtils;
 import org.chromium.chrome.browser.layouts.ManagedLayoutManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -50,12 +52,14 @@ public class PlusAddressCreationViewBridgeTest {
     private static final String MODAL_CANCEL = "cancel";
     private static final String MODAL_PROPOSED_PLUS_ADDRESS = "plus+1@plus.plus";
     private static final String MODAL_ERROR_MESSAGE = "error!";
+    private static final String MANAGE_URL = "manage.com";
 
     @Rule public JniMocker mJniMocker = new JniMocker();
     @Mock private Profile mProfile;
     @Mock private PlusAddressCreationViewBridge.Natives mBridgeNatives;
     @Mock private ManagedBottomSheetController mBottomSheetController;
     @Mock private ManagedLayoutManager mLayoutManager;
+    @Mock private TabModelSelector mTabModelSelector;
     @Mock private PlusAddressCreationCoordinator mCoordinator;
     @Mock private PlusAddressCreationViewBridge.CoordinatorFactory mCoordinatorFactory;
 
@@ -74,7 +78,11 @@ public class PlusAddressCreationViewBridgeTest {
         LayoutManagerAppUtils.attach(mWindow, mLayoutManager);
         mPlusAddressCreationViewBridge =
                 new PlusAddressCreationViewBridge(
-                        NATIVE_PLUS_ADDRESS_CREATION_VIEW, mWindow, mTabModel, mCoordinatorFactory);
+                        NATIVE_PLUS_ADDRESS_CREATION_VIEW,
+                        mWindow,
+                        mTabModel,
+                        mTabModelSelector,
+                        mCoordinatorFactory);
         mPlusAddressCreationViewBridge.setActivityForTesting(mActivity);
         mJniMocker.mock(PlusAddressCreationViewBridgeJni.TEST_HOOKS, mBridgeNatives);
     }
@@ -92,12 +100,14 @@ public class PlusAddressCreationViewBridgeTest {
                         mBottomSheetController,
                         mLayoutManager,
                         mTabModel,
+                        mTabModelSelector,
                         mPlusAddressCreationViewBridge,
                         MODAL_TITLE,
                         MODAL_PLUS_ADDRESS_DESCRIPTION,
                         MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER,
                         MODAL_OK,
-                        MODAL_CANCEL))
+                        MODAL_CANCEL,
+                        new GURL(MANAGE_URL)))
                 .thenReturn(mCoordinator);
     }
 
@@ -107,7 +117,8 @@ public class PlusAddressCreationViewBridgeTest {
                 MODAL_PLUS_ADDRESS_DESCRIPTION,
                 MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER,
                 MODAL_OK,
-                MODAL_CANCEL);
+                MODAL_CANCEL,
+                MANAGE_URL);
     }
 
     @Test

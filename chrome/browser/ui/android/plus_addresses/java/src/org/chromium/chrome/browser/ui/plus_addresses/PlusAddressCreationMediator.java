@@ -8,11 +8,15 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.url.GURL;
 
 /**
  * Mediator class for the plus address creation UI.
@@ -30,6 +34,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
     private final PlusAddressCreationBottomSheetContent mBottomSheetContent;
     private final BottomSheetController mBottomSheetController;
     private final LayoutStateProvider mLayoutStateProvider;
+    private final TabModelSelector mTabModelSelector;
     private final TabModel mTabModel;
     private final PlusAddressCreationViewBridge mBridge;
 
@@ -42,6 +47,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
      *     to be hidden after a change of layout (e.g. to the tab switcher).
      * @param tabModel The TabModel used to detect when the bottom sheet needs to be hidden after a
      *     tab change.
+     * @param tabModelSelector The TabModelSelector for tabModel
      * @param bridge The bridge to signal UI flow events (onConfirmed, onCanceled, etc.) to.
      */
     PlusAddressCreationMediator(
@@ -49,11 +55,13 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
             BottomSheetController bottomSheetController,
             LayoutStateProvider layoutStateProvider,
             TabModel tabModel,
+            TabModelSelector tabModelSelector,
             PlusAddressCreationViewBridge bridge) {
         mBottomSheetContent = bottomSheetContent;
         mBottomSheetController = bottomSheetController;
         mLayoutStateProvider = layoutStateProvider;
         mTabModel = tabModel;
+        mTabModelSelector = tabModelSelector;
         mBridge = bridge;
 
         mBottomSheetContent.setDelegate(this);
@@ -105,6 +113,15 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
     @Override
     public void onPromptDismissed() {
         mBridge.onPromptDismissed();
+    }
+
+    @Override
+    public void openManagementPage(GURL url) {
+        mTabModelSelector.openNewTab(
+                new LoadUrlParams(url.getSpec()),
+                TabLaunchType.FROM_LINK,
+                mTabModelSelector.getCurrentTab(),
+                /* incognito= */ false);
     }
 
     // EmptyBottomSheetObserver overridden methods follow:

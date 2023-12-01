@@ -23,10 +23,14 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.url.GURL;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public final class PlusAddressCreationMediatorTest {
@@ -42,6 +46,7 @@ public final class PlusAddressCreationMediatorTest {
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private TabModel mTabModel;
+    @Mock private TabModelSelector mTabModelSelector;
     @Mock private PlusAddressCreationViewBridge mBridge;
 
     private PlusAddressCreationMediator mMediator;
@@ -54,6 +59,7 @@ public final class PlusAddressCreationMediatorTest {
                         mBottomSheetController,
                         mLayoutStateProvider,
                         mTabModel,
+                        mTabModelSelector,
                         mBridge);
     }
 
@@ -168,5 +174,18 @@ public final class PlusAddressCreationMediatorTest {
         mMediator.onStartedShowing(LayoutType.TAB_SWITCHER);
 
         verify(mBottomSheetController).hideContent(mBottomSheetContent, /* animate= */ true);
+    }
+
+    @Test
+    public void testOpenManagementPage_openNewTab() {
+        GURL url = new GURL("manage.com");
+        mMediator.openManagementPage(url);
+
+        verify(mTabModelSelector)
+                .openNewTab(
+                        new LoadUrlParams(url),
+                        TabLaunchType.FROM_LINK,
+                        mTabModelSelector.getCurrentTab(),
+                        false);
     }
 }
