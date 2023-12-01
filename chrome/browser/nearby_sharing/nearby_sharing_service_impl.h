@@ -34,6 +34,7 @@
 #include "chrome/browser/nearby_sharing/nearby_file_handler.h"
 #include "chrome/browser/nearby_sharing/nearby_notification_manager.h"
 #include "chrome/browser/nearby_sharing/nearby_share_feature_usage_metrics.h"
+#include "chrome/browser/nearby_sharing/nearby_share_logger.h"
 #include "chrome/browser/nearby_sharing/nearby_share_profile_info_provider_impl.h"
 #include "chrome/browser/nearby_sharing/nearby_share_settings.h"
 #include "chrome/browser/nearby_sharing/nearby_share_transfer_profiler.h"
@@ -460,6 +461,7 @@ class NearbySharingServiceImpl
   std::unique_ptr<NearbyShareContactManager> contact_manager_;
   std::unique_ptr<NearbyShareCertificateManager> certificate_manager_;
   std::unique_ptr<NearbyShareTransferProfiler> transfer_profiler_;
+  std::unique_ptr<NearbyShareLogger> logger_;
   NearbyShareSettings settings_;
   NearbyShareFeatureUsageMetrics feature_usage_metrics_;
   std::unique_ptr<FastInitiationScannerFeatureUsageMetrics>
@@ -524,6 +526,11 @@ class NearbySharingServiceImpl
   // retry certificate decryption.
   base::flat_map<std::string, std::vector<uint8_t>>
       discovered_advertisements_to_retry_map_;
+
+  // Mapping of Endpoint Id to share targets.
+  base::flat_map<std::string, ShareTarget> share_target_map_;
+  // Mapping of Endpoint Id to total transfer size.
+  base::flat_map<std::string, int64_t> transfer_size_map_;
 
   // A mapping of Attachment Id to additional AttachmentInfo related to the
   // Attachment.

@@ -328,37 +328,6 @@ std::string GetUpgradedMediumSubcategoryName(
   }
 }
 
-std::string GetMediumName(nearby::connections::mojom::Medium medium) {
-  switch (medium) {
-    case nearby::connections::mojom::Medium::kWebRtc:
-      return "WebRtc";
-    case nearby::connections::mojom::Medium::kWifiLan:
-      return "WifiLan";
-    case nearby::connections::mojom::Medium::kUnknown:
-      return "Unknown";
-    case nearby::connections::mojom::Medium::kMdns:
-      return "Mdns";
-    case nearby::connections::mojom::Medium::kBluetooth:
-      return "Bluetooth";
-    case nearby::connections::mojom::Medium::kWifiHotspot:
-      return "WifiHotspot";
-    case nearby::connections::mojom::Medium::kBle:
-      return "Ble";
-    case nearby::connections::mojom::Medium::kWifiAware:
-      return "WifiAware";
-    case nearby::connections::mojom::Medium::kNfc:
-      return "Nfc";
-    case nearby::connections::mojom::Medium::kWifiDirect:
-      return "WifiDirect";
-    case nearby::connections::mojom::Medium::kBleL2Cap:
-      return "BleL2Cap";
-    case nearby::connections::mojom::Medium::kUsb:
-      return "Usb";
-    default:
-      NOTREACHED_NORETURN();
-  }
-}
-
 UpgradedMedium GetUpgradedMediumForMetrics(
     absl::optional<nearby::connections::mojom::Medium> last_upgraded_medium) {
   if (!last_upgraded_medium) {
@@ -450,6 +419,35 @@ bool IsShareCacheFilePath(Profile* profile, const base::FilePath& file_path) {
 }
 
 }  // namespace
+
+std::string GetMediumName(nearby::connections::mojom::Medium medium) {
+  switch (medium) {
+    case nearby::connections::mojom::Medium::kWebRtc:
+      return "WebRtc";
+    case nearby::connections::mojom::Medium::kWifiLan:
+      return "WifiLan";
+    case nearby::connections::mojom::Medium::kUnknown:
+      return "Unknown";
+    case nearby::connections::mojom::Medium::kMdns:
+      return "Mdns";
+    case nearby::connections::mojom::Medium::kBluetooth:
+      return "Bluetooth";
+    case nearby::connections::mojom::Medium::kWifiHotspot:
+      return "WifiHotspot";
+    case nearby::connections::mojom::Medium::kBle:
+      return "Ble";
+    case nearby::connections::mojom::Medium::kWifiAware:
+      return "WifiAware";
+    case nearby::connections::mojom::Medium::kNfc:
+      return "Nfc";
+    case nearby::connections::mojom::Medium::kWifiDirect:
+      return "WifiDirect";
+    case nearby::connections::mojom::Medium::kBleL2Cap:
+      return "BleL2Cap";
+    case nearby::connections::mojom::Medium::kUsb:
+      return "Usb";
+  }
+}
 
 void RecordNearbyShareEnabledMetric(NearbyShareEnabledState state) {
   base::UmaHistogramEnumeration("Nearby.Share.Enabled", state);

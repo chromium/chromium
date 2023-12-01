@@ -5030,6 +5030,8 @@ static_library("browser") {
       "nearby_sharing/nearby_share_feature_status.h",
       "nearby_sharing/nearby_share_feature_usage_metrics.cc",
       "nearby_sharing/nearby_share_feature_usage_metrics.h",
+      "nearby_sharing/nearby_share_logger.cc",
+      "nearby_sharing/nearby_share_logger.h",
       "nearby_sharing/nearby_share_metrics.cc",
       "nearby_sharing/nearby_share_metrics.h",
       "nearby_sharing/nearby_share_profile_info_provider_impl.cc",
