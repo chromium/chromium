@@ -17,7 +17,7 @@ test("ui_unittests") {
     deps += [ "//ui/actions:unit_tests" ]
   }
 
-  if (!is_ios) {
+  if (use_blink) {
     deps += [ "//ui/color:unit_tests" ]
   }
 }

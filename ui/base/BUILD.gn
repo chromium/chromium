@@ -514,8 +514,6 @@ component("base") {
     "//ui/base/dragdrop/mojom",
     "//ui/display",
     "//ui/display/util:gpu_info_util",
-    "//ui/events",
-    "//ui/events/devices",
     "//ui/resources:webui_resources_grd",
     "//ui/strings",
     "//url",
@@ -544,15 +542,15 @@ component("base") {
       ":l10n_util_ios",
       "//base",
     ]
-    if (!use_blink) {
-      deps -= [
-        "//ui/events",
-        "//ui/events/devices",
-      ]
-    }
-  } else {  # !is_ios
+  }
+
+  if (use_blink) {
+    deps += [
+      "//ui/color",
+      "//ui/events",
+      "//ui/events/devices",
+    ]
     public_deps += [ "//ui/color:color_headers" ]
-    deps += [ "//ui/color" ]
   }
 
   if (is_win) {
@@ -1065,8 +1063,6 @@ test("ui_base_unittests") {
     "//ui/base/metadata:metadata_tests",
     "//ui/base/prediction:prediction",
     "//ui/display",
-    "//ui/events:events_base",
-    "//ui/events:test_support",
     "//ui/gfx:test_support",
     "//ui/resources",
     "//ui/resources:ui_test_pak",
@@ -1108,12 +1104,6 @@ test("ui_base_unittests") {
       "test/ios/ui_image_test_utils_unittest.mm",
     ]
     deps += [ ":l10n_util_ios" ]
-    if (!use_blink) {
-      deps -= [
-        "//ui/events:events_base",
-        "//ui/events:test_support",
-      ]
-    }
   } else {  # !is_ios
     sources += [
       "accelerators/accelerator_manager_unittest.cc",
@@ -1129,8 +1119,14 @@ test("ui_base_unittests") {
       "themed_vector_icon_unittest.cc",
       "webui/web_ui_util_unittest.cc",
     ]
+  }
 
-    deps += [ "//ui/color" ]
+  if (use_blink) {
+    deps += [
+      "//ui/color",
+      "//ui/events:events_base",
+      "//ui/events:test_support",
+    ]
   }
 
   if (is_linux || is_chromeos) {
