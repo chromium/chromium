@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_welcome_view_controller.h"
 
+#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_constants.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -19,6 +20,8 @@ constexpr NSString* kWelcomeBannerName = @"welcome_illustration";
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
+  self.view.accessibilityIdentifier = kPrivacyGuideWelcomeViewId;
+
   self.bannerName = kWelcomeBannerName;
   self.bannerSize = BannerImageSizeType::kTall;
 

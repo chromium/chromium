@@ -7,12 +7,8 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-@protocol PrivacyGuideWelcomeCoordinatorDelegate;
-
 // Coordinator for the Welcome step of the Privacy Guide.
 @interface PrivacyGuideWelcomeCoordinator : ChromeCoordinator
-
-@property(nonatomic, weak) id<PrivacyGuideWelcomeCoordinatorDelegate> delegate;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;

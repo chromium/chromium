@@ -5,14 +5,13 @@
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_welcome_coordinator.h"
 
 #import "base/check_op.h"
-#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_welcome_coordinator_delegate.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_commands.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_welcome_view_controller.h"
-#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_welcome_view_controller_presentation_delegate.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 
-@interface PrivacyGuideWelcomeCoordinator () <
-    PrivacyGuideWelcomeViewControllerPresentationDelegate,
-    PromoStyleViewControllerDelegate>
+@interface PrivacyGuideWelcomeCoordinator () <PromoStyleViewControllerDelegate>
 @end
 
 @implementation PrivacyGuideWelcomeCoordinator {
@@ -37,7 +36,6 @@
 
 - (void)start {
   _viewController = [[PrivacyGuideWelcomeViewController alloc] init];
-  _viewController.presentationDelegate = self;
   _viewController.delegate = self;
 
   CHECK(self.baseNavigationController);
@@ -47,18 +45,21 @@
 
 - (void)stop {
   _viewController.delegate = nil;
-  _viewController.presentationDelegate = nil;
   _viewController = nil;
 }
 
-#pragma mark - PrivacyGuideWelcomeViewControllerPresentationDelegate
+#pragma mark - PromoStyleViewControllerDelegate
 
-- (void)privacyGuideWelcomeViewControllerDidRemove:
-    (PrivacyGuideWelcomeViewController*)controller {
-  CHECK_EQ(controller, _viewController);
-  [self.delegate privacyGuideWelcomeCoordinatorDidRemove:self];
+- (void)didTapPrimaryActionButton {
+  id<PrivacyGuideCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), PrivacyGuideCommands);
+  [handler showNextStep];
 }
 
-// TODO(crbug.com/1494887): Implement the WelcomeViewController actions.
+- (void)didTapSecondaryActionButton {
+  id<PrivacyGuideCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), PrivacyGuideCommands);
+  [handler dismissGuide];
+}
 
 @end

@@ -8,12 +8,14 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_commands.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_main_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_welcome_coordinator.h"
-#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_welcome_coordinator_delegate.h"
 
 @interface PrivacyGuideMainCoordinator () <
-    PrivacyGuideWelcomeCoordinatorDelegate,
+    PrivacyGuideCommands,
     UIAdaptivePresentationControllerDelegate>
 @end
 
@@ -22,6 +24,10 @@
 }
 
 - (void)start {
+  [self.browser->GetCommandDispatcher()
+      startDispatchingToTarget:self
+                   forProtocol:@protocol(PrivacyGuideCommands)];
+
   _navigationController =
       [[UINavigationController alloc] initWithNavigationBarClass:nil
                                                     toolbarClass:nil];
@@ -35,6 +41,8 @@
 }
 
 - (void)stop {
+  [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
+
   [_navigationController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:nil];
@@ -44,13 +52,14 @@
   [self stopAndCleanupChildCoordinators];
 }
 
-#pragma mark - PrivacyGuideWelcomeCoordinatorDelegate
+#pragma mark - PrivacyGuideCommands
 
-- (void)privacyGuideWelcomeCoordinatorDidRemove:
-    (PrivacyGuideWelcomeCoordinator*)coordinator {
-  CHECK([self.childCoordinators containsObject:coordinator]);
-  coordinator.delegate = nil;
-  [self.childCoordinators removeObject:coordinator];
+- (void)showNextStep {
+  // TODO(crbug.com/1488447): Implement showing the next Privacy Guide step.
+}
+
+- (void)dismissGuide {
+  [self.delegate privacyGuideMainCoordinatorDidRemove:self];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -68,7 +77,6 @@
       [[PrivacyGuideWelcomeCoordinator alloc]
           initWithBaseNavigationController:_navigationController
                                    browser:self.browser];
-  coordinator.delegate = self;
   [coordinator start];
 
   [self.childCoordinators addObject:coordinator];
