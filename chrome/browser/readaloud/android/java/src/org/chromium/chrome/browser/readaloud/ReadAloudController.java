@@ -13,6 +13,8 @@ import android.app.Activity;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ApplicationState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
 import org.chromium.base.ResettersForTesting;
@@ -20,6 +22,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
+import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -54,7 +57,11 @@ import java.util.Map;
  * The main entrypoint component for Read Aloud feature. It's responsible for checking its
  * availability and triggering playback.
  */
-public class ReadAloudController implements Player.Observer, Player.Delegate, PlaybackListener {
+public class ReadAloudController
+        implements Player.Observer,
+                Player.Delegate,
+                PlaybackListener,
+                ApplicationStatus.ApplicationStateListener {
     private static final String TAG = "ReadAloudController";
 
     private final Activity mActivity;
@@ -218,6 +225,7 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
         mBrowserControlsSizer = browserControlsSizer;
         mLayoutManager = layoutManager;
         mHighlightingEnabled = new ObservableSupplierImpl<>(false);
+        ApplicationStatus.registerApplicationStateListener(this);
     }
 
     private void onProfileAvailable(Profile profile) {
@@ -447,6 +455,7 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
             mTabObserver.destroy();
         }
         mHighlightingEnabled.removeObserver(ReadAloudController.this::onHighlightingEnabledChanged);
+        ApplicationStatus.unregisterApplicationStateListener(this);
         resetCurrentPlayback();
     }
 
@@ -736,6 +745,16 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
     @Override
     public void onPlaybackDataChanged(PlaybackData data) {
         mCurrentPlaybackData = data;
+    }
+
+    @Override
+    public void onApplicationStateChange(@ApplicationState int newState) {
+        // stop any playback if user left Chrome while screen is on and unlocked
+        if (newState == ApplicationState.HAS_STOPPED_ACTIVITIES
+                && DeviceConditions.isCurrentlyScreenOnAndUnlocked(
+                        mActivity.getApplicationContext())) {
+            maybeStopPlayback(/* tab= */ null);
+        }
     }
 
     // Tests.

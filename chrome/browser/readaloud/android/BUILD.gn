@@ -18,6 +18,7 @@ android_library("java") {
     "//chrome/android:chrome_app_java_resources",
     "//chrome/android/modules/readaloud/public:java",
     "//chrome/browser/browser_controls/android:java",
+    "//chrome/browser/device:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/language/android:base_module_java",
     "//chrome/browser/language/android:java",
