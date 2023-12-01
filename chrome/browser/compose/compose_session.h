@@ -26,6 +26,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+// The state of a compose session. This currently includes the model quality log
+// entry, and the mojo based compose state.
+class ComposeState;
+
 // A class for managing a Compose Session. This session begins when a Compose
 // Dialog is opened for a given field in a WebContents, and ends when one of the
 // following occurs:
@@ -109,7 +113,7 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   void InitializeWithText(const std::optional<std::string>& text);
 
   // Saves the last OK response state to the undo stack.
-  void SaveLastOKStateToUndoStack();
+  void SaveMostRecentOkStateToUndoStack();
 
   void set_compose_callback(ComposeCallback callback) {
     callback_ = std::move(callback);
@@ -159,6 +163,10 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   void UpdateInnerTextAndContinueComposeIfNecessary(
       const std::string& inner_text);
 
+  void SendQualityLogEntryUponError(
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry>,
+      base::TimeDelta request_time);
+
   // Outlives `this`.
   raw_ptr<optimization_guide::OptimizationGuideModelExecutor> executor_;
 
@@ -169,11 +177,11 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   // lifetime of ComposeSession.
   compose::mojom::ComposeStatePtr current_state_;
 
-  // The last state that received a kOk status and valid response text.
-  compose::mojom::ComposeStatePtr last_ok_state_;
+  // The most recent state that was received via a request/response pair.
+  std::unique_ptr<ComposeState> most_recent_ok_state_;
 
   // The state returned when user clicks undo.
-  std::stack<compose::mojom::ComposeStatePtr> undo_states_;
+  std::stack<std::unique_ptr<ComposeState>> undo_states_;
 
   // Renderer provided text selection.
   std::string initial_input_;
@@ -216,9 +224,10 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
 
   base::OnceClosure continue_compose_;
 
-  std::unique_ptr<optimization_guide::ModelQualityLogEntry> modeling_log_entry_;
-
-  std::optional<optimization_guide::ModelQualityLogsUploader*>
+  // This pointer is obtained form a BrowserContextKeyedService.
+  // TODO(b/314328835) Add a BrowserContextKeyedServiceShutdownNotifierFactory
+  // to nullify when keyed service is destyroyed.
+  raw_ptr<optimization_guide::ModelQualityLogsUploader>
       model_quality_logs_uploader_;
 
   base::Token session_id_;

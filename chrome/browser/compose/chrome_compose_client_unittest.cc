@@ -1307,6 +1307,9 @@ TEST_F(ChromeComposeClientTest, TestAutoComposeWithRepeatedRightClick) {
 TEST_F(ChromeComposeClientTest, TestComposeQualitySessionId) {
   ShowDialogAndBindMojo();
 
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
+  BindComposeFutureToOnResponseReceived(compose_future);
+
   EXPECT_CALL(session(), ExecuteModel(_, _)).Times(2);
 
   base::test::TestFuture<
@@ -1322,7 +1325,18 @@ TEST_F(ChromeComposeClientTest, TestComposeQualitySessionId) {
 
   page_handler()->Compose("a user typed this");
 
+  EXPECT_TRUE(compose_future.Wait());
+  // Reset future for second compose call.
+  compose_future.Clear();
+
   page_handler()->Compose("a user typed that");
+  EXPECT_TRUE(compose_future.Wait());
+
+  base::test::TestFuture<compose::mojom::ComposeStatePtr> undo_future;
+  page_handler()->Undo(undo_future.GetCallback());
+  compose::mojom::ComposeStatePtr state = undo_future.Take();
+  EXPECT_TRUE(state)
+      << "Undo should return valid state after second Compose() invocation.";
 
   // This take should clear the test future for the second commit.
   std::unique_ptr<optimization_guide::ModelQualityLogEntry> result =
@@ -1356,6 +1370,9 @@ TEST_F(ChromeComposeClientTest, TestComposeQualitySessionId) {
 TEST_F(ChromeComposeClientTest, TestComposeQualityLatency) {
   ShowDialogAndBindMojo();
 
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
+  BindComposeFutureToOnResponseReceived(compose_future);
+
   EXPECT_CALL(session(), ExecuteModel(_, _)).Times(2);
 
   base::test::TestFuture<
@@ -1371,9 +1388,22 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityLatency) {
 
   page_handler()->Compose("a user typed this");
 
+  EXPECT_TRUE(compose_future.Wait());
+  // Reset future for second compose call.
+  compose_future.Clear();
+
   page_handler()->Compose("a user typed that");
 
-  // This take should clear the test future for the second commit.
+  // Ensure compose is finished before calling undo
+  EXPECT_TRUE(compose_future.Wait());
+
+  base::test::TestFuture<compose::mojom::ComposeStatePtr> undo_future;
+  page_handler()->Undo(undo_future.GetCallback());
+  compose::mojom::ComposeStatePtr state = undo_future.Take();
+  EXPECT_TRUE(state)
+      << "Undo should return valid state after second Compose() invocation.";
+
+  // This take should clear the quality future from the model that was undone.
   std::unique_ptr<optimization_guide::ModelQualityLogEntry> result =
       quality_test_future.Take();
 
@@ -1382,7 +1412,7 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityLatency) {
       result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
           ->request_latency_ms());
 
-  // Close UI to submit quality logs.
+  // Close UI to submit remaining quality logs.
   client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
 
   result = quality_test_future.Take();
@@ -1391,6 +1421,59 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityLatency) {
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime.InMilliseconds(),
       result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
           ->request_latency_ms());
+}
+
+TEST_F(ChromeComposeClientTest,
+       TestComposeQualityOnlyOneLogEntryAbandonedOnClose) {
+  ShowDialogAndBindMojo();
+
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
+  BindComposeFutureToOnResponseReceived(compose_future);
+
+  EXPECT_CALL(session(), ExecuteModel(_, _)).Times(2);
+
+  base::test::TestFuture<
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry>>
+      quality_test_future;
+  base::test::TestFuture<
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry>>
+      quality_test_future_2;
+
+  EXPECT_CALL(model_quality_logs_uploader(), UploadModelQualityLogs(_))
+      .WillRepeatedly(testing::Invoke(
+          [&](std::unique_ptr<optimization_guide::ModelQualityLogEntry>
+                  response) {
+            if (!quality_test_future.IsReady()) {
+              quality_test_future.SetValue(std::move(response));
+            } else {
+              quality_test_future_2.SetValue(std::move(response));
+            }
+          }));
+
+  page_handler()->Compose("a user typed this");
+
+  EXPECT_TRUE(compose_future.Wait());  // Reset future for second compose call.
+  compose_future.Clear();
+
+  page_handler()->Compose("a user typed that");
+
+  EXPECT_TRUE(compose_future.Wait());
+  // Close UI to submit remaining quality logs.
+  client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
+
+  // This take should clear the quality future from the model that was undone.
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> result =
+      quality_test_future.Take();
+
+  EXPECT_EQ(optimization_guide::proto::FinalStatus::STATUS_ABANDONED,
+            result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+                ->final_status());
+
+  result = quality_test_future_2.Take();
+
+  EXPECT_EQ(optimization_guide::proto::FinalStatus::STATUS_UNSPECIFIED,
+            result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+                ->final_status());
 }
 
 #if defined(GTEST_HAS_DEATH_TEST)
