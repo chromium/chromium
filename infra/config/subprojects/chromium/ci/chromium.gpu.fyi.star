@@ -609,6 +609,7 @@ ci.gpu.mac_builder(
             "try_builder",
             "reclient",
             "disable_nacl",
+            "x64",
         ],
     ),
 )
@@ -641,6 +642,7 @@ ci.gpu.mac_builder(
             "reclient",
             "asan",
             "disable_nacl",
+            "x64",
         ],
     ),
 )
@@ -672,6 +674,7 @@ ci.gpu.mac_builder(
             "reclient",
             "disable_nacl",
             "use_dummy_lastchange",
+            "x64",
         ],
     ),
 )

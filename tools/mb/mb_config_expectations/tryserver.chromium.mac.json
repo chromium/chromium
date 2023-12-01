@@ -1,17 +1,4 @@
 {
-  "gpu-fyi-try-mac-amd-pro-rel": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "enable_nacl": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "use_dummy_lastchange": true,
-      "use_remoteexec": true
-    }
-  },
   "ios-blink-dbg-fyi": {
     "gn_args": {
       "dcheck_always_on": true,

@@ -178,6 +178,7 @@ ci.gpu.mac_builder(
             "release_builder",
             "try_builder",
             "reclient",
+            "x64",
         ],
     ),
 )
@@ -209,6 +210,7 @@ ci.gpu.mac_builder(
             "gpu_tests",
             "debug_builder",
             "reclient",
+            "x64",
         ],
     ),
 )

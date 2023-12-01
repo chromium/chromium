@@ -594,7 +594,6 @@
     },
 
     'tryserver.chromium.mac': {
-      'gpu-fyi-try-mac-amd-pro-rel': 'gpu_fyi_tests_release_trybot_reclient',
       'ios-blink-dbg-fyi': 'ios_simulator_blink_xctest',
       'ios-fieldtrial-rel': 'ios_simulator_debug_static_bot_xctest_arm64_reclient',
       'ios-m1-simulator': 'ios_simulator_debug_static_bot_xctest_arm64_reclient',
