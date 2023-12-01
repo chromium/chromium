@@ -31,7 +31,7 @@
       "--enable-blink-features=PrivateNetworkAccessPermissionPrompt",
       "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": ["phao@google.com", "lyf@google.com"],
-    "expires": "Jan 1, 2024"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "pna-workers-disabled",
@@ -40,7 +40,7 @@
     "args": ["--disable-features=PrivateNetworkAccessForWorkers",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": ["phao@google.com", "lyf@google.com"],
-    "expires": "Jan 1, 2024"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "pna-workers-enabled",
@@ -51,7 +51,7 @@
       "--disable-features=PrivateNetworkAccessForWorkersWarningOnly",
       "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": ["phao@google.com", "lyf@google.com"],
-    "expires": "Jan 1, 2024"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "pna-iframes-enabled",
@@ -60,7 +60,7 @@
     "args": ["--enable-features=PrivateNetworkAccessForIframes,CorsSafelistedHeaderValueSizeRelaxed",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": ["phao@google.com", "lyf@google.com"],
-    "expires": "Jan 1, 2024"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "pna-iframes-warning",
@@ -69,7 +69,7 @@
     "args": ["--enable-features=PrivateNetworkAccessForIframes,PrivateNetworkAccessForIframesWarningOnly,CorsSafelistedHeaderValueSizeRelaxed",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": ["phao@google.com", "lyf@google.com"],
-    "expires": "Jan 1, 2024"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "reduce-accept-language",
