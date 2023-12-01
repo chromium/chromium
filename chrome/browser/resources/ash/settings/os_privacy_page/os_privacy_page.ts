@@ -239,7 +239,7 @@ export class OsSettingsPrivacyPageElement extends
               lockScreen: 'os-settings:privacy-lock-screen',
               manageOtherPeople: 'os-settings:privacy-manage-people',
               smartPrivacy: 'os-settings:privacy-smart-privacy',
-              suggestedContent: 'os-settings:privacy-suggested-content',
+              suggestedContent: 'os-settings:content-recommend',
               verifiedAccess: 'os-settings:privacy-verified-access',
               dataAccessProtection:
                   'os-settings:privacy-data-access-protection',

@@ -84,7 +84,7 @@ export class SearchAndAssistantSettingsCardElement extends
             return {
               searchEngine: 'os-settings:explore',
               assistant: 'os-settings:assistant',
-              contentRecommendations: '',
+              contentRecommendations: 'os-settings:content-recommend',
             };
           }
 
