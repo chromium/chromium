@@ -427,6 +427,9 @@ extern const char kBorealisWebUIInstallerDescription[];
 extern const char kBypassAppBannerEngagementChecksName[];
 extern const char kBypassAppBannerEngagementChecksDescription[];
 
+extern const char kSeparateWebAppShortcutBadgeIconName[];
+extern const char kSeparateWebAppShortcutBadgeIconDescription[];
+
 extern const char kServiceWorkerBypassFetchHandlerName[];
 extern const char kServiceWorkerBypassFetchHandlerDescription[];
 

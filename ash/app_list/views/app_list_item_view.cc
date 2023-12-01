@@ -605,9 +605,9 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
   icon_background_->SetCanProcessEventsWithinSubtree(false);
   icon_background_->SetVisible(is_folder_);
 
-  // If the item icon is used, set the icon in ImageView and paint the view.
   if (use_item_icon_) {
-    if (chromeos::features::IsSeparateWebAppShortcutBadgeIconEnabled()) {
+    // If the item icon is used, set the icon in ImageView and paint the view.
+    if (features::IsSeparateWebAppShortcutBadgeIconEnabled()) {
       shortcut_background_container_ =
           AddChildView(std::make_unique<views::View>());
     }
@@ -1442,7 +1442,7 @@ void AppListItemView::Layout() {
   }
 
   if (host_badge_icon_container_ && host_badge_icon_view_ &&
-      chromeos::features::IsSeparateWebAppShortcutBadgeIconEnabled()) {
+      features::IsSeparateWebAppShortcutBadgeIconEnabled()) {
     gfx::Rect host_badge_icon_container_bounds =
         GetHostBadgeIconContainerBoundsForTargetViewBounds(
             icon_bounds,
@@ -2007,7 +2007,7 @@ gfx::ImageSkia AppListItemView::GetDragImage() const {
     return folder_icon_->CreateDragImage();
   }
   if (has_host_badge_ && host_badge_icon_view_ &&
-      chromeos::features::IsSeparateWebAppShortcutBadgeIconEnabled()) {
+      features::IsSeparateWebAppShortcutBadgeIconEnabled()) {
     const int background_radius =
         std::round(app_list_config_->GetShortcutBackgroundContainerDimension() /
                    2.0f * kDragDropAppIconScale);

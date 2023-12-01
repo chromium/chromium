@@ -33515,6 +33515,7 @@ from previous Chrome versions.
   <int value="-1376258171" label="InstanceSwitcher:enabled"/>
   <int value="-1376006534" label="WinUseBrowserSpellChecker:disabled"/>
   <int value="-1375111024" label="enable-fixed-position-compositing"/>
+  <int value="-1374377956" label="SeparateWebAppShortcutBadgeIcon:disabled"/>
   <int value="-1374048865" label="CpuAffinityRestrictToLittleCores:enabled"/>
   <int value="-1373942769" label="WebAuthenticationCtap2:disabled"/>
   <int value="-1373705581" label="ManualSaving:enabled"/>
@@ -35883,6 +35884,7 @@ from previous Chrome versions.
   <int value="-254158542" label="SubresourceRedirectPreviews:enabled"/>
   <int value="-253685023" label="PrivacyGuideAndroid3:enabled"/>
   <int value="-253619457" label="ChromeSharingHubLaunchAdjacent:enabled"/>
+  <int value="-253140720" label="SeparateWebAppShortcutBadgeIcon:enabled"/>
   <int value="-252258023" label="ShimlessRMAFlow:enabled"/>
   <int value="-252128826" label="ContextualSearchDelayedIntelligence:enabled"/>
   <int value="-251167216" label="ArcUpdateO4CListViaA2C2:disabled"/>

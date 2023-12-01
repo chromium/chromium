@@ -7163,6 +7163,11 @@
     "expiry_milestone": 119
   },
   {
+    "name": "separate-web-app-shortcut-badge-icon",
+    "owners": ["tbarzic@chromium.org", "mxcai@chromium.org", "owenzhang@google.com"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "service-worker-bypass-fetch-handler",
     "owners": [ "sisidovski@google.com", "chrome-worker@google.com" ],
     "expiry_milestone": 119

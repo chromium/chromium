@@ -758,6 +758,12 @@ const char kBypassAppBannerEngagementChecksDescription[] =
     "eligibility requirements for showing app banners, such as having a "
     "manifest, are met.";
 
+const char kSeparateWebAppShortcutBadgeIconName[] =
+    "Separate Web App Shorcut Badge Icon";
+const char kSeparateWebAppShortcutBadgeIconDescription[] =
+    "The shortcut app badge is painted in the UI instead of being part of the "
+    "shortcut app icon, and more effects are added for the icon.";
+
 const char kServiceWorkerBypassFetchHandlerName[] =
     "Bypass Service Worker Fetch Handler";
 const char kServiceWorkerBypassFetchHandlerDescription[] =

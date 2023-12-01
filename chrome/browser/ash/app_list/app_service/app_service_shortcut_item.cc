@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_list/app_service/app_service_shortcut_item.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -163,7 +164,7 @@ void AppServiceShortcutItem::OnLoadIcon(apps::IconValuePtr icon_value,
   // icons.
   // TODO(crbug.com/1480423): Remove this when the actual visual is done in the
   // UI.
-  if (chromeos::features::IsSeparateWebAppShortcutBadgeIconEnabled()) {
+  if (ash::features::IsSeparateWebAppShortcutBadgeIconEnabled()) {
     SetIcon(icon_value->uncompressed, false);
   } else {
     gfx::ImageSkia icon_with_badge =
