@@ -488,9 +488,11 @@ void FormStructure::DetermineHeuristicTypes(
     LogManager* log_manager) {
   SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.DetermineHeuristicTypes");
 
+  client_country_ = client_country;
+
   // The active heuristic source might not be a pattern source.
   if (absl::optional<PatternSource> pattern_source = GetActivePatternSource()) {
-    ParseFieldTypesWithPatterns(*pattern_source, client_country, log_manager);
+    ParseFieldTypesWithPatterns(*pattern_source, log_manager);
   }
 
   if (!base::FeatureList::IsEnabled(
@@ -498,8 +500,7 @@ void FormStructure::DetermineHeuristicTypes(
     for (HeuristicSource heuristic_source : GetNonActiveHeuristicSources()) {
       if (auto shadow_source =
               HeuristicSourceToPatternSource(heuristic_source)) {
-        ParseFieldTypesWithPatterns(*shadow_source, client_country,
-                                    log_manager);
+        ParseFieldTypesWithPatterns(*shadow_source, log_manager);
       }
     }
   }
@@ -1339,7 +1340,6 @@ bool FormStructure::SetSectionsFromAutocompleteOrReset() {
 
 void FormStructure::ParseFieldTypesWithPatterns(
     PatternSource pattern_source,
-    const GeoIpCountryCode& client_country,
     LogManager* log_manager) {
   FieldCandidatesMap field_type_map;
   const LanguageCode& page_language =
@@ -1347,14 +1347,14 @@ void FormStructure::ParseFieldTypesWithPatterns(
           ? current_page_language_
           : LanguageCode();
   if (ShouldRunHeuristics()) {
-    FormField::ParseFormFields(fields_, client_country, page_language,
+    FormField::ParseFormFields(fields_, client_country_, page_language,
                                is_form_tag_, pattern_source, field_type_map,
                                log_manager);
   } else if (ShouldRunHeuristicsForSingleFieldForms()) {
-    FormField::ParseSingleFieldForms(fields_, client_country, page_language,
+    FormField::ParseSingleFieldForms(fields_, client_country_, page_language,
                                      is_form_tag_, pattern_source,
                                      field_type_map, log_manager);
-    FormField::ParseStandaloneCVCFields(fields_, client_country, page_language,
+    FormField::ParseStandaloneCVCFields(fields_, client_country_, page_language,
                                         pattern_source, field_type_map,
                                         log_manager);
 
@@ -1364,7 +1364,7 @@ void FormStructure::ParseFieldTypesWithPatterns(
     if (is_form_tag_ &&
         base::FeatureList::IsEnabled(
             features::kAutofillEnableEmailHeuristicOnlyAddressForms)) {
-      FormField::ParseStandaloneEmailFields(fields_, client_country,
+      FormField::ParseStandaloneEmailFields(fields_, client_country_,
                                             page_language, pattern_source,
                                             field_type_map, log_manager);
     }

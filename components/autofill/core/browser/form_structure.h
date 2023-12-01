@@ -262,7 +262,6 @@ class FormStructure {
 
   // Classifies each field in |fields_| using the regular expressions.
   void ParseFieldTypesWithPatterns(PatternSource pattern_source,
-                                   const GeoIpCountryCode& client_country,
                                    LogManager* log_manager);
 
   // Returns the values that can be filled into the form structure for the
@@ -550,6 +549,10 @@ class FormStructure {
   // Extract parseable field labels by potentially splitting labels between
   // adjacent fields.
   void ExtractParseableFieldLabels();
+
+  // The country where the user is currently located. Used to introduce biases
+  // in form parsing and understanding according to the user's location.
+  GeoIpCountryCode client_country_;
 
   // The language detected for this form's page, before any translations
   // performed by Chrome.
