@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_UNPOSITIONED_FLOAT_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_UNPOSITIONED_FLOAT_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_UNPOSITIONED_FLOAT_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_UNPOSITIONED_FLOAT_H_
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -71,4 +71,4 @@ struct CORE_EXPORT UnpositionedFloat final {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_UNPOSITIONED_FLOAT_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_UNPOSITIONED_FLOAT_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/ng/ng_out_of_flow_layout_part.h"
+#include "third_party/blink/renderer/core/layout/out_of_flow_layout_part.h"
 
 #include <math.h>
 
@@ -23,13 +23,13 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/legacy_layout_tree_walking.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_box_utils.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_absolute_utils.h"
+#include "third_party/blink/renderer/core/layout/absolute_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_anchor_query_map.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_disable_side_effects_scope.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragment.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_out_of_flow_positioned_node.h"
+#include "third_party/blink/renderer/core/layout/oof_positioned_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_simplified_layout_algorithm.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_simplified_oof_layout_algorithm.h"
+#include "third_party/blink/renderer/core/layout/simplified_oof_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/physical_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -1641,7 +1641,7 @@ OutOfFlowLayoutPart::NodeInfo OutOfFlowLayoutPart::SetupNodeInfo(
       container_content_size, GetConstraintSpace().GetWritingMode());
 
   // Adjust the |static_position| (which is currently relative to the default
-  // container's border-box). ng_absolute_utils expects the static position to
+  // container's border-box). absolute_utils expects the static position to
   // be relative to the container's padding-box. Since
   // |container_info.rect.offset| is relative to its fragmentainer in this
   // case, we also need to adjust the offset to account for this.

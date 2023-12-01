@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_OUT_OF_FLOW_LAYOUT_PART_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_OUT_OF_FLOW_LAYOUT_PART_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_OUT_OF_FLOW_LAYOUT_PART_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_OUT_OF_FLOW_LAYOUT_PART_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -13,7 +13,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/static_position.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_containing_block_utils.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_absolute_utils.h"
+#include "third_party/blink/renderer/core/layout/absolute_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/non_overflowing_scroll_range.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
@@ -443,4 +443,4 @@ WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
     blink::OutOfFlowLayoutPart::NodeToLayout)
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_OUT_OF_FLOW_LAYOUT_PART_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_OUT_OF_FLOW_LAYOUT_PART_H_

@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/core/layout/inline/hyphen_result.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_text_index.h"
 #include "third_party/blink/renderer/core/layout/inline/text_offset_range.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_positioned_float.h"
+#include "third_party/blink/renderer/core/layout/positioned_float.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"

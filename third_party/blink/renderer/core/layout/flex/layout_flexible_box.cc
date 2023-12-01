@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/layout/flex/flex_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_out_of_flow_positioned_node.h"
+#include "third_party/blink/renderer/core/layout/oof_positioned_node.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 
 namespace blink {

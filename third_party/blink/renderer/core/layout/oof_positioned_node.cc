@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/ng/ng_out_of_flow_positioned_node.h"
+#include "third_party/blink/renderer/core/layout/oof_positioned_node.h"
 
 namespace blink {
 
