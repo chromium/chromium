@@ -496,7 +496,14 @@ void DownloadsDOMHandler::BypassDeepScanRequiringGesture(
   if (download) {
     DownloadItemModel model(download);
     DownloadCommands commands(model.GetWeakPtr());
-    commands.ExecuteCommand(DownloadCommands::BYPASS_DEEP_SCANNING_AND_OPEN);
+    // Under ImprovedDownloadPageWarnings, the button says "Download suspicious
+    // file" which does not imply opening the file. In the old behavior, the
+    // button says "Open anyway" so we should open the file.
+    commands.ExecuteCommand(
+        base::FeatureList::IsEnabled(
+            safe_browsing::kImprovedDownloadPageWarnings)
+            ? DownloadCommands::BYPASS_DEEP_SCANNING
+            : DownloadCommands::BYPASS_DEEP_SCANNING_AND_OPEN);
   }
 }
 
