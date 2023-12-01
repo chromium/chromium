@@ -954,7 +954,7 @@
   },
   {
     "prefix": "fluent-non-overlay-scrollbar",
-    "platforms": ["Win"],
+    "platforms": ["Linux", "Win"],
     "bases": ["fast/scrolling/scrollbars", "external/wpt/css/css-scrollbars"],
     "args": ["--enable-features=FluentScrollbar",
              "--enable-threaded-compositing",
@@ -964,7 +964,7 @@
   },
   {
     "prefix": "fluent-non-overlay-scrollbar-dsf-150",
-    "platforms": ["Win"],
+    "platforms": ["Linux", "Win"],
     "bases": ["virtual/fluent-non-overlay-scrollbar/composited"],
     "args": ["--enable-features=FluentScrollbar",
              "--enable-threaded-compositing",
@@ -974,7 +974,7 @@
   },
   {
     "prefix": "fluent-non-overlay-scrollbar-dsf-200",
-    "platforms": ["Win"],
+    "platforms": ["Linux", "Win"],
     "bases": ["virtual/fluent-non-overlay-scrollbar/composited"],
     "args": ["--enable-features=FluentScrollbar",
              "--enable-threaded-compositing",
@@ -984,7 +984,7 @@
   },
   {
     "prefix": "fluent-non-overlay-scrollbar-hc",
-    "platforms": ["Win"],
+    "platforms": ["Linux", "Win"],
     "bases": ["virtual/fluent-non-overlay-scrollbar/composited",
               "virtual/fluent-non-overlay-scrollbar/hover-over-scrollbar-thumb.html"],
     "args": ["--enable-features=FluentScrollbar",
@@ -995,7 +995,7 @@
   },
   {
     "prefix": "fluent-non-overlay-scrollbar-dark-mode",
-    "platforms": ["Win"],
+    "platforms": ["Linux", "Win"],
     "bases": ["fast/forms/color-scheme/scrollbar",
               "virtual/fluent-non-overlay-scrollbar/hover-over-scrollbar-thumb.html"],
     "args": ["--enable-features=FluentScrollbar",
@@ -1006,7 +1006,7 @@
   },
   {
     "prefix": "fluent-overlay-scrollbar",
-    "platforms": ["Win"],
+    "platforms": ["Linux", "Win"],
     "bases": ["virtual/fluent-non-overlay-scrollbar/hover-over-scrollbar-thumb.html"],
     "args": ["--enable-features=FluentOverlayScrollbar",
              "--enable-threaded-compositing",
@@ -1016,7 +1016,7 @@
   },
   {
     "prefix": "fluent-overlay-scrollbar-dark-mode",
-    "platforms": ["Win"],
+    "platforms": ["Linux", "Win"],
     "bases": ["virtual/fluent-non-overlay-scrollbar/hover-over-scrollbar-thumb.html"],
     "args": ["--enable-features=FluentOverlayScrollbar",
              "--enable-threaded-compositing",
@@ -1026,7 +1026,7 @@
   },
   {
     "prefix": "fluent-overlay-scrollbar-hc",
-    "platforms": ["Win"],
+    "platforms": ["Linux", "Win"],
     "bases": ["virtual/fluent-non-overlay-scrollbar/hover-over-scrollbar-thumb.html"],
     "args": ["--enable-features=FluentOverlayScrollbar",
              "--enable-threaded-compositing",

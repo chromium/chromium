@@ -71,8 +71,9 @@ window.onload = () => {
     await mouseDragAndDrop(SCROLLBAR_THUMB.x, SCROLLBAR_THUMB.y, SCROLLBAR_THUMB.x, SCROLLBAR_THUMB.y + 20);
     let expected_offset = 0;
 
-    if (onLinuxPlatform)
-      expected_offset = 92;
+    // If Fluent is enabled, Linux and Windows behavior should match
+    if (onLinuxPlatform && !internals.runtimeFlags.fluentScrollbarsEnabled)
+      expected_offset =  92;
     else if (onMacPlatform)
       expected_offset = 46.5;
     else
@@ -106,7 +107,8 @@ window.onload = () => {
     const modifier = onMacPlatform ? "Alt" : "Shift";
     await mouseClickOn(SCROLLBAR_BUTTON_FWD.x, standardRectFast.top + 50, /*left_click*/0, modifier);
     let expected_offset = 0;
-    if (onLinuxPlatform)
+    // If Fluent is enabled, Linux and Windows behavior should match
+    if (onLinuxPlatform && !internals.runtimeFlags.fluentScrollbarsEnabled)
       expected_offset = 87;
     else if (onMacPlatform)
       expected_offset = 72.5;
