@@ -617,7 +617,7 @@ void SecondDeviceAuthBroker::OnChallengeBytesFetched(
 }
 
 void SecondDeviceAuthBroker::FetchAttestationCertificate(
-    const Base64String& fido_credential_id,
+    const Base64UrlString& fido_credential_id,
     AttestationCertificateCallback certificate_callback) {
   attestation::AttestationFeatures::GetFeatures(base::BindOnce(
       &SecondDeviceAuthBroker::FetchAttestationCertificateInternal,
@@ -675,7 +675,7 @@ void SecondDeviceAuthBroker::OnAuthorizationCodeFetched(
 }
 
 void SecondDeviceAuthBroker::FetchAttestationCertificateInternal(
-    const Base64String& fido_credential_id,
+    const Base64UrlString& fido_credential_id,
     AttestationCertificateCallback certificate_callback,
     const attestation::AttestationFeatures* attestation_features) {
   if (!attestation_features) {

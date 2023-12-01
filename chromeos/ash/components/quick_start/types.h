@@ -32,6 +32,9 @@ using PEMCertChain = base::StrongAlias<class PEMCertChainTag, std::string>;
 // in the output.
 Base64UrlString Base64UrlEncode(const std::vector<uint8_t>& data);
 
+// Same as above - except that it accepts `data` as `std::string`.
+Base64UrlString Base64UrlEncode(const std::string& data);
+
 // Transcodes a Base64 encoded string to Base64Url. Returns an empty optional if
 // the input string is incorrectly encoded. Omits padding characters in the
 // output.

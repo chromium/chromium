@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/base64.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
@@ -631,8 +630,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
   // Objects that will be used for verifying the data flow between the
   // components.
   FidoAssertionInfo fido_assertion;
-  fido_assertion.credential_id =
-      Base64String(base::Base64Encode(kTestCredentialId));
+  fido_assertion.credential_id = Base64UrlEncode(kTestCredentialId);
   PEMCertChain pem_cert_chain{kPemCertificateString};
 
   // TODO(b/287006890) - Expand test to include failure modes as well.

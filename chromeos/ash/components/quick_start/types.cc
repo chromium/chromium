@@ -20,6 +20,10 @@ Base64UrlString Base64UrlEncode(const std::vector<uint8_t>& data) {
   return result;
 }
 
+Base64UrlString Base64UrlEncode(const std::string& data) {
+  return Base64UrlEncode(std::vector<uint8_t>(data.begin(), data.end()));
+}
+
 absl::optional<Base64UrlString> Base64UrlTranscode(const Base64String& data) {
   absl::optional<std::vector<uint8_t>> decoded_bytes =
       base::Base64Decode(*data);

@@ -33,7 +33,7 @@ class MockSecondDeviceAuthBroker : public SecondDeviceAuthBroker {
               (override));
   MOCK_METHOD(void,
               FetchAttestationCertificate,
-              (const Base64String&, AttestationCertificateCallback),
+              (const Base64UrlString&, AttestationCertificateCallback),
               (override));
 
   void SetupChallengeBytesResponse(ChallengeBytesOrError challenge);

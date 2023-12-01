@@ -154,7 +154,7 @@ class SecondDeviceAuthBroker {
   // during attestation.
   // Virtual for testing.
   virtual void FetchAttestationCertificate(
-      const Base64String& fido_credential_id,
+      const Base64UrlString& fido_credential_id,
       AttestationCertificateCallback certificate_callback);
 
   // Fetches an OAuth authorization code.
@@ -184,7 +184,7 @@ class SecondDeviceAuthBroker {
   // Same as `FetchAttestationCertificate` except that it is called with
   // `attestation_features`.
   void FetchAttestationCertificateInternal(
-      const Base64String& fido_credential_id,
+      const Base64UrlString& fido_credential_id,
       AttestationCertificateCallback certificate_callback,
       const attestation::AttestationFeatures* attestation_features);
 

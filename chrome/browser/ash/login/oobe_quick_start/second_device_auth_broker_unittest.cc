@@ -225,7 +225,7 @@ class SecondDeviceAuthBrokerTest : public ::testing::Test {
   }
 
   base::expected<PEMCertChain, SecondDeviceAuthBroker::AttestationErrorType>
-  FetchAttestationCertificate(const Base64String& fido_credential_id) {
+  FetchAttestationCertificate(const Base64UrlString& fido_credential_id) {
     base::test::TestFuture<
         SecondDeviceAuthBroker::AttestationCertificateOrError>
         future;
@@ -297,8 +297,8 @@ class SecondDeviceAuthBrokerTest : public ::testing::Test {
     return mock_attestation_flow_;
   }
 
-  Base64String fido_credential_id() {
-    return Base64String(base::Base64Encode(kFidoCredentialIdBytes));
+  Base64UrlString fido_credential_id() {
+    return Base64UrlEncode(kFidoCredentialIdBytes);
   }
 
   scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory() {

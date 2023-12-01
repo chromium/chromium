@@ -519,8 +519,8 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
   // Emulate a GetAssertion response.
   std::vector<uint8_t> credential_id = {0x01, 0x02, 0x03};
 
-  // The credential ID should be Base64 encoded.
-  Base64String expected_credential_id(base::Base64Encode(credential_id));
+  // The credential ID should be Base64Url encoded.
+  Base64UrlString expected_credential_id = Base64UrlEncode(credential_id);
 
   std::vector<uint8_t> auth_data = {0x02, 0x03, 0x04};
   std::vector<uint8_t> signature = {0x03, 0x04, 0x05};
