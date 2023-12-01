@@ -134,6 +134,27 @@ const int kDefaultKeyModifier = blink::WebInputEvent::kMetaKey;
 const int kDefaultKeyModifier = blink::WebInputEvent::kControlKey;
 #endif
 
+// A promise that receives and sends postMessage() messages to the PDF iframe.
+// The iframe must be accessed differently than the embed, so
+// `EnsurePDFHasLoaded()` can't be used here.
+const char kOopifPostMessageIframe[] = R"(
+    new Promise(resolve => {
+      window.addEventListener('message', event => {
+        if (event.origin !==
+                'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai') {
+          return;
+        }
+        if (event.data.type === 'documentLoaded') {
+          resolve(
+              event.data.load_state === 'success');
+        } else if (event.data.type === 'passwordPrompted') {
+          resolve(true);
+        }
+      });
+      window.frames[0][0].postMessage({type: 'initialize'}, '*');
+    });
+  )";
+
 struct PDFExtensionLoadTestPassToString {
   std::string operator()(
       const ::testing::TestParamInfo<std::tuple<int, bool>>& i) const {
@@ -3648,6 +3669,69 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, ExtensionsBindingLocalHost) {
   EXPECT_EQ(1, content::EvalJs(guest_view->web_contents(), "1;").ExtractInt());
 }
 
+// PDF extension tests for loading the PDF in an incognito browser.
+class PDFExtensionIncognitoTest : public PDFExtensionTest {
+ protected:
+  void SetUpOnMainThread() override {
+    PDFExtensionTest::SetUpOnMainThread();
+    incognito_browser_ = CreateIncognitoBrowser();
+  }
+
+  void TearDownOnMainThread() override {
+    incognito_browser_ = nullptr;
+    PDFExtensionTest::TearDownOnMainThread();
+  }
+
+  Browser* incognito_browser() { return incognito_browser_; }
+
+ private:
+  raw_ptr<Browser> incognito_browser_ = nullptr;
+};
+
+// Test that full page PDF viewer successfully loads in incognito.
+IN_PROC_BROWSER_TEST_P(PDFExtensionIncognitoTest, IncognitoFullPage) {
+  // Load a direct PDF URL full page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      incognito_browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
+
+  content::WebContents* contents =
+      incognito_browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(
+      contents->GetPrimaryMainFrame()));
+}
+
+// Test that an embed-embedded PDF viewer successfully loads in incognito.
+IN_PROC_BROWSER_TEST_P(PDFExtensionIncognitoTest, IncognitoEmbed) {
+  // Load the HTML containing an embed embedding a PDF.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      incognito_browser(),
+      embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
+
+  content::WebContents* contents =
+      incognito_browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(
+      contents->GetPrimaryMainFrame()));
+}
+
+// Test that an iframe-embedded PDF viewer successfully loads in incognito.
+IN_PROC_BROWSER_TEST_P(PDFExtensionIncognitoTest, IncognitoIframe) {
+  if (!UseOopif()) {
+    GTEST_SKIP() << "GuestView PDF viewer cannot ensure PDF load in an iframe.";
+  }
+
+  // Load the HTML containing an iframe embedding a PDF.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      incognito_browser(),
+      embedded_test_server()->GetURL("/pdf/test-iframe.html")));
+
+  content::WebContents* contents =
+      incognito_browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Verify the pdf has loaded.
+  EXPECT_EQ(true, content::EvalJs(contents->GetPrimaryMainFrame(),
+                                  kOopifPostMessageIframe));
+}
+
 // PDF extension tests for the OOPIF PDF viewer.
 class PDFExtensionOopifTest : public PDFExtensionTestWithoutOopifOverride {
  public:
@@ -3685,34 +3769,13 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, OopifPdfPostMessageEmbed) {
 // Test that an iframe-embedded PDF can send and receive postMessage() messages
 // from its embedder.
 IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, OopifPdfPostMessageIframe) {
-  // A promise that receives and sends postMessage() messages to the PDF iframe.
-  // The iframe must be accessed differently than the embed, so
-  // `EnsurePDFHasLoaded()` can't be used here.
-  const std::string kPostMessageIframe = R"(
-      new Promise(resolve => {
-        window.addEventListener('message', event => {
-          if (event.origin !==
-                  'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai') {
-            return;
-          }
-          if (event.data.type === 'documentLoaded') {
-            resolve(
-                event.data.load_state === 'success');
-          } else if (event.data.type === 'passwordPrompted') {
-            resolve(true);
-          }
-        });
-        window.frames[0][0].postMessage({type: 'initialize'}, '*');
-      });
-    )";
-
   // Load the HTML containing an iframe embedding a PDF.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/pdf/test-iframe.html")));
 
   // Verify the pdf has loaded.
   EXPECT_EQ(true, content::EvalJs(GetActiveWebContents()->GetPrimaryMainFrame(),
-                                  kPostMessageIframe));
+                                  kOopifPostMessageIframe));
 }
 
 // TODO(crbug.com/1445746): Stop testing both modes after OOPIF PDF viewer
@@ -3732,3 +3795,4 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionPrerenderTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionSubmitFormTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     PDFExtensionPrerenderAndFencedFrameTest);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionIncognitoTest);
