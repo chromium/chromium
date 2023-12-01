@@ -3387,8 +3387,16 @@ void DoDynamicChangingFormFill_SelectUpdated(
 
 // Test that we can Autofill dynamically changing selects that have options
 // added and removed.
+// TODO(crbug.com/1481004) Flaky on win-asan.
+#if defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_WIN)
+#define MAYBE_DynamicChangingFormFill_SelectUpdated \
+    DISABLED_DynamicChangingFormFill_SelectUpdated
+#else
+#define MAYBE_DynamicChangingFormFill_SelectUpdated \
+    DynamicChangingFormFill_SelectUpdated
+#endif
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
-                       DynamicChangingFormFill_SelectUpdated) {
+                       MAYBE_DynamicChangingFormFill_SelectUpdated) {
   DoDynamicChangingFormFill_SelectUpdated(this, embedded_test_server(),
                                           /*should_test_selectlist=*/false,
                                           /*should_test_async_update=*/false);
@@ -3396,8 +3404,16 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 
 // Test that we can Autofill dynamically changing selectlists that have options
 // added and removed.
+// TODO(crbug.com/1481004) Flaky on win-asan.
+#if defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_WIN)
+#define MAYBE_DynamicChangingFormFill_SelectListUpdated \
+    DISABLED_DynamicChangingFormFill_SelectListUpdated
+#else
+#define MAYBE_DynamicChangingFormFill_SelectListUpdated \
+    DynamicChangingFormFill_SelectListUpdated
+#endif
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
-                       DynamicChangingFormFill_SelectListUpdated) {
+                       MAYBE_DynamicChangingFormFill_SelectListUpdated) {
   DoDynamicChangingFormFill_SelectUpdated(this, embedded_test_server(),
                                           /*should_test_selectlist=*/true,
                                           /*should_test_async_update=*/false);
@@ -3405,8 +3421,16 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 
 // Test that we can Autofill dynamically changing selects that have options
 // added and removed, when the updating occurs asynchronously.
+// TODO(crbug.com/1481004) Flaky on win-asan.
+#if defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_WIN)
+#define MAYBE_DynamicChangingFormFill_SelectUpdatedAsync \
+    DISABLED_DynamicChangingFormFill_SelectUpdatedAsync
+#else
+#define MAYBE_DynamicChangingFormFill_SelectUpdatedAsync \
+    DynamicChangingFormFill_SelectUpdatedAsync
+#endif
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
-                       DynamicChangingFormFill_SelectUpdatedAsync) {
+                       MAYBE_DynamicChangingFormFill_SelectUpdatedAsync) {
   DoDynamicChangingFormFill_SelectUpdated(this, embedded_test_server(),
                                           /*should_test_selectlist=*/false,
                                           /*should_test_async_update=*/true);
@@ -3414,8 +3438,16 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 
 // Test that we can Autofill dynamically changing selectlists that have options
 // added and removed, when the updating occurs asynchronously.
+// TODO(crbug.com/1481004) Flaky on win-asan.
+#if defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_WIN)
+#define MAYBE_DynamicChangingFormFill_SelectListUpdatedAsync \
+    DISABLED_DynamicChangingFormFill_SelectListUpdatedAsync
+#else
+#define MAYBE_DynamicChangingFormFill_SelectListUpdatedAsync \
+    DynamicChangingFormFill_SelectListUpdatedAsync
+#endif
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
-                       DynamicChangingFormFill_SelectListUpdatedAsync) {
+                       MAYBE_DynamicChangingFormFill_SelectListUpdatedAsync) {
   DoDynamicChangingFormFill_SelectUpdated(this, embedded_test_server(),
                                           /*should_test_selectlist=*/true,
                                           /*should_test_async_update=*/true);
