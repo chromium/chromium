@@ -5007,6 +5007,8 @@ static_library("browser") {
       "nearby_sharing/instantmessaging/stream_parser.h",
       "nearby_sharing/instantmessaging/token_fetcher.cc",
       "nearby_sharing/instantmessaging/token_fetcher.h",
+      "nearby_sharing/metrics/attachment_metric_logger.cc",
+      "nearby_sharing/metrics/attachment_metric_logger.h",
       "nearby_sharing/metrics/discovery_metric_logger.cc",
       "nearby_sharing/metrics/discovery_metric_logger.h",
       "nearby_sharing/metrics/metric_common.cc",

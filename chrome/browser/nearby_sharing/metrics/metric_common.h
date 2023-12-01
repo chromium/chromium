@@ -20,8 +20,30 @@ enum DeviceRelationship {
   kStranger = 2,
 };
 
+// This has significant overlap with `TransferMetadata::Status`, but it only
+// captures terminal states.
+enum TransferResult {
+  kUnknown = 0,
+  kComplete = 1,
+  kFailed = 2,
+  kCancelled = 3,
+  kRejected = 4,
+  kTimedOut = 5,
+  kNotEnoughSpace = 6,
+  kUnsupportedAttachmentType = 7,
+  kMissingPayloads = 8,
+  kIncompletePayloads = 9,
+  kUnexpectedDisconnection = 10,
+  kFailedToInitiateOutgoingConnection = 11,
+  kFailedToReadOutgoingConnectionResponse = 12,
+  kInvalidIntroductionFrame = 13,
+  kPairedKeyVerificationFailed = 14,
+  kMediaUnavailable = 15,
+};
+
 Platform GetPlatform(const ShareTarget& share_target);
 DeviceRelationship GetDeviceRelationship(const ShareTarget& share_target);
+TransferResult GetTransferResult(TransferMetadata::Status status);
 
 }  // namespace nearby::share::metrics
 

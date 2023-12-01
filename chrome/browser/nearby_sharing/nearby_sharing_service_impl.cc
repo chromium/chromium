@@ -344,7 +344,9 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
       discovery_metric_logger_(
           std::make_unique<nearby::share::metrics::DiscoveryMetricLogger>()),
       throughput_metric_logger_(
-          std::make_unique<nearby::share::metrics::ThroughputMetricLogger>()) {
+          std::make_unique<nearby::share::metrics::ThroughputMetricLogger>()),
+      attachment_metric_logger_(
+          std::make_unique<nearby::share::metrics::AttachmentMetricLogger>()) {
   DCHECK(profile_);
   DCHECK(nearby_connections_manager_);
   DCHECK(power_client_);
@@ -373,6 +375,7 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
   if (base::FeatureList::IsEnabled(metrics::structured::kNearbyShareMetrics)) {
     AddObserver(discovery_metric_logger_.get());
     AddObserver(throughput_metric_logger_.get());
+    AddObserver(attachment_metric_logger_.get());
   }
 
   GetBluetoothAdapter();
@@ -405,6 +408,7 @@ NearbySharingServiceImpl::~NearbySharingServiceImpl() {
   if (base::FeatureList::IsEnabled(metrics::structured::kNearbyShareMetrics)) {
     RemoveObserver(discovery_metric_logger_.get());
     RemoveObserver(throughput_metric_logger_.get());
+    RemoveObserver(attachment_metric_logger_.get());
   }
 }
 
