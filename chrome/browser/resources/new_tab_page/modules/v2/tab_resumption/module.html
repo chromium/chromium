@@ -125,7 +125,6 @@
                                   'modulesMoreActions',
                                   'modulesDriveSentence')]]"
     on-disable-button-click="onDisableButtonClick_"
-    on-dismiss-button-click="onDismissButtonClick_"
     on-info-button-click="onInfoButtonClick_"
     on-menu-button-click="onMenuButtonClick_">
 </ntp-module-header-v2>
@@ -149,7 +148,8 @@
 </div>
 <cr-lazy-render id="infoDialogRender">
   <template>
-    <ntp-info-dialog inner-h-t-m-l="[[i18nAdvanced('modulesDriveInfo')]]">
+    <ntp-info-dialog
+        inner-h-t-m-l="[[i18nAdvanced('modulesTabResumptionInfo')]]">
     </ntp-info-dialog>
   </template>
 </cr-lazy-render>

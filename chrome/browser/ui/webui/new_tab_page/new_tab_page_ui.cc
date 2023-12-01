@@ -545,6 +545,7 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
        IDS_NTP_MODULES_QUEST_CART_TILE_LABEL_DEFAULT},
       {"modulesMoreActions", IDS_NTP_MODULES_MORE_ACTIONS},
       {"modulesTabResumptionTitle", IDS_NTP_TAB_RESUMPTION_TITLE},
+      {"modulesTabResumptionInfo", IDS_NTP_MODULES_TAB_RESUMPTION_INFO},
 
       // Middle slot promo.
       {"undoDismissPromoButtonToast", IDS_NTP_UNDO_DISMISS_PROMO_BUTTON_TOAST},
