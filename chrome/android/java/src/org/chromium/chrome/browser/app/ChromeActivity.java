@@ -1067,9 +1067,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         super.initializeCompositor();
 
         getTabContentManager().initWithNative();
+        PrefService prefs = UserPrefs.get(getProfileProviderSupplier().get().getOriginalProfile());
         mCompositorViewHolderSupplier
                 .get()
-                .onNativeLibraryReady(getWindowAndroid(), getTabContentManager(), getPrefService());
+                .onNativeLibraryReady(getWindowAndroid(), getTabContentManager(), prefs);
 
         // TODO(1107916): Move contextual search initialization to the RootUiCoordinator.
         if (ContextualSearchFieldTrial.isEnabled()) {
@@ -1317,7 +1318,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 mMissingDeviceLockLauncher =
                         new MissingDeviceLockLauncher(
                                 this,
-                                Profile.getLastUsedRegularProfile(),
+                                getProfileProviderSupplier().get().getOriginalProfile(),
                                 getModalDialogManagerSupplier().get());
             }
             mMissingDeviceLockLauncher.checkPrivateDataIsProtectedByDeviceLock();
@@ -1484,7 +1485,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                             RecordHistogram.recordSparseHistogram(
                                     "Android.PlayServices.Version", playServicesVersion);
 
-                            FontSizePrefs.getInstance(Profile.getLastUsedRegularProfile())
+                            FontSizePrefs.getInstance(
+                                            getProfileProviderSupplier().get().getOriginalProfile())
                                     .recordUserFontPrefOnStartup();
                         });
 
@@ -1493,7 +1495,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         () -> {
                             if (isActivityFinishingOrDestroyed()) return;
                             ForcedSigninProcessor.checkCanSignIn(
-                                    ChromeActivity.this, Profile.getLastUsedRegularProfile());
+                                    ChromeActivity.this,
+                                    getProfileProviderSupplier().get().getOriginalProfile());
                         });
 
         // GSA connection is not needed on low-end devices because Icing is disabled.
@@ -2593,12 +2596,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         if (id == R.id.help_id) {
             String url = currentTab != null ? currentTab.getUrl().getSpec() : "";
-            Profile profile =
-                    getTabModelSelector().isIncognitoSelected()
-                            ? Profile.getLastUsedRegularProfile()
-                                    .getPrimaryOTRProfile(/* createIfNeeded= */ true)
-                            : Profile.getLastUsedRegularProfile();
-            startHelpAndFeedback(url, "MobileMenuFeedback", profile);
+            startHelpAndFeedback(
+                    url,
+                    "MobileMenuFeedback",
+                    getTabModelSelector().getCurrentModel().getProfile());
             return true;
         }
 
@@ -2637,7 +2638,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 || id == R.id.add_bookmark_menu_id
                 || id == R.id.edit_bookmark_menu_id) {
             mTabBookmarkerSupplier.get().addOrEditBookmark(currentTab);
-            TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
+            TrackerFactory.getTrackerForProfile(currentTab.getProfile())
                     .notifyEvent(EventConstants.APP_MENU_BOOKMARK_STAR_ICON_PRESSED);
             RecordUserAction.record("MobileMenuAddToBookmarks");
             return true;
@@ -2646,7 +2647,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         if (id == R.id.enable_price_tracking_menu_id) {
             mTabBookmarkerSupplier.get().startOrModifyPriceTracking(currentTab);
             RecordUserAction.record("MobileMenuEnablePriceTracking");
-            TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
+            TrackerFactory.getTrackerForProfile(currentTab.getProfile())
                     .notifyEvent(EventConstants.SHOPPING_LIST_PRICE_TRACK_FROM_MENU);
             return true;
         }
@@ -2658,7 +2659,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                     /* enabled= */ false,
                     mSnackbarManager,
                     getResources(),
-                    Profile.getLastUsedRegularProfile(),
+                    currentTab.getProfile(),
                     (success) -> {});
             RecordUserAction.record("MobileMenuDisablePriceTracking");
             return true;
@@ -3060,21 +3061,18 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         if (!currentTabSupplier.hasValue()) return false;
         if (printingController == null || printingController.isBusy()) return false;
-        if (!UserPrefs.get(Profile.getLastUsedRegularProfile()).getBoolean(Pref.PRINTING_ENABLED)) {
+        Tab currentTab = currentTabSupplier.get();
+        if (!UserPrefs.get(currentTab.getProfile()).getBoolean(Pref.PRINTING_ENABLED)) {
             return false;
         }
         printingController.startPrint(
-                new TabPrinter(currentTabSupplier.get()), new PrintManagerDelegateImpl(activity));
+                new TabPrinter(currentTab), new PrintManagerDelegateImpl(activity));
         return true;
     }
 
     /** Returns a {@link CompositorViewHolder} instance for testing. */
     public CompositorViewHolder getCompositorViewHolderForTesting() {
         return mCompositorViewHolderSupplier.get();
-    }
-
-    private static PrefService getPrefService() {
-        return UserPrefs.get(Profile.getLastUsedRegularProfile());
     }
 
     /**
