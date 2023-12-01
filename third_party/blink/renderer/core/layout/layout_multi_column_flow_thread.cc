@@ -546,50 +546,6 @@ void LayoutMultiColumnFlowThread::FinishLayoutFromNG(
   last_set_worked_on_ = nullptr;
 }
 
-void LayoutMultiColumnFlowThread::CalculateColumnCountAndWidth(
-    LayoutUnit& width,
-    unsigned& count) const {
-  NOT_DESTROYED();
-  LayoutBlock* column_block = MultiColumnBlockFlow();
-  const ComputedStyle* column_style = column_block->Style();
-  LayoutUnit available_width = column_block->ContentLogicalWidth();
-  LayoutUnit column_gap = ColumnGap(*column_style, available_width);
-  LayoutUnit computed_column_width =
-      max(LayoutUnit(1), LayoutUnit(column_style->ColumnWidth()));
-  unsigned computed_column_count = max<int>(1, column_style->ColumnCount());
-
-  DCHECK(!column_style->HasAutoColumnCount() ||
-         !column_style->HasAutoColumnWidth());
-  if (column_style->HasAutoColumnWidth() &&
-      !column_style->HasAutoColumnCount()) {
-    count = computed_column_count;
-    width = ((available_width - ((count - 1) * column_gap)) / count)
-                .ClampNegativeToZero();
-  } else if (!column_style->HasAutoColumnWidth() &&
-             column_style->HasAutoColumnCount()) {
-    count = std::max(LayoutUnit(1), (available_width + column_gap) /
-                                        (computed_column_width + column_gap))
-                .ToUnsigned();
-    width = ((available_width + column_gap) / count) - column_gap;
-  } else {
-    count = std::max(std::min(LayoutUnit(computed_column_count),
-                              (available_width + column_gap) /
-                                  (computed_column_width + column_gap)),
-                     LayoutUnit(1))
-                .ToUnsigned();
-    width = ((available_width + column_gap) / count) - column_gap;
-  }
-}
-
-LayoutUnit LayoutMultiColumnFlowThread::ColumnGap(const ComputedStyle& style,
-                                                  LayoutUnit available_width) {
-  if (const absl::optional<Length>& column_gap = style.ColumnGap())
-    return ValueForLength(*column_gap, available_width);
-
-  // "1em" is recommended as the normal gap setting. Matches <p> margins.
-  return LayoutUnit(style.GetFontDescription().ComputedSize());
-}
-
 void LayoutMultiColumnFlowThread::CreateAndInsertMultiColumnSet(
     LayoutBox* insert_before) {
   NOT_DESTROYED();
