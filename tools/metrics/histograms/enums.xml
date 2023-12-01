@@ -56738,6 +56738,21 @@ would be helpful to identify which type is being sent.
   <int value="7" label="should_update_history"/>
 </enum>
 
+<enum name="VertexOpacityUsage">
+  <int value="0" label="None">
+    Vertex opacity is not used. Default value of 1f.
+  </int>
+  <int value="1" label="Constant">
+    Vertex opacity values all the same but non 1f.
+  </int>
+  <int value="2" label="LeftRight">
+    Vertex opacity is a left to right gradient.
+  </int>
+  <int value="3" label="TopBottom">
+    Vertex opacity is a top to bottom gradient.
+  </int>
+</enum>
+
 <enum name="VideoCodec">
   <int value="0" label="kUnknownVideoCodec"/>
   <int value="1" label="kCodecH264"/>

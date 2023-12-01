@@ -103,6 +103,38 @@ namespace viz {
 
 namespace {
 
+enum VertexOpacityUsage {
+  kNone = 0,
+  kConstant = 1,
+  kLeftRight = 2,
+  kTopBottom = 3,
+  kMaxValue = kTopBottom,
+  kCount,
+};
+
+// TODO(crbug.com/1506077): If histograms were significantly cheaper we would
+// not need to write custom submitting code like the accumulator below.
+void SubmitOrAccumulateVertexUsageUMA(VertexOpacityUsage usage) {
+  static uint32_t vertex_usage_counter = 0;
+  static std::array<bool, VertexOpacityUsage::kCount> vertex_usage = {};
+  constexpr uint32_t kMaxNumberAccumulations = 1000;
+  vertex_usage_counter++;
+  vertex_usage[usage] = true;
+
+  if (vertex_usage_counter > kMaxNumberAccumulations) {
+    for (int i = VertexOpacityUsage::kNone; i < VertexOpacityUsage::kCount;
+         i++) {
+      if (vertex_usage[i]) {
+        UMA_HISTOGRAM_ENUMERATION("Compositing.SkiaRenderer.VertexOpacityUsage",
+                                  static_cast<VertexOpacityUsage>(i));
+        vertex_usage[i] = false;
+      }
+    }
+
+    vertex_usage_counter = 0;
+  }
+}
+
 // Smallest unit that impacts anti-aliasing output. We use this to determine
 // when an exterior edge (with AA) has been clipped (no AA). The specific value
 // was chosen to match that used by gl_renderer.
@@ -2556,6 +2588,7 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
     // This is a simple texture draw and can go into the batching system
     DCHECK(!MustFlushBatchedQuads(quad, rpdq_params, *params));
     AddQuadToBatch(image, valid_texel_bounds, params);
+    SubmitOrAccumulateVertexUsageUMA(VertexOpacityUsage::kNone);
     return;
   }
 
@@ -2588,6 +2621,7 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
         quad->vertex_opacity[0] == quad->vertex_opacity[2] &&
         quad->vertex_opacity[0] == quad->vertex_opacity[3]) {
       quad_alpha *= quad->vertex_opacity[0];
+      SubmitOrAccumulateVertexUsageUMA(VertexOpacityUsage::kConstant);
     } else {
       // The only occurrences of non-constant vertex opacities come from unit
       // tests and src/chrome/browser/android/compositor/decoration_title.cc,
@@ -2601,6 +2635,8 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
             params->visible_rect.y() + 0.5f * params->visible_rect.height();
         gradient_pts[0] = {params->visible_rect.x(), y};
         gradient_pts[1] = {params->visible_rect.right(), y};
+
+        SubmitOrAccumulateVertexUsageUMA(VertexOpacityUsage::kLeftRight);
       } else if (quad->vertex_opacity[0] == quad->vertex_opacity[3] &&
                  quad->vertex_opacity[1] == quad->vertex_opacity[2]) {
         // Top to bottom gradient
@@ -2608,6 +2644,8 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
             params->visible_rect.x() + 0.5f * params->visible_rect.width();
         gradient_pts[0] = {x, params->visible_rect.y()};
         gradient_pts[1] = {x, params->visible_rect.bottom()};
+        SubmitOrAccumulateVertexUsageUMA(VertexOpacityUsage::kTopBottom);
+
       } else {
         // Not sure how to emulate
         NOTIMPLEMENTED();
@@ -2626,6 +2664,8 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
       // any color filter chain needed for background blending
       quad_alpha = 1.f;
     }
+  } else {
+    SubmitOrAccumulateVertexUsageUMA(VertexOpacityUsage::kNone);
   }
 
   if (needs_color_conversion_filter) {
