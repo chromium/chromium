@@ -6,6 +6,7 @@
 
 load("@builtin//encoding.star", "json")
 load("@builtin//lib/gn.star", "gn")
+load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
 load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
 load("./config.star", "config")
@@ -40,7 +41,45 @@ def __parse_rewrapper_cmdline(ctx, cmd):
             break
     if wrapped_command_pos < 1:
         fail("couldn't find first non-arg passed to rewrapper for %s" % str(cmd.args))
-    return cmd.args[wrapped_command_pos:], cfg_file, True
+    if not cfg_file:
+        return cmd.args[wrapped_command_pos:], None, True
+    return cmd.args[wrapped_command_pos:], rewrapper_cfg.parse(ctx, cfg_file), True
+
+def __parse_cros_rewrapper_cmdline(ctx, cmd):
+    # fix cros sdk clang command line and extract rewrapper cfg.
+    # Example command:
+    #   ../../build/cros_cache/chrome-sdk/symlinks/amd64-generic+15629.0.0+target_toolchain/bin/x86_64-cros-linux-gnu-clang++
+    #  -MMD -MF obj/third_party/abseil-cpp/absl/base/base/spinlock.o.d
+    #  ...
+    #  --rewrapper-path /usr/local/google/home/ukai/src/chromium/src/build/args/chromeos/rewrapper_amd64-generic
+    #  --rewrapper-cfg ../../buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_linux.cfg
+    #  -pipe -march=x86-64 -msse3 ...
+    cfg_file = None
+    skip = ""
+    args = []
+    toolchainpath = None
+    for i, arg in enumerate(cmd.args):
+        if i == 0:
+            toolchainpath = path.dir(path.dir(ctx.fs.canonpath(arg)))
+            args.append(arg)
+            continue
+        if skip:
+            if skip == "--rewrapper-cfg":
+                cfg_file = ctx.fs.canonpath(arg)
+            skip = ""
+            continue
+        if arg in ("--rewrapper-path", "--rewrapper-cfg"):
+            skip = arg
+            continue
+        args.append(arg)
+    if not cfg_file:
+        fail("couldn't find rewrapper cfg file in %s" % str(cmd.args))
+    rwcfg = rewrapper_cfg.parse(ctx, cfg_file)
+    inputs = rwcfg.get("inputs", [])
+    inputs.append(toolchainpath)
+    rwcfg["inputs"] = inputs
+    rwcfg["preserve_symlinks"] = True
+    return args, rwcfg
 
 # TODO(b/278225415): change gn so this wrapper (and by extension this handler) becomes unnecessary.
 def __parse_clang_code_coverage_wrapper_cmdline(ctx, cmd):
@@ -80,29 +119,33 @@ def __parse_clang_code_coverage_wrapper_cmdline(ctx, cmd):
         fail("couldn't find rewrapper cfg file in %s" % str(cmd.args))
     coverage_wrapper_command = cmd.args[:rewrapper_pos] + cmd.args[wrapped_command_pos:]
     clang_command = clang_code_coverage_wrapper.run(ctx, list(coverage_wrapper_command))
-    return clang_command, cfg_file
+    if len(clang_command) > 1 and "/chrome-sdk/" in clang_command[0]:
+        # TODO: implement cros sdk support under code coverage wrapper
+        fail("need to fix handler for cros sdk under code coverage wrapper")
+    return clang_command, rewrapper_cfg.parse(ctx, cfg_file)
 
 def __rewrite_rewrapper(ctx, cmd):
     # If clang-coverage, needs different handling.
     if len(cmd.args) > 2 and "clang_code_coverage_wrapper.py" in cmd.args[1]:
-        args, cfg_file = __parse_clang_code_coverage_wrapper_cmdline(ctx, cmd)
+        args, rwcfg = __parse_clang_code_coverage_wrapper_cmdline(ctx, cmd)
+    elif len(cmd.args) > 1 and "/chrome-sdk/" in cmd.args[0]:
+        args, rwcfg = __parse_cros_rewrapper_cmdline(ctx, cmd)
     else:
         # handling for generic rewrapper.
-        args, cfg_file, wrapped = __parse_rewrapper_cmdline(ctx, cmd)
+        args, rwcfg, wrapped = __parse_rewrapper_cmdline(ctx, cmd)
         if not wrapped:
             print("command doesn't have rewrapper. %s" % str(cmd.args))
             return
-    if not cfg_file:
+    if not rwcfg:
         fail("couldn't find rewrapper cfg file in %s" % str(cmd.args))
-    reproxy_config = rewrapper_cfg.parse(ctx, cfg_file)
     if cmd.outputs[0] == ctx.fs.canonpath("./obj/third_party/abseil-cpp/absl/functional/any_invocable_test/any_invocable_test.o"):
         # need longer timeout for any_invocable_test.o crbug.com/1484474
-        reproxy_config.update({
+        rwcfg.update({
             "exec_timeout": "4m",
         })
     ctx.actions.fix(
         args = args,
-        reproxy_config = json.encode(reproxy_config),
+        reproxy_config = json.encode(rwcfg),
     )
 
 def __strip_rewrapper(ctx, cmd):
@@ -224,14 +267,6 @@ def __step_config(ctx, step_config):
             if not rule.get("action"):
                 fail("clang rule %s found without action" % rule["name"])
 
-            # TODO(b/294160948): reclient doesn't work well with cros wrapper symlink tricks.
-            cros_rule = {
-                "name": rule["name"] + "/cros",
-                "action": rule["action"],
-                "command_prefix": "../../build/cros_cache/",
-                "use_remote_exec_wrapper": True,
-            }
-            new_rules.append(cros_rule)
             new_rule = {
                 "name": rule["name"],
                 "action": rule["action"],
