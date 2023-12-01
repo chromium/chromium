@@ -22,7 +22,6 @@
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/patchpanel/patchpanel_client.h"
-#include "chromeos/ash/components/dbus/patchpanel/patchpanel_service.pb.h"
 #include "chromeos/ash/components/network/network_connection_observer.h"
 #include "chromeos/ash/components/network/network_profile_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
@@ -123,7 +122,7 @@ class ArcNetHostImpl : public KeyedService,
 
  private:
   const ash::NetworkState* GetDefaultNetworkFromChrome();
-  void UpdateActiveNetworks(
+  void UpdateHostNetworks(
       const std::vector<patchpanel::NetworkDevice>& devices);
 
   // Due to a race in Chrome, GetNetworkStateFromGuid() might not know about

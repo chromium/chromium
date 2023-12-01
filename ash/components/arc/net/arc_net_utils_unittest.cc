@@ -20,6 +20,8 @@ namespace {
 
 constexpr char kNetworkStatePath[] = "test_path";
 
+constexpr char kTestEthDeviceInterface[] = "eth0";
+constexpr char kTestEthDeviceGuestInterface[] = "eth0";
 constexpr char kTestWiFiDevicePath[] = "wifi_path";
 constexpr char kTestWiFiDeviceName[] = "wifi_name";
 constexpr char kTestWiFiDeviceInterface[] = "wlan0";
@@ -84,13 +86,19 @@ class ArcNetUtilsTest : public testing::Test {
     return addr;
   }
 
-  static patchpanel::NetworkDevice GetDevice(const std::string& phys_ifname,
-                                             const std::string& guest_ifname) {
+  static patchpanel::NetworkDevice GetDevice(
+      const std::string& phys_ifname,
+      const std::string& guest_ifname,
+      std::optional<patchpanel::NetworkDevice::TechnologyType>
+          technology_type) {
     patchpanel::NetworkDevice device;
     // Set up test network device.
     device.set_guest_type(patchpanel::NetworkDevice::ARC);
     device.set_phys_ifname(phys_ifname);
     device.set_guest_ifname(guest_ifname);
+    if (technology_type.has_value()) {
+      device.set_technology_type(technology_type.value());
+    }
     return device;
   }
 
@@ -139,6 +147,9 @@ class ArcNetUtilsTest : public testing::Test {
   }
 
   void SetUpNetworkState() {
+    network_state_->PropertyChanged(shill::kVisibleProperty, base::Value(true));
+    network_state_->PropertyChanged(shill::kStateProperty,
+                                    base::Value(shill::kStateOnline));
     network_state_->PropertyChanged(shill::kDeviceProperty,
                                     base::Value(kTestWiFiDevicePath));
     network_state_->PropertyChanged(shill::kGuidProperty, base::Value(kGuid));
@@ -392,7 +403,8 @@ TEST_F(ArcNetUtilsTest, FillConfigurationsFromState) {
 TEST_F(ArcNetUtilsTest, FillConfigurationsFromDevice) {
   auto mojo = arc::mojom::NetworkConfiguration::New();
   auto device =
-      GetDevice(kTestWiFiDeviceInterface, kTestWiFiDeviceGuestInterface);
+      GetDevice(kTestWiFiDeviceInterface, kTestWiFiDeviceGuestInterface,
+                patchpanel::NetworkDevice::WIFI);
   // set IP config of device.
   device.set_ipv4_addr(StringToIPv4Address(kTestWiFiAddress).s_addr);
   device.set_host_ipv4_addr(StringToIPv4Address(kGateway).s_addr);
@@ -414,11 +426,15 @@ TEST_F(ArcNetUtilsTest, FillConfigurationsFromDevice) {
   EXPECT_EQ(kNameServerIpv6, mojo->dns_proxy_addresses.value()[1]);
 }
 
-TEST_F(ArcNetUtilsTest, TranslateNetworkStates) {
+TEST_F(ArcNetUtilsTest, TranslateNetworkDevices) {
   std::vector<patchpanel::NetworkDevice> network_devices;
 
-  network_devices.emplace_back(
-      GetDevice(kTestWiFiDeviceInterface, kTestWiFiDeviceGuestInterface));
+  network_devices.emplace_back(GetDevice(kTestEthDeviceInterface,
+                                         kTestEthDeviceGuestInterface,
+                                         patchpanel::NetworkDevice::ETHERNET));
+  network_devices.emplace_back(GetDevice(kTestWiFiDeviceInterface,
+                                         kTestWiFiDeviceGuestInterface,
+                                         patchpanel::NetworkDevice::WIFI));
 
   std::map<std::string, base::Value::Dict> shill_network_properties;
   shill_network_properties[kNetworkStatePath] = GetShillDict();
@@ -426,14 +442,45 @@ TEST_F(ArcNetUtilsTest, TranslateNetworkStates) {
   ash::NetworkStateHandler::NetworkStateList network_states;
   network_states.push_back(GetNetworkState());
   std::vector<arc::mojom::NetworkConfigurationPtr> res =
+      net_utils::TranslateNetworkDevices(network_devices, /*arc_vpn_path=*/"",
+                                         network_states,
+                                         shill_network_properties);
+  base::RunLoop().RunUntilIdle();
+
+  // In TranslateNetworkDevices, A network devices without associated state is
+  // reported, so both the ethernet device and the wifi device are available.
+
+  EXPECT_EQ(2u, res.size());
+  for (const arc::mojom::NetworkConfigurationPtr& mojo : res) {
+    if (mojo->network_interface.value() == kTestWiFiDeviceInterface) {
+      EXPECT_EQ(kTestWiFiDeviceGuestInterface, mojo->arc_network_interface);
+      EXPECT_EQ(mojom::NetworkType::WIFI, mojo->type);
+      EXPECT_EQ(kGuid, mojo->guid);
+    } else if (mojo->network_interface.value() == kTestEthDeviceInterface) {
+      EXPECT_EQ(kTestEthDeviceGuestInterface, mojo->arc_network_interface);
+      EXPECT_EQ(mojom::NetworkType::ETHERNET, mojo->type);
+      EXPECT_EQ(0u, mojo->guid.length());
+    } else {
+      GTEST_FAIL() << "Unknown network interface "
+                   << mojo->network_interface.value_or("(no ifname)");
+    }
+  }
+}
+
+TEST_F(ArcNetUtilsTest, TranslateNetworkStates) {
+  std::map<std::string, base::Value::Dict> shill_network_properties;
+  shill_network_properties[kNetworkStatePath] = GetShillDict();
+
+  ash::NetworkStateHandler::NetworkStateList network_states;
+  network_states.push_back(GetNetworkState());
+  std::vector<arc::mojom::NetworkConfigurationPtr> res =
       net_utils::TranslateNetworkStates(/*arc_vpn_path=*/"", network_states,
-                                        shill_network_properties,
-                                        network_devices);
+                                        shill_network_properties);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(1u, network_states.size());
+  EXPECT_EQ(1u, res.size());
   EXPECT_EQ(kNetworkStatePath, res[0]->service_name);
-  EXPECT_EQ(kTestWiFiDeviceGuestInterface, res[0]->arc_network_interface);
 }
 
 TEST_F(ArcNetUtilsTest, TranslateSubjectNameMatchListToValue) {

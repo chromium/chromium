@@ -62,13 +62,22 @@ arc::mojom::ConnectionStateType TranslateConnectionState(
 // Translates a shill technology type into a mojom NetworkType.
 arc::mojom::NetworkType TranslateNetworkType(const std::string& type);
 
-// Translates a vector of NetworkState objects to a
-// vector of mojo NetworkConfiguration objects.
+// Translates a vector of NetworkStates to a vector of NetworkConfigurations.
+// For each state, fill the fields in NetworkConfiguration.
 std::vector<arc::mojom::NetworkConfigurationPtr> TranslateNetworkStates(
     const std::string& arc_vpn_path,
     const ash::NetworkStateHandler::NetworkStateList& network_states,
-    const std::map<std::string, base::Value::Dict>& shill_network_properties,
-    const std::vector<patchpanel::NetworkDevice>& devices);
+    const std::map<std::string, base::Value::Dict>& shill_network_properties);
+
+// Translates a vector of NetworkDevices to a vector of NetworkConfigurations.
+// For each device, fill the fields in NetworkConfiguration. For each active
+// state, the corresponding fields of the associated device is added. A state
+// without a device (e.g: host VPN) is also attached to the result.
+std::vector<arc::mojom::NetworkConfigurationPtr> TranslateNetworkDevices(
+    const std::vector<patchpanel::NetworkDevice>& devices,
+    const std::string& arc_vpn_path,
+    const ash::NetworkStateHandler::NetworkStateList& active_network_states,
+    const std::map<std::string, base::Value::Dict>& shill_network_properties);
 
 // Convert a vector of subject name match list that containing ":" separated
 // string in "Type:Value" format (like DNS:example.com, EMAIL:test@domain.com)
