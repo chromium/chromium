@@ -18,7 +18,7 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.components.browser_ui.media.MediaNotificationInfo;
 import org.chromium.components.browser_ui.media.MediaNotificationManager;
 import org.chromium.components.browser_ui.media.MediaSessionHelper;
-import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -90,8 +90,8 @@ public class MediaSessionTabHelper implements MediaSessionHelper.Delegate {
     }
 
     @Override
-    public BrowserContextHandle getBrowserContextHandle() {
-        return mTab.getProfile();
+    public LargeIconBridge getLargeIconBridge() {
+        return new LargeIconBridge(mTab.getProfile());
     }
 
     @Override

@@ -21,7 +21,6 @@ import org.chromium.base.SysUtils;
 import org.chromium.components.browser_ui.media.MediaSessionUma.MediaSessionActionSource;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.url_formatter.UrlFormatter;
-import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.MediaSession;
 import org.chromium.content_public.browser.MediaSessionObserver;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -368,8 +367,8 @@ public class MediaSessionHelper implements MediaImageCallback {
         /** Returns an intent that brings the associated web contents to the front. */
         Intent createBringTabToFrontIntent();
 
-        /** Returns the {@link BrowserContextHandle} for mWebContents. */
-        BrowserContextHandle getBrowserContextHandle();
+        /** Returns the {@link LargeIconBridge} to be used while obtaining icons. */
+        LargeIconBridge getLargeIconBridge();
 
         /**
          * Creates a {@link MediaNotificationInfo.Builder} with basic embedder-specific
@@ -465,7 +464,7 @@ public class MediaSessionHelper implements MediaImageCallback {
         GURL pageUrl = mWebContents.getLastCommittedUrl();
         int size = MediaNotificationImageUtils.MINIMAL_MEDIA_IMAGE_SIZE_PX;
         if (mLargeIconBridge == null) {
-            mLargeIconBridge = new LargeIconBridge(mDelegate.getBrowserContextHandle());
+            mLargeIconBridge = mDelegate.getLargeIconBridge();
         }
         LargeIconBridge.LargeIconCallback callback =
                 new LargeIconBridge.LargeIconCallback() {
