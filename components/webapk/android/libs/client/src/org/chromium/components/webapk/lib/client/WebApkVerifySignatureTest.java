@@ -93,6 +93,8 @@ public class WebApkVerifySignatureTest {
             new FileResult("bad-sig.apk", Error.INCORRECT_SIGNATURE),
             new FileResult("bad-utf8-fname.apk", Error.INCORRECT_SIGNATURE),
             new FileResult("empty.apk", Error.BAD_APK),
+            new FileResult("extra-field-too-large.apk", Error.OK),
+            new FileResult("extra-len-too-large.apk", Error.BAD_APK),
             new FileResult("no-cd.apk", Error.BAD_APK),
             new FileResult("no-comment.apk", Error.SIGNATURE_NOT_FOUND),
             new FileResult("no-eocd.apk", Error.BAD_APK),
