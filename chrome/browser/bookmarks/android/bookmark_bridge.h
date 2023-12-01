@@ -24,17 +24,13 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/reading_list/android/reading_list_manager.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
+#include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/scoped_group_bookmark_actions.h"
 #include "components/bookmarks/common/android/bookmark_id.h"
+#include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "url/android/gurl_android.h"
 
-namespace bookmarks {
-class BookmarkModel;
-class ManagedBookmarkService;
-class ScopedGroupBookmarkActions;
-}  // namespace bookmarks
-
-class Profile;
 class BookmarkBridgeTest;
 
 // The delegate to fetch bookmarks information for the Android native
