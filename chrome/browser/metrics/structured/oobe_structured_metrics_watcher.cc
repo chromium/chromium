@@ -22,7 +22,11 @@ void OobeStructuredMetricsWatcher::OnEventsRecord(Event* event) {}
 
 void OobeStructuredMetricsWatcher::OnEventRecorded(
     StructuredEventProto* event) {
-  if (!IsOobeActive()) {
+  // If an upload hasn't occurred then we will attempt to upload events even if
+  // OOBE has completed.
+  // TODO(b/314350095): Improve short term fix such that oobe events can be
+  // uploaded earlier.
+  if (upload_count_ > 0 && !IsOobeActive()) {
     return;
   }
 
@@ -55,6 +59,7 @@ void OobeStructuredMetricsWatcher::AttemptUpload() {
 
   service_->ManualUpload();
   event_count_ = 0;
+  upload_count_ += 1;
 }
 
 }  // namespace metrics::structured
