@@ -48,10 +48,6 @@ class HostFrameSinkManager;
 class HostGpuMemoryBufferManager;
 }  // namespace viz
 
-namespace vr {
-class GraphicsDelegateWin;
-}
-
 namespace mojo {
 class ScopedAllowSyncCallForTesting;
 
@@ -120,8 +116,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncCallRestrictions {
   // the platform window is destroyed.
   friend class viz::HostFrameSinkManager;
   friend class viz::HostGpuMemoryBufferManager;
-  // For creating a GpuMemoryBufferHandle.
-  friend class vr::GraphicsDelegateWin;
   // For preventing frame swaps of wrong size during resize on Windows.
   // (https://crbug.com/811945)
   friend class ui::Compositor;
