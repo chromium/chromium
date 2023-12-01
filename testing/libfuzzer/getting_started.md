@@ -38,8 +38,8 @@ More detail in all the following sections.
 ## Creating a new `FUZZ_TEST` target
 
 *** note
-**Note:** Fuzztests don't yet build on Android or Windows component builds
-. We recommendwrapping these new targets in `if (fuzztest_supported) { }`
+**Note:** Fuzztests don't yet build on Windows component builds.
+We recommend wrapping these new targets in `if (fuzztest_supported) { }`
 blocks in your `gn` file for now. We'll remove these in future when it works on
 all platforms.
 ***
