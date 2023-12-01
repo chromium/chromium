@@ -87,10 +87,16 @@ constexpr CLSID kIntelAV1HybridEncoderCLSID = {
     {0x8c, 0x5a, 0xfb, 0xef, 0xfe, 0xff, 0xb8, 0x2d}};
 
 #ifndef ARCH_CPU_X86
-// Temporal layers are reported to be supported by the Intel driver but cause
-// initialization errors.
-BASE_FEATURE(kMediaFoundationIntelVP9TemporalLayerSupport,
-             "MediaFoundationIntelVP9TemporalLayerSupport",
+// Temporal layers are reported to be supported by the Intel driver, but are
+// only considered supported by MediaFoundation depending on these flags. This
+// support is reported in MediaCapabilities' powerEfficient as well as deciding
+// if Initialize() is allowed to succeed.
+BASE_FEATURE(kMediaFoundationVP9L1T2Support,
+             "MediaFoundationVP9L1T2Support",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// Up to 3 temporal layers, i.e. this enables both L1T2 and L1T3.
+BASE_FEATURE(kMediaFoundationVP9L1T3Support,
+             "MediaFoundationVP9L1T3Support",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !defined(ARCH_CPU_X86)
 
@@ -186,13 +192,15 @@ MediaFoundationVideoEncodeAccelerator::DriverVendor GetDriverVendor(
   return DriverVendor::kOther;
 }
 
-bool IsVendorSupportTemporalLayer(
+// The driver tells us how many temporal layers it supports, but we may need to
+// reduce this limit to avoid bad or untested drivers.
+int GetMaxTemporalLayerVendorLimit(
     MediaFoundationVideoEncodeAccelerator::DriverVendor vendor,
     VideoCodec codec) {
 #if defined(ARCH_CPU_X86)
   // x86 systems sometimes crash in video drivers here.
   // More info: https://crbug.com/1253748
-  return false;
+  return 1;
 #else
   using DriverVendor = MediaFoundationVideoEncodeAccelerator::DriverVendor;
   // crbug.com/1373780: Nvidia HEVC encoder reports supporting 3 temporal
@@ -200,26 +208,37 @@ bool IsVendorSupportTemporalLayer(
   // more than one temporal layers, thus we block Nvidia HEVC encoder for
   // temporal SVC encoding.
   if (codec == VideoCodec::kHEVC && vendor == DriverVendor::kNvidia) {
-    return false;
+    return 1;
   }
 
-  // crbug.com/1425117: Intel VP9 HW encoder reports supporting 3 temporal
-  // layers, but will fail initialization if configured with more than one
-  // temporal layers.
-  if (!base::FeatureList::IsEnabled(
-          kMediaFoundationIntelVP9TemporalLayerSupport) &&
-      codec == VideoCodec::kVP9 && vendor == DriverVendor::kIntel) {
-    return false;
+  // Temporal layer encoding is disabled for VP9 unless a flag is enabled.
+  //
+  // For example, the Intel VP9 HW encoder reports supporting 3 temporal layers
+  // but the number of temporal layers we allow depends on feature flags. At the
+  // time of writing, Intel L1T3 may not be spec-compliant.
+  // - See https://crbug.com/1425117 for temporal layer foundation (L1T2/L1T3).
+  // - See https://crbug.com/1501767 for L1T2 rollout (not L1T3).
+  if (codec == VideoCodec::kVP9) {
+    if (base::FeatureList::IsEnabled(kMediaFoundationVP9L1T3Support)) {
+      return 3;
+    }
+    if (base::FeatureList::IsEnabled(kMediaFoundationVP9L1T2Support)) {
+      return 2;
+    }
+    return 1;
   }
 
-  return true;
+  // No driver/codec specific limit to enforce.
+  return 3;
 #endif
 }
 
-bool IsSVCSupported(IMFActivate* activate, VideoCodec codec) {
+int GetNumSupportedTemporalLayers(IMFActivate* activate, VideoCodec codec) {
   auto vendor = GetDriverVendor(activate);
-  if (!IsVendorSupportTemporalLayer(vendor, codec)) {
-    return false;
+  int max_temporal_layer_vendor_limit =
+      GetMaxTemporalLayerVendorLimit(vendor, codec);
+  if (max_temporal_layer_vendor_limit == 1) {
+    return 1;
   }
 
   ComMFTransform encoder;
@@ -228,28 +247,33 @@ bool IsSVCSupported(IMFActivate* activate, VideoCodec codec) {
   if (FAILED(hr)) {
     // Log to VLOG since errors are expected as part of GetSupportedProfiles().
     DVLOG(2) << "Failed to activate encoder: " << PrintHr(hr);
-    return false;
+    return 1;
   }
 
   hr = encoder.As(&codec_api);
   if (FAILED(hr)) {
     // Log to VLOG since errors are expected as part of GetSupportedProfiles().
     DVLOG(2) << "Failed to get encoder as CodecAPI: " << PrintHr(hr);
-    return false;
+    return 1;
   }
 
   if (codec_api->IsSupported(&CODECAPI_AVEncVideoTemporalLayerCount) != S_OK) {
-    return false;
+    return 1;
   }
 
   base::win::ScopedVariant min, max, step;
   if (FAILED(codec_api->GetParameterRange(
           &CODECAPI_AVEncVideoTemporalLayerCount, min.AsInput(), max.AsInput(),
           step.AsInput()))) {
-    return false;
+    return 1;
   }
 
-  return V_UI4(min.ptr()) <= 1u && V_UI4(max.ptr()) >= 3u;
+  // Temporal encoding is only considered supported if the driver reports at
+  // least a span of 1-3 temporal layers.
+  if (V_UI4(min.ptr()) > 1u || V_UI4(max.ptr()) < 3u) {
+    return 1;
+  }
+  return max_temporal_layer_vendor_limit;
 }
 
 bool IsIntelHybridAV1Encoder(IMFActivate* activate) {
@@ -300,7 +324,9 @@ uint32_t EnumerateHardwareEncoders(VideoCodec codec, IMFActivate*** activates) {
   return count - excluded_encoders;
 }
 
-bool IsCodecSupportedForEncoding(VideoCodec codec, bool* svc_supported) {
+bool IsCodecSupportedForEncoding(VideoCodec codec, int* num_temporal_layers) {
+  *num_temporal_layers = 1;
+
   base::win::ScopedCoMem<IMFActivate*> activates;
   const auto encoder_count = EnumerateHardwareEncoders(codec, &activates);
   if (encoder_count == 0 || !activates) {
@@ -309,11 +335,10 @@ bool IsCodecSupportedForEncoding(VideoCodec codec, bool* svc_supported) {
     return false;
   }
 
-  *svc_supported = false;
   for (UINT32 i = 0; i < encoder_count; i++) {
-    if (!*svc_supported && IsSVCSupported(activates[i], codec)) {
-      *svc_supported = true;
-    }
+    *num_temporal_layers =
+        std::max(GetNumSupportedTemporalLayers(activates[i], codec),
+                 *num_temporal_layers);
     activates[i]->Release();
   }
 
@@ -622,8 +647,8 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfiles() {
 
   SupportedProfiles profiles;
   for (auto codec : supported_codecs) {
-    bool svc_supported = false;
-    if (!IsCodecSupportedForEncoding(codec, &svc_supported)) {
+    int num_temporal_layers = 1;
+    if (!IsCodecSupportedForEncoding(codec, &num_temporal_layers)) {
       continue;
     }
 
@@ -641,9 +666,13 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfiles() {
                              bitrate_mode, {SVCScalabilityMode::kL1T1});
     profile.min_resolution = gfx::Size(32, 32);
 
-    if (svc_supported && !workarounds_.disable_svc_encoding) {
-      profile.scalability_modes.push_back(SVCScalabilityMode::kL1T2);
-      profile.scalability_modes.push_back(SVCScalabilityMode::kL1T3);
+    if (!workarounds_.disable_svc_encoding) {
+      if (num_temporal_layers >= 2) {
+        profile.scalability_modes.push_back(SVCScalabilityMode::kL1T2);
+      }
+      if (num_temporal_layers >= 3) {
+        profile.scalability_modes.push_back(SVCScalabilityMode::kL1T3);
+      }
     }
 
     SupportedProfile portrait_profile(profile);
@@ -1181,8 +1210,7 @@ bool MediaFoundationVideoEncodeAccelerator::ActivateAsyncEncoder(
       continue;
     }
 
-    if (IsTemporaScalabilityCoding() &&
-        !IsVendorSupportTemporalLayer(vendor, codec_)) {
+    if (num_temporal_layers_ > GetMaxTemporalLayerVendorLimit(vendor, codec_)) {
       DLOG(WARNING) << "Skipped GPUs due to not support temporal layer";
       continue;
     }
