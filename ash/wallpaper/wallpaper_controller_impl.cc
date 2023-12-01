@@ -1257,15 +1257,10 @@ void WallpaperControllerImpl::ShowUserWallpaper(
     return;
   }
 
-  if (info.type == WallpaperType::kSeaPen) {
-    // TODO(b/308185349) load SeaPen wallpaper from disk.
-    SetDefaultWallpaper(account_id, /*show_wallpaper=*/true, base::DoNothing());
-    return;
-  }
-
   if (IsOnlineWallpaper(info.type) ||
       info.type == WallpaperType::kOnceGooglePhotos ||
-      info.type == WallpaperType::kDailyGooglePhotos) {
+      info.type == WallpaperType::kDailyGooglePhotos ||
+      info.type == WallpaperType::kSeaPen) {
     // Load wallpaper according to WallpaperInfo.
     SetWallpaperFromInfo(account_id, info);
     return;
@@ -2319,6 +2314,14 @@ void WallpaperControllerImpl::SetWallpaperFromInfo(const AccountId& account_id,
     // time and can be loaded from the path.
     wallpaper_file_manager_->LoadWallpaper(
         info.type, GetUserGooglePhotosWallpaperDir(account_id), info.location,
+        base::BindOnce(&WallpaperControllerImpl::OnWallpaperDecoded,
+                       weak_factory_.GetWeakPtr(), account_id, path, info,
+                       /*show_wallpaper=*/true));
+  } else if (info.type == WallpaperType::kSeaPen) {
+    auto path = base::FilePath(info.user_file_path);
+    wallpaper_file_manager_->LoadWallpaper(
+        info.type, GetUserSeaPenWallpaperDir(account_id),
+        path.BaseName().value(),
         base::BindOnce(&WallpaperControllerImpl::OnWallpaperDecoded,
                        weak_factory_.GetWeakPtr(), account_id, path, info,
                        /*show_wallpaper=*/true));

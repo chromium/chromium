@@ -841,6 +841,25 @@ class WallpaperControllerTestBase : public AshTestBase {
     RunAllTasksUntilIdle();
   }
 
+  void SetSeaPenWallpaper(gfx::ImageSkia* image, SkColor color) {
+    TestWallpaperControllerObserver observer(controller_);
+    std::string jpg_bytes = CreateEncodedImageForTesting(
+        {1, 1}, color, data_decoder::mojom::ImageCodec::kDefault, image);
+    ASSERT_TRUE(!jpg_bytes.empty());
+
+    base::test::TestFuture<bool> set_wallpaper_future;
+    controller_->SetSeaPenWallpaper(
+        kAccountId1,
+        {std::move(jpg_bytes), /*id=*/5, /*query=*/std::string(),
+         manta::proto::RESOLUTION_64},
+        set_wallpaper_future.GetCallback());
+
+    EXPECT_TRUE(set_wallpaper_future.Take());
+    EXPECT_EQ(1, observer.wallpaper_changed_count());
+    histogram_tester().ExpectUniqueSample("Ash.Wallpaper.SeaPen.Result2",
+                                          SetWallpaperResult::kSuccess, 1);
+  }
+
   TestWallpaperImageDownloader* test_wallpaper_image_downloader() {
     return static_cast<TestWallpaperImageDownloader*>(
         controller_->wallpaper_image_downloader_for_testing());
@@ -2026,32 +2045,53 @@ TEST_P(WallpaperControllerTest, SetThirdPartyWallpaper_PolicyWallpaper) {
 
 TEST_P(WallpaperControllerTest, SetSeaPenWallpaper) {
   SimulateUserLogin(kAccountId1);
-  TestWallpaperControllerObserver observer(controller_);
 
   WallpaperInfo wallpaper_info;
   ASSERT_FALSE(
       pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
 
   gfx::ImageSkia expected_image;
-  std::string jpg_bytes = CreateEncodedImageForTesting(
-      {1, 1}, SK_ColorGREEN, data_decoder::mojom::ImageCodec::kDefault,
-      &expected_image);
-  ASSERT_TRUE(!jpg_bytes.empty());
-
-  base::test::TestFuture<bool> set_wallpaper_future;
-  controller_->SetSeaPenWallpaper(
-      kAccountId1,
-      {std::move(jpg_bytes), /*id=*/5, /*query=*/std::string(),
-       manta::proto::RESOLUTION_64},
-      set_wallpaper_future.GetCallback());
-
-  EXPECT_TRUE(set_wallpaper_future.Take());
+  SetSeaPenWallpaper(&expected_image, SK_ColorGREEN);
   EXPECT_TRUE(
       pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
   EXPECT_EQ(WallpaperType::kSeaPen, wallpaper_info.type);
-  EXPECT_EQ(1, observer.wallpaper_changed_count());
-  histogram_tester().ExpectUniqueSample("Ash.Wallpaper.SeaPen.Result2",
-                                        SetWallpaperResult::kSuccess, 1);
+
+  // Use `AreBitmapsClose` because jpg encoding/decoding can alter the color
+  // channels +- 1.
+  EXPECT_TRUE(gfx::test::AreBitmapsClose(
+      *expected_image.bitmap(), *controller_->GetWallpaperImage().bitmap(),
+      /*max_deviation=*/1));
+}
+
+TEST_P(WallpaperControllerTest, ShowSeaPenWallpaperOnLogin) {
+  SimulateUserLogin(kAccountId1);
+
+  WallpaperInfo wallpaper_info;
+  ASSERT_FALSE(
+      pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
+
+  gfx::ImageSkia expected_image;
+  SetSeaPenWallpaper(&expected_image, SK_ColorBLUE);
+  EXPECT_TRUE(
+      pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
+  EXPECT_EQ(WallpaperType::kSeaPen, wallpaper_info.type);
+
+  // Simulates device reboot.
+  controller_->ReloadWallpaperForTesting(/*clear_cache=*/true);
+  ClearWallpaper();
+  ClearLogin();
+  SimulateUserLogin(kAccountId1);
+  const AccountId active_account_id =
+      Shell::Get()->session_controller()->GetActiveAccountId();
+  controller_->ShowUserWallpaper(active_account_id);
+  RunAllTasksUntilIdle();
+
+  WallpaperInfo new_wallpaper_info;
+  EXPECT_TRUE(pref_manager_->GetUserWallpaperInfo(active_account_id,
+                                                  &new_wallpaper_info));
+  EXPECT_EQ(WallpaperType::kSeaPen, new_wallpaper_info.type);
+  EXPECT_TRUE(wallpaper_info.MatchesAsset(new_wallpaper_info));
+
   // Use `AreBitmapsClose` because jpg encoding/decoding can alter the color
   // channels +- 1.
   EXPECT_TRUE(gfx::test::AreBitmapsClose(
