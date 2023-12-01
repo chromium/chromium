@@ -225,9 +225,9 @@ void ScriptRunner::RemoveDelayReasonFromScript(PendingScript* pending_script,
 
   // Script is really ready to evaluate.
   pending_async_scripts_.erase(it);
-  base::OnceClosure task =
-      WTF::BindOnce(&ScriptRunner::ExecuteAsyncPendingScript,
-                    WrapWeakPersistent(this), WrapPersistent(pending_script));
+  base::OnceClosure task = WTF::BindOnce(
+      &ScriptRunner::ExecuteAsyncPendingScript, WrapWeakPersistent(this),
+      WrapPersistent(pending_script), base::TimeTicks::Now());
   if (pending_script->IsEligibleForLowPriorityAsyncScriptExecution()) {
     PostTaskWithLowPriorityUntilTimeout(
         FROM_HERE, std::move(task),
@@ -238,7 +238,12 @@ void ScriptRunner::RemoveDelayReasonFromScript(PendingScript* pending_script,
   }
 }
 
-void ScriptRunner::ExecuteAsyncPendingScript(PendingScript* pending_script) {
+void ScriptRunner::ExecuteAsyncPendingScript(
+    PendingScript* pending_script,
+    base::TimeTicks ready_to_evaluate_time) {
+  base::UmaHistogramMediumTimes(
+      "Blink.Script.AsyncScript.FromReadyToStartExecution.Time",
+      base::TimeTicks::Now() - ready_to_evaluate_time);
   DCHECK_GT(number_of_async_scripts_not_evaluated_yet_, 0u);
   ExecutePendingScript(pending_script);
   number_of_async_scripts_not_evaluated_yet_--;

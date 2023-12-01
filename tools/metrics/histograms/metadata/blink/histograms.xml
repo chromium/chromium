@@ -3367,6 +3367,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Script.AsyncScript.FromReadyToStartExecution.Time"
+    units="ms" expires_after="2024-02-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>kouhei@chromium.org</owner>
+  <summary>
+    Record when async scripts or dynamically inserted scripts run. Measures the
+    duration between when a script is ready to run, to when the script is about
+    to run.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Script.AsyncScriptCount" units="count"
     expires_after="2022-04-04">
   <owner>dom@chromium.org</owner>
