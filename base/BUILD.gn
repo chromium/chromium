@@ -4474,11 +4474,13 @@ if (is_android) {
 
     resources_package = "org.chromium.base"
 
-    proguard_configs = [
-      "android/proguard/chromium_apk.flags",
-      "android/proguard/chromium_code.flags",
-      "android/proguard/remove_logging.flags",
-    ]
+    proguard_configs = [ "android/proguard/chromium_code.flags" ]
+    if (!is_cronet_build) {
+      proguard_configs += [
+        "android/proguard/chromium_apk.flags",
+        "android/proguard/remove_logging.flags",
+      ]
+    }
   }
 
   android_library("base_shared_preferences_java") {

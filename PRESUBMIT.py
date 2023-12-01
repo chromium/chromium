@@ -1898,6 +1898,8 @@ _GENERIC_PYDEPS_FILES = [
     'chrome/test/chromedriver/log_replay/client_replay_unittest.pydeps',
     'chrome/test/chromedriver/test/run_py_tests.pydeps',
     'chromecast/resource_sizes/chromecast_resource_sizes.pydeps',
+    'components/cronet/tools/check_combined_proguard_file.pydeps',
+    'components/cronet/tools/generate_proguard_file.pydeps',
     'components/cronet/tools/generate_javadoc.pydeps',
     'components/cronet/tools/jar_src.pydeps',
     'components/module_installer/android/module_desc_java.pydeps',
