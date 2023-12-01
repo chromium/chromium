@@ -389,7 +389,7 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
       [self detailItemWithType:ItemTypeMigrateInAccountAddress
                           text:self.profileDescriptionForMigrationPrompt
                         symbol:CustomSymbolTemplateWithPointSize(
-                                   kLocationFillSymbol, kSymbolSize)
+                                   kLocationSymbol, kSymbolSize)
           imageTintColorIsGrey:YES];
   [model addItem:addressItem toSectionWithIdentifier:SectionIdentifierFields];
 
@@ -459,8 +459,7 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
       return DefaultSymbolTemplateWithPointSize(kPersonFillSymbol, kSymbolSize);
     case AutofillUITypeAddressHomeAddress:
     case AutofillUITypeProfileHomeAddressStreet:
-      return CustomSymbolTemplateWithPointSize(kLocationFillSymbol,
-                                               kSymbolSize);
+      return CustomSymbolTemplateWithPointSize(kLocationSymbol, kSymbolSize);
     case AutofillUITypeProfileEmailAddress:
       return DefaultSymbolTemplateWithPointSize(kMailFillSymbol, kSymbolSize);
     case AutofillUITypeProfileHomePhoneWholeNumber:

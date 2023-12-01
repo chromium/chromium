@@ -74,7 +74,7 @@ TEST_F(SaveAddressProfileInfobarBannerOverlayMediatorTest, SetUpConsumer) {
   EXPECT_NSEQ(base::SysUTF16ToNSString(delegate->GetDescription()),
               consumer.subtitleText);
   EXPECT_NSEQ(
-      CustomSymbolWithPointSize(kLocationFillSymbol, kInfobarSymbolPointSize),
+      CustomSymbolWithPointSize(kLocationSymbol, kInfobarSymbolPointSize),
       consumer.iconImage);
 }
 

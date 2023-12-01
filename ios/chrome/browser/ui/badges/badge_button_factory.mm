@@ -197,7 +197,7 @@ const CGFloat kSymbolIncognitoFullScreenPointSize = 14.;
 
 - (BadgeButton*)saveAddressProfileBadgeButton:(InfoBarIOS*)infoBar {
   UIImage* image =
-      CustomSymbolWithPointSize(kLocationFillSymbol, kInfobarSymbolPointSize);
+      CustomSymbolWithPointSize(kLocationSymbol, kInfobarSymbolPointSize);
 
   if (infoBar) {
     autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate =
