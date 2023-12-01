@@ -869,6 +869,7 @@ void PaintArtifactCompositor::Update(
     // We need additional bookkeeping for backdrop-filter mask.
     if (effect.RequiresCompositingForBackdropFilterMask() &&
         effect.CcNodeId(g_s_property_tree_sequence_number) == effect_id) {
+      CHECK(pending_layer.GetContentLayerClient());
       static_cast<cc::PictureLayer&>(layer).SetIsBackdropFilterMask(true);
       layer.SetElementId(effect.GetCompositorElementId());
       auto& effect_tree = host->property_trees()->effect_tree_mutable();

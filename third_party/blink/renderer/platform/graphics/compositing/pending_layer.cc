@@ -122,7 +122,7 @@ std::unique_ptr<JSONObject> PendingLayer::ToJSON() const {
                    VectorAsJSONArray(offset_of_decomposited_transforms_));
   result->SetArray("paint_chunks", chunks_.ToJSON());
   result->SetBoolean("draws_content", DrawsContent());
-  result->SetBoolean("is_solid_color", solid_color_chunk_index_ != kNotFound);
+  result->SetBoolean("is_solid_color", IsSolidColor());
   result->SetString("hit_test_opaqueness",
                     cc::HitTestOpaquenessToString(hit_test_opaqueness_));
   return result;
@@ -622,6 +622,11 @@ void PendingLayer::UpdateSolidColorLayer(PendingLayer* old_pending_layer) {
 
 bool PendingLayer::UsesSolidColorLayer() const {
   if (!RuntimeEnabledFeatures::SolidColorLayersEnabled() || !IsSolidColor()) {
+    return false;
+  }
+  // We need a PictureLayer for the backdrop filter mask.
+  if (property_tree_state_.Effect()
+          .RequiresCompositingForBackdropFilterMask()) {
     return false;
   }
 #if BUILDFLAG(IS_MAC)
