@@ -6,9 +6,11 @@
 
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
+#include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 
@@ -213,6 +215,12 @@ ScriptEvaluationResult ClassicScript::RunScriptOnScriptStateAndReturnValue(
     ScriptState* script_state,
     ExecuteScriptPolicy policy,
     V8ScriptRunner::RethrowErrorsOption rethrow_errors) {
+  probe::EvaluateScriptBlock probe_scope(
+      ExecutionContext::From(script_state),
+      GetSanitizeScriptErrors() == SanitizeScriptErrors::kSanitize ? SourceUrl()
+                                                                   : BaseUrl(),
+      /*module=*/false);
+
   return V8ScriptRunner::CompileAndRunScript(script_state, this, policy,
                                              std::move(rethrow_errors));
 }

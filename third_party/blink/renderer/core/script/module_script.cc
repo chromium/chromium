@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/module_record_resolver.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -113,6 +114,10 @@ ScriptEvaluationResult ModuleScript::RunScriptOnScriptStateAndReturnValue(
     ScriptState* script_state,
     ExecuteScriptPolicy execute_script_policy,
     V8ScriptRunner::RethrowErrorsOption rethrow_errors) {
+  probe::EvaluateScriptBlock probe_scope(ExecutionContext::From(script_state),
+                                         BaseUrl(),
+                                         /*module=*/true);
+
   DCHECK_EQ(execute_script_policy,
             ExecuteScriptPolicy::kDoNotExecuteScriptWhenScriptsDisabled);
   DCHECK_EQ(script_state, SettingsObject()->GetScriptState());

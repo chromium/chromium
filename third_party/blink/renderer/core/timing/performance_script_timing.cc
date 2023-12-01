@@ -162,7 +162,7 @@ WTF::String PerformanceScriptTiming::sourceLocation() const {
   const ScriptTimingInfo::ScriptSourceLocation& source_location =
       info_->GetSourceLocation();
   if (!source_location.url) {
-    return WTF::String();
+    return WTF::String("");
   }
 
   StringBuilder builder;

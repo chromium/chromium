@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
+#include "v8-message.h"
 
 namespace blink {
 
@@ -538,16 +539,24 @@ ScriptTimingInfo::ScriptSourceLocation CaptureScriptSourceLocation(
   }
 
   v8::Local<v8::Function> function = value.As<v8::Function>();
-  if (function->IsFunction()) {
-    return ScriptTimingInfo::ScriptSourceLocation{
-        .url = ToCoreStringWithUndefinedOrNullCheck(
-            isolate, function->GetScriptOrigin().ResourceName()),
-        .function_name =
-            ToCoreStringWithUndefinedOrNullCheck(isolate, function->GetName()),
-        .start_position = function->GetScriptStartPosition()};
+  if (!function->IsFunction()) {
+    return ScriptTimingInfo::ScriptSourceLocation();
   }
 
-  return ScriptTimingInfo::ScriptSourceLocation();
+  v8::ScriptOrigin origin = function->GetScriptOrigin();
+
+  // Opaque scripts don't report source locations.
+  if (origin.Options().IsOpaque()) {
+    return ScriptTimingInfo::ScriptSourceLocation();
+  }
+
+  v8::Local<v8::Value> source_location = origin.ResourceName();
+
+  return ScriptTimingInfo::ScriptSourceLocation{
+      .url = ToCoreStringWithUndefinedOrNullCheck(isolate, source_location),
+      .function_name =
+          ToCoreStringWithUndefinedOrNullCheck(isolate, function->GetName()),
+      .start_position = function->GetScriptStartPosition()};
 }
 
 bool IsCallbackFromMainWorld(v8::MaybeLocal<v8::Value> callback) {

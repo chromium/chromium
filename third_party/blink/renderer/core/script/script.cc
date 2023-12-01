@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script_type_names.h"
 
 namespace blink {
@@ -28,10 +27,6 @@ void Script::RunScriptOnScriptState(
     V8ScriptRunner::RethrowErrorsOption rethrow_errors) {
   if (!script_state)
     return;
-
-  probe::EvaluateScriptBlock probe_scope(
-      ExecutionContext::From(script_state), source_url_,
-      GetScriptType() == mojom::blink::ScriptType::kModule);
 
   v8::HandleScope scope(script_state->GetIsolate());
   std::ignore = RunScriptOnScriptStateAndReturnValue(
