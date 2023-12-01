@@ -37,6 +37,7 @@ class QuickStartController
   enum class EntryPoint {
     WELCOME_SCREEN,
     NETWORK_SCREEN,
+    GAIA_INFO_SCREEN,
     GAIA_SCREEN,
   };
 

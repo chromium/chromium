@@ -35,6 +35,8 @@ std::string QuickStartScreen::GetResultString(Result result) {
       return "CancelAndReturnToWelcome";
     case Result::CANCEL_AND_RETURN_TO_NETWORK:
       return "CancelAndReturnToNetwork";
+    case Result::CANCEL_AND_RETURN_TO_GAIA_INFO:
+      return "CancelAndReturnToGaiaInfo";
     case Result::CANCEL_AND_RETURN_TO_SIGNIN:
       return "CancelAndReturnToSignin";
     case Result::WIFI_CREDENTIALS_RECEIVED:
@@ -137,6 +139,9 @@ void QuickStartScreen::ExitScreen() {
       return;
     case ash::quick_start::QuickStartController::EntryPoint::NETWORK_SCREEN:
       exit_callback_.Run(Result::CANCEL_AND_RETURN_TO_NETWORK);
+      return;
+    case ash::quick_start::QuickStartController::EntryPoint::GAIA_INFO_SCREEN:
+      exit_callback_.Run(Result::CANCEL_AND_RETURN_TO_GAIA_INFO);
       return;
     case ash::quick_start::QuickStartController::EntryPoint::GAIA_SCREEN:
       exit_callback_.Run(Result::CANCEL_AND_RETURN_TO_SIGNIN);

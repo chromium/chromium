@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
@@ -37,6 +38,8 @@ absl::optional<QuickStartController::EntryPoint> EntryPointFromScreen(
     return QuickStartController::EntryPoint::WELCOME_SCREEN;
   } else if (screen.name == NetworkScreenHandler::kScreenId.name) {
     return QuickStartController::EntryPoint::NETWORK_SCREEN;
+  } else if (screen.name == GaiaInfoScreenHandler::kScreenId.name) {
+    return QuickStartController::EntryPoint::GAIA_INFO_SCREEN;
   } else if (screen.name == GaiaScreenHandler::kScreenId.name) {
     return QuickStartController::EntryPoint::GAIA_SCREEN;
   }

@@ -25,10 +25,18 @@ void GaiaInfoScreenHandler::DeclareLocalizedValues(
   builder->AddF("gaiaInfoScreenTitle", IDS_GAIA_INFO_TITLE,
                 ui::GetChromeOSDeviceTypeResourceId());
   builder->Add("gaiaInfoScreenDescription", IDS_GAIA_INFO_DESCRIPTION);
+  builder->Add("gaiaInfoScreenDescriptionQuickStart",
+               IDS_GAIA_INFO_DESCRIPTION_QUICK_START);
+  builder->Add("gaiaInfoScreenManualFlow", IDS_GAIA_INFO_MANUAL_FLOW);
+  builder->Add("gaiaInfoScreenQuickStartFlow", IDS_GAIA_INFO_QUICK_START_FLOW);
 }
 
 void GaiaInfoScreenHandler::Show() {
   ShowInWebUI();
+}
+
+void GaiaInfoScreenHandler::SetQuickStartVisible() {
+  CallExternalAPI("setQuickStartVisible");
 }
 
 }  // namespace ash

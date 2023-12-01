@@ -1431,10 +1431,13 @@ void WizardController::OnGaiaInfoScreenExit(GaiaInfoScreen::Result result) {
     case GaiaInfoScreen::Result::kBack:
       AdvanceToScreen(UserCreationView::kScreenId);
       break;
-    case GaiaInfoScreen::Result::kNext:
+    case GaiaInfoScreen::Result::kManual:
     case GaiaInfoScreen::Result::kNotApplicable:
       AdvanceToScreen(GaiaView::kScreenId);
       break;
+    case GaiaInfoScreen::Result::kQuickstart:
+      ShowQuickStartScreen();
+      return;
   }
 }
 
@@ -1846,6 +1849,9 @@ void WizardController::OnQuickStartScreenExit(QuickStartScreen::Result result) {
     case QuickStartScreen::Result::WIFI_CREDENTIALS_RECEIVED:
     case QuickStartScreen::Result::CANCEL_AND_RETURN_TO_NETWORK:
       ShowNetworkScreen();
+      return;
+    case QuickStartScreen::Result::CANCEL_AND_RETURN_TO_GAIA_INFO:
+      AdvanceToScreen(GaiaInfoScreenView::kScreenId);
       return;
     case QuickStartScreen::Result::CANCEL_AND_RETURN_TO_SIGNIN:
       AdvanceToScreen(GaiaView::kScreenId);

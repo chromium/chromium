@@ -2,7 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
+import '//resources/cr_elements/cr_radio_button/cr_card_radio_button.js';
+import '//resources/cr_elements/cr_radio_group/cr_radio_group.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../../components/oobe_icons.html.js';
+import '../../components/oobe_illo_icons.html.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
+import '../../components/common_styles/cr_card_radio_group_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 
@@ -31,12 +38,22 @@ const GaiaInfoStep = {
 };
 
 /**
+ * User type for setting up the device.
+ * @enum {string}
+ */
+const UserCreationFlowType = {
+  MANUAL: 'manual',
+  QUICKSTART: 'quickstart',
+};
+
+/**
  * Available user actions.
  * @enum {string}
  */
 const UserAction = {
   BACK: 'back',
-  NEXT: 'next',
+  MANUAL: 'manual',
+  QUICKSTART: 'quickstart',
 };
 
 /**
@@ -52,7 +69,31 @@ class GaiaInfoScreen extends GaiaInfoScreenElementBase {
   }
 
   static get properties() {
-    return {};
+    return {
+      /**
+       * The currently selected flow type.
+       * @type {string}
+       * @private
+       */
+      selectedFlowType_: {
+        type: String,
+        value: '',
+      },
+      /**
+       * Whether Quick start feature is enabled. If it's enabled the quick start
+       * button will be shown in the gaia info screen.
+       * @type {boolean}
+       * @private
+       */
+      isQuickStartVisible_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
+
+  get EXTERNAL_API() {
+    return ['setQuickStartVisible'];
   }
 
   get UI_STEPS() {
@@ -60,6 +101,7 @@ class GaiaInfoScreen extends GaiaInfoScreenElementBase {
   }
 
   onBeforeShow() {
+    this.selectedFlowType_ = '';
     this.setAnimationPlaying_(true);
   }
 
@@ -77,20 +119,42 @@ class GaiaInfoScreen extends GaiaInfoScreenElementBase {
     this.initializeLoginScreen('GaiaInfoScreen');
   }
 
+  setQuickStartVisible() {
+    this.isQuickStartVisible_ = true;
+  }
+
   getOobeUIInitialState() {
     return OOBE_UI_STATE.GAIA_INFO;
   }
 
   onNextClicked_() {
-    this.userActed(UserAction.NEXT);
+    if (this.isQuickStartVisible_ &&
+        this.selectedFlowType_ == UserCreationFlowType.QUICKSTART) {
+      this.userActed(UserAction.QUICKSTART);
+    } else {
+      this.userActed(UserAction.MANUAL);
+    }
   }
 
   onBackClicked_() {
     this.userActed(UserAction.BACK);
   }
 
-  setAnimationPlaying_(enabled) {
-    this.$.gaiaInfoAnimation.playing = enabled;
+  isNextButtonEnabled_(isQuickStartVisible, selectedFlowType) {
+    return (!this.isQuickStartVisible_) || this.selectedFlowType_;
+  }
+
+  /**
+   * Play or pause the lottie animation in the legacy flow.
+   * @param {boolean} play - whether play or pause the animation.
+   * @private
+   */
+  setAnimationPlaying_(play) {
+    const gaiaInfoAnimation =
+        this.shadowRoot.querySelector('#gaiaInfoAnimation');
+    if (gaiaInfoAnimation) {
+      gaiaInfoAnimation.playing = play;
+    }
   }
 }
 

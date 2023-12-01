@@ -20,7 +20,7 @@ class GaiaInfoScreen : public BaseScreen {
  public:
   using TView = GaiaInfoScreenView;
 
-  enum class Result { kNext = 0, kBack, kNotApplicable };
+  enum class Result { kManual = 0, kQuickstart, kBack, kNotApplicable };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
@@ -32,6 +32,14 @@ class GaiaInfoScreen : public BaseScreen {
 
   ~GaiaInfoScreen() override;
 
+  void set_exit_callback_for_testing(const ScreenExitCallback& exit_callback) {
+    exit_callback_ = exit_callback;
+  }
+
+  const ScreenExitCallback& get_exit_callback_for_testing() {
+    return exit_callback_;
+  }
+
   static std::string GetResultString(Result result);
 
  private:
@@ -41,8 +49,13 @@ class GaiaInfoScreen : public BaseScreen {
   void HideImpl() override;
   void OnUserAction(const base::Value::List& args) override;
 
+  void SetQuickStartButtonVisibility(bool visible);
+
   base::WeakPtr<GaiaInfoScreenView> view_;
   ScreenExitCallback exit_callback_;
+
+  // WeakPtrFactory used to schedule other tasks in this object.
+  base::WeakPtrFactory<GaiaInfoScreen> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

@@ -14,15 +14,18 @@ namespace ash {
 namespace {
 
 constexpr char kUserActionBack[] = "back";
-constexpr char kUserActionNext[] = "next";
+constexpr char kUserActionManual[] = "manual";
+constexpr char kUserActionQuickstart[] = "quickstart";
 
 }  // namespace
 
 // static
 std::string GaiaInfoScreen::GetResultString(Result result) {
   switch (result) {
-    case Result::kNext:
-      return "Next";
+    case Result::kManual:
+      return "Manual";
+    case Result::kQuickstart:
+      return "Quickstart";
     case Result::kBack:
       return "Back";
     case Result::kNotApplicable:
@@ -55,6 +58,13 @@ void GaiaInfoScreen::ShowImpl() {
   }
 
   view_->Show();
+
+  // Determine the QuickStart button visibility
+  WizardController::default_controller()
+      ->quick_start_controller()
+      ->DetermineEntryPointVisibility(
+          base::BindOnce(&GaiaInfoScreen::SetQuickStartButtonVisibility,
+                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void GaiaInfoScreen::HideImpl() {}
@@ -63,10 +73,18 @@ void GaiaInfoScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionBack) {
     exit_callback_.Run(Result::kBack);
-  } else if (action_id == kUserActionNext) {
-    exit_callback_.Run(Result::kNext);
+  } else if (action_id == kUserActionManual) {
+    exit_callback_.Run(Result::kManual);
+  } else if (action_id == kUserActionQuickstart) {
+    exit_callback_.Run(Result::kQuickstart);
   } else {
     BaseScreen::OnUserAction(args);
+  }
+}
+
+void GaiaInfoScreen::SetQuickStartButtonVisibility(bool visible) {
+  if (visible && view_) {
+    view_->SetQuickStartVisible();
   }
 }
 
