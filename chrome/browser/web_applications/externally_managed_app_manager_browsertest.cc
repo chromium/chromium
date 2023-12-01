@@ -42,6 +42,33 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/scoped_observation.h"
+#include "base/test/run_until.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
+#include "chrome/common/pref_names.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "ui/message_center/public/cpp/notification.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/message_center.mojom-test-utils.h"
+#include "chromeos/crosapi/mojom/message_center.mojom.h"
+#include "chromeos/crosapi/mojom/notification.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_CHROMEOS)
+using testing::_;
+using testing::AllOf;
+using testing::Eq;
+using testing::Field;
+using testing::Property;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace web_app {
 
 class ExternallyManagedAppManagerBrowserTest
@@ -854,5 +881,218 @@ IN_PROC_BROWSER_TEST_P(ExternallyManagedAppManagerBrowserTestShortcut,
 INSTANTIATE_TEST_SUITE_P(All,
                          ExternallyManagedAppManagerBrowserTestShortcut,
                          ::testing::Bool());
+
+#if BUILDFLAG(IS_CHROMEOS)
+class PlaceholderUpdateRelaunchBrowserTest
+    : public ExternallyManagedAppManagerBrowserTest,
+      public NotificationDisplayService::Observer {
+ public:
+  ~PlaceholderUpdateRelaunchBrowserTest() override {
+    notification_observation_.Reset();
+  }
+
+  // NotificationDisplayService::Observer:
+  MOCK_METHOD(void,
+              OnNotificationDisplayed,
+              (const message_center::Notification&,
+               const NotificationCommon::Metadata* const),
+              (override));
+  MOCK_METHOD(void,
+              OnNotificationClosed,
+              (const std::string& notification_id),
+              (override));
+
+  void OnNotificationDisplayServiceDestroyed(
+      NotificationDisplayService* service) override {
+    notification_observation_.Reset();
+  }
+
+  void AddForceInstalledApp(const std::string& manifest_id,
+                            const std::string& app_name) {
+    base::test::TestFuture<void> app_sync_future;
+    provider()
+        ->policy_manager()
+        .SetOnAppsSynchronizedCompletedCallbackForTesting(
+            app_sync_future.GetCallback());
+    PrefService* prefs = profile()->GetPrefs();
+    base::Value::List install_force_list =
+        prefs->GetList(prefs::kWebAppInstallForceList).Clone();
+    install_force_list.Append(
+        base::Value::Dict()
+            .Set(kUrlKey, manifest_id)
+            .Set(kDefaultLaunchContainerKey, kDefaultLaunchContainerWindowValue)
+            .Set(kFallbackAppNameKey, app_name));
+    profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                   std::move(install_force_list));
+    EXPECT_TRUE(app_sync_future.Wait());
+  }
+
+  void AddPreventCloseToApp(const std::string& manifest_id,
+                            const std::string& run_on_os_login) {
+    base::test::TestFuture<void> policy_refresh_sync_future;
+    provider()
+        ->policy_manager()
+        .SetRefreshPolicySettingsCompletedCallbackForTesting(
+            policy_refresh_sync_future.GetCallback());
+    PrefService* prefs = profile()->GetPrefs();
+    base::Value::List web_app_settings =
+        prefs->GetList(prefs::kWebAppSettings).Clone();
+    web_app_settings.Append(base::Value::Dict()
+                                .Set(kManifestId, manifest_id)
+                                .Set(kRunOnOsLogin, run_on_os_login)
+                                .Set(kPreventClose, true));
+    prefs->SetList(prefs::kWebAppSettings, std::move(web_app_settings));
+    EXPECT_TRUE(policy_refresh_sync_future.Wait());
+  }
+
+  void WaitForNumberOfAppInstances(const webapps::AppId& app_id,
+                                   size_t number_of_app_instances) {
+    ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
+      return provider()->ui_manager().GetNumWindowsForApp(app_id) ==
+             number_of_app_instances;
+    }));
+  }
+
+  auto GetAllNotifications() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    base::test::TestFuture<std::set<std::string>, bool> get_displayed_future;
+    NotificationDisplayService::GetForProfile(profile())->GetDisplayed(
+        get_displayed_future.GetCallback());
+#else
+    base::test::TestFuture<const std::vector<std::string>&>
+        get_displayed_future;
+    auto& remote = chromeos::LacrosService::Get()
+                       ->GetRemote<crosapi::mojom::MessageCenter>();
+    EXPECT_TRUE(remote.get());
+    remote->GetDisplayedNotifications(get_displayed_future.GetCallback());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    const auto& notification_ids = get_displayed_future.Get<0>();
+    EXPECT_TRUE(get_displayed_future.Wait());
+    return notification_ids;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void ClearAllNotifications() {
+    base::test::TestFuture<const std::vector<std::string>&>
+        get_displayed_future;
+    auto& service = chromeos::LacrosService::Get()
+                        ->GetRemote<crosapi::mojom::MessageCenter>();
+    EXPECT_TRUE(service.get());
+    for (const std::string& notification_id : GetAllNotifications()) {
+      service->CloseNotification(notification_id);
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  size_t GetDisplayedNotificationsCount() {
+    return GetAllNotifications().size();
+  }
+
+  void WaitUntilDisplayNotificationCount(size_t display_count) {
+    ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
+      return GetDisplayedNotificationsCount() == display_count;
+    }));
+  }
+
+ protected:
+  base::ScopedObservation<NotificationDisplayService,
+                          PlaceholderUpdateRelaunchBrowserTest>
+      notification_observation_{this};
+};
+
+IN_PROC_BROWSER_TEST_F(PlaceholderUpdateRelaunchBrowserTest,
+                       UpdatePlaceholderRelaunchClosePreventedAppSucceeds) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // This may be needed due to side-effects previously run lacros tests.
+  ClearAllNotifications();
+  WaitUntilDisplayNotificationCount(/*display_count=*/0u);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  notification_observation_.Observe(
+      NotificationDisplayService::GetForProfile(profile()));
+
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      &ExternallyManagedAppManagerBrowserTest::SimulateRedirectHandler,
+      base::Unretained(this)));
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  simulate_redirect_ = true;
+  GURL install_url = embedded_test_server()->GetURL(
+      "/banners/manifest_with_id_test_page.html");
+
+  // Force install the placeholder.
+  AddForceInstalledApp(install_url.spec(), /*app_name=*/"placeholder app");
+
+  const webapps::AppId placeholder_app_id =
+      GenerateAppId(absl::nullopt, install_url);
+  apps::AppReadinessWaiter(profile(), placeholder_app_id).Await();
+
+  // Enable prevent-close close for the placeholder.
+  AddPreventCloseToApp(install_url.spec(), kRunWindowed);
+
+  absl::optional<webapps::AppId> app_id =
+      registrar().LookupExternalAppId(install_url);
+  ASSERT_TRUE(app_id.has_value());
+  EXPECT_EQ(placeholder_app_id, *app_id);
+  EXPECT_TRUE(registrar().IsPlaceholderApp(*app_id, WebAppManagement::kPolicy));
+
+  EXPECT_CALL(
+      *this,
+      OnNotificationDisplayed(
+          AllOf(
+              Property(&message_center::Notification::id,
+                       Eq("web_app_relaunch_notifier:" + placeholder_app_id)),
+              Property(&message_center::Notification::notifier_id,
+                       Field(&message_center::NotifierId::id,
+                             Eq("web_app_relaunch"))),
+              Property(&message_center::Notification::title,
+                       Eq(u"Restarting and updating Manifest test app with id "
+                          u"specified")),
+              Property(
+                  &message_center::Notification::message,
+                  Eq(u"Please wait while this application is being updated"))),
+          _))
+      .Times(1);
+
+  // Launch the PWA so that the app relaunch is triggered on sync.
+  ASSERT_TRUE(web_app::LaunchWebAppBrowser(profile(), placeholder_app_id,
+                                           WindowOpenDisposition::NEW_WINDOW));
+  WaitForNumberOfAppInstances(placeholder_app_id,
+                              /*number_of_app_instances=*/1u);
+
+  // Resolve the redirect (placeholder can be updated now).
+  simulate_redirect_ = false;
+  provider()->policy_manager().RefreshPolicyInstalledAppsForTesting(
+      /*allow_close_and_relaunch=*/true);
+
+  // Wait until the final version of the app is installed.
+  const webapps::AppId final_app_id = GenerateAppId("some_id", install_url);
+  apps::AppReadinessWaiter(profile(), final_app_id).Await();
+
+  // Check that the placeholder app is indeed closed.
+  WaitForNumberOfAppInstances(placeholder_app_id,
+                              /*number_of_app_instances=*/0u);
+
+  // Wait for the placeholder removal task to be done.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() -> bool { return !registrar().IsInstalled(placeholder_app_id); }));
+
+  // Check that the new app is launched.
+  WaitForNumberOfAppInstances(final_app_id, /*number_of_app_instances=*/1u);
+
+  // Make sure that the notification got cleaned up.
+  WaitUntilDisplayNotificationCount(/*display_count=*/0u);
+
+  EXPECT_NE(final_app_id, placeholder_app_id);
+  EXPECT_TRUE(registrar().IsInstalled(final_app_id));
+  EXPECT_FALSE(
+      registrar().IsPlaceholderApp(final_app_id, WebAppManagement::kPolicy));
+  EXPECT_EQ(0, registrar().CountUserInstalledApps());
+  EXPECT_EQ(1u, registrar()
+                    .GetExternallyInstalledApps(
+                        ExternalInstallSource::kExternalPolicy)
+                    .size());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace web_app

@@ -112,7 +112,8 @@ class WebAppPolicyManager {
 
   bool IsPreventCloseEnabled(const webapps::AppId& app_id) const;
 
-  void RefreshPolicyInstalledAppsForTesting();
+  void RefreshPolicyInstalledAppsForTesting(
+      bool allow_close_and_relaunch = false);
 
  private:
   friend class WebAppPolicyManagerTest;
@@ -147,7 +148,7 @@ class WebAppPolicyManager {
 
   void InitChangeRegistrarAndRefreshPolicy(bool enable_pwa_support);
 
-  void RefreshPolicyInstalledApps();
+  void RefreshPolicyInstalledApps(bool allow_close_and_relaunch = false);
 #if BUILDFLAG(IS_CHROMEOS)
   void RefreshPolicyInstalledIsolatedWebApps();
 #endif
