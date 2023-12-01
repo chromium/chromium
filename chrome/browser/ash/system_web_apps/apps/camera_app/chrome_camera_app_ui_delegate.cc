@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/feature_list.h"
@@ -89,24 +88,16 @@ void ChromeCameraAppUIDelegate::CameraAppDialog::ShowIntent(
 ChromeCameraAppUIDelegate::CameraAppDialog::CameraAppDialog(
     const std::string& url)
     : ash::SystemWebDialogDelegate(GURL(url),
-                                   /*title=*/std::u16string()) {}
+                                   /*title=*/std::u16string()) {
+  set_can_maximize(true);
+  // For customizing the title bar.
+  set_dialog_frame_kind(ui::WebDialogDelegate::FrameKind::kNonClient);
+  set_dialog_modal_type(ui::MODAL_TYPE_WINDOW);
+  set_dialog_size(
+      gfx::Size(kChromeCameraAppDefaultWidth, kChromeCameraAppDefaultHeight));
+}
 
 ChromeCameraAppUIDelegate::CameraAppDialog::~CameraAppDialog() = default;
-
-ui::ModalType ChromeCameraAppUIDelegate::CameraAppDialog::GetDialogModalType()
-    const {
-  return ui::MODAL_TYPE_WINDOW;
-}
-
-bool ChromeCameraAppUIDelegate::CameraAppDialog::CanMaximizeDialog() const {
-  return !ash::TabletMode::Get()->InTabletMode();
-}
-
-ui::WebDialogDelegate::FrameKind
-ChromeCameraAppUIDelegate::CameraAppDialog::GetWebDialogFrameKind() const {
-  // For customizing the title bar.
-  return ui::WebDialogDelegate::FrameKind::kNonClient;
-}
 
 void ChromeCameraAppUIDelegate::CameraAppDialog::AdjustWidgetInitParams(
     views::Widget::InitParams* params) {
@@ -119,11 +110,6 @@ void ChromeCameraAppUIDelegate::CameraAppDialog::AdjustWidgetInitParams(
                                                 grey_900);
   params->init_properties_container.SetProperty(
       chromeos::kFrameInactiveColorKey, grey_900);
-}
-
-void ChromeCameraAppUIDelegate::CameraAppDialog::GetDialogSize(
-    gfx::Size* size) const {
-  size->SetSize(kChromeCameraAppDefaultWidth, kChromeCameraAppDefaultHeight);
 }
 
 void ChromeCameraAppUIDelegate::CameraAppDialog::RequestMediaAccessPermission(
