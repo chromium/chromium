@@ -308,7 +308,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kAccessibilityIncludeLongClickAction);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAccessibilityPageZoom);
 CONTENT_EXPORT extern const base::FeatureParam<bool>
     kAccessibilityPageZoomOSLevelAdjustment;
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kAccessibilityPerformanceTesting);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAutoDisableAccessibilityV2);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kGinJavaBridgeMojo);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kReduceGpuPriorityOnBackground);

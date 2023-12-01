@@ -24,7 +24,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kAccessibilityIncludeLongClickAction,
     &features::kAccessibilityPageZoom,
     &features::kAccessibilityPerformanceFiltering,
-    &features::kAccessibilityPerformanceTesting,
     &features::kAutoDisableAccessibilityV2,
     &features::kBackgroundMediaRendererHasModerateBinding,
     &features::kFedCm,

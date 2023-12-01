@@ -969,12 +969,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             if (WebContentsAccessibilityImplJni.get()
                     .populateAccessibilityNodeInfo(mNativeObj, info, virtualViewId)) {
                 // After successfully populating this node, add it to our cache then return.
-                // If we are not doing performance testing, then use the cache.
-                if (!ContentFeatureMap.isEnabled(
-                        ContentFeatureList.ACCESSIBILITY_PERFORMANCE_TESTING)) {
-                    mNodeInfoCache.put(virtualViewId, AccessibilityNodeInfoCompat.obtain(info));
-                    mHistogramRecorder.incrementNodeWasCreatedFromScratch();
-                }
+                mNodeInfoCache.put(virtualViewId, AccessibilityNodeInfoCompat.obtain(info));
+                mHistogramRecorder.incrementNodeWasCreatedFromScratch();
                 return info;
             } else {
                 info.recycle();
@@ -1723,36 +1719,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             return;
         }
 
-        // If we are not doing performance testing, then use event dispatcher, otherwise send the
-        // event immediately without throttling / optimizations.
-        if (!ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_PERFORMANCE_TESTING)) {
-            mHistogramRecorder.incrementEnqueuedEvents();
-            mEventDispatcher.enqueueEvent(virtualViewId, eventType);
-        } else {
-            sendEventSynchronously(virtualViewId, eventType);
-        }
-    }
-
-    private void sendEventSynchronously(int virtualViewId, int eventType) {
-        AccessibilityEvent event = buildAccessibilityEvent(virtualViewId, eventType);
-        if (event == null) return;
-
-        requestSendAccessibilityEvent(event);
-
-        // Always send the ENTER and then the EXIT event, to match a standard
-        // Android View.
-        if (eventType == AccessibilityEvent.TYPE_VIEW_HOVER_ENTER) {
-            AccessibilityEvent exitEvent =
-                    buildAccessibilityEvent(mLastHoverId, AccessibilityEvent.TYPE_VIEW_HOVER_EXIT);
-            if (exitEvent != null) {
-                requestSendAccessibilityEvent(exitEvent);
-                mLastHoverId = virtualViewId;
-            } else if (virtualViewId != View.NO_ID && mLastHoverId != virtualViewId) {
-                // If IDs become mismatched, or on first hover, this will sync the
-                // values again so all further hovers have correct event pairing.
-                mLastHoverId = virtualViewId;
-            }
-        }
+        mHistogramRecorder.incrementEnqueuedEvents();
+        mEventDispatcher.enqueueEvent(virtualViewId, eventType);
     }
 
     private AccessibilityEvent buildAccessibilityEvent(int virtualViewId, int eventType) {

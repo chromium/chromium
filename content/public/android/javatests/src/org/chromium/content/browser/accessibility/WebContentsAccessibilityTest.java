@@ -165,16 +165,10 @@ public class WebContentsAccessibilityTest {
             "Expected focus to be on a different node than it is.";
 
     // ContentFeatureList maps used for various tests.
-    private static final Map<String, Boolean> AXMODES_ON_PERF_TEST_OFF =
-            Map.of(
-                    ContentFeatureList.ACCESSIBILITY_PERFORMANCE_FILTERING,
-                    true,
-                    ContentFeatureList.ACCESSIBILITY_PERFORMANCE_TESTING,
-                    false);
+    private static final Map<String, Boolean> AXMODES_ON =
+            Map.of(ContentFeatureList.ACCESSIBILITY_PERFORMANCE_FILTERING, true);
     private static final Map<String, Boolean> AUTO_DISABLE_V2_ON =
             Map.of(ContentFeatureList.AUTO_DISABLE_ACCESSIBILITY_V2, true);
-    private static final Map<String, Boolean> PERF_TEST_OFF =
-            Map.of(ContentFeatureList.ACCESSIBILITY_PERFORMANCE_TESTING, false);
     private static final Map<String, Boolean> INCLUDE_LONG_CLICK_ENABLED =
             Map.of(ContentFeatureList.ACCESSIBILITY_INCLUDE_LONG_CLICK_ACTION, true);
     private static final Map<String, Boolean> INCLUDE_LONG_CLICK_DISABLED =
@@ -394,7 +388,7 @@ public class WebContentsAccessibilityTest {
                         + "<p>This is a test 3</p>");
 
         // Set the relevant features and accessibility state.
-        FeatureList.setTestFeatures(AXMODES_ON_PERF_TEST_OFF);
+        FeatureList.setTestFeatures(AXMODES_ON);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setIsScreenReaderEnabledForTesting(true);
@@ -429,7 +423,7 @@ public class WebContentsAccessibilityTest {
                         + "<p>This is a test 3</p>");
 
         // Set the relevant features and accessibility state.
-        FeatureList.setTestFeatures(AXMODES_ON_PERF_TEST_OFF);
+        FeatureList.setTestFeatures(AXMODES_ON);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setIsScreenReaderEnabledForTesting(false);
@@ -465,7 +459,7 @@ public class WebContentsAccessibilityTest {
                         + "<p>This is a test 3</p>");
 
         // Set the relevant features and screen reader state.
-        FeatureList.setTestFeatures(AXMODES_ON_PERF_TEST_OFF);
+        FeatureList.setTestFeatures(AXMODES_ON);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setIsScreenReaderEnabledForTesting(false);
@@ -503,7 +497,7 @@ public class WebContentsAccessibilityTest {
                         + "<p>This is a test 3</p>");
 
         // Set the relevant features and screen reader state, set event type masks to empty.
-        FeatureList.setTestFeatures(AXMODES_ON_PERF_TEST_OFF);
+        FeatureList.setTestFeatures(AXMODES_ON);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setStateMaskForTesting(
@@ -544,7 +538,7 @@ public class WebContentsAccessibilityTest {
                         + "<p>This is a test 3</p>");
 
         // Set the relevant features and screen reader state, set event type masks to empty.
-        FeatureList.setTestFeatures(AXMODES_ON_PERF_TEST_OFF);
+        FeatureList.setTestFeatures(AXMODES_ON);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setStateMaskForTesting(
@@ -582,7 +576,7 @@ public class WebContentsAccessibilityTest {
                         + "<p>This is a test 3</p>");
 
         // Set the relevant features and screen reader state, set event type masks to empty.
-        FeatureList.setTestFeatures(AXMODES_ON_PERF_TEST_OFF);
+        FeatureList.setTestFeatures(AXMODES_ON);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setStateMaskForTesting(
@@ -621,9 +615,6 @@ public class WebContentsAccessibilityTest {
                 "<p>This is a test 1</p>\n"
                         + "<p>This is a test 2</p>\n"
                         + "<p>This is a test 3</p>");
-
-        // Set the correct performance testing state so the cache is used.
-        FeatureList.setTestFeatures(PERF_TEST_OFF);
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
