@@ -20,3 +20,4 @@ Android.WebView.VisibleScreenCoverage.PerWebView.data
 Android.WebView.SitesVisitedWeekly
 Android.WebView.SafeMode.ActionName
 Android.WebView.SafeMode.SafeModeEnabled
+Android.WebView.SafeMode.ReceivedFix
