@@ -551,7 +551,8 @@ TranslateMessage::HandleSecondaryMenuItemClicked(
   // try to turn on auto-always-translate.
   is_translation_eligible_for_auto_always_translate_ = false;
 
-  std::string language_code_utf8 = ConvertJavaStringToUTF8(env, language_code);
+  std::string language_code_utf8 =
+      base::android::ConvertJavaStringToUTF8(env, language_code);
   if (!language_code_utf8.empty()) {
     switch (static_cast<OverflowMenuItemId>(overflow_menu_item_id)) {
       case OverflowMenuItemId::kChangeSourceLanguage:

@@ -62,8 +62,10 @@ static jlong JNI_Origin_CreateNative(
     jboolean is_opaque,
     jlong token_high_bits,
     jlong token_low_bits) {
-  const std::string& scheme = ConvertJavaStringToUTF8(env, java_scheme);
-  const std::string& host = ConvertJavaStringToUTF8(env, java_host);
+  const std::string& scheme =
+      base::android::ConvertJavaStringToUTF8(env, java_scheme);
+  const std::string& host =
+      base::android::ConvertJavaStringToUTF8(env, java_host);
 
   Origin origin;
   if (is_opaque) {

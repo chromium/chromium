@@ -257,7 +257,7 @@ static void JNI_AwBrowserProcess_SetProcessNameCrashKey(
     const base::android::JavaParamRef<jstring>& processName) {
   static ::crash_reporter::CrashKeyString<64> crash_key(
       crash_keys::kAppProcessName);
-  crash_key.Set(ConvertJavaStringToUTF8(env, processName));
+  crash_key.Set(base::android::ConvertJavaStringToUTF8(env, processName));
 }
 
 static base::android::ScopedJavaLocalRef<jobjectArray>

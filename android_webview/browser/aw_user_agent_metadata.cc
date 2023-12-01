@@ -25,7 +25,7 @@ namespace {
 // return an empty std string.
 std::string ConvertJavaStringToUTF8Wrapper(
     const base::android::JavaRef<jstring>& str) {
-  return str.obj() ? ConvertJavaStringToUTF8(str) : "";
+  return str.obj() ? base::android::ConvertJavaStringToUTF8(str) : "";
 }
 
 }  // namespace

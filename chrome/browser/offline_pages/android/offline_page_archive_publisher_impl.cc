@@ -153,10 +153,11 @@ OfflinePageArchivePublisherImpl::Delegate::AddCompletedDownload(
   JNIEnv* env = base::android::AttachCurrentThread();
 
   if (ShouldUseDownloadsCollection()) {
-    base::FilePath new_file_path = base::FilePath(ConvertJavaStringToUTF8(
-        Java_OfflinePageArchivePublisherBridge_publishArchiveToDownloadsCollection(
-            env,
-            android::OfflinePageBridge::ConvertToJavaOfflinePage(env, page))));
+    base::FilePath new_file_path =
+        base::FilePath(base::android::ConvertJavaStringToUTF8(
+            Java_OfflinePageArchivePublisherBridge_publishArchiveToDownloadsCollection(
+                env, android::OfflinePageBridge::ConvertToJavaOfflinePage(
+                         env, page))));
 
     if (new_file_path.empty())
       return PublishArchiveResult::Failure(SavePageResult::FILE_MOVE_FAILED);

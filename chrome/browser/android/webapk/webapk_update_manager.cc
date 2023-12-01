@@ -31,6 +31,8 @@
 #include "ui/android/color_utils_android.h"
 #include "url/gurl.h"
 
+using base::android::ConvertJavaStringToUTF16;
+using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;

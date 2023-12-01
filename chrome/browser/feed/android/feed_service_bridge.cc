@@ -128,8 +128,8 @@ static jboolean JNI_FeedServiceBridge_IsSignedIn(JNIEnv* env) {
 
 std::string FeedServiceBridge::GetLanguageTag() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  return ConvertJavaStringToUTF8(env,
-                                 Java_FeedServiceBridge_getLanguageTag(env));
+  return base::android::ConvertJavaStringToUTF8(
+      env, Java_FeedServiceBridge_getLanguageTag(env));
 }
 
 DisplayMetrics FeedServiceBridge::GetDisplayMetrics() {

@@ -87,7 +87,7 @@ void TrackerImplAndroid::NotifyEvent(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jobj,
     const base::android::JavaParamRef<jstring>& jevent) {
-  std::string event = ConvertJavaStringToUTF8(env, jevent);
+  std::string event = base::android::ConvertJavaStringToUTF8(env, jevent);
   tracker_->NotifyEvent(event);
 }
 
@@ -95,7 +95,7 @@ bool TrackerImplAndroid::ShouldTriggerHelpUI(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jobj,
     const base::android::JavaParamRef<jstring>& jfeature) {
-  std::string feature = ConvertJavaStringToUTF8(env, jfeature);
+  std::string feature = base::android::ConvertJavaStringToUTF8(env, jfeature);
   DCHECK(features_.find(feature) != features_.end());
 
   return tracker_->ShouldTriggerHelpUI(*features_[feature]);
@@ -106,7 +106,7 @@ TrackerImplAndroid::ShouldTriggerHelpUIWithSnooze(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jobj,
     const base::android::JavaParamRef<jstring>& jfeature) {
-  std::string feature = ConvertJavaStringToUTF8(env, jfeature);
+  std::string feature = base::android::ConvertJavaStringToUTF8(env, jfeature);
   DCHECK(features_.find(feature) != features_.end());
 
   Tracker::TriggerDetails triggerDetails =
@@ -119,7 +119,7 @@ bool TrackerImplAndroid::WouldTriggerHelpUI(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jobj,
     const base::android::JavaParamRef<jstring>& jfeature) {
-  std::string feature = ConvertJavaStringToUTF8(env, jfeature);
+  std::string feature = base::android::ConvertJavaStringToUTF8(env, jfeature);
   DCHECK(features_.find(feature) != features_.end());
 
   return tracker_->WouldTriggerHelpUI(*features_[feature]);
@@ -130,7 +130,7 @@ bool TrackerImplAndroid::HasEverTriggered(
     const base::android::JavaRef<jobject>& jobj,
     const base::android::JavaParamRef<jstring>& jfeature,
     const jboolean j_from_window) {
-  std::string feature = ConvertJavaStringToUTF8(env, jfeature);
+  std::string feature = base::android::ConvertJavaStringToUTF8(env, jfeature);
   DCHECK(features_.find(feature) != features_.end());
 
   return tracker_->HasEverTriggered(*features_[feature], j_from_window);
@@ -140,7 +140,7 @@ jint TrackerImplAndroid::GetTriggerState(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jobj,
     const base::android::JavaParamRef<jstring>& jfeature) {
-  std::string feature = ConvertJavaStringToUTF8(env, jfeature);
+  std::string feature = base::android::ConvertJavaStringToUTF8(env, jfeature);
   DCHECK(features_.find(feature) != features_.end());
 
   return static_cast<int>(tracker_->GetTriggerState(*features_[feature]));
@@ -150,7 +150,7 @@ void TrackerImplAndroid::Dismissed(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jobj,
     const base::android::JavaParamRef<jstring>& jfeature) {
-  std::string feature = ConvertJavaStringToUTF8(env, jfeature);
+  std::string feature = base::android::ConvertJavaStringToUTF8(env, jfeature);
   DCHECK(features_.find(feature) != features_.end());
 
   tracker_->Dismissed(*features_[feature]);
@@ -161,7 +161,7 @@ void TrackerImplAndroid::DismissedWithSnooze(
     const base::android::JavaRef<jobject>& jobj,
     const base::android::JavaParamRef<jstring>& jfeature,
     const jint snooze_action) {
-  std::string feature = ConvertJavaStringToUTF8(env, jfeature);
+  std::string feature = base::android::ConvertJavaStringToUTF8(env, jfeature);
   DCHECK(features_.find(feature) != features_.end());
 
   tracker_->DismissedWithSnooze(
@@ -190,7 +190,7 @@ void TrackerImplAndroid::SetPriorityNotification(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jobj,
     const base::android::JavaParamRef<jstring>& jfeature) {
-  std::string feature = ConvertJavaStringToUTF8(env, jfeature);
+  std::string feature = base::android::ConvertJavaStringToUTF8(env, jfeature);
   DCHECK(features_.find(feature) != features_.end());
 
   return tracker_->SetPriorityNotification(*features_[feature]);
@@ -212,7 +212,7 @@ void TrackerImplAndroid::RegisterPriorityNotificationHandler(
     const base::android::JavaRef<jobject>& jobj,
     const base::android::JavaParamRef<jstring>& jfeature,
     const base::android::JavaRef<jobject>& jrunnable) {
-  std::string feature = ConvertJavaStringToUTF8(env, jfeature);
+  std::string feature = base::android::ConvertJavaStringToUTF8(env, jfeature);
   DCHECK(features_.find(feature) != features_.end());
 
   return tracker_->RegisterPriorityNotificationHandler(
@@ -225,7 +225,7 @@ void TrackerImplAndroid::UnregisterPriorityNotificationHandler(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jobj,
     const base::android::JavaParamRef<jstring>& jfeature) {
-  std::string feature = ConvertJavaStringToUTF8(env, jfeature);
+  std::string feature = base::android::ConvertJavaStringToUTF8(env, jfeature);
   DCHECK(features_.find(feature) != features_.end());
 
   return tracker_->UnregisterPriorityNotificationHandler(*features_[feature]);

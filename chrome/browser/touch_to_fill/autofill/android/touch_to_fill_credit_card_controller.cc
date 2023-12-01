@@ -120,8 +120,8 @@ void TouchToFillCreditCardController::SuggestionSelected(
     JNIEnv* env,
     base::android::JavaParamRef<jstring> unique_id,
     bool is_virtual) {
-  delegate_->SuggestionSelected(ConvertJavaStringToUTF8(env, unique_id),
-                                is_virtual);
+  delegate_->SuggestionSelected(
+      base::android::ConvertJavaStringToUTF8(env, unique_id), is_virtual);
 }
 
 base::android::ScopedJavaLocalRef<jobject>

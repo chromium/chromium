@@ -230,13 +230,13 @@ AutofillProfile CreateStarterProfile(
     const base::android::JavaParamRef<jobject>& jprofile,
     JNIEnv* env,
     const AutofillProfile* existing_profile) {
-  std::string guid =
-      ConvertJavaStringToUTF8(Java_AutofillProfile_getGUID(env, jprofile));
+  std::string guid = base::android::ConvertJavaStringToUTF8(
+      Java_AutofillProfile_getGUID(env, jprofile));
   if (!existing_profile) {
     AutofillProfile::Source source = static_cast<AutofillProfile::Source>(
         Java_AutofillProfile_getSource(env, jprofile));
     AddressCountryCode country_code =
-        AddressCountryCode(ConvertJavaStringToUTF8(
+        AddressCountryCode(base::android::ConvertJavaStringToUTF8(
             Java_AutofillProfile_getCountryCode(env, jprofile)));
     AutofillProfile profile = AutofillProfile(source, country_code);
     // Only set the guid if CreateStartProfile is called on an existing profile
@@ -372,14 +372,15 @@ AutofillProfile AutofillProfile::CreateFromJavaObject(
     // TODO(crbug.com/1471502): Reconcile usage of GetInfo and GetRawInfo below.
     if (field_type == NAME_FULL || field_type == ADDRESS_HOME_COUNTRY) {
       profile.SetInfoWithVerificationStatus(
-          field_type, ConvertJavaStringToUTF16(value), app_locale, status);
+          field_type, base::android::ConvertJavaStringToUTF16(value),
+          app_locale, status);
     } else {
       profile.SetRawInfoWithVerificationStatus(
-          field_type, ConvertJavaStringToUTF16(value), status);
+          field_type, base::android::ConvertJavaStringToUTF16(value), status);
     }
   }
 
-  profile.set_language_code(ConvertJavaStringToUTF8(
+  profile.set_language_code(base::android::ConvertJavaStringToUTF8(
       Java_AutofillProfile_getLanguageCode(env, jprofile)));
   profile.FinalizeAfterImport();
 

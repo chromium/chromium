@@ -82,7 +82,7 @@ void TileProviderBridge::GetQueryTiles(JNIEnv* env,
         &RunGetTilesCallback, ScopedJavaGlobalRef<jobject>(jcallback)));
   } else {
     tile_service_->GetTile(
-        ConvertJavaStringToUTF8(env, j_tile_id),
+        base::android::ConvertJavaStringToUTF8(env, j_tile_id),
         base::BindOnce(&RunGetTileCallback,
                        ScopedJavaGlobalRef<jobject>(jcallback)));
   }
@@ -90,7 +90,8 @@ void TileProviderBridge::GetQueryTiles(JNIEnv* env,
 
 void TileProviderBridge::OnTileClicked(JNIEnv* env,
                                        const JavaParamRef<jstring>& j_tile_id) {
-  tile_service_->OnTileClicked(ConvertJavaStringToUTF8(env, j_tile_id));
+  tile_service_->OnTileClicked(
+      base::android::ConvertJavaStringToUTF8(env, j_tile_id));
 }
 
 }  // namespace query_tiles

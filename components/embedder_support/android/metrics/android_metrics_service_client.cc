@@ -689,7 +689,7 @@ std::string AndroidMetricsServiceClient::GetAppPackageName() {
   base::android::ScopedJavaLocalRef<jstring> j_app_name =
       Java_AndroidMetricsServiceClient_getAppPackageName(env);
   if (j_app_name)
-    return ConvertJavaStringToUTF8(env, j_app_name);
+    return base::android::ConvertJavaStringToUTF8(env, j_app_name);
   return std::string();
 }
 
