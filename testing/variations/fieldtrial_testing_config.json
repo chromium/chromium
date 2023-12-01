@@ -11458,7 +11458,8 @@
                 {
                     "name": "Enabled_Final_Matches_Only_Custom_Missing_Value_082823",
                     "params": {
-                        "MlUrlScoringRerankFinalMatchesOnly": "true"
+                        "MlUrlScoringRerankFinalMatchesOnly": "true",
+                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
                     },
                     "enable_features": [
                         "MlUrlScoring",
@@ -11468,7 +11469,8 @@
                 {
                     "name": "Enabled_Final_Matches_Only_Custom_Missing_Non_Default_082823",
                     "params": {
-                        "MlUrlScoringRerankFinalMatchesOnly": "true"
+                        "MlUrlScoringRerankFinalMatchesOnly": "true",
+                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
                     },
                     "enable_features": [
                         "MlUrlScoring",
@@ -11478,7 +11480,8 @@
                 {
                     "name": "Enabled_Sync_Custom_Missing_Value_082823",
                     "params": {
-                        "MlSyncBatchUrlScoring": "true"
+                        "MlSyncBatchUrlScoring": "true",
+                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
                     },
                     "enable_features": [
                         "MlUrlScoring",
@@ -11488,7 +11491,8 @@
                 {
                     "name": "Enabled_Sync_Custom_Missing_Non_Default_082823",
                     "params": {
-                        "MlSyncBatchUrlScoring": "true"
+                        "MlSyncBatchUrlScoring": "true",
+                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
                     },
                     "enable_features": [
                         "MlUrlScoring",
@@ -11499,7 +11503,8 @@
                     "name": "Enabled_Sync_Final_Matches_Only_Custom_Missing_Value_082823",
                     "params": {
                         "MlSyncBatchUrlScoring": "true",
-                        "MlUrlScoringRerankFinalMatchesOnly": "true"
+                        "MlUrlScoringRerankFinalMatchesOnly": "true",
+                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
                     },
                     "enable_features": [
                         "MlUrlScoring",
@@ -11510,7 +11515,8 @@
                     "name": "Enabled_Sync_Final_Matches_Only_Custom_Missing_Non_Default_082823",
                     "params": {
                         "MlSyncBatchUrlScoring": "true",
-                        "MlUrlScoringRerankFinalMatchesOnly": "true"
+                        "MlUrlScoringRerankFinalMatchesOnly": "true",
+                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
                     },
                     "enable_features": [
                         "MlUrlScoring",
@@ -11521,7 +11527,8 @@
                     "name": "Enabled_Sync_10_Matches_Provider_Limit_Custom_Missing_Value_082823",
                     "params": {
                         "MlSyncBatchUrlScoring": "true",
-                        "MlUrlScoringMaxMatchesByProvider": "1:10,4:10,8:10,64:10,65536:10"
+                        "MlUrlScoringMaxMatchesByProvider": "1:10,4:10,8:10,64:10,65536:10",
+                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
                     },
                     "enable_features": [
                         "MlUrlScoring",
@@ -11532,7 +11539,8 @@
                     "name": "Enabled_Sync_10_Matches_Provider_Limit_Custom_Missing_Non_Default_082823",
                     "params": {
                         "MlSyncBatchUrlScoring": "true",
-                        "MlUrlScoringMaxMatchesByProvider": "1:10,4:10,8:10,64:10,65536:10"
+                        "MlUrlScoringMaxMatchesByProvider": "1:10,4:10,8:10,64:10,65536:10",
+                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
                     },
                     "enable_features": [
                         "MlUrlScoring",
