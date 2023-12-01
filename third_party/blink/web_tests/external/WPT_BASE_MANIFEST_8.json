@@ -354201,7 +354201,7 @@
          []
         ],
         "service-worker.js": [
-         "ab9a3239ea0a18515417f320386cfb88bc826e13",
+         "df9ce65acdaba652fe9fe18c93d4b821e1484484",
          []
         ],
         "slow.py": [
@@ -393507,14 +393507,6 @@
      }
     },
     "message-channels": {
-     "close-event": {
-      "resources": {
-       "helper.js": [
-        "cb9ea9fe981e95374b836255c752a42de788fc7b",
-        []
-       ]
-      }
-     },
      "close.any-expected.txt": [
       "945c89a3d4e14bc39a49bc47c0fc5dee46809c2a",
       []
@@ -393709,11 +393701,11 @@
      []
     ],
     "idlharness.https.any-expected.txt": [
-     "7716ab89d1bf0c43f5034794dfed8518e9309dc3",
+     "1c71129cd65b5a48b26cc4d89aea5c677c219689",
      []
     ],
     "idlharness.https.any.worker-expected.txt": [
-     "8390c309e6c8f9a4102407ac4b36ef8bc91552b4",
+     "60d6a5bee217f04c5ff1bb964d2937f7eaa29c73",
      []
     ],
     "leaky_relu.https.any.worker-expected.txt": [
@@ -476953,7 +476945,7 @@
       ]
      ],
      "attributes.html": [
-      "c6db7eb8aa4e6c3c4a4f365965af6acb9665f562",
+      "47f51dff1bccd8bc368828f6e7dde5400aa0317a",
       [
        null,
        {}
@@ -521400,49 +521392,6 @@
          }
         ]
        ],
-       "message-port-entangled-after-restore.https.tentative.window.js": [
-        "efbb244cc6bc30a7e7090215922ea5b99a581160",
-        [
-         "html/browsers/browsing-the-web/back-forward-cache/message-port-entangled-after-restore.https.tentative.window.html",
-         {
-          "script_metadata": [
-           [
-            "timeout",
-            "long"
-           ],
-           [
-            "title",
-            "Confirm close event is not fired when the page enters BFCache and MessagePort still works after the page is restored."
-           ],
-           [
-            "script",
-            "/common/dispatcher/dispatcher.js"
-           ],
-           [
-            "script",
-            "/common/get-host-info.sub.js"
-           ],
-           [
-            "script",
-            "/common/utils.js"
-           ],
-           [
-            "script",
-            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
-           ],
-           [
-            "script",
-            "/service-workers/service-worker/resources/test-helpers.sub.js"
-           ],
-           [
-            "script",
-            "resources/rc-helper.js"
-           ]
-          ],
-          "timeout": "long"
-         }
-        ]
-       ],
        "pushstate.https.html": [
         "218562254a6f6396dcf491aa9901463a18aa8090",
         [
@@ -561889,63 +561838,63 @@
         ]
        ],
        "image-loading-lazy-in-scroller-far.html": [
-        "b85eb57d0521bbe677bdbbbcbd08176022f92735",
+        "065fa939bc51bfdc78033406abd6aaaebf4dd8ae",
         [
          null,
          {}
         ]
        ],
        "image-loading-lazy-in-scroller-horizontal-far.html": [
-        "d406f81cc59f547eb84ecdb761179f4edbed4a6b",
+        "20274310f1c0bb598f6e4dfedab3ea7ce76e5cc1",
         [
          null,
          {}
         ]
        ],
        "image-loading-lazy-in-scroller-horizontal.html": [
-        "5801a2b163bf5da2e012d8b62a42f34debcdb77c",
+        "124dbaddf890c0c0ac02f6086398bd8a6ff12133",
         [
          null,
          {}
         ]
        ],
        "image-loading-lazy-in-scroller-nested-2.html": [
-        "c314b5ac3fa4977264c96a2d7d8525d876257a11",
+        "5e25f452750bbde9ce6be0b4498d82ce72839a4e",
         [
          null,
          {}
         ]
        ],
        "image-loading-lazy-in-scroller-nested-3.html": [
-        "53e0823f1aaf2673b465557033d01ffedf09e77c",
+        "0d6d95826bb1fc47149df06f64c7b31b093be0da",
         [
          null,
          {}
         ]
        ],
        "image-loading-lazy-in-scroller-nested-4.html": [
-        "8cdf047e9550fa622a00f88b48cc2fa52da62bde",
+        "312e90bd49448ad3b6e5d17e6188af8e4776144f",
         [
          null,
          {}
         ]
        ],
        "image-loading-lazy-in-scroller-nested-5.html": [
-        "5c0f3aa2a5d664e5a607c2b75aa8d7976b8cb994",
+        "77bb3004d36a772e4432e590567285e775105861",
         [
          null,
          {}
         ]
        ],
        "image-loading-lazy-in-scroller-nested.html": [
-        "76aa5e55f2a139e30338bd36941e439b4a326a7f",
+        "cc3e4d5e4b5122e826655b9afd3740b32116e744",
         [
          null,
          {}
         ]
        ],
        "image-loading-lazy-in-scroller.html": [
-        "9caeb6847c039b01cc9b9933804906a059657eeb",
+        "17f0e7d17a83778a1c562e777d6b6993299861a7",
         [
          null,
          {}
@@ -654299,110 +654248,26 @@
       ]
      ],
      "close-event": {
-      "document-destroyed.tentative.window.js": [
-       "85e4ad30add19b9a1d733917f6d89ada74c62198",
+      "close-event.tentative.any.js": [
+       "a793269ddee432f68fa304b5ade025b9641f4d3e",
        [
-        "webmessaging/message-channels/close-event/document-destroyed.tentative.window.html",
+        "webmessaging/message-channels/close-event/close-event.tentative.any.html",
         {
          "script_metadata": [
           [
            "title",
-           "Close event test when the document is destroyed."
-          ],
-          [
-           "script",
-           "/common/dispatcher/dispatcher.js"
-          ],
-          [
-           "script",
-           "/common/get-host-info.sub.js"
-          ],
-          [
-           "script",
-           "/common/utils.js"
-          ],
-          [
-           "script",
-           "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
-          ],
-          [
-           "script",
-           "resources/helper.js"
-          ]
-         ]
-        }
-       ]
-      ],
-      "explicitly-closed.tentative.window.js": [
-       "612003d58eaea908ad93294a7bbf777184356a28",
-       [
-        "webmessaging/message-channels/close-event/explicitly-closed.tentative.window.html",
-        {
-         "script_metadata": [
-          [
-           "title",
-           "Close event test when an entangled port is explicitly closed."
-          ],
-          [
-           "script",
-           "/common/dispatcher/dispatcher.js"
-          ],
-          [
-           "script",
-           "/common/get-host-info.sub.js"
-          ],
-          [
-           "script",
-           "/common/utils.js"
-          ],
-          [
-           "script",
-           "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
-          ],
-          [
-           "script",
-           "resources/helper.js"
-          ]
-         ]
-        }
-       ]
-      ],
-      "garbage-collected.tentative.any.js": [
-       "8347f564523d693cdac99702e7458060441aab07",
-       [
-        "webmessaging/message-channels/close-event/garbage-collected.tentative.any.html",
-        {
-         "script_metadata": [
-          [
-           "title",
-           "Close event test when an entangled port is GCed."
-          ],
-          [
-           "script",
-           "/common/gc.js"
-          ],
-          [
-           "script",
-           "/wpt_internal/dom/abort/resources/run-async-gc.js"
+           "close event test"
           ]
          ]
         }
        ],
        [
-        "webmessaging/message-channels/close-event/garbage-collected.tentative.any.worker.html",
+        "webmessaging/message-channels/close-event/close-event.tentative.any.worker.html",
         {
          "script_metadata": [
           [
            "title",
-           "Close event test when an entangled port is GCed."
-          ],
-          [
-           "script",
-           "/common/gc.js"
-          ],
-          [
-           "script",
-           "/wpt_internal/dom/abort/resources/run-async-gc.js"
+           "close event test"
           ]
          ]
         }
