@@ -2,7 +2,6 @@
 # The following tests fail consistently.
 -BookmarkBarViewTest22.CloseSourceBrowserDuringDrag
 -BookmarkBarViewTest28.ClickWithModifierOnFolderOpensAllBookmarks
--BookmarkBarViewTest29.DNDToEmptyMenu
 -BookmarkBarViewTest5.DND
 -BookmarkBarViewTest7.DNDToDifferentMenu
 -BookmarkBarViewTest8.DNDBackToOriginatingMenu
