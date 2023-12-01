@@ -91,6 +91,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.signin.LegacySyncPromoView;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
@@ -1432,7 +1433,6 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1369091")
     public void testShowInFolder_NoScroll() throws Exception {
         addFolder(TEST_FOLDER_TITLE);
         BookmarkPromoHeader.forcePromoStateForTesting(
@@ -1444,9 +1444,17 @@ public class BookmarkTest {
         enterSearch();
 
         // Click "Show in folder".
-        View testFolder = getBookmarkFolderRow(0);
         clickMoreButtonOnFirstItem(TEST_FOLDER_TITLE);
         onView(withText("Show in folder")).perform(click());
+
+        // Find the test folder view, which is the second view in the list, the first view is promo.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    View promo = getViewHolder(0).itemView;
+                    return promo instanceof LegacySyncPromoView;
+                },
+                "The promo is never shown up");
+        View testFolder = getBookmarkFolderRow(1);
 
         // Assert that the view pulses.
         assertTrue(
@@ -1463,6 +1471,14 @@ public class BookmarkTest {
         // Click "Show in folder" again.
         clickMoreButtonOnFirstItem(TEST_FOLDER_TITLE);
         onView(withText("Show in folder")).perform(click());
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    View promo = getViewHolder(0).itemView;
+                    return promo instanceof LegacySyncPromoView;
+                },
+                "The promo is never shown up");
+        testFolder = getBookmarkFolderRow(1);
         assertTrue(
                 "Expected bookmark row to pulse after clicking \"show in folder\" a 2nd time!",
                 checkHighlightPulse(testFolder));
