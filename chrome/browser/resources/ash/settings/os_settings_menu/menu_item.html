@@ -68,6 +68,11 @@
     margin-inline-end: 12px;
   }
 
+  :host-context(body.revamp-wayfinding-enabled):host(:not(.iron-selected))
+      iron-icon {
+    --iron-icon-fill-color: var(--cros-sys-primary);
+  }
+
   /* Hover state */
   :host(:not(.iron-selected):hover) {
     background-color: var(--cros-sys-hover_on_subtle) !important;
@@ -85,7 +90,7 @@
   }
 
   :host(.iron-selected) > iron-icon {
-    fill: var(--cros-sys-on_primary);
+    --iron-icon-fill-color: var(--cros-sys-on_primary);
   }
 
   :host(.iron-selected) #sublabel {
