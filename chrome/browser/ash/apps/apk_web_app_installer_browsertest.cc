@@ -897,4 +897,47 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerBrowserTest,
   ASSERT_THAT(removed_packages_, testing::Contains(kDeprecatedPackage));
 }
 
+IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerBrowserTest,
+                       InstallAndUninstallArcOverUserInstall) {
+  ApkWebAppService* service = apk_web_app_service();
+
+  // Install the Web App as if the user installed it.
+  std::unique_ptr<web_app::WebAppInstallInfo> web_app_install_info =
+      CreateWebAppInstallInfo(GURL(kAppUrl));
+
+  webapps::AppId app_id = web_app::test::InstallWebApp(
+      browser()->profile(), std::move(web_app_install_info),
+      /*overwrite_existing_manifest_fields=*/true,
+      webapps::WebappInstallSource::SYNC);
+
+  // Then also install the Web App from ARC.
+  {
+    base::test::TestFuture<const std::string&, const webapps::AppId&>
+        installed_future;
+    service->SetWebAppInstalledCallbackForTesting(
+        installed_future.GetCallback());
+
+    app_instance_->SendPackageAdded(GetWebAppPackage(kPackageName, kAppTitle));
+    webapps::AppId arc_app_id = installed_future.Get<1>();
+
+    ASSERT_EQ(app_id, arc_app_id);
+  }
+
+  ASSERT_TRUE(service->IsWebAppInstalledFromArc(app_id));
+
+  // Uninstall the Web App from ARC.
+  base::test::TestFuture<const std::string&, const webapps::AppId&>
+      uninstalled_future;
+  service->SetWebAppUninstalledCallbackForTesting(
+      uninstalled_future.GetCallback());
+
+  app_instance_->SendPackageUninstalled(kPackageName);
+  ASSERT_TRUE(uninstalled_future.Wait());
+
+  // The app should still be installed, but is no longer registered in
+  // ApkWebAppService.
+  ASSERT_FALSE(service->IsWebAppInstalledFromArc(app_id));
+  ASSERT_TRUE(provider_->registrar_unsafe().GetAppById(app_id));
+}
+
 }  // namespace ash

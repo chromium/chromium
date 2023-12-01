@@ -126,7 +126,8 @@ class ApkWebAppServiceDelegateImpl : public ApkWebAppService::Delegate,
                        package_name, std::move(web_app_info)));
   }
 
-  void MaybeUninstallWebAppInLacros(const webapps::AppId& web_app_id) override {
+  void MaybeUninstallWebAppInLacros(const webapps::AppId& web_app_id,
+                                    WebAppUninstallCallback callback) override {
     DCHECK(web_app::IsWebAppsCrosapiEnabled());
     if (crosapi::mojom::WebAppProviderBridge* web_app_provider_bridge =
             crosapi::CrosapiManager::Get()
@@ -134,7 +135,7 @@ class ApkWebAppServiceDelegateImpl : public ApkWebAppService::Delegate,
                 ->web_app_service_ash()
                 ->GetWebAppProviderBridge()) {
       web_app_provider_bridge->WebAppUninstalledInArc(web_app_id,
-                                                      base::DoNothing());
+                                                      std::move(callback));
     }
   }
 
@@ -335,7 +336,9 @@ void ApkWebAppService::MaybeInstallWebApp(
 
 void ApkWebAppService::MaybeUninstallWebApp(const webapps::AppId& web_app_id) {
   if (web_app::IsWebAppsCrosapiEnabled()) {
-    GetDelegate().MaybeUninstallWebAppInLacros(web_app_id);
+    GetDelegate().MaybeUninstallWebAppInLacros(
+        web_app_id, base::BindOnce(&ApkWebAppService::OnDidRemoveInstallSource,
+                                   weak_ptr_factory_.GetWeakPtr(), web_app_id));
     return;
   }
 
@@ -348,7 +351,9 @@ void ApkWebAppService::MaybeUninstallWebApp(const webapps::AppId& web_app_id) {
   DCHECK(provider);
   provider->scheduler().RemoveInstallSource(
       web_app_id, web_app::WebAppManagement::kWebAppStore,
-      webapps::WebappUninstallSource::kArc, base::DoNothing());
+      webapps::WebappUninstallSource::kArc,
+      base::BindOnce(&ApkWebAppService::OnDidRemoveInstallSource,
+                     weak_ptr_factory_.GetWeakPtr(), web_app_id));
 }
 
 void ApkWebAppService::MaybeUninstallArcPackage(
@@ -569,6 +574,23 @@ void ApkWebAppService::OnDidFinishInstall(
   // For testing.
   if (web_app_installed_callback_) {
     std::move(web_app_installed_callback_).Run(package_name, web_app_id);
+  }
+}
+
+void ApkWebAppService::OnDidRemoveInstallSource(
+    const webapps::AppId& app_id,
+    webapps::UninstallResultCode code) {
+  {
+    // The web app may still exist, but is no longer managed by an ARC package,
+    // so remove it from the tracking dictionary.
+    ScopedDictPrefUpdate web_apps_to_apks(profile_->GetPrefs(),
+                                          kWebAppToApkDictPref);
+    web_apps_to_apks->Remove(app_id);
+  }
+
+  if (web_app_uninstalled_callback_) {
+    std::move(web_app_uninstalled_callback_)
+        .Run(/*removed_package_name=*/"", app_id);
   }
 }
 

@@ -32,6 +32,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/test/browser_test.h"
 
 namespace ash {
@@ -128,22 +129,28 @@ class ApkWebAppServiceLacrosBrowserTest : public InProcessBrowserTest,
                             webapps::InstallResultCode::kSuccessNewInstall);
   }
 
-  void MaybeUninstallWebAppInLacros(const webapps::AppId& web_app_id) override {
+  void MaybeUninstallWebAppInLacros(const webapps::AppId& web_app_id,
+                                    WebAppUninstallCallback callback) override {
     if (!lacros_running_) {
       return;
     }
 
     auto it = lacros_web_apps_.find(web_app_id);
-    if (it == lacros_web_apps_.end()) {
-      return;
+
+    // Do not publish the uninstall to App Service if the app is marked as
+    // also installed by the browser, as the real web app provider removes the
+    // ARC install source but keeps the app installed.
+    if (it != lacros_web_apps_.end() &&
+        !base::Contains(browser_installed_apps_, web_app_id)) {
+      auto app = std::move(it->second);
+      app->readiness = apps::Readiness::kUninstalledByUser;
+      lacros_web_apps_.erase(it);
+      std::vector<apps::AppPtr> apps;
+      apps.push_back(std::move(app));
+      PublishToAppService(std::move(apps));
     }
 
-    auto app = std::move(it->second);
-    app->readiness = apps::Readiness::kUninstalledByUser;
-    lacros_web_apps_.erase(it);
-    std::vector<apps::AppPtr> apps;
-    apps.push_back(std::move(app));
-    PublishToAppService(std::move(apps));
+    std::move(callback).Run(webapps::UninstallResultCode::kSuccess);
   }
 
   void MaybeUninstallPackageInArc(const std::string& package_name) override {
@@ -250,6 +257,11 @@ class ApkWebAppServiceLacrosBrowserTest : public InProcessBrowserTest,
     return in_app_service;
   }
 
+  void SetAppInstalledInBrowser(const std::string& app_id) {
+    browser_installed_apps_.emplace(app_id);
+  }
+
+ private:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::CallbackListSubscription dependency_manager_subscription_;
 
@@ -258,6 +270,7 @@ class ApkWebAppServiceLacrosBrowserTest : public InProcessBrowserTest,
   bool published_initial_apps_ = false;
 
   std::map<std::string, apps::AppPtr> lacros_web_apps_;
+  std::set<std::string> browser_installed_apps_;
 };
 
 IN_PROC_BROWSER_TEST_F(ApkWebAppServiceLacrosBrowserTest, InstallAndUninstall) {
@@ -411,7 +424,7 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppServiceLacrosBrowserTest,
 
   // Stop ARC and uninstall app "a" from the browser side.
   StopArc();
-  MaybeUninstallWebAppInLacros(*app_id_a);
+  MaybeUninstallWebAppInLacros(*app_id_a, base::DoNothing());
 
   // Prefs should still be there, but the web app is uninstalled.
   EXPECT_NE(GetArcAppListPrefs().GetPackage("org.example.a"), nullptr);
@@ -450,6 +463,31 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppServiceLacrosBrowserTest,
   // Web app should be uninstalled.
   EXPECT_EQ(service.GetWebAppIdForPackageName("org.example.a"), absl::nullopt);
   EXPECT_FALSE(IsWebAppInstalled("https://example.org/a?start"));
+}
+
+IN_PROC_BROWSER_TEST_F(ApkWebAppServiceLacrosBrowserTest,
+                       InstallAndUninstallArcOverUserInstall) {
+  auto& service = GetApkWebAppService();
+
+  StartLacros();
+  StartArc(GetWebAppPackage("a"));
+
+  // App "a" should be installed.
+  absl::optional<std::string> app_id_a =
+      service.GetWebAppIdForPackageName("org.example.a");
+  EXPECT_TRUE(service.IsWebOnlyTwa(*app_id_a));
+  EXPECT_TRUE(IsWebAppInstalled("https://example.org/a?start"));
+
+  // Mark the app as also installed by the browser, so that uninstalling the ARC
+  // package doesn't remove the app.
+  SetAppInstalledInBrowser(*app_id_a);
+
+  // Uninstall the web app from ARC.
+  GetAppHost().OnPackageRemoved("org.example.a");
+
+  // Web app should be removed from ApkWebAppService, but is still installed.
+  EXPECT_EQ(service.GetWebAppIdForPackageName("org.example.a"), absl::nullopt);
+  EXPECT_TRUE(IsWebAppInstalled("https://example.org/a?start"));
 }
 
 }  // namespace ash

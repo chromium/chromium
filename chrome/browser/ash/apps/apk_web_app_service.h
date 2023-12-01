@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
 
 class ArcAppListPrefs;
@@ -61,6 +62,9 @@ class ApkWebAppService : public KeyedService,
         const absl::optional<std::string> sha256_fingerprint,
         webapps::InstallResultCode code)>;
 
+    using WebAppUninstallCallback =
+        base::OnceCallback<void(webapps::UninstallResultCode code)>;
+
     virtual ~Delegate();
 
     // Kicks off installation of a web app in Lacros. It will first fetch the
@@ -76,7 +80,8 @@ class ApkWebAppService : public KeyedService,
     // with ID |web_app_id|. If no other sources left, the web app will be
     // uninstalled. Does nothing if Lacros is not connected.
     virtual void MaybeUninstallWebAppInLacros(
-        const webapps::AppId& web_app_id) = 0;
+        const webapps::AppId& web_app_id,
+        WebAppUninstallCallback callback) = 0;
 
     // Tells ARC to uninstall a package identified by |package_name|. Returns
     // true if the call to ARC was successful, false if ARC is not running.
@@ -182,6 +187,8 @@ class ApkWebAppService : public KeyedService,
                           bool is_web_only_twa,
                           const absl::optional<std::string> sha256_fingerprint,
                           webapps::InstallResultCode code);
+  void OnDidRemoveInstallSource(const webapps::AppId& app_id,
+                                webapps::UninstallResultCode code);
   void UpdatePackageInfo(const std::string& app_id,
                          const arc::mojom::WebAppInfoPtr& web_app_info);
   const base::Value::Dict& WebAppToApks() const;
