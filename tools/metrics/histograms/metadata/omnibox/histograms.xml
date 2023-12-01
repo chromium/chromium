@@ -616,12 +616,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.DocumentSuggest.HttpResponseCode"
+    enum="HttpResponseCode" expires_after="2024-04-28">
+  <owner>manukh@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <summary>
+    Counts the number of responses from the document suggestion service,
+    bucketed by the HTTP response code. Recorded once per response received,
+    which is 0 or 1 times per request sent, since some requests are cancelled.
+    At most 1 request is sent per omnibox autocompletion cycle (in other words,
+    per each time the user changes the omnibox input).
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.DocumentSuggest.Requests"
     enum="OmniboxDocumentSuggestRequests" expires_after="2024-04-28">
   <owner>manukh@chromium.org</owner>
-  <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
-  <owner>skare@chromium.org</owner>
   <summary>
     Counts the number of document suggest requests the omnibox sent, were
     invalidated, and were completed successfully.

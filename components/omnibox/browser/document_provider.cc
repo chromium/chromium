@@ -515,6 +515,8 @@ void DocumentProvider::OnURLLoadComplete(
   LogRequestTime(time_request_sent_, false);
   LogOmniboxDocumentRequest(
       RemoteRequestHistogramValue::kRemoteResponseReceived);
+  base::UmaHistogramSparse("Omnibox.DocumentSuggest.HttpResponseCode",
+                           response_code);
 
   // The following are codes that we believe indicate non-transient failures,
   // based on experience working with the owners of the API. Since they are
