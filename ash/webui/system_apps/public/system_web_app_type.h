@@ -115,6 +115,12 @@ enum class SystemWebAppType {
   // contact: googleo@google.com
   FACE_ML = 24,
 
+  // VC Background allows users to control webcam settings, including blur and
+  // background image.
+  // Source: //ash/webui/vc_background_ui/
+  // Contact: assistive-eng@google.com
+  VC_BACKGROUND = 25,
+
   // When adding a new System App, remember to:
   //
   // 1. Add a corresponding histogram suffix in WebAppSystemAppInternalName
@@ -154,7 +160,7 @@ enum class SystemWebAppType {
   //
   // 8. Have one of System Web App Platform owners review the CL.
   //    See: //ash/webui/PLATFORM_OWNERS
-  kMaxValue = FACE_ML,
+  kMaxValue = VC_BACKGROUND,
 };
 
 }  // namespace ash

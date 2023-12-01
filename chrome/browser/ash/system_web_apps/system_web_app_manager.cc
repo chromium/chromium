@@ -58,6 +58,7 @@
 #include "chrome/browser/ash/system_web_apps/apps/shimless_rma_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/shortcut_customization_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/terminal_system_web_app_info.h"
+#include "chrome/browser/ash/system_web_apps/apps/vc_background_ui/vc_background_ui_system_app_delegate.h"
 #include "chrome/browser/ash/system_web_apps/color_helpers.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_background_task.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_icon_checker.h"
@@ -139,6 +140,9 @@ SystemWebAppDelegateMap CreateSystemWebApps(Profile* profile) {
       std::make_unique<FirmwareUpdateSystemAppDelegate>(profile));
   info_vec.push_back(std::make_unique<OsFlagsSystemWebAppDelegate>(profile));
   info_vec.push_back(std::make_unique<FaceMLSystemAppDelegate>(profile));
+  info_vec.push_back(
+      std::make_unique<vc_background_ui::VcBackgroundUISystemAppDelegate>(
+          profile));
 
 #if !defined(OFFICIAL_BUILD)
   info_vec.push_back(std::make_unique<SampleSystemAppDelegate>(profile));

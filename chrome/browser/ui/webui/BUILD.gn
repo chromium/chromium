@@ -54,6 +54,7 @@ source_set("configs") {
       "//ash/webui/shortcut_customization_ui",
       "//ash/webui/status_area_internals",
       "//ash/webui/system_extensions_internals_ui",
+      "//ash/webui/vc_background_ui",
       "//chrome/browser/ash",
       "//components/cross_device/logging",
     ]

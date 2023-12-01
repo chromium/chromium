@@ -103,6 +103,7 @@ source_set("browser_tests") {
       "chromeos/firmware_update/firmware_update_browsertest.cc",
       "chromeos/personalization_app/personalization_app_browsertest.cc",
       "chromeos/scanning/scanning_app_browsertest.cc",
+      "chromeos/vc_background_ui/vc_background_ui_browsertest.cc",
     ]
   } else {
     sources += [
@@ -178,6 +179,7 @@ source_set("browser_tests") {
       "//chrome/browser/ash:ash",
       "//chrome/browser/ash:test_support",
       "//chromeos/ash/components/standalone_browser",
+      "//components/manta",
     ]
   }
   if (enable_compose) {
@@ -493,6 +495,7 @@ generate_grd("build_grd") {
       "chromeos/print_management:build_grdp",
       "chromeos/scanning:build_grdp",
       "chromeos/shortcut_customization:build_grdp",
+      "chromeos/vc_background_ui:build_grdp",
       "cr_components/chromeos:build_grdp",
       "nearby_share:build_grdp",
       "settings/chromeos:build_grdp",
@@ -514,6 +517,7 @@ generate_grd("build_grd") {
       "$target_gen_dir/chromeos/personalization_app/resources.grdp",
       "$target_gen_dir/chromeos/print_management/resources.grdp",
       "$target_gen_dir/chromeos/resources.grdp",
+      "$target_gen_dir/chromeos/vc_background_ui/resources.grdp",
       "$target_gen_dir/chromeos/scanning/resources.grdp",
       "$target_gen_dir/chromeos/shortcut_customization/resources.grdp",
       "$target_gen_dir/chromeos/web_ui_test_mojo_lite_resources.grdp",

@@ -5026,6 +5026,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="ShimlessRMA" label="Shimless RMA"/>
   <suffix name="ShortcutCustomization" label="ShortcutCustomization"/>
   <suffix name="Terminal" label="Terminal"/>
+  <suffix name="VcBackground" label="VC Background"/>
   <affected-histogram name="Webapp.InstallResult.System.Apps"/>
 </histogram_suffixes>
 

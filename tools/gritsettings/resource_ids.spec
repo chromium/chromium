@@ -906,6 +906,10 @@
     "META": {"join": 2, "sizes": {"includes": [50],}},
     "includes": [6240],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/vc_background_ui/resources/resources.grd": {
+    "META": {"sizes": {"includes": [50],}},
+    "includes": [6260],
+  },
   # END chromeos/ section.
 
   # START components/ section.
