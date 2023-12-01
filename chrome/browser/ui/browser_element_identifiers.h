@@ -42,6 +42,7 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kNewTabButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kOfferNotificationChipElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kOmniboxElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kPasswordsOmniboxKeyIconElementId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kPerformanceSidePanelWebViewElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(
     kPinnedToolbarActionsContainerDividerElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kPinnedToolbarActionsContainerElementId);

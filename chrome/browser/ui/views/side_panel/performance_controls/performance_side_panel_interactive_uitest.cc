@@ -5,6 +5,9 @@
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -17,6 +20,10 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/interaction/element_tracker_views.h"
+
+namespace {
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPerformanceWebContentsElementId);
+}  // namespace
 
 class PerformanceSidePanelInteractiveTest : public InteractiveBrowserTest {
  public:
@@ -73,4 +80,31 @@ IN_PROC_BROWSER_TEST_F(PerformanceSidePanelInteractiveTest,
                      }
                      return true;
                    })));
+}
+
+IN_PROC_BROWSER_TEST_F(PerformanceSidePanelInteractiveTest,
+                       OpenSidePanelFromAppMenu) {
+  const DeepQuery kPathToFirstCardElement{"performance-app",
+                                          ".card:nth-of-type(1)"};
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kCardIsVisible);
+  StateChange card_is_visible;
+  card_is_visible.event = kCardIsVisible;
+  card_is_visible.where = kPathToFirstCardElement;
+  card_is_visible.type = StateChange::Type::kExists;
+
+  RunTestSequence(
+      Do([this]() {
+        SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser())
+            ->SetNoDelaysForTesting(true);
+      }),
+      MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
+      SelectMenuItem(AppMenuModel::kPerformanceMenuItem),
+      WaitForHide(AppMenuModel::kPerformanceMenuItem),
+      WaitForShow(kSidePanelElementId), FlushEvents(),
+      WaitForShow(kPerformanceSidePanelWebViewElementId),
+      InstrumentNonTabWebView(kPerformanceWebContentsElementId,
+                              kPerformanceSidePanelWebViewElementId),
+      WaitForStateChange(kPerformanceWebContentsElementId, card_is_visible),
+      CheckJsResultAt(kPerformanceWebContentsElementId, kPathToFirstCardElement,
+                      "el => el.tagName.toLowerCase()", "browser-health-card"));
 }
