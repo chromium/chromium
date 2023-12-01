@@ -351807,15 +351807,15 @@
       []
      ],
      "iframe.tentative.https.window_include=from-private-expected.txt": [
-      "e6d9e18c2fbc77207fe210b2a3648d79d7f9b0ce",
+      "9e4b954d95b3e00e6968afa84e9eb1e17c84039d",
       []
      ],
      "iframe.tentative.https.window_include=from-public-expected.txt": [
-      "e62f59d5bb4af75cca92402e9ddfa3de6723edcf",
+      "73c9c1ab14c1d36c6aaa5730cb5762fc6e7b0dcf",
       []
      ],
      "iframe.tentative.https.window_include=from-treat-as-public-expected.txt": [
-      "62c36a00a345581e2047d411481431ddc80930bd",
+      "ed2ff83c8a68f9292f2f05aee946752089095b71",
       []
      ],
      "iframe.tentative.https.window_include=grandparent-expected.txt": [
@@ -351871,6 +351871,10 @@
        "3a1859876d406cebe9a2bbc63952d019ddc5ed06",
        []
       ],
+      "iframed-no-preflight-received.html": [
+       "20b5150d44a770f7519ba5ecec85e79ef9bda064",
+       []
+      ],
       "iframed.html": [
        "c889c2882a45030fb1257db6be812a722475c9f3",
        []
@@ -351879,12 +351883,20 @@
        "304cc54ae4448b84bf43aad3279b2dd198add165",
        []
       ],
+      "no-preflight-received.html": [
+       "5ee533e1820d737f6cbfb8cc4f5b7a134706c3fd",
+       []
+      ],
+      "openee.html": [
+       "8f0a859cb3256c0535738f4e3c445c41532cf82b",
+       []
+      ],
       "opener.html": [
-       "40e3b60bb52bc559f66fd283df2ca564d533edaf",
+       "78b66c6db7bfba26cb5b25e05807ff2cfedfe19e",
        []
       ],
       "preflight.py": [
-       "255bd56a33e73858498e02bb66e799b25b78a0ed",
+       "7ab9dffe1d9a7046e79a940dd78e53800bd73d01",
        []
       ],
       "service-worker-bridge.html": [
@@ -351912,7 +351924,7 @@
        []
       ],
       "support.sub.js": [
-       "c3bdb8139bae670efbef4bd97d238ebfd4cede09",
+       "15bd685810c1da2831a7d9f68c4804c157141ca4",
        []
       ],
       "worker-blob-fetcher.html": [
@@ -351968,8 +351980,20 @@
       "8e97c94388c8360494714673e9878dc8de38e43e",
       []
      ],
+     "window-open.tentative.https.window_include=from-private-expected.txt": [
+      "a1f71342af938b921068edb09a61ee9f7c7d56af",
+      []
+     ],
+     "window-open.tentative.https.window_include=from-public-expected.txt": [
+      "d14171bc367dbc44dd4e8888d5a9cc1b943ce793",
+      []
+     ],
+     "window-open.tentative.https.window_include=from-treat-as-public-expected.txt": [
+      "aa8c3d8001da1c0aaa3c81d6264ed4bf658725bc",
+      []
+     ],
      "window-open.tentative.window-expected.txt": [
-      "3b07807d1e3607eae2e582d18c2a73dc15561798",
+      "06cd1f13ec8f52bf10fdfd2a6bfcc6e0578c4753",
       []
      ],
      "worker-fetch.tentative.https.window-expected.txt": [
@@ -510794,11 +510818,15 @@
       ]
      ],
      "window-open.tentative.https.window.js": [
-      "85b929f34d4f3893c3e09f3bc23fa590108262b6",
+      "b99f21c97bf99594beed79b4b272b1d6b91ac241",
       [
-       "fetch/private-network-access/window-open.tentative.https.window.html",
+       "fetch/private-network-access/window-open.tentative.https.window.html?include=from-local",
        {
         "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
          [
           "script",
           "/common/dispatcher/dispatcher.js"
@@ -510810,13 +510838,146 @@
          [
           "script",
           "resources/support.sub.js"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ],
+         [
+          "variant",
+          "?include=from-treat-as-public"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/private-network-access/window-open.tentative.https.window.html?include=from-private",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ],
+         [
+          "variant",
+          "?include=from-treat-as-public"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/private-network-access/window-open.tentative.https.window.html?include=from-public",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ],
+         [
+          "variant",
+          "?include=from-treat-as-public"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/private-network-access/window-open.tentative.https.window.html?include=from-treat-as-public",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ],
+         [
+          "variant",
+          "?include=from-treat-as-public"
          ]
         ]
        }
       ]
      ],
      "window-open.tentative.window.js": [
-      "8d023775226b8107abc1513b67cc2fd70eb43560",
+      "04023f224a8d9ddf07e3404f466af75a0bc13002",
       [
        "fetch/private-network-access/window-open.tentative.window.html",
        {
@@ -566095,7 +566256,7 @@
        ]
       ],
       "popover-events.html": [
-       "eb5b21b15e1666c188680b08278565fecc8f093b",
+       "4d58001f7ddeae31d2d00622a819115d7004b829",
        [
         null,
         {}
