@@ -316,8 +316,8 @@ HanKerning::FontData::FontData(const SimpleFontData& font,
   // First, ensure all non-quote characters have 1ic advances. If not, this font
   // isn't applicable.
   Vector<Glyph, 256> glyphs;
-  const float em = font.GetFontMetrics().IdeographicFullWidth().value_or(
-      font.PlatformData().size());
+  const float em =
+      font.IdeographicInlineSize().value_or(font.PlatformData().size());
   const base::span<HarfBuzzShaper::GlyphData> glyph_data_span(glyph_data_list);
   for (const HarfBuzzShaper::GlyphData& glyph_data :
        glyph_data_span.first(kQuoteStartIndex)) {

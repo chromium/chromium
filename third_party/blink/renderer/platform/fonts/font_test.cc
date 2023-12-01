@@ -85,7 +85,7 @@ TEST_F(FontTest, IdeographicFullWidthAhem) {
                              test::PlatformTestDataPath("Ahem.woff"), 16);
   const SimpleFontData* font_data = font.PrimaryFont();
   ASSERT_TRUE(font_data);
-  EXPECT_FALSE(font_data->GetFontMetrics().IdeographicFullWidth().has_value());
+  EXPECT_FALSE(font_data->IdeographicInlineSize().has_value());
 }
 
 TEST_F(FontTest, IdeographicFullWidthCjkFull) {
@@ -94,8 +94,8 @@ TEST_F(FontTest, IdeographicFullWidthCjkFull) {
       blink::test::BlinkWebTestsFontsTestDataPath("mplus-1p-regular.woff"), 16);
   const SimpleFontData* font_data = font.PrimaryFont();
   ASSERT_TRUE(font_data);
-  EXPECT_TRUE(font_data->GetFontMetrics().IdeographicFullWidth().has_value());
-  EXPECT_EQ(*font_data->GetFontMetrics().IdeographicFullWidth(), 16);
+  EXPECT_TRUE(font_data->IdeographicInlineSize().has_value());
+  EXPECT_EQ(*font_data->IdeographicInlineSize(), 16);
 }
 
 TEST_F(FontTest, IdeographicFullWidthCjkNarrow) {
@@ -105,8 +105,8 @@ TEST_F(FontTest, IdeographicFullWidthCjkNarrow) {
                              16);
   const SimpleFontData* font_data = font.PrimaryFont();
   ASSERT_TRUE(font_data);
-  EXPECT_TRUE(font_data->GetFontMetrics().IdeographicFullWidth().has_value());
-  EXPECT_EQ(*font_data->GetFontMetrics().IdeographicFullWidth(), 8);
+  EXPECT_TRUE(font_data->IdeographicInlineSize().has_value());
+  EXPECT_EQ(*font_data->IdeographicInlineSize(), 8);
 }
 
 // A font that does not have the CJK "water" glyph.
@@ -115,7 +115,7 @@ TEST_F(FontTest, IdeographicFullWidthUprightAhem) {
                              test::PlatformTestDataPath("Ahem.woff"), 16);
   const SimpleFontData* font_data = font.PrimaryFont();
   ASSERT_TRUE(font_data);
-  EXPECT_FALSE(font_data->GetFontMetrics().IdeographicFullWidth().has_value());
+  EXPECT_FALSE(font_data->IdeographicInlineSize().has_value());
 }
 
 // A Japanese font, with the "water" glyph, but the `vmtx` table is missing.
@@ -126,8 +126,8 @@ TEST_F(FontTest, IdeographicFullWidthUprightCjkNoVmtx) {
   const SimpleFontData* font_data = font.PrimaryFont();
   ASSERT_TRUE(font_data);
   // If the `vmtx` table is missing, the vertical advance should be synthesized.
-  ASSERT_TRUE(font_data->GetFontMetrics().IdeographicFullWidth().has_value());
-  EXPECT_EQ(*font_data->GetFontMetrics().IdeographicFullWidth(),
+  ASSERT_TRUE(font_data->IdeographicInlineSize().has_value());
+  EXPECT_EQ(*font_data->IdeographicInlineSize(),
             font_data->GetFontMetrics().Height());
 }
 
@@ -140,8 +140,8 @@ TEST_F(FontTest, IdeographicFullWidthUprightCjkVmtx) {
                                     16);
   const SimpleFontData* font_data = font.PrimaryFont();
   ASSERT_TRUE(font_data);
-  ASSERT_TRUE(font_data->GetFontMetrics().IdeographicFullWidth().has_value());
-  EXPECT_EQ(*font_data->GetFontMetrics().IdeographicFullWidth(), 16);
+  ASSERT_TRUE(font_data->IdeographicInlineSize().has_value());
+  EXPECT_EQ(*font_data->IdeographicInlineSize(), 16);
 }
 
 TEST_F(FontTest, TextIntercepts) {

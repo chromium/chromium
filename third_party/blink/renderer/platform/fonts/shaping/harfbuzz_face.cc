@@ -492,6 +492,15 @@ static_assert(
     "Skia and HarfBuzz Variation parameter types must match in structure and "
     "size.");
 
+const OpenTypeVerticalData& HarfBuzzFace::VerticalData() const {
+  // Ensure `HarfBuzzFontData` and its `OpenTypeVerticalData` is up-to-date,
+  // with `kPrepareForVerticalLayout`, even when this font isn't used for
+  // vertical flow. See `GetScaledFont()`.
+  harfbuzz_font_data_->UpdateFallbackMetricsAndScale(
+      *platform_data_, HarfBuzzFace::kPrepareForVerticalLayout);
+  return *harfbuzz_font_data_->VerticalData();
+}
+
 hb_font_t* HarfBuzzFace::GetScaledFont(scoped_refptr<UnicodeRangeSet> range_set,
                                        VerticalLayoutCallbacks vertical_layout,
                                        float specified_size) const {

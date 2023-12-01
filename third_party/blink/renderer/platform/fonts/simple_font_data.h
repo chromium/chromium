@@ -105,6 +105,11 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
     return GetFontMetrics().FloatHeight() - PlatformData().size();
   }
 
+  // The approximated advance of fullwidth ideographic characters in the inline
+  // axis. This is currently used to support the `ic` unit.
+  // https://drafts.csswg.org/css-values-4/#ic
+  const absl::optional<float>& IdeographicInlineSize() const;
+
   // |sTypoAscender| and |sTypoDescender| in |OS/2| table, normalized to 1em.
   // This metrics can simulate ideographics em-box when the font doesn't have
   // better ways to compute it.
@@ -180,7 +185,6 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
 
   void PlatformInit(bool subpixel_ascent_descent, const FontMetricsOverride&);
   void PlatformGlyphInit();
-  void PlatformGlyphInitVerticalUpright(Glyph cjk_water_glyph);
 
   scoped_refptr<SimpleFontData> CreateScaledFontData(const FontDescription&,
                                               float scale_factor) const;
@@ -216,6 +220,9 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
   mutable std::unique_ptr<DerivedFontData> derived_font_data_;
 
   const scoped_refptr<CustomFontData> custom_font_data_;
+
+  mutable std::once_flag ideographic_inline_size_once_;
+  mutable absl::optional<float> ideographic_inline_size_;
 
   // Simple LRU cache for `HanKerning::FontData`. The cache has 2 entries
   // because one additional language or horizontal/vertical mixed document is

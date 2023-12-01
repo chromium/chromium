@@ -199,10 +199,11 @@ int FontSizeFunctions::LegacyFontSize(const Document* document,
                                           medium_size);
 }
 
-static float AspectValue(const FontMetrics& font_metrics,
+static float AspectValue(const SimpleFontData& font_data,
                          FontSizeAdjust::Metric metric,
                          float computed_size) {
   DCHECK(computed_size);
+  const FontMetrics& font_metrics = font_data.GetFontMetrics();
   // FIXME: The behavior for missing metrics has yet to be defined.
   // https://github.com/w3c/csswg-drafts/issues/6384
   float aspect_value = 1.0;
@@ -218,9 +219,9 @@ static float AspectValue(const FontMetrics& font_metrics,
       }
       break;
     case FontSizeAdjust::Metric::kIcWidth:
-      if (font_metrics.IdeographicFullWidth().has_value()) {
-        aspect_value =
-            font_metrics.IdeographicFullWidth().value() / computed_size;
+      if (const absl::optional<float> size =
+              font_data.IdeographicInlineSize()) {
+        aspect_value = *size / computed_size;
       }
       break;
     case FontSizeAdjust::Metric::kExHeight:
@@ -239,7 +240,7 @@ absl::optional<float> FontSizeFunctions::FontAspectValue(
   if (!font_data || !computed_size) {
     return absl::nullopt;
   }
-  return AspectValue(font_data->GetFontMetrics(), metric, computed_size);
+  return AspectValue(*font_data, metric, computed_size);
 }
 
 absl::optional<float> FontSizeFunctions::MetricsMultiplierAdjustedFontSize(
@@ -253,8 +254,8 @@ absl::optional<float> FontSizeFunctions::MetricsMultiplierAdjustedFontSize(
     return absl::nullopt;
   }
 
-  float aspect_value = AspectValue(font_data->GetFontMetrics(),
-                                   size_adjust.GetMetric(), computed_size);
+  float aspect_value =
+      AspectValue(*font_data, size_adjust.GetMetric(), computed_size);
   if (!aspect_value) {
     return absl::nullopt;
   }
