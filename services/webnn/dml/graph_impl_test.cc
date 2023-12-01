@@ -3369,7 +3369,8 @@ struct GatherTester {
 
 TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorGather) {
   {
-    // Test gather with 1-D input, 1-D indices and axis = 0.
+    // Test gather with 1-D input, 1-D indices and axis = 0 with data type
+    // uint32.
     GatherTester<float, uint32_t>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {4},
@@ -3384,15 +3385,16 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorGather) {
         .Test();
   }
   {
-    // Test gather with 2-D input, 2-D indices and axis = 1.
-    GatherTester<int32_t, uint32_t>{
+    // Test gather with 2-D input, 2-D indices and axis = 1 with data type
+    // uint64.
+    GatherTester<int32_t, uint64_t>{
         .input = {.type = mojom::Operand::DataType::kInt32,
                   .dimensions = {3, 3},
                   // [[1 2 3]
                   //  [4 5 6]
                   //  [7 8 9]] with shape (3, 3)
                   .values = {1, 2, 3, 4, 5, 6, 7, 8, 9}},
-        .indices = {.type = mojom::Operand::DataType::kUint32,
+        .indices = {.type = mojom::Operand::DataType::kUint64,
                     .dimensions = {1, 2},
                     .values = {0, 2}},
         .axis = 1,
@@ -3405,8 +3407,9 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorGather) {
         .Test();
   }
   {
-    // Test gather with 4-D input, 1-D indices with negative index and axis = 1.
-    GatherTester<uint32_t, int32_t>{
+    // Test gather with 4-D input, 1-D indices with negative index and axis = 1
+    // with data type int64.
+    GatherTester<uint32_t, int64_t>{
         .input = {.type = mojom::Operand::DataType::kUint32,
                   .dimensions = {2, 2, 2, 2},
                   // [[[[ 1  2]
@@ -3419,7 +3422,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorGather) {
                   //    [15 16]]]] with shape (2, 2, 2, 2)
                   .values = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
                              16}},
-        .indices = {.type = mojom::Operand::DataType::kInt32,
+        .indices = {.type = mojom::Operand::DataType::kInt64,
                     .dimensions = {1},
                     .values = {-1}},
         .axis = 1,
@@ -3433,7 +3436,8 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorGather) {
         .Test();
   }
   {
-    // Test gather with 6-D input, 0-D indices and axis = 5.
+    // Test gather with 6-D input, 0-D indices and axis = 5 with data type
+    // int32.
     GatherTester<float, int32_t>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 1, 1, 1, 1, 5},
@@ -3450,7 +3454,8 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorGather) {
         .Test();
   }
   {
-    // Test gather with 1-D input, 0-D indices and axis = 0.
+    // Test gather with 1-D input, 0-D indices and axis = 0 with data type
+    // uint32.
     GatherTester<int32_t, uint32_t>{
         .input = {.type = mojom::Operand::DataType::kInt32,
                   .dimensions = {3},
@@ -3465,7 +3470,8 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorGather) {
         .Test();
   }
   {
-    // Test gather with 2-D input, 2-D out-of-bound indices and axis = 1.
+    // Test gather with 2-D input, 2-D out-of-bound indices and axis = 1 with
+    // data type uint32.
     GatherTester<float, uint32_t>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {3, 3},
@@ -3486,7 +3492,8 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorGather) {
         .Test();
   }
   {
-    // Test gather with 1-D input, 2-D out-of-bound indices and axis = 0.
+    // Test gather with 1-D input, 2-D out-of-bound indices and axis = 0 with
+    // data type int32.
     GatherTester<float, int32_t>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {4},

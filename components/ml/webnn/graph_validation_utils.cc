@@ -336,6 +336,10 @@ std::string DataTypeToString(Operand::DataType data_type) {
       return "int32";
     case Operand::DataType::kUint32:
       return "uint32";
+    case Operand::DataType::kInt64:
+      return "int64";
+    case Operand::DataType::kUint64:
+      return "uint64";
     case Operand::DataType::kInt8:
       return "int8";
     case Operand::DataType::kUint8:

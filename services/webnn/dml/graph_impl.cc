@@ -57,6 +57,10 @@ DML_TENSOR_DATA_TYPE GetTensorDataType(Operand::DataType type) {
       return DML_TENSOR_DATA_TYPE_INT8;
     case Operand::DataType::kUint8:
       return DML_TENSOR_DATA_TYPE_UINT8;
+    case Operand::DataType::kInt64:
+      return DML_TENSOR_DATA_TYPE_INT64;
+    case Operand::DataType::kUint64:
+      return DML_TENSOR_DATA_TYPE_UINT64;
     case Operand::DataType::kInt32:
       return DML_TENSOR_DATA_TYPE_INT32;
     case Operand::DataType::kUint32:

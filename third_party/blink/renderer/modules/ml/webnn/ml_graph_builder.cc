@@ -63,6 +63,10 @@ blink::V8MLOperandDataType::Enum ComponentOperandTypeToBlink(
       return blink::V8MLOperandDataType::Enum::kInt32;
     case webnn::Operand::DataType::kUint32:
       return blink::V8MLOperandDataType::Enum::kUint32;
+    case webnn::Operand::DataType::kInt64:
+      return blink::V8MLOperandDataType::Enum::kInt64;
+    case webnn::Operand::DataType::kUint64:
+      return blink::V8MLOperandDataType::Enum::kUint64;
     case webnn::Operand::DataType::kInt8:
       return blink::V8MLOperandDataType::Enum::kInt8;
     case webnn::Operand::DataType::kUint8:
@@ -82,6 +86,10 @@ webnn::Operand::DataType BlinkOperandTypeToComponent(
       return webnn::Operand::DataType::kInt32;
     case blink::V8MLOperandDataType::Enum::kUint32:
       return webnn::Operand::DataType::kUint32;
+    case blink::V8MLOperandDataType::Enum::kInt64:
+      return webnn::Operand::DataType::kInt64;
+    case blink::V8MLOperandDataType::Enum::kUint64:
+      return webnn::Operand::DataType::kUint64;
     case blink::V8MLOperandDataType::Enum::kInt8:
       return webnn::Operand::DataType::kInt8;
     case blink::V8MLOperandDataType::Enum::kUint8:

@@ -11,8 +11,10 @@ enum MLOperandDataType {
   FLOAT16 = 1;
   INT32 = 2;
   UINT32 = 3;
-  INT8 = 4;
-  UINT8 = 5;
+  INT64 = 4;
+  UINT64 = 5;
+  INT8 = 6;
+  UINT8 = 7;
 }
 
 enum MLInputOperandLayout {

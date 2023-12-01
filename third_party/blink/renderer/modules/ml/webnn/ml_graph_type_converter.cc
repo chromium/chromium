@@ -38,6 +38,10 @@ blink_mojom::Operand::DataType BlinkOperandTypeToMojo(
       return blink_mojom::Operand::DataType::kInt32;
     case blink::V8MLOperandDataType::Enum::kUint32:
       return blink_mojom::Operand::DataType::kUint32;
+    case blink::V8MLOperandDataType::Enum::kInt64:
+      return blink_mojom::Operand::DataType::kInt64;
+    case blink::V8MLOperandDataType::Enum::kUint64:
+      return blink_mojom::Operand::DataType::kUint64;
     case blink::V8MLOperandDataType::Enum::kInt8:
       return blink_mojom::Operand::DataType::kInt8;
     case blink::V8MLOperandDataType::Enum::kUint8:

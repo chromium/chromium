@@ -64,6 +64,16 @@ NotShared<DOMArrayBufferView> CreateDOMArrayBufferView(
           blink::DOMUint32Array::CreateOrNull(size));
       break;
     }
+    case V8MLOperandDataType::Enum::kInt64: {
+      buffer_view = NotShared<DOMArrayBufferView>(
+          blink::DOMBigInt64Array::CreateOrNull(size));
+      break;
+    }
+    case V8MLOperandDataType::Enum::kUint64: {
+      buffer_view = NotShared<DOMArrayBufferView>(
+          blink::DOMBigUint64Array::CreateOrNull(size));
+      break;
+    }
     case V8MLOperandDataType::Enum::kInt8: {
       buffer_view = NotShared<DOMArrayBufferView>(
           blink::DOMInt8Array::CreateOrNull(size));

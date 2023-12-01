@@ -66,6 +66,19 @@ TEST_F(MLGraphBuilderTest, InputTest) {
     EXPECT_EQ(input->Name(), "input");
   }
   {
+    // Test building a 1-D input with int64 data type.
+    auto* input =
+        BuildInput(builder, "input", {3}, V8MLOperandDataType::Enum::kInt64,
+                   scope.GetExceptionState());
+    EXPECT_NE(input, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kNoError);
+    EXPECT_EQ(input->Kind(), MLOperand::OperandKind::kInput);
+    EXPECT_EQ(input->DataType(), V8MLOperandDataType::Enum::kInt64);
+    EXPECT_EQ(input->Dimensions(), Vector<uint32_t>({3}));
+    EXPECT_EQ(input->Name(), "input");
+  }
+  {
     // Test building a 2-D input without errors.
     auto* input = BuildInput(builder, "input", {3, 4},
                              V8MLOperandDataType::Enum::kFloat32,
@@ -158,6 +171,18 @@ TEST_F(MLGraphBuilderTest, ConstantTest) {
     EXPECT_EQ(constant->Kind(), MLOperand::OperandKind::kConstant);
     EXPECT_EQ(constant->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(constant->Dimensions(), Vector<uint32_t>({}));
+  }
+  {
+    // Test building a 1-D constant with uint64 data type.
+    auto* constant =
+        BuildConstant(builder, {5}, V8MLOperandDataType::Enum::kUint64,
+                      scope.GetExceptionState());
+    EXPECT_NE(constant, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kNoError);
+    EXPECT_EQ(constant->Kind(), MLOperand::OperandKind::kConstant);
+    EXPECT_EQ(constant->DataType(), V8MLOperandDataType::Enum::kUint64);
+    EXPECT_EQ(constant->Dimensions(), Vector<uint32_t>({5}));
   }
   {
     // Test building a 2-D constant without errors.
@@ -3764,7 +3789,7 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
               "The input data type must be one of the "
-              "float32,float16,int32,int8 types.");
+              "float32,float16,int32,int64,int8 types.");
   }
   {
     // Test throwing exception when building abs with uint8 input.
@@ -3778,7 +3803,7 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
               "The input data type must be one of the "
-              "float32,float16,int32,int8 types.");
+              "float32,float16,int32,int64,int8 types.");
   }
   {
     // Test building element-wise Erf.

@@ -19,6 +19,10 @@ V8MLOperandDataType::Enum ToV8MLOperandDataType(
       return V8MLOperandDataType::Enum::kInt32;
     case webnn_proto::MLOperandDataType::UINT32:
       return V8MLOperandDataType::Enum::kUint32;
+    case webnn_proto::MLOperandDataType::INT64:
+      return V8MLOperandDataType::Enum::kInt64;
+    case webnn_proto::MLOperandDataType::UINT64:
+      return V8MLOperandDataType::Enum::kUint64;
     case webnn_proto::MLOperandDataType::INT8:
       return V8MLOperandDataType::Enum::kInt8;
     case webnn_proto::MLOperandDataType::UINT8:

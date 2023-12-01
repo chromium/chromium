@@ -36,6 +36,10 @@ size_t GetBytesPerElement(mojom::Operand::DataType operand_type) {
       return sizeof(int32_t);
     case mojom::Operand::DataType::kUint32:
       return sizeof(uint32_t);
+    case mojom::Operand::DataType::kInt64:
+      return sizeof(int64_t);
+    case mojom::Operand::DataType::kUint64:
+      return sizeof(uint64_t);
     case mojom::Operand::DataType::kInt8:
       return sizeof(int8_t);
     case mojom::Operand::DataType::kUint8:
@@ -55,6 +59,10 @@ webnn::Operand::DataType MojoOperandTypeToComponent(
       return webnn::Operand::DataType::kInt32;
     case mojom::Operand::DataType::kUint32:
       return webnn::Operand::DataType::kUint32;
+    case mojom::Operand::DataType::kInt64:
+      return webnn::Operand::DataType::kInt64;
+    case mojom::Operand::DataType::kUint64:
+      return webnn::Operand::DataType::kUint64;
     case mojom::Operand::DataType::kInt8:
       return webnn::Operand::DataType::kInt8;
     case mojom::Operand::DataType::kUint8:

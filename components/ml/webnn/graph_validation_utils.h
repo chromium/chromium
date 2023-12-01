@@ -28,6 +28,8 @@ struct Operand {
     kFloat16,
     kInt32,
     kUint32,
+    kInt64,
+    kUint64,
     kInt8,
     kUint8,
     kMaxValue = kUint8,
@@ -63,16 +65,16 @@ static constexpr DataTypeConstraintSet kFloat = {Operand::DataType::kFloat32,
                                                  Operand::DataType::kFloat16};
 
 static constexpr DataTypeConstraintSet kSignedInteger = {
-    Operand::DataType::kInt32, Operand::DataType::kInt8};
+    Operand::DataType::kInt32, Operand::DataType::kInt64,
+    Operand::DataType::kInt8};
 
 static constexpr DataTypeConstraintSet kSignedNumber = {
     Operand::DataType::kFloat32, Operand::DataType::kFloat16,
     Operand::DataType::kInt32, Operand::DataType::kInt8};
 
-// TODO(crbug.com/1273291): Add int64 and uint64 as index type. Spec issue:
-// https://github.com/webmachinelearning/webnn/pull/478
 static constexpr DataTypeConstraintSet kGatherOperatorIndexDataTypes = {
-    Operand::DataType::kInt32, Operand::DataType::kUint32};
+    Operand::DataType::kInt32, Operand::DataType::kUint32,
+    Operand::DataType::kInt64, Operand::DataType::kUint64};
 
 }  // namespace DataTypeConstraint
 

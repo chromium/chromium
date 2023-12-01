@@ -385,6 +385,8 @@ xnn_datatype GetXnnDataType(V8MLOperandDataType::Enum operand_type) {
       return xnn_datatype_fp16;
     case V8MLOperandDataType::Enum::kInt32:
     case V8MLOperandDataType::Enum::kUint32:
+    case V8MLOperandDataType::Enum::kInt64:
+    case V8MLOperandDataType::Enum::kUint64:
     case V8MLOperandDataType::Enum::kInt8:
     case V8MLOperandDataType::Enum::kUint8:
       // TODO(crbug.com/1273291): Support the quantized integer types that is a

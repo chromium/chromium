@@ -63,6 +63,10 @@ tflite::TensorType BlinkOperandTypeToTFLite(
       return tflite::TensorType_INT32;
     case V8MLOperandDataType::Enum::kUint32:
       return tflite::TensorType_UINT32;
+    case V8MLOperandDataType::Enum::kInt64:
+      return tflite::TensorType_INT64;
+    case V8MLOperandDataType::Enum::kUint64:
+      return tflite::TensorType_UINT64;
     case V8MLOperandDataType::Enum::kInt8:
       return tflite::TensorType_INT8;
     case V8MLOperandDataType::Enum::kUint8:
