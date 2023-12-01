@@ -70,10 +70,12 @@ StyleContainmentScope* StyleContainmentScopeTree::CreateScopeForElement(
   scopes_.insert(&element, scope);
   // Try to find if we create a scope anywhere between the parent and existing
   // children. If so, reattach the child and the quotes.
+  bool parent_has_changed = false;
   auto children = parent->Children();
   for (StyleContainmentScope* child : children) {
     if (child != scope &&
         scope->IsAncestorOf(child->GetElement(), parent->GetElement())) {
+      parent_has_changed = true;
       parent->RemoveChild(child);
       scope->AppendChild(child);
     }
@@ -82,12 +84,14 @@ StyleContainmentScope* StyleContainmentScopeTree::CreateScopeForElement(
   auto quotes = parent->Quotes();
   for (LayoutQuote* quote : quotes) {
     if (scope->IsAncestorOf(quote->GetOwningPseudo(), parent->GetElement())) {
+      parent_has_changed = true;
       parent->DetachQuote(*quote);
       scope->AttachQuote(*quote);
     }
   }
-  UpdateOutermostCountersDirtyScope(parent);
-  UpdateOutermostQuotesDirtyScope(parent);
+  StyleContainmentScope* changed_scope = parent_has_changed ? parent : nullptr;
+  UpdateOutermostCountersDirtyScope(changed_scope);
+  UpdateOutermostQuotesDirtyScope(changed_scope);
   return scope;
 }
 

@@ -123,23 +123,16 @@ int StyleContainmentScope::ComputeInitialQuoteDepth() const {
 }
 
 void StyleContainmentScope::UpdateQuotes() const {
-  bool needs_children_update = false;
   if (quotes_.size()) {
     int depth = ComputeInitialQuoteDepth();
     for (LayoutQuote* quote : quotes_) {
-      if (depth != quote->GetDepth()) {
-        needs_children_update = true;
-      }
       quote->SetDepth(depth);
       quote->UpdateText();
       depth = quote->GetNextDepth();
     }
   }
-  // If nothing has changed on this level don't update children.
-  if (needs_children_update || !quotes_.size()) {
-    for (StyleContainmentScope* child : Children()) {
-      child->UpdateQuotes();
-    }
+  for (StyleContainmentScope* child : Children()) {
+    child->UpdateQuotes();
   }
 }
 
