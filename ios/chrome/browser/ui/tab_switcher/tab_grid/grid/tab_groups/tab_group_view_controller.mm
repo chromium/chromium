@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_view_controller.h"
 
 #import "base/check.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
-@implementation TabGroupsViewController
+@implementation TabGroupViewController
 
 #pragma mark - UIViewController
 

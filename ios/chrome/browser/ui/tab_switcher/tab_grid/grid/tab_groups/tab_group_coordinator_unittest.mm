@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_coordinator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_coordinator.h"
 
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
@@ -12,21 +12,21 @@
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/platform_test.h"
 
-class TabGroupsCoordinatorTest : public PlatformTest {
+class TabGroupCoordinatorTest : public PlatformTest {
  protected:
-  TabGroupsCoordinatorTest() {
+  TabGroupCoordinatorTest() {
     feature_list_.InitWithFeatures({kTabGroupsInGrid}, {});
     browser_state_ = TestChromeBrowserState::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     base_view_controller_ = [[UIViewController alloc] init];
-    coordinator_ = [[TabGroupsCoordinator alloc]
+    coordinator_ = [[TabGroupCoordinator alloc]
         initWithBaseViewController:base_view_controller_
                            browser:browser_.get()];
 
     [coordinator_ start];
   }
 
-  ~TabGroupsCoordinatorTest() override { [coordinator_ stop]; }
+  ~TabGroupCoordinatorTest() override { [coordinator_ stop]; }
 
   // Needed for test browser state created by TestBrowser().
   base::test::TaskEnvironment task_environment_;
@@ -34,9 +34,9 @@ class TabGroupsCoordinatorTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
   UIViewController* base_view_controller_;
-  TabGroupsCoordinator* coordinator_;
+  TabGroupCoordinator* coordinator_;
 };
 
-TEST_F(TabGroupsCoordinatorTest, TabGroupsCoordinatorCreated) {
+TEST_F(TabGroupCoordinatorTest, TabGroupCoordinatorCreated) {
   ASSERT_NE(coordinator_, nil);
 }

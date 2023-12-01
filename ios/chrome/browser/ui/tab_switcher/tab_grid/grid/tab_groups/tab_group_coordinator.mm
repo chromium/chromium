@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_coordinator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_coordinator.h"
 
 #import "base/check.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_mediator.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_mediator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_view_controller.h"
 
-@implementation TabGroupsCoordinator {
+@implementation TabGroupCoordinator {
   // Mediator for tab groups.
-  TabGroupsMediator* _mediator;
+  TabGroupMediator* _mediator;
   // View controller for tab groups.
-  TabGroupsViewController* _viewController;
+  TabGroupViewController* _viewController;
 }
 
 #pragma mark - ChromeCoordinator
@@ -28,9 +28,9 @@
 }
 
 - (void)start {
-  _mediator = [[TabGroupsMediator alloc]
+  _mediator = [[TabGroupMediator alloc]
       initWithWebStateList:self.browser->GetWebStateList()];
-  _viewController = [[TabGroupsViewController alloc] init];
+  _viewController = [[TabGroupViewController alloc] init];
 }
 
 - (void)stop {

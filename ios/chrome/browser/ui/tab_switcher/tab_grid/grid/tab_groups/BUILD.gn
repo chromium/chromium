@@ -4,10 +4,10 @@
 
 source_set("tab_groups") {
   sources = [
-    "tab_groups_coordinator.h",
-    "tab_groups_coordinator.mm",
-    "tab_groups_mediator.h",
-    "tab_groups_mediator.mm",
+    "tab_group_coordinator.h",
+    "tab_group_coordinator.mm",
+    "tab_group_mediator.h",
+    "tab_group_mediator.mm",
   ]
   deps = [
     ":tab_groups_ui",
@@ -21,8 +21,8 @@ source_set("tab_groups") {
 
 source_set("tab_groups_ui") {
   sources = [
-    "tab_groups_view_controller.h",
-    "tab_groups_view_controller.mm",
+    "tab_group_view_controller.h",
+    "tab_group_view_controller.mm",
   ]
   deps = [
     "//base",
@@ -32,7 +32,7 @@ source_set("tab_groups_ui") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "tab_groups_coordinator_unittest.mm" ]
+  sources = [ "tab_group_coordinator_unittest.mm" ]
   deps = [
     ":tab_groups",
     "//base/test:test_support",
