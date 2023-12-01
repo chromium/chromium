@@ -317,16 +317,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, DescComboboxFocusable) {
   RunAccNameTest(FILE_PATH_LITERAL("desc-combobox-focusable.html"));
 }
 
-// TODO(crbug.com/1500087): Re-enable this test
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_DescFromContentOfDescribedbyElement \
-  DISABLED_DescFromContentOfDescribedbyElement
-#else
-#define MAYBE_DescFromContentOfDescribedbyElement \
-  DescFromContentOfDescribedbyElement
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
-                       MAYBE_DescFromContentOfDescribedbyElement) {
+                       DescFromContentOfDescribedbyElement) {
   RunAccNameTest(
       FILE_PATH_LITERAL("desc-from-content-of-describedby-element.html"));
 }
