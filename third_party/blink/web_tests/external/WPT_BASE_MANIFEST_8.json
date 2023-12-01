@@ -5895,6 +5895,15 @@
        ]
       },
       "the-fieldset-and-legend-elements": {
+       "crashtests": {
+        "fieldset-middleclick.html": [
+         "39acf9eca17597838a4eec54f31d70be3f9abbb7",
+         [
+          null,
+          {}
+         ]
+        ]
+       },
        "fieldset-crash.html": [
         "111dcbe5338a1df74c69a05cccd618f37a761c91",
         [
@@ -138339,7 +138348,7 @@
        ]
       ],
       "grid-areas-overflowing-grid-container-009.html": [
-       "d1ab96e4c770c630ee8edc8497338219d507a033",
+       "367820eaeae700d14f8d23dc23a500a8067918ce",
        [
         null,
         [
@@ -272736,6 +272745,58 @@
         ]
        ],
        "sizes": {
+        "sizes-auto-rendering-2.html": [
+         "75d1884e34bf9fe4adfdc1536667949672f97f90",
+         [
+          null,
+          [
+           [
+            "/html/semantics/embedded-content/the-img-element/sizes/reference/sizes-auto-rendering-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "sizes-auto-rendering-3.html": [
+         "71ed90ebbec9e1d5a03622109fec8435a7286083",
+         [
+          null,
+          [
+           [
+            "/html/semantics/embedded-content/the-img-element/sizes/reference/sizes-auto-rendering-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "sizes-auto-rendering-dynamic.html": [
+         "901c6f2e096c2c60a649a9b3835be59fe09463aa",
+         [
+          null,
+          [
+           [
+            "/html/semantics/embedded-content/the-img-element/sizes/reference/sizes-auto-rendering-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "sizes-auto-rendering.html": [
+         "e972f69c20d70218810abb39204ada0a363c5a2a",
+         [
+          null,
+          [
+           [
+            "/html/semantics/embedded-content/the-img-element/sizes/reference/sizes-auto-rendering-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
         "sizes-dynamic-001.html": [
          "51f8145bf97958af3950b0f33061488274c03d60",
          [
@@ -319574,16 +319635,6 @@
       "a037967e493fa5eba3914db3c8f38914ee1d8729",
       []
      ],
-     "parsing": {
-      "grid-area-shorthand-expected.txt": [
-       "e050dd633a6faa284cba7301e413771f65eca2e7",
-       []
-      ],
-      "grid-area-valid-expected.txt": [
-       "cd8f2eb31c75b0e178bf0d4226a1ba957006f214",
-       []
-      ]
-     },
      "reference": {
       "anonymous-grid-items-001-ref.html": [
        "20302c2f1aa48e45b0698ed42bca866cf8f6a58e",
@@ -354150,7 +354201,7 @@
          []
         ],
         "service-worker.js": [
-         "df9ce65acdaba652fe9fe18c93d4b821e1484484",
+         "ab9a3239ea0a18515417f320386cfb88bc826e13",
          []
         ],
         "slow.py": [
@@ -364151,7 +364202,7 @@
         []
        ],
        "lists-styles-expected.txt": [
-        "72718cd8c12ab48293b21679b7b4d730d4199dad",
+        "af90728dd309819597c940a58e1fbecc803675a8",
         []
        ],
        "ol-display-contents-ref.html": [
@@ -366515,10 +366566,12 @@
          "2135bf678d1725a5feeed36851ee526524a276e2",
          []
         ],
-        "sizes-auto-expected.txt": [
-         "f0b9fa72d2746844f35259b0a0e572f8bc9cfcc1",
-         []
-        ],
+        "reference": {
+         "sizes-auto-rendering-ref.html": [
+          "221930fddb888e119420769da83e307a259fd4d6",
+          []
+         ]
+        },
         "sizes-dynamic-001-ref.html": [
          "68466ae94d4e5c44b07f6eac52d71119a9d1a657",
          []
@@ -385982,6 +386035,14 @@
       "d87092aad1d2efedf5d4245884e28e159880b2df",
       []
      ],
+     "shared-storage-writable-fetch-request-fallback-to-network-iframe.https.html": [
+      "8229ce88d82ad05e8f7e1d1e9886f49c282bc805",
+      []
+     ],
+     "shared-storage-writable-fetch-request-fallback-to-network-worker.js": [
+      "d304669ea19186b4fde0b105c37725d7a628e8bd",
+      []
+     ],
      "shared-storage-writable-iframe-in-fenced-inner.https.sub.html": [
       "87dbe81a2b5294d8b7bc62dcc0e438d3f5ef830a",
       []
@@ -393446,6 +393507,14 @@
      }
     },
     "message-channels": {
+     "close-event": {
+      "resources": {
+       "helper.js": [
+        "cb9ea9fe981e95374b836255c752a42de788fc7b",
+        []
+       ]
+      }
+     },
      "close.any-expected.txt": [
       "945c89a3d4e14bc39a49bc47c0fc5dee46809c2a",
       []
@@ -454378,7 +454447,7 @@
         }
        ]
       ],
-      "snap-area-overflow-boundary.html": [
+      "snap-area-overflow-boundary-viewport-covering.tentative.html": [
        "0978f127fa461fa811050081b5aceb7481b1b081",
        [
         null,
@@ -454402,8 +454471,15 @@
        {}
       ]
      ],
+     "overflowing-snap-areas-nested.tentative.html": [
+      "046f3c88ed930fd943c566eaea3defedab302254",
+      [
+       null,
+       {}
+      ]
+     ],
      "overflowing-snap-areas.html": [
-      "38002c3edda71f53b95dcf27049198affdf6f896",
+      "1e727108119494d4a2a50d5fdf5dde535ae95596",
       [
        null,
        {}
@@ -454637,7 +454713,7 @@
        {}
       ]
      ],
-     "scroll-snap-nested-snap-area-layout-changed.html": [
+     "scroll-snap-nested-snap-area-layout-changed.tentative.html": [
       "be0bd5c4a57827547a0e95f4a496cc212ff7d9d2",
       [
        null,
@@ -454653,8 +454729,15 @@
        {}
       ]
      ],
+     "scroll-snap-stop-002-nested.tentative.html": [
+      "34b6dc97e22bcd15924fe204822e385003fee040",
+      [
+       null,
+       {}
+      ]
+     ],
      "scroll-snap-stop-002.html": [
-      "0951604a74bb0c3726e00641b076948dd4a67849",
+      "1aae7aea6047461ef6d52bee4a2a93fda798c751",
       [
        null,
        {}
@@ -454834,7 +454917,7 @@
        {}
       ]
      ],
-     "snap-into-covering-area.html": [
+     "snap-into-covering-area.tentative.html": [
       "2cc8741f5ef2e02afa1e313fc918fef00c12adb5",
       [
        null,
@@ -513468,7 +513551,7 @@
       ]
      ],
      "join-leave-ad-interest-group.https.window.js": [
-      "107bd3b815ada1b175c1ca425f6bbdb0c2e3be44",
+      "c3c97d60c614424262590027d415132ff8d8e756",
       [
        "fledge/tentative/join-leave-ad-interest-group.https.window.html?1-10",
        {
@@ -521313,6 +521396,49 @@
         [
          null,
          {
+          "timeout": "long"
+         }
+        ]
+       ],
+       "message-port-entangled-after-restore.https.tentative.window.js": [
+        "efbb244cc6bc30a7e7090215922ea5b99a581160",
+        [
+         "html/browsers/browsing-the-web/back-forward-cache/message-port-entangled-after-restore.https.tentative.window.html",
+         {
+          "script_metadata": [
+           [
+            "timeout",
+            "long"
+           ],
+           [
+            "title",
+            "Confirm close event is not fired when the page enters BFCache and MessagePort still works after the page is restored."
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+           ],
+           [
+            "script",
+            "/service-workers/service-worker/resources/test-helpers.sub.js"
+           ],
+           [
+            "script",
+            "resources/rc-helper.js"
+           ]
+          ],
           "timeout": "long"
          }
         ]
@@ -556573,7 +556699,7 @@
         ]
        ],
        "lists-styles.html": [
-        "3a94de18ad69d2e7e92139ad5171c3bb416917f3",
+        "a5f011cecc1dbd6d199d4af5e0cd09113ca90735",
         [
          null,
          {}
@@ -562097,7 +562223,7 @@
          ]
         ],
         "sizes-auto.html": [
-         "41385edd33f1e7cc1fdc1d882883e5725b5e4d2b",
+         "6c1a741f2bfd512534975f71047d80f4d8b6b146",
          [
           null,
           {}
@@ -621024,6 +621150,13 @@
       {}
      ]
     ],
+    "shared-storage-writable-service-worker-img.tentative.https.sub.html": [
+     "9e7326d3c4d62435ef7a344864341bdd318965fb",
+     [
+      null,
+      {}
+     ]
+    ],
     "shared-storage-writable-setters.tentative.https.sub.html": [
      "066bf174de0a98971c83a0d07ca1f474b35ff39d",
      [
@@ -654166,26 +654299,110 @@
       ]
      ],
      "close-event": {
-      "close-event.tentative.any.js": [
-       "a793269ddee432f68fa304b5ade025b9641f4d3e",
+      "document-destroyed.tentative.window.js": [
+       "85e4ad30add19b9a1d733917f6d89ada74c62198",
        [
-        "webmessaging/message-channels/close-event/close-event.tentative.any.html",
+        "webmessaging/message-channels/close-event/document-destroyed.tentative.window.html",
         {
          "script_metadata": [
           [
            "title",
-           "close event test"
+           "Close event test when the document is destroyed."
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+          ],
+          [
+           "script",
+           "resources/helper.js"
+          ]
+         ]
+        }
+       ]
+      ],
+      "explicitly-closed.tentative.window.js": [
+       "612003d58eaea908ad93294a7bbf777184356a28",
+       [
+        "webmessaging/message-channels/close-event/explicitly-closed.tentative.window.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Close event test when an entangled port is explicitly closed."
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+          ],
+          [
+           "script",
+           "resources/helper.js"
+          ]
+         ]
+        }
+       ]
+      ],
+      "garbage-collected.tentative.any.js": [
+       "8347f564523d693cdac99702e7458060441aab07",
+       [
+        "webmessaging/message-channels/close-event/garbage-collected.tentative.any.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Close event test when an entangled port is GCed."
+          ],
+          [
+           "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
+           "/wpt_internal/dom/abort/resources/run-async-gc.js"
           ]
          ]
         }
        ],
        [
-        "webmessaging/message-channels/close-event/close-event.tentative.any.worker.html",
+        "webmessaging/message-channels/close-event/garbage-collected.tentative.any.worker.html",
         {
          "script_metadata": [
           [
            "title",
-           "close event test"
+           "Close event test when an entangled port is GCed."
+          ],
+          [
+           "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
+           "/wpt_internal/dom/abort/resources/run-async-gc.js"
           ]
          ]
         }

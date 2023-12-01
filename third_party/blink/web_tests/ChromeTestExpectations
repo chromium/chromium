@@ -584,6 +584,8 @@ crbug.com/1499775 external/wpt/preload/preload-strict-dynamic.sub.html [ Failure
 crbug.com/1499775 external/wpt/webusb/usbDevice-iframe.https.html [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/webmessaging/message-channels/close-event/garbage-collected.tentative.any.html [ Timeout ]
+crbug.com/626703 external/wpt/webmessaging/message-channels/close-event/garbage-collected.tentative.any.worker.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-color-adjust/rendering/dark-color-scheme/color-scheme-iframe-background-about-blank.tentative.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-transforms/transform-box/svgbox-stroke-box-003.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-transforms/transform-box/svgbox-stroke-box-004.html [ Failure ]
