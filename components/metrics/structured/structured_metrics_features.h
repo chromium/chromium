@@ -27,6 +27,9 @@ BASE_DECLARE_FEATURE(kBluetoothSessionizedMetrics);
 // Controls whether fast pair logging is enabled or not.
 BASE_DECLARE_FEATURE(kFastPairMetrics);
 
+// Controls whether nearby share logging is enabled or not.
+BASE_DECLARE_FEATURE(kNearbyShareMetrics);
+
 // Controls whether the structured metrics service is recorder instead of the
 // provider.
 BASE_DECLARE_FEATURE(kEnabledStructuredMetricsService);
