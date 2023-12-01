@@ -1776,7 +1776,7 @@
     },
     {
       name: "FledgeClearOriginJoinedAdInterestGroups",
-      status: "test",
+      status: "stable",
     },
     {
       name: "FledgeDirectFromSellerSignalsHeaderAdSlot",
