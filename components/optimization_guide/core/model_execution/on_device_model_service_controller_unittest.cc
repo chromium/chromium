@@ -229,10 +229,12 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
     return base::BindLambdaForTesting(
         [=](proto::ModelExecutionFeature feature,
             const google::protobuf::MessageLite& m,
+            std::unique_ptr<proto::LogAiDataRequest> l,
             OptimizationGuideModelExecutionResultStreamingCallback c) {
           remote_execute_called_ = true;
           last_remote_message_ = base::WrapUnique(m.New());
           last_remote_message_->CheckTypeAndMergeFrom(m);
+          log_ai_data_request_passed_to_remote_ = std::move(l);
         });
   }
 
@@ -308,6 +310,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
  protected:
   void OnResponse(OptimizationGuideModelStreamingExecutionResult result,
                   std::unique_ptr<ModelQualityLogEntry> log_entry) {
+    log_entry_received_ = std::move(log_entry);
     if (!result.has_value()) {
       response_error_ = result.error().error();
       return;
@@ -329,11 +332,14 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
   raw_ptr<OnDeviceModelAccessController> access_controller_ = nullptr;
   std::vector<std::string> streamed_responses_;
   std::optional<std::string> response_received_;
+  std::unique_ptr<ModelQualityLogEntry> log_entry_received_;
   std::optional<OptimizationGuideModelExecutionError::ModelExecutionError>
       response_error_;
   base::test::ScopedFeatureList feature_list_;
   bool remote_execute_called_ = false;
   std::unique_ptr<google::protobuf::MessageLite> last_remote_message_;
+  std::unique_ptr<proto::LogAiDataRequest>
+      log_ai_data_request_passed_to_remote_;
   OptimizationGuideLogger logger_;
 };
 
@@ -349,6 +355,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionSuccess) {
   const std::string expected_response = "Input: execute:foo\n";
   EXPECT_EQ(*response_received_, expected_response);
   EXPECT_THAT(streamed_responses_, ElementsAre(expected_response));
+  EXPECT_TRUE(log_entry_received_);
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason.Compose",
@@ -672,6 +679,17 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextDisconnectExecute) {
   });
   EXPECT_EQ(*response_received_, expected_responses[1]);
   EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
+  EXPECT_EQ(log_entry_received_->log_ai_data_request()
+                ->compose()
+                .request_data()
+                .page_metadata()
+                .page_url(),
+            "baz");
+  EXPECT_EQ(log_entry_received_->log_ai_data_request()
+                ->compose()
+                .response_data()
+                .output(),
+            "Context: ctx:foo off:0 max:10\nInput: execute:foobaz\n");
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, AddContextExecuteDisconnect) {
@@ -686,6 +704,7 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextExecuteDisconnect) {
   test_controller_->LaunchService();
   task_environment_.RunUntilIdle();
   ASSERT_FALSE(response_received_);
+  ASSERT_FALSE(log_entry_received_);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ExecuteDisconnectedSession) {
@@ -711,8 +730,20 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteDisconnectedSession) {
   };
   EXPECT_EQ(*response_received_, expected_responses1[1]);
   EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses1));
+  EXPECT_EQ(log_entry_received_->log_ai_data_request()
+                ->compose()
+                .request_data()
+                .page_metadata()
+                .page_url(),
+            "2");
+  EXPECT_EQ(log_entry_received_->log_ai_data_request()
+                ->compose()
+                .response_data()
+                .output(),
+            "Context: ctx:bar off:0 max:10\nInput: execute:bar2\n");
   response_received_.reset();
   streamed_responses_.clear();
+  log_entry_received_.reset();
 
   ExecuteModel(*session1, "1");
   task_environment_.RunUntilIdle();
@@ -723,6 +754,17 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteDisconnectedSession) {
   };
   EXPECT_EQ(*response_received_, expected_responses2[1]);
   EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses2));
+  EXPECT_EQ(log_entry_received_->log_ai_data_request()
+                ->compose()
+                .request_data()
+                .page_metadata()
+                .page_url(),
+            "1");
+  EXPECT_EQ(log_entry_received_->log_ai_data_request()
+                ->compose()
+                .response_data()
+                .output(),
+            "Context: ctx:foo off:0 max:10\nInput: execute:foo1\n");
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, CallsRemoteExecute) {
@@ -746,6 +788,9 @@ TEST_F(OnDeviceModelServiceControllerTest, CallsRemoteExecute) {
   ExecuteModel(*session, "2");
   EXPECT_TRUE(remote_execute_called_);
   EXPECT_FALSE(test_controller_->did_launch_service());
+  // Did not start with on-device, so there should not have been a log entry
+  // passed.
+  ASSERT_FALSE(log_ai_data_request_passed_to_remote_);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, AddContextInvalidConfig) {
@@ -786,6 +831,9 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextInvalidConfig) {
         ExecuteModelResult::kUsedServer, 1);
   }
   EXPECT_TRUE(remote_execute_called_);
+  // The execute call never made it to on-device, so we shouldn't have created a
+  // log entry.
+  EXPECT_FALSE(log_ai_data_request_passed_to_remote_);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ExecuteInvalidConfig) {
@@ -816,6 +864,9 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteInvalidConfig) {
       "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
       ExecuteModelResult::kFailedConstructingMessage, 1);
   EXPECT_TRUE(remote_execute_called_);
+  // We never actually executed the request on-device so it is expected to not
+  // have created a log entry.
+  EXPECT_FALSE(log_ai_data_request_passed_to_remote_);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, FallbackToServerAfterDelay) {
@@ -840,6 +891,14 @@ TEST_F(OnDeviceModelServiceControllerTest, FallbackToServerAfterDelay) {
       static_cast<const proto::ComposeRequest&>(*last_remote_message_);
   ASSERT_TRUE(compose_request.has_page_metadata());
   EXPECT_EQ("2z", compose_request.page_metadata().page_url());
+  ASSERT_TRUE(log_ai_data_request_passed_to_remote_);
+  EXPECT_EQ(log_ai_data_request_passed_to_remote_->compose()
+                .request_data()
+                .page_metadata()
+                .page_url(),
+            "2z");
+  EXPECT_FALSE(
+      log_ai_data_request_passed_to_remote_->compose().has_response_data());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,
@@ -856,6 +915,14 @@ TEST_F(OnDeviceModelServiceControllerTest,
       "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
       ExecuteModelResult::kDisconnectAndFallbackToServer, 1);
   EXPECT_TRUE(remote_execute_called_);
+  ASSERT_TRUE(log_ai_data_request_passed_to_remote_);
+  EXPECT_EQ(log_ai_data_request_passed_to_remote_->compose()
+                .request_data()
+                .page_metadata()
+                .page_url(),
+            "foo");
+  EXPECT_FALSE(
+      log_ai_data_request_passed_to_remote_->compose().has_response_data());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,

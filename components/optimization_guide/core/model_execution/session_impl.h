@@ -11,6 +11,7 @@
 #include "base/timer/timer.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
@@ -24,6 +25,7 @@ class OnDeviceModelServiceController;
 using ExecuteRemoteFn = base::RepeatingCallback<void(
     proto::ModelExecutionFeature feature,
     const google::protobuf::MessageLite&,
+    std::unique_ptr<proto::LogAiDataRequest>,
     OptimizationGuideModelExecutionResultStreamingCallback)>;
 
 // Session implementation that uses either the on device model or the server
@@ -143,6 +145,8 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     base::OneShotTimer timer_for_first_response;
     // Used to log the result of ExecuteModel().
     std::unique_ptr<ExecuteModelHistogramLogger> histogram_logger;
+    // Used to log execution information.
+    std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request;
   };
 
   AddContextResult AddContextImpl(

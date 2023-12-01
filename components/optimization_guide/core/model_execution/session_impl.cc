@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_config_interpreter.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -189,7 +190,9 @@ void SessionImpl::ExecuteModel(
 
   if (!ShouldUseOnDeviceModel()) {
     DestroyOnDeviceState();
-    execute_remote_fn_.Run(feature_, *last_message_, std::move(callback));
+    execute_remote_fn_.Run(feature_, *last_message_,
+                           /*log_ai_data_request=*/nullptr,
+                           std::move(callback));
     return;
   }
 
@@ -249,6 +252,10 @@ void SessionImpl::ExecuteModel(
         << input->input_string;
   }
 
+  on_device_state_->log_ai_data_request =
+      std::make_unique<proto::LogAiDataRequest>();
+  SetExecutionRequest(feature_, *(on_device_state_->log_ai_data_request),
+                      *last_message_);
   on_device_state_->callback = std::move(callback);
   on_device_state_->start = base::TimeTicks::Now();
   on_device_state_->timer_for_first_response.Start(
@@ -357,12 +364,23 @@ void SessionImpl::SendResponse(bool is_complete) {
     return;
   }
 
+  std::unique_ptr<ModelQualityLogEntry> log_entry;
+  if (is_complete && on_device_state_->log_ai_data_request) {
+    SetExecutionResponse(feature_, *(on_device_state_->log_ai_data_request),
+                         *output);
+    // Create corresponding log entry for `log_ai_data_request` to pass it with
+    // the callback.
+    log_entry = std::make_unique<ModelQualityLogEntry>(
+        std::move(on_device_state_->log_ai_data_request));
+    on_device_state_->log_ai_data_request.reset();
+  }
+
   on_device_state_->callback.Run(
       StreamingResponse{
           .response = *output,
           .is_complete = is_complete,
       },
-      nullptr);
+      std::move(log_entry));
 }
 
 bool SessionImpl::ShouldUseOnDeviceModel() const {
@@ -375,9 +393,11 @@ void SessionImpl::DestroyOnDeviceStateAndFallbackToRemote(
   if (on_device_state_->histogram_logger) {
     on_device_state_->histogram_logger->set_result(result);
   }
+  auto log_ai_data_request = std::move(on_device_state_->log_ai_data_request);
   auto callback = std::move(on_device_state_->callback);
   DestroyOnDeviceState();
-  execute_remote_fn_.Run(feature_, *last_message_, std::move(callback));
+  execute_remote_fn_.Run(feature_, *last_message_,
+                         std::move(log_ai_data_request), std::move(callback));
 }
 
 void SessionImpl::DestroyOnDeviceState() {

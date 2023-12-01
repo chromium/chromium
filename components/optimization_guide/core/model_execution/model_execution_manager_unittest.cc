@@ -104,6 +104,7 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelEmptyAccessToken) {
   base::RunLoop run_loop;
   model_execution_manager()->ExecuteModel(
       proto::MODEL_EXECUTION_FEATURE_COMPOSE, request,
+      /*log_ai_data_request=*/nullptr,
       base::BindOnce(
           [](base::RunLoop* run_loop,
              OptimizationGuideModelExecutionResult result,
@@ -124,6 +125,7 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithUserSignIn) {
       "test_email", signin::ConsentLevel::kSignin);
   model_execution_manager()->ExecuteModel(
       proto::MODEL_EXECUTION_FEATURE_COMPOSE, request,
+      /*log_ai_data_request=*/nullptr,
       base::BindOnce(
           [](base::RunLoop* run_loop,
              OptimizationGuideModelExecutionResult result,

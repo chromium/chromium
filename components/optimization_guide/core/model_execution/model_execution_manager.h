@@ -49,10 +49,18 @@ class ModelExecutionManager {
   ModelExecutionManager(const ModelExecutionManager&) = delete;
   ModelExecutionManager& operator=(const ModelExecutionManager&) = delete;
 
-  void ExecuteModel(proto::ModelExecutionFeature feature,
-                    const google::protobuf::MessageLite& request_metadata,
-                    OptimizationGuideModelExecutionResultCallback callback);
+  // Executes the model when model execution happens remotely.
+  //
+  // As this can potentially be called as a fallback from on-device,
+  // `log_ai_data_request` may be populated already with any existing work prior
+  // to calling this function.
+  void ExecuteModel(
+      proto::ModelExecutionFeature feature,
+      const google::protobuf::MessageLite& request_metadata,
+      std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request,
+      OptimizationGuideModelExecutionResultCallback callback);
 
+  // Starts a new session for `feature`.
   std::unique_ptr<OptimizationGuideModelExecutor::Session> StartSession(
       proto::ModelExecutionFeature feature);
 
@@ -62,6 +70,7 @@ class ModelExecutionManager {
   void ExecuteModelWithStreaming(
       proto::ModelExecutionFeature feature,
       const google::protobuf::MessageLite& request_metadata,
+      std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request,
       OptimizationGuideModelExecutionResultStreamingCallback callback);
 
   // Invoked when the model execution result is available.

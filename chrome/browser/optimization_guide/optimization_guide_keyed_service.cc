@@ -514,6 +514,7 @@ void OptimizationGuideKeyedService::ExecuteModel(
     return;
   }
   model_execution_manager_->ExecuteModel(feature, request_metadata,
+                                         /*log_ai_data_request=*/nullptr,
                                          std::move(callback));
 }
 

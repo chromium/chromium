@@ -11,10 +11,10 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "components/optimization_guide/core/model_execution/model_execution_fetcher.h"
+#include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_config_interpreter.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
-#include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
@@ -69,94 +69,6 @@ GURL GetModelExecutionServiceURL() {
   return GURL(kOptimizationGuideServiceModelExecutionDefaultURL);
 }
 
-// Sets request data corresponding the feature's LogAiDataRequest.
-template <typename FeatureType>
-void SetExecutionRequestTemplate(
-    proto::LogAiDataRequest& log_ai_request,
-    const google::protobuf::MessageLite& request_metadata) {
-  typename FeatureType::LoggingData* logging_data =
-      FeatureType::GetLoggingData(log_ai_request);
-  CHECK(logging_data);
-
-  // Request is set by the feature and should always be typed.
-  auto typed_request =
-      static_cast<const FeatureType::Request&>(request_metadata);
-  *(logging_data->mutable_request_data()) = typed_request;
-}
-
-// Sets response data corresponding the feature's LogAiDataRequest.
-template <typename FeatureType>
-void SetExecutionResponseTemplate(proto::LogAiDataRequest& log_ai_request,
-                                  const proto::Any& response_metadata) {
-  typename FeatureType::LoggingData* logging_data =
-      FeatureType::GetLoggingData(log_ai_request);
-  CHECK(logging_data);
-
-  // Deserialize any to correct feature response type.
-  auto response_data =
-      optimization_guide::ParsedAnyMetadata<typename FeatureType::Response>(
-          response_metadata);
-
-  if (!response_data) {
-    return;
-  }
-
-  // Set the response data to feature LoggingData if exists.
-  *(logging_data->mutable_response_data()) = std::move(*response_data);
-  CHECK(logging_data->has_response_data()) << "Response data is not set\n";
-}
-
-// Helper method matches feature to corresponding FeatureTypeMap to set
-// LogAiDataRequest's request data.
-void SetExecutionRequest(
-    proto::ModelExecutionFeature feature,
-    proto::LogAiDataRequest& log_ai_request,
-    const google::protobuf::MessageLite& request_metadata) {
-  switch (feature) {
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH:
-      SetExecutionRequestTemplate<WallpaperSearchFeatureTypeMap>(
-          log_ai_request, request_metadata);
-      return;
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION:
-      SetExecutionRequestTemplate<TabOrganizationFeatureTypeMap>(
-          log_ai_request, request_metadata);
-      return;
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE:
-      SetExecutionRequestTemplate<ComposeFeatureTypeMap>(log_ai_request,
-                                                         request_metadata);
-      return;
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
-      // Don't log any request data when the feature is not specified.
-      NOTREACHED();
-      return;
-  }
-}
-
-// Helper method matches feature to corresponding FeatureTypeMap to set
-// LogAiDataRequest's response data.
-void SetExecutionResponse(proto::ModelExecutionFeature feature,
-                          proto::LogAiDataRequest& log_ai_request,
-                          const proto::Any& response_metadata) {
-  switch (feature) {
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH:
-      SetExecutionResponseTemplate<WallpaperSearchFeatureTypeMap>(
-          log_ai_request, response_metadata);
-      return;
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION:
-      SetExecutionResponseTemplate<TabOrganizationFeatureTypeMap>(
-          log_ai_request, response_metadata);
-      return;
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE:
-      SetExecutionResponseTemplate<ComposeFeatureTypeMap>(log_ai_request,
-                                                          response_metadata);
-      return;
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
-      // Don't log any response data when the feature is not specified.
-      NOTREACHED();
-      return;
-  }
-}
-
 void RecordSessionUsedRemoteExecutionHistogram(
     proto::ModelExecutionFeature feature,
     bool is_remote) {
@@ -193,9 +105,10 @@ ModelExecutionManager::~ModelExecutionManager() = default;
 void ModelExecutionManager::ExecuteModelWithStreaming(
     proto::ModelExecutionFeature feature,
     const google::protobuf::MessageLite& request_metadata,
+    std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request,
     OptimizationGuideModelExecutionResultStreamingCallback callback) {
   ExecuteModel(
-      feature, request_metadata,
+      feature, request_metadata, std::move(log_ai_data_request),
       base::BindOnce(
           [](OptimizationGuideModelExecutionResultStreamingCallback callback,
              OptimizationGuideModelExecutionResult result,
@@ -218,6 +131,7 @@ void ModelExecutionManager::ExecuteModelWithStreaming(
 void ModelExecutionManager::ExecuteModel(
     proto::ModelExecutionFeature feature,
     const google::protobuf::MessageLite& request_metadata,
+    std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request,
     OptimizationGuideModelExecutionResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -263,8 +177,12 @@ void ModelExecutionManager::ExecuteModel(
     }
   }
 
+  // Create log request if not already provided.
+  if (!log_ai_data_request) {
+    log_ai_data_request = std::make_unique<proto::LogAiDataRequest>();
+  }
+
   // Set execution request in corresponding `log_ai_data_request`.
-  auto log_ai_data_request = std::make_unique<proto::LogAiDataRequest>();
   SetExecutionRequest(feature, *log_ai_data_request.get(), request_metadata);
 
   auto fetcher_it = active_model_execution_fetchers_.emplace(

@@ -248,6 +248,8 @@ static_library("core") {
       "model_execution/model_execution_fetcher.h",
       "model_execution/model_execution_manager.cc",
       "model_execution/model_execution_manager.h",
+      "model_execution/model_execution_util.cc",
+      "model_execution/model_execution_util.h",
       "model_execution/on_device_model_access_controller.cc",
       "model_execution/on_device_model_access_controller.h",
       "model_execution/on_device_model_execution_config_interpreter.cc",
