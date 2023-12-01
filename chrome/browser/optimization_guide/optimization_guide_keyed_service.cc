@@ -155,6 +155,7 @@ void LogOnDeviceMetrics() {
         base::UmaHistogramEnumeration(
             "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass",
             ConvertToOnDeviceModelPerformanceClass(performance_class));
+        controller->ShutdownServiceIfNoModelLoaded();
       },
       controller));
 }

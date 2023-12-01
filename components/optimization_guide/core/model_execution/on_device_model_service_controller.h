@@ -80,6 +80,9 @@ class OnDeviceModelServiceController
 
   bool ShouldStartNewSession() const;
 
+  // Shuts down the service if there is no active model.
+  void ShutdownServiceIfNoModelLoaded();
+
  private:
   friend class base::RefCounted<OnDeviceModelServiceController>;
   friend class ChromeOnDeviceModelServiceController;

@@ -208,4 +208,10 @@ bool OnDeviceModelServiceController::ShouldStartNewSession() const {
          OnDeviceModelEligibilityReason::kSuccess;
 }
 
+void OnDeviceModelServiceController::ShutdownServiceIfNoModelLoaded() {
+  if (!model_remote_) {
+    service_remote_.reset();
+  }
+}
+
 }  // namespace optimization_guide
