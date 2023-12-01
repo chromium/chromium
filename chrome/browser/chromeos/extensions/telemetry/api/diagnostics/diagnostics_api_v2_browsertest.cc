@@ -14,7 +14,6 @@
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/common/extension_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -501,60 +500,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(
     TelemetryExtensionDiagnosticsApiV2BrowserTest,
-    IsVolumeButtonRoutineArgumentSupportedWithoutFeatureFlagError) {
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      function isVolumeButtonRoutineArgumentSupportedFail() {
-        chrome.test.assertThrows(() => {
-          chrome.os.diagnostics.isVolumeButtonRoutineArgumentSupported({
-            button_type: "volume_up",
-            timeout_seconds: 10,
-          });
-        }, [],
-          'chrome.os.diagnostics.isVolumeButtonRoutineArgumentSupported ' +
-          'is not a function'
-        );
-
-        chrome.test.succeed();
-      }
-    ]);
-  )");
-}
-
-IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
-                       CreateVolumeButtonRoutineWithoutFeatureFlagError) {
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      function createVolumeButtonRoutineFail() {
-        chrome.test.assertThrows(() => {
-          chrome.os.diagnostics.createVolumeButtonRoutine({
-            button_type: "volume_up",
-            timeout_seconds: 10,
-          });
-        }, [],
-          'chrome.os.diagnostics.createVolumeButtonRoutine is not a function'
-        );
-
-        chrome.test.succeed();
-      }
-    ]);
-  )");
-}
-
-class TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval
-    : public TelemetryExtensionDiagnosticsApiV2BrowserTest {
- public:
-  TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kTelemetryExtensionPendingApprovalApi);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
     IsVolumeButtonRoutineArgSupportedWithFeatureFlagApiInternalError) {
   fake_service().SetIsRoutineArgumentSupportedResponse(
       crosapi::TelemetryExtensionSupportStatus::NewUnmappedUnionField(0));
@@ -578,7 +523,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
+    TelemetryExtensionDiagnosticsApiV2BrowserTest,
     IsVolumeButtonRoutineArgSupportedWithFeatureFlagException) {
   auto exception = crosapi::TelemetryExtensionException::New();
   exception->debug_message = "TEST_MESSAGE";
@@ -605,7 +550,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
+    TelemetryExtensionDiagnosticsApiV2BrowserTest,
     IsVolumeButtonRoutineArgSupportedWithFeatureFlagSuccess) {
   fake_service().SetIsRoutineArgumentSupportedResponse(
       crosapi::TelemetryExtensionSupportStatus::NewSupported(
@@ -630,7 +575,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
+    TelemetryExtensionDiagnosticsApiV2BrowserTest,
     CreateVolumeButtonRoutineWithFeatureFlagCompanionUiNotOpenError) {
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
@@ -650,7 +595,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
+    TelemetryExtensionDiagnosticsApiV2BrowserTest,
     CreateVolumeButtonRoutineWithFeatureFlagResetConnection) {
   fake_service().SetOnCreateRoutineCalled(base::BindLambdaForTesting([this]() {
     auto* control = fake_service().GetCreatedRoutineControlForRoutineType(
@@ -695,9 +640,8 @@ IN_PROC_BROWSER_TEST_F(
     )");
 }
 
-IN_PROC_BROWSER_TEST_F(
-    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
-    CreateVolumeButtonRoutineWithFeatureFlagSuccess) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
+                       CreateVolumeButtonRoutineWithFeatureFlagSuccess) {
   fake_service().SetOnCreateRoutineCalled(base::BindLambdaForTesting([this]() {
     auto* control = fake_service().GetCreatedRoutineControlForRoutineType(
         crosapi::TelemetryDiagnosticRoutineArgument::Tag::kVolumeButton);
@@ -763,7 +707,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
+    TelemetryExtensionDiagnosticsApiV2BrowserTest,
     IsFanRoutineArgSupportedWithFeatureFlagApiInternalError) {
   fake_service().SetIsRoutineArgumentSupportedResponse(
       crosapi::TelemetryExtensionSupportStatus::NewUnmappedUnionField(0));
@@ -784,9 +728,8 @@ IN_PROC_BROWSER_TEST_F(
   )");
 }
 
-IN_PROC_BROWSER_TEST_F(
-    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
-    IsFanRoutineArgSupportedWithFeatureFlagException) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
+                       IsFanRoutineArgSupportedWithFeatureFlagException) {
   auto exception = crosapi::TelemetryExtensionException::New();
   exception->debug_message = "TEST_MESSAGE";
   fake_service().SetIsRoutineArgumentSupportedResponse(
@@ -809,9 +752,8 @@ IN_PROC_BROWSER_TEST_F(
   )");
 }
 
-IN_PROC_BROWSER_TEST_F(
-    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
-    IsFanRoutineArgSupportedWithFeatureFlagSuccess) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
+                       IsFanRoutineArgSupportedWithFeatureFlagSuccess) {
   fake_service().SetIsRoutineArgumentSupportedResponse(
       crosapi::TelemetryExtensionSupportStatus::NewSupported(
           crosapi::TelemetryExtensionSupported::New()));
@@ -832,9 +774,8 @@ IN_PROC_BROWSER_TEST_F(
   )");
 }
 
-IN_PROC_BROWSER_TEST_F(
-    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
-    CreateFanRoutineWithFeatureFlagCompanionUiNotOpenError) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
+                       CreateFanRoutineWithFeatureFlagCompanionUiNotOpenError) {
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
       async function createFanRoutineFail() {
@@ -850,9 +791,8 @@ IN_PROC_BROWSER_TEST_F(
     )");
 }
 
-IN_PROC_BROWSER_TEST_F(
-    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
-    CreateFanRoutineWithFeatureFlagResetConnection) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
+                       CreateFanRoutineWithFeatureFlagResetConnection) {
   fake_service().SetOnCreateRoutineCalled(base::BindLambdaForTesting([this]() {
     auto* control = fake_service().GetCreatedRoutineControlForRoutineType(
         crosapi::TelemetryDiagnosticRoutineArgument::Tag::kFan);
@@ -894,9 +834,8 @@ IN_PROC_BROWSER_TEST_F(
     )");
 }
 
-IN_PROC_BROWSER_TEST_F(
-    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
-    CreateFanRoutineWithFeatureFlagSuccess) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
+                       CreateFanRoutineWithFeatureFlagSuccess) {
   fake_service().SetOnCreateRoutineCalled(base::BindLambdaForTesting([this]() {
     auto* control = fake_service().GetCreatedRoutineControlForRoutineType(
         crosapi::TelemetryDiagnosticRoutineArgument::Tag::kFan);

@@ -201,6 +201,7 @@ extension-event based interface in M119. The interface is described in
 | runDnsResolutionRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M108 |
 | runDnsResolverPresentRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M108 |
 | runEmmcLifetimeRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M110 |
+| runFanRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M121 |
 | runFingerprintAliveRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M110 |
 | runGatewayCanBePingedRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M108 |
 | runLanConnectivityRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M102 |
@@ -325,6 +326,24 @@ extension-event based interface in M119. The interface is described in
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
 
+### Enum VolumeButtonType
+| Property Name |
+------------ |
+| volume_up |
+| volume_down |
+
+### VolumeButtonRoutineFinishedInfo
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| uuid | string | UUID of the routine that entered this state  |
+| has_passed | boolean | Whether the routine finished successfully |
+
+### RunVolumeButtonRoutineArguments
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| button_type | VolumeButtonType | The volume button to be tested |
+| timeout_seconds | number | Length of time to listen to the volume button events. The value should be positive and less or equal to 600 seconds |
+
 ### CreateRoutineResponse
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
@@ -352,9 +371,11 @@ extension-event based interface in M119. The interface is described in
 | startRoutine | (params: StartRoutineRequest) => Promise<void\> | `os.diagnostics` | M119 |
 | cancelRoutine | (params: CancelRoutineRequest) => Promise<void\> | `os.diagnostics` | M119 |
 | createMemoryRoutine | (args: RunMemoryRoutineArguments) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M119 |
-| isMemoryRoutineArgumentSupported | (args: RunMemoryRoutineArguments) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M119 |
 | createFanRoutine | (args: RunFanRoutineArguments) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M121 |
+| createVolumeButtonRoutine | (args: RunVolumeButtonRoutineArguments) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M121 |
+| isMemoryRoutineArgumentSupported | (args: RunMemoryRoutineArguments) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M119 |
 | isFanRoutineArgumentSupported | (args: RunFanRoutineArguments) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M121 |
+| isVolumeButtonRoutineArgumentSupported | (args: RunVolumeButtonRoutineArguments) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M121 |
 
 ## Events
 
@@ -366,6 +387,7 @@ extension-event based interface in M119. The interface is described in
 | onRoutineException | function(ExceptionInfo) | `os.diagnostics` | M119 | Informs the extension that an exception occurred. The error passed in `ExceptionInfo` is non-recoverable |
 | onMemoryRoutineFinished | function(MemoryRoutineFinishedInfo) | `os.diagnostics` | M119 | Informs the extension that a memory routine finished |
 | onFanRoutineFinished | function(FanRoutineFinishedInfo) | `os.diagnostics` | M121 | Informs the extension that a fan routine finished |
+| onVolumeButtonRoutineFinished | function(VolumeButtonRoutineFinishedInfo) | `os.diagnostics` | M121 | Informs the extension that a volume button routine finished |
 
 # Events
 

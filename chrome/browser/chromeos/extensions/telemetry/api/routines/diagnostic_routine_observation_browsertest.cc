@@ -23,7 +23,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/event_router.h"
-#include "extensions/common/extension_features.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
@@ -272,59 +271,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutineObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(
     TelemetryExtensionDiagnosticRoutineObserverBrowserTest,
-    CannotObserveOnVolumeButtonRoutineFinishedWithoutFeatureFlag) {
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      function cannotObserveOnVolumeButtonRoutineFinished() {
-        chrome.test.assertThrows(() => {
-          chrome.os.diagnostics.onVolumeButtonRoutineFinished.addListener(
-            (event) => {
-              // unreachable
-          });
-        }, [],
-          'Cannot read properties of undefined (reading \'addListener\')'
-        );
-
-        chrome.test.succeed();
-      }
-    ]);
-  )");
-}
-
-IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutineObserverBrowserTest,
-                       CannotObserveOnFanRoutineFinishedWithoutFeatureFlag) {
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      function cannotObserveOnFanRoutineFinished() {
-        chrome.test.assertThrows(() => {
-          chrome.os.diagnostics.onFanRoutineFinished.addListener(
-            (event) => {
-              // unreachable
-          });
-        }, [],
-          'Cannot read properties of undefined (reading \'addListener\')'
-        );
-
-        chrome.test.succeed();
-      }
-    ]);
-  )");
-}
-
-class PendingApprovalTelemetryExtensionDiagnosticRoutineObserverBrowserTest
-    : public TelemetryExtensionDiagnosticRoutineObserverBrowserTest {
- public:
-  PendingApprovalTelemetryExtensionDiagnosticRoutineObserverBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kTelemetryExtensionPendingApprovalApi);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    PendingApprovalTelemetryExtensionDiagnosticRoutineObserverBrowserTest,
     CanObserveOnVolumeButtonRoutineFinished) {
   RegisterEventObserver(
       api::os_diagnostics::OnVolumeButtonRoutineFinished::kEventName,
@@ -369,9 +315,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(info.uuid, uuid_);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    PendingApprovalTelemetryExtensionDiagnosticRoutineObserverBrowserTest,
-    CanObserveOnFanRoutineFinished) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutineObserverBrowserTest,
+                       CanObserveOnFanRoutineFinished) {
   RegisterEventObserver(
       api::os_diagnostics::OnFanRoutineFinished::kEventName,
       base::BindLambdaForTesting([this] {
