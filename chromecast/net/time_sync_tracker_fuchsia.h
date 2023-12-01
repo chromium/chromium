@@ -1,11 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROMECAST_NET_TIME_SYNC_TRACKER_FUCHSIA_H_
 #define CHROMECAST_NET_TIME_SYNC_TRACKER_FUCHSIA_H_
 
-#include <lib/async/cpp/wait.h>
 #include <lib/zx/clock.h>
 
 #include "base/memory/scoped_refptr.h"
@@ -31,9 +30,12 @@ class TimeSyncTrackerFuchsia : public TimeSyncTracker {
   bool IsTimeSynced() const final;
 
  private:
+  void Poll();
+
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   zx::unowned_clock utc_clock_;
-  std::unique_ptr<async::WaitOnce> wait_for_utc_;
+
+  bool is_polling_ = false;
   bool is_time_synced_ = false;
 
   base::WeakPtr<TimeSyncTrackerFuchsia> weak_this_;
