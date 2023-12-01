@@ -366,6 +366,27 @@ void PinnedToolbarActionsContainer::UpdateActionState(actions::ActionId id,
   if (!pinned && !is_active) {
     RemovePoppedOutButtonFor(id);
   }
+
+  UpdateDividerFlexSpecification();
+  InvalidateLayout();
+}
+
+void PinnedToolbarActionsContainer::UpdateDividerFlexSpecification() {
+  bool force_divider_visibility = false;
+  for (auto* const pinned_button : pinned_buttons_) {
+    if (pinned_button->IsActive()) {
+      force_divider_visibility = true;
+      break;
+    }
+  }
+
+  if (force_divider_visibility) {
+    toolbar_divider_->SetProperty(views::kFlexBehaviorKey,
+                                  views::FlexSpecification());
+  } else {
+    toolbar_divider_->ClearProperty(views::kFlexBehaviorKey);
+  }
+  InvalidateLayout();
 }
 
 void PinnedToolbarActionsContainer::UpdateAllIcons() {
@@ -588,6 +609,9 @@ void PinnedToolbarActionsContainer::AddPinnedActionButtonFor(
     (*iter)->SetPinned(true);
     pinned_buttons_.push_back(*iter);
     popped_out_buttons_.erase(iter);
+    // Flex specification of the divider might need to be updated when an active
+    // button moves from popped out to pinned state.
+    UpdateDividerFlexSpecification();
   } else {
     auto button = std::make_unique<PinnedActionToolbarButton>(
         browser_view_->browser(), id, this);
@@ -611,6 +635,9 @@ void PinnedToolbarActionsContainer::RemovePinnedActionButtonFor(
     popped_out_buttons_.push_back(*iter);
   }
   pinned_buttons_.erase(iter);
+  // Flex specification of the divider needs to be updated when an active pinned
+  // button moves to popped out state.
+  UpdateDividerFlexSpecification();
   ReorderViews();
 }
 

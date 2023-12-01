@@ -84,6 +84,7 @@ class PinnedToolbarActionsContainer
   ~PinnedToolbarActionsContainer() override;
 
   void UpdateActionState(actions::ActionId id, bool is_active);
+  void UpdateDividerFlexSpecification();
 
   // ToolbarIconContainerView:
   void UpdateAllIcons() override;
