@@ -108,6 +108,16 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   // Registers `crosapi_subscriber_`.
   void RegisterCrosApiSubScriber(SubscriberCrosapi* subscriber);
 
+  // Sets the publisher for `app_type` is unavailable, to allow
+  // AppService to remove apps for `app_type`, and clean up launch requests,
+  // etc. This is used when the app platform is unavailable, e.g. GuestOS
+  // disabled, ARC disabled, etc.
+  //
+  // All apps for `app_type` will be deleted from AppRegistryCache and
+  // AppStorage. So this function should not be called for the normal shutdown
+  // process.
+  void SetPublisherUnavailable(AppType app_type);
+
   // Signals when AppServiceProxy becomes ready after reading the AppStorage
   // file, and init publishers.
   const base::OneShotEvent* OnReady() const {

@@ -312,6 +312,15 @@ void AppServiceProxyAsh::RegisterPublisher(AppType app_type,
   }
 }
 
+void AppServiceProxyAsh::SetPublisherUnavailable(AppType app_type) {
+  UnregisterPublisher(app_type);
+
+  // Remove all apps for `app_type` in AppRegistryCache and AppStorage. Related
+  // launch requests, icon spinners will be removed too in OnAppUpdate when apps
+  // are removed.
+  OnApps(std::vector<AppPtr>{}, app_type, /*should_notify_initialized=*/true);
+}
+
 void AppServiceProxyAsh::Uninstall(const std::string& app_id,
                                    UninstallSource uninstall_source,
                                    gfx::NativeWindow parent_window) {

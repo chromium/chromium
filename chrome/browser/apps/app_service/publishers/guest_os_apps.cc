@@ -36,10 +36,16 @@ void GuestOSApps::InitializeForTesting() {
 void GuestOSApps::Initialize() {
   DCHECK(profile_);
   if (!CouldBeAllowed()) {
+    // Set the publisher unavailable to remove apps saved in the AppStorage
+    // file, and related launch requests.
+    proxy()->SetPublisherUnavailable(AppType());
     return;
   }
   registry_ = guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_);
   if (!registry_) {
+    // Set the publisher unavailable to remove apps saved in the AppStorage
+    // file, and related launch requests.
+    proxy()->SetPublisherUnavailable(AppType());
     return;
   }
   registry_observation_.Observe(registry_);

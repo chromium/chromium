@@ -45,6 +45,7 @@
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_item_controller.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/types/display_constants.h"
 #endif
@@ -1582,6 +1583,70 @@ TEST_F(AppServiceProxyLaunchTest, LaunchAppWithParams) {
   EXPECT_EQ(LaunchSource::kFromManagementApi,
             launch_requests[kTestAppId][0]->params_->launch_source);
   EXPECT_TRUE(is_called);
+}
+
+// Verify the launch request can be removed if the publisher is unavailable.
+TEST_F(AppServiceProxyLaunchTest, SetPublisherUnavailable) {
+  constexpr char kTestAppId1[] = "webapp";
+  constexpr char kTestAppId2[] = "crostiniapp";
+  InstallApp(AppType::kWeb, kTestAppId1);
+  InstallApp(AppType::kCrostini, kTestAppId2);
+
+  proxy()->Launch(kTestAppId1, /*event_flags=*/0, LaunchSource::kFromTest);
+  std::vector<base::FilePath> file_paths{base::FilePath("/abc")};
+  proxy()->LaunchAppWithFiles(kTestAppId1, /*event_flags=*/2,
+                              LaunchSource::kFromChromeInternal, file_paths);
+  proxy()->LaunchAppWithIntent(
+      kTestAppId2, /*event_flags=*/3,
+      apps_util::MakeShareIntent(/*text=*/"text", /*title=*/"title"),
+      LaunchSource::kFromManagementApi,
+      std::make_unique<WindowInfo>(display::kDefaultDisplayId),
+      base::NullCallback());
+
+  // Verify the spinner is applied to the app icon.
+  EXPECT_TRUE(
+      shelf_controller()->GetShelfSpinnerController()->HasApp(kTestAppId1));
+  EXPECT_TRUE(
+      shelf_controller()->GetShelfSpinnerController()->HasApp(kTestAppId2));
+
+  // Set the publisher is unavailable for web apps.
+  proxy()->SetPublisherUnavailable(AppType::kWeb);
+
+  // Verify the spinner is closed for `kTestAppId1`, and `kTestAppId2` still has
+  // the spinner.
+  EXPECT_FALSE(
+      shelf_controller()->GetShelfSpinnerController()->HasApp(kTestAppId1));
+  EXPECT_TRUE(
+      shelf_controller()->GetShelfSpinnerController()->HasApp(kTestAppId2));
+
+  // Verify kTestAppId1 has been uninstalled.
+  proxy()->AppRegistryCache().ForOneApp(
+      kTestAppId1, [&](const apps::AppUpdate& update) {
+        EXPECT_FALSE(apps_util::IsInstalled(update.Readiness()));
+      });
+  proxy()->AppRegistryCache().ForOneApp(
+      kTestAppId2, [&](const apps::AppUpdate& update) {
+        EXPECT_TRUE(apps_util::IsInstalled(update.Readiness()));
+      });
+
+  // Register the ARC publisher.
+  FakePublisherForProxyTest pub1(proxy(), AppType::kCrostini,
+                                 std::vector<std::string>{});
+  auto& launch_requests1 = pub1.launch_requests();
+
+  // Verify `kTestAppId2` still has the spinner.
+  EXPECT_FALSE(
+      shelf_controller()->GetShelfSpinnerController()->HasApp(kTestAppId2));
+  EXPECT_TRUE(base::Contains(launch_requests1, kTestAppId2));
+
+  // Register the publisher for the web app.
+  FakePublisherForProxyTest pub2(proxy(), AppType::kWeb,
+                                 std::vector<std::string>{kTestAppId1});
+  auto& launch_requests2 = pub2.launch_requests();
+
+  // Verify the Launch request has been removed, and the launch function is not
+  // called.
+  EXPECT_FALSE(base::Contains(launch_requests2, kTestAppId1));
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
