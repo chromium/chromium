@@ -139,6 +139,10 @@ class ASH_EXPORT FeatureTile : public views::Button {
   void AddLayerToRegion(ui::Layer* layer, views::LayerRegion region) override;
   void RemoveLayerFromRegions(ui::Layer* layer) override;
 
+  base::WeakPtr<FeatureTile> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   bool is_icon_clickable() const { return is_icon_clickable_; }
   views::ImageButton* icon_button() { return icon_button_; }
   views::Label* label() { return label_; }
