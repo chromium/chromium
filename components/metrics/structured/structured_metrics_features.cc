@@ -4,6 +4,8 @@
 
 #include "components/metrics/structured/structured_metrics_features.h"
 
+#include "base/feature_list.h"
+
 namespace metrics::structured {
 
 BASE_FEATURE(kEventSequenceLogging,
@@ -26,6 +28,10 @@ BASE_FEATURE(kNearbyShareMetrics,
 BASE_FEATURE(kEnabledStructuredMetricsService,
              "EnableStructuredMetricsService",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPhoneHubStructuredMetrics,
+             "PhoneHubStructuredMetrics",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<int> kLimitFilesPerScanParam{
     &features::kStructuredMetrics, "file_limit", 50};

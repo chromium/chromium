@@ -34,6 +34,9 @@ BASE_DECLARE_FEATURE(kNearbyShareMetrics);
 // provider.
 BASE_DECLARE_FEATURE(kEnabledStructuredMetricsService);
 
+// Controls whether Phone Hub Structured Metrics is enabled or not.
+BASE_DECLARE_FEATURE(kPhoneHubStructuredMetrics);
+
 // Controls the minimum number of logs to be stored.
 extern const base::FeatureParam<int> kMinLogQueueCount;
 
