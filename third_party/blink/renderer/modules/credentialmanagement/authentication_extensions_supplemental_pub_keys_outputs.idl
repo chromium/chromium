@@ -1,0 +1,8 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://w3c.github.io/webauthn/#sctn-supplemental-public-keys-extension
+dictionary AuthenticationExtensionsSupplementalPubKeysOutputs {
+  required sequence<ArrayBuffer> signatures;
+};

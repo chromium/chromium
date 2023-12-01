@@ -20,9 +20,8 @@ dictionary AuthenticationExtensionsClientOutputsJSON {
   boolean credBlob;
   Base64URLString getCredBlob;
 
-  // Device-bound public-key support.
-  // https://github.com/w3c/webauthn/pull/1663
-  [RuntimeEnabled=WebAuthenticationDevicePublicKey] object devicePubKey;
+  // https://w3c.github.io/webauthn/#sctn-supplemental-public-keys-extension
+  [RuntimeEnabled=WebAuthenticationSupplementalPubKeys] object supplementalPubKeys;
 
   // https://w3c.github.io/webauthn/#prf-extension
   [RuntimeEnabled=WebAuthenticationPRF] object prf;

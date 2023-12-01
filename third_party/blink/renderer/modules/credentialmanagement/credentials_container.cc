@@ -20,14 +20,14 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_outputs.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_device_public_key_inputs.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_device_public_key_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_payment_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_values.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_supplemental_pub_keys_inputs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_supplemental_pub_keys_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authenticator_selection_criteria.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_properties_output.h"
@@ -761,14 +761,10 @@ void OnMakePublicKeyCredentialComplete(
     large_blob_outputs->setSupported(credential->supports_large_blob);
     extension_outputs->setLargeBlob(large_blob_outputs);
   }
-  if (credential->device_public_key) {
-    AuthenticationExtensionsDevicePublicKeyOutputs* device_public_key_outputs =
-        AuthenticationExtensionsDevicePublicKeyOutputs::Create();
-    device_public_key_outputs->setAuthenticatorOutput(VectorToDOMArrayBuffer(
-        std::move(credential->device_public_key->authenticator_output)));
-    device_public_key_outputs->setSignature(VectorToDOMArrayBuffer(
-        std::move(credential->device_public_key->signature)));
-    extension_outputs->setDevicePubKey(device_public_key_outputs);
+  if (credential->supplemental_pub_keys) {
+    extension_outputs->setSupplementalPubKeys(
+        ConvertTo<AuthenticationExtensionsSupplementalPubKeysOutputs*>(
+            credential->supplemental_pub_keys));
   }
   if (credential->echo_prf) {
     auto* prf_outputs = AuthenticationExtensionsPRFOutputs::Create();
@@ -931,16 +927,6 @@ void OnGetAssertionComplete(
     if (extensions->get_cred_blob) {
       extension_outputs->setGetCredBlob(
           VectorToDOMArrayBuffer(std::move(*extensions->get_cred_blob)));
-    }
-    if (extensions->device_public_key) {
-      AuthenticationExtensionsDevicePublicKeyOutputs*
-          device_public_key_outputs =
-              AuthenticationExtensionsDevicePublicKeyOutputs::Create();
-      device_public_key_outputs->setAuthenticatorOutput(VectorToDOMArrayBuffer(
-          std::move(extensions->device_public_key->authenticator_output)));
-      device_public_key_outputs->setSignature(VectorToDOMArrayBuffer(
-          std::move(extensions->device_public_key->signature)));
-      extension_outputs->setDevicePubKey(device_public_key_outputs);
     }
     if (extensions->echo_prf) {
       auto* prf_outputs = AuthenticationExtensionsPRFOutputs::Create();

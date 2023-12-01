@@ -4083,12 +4083,6 @@
       status: "test",
       base_feature: "none",
     },
-    // https://github.com/w3c/webauthn/pull/1663
-    {
-      name: "WebAuthenticationDevicePublicKey",
-      status: "experimental",
-      base_feature: "none",
-    },
     // https://w3c.github.io/webauthn/#dom-publickeycredential-tojson
     // https://w3c.github.io/webauthn/#sctn-parseCreationOptionsFromJSON
     // https://w3c.github.io/webauthn/#sctn-parseRequestOptionsFromJSON
@@ -4111,6 +4105,11 @@
       name: "WebAuthenticationRemoteDesktopSupport",
       base_feature: "none",
       public: true,
+    },
+    // https://w3c.github.io/webauthn/#sctn-supplemental-public-keys-extension
+    {
+      name: "WebAuthenticationSupplementalPubKeys",
+      status: "experimental",
     },
     // WebBluetooth is enabled by default on Android, ChromeOS, macOS and
     // Windows.

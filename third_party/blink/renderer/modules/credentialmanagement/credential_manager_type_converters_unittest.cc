@@ -12,13 +12,13 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_outputs.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_device_public_key_inputs.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_device_public_key_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_values.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_supplemental_pub_keys_inputs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_supplemental_pub_keys_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cable_authentication_data.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options_context.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_request_options.h"
@@ -183,23 +183,21 @@ TEST(CredentialManagerTypeConvertersTest,
 }
 
 TEST(CredentialManagerTypeConvertersTest,
-     AuthenticationExtensionsClientOutputs_devicePublicKey) {
+     AuthenticationExtensionsClientOutputs_supplementalPubKeys) {
   auto mojo_type =
       blink::mojom::blink::AuthenticationExtensionsClientOutputs::New();
-  mojo_type->device_public_key =
-      blink::mojom::blink::DevicePublicKeyResponse::New(
-          /*authenticator_output=*/Vector<uint8_t>{1, 2, 3},
-          /*signature=*/Vector<uint8_t>{4, 5, 6});
+  mojo_type->supplemental_pub_keys =
+      blink::mojom::blink::SupplementalPubKeysResponse::New(
+          /*signatures=*/Vector<Vector<uint8_t>>{{1, 2, 3}, {4, 5, 6}});
 
   auto* blink_type =
       ConvertTo<blink::AuthenticationExtensionsClientOutputs*>(mojo_type);
 
-  EXPECT_TRUE(blink_type->hasDevicePubKey());
-  EXPECT_TRUE(blink_type->devicePubKey()->hasAuthenticatorOutput());
-  EXPECT_THAT(blink_type->devicePubKey()->authenticatorOutput(),
+  EXPECT_TRUE(blink_type->hasSupplementalPubKeys());
+  ASSERT_EQ(blink_type->supplementalPubKeys()->signatures().size(), 2u);
+  EXPECT_THAT(blink_type->supplementalPubKeys()->signatures()[0],
               DOMArrayBufferEqualTo(Vector<uint8_t>{1, 2, 3}));
-  EXPECT_TRUE(blink_type->devicePubKey()->hasSignature());
-  EXPECT_THAT(blink_type->devicePubKey()->signature(),
+  EXPECT_THAT(blink_type->supplementalPubKeys()->signatures()[1],
               DOMArrayBufferEqualTo(Vector<uint8_t>{4, 5, 6}));
 }
 
@@ -375,27 +373,32 @@ TEST(CredentialManagerTypeConvertersTest,
           &*expected->origin));
 }
 
-const char* attestationFormat = "indirect";
-
 TEST(CredentialManagerTypeConvertersTest,
-     AuthenticationExtensionsClientInputsTest_devicePublicKey) {
+     AuthenticationExtensionsClientInputsTest_supplementalPubKeys) {
   blink::AuthenticationExtensionsClientInputs* blink_type =
       blink::AuthenticationExtensionsClientInputs::Create();
-  blink::AuthenticationExtensionsDevicePublicKeyInputs* devicePublicKeyRequest =
-      blink::AuthenticationExtensionsDevicePublicKeyInputs::Create();
-  devicePublicKeyRequest->setAttestation("indirect");
-  devicePublicKeyRequest->setAttestationFormats(
-      Vector({String::FromUTF8(attestationFormat)}));
-  blink_type->setDevicePubKey(devicePublicKeyRequest);
+  blink::AuthenticationExtensionsSupplementalPubKeysInputs*
+      supplemental_pub_keys =
+          blink::AuthenticationExtensionsSupplementalPubKeysInputs::Create();
+
+  const char attestation_format[] = "format";
+  supplemental_pub_keys->setAttestation("indirect");
+  supplemental_pub_keys->setAttestationFormats(
+      Vector({String::FromUTF8(attestation_format)}));
+  supplemental_pub_keys->setScopes(
+      Vector({String::FromUTF8("device"), String::FromUTF8("provider")}));
+  blink_type->setSupplementalPubKeys(supplemental_pub_keys);
 
   blink::mojom::blink::AuthenticationExtensionsClientInputsPtr mojo_type =
       ConvertTo<blink::mojom::blink::AuthenticationExtensionsClientInputsPtr>(
           *blink_type);
 
-  auto expected = blink::mojom::blink::DevicePublicKeyRequest::New(
+  auto expected = blink::mojom::blink::SupplementalPubKeysRequest::New(
+      /*device_scope_requested=*/true,
+      /*provider_scope_requested=*/true,
       blink::mojom::blink::AttestationConveyancePreference::INDIRECT,
-      Vector<WTF::String>({WTF::String::FromUTF8(attestationFormat)}));
-  ASSERT_EQ(*(mojo_type->device_public_key), *expected);
+      Vector<WTF::String>({WTF::String::FromUTF8(attestation_format)}));
+  ASSERT_EQ(*(mojo_type->supplemental_pub_keys), *expected);
 }
 
 TEST(CredentialManagerTypeConvertersTest,
