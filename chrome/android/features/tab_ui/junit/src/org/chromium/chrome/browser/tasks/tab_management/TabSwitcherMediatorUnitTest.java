@@ -50,6 +50,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.UmaRecorderHolder;
+import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -109,8 +110,8 @@ public class TabSwitcherMediatorUnitTest {
 
     private final OneshotSupplierImpl<IncognitoReauthController>
             mIncognitoReauthControllerSupplier = new OneshotSupplierImpl<>();
-    private final OneshotSupplierImpl<TabGridDialogMediator.DialogController>
-            mTabGridDialogControllerSupplier = new OneshotSupplierImpl<>();
+    private LazyOneshotSupplier<TabGridDialogMediator.DialogController>
+            mTabGridDialogControllerSupplier;
 
     @Mock TabSwitcherMediator.ResetHandler mResetHandler;
     @Mock Runnable mTabSwitcherVisibilityDelegate;
@@ -219,7 +220,8 @@ public class TabSwitcherMediatorUnitTest {
                 .getHandleBackPressChangedSupplier();
         when(mIncognitoReauthController.isIncognitoReauthPending()).thenReturn(false);
         mIncognitoReauthControllerSupplier.set(mIncognitoReauthController);
-        mTabGridDialogControllerSupplier.set(mTabGridDialogController);
+        mTabGridDialogControllerSupplier = LazyOneshotSupplier.fromValue(mTabGridDialogController);
+        mTabGridDialogControllerSupplier.get();
 
         mModel = new PropertyModel(TabListContainerProperties.ALL_KEYS);
         mModel.addObserver(mPropertyObserver);
@@ -349,37 +351,6 @@ public class TabSwitcherMediatorUnitTest {
     }
 
     @Test
-    public void beforeHideTabSwitcherView_NullController() {
-        reset(mTabGridDialogController);
-        mMediator =
-                new TabSwitcherMediator(
-                        mContext,
-                        mResetHandler,
-                        mModel,
-                        mTabModelSelector,
-                        mBrowserControlsStateProvider,
-                        mCompositorViewHolder,
-                        null,
-                        mMessageItemsController,
-                        mPriceWelcomeMessageController,
-                        mMultiWindowModeStateDispatcher,
-                        mHandler,
-                        TabListCoordinator.TabListMode.GRID,
-                        mIncognitoReauthControllerSupplier,
-                        null,
-                        null,
-                        mTabSwitcherVisibilityDelegate,
-                        null);
-        mMediator.initWithNative(null);
-        mMediator.setTabListEditorController(mEditorController);
-        mMediator.addTabSwitcherViewObserver(mTabSwitcherViewObserver);
-        mMediator.setOnTabSelectingListener(mOnTabSelectingListener);
-
-        mMediator.prepareHideTabSwitcherView();
-        verifyNoMoreInteractions(mTabGridDialogController);
-    }
-
-    @Test
     public void beforeHideTabSwitcherView_WithController() {
         mMediator.prepareHideTabSwitcherView();
         verify(mTabGridDialogController).hideDialog(eq(false));
@@ -426,7 +397,7 @@ public class TabSwitcherMediatorUnitTest {
     }
 
     @Test
-    public void resetsAfterNewTabModelSelected_DialogEnabled() {
+    public void resetsAfterNewTabModelSelected() {
         initAndAssertAllProperties();
         mModel.set(TabListContainerProperties.IS_VISIBLE, true);
 
@@ -434,46 +405,6 @@ public class TabSwitcherMediatorUnitTest {
         mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(mTabModel, null);
         verify(mResetHandler).resetWithTabList(eq(mTabModelFilter), eq(false), eq(false));
         verify(mTabGridDialogController).hideDialog(eq(false));
-        assertThat(mModel.get(TabListContainerProperties.IS_INCOGNITO), equalTo(true));
-
-        // Switching TabModels by itself shouldn't cause visibility changes.
-        assertThat(mModel.get(TabListContainerProperties.IS_VISIBLE), equalTo(true));
-    }
-
-    @Test
-    public void resetsAfterNewTabModelSelected_DialogNotEnabled() {
-        reset(mTabGridDialogController);
-        mMediator =
-                new TabSwitcherMediator(
-                        mContext,
-                        mResetHandler,
-                        mModel,
-                        mTabModelSelector,
-                        mBrowserControlsStateProvider,
-                        mCompositorViewHolder,
-                        null,
-                        mMessageItemsController,
-                        mPriceWelcomeMessageController,
-                        mMultiWindowModeStateDispatcher,
-                        mHandler,
-                        TabListCoordinator.TabListMode.GRID,
-                        mIncognitoReauthControllerSupplier,
-                        null,
-                        null,
-                        mTabSwitcherVisibilityDelegate,
-                        null);
-        mMediator.initWithNative(null);
-        mMediator.setTabListEditorController(mEditorController);
-        mMediator.addTabSwitcherViewObserver(mTabSwitcherViewObserver);
-        mMediator.setOnTabSelectingListener(mOnTabSelectingListener);
-
-        initAndAssertAllProperties();
-        mModel.set(TabListContainerProperties.IS_VISIBLE, true);
-
-        doReturn(true).when(mTabModelFilter).isIncognito();
-        mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(mTabModel, null);
-        verify(mResetHandler).resetWithTabList(eq(mTabModelFilter), eq(false), eq(false));
-        verify(mTabGridDialogController, never()).hideDialog(eq(false));
         assertThat(mModel.get(TabListContainerProperties.IS_INCOGNITO), equalTo(true));
 
         // Switching TabModels by itself shouldn't cause visibility changes.

@@ -34,6 +34,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -118,6 +119,8 @@ class TabSwitcherMediator
     private final ObservableSupplierImpl<Boolean> mIsDialogVisibleSupplier =
             new ObservableSupplierImpl<>();
     private final Callback<Boolean> mNotifyBackPressedCallback = this::notifyBackPressStateChanged;
+    private final @NonNull LazyOneshotSupplier<TabGridDialogMediator.DialogController>
+            mTabGridDialogControllerSupplier;
     private Runnable mOnTabSwitcherShownCallback;
 
     /**
@@ -151,8 +154,6 @@ class TabSwitcherMediator
             };
 
     private CallbackController mCallbackController;
-    private OneshotSupplier<TabGridDialogMediator.DialogController>
-            mTabGridDialogControllerSupplier;
     private TabListEditorCoordinator.TabListEditorController mTabListEditorController;
     private TabSwitcher.OnTabSelectingListener mOnTabSelectingListener;
     private PriceMessageService mPriceMessageService;
@@ -305,8 +306,8 @@ class TabSwitcherMediator
             @TabListMode int mode,
             @Nullable OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
             @Nullable BackPressManager backPressManager,
-            @Nullable
-                    OneshotSupplier<TabGridDialogMediator.DialogController>
+            @NonNull
+                    LazyOneshotSupplier<TabGridDialogMediator.DialogController>
                             tabGridDialogControllerSupplier,
             Runnable onTabSwitcherShownCallback,
             @Nullable OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier) {
@@ -323,6 +324,14 @@ class TabSwitcherMediator
         mIsStartSurfaceRefactorEnabled = ReturnToChromeUtil.isStartSurfaceRefactorEnabled(context);
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
         mOnTabSwitcherShownCallback = onTabSwitcherShownCallback;
+        mTabGridDialogControllerSupplier = tabGridDialogControllerSupplier;
+        // Any observer events get posted so it is safe to set up early.
+        mTabGridDialogControllerSupplier.onAvailable(
+                (tabGridDialogController) -> {
+                    tabGridDialogController
+                            .getHandleBackPressChangedSupplier()
+                            .addObserver(mNotifyBackPressedCallback);
+                });
         if (layoutStateProviderSupplier != null) {
             if (layoutStateProviderSupplier.hasValue()) {
                 onLayoutStateProviderAvailable(layoutStateProviderSupplier.get());
@@ -357,8 +366,7 @@ class TabSwitcherMediator
                                         .getCurrentTabModelFilter();
                         mContainerViewModel.set(IS_INCOGNITO, currentTabModelFilter.isIncognito());
                         notifyBackPressStateChangedInternal();
-                        if (mTabGridDialogControllerSupplier != null
-                                && mTabGridDialogControllerSupplier.hasValue()) {
+                        if (mTabGridDialogControllerSupplier.hasValue()) {
                             mTabGridDialogControllerSupplier.get().hideDialog(false);
                         }
                         if (!mContainerViewModel.get(IS_VISIBLE)) return;
@@ -588,16 +596,6 @@ class TabSwitcherMediator
                 };
         mMultiWindowModeStateDispatcher.addObserver(mMultiWindowModeObserver);
         notifyBackPressStateChangedInternal();
-
-        mTabGridDialogControllerSupplier = tabGridDialogControllerSupplier;
-        if (mTabGridDialogControllerSupplier != null) {
-            mTabGridDialogControllerSupplier.onAvailable(
-                    (tabGridDialogController) -> {
-                        tabGridDialogController
-                                .getHandleBackPressChangedSupplier()
-                                .addObserver(mNotifyBackPressedCallback);
-                    });
-        }
     }
 
     /** Called after native initialization is completed. */
@@ -775,8 +773,7 @@ class TabSwitcherMediator
             mContainerViewModel.set(ANIMATE_VISIBILITY_CHANGES, true);
         }
 
-        if (mTabGridDialogControllerSupplier != null
-                && mTabGridDialogControllerSupplier.hasValue()) {
+        if (mTabGridDialogControllerSupplier.hasValue()) {
             // Don't wait until didSelectTab(), which is after the GTS animation.
             // We need to hide the dialog immediately.
             mTabGridDialogControllerSupplier.get().hideDialog(false);
@@ -928,8 +925,7 @@ class TabSwitcherMediator
             return false;
         }
 
-        if (mTabGridDialogControllerSupplier != null
-                && mTabGridDialogControllerSupplier.hasValue()
+        if (mTabGridDialogControllerSupplier.hasValue()
                 && mTabGridDialogControllerSupplier.get().handleBackPressed()) {
             return true;
         }
@@ -970,8 +966,7 @@ class TabSwitcherMediator
             return true;
         }
 
-        if (mTabGridDialogControllerSupplier != null
-                && mTabGridDialogControllerSupplier.hasValue()
+        if (mTabGridDialogControllerSupplier.hasValue()
                 && mTabGridDialogControllerSupplier.get().isVisible()) {
             return true;
         }
@@ -1029,8 +1024,7 @@ class TabSwitcherMediator
         assert mCustomView == null : "Only one client at a time is supported to add a custom view.";
 
         // Hide any tab grid dialog before we add the custom view.
-        if (mTabGridDialogControllerSupplier != null
-                && mTabGridDialogControllerSupplier.hasValue()) {
+        if (mTabGridDialogControllerSupplier.hasValue()) {
             mTabGridDialogControllerSupplier.get().hideDialog(false);
         }
 
@@ -1108,8 +1102,7 @@ class TabSwitcherMediator
                     .removeObserver(mNotifyBackPressedCallback);
         }
 
-        if (mTabGridDialogControllerSupplier != null
-                && mTabGridDialogControllerSupplier.hasValue()) {
+        if (mTabGridDialogControllerSupplier.hasValue()) {
             mTabGridDialogControllerSupplier
                     .get()
                     .getHandleBackPressChangedSupplier()
@@ -1166,7 +1159,6 @@ class TabSwitcherMediator
     public TabListMediator.TabActionListener openTabGridDialog(Tab tab) {
         if (!ableToOpenDialog(tab)) return null;
         assert getRelatedTabs(tab.getId()).size() != 1;
-        assert mTabGridDialogControllerSupplier != null;
         return tabId -> {
             List<Tab> relatedTabs = getRelatedTabs(tabId);
             if (relatedTabs.size() == 0) {
