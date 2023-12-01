@@ -4,6 +4,7 @@
 
 #include "chrome/browser/component_updater/registration.h"
 
+#include "afp_blocked_domain_list_component_installer.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -39,6 +40,7 @@
 #include "chrome/browser/component_updater/tpcd_metadata_component_installer.h"
 #include "chrome/browser/component_updater/trust_token_key_commitments_component_installer.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/installer_policies/autofill_states_component_installer.h"
@@ -140,6 +142,10 @@ void RegisterComponentsForUpdate() {
   RegisterFirstPartySetsComponent(cus);
   RegisterMaskedDomainListComponent(cus);
   RegisterPrivacySandboxAttestationsComponent(cus);
+  if (base::FeatureList::IsEnabled(
+          features::kEnableNetworkServiceResourceBlockList)) {
+    RegisterAntiFingerprintingBlockedDomainListComponent(cus);
+  }
 
   base::FilePath path;
   if (base::PathService::Get(chrome::DIR_USER_DATA, &path)) {
@@ -147,6 +153,13 @@ void RegisterComponentsForUpdate() {
 
     // Clean up any remaining desktop sharing hub state.
     component_updater::DeleteDesktopSharingHub(path);
+
+    // Clean up any existing versions of the blocklist if the feature is
+    // disabled.
+    if (!base::FeatureList::IsEnabled(
+            features::kEnableNetworkServiceResourceBlockList)) {
+      DeleteAntiFingerprintingBlockedDomainListComponent(path);
+    }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     if (base::SysInfo::IsRunningOnChromeOS()) {
