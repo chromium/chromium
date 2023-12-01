@@ -236,8 +236,8 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
           /*slow_check_notifier=*/nullptr,
           /*proceed=*/callback_info.should_proceed,
           /*show_interstitial=*/
-          callback_info.should_show_interstitial, callback_info.performed_check,
-          /*did_check_url_real_time_allowlist=*/false);
+          callback_info.should_show_interstitial,
+          callback_info.performed_check);
     }
   }
 
@@ -249,8 +249,7 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
              /*proceed=*/callback_infos_[index].should_proceed,
              /*show_interstitial=*/
              callback_infos_[index].should_show_interstitial,
-             callback_infos_[index].performed_check,
-             /*did_check_url_real_time_allowlist=*/false);
+             callback_infos_[index].performed_check);
   }
 
   // Informs how the callback in |CheckUrl| should be handled. The info applies

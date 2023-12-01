@@ -139,11 +139,10 @@ void UrlCheckerOnSB::OnCheckUrlResult(
     NativeUrlCheckNotifier* slow_check_notifier,
     bool proceed,
     bool showed_interstitial,
-    SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
-    bool did_check_url_real_time_allowlist) {
+    SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
   if (!slow_check_notifier) {
     OnCompleteCheck(false /* slow_check */, proceed, showed_interstitial,
-                    performed_check, did_check_url_real_time_allowlist);
+                    performed_check);
     return;
   }
 
@@ -165,16 +164,14 @@ void UrlCheckerOnSB::OnCompleteCheck(
     bool slow_check,
     bool proceed,
     bool showed_interstitial,
-    SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
-    bool did_check_url_real_time_allowlist) {
+    SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
   if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
     complete_callback_.Run(slow_check, proceed, showed_interstitial,
-                           performed_check, did_check_url_real_time_allowlist);
+                           performed_check);
   } else {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(complete_callback_, slow_check, proceed,
-                                  showed_interstitial, performed_check,
-                                  did_check_url_real_time_allowlist));
+                                  showed_interstitial, performed_check));
   }
 }
 

@@ -69,8 +69,8 @@ void SafeBrowsingQueryManager::StartQuery(const Query& query) {
                                               client_);
   base::OnceCallback<void(
       bool proceed, bool show_error_page,
-      safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
-      bool did_check_url_real_time_allowlist)>
+      safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
+          performed_check)>
       callback = base::BindOnce(&SafeBrowsingQueryManager::UrlCheckFinished,
                                 weak_factory_.GetWeakPtr(), query);
   if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
@@ -110,8 +110,7 @@ void SafeBrowsingQueryManager::UrlCheckFinished(
     const Query query,
     bool proceed,
     bool show_error_page,
-    safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
-    bool did_check_url_real_time_allowlist) {
+    safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
   auto query_result_pair = results_.find(query);
   DCHECK(query_result_pair != results_.end());
 
@@ -188,8 +187,7 @@ void SafeBrowsingQueryManager::UrlCheckerClient::CheckUrl(
     base::OnceCallback<void(bool proceed,
                             bool show_error_page,
                             safe_browsing::SafeBrowsingUrlCheckerImpl::
-                                PerformedCheck performed_check,
-                            bool did_check_url_real_time_allowlist)> callback) {
+                                PerformedCheck performed_check)> callback) {
   DCHECK_CURRENTLY_ON(
       base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
           ? web::WebThread::UI
@@ -208,8 +206,7 @@ void SafeBrowsingQueryManager::UrlCheckerClient::OnCheckUrlResult(
         slow_check_notifier,
     bool proceed,
     bool showed_interstitial,
-    safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
-    bool did_check_url_real_time_allowlist) {
+    safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
   DCHECK_CURRENTLY_ON(
       base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
           ? web::WebThread::UI
@@ -221,16 +218,14 @@ void SafeBrowsingQueryManager::UrlCheckerClient::OnCheckUrlResult(
     return;
   }
 
-  OnCheckComplete(url_checker, proceed, showed_interstitial, performed_check,
-                  did_check_url_real_time_allowlist);
+  OnCheckComplete(url_checker, proceed, showed_interstitial, performed_check);
 }
 
 void SafeBrowsingQueryManager::UrlCheckerClient::OnCheckComplete(
     safe_browsing::SafeBrowsingUrlCheckerImpl* url_checker,
     bool proceed,
     bool showed_interstitial,
-    safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
-    bool did_check_url_real_time_allowlist) {
+    safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
   DCHECK_CURRENTLY_ON(
       base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
           ? web::WebThread::UI
@@ -242,9 +237,8 @@ void SafeBrowsingQueryManager::UrlCheckerClient::OnCheckComplete(
   // kSafeBrowsingOnUIThread launches, if all the callers are ok with the
   // callback being run synchronously sometimes.
   web::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(it->second), proceed, showed_interstitial,
-                     performed_check, did_check_url_real_time_allowlist));
+      FROM_HERE, base::BindOnce(std::move(it->second), proceed,
+                                showed_interstitial, performed_check));
 
   active_url_checkers_.erase(it);
 }

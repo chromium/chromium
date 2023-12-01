@@ -276,24 +276,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="SafeBrowsing.BrowserThrottle.TotalDelay2.EnterpriseFullUrlLookup{AllowlistCheckStatus}"
-    units="ms" expires_after="2024-01-04">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logs the latency between when the browser URL loader was deferred by Safe
-    Browsing check and when the check is completed, for enterprise real time URL
-    check request with {AllowlistCheckStatus} during the check. This metric is
-    different from SafeBrowsing.BrowserThrottle.TotalDelay as it logs for each
-    request, recording zero delay when the request is not deferred.
-  </summary>
-  <token key="AllowlistCheckStatus">
-    <variant name=".AllowlistBypassed" summary="allowlist bypassed"/>
-    <variant name=".AllowlistChecked" summary="allowlist checked"/>
-  </token>
-</histogram>
-
 <histogram name="SafeBrowsing.BrowserThrottle.TotalDelay2{UserCategory}"
     units="ms" expires_after="2024-05-12">
   <owner>xinghuilu@chromium.org</owner>
@@ -1842,7 +1824,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.PageLoadToken.PasswordProtectionHasToken"
-    enum="BooleanExists" expires_after="2023-12-24">
+    enum="BooleanExists" expires_after="2024-11-30">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1916,7 +1898,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.Pref.Daily.SafeBrowsingModeManaged"
-    enum="BooleanManagedPref" expires_after="2024-01-04">
+    enum="BooleanManagedPref" expires_after="2024-11-30">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2091,7 +2073,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.CacheManager.CleanUpTime" units="ms"
-    expires_after="2023-12-24">
+    expires_after="2024-11-30">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

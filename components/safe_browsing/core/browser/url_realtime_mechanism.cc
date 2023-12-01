@@ -98,8 +98,7 @@ UrlRealTimeMechanism::StartCheckInternal() {
   }
 
   return StartCheckResult(
-      /*is_safe_synchronously=*/false,
-      /*did_check_url_real_time_allowlist=*/check_allowlist);
+      /*is_safe_synchronously=*/false);
 }
 
 void UrlRealTimeMechanism::OnCheckUrlForHighConfidenceAllowlist(

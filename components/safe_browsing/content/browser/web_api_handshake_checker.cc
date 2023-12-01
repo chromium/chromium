@@ -99,8 +99,7 @@ class WebApiHandshakeChecker::CheckerOnSB
       SafeBrowsingUrlCheckerImpl::NativeUrlCheckNotifier* slow_check_notifier,
       bool proceed,
       bool showed_interstitial,
-      SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
-      bool did_check_url_real_time_allowlist) {
+      SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
     DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)
                             ? content::BrowserThread::UI
                             : content::BrowserThread::IO);
@@ -118,8 +117,7 @@ class WebApiHandshakeChecker::CheckerOnSB
       bool slow_check,
       bool proceed,
       bool showed_interstitial,
-      SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
-      bool did_check_url_real_time_allowlist) {
+      SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
     OnCompleteCheckInternal(proceed);
   }
 

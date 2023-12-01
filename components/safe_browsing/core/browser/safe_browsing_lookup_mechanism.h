@@ -21,10 +21,8 @@ namespace safe_browsing {
 class SafeBrowsingLookupMechanism {
  public:
   struct StartCheckResult {
-    StartCheckResult(bool is_safe_synchronously,
-                     bool did_check_url_real_time_allowlist);
+    explicit StartCheckResult(bool is_safe_synchronously);
     bool is_safe_synchronously;
-    bool did_check_url_real_time_allowlist;
   };
 
   // This is used by individual lookup mechanisms as the input for the

@@ -36,20 +36,11 @@ constexpr char kFromCacheUmaSuffix[] = ".FromCache";
 constexpr char kFromNetworkUmaSuffix[] = ".FromNetwork";
 
 void LogTotalDelay2Metrics(const std::string& url_check_type,
-                           bool did_check_url_real_time_allowlist,
                            base::TimeDelta total_delay) {
   base::UmaHistogramTimes(
       base::StrCat(
           {"SafeBrowsing.BrowserThrottle.TotalDelay2", url_check_type}),
       total_delay);
-  if (url_check_type == base::StrCat({".Enterprise", kFullURLLookup})) {
-    base::UmaHistogramTimes(
-        base::StrCat(
-            {"SafeBrowsing.BrowserThrottle.TotalDelay2.EnterpriseFullUrlLookup",
-             did_check_url_real_time_allowlist ? ".AllowlistChecked"
-                                               : ".AllowlistBypassed"}),
-        total_delay);
-  }
 }
 
 void LogTotalDelay2MetricsWithResponseType(bool is_response_from_cache,
@@ -434,8 +425,7 @@ void BrowserURLLoaderThrottle::OnCompleteSyncCheck(
     bool slow_check,
     bool proceed,
     bool showed_interstitial,
-    SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
-    bool did_check_url_real_time_allowlist) {
+    SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!blocked_);
   DCHECK(url_real_time_lookup_enabled_ ||
@@ -460,7 +450,7 @@ void BrowserURLLoaderThrottle::OnCompleteSyncCheck(
                                             total_delay_);
     }
     LogTotalDelay2Metrics(GetUrlCheckTypeForLogging(performed_check),
-                          did_check_url_real_time_allowlist, total_delay_);
+                          total_delay_);
   }
 
   if (proceed) {

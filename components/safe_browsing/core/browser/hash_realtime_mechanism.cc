@@ -45,8 +45,7 @@ HashRealTimeMechanism::StartCheckInternal() {
           weak_factory_.GetWeakPtr()));
 
   return StartCheckResult(
-      /*is_safe_synchronously=*/false,
-      /*did_check_url_real_time_allowlist=*/false);
+      /*is_safe_synchronously=*/false);
 }
 
 void HashRealTimeMechanism::OnCheckUrlForHighConfidenceAllowlist(

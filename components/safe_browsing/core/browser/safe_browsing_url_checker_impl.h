@@ -76,8 +76,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   using NativeUrlCheckNotifier =
       base::OnceCallback<void(bool /* proceed */,
                               bool /* showed_interstitial */,
-                              PerformedCheck /* performed_check */,
-                              bool /* did_check_url_real_time_allowlist */)>;
+                              PerformedCheck /* performed_check */)>;
 
   // If |slow_check_notifier| is not null, the callback is supposed to update
   // this output parameter with a callback to receive complete notification. In
@@ -86,8 +85,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
       base::OnceCallback<void(NativeUrlCheckNotifier* /* slow_check_notifier */,
                               bool /* proceed */,
                               bool /* showed_interstitial */,
-                              PerformedCheck /* performed_check */,
-                              bool /* did_check_url_real_time_allowlist */)>;
+                              PerformedCheck /* performed_check */)>;
 
   // Constructor for SafeBrowsingUrlCheckerImpl. |url_real_time_lookup_enabled|
   // indicates whether or not the profile has enabled real time URL lookups, as
@@ -173,8 +171,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
     void OnStartSlowCheck(PerformedCheck performed_check);
     void OnCompleteCheck(bool proceed,
                          bool showed_interstitial,
-                         PerformedCheck performed_check,
-                         bool did_check_url_real_time_allowlist);
+                         PerformedCheck performed_check);
 
    private:
     // Used in the mojo interface case.
@@ -270,10 +267,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   };
 
   struct UrlInfo {
-    UrlInfo(const GURL& url,
-            const std::string& method,
-            Notifier notifier,
-            bool did_check_url_real_time_allowlist);
+    UrlInfo(const GURL& url, const std::string& method, Notifier notifier);
     UrlInfo(UrlInfo&& other);
 
     ~UrlInfo();
@@ -281,9 +275,6 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
     GURL url;
     std::string method;
     Notifier notifier;
-
-    // If the allowlist was checked for this URL.
-    bool did_check_url_real_time_allowlist;
   };
 
   SEQUENCE_CHECKER(sequence_checker_);

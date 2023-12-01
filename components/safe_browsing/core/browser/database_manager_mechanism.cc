@@ -39,8 +39,7 @@ DatabaseManagerMechanism::StartCheckInternal() {
   if (!is_safe_synchronously) {
     is_async_database_manager_check_in_progress_ = true;
   }
-  return StartCheckResult(is_safe_synchronously,
-                          /*did_check_url_real_time_allowlist=*/false);
+  return StartCheckResult(is_safe_synchronously);
 }
 
 void DatabaseManagerMechanism::OnCheckBrowseUrlResult(

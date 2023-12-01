@@ -20,10 +20,8 @@ SafeBrowsingLookupMechanism::SafeBrowsingLookupMechanism(
 SafeBrowsingLookupMechanism::~SafeBrowsingLookupMechanism() = default;
 
 SafeBrowsingLookupMechanism::StartCheckResult::StartCheckResult(
-    bool is_safe_synchronously,
-    bool did_check_url_real_time_allowlist)
-    : is_safe_synchronously(is_safe_synchronously),
-      did_check_url_real_time_allowlist(did_check_url_real_time_allowlist) {}
+    bool is_safe_synchronously)
+    : is_safe_synchronously(is_safe_synchronously) {}
 
 SafeBrowsingLookupMechanism::CompleteCheckResult::CompleteCheckResult(
     const GURL& url,

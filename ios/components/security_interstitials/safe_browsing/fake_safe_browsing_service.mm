@@ -63,8 +63,7 @@ class FakeSafeBrowsingUrlCheckerImpl
           /*showed_interstitial=*/true,
           /*did_perform_url_real_time_check=*/
           safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck::
-              kHashDatabaseCheck,
-          /*did_check_url_real_time_allowlist=*/true);
+              kHashDatabaseCheck);
       return;
     }
     std::move(callback).Run(
@@ -72,8 +71,7 @@ class FakeSafeBrowsingUrlCheckerImpl
         /*showed_interstitial=*/false,
         /*did_perform_url_real_time_check=*/
         safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck::
-            kHashDatabaseCheck,
-        /*did_check_url_real_time_allowlist=*/true);
+            kHashDatabaseCheck);
   }
 };
 }  // namespace

@@ -98,8 +98,7 @@ class MockSafeBrowsingLookupMechanism : public SafeBrowsingLookupMechanism {
                   /*real_time_request_failed=*/real_time_request_failed_)),
           time_to_completion_);
     }
-    return StartCheckResult(is_safe_synchronously_,
-                            /*did_check_url_real_time_allowlist=*/false);
+    return StartCheckResult(is_safe_synchronously_);
   }
 
   // StartCheckInternal will return this value. Also, if it is true, the

@@ -43,8 +43,7 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
       bool /* slow_check */,
       bool /* proceed */,
       bool /* showed_interstitial */,
-      SafeBrowsingUrlCheckerImpl::PerformedCheck /* performed_check */,
-      bool /* did_check_url_real_time_allowlist */)>;
+      SafeBrowsingUrlCheckerImpl::PerformedCheck /* performed_check */)>;
 
   using OnNotifySlowCheckCallback = base::RepeatingCallback<void()>;
 
@@ -54,8 +53,7 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
   using NativeUrlCheckNotifier = base::OnceCallback<void(
       bool /* proceed */,
       bool /* showed_interstitial */,
-      SafeBrowsingUrlCheckerImpl::PerformedCheck /* performed_check */,
-      bool /* did_check_url_real_time_allowlist */)>;
+      SafeBrowsingUrlCheckerImpl::PerformedCheck /* performed_check */)>;
 
   UrlCheckerOnSB(
       GetDelegateCallback delegate_getter,
@@ -102,8 +100,7 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
       NativeUrlCheckNotifier* slow_check_notifier,
       bool proceed,
       bool showed_interstitial,
-      SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
-      bool did_check_url_real_time_allowlist);
+      SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check);
 
   // |slow_check| indicates whether it reports the result of a slow check.
   // (Please see comments of OnCheckUrlResult() for what slow check means).
@@ -111,8 +108,7 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
       bool slow_check,
       bool proceed,
       bool showed_interstitial,
-      SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
-      bool did_check_url_real_time_allowlist);
+      SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check);
 
   // The following member stays valid until |url_checker_| is created.
   GetDelegateCallback delegate_getter_;
