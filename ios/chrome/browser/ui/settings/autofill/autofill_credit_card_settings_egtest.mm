@@ -55,6 +55,8 @@ const DisplayStringIDToExpectedResult kExpectedFields[] = {
 
 NSString* const kCreditCardLabelTemplate = @"Test User, %@";
 
+NSString* const kServerCardHolderName = @"Bonnie Parker";
+
 NSString* const kMandatoryReauthOptOutHistogramName =
     @"Autofill.PaymentMethods.MandatoryReauth.OptChangeEvent.SettingsPage."
     @"OptOut";
@@ -157,11 +159,12 @@ id<GREYMatcher> BottomToolbar() {
   [ChromeEarlGreyUI waitForAppToIdle];
 }
 
-// Test that the page for viewing Autofill credit card details is as expected.
-- (void)testCreditCardViewPage {
-  NSString* lastDigits = [AutofillAppInterface saveLocalCreditCard];
+// Test that the page for viewing Autofill credit card details is as expected
+// when Mandatory Reauth is enabled.
+- (void)testCreditCardViewPageMandatoryReauthEnabled {
   [AutofillAppInterface mockReauthenticationModuleExpectedResult:
                             ReauthenticationResult::kSuccess];
+  NSString* lastDigits = [AutofillAppInterface saveLocalCreditCard];
   [self openEditCreditCard:[self creditCardLabel:lastDigits]];
 
   // Check that all fields and values match the expectations.
@@ -179,6 +182,86 @@ id<GREYMatcher> BottomToolbar() {
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
       performAction:grey_tap()];
 
+  [self exitSettingsMenu];
+}
+
+// Test that the page for viewing Autofill credit card details is as expected
+// when Mandatory Reauth is disabled.
+- (void)testCreditCardViewPageMandatoryReauthDisabled {
+  [AutofillAppInterface setMandatoryReauthEnabled:FALSE];
+  NSString* lastDigits = [AutofillAppInterface saveLocalCreditCard];
+  [self openEditCreditCard:[self creditCardLabel:lastDigits]];
+
+  // Check that all fields and values match the expectations.
+  for (const DisplayStringIDToExpectedResult& expectation : kExpectedFields) {
+    [[EarlGrey selectElementWithMatcher:
+                   grey_accessibilityLabel([NSString
+                       stringWithFormat:@"%@, %@",
+                                        l10n_util::GetNSString(
+                                            expectation.display_string_id),
+                                        expectation.expected_result])]
+        assertWithMatcher:grey_notNil()];
+  }
+
+  // Go back to the list view page.
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
+      performAction:grey_tap()];
+
+  [self exitSettingsMenu];
+}
+
+// Test that the page for viewing Autofill credit card details is not reached
+// if the Mandatory Reauth feature is enabled and the user fails the
+// authentication prompt.
+- (void)testCreditCardViewPageMandatoryReauthFailed {
+  [AutofillAppInterface mockReauthenticationModuleExpectedResult:
+                            ReauthenticationResult::kFailure];
+  NSString* lastDigits = [AutofillAppInterface saveLocalCreditCard];
+  [self openEditCreditCard:[self creditCardLabel:lastDigits]];
+
+  // Confirm that we have not reached the card details page by confirming that
+  // none of its fields are present.
+  for (const DisplayStringIDToExpectedResult& expectation : kExpectedFields) {
+    [[EarlGrey selectElementWithMatcher:
+                   grey_accessibilityLabel([NSString
+                       stringWithFormat:@"%@, %@",
+                                        l10n_util::GetNSString(
+                                            expectation.display_string_id),
+                                        expectation.expected_result])]
+        assertWithMatcher:grey_nil()];
+  }
+
+  // Confirm we are still on the credit card settings page by confirming the
+  // presence of the mandatory reauth toggle.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                   kAutofillCreditCardSwitchViewId, YES, YES)]
+      assertWithMatcher:grey_notNil()];
+
+  [self exitSettingsMenu];
+}
+
+// Test that reaching the credit card details page for a server card does not
+// require reauthentication.
+- (void)testServerCardViewSkipsMandatoryReauth {
+  [AutofillAppInterface saveMaskedCreditCard];
+  [self openEditCreditCard:kServerCardHolderName];
+
+  // Confirm we have arrived at the card details page by specifying the presence
+  // of the cardholder name field and its correct value.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel([NSString
+                     stringWithFormat:@"%@, %@",
+                                      l10n_util::GetNSString(
+                                          IDS_IOS_AUTOFILL_CARDHOLDER),
+                                      kServerCardHolderName])]
+      assertWithMatcher:grey_notNil()];
+
+  // Go back to the list view page.
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
+      performAction:grey_tap()];
+
+  [AutofillAppInterface clearAllServerDataForTesting];
   [self exitSettingsMenu];
 }
 

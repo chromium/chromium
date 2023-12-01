@@ -51,8 +51,11 @@ enum CreditCardSaveManagerObserverEvent : int {
 // Returns the name of the sample profile.
 + (NSString*)exampleProfileName;
 
-// Removes the stored credit cards.
+// Removes the locally stored credit cards.
 + (void)clearCreditCardStore;
+
+// Clears all server data including server cards.
++ (void)clearAllServerDataForTesting;
 
 // Saves a local credit card that doesn't require CVC to be used.
 // Returns the `card.NetworkAndLastFourDigits` of the card used in the UIs.

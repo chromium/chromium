@@ -601,9 +601,35 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 
   const std::vector<autofill::CreditCard*>& creditCards =
       _personalDataManager->GetCreditCards();
+  autofill::CreditCard selectedCard = *creditCards[indexPath.item];
+  if (autofill::IsCreditCardLocal(selectedCard) &&
+      _personalDataManager->IsPaymentMethodsMandatoryReauthEnabled() &&
+      [self.reauthenticationModule canAttemptReauth]) {
+    [self attemptReauthentication:selectedCard];
+  } else {
+    [self openCreditCardDetails:selectedCard];
+  }
+}
+
+// Attempt reauthentication, if all goes well proceed to card details page.
+- (void)attemptReauthentication:(autofill::CreditCard)selectedCard {
+  auto completionHandler = ^(ReauthenticationResult result) {
+    if (result != ReauthenticationResult::kFailure) {
+      [self openCreditCardDetails:selectedCard];
+    }
+  };
+  [self.reauthenticationModule
+      attemptReauthWithLocalizedReason:
+          l10n_util::GetNSString(
+              IDS_PAYMENTS_AUTOFILL_SETTINGS_EDIT_MANDATORY_REAUTH)
+                  canReusePreviousAuth:YES
+                               handler:completionHandler];
+}
+
+- (void)openCreditCardDetails:(autofill::CreditCard)creditCard {
   AutofillCreditCardEditTableViewController* controller =
       [[AutofillCreditCardEditTableViewController alloc]
-           initWithCreditCard:*creditCards[indexPath.item]
+           initWithCreditCard:creditCard
           personalDataManager:_personalDataManager];
   [self configureHandlersForRootViewController:controller];
   [self.navigationController pushViewController:controller animated:YES];

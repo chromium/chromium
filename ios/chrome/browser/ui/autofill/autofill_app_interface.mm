@@ -405,6 +405,7 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
   autofill::PersonalDataManager* personalDataManager =
       [self personalDataManager];
   for (const auto* creditCard : personalDataManager->GetCreditCards()) {
+    // This will not remove server cards, as they have no guid.
     personalDataManager->RemoveByGUID(creditCard->guid());
   }
 
@@ -412,6 +413,11 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
       chrome_test_util::GetOriginalBrowserState();
   autofill::prefs::SetAutofillPaymentMethodsEnabled(browserState->GetPrefs(),
                                                     YES);
+}
+
+// Clears all server data including server cards.
++ (void)clearAllServerDataForTesting {
+  [self personalDataManager]->ClearAllServerDataForTesting();
 }
 
 + (NSString*)saveLocalCreditCard {
@@ -439,7 +445,6 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
   autofill::CreditCard card =
       autofill::test::WithCvc(autofill::test::GetMaskedServerCard());
   DCHECK(card.record_type() != autofill::CreditCard::RecordType::kLocalCard);
-
   personalDataManager->AddServerCreditCardForTest(
       std::make_unique<autofill::CreditCard>(card));
   personalDataManager->NotifyPersonalDataObserver();
