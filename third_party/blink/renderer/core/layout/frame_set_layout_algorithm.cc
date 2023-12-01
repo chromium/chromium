@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/ng/ng_frame_set_layout_algorithm.h"
+#include "third_party/blink/renderer/core/layout/frame_set_layout_algorithm.h"
 
 #include "third_party/blink/renderer/core/html/html_frame_set_element.h"
-#include "third_party/blink/renderer/core/layout/ng/frame_set_layout_data.h"
+#include "third_party/blink/renderer/core/layout/frame_set_layout_data.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_disable_side_effects_scope.h"
 
 namespace blink {

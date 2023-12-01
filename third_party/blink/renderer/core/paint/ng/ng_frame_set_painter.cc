@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/ng/ng_frame_set_painter.h"
 
-#include "third_party/blink/renderer/core/layout/ng/frame_set_layout_data.h"
+#include "third_party/blink/renderer/core/layout/frame_set_layout_data.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"

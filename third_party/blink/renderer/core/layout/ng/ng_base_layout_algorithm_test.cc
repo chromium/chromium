@@ -6,10 +6,10 @@
 
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
+#include "third_party/blink/renderer/core/layout/forms/fieldset_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_layout_algorithm.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_fieldset_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/physical_fragment.h"
