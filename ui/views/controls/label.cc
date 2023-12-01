@@ -42,6 +42,7 @@
 #include "ui/views/selection_controller.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
+#include "ui/views/views_features.h"
 
 namespace {
 
@@ -80,6 +81,8 @@ Label::Label(const std::u16string& text,
              gfx::DirectionalityMode directionality_mode)
     : text_context_(text_context),
       text_style_(text_style),
+      use_legacy_preferred_size_(
+          base::FeatureList::IsEnabled(features::kForceUseLegacyPreferredSize)),
       context_menu_contents_(this) {
   Init(text, TypographyProvider::Get().GetFont(text_context, text_style),
        directionality_mode);
@@ -88,6 +91,8 @@ Label::Label(const std::u16string& text,
 Label::Label(const std::u16string& text, const CustomFont& font)
     : text_context_(style::CONTEXT_LABEL),
       text_style_(style::STYLE_PRIMARY),
+      use_legacy_preferred_size_(
+          base::FeatureList::IsEnabled(features::kForceUseLegacyPreferredSize)),
       context_menu_contents_(this) {
   Init(text, font.font_list, gfx::DirectionalityMode::DIRECTIONALITY_FROM_TEXT);
 }
@@ -655,7 +660,15 @@ gfx::Size Label::CalculatePreferredSize(
   if (GetMultiLine() && fixed_width_ != 0 && !GetText().empty())
     return gfx::Size(fixed_width_, GetHeightForWidth(fixed_width_));
 
-  gfx::Size size(GetBoundedTextSize(available_size));
+  // In the scenario of unbounded layout. The available size is always
+  // constrained to the width of the label.
+  // TODO(crbug.com/1346889): Remove this.
+  SizeBounds fixed_available_size(available_size);
+  if (use_legacy_preferred_size_ && available_size.width().is_bounded()) {
+    fixed_available_size.set_width(width());
+  }
+
+  gfx::Size size(GetBoundedTextSize(fixed_available_size));
   const gfx::Insets insets = GetInsets();
   size.Enlarge(insets.width(), insets.height());
 
