@@ -69,6 +69,7 @@ tools/metrics/histograms/metadata/families/enums.xml
 tools/metrics/histograms/metadata/families/histograms.xml
 tools/metrics/histograms/metadata/fastpair/histograms.xml
 tools/metrics/histograms/metadata/feature_engagement/histograms.xml
+tools/metrics/histograms/metadata/file/enums.xml
 tools/metrics/histograms/metadata/file/histograms.xml
 tools/metrics/histograms/metadata/fingerprint/histograms.xml
 tools/metrics/histograms/metadata/game_mode/histograms.xml

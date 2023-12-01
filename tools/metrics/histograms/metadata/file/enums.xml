@@ -1,0 +1,714 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="BooleanInteractive">
+  <int value="0" label="Non-interactive"/>
+  <int value="1" label="Interactive"/>
+</enum>
+
+<enum name="CloudProvider">
+  <int value="0" label="None"/>
+  <int value="1" label="Unknown"/>
+  <int value="2" label="Google Drive"/>
+  <int value="3" label="OneDrive"/>
+</enum>
+
+<enum name="ContentEncoding">
+  <int value="0" label="ISO_8859_1"/>
+  <int value="1" label="ISO_8859_2"/>
+  <int value="2" label="ISO_8859_3"/>
+  <int value="3" label="ISO_8859_4"/>
+  <int value="4" label="ISO_8859_5"/>
+  <int value="5" label="ISO_8859_6"/>
+  <int value="6" label="ISO_8859_7"/>
+  <int value="7" label="ISO_8859_8"/>
+  <int value="8" label="ISO_8859_9"/>
+  <int value="9" label="ISO_8859_10"/>
+  <int value="10" label="JAPANESE_EUC_JP"/>
+  <int value="11" label="JAPANESE_SHIFT_JIS"/>
+  <int value="12" label="JAPANESE_JIS"/>
+  <int value="13" label="CHINESE_BIG5"/>
+  <int value="14" label="CHINESE_GB"/>
+  <int value="15" label="CHINESE_EUC_CN"/>
+  <int value="16" label="KOREAN_EUC_KR"/>
+  <int value="17" label="UNICODE"/>
+  <int value="18" label="CHINESE_EUC_DEC"/>
+  <int value="19" label="CHINESE_CNS"/>
+  <int value="20" label="CHINESE_BIG5_CP950"/>
+  <int value="21" label="JAPANESE_CP932"/>
+  <int value="22" label="UTF8"/>
+  <int value="23" label="UNKNOWN_ENCODING"/>
+  <int value="24" label="ASCII_7BIT"/>
+  <int value="25" label="RUSSIAN_KOI8_R"/>
+  <int value="26" label="RUSSIAN_CP1251"/>
+  <int value="27" label="MSFT_CP1252"/>
+  <int value="28" label="RUSSIAN_KOI8_RU"/>
+  <int value="29" label="MSFT_CP1250"/>
+  <int value="30" label="ISO_8859_15"/>
+  <int value="31" label="MSFT_CP1254"/>
+  <int value="32" label="MSFT_CP1257"/>
+  <int value="33" label="ISO_8859_11"/>
+  <int value="34" label="MSFT_CP874"/>
+  <int value="35" label="MSFT_CP1256"/>
+  <int value="36" label="MSFT_CP1255"/>
+  <int value="37" label="ISO_8859_8_I"/>
+  <int value="38" label="HEBREW_VISUAL"/>
+  <int value="39" label="CZECH_CP852"/>
+  <int value="40" label="CZECH_CSN_369103"/>
+  <int value="41" label="MSFT_CP1253"/>
+  <int value="42" label="RUSSIAN_CP866"/>
+  <int value="43" label="ISO_8859_13"/>
+  <int value="44" label="ISO_2022_KR"/>
+  <int value="45" label="GBK"/>
+  <int value="46" label="GB18030"/>
+  <int value="47" label="BIG5_HKSCS"/>
+  <int value="48" label="ISO_2022_CN"/>
+  <int value="49" label="TSCII"/>
+  <int value="50" label="TAMIL_MONO"/>
+  <int value="51" label="TAMIL_BI"/>
+  <int value="52" label="JAGRAN"/>
+  <int value="53" label="MACINTOSH_ROMAN"/>
+  <int value="54" label="UTF7"/>
+  <int value="55" label="BHASKAR"/>
+  <int value="56" label="HTCHANAKYA"/>
+  <int value="57" label="UTF16BE"/>
+  <int value="58" label="UTF16LE"/>
+  <int value="59" label="UTF32BE"/>
+  <int value="60" label="UTF32LE"/>
+  <int value="61" label="BINARYENC"/>
+  <int value="62" label="HZ_GB_2312"/>
+  <int value="63" label="UTF8UTF8"/>
+  <int value="64" label="TAM_ELANGO"/>
+  <int value="65" label="TAM_LTTMBARANI"/>
+  <int value="66" label="TAM_SHREE"/>
+  <int value="67" label="TAM_TBOOMIS"/>
+  <int value="68" label="TAM_TMNEWS"/>
+  <int value="69" label="TAM_WEBTAMIL"/>
+  <int value="70" label="KDDI_SHIFT_JIS"/>
+  <int value="71" label="DOCOMO_SHIFT_JIS"/>
+  <int value="72" label="SOFTBANK_SHIFT_JIS"/>
+  <int value="73" label="KDDI_ISO_2022_JP"/>
+  <int value="74" label="SOFTBANK_ISO_2022_JP"/>
+</enum>
+
+<enum name="DocsOfflineEnableStatus">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Already enabled"/>
+  <int value="3" label="Unknown error"/>
+  <int value="4" label="Disable unsupported"/>
+  <int value="5" label="Offline eligible"/>
+  <int value="6" label="Offline ineligible - Unknown"/>
+  <int value="7" label="Offline ineligible - Other user already enabled"/>
+  <int value="8" label="Offline ineligible - DD in invalid state"/>
+  <int value="9" label="Offline ineligible - Policy disallow"/>
+  <int value="10" label="Offline ineligible - No extension"/>
+  <int value="11" label="Offline ineligible - Insufficient disk space"/>
+  <int value="12" label="Native message host error"/>
+  <int value="13" label="Native message client error"/>
+  <int value="14" label="System error"/>
+</enum>
+
+<enum name="DriveFileError">
+<!--
+  Represents drive::FileError enum values defined in
+  components/drive/file_errors.h. The drive::FileError enum values are
+  negative (0=OK, -1=FAILED, -2=IN_USE, etc) whereas these UMA DriveFileError
+  enum values are positive and shifted by one (1=OK, 2=FAILED, 3=IN_USE, etc).
+-->
+
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="FILE_ERROR_OK"/>
+  <int value="2" label="FILE_ERROR_FAILED"/>
+  <int value="3" label="FILE_ERROR_IN_USE"/>
+  <int value="4" label="FILE_ERROR_EXISTS"/>
+  <int value="5" label="FILE_ERROR_NOT_FOUND"/>
+  <int value="6" label="FILE_ERROR_ACCESS_DENIED"/>
+  <int value="7" label="FILE_ERROR_TOO_MANY_OPENED"/>
+  <int value="8" label="FILE_ERROR_NO_MEMORY"/>
+  <int value="9" label="FILE_ERROR_NO_SERVER_SPACE"/>
+  <int value="10" label="FILE_ERROR_NOT_A_DIRECTORY"/>
+  <int value="11" label="FILE_ERROR_INVALID_OPERATION"/>
+  <int value="12" label="FILE_ERROR_SECURITY"/>
+  <int value="13" label="FILE_ERROR_ABORT"/>
+  <int value="14" label="FILE_ERROR_NOT_A_FILE"/>
+  <int value="15" label="FILE_ERROR_NOT_EMPTY"/>
+  <int value="16" label="FILE_ERROR_INVALID_URL"/>
+  <int value="17" label="FILE_ERROR_NO_CONNECTION"/>
+  <int value="18" label="FILE_ERROR_NO_LOCAL_SPACE"/>
+  <int value="19" label="FILE_ERROR_SERVICE_UNAVAILABLE"/>
+  <int value="20" label="FILE_ERROR_OK_WITH_MORE_RESULTS"/>
+</enum>
+
+<enum name="DriveMountStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="UnknownFailure"/>
+  <int value="2" label="TemporaryUnavailable"/>
+  <int value="3" label="InvocationFailure"/>
+  <int value="4" label="UnexpectedDisconnect"/>
+  <int value="5" label="Timeout"/>
+</enum>
+
+<enum name="FailedTrashingType">
+  <int value="0" label="Failed to write the metadata file"/>
+  <int value="1" label="Failed to move the file to the .Trash/info folder"/>
+</enum>
+
+<enum name="FileDialogType">
+  <int value="0" label="Select folder"/>
+  <int value="1" label="Upload folder"/>
+  <int value="2" label="Save as file"/>
+  <int value="3" label="Open file"/>
+  <int value="4" label="Open multiple files"/>
+  <int value="5" label="Full page"/>
+  <int value="6" label="Error"/>
+</enum>
+
+<enum name="FileManagerExtractStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Unknown Error"/>
+  <int value="2" label="Cancelled"/>
+  <int value="3" label="Low Disk Space"/>
+  <int value="4" label="Bad Password"/>
+  <int value="5" label="AES encrypted"/>
+</enum>
+
+<enum name="FileManagerFormatFileSystemType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="FAT32"/>
+  <int value="2" label="exFAT"/>
+  <int value="3" label="NTFS"/>
+</enum>
+
+<enum name="FileManagerGlitch">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Unhandled Error"/>
+  <int value="2" label="Unhandled Rejection"/>
+  <int value="3" label="Caught Exception"/>
+</enum>
+
+<enum name="FileManagerGoogleDriveBulkPinningEnabledSource">
+  <int value="0" label="Banner"/>
+  <int value="1" label="System Settings"/>
+  <int value="2" label="Drive Internals"/>
+  <int value="3" label="CHOOBE"/>
+</enum>
+
+<enum name="FileManagerListType">
+  <int value="0" label="Uninitialized"/>
+  <int value="1" label="List view (detail)"/>
+  <int value="2" label="Grid view (thumbnail)"/>
+</enum>
+
+<enum name="FileManagerMenuCommands">
+  <int value="0" label="Help"/>
+  <int value="1" label="Help (In Google Drive)"/>
+  <int value="2" label="Buy more storage"/>
+  <int value="3" label="Go to drive.google.com"/>
+  <int value="4" label="Toggle show hidden files (Show)"/>
+  <int value="5" label="Toggle show hidden files (Hide)"/>
+  <int value="6" label="Toggle use mobile data for sync (on)"/>
+  <int value="7" label="Toggle use mobile data for sync (off)"/>
+  <int value="8" label="Toggle Show Google Docs files (on)"/>
+  <int value="9" label="Toggle Show Google Docs files (off)"/>
+  <int value="10" label="Toggle show hidden Android folders (on)"/>
+  <int value="11" label="Toggle show hidden Android folders (off)"/>
+  <int value="12" label="Share with Linux"/>
+  <int value="13" label="Manage Linux sharing menu"/>
+  <int value="14" label="Manage Linux sharing toast"/>
+  <int value="15" label="Manage Linux sharing toast startup"/>
+  <int value="16" label="Share with Plugin VM"/>
+  <int value="17" label="Manage Plugin VM sharing menu"/>
+  <int value="18" label="Manage Plugin VM sharing toast"/>
+  <int value="19" label="Manage Plugin VM sharing toast startup"/>
+  <int value="20" label="Pin to holding space"/>
+  <int value="21" label="Unpin from holding space"/>
+  <int value="22" label="Share with Bruschetta"/>
+  <int value="23" label="Manage Bruschetta sharing menu"/>
+  <int value="24" label="Manage Bruschetta sharing toast"/>
+  <int value="25" label="Manage Bruschetta sharing toast startup"/>
+</enum>
+
+<enum name="FileManagerNotificationType">
+  <int value="0" label="DEVICE_NAVIGATION_ALLOW_APP_ACCESS"/>
+  <int value="1" label="DEVICE_NAVIGATION_APPS_HAVE_ACCESS"/>
+  <int value="2" label="DEVICE_NAVIGATION"/>
+  <int value="3" label="DEVICE_NAVIGATION_READONLY_POLICY"/>
+  <int value="4" label="DEVICE_IMPORT"/>
+  <int value="5" label="DEVICE_FAIL"/>
+  <int value="6" label="DEVICE_FAIL_UNKNOWN"/>
+  <int value="7" label="DEVICE_FAIL_UNKNOWN_READONLY"/>
+  <int value="8" label="DEVICE_EXTERNAL_STORAGE_DISABLED"/>
+  <int value="9" label="DEVICE_HARD_UNPLUGGED"/>
+  <int value="10" label="FORMAT_START"/>
+  <int value="11" label="FORMAT_SUCCESS"/>
+  <int value="12" label="FORMAT_FAIL"/>
+  <int value="13" label="RENAME_FAIL"/>
+  <int value="14" label="PARTITION_START"/>
+  <int value="15" label="PARTITION_SUCCESS"/>
+  <int value="16" label="PARTITION_FAIL"/>
+</enum>
+
+<enum name="FileManagerNotificationUserAction">
+  <int value="0" label="OPEN_SETTINGS_FOR_ARC_STORAGE"/>
+  <int value="1" label="OPEM_MEDIA_DEVICE_NAVIGATION"/>
+  <int value="2" label="OPEN_MEDIA_DEVICE_NAVIGATION_ARC"/>
+  <int value="3" label="OPEN_MEDIA_DEVICE_FAIL"/>
+  <int value="4" label="OPEN_MEDIA_DEVICE_IMPORT"/>
+</enum>
+
+<enum name="FileManagerQuickViewWayToOpen">
+  <int value="0" label="Context menu"/>
+  <int value="1" label="Space key"/>
+  <int value="2" label="Selection menu"/>
+</enum>
+
+<enum name="FileManagerRecentFilterType">
+  <summary>
+    The filter type for Recent view, the types here should be in sync with the
+    enumFileType from chrome/browser/ash/fileapi/recent_source.h.
+  </summary>
+  <int value="0" label="All"/>
+  <int value="1" label="Audio"/>
+  <int value="2" label="Images"/>
+  <int value="3" label="Videos"/>
+  <int value="4" label="Documents"/>
+</enum>
+
+<enum name="FileManagerRootType">
+  <int value="0" label="DOWNLOADS"/>
+  <int value="1" label="ARCHIVE"/>
+  <int value="2" label="REMOVABLE"/>
+  <int value="3" label="DRIVE"/>
+  <int value="4" label="TEAM_DRIVES_GRAND_ROOT"/>
+  <int value="5" label="TEAM_DRIVE"/>
+  <int value="6" label="MTP"/>
+  <int value="7" label="PROVIDED"/>
+  <int value="8" label="DRIVE_OTHER"/>
+  <int value="9" label="DRIVE_OFFLINE"/>
+  <int value="10" label="DRIVE_SHARED_WITH_ME"/>
+  <int value="11" label="DRIVE_RECENT"/>
+  <int value="12" label="MEDIA_VIEW"/>
+  <int value="13" label="RECENT"/>
+  <int value="14" label="DRIVE_FAKE_ROOT"/>
+  <int value="15" label="ADD_NEW_SERVICES_MENU"/>
+  <int value="16" label="CROSTINI"/>
+  <int value="17" label="ANDROID_FILES"/>
+  <int value="18" label="MY_FILES"/>
+  <int value="19" label="COMPUTERS_GRAND_ROOT"/>
+  <int value="20" label="COMPUTER"/>
+  <int value="21" label="EXTERNAL_MEDIA"/>
+  <int value="22" label="DOCUMENTS_PROVIDER"/>
+  <int value="23" label="SMB"/>
+  <int value="24" label="DEPRECATED_RECENT_AUDIO"/>
+  <int value="25" label="DEPRECATED_RECENT_IMAGES"/>
+  <int value="26" label="DEPRECATED_RECENT_VIDEOS"/>
+  <int value="27" label="TRASH"/>
+  <int value="28" label="GUEST_OS"/>
+</enum>
+
+<enum name="FileManagerTaskType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Browser"/>
+  <int value="2" label="Chrome App"/>
+  <int value="3" label="Drive App"/>
+  <int value="4" label="ARC App"/>
+  <int value="5" label="Crostini App"/>
+  <int value="6" label="Web App"/>
+  <int value="7" label="Plugin VM App"/>
+  <int value="8" label="Bruschetta App"/>
+</enum>
+
+<enum name="FileManagerTrashDirectorySetupFailedStep">
+  <int value="0" label="Failed creating info folder"/>
+  <int value="1" label="Failed creating files folder"/>
+  <int value="2" label="Failed setting the extended attributes"/>
+  <int value="3" label="Failed setting parent folder permissions"/>
+</enum>
+
+<enum name="FileManagerVolumeType">
+<!-- Keep this in sync with the JS value: QuickViewUma.VolumeType. -->
+
+  <int value="0" label="Google Drive"/>
+  <int value="1" label="Download Folder"/>
+  <int value="2" label="Removable Disk"/>
+  <int value="3" label="Archive File"/>
+  <int value="4" label="FileSystemProvider API"/>
+  <int value="5" label="MTP (Media Transfer Protocol) Device"/>
+  <int value="6" label="Media View"/>
+  <int value="7" label="Crostini Linux Files"/>
+  <int value="8" label="Android Files"/>
+  <int value="9" label="Android Documents Provider"/>
+  <int value="10" label="SMB File Share"/>
+  <int value="11" label="System internal"/>
+  <int value="12" label="Guest OS Files"/>
+</enum>
+
+<enum name="FileSystemDatabaseInitResult">
+  <int value="0" label="OK"/>
+  <int value="1" label="Corruption"/>
+  <int value="2" label="IO Error"/>
+  <int value="3" label="Unknown Error"/>
+</enum>
+
+<enum name="FileSystemProviderMountType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Zip Unpacker"/>
+  <int value="2" label="File System for Dropbox"/>
+  <int value="3" label="File System for One Drive"/>
+  <int value="4" label="SFTP File System"/>
+  <int value="5" label="Box for ChromeOS"/>
+  <int value="6" label="Ted Talks"/>
+  <int value="7" label="WebDAV File System"/>
+  <int value="8" label="Cloud Storage"/>
+  <int value="9" label="Scan"/>
+  <int value="10" label="File System for SMB CIFS"/>
+  <int value="11" label="Add My Documents"/>
+  <int value="12" label="Wicked Good Unarchiver"/>
+  <int value="13" label="Network File Share for ChromeOS"/>
+  <int value="14" label="LAN Folder"/>
+  <int value="15" label="Zip Archiver"/>
+  <int value="16" label="Secure Shell App"/>
+  <int value="17" label="Native Network SMB"/>
+</enum>
+
+<enum name="FileSystemProviderOperationCompletion">
+  <int value="0" label="CompletedNormally"/>
+  <int value="1" label="CompletedAfterWarning"/>
+  <int value="2" label="AbortedFromNotification"/>
+  <int value="3" label="AbortedInternally"/>
+</enum>
+
+<enum name="GoogleDrive.BulkPinning.MountFailureReason">
+  <int value="0" label="Successfully mounted"/>
+  <int value="1" label="More than 3 consecutive startup failures"/>
+  <int value="2" label="More than 10 total mount failures"/>
+</enum>
+
+<enum name="GoogleDrive.BulkPinning.Stage">
+  <int value="0" label="Stopped"/>
+  <int value="1" label="Paused Because Offline"/>
+  <int value="2" label="Paused Because Of BatterySaver"/>
+  <int value="3" label="Getting Free Space"/>
+  <int value="4" label="Listing Files"/>
+  <int value="5" label="Syncing"/>
+  <int value="6" label="Success"/>
+  <int value="7" label="Not Enough Space"/>
+  <int value="8" label="Cannot Get Free Space"/>
+  <int value="9" label="Cannot List Files"/>
+  <int value="10" label="Cannot Enable Docs Offline"/>
+</enum>
+
+<enum name="MetricState">
+  <int value="0" label="Correctly not logged"/>
+  <int value="1" label="Correctly logged"/>
+  <int value="2" label="Incorrectly not logged"/>
+  <int value="3" label="Incorrectly logged"/>
+  <int value="4" label="Incorrectly logged multiple times"/>
+  <int value="5" label="Wrong value logged"/>
+</enum>
+
+<enum name="Microsoft365Availability">
+  <int value="0" label="Neither MS365 PWA nor ODFS set up"/>
+  <int value="1" label="Only MS365 PWA set up"/>
+  <int value="2" label="Only ODFS set up"/>
+  <int value="3" label="Both MS365 PWA and ODFS set up"/>
+</enum>
+
+<enum name="OfficeDriveOpenErrors">
+  <int value="0" label="Offline"/>
+  <int value="1" label="DriveFs interface not available"/>
+  <int value="2" label="Timed out waiting for metadata"/>
+  <int value="3" label="Metadata not available"/>
+  <int value="4" label="Empty or invalid alternate URL"/>
+  <int value="5" label="Alternate URL does not allow editing"/>
+  <int value="6" label="Unexpected alternate URL"/>
+  <int value="7" label="Success"/>
+  <int value="8" label="Drive disabled"/>
+  <int value="9" label="No Drive service"/>
+  <int value="10" label="Drive authentication not ready"/>
+  <int value="11" label="Metered connection"/>
+</enum>
+
+<enum name="OfficeFileHandler">
+  <int value="0" label="Other"/>
+  <int value="1" label="Web Drive Office"/>
+  <int value="2" label="Quick Office"/>
+</enum>
+
+<enum name="OfficeFilesSourceVolume">
+  <int value="0" label="Google Drive"/>
+  <int value="1" label="My Files"/>
+  <int value="2" label="Removable Disk"/>
+  <int value="3" label="Archive File"/>
+  <int value="4" label="FileSystemProvider API"/>
+  <int value="5" label="MTP (Media Transfer Protocol) Device"/>
+  <int value="6" label="Media View"/>
+  <int value="7" label="Crostini Linux Files"/>
+  <int value="8" label="Android Files"/>
+  <int value="9" label="Android Documents Provider"/>
+  <int value="10" label="SMB File Share"/>
+  <int value="11" label="System internal"/>
+  <int value="12" label="Guest OS Files"/>
+  <int value="100" label="Unknown"/>
+  <int value="101" label="Microsoft OneDrive"/>
+  <int value="102" label="Android OneDrive Documents Provider"/>
+</enum>
+
+<enum name="OfficeFilesTransferRequired">
+  <int value="0" label="Not Required"/>
+  <int value="1" label="Move"/>
+  <int value="2" label="Copy"/>
+</enum>
+
+<enum name="OfficeFilesUploadResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Other error"/>
+  <int value="2" label="Filesystem not found"/>
+  <int value="3" label="Move operation cancelled"/>
+  <int value="4" label="Move operation error"/>
+  <int value="5" label="Move operation needs password"/>
+  <int value="6" label="Copy operation cancelled"/>
+  <int value="7" label="Copy operation error"/>
+  <int value="8" label="Copy operation needs password"/>
+  <int value="9" label="Pinning failed due to low disk space"/>
+  <int value="10" label="Cloud access denied"/>
+  <int value="11" label="Bad metadata received from cloud"/>
+  <int value="12" label="Cloud quota full"/>
+  <int value="13" label="Cloud error"/>
+  <int value="14" label="No connectivity to cloud or sync disabled"/>
+  <int value="15" label="Failed to generate destination folder URL"/>
+  <int value="16" label="Invalid uploaded file URL"/>
+  <int value="17" label="Cloud re-authentication required"/>
+  <int value="18" label="Invalid alternate URL"/>
+  <int value="19" label="Unexpected alternate URL host"/>
+  <int value="20" label="Sync failed"/>
+  <int value="21" label="Sync error cancelled and deleted"/>
+  <int value="22" label="Sync error cancelled and trashed"/>
+  <int value="23" label="Upload not started: Reauthentication needed"/>
+  <int value="24" label="Success after reauthentication"/>
+</enum>
+
+<enum name="OfficeFilesUseOutsideDriveHook">
+  <summary>
+    Hooks for file system operations that use MS Office files outside of Drive.
+  </summary>
+  <int value="0" label="File picker selection"/>
+  <int value="1" label="Copy"/>
+  <int value="2" label="Move"/>
+  <int value="3" label="Zip"/>
+  <int value="4" label="Open from files app"/>
+</enum>
+
+<enum name="OfficeGraphAPIResult">
+  <summary>
+    Result of Microsoft Graph API calls. HTTP response codes copied from enum
+    &quot;HttpResponseCode&quot;.
+  </summary>
+  <int value="-2" label="Request Timed Out"/>
+  <int value="-1" label="Network Error"/>
+  <int value="100" label="100: Continue"/>
+  <int value="101" label="101: Switching Protocols"/>
+  <int value="103" label="103: Early Hints"/>
+  <int value="200" label="200: OK"/>
+  <int value="201" label="201: Created"/>
+  <int value="202" label="202: Accepted"/>
+  <int value="203" label="203: Non-Authoritative Information"/>
+  <int value="204" label="204: No Content"/>
+  <int value="205" label="205: Reset Content"/>
+  <int value="206" label="206: Partial Content"/>
+  <int value="300" label="300: Multiple Choices"/>
+  <int value="301" label="301: Moved Permanently"/>
+  <int value="302" label="302: Found"/>
+  <int value="303" label="303: See Other"/>
+  <int value="304" label="304: Not Modified"/>
+  <int value="305" label="305: Use Proxy"/>
+  <int value="306" label="306: (Unused)"/>
+  <int value="307" label="307: Temporary Redirect"/>
+  <int value="308" label="308: Permanent Redirect"/>
+  <int value="400" label="400: Bad Request"/>
+  <int value="401" label="401: Unauthorized"/>
+  <int value="402" label="402: Payment Required"/>
+  <int value="403" label="403: Forbidden"/>
+  <int value="404" label="404: Not Found"/>
+  <int value="405" label="405: Method Not Allowed"/>
+  <int value="406" label="406: Not Acceptable"/>
+  <int value="407" label="407: Proxy Authentication Required"/>
+  <int value="408" label="408: Request Timeout"/>
+  <int value="409" label="409: Conflict"/>
+  <int value="410" label="410: Gone"/>
+  <int value="411" label="411: Length Required"/>
+  <int value="412" label="412: Precondition Failed"/>
+  <int value="413" label="413: Request Entity Too Large"/>
+  <int value="414" label="414: Request-URI Too Long"/>
+  <int value="415" label="415: Unsupported Media Type"/>
+  <int value="416" label="416: Requested Range Not Satisfiable"/>
+  <int value="417" label="417: Expectation Failed"/>
+  <int value="418" label="418: I'm a teapot"/>
+  <int value="422" label="422: Unprocessable Content"/>
+  <int value="425" label="425: Too Early Experimental"/>
+  <int value="429" label="429: Too Many Requests"/>
+  <int value="500" label="500: Internal Server Error"/>
+  <int value="501" label="501: Not Implemented"/>
+  <int value="502" label="502: Bad Gateway"/>
+  <int value="503" label="503: Service Unavailable"/>
+  <int value="504" label="504: Gateway Timeout"/>
+  <int value="505" label="505: HTTP Version Not Supported"/>
+</enum>
+
+<enum name="OfficeOneDriveAuthResultInteractive">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed to get authorization code: failed to load page"/>
+  <int value="2" label="Failed to get authorization code: page load timed out"/>
+  <int value="3" label="Failed to get authorization code: cancelled"/>
+  <int value="4" label="Failed to get authorization code: other error"/>
+  <int value="5" label="Failed to get access token: fetch error"/>
+  <int value="6" label="Failed to get access token: bad response"/>
+  <int value="7" label="Failed to get access token: other error"/>
+  <int value="8" label="Failed to get authorization code: access denied"/>
+  <int value="9" label="Failed to get authorization code: server error"/>
+  <int value="10" label="Failed to get authorization code: developer error"/>
+</enum>
+
+<enum name="OfficeOneDriveAuthResultNonInteractive">
+  <int value="0" label="Success using refresh token"/>
+  <int value="1" label="Success using non-interactive auth"/>
+  <int value="2" label="Failed to get authorization code: failed to load page"/>
+  <int value="3" label="Failed to get authorization code: page load timed out"/>
+  <int value="4"
+      label="Failed to get authorization code: interaction required (remote)"/>
+  <int value="5"
+      label="Failed to get authorization code: interaction required (Chrome)"/>
+  <int value="6" label="Failed to get authorization code: other error"/>
+  <int value="7" label="Failed to get access token: fetch error"/>
+  <int value="8" label="Failed to get access token: bad response"/>
+  <int value="9" label="Failed to get access token: other error"/>
+  <int value="10" label="Failed to get authorization code: login required"/>
+  <int value="11" label="Failed to get authorization code: access denied"/>
+  <int value="12" label="Failed to get authorization code: server error"/>
+  <int value="13" label="Failed to get authorization code: developer error"/>
+</enum>
+
+<enum name="OfficeOneDriveOpenErrors">
+  <int value="0" label="Success"/>
+  <int value="1" label="Offline"/>
+  <int value="2" label="No profile"/>
+  <int value="3" label="No filesystem URL"/>
+  <int value="4" label="Invalid filesystem URL"/>
+  <int value="5" label="getActions: generic error"/>
+  <int value="6" label="getActions: re-authentication required"/>
+  <int value="7" label="getActions: invalid URL"/>
+  <int value="8" label="getActions: no URL"/>
+  <int value="9" label="getActions: access denied"/>
+  <int value="10" label="getActions: no email"/>
+  <int value="11" label="Conversion to ODFS URL error"/>
+  <int value="12" label="Emails do not match"/>
+</enum>
+
+<enum name="OfficeOneDriveType">
+  <int value="0" label="Business"/>
+  <int value="1" label="Personal"/>
+  <int value="2" label="Other"/>
+</enum>
+
+<enum name="OfficeOpenExtensions">
+  <int value="0" label="other"/>
+  <int value="1" label=".doc"/>
+  <int value="2" label=".docm"/>
+  <int value="3" label=".docx"/>
+  <int value="4" label=".dotm"/>
+  <int value="5" label=".dotx"/>
+  <int value="6" label=".odp"/>
+  <int value="7" label=".ods"/>
+  <int value="8" label=".odt"/>
+  <int value="9" label=".pot"/>
+  <int value="10" label=".potm"/>
+  <int value="11" label=".potx"/>
+  <int value="12" label=".ppam"/>
+  <int value="13" label=".pps"/>
+  <int value="14" label=".ppsm"/>
+  <int value="15" label=".ppsx"/>
+  <int value="16" label=".ppt"/>
+  <int value="17" label=".pptm"/>
+  <int value="18" label=".pptx"/>
+  <int value="19" label=".xls"/>
+  <int value="20" label=".xlsb"/>
+  <int value="21" label=".xlsm"/>
+  <int value="22" label=".xlsx"/>
+</enum>
+
+<enum name="OfficeSetupFileHandler">
+  <int value="0" label="Google Docs"/>
+  <int value="1" label="Google Sheets"/>
+  <int value="2" label="Google Slides"/>
+  <int value="3" label="Microsoft 365"/>
+  <int value="4" label="Other Local file handler"/>
+  <int value="5" label="Quickoffice"/>
+</enum>
+
+<enum name="OfficeSetupPage">
+  <int value="0" label="File handler page"/>
+  <int value="1" label="Move confirmation page (Microsoft OneDrive)"/>
+  <int value="2" label="Move confirmation page (Google Drive)"/>
+  <int value="3" label="Microsoft OneDrive setup (welcome page)"/>
+  <int value="4" label="Microsoft OneDrive setup (PWA install page)"/>
+  <int value="5" label="Microsoft OneDrive setup (ODFS setup page)"/>
+  <int value="6" label="Microsoft OneDrive setup (setup complete page)"/>
+</enum>
+
+<enum name="OfficeTaskResult">
+  <int value="0" label="Fallback (QuickOffice)"/>
+  <int value="1" label="Fallback (Other)"/>
+  <int value="2" label="Opened"/>
+  <int value="3" label="Moved"/>
+  <int value="4" label="Cancelled at confirmation"/>
+  <int value="5" label="Failed to upload"/>
+  <int value="6" label="Failed to open"/>
+  <int value="7" label="Copied"/>
+  <int value="8" label="Cancelled at fallback"/>
+  <int value="9" label="Cancelled at setup"/>
+  <int value="10" label="Local file task"/>
+</enum>
+
+<enum name="RestoreFailedNoParentType">
+  <int value="0" label="Single item, no parent"/>
+  <int value="1" label="Multiple items all with same parent"/>
+  <int value="2" label="Multiple items with different parents"/>
+  <int value="3"
+      label="Multiple items with some parents removed, some still existing"/>
+</enum>
+
+<enum name="ZipFileCreator.Result">
+  <int value="0" label="Success"/>
+  <int value="1" label="Cancelled"/>
+  <int value="2" label="Error"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>
