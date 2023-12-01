@@ -30,7 +30,9 @@ constexpr char kTestEffectHistogramName[] =
     "Ash.VideoConferenceTray.TestEffect.Click";
 }  // namespace
 
-class ToggleEffectsViewTest : public AshTestBase {
+class ToggleEffectsViewTest
+    : public AshTestBase,
+      public testing::WithParamInterface</*IsVcDlcUiEnabled*/ bool> {
  public:
   ToggleEffectsViewTest() = default;
   ToggleEffectsViewTest(const ToggleEffectsViewTest&) = delete;
@@ -39,11 +41,14 @@ class ToggleEffectsViewTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kVideoConference,
-         features::kCameraEffectsSupportedByHardware,
-         chromeos::features::kJelly},
-        {});
+    std::vector<base::test::FeatureRef> enabled_features = {
+        features::kVideoConference, features::kCameraEffectsSupportedByHardware,
+        chromeos::features::kJelly};
+    if (IsVcDlcUiEnabled()) {
+      enabled_features.push_back(features::kVcDlcUi);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features,
+                                          /*disabled_features=*/{});
 
     // Instantiates a fake controller (the real one is created in
     // `ChromeBrowserMainExtraPartsAsh::PreProfileInit()` which is not called in
@@ -64,6 +69,8 @@ class ToggleEffectsViewTest : public AshTestBase {
     office_bunny_.reset();
     controller_.reset();
   }
+
+  bool IsVcDlcUiEnabled() { return GetParam(); }
 
   VideoConferenceTray* video_conference_tray() {
     return StatusAreaWidgetTestHelper::GetStatusAreaWidget()
@@ -104,8 +111,12 @@ class ToggleEffectsViewTest : public AshTestBase {
   std::unique_ptr<ash::fake_video_conference::OfficeBunnyEffect> office_bunny_;
 };
 
+INSTANTIATE_TEST_SUITE_P(IsVcDlcUiEnabled,
+                         ToggleEffectsViewTest,
+                         testing::Bool());
+
 // Tests that a toggle button records histograms when clicked.
-TEST_F(ToggleEffectsViewTest, ToggleButtonClickedRecordedHistogram) {
+TEST_P(ToggleEffectsViewTest, ToggleButtonClickedRecordedHistogram) {
   base::HistogramTester histogram_tester;
 
   // Add one toggle effect.
@@ -123,10 +134,13 @@ TEST_F(ToggleEffectsViewTest, ToggleButtonClickedRecordedHistogram) {
   // Click again.
   LeftClickOn(GetFirstToggleEffectButton());
   histogram_tester.ExpectBucketCount(kTestEffectHistogramName, false, 1);
+
+  // Cleanup.
+  controller()->effects_manager().UnregisterDelegate(office_bunny());
 }
 
 // Tests that a toggled ToggleButton's tooltip is updated.
-TEST_F(ToggleEffectsViewTest, TooltipIsUpdated) {
+TEST_P(ToggleEffectsViewTest, TooltipIsUpdated) {
   // Add one toggle effect.
   controller()->effects_manager().RegisterDelegate(office_bunny());
   LeftClickOn(toggle_bubble_button());
@@ -147,6 +161,9 @@ TEST_F(ToggleEffectsViewTest, TooltipIsUpdated) {
           VIDEO_CONFERENCE_TOGGLE_BUTTON_TOOLTIP,
           l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA),
           l10n_util::GetStringUTF16(VIDEO_CONFERENCE_TOGGLE_BUTTON_STATE_ON)));
+
+  // Cleanup.
+  controller()->effects_manager().UnregisterDelegate(office_bunny());
 }
 
 }  // namespace ash::video_conference

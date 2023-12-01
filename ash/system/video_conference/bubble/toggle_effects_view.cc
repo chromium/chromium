@@ -10,12 +10,15 @@
 #include <utility>
 
 #include "ash/bubble/bubble_utils.h"
+#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/typography.h"
 #include "ash/system/tray/tray_constants.h"
+#include "ash/system/unified/feature_tile.h"
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"
+#include "ash/system/video_conference/bubble/vc_tile_ui_controller.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "ash/system/video_conference/video_conference_utils.h"
@@ -318,10 +321,20 @@ ToggleEffectsView::ToggleEffectsView(
       // `current_state` can only be a `bool` for a toggle effect.
       bool toggle_state = current_state.value() != 0;
       const VcEffectState* state = tile->GetState(/*index=*/0);
+      if (ash::features::IsVcDlcUiEnabled()) {
+        auto* tile_controller =
+            controller->effects_manager().GetUiControllerForEffectId(
+                tile->id());
+        if (tile_controller) {
+          row_view->AddChildView(tile_controller->CreateTile());
+          continue;
+        }
+      }
       row_view->AddChildView(std::make_unique<ToggleEffectsButton>(
           state->button_callback(), state->icon(), toggle_state,
           state->label_text(), state->accessible_name_id(),
-          tile->container_id(), tile->id(), /*num_button_per_row=*/row.size()));
+          tile->container_id(), tile->id(),
+          /*num_button_per_row=*/row.size()));
     }
 
     // Add the row as a child, now that it's fully populated,
