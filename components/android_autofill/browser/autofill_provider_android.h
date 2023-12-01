@@ -36,7 +36,9 @@ class AutofillProviderAndroid : public AutofillProvider,
     // and a bottom sheet was shown.
     kRequestSentStructureProvidedBottomSheetShown = 0,
     // A prefill request was sent and a view structure was requested and
-    // provided, but no bottom sheet was shown.
+    // provided, but no bottom sheet was shown. The reason for not showing the
+    // bottom sheet is opaque to WebView (e.g., no suggestions available by
+    // providers, keyboard suppression not working correctly, etc.)
     kRequestSentStructureProvidedBottomSheetNotShown = 1,
     // A prefill request was sent, but no view structure was requested by the
     // framework.
@@ -125,7 +127,8 @@ class AutofillProviderAndroid : public AutofillProvider,
   void OnAcceptDatalistSuggestion(const std::u16string& value) override;
   void SetAnchorViewRect(const base::android::JavaRef<jobject>& anchor,
                          const gfx::RectF& bounds) override;
-  void OnShowBottomSheetResult(bool is_shown) override;
+  void OnShowBottomSheetResult(bool is_shown,
+                               bool provided_autofill_structure) override;
 
   // content::WebContentsObserver:
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;

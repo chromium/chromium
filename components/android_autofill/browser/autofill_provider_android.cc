@@ -278,7 +278,9 @@ void AutofillProviderAndroid::SetAnchorViewRect(
   }
 }
 
-void AutofillProviderAndroid::OnShowBottomSheetResult(bool is_shown) {
+void AutofillProviderAndroid::OnShowBottomSheetResult(
+    bool is_shown,
+    bool provided_autofill_structure) {
   was_bottom_sheet_just_shown_ = is_shown;
 
   if (is_shown) {
@@ -292,8 +294,16 @@ void AutofillProviderAndroid::OnShowBottomSheetResult(bool is_shown) {
     keyboard_suppressor_->Unsuppress();
   }
 
-  // TODO(crbug.com/1502097): Add metrics for the cases in which we attempt
-  // to show a bottom sheet, but failed.
+  // Note that in some cases this metric is not accurate: If, for example,
+  // the bottom sheet is not shown because keyboard suppression did not work, it
+  // might be that a later interaction triggers the bottom sheet. See
+  // b/310634445.
+  base::UmaHistogramEnumeration(
+      kPrefillRequestStateUma,
+      provided_autofill_structure
+          ? PrefillRequestState::
+                kRequestSentStructureProvidedBottomSheetNotShown
+          : PrefillRequestState::kRequestSentStructureNotProvided);
 }
 
 void AutofillProviderAndroid::OnTextFieldDidChange(

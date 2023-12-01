@@ -56,6 +56,9 @@ import java.util.Collections;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @Features.EnableFeatures({AndroidAutofillFeatures.ANDROID_AUTOFILL_BOTTOM_SHEET_WORKAROUND_NAME})
+@Features.DisableFeatures({
+    AndroidAutofillFeatures.ANDROID_AUTOFILL_VIEW_STRUCTURE_WITH_FORM_HIERARCHY_LAYER_NAME
+})
 public class AutofillProviderTest {
     private static final float EXPECTED_DIP_SCALE = 2;
     private static final int SCROLL_X = 15;
@@ -263,10 +266,10 @@ public class AutofillProviderTest {
         // Creating a new request here shouldn't affect the results, that's better than saving the
         // prefill request in the provider.
         PrefillRequest randomRequest = new PrefillRequest(formData);
-        SparseArray<VirtualViewFillInfo> expctedInfos = randomRequest.getPrefillHints();
+        SparseArray<VirtualViewFillInfo> expectedInfos = randomRequest.getPrefillHints();
 
         assertEquals(
-                expctedInfos.valueAt(0).getAutofillHints(),
+                expectedInfos.valueAt(0).getAutofillHints(),
                 mPrefillRequestInfos.valueAt(0).getAutofillHints());
     }
 
@@ -281,8 +284,8 @@ public class AutofillProviderTest {
         int sessionId = 123;
         int virtualId = FormData.toFieldVirtualId(sessionId, (short) focus);
         FormData formData = setupPrefillRequest(sessionId);
+        simulateOnProvideAutofillStructure();
         when(mAutofillManager.showAutofillDialog(any(), eq(virtualId))).thenReturn(true);
-
         mAutofillProvider.startAutofillSession(
                 formData,
                 focus,
@@ -297,7 +300,11 @@ public class AutofillProviderTest {
         // notifyVirtualViewEntered shouldn't be called so this has to be unset.
         assertEquals(mFocusVirtualId, 0);
 
-        verify(mNativeMock).onShowBottomSheetResult(mMockedNativeAutofillProviderAndroid, true);
+        verify(mNativeMock)
+                .onShowBottomSheetResult(
+                        mMockedNativeAutofillProviderAndroid,
+                        /* isShown= */ true,
+                        /* provided_structure= */ true);
     }
 
     @Test
@@ -307,6 +314,42 @@ public class AutofillProviderTest {
         AndroidAutofillFeatures.ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME
     })
     public void testStartSessionWithPrefillRequestWithoutShowingBottomSheet() {
+        int focus = 1;
+        int sessionId = 123;
+        int virtualId = FormData.toFieldVirtualId(sessionId, (short) focus);
+        FormData formData = setupPrefillRequest(sessionId);
+        simulateOnProvideAutofillStructure();
+        when(mAutofillManager.showAutofillDialog(any(), eq(virtualId))).thenReturn(false);
+
+        mAutofillProvider.startAutofillSession(
+                formData,
+                focus,
+                /* x= */ 0,
+                /* y= */ 0,
+                /* width= */ 0,
+                /* height= */ 0,
+                /* hasServerPrediction= */ false);
+
+        // shouldAutofillDialog returns false so we call notifyVirtualViewEntered as well and both
+        // of them will have the correct virtualId.
+        assertEquals(mDialogVirtualId, virtualId);
+        assertEquals(mFocusVirtualId, virtualId);
+
+        verify(mNativeMock)
+                .onShowBottomSheetResult(
+                        mMockedNativeAutofillProviderAndroid,
+                        /* isShown= */ false,
+                        /* providedAutofillStructure= */ true);
+    }
+
+    @Test
+    @Config(minSdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @Features.EnableFeatures({
+        AndroidAutofillFeatures.ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME
+    })
+    public void
+            testStartSessionWithPrefillRequestWithoutShowingBottomSheetAndNoAutofillStructure() {
         int focus = 1;
         int sessionId = 123;
         int virtualId = FormData.toFieldVirtualId(sessionId, (short) focus);
@@ -327,7 +370,11 @@ public class AutofillProviderTest {
         assertEquals(mDialogVirtualId, virtualId);
         assertEquals(mFocusVirtualId, virtualId);
 
-        verify(mNativeMock).onShowBottomSheetResult(mMockedNativeAutofillProviderAndroid, false);
+        verify(mNativeMock)
+                .onShowBottomSheetResult(
+                        mMockedNativeAutofillProviderAndroid,
+                        /* isShown= */ false,
+                        /* providedAutofillStructure= */ false);
     }
 
     @Test
@@ -360,7 +407,7 @@ public class AutofillProviderTest {
         // notifyVirtualViewEntered should be called so this has to hold the correct virtualId.
         assertEquals(mFocusVirtualId, FormData.toFieldVirtualId(newSessionId, (short) focus));
 
-        verify(mNativeMock, never()).onShowBottomSheetResult(anyLong(), anyBoolean());
+        verify(mNativeMock, never()).onShowBottomSheetResult(anyLong(), anyBoolean(), anyBoolean());
     }
 
     FormData setupPrefillRequest(int sessionId) {
@@ -380,5 +427,14 @@ public class AutofillProviderTest {
         mAutofillProvider.sendPrefillRequest(formData);
 
         return formData;
+    }
+
+    /**
+     * Simulates a call from the Android Autofill framework to the AutofillProvider to provide the
+     * Autofill ViewStructure.
+     */
+    void simulateOnProvideAutofillStructure() {
+        mAutofillProvider.onProvideAutoFillVirtualStructure(
+                new TestViewStructure(), /* flags= */ 0);
     }
 }

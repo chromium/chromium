@@ -78,6 +78,9 @@ public class AutofillProvider {
     private WebContentsAccessibility mWebContentsAccessibility;
     private View mAnchorView;
     private PrefillRequest mPrefillRequest;
+    // Whether onProvideAutofillVirtualStructure has been called for the current PrefillRequest.
+    // Used solely for metrics.
+    private boolean mStructureProvidedForPrefillRequest;
 
     public AutofillProvider(
             Context context,
@@ -153,7 +156,13 @@ public class AutofillProvider {
         }
         // We should have one of them available here, we start with AutofillRequest as it should be
         // available only if we started a session.
-        FormData form = mRequest != null ? mRequest.getForm() : mPrefillRequest.getForm();
+        FormData form;
+        if (mRequest != null) {
+            form = mRequest.getForm();
+        } else {
+            form = mPrefillRequest.getForm();
+            mStructureProvidedForPrefillRequest = true;
+        }
         form.fillViewStructure(structure);
         if (AutofillManagerWrapper.isLoggable()) {
             AutofillManagerWrapper.log(
@@ -221,6 +230,7 @@ public class AutofillProvider {
 
         transformFormFieldToContainViewCoordinates(form);
         mPrefillRequest = new PrefillRequest(form);
+        mStructureProvidedForPrefillRequest = false;
 
         mAutofillManager.notifyVirtualViewsReady(mContainerView, mPrefillRequest.getPrefillHints());
     }
@@ -258,18 +268,7 @@ public class AutofillProvider {
         mRequest =
                 new AutofillRequest(
                         formData, new FocusField((short) focus, absBound), hasServerPrediction);
-        boolean bottomSheetShown = false;
-        if (Build.VERSION.SDK_INT >= VERSION_CODES.UPSIDE_DOWN_CAKE
-                && mPrefillRequest != null
-                && mPrefillRequest.getForm().mSessionId == formData.mSessionId) {
-            bottomSheetShown = showAutofillDialog(mContainerView, focus);
-            // Update native with the results.
-            if (mNativeAutofillProvider != 0) {
-                AutofillProviderJni.get()
-                        .onShowBottomSheetResult(mNativeAutofillProvider, bottomSheetShown);
-            }
-        }
-        if (!bottomSheetShown) {
+        if (!maybeShowBottomSheet(focus)) {
             notifyVirtualViewEntered(mContainerView, focus, absBound);
         }
         mAutofillUMA.onSessionStarted(mAutofillManager.isDisabled());
@@ -279,6 +278,31 @@ public class AutofillProvider {
         mAutofillTriggeredTimeMillis = System.currentTimeMillis();
 
         mAutofillManager.notifyNewSessionStarted(hasServerPrediction);
+    }
+
+    /**
+     * Attempts to show a bottom sheet if the Android version is U+ and there has been a prefill
+     * request for the form in mRequest.
+     *
+     * @param focus the index of the focused field in mRequest.
+     * @return whether the bottom sheet was shown.
+     */
+    boolean maybeShowBottomSheet(int focus) {
+        if (Build.VERSION.SDK_INT < VERSION_CODES.UPSIDE_DOWN_CAKE) return false;
+        if (mPrefillRequest == null
+                || mPrefillRequest.getForm().mSessionId != mRequest.getForm().mSessionId) {
+            return false;
+        }
+
+        boolean bottomSheetShown = showAutofillDialog(mContainerView, focus);
+        if (mNativeAutofillProvider != 0) {
+            AutofillProviderJni.get()
+                    .onShowBottomSheetResult(
+                            mNativeAutofillProvider,
+                            bottomSheetShown,
+                            mStructureProvidedForPrefillRequest);
+        }
+        return bottomSheetShown;
     }
 
     /**
@@ -781,6 +805,9 @@ public class AutofillProvider {
                 float width,
                 float height);
 
-        void onShowBottomSheetResult(long nativeAutofillProviderAndroidBridgeImpl, boolean isShown);
+        void onShowBottomSheetResult(
+                long nativeAutofillProviderAndroidBridgeImpl,
+                boolean isShown,
+                boolean providedAutofillStructure);
     }
 }

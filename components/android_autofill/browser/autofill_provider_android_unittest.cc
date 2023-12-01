@@ -866,10 +866,71 @@ TEST_F(AutofillProviderAndroidTest,
       login_form, login_form.fields.front());
 
   // Simulate a successfully shown bottom sheet.
-  provider_bridge_delegate().OnShowBottomSheetResult(/*is_shown=*/true);
+  provider_bridge_delegate().OnShowBottomSheetResult(
+      /*is_shown=*/true, /*provided_autofill_structure=*/true);
   histogram_tester.ExpectUniqueSample(
       AutofillProviderAndroid::kPrefillRequestStateUma,
       PrefillRequestState::kRequestSentStructureProvidedBottomSheetShown, 1);
+}
+
+// Tests that the correct metrics are emitted when the bottom sheet is not shown
+// and no view structure was provided to the Android framework.
+TEST_F(AutofillProviderAndroidTest,
+       PrefillRequestStateEmittedOnNotShowingBottomSheetWithoutViewStructure) {
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SdkVersion::SDK_VERSION_U) {
+    GTEST_SKIP();
+  }
+
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAndroidAutofillPrefillRequestsForLoginForms);
+
+  FormData login_form =
+      CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
+  android_autofill_manager().OnFormsSeen({login_form}, /*removed_forms=*/{});
+  android_autofill_manager().SimulatePropagateAutofillPredictions(
+      login_form.global_id());
+  android_autofill_manager().SimulateOnAskForValuesToFill(
+      login_form, login_form.fields.front());
+
+  // Simulate a successfully shown bottom sheet.
+  provider_bridge_delegate().OnShowBottomSheetResult(
+      /*is_shown=*/false, /*provided_autofill_structure=*/false);
+  histogram_tester.ExpectUniqueSample(
+      AutofillProviderAndroid::kPrefillRequestStateUma,
+      PrefillRequestState::kRequestSentStructureNotProvided, 1);
+}
+
+// Tests that the correct metrics are emitted when the bottom sheet is not shown
+// and a view structure was provided to the Android framework.
+TEST_F(AutofillProviderAndroidTest,
+       PrefillRequestStateEmittedOnNotShowingBottomSheetWithViewStructure) {
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SdkVersion::SDK_VERSION_U) {
+    GTEST_SKIP();
+  }
+
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAndroidAutofillPrefillRequestsForLoginForms);
+
+  FormData login_form =
+      CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
+  android_autofill_manager().OnFormsSeen({login_form}, /*removed_forms=*/{});
+  android_autofill_manager().SimulatePropagateAutofillPredictions(
+      login_form.global_id());
+  android_autofill_manager().SimulateOnAskForValuesToFill(
+      login_form, login_form.fields.front());
+
+  // Simulate a successfully shown bottom sheet.
+  provider_bridge_delegate().OnShowBottomSheetResult(
+      /*is_shown=*/false, /*provided_autofill_structure=*/true);
+  histogram_tester.ExpectUniqueSample(
+      AutofillProviderAndroid::kPrefillRequestStateUma,
+      PrefillRequestState::kRequestSentStructureProvidedBottomSheetNotShown, 1);
 }
 
 class AutofillProviderAndroidTestHidingLogic

@@ -69,7 +69,13 @@ class AutofillProviderAndroidBridgeImpl : public AutofillProviderAndroidBridge {
                          jfloat width,
                          jfloat height);
 
-  void OnShowBottomSheetResult(JNIEnv* env, jboolean is_shown);
+  // Informs the `Delegate` of the outcome of an attempt to show a bottom sheet.
+  // `is_shown` indicates whether the bottom sheet was shown and
+  // `provided_autofill_structure` describes whether an Autofill ViewStructure
+  // was provided to the Autofill framework prior to showing the bottom sheet.
+  void OnShowBottomSheetResult(JNIEnv* env,
+                               jboolean is_shown,
+                               jboolean provided_autofill_structure);
 
  private:
   // The delegate of the bridge.

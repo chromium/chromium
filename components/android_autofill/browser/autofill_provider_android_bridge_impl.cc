@@ -249,7 +249,8 @@ void AutofillProviderAndroidBridgeImpl::SetAnchorViewRect(JNIEnv* env,
 
 void AutofillProviderAndroidBridgeImpl::OnShowBottomSheetResult(
     JNIEnv* env,
-    jboolean is_shown) {
-  delegate_->OnShowBottomSheetResult(is_shown);
+    jboolean is_shown,
+    jboolean provided_autofill_structure) {
+  delegate_->OnShowBottomSheetResult(is_shown, provided_autofill_structure);
 }
 }  // namespace autofill

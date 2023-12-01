@@ -44,7 +44,8 @@ class AutofillProviderAndroidBridge {
     virtual void SetAnchorViewRect(
         const base::android::JavaRef<jobject>& anchor,
         const gfx::RectF& bounds) = 0;
-    virtual void OnShowBottomSheetResult(bool is_shown) = 0;
+    virtual void OnShowBottomSheetResult(bool is_shown,
+                                         bool provided_autofill_structure) = 0;
   };
 
   // A helper struct to reference a field in a form.
