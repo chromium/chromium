@@ -8507,6 +8507,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_SIDE_PANEL_PINNED" is_accessibility_with_no_ui="true" desc="Used to indicate to a screen reader user that a side panel has been pinned.">
         Side panel pinned
       </message>
+      <message name="IDS_PINNED_ACTION_BUTTON_ACCESSIBLE_TITLE" is_accessibility_with_no_ui="true" desc="Used to indicate to a screen reader user that an action is pinned in the toolbar">
+        <ph name="ACTION_NAME">$1<ex>Bookmarks</ex></ph> - pinned
+      </message>
       <message name="IDS_SIDE_PANEL_GENERIC_MENU_IPH" desc="The body text of the IPH describing how to find side panel entry points in the Chrome menu.">
         You can open most side panel features through the Chrome menu
       </message>

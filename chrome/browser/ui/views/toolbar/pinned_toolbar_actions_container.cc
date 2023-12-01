@@ -155,6 +155,12 @@ void PinnedToolbarActionsContainer::PinnedActionToolbarButton::
   }
 }
 
+void PinnedToolbarActionsContainer::PinnedActionToolbarButton::SetPinned(
+    bool pinned) {
+  pinned_ = pinned;
+  ActionItemChanged();
+}
+
 gfx::Size PinnedToolbarActionsContainer::PinnedActionToolbarButton::
     CalculatePreferredSize() const {
   // This makes sure the buttons are at least the toolbar button sized width.
@@ -179,9 +185,18 @@ void PinnedToolbarActionsContainer::PinnedActionToolbarButton::
                           ? action_item_->GetText()
                           : action_item_->GetTooltipText();
   SetTooltipText(tooltip_text);
-  if (!action_item_->GetAccessibleName().empty()) {
-    SetAccessibleName(action_item_->GetAccessibleName());
-  }
+
+  // Set the accessible name. Fall back to the tooltip if one is not provided.
+  // If pinned, the pinned state is added to the accessible name.
+  auto accessible_name = action_item_->GetAccessibleName().empty()
+                             ? tooltip_text
+                             : action_item_->GetAccessibleName();
+  auto stateful_accessible_name =
+      pinned_ ? l10n_util::GetStringFUTF16(
+                    IDS_PINNED_ACTION_BUTTON_ACCESSIBLE_TITLE, accessible_name)
+              : accessible_name;
+  SetAccessibleName(stateful_accessible_name);
+
   // If possible use the vector icon so that it updates as the theme updates.
   if (action_item_->GetImage().IsVectorIcon()) {
     SetVectorIcon(*action_item_->GetImage().GetVectorIcon().vector_icon());
@@ -570,11 +585,13 @@ void PinnedToolbarActionsContainer::AddPinnedActionButtonFor(
     const auto iter =
         base::ranges::find(popped_out_buttons_, id,
                            [](auto* button) { return button->GetActionId(); });
+    (*iter)->SetPinned(true);
     pinned_buttons_.push_back(*iter);
     popped_out_buttons_.erase(iter);
   } else {
     auto button = std::make_unique<PinnedActionToolbarButton>(
         browser_view_->browser(), id, this);
+    button->SetPinned(true);
     pinned_buttons_.push_back(AddChildView(std::move(button)));
   }
   ReorderViews();
@@ -590,6 +607,7 @@ void PinnedToolbarActionsContainer::RemovePinnedActionButtonFor(
   if (!(*iter)->IsActive()) {
     RemoveButton(*iter);
   } else {
+    (*iter)->SetPinned(false);
     popped_out_buttons_.push_back(*iter);
   }
   pinned_buttons_.erase(iter);
