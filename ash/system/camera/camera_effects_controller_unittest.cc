@@ -21,6 +21,7 @@
 #include "ash/system/video_conference/video_conference_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
@@ -31,6 +32,26 @@
 
 namespace ash {
 
+using BackgroundImageInfo = CameraEffectsController::BackgroundImageInfo;
+
+// Matcher defined to compare BackgroundImageInfo.
+// We ignore the creation_time and last_accessed for now, because that were
+// obtained from the filesystem, which is hard to mock for now.
+auto BackgroundImageInfoMatcher(const base::FilePath& basename,
+                                const std::string& jpeg_bytes) {
+  return testing::AllOf(
+      testing::Field("basename", &BackgroundImageInfo::basename,
+                     testing::Eq(basename.value())),
+      testing::Field("jpeg_bytes", &BackgroundImageInfo::jpeg_bytes,
+                     testing::Eq(jpeg_bytes)));
+}
+
+base::FilePath HashAsFileName(const std::string& jpeg_bytes) {
+  return base::FilePath(
+      base::StrCat({base::NumberToString(base::Hash(jpeg_bytes)), ".jpg"}));
+}
+
+constexpr char kTestAccount[] = "testuser@gmail.com";
 class CameraEffectsControllerTest : public NoSessionAshTestBase {
  public:
   // NoSessionAshTestBase:
@@ -60,10 +81,6 @@ class CameraEffectsControllerTest : public NoSessionAshTestBase {
         file_tmp_dir_.GetPath().AppendASCII("camera_background_run_dir_");
     ASSERT_TRUE(base::CreateDirectory(camera_background_img_dir_));
     ASSERT_TRUE(base::CreateDirectory(camera_background_run_dir_));
-    camera_effects_controller_->set_camera_background_img_dir_for_testing(
-        camera_background_img_dir_);
-    camera_effects_controller_->set_camera_background_run_dir_for_testing(
-        camera_background_run_dir_);
   }
 
   void TearDown() override {
@@ -152,21 +169,48 @@ class CameraEffectsControllerTest : public NoSessionAshTestBase {
         /*active_device_ids=*/{"fake_id"});
   }
 
+  // Callback just to save the BackgroundImageInfo.
+  void GetRecentlyUsedBackgroundImagesCallback(
+      const std::vector<BackgroundImageInfo>& info) {
+    background_image_info_ = info;
+  }
+
   CameraEffectsController* camera_effects_controller() {
     return camera_effects_controller_;
   }
 
   FakeVideoConferenceTrayController* controller() { return controller_.get(); }
 
+  base::FilePath GetFileInBackgroundRunDir() {
+    base::FileEnumerator enumerator(camera_background_run_dir_,
+                                    /*recursive=*/false,
+                                    base::FileEnumerator::FILES);
+    std::vector<base::FilePath> files;
+    for (auto path = enumerator.Next(); !path.empty();
+         path = enumerator.Next()) {
+      files.push_back(enumerator.GetInfo().GetName());
+    }
+
+    // We should always see 1 file in the camera_background_run_dir_.
+    CHECK_EQ(files.size(), 1u);
+
+    return files[0];
+  }
+
  protected:
   base::ScopedTempDir file_tmp_dir_;
   base::FilePath camera_background_img_dir_;
   base::FilePath camera_background_run_dir_;
 
+  std::vector<BackgroundImageInfo> background_image_info_;
+
   raw_ptr<CameraEffectsController, DanglingUntriaged | ExperimentalAsh>
       camera_effects_controller_ = nullptr;
+
   std::unique_ptr<FakeVideoConferenceTrayController> controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
+
+  base::WeakPtrFactory<CameraEffectsControllerTest> weak_factory_{this};
 };
 
 TEST_F(CameraEffectsControllerTest, IsEffectControlAvailable) {
@@ -218,7 +262,7 @@ TEST_F(CameraEffectsControllerTest, IsEffectControlAvailable) {
 }
 
 TEST_F(CameraEffectsControllerTest, BackgroundBlurOnEffectControlActivated) {
-  SimulateUserLogin("testuser@gmail.com");
+  SimulateUserLogin(kTestAccount);
 
   // Activate the possible values of
   // `CameraEffectsController::BackgroundBlurPrefValue`, verify that the pref
@@ -259,7 +303,7 @@ TEST_F(CameraEffectsControllerTest, BackgroundBlurOnEffectControlActivated) {
 
 TEST_F(CameraEffectsControllerTest,
        PortraitRelightingOnEffectControlActivated) {
-  SimulateUserLogin("testuser@gmail.com");
+  SimulateUserLogin(kTestAccount);
 
   // Initial state should be "off".
   EXPECT_FALSE(GetPortraitRelightingEffectState());
@@ -282,7 +326,7 @@ TEST_F(CameraEffectsControllerTest,
 }
 
 TEST_F(CameraEffectsControllerTest, PrefOnCameraEffectChanged) {
-  SimulateUserLogin("testuser@gmail.com");
+  SimulateUserLogin(kTestAccount);
 
   // Initial state should be "off".
   EXPECT_EQ(GetBackgroundBlurPref(),
@@ -335,7 +379,7 @@ TEST_F(CameraEffectsControllerTest, PrefOnCameraEffectChanged) {
 }
 
 TEST_F(CameraEffectsControllerTest, ResourceDependencyFlags) {
-  SimulateUserLogin("testuser@gmail.com");
+  SimulateUserLogin(kTestAccount);
 
   // Makes sure that all registered effects have the correct dependency flag.
   auto* background_blur =
@@ -360,7 +404,7 @@ TEST_F(CameraEffectsControllerTest, BackgroundBlurEnums) {
 TEST_F(CameraEffectsControllerTest, BackgroundBlurMetricsRecord) {
   base::HistogramTester histogram_tester;
 
-  SimulateUserLogin("testuser@gmail.com");
+  SimulateUserLogin(kTestAccount);
 
   // Update media status to make the video conference tray visible.
   VideoConferenceMediaState state;
@@ -421,7 +465,7 @@ TEST_F(CameraEffectsControllerTest, BackgroundBlurMetricsRecord) {
 }
 
 TEST_F(CameraEffectsControllerTest, CameraFramingSupportState) {
-  SimulateUserLogin("testuser@gmail.com");
+  SimulateUserLogin(kTestAccount);
 
   // By default autozoom is not supported, so the effect is not added.
   EXPECT_FALSE(
@@ -441,7 +485,7 @@ TEST_F(CameraEffectsControllerTest, CameraFramingSupportState) {
 TEST_F(CameraEffectsControllerTest, CameraFramingToggle) {
   SetAutozoomSupportState(true);
 
-  SimulateUserLogin("testuser@gmail.com");
+  SimulateUserLogin(kTestAccount);
 
   ASSERT_EQ(Shell::Get()->autozoom_controller()->GetState(),
             cros::mojom::CameraAutoFramingState::OFF);
@@ -456,7 +500,11 @@ TEST_F(CameraEffectsControllerTest, CameraFramingToggle) {
 }
 
 TEST_F(CameraEffectsControllerTest, SetBackgroundImageWithFileExists) {
-  SimulateUserLogin("testuser@gmail.com");
+  SimulateUserLogin(kTestAccount);
+  camera_effects_controller()->set_camera_background_img_dir_for_testing(
+      camera_background_img_dir_);
+  camera_effects_controller()->set_camera_background_run_dir_for_testing(
+      camera_background_run_dir_);
 
   // Apply background blur first.
   const auto state = CameraEffectsController::BackgroundBlurPrefValue::kLowest;
@@ -471,8 +519,9 @@ TEST_F(CameraEffectsControllerTest, SetBackgroundImageWithFileExists) {
   ASSERT_TRUE(base::WriteFile(file_fullpath, ""));
 
   // Set background image.
-  camera_effects_controller_->SetBackgroundImage(base::FilePath(relative_path));
-  base::RunLoop().RunUntilIdle();
+  camera_effects_controller()->SetBackgroundImage(
+      base::FilePath(relative_path));
+  task_environment()->RunUntilIdle();
 
   // Check background replace result from pref.
   EXPECT_THAT(GetBackgroundReplacePref(), testing::Pair(true, relative_path));
@@ -490,7 +539,11 @@ TEST_F(CameraEffectsControllerTest, SetBackgroundImageWithFileExists) {
 }
 
 TEST_F(CameraEffectsControllerTest, SetBackgroundImageWithFileDoesNotExist) {
-  SimulateUserLogin("testuser@gmail.com");
+  SimulateUserLogin(kTestAccount);
+  camera_effects_controller()->set_camera_background_img_dir_for_testing(
+      camera_background_img_dir_);
+  camera_effects_controller()->set_camera_background_run_dir_for_testing(
+      camera_background_run_dir_);
 
   // Apply background blur first.
   const auto state = CameraEffectsController::BackgroundBlurPrefValue::kLowest;
@@ -500,8 +553,9 @@ TEST_F(CameraEffectsControllerTest, SetBackgroundImageWithFileDoesNotExist) {
   const std::string relative_path = "background/test.png";
 
   // Set background image.
-  camera_effects_controller_->SetBackgroundImage(base::FilePath(relative_path));
-  base::RunLoop().RunUntilIdle();
+  camera_effects_controller()->SetBackgroundImage(
+      base::FilePath(relative_path));
+  task_environment()->RunUntilIdle();
 
   // Because the image is not created, the above SetBackgroundImage should fail,
   // so that the background replace pref should not be set.
@@ -509,6 +563,119 @@ TEST_F(CameraEffectsControllerTest, SetBackgroundImageWithFileDoesNotExist) {
 
   // Check the background blur is not changed.
   EXPECT_EQ(GetBackgroundBlurPref(), state);
+}
+
+TEST_F(CameraEffectsControllerTest, SetBackgroundImageFromContent) {
+  SimulateUserLogin(kTestAccount);
+  camera_effects_controller()->set_camera_background_img_dir_for_testing(
+      camera_background_img_dir_);
+  camera_effects_controller()->set_camera_background_run_dir_for_testing(
+      camera_background_run_dir_);
+
+  const std::string content1 = "fake-content1";
+  const base::FilePath filename1 = HashAsFileName(content1);
+
+  const std::string content2 = "fake-content2";
+  const base::FilePath filename2 = HashAsFileName(content2);
+
+  // Set background image from content1.
+  camera_effects_controller()->SetBackgroundImageFromContent(
+      std::string(content1));
+  task_environment()->RunUntilIdle();
+
+  // We should see replace-enabled and the filename1 in prefs.
+  EXPECT_THAT(GetBackgroundReplacePref(),
+              testing::Pair(true, filename1.value()));
+
+  // Check saved image info.
+  camera_effects_controller()->GetRecentlyUsedBackgroundImages(
+      3,
+      base::BindOnce(
+          &CameraEffectsControllerTest::GetRecentlyUsedBackgroundImagesCallback,
+          weak_factory_.GetWeakPtr()));
+  task_environment()->RunUntilIdle();
+  EXPECT_THAT(
+      background_image_info_,
+      testing::ElementsAre(BackgroundImageInfoMatcher(filename1, content1)));
+
+  EXPECT_EQ(GetFileInBackgroundRunDir(), filename1);
+
+  // Set background image from content2.
+  camera_effects_controller()->SetBackgroundImageFromContent(
+      std::string(content2));
+  task_environment()->RunUntilIdle();
+
+  // We should see replace-enabled and the filename2 in prefs.
+  EXPECT_THAT(GetBackgroundReplacePref(),
+              testing::Pair(true, filename2.value()));
+
+  camera_effects_controller()->GetRecentlyUsedBackgroundImages(
+      3,
+      base::BindOnce(
+          &CameraEffectsControllerTest::GetRecentlyUsedBackgroundImagesCallback,
+          weak_factory_.GetWeakPtr()));
+  task_environment()->RunUntilIdle();
+  EXPECT_THAT(
+      background_image_info_,
+      testing::ElementsAre(BackgroundImageInfoMatcher(filename2, content2),
+                           BackgroundImageInfoMatcher(filename1, content1)));
+  EXPECT_EQ(GetFileInBackgroundRunDir(), filename2);
+
+  // SetBackgroundImage with filename1 should update the last activity
+  // time of filename1.
+  camera_effects_controller()->SetBackgroundImage(filename1);
+  task_environment()->RunUntilIdle();
+
+  // We should see replace-enabled and the filename1 in prefs.
+  EXPECT_THAT(GetBackgroundReplacePref(),
+              testing::Pair(true, filename1.value()));
+
+  camera_effects_controller()->GetRecentlyUsedBackgroundImages(
+      3,
+      base::BindOnce(
+          &CameraEffectsControllerTest::GetRecentlyUsedBackgroundImagesCallback,
+          weak_factory_.GetWeakPtr()));
+  task_environment()->RunUntilIdle();
+  EXPECT_THAT(
+      background_image_info_,
+      testing::ElementsAre(BackgroundImageInfoMatcher(filename1, content1),
+                           BackgroundImageInfoMatcher(filename2, content2)));
+  EXPECT_EQ(GetFileInBackgroundRunDir(), filename1);
+
+  // Remove filename2.
+  camera_effects_controller()->RemoveBackgroundImage(filename2);
+  task_environment()->RunUntilIdle();
+
+  // Pref should not be effect if a irrelevant image is removed.
+  EXPECT_THAT(GetBackgroundReplacePref(),
+              testing::Pair(true, filename1.value()));
+
+  camera_effects_controller()->GetRecentlyUsedBackgroundImages(
+      3,
+      base::BindOnce(
+          &CameraEffectsControllerTest::GetRecentlyUsedBackgroundImagesCallback,
+          weak_factory_.GetWeakPtr()));
+  task_environment()->RunUntilIdle();
+  EXPECT_THAT(
+      background_image_info_,
+      testing::ElementsAre(BackgroundImageInfoMatcher(filename1, content1)));
+
+  // Remove filename1.
+  camera_effects_controller()->RemoveBackgroundImage(filename1);
+  task_environment()->RunUntilIdle();
+
+  // Since filename2 is removed, we should see the background image is removed
+  // from prefs.
+  EXPECT_THAT(GetBackgroundReplacePref(), testing::Pair(false, ""));
+
+  camera_effects_controller()->GetRecentlyUsedBackgroundImages(
+      3,
+      base::BindOnce(
+          &CameraEffectsControllerTest::GetRecentlyUsedBackgroundImagesCallback,
+          weak_factory_.GetWeakPtr()));
+  task_environment()->RunUntilIdle();
+  // We should only see all files removed.
+  EXPECT_TRUE(background_image_info_.empty());
 }
 
 }  // namespace ash

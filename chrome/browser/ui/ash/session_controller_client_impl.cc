@@ -319,6 +319,17 @@ PrefService* SessionControllerClientImpl::GetUserPrefService(
   return user_profile->GetPrefs();
 }
 
+base::FilePath SessionControllerClientImpl::GetProfilePath(
+    const AccountId& account_id) {
+  Profile* const user_profile =
+      multi_user_util::GetProfileFromAccountId(account_id);
+  if (!user_profile) {
+    return base::FilePath();
+  }
+
+  return user_profile->GetPath();
+}
+
 bool SessionControllerClientImpl::IsEnterpriseManaged() const {
   const ash::ChromeUserManager* user_manager = ash::ChromeUserManager::Get();
   return user_manager && user_manager->IsEnterpriseManaged();

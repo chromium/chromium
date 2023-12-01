@@ -146,6 +146,7 @@ class TestSessionControllerClient : public SessionControllerClient {
   void EmitAshInitialized() override;
   PrefService* GetSigninScreenPrefService() override;
   PrefService* GetUserPrefService(const AccountId& account_id) override;
+  base::FilePath GetProfilePath(const AccountId& account_id) override;
   bool IsEnterpriseManaged() const override;
   std::optional<int> GetExistingUsersCount() const override;
 

@@ -320,6 +320,11 @@ PrefService* SessionControllerImpl::GetUserPrefServiceForUser(
   return client_ ? client_->GetUserPrefService(account_id) : nullptr;
 }
 
+base::FilePath SessionControllerImpl::GetProfilePath(
+    const AccountId& account_id) const {
+  return client_ ? client_->GetProfilePath(account_id) : base::FilePath();
+}
+
 PrefService* SessionControllerImpl::GetPrimaryUserPrefService() const {
   const UserSession* session = GetPrimaryUserSession();
   return session ? GetUserPrefServiceForUser(session->user_info.account_id)

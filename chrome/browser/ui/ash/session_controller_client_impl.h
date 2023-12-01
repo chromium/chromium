@@ -91,6 +91,7 @@ class SessionControllerClientImpl
   void EmitAshInitialized() override;
   PrefService* GetSigninScreenPrefService() override;
   PrefService* GetUserPrefService(const AccountId& account_id) override;
+  base::FilePath GetProfilePath(const AccountId& account_id) override;
   bool IsEnterpriseManaged() const override;
   absl::optional<int> GetExistingUsersCount() const override;
 
