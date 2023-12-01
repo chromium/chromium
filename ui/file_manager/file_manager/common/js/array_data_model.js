@@ -189,7 +189,7 @@ export class ArrayDataModel extends EventTarget {
     // TODO(arv): Maybe unify splice and change events?
     const
         spliceEventDetail = /**
-                                @type {import('../../definitions/array_data_model_splice_event').ArrayDataModelSpliceEvent['detail']}
+                                @type {import('../../definitions/array_data_model_events.js').ArrayDataModelSpliceEvent['detail']}
                                   */
         ({
           removed: deletedItems,

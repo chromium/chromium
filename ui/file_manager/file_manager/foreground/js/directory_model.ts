@@ -15,7 +15,7 @@ import {recordMediumCount, recordUserAction} from '../../common/js/metrics.js';
 import {getEntryLabel} from '../../common/js/translations.js';
 import {testSendMessage} from '../../common/js/util.js';
 import {FileSystemType, getVolumeTypeFromRootType, isNative, RootType, Source, VolumeType} from '../../common/js/volume_manager_types.js';
-import type {ArrayDataModelSpliceEvent} from '../../definitions/array_data_model_splice_event.js';
+import type {ArrayDataModelSpliceEvent} from '../../definitions/array_data_model_events.js';
 import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {PropStatus, SearchLocation, SearchOptions, State, Volume, VolumeId} from '../../externs/ts/state.js';
 import type {SearchData} from '../../externs/ts/state.js';

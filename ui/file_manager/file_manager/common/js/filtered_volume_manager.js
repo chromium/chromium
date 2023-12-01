@@ -386,7 +386,7 @@ export class FilteredVolumeManager extends EventTarget {
   onVolumeInfoListUpdated_(event) {
     const
         spliceEventDetail = /**
-                         @type {import('../../definitions/array_data_model_splice_event.js').ArrayDataModelSpliceEvent}
+                         @type {import('../../definitions/array_data_model_events.js').ArrayDataModelSpliceEvent}
                            */
         (event).detail;
     // Filters some volumes.

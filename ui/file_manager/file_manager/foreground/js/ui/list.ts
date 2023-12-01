@@ -7,6 +7,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {ArrayDataModel} from '../../../common/js/array_data_model.js';
 import {boolAttrSetter, decorate, PropertyChangeEvent} from '../../../common/js/cr_ui.js';
+import type {ArrayDataModelChangeEvent} from '../../../definitions/array_data_model_events.js';
 
 import {createListItem, ListItem} from './list_item.js';
 import {ListSelectionController} from './list_selection_controller.js';
@@ -33,10 +34,6 @@ type EventHandler = (event: Event) => void;
 type ArrayDataModelPermutationEvent = Event&{
   permutation: number[],
   newLength: number,
-};
-
-type ArrayDataModelChangeEvent = Event&{
-  index: number,
 };
 
 /**
@@ -158,7 +155,8 @@ export class List extends HTMLUListElement {
     if (!this.boundHandleDataModelPermuted_) {
       this.boundHandleDataModelPermuted_ =
           this.handleDataModelPermuted_.bind(this);
-      this.boundHandleDataModelChange_ = this.handleDataModelChange_.bind(this);
+      this.boundHandleDataModelChange_ =
+          this.handleDataModelChange_.bind(this) as EventListener;
     }
 
     if (this.dataModel_) {
@@ -745,14 +743,17 @@ export class List extends HTMLUListElement {
     this.endBatchUpdates();
   }
 
-  private handleDataModelChange_(event: Event) {
-    const e = event as ArrayDataModelChangeEvent;
-    delete this.cachedItems_[e.index];
-    delete this.cachedItemHeights_[e.index];
+  private handleDataModelChange_(event: ArrayDataModelChangeEvent) {
+    if (!event.detail.index) {
+      return;
+    }
+    const eventIndex = event.detail.index;
+    delete this.cachedItems_[eventIndex];
+    delete this.cachedItemHeights_[eventIndex];
     this.cachedMeasuredItem_ = null;
 
-    if (e.index >= this.firstIndex_ &&
-        (e.index < this.lastIndex_ || this.remainingSpace_)) {
+    if (eventIndex >= this.firstIndex_ &&
+        (eventIndex < this.lastIndex_ || this.remainingSpace_)) {
       this.redraw();
     }
   }

@@ -183,11 +183,16 @@ export class ListThumbnailLoader extends EventTarget {
    * @param {!Event} event Event
    */
   onChange_(event) {
+    const
+        customEvent = /**
+                         @type {import('../../definitions/array_data_model_events.js').ArrayDataModelChangeEvent}
+                           */
+        (event);
     // Mark the thumbnail in cache as invalid.
-    // @ts-ignore: error TS2339: Property 'index' does not exist on type
-    // 'Event'.
-    const entry = this.dataModel_.item(event.index);
-    const cachedThumbnail = this.cache_.peek(entry.toURL());
+    const entry = (customEvent.detail.index) ?
+        this.dataModel_.item(customEvent.detail.index) :
+        null;
+    const cachedThumbnail = this.cache_.peek(entry?.toURL());
     if (cachedThumbnail) {
       cachedThumbnail.outdated = true;
     }

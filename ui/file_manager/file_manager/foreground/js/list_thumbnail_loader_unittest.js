@@ -408,10 +408,7 @@ export function testChangeEvent(callback) {
         return thumbnailLoadedEvents.length === 2;
       }).then(() => {
         // entry1 is changed.
-        const changeEvent = new Event('change');
-        // @ts-ignore: error TS2339: Property 'index' does not exist on type
-        // 'Event'.
-        changeEvent.index = 1;
+        const changeEvent = new CustomEvent('change', {detail: {index: 1}});
         fileListModel.dispatchEvent(changeEvent);
 
         // cache of entry1 should become invalid.

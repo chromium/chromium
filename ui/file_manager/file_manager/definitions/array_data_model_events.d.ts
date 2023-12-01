@@ -7,3 +7,7 @@ export type ArrayDataModelSpliceEvent = CustomEvent<{
   added: any[],
   index?: number,
 }>;
+
+export type ArrayDataModelChangeEvent = CustomEvent<{
+  index: number,
+}>;

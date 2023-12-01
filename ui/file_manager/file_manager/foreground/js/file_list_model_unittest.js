@@ -159,7 +159,7 @@ export function testSplice() {
   fileListModel.addEventListener('splice', event => {
     const
         spliceEventDetail = /**
-                         @type {import('../../definitions/array_data_model_splice_event.js').ArrayDataModelSpliceEvent}
+                         @type {import('../../definitions/array_data_model_events.js').ArrayDataModelSpliceEvent}
                            */
         (event).detail;
     assertEntryArrayEquals(spliceEventDetail.added, ['p', 'b']);
@@ -188,7 +188,7 @@ export function testSpliceWithoutSortStatus() {
   fileListModel.addEventListener('splice', event => {
     const
         spliceEventDetail = /**
-                         @type {import('../../definitions/array_data_model_splice_event.js').ArrayDataModelSpliceEvent}
+                         @type {import('../../definitions/array_data_model_events.js').ArrayDataModelSpliceEvent}
                            */
         (event).detail;
     assertEntryArrayEquals(spliceEventDetail.added, ['p', 'b']);
@@ -221,7 +221,7 @@ export function testSpliceWithoutAddingNewItems() {
   fileListModel.addEventListener('splice', event => {
     const
         spliceEventDetail = /**
-                         @type {import('../../definitions/array_data_model_splice_event.js').ArrayDataModelSpliceEvent}
+                         @type {import('../../definitions/array_data_model_events.js').ArrayDataModelSpliceEvent}
                            */
         (event).detail;
     assertEntryArrayEquals(spliceEventDetail.added, []);
@@ -251,7 +251,7 @@ export function testSpliceWithoutDeletingItems() {
   fileListModel.addEventListener('splice', event => {
     const
         spliceEventDetail = /**
-                         @type {import('../../definitions/array_data_model_splice_event.js').ArrayDataModelSpliceEvent}
+                         @type {import('../../definitions/array_data_model_events.js').ArrayDataModelSpliceEvent}
                            */
         (event).detail;
     assertEntryArrayEquals(spliceEventDetail.added, ['p', 'b']);

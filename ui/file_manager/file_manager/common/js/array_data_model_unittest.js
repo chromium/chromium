@@ -22,7 +22,7 @@ export function testPush() {
   m.addEventListener('splice', function(e) {
     const spliceEventDetail =
         /**
-     @type {import('../../definitions/array_data_model_splice_event.js').ArrayDataModelSpliceEvent}
+     @type {import('../../definitions/array_data_model_events.js').ArrayDataModelSpliceEvent}
        */
         (e).detail;
     count++;
@@ -99,7 +99,7 @@ export function testUpdateIndexes() {
   m.addEventListener('change', function(event) {
     const
         spliceEvent = /**
-                         @type {import('../../definitions/array_data_model_splice_event.js').ArrayDataModelSpliceEvent}
+                         @type {import('../../definitions/array_data_model_events.js').ArrayDataModelSpliceEvent}
                            */
         (event);
     changedIndexes.push(spliceEvent.detail.index);
@@ -122,7 +122,7 @@ export function testReplaceItem() {
   m.addEventListener('change', function(event) {
     const
         spliceEvent = /**
-                         @type {import('../../definitions/array_data_model_splice_event.js').ArrayDataModelSpliceEvent}
+                         @type {import('../../definitions/array_data_model_events.js').ArrayDataModelSpliceEvent}
                            */
         (event);
     changeIndex = spliceEvent.detail.index;

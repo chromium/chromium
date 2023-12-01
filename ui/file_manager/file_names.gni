@@ -581,7 +581,7 @@ generate_definitions_js_files = [
 
 # d.ts. files that are manually created and checked-in in the repo.
 checked_in_dts_files = [
-  "file_manager/definitions/array_data_model_splice_event.d.ts",
+  "file_manager/definitions/array_data_model_events.d.ts",
   "file_manager/definitions/file_error.d.ts",
   "file_manager/definitions/file_manager.d.ts",
   "file_manager/definitions/directory_change_event.d.ts",
