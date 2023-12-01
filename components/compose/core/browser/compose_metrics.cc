@@ -10,6 +10,7 @@
 
 namespace compose {
 
+const char kComposeDialogInnerTextSize[] = "Compose.Dialog.InnerTextSize";
 const char kComposeDialogOpenLatency[] = "Compose.Dialog.OpenLatency";
 const char kComposeDialogSelectionLength[] = "Compose.Dialog.SelectionLength";
 const char kComposeResponseDurationOk[] = "Compose.Response.Duration.Ok";
@@ -57,6 +58,10 @@ void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
   base::UmaHistogramCounts1000(kComposeSessionDialogShownCount + status,
                                dialog_shown_count);
   base::UmaHistogramCounts1000(kComposeSessionUndoCount + status, undo_count);
+}
+
+void LogComposeDialogInnerTextSize(int size) {
+  base::UmaHistogramCounts10M(kComposeDialogInnerTextSize, size);
 }
 
 void LogComposeDialogOpenLatency(base::TimeDelta duration) {

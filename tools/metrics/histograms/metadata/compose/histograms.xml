@@ -45,6 +45,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compose.Dialog.InnerTextSize" units="bytes"
+    expires_after="2024-03-31">
+  <owner>sophey@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    The size, in bytes, of the untrimmed inner text from the page when the
+    dialog is opened. The text is trimmed to inner_text_max_bytes before being
+    sent to Compose. Logged each time the dialog is opened.
+  </summary>
+</histogram>
+
 <histogram name="Compose.Dialog.OpenLatency" units="ms"
     expires_after="2024-03-31">
   <owner>cuianthony@chromium.org</owner>

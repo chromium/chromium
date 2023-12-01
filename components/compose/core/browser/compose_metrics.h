@@ -75,6 +75,10 @@ void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
                                    int dialog_shown_count,
                                    int undo_count);
 
+// Log the size (in bytes) of the untrimmed inner text from the page when the
+// dialog is opened.
+void LogComposeDialogInnerTextSize(int size);
+
 // Log the time taken for the dialog to be fully shown and interactable.
 void LogComposeDialogOpenLatency(base::TimeDelta duration);
 

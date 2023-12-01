@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
+#include "components/compose/core/browser/compose_metrics.h"
 #include "components/compose/core/browser/config.h"
 
 #include "content/public/browser/web_contents.h"
@@ -40,6 +41,7 @@ void InnerTextExtractor::InnerTextCallback(
   if (result) {
     const compose::Config& config = compose::GetComposeConfig();
     inner_text = result->inner_text;
+    compose::LogComposeDialogInnerTextSize(inner_text.size());
     if (inner_text.size() > config.inner_text_max_bytes) {
       // TODO(b/314230455): Reduce the number of times inner_text is copied.
       inner_text.erase(config.inner_text_max_bytes);
