@@ -2019,7 +2019,7 @@ public class CustomTabsConnection {
             ArrayList<String> foundTextFragments) {}
 
     protected boolean isCCTAPIDeprecated(String featureParamName) {
-        return false;
+        return true;
     }
 
     /**
