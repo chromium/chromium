@@ -1745,7 +1745,7 @@ void RunBackupRefPtrImplAdvanceTest(
   protected_ptr += requested_size / 2;
   // end-of-allocation address should not cause an error immediately, but it may
   // result in the pointer being poisoned.
-  protected_ptr = protected_ptr + requested_size / 2;
+  protected_ptr = protected_ptr + (requested_size + 1) / 2;
 #if BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
   EXPECT_DEATH_IF_SUPPORTED(*protected_ptr = ' ', "");
   protected_ptr -= 1;  // This brings the pointer back within
@@ -1761,7 +1761,7 @@ void RunBackupRefPtrImplAdvanceTest(
   // allocation, assign it explicitly to make sure the underlying implementation
   // doesn't "switch" to the next slot.
   protected_ptr = ptr + requested_size;
-  protected_ptr -= requested_size / 2;
+  protected_ptr -= (requested_size + 1) / 2;
   protected_ptr = protected_ptr - requested_size / 2;
   EXPECT_CHECK_DEATH(protected_ptr = protected_ptr - 1);
   EXPECT_CHECK_DEATH(protected_ptr -= 1);
@@ -1807,13 +1807,13 @@ TEST_F(BackupRefPtrTest, Advance) {
   size_t raw_size = 300003;
   ASSERT_GT(raw_size, partition_alloc::internal::MaxRegularSlotSpanSize());
   ASSERT_LE(raw_size, partition_alloc::internal::kMaxBucketed);
-  requested_size = allocator_.root()->AdjustSizeForExtrasSubtract(slot_size);
+  requested_size = allocator_.root()->AdjustSizeForExtrasSubtract(raw_size);
   RunBackupRefPtrImplAdvanceTest(allocator_, requested_size);
 
   // Same for direct map.
   raw_size = 1001001;
   ASSERT_GT(raw_size, partition_alloc::internal::kMaxBucketed);
-  requested_size = allocator_.root()->AdjustSizeForExtrasSubtract(slot_size);
+  requested_size = allocator_.root()->AdjustSizeForExtrasSubtract(raw_size);
   RunBackupRefPtrImplAdvanceTest(allocator_, requested_size);
 }
 
