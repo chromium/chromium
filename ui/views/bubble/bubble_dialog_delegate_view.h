@@ -300,6 +300,8 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // Get the maximum available screen space to place a bubble anchored to
   // |anchor_view| at |arrow|. If offscreen adjustment is on, this would return
   // the max space corresponding to the possible arrow positions of the bubble.
+  // NOTE: This function should not be called in ozone platforms where global
+  // screen coordinates are not available.
   static gfx::Size GetMaxAvailableScreenSpaceToPlaceBubble(
       View* anchor_view,
       BubbleBorder::Arrow arrow,

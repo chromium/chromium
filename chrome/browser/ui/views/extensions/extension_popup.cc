@@ -18,6 +18,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/native/native_view_host.h"
@@ -30,6 +31,10 @@
 #include "ui/aura/window.h"
 #include "ui/wm/core/window_animations.h"
 #include "ui/wm/public/activation_client.h"
+#endif
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -222,6 +227,18 @@ gfx::Size ExtensionPopup::GetMinBounds() {
 }
 
 gfx::Size ExtensionPopup::GetMaxBounds() {
+#if BUILDFLAG(IS_OZONE)
+  // Some platforms like wayland don't allow clients to know the global
+  // coordinates of the window. This means in those platforms we have no way to
+  // calculate exact space available based on the position of the parent window.
+  // So simply fall back on default max.
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformProperties()
+           .supports_global_screen_coordinates) {
+    return kMaxSize;
+  }
+#endif
+
   gfx::Size max_size = kMaxSize;
   max_size.SetToMin(
       BubbleDialogDelegate::GetMaxAvailableScreenSpaceToPlaceBubble(

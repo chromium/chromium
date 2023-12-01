@@ -63,6 +63,10 @@
 #include "ui/aura/window_observer.h"
 #endif
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 DEFINE_UI_CLASS_PROPERTY_TYPE(std::vector<views::BubbleDialogDelegate*>*)
 
 namespace views {
@@ -786,6 +790,14 @@ gfx::Size BubbleDialogDelegate::GetMaxAvailableScreenSpaceToPlaceBubble(
          arrow == BubbleBorder::BOTTOM_LEFT);
   DCHECK_EQ(arrow_adjustment,
             BubbleFrameView::PreferredArrowAdjustment::kMirror);
+
+#if BUILDFLAG(IS_OZONE)
+  // This function should not be called in ozone platforms where global screen
+  // coordinates are not available.
+  DCHECK(ui::OzonePlatform::GetInstance()
+             ->GetPlatformProperties()
+             .supports_global_screen_coordinates);
+#endif
 
   gfx::Rect anchor_rect = anchor_view->GetAnchorBoundsInScreen();
   gfx::Rect screen_rect =
