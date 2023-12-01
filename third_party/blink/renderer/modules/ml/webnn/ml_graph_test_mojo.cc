@@ -3273,7 +3273,7 @@ TEST_P(MLGraphTestMojo, Resample2dTest) {
 
 struct ReshapeTester {
   OperandInfoBlink input;
-  Vector<absl::optional<uint32_t>> new_shape;
+  Vector<uint32_t> new_shape;
   OperandInfoMojo expected;
 
   void Test(MLGraphTestMojo& helper,
@@ -3347,32 +3347,12 @@ TEST_P(MLGraphTestMojo, ReshapeTest) {
         .Test(*this, scope, builder);
   }
   {
-    // Test reshaping from 2-D tensor to 1-D tensor with calculated dimension.
-    ReshapeTester{
-        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
-                  .dimensions = {2, 2}},
-        .new_shape = {absl::nullopt},
-        .expected = {.data_type = blink_mojom::Operand::DataType::kFloat16,
-                     .dimensions = {4}}}
-        .Test(*this, scope, builder);
-  }
-  {
     // Test reshaping from 4-D tensor to 2-D tensor.
     ReshapeTester{
         .input = {.data_type = V8MLOperandDataType::Enum::kInt32,
                   .dimensions = {1, 2, 2, 1}},
         .new_shape = {1, 4},
         .expected = {.data_type = blink_mojom::Operand::DataType::kInt32,
-                     .dimensions = {1, 4}}}
-        .Test(*this, scope, builder);
-  }
-  {
-    // Test reshaping from 4-D tensor to 2-D tensor with calculated dimension.
-    ReshapeTester{
-        .input = {.data_type = V8MLOperandDataType::Enum::kUint8,
-                  .dimensions = {1, 2, 2, 1}},
-        .new_shape = {1, absl::nullopt},
-        .expected = {.data_type = blink_mojom::Operand::DataType::kUint8,
                      .dimensions = {1, 4}}}
         .Test(*this, scope, builder);
   }

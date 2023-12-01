@@ -1510,7 +1510,7 @@ TEST_P(MLGraphTest, Pool2dTest) {
 template <typename T>
 struct ReshapeTester {
   OperandInfo<T> input;
-  Vector<absl::optional<uint32_t>> new_shape;
+  Vector<uint32_t> new_shape;
   Vector<uint32_t> expected_output_shape;
 
   void Test(MLGraphTest& helper, V8TestingScope& scope) {
@@ -1575,32 +1575,12 @@ TEST_P(MLGraphTest, ReshapeTest) {
         .Test(*this, scope);
   }
   {
-    // Test reshaping from 2-D tensor to 1-D tensor with calculated dimension.
-    ReshapeTester<float>{
-        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                  .dimensions = {2, 2},
-                  .values = {-10.0, -0.5, 0.5, 10.0}},
-        .new_shape = {absl::nullopt},
-        .expected_output_shape = {4}}
-        .Test(*this, scope);
-  }
-  {
     // Test reshaping from 4-D tensor to 2-D tensor.
     ReshapeTester<float>{
         .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 2, 2, 1},
                   .values = {-10.0, -0.5, 0.5, 10.0}},
         .new_shape = {1, 4},
-        .expected_output_shape = {1, 4}}
-        .Test(*this, scope);
-  }
-  {
-    // Test reshaping from 4-D tensor to 2-D tensor with calculated dimension.
-    ReshapeTester<float>{
-        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                  .dimensions = {1, 2, 2, 1},
-                  .values = {-10.0, -0.5, 0.5, 10.0}},
-        .new_shape = {1, absl::nullopt},
         .expected_output_shape = {1, 4}}
         .Test(*this, scope);
   }

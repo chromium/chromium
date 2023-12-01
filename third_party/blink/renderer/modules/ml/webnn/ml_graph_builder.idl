@@ -214,7 +214,7 @@ dictionary MLSplitOptions {
   [RaisesException] MLOperand relu(MLOperand input);
   [RaisesException] MLActivation relu();
 
-  [RaisesException] MLOperand reshape(MLOperand input, sequence<[EnforceRange] unsigned long?> newShape);
+  [RaisesException] MLOperand reshape(MLOperand input, sequence<[EnforceRange] unsigned long> newShape);
 
   [RaisesException] MLOperand resample2d(MLOperand input, optional MLResample2dOptions options = {});
 

@@ -1129,40 +1129,23 @@ MLActivation* MLGraphBuilder::relu(ExceptionState& exception_state) {
                                             MLOperator::OperatorKind::kRelu);
 }
 
-MLOperand* MLGraphBuilder::reshape(
-    const MLOperand* input,
-    const Vector<absl::optional<uint32_t>>& new_shape,
-    ExceptionState& exception_state) {
-  absl::optional<wtf_size_t> null_dim_index = absl::nullopt;
+MLOperand* MLGraphBuilder::reshape(const MLOperand* input,
+                                   const Vector<uint32_t>& new_shape,
+                                   ExceptionState& exception_state) {
   // Setting the initial number of elements to 1 would cover the 0-D scalar with
   // empty dimensions.
   base::CheckedNumeric<size_t> checked_newshape_number_of_elements = 1;
   Vector<uint32_t> output_shape(new_shape.size());
-  // According to WebNN spec:
-  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-reshape, only one
-  // component of new shape can be the special value of null.
-  //
-  // TODO(crbug.com/1502361): Drop the special null value support.
   for (wtf_size_t i = 0; i < new_shape.size(); ++i) {
     auto dim = new_shape[i];
-    if (!dim) {
-      if (null_dim_index) {
-        exception_state.ThrowDOMException(
-            DOMExceptionCode::kDataError,
-            "Only one component of new shape can be null.");
-        return nullptr;
-      }
-      null_dim_index = i;
-    } else {
-      if (dim.value() == 0) {
-        exception_state.ThrowDOMException(
-            DOMExceptionCode::kDataError,
-            "The value of new shape should not be 0.");
-        return nullptr;
-      }
-      checked_newshape_number_of_elements *= dim.value();
-      output_shape[i] = dim.value();
+    if (dim == 0) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          "The value of new shape should not be 0.");
+      return nullptr;
     }
+    checked_newshape_number_of_elements *= dim;
+    output_shape[i] = dim;
   }
   size_t newshape_number_of_elements;
   if (!checked_newshape_number_of_elements.AssignIfValid(
@@ -1173,40 +1156,16 @@ MLOperand* MLGraphBuilder::reshape(
     return nullptr;
   }
   DCHECK_NE(newshape_number_of_elements, size_t(0));
-  if (null_dim_index) {
-    // The size of the dimension with the value of null is computed so that the
-    // total size remains constant.
-    if (input->NumberOfElements() % newshape_number_of_elements != size_t(0)) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          String::Format(
-              "The number of elements (%zu) in the input tensor can't be "
-              "divided evenly by the number of elements (%zu) implied by new "
-              "shape.",
-              input->NumberOfElements(), newshape_number_of_elements));
-      return nullptr;
-    }
-    // Check whether the quotient of type size_t is in the range of dimension of
-    // type uint32_t.
-    if (!base::CheckDiv(input->NumberOfElements(), newshape_number_of_elements)
-             .AssignIfValid(&output_shape[null_dim_index.value()])) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          "The size of dimension with the value null is too large.");
-      return nullptr;
-    }
-  } else {
-    // The number of elements implied by new shape must be the same as the
-    // number of elements in the input tensor.
-    if (input->NumberOfElements() != newshape_number_of_elements) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          String::Format(
-              "The number of elements (%zu) implied by new shape doesn't match "
-              "the number of elements (%zu) in the input tensor.",
-              newshape_number_of_elements, input->NumberOfElements()));
-      return nullptr;
-    }
+  // The number of elements implied by new shape must be the same as the
+  // number of elements in the input tensor.
+  if (input->NumberOfElements() != newshape_number_of_elements) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        String::Format(
+            "The number of elements (%zu) implied by new shape doesn't match "
+            "the number of elements (%zu) in the input tensor.",
+            newshape_number_of_elements, input->NumberOfElements()));
+    return nullptr;
   }
   auto* reshape = MakeGarbageCollected<MLOperator>(
       this, MLOperator::OperatorKind::kReshape);
