@@ -14,6 +14,7 @@ import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -114,6 +115,11 @@ public class DisplayCutoutTabHelper implements UserData {
             BaseCustomTabActivity baseCustomTabActivity = (BaseCustomTabActivity) activity;
             return (baseCustomTabActivity.getIntentDataProvider().getTwaDisplayMode()
                     instanceof TrustedWebActivityDisplayMode.ImmersiveMode);
+        }
+
+        @Override
+        public boolean isDrawEdgeToEdgeEnabled() {
+            return ChromeFeatureList.sDrawEdgeToEdge.isEnabled();
         }
     }
 

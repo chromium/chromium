@@ -122,6 +122,9 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
 
         /** Whether the activity is in browser (not-HTML) fullscreen. */
         boolean isInBrowserFullscreen();
+
+        /** Whether the basic Feature for drawing Edge To Edge is enabled. */
+        boolean isDrawEdgeToEdgeEnabled();
     }
 
     private final Delegate mDelegate;
@@ -228,7 +231,9 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
                 value == ViewportFit.COVER || value == ViewportFit.COVER_FORCED_BY_USER_AGENT);
 
         // TODO(crbug.com/1480477): Investigate whether if() can be turned into assert.
-        if (!mDelegate.getWebContents().isFullscreenForCurrentTab()
+        // Most likely we will need to just remove this section when E2E is launched.
+        if (!mDelegate.isDrawEdgeToEdgeEnabled()
+                && !mDelegate.getWebContents().isFullscreenForCurrentTab()
                 && !mDelegate.isInBrowserFullscreen()) {
             value = ViewportFit.AUTO;
         }
