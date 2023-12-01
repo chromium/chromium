@@ -12,7 +12,8 @@
       "os.telemetry.network_info"
     ],
     "optional_permissions": [
-      "os.bluetooth_peripherals_info"
+      "os.bluetooth_peripherals_info",
+      "os.management.audio"
     ],
     "chromeos_system_extension": {},
     "externally_connectable": {

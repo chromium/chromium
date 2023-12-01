@@ -18817,6 +18817,7 @@ Called by update_extension_histograms.py.-->
   <int value="1848" label="ODFSCONFIGPRIVATE_GETMOUNT"/>
   <int value="1849" label="ODFSCONFIGPRIVATE_GETACCOUNTRESTRICTIONS"/>
   <int value="1850" label="DOCUMENT_SCAN_GETSCANNERLIST"/>
+  <int value="1851" label="OS_MANAGEMENT_SETAUDIOGAIN"/>
 </enum>
 
 <enum name="ExtensionInProgressRequestState">
@@ -19243,6 +19244,7 @@ Called by update_extension_permission.py.-->
   <int value="254" label="kChromeOSBluetoothPeripheralsInfo"/>
   <int value="255" label="kEnterpriseKioskInput"/>
   <int value="256" label="kOdfsConfigPrivate"/>
+  <int value="257" label="kChromeOSManagementAudio"/>
 </enum>
 
 <enum name="ExtensionPointEnableState">

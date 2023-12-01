@@ -1910,6 +1910,7 @@ enum HistogramValue {
   ODFSCONFIGPRIVATE_GETMOUNT = 1848,
   ODFSCONFIGPRIVATE_GETACCOUNTRESTRICTIONS = 1849,
   DOCUMENT_SCAN_GETSCANNERLIST = 1850,
+  OS_MANAGEMENT_SETAUDIOGAIN = 1851,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY
