@@ -452,11 +452,17 @@ void FrameCaptionButtonContainerView::SetButtonSize(const gfx::Size& size) {
     constexpr int kExtraTargetSpaceForCloseButton = 8;
     close_button_->SetPreferredSize(gfx::Size(
         size.width() + kExtraTargetSpaceForCloseButton, size.height()));
-    // Add padding to trailing edge to keep distance between caption buttons
-    // unchanged.
-    close_button_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
-        0, base::i18n::IsRTL() ? kExtraTargetSpaceForCloseButton : 0, 0,
-        base::i18n::IsRTL() ? 0 : kExtraTargetSpaceForCloseButton)));
+
+    // Do not create a new border if there already exists. Otherwise, that could
+    // cause a significant performance issue as `SetButtonSize` is called on
+    // every layout.
+    if (!close_button_->GetBorder()) {
+      // Add padding to trailing edge to keep distance between caption buttons
+      // unchanged.
+      close_button_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+          0, base::i18n::IsRTL() ? kExtraTargetSpaceForCloseButton : 0, 0,
+          base::i18n::IsRTL() ? 0 : kExtraTargetSpaceForCloseButton)));
+    }
   } else {
     close_button_->SetPreferredSize(size);
   }
