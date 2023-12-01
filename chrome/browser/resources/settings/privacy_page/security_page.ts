@@ -383,6 +383,13 @@ export class SettingsSecurityPageElement extends
     return subLabel;
   }
 
+  // Conversion helper for binding Integer pref values as String values.
+  // For ControlledRadioButton elements, the name attribute must be of String
+  // type in order to correctly match for the PrefControlMixin.
+  private getName_(value: number): string {
+    return value.toString();
+  }
+
   private getHttpsFirstModeSubLabel_(): string {
     // If the backing HTTPS-Only Mode preference is enabled, but the
     // generated preference has its user control disabled, then additional

@@ -17,6 +17,9 @@
         "prefs": {
           "https_only_mode_enabled": {
             "value": false
+          },
+          "https_first_mode_incognito_enabled": {
+            "value": false
           }
         }
       },
@@ -27,6 +30,9 @@
         "prefs": {
           "https_only_mode_enabled": {
             "default_value": false
+          },
+          "https_first_mode_incognito_enabled": {
+            "default_value": true
           }
         }
       },
@@ -36,6 +42,9 @@
         },
         "prefs": {
           "https_only_mode_enabled": {
+            "value": true
+          },
+          "https_first_mode_incognito_enabled": {
             "value": true
           }
         }
