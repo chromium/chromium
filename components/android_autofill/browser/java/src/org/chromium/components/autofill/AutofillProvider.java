@@ -159,6 +159,7 @@ public class AutofillProvider {
         FormData form;
         if (mRequest != null) {
             form = mRequest.getForm();
+            mAutofillUMA.onVirtualStructureProvided();
         } else {
             form = mPrefillRequest.getForm();
             mStructureProvidedForPrefillRequest = true;
@@ -168,7 +169,6 @@ public class AutofillProvider {
             AutofillManagerWrapper.log(
                     "onProvideAutoFillVirtualStructure fields:" + structure.getChildCount());
         }
-        mAutofillUMA.onVirtualStructureProvided();
     }
 
     /**
@@ -265,13 +265,15 @@ public class AutofillProvider {
         Rect absBound = transformToWindowBounds(new RectF(x, y, x + width, y + height));
         if (mRequest != null) notifyViewExitBeforeDestroyRequest();
         transformFormFieldToContainViewCoordinates(formData);
+        mAutofillUMA.onSessionStarted(mAutofillManager.isDisabled());
         mRequest =
                 new AutofillRequest(
                         formData, new FocusField((short) focus, absBound), hasServerPrediction);
-        if (!maybeShowBottomSheet(focus)) {
+        if (maybeShowBottomSheet(focus)) {
+            mAutofillUMA.onBottomSheetShown();
+        } else {
             notifyVirtualViewEntered(mContainerView, focus, absBound);
         }
-        mAutofillUMA.onSessionStarted(mAutofillManager.isDisabled());
         if (hasServerPrediction) {
             mAutofillUMA.onServerTypeAvailable(formData, /* afterSessionStarted= */ false);
         }

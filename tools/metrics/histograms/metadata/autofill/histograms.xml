@@ -5372,6 +5372,17 @@ chromium-metrics-reviews@google.com.
   <summary>Records the state of an autofill session.</summary>
 </histogram>
 
+<histogram name="Autofill.WebView.AutofillSessionWithBottomSheet"
+    enum="AutofillSessionStates" expires_after="2024-12-12">
+  <owner>jkeitel@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the state of an autofill session in the presence of a bottom sheet.
+    Emitted at the end of a session (i.e. on submit, on start of a new session,
+    or on destruction of the WebContents).
+  </summary>
+</histogram>
+
 <histogram name="Autofill.WebView.AutofillState.NoVirtualStructureProvided"
     enum="BooleanEnabled" expires_after="2024-12-12">
   <owner>jihadghanna@google.com</owner>
@@ -5432,6 +5443,8 @@ chromium-metrics-reviews@google.com.
     session.
 
     Bit #6 is true iff a form submission was detected.
+
+    Bit #7 is true iff a bottom sheet was shown.
   </summary>
 </histogram>
 

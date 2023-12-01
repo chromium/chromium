@@ -39,6 +39,8 @@ public class AutofillProviderUMA {
 
     // Records what happened in an autofill session.
     public static final String UMA_AUTOFILL_AUTOFILL_SESSION = "Autofill.WebView.AutofillSession";
+    public static final String UMA_AUTOFILL_AUTOFILL_SESSION_WITH_BOTTOM_SHEET =
+            "Autofill.WebView.AutofillSessionWithBottomSheet";
     // The possible value of UMA_AUTOFILL_AUTOFILL_SESSION.
     public static final int SESSION_UNKNOWN = 0;
     public static final int NO_STRUCTURE_PROVIDED = 1;
@@ -146,7 +148,8 @@ public class AutofillProviderUMA {
         public static final int EVENT_USER_CHANGED_AUTOFILLED_FIELD = 1 << 4;
         public static final int EVENT_FIELD_CHANGED_VISIBILITY = 1 << 5;
         public static final int EVENT_FORM_SUBMITTED = 1 << 6;
-        public static final int EVENT_MAX = 1 << 7;
+        public static final int EVENT_BOTTOM_SHEET_SHOWN = 1 << 7;
+        public static final int EVENT_MAX = 1 << 8;
 
         private Long mSuggestionTimeMillis;
 
@@ -174,10 +177,16 @@ public class AutofillProviderUMA {
         }
 
         public void recordHistogram(boolean autofillDisabled) {
+            final int sessionValue = toUMAAutofillSessionValue();
             RecordHistogram.recordEnumeratedHistogram(
-                    UMA_AUTOFILL_AUTOFILL_SESSION,
-                    toUMAAutofillSessionValue(),
-                    AUTOFILL_SESSION_HISTOGRAM_COUNT);
+                    UMA_AUTOFILL_AUTOFILL_SESSION, sessionValue, AUTOFILL_SESSION_HISTOGRAM_COUNT);
+            // If a bottom sheet was shown, we record an additional, separate metric for it.
+            if ((mState & EVENT_BOTTOM_SHEET_SHOWN) != 0) {
+                RecordHistogram.recordEnumeratedHistogram(
+                        UMA_AUTOFILL_AUTOFILL_SESSION,
+                        sessionValue,
+                        AUTOFILL_SESSION_HISTOGRAM_COUNT);
+            }
             RecordHistogram.recordEnumeratedHistogram(UMA_AUTOFILL_EVENTS, mState, EVENT_MAX);
             // Only record if user ever changed form.
             if (mUserChangedAutofilledField != null) {
@@ -410,6 +419,14 @@ public class AutofillProviderUMA {
     public void onAutofill() {
         if (mRecorder != null) mRecorder.record(SessionRecorder.EVENT_FORM_AUTOFILLED);
         if (mServerPredictionRecorder != null) mServerPredictionRecorder.onAutofill();
+    }
+
+    public void onBottomSheetShown() {
+        if (mRecorder == null) return;
+        // The virtual structure event is provided prior to session start for sessions with a bottom
+        // sheet. Therefore we record it here manually.
+        mRecorder.record(SessionRecorder.EVENT_VIRTUAL_STRUCTURE_PROVIDED);
+        mRecorder.record(SessionRecorder.EVENT_BOTTOM_SHEET_SHOWN);
     }
 
     public void onUserChangeFieldValue(boolean isPreviouslyAutofilled) {
