@@ -5,23 +5,11 @@
     "chrome_project": "chrome-m118",
     "is_main": false,
     "platforms": {
-        "android": {
-            "description": "beta/stable",
-            "sheriff_rotation": "chrome_browser_release"
-        },
         "cros": {
             "description": "beta/stable",
             "sheriff_rotation": "chrome_browser_release"
         },
         "fuchsia": {
-            "description": "beta/stable",
-            "sheriff_rotation": "chrome_browser_release"
-        },
-        "ios": {
-            "description": "beta/stable",
-            "sheriff_rotation": "chrome_browser_release"
-        },
-        "linux": {
             "description": "beta/stable",
             "sheriff_rotation": "chrome_browser_release"
         },
