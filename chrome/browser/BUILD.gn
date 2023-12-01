@@ -5013,6 +5013,8 @@ static_library("browser") {
       "nearby_sharing/metrics/discovery_metric_logger.h",
       "nearby_sharing/metrics/metric_common.cc",
       "nearby_sharing/metrics/metric_common.h",
+      "nearby_sharing/metrics/nearby_share_metric_logger.cc",
+      "nearby_sharing/metrics/nearby_share_metric_logger.h",
       "nearby_sharing/metrics/throughput_metric_logger.cc",
       "nearby_sharing/metrics/throughput_metric_logger.h",
       "nearby_sharing/nearby_confirmation_manager.cc",
