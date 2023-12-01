@@ -428,16 +428,13 @@ void CloudPolicyInvalidator::Register(const invalidation::Topic& topic) {
   UpdateInvalidationsEnabled();
 
   // Update subscription with the invalidation service.
-  bool success =
+  const bool success =
       invalidation_service_->UpdateInterestedTopics(this, /*topics=*/{topic});
-  // Do not crash as server might send duplicate invalidation IDs due to
-  // http://b/119860379.
-  if (!success) {
-    LOG(ERROR) << "Failed to subscribe to " << topic
-               << " for policy invalidations";
-  }
+
   base::UmaHistogramBoolean(kMetricPolicyInvalidationRegistration, success);
   base::UmaHistogramBoolean(kMetricPolicyInvalidationRegistrationFcm, success);
+
+  CHECK(success) << "Could not subscribe to topic: " << topic;
 }
 
 void CloudPolicyInvalidator::Unregister() {

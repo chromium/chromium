@@ -150,7 +150,7 @@ void RemoteCommandsInvalidator::Register(const invalidation::Topic& topic) {
       invalidation_service_->UpdateInterestedTopics(this, /*topics=*/{topic});
   base::UmaHistogramBoolean(kMetricRemoteCommandInvalidationsRegistrationResult,
                             success);
-  CHECK(success);
+  CHECK(success) << "Could not subscribe to topic: " << topic;
 }
 
 void RemoteCommandsInvalidator::Unregister() {
