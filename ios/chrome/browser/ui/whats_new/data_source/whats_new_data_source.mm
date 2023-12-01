@@ -35,6 +35,7 @@ NSString* const kDictionaryTitleKey = @"Title";
 NSString* const kDictionarySubtitleKey = @"Subtitle";
 NSString* const kDictionaryIsSymbolKey = @"IsSymbol";
 NSString* const kDictionaryIsSystemSymbolKey = @"IsSystemSymbol";
+NSString* const kDictionaryIsMulticolorSymbolKey = @"IsMulticolorSymbol";
 NSString* const kDictionaryImageNameKey = @"ImageName";
 NSString* const kDictionaryImageTextKey = @"ImageTexts";
 NSString* const kDictionaryIconImageKey = @"IconImageName";
@@ -79,10 +80,16 @@ NSString* GetPrimaryActionTitle(WhatsNewPrimaryAction action) {
 }
 
 // Returns a UIImage given an image name.
-UIImage* GenerateImage(BOOL is_symbol, NSString* image, BOOL is_system_symbol) {
+UIImage* GenerateImage(BOOL is_symbol,
+                       NSString* image,
+                       BOOL is_system_symbol,
+                       BOOL is_multicolor_symbol) {
   if (is_symbol) {
     if (is_system_symbol) {
       return DefaultSymbolTemplateWithPointSize(image, kIconImageWhatsNew);
+    } else if (is_multicolor_symbol) {
+      return MakeSymbolMulticolor(
+          CustomSymbolWithPointSize(image, kIconImageWhatsNew));
     }
     return CustomSymbolTemplateWithPointSize(image, kIconImageWhatsNew);
   }
@@ -217,8 +224,12 @@ WhatsNewItem* ConstructWhatsNewItem(NSDictionary* entry) {
   // Load the entry icon.
   BOOL is_symbol = [entry[kDictionaryIsSymbolKey] boolValue];
   BOOL is_system_symbol = [entry[kDictionaryIsSystemSymbolKey] boolValue];
-  whats_new_item.iconImage = GenerateImage(
-      is_symbol, entry[kDictionaryIconImageKey], is_system_symbol);
+  BOOL is_multicolor_symbol =
+      [entry[kDictionaryIsMulticolorSymbolKey] boolValue];
+
+  whats_new_item.iconImage =
+      GenerateImage(is_symbol, entry[kDictionaryIconImageKey], is_system_symbol,
+                    is_multicolor_symbol);
 
   // Load the entry icon background image.
   whats_new_item.backgroundColor =
