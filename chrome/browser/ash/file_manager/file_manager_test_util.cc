@@ -188,6 +188,15 @@ scoped_refptr<const extensions::Extension> InstallTestingChromeApp(
 
 base::WeakPtr<file_manager::Volume> InstallFileSystemProviderChromeApp(
     Profile* profile) {
+  return InstallFileSystemProviderChromeApp(
+      profile, base::BindOnce(&InstallTestingChromeApp, profile)
+                   .Then(base::BindOnce(
+                       [](scoped_refptr<const extensions::Extension>) {})));
+}
+
+base::WeakPtr<file_manager::Volume> InstallFileSystemProviderChromeApp(
+    Profile* profile,
+    base::OnceCallback<void(const char*)> install_fn) {
   static constexpr char kFileSystemProviderFilesystemId[] =
       "test-image-provider-fs";
   base::RunLoop run_loop;
@@ -200,8 +209,7 @@ base::WeakPtr<file_manager::Volume> InstallFileSystemProviderChromeApp(
 
   file_manager::test::VolumeWaiter waiter(profile_with_volume_manager_events,
                                           run_loop.QuitClosure());
-  auto extension = InstallTestingChromeApp(
-      profile, "extensions/api_test/file_browser/image_provider");
+  std::move(install_fn).Run("extensions/api_test/file_browser/image_provider");
   run_loop.Run();
 
   auto* volume_manager =

@@ -14,7 +14,9 @@
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/tts_crosapi_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
@@ -29,6 +31,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/tts_utterance.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
 #include "url/origin.h"
@@ -168,6 +171,60 @@ void StandaloneBrowserTestController::InstallWebApp(
       webapps::WebappInstallSource::SYNC,
       base::BindOnce(&StandaloneBrowserTestController::WebAppInstallationDone,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void StandaloneBrowserTestController::InstallUnpackedExtension(
+    const std::string& path,
+    InstallUnpackedExtensionCallback callback) {
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  extensions::ChromeTestExtensionLoader loader(profile);
+  loader.LoadUnpackedExtensionAsync(
+      base::FilePath{path},
+      base::BindOnce([](const extensions::Extension* extension) {
+        return extension->id();
+      }).Then(std::move(callback)));
+}
+
+void StandaloneBrowserTestController::ObserveDomMessages(
+    mojo::PendingRemote<crosapi::mojom::DomMessageObserver> observer,
+    ObserveDomMessagesCallback callback) {
+  dom_message_observer_.Bind(std::move(observer));
+  dom_message_observer_.set_disconnect_handler(base::BindOnce(
+      &StandaloneBrowserTestController::OnDomMessageObserverDisconnected,
+      weak_ptr_factory_.GetWeakPtr()));
+
+  ASSERT_FALSE(dom_message_queue_.has_value());
+  dom_message_queue_.emplace();
+  dom_message_queue_->SetOnMessageAvailableCallback(
+      base::BindOnce(&StandaloneBrowserTestController::OnDomMessageQueueReady,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  std::move(callback).Run();
+}
+
+void StandaloneBrowserTestController::OnDomMessageObserverDisconnected() {
+  dom_message_queue_.reset();
+  dom_message_observer_.reset();
+}
+
+void StandaloneBrowserTestController::OnDomMessageQueueReady() {
+  std::string message;
+  ASSERT_TRUE(dom_message_queue_->PopMessage(&message));
+  dom_message_observer_->OnMessage(message);
+
+  dom_message_queue_->SetOnMessageAvailableCallback(
+      base::BindOnce(&StandaloneBrowserTestController::OnDomMessageQueueReady,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void StandaloneBrowserTestController::RemoveComponentExtension(
+    const std::string& extension_id,
+    RemoveComponentExtensionCallback callback) {
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  extensions::ExtensionSystem::Get(profile)
+      ->extension_service()
+      ->RemoveComponentExtension(extension_id);
+  std::move(callback).Run();
 }
 
 void StandaloneBrowserTestController::LoadVpnExtension(

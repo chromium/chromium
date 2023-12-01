@@ -2493,8 +2493,9 @@ void DOMMessageQueue::PrimaryMainFrameRenderProcessGone(
       break;
     default:
       renderer_crashed_ = true;
-      if (quit_closure_)
-        std::move(quit_closure_).Run();
+      if (callback_) {
+        std::move(callback_).Run();
+      }
       break;
   }
 }
@@ -2504,8 +2505,9 @@ void DOMMessageQueue::RenderFrameDeleted(RenderFrameHost* render_frame_host) {
     return;
   if (render_frame_host_ != render_frame_host)
     return;
-  if (quit_closure_)
-    std::move(quit_closure_).Run();
+  if (callback_) {
+    std::move(callback_).Run();
+  }
 }
 
 void DOMMessageQueue::ClearQueue() {
@@ -2514,8 +2516,9 @@ void DOMMessageQueue::ClearQueue() {
 
 void DOMMessageQueue::OnDomMessageReceived(const std::string& message) {
   message_queue_.push(message);
-  if (quit_closure_)
-    std::move(quit_closure_).Run();
+  if (callback_) {
+    std::move(callback_).Run();
+  }
 }
 
 void DOMMessageQueue::OnWebContentsCreated(WebContents* contents) {
@@ -2531,12 +2534,23 @@ void DOMMessageQueue::OnBackingWebContentsDestroyed(MessageObserver* observer) {
   }
 }
 
+void DOMMessageQueue::SetOnMessageAvailableCallback(
+    base::OnceClosure callback) {
+  CHECK(!callback_);
+  CHECK(!render_frame_host_);  // Not supported for simplicity.
+  if (!message_queue_.empty() || renderer_crashed_) {
+    std::move(callback).Run();
+  } else {
+    callback_ = std::move(callback);
+  }
+}
+
 bool DOMMessageQueue::WaitForMessage(std::string* message) {
   DCHECK(message);
   if (!renderer_crashed_ && message_queue_.empty()) {
     // This will be quit when a new message comes in.
     base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
-    quit_closure_ = run_loop.QuitClosure();
+    callback_ = run_loop.QuitClosure();
     run_loop.Run();
   }
   return PopMessage(message);

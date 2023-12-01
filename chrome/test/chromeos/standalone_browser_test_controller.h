@@ -16,6 +16,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/common/web_app_id.h"
+#include "content/public/test/browser_test_utils.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -55,6 +56,20 @@ class StandaloneBrowserTestController
   void SetWebAppSettingsPref(const std::string& web_app_settings_json,
                              SetWebAppSettingsPrefCallback callback) override;
 
+  // This does not wait for background page or any views to finish (or even
+  // start) loading.
+  void InstallUnpackedExtension(
+      const std::string& path,
+      InstallUnpackedExtensionCallback callback) override;
+
+  void RemoveComponentExtension(
+      const std::string& extension_id,
+      RemoveComponentExtensionCallback callback) override;
+
+  void ObserveDomMessages(
+      mojo::PendingRemote<crosapi::mojom::DomMessageObserver> observer,
+      ObserveDomMessagesCallback callback) override;
+
  private:
   class LacrosUtteranceEventDelegate;
 
@@ -62,9 +77,10 @@ class StandaloneBrowserTestController
   void WebAppInstallationDone(InstallWebAppCallback callback,
                               const webapps::AppId& installed_app_id,
                               webapps::InstallResultCode code);
-
   base::Value::Dict CreateVpnExtensionManifest(
       const std::string& extension_name);
+  void OnDomMessageObserverDisconnected();
+  void OnDomMessageQueueReady();
 
   mojo::Receiver<crosapi::mojom::StandaloneBrowserTestController>
       controller_receiver_{this};
@@ -72,6 +88,9 @@ class StandaloneBrowserTestController
   // Lacros utterance event delegates by utterance id.
   std::map<int, std::unique_ptr<LacrosUtteranceEventDelegate>>
       lacros_utterance_event_delegates_;
+
+  mojo::Remote<crosapi::mojom::DomMessageObserver> dom_message_observer_;
+  std::optional<content::DOMMessageQueue> dom_message_queue_;
 
   base::WeakPtrFactory<StandaloneBrowserTestController> weak_ptr_factory_{this};
 };

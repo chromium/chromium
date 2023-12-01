@@ -68,11 +68,18 @@ struct AppListItemAttributes {
   string pin_position@1;
 };
 
+// For use with StandaloneBrowserTestController's ObserveDomMessages method.
+[Stable]
+interface DomMessageObserver {
+  // Invoked when a message arrived.
+  OnMessage@0(string message);
+};
+
 // Implemented in lacros-chrome.
 // Lets the Ash browser tests that require Lacros to send commands to this
 // lacros-chrome instance.
-// Next version: 8
-// Next method id: 8
+// Next version: 9
+// Next method id: 11
 [Stable, Uuid="20e7f031-f4e1-4ad9-bd91-ad59eb8b1504"]
 interface StandaloneBrowserTestController {
   // Installs a test web app in lacros-chrome given a start URL and mode (open
@@ -114,6 +121,22 @@ interface StandaloneBrowserTestController {
   // Sets WebAppSettings pref for a primary user profile.
   [MinVersion=7]
   SetWebAppSettingsPref@7(string policy) => (bool success);
+
+  // Installs an unpacked extension located at the given directory in Lacros and
+  // returns its id once the extensions registry signals loading is complete
+  // (which does NOT guarantee that any background script or views have finished
+  // loading). If installation/loading fails, the callback is never run.
+  [MinVersion=8]
+  InstallUnpackedExtension@8(string path) => (string extension_id);
+
+  // Removes the given component extension from Lacros.
+  [MinVersion=8]
+  RemoveComponentExtension@9(string extension_id) => ();
+
+  // Informs the given observer of future messages from the
+  // DOMAutomationController.
+  [MinVersion=8]
+  ObserveDomMessages@10(pending_remote<DomMessageObserver> observer) => ();
 };
 
 // Allows callers running in lacros to trigger test events that are passed to

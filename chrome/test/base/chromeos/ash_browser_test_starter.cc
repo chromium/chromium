@@ -26,6 +26,7 @@
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/exo/wm_helper.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "content/public/common/content_switches.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -175,6 +176,9 @@ bool AshBrowserTestStarter::PrepareEnvironmentForLacros() {
   lacros_args.emplace_back(base::StringPrintf("--%s", switches::kNoFirstRun));
   lacros_args.emplace_back(
       base::StringPrintf("--%s", switches::kIgnoreCertificateErrors));
+  // For some StandaloneBrowserTestController features.
+  lacros_args.emplace_back(
+      base::StringPrintf("--%s", switches::kDomAutomationController));
   // Override Gaia url in Lacros so that the gaia requests will NOT be handled
   // with the real internet connection, but with the embedded test server. The
   // embedded test server will simulate failure of the Gaia url requests which

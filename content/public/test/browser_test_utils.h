@@ -1272,6 +1272,12 @@ class DOMMessageQueue {
   // message. Returns true on success.
   [[nodiscard]] bool WaitForMessage(std::string* message);
 
+  // Facilitates asynchronous use of the DOMMessageQueue. The given callback
+  // will be called once a message was put into the queue (or when there is a
+  // renderer crash).
+  // NOTE: This is incompatible with the DOMMessageQueue(RenderFrameHost*) ctor.
+  void SetOnMessageAvailableCallback(base::OnceClosure callback);
+
   // If there is a message in the queue, then copies it to |message| and returns
   // true.  Otherwise (if the queue is empty), returns false.
   [[nodiscard]] bool PopMessage(std::string* message);
@@ -1293,7 +1299,7 @@ class DOMMessageQueue {
   std::set<std::unique_ptr<MessageObserver>> observers_;
   base::CallbackListSubscription web_contents_creation_subscription_;
   base::queue<std::string> message_queue_;
-  base::OnceClosure quit_closure_;
+  base::OnceClosure callback_;
   bool renderer_crashed_ = false;
   raw_ptr<RenderFrameHost, DanglingUntriaged> render_frame_host_ = nullptr;
 };

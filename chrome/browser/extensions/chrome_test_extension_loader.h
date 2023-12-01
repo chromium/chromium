@@ -47,6 +47,13 @@ class ChromeTestExtensionLoader {
   // unpacked extensions.
   scoped_refptr<const Extension> LoadExtension(const base::FilePath& file_path);
 
+  // A limited asynchronous version of LoadExtension. It only supports unpacked
+  // extensions and the callback is run as soon as the OnExtensionLoaded fires.
+  // It also does not support any of the custom settings below.
+  void LoadUnpackedExtensionAsync(
+      const base::FilePath& file_path,
+      base::OnceCallback<void(const Extension*)> callback);
+
   // Myriad different settings. See the member variable declarations for
   // explanations and defaults.
   // Prefer using these setters rather than adding n different

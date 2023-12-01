@@ -76,12 +76,18 @@ scoped_refptr<const extensions::Extension> InstallTestingChromeApp(
     Profile* profile,
     const char* test_path_ascii);
 
-// Installs a test File System Provider chrome app that provides a file system
-// containing readwrite.gif and readonly.png files, and wait for the file system
-// to be mounted. Returns a base::WeakPtr<file_manager::Volume> to the mounted
-// file system.
+// Uses InstallTestingChromeApp to install a test File System Provider chrome
+// app that provides a file system containing readwrite.gif and readonly.png
+// files, and wait for the file system to be mounted. Returns a
+// base::WeakPtr<file_manager::Volume> to the mounted file system.
 base::WeakPtr<file_manager::Volume> InstallFileSystemProviderChromeApp(
     Profile* profile);
+// Like above but uses the provided chrome app installation function
+// |install_fn| instead of InstallTestingChromeApp. |install_fn| receives the
+// chrome app's path (relative to DIR_TEST_DATA) as argument.
+base::WeakPtr<file_manager::Volume> InstallFileSystemProviderChromeApp(
+    Profile* profile,
+    base::OnceCallback<void(const char*)> install_fn);
 
 // Gets the list of available tasks for the provided `file`. Note only the path
 // string is used for this helper, so it must have a well-known MIME type
