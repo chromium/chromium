@@ -276,6 +276,8 @@ def gpu_mac_builder(*, name, **kwargs):
         builder_group = "tryserver.chromium.mac",
         builderless = True,
         cores = None,
+        # Builders can run on either Intel or Apple Silicon hadware.
+        cpu = None,
         os = os.MAC_ANY,
         ssd = None,
         **kwargs
@@ -358,9 +360,7 @@ gpu_mac_builder(
         "ci/GPU FYI Mac arm64 Builder",
         "ci/Mac FYI Retina Release (Apple M2)",
     ],
-    # TODO(crbug.com/1435476): Switch to a dedicated M2 pool once we have
-    # allocated machines.
-    pool = "luci.chromium.gpu.mac.arm64.apple.m1.try",
+    pool = "luci.chromium.gpu.mac.arm64.apple.m2.try",
     gn_args = "ci/GPU FYI Mac arm64 Builder",
 )
 
