@@ -970,7 +970,9 @@ class GFX_EXPORT RenderText {
 
   // A mapping from text to display text indices for each grapheme. The vector
   // contains an ordered sequence of indice pairs. Both sequence |text_index|
-  // and |display_index| are sorted.
+  // and |display_index| are sorted. Note that currently this is a mapping
+  // between `text_` and `layout_text_`, but the intention is to combine the
+  // phases that currently creates `layout_text_` and `display_text_`.
   mutable internal::TextToDisplaySequence text_to_display_indices_;
 
   // A flag to obscure actual text with asterisks for password fields.

@@ -1618,6 +1618,12 @@ void RenderText::EnsureLayoutTextUpdated() const {
   while (!text_iter.end() && !text_truncated) {
     std::vector<uint32_t> grapheme_codepoints;
     const size_t text_grapheme_start_position = text_iter.array_pos();
+    // We have not added the codepoints of the current grapheme to
+    // `layout_text_` yet. The rest of the loop will either add the codepoints
+    // of the current grapheme to `layout_text_` or skip the grapheme if it will
+    // not exist in `layout_text_`. Therefore, layout_text_.size() will either
+    // be the start of the current grapeheme or indicate that the grapheme does
+    // not exist in `layout_text_`.
     const size_t layout_grapheme_start_position = layout_text_.size();
 
     // Retrieve codepoints of the current grapheme.
