@@ -29,9 +29,11 @@ found in the LICENSE file.
     <dimen name="location_bar_url_text_size">16sp</dimen>
     <dimen name="location_bar_url_text_size_polish">18sp</dimen>
     <dimen name="location_bar_icon_width">28dp</dimen>
-    <dimen name="location_bar_action_icon_width">48dp</dimen>
-    <dimen name="location_bar_action_icon_height">48dp</dimen>
+    <dimen name="location_bar_action_icon_width">@dimen/min_touch_target_size</dimen>
+    <dimen name="location_bar_action_icon_height">@dimen/min_touch_target_size</dimen>
     <dimen name="location_bar_icon_margin_end">4dp</dimen>
+    <dimen name="location_bar_lock_icon_width">@dimen/min_touch_target_size</dimen>
+    <dimen name="location_bar_lock_icon_height">@dimen/min_touch_target_size</dimen>
     <dimen name="location_bar_status_separator_width">1dp</dimen>
     <dimen name="location_bar_status_separator_spacer">8dp</dimen>
     <dimen name="location_bar_min_url_width">68dp</dimen>
