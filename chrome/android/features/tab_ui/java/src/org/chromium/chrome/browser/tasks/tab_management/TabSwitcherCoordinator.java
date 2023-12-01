@@ -120,6 +120,7 @@ public class TabSwitcherCoordinator
     @Nullable private TabListEditorCoordinator mTabListEditorCoordinator;
     @Nullable private List<TabListEditorAction> mTabListEditorActions;
     private TabSuggestionsOrchestrator mTabSuggestionsOrchestrator;
+    private TabSuggestionMessageService mTabSuggestionMessageService;
     private TabAttributeCache mTabAttributeCache;
     private ViewGroup mContainer;
     private TabCreatorManager mTabCreatorManager;
@@ -383,6 +384,20 @@ public class TabSwitcherCoordinator
                             LargeMessageCardViewBinder::bind);
                 }
 
+                if (shouldRegisterLargeMessageItemType() && mTabSuggestionMessageService != null) {
+                    mTabListCoordinator.registerItemType(
+                            TabProperties.UiType.CUSTOM_MESSAGE,
+                            new LayoutViewBuilder(R.layout.custom_message_card_item),
+                            (model, view, key) -> {
+                                CustomMessageCardViewBinder.bind(
+                                        model,
+                                        new CustomMessageCardViewBinder.ViewHolder(
+                                                (CustomMessageCardView) view,
+                                                mTabSuggestionMessageService),
+                                        key);
+                            });
+                }
+
                 if (ProfileManager.isInitialized()
                         && PriceTrackingFeatures.isPriceTrackingEnabled(
                                 Profile.getLastUsedRegularProfile())) {
@@ -503,7 +518,7 @@ public class TabSwitcherCoordinator
                     mTabSuggestionsOrchestrator =
                             new TabSuggestionsOrchestrator(
                                     mActivity, mTabModelSelector, mLifecycleDispatcher);
-                    TabSuggestionMessageService tabSuggestionMessageService =
+                    mTabSuggestionMessageService =
                             new TabSuggestionMessageService(
                                     mActivity,
                                     mTabModelSelector,
@@ -511,9 +526,9 @@ public class TabSwitcherCoordinator
                                         initTabListEditor(/* isItemTypeSelectable= */ false);
                                         return mTabListEditorCoordinator.getController();
                                     });
-                    mTabSuggestionsOrchestrator.addObserver(tabSuggestionMessageService);
+                    mTabSuggestionsOrchestrator.addObserver(mTabSuggestionMessageService);
                     mMessageCardProviderCoordinator.subscribeMessageService(
-                            tabSuggestionMessageService);
+                            mTabSuggestionMessageService);
                 }
 
                 if (!TabSwitcherCoordinator.isShowingTabsInMRUOrder(mMode)) {

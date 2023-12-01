@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSu
 import static org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionFeedback.TabSuggestionResponse.NOT_CONSIDERED;
 
 import android.content.Context;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -33,7 +34,8 @@ import java.util.Set;
 /**
  * One of the concrete {@link MessageService} that only serve {@link MessageType#TAB_SUGGESTION}.
  */
-public class TabSuggestionMessageService extends MessageService implements TabSuggestionsObserver {
+public class TabSuggestionMessageService extends MessageService
+        implements TabSuggestionsObserver, CustomMessageCardProvider {
     private static boolean sSuggestionAvailableForTesting;
 
     /** This is the data type that this MessageService is serving to its Observer. */
@@ -262,5 +264,27 @@ public class TabSuggestionMessageService extends MessageService implements TabSu
 
     public static boolean isSuggestionAvailableForTesting() {
         return sSuggestionAvailableForTesting;
+    }
+
+    // CustomMessageCardProvider implementation
+    @Override
+    public View getCustomView() {
+        // TODO(crbug.com/1487664): Return the UI for custom message card entrypoint.
+        return null;
+    }
+
+    @Override
+    public int getMessageCardVisibilityControl() {
+        return MessageCardViewProperties.MessageCardScope.REGULAR;
+    }
+
+    @Override
+    public int getCardType() {
+        return TabListModel.CardProperties.ModelType.MESSAGE;
+    }
+
+    @Override
+    public void setIsIncognito(boolean isIncognito) {
+        // Intentional noop - this card will not appear on incognito.
     }
 }

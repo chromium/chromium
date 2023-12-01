@@ -1595,7 +1595,8 @@ class TabListMediator {
 
                         if (itemType == TabProperties.UiType.MESSAGE
                                 || itemType == TabProperties.UiType.LARGE_MESSAGE
-                                || itemType == UiType.DIVIDER) {
+                                || itemType == UiType.DIVIDER
+                                || itemType == TabProperties.UiType.CUSTOM_MESSAGE) {
                             return manager.getSpanCount();
                         }
                         return 1;

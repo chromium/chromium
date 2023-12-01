@@ -32,7 +32,8 @@ public class TabProperties {
         UiType.MESSAGE,
         UiType.DIVIDER,
         UiType.NEW_TAB_TILE_DEPRECATED,
-        UiType.LARGE_MESSAGE
+        UiType.LARGE_MESSAGE,
+        UiType.CUSTOM_MESSAGE
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface UiType {
@@ -43,6 +44,7 @@ public class TabProperties {
         int DIVIDER = 4;
         int NEW_TAB_TILE_DEPRECATED = 5;
         int LARGE_MESSAGE = 6;
+        int CUSTOM_MESSAGE = 7;
     }
 
     public static final PropertyModel.WritableIntPropertyKey TAB_ID =
