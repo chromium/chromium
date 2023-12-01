@@ -602,10 +602,16 @@ bool MessagePopupCollection::AddPopup() {
 
   CalculateAndUpdateBounds();
 
-  auto& item = popup_items_.back();
-  item.start_bounds = item.bounds;
-  item.start_bounds +=
-      gfx::Vector2d((IsFromLeft() ? -1 : 1) * item.bounds.width(), 0);
+  // We might remove all popup items after update bounds.
+  // TODO(b/302172146): Remove this check once we have the long-term solution
+  // for notifier collision.
+  if (!popup_items_.empty()) {
+    auto& item = popup_items_.back();
+    item.start_bounds = item.bounds;
+    item.start_bounds +=
+        gfx::Vector2d((IsFromLeft() ? -1 : 1) * item.bounds.width(), 0);
+  }
+
   return true;
 }
 
