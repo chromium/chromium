@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "ios/web/public/web_state_id.h"
+#import "url/gurl.h"
 
 @implementation TabSwitcherItem
 

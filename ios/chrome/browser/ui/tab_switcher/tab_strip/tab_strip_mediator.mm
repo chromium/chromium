@@ -229,6 +229,10 @@ NSArray<TabSwitcherItem*>* CreateItems(WebStateList* web_state_list) {
     self.webStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
 }
 
+- (void)closeAllItemsExcept:(TabSwitcherItem*)item {
+  // TODO.
+}
+
 #pragma mark - Private
 
 // Adds an observation to every WebState of the current WebSateList.

@@ -21,7 +21,7 @@
 // Initializes a factory instance to create action instances for the given
 // `scenario`. `scenario` is used to choose the histogram in which to record the
 // actions.
-- (instancetype)initWithScenario:(MenuScenarioHistogram)scenario;
+- (instancetype)initWithScenario:(enum MenuScenarioHistogram)scenario;
 
 // Creates a UIAction instance configured to copy the given `URL` to the
 // pasteboard.
@@ -96,6 +96,9 @@
 
 // Creates a UIAction instance for closing a pinned tab.
 - (UIAction*)actionToClosePinnedTabWithBlock:(ProceduralBlock)block;
+
+// Creates a UIAction instance for closing all the other tabs.
+- (UIAction*)actionToCloseAllOtherTabsWithBlock:(ProceduralBlock)block;
 
 // Creates a UIAction instance for saving an image.
 - (UIAction*)actionSaveImageWithBlock:(ProceduralBlock)block;

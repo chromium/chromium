@@ -472,6 +472,7 @@ chromium-metrics-reviews@google.com.
     <variant name="TabGridItem" summary="tab grid item"/>
     <variant name="TabGridSelectionMode" summary="tab grid selection mode"/>
     <variant name="TabShareButton" summary="current tab"/>
+    <variant name="TabStripItem" summary="tab strip item"/>
   </token>
 </histogram>
 

@@ -5,6 +5,7 @@
 #import <XCTest/XCTest.h>
 
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -54,6 +55,29 @@
     GREYAssertEqualObjects([ChromeEarlGrey currentTabTitle], nextTabTitle,
                            @"The selected tab did not change to the next tab.");
   }
+}
+
+// Tests sharing a tab from the Context Menu.
+- (void)testContextMenuShare {
+  if ([ChromeEarlGrey isCompactWidth]) {
+    EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
+  }
+
+  [ChromeEarlGrey loadURL:GURL("chrome://version")];
+  NSString* tabTitle = [ChromeEarlGrey currentTabTitle];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_text(tabTitle),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_longPress()];
+
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
+                                IDS_IOS_SHARE_BUTTON_LABEL),
+                            grey_not(grey_accessibilityTrait(
+                                UIAccessibilityTraitNotEnabled)),
+                            nil)] performAction:grey_tap()];
+
+  [ChromeEarlGrey verifyActivitySheetVisible];
 }
 
 @end

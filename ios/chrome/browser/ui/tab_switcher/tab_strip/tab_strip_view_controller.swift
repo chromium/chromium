@@ -23,6 +23,7 @@ class TabStripViewController: UIViewController, TabStripCellDelegate, TabStripCo
   private var tabCellRegistration: UICollectionView.CellRegistration<TabStripCell, TabSwitcherItem>?
 
   weak var mutator: TabStripMutator?
+  weak var delegate: TabStripViewControllerDelegate?
 
   init() {
     layout = TabStripLayout()
@@ -129,6 +130,29 @@ class TabStripViewController: UIViewController, TabStripCellDelegate, TabStripCo
     mutator?.activate(item)
   }
 
+  func collectionView(
+    _ collectionView: UICollectionView,
+    contextMenuConfigurationForItemAt indexPath: IndexPath,
+    point: CGPoint
+  ) -> UIContextMenuConfiguration? {
+    return self.collectionView(
+      collectionView, contextMenuConfigurationForItemsAt: [indexPath], point: point)
+  }
+
+  func collectionView(
+    _ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath],
+    point: CGPoint
+  ) -> UIContextMenuConfiguration? {
+    if indexPaths.count != 1 {
+      return nil
+    }
+
+    weak var weakSelf = self
+    return UIContextMenuConfiguration(actionProvider: { suggestedActions in
+      return weakSelf?.contextMenuForIndexPath(indexPaths[0])
+    })
+  }
+
   // MARK: - TabStripCellDelegate
 
   func closeButtonTapped(for cell: TabStripCell?) {
@@ -146,7 +170,7 @@ class TabStripViewController: UIViewController, TabStripCellDelegate, TabStripCo
   // MARK: - Private
 
   /// Creates the registrations of the different cells used in the collection view.
-  func createRegistrations() {
+  private func createRegistrations() {
     tabCellRegistration = UICollectionView.CellRegistration<TabStripCell, TabSwitcherItem> {
       (cell, indexPath, item) in
       cell.setTitle(item.title)
@@ -171,7 +195,7 @@ class TabStripViewController: UIViewController, TabStripCellDelegate, TabStripCo
   }
 
   /// Retuns the cell to be used in the collection view.
-  func getCell(
+  private func getCell(
     collectionView: UICollectionView, indexPath: IndexPath, itemIdentifier: TabSwitcherItem
   ) -> UICollectionViewCell? {
     let sectionIdentifier = diffableDataSource?.sectionIdentifier(for: indexPath.section)
@@ -187,4 +211,32 @@ class TabStripViewController: UIViewController, TabStripCellDelegate, TabStripCo
         item: itemIdentifier)
     }
   }
+
+  /// Returns a UIMenu for the context menu to be displayed at `indexPath`.
+  private func contextMenuForIndexPath(_ indexPath: IndexPath) -> UIMenu {
+    let selectedItem = diffableDataSource?.itemIdentifier(for: indexPath)
+
+    let actionFactory = ActionFactory(scenario: kMenuScenarioHistogramTabStripEntry)
+    weak var weakSelf = self
+
+    let close = actionFactory?.actionToCloseRegularTab {
+      weakSelf?.mutator?.close(selectedItem)
+    }
+    let closeOthers = actionFactory?.actionToCloseAllOtherTabs {
+      weakSelf?.mutator?.closeAllItemsExcept(selectedItem)
+    }
+    let share = actionFactory?.actionToShare {
+      let cell = weakSelf?.collectionView.cellForItem(at: indexPath)
+      weakSelf?.delegate?.tabStrip(weakSelf, shareItem: selectedItem, originView: cell)
+    }
+
+    guard let close = close, let closeOthers = closeOthers, let share = share else {
+      return UIMenu()
+    }
+
+    let closeActions = UIMenu(options: .displayInline, children: [close, closeOthers])
+
+    return UIMenu(children: [share, closeActions])
+  }
+
 }

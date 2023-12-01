@@ -8,10 +8,13 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
+#import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_swift.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 
-@interface TabStripCoordinator ()
+@interface TabStripCoordinator () <TabStripViewControllerDelegate>
 
 // Mediator for updating the TabStrip when the WebStateList changes.
 @property(nonatomic, strong) TabStripMediator* mediator;
@@ -20,7 +23,11 @@
 
 @end
 
-@implementation TabStripCoordinator
+@implementation TabStripCoordinator {
+  SharingCoordinator* _sharingCoordinator;
+}
+
+@synthesize baseViewController = _baseViewController;
 
 #pragma mark - ChromeCoordinator
 
@@ -36,6 +43,7 @@
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   CHECK(browserState);
   self.tabStripViewController = [[TabStripViewController alloc] init];
+  self.tabStripViewController.delegate = self;
   self.tabStripViewController.overrideUserInterfaceStyle =
       browserState->IsOffTheRecord() ? UIUserInterfaceStyleDark
                                      : UIUserInterfaceStyleUnspecified;
@@ -49,6 +57,8 @@
 }
 
 - (void)stop {
+  [_sharingCoordinator stop];
+  _sharingCoordinator = nil;
   [self.mediator disconnect];
   self.mediator = nil;
   self.tabStripViewController = nil;
@@ -64,6 +74,23 @@
 
 - (void)hideTabStrip:(BOOL)hidden {
   self.tabStripViewController.view.hidden = hidden;
+}
+
+#pragma mark - TabStripViewControllerDelegate
+
+- (void)tabStrip:(TabStripViewController*)tabStrip
+       shareItem:(TabSwitcherItem*)item
+      originView:(UIView*)originView {
+  SharingParams* params =
+      [[SharingParams alloc] initWithURL:item.URL
+                                   title:item.title
+                                scenario:SharingScenario::TabStripItem];
+  _sharingCoordinator = [[SharingCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                          params:params
+                      originView:originView];
+  [_sharingCoordinator start];
 }
 
 @end

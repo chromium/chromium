@@ -29457,6 +29457,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="9" label="Tab Grid Selection Mode"/>
   <int value="10" label="Share Chrome"/>
   <int value="11" label="Omnibox Most Visited Tile"/>
+  <int value="12" label="Tab Strip Item"/>
 </enum>
 
 <enum name="IOSColdStartType">
@@ -29559,6 +29560,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="40" label="Unpin Tab"/>
   <int value="41" label="Lens Camera Search"/>
   <int value="42" label="Save Image in Google Photos"/>
+  <int value="43" label="Close Other Tabs"/>
 </enum>
 
 <enum name="IOSMenuScenario">

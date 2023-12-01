@@ -1051,6 +1051,7 @@ enum class ToolbarKind {
   _viewController.omniboxCommandsHandler = _omniboxCommandsHandler;
 
   _legacyTabStripCoordinator.baseViewController = self.viewController;
+  _tabStripCoordinator.baseViewController = self.viewController;
   _NTPCoordinator.baseViewController = self.viewController;
 
   _bubblePresenter.toolbarCommandsHandler =

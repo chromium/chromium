@@ -8,6 +8,7 @@
 // Enum representing the existing set of menu scenarios. Current values should
 // not be renumbered. Please keep in sync with "IOSMenuScenario" in
 // src/tools/metrics/histograms/enums.xml.
+// LINT.IfChange
 enum MenuScenarioHistogram {
   kMenuScenarioHistogramBookmarkEntry = 0,
   kMenuScenarioHistogramBookmarkFolder = 1,
@@ -31,11 +32,12 @@ enum MenuScenarioHistogram {
   kMenuScenarioHistogramInactiveTabsEntry = 19,
   kMenuScenarioHistogramCount,
 };
+// LINT.ThenChange(/tools/metrics/histograms/enums.xml)
 
 // Records a menu shown histogram metric for the `scenario`.
-void RecordMenuShown(MenuScenarioHistogram scenario);
+void RecordMenuShown(enum MenuScenarioHistogram scenario);
 
 // Retrieves a histogram name for the given menu `scenario`'s actions.
-const char* GetActionsHistogramName(MenuScenarioHistogram scenario);
+const char* GetActionsHistogramName(enum MenuScenarioHistogram scenario);
 
 #endif  // IOS_CHROME_BROWSER_UI_MENU_MENU_HISTOGRAMS_H_
