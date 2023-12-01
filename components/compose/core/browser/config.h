@@ -16,6 +16,8 @@ struct Config {
   unsigned int input_max_words = 500;
   // The maximum number of characters allowed for a valid user input.
   unsigned int input_max_chars = 2500;
+  // The maximum number of bytes allowed in the inner text.
+  unsigned int inner_text_max_bytes = 1024 * 1024;
   // Whether to send a compose when the dialog is first opened,
   // if there is an acceptable input text selected.
   bool auto_submit_with_selection = true;

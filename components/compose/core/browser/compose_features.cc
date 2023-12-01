@@ -13,6 +13,8 @@ const base::FeatureParam<int> kEnableComposeInputMaxWords{
     &kEnableCompose, "input_max_words", 500};
 const base::FeatureParam<int> kEnableComposeInputMaxChars{
     &kEnableCompose, "input_max_chars", 2500};
+const base::FeatureParam<int> kEnableComposeInnerTextMaxBytes{
+    &kEnableCompose, "inner_text_max_bytes", 1024 * 1024};
 
 BASE_FEATURE(kEnableComposeNudge,
              "ComposeNudge",

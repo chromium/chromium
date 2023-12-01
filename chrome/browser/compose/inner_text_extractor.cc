@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
+#include "components/compose/core/browser/config.h"
 
 #include "content/public/browser/web_contents.h"
 
@@ -35,8 +36,17 @@ void InnerTextExtractor::Extract(
 
 void InnerTextExtractor::InnerTextCallback(
     std::unique_ptr<content_extraction::InnerTextResult> result) {
+  std::string inner_text;
+  if (result) {
+    const compose::Config& config = compose::GetComposeConfig();
+    inner_text = result->inner_text;
+    if (inner_text.size() > config.inner_text_max_bytes) {
+      // TODO(b/314230455): Reduce the number of times inner_text is copied.
+      inner_text.erase(config.inner_text_max_bytes);
+    }
+  }
   for (auto& callback : callbacks_) {
-    std::move(callback).Run(result ? result->inner_text : "");
+    std::move(callback).Run(inner_text);
   }
   callbacks_.clear();
 }

@@ -2880,7 +2880,10 @@ if (!is_android) {
         "../browser/compose/compose_inner_text_browsertest.cc",
       ]
 
-      deps += [ "//components/compose/core/browser:features" ]
+      deps += [
+        "//components/compose/core/browser",
+        "//components/compose/core/browser:features",
+      ]
     }
 
     if (enable_supervised_users) {

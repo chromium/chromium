@@ -41,6 +41,9 @@ Config::Config() {
   input_max_chars = base::GetFieldTrialParamByFeatureAsInt(
       features::kEnableCompose, "input_max_chars", input_max_chars);
 
+  inner_text_max_bytes = base::GetFieldTrialParamByFeatureAsInt(
+      features::kEnableCompose, "inner_text_max_bytes", inner_text_max_bytes);
+
   auto_submit_with_selection = base::GetFieldTrialParamByFeatureAsBool(
       features::kEnableCompose, "auto_submit_with_selection",
       auto_submit_with_selection);
