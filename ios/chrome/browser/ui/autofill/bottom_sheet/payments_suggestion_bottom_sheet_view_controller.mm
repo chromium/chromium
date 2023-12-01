@@ -296,7 +296,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   UIImage* image;
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
   image = MakeSymbolMulticolor(
-      CustomSymbolWithPointSize(kChromeSymbol, kTitleLogoHeight));
+      CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kTitleLogoHeight));
 #else
   image = DefaultSymbolTemplateWithPointSize(kDefaultBrowserSymbol,
                                              kTitleLogoHeight);

@@ -101,7 +101,7 @@ const CGFloat kSymbolSize = 18;
     case OmniboxPedalId::SET_CHROME_AS_DEFAULT_BROWSER: {
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
       UIImage* image = MakeSymbolMulticolor(
-          CustomSymbolWithPointSize(kChromeSymbol, kSymbolSize));
+          CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kSymbolSize));
 #else
       UIImage* image = DefaultSymbolTemplateWithPointSize(kDefaultBrowserSymbol,
                                                           kSymbolSize);

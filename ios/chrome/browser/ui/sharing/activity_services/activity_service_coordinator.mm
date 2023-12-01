@@ -399,8 +399,8 @@ constexpr CGFloat kAppIconPointSize = 80;
 
 - (NSItemProvider*)appIconProvider {
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-  UIImage* image = MakeSymbolMulticolor(
-      CustomSymbolWithPointSize(kChromeSymbol, kAppIconPointSize));
+  UIImage* image = MakeSymbolMulticolor(CustomSymbolWithPointSize(
+      kMulticolorChromeballSymbol, kAppIconPointSize));
 #else
   UIImage* image = DefaultSymbolTemplateWithPointSize(kDefaultBrowserSymbol,
                                                       kAppIconPointSize);

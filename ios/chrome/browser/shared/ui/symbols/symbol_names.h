@@ -18,7 +18,6 @@
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 extern NSString* const kGoogleIconSymbol;
 extern NSString* const kGoogleShieldSymbol;
-extern NSString* const kChromeSymbol;
 extern NSString* const kMulticolorChromeballSymbol;
 extern NSString* const kGoogleMapsSymbol;
 extern NSString* const kGooglePhotosSymbol;

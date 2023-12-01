@@ -8,7 +8,6 @@
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 NSString* const kGoogleIconSymbol = @"google_icon";
 NSString* const kGoogleShieldSymbol = @"google_shield";
-NSString* const kChromeSymbol = @"chrome_symbol";
 NSString* const kMulticolorChromeballSymbol = @"multicolor_chromeball";
 NSString* const kGoogleMapsSymbol = @"google_maps";
 NSString* const kGooglePhotosSymbol = @"google_photos";
