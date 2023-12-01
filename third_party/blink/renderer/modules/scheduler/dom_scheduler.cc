@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_scheduler_post_task_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_scheduler_post_task_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_scheduler_yield_options.h"
@@ -92,9 +91,7 @@ ScriptPromise DOMScheduler::postTask(
           : g_null_atom);
   if (state.abort_source && state.abort_source->aborted()) {
     exception_state.RethrowV8Exception(
-        ToV8Traits<IDLAny>::ToV8(script_state,
-                                 state.abort_source->reason(script_state))
-            .ToLocalChecked());
+        state.abort_source->reason(script_state).V8ValueFor(script_state));
     return ScriptPromise();
   }
 
@@ -155,9 +152,7 @@ ScriptPromise DOMScheduler::yield(ScriptState* script_state,
       script_state, signal_option, priority_option);
   if (state.abort_source && state.abort_source->aborted()) {
     exception_state.RethrowV8Exception(
-        ToV8Traits<IDLAny>::ToV8(script_state,
-                                 state.abort_source->reason(script_state))
-            .ToLocalChecked());
+        state.abort_source->reason(script_state).V8ValueFor(script_state));
     return ScriptPromise();
   }
 

@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/modules/scheduler/dom_task_signal.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -71,9 +70,7 @@ void DOMTaskContinuation::OnAbort() {
   // TODO(crbug.com/1293949): Add an error message.
   CHECK(signal_);
   resolver_->Reject(
-      ToV8Traits<IDLAny>::ToV8(resolver_script_state,
-                               signal_->reason(resolver_script_state))
-          .ToLocalChecked());
+      signal_->reason(resolver_script_state).V8ValueFor(resolver_script_state));
 }
 
 }  // namespace blink
