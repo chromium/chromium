@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_coordinator.h"
+#import "ios/public/provider/chrome/browser/signin/choice_api.h"
 
 @interface SearchEngineChoiceAppAgent () <SearchEngineChoiceCoordinatorDelegate>
 @end
@@ -78,6 +79,9 @@
 }
 
 - (BOOL)shouldShowChoiceScreen {
+  if (!ios::provider::IsChoiceEnabled()) {
+    return NO;
+  }
   ChromeBrowserState* browserState = self.appState.mainBrowserState;
   if (!browserState) {
     return NO;

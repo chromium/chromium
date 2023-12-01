@@ -384,6 +384,7 @@ source_set("search_engine_choice_app_agent") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/ui/search_engine_choice",
+    "//ios/public/provider/chrome/browser/signin:choice_api",
   ]
 }
 
