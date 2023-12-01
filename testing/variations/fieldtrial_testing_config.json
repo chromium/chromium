@@ -18425,6 +18425,21 @@
             ]
         }
     ],
+    "TextInputHostMojoCapabilityControlWorkaround": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TextInputHostMojoCapabilityControlWorkaround"
+                    ]
+                }
+            ]
+        }
+    ],
     "ThemeProviderColorProviderRedirection": [
         {
             "platforms": [
