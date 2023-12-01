@@ -112,7 +112,10 @@ EventFilter FakeEventFilter() {
 
 class SecurityCurtainControllerImplTest : public PowerButtonTestBase {
  public:
-  SecurityCurtainControllerImplTest() = default;
+  SecurityCurtainControllerImplTest()
+      : PowerButtonTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
   SecurityCurtainControllerImplTest(const SecurityCurtainControllerImplTest&) =
       delete;
   SecurityCurtainControllerImplTest& operator=(
@@ -558,12 +561,19 @@ TEST_F(SecurityCurtainControllerImplTest,
 }
 
 TEST_F(SecurityCurtainControllerImplTest,
-       ShouldMuteAudioOutputMuteWhileCurtainIsEnabled) {
+       ShouldMuteAudioOutputAfterRequestedDelayWhileCurtainIsEnabled) {
   CreateSingleDisplay();
 
+  auto delay = base::Minutes(5);
   auto params = init_params();
-  params.mute_audio_output = true;
+  params.mute_audio_output_after = delay;
   security_curtain_controller().Enable(params);
+  EXPECT_FALSE(IsAudioOutputMuted());
+
+  task_environment()->FastForwardBy(delay - base::Seconds(10));
+  EXPECT_FALSE(IsAudioOutputMuted());
+
+  task_environment()->FastForwardBy(base::Seconds(10));
   EXPECT_TRUE(IsAudioOutputMuted());
 
   security_curtain_controller().Disable();
@@ -571,11 +581,25 @@ TEST_F(SecurityCurtainControllerImplTest,
 }
 
 TEST_F(SecurityCurtainControllerImplTest,
-       ShouldNotMuteAudioOutputMuteWhenItsNotRequested) {
+       ShouldMuteAudioOutputWhileCurtainIsEnabled) {
   CreateSingleDisplay();
 
   auto params = init_params();
-  params.mute_audio_output = false;
+  params.mute_audio_output_after = base::TimeDelta();
+  security_curtain_controller().Enable(params);
+  task_environment()->RunUntilIdle();  // Audio is muted asynchronously.
+  EXPECT_TRUE(IsAudioOutputMuted());
+
+  security_curtain_controller().Disable();
+  EXPECT_FALSE(IsAudioOutputMuted());
+}
+
+TEST_F(SecurityCurtainControllerImplTest,
+       ShouldNotMuteAudioOutputWhenItsNotRequested) {
+  CreateSingleDisplay();
+
+  auto params = init_params();
+  params.mute_audio_output_after = base::TimeDelta::Max();
   security_curtain_controller().Enable(params);
   EXPECT_FALSE(IsAudioOutputMuted());
 }

@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "base/functional/callback.h"
+#include "base/time/time.h"
 
 namespace views {
 class View;
@@ -53,7 +54,10 @@ class ASH_EXPORT SecurityCurtainController {
     // Will be invoked multiple times, once for each monitor.
     ViewFactory curtain_factory;
 
-    bool mute_audio_output = true;
+    // The delay until muting audio output. Can be `base::TimeDelta()` to mute
+    // immediately, `base::TimeDelta::Max()` to never mute, or any delay.
+    base::TimeDelta mute_audio_output_after;
+
     bool mute_audio_input = true;
     bool disable_camera_access = true;
   };
