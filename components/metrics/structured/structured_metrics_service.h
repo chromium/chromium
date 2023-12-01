@@ -33,9 +33,9 @@ namespace metrics::structured {
 // Structured Metric events.
 class StructuredMetricsService final {
  public:
-  StructuredMetricsService(MetricsProvider* system_profile_provider,
-                           MetricsServiceClient* client,
-                           PrefService* local_state);
+  StructuredMetricsService(MetricsServiceClient* client,
+                           PrefService* local_state,
+                           std::unique_ptr<StructuredMetricsRecorder> recorder);
 
   ~StructuredMetricsService();
 
@@ -67,20 +67,16 @@ class StructuredMetricsService final {
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
  private:
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   friend class StructuredMetricsServiceTest;
   friend class StructuredMetricsMixin;
+#if BUILDFLAG(IS_CHROMEOS)
   friend class OobeStructuredMetricsWatcher;
+#endif
   friend class metrics::StructuredMetricsServiceTestBase;
 
   FRIEND_TEST_ALL_PREFIXES(StructuredMetricsServiceTest, RotateLogs);
   FRIEND_TEST_ALL_PREFIXES(metrics::TestStructuredMetricsServiceDisabled,
                            ValidStateWhenDisabled);
-#endif
-
-  StructuredMetricsService(MetricsServiceClient* client,
-                           PrefService* local_state,
-                           std::unique_ptr<StructuredMetricsRecorder> recorder);
 
   // Sets the instance of the recorder used for test.
   void SetRecorderForTest(std::unique_ptr<StructuredMetricsRecorder> recorder);

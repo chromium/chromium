@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/metrics/structured/structured_metrics_recorder.h"
+
 #include <cstdint>
 #include <memory>
 
@@ -86,24 +87,8 @@ constexpr char kProjectFourId[] = "FBBBB6DE2AA74C3C";
 constexpr char kValueOne[] = "value one";
 constexpr char kValueTwo[] = "value two";
 
-constexpr char kHwid[] = "hwid";
-constexpr size_t kUserCount = 3;
-
 std::string HashToHex(const uint64_t hash) {
   return base::HexEncode(&hash, sizeof(uint64_t));
-}
-
-// Make a simple testing proto with one |uma_events| message for each id in
-// |ids|.
-EventsProto MakeExternalEventProto(const std::vector<uint64_t>& ids) {
-  EventsProto proto;
-
-  for (const auto id : ids) {
-    auto* event = proto.add_non_uma_events();
-    event->set_profile_event_id(id);
-  }
-
-  return proto;
 }
 
 class TestRecorder : public StructuredMetricsClient::RecordingDelegate {
@@ -120,26 +105,14 @@ class TestRecorder : public StructuredMetricsClient::RecordingDelegate {
   bool IsReadyToRecord() const override { return true; }
 };
 
-class TestSystemProfileProvider : public metrics::MetricsProvider {
- public:
-  TestSystemProfileProvider() = default;
-  TestSystemProfileProvider(const TestSystemProfileProvider& recorder) = delete;
-  TestSystemProfileProvider& operator=(
-      const TestSystemProfileProvider& recorder) = delete;
-  ~TestSystemProfileProvider() override = default;
-
-  void ProvideSystemProfileMetrics(
-      metrics::SystemProfileProto* proto) override {
-    proto->set_multi_profile_user_count(kUserCount);
-    proto->mutable_hardware()->set_full_hardware_class(kHwid);
-  }
-};
-
 class TestStructuredMetricsRecorder : public StructuredMetricsRecorder {
  public:
-  explicit TestStructuredMetricsRecorder(
-      metrics::MetricsProvider* system_profile_provider)
-      : StructuredMetricsRecorder(system_profile_provider) {}
+  TestStructuredMetricsRecorder(const base::FilePath& device_key_path,
+                                const base::FilePath& profile_key_path)
+      : StructuredMetricsRecorder(
+            std::make_unique<TestKeyDataProvider>(device_key_path,
+                                                  profile_key_path),
+            std::make_unique<TestEventStorage>()) {}
 
   using StructuredMetricsRecorder::StructuredMetricsRecorder;
 };
@@ -181,6 +154,11 @@ class StructuredMetricsRecorderTest : public testing::Test {
   void TearDown() override { StructuredMetricsClient::Get()->UnsetDelegate(); }
 
   void Wait() { task_environment_.RunUntilIdle(); }
+
+  // Adds a project to the disallowed projects list.
+  void AddDisallowedProject(uint64_t project_name_hash) {
+    recorder_->AddDisallowedProjectForTest(project_name_hash);
+  }
 
   void WriteTestingProfileKeys() {
     const int today = (base::Time::Now() - base::Time::UnixEpoch()).InDays();
@@ -241,23 +219,13 @@ class StructuredMetricsRecorderTest : public testing::Test {
     return proto;
   }
 
-  // Adds a project to the disallowed projects list.
-  void AddDisallowedProject(uint64_t project_name_hash) {
-    recorder_->AddDisallowedProjectForTest(project_name_hash);
-  }
-
   // Simulates the three external events that the structure metrics system cares
   // about: the metrics service initializing and enabling its providers, and a
   // user logging in.
   void Init() {
-    // Create a system profile, normally done by ChromeMetricsServiceClient.
-    system_profile_provider_ = std::make_unique<TestSystemProfileProvider>();
     // Create the provider, normally done by the ChromeMetricsServiceClient.
     recorder_ = std::make_unique<TestStructuredMetricsRecorder>(
-        system_profile_provider_.get());
-    recorder_->InitializeKeyDataProvider(std::make_unique<TestKeyDataProvider>(
-        device_key_path_, profile_key_path_));
-    recorder_->InitializeEventStorage(std::make_unique<TestEventStorage>());
+        device_key_path_, profile_key_path_);
     // Enable recording, normally done after the metrics service has checked
     // consent allows recording.
     recorder_->EnableRecording();
@@ -269,14 +237,9 @@ class StructuredMetricsRecorderTest : public testing::Test {
 
   // Enables recording without adding a profile.
   void InitWithoutLogin() {
-    // Create a system profile, normally done by ChromeMetricsServiceClient.
-    system_profile_provider_ = std::make_unique<TestSystemProfileProvider>();
     // Create the provider, normally done by the ChromeMetricsServiceClient.
     recorder_ = std::make_unique<TestStructuredMetricsRecorder>(
-        system_profile_provider_.get());
-    recorder_->InitializeKeyDataProvider(
-        std::make_unique<TestKeyDataProvider>(device_key_path_));
-    recorder_->InitializeEventStorage(std::make_unique<TestEventStorage>());
+        device_key_path_, profile_key_path_);
     // Enable recording, normally done after the metrics service has checked
     // consent allows recording.
     recorder_->EnableRecording();
@@ -284,14 +247,9 @@ class StructuredMetricsRecorderTest : public testing::Test {
 
   // Sets up StructuredMetricsRecorder.
   void InitWithoutEnabling() {
-    // Create a system profile, normally done by ChromeMetricsServiceClient.
-    system_profile_provider_ = std::make_unique<TestSystemProfileProvider>();
     // Create the provider, normally done by the ChromeMetricsServiceClient.
     recorder_ = std::make_unique<TestStructuredMetricsRecorder>(
-        system_profile_provider_.get());
-    recorder_->InitializeKeyDataProvider(
-        std::make_unique<TestKeyDataProvider>(device_key_path_));
-    recorder_->InitializeEventStorage(std::make_unique<TestEventStorage>());
+        device_key_path_, profile_key_path_);
   }
 
   bool is_initialized() { return recorder_->IsInitialized(); }
@@ -324,26 +282,12 @@ class StructuredMetricsRecorderTest : public testing::Test {
     return uma_proto.structured_data();
   }
 
-  ChromeUserMetricsExtension GetUmaProto() {
-    ChromeUserMetricsExtension uma_proto;
-    recorder_->ProvideEventMetrics(uma_proto);
-    Wait();
-    return uma_proto;
-  }
-
   void ExpectNoErrors() {
     histogram_tester_.ExpectTotalCount("UMA.StructuredMetrics.InternalError",
                                        0);
   }
 
-  void SetExternalMetricsDirForTest(const base::FilePath dir) {
-    recorder_->SetExternalMetricsDirForTest(dir);
-  }
-
-  void InitializeSystemProfile() { recorder_->OnSystemProfileInitialized(); }
-
  protected:
-  std::unique_ptr<MetricsProvider> system_profile_provider_;
   std::unique_ptr<TestStructuredMetricsRecorder> recorder_;
   // Feature list should be constructed before task environment.
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -545,73 +489,6 @@ TEST_F(StructuredMetricsRecorderTest, EventMetricsReportedCorrectly) {
   histogram_tester_.ExpectTotalCount("UMA.StructuredMetrics.InternalError", 0);
 }
 
-TEST_F(StructuredMetricsRecorderTest, EventMetricsProvideSystemProfile) {
-  WriteTestingProfileKeys();
-  Init();
-  InitializeSystemProfile();
-
-  events::v2::test_project_one::TestEventOne()
-      .SetTestMetricOne(kValueOne)
-      .SetTestMetricTwo(12345)
-      .Record();
-  events::v2::test_project_two::TestEventTwo()
-      .SetTestMetricThree(kValueTwo)
-      .Record();
-
-  const auto uma_proto = GetUmaProto();
-  CHECK(uma_proto.has_system_profile());
-
-  {
-    const auto structured_profile = uma_proto.system_profile();
-    EXPECT_EQ(structured_profile.multi_profile_user_count(), kUserCount);
-    EXPECT_EQ(structured_profile.hardware().full_hardware_class(), kHwid);
-  }
-
-  const auto data = uma_proto.structured_data();
-  ASSERT_EQ(data.events_size(), 2);
-
-  {  // First event
-    const auto& event = data.events(0);
-    EXPECT_EQ(event.event_name_hash(), kEventOneHash);
-    EXPECT_EQ(HashToHex(event.profile_event_id()), kProjectOneId);
-    ASSERT_EQ(event.metrics_size(), 2);
-    {}
-
-    {  // First metric
-      const auto& metric = event.metrics(0);
-      EXPECT_EQ(metric.name_hash(), kMetricOneHash);
-      EXPECT_EQ(HashToHex(metric.value_hmac()),
-                // Value of HMAC_256("aaa...a", concat(hex(kMetricOneHash),
-                // kValueOne))
-                "8C2469269D142715");
-    }
-
-    {  // Second metric
-      const auto& metric = event.metrics(1);
-      EXPECT_EQ(metric.name_hash(), kMetricTwoHash);
-      EXPECT_EQ(metric.value_int64(), 12345);
-    }
-  }
-
-  {  // Second event
-    const auto& event = data.events(1);
-    EXPECT_EQ(event.event_name_hash(), kEventTwoHash);
-    EXPECT_EQ(HashToHex(event.profile_event_id()), kProjectTwoId);
-    ASSERT_EQ(event.metrics_size(), 1);
-
-    {  // First metric
-      const auto& metric = event.metrics(0);
-      EXPECT_EQ(metric.name_hash(), kMetricThreeHash);
-      EXPECT_EQ(HashToHex(metric.value_hmac()),
-                // Value of HMAC_256("bbb...b", concat(hex(kProjectTwoHash),
-                // kValueTwo))
-                "86F0169868588DC7");
-    }
-  }
-
-  histogram_tester_.ExpectTotalCount("UMA.StructuredMetrics.InternalError", 0);
-}
-
 // Ensure that events containing raw string metrics are reported correctly.
 TEST_F(StructuredMetricsRecorderTest, RawStringMetricsReportedCorrectly) {
   Init();
@@ -677,6 +554,8 @@ TEST_F(StructuredMetricsRecorderTest, FloatMetricsReportedCorrectly) {
   EXPECT_EQ(metric2.value_double(), test_float2);
 }
 
+// TODO: Test copied in AshStructuredMetricsRecorder unit tests, remove this one
+// once the test key provider is simplified.
 TEST_F(StructuredMetricsRecorderTest, DeviceKeysUsedForDeviceScopedProjects) {
   WriteTestingProfileKeys();
   WriteTestingDeviceKeys();
@@ -781,50 +660,12 @@ TEST_F(StructuredMetricsRecorderTest, EventWithoutMetricsReportCorrectly) {
   EXPECT_EQ(event.event_name_hash(), kNoMetricsEventHash);
 }
 
-TEST_F(StructuredMetricsRecorderTest, ExternalMetricsAreReported) {
-  const base::FilePath events_dir(TempDirPath().Append("events"));
-  base::CreateDirectory(events_dir);
-
-  const auto proto = MakeExternalEventProto({111, 222, 333});
-  ASSERT_TRUE(
-      base::WriteFile(events_dir.Append("event"), proto.SerializeAsString()));
-
-  Init();
-  SetExternalMetricsDirForTest(events_dir);
-  OnRecordingEnabled();
-  task_environment_.AdvanceClock(base::Hours(10));
-  Wait();
-  EXPECT_EQ(GetUMAEventMetrics().events_size(), 0);
-  EXPECT_EQ(GetEventMetrics().events_size(), 3);
-}
-
-TEST_F(StructuredMetricsRecorderTest,
-       ExternalMetricsDroppedWhenRecordingDisabled) {
-  const base::FilePath events_dir(TempDirPath().Append("events"));
-  base::CreateDirectory(events_dir);
-
-  const auto proto = MakeExternalEventProto({111, 222, 333});
-  ASSERT_TRUE(
-      base::WriteFile(events_dir.Append("event"), proto.SerializeAsString()));
-
-  system_profile_provider_ = std::make_unique<TestSystemProfileProvider>();
-  Init();
-  SetExternalMetricsDirForTest(events_dir);
-  OnRecordingDisabled();
-  task_environment_.AdvanceClock(base::Hours(10));
-  Wait();
-  EXPECT_EQ(GetUMAEventMetrics().events_size(), 0);
-  EXPECT_EQ(GetEventMetrics().events_size(), 0);
-}
-
 // Test that events reported before recording is enabled are ignored.
 TEST_F(StructuredMetricsRecorderTest, EventsNotRecordedBeforeRecordingEnabled) {
   // Manually create and initialize the provider, adding recording calls between
   // each step. All of these events should be ignored.
   events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  system_profile_provider_ = std::make_unique<TestSystemProfileProvider>();
-  recorder_ = std::make_unique<TestStructuredMetricsRecorder>(
-      system_profile_provider_.get());
+  InitWithoutEnabling();
   events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
   OnRecordingEnabled();
   Wait();
@@ -913,45 +754,6 @@ TEST_F(StructuredMetricsRecorderTest,
   EXPECT_EQ(GetEventMetrics().events_size(), 0);
 }
 
-// Ensures that events part of event sequence are recorded properly.
-TEST_F(StructuredMetricsRecorderTest, EventSequenceLogging) {
-  Init();
-
-  scoped_feature_list_.InitAndEnableFeature(
-      metrics::structured::kEventSequenceLogging);
-
-  const int test_time = 50;
-  const double test_metric = 1.0;
-
-  events::v2::cr_os_events::Test1 test_event;
-  EXPECT_TRUE(test_event.IsEventSequenceType());
-  test_event.SetEventSequenceMetadata(Event::EventSequenceMetadata(1));
-  test_event.SetRecordedTimeSinceBoot(base::Milliseconds(test_time));
-  test_event.SetMetric1(test_metric).Record();
-
-  const auto data = GetEventMetrics();
-  ASSERT_EQ(data.events_size(), 1);
-
-  const auto& event = data.events(0);
-  EXPECT_EQ(event.project_name_hash(), kCrOSEventsProjectHash);
-
-  // Sequence events should have both a device and user project id.
-  EXPECT_TRUE(event.has_device_project_id());
-  EXPECT_TRUE(event.has_user_project_id());
-
-  // Verify that event sequence metadata has been serialized correctly.
-  const auto& event_metadata = event.event_sequence_metadata();
-  EXPECT_EQ(event_metadata.reset_counter(), 1);
-  EXPECT_TRUE(event_metadata.has_event_unique_id());
-  EXPECT_EQ(event_metadata.system_uptime(), test_time);
-
-  ASSERT_EQ(event.metrics_size(), 1);
-  const auto& metric = event.metrics(0);
-  EXPECT_EQ(metric.value_double(), 1.0);
-
-  ExpectNoErrors();
-}
-
 TEST_F(StructuredMetricsRecorderTest, EventsClone) {
   Init();
 
@@ -990,27 +792,6 @@ TEST_F(StructuredMetricsRecorderTest, DisallowedProjectAreDropped) {
   const auto data = GetEventMetrics();
   ASSERT_EQ(data.events_size(), 1);
   ASSERT_EQ(data.events(0).project_name_hash(), kProjectTwoHash);
-}
-
-TEST_F(StructuredMetricsRecorderTest, CorrectClientAge) {
-  WriteTestingProfileKeys();
-
-  Init();
-
-  const int advance_days = 30;
-  const uint32_t expected_client_age_weeks = advance_days / 7;
-
-  // Advance clock by 30 days.
-  task_environment_.AdvanceClock(base::Days(advance_days));
-
-  events::v2::cr_os_events::NoMetricsEvent test_event;
-  test_event.SetEventSequenceMetadata(Event::EventSequenceMetadata(1));
-  test_event.Record();
-
-  const auto data = GetEventMetrics();
-  ASSERT_EQ(data.events_size(), 1);
-  ASSERT_EQ(data.events(0).event_sequence_metadata().client_id_rotation_weeks(),
-            expected_client_age_weeks);
 }
 
 class TestProcessor : public EventsProcessorInterface {

@@ -61,8 +61,6 @@ class TestStructuredMetricsProvider : public Recorder::RecorderImpl {
   void OnEventRecord(const Event& event) override;
   void OnReportingStateChanged(bool enabled) override;
 
-  std::unique_ptr<MetricsProvider> system_profile_provider_;
-
   std::unique_ptr<StructuredMetricsRecorder> structured_metrics_recorder_;
 
   std::unique_ptr<StructuredMetricsProvider> structured_metrics_provider_;

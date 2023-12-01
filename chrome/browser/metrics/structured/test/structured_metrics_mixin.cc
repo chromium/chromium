@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/metrics/structured/test/structured_metrics_mixin.h"
+
+#include <memory>
+
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/browser_process.h"
@@ -56,11 +59,6 @@ void StructuredMetricsMixin::SetUpOnMainThread() {
   ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
       &recording_state_);
 
-  system_profile_provider_ = std::make_unique<TestSystemProfileProvider>();
-
-  auto recorder = std::make_unique<StructuredMetricsRecorder>(
-      system_profile_provider_.get());
-
   base::FilePath device_keys_path =
       temp_dir_.GetPath()
           .Append(FILE_PATH_LITERAL("structured"))
@@ -69,13 +67,11 @@ void StructuredMetricsMixin::SetUpOnMainThread() {
       temp_dir_.GetPath().Append(FILE_PATH_LITERAL("profile"));
 
   // Create test key data provider and initialize key data provider.
-  auto test_key_data_provider =
-      std::make_unique<TestKeyDataProvider>(device_keys_path);
-  recorder->InitializeKeyDataProvider(std::move(test_key_data_provider));
-
   // TODO(andrewbregger) make sure that all tests that rely on the persistent
   // storage are moved.
-  recorder->InitializeEventStorage(std::make_unique<TestEventStorage>());
+  auto recorder = std::make_unique<StructuredMetricsRecorder>(
+      std::make_unique<TestKeyDataProvider>(device_keys_path),
+      std::make_unique<TestEventStorage>());
 
   // TODO(b/282057109): Cleanup provider code once feature is removed.
   if (base::FeatureList::IsEnabled(kEnabledStructuredMetricsService)) {

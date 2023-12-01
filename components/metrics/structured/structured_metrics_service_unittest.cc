@@ -4,6 +4,8 @@
 
 #include "components/metrics/structured/structured_metrics_service.h"
 
+#include <memory>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -52,18 +54,6 @@ class TestRecorder : public StructuredMetricsClient::RecordingDelegate {
   bool IsReadyToRecord() const override { return true; }
 };
 
-class TestSystemProfileProvider : public metrics::MetricsProvider {
- public:
-  TestSystemProfileProvider() = default;
-  TestSystemProfileProvider(const TestSystemProfileProvider& recorder) = delete;
-  TestSystemProfileProvider& operator=(
-      const TestSystemProfileProvider& recorder) = delete;
-  ~TestSystemProfileProvider() override = default;
-
-  void ProvideSystemProfileMetrics(
-      metrics::SystemProfileProto* proto) override {}
-};
-
 }  // namespace
 
 class StructuredMetricsServiceTest : public testing::Test {
@@ -84,8 +74,6 @@ class StructuredMetricsServiceTest : public testing::Test {
 
     WriteTestingDeviceKeys();
 
-    system_profile_provider_ = std::make_unique<TestSystemProfileProvider>();
-
     WriteTestingProfileKeys();
   }
 
@@ -93,13 +81,13 @@ class StructuredMetricsServiceTest : public testing::Test {
 
   void Init() {
     auto recorder = std::make_unique<StructuredMetricsRecorder>(
-        system_profile_provider_.get());
-    recorder->InitializeKeyDataProvider(std::make_unique<TestKeyDataProvider>(
-        DeviceKeyFilePath(), ProfileKeyFilePath()));
-    recorder->InitializeEventStorage(std::make_unique<TestEventStorage>());
+        std::make_unique<TestKeyDataProvider>(DeviceKeyFilePath(),
+                                              ProfileKeyFilePath()),
+        std::make_unique<TestEventStorage>());
+
     recorder->OnProfileAdded(temp_dir_.GetPath());
-    service_ = base::WrapUnique(
-        new StructuredMetricsService(&client_, &prefs_, std::move(recorder)));
+    service_ = std::make_unique<StructuredMetricsService>(&client_, &prefs_,
+                                                          std::move(recorder));
     Wait();
   }
 
@@ -191,7 +179,6 @@ class StructuredMetricsServiceTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple prefs_;
 
-  std::unique_ptr<TestSystemProfileProvider> system_profile_provider_;
   TestRecorder test_recorder_;
   base::ScopedTempDir temp_dir_;
 

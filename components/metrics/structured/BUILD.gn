@@ -36,13 +36,6 @@ static_library("structured") {
     "structured_metrics_service.h",
   ]
 
-  if (is_chromeos_ash || is_chromeos_lacros) {
-    sources += [
-      "external_metrics.cc",
-      "external_metrics.h",
-    ]
-  }
-
   public_deps = [
     ":common",
     ":events",
@@ -59,6 +52,21 @@ static_library("structured") {
     "//components/prefs",
     "//crypto",
   ]
+}
+
+if (is_chromeos_ash) {
+  static_library("external_metrics") {
+    sources = [
+      "external_metrics.cc",
+      "external_metrics.h",
+    ]
+    deps = [
+      ":common",
+      ":storage",
+      ":structured_events",
+      "//base",
+    ]
+  }
 }
 
 static_library("events") {
@@ -226,42 +234,46 @@ static_library("test_support") {
   ]
 }
 
-# Structured metrics is only used in ash and lacros.
-if (is_chromeos_ash || is_chromeos_lacros) {
-  source_set("unit_tests") {
-    testonly = true
-    sources = [
-      "external_metrics_unittest.cc",
-      "key_data_unittest.cc",
-      "persistent_proto_unittest.cc",
-      "structured_metrics_provider_unittest.cc",
-      "structured_metrics_recorder_unittest.cc",
-      "structured_metrics_service_unittest.cc",
-    ]
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "key_data_unittest.cc",
+    "persistent_proto_unittest.cc",
+    "structured_metrics_provider_unittest.cc",
+    "structured_metrics_recorder_unittest.cc",
+    "structured_metrics_service_unittest.cc",
+  ]
 
-    deps = [
-      ":events",
-      ":storage",
-      ":structured",
-      ":structured_events",
-      ":structured_metrics_validator",
-      ":test_support",
-      "//base",
-      "//base/test:test_support",
-      "//components/metrics",
-      "//components/metrics:test_support",
-      "//components/prefs",
-      "//components/prefs:test_support",
-      "//testing/gtest",
-    ]
+  if (is_chromeos_ash) {
+    sources += [ "external_metrics_unittest.cc" ]
   }
 
-  # Convenience testing target
-  test("structured_metrics_unittests") {
-    deps = [
-      ":unit_tests",
-      "//components/metrics/structured/mojom:unit_tests",
-      "//components/test:run_all_unittests",
-    ]
+  deps = [
+    ":events",
+    ":storage",
+    ":structured",
+    ":structured_events",
+    ":structured_metrics_validator",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/metrics",
+    "//components/metrics:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//testing/gtest",
+  ]
+
+  if (is_chromeos_ash) {
+    deps += [ ":external_metrics" ]
   }
+}
+
+# Convenience testing target
+test("structured_metrics_unittests") {
+  deps = [
+    ":unit_tests",
+    "//components/metrics/structured/mojom:unit_tests",
+    "//components/test:run_all_unittests",
+  ]
 }

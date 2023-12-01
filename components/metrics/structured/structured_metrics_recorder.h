@@ -9,17 +9,12 @@
 
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
-#include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/event_storage.h"
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "components/metrics/structured/external_metrics.h"
-#endif
 #include "components/metrics/structured/key_data.h"
 #include "components/metrics/structured/key_data_provider.h"
 #include "components/metrics/structured/project_validator.h"
@@ -32,41 +27,26 @@ namespace metrics::structured {
 // and should only be called on the browser UI sequence, because calls from the
 // metrics service come on the UI sequence.
 //
-// Initialization of the StructuredMetricsRecorder must wait until a profile is
-// added, because state is stored within the profile directory. Initialization
-// happens in several steps:
+// This is to be used as a base class for different platform implementations.
+// The subclass will instantiate the desired KeyDataProvider and EventStorage.
 //
-// 1. A StructuredMetricsRecorder instance is constructed and owned by the
-//    MetricsService. It registers itself as an observer of
-//    metrics::structured::Recorder.
-//
-// 2. When a profile is added that is eligible for recording,
-//    ChromeMetricsServiceClient calls Recorder::ProfileAdded, which notifies
-//    this class.
-//
-// 3. This class then begins initialization by asynchronously reading keys and
-//    unsent logs from the cryptohome.
-//
-// 4. If the read succeeds, initialization is complete and this class starts
-//    accepting events to record.
-//
-// After initialization, this class accepts events to record from
+// This class accepts events to record from
 // StructuredMetricsRecorder::OnRecord via Recorder::Record via
 // Event::Record. These events are not uploaded immediately, and are cached
 // in ready-to-upload form.
-//
-// On a call to ProvideUmaEventMetrics, the cache of unsent logs is added to
-// a ChromeUserMetricsExtension for upload, and is then cleared.
 class StructuredMetricsRecorder : public Recorder::RecorderImpl,
                                   KeyDataProvider::Observer {
  public:
-  explicit StructuredMetricsRecorder(
-      metrics::MetricsProvider* system_profile_provider);
+  StructuredMetricsRecorder(std::unique_ptr<KeyDataProvider> key_data_provider,
+                            std::unique_ptr<EventStorage> event_storage);
   ~StructuredMetricsRecorder() override;
   StructuredMetricsRecorder(const StructuredMetricsRecorder&) = delete;
   StructuredMetricsRecorder& operator=(const StructuredMetricsRecorder&) =
       delete;
 
+  // Manages whether or not Structured Metrics is recording.
+  // If these functions are overloaded, make sure they are explicitly called in
+  // the overriding function.
   virtual void EnableRecording();
   virtual void DisableRecording();
 
@@ -80,12 +60,7 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   //
   // This calls OnIndependentMetrics() to populate |uma_proto| with metadata
   // fields.
-  void ProvideEventMetrics(ChromeUserMetricsExtension& uma_proto);
-
-  void InitializeKeyDataProvider(
-      std::unique_ptr<KeyDataProvider> key_data_provider);
-
-  void InitializeEventStorage(std::unique_ptr<EventStorage> event_storage);
+  virtual void ProvideEventMetrics(ChromeUserMetricsExtension& uma_proto);
 
   // Returns true if ready to provide metrics via ProvideEventMetrics.
   bool CanProvideMetrics();
@@ -104,15 +79,9 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   friend class TestStructuredMetricsProvider;
   friend class StructuredMetricsMixin;
 
- private:
-  friend class Recorder;
-  friend class StructuredMetricsMixin;
-  friend class StructuredMetricsProviderTest;
-  friend class StructuredMetricsRecorderTest;
-  friend class StructuredMetricsRecorderHwidTest;
-  friend class TestStructuredMetricsRecorder;
-  friend class TestStructuredMetricsProvider;
-  friend class StructuredMetricsServiceTest;
+  // Recorder::RecorderImpl:
+  void OnProfileAdded(const base::FilePath& profile_path) override;
+  void OnEventRecord(const Event& event) override;
 
   // Different initialization states for the recorder.
   enum State {
@@ -134,25 +103,20 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   using InitState =
       base::EnumSet<State, State::kUninitialized, State::kMaxValue>;
 
-  void OnRead(ReadStatus status);
-  void OnWrite(WriteStatus status);
-  void OnExternalMetricsCollected(const EventsProto& external_events);
+  bool HasState(State state) const;
+
+ private:
+  friend class Recorder;
+  friend class StructuredMetricsMixin;
+  friend class StructuredMetricsProviderTest;
+  friend class StructuredMetricsRecorderTest;
+  friend class StructuredMetricsRecorderHwidTest;
+  friend class TestStructuredMetricsRecorder;
+  friend class TestStructuredMetricsProvider;
+  friend class StructuredMetricsServiceTest;
 
   // Recorder::RecorderImpl:
-  void OnProfileAdded(const base::FilePath& profile_path) override;
-  void OnEventRecord(const Event& event) override;
   void OnReportingStateChanged(bool enabled) override;
-  void OnSystemProfileInitialized() override;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  void SetExternalMetricsDirForTest(const base::FilePath& dir);
-#endif
-  void SetOnReadyToRecord(base::OnceClosure callback);
-
-  // Sets a callback to be made every time an event is recorded. This is exposed
-  // so that tests can check if a specific event is recorded since recording
-  // happens asynchronously.
-  void SetEventRecordCallbackForTest(base::RepeatingClosure callback);
 
   // Records events before IsInitialized().
   void RecordEventBeforeInitialization(const Event& event);
@@ -169,17 +133,17 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
                             const ProjectValidator& project_validator,
                             const EventValidator& event_validator);
 
-  // Adds sequence metadata to the event.
-  void AddSequenceMetadata(StructuredEventProto* proto,
-                           const Event& event,
-                           const ProjectValidator& project_validator,
-                           const KeyData& key_data);
-
   // Processes the events metric to proto format.
   void AddMetricsToProto(StructuredEventProto* proto,
                          const Event& event,
                          const ProjectValidator& project_validator,
                          const EventValidator& validator);
+
+  // Adds sequence metadata to the event.
+  virtual void AddSequenceMetadata(StructuredEventProto* proto,
+                                   const Event& event,
+                                   const ProjectValidator& project_validator,
+                                   const KeyData& key_data) {}
 
   // Populates system profile needed for Structured Metrics.
   // Independent metric uploads will rely on a SystemProfileProvider
@@ -196,9 +160,6 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
 
   // Builds a cache of disallow projects from the Finch controlled variable.
   void CacheDisallowedProjectsSet();
-
-  // Adds a project to the diallowed list for testing.
-  void AddDisallowedProjectForTest(uint64_t project_name_hash);
 
   // Returns true if key data is ready to use.
   bool IsKeyDataInitialized();
@@ -223,9 +184,22 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   absl::optional<std::pair<const ProjectValidator*, const EventValidator*>>
   GetEventValidators(const Event& event) const;
 
-  // Beyond this number of logging events between successive calls to
-  // ProvideCurrentSessionData, we stop recording events.
-  static int kMaxEventsPerUpload;
+  void SetOnReadyToRecord(base::OnceClosure callback);
+
+  // Sets a callback to be made every time an event is recorded. This is exposed
+  // so that tests can check if a specific event is recorded since recording
+  // happens asynchronously.
+  void SetEventRecordCallbackForTest(base::RepeatingClosure callback);
+
+  // Adds a project to the diallowed list for testing.
+  void AddDisallowedProjectForTest(uint64_t project_name_hash);
+
+ protected:
+  // Key data provider that provides device and profile keys.
+  std::unique_ptr<KeyDataProvider> key_data_provider_;
+
+  // Storage for events while on device.
+  std::unique_ptr<EventStorage> event_storage_;
 
   // Whether the metrics provider has completed initialization. Initialization
   // occurs across OnProfileAdded and OnKeyReady. No incoming
@@ -245,6 +219,7 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   // |init_state_| to kInitialized.
   InitState init_state_;
 
+ private:
   // Tracks the recording state signalled to the metrics provider by
   // OnRecordingEnabled and OnRecordingDisabled. This is false until
   // OnRecordingEnabled is called, which sets it true if structured metrics'
@@ -256,32 +231,11 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   // state will be purged upon initialization.
   bool purge_state_on_init_ = false;
 
-  // The last time we provided independent metrics.
-  base::Time last_provided_independent_metrics_;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Periodically reports metrics from cros.
-  std::unique_ptr<ExternalMetrics> external_metrics_;
-#endif
-
-  // Storage for events while on device.
-  std::unique_ptr<EventStorage> event_storage_;
-
-  // Key data provider that provides device and profile keys.
-  std::unique_ptr<KeyDataProvider> key_data_provider_;
-
   // Store for events that were recorded before keys are loaded.
   std::deque<Event> unhashed_events_;
 
   // Store for events that were recorded before profile keys are loaded.
   std::deque<Event> unhashed_profile_events_;
-
-  // Whether the system profile has been initialized.
-  bool system_profile_initialized_ = false;
-
-  // Interface for providing the SystemProfile to metrics.
-  // See chrome/browser/metrics/chrome_metrics_service_client.h
-  raw_ptr<metrics::MetricsProvider, DanglingUntriaged> system_profile_provider_;
 
   // A set of projects that are not allowed to be recorded. This is a cache of
   // GetDisabledProjects().
@@ -289,10 +243,6 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
 
   // Callbacks for tests whenever an event is recorded.
   base::RepeatingClosure test_callback_on_record_ = base::DoNothing();
-
-  // The number of scans of external metrics that occurred since the last
-  // upload. This is only incremented if events were added by the scan.
-  int external_metrics_scans_ = 0;
 
   // Callback to be made once recorder is ready to persist events to disk.
   base::OnceClosure on_ready_callback_ = base::DoNothing();

@@ -168,6 +168,7 @@
 #include "chrome/browser/metrics/cros_healthd_metrics_provider.h"
 #include "chrome/browser/metrics/family_user_metrics_provider.h"
 #include "chrome/browser/metrics/per_user_state_manager_chromeos.h"
+#include "chrome/browser/metrics/structured/ash_structured_metrics_recorder.h"  // nogncheck
 #include "chrome/browser/metrics/update_engine_metrics_provider.h"
 #include "chrome/browser/ui/webui/ash/settings/services/metrics/os_settings_metrics_provider.h"
 #include "components/metrics/structured/structured_metrics_features.h"  // nogncheck
@@ -729,9 +730,12 @@ void ChromeMetricsServiceClient::Initialize() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   cros_system_profile_provider_ =
       std::make_unique<ChromeOSSystemProfileProvider>();
+
   structured_metrics_service_ =
       std::make_unique<metrics::structured::StructuredMetricsService>(
-          cros_system_profile_provider_.get(), this, local_state);
+          this, local_state,
+          std::make_unique<metrics::structured::AshStructuredMetricsRecorder>(
+              cros_system_profile_provider_.get()));
 #endif
 
   RegisterMetricsServiceProviders();

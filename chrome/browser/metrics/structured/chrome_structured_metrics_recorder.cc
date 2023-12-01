@@ -45,12 +45,6 @@ void LogInitializationInStructuredMetrics(StructuredMetricsPlatform platform) {
       .Record();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// The path used to store events before the start of a user session.
-constexpr char kAshPreUserStorePath[] =
-    "/var/lib/metrics/structured/chromium/events";
-#endif
-
 }  // namespace
 
 ChromeStructuredMetricsRecorder::ChromeStructuredMetricsRecorder() {
@@ -101,12 +95,6 @@ void ChromeStructuredMetricsRecorder::Initialize() {
               service, GetOobeEventUploadCount()));
     }
   }
-
-  // Initialize the key data provider and event storage.
-  service->recorder()->InitializeKeyDataProvider(
-      std::make_unique<KeyDataProviderAsh>());
-  service->recorder()->InitializeEventStorage(std::make_unique<AshEventStorage>(
-      AshEventStorage::kSaveDelay, base::FilePath(kAshPreUserStorePath)));
 
   Recorder::GetInstance()->AddEventsProcessor(
       std::make_unique<MetadataProcessorAsh>());

@@ -14,13 +14,48 @@
 namespace metrics::structured {
 
 StructuredMetricsService::StructuredMetricsService(
-    MetricsProvider* system_profile_provider,
     MetricsServiceClient* client,
-    PrefService* local_state)
-    : StructuredMetricsService(client,
-                               local_state,
-                               std::make_unique<StructuredMetricsRecorder>(
-                                   system_profile_provider)) {}
+    PrefService* local_state,
+    std::unique_ptr<StructuredMetricsRecorder> recorder)
+    : recorder_(std::move(recorder)),
+      // This service is only enabled if both structured metrics and the service
+      // flags are enabled.
+      structured_metrics_enabled_(
+          base::FeatureList::IsEnabled(metrics::features::kStructuredMetrics) &&
+          base::FeatureList::IsEnabled(kEnabledStructuredMetricsService)),
+      client_(client) {
+  CHECK(client_);
+  CHECK(local_state);
+  CHECK(recorder_);
+
+  // If the StructuredMetricsService is not enabled then return early. The
+  // recorder needs to be initialized, but not the reporting service or
+  // scheduler.
+  if (!structured_metrics_enabled_) {
+    return;
+  }
+
+  // Setup the reporting service.
+  const UnsentLogStore::UnsentLogStoreLimits storage_limits =
+      GetLogStoreLimits();
+
+  reporting_service_ =
+      std::make_unique<reporting::StructuredMetricsReportingService>(
+          client_, local_state, storage_limits);
+
+  reporting_service_->Initialize();
+
+  // Setup the log rotation scheduler.
+  base::RepeatingClosure rotate_callback = base::BindRepeating(
+      &StructuredMetricsService::RotateLogsAndSend, weak_factory_.GetWeakPtr());
+  base::RepeatingCallback<base::TimeDelta(void)> get_upload_interval_callback =
+      base::BindRepeating(&StructuredMetricsService::GetUploadTimeInterval,
+                          base::Unretained(this));
+
+  const bool fast_startup_for_test = client->ShouldStartUpFastForTesting();
+  scheduler_ = std::make_unique<StructuredMetricsScheduler>(
+      rotate_callback, get_upload_interval_callback, fast_startup_for_test);
+}
 
 StructuredMetricsService::~StructuredMetricsService() = default;
 
@@ -82,49 +117,6 @@ void StructuredMetricsService::Purge() {
   }
   recorder_->Purge();
   reporting_service_->Purge();
-}
-
-StructuredMetricsService::StructuredMetricsService(
-    MetricsServiceClient* client,
-    PrefService* local_state,
-    std::unique_ptr<StructuredMetricsRecorder> recorder)
-    : recorder_(std::move(recorder)),
-      // This service is only enabled if both structured metrics and the service
-      // flags are enabled.
-      structured_metrics_enabled_(
-          base::FeatureList::IsEnabled(metrics::features::kStructuredMetrics) &&
-          base::FeatureList::IsEnabled(kEnabledStructuredMetricsService)),
-      client_(client) {
-  DCHECK(client);
-  DCHECK(local_state);
-
-  // If the StructuredMetricsService is not enabled then return early. The
-  // recorder needs to be initialized, but not the reporting service or
-  // scheduler.
-  if (!structured_metrics_enabled_) {
-    return;
-  }
-
-  // Setup the reporting service.
-  const UnsentLogStore::UnsentLogStoreLimits storage_limits =
-      GetLogStoreLimits();
-
-  reporting_service_ =
-      std::make_unique<reporting::StructuredMetricsReportingService>(
-          client, local_state, storage_limits);
-
-  reporting_service_->Initialize();
-
-  // Setup the log rotation scheduler.
-  base::RepeatingClosure rotate_callback = base::BindRepeating(
-      &StructuredMetricsService::RotateLogsAndSend, weak_factory_.GetWeakPtr());
-  base::RepeatingCallback<base::TimeDelta(void)> get_upload_interval_callback =
-      base::BindRepeating(&StructuredMetricsService::GetUploadTimeInterval,
-                          base::Unretained(this));
-
-  const bool fast_startup_for_test = client->ShouldStartUpFastForTesting();
-  scheduler_ = std::make_unique<StructuredMetricsScheduler>(
-      rotate_callback, get_upload_interval_callback, fast_startup_for_test);
 }
 
 base::TimeDelta StructuredMetricsService::GetUploadTimeInterval() {

@@ -7,6 +7,25 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos)
 
+if (is_chromeos_ash) {
+  source_set("structured") {
+    sources = [
+      "ash_event_storage.cc",
+      "ash_event_storage.h",
+      "ash_structured_metrics_recorder.cc",
+      "ash_structured_metrics_recorder.h",
+      "key_data_provider_ash.cc",
+      "key_data_provider_ash.h",
+    ]
+    deps = [
+      "//components/metrics",
+      "//components/metrics/structured",
+      "//components/metrics/structured:external_metrics",
+      "//components/metrics/structured:structured_metrics_validator",
+    ]
+  }
+}
+
 source_set("features") {
   sources = [
     "event_logging_features.cc",

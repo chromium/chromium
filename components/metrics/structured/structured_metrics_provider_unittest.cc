@@ -103,14 +103,10 @@ class StructuredMetricsProviderTest : public testing::Test {
   // about: the metrics service initializing and enabling its providers, and a
   // user logging in.
   void Init() {
-    system_profile_provider_ = std::make_unique<TestSystemProfileProvider>();
     // Create a system profile, normally done by ChromeMetricsServiceClient.
-    structured_metrics_recorder_ = std::unique_ptr<StructuredMetricsRecorder>(
-        new StructuredMetricsRecorder(system_profile_provider_.get()));
-    structured_metrics_recorder_->InitializeKeyDataProvider(
+    structured_metrics_recorder_ = std::make_unique<StructuredMetricsRecorder>(
         std::make_unique<TestKeyDataProvider>(DeviceKeyFilePath(),
-                                              ProfileKeyFilePath()));
-    structured_metrics_recorder_->InitializeEventStorage(
+                                              ProfileKeyFilePath()),
         std::make_unique<TestEventStorage>());
     // Create the provider, normally done by the ChromeMetricsServiceClient.
     provider_ = std::unique_ptr<StructuredMetricsProvider>(
