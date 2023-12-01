@@ -27,11 +27,11 @@ jobs:
     name: Build WebDriverBidi types
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository
+      - name: Check out spec repository
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v3.5.3
         with:
-          repository: ${{ github.event.inputs.repository }}
-          ref: ${{ github.event.inputs.source_ref }}
+          repository: ${{ github.event.inputs.repository || 'w3c/webdriver-bidi' }}
+          ref: ${{ github.event.inputs.source_ref || 'main' }}
       - name: Generate WebDriverBidi CDDL
         run: ./scripts/test.sh
       - name: Upload WebDriverBidi CDDL
@@ -44,7 +44,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository
+      - name: Check out mapper repository
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v3.5.3
       - name: Set up Python
         uses: actions/setup-python@65d7f2d534ac1bc67fcd62888c5f4f3d2cb2b236 # v4.7.1
