@@ -39,6 +39,13 @@ try_.builder(
     ],
     ssd = True,
     contact_team_email = "clank-engprod@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-official",
+            "dcheck_always_on",
+            "use_dummy_lastchange",
+        ],
+    ),
 )
 
 try_.builder(
@@ -48,6 +55,14 @@ try_.builder(
         "ci/fuchsia-official",
     ],
     ssd = True,
+    gn_args = gn_args.config(
+        configs = [
+            "ci/fuchsia-official",
+            "minimal_symbols",
+            "dcheck_always_on",
+            "use_dummy_lastchange",
+        ],
+    ),
 )
 
 try_.builder(
@@ -75,6 +90,14 @@ try_.builder(
     # TODO(crbug.com/1279290) builds with PGO change take long time.
     # Keep in sync with mac-official in ci/chromium.star.
     execution_timeout = 15 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "ci/mac-official",
+            "minimal_symbols",
+            "dcheck_always_on",
+            "use_dummy_lastchange",
+        ],
+    ),
 )
 
 try_.builder(
@@ -85,6 +108,13 @@ try_.builder(
     ],
     os = os.WINDOWS_DEFAULT,
     execution_timeout = 6 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "ci/win-official",
+            "dcheck_always_on",
+            "use_dummy_lastchange",
+        ],
+    ),
 )
 
 try_.builder(
@@ -95,4 +125,12 @@ try_.builder(
     ],
     os = os.WINDOWS_DEFAULT,
     execution_timeout = 6 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "ci/win32-official",
+            "minimal_symbols",
+            "dcheck_always_on",
+            "use_dummy_lastchange",
+        ],
+    ),
 )

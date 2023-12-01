@@ -736,6 +736,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    "mac_strip",
+    args = {
+        "enable_stripping": True,
+    },
+)
+
+gn_args.config(
     "minimal_symbols",
     args = {
         "symbol_level": 1,

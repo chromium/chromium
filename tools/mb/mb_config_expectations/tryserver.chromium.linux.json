@@ -94,16 +94,6 @@
       "use_remoteexec": true
     }
   },
-  "linux-clobber-rel": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
-      "use_dummy_lastchange": true,
-      "use_remoteexec": true
-    }
-  },
   "linux-cr23-rel": {
     "gn_args": {
       "dcheck_always_on": true,
@@ -266,14 +256,6 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_remoteexec": true
-    }
-  },
-  "linux_chromium_archive_rel_ng": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
       "use_remoteexec": true
     }
   },

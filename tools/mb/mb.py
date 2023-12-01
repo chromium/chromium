@@ -780,10 +780,6 @@ class MetaBuildWrapper:
     validation.CheckAllConfigsAndMixinsReferenced(errs, all_configs,
                                                   self.configs, self.mixins)
 
-    if self.args.config_file == self.default_config:
-      validation.EnsureNoProprietaryMixins(errs, self.builder_groups,
-                                           self.configs, self.mixins)
-
     validation.CheckDuplicateConfigs(errs, self.configs, self.mixins,
                                      self.builder_groups, FlattenConfig)
 

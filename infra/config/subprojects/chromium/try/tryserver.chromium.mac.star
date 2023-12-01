@@ -48,6 +48,7 @@ try_.builder(
     mirrors = [
         "ci/mac-arm64-archive-rel",
     ],
+    gn_args = "ci/mac-arm64-archive-rel",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -72,6 +73,7 @@ try_.builder(
     mirrors = [
         "ci/mac-archive-rel",
     ],
+    gn_args = "ci/mac-archive-rel",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 

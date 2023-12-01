@@ -336,6 +336,13 @@ try_.builder(
         "ci/android-archive-rel",
     ],
     contact_team_email = "clank-engprod@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-archive-rel",
+            "release_try_builder",
+            "chrome_with_codecs",
+        ],
+    ),
 )
 
 try_.builder(

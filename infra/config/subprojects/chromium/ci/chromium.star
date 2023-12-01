@@ -12,6 +12,11 @@ load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
 
+# Take care when changing the GN args of any of these builders to ensure that
+# you do not include a configuration with 'chrome_with_codecs' since these
+# builders generate publicly advertised non-Official builds which are not
+# allowed to have proprietary codecs enabled.
+
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
     builder_group = "chromium",
@@ -75,6 +80,15 @@ ci.builder(
         short_name = "rel",
     ),
     contact_team_email = "clank-engprod@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder_without_codecs",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "strip_debug_info",
+        ],
+    ),
     properties = {
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {
@@ -118,6 +132,16 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "android|arm",
         short_name = "arm64",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder_without_codecs",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "strip_debug_info",
+            "arm64",
+        ],
     ),
     properties = {
         # The format of these properties is defined at archive/properties.proto
@@ -165,6 +189,14 @@ ci.builder(
     # See https://crbug.com/1153349#c22, as we update symbol_level=2, build
     # needs longer time to complete.
     execution_timeout = 7 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "official_optimize",
+            "reclient",
+            "android_builder_without_codecs",
+            "full_symbols",
+        ],
+    ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -206,6 +238,13 @@ ci.builder(
     # TODO: Change this back down to something reasonable once these builders
     # have populated their cached by getting through the compile step
     execution_timeout = 10 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "official_optimize",
+            "reclient",
+            "fuchsia",
+        ],
+    ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -234,6 +273,14 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "cros",
         short_name = "lnx",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "chromeos_with_codecs",
+            "release_builder",
+            "reclient",
+            "use_cups",
+        ],
     ),
     properties = {
         # The format of these properties is defined at archive/properties.proto
@@ -274,6 +321,14 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "lacros",
         short_name = "lnx",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "lacros_on_linux",
+            "release_builder",
+            "reclient",
+            "also_build_ash_chrome",
+        ],
     ),
     properties = {
         # The format of these properties is defined at archive/properties.proto
@@ -320,6 +375,17 @@ ci.builder(
         short_name = "rel",
     ),
     contact_team_email = "chrome-desktop-engprod@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "chromeos_device",
+            "dcheck_off",
+            "reclient",
+            "amd64-generic-crostoolchain",
+            "ozone_headless",
+            "lacros",
+            "release",
+        ],
+    ),
     properties = {
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {
@@ -365,6 +431,17 @@ ci.builder(
         short_name = "arm",
     ),
     contact_team_email = "chrome-desktop-engprod@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "chromeos_device",
+            "dcheck_off",
+            "reclient",
+            "arm-generic-crostoolchain",
+            "ozone_headless",
+            "lacros",
+            "release",
+        ],
+    ),
     properties = {
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {
@@ -411,6 +488,17 @@ ci.builder(
         category = "lacros",
         short_name = "arm64",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "chromeos_device",
+            "dcheck_off",
+            "reclient",
+            "arm64-generic-crostoolchain",
+            "ozone_headless",
+            "lacros",
+            "release",
+        ],
+    ),
     properties = {
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {
@@ -450,6 +538,13 @@ ci.builder(
         short_name = "rel",
     ),
     contact_team_email = "chrome-browser-infra-team@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "updater",
+        ],
+    ),
     notifies = ["linux-archive-rel"],
     properties = {
         # The format of these properties is defined at archive/properties.proto
@@ -526,6 +621,14 @@ ci.builder(
         short_name = "rel",
     ),
     contact_team_email = "bling-engprod@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "mac_strip",
+            "minimal_symbols",
+        ],
+    ),
     properties = {
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {
@@ -563,6 +666,15 @@ ci.builder(
         short_name = "rel",
     ),
     contact_team_email = "bling-engprod@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "mac_strip",
+            "minimal_symbols",
+            "arm64",
+        ],
+    ),
     properties = {
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {
@@ -605,6 +717,12 @@ ci.builder(
     # TODO(crbug.com/1279290) builds with PGO change take long time.
     # Keep in sync with mac-official in try/chromium.star.
     execution_timeout = 15 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "official_optimize",
+            "reclient",
+        ],
+    ),
 )
 
 ci.builder(
@@ -632,6 +750,13 @@ ci.builder(
         short_name = "64",
     ),
     contact_team_email = "chrome-desktop-engprod@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+        ],
+    ),
     properties = {
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {
@@ -673,6 +798,13 @@ ci.builder(
     contact_team_email = "chrome-desktop-engprod@google.com",
     # TODO(crbug.com/1155416) builds with PGO change take long time.
     execution_timeout = 7 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "official_optimize",
+            "reclient",
+            "minimal_symbols",
+        ],
+    ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -701,6 +833,14 @@ ci.builder(
         short_name = "32",
     ),
     contact_team_email = "chrome-desktop-engprod@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "x86",
+            "minimal_symbols",
+        ],
+    ),
     properties = {
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {
@@ -742,5 +882,12 @@ ci.builder(
     contact_team_email = "chrome-desktop-engprod@google.com",
     # TODO(crbug.com/1155416) builds with PGO change take long time.
     execution_timeout = 7 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "official_optimize",
+            "reclient",
+            "x86",
+        ],
+    ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )

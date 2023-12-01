@@ -1,6 +1,23 @@
 {
   "chromium": {
-    "linux-official": "ci/linux-official/gn-args.json"
+    "android-archive-rel": "ci/android-archive-rel/gn-args.json",
+    "android-arm64-archive-rel": "ci/android-arm64-archive-rel/gn-args.json",
+    "android-official": "ci/android-official/gn-args.json",
+    "fuchsia-official": "ci/fuchsia-official/gn-args.json",
+    "lacros-arm-archive-rel": "ci/lacros-arm-archive-rel/gn-args.json",
+    "lacros-arm64-archive-rel": "ci/lacros-arm64-archive-rel/gn-args.json",
+    "lacros64-archive-rel": "ci/lacros64-archive-rel/gn-args.json",
+    "linux-archive-rel": "ci/linux-archive-rel/gn-args.json",
+    "linux-chromeos-archive-rel": "ci/linux-chromeos-archive-rel/gn-args.json",
+    "linux-lacros-archive-rel": "ci/linux-lacros-archive-rel/gn-args.json",
+    "linux-official": "ci/linux-official/gn-args.json",
+    "mac-archive-rel": "ci/mac-archive-rel/gn-args.json",
+    "mac-arm64-archive-rel": "ci/mac-arm64-archive-rel/gn-args.json",
+    "mac-official": "ci/mac-official/gn-args.json",
+    "win-archive-rel": "ci/win-archive-rel/gn-args.json",
+    "win-official": "ci/win-official/gn-args.json",
+    "win32-archive-rel": "ci/win32-archive-rel/gn-args.json",
+    "win32-official": "ci/win32-official/gn-args.json"
   },
   "chromium.accessibility": {
     "fuchsia-x64-accessibility-rel": "ci/fuchsia-x64-accessibility-rel/gn-args.json",
@@ -404,7 +421,12 @@
     "Windows deterministic": "ci/Windows deterministic/gn-args.json"
   },
   "tryserver.chromium": {
-    "linux-official": "try/linux-official/gn-args.json"
+    "android-official": "try/android-official/gn-args.json",
+    "fuchsia-official": "try/fuchsia-official/gn-args.json",
+    "linux-official": "try/linux-official/gn-args.json",
+    "mac-official": "try/mac-official/gn-args.json",
+    "win-official": "try/win-official/gn-args.json",
+    "win32-official": "try/win32-official/gn-args.json"
   },
   "tryserver.chromium.accessibility": {
     "fuchsia-x64-accessibility-rel": "try/fuchsia-x64-accessibility-rel/gn-args.json",
@@ -427,6 +449,7 @@
     "android-binary-size-siso": "try/android-binary-size-siso/gn-args.json",
     "android-chrome-pie-x86-wpt-android-specific": "try/android-chrome-pie-x86-wpt-android-specific/gn-args.json",
     "android-chrome-pie-x86-wpt-fyi-rel": "try/android-chrome-pie-x86-wpt-fyi-rel/gn-args.json",
+    "android-clobber-rel": "try/android-clobber-rel/gn-args.json",
     "android-code-coverage": "try/android-code-coverage/gn-args.json",
     "android-code-coverage-native": "try/android-code-coverage-native/gn-args.json",
     "android-cronet-arm-dbg": "try/android-cronet-arm-dbg/gn-args.json",
@@ -602,6 +625,7 @@
     "linux-arm64-castos": "try/linux-arm64-castos/gn-args.json",
     "linux-bfcache-rel": "try/linux-bfcache-rel/gn-args.json",
     "linux-chromeos-code-coverage": "try/linux-chromeos-code-coverage/gn-args.json",
+    "linux-clobber-rel": "try/linux-clobber-rel/gn-args.json",
     "linux-code-coverage": "try/linux-code-coverage/gn-args.json",
     "linux-exp-asan-lsan-fyi-rel": "try/linux-exp-asan-lsan-fyi-rel/gn-args.json",
     "linux-exp-msan-fyi-rel": "try/linux-exp-msan-fyi-rel/gn-args.json",
@@ -622,6 +646,7 @@
     "linux-x64-castos": "try/linux-x64-castos/gn-args.json",
     "linux-x64-castos-audio": "try/linux-x64-castos-audio/gn-args.json",
     "linux-x64-castos-dbg": "try/linux-x64-castos-dbg/gn-args.json",
+    "linux_chromium_archive_rel_ng": "try/linux_chromium_archive_rel_ng/gn-args.json",
     "linux_chromium_asan_rel_ng": "try/linux_chromium_asan_rel_ng/gn-args.json",
     "linux_chromium_cfi_rel_ng": "try/linux_chromium_cfi_rel_ng/gn-args.json",
     "linux_chromium_chromeos_asan_rel_ng": "try/linux_chromium_chromeos_asan_rel_ng/gn-args.json",
@@ -657,7 +682,9 @@
     "ios-simulator-code-coverage": "try/ios-simulator-code-coverage/gn-args.json",
     "ios-simulator-full-configs": "try/ios-simulator-full-configs/gn-args.json",
     "ios-simulator-noncq": "try/ios-simulator-noncq/gn-args.json",
+    "mac-arm64-clobber-rel": "try/mac-arm64-clobber-rel/gn-args.json",
     "mac-arm64-on-arm64-rel": "try/mac-arm64-on-arm64-rel/gn-args.json",
+    "mac-clobber-rel": "try/mac-clobber-rel/gn-args.json",
     "mac-code-coverage": "try/mac-code-coverage/gn-args.json",
     "mac-fieldtrial-tester": "try/mac-fieldtrial-tester/gn-args.json",
     "mac-intel-on-arm64-rel": "try/mac-intel-on-arm64-rel/gn-args.json",
@@ -718,10 +745,12 @@
     "gpu-fyi-try-win10-nvidia-rel-64": "try/gpu-fyi-try-win10-nvidia-rel-64/gn-args.json",
     "gpu-try-win-nvidia-dbg": "try/gpu-try-win-nvidia-dbg/gn-args.json",
     "win-asan": "try/win-asan/gn-args.json",
+    "win-clobber-rel": "try/win-clobber-rel/gn-args.json",
     "win-rel": "try/win-rel/gn-args.json",
     "win10-code-coverage": "try/win10-code-coverage/gn-args.json",
     "win10-dbg": "try/win10-dbg/gn-args.json",
     "win11-x64-fyi-rel": "try/win11-x64-fyi-rel/gn-args.json",
+    "win32-clobber-rel": "try/win32-clobber-rel/gn-args.json",
     "win_chromium_compile_dbg_ng": "try/win_chromium_compile_dbg_ng/gn-args.json",
     "win_chromium_compile_rel_ng": "try/win_chromium_compile_rel_ng/gn-args.json",
     "win_chromium_x64_rel_ng": "try/win_chromium_x64_rel_ng/gn-args.json"

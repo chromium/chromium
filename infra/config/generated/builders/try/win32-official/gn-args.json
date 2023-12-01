@@ -1,0 +1,10 @@
+{
+  "gn_args": {
+    "dcheck_always_on": true,
+    "is_official_build": true,
+    "symbol_level": 1,
+    "target_cpu": "x86",
+    "use_dummy_lastchange": true,
+    "use_remoteexec": true
+  }
+}

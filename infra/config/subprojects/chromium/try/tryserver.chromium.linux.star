@@ -119,6 +119,15 @@ try_.builder(
         is_compile_only = True,
     ),
     contact_team_email = "chrome-browser-infra-team@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "no_symbols",
+            "dcheck_always_on",
+            "use_dummy_lastchange",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -486,6 +495,12 @@ try_.builder(
     mirrors = [
         "ci/linux-archive-rel",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 

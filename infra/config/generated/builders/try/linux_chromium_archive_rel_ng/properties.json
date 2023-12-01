@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/try/linux_chromium_archive_rel_ng/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {

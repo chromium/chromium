@@ -70,6 +70,14 @@ try_.builder(
         "ci/win-archive-rel",
     ],
     contact_team_email = "chrome-desktop-engprod@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "ci/win-archive-rel",
+            "no_symbols",
+            "dcheck_always_on",
+            "use_dummy_lastchange",
+        ],
+    ),
 )
 
 try_.builder(
@@ -170,6 +178,12 @@ try_.builder(
         "ci/win32-archive-rel",
     ],
     contact_team_email = "chrome-desktop-engprod@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "ci/win32-archive-rel",
+            "release_try_builder",
+        ],
+    ),
 )
 
 try_.builder(

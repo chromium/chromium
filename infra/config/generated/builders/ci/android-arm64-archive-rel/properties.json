@@ -9,6 +9,9 @@
   },
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/android-arm64-archive-rel/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
