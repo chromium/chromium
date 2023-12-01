@@ -37,12 +37,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
-#if defined(ARCH_CPU_X86_FAMILY)
-#include <xmmintrin.h>
-#elif defined(CPU_ARM_NEON)
-#include <arm_neon.h>
-#endif
-
 namespace blink {
 
 AudioParam::AudioParam(BaseAudioContext& context,
