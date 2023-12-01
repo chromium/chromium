@@ -219,7 +219,7 @@ const base::FeatureParam<int> kFledgeLimitNumAuctionsParam{
 // Enables caching when loading interest groups for a bidder in an auction.
 BASE_FEATURE(kFledgeUseInterestGroupCache,
              "FledgeUseInterestGroupCache",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables fixes for matching src: local() for web fonts correctly against full
 // font name or postscript name. Rolling out behind a flag, as enabling this
