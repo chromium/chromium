@@ -30,7 +30,10 @@ OnDeviceModelService::CreateModel(mojom::LoadModelParamsPtr params) {
 mojom::PerformanceClass OnDeviceModelService::GetEstimatedPerformanceClass() {
   auto* chrome_ml = ml::ChromeML::Get();
   if (!chrome_ml) {
-    return mojom::PerformanceClass::kError;
+    return mojom::PerformanceClass::kFailedToLoadLibrary;
+  }
+  if (chrome_ml->IsGpuBlocked()) {
+    return mojom::PerformanceClass::kGpuBlocked;
   }
   return ml::GetEstimatedPerformanceClass(*chrome_ml);
 }

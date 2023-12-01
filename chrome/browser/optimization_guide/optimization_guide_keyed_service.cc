@@ -125,6 +125,10 @@ OnDeviceModelPerformanceClass ConvertToOnDeviceModelPerformanceClass(
       return OnDeviceModelPerformanceClass::kHigh;
     case on_device_model::mojom::PerformanceClass::kVeryHigh:
       return OnDeviceModelPerformanceClass::kVeryHigh;
+    case on_device_model::mojom::PerformanceClass::kGpuBlocked:
+      return OnDeviceModelPerformanceClass::kGpuBlocked;
+    case on_device_model::mojom::PerformanceClass::kFailedToLoadLibrary:
+      return OnDeviceModelPerformanceClass::kFailedToLoadLibrary;
   }
 }
 

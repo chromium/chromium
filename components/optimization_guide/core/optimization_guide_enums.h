@@ -282,11 +282,17 @@ enum class OnDeviceModelPerformanceClass {
   // The service crashed, so a valid value was not returned.
   kServiceCrash = 7,
 
+  // GPU was blocklisted.
+  kGpuBlocked = 8,
+
+  // Native library failed to load.
+  kFailedToLoadLibrary = 9,
+
   // This must be kept in sync with
   // OnDeviceModelPerformanceClass in optimization/enums.xml.
 
   // Insert new values before this line.
-  kMaxValue = kServiceCrash,
+  kMaxValue = kFailedToLoadLibrary,
 };
 
 // The result of loading an on-device model.

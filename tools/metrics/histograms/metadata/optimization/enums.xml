@@ -85,6 +85,8 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="High"/>
   <int value="6" label="Very High"/>
   <int value="7" label="Service Crash"/>
+  <int value="8" label="GPU blocked"/>
+  <int value="9" label="Failed to load library"/>
 </enum>
 
 <enum name="OptimizationGuideAccessTokenResult">

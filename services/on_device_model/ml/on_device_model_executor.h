@@ -40,8 +40,6 @@ class OnDeviceModelExecutor
   std::unique_ptr<Session> CreateSession() override;
 
  private:
-  bool IsGpuBlocked();
-
   on_device_model::mojom::LoadModelResult Init(
       on_device_model::mojom::LoadModelParamsPtr params);
 

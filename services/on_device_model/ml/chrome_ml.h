@@ -32,6 +32,9 @@ class ChromeML {
   // Exposes the raw ChromeMLAPI functions defined by the library.
   const ChromeMLAPI& api() const { return *api_; }
 
+  // Whether or not the GPU is blocklisted.
+  bool IsGpuBlocked() const;
+
  private:
   static std::unique_ptr<ChromeML> Create();
 

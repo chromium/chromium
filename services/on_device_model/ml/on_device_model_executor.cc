@@ -13,7 +13,6 @@
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "gpu/config/webgpu_blocklist_impl.h"
 #include "services/on_device_model/ml/chrome_ml.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
@@ -26,10 +25,6 @@ using on_device_model::mojom::LoadModelResult;
 
 namespace ml {
 namespace {
-
-const base::FeatureParam<std::string> kGpuBlockList{
-    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
-    "on_device_model_gpu_block_list", ""};
 
 const base::FeatureParam<double> kTemperature{
     &optimization_guide::features::kOptimizationGuideOnDeviceModel,
@@ -284,30 +279,9 @@ OnDeviceModelExecutor::CreateSession() {
   return std::make_unique<SessionImpl>(*chrome_ml_, model_);
 }
 
-bool OnDeviceModelExecutor::IsGpuBlocked() {
-  GpuConfig gpu_config;
-  if (!chrome_ml_->api().GetGpuConfig(gpu_config)) {
-    LOG(ERROR) << "Unable to get gpu config";
-    return true;
-  }
-  WGPUAdapterProperties wgpu_adapter_properties = {};
-  wgpu_adapter_properties.vendorID = gpu_config.vendor_id;
-  wgpu_adapter_properties.deviceID = gpu_config.device_id;
-  wgpu_adapter_properties.architecture = gpu_config.architecture;
-  wgpu_adapter_properties.driverDescription = gpu_config.driver_description;
-  wgpu_adapter_properties.adapterType = gpu_config.adapter_type;
-  wgpu_adapter_properties.backendType = gpu_config.backend_type;
-  if (gpu::IsWebGPUAdapterBlocklisted(wgpu_adapter_properties,
-                                      kGpuBlockList.Get())) {
-    LOG(ERROR) << "WebGPU blocked on this device";
-    return true;
-  }
-  return false;
-}
-
 LoadModelResult OnDeviceModelExecutor::Init(
     on_device_model::mojom::LoadModelParamsPtr params) {
-  if (IsGpuBlocked()) {
+  if (chrome_ml_->IsGpuBlocked()) {
     return LoadModelResult::kGpuBlocked;
   }
   on_device_model::ModelAssets assets = std::move(params->assets);
