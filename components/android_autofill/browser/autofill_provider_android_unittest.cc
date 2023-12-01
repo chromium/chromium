@@ -245,6 +245,11 @@ class AutofillProviderAndroidTest : public content::RenderViewHostTestHarness {
     return *AutofillProviderAndroid::FromWebContents(web_contents());
   }
 
+  AutofillProviderAndroidBridge::Delegate& provider_bridge_delegate() {
+    return static_cast<AutofillProviderAndroidBridge::Delegate&>(
+        autofill_provider());
+  }
+
   // Returns the local frame token of the primary main frame.
   LocalFrameToken main_frame_token() {
     return LocalFrameToken(main_frame()->GetFrameToken().value());
@@ -835,6 +840,36 @@ TEST_F(AutofillProviderAndroidTest,
   // before.
   EXPECT_NE(cache_session_id, pw_form_second_session_id);
   EXPECT_NE(pi_form_session_id, pw_form_second_session_id);
+}
+
+// Tests that metrics are emitted when the bottom sheet is shown.
+TEST_F(AutofillProviderAndroidTest,
+       PrefillRequestStateEmittedOnShowingBottomSheet) {
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SdkVersion::SDK_VERSION_U) {
+    GTEST_SKIP();
+  }
+
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAndroidAutofillPrefillRequestsForLoginForms);
+
+  FormData login_form =
+      CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
+  android_autofill_manager().OnFormsSeen({login_form}, /*removed_forms=*/{});
+  android_autofill_manager().SimulatePropagateAutofillPredictions(
+      login_form.global_id());
+
+  EXPECT_CALL(provider_bridge(), StartAutofillSession);
+  android_autofill_manager().SimulateOnAskForValuesToFill(
+      login_form, login_form.fields.front());
+
+  // Simulate a successfully shown bottom sheet.
+  provider_bridge_delegate().OnShowBottomSheetResult(/*is_shown=*/true);
+  histogram_tester.ExpectUniqueSample(
+      AutofillProviderAndroid::kPrefillRequestStateUma,
+      PrefillRequestState::kRequestSentStructureProvidedBottomSheetShown, 1);
 }
 
 class AutofillProviderAndroidTestHidingLogic

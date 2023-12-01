@@ -247,9 +247,6 @@ void AutofillProviderAndroid::StartNewSession(AndroidAutofillManager* manager,
                                   PrefillRequestState::kRequestNotSentNoTime);
   }();
 
-  // TODO(crbug.com/1502097): Add metrics for the cases in which we attempt
-  // to show a bottom sheet.
-
   has_used_cached_form_ = true;
   bridge_->StartAutofillSession(
       *form_, field_info, manager->has_server_prediction(form.global_id()));
@@ -283,9 +280,20 @@ void AutofillProviderAndroid::SetAnchorViewRect(
 
 void AutofillProviderAndroid::OnShowBottomSheetResult(bool is_shown) {
   was_bottom_sheet_just_shown_ = is_shown;
-  if (!is_shown && keyboard_suppressor_) {
+
+  if (is_shown) {
+    base::UmaHistogramEnumeration(
+        kPrefillRequestStateUma,
+        PrefillRequestState::kRequestSentStructureProvidedBottomSheetShown);
+    return;
+  }
+
+  if (keyboard_suppressor_) {
     keyboard_suppressor_->Unsuppress();
   }
+
+  // TODO(crbug.com/1502097): Add metrics for the cases in which we attempt
+  // to show a bottom sheet, but failed.
 }
 
 void AutofillProviderAndroid::OnTextFieldDidChange(
