@@ -866,22 +866,9 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest, AlternativeJSAPI) {
   const char request[] = R"(
   {
    "providers": [ {
-      "params": {
-         "extraParamAsNeededByDigitalCredentials": "true",
-         "nonce": "1234",
-         "readerPublicKey": "test_reader_public_key"
-      },
-      "responseFormat": [ "mdoc" ],
-      "selector": {
-         "fields": [ {
-            "equals": "org.iso.18013.5.1.mDL",
-            "name": "doctype"
-         }, {
-            "name": "org.iso.18013.5.1.family_name"
-         }, {
-            "name": "org.iso.18013.5.1.portrait"
-         } ]
-      }
+     "protocol": "OpenID4VP",
+     "request": "{canBeAnything: true}",
+     "publicKey": "anything really? yeah."
    } ]
   }
   )";
@@ -897,19 +884,9 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest, AlternativeJSAPI) {
         (async () => {
           const {token} = await navigator.credentials.requestIdentity({
             providers: [{
-              selector: {
-                format: ['mdoc'],
-                doctype: 'org.iso.18013.5.1.mDL',
-                fields: [
-                  'org.iso.18013.5.1.family_name',
-                  'org.iso.18013.5.1.portrait',
-                ]
-              },
-              params: {
-                nonce: '1234',
-                readerPublicKey: 'test_reader_public_key',
-                extraParamAsNeededByDigitalCredentials: true,
-              },
+              protocol: "OpenID4VP",
+              request: "{canBeAnything: true}",
+              publicKey: "anything really? yeah.",
             }],
           });
           return token;

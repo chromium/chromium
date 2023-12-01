@@ -70,8 +70,11 @@ union IdentityProvider {
 
 // The specification of the query to digital credentials.
 struct DigitalCredentialProvider {
-  map<string, string> params;
-  DigitalCredentialSelector selector;
+  map<string, string>? params;
+  DigitalCredentialSelector? selector;
+  string? protocol;
+  string? request;
+  string? publicKey;
 };
 
 // The requirements of the credentials that are being requested.

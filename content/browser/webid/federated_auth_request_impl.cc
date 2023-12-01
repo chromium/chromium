@@ -613,41 +613,58 @@ void FederatedAuthRequestImpl::CompleteDigitalCredentialRequest(
 
 base::Value::Dict BuildDigitalCredentialRequest(
     blink::mojom::DigitalCredentialProviderPtr provider) {
-  auto formats = Value::List();
-  for (auto& format : provider->selector->format) {
-    formats.Append(format);
-  }
+  auto result = Value::Dict();
 
-  auto params = Value::Dict();
-  for (const auto& pair : provider->params) {
-    params.Set(pair.first, pair.second);
-  }
-
-  auto fields = Value::List();
-
-  if (provider->selector->doctype) {
-    auto doctype = Value::Dict();
-    doctype.Set("name", "doctype");
-    doctype.Set("equals", provider->selector->doctype.value());
-    fields.Append(std::move(doctype));
-  }
-
-  for (auto& value : provider->selector->fields) {
-    auto field = Value::Dict();
-    field.Set("name", value->name);
-    if (value->equals) {
-      field.Set("equals", value->equals.value());
+  if (provider->params) {
+    auto params = Value::Dict();
+    for (const auto& pair : *provider->params) {
+      params.Set(pair.first, pair.second);
     }
-    fields.Append(std::move(field));
+    result.Set("params", std::move(params));
   }
 
-  return Value::Dict().Set(
-      "providers", Value::List().Append(
-                       Value::Dict()
-                           .Set("responseFormat", std::move(formats))
-                           .Set("params", std::move(params))
-                           .Set("selector", Value::Dict().Set(
-                                                "fields", std::move(fields)))));
+  if (provider->selector) {
+    auto formats = Value::List();
+    for (auto& format : provider->selector->format) {
+      formats.Append(format);
+    }
+
+    auto fields = Value::List();
+
+    if (provider->selector->doctype) {
+      auto doctype = Value::Dict();
+      doctype.Set("name", "doctype");
+      doctype.Set("equals", provider->selector->doctype.value());
+      fields.Append(std::move(doctype));
+    }
+
+    for (auto& value : provider->selector->fields) {
+      auto field = Value::Dict();
+      field.Set("name", value->name);
+      if (value->equals) {
+        field.Set("equals", value->equals.value());
+      }
+      fields.Append(std::move(field));
+    }
+
+    result.Set("selector", Value::Dict().Set("fields", std::move(fields)));
+    result.Set("responseFormat", std::move(formats));
+  }
+
+  if (provider->protocol) {
+    result.Set("protocol", *provider->protocol);
+  }
+
+  if (provider->request) {
+    result.Set("request", *provider->request);
+  }
+
+  if (provider->publicKey) {
+    result.Set("publicKey", *provider->publicKey);
+  }
+
+  return Value::Dict().Set("providers",
+                           Value::List().Append(std::move(result)));
 }
 
 std::vector<blink::mojom::IdentityProviderPtr>

@@ -886,8 +886,8 @@ TypeConverter<IdentityProviderPtr, blink::IdentityProviderRequestOptions>::
       }
       mojo_provider->params = std::move(params);
     }
-    mojo_provider->selector = DigitalCredentialSelector::New();
     if (provider.holder()->hasSelector()) {
+      mojo_provider->selector = DigitalCredentialSelector::New();
       if (provider.holder()->selector()->hasFormat()) {
         mojo_provider->selector->format =
             provider.holder()->selector()->format();
@@ -916,6 +916,15 @@ TypeConverter<IdentityProviderPtr, blink::IdentityProviderRequestOptions>::
         }
         mojo_provider->selector->fields = std::move(fields);
       }
+    }
+    if (provider.holder()->hasProtocol()) {
+      mojo_provider->protocol = provider.holder()->protocol();
+    }
+    if (provider.holder()->hasRequest()) {
+      mojo_provider->request = provider.holder()->request();
+    }
+    if (provider.holder()->hasPublicKey()) {
+      mojo_provider->publicKey = provider.holder()->publicKey();
     }
     return IdentityProvider::NewHolder(std::move(mojo_provider));
   } else {
