@@ -40,6 +40,9 @@ public class BackPressManager implements Destroyable {
     public static final BooleanCachedFieldTrialParameter TAB_HISTORY_RECOVER =
             new BooleanCachedFieldTrialParameter(
                     ChromeFeatureList.BACK_GESTURE_REFACTOR, "tab_history_recover", false);
+    public static final BooleanCachedFieldTrialParameter START_UP_MOVE_TO_BACK =
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.BACK_GESTURE_REFACTOR, "move_task_to_back", true);
     private static final SparseIntArray sMetricsMap;
     private static final int sMetricsMaxValue;
 
@@ -147,6 +150,14 @@ public class BackPressManager implements Destroyable {
      */
     public static boolean correctTabNavigationOnFallback() {
         return isEnabled() && TAB_HISTORY_RECOVER.getValue();
+    }
+
+    /**
+     * @return True if app should be moved to back by manually calling `moveTaskToBack` when back is
+     *     pressed during start up. Otherwise, call `onBackPressed` to trigger default behavior.
+     */
+    public static boolean shouldMoveToBackDuringStartup() {
+        return START_UP_MOVE_TO_BACK.getValue();
     }
 
     /**

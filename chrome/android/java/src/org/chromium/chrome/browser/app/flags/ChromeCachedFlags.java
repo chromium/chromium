@@ -134,7 +134,8 @@ public class ChromeCachedFlags {
                         TabManagementFieldTrial.DELAY_TEMP_STRIP_TIMEOUT_MS,
                         VersionNumberGetter.MIN_SDK_VERSION,
                         MinimizeAppAndCloseTabBackPressHandler.SYSTEM_BACK,
-                        BackPressManager.TAB_HISTORY_RECOVER);
+                        BackPressManager.TAB_HISTORY_RECOVER,
+                        BackPressManager.START_UP_MOVE_TO_BACK);
 
         tryToCatchMissingParameters(fieldTrialsToCache);
         CachedFlagUtils.cacheFieldTrialParameters(fieldTrialsToCache);

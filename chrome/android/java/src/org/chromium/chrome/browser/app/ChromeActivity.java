@@ -2471,9 +2471,13 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         public void handleOnBackPressed() {
                             mBackPressManager.recordLastPressInterval();
                             if (!ChromeActivity.this.handleOnBackPressed()) {
-                                setEnabled(false);
-                                getOnBackPressedDispatcher().onBackPressed();
-                                setEnabled(true);
+                                if (BackPressManager.shouldMoveToBackDuringStartup()) {
+                                    moveTaskToBack(true);
+                                } else {
+                                    setEnabled(false);
+                                    getOnBackPressedDispatcher().onBackPressed();
+                                    setEnabled(true);
+                                }
                             }
                         }
                     };
