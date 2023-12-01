@@ -1,3 +1,9 @@
+# TODO(crbug.com/1506550): The expected results appear quite clipped.
+-All/LayerTreeHostMaskAsBlendingPixelTest.RotatedClippedCircle/SkiaGL_ZeroCopy_0
+-All/LayerTreeHostMaskAsBlendingPixelTest.RotatedClippedCircle/SkiaGL_ZeroCopy_1
+-All/LayerTreeHostMaskAsBlendingPixelTest.RotatedClippedCircle/SkiaGL_ZeroCopy_2
+-All/LayerTreeHostMaskAsBlendingPixelTest.RotatedClippedCircle/SkiaGL_ZeroCopy_3
+
 # These appear to fail with imperciptible pixel differences.
 -All/BackdropFilterInvertTest.StandardDpi/SkiaGraphiteDawn
 -All/BackdropFilterInvertTest.StandardDpi/SkiaGraphiteMetal

@@ -1013,12 +1013,13 @@ if (use_blink) {
     }
 
     if (is_ios) {
-      deps += [
+      bundle_deps = [
         ":components_tests_distiller_bundle_data",
         ":components_tests_pak_bundle_data",
         "test:dom_distiller_test_bundle_data",
         "test:url_rewrite_test_bundle_data",
         "//content/test:content_test_bundle_data",
+        "//testing/buildbot/filters:components_browsertests_filters_bundle_data",
       ]
     }
 

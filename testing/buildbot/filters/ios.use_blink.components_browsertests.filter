@@ -1,0 +1,3 @@
+# TODO(crbug.com/1506552): The following consistently fail on the platform.
+-ResourceAttrMemoryMeasurementProviderBrowserTest.TwoFramesOneProcess
+-ResourceAttrMemoryMeasurementProviderBrowserTest.TwoFramesSeparateProcesses
