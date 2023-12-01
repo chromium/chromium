@@ -165,6 +165,8 @@ component("x") {
     "event_observer.h",
     "future.cc",
     "future.h",
+    "geometry_cache.cc",
+    "geometry_cache.h",
     "keyboard_state.cc",
     "keyboard_state.h",
     "property_cache.cc",
@@ -211,6 +213,7 @@ source_set("unit_test") {
   testonly = true
   sources = [
     "connection_unittest.cc",
+    "geometry_cache_unittest.cc",
     "property_cache_unittest.cc",
     "window_cache_unittest.cc",
   ]

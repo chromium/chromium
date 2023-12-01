@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation_traits.h"
 #include "base/sequence_checker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/platform/platform_event_source.h"
@@ -571,5 +572,21 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
 };
 
 }  // namespace x11
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<x11::Connection, x11::EventObserver> {
+  static void AddObserver(x11::Connection* connection,
+                          x11::EventObserver* observer) {
+    connection->AddEventObserver(observer);
+  }
+  static void RemoveObserver(x11::Connection* connection,
+                             x11::EventObserver* observer) {
+    connection->RemoveEventObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // UI_GFX_X_CONNECTION_H_
