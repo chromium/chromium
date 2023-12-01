@@ -116,7 +116,7 @@ source_set("model") {
     "//ios/chrome/browser/safety_check/model:factory",
     "//ios/chrome/browser/screen_time/model:buildflags",
     "//ios/chrome/browser/search_engines/model",
-    "//ios/chrome/browser/segmentation_platform",
+    "//ios/chrome/browser/segmentation_platform/model",
     "//ios/chrome/browser/send_tab_to_self/model",
     "//ios/chrome/browser/sessions:session_restoration_service_factory",
     "//ios/chrome/browser/shared/model/application_context",

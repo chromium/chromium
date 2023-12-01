@@ -4,7 +4,7 @@
 
 import("//components/optimization_guide/features.gni")
 
-source_set("segmentation_platform") {
+source_set("model") {
   sources = [
     "otr_web_state_observer.h",
     "otr_web_state_observer.mm",
@@ -52,7 +52,7 @@ source_set("unit_tests") {
     "segmentation_platform_service_factory_unittest.mm",
   ]
   deps = [
-    ":segmentation_platform",
+    ":model",
     "//base/test:test_support",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:features",

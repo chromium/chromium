@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/segmentation_platform/otr_web_state_observer.h"
+#import "ios/chrome/browser/segmentation_platform/model/otr_web_state_observer.h"
 
 #import "base/scoped_observation.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"

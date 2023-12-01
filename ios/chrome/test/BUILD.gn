@@ -262,7 +262,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/safety_check/model:unit_tests",
     "//ios/chrome/browser/screenshot/model:unit_tests",
     "//ios/chrome/browser/search_engines/model:unit_tests",
-    "//ios/chrome/browser/segmentation_platform:unit_tests",
+    "//ios/chrome/browser/segmentation_platform/model:unit_tests",
     "//ios/chrome/browser/send_tab_to_self/model:unit_tests",
     "//ios/chrome/browser/settings/model/sync/utils:unit_tests",
     "//ios/chrome/browser/shared/coordinator/alert:unit_tests",

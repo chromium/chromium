@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SEGMENTATION_PLATFORM_OTR_WEB_STATE_OBSERVER_H_
-#define IOS_CHROME_BROWSER_SEGMENTATION_PLATFORM_OTR_WEB_STATE_OBSERVER_H_
+#ifndef IOS_CHROME_BROWSER_SEGMENTATION_PLATFORM_MODEL_OTR_WEB_STATE_OBSERVER_H_
+#define IOS_CHROME_BROWSER_SEGMENTATION_PLATFORM_MODEL_OTR_WEB_STATE_OBSERVER_H_
 
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
@@ -81,4 +81,4 @@ class OTRWebStateObserver : public BrowserStateInfoCacheObserver {
 
 }  // namespace segmentation_platform
 
-#endif  // IOS_CHROME_BROWSER_SEGMENTATION_PLATFORM_OTR_WEB_STATE_OBSERVER_H_
+#endif  // IOS_CHROME_BROWSER_SEGMENTATION_PLATFORM_MODEL_OTR_WEB_STATE_OBSERVER_H_

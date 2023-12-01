@@ -25,7 +25,7 @@ source_set("bubble") {
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/iph_for_new_chrome_user/model",
     "//ios/chrome/browser/ntp/model:util",
-    "//ios/chrome/browser/segmentation_platform",
+    "//ios/chrome/browser/segmentation_platform/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
