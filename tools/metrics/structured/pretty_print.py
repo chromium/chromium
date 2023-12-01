@@ -13,8 +13,8 @@ import presubmit_util
 
 def main(argv):
   dirname = os.path.dirname(os.path.realpath(__file__))
-  xml = dirname + '/structured.xml'
-  old_xml = dirname + '/structured.old.xml'
+  xml = dirname + '/sync/structured.xml'
+  old_xml = dirname + '/sync/structured.old.xml'
   presubmit_util.DoPresubmitMain(argv, xml,
                                  old_xml, lambda x: repr(model.Model(x)))
 
