@@ -34,6 +34,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kReduceGpuPriorityOnBackground,
     &features::kRequestDesktopSiteAdditions,
     &features::kRequestDesktopSiteWindowSetting,
+    &features::kSelectionMenuOrderCorrection,
     &features::kSmartZoom,
     &features::kTouchDragAndContextMenu,
     &features::kWebBluetoothNewPermissionsBackend,

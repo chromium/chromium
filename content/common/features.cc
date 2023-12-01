@@ -452,6 +452,13 @@ BASE_FEATURE(kRunStableVideoDecoderFactoryProcessServiceOnIOThread,
              "RunStableVideoDecoderFactoryProcessServiceOnIOThread",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+// Apply text selection menu order correction logic for Android.
+BASE_FEATURE(kSelectionMenuOrderCorrection,
+             "SelectionMenuOrderCorrection",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 // Enables auto preloading for fetch requests before invoking the fetch handler
 // in ServiceWorker. The fetch request inside the fetch handler is resolved with
 // this preload response. If the fetch handler result is fallback, uses this

@@ -94,6 +94,9 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kRequestFileSetCheckedInCanRequestURL);
 BASE_DECLARE_FEATURE(kRestrictCanAccessDataForOriginToUIThread);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kReuseInitialRenderFrameHostForWebUI);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSendBeaconThrowForBlobWithNonSimpleType);
+#if BUILDFLAG(IS_ANDROID)
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kSelectionMenuOrderCorrection);
+#endif
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerAutoPreload);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kServiceWorkerStaticRouterStartServiceWorker);

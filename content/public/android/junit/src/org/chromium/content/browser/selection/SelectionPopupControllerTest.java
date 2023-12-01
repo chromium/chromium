@@ -170,6 +170,9 @@ public class SelectionPopupControllerTest {
 
         mTestValues = new FeatureList.TestValues();
         setDropdownMenuFeatureEnabled(false);
+        mTestValues.addFeatureFlagOverride(
+                ContentFeatureList.SELECTION_MENU_ORDER_CORRECTION, true);
+        FeatureList.setTestValues(mTestValues);
 
         SelectionPopupControllerImpl.setDisableMagnifierForTesting(true);
 
@@ -997,7 +1000,6 @@ public class SelectionPopupControllerTest {
     private void setDropdownMenuFeatureEnabled(boolean enabled) {
         mTestValues.addFeatureFlagOverride(
                 ContentFeatureList.MOUSE_AND_TRACKPAD_DROPDOWN_MENU, enabled);
-        FeatureList.setTestValues(mTestValues);
         SelectionPopupControllerImpl.setEnableTabletUiModeForTesting(enabled);
     }
 

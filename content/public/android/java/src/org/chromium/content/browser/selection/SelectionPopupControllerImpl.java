@@ -1064,18 +1064,22 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
             Menu menu,
             Map<MenuItem, View.OnClickListener> customMenuItemClickListeners,
             @Nullable MenuItem.OnMenuItemClickListener additionalMenuItemClickListener) {
+        boolean isSelectionMenuOrderCorrectionEnabled =
+                ContentFeatureMap.isEnabled(ContentFeatureList.SELECTION_MENU_ORDER_CORRECTION);
         for (SelectionMenuGroup group : menuGroups) {
             addMenuItemsToActionMenu(
                     context,
                     group,
                     menu,
                     customMenuItemClickListeners,
-                    additionalMenuItemClickListener);
+                    additionalMenuItemClickListener,
+                    isSelectionMenuOrderCorrectionEnabled);
         }
     }
 
     /**
      * Adds the menu items from the {@link SelectionMenuGroup} to the action menu.
+     *
      * @param additionalMenuItemClickListener executes after every menu item is clicked.
      */
     private static void addMenuItemsToActionMenu(
@@ -1083,7 +1087,11 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
             SelectionMenuGroup group,
             Menu menu,
             Map<MenuItem, View.OnClickListener> customMenuItemClickListeners,
-            @Nullable MenuItem.OnMenuItemClickListener additionalMenuItemClickListener) {
+            @Nullable MenuItem.OnMenuItemClickListener additionalMenuItemClickListener,
+            boolean isSelectionMenuOrderCorrectionEnabled) {
+        // All menu items and groups are sorted already at this point, so this is just passing
+        // 1-indexed value as order.
+        int menuItemCount = menu.size();
         for (SelectionMenuItem item : group.items) {
             if (!item.isEnabled) {
                 // We will only add items if they are enabled. This will prevent us from
@@ -1091,7 +1099,10 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                 continue;
             }
             MenuItem menuItem =
-                    menu.add(group.id, item.id, item.orderInCategory, item.getTitle(context))
+                    menu.add(group.id, item.id, isSelectionMenuOrderCorrectionEnabled
+                                            ? ++menuItemCount
+                                            : item.orderInCategory,
+                                    item.getTitle(context))
                             .setShowAsActionFlags(item.showAsActionFlags);
             @Nullable Drawable icon = item.getIcon(context);
             if (icon != null) {
@@ -1190,8 +1201,11 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                 SelectActionMenuHelper.getTextProcessingItems(
                         mContext, false, false, this::processText);
         if (textProcessingItems != null) {
+            boolean isSelectionMenuOrderCorrectionEnabled =
+                    ContentFeatureMap.isEnabled(ContentFeatureList.SELECTION_MENU_ORDER_CORRECTION);
             addMenuItemsToActionMenu(
-                    mContext, textProcessingItems, menu, mCustomActionMenuItemClickListeners, null);
+                    mContext, textProcessingItems, menu, mCustomActionMenuItemClickListeners, null,
+                    isSelectionMenuOrderCorrectionEnabled);
         }
     }
 
