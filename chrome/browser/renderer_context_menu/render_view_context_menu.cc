@@ -2023,9 +2023,7 @@ void RenderViewContextMenu::AppendVideoItems() {
         GetSearchForVideoFrameIdc(),
         l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHFORVIDEOFRAME,
                                    GetImageSearchProviderName(provider)));
-    if (companion::IsNewBadgeEnabledForSearchMenuItem(GetBrowser())) {
-      menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
-    }
+    menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
     MaybePrepareForLensQuery();
   }
 }
