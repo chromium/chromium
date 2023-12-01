@@ -261,9 +261,6 @@ class BASE_EXPORT SysInfo {
 
   // Returns the Android hardware EGL system property.
   static std::string GetAndroidHardwareEGL();
-
-  static int DalvikHeapSizeMB();
-  static int DalvikHeapGrowthLimitMB();
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_IOS)

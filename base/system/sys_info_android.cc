@@ -61,72 +61,6 @@ void GetOsVersionStringAndNumbers(std::string* version_string,
                                          *minor_version, *bugfix_version);
 }
 
-// Parses a system property (specified with unit 'k','m' or 'g').
-// Returns a value in bytes.
-// Returns -1 if the string could not be parsed.
-int64_t ParseSystemPropertyBytes(const base::StringPiece& str) {
-  const int64_t KB = 1024;
-  const int64_t MB = 1024 * KB;
-  const int64_t GB = 1024 * MB;
-  if (str.size() == 0u)
-    return -1;
-  int64_t unit_multiplier = 1;
-  size_t length = str.size();
-  if (str[length - 1] == 'k') {
-    unit_multiplier = KB;
-    length--;
-  } else if (str[length - 1] == 'm') {
-    unit_multiplier = MB;
-    length--;
-  } else if (str[length - 1] == 'g') {
-    unit_multiplier = GB;
-    length--;
-  }
-  int64_t result = 0;
-  bool parsed = base::StringToInt64(str.substr(0, length), &result);
-  bool negative = result <= 0;
-  bool overflow =
-      result >= std::numeric_limits<int64_t>::max() / unit_multiplier;
-  if (!parsed || negative || overflow)
-    return -1;
-  return result * unit_multiplier;
-}
-
-int GetDalvikHeapSizeMB() {
-  char heap_size_str[PROP_VALUE_MAX];
-  __system_property_get("dalvik.vm.heapsize", heap_size_str);
-  // dalvik.vm.heapsize property is writable by a root user.
-  // Clamp it to reasonable range as a sanity check,
-  // a typical android device will never have less than 48MB.
-  const int64_t MB = 1024 * 1024;
-  int64_t result = ParseSystemPropertyBytes(heap_size_str);
-  if (result == -1) {
-    // We should consider not exposing these values if they are not reliable.
-    LOG(ERROR) << "Can't parse dalvik.vm.heapsize: " << heap_size_str;
-    result = base::SysInfo::AmountOfPhysicalMemoryMB() / 3;
-  }
-  result =
-      std::min<int64_t>(std::max<int64_t>(32 * MB, result), 1024 * MB) / MB;
-  return static_cast<int>(result);
-}
-
-int GetDalvikHeapGrowthLimitMB() {
-  char heap_size_str[PROP_VALUE_MAX];
-  __system_property_get("dalvik.vm.heapgrowthlimit", heap_size_str);
-  // dalvik.vm.heapgrowthlimit property is writable by a root user.
-  // Clamp it to reasonable range as a sanity check,
-  // a typical android device will never have less than 24MB.
-  const int64_t MB = 1024 * 1024;
-  int64_t result = ParseSystemPropertyBytes(heap_size_str);
-  if (result == -1) {
-    // We should consider not exposing these values if they are not reliable.
-    LOG(ERROR) << "Can't parse dalvik.vm.heapgrowthlimit: " << heap_size_str;
-    result = base::SysInfo::AmountOfPhysicalMemoryMB() / 6;
-  }
-  result = std::min<int64_t>(std::max<int64_t>(16 * MB, result), 512 * MB) / MB;
-  return static_cast<int>(result);
-}
-
 std::string HardwareManufacturerName() {
   char device_model_str[PROP_VALUE_MAX];
   __system_property_get("ro.product.manufacturer", device_model_str);
@@ -178,16 +112,6 @@ std::string SysInfo::GetAndroidHardwareEGL() {
   char os_hardware_egl_str[PROP_VALUE_MAX];
   __system_property_get("ro.hardware.egl", os_hardware_egl_str);
   return std::string(os_hardware_egl_str);
-}
-
-int SysInfo::DalvikHeapSizeMB() {
-  static int heap_size = GetDalvikHeapSizeMB();
-  return heap_size;
-}
-
-int SysInfo::DalvikHeapGrowthLimitMB() {
-  static int heap_growth_limit = GetDalvikHeapGrowthLimitMB();
-  return heap_growth_limit;
 }
 
 static base::LazyInstance<base::internal::LazySysInfoValue<
