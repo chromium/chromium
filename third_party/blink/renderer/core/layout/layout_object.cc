@@ -3922,6 +3922,8 @@ void LayoutObject::WillBeRemovedFromTree() {
 
   if (LocalFrameView* frame_view = GetFrameView())
     frame_view->GetPaintTimingDetector().LayoutObjectWillBeDestroyed(*this);
+
+  InvalidateIntersectionObserverCachedRects();
 }
 
 void LayoutObject::SetNeedsPaintPropertyUpdate() {

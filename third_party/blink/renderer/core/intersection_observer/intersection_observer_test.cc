@@ -1272,6 +1272,47 @@ TEST_P(IntersectionObserverTest, CachedRectsWithoutIntermediateScrollable) {
   }
 }
 
+TEST_P(IntersectionObserverTest, CachedRectsDisplayNone) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <div id='root'>
+      <div id='target'>Hello, world!</div>
+    </div>
+  )HTML");
+
+  Element* root = GetDocument().getElementById(AtomicString("root"));
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+
+  IntersectionObserverInit* observer_init = IntersectionObserverInit::Create();
+  observer_init->setRoot(MakeGarbageCollected<V8UnionDocumentOrElement>(root));
+  DummyExceptionStateForTesting exception_state;
+  TestIntersectionObserverDelegate* observer_delegate =
+      MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+  IntersectionObserver* observer = IntersectionObserver::Create(
+      observer_init, *observer_delegate, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  observer->observe(target, exception_state);
+  IntersectionObservation* observation =
+      target->IntersectionObserverData()->GetObservationFor(*observer);
+
+  // Generate initial notifications and populate cache.
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+    EXPECT_TRUE(observation->CanUseCachedRectsForTesting());
+  } else {
+    EXPECT_FALSE(observation->CanUseCachedRectsForTesting());
+  }
+
+  target->setAttribute(html_names::kStyleAttr, AtomicString("display: none"));
+  GetDocument().View()->UpdateLifecycleToPrePaintClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_FALSE(observation->CanUseCachedRectsForTesting());
+}
+
 TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateNotScrollable) {
   if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
     return;
