@@ -81,6 +81,14 @@ void LogMandatoryReauthSettingsPageEditCardEvent(
   base::UmaHistogramEnumeration(histogram_name, event);
 }
 
+void LogMandatoryReauthSettingsPageDeleteCardEvent(
+    MandatoryReauthAuthenticationFlowEvent event) {
+  base::UmaHistogramEnumeration(
+      "Autofill.PaymentMethods.MandatoryReauth.AuthEvent.SettingsPage."
+      "DeleteCard",
+      event);
+}
+
 void LogMandatoryReauthCheckoutFlowUsageEvent(
     CreditCard::RecordType card_type,
     payments::MandatoryReauthAuthenticationMethod authentication_method,

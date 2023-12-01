@@ -41722,6 +41722,7 @@ from previous Chrome versions.
   <int value="1" label="Flow started"/>
   <int value="2" label="Flow succeeded"/>
   <int value="3" label="Flow failed"/>
+  <int value="4" label="Flow skipped"/>
 </enum>
 
 <enum name="MandatoryReauthOfferOptInDecision">

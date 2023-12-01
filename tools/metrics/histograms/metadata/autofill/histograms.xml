@@ -3136,18 +3136,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Autofill.PaymentMethods.MandatoryReauth.AuthEvent.SettingsPage.EditCard"
+    name="Autofill.PaymentMethods.MandatoryReauth.AuthEvent.SettingsPage.{ActionType}"
     enum="MandatoryReauthAuthEvent" expires_after="2024-07-01">
   <owner>koulvipul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
-    Tracks the auth result when the user tries to edit a local card and
-    mandatory reauth feature is enabled. Whenever a user tries to edit the card
-    from the Settings page, we will log into the `flow started` bucket. The user
-    would then be challenged with an auth, where if the auth was successful, we
-    will log in the `flow succeded` bucket, else we will log in the `flow
-    failed` bucket.
+    Tracks the auth result when the user tries to {ActionType} and mandatory
+    reauth feature is enabled. Whenever a user tries to {ActionType}, we will
+    log into the `flow started` bucket. The user would then be challenged with
+    an auth, where if the auth was successful, we will log in the `flow
+    succeded` bucket, else we will log in the `flow failed` bucket.
   </summary>
+  <token key="ActionType">
+    <variant name="DeleteCard"
+        summary="delete a card from the payment methods settings"/>
+    <variant name="EditCard"
+        summary="edit a card on the payment methods settings"/>
+  </token>
 </histogram>
 
 <histogram

@@ -365,9 +365,25 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
   // early and do nothing.
   if (_personalDataManager->IsPaymentMethodsMandatoryReauthEnabled() &&
       [self.reauthenticationModule canAttemptReauth]) {
+    LogMandatoryReauthSettingsPageDeleteCardEvent(
+        MandatoryReauthAuthenticationFlowEvent::kFlowStarted);
+
     auto completionHandler = ^(ReauthenticationResult result) {
-      if (result != ReauthenticationResult::kFailure) {
-        [super editButtonPressed];
+      switch (result) {
+        case ReauthenticationResult::kSuccess:
+          LogMandatoryReauthSettingsPageDeleteCardEvent(
+              MandatoryReauthAuthenticationFlowEvent::kFlowSucceeded);
+          [super editButtonPressed];
+          break;
+        case ReauthenticationResult::kSkipped:
+          LogMandatoryReauthSettingsPageDeleteCardEvent(
+              MandatoryReauthAuthenticationFlowEvent::kFlowSkipped);
+          [super editButtonPressed];
+          break;
+        case ReauthenticationResult::kFailure:
+          LogMandatoryReauthSettingsPageDeleteCardEvent(
+              MandatoryReauthAuthenticationFlowEvent::kFlowFailed);
+          break;
       }
     };
     [self.reauthenticationModule

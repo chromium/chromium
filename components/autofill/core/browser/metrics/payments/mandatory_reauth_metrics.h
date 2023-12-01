@@ -96,7 +96,9 @@ enum class MandatoryReauthAuthenticationFlowEvent {
   kFlowSucceeded = 2,
   // User authentication flow failed.
   kFlowFailed = 3,
-  kMaxValue = kFlowFailed,
+  // User authentication flow was skipped because of previous auth success.
+  kFlowSkipped = 4,
+  kMaxValue = kFlowSkipped,
 };
 
 // All the sources that can trigger the OptIn or OptOut flow for mandatory
@@ -148,9 +150,15 @@ void LogMandatoryReauthOptInOrOutUpdateEvent(
     MandatoryReauthAuthenticationFlowEvent event);
 
 // Logs the status of a mandatory reauth occurrence, such as flow
-// started/succeeded/failed, when the user tries to edit a local card in
+// started/succeeded/failed, when the user tries to edit a local card on the
 // Settings page.
 void LogMandatoryReauthSettingsPageEditCardEvent(
+    MandatoryReauthAuthenticationFlowEvent event);
+
+// Logs the status of a mandatory reauth occurrence, such as flow
+// started/succeeded/failed, when the user tries to delete a local card on the
+// Settings page.
+void LogMandatoryReauthSettingsPageDeleteCardEvent(
     MandatoryReauthAuthenticationFlowEvent event);
 
 // Logs the status of a mandatory reauth occurrence during checkout flow, such
