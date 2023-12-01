@@ -148,10 +148,17 @@ constexpr CGFloat kButtonTopPadding = 14.0;
 
     [self.contentView addSubview:stackView];
 
+    // Lower the height padding constraints priority. UITableView might try to
+    // set the header view height to 0 breaking the constraints. See
+    // https://crbug.com/854117 for more information.
+    NSLayoutConstraint* imageHeightConstraint =
+        [_illustratedImageView.heightAnchor
+            constraintEqualToConstant:kImageViewHeight];
+    imageHeightConstraint.priority = UILayoutPriorityRequired - 1;
+
     // Set and activate constraints.
     [NSLayoutConstraint activateConstraints:@[
-      [_illustratedImageView.heightAnchor
-          constraintEqualToConstant:kImageViewHeight],
+      imageHeightConstraint,
       [_illustratedImageView.leadingAnchor
           constraintEqualToAnchor:stackView.leadingAnchor],
       [_illustratedImageView.trailingAnchor

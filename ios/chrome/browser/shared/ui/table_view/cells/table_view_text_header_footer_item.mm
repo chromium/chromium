@@ -107,6 +107,7 @@ const CGFloat kHorizontalSpacingToAlignWithItems = 16.0;
     _textLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
     _textLabel.accessibilityTraits = UIAccessibilityTraitHeader;
+    _textLabel.numberOfLines = 0;
 
     // Vertical StackView.
     UIStackView* verticalStack = [[UIStackView alloc]
@@ -159,6 +160,11 @@ const CGFloat kHorizontalSpacingToAlignWithItems = 16.0;
       trailingAnchorConstraint_,
       [containerView.centerYAnchor
           constraintEqualToAnchor:self.contentView.centerYAnchor],
+      // Match container view to contentView width.
+      [containerView.leadingAnchor
+          constraintEqualToAnchor:self.contentView.leadingAnchor],
+      [containerView.trailingAnchor
+          constraintEqualToAnchor:self.contentView.trailingAnchor],
       // Vertical StackView Constraints.
       [verticalStack.leadingAnchor
           constraintEqualToAnchor:containerView.leadingAnchor],

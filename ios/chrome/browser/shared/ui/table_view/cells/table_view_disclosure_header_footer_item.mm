@@ -39,7 +39,6 @@ static const CGFloat kDisabledOpacity = (CGFloat)0.40;
           headerFooter);
   header.titleLabel.text = self.text;
   header.subtitleLabel.text = self.subtitleText;
-  header.subtitleLabel.numberOfLines = 0;
   header.disabled = self.disabled;
   header.isAccessibilityElement = YES;
   header.accessibilityTraits |= UIAccessibilityTraitButton;
@@ -69,6 +68,7 @@ static const CGFloat kDisabledOpacity = (CGFloat)0.40;
   if (self) {
     // Labels, set font sizes using dynamic type.
     _titleLabel = [[UILabel alloc] init];
+    _titleLabel.numberOfLines = 0;
     UIFontDescriptor* baseDescriptor = [UIFontDescriptor
         preferredFontDescriptorWithTextStyle:UIFontTextStyleSubheadline];
     UIFontDescriptor* styleDescriptor = [baseDescriptor
@@ -80,6 +80,7 @@ static const CGFloat kDisabledOpacity = (CGFloat)0.40;
                                         forAxis:UILayoutConstraintAxisVertical];
 
     _subtitleLabel = [[UILabel alloc] init];
+    _subtitleLabel.numberOfLines = 0;
     _subtitleLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
     [_subtitleLabel
@@ -109,8 +110,8 @@ static const CGFloat kDisabledOpacity = (CGFloat)0.40;
     // Add subviews to View Hierarchy.
     [self.contentView addSubview:horizontalStack];
 
-    // Lower the padding constraints priority. UITableView might try to set
-    // the header view height/width to 0 breaking the constraints. See
+    // Lower the height padding constraints priority. UITableView might try to
+    // set the header view height to 0 breaking the constraints. See
     // https://crbug.com/854117 for more information.
     NSLayoutConstraint* topAnchorConstraint = [horizontalStack.topAnchor
         constraintGreaterThanOrEqualToAnchor:self.contentView.topAnchor
@@ -120,22 +121,15 @@ static const CGFloat kDisabledOpacity = (CGFloat)0.40;
         constraintLessThanOrEqualToAnchor:self.contentView.bottomAnchor
                                  constant:-kTableViewVerticalSpacing];
     bottomAnchorConstraint.priority = UILayoutPriorityDefaultHigh;
-    NSLayoutConstraint* leadingAnchorConstraint = [horizontalStack.leadingAnchor
-        constraintEqualToAnchor:self.contentView.leadingAnchor
-                       constant:HorizontalPadding()];
-    leadingAnchorConstraint.priority = UILayoutPriorityDefaultHigh;
-    NSLayoutConstraint* trailingAnchorConstraint =
-        [horizontalStack.trailingAnchor
-            constraintEqualToAnchor:self.contentView.trailingAnchor
-                           constant:-HorizontalPadding()];
-    trailingAnchorConstraint.priority = UILayoutPriorityDefaultHigh;
-
     // Set and activate constraints.
     [NSLayoutConstraint activateConstraints:@[
-      topAnchorConstraint, bottomAnchorConstraint, leadingAnchorConstraint,
-      trailingAnchorConstraint,
-      [horizontalStack.centerYAnchor
-          constraintEqualToAnchor:self.contentView.centerYAnchor]
+      topAnchorConstraint, bottomAnchorConstraint,
+      [horizontalStack.leadingAnchor
+          constraintEqualToAnchor:self.contentView.leadingAnchor
+                         constant:HorizontalPadding()],
+      [horizontalStack.trailingAnchor
+          constraintEqualToAnchor:self.contentView.trailingAnchor
+                         constant:-HorizontalPadding()]
     ]];
   }
   return self;
