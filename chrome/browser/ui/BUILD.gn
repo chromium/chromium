@@ -534,6 +534,7 @@ static_library("ui") {
     "//components/live_caption:utils",
     "//components/local_state",
     "//components/lookalikes/core",
+    "//components/metrics:content",
     "//components/metrics/debug",
     "//components/metrics_services_manager",
     "//components/navigation_metrics",

@@ -639,6 +639,10 @@ void MetricsService::OnAppEnterForeground(bool force_open_new_log) {
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
+void MetricsService::OnPageLoadStarted() {
+  delegating_provider_.OnPageLoadStarted();
+}
+
 void MetricsService::LogCleanShutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   state_manager_->LogHasSessionShutdownCleanly(true);

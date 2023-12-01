@@ -345,6 +345,8 @@ if (!is_cronet_build) {
         "content/extensions_helper.h",
         "content/gpu_metrics_provider.cc",
         "content/gpu_metrics_provider.h",
+        "content/metrics_services_web_contents_observer.cc",
+        "content/metrics_services_web_contents_observer.h",
         "content/rendering_perf_metrics_provider.cc",
         "content/rendering_perf_metrics_provider.h",
         "content/subprocess_metrics_provider.cc",

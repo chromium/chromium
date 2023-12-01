@@ -1,41 +1,38 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/metrics/metrics_services_web_contents_observer.h"
+#include "components/metrics/content/metrics_services_web_contents_observer.h"
 
-#include "chrome/browser/browser_process.h"
 #include "components/metrics/metrics_service.h"
-#include "components/metrics_services_manager/metrics_services_manager.h"
 
 namespace metrics {
 
 MetricsServicesWebContentsObserver::MetricsServicesWebContentsObserver(
-    content::WebContents* web_contents)
+    content::WebContents* web_contents,
+    OnDidStartLoadingCb did_start_loading_cb,
+    OnDidStopLoadingCb did_stop_loading_cb,
+    OnRendererUnresponsiveCb renderer_unresponsive_cb)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<MetricsServicesWebContentsObserver>(
-          *web_contents) {}
-
+          *web_contents),
+      did_start_loading_cb_(std::move(did_start_loading_cb)),
+      did_stop_loading_cb_(std::move(did_stop_loading_cb)),
+      renderer_unresponsive_cb_(std::move(renderer_unresponsive_cb)) {}
 MetricsServicesWebContentsObserver::~MetricsServicesWebContentsObserver() =
     default;
 
 void MetricsServicesWebContentsObserver::DidStartLoading() {
-  auto* manager = g_browser_process->GetMetricsServicesManager();
-  if (manager)
-    manager->LoadingStateChanged(/*is_loading=*/true);
+  did_start_loading_cb_.Run();
 }
 
 void MetricsServicesWebContentsObserver::DidStopLoading() {
-  auto* manager = g_browser_process->GetMetricsServicesManager();
-  if (manager)
-    manager->LoadingStateChanged(/*is_loading=*/false);
+  did_stop_loading_cb_.Run();
 }
 
 void MetricsServicesWebContentsObserver::OnRendererUnresponsive(
     content::RenderProcessHost* host) {
-  auto* manager = g_browser_process->GetMetricsServicesManager();
-  if (manager)
-    manager->GetMetricsService()->OnApplicationNotIdle();
+  renderer_unresponsive_cb_.Run();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(MetricsServicesWebContentsObserver);

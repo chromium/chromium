@@ -61,6 +61,12 @@ void DelegatingProvider::OnAppEnterBackground() {
     provider->OnAppEnterBackground();
 }
 
+void DelegatingProvider::OnPageLoadStarted() {
+  for (auto& provider : metrics_providers_) {
+    provider->OnPageLoadStarted();
+  }
+}
+
 bool DelegatingProvider::HasIndependentMetrics() {
   // These are collected seperately for each provider.
   NOTREACHED();

@@ -41,7 +41,6 @@
 #include "chrome/browser/lookalikes/safety_tip_web_contents_observer.h"
 #include "chrome/browser/media/media_engagement_service.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_observer.h"
-#include "chrome/browser/metrics/metrics_services_web_contents_observer.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_preconnect_client.h"
 #include "chrome/browser/net/net_error_tab_helper.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -131,6 +130,8 @@
 #include "components/history/core/browser/top_sites.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
+#include "components/metrics/content/metrics_services_web_contents_observer.h"
+#include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_web_contents_observer.h"
@@ -394,8 +395,13 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   if (MediaEngagementService::IsEnabled()) {
     MediaEngagementService::CreateWebContentsObserver(web_contents);
   }
-  metrics::MetricsServicesWebContentsObserver::CreateForWebContents(
-      web_contents);
+  if (auto* metrics_services_manager =
+          g_browser_process->GetMetricsServicesManager()) {
+    metrics::MetricsServicesWebContentsObserver::CreateForWebContents(
+        web_contents, metrics_services_manager->GetOnDidStartLoadingCb(),
+        metrics_services_manager->GetOnDidStopLoadingCb(),
+        metrics_services_manager->GetOnRendererUnresponsiveCb());
+  }
   MixedContentSettingsTabHelper::CreateForWebContents(web_contents);
   NavigationMetricsRecorder::CreateForWebContents(web_contents);
   NavigationPredictorPreconnectClient::CreateForWebContents(web_contents);

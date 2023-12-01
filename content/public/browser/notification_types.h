@@ -33,15 +33,6 @@ enum NotificationType {
   // TODO(https://crbug.com/1174760): Remove.
   NOTIFICATION_NAV_ENTRY_COMMITTED = NOTIFICATION_CONTENT_START,
 
-  // Other load-related (not from NavigationController) ----------------------
-
-  // A content load is starting.  The source will be a
-  // Source<NavigationController> corresponding to the tab in which the load
-  // is occurring.  No details are expected for this notification.
-  // DEPRECATED: Use WebContentsObserver::DidStartLoading()
-  // TODO(https://crbug.com/1174762): Remove.
-  NOTIFICATION_LOAD_START,
-
   // WebContents ---------------------------------------------------------------
 
   // Indicates a RenderWidgetHost has been hidden or restored. The source is

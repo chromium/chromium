@@ -35,6 +35,7 @@
 #include "components/metrics/content/content_stability_metrics_provider.h"
 #include "components/metrics/content/extensions_helper.h"
 #include "components/metrics/content/gpu_metrics_provider.h"
+#include "components/metrics/content/metrics_services_web_contents_observer.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/metrics/cpu_metrics_provider.h"
 #include "components/metrics/drive_metrics_provider.h"
@@ -59,8 +60,6 @@
 #include "content/public/browser/histogram_fetcher.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace metrics {
@@ -624,8 +623,17 @@ void AndroidMetricsServiceClient::RenderProcessExited(
 void AndroidMetricsServiceClient::OnWebContentsCreated(
     content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  WebContentsObserverImpl::CreateForWebContents(web_contents,
-                                                weak_ptr_factory_.GetWeakPtr());
+  metrics::MetricsServicesWebContentsObserver::CreateForWebContents(
+      web_contents,
+      /*OnDidStartLoadingCb=*/
+      base::BindRepeating(&AndroidMetricsServiceClient::OnDidStartLoading,
+                          weak_ptr_factory_.GetWeakPtr()),
+      /*OnDidStopLoadingCb=*/
+      base::BindRepeating(&AndroidMetricsServiceClient::OnApplicationNotIdle,
+                          weak_ptr_factory_.GetWeakPtr()),
+      /*OnRendererUnresponsiveCb=*/
+      base::BindRepeating(&AndroidMetricsServiceClient::OnApplicationNotIdle,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AndroidMetricsServiceClient::SetCollectFinalMetricsForLogClosureForTesting(
@@ -694,36 +702,8 @@ AndroidMetricsServiceClient::GetURLLoaderFactory() {
   return nullptr;
 }
 
-AndroidMetricsServiceClient::WebContentsObserverImpl::WebContentsObserverImpl(
-    content::WebContents* web_contents,
-    base::WeakPtr<AndroidMetricsServiceClient> weak_service_client)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<WebContentsObserverImpl>(*web_contents),
-      weak_service_client_(weak_service_client) {}
-
-AndroidMetricsServiceClient::WebContentsObserverImpl::
-    ~WebContentsObserverImpl() = default;
-
-void AndroidMetricsServiceClient::WebContentsObserverImpl::DidStartLoading() {
-  OnApplicationNotIdle();
-}
-
-void AndroidMetricsServiceClient::WebContentsObserverImpl::DidStopLoading() {
-  OnApplicationNotIdle();
-}
-
-void AndroidMetricsServiceClient::WebContentsObserverImpl::
-    OnRendererUnresponsive(content::RenderProcessHost* host) {
-  OnApplicationNotIdle();
-}
-
-void AndroidMetricsServiceClient::WebContentsObserverImpl::
-    OnApplicationNotIdle() {
-  if (!weak_service_client_) {
-    return;
-  }
-
-  auto* metrics_service = weak_service_client_->GetMetricsServiceIfStarted();
+void AndroidMetricsServiceClient::OnApplicationNotIdle() {
+  auto* metrics_service = GetMetricsServiceIfStarted();
   if (!metrics_service) {
     return;
   }
@@ -731,7 +711,15 @@ void AndroidMetricsServiceClient::WebContentsObserverImpl::
   metrics_service->OnApplicationNotIdle();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(
-    AndroidMetricsServiceClient::WebContentsObserverImpl);
+void AndroidMetricsServiceClient::OnDidStartLoading() {
+  OnApplicationNotIdle();
+
+  auto* metrics_service = GetMetricsService();
+  if (!metrics_service) {
+    return;
+  }
+
+  metrics_service->OnPageLoadStarted();
+}
 
 }  // namespace metrics

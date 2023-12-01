@@ -147,6 +147,9 @@ class MetricsService {
   void OnAppEnterForeground(bool force_open_new_log = false);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
+  // Called when a document first starts loading.
+  void OnPageLoadStarted();
+
   // Signals that the browser is shutting down cleanly. Intended to be called
   // during shutdown after critical shutdown tasks have completed.
   void LogCleanShutdown();

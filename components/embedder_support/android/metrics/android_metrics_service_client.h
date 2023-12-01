@@ -25,8 +25,7 @@
 #include "components/version_info/android/channel_getter.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
-#include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
+#include "content/public/browser/web_contents.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -276,6 +275,9 @@ class AndroidMetricsServiceClient
   void RegisterMetricsProvidersAndInitState();
   void CreateUkmService();
 
+  void OnApplicationNotIdle();
+  void OnDidStartLoading();
+
   std::unique_ptr<MetricsStateManager> metrics_state_manager_;
   std::unique_ptr<variations::SyntheticTrialRegistry> synthetic_trial_registry_;
   // Metrics service observer for synthetic trials.
@@ -314,27 +316,6 @@ class AndroidMetricsServiceClient
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<AndroidMetricsServiceClient> weak_ptr_factory_{this};
-
-  class WebContentsObserverImpl
-      : public content::WebContentsObserver,
-        public content::WebContentsUserData<WebContentsObserverImpl> {
-   public:
-    WebContentsObserverImpl(
-        content::WebContents* web_contents,
-        base::WeakPtr<AndroidMetricsServiceClient> weak_service_client);
-    ~WebContentsObserverImpl() override;
-
-    void DidStartLoading() override;
-    void DidStopLoading() override;
-    void OnRendererUnresponsive(content::RenderProcessHost* host) override;
-
-    WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-   private:
-    void OnApplicationNotIdle();
-
-    base::WeakPtr<AndroidMetricsServiceClient> weak_service_client_;
-  };
 };
 
 }  // namespace metrics

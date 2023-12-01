@@ -807,8 +807,6 @@ static_library("browser") {
     "metrics/metrics_memory_details.h",
     "metrics/metrics_reporting_state.cc",
     "metrics/metrics_reporting_state.h",
-    "metrics/metrics_services_web_contents_observer.cc",
-    "metrics/metrics_services_web_contents_observer.h",
     "metrics/network_quality_estimator_provider_impl.cc",
     "metrics/network_quality_estimator_provider_impl.h",
     "metrics/process_memory_metrics_emitter.cc",

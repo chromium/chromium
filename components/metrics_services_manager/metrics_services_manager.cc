@@ -64,9 +64,24 @@ variations::VariationsService* MetricsServicesManager::GetVariationsService() {
   return variations_service_.get();
 }
 
-void MetricsServicesManager::LoadingStateChanged(bool is_loading) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  GetMetricsServiceClient()->LoadingStateChanged(is_loading);
+MetricsServicesManager::OnDidStartLoadingCb
+MetricsServicesManager::GetOnDidStartLoadingCb() {
+  return base::BindRepeating(&MetricsServicesManager::LoadingStateChanged,
+                             weak_ptr_factory_.GetWeakPtr(),
+                             /*is_loading=*/true);
+}
+
+MetricsServicesManager::OnDidStopLoadingCb
+MetricsServicesManager::GetOnDidStopLoadingCb() {
+  return base::BindRepeating(&MetricsServicesManager::LoadingStateChanged,
+                             weak_ptr_factory_.GetWeakPtr(),
+                             /*is_loading=*/false);
+}
+
+MetricsServicesManager::OnRendererUnresponsiveCb
+MetricsServicesManager::GetOnRendererUnresponsiveCb() {
+  return base::BindRepeating(&MetricsServicesManager::OnRendererUnresponsive,
+                             weak_ptr_factory_.GetWeakPtr());
 }
 
 std::unique_ptr<const variations::EntropyProviders>
@@ -142,6 +157,19 @@ void MetricsServicesManager::UpdatePermissions(bool current_may_record,
   consent_given_ = current_consent_given;
   may_upload_ = current_may_upload;
   UpdateRunningServices();
+}
+
+void MetricsServicesManager::LoadingStateChanged(bool is_loading) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  GetMetricsServiceClient()->LoadingStateChanged(is_loading);
+  if (is_loading) {
+    GetMetricsService()->OnPageLoadStarted();
+  }
+}
+
+void MetricsServicesManager::OnRendererUnresponsive() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  GetMetricsService()->OnApplicationNotIdle();
 }
 
 void MetricsServicesManager::UpdateRunningServices() {
