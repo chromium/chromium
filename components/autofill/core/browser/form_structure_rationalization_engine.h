@@ -173,7 +173,13 @@ class RationalizationRuleBuilder {
 namespace internal {
 bool IsEnvironmentConditionFulfilled(const EnvironmentCondition& env,
                                      const GeoIpCountryCode& client_country);
-}
+
+bool IsFieldConditionFulfilledIgnoringLocation(
+    const FieldCondition& condition,
+    const LanguageCode& page_language,
+    PatternSource pattern_source,
+    const AutofillField& field);
+}  // namespace internal
 
 }  // namespace autofill::rationalization
 

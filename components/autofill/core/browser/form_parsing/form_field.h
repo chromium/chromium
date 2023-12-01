@@ -101,6 +101,12 @@ class FormField {
       FieldCandidatesMap& field_candidates,
       LogManager* log_manager = nullptr);
 
+  // Returns true if `field` matches one of the the passed `patterns`.
+  static bool FieldMatchesMatchPatternRef(
+      base::span<const MatchPatternRef> patterns,
+      const AutofillField& field,
+      const RegExLogging& logging = {});
+
 #if defined(UNIT_TEST)
   static bool MatchForTesting(const AutofillField* field,
                               base::StringPiece16 pattern,

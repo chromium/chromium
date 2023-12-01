@@ -7,6 +7,9 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "components/autofill/core/browser/form_parsing/form_field.h"
+#include "components/autofill/core/browser/form_parsing/regex_patterns.h"
+#include "components/autofill/core/common/form_field_data.h"
 
 namespace autofill::rationalization {
 
@@ -124,6 +127,28 @@ bool IsEnvironmentConditionFulfilled(const EnvironmentCondition& env,
 
   if (env.feature && !base::FeatureList::IsEnabled(*env.feature)) {
     return false;
+  }
+
+  return true;
+}
+
+bool IsFieldConditionFulfilledIgnoringLocation(
+    const FieldCondition& condition,
+    const LanguageCode& page_language,
+    PatternSource pattern_source,
+    const AutofillField& field) {
+  if (condition.possible_overall_types.has_value() &&
+      !condition.possible_overall_types->contains(
+          field.Type().GetStorableType())) {
+    return false;
+  }
+
+  if (condition.regex_reference_match.has_value()) {
+    base::span<const MatchPatternRef> patterns = GetMatchPatterns(
+        condition.regex_reference_match.value(), page_language, pattern_source);
+    if (!FormField::FieldMatchesMatchPatternRef(patterns, field)) {
+      return false;
+    }
   }
 
   return true;

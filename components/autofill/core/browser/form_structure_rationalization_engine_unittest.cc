@@ -101,7 +101,7 @@ TEST(FormStructureRationalizationEngine,
   EXPECT_FALSE(IsEnvironmentConditionFulfilled(one_of_many, kUS));
 }
 
-// Vierifies that the experiment state is checked.
+// Verifies that the experiment state is checked.
 TEST(FormStructureRationalizationEngine,
      IsEnvironmentConditionFulfilled_CheckExperiment) {
   using internal::IsEnvironmentConditionFulfilled;
@@ -127,6 +127,104 @@ TEST(FormStructureRationalizationEngine,
     EXPECT_TRUE(IsEnvironmentConditionFulfilled(no_experiment_required, kMX));
     EXPECT_FALSE(IsEnvironmentConditionFulfilled(experiment_required, kMX));
   }
+}
+
+// Verifies that the possible types are correctly checked in
+// IsFieldConditionFulfilledIgnoringLocation.
+TEST(FormStructureRationalizationEngine,
+     IsFieldConditionFulfilledIgnoringLocation_CheckPossibleTypes) {
+  using internal::IsFieldConditionFulfilledIgnoringLocation;
+  GeoIpCountryCode kMX = GeoIpCountryCode("MX");
+
+  FieldCondition no_possible_types_required = {};
+  FieldCondition requires_address_line1_type = {
+      .possible_overall_types = ServerFieldTypeSet{ADDRESS_HOME_LINE1},
+  };
+
+  LanguageCode page_language = LanguageCode("es");
+  PatternSource pattern_source = PatternSource::kLegacy;
+
+  AutofillField field;
+
+  // Unknown type.
+  ASSERT_EQ(field.Type().GetStorableType(), UNKNOWN_TYPE);
+  EXPECT_TRUE(IsFieldConditionFulfilledIgnoringLocation(
+      no_possible_types_required, page_language, pattern_source, field));
+  EXPECT_FALSE(IsFieldConditionFulfilledIgnoringLocation(
+      requires_address_line1_type, page_language, pattern_source, field));
+
+  // Non-matching type.
+  field.set_heuristic_type(HeuristicSource::kLegacy, NAME_FIRST);
+  ASSERT_EQ(field.Type().GetStorableType(), NAME_FIRST);
+  EXPECT_TRUE(IsFieldConditionFulfilledIgnoringLocation(
+      no_possible_types_required, page_language, pattern_source, field));
+  EXPECT_FALSE(IsFieldConditionFulfilledIgnoringLocation(
+      requires_address_line1_type, page_language, pattern_source, field));
+
+  // Matching type.
+  field.set_heuristic_type(HeuristicSource::kLegacy, ADDRESS_HOME_LINE1);
+  ASSERT_EQ(field.Type().GetStorableType(), ADDRESS_HOME_LINE1);
+  EXPECT_TRUE(IsFieldConditionFulfilledIgnoringLocation(
+      no_possible_types_required, page_language, pattern_source, field));
+  EXPECT_TRUE(IsFieldConditionFulfilledIgnoringLocation(
+      requires_address_line1_type, page_language, pattern_source, field));
+}
+
+// Verifies that the required match for regexes works as expected in
+// IsFieldConditionFulfilledIgnoringLocation.
+TEST(FormStructureRationalizationEngine,
+     IsFieldConditionFulfilledIgnoringLocation_CheckRegex) {
+  using internal::IsFieldConditionFulfilledIgnoringLocation;
+  GeoIpCountryCode kMX = GeoIpCountryCode("MX");
+
+  FieldCondition no_regex_match_required = {};
+  FieldCondition requires_dependent_locality_match = {
+      .regex_reference_match = "ADDRESS_HOME_DEPENDENT_LOCALITY",
+  };
+
+  LanguageCode page_language = LanguageCode("es");
+  PatternSource pattern_source = PatternSource::kLegacy;
+
+  AutofillField field;
+  field.label = u"";
+
+  // Empty label.
+  EXPECT_TRUE(IsFieldConditionFulfilledIgnoringLocation(
+      no_regex_match_required, page_language, pattern_source, field));
+  EXPECT_FALSE(IsFieldConditionFulfilledIgnoringLocation(
+      requires_dependent_locality_match, page_language, pattern_source, field));
+
+  // Non-matching label.
+  field.label = u"foobar";
+  EXPECT_TRUE(IsFieldConditionFulfilledIgnoringLocation(
+      no_regex_match_required, page_language, pattern_source, field));
+  EXPECT_FALSE(IsFieldConditionFulfilledIgnoringLocation(
+      requires_dependent_locality_match, page_language, pattern_source, field));
+
+  // Matching label.
+  field.label = u"colonia";
+  EXPECT_TRUE(IsFieldConditionFulfilledIgnoringLocation(
+      no_regex_match_required, page_language, pattern_source, field));
+  EXPECT_TRUE(IsFieldConditionFulfilledIgnoringLocation(
+      requires_dependent_locality_match, page_language, pattern_source, field));
+
+  // Matching label but incorrect type.
+  field.label = u"colonia";
+  field.form_control_type = FormControlType::kInputMonth;
+  EXPECT_TRUE(IsFieldConditionFulfilledIgnoringLocation(
+      no_regex_match_required, page_language, pattern_source, field));
+  EXPECT_FALSE(IsFieldConditionFulfilledIgnoringLocation(
+      requires_dependent_locality_match, page_language, pattern_source, field));
+
+  FieldCondition regex_with_negative_pattern = {
+      .regex_reference_match = "ADDRESS_NAME_IGNORED",
+  };
+  // This matches the positive pattern due to "nombre.*dirección" but also
+  // the negataive pattern due to "correo". Therefore, the condition should not
+  // be considered fulfilled.
+  field.label = u"nombre de usuario/dirección de correo electrónico";
+  EXPECT_FALSE(IsFieldConditionFulfilledIgnoringLocation(
+      regex_with_negative_pattern, page_language, pattern_source, field));
 }
 
 }  // namespace
