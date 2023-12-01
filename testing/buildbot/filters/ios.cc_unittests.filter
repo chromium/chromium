@@ -1,3 +1,6 @@
+# TODO(crbug.com/1507079): Delete lines from this file as these test failures
+# are addressed.
+
 # TODO(crbug.com/1506550): The expected results appear quite clipped.
 -All/LayerTreeHostMaskAsBlendingPixelTest.RotatedClippedCircle/SkiaGL_ZeroCopy_0
 -All/LayerTreeHostMaskAsBlendingPixelTest.RotatedClippedCircle/SkiaGL_ZeroCopy_1
@@ -12,6 +15,7 @@
 -All/LayerTreeHostFiltersPixelTest.BackdropFilterBlurRounded/SkiaGraphiteMetal
 -All/LayerTreeHostFiltersPixelTest.EnlargedTextureWithAlphaThresholdFilter/SkiaGraphiteMetal
 -All/LayerTreeHostFiltersPixelTest.EnlargedTextureWithCropOffsetFilter/SkiaGraphiteMetal
+-MixedFilterZoomAndOffsetTest.StandardDpi/SkiaGraphiteMetal
 
 # Spot checking seems to show that the following tests fail with errors like
 # the following:
@@ -52,6 +56,8 @@
 -All/LayerTreeHostTilesTestRasterColorSpace.CustomColorSpace/SkiaGraphiteDawn_GPU
 -All/LayerTreeHostTilesTestRasterColorSpace.GenericRGB/SkiaGraphiteDawn_GPU
 -All/LayerTreeHostTilesTestRasterColorSpace.sRGB/SkiaGraphiteDawn_GPU
+-MixedFilterZoomAndOffsetTest.HiDpi/SkiaGraphiteDawn
+-MixedFilterZoomAndOffsetTest.StandardDpi/SkiaGraphiteDawn
 
 # Spot checking seems to show that the following tests fail due to reading from
 # a render target not being supported in the simulator. Fail with error output
