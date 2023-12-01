@@ -14,7 +14,7 @@
 
 MediaCoordinator::MediaCoordinator(ViewType view_type,
                                    views::View& parent_view,
-                                   absl::optional<size_t> index,
+                                   std::optional<size_t> index,
                                    bool is_subsection) {
   auto* media_view =
       parent_view.AddChildViewAt(std::make_unique<MediaView>(is_subsection),
@@ -35,6 +35,10 @@ MediaCoordinator::MediaCoordinator(ViewType view_type,
 
   if (view_type != ViewType::kMicOnly) {
     camera_coordinator_.emplace(*media_view, /*needs_borders=*/!is_subsection);
+  }
+
+  if (view_type != ViewType::kCameraOnly) {
+    mic_coordinator_.emplace(*media_view, /*needs_borders=*/!is_subsection);
   }
 }
 

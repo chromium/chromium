@@ -4688,9 +4688,18 @@ static_library("ui") {
       "views/media_preview/media_view.h",
       "views/media_preview/media_view_controller_base.cc",
       "views/media_preview/media_view_controller_base.h",
+      "views/media_preview/mic_preview/mic_coordinator.cc",
+      "views/media_preview/mic_preview/mic_coordinator.h",
+      "views/media_preview/mic_preview/mic_mediator.cc",
+      "views/media_preview/mic_preview/mic_mediator.h",
+      "views/media_preview/mic_preview/mic_selector_combobox_model.cc",
+      "views/media_preview/mic_preview/mic_selector_combobox_model.h",
+      "views/media_preview/mic_preview/mic_view_controller.cc",
+      "views/media_preview/mic_preview/mic_view_controller.h",
     ]
     deps += [
       "//components/capture_mode",
+      "//services/audio/public/mojom",
       "//services/video_capture/public/mojom",
     ]
   }

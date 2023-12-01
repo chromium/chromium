@@ -7,8 +7,10 @@
 
 #include <stddef.h>
 
+#include <optional>
+
 #include "chrome/browser/ui/views/media_preview/camera_preview/camera_coordinator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "chrome/browser/ui/views/media_preview/mic_preview/mic_coordinator.h"
 
 namespace views {
 class View;
@@ -21,14 +23,15 @@ class MediaCoordinator {
 
   MediaCoordinator(ViewType view_type,
                    views::View& parent_view,
-                   absl::optional<size_t> index,
+                   std::optional<size_t> index,
                    bool is_subsection);
   MediaCoordinator(const MediaCoordinator&) = delete;
   MediaCoordinator& operator=(const MediaCoordinator&) = delete;
   ~MediaCoordinator();
 
  private:
-  absl::optional<CameraCoordinator> camera_coordinator_;
+  std::optional<CameraCoordinator> camera_coordinator_;
+  std::optional<MicCoordinator> mic_coordinator_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_MEDIA_PREVIEW_MEDIA_COORDINATOR_H_
