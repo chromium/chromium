@@ -253,8 +253,9 @@ class NetworkRequestMetricsBrowserTest
   // The request identified by GetParam() is expected to fail with
   // net::ERR_ABORTED.
   void CheckHistogramsAfterMainFrameInterruption() {
-    // Some metrics may come from the renderer. This call ensures that those
+    // Some metrics may come from the renderer. These call ensures that those
     // metrics are available.
+    FetchHistogramsFromChildProcesses();
     metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
     if (GetParam() == RequestType::kMainFrame) {
