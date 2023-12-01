@@ -8,3 +8,5 @@ NSString* const kPlusAddressModalDescriptionAccessibilityIdentifier =
     @"plusAddressModalDescriptionAXID";
 
 const CGFloat kPrimaryAddressBottomMargin = 20;
+
+const CGFloat kBeforeImageTopMargin = 10;

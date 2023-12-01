@@ -93,6 +93,12 @@ NSAttributedString* DescriptionMessage() {
       l10n_util::GetNSString(IDS_PLUS_ADDRESS_MODAL_OK_TEXT);
   self.secondaryActionString =
       l10n_util::GetNSString(IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT);
+  // Don't show the dismiss bar button (with the secondary button used for
+  // canceling), and ensure there is still sufficient space between the top of
+  // the bottom sheet content and the top of the sheet. This is especially
+  // relevant with larger accessibility text sizes.
+  self.showDismissBarButton = NO;
+  self.customSpacingBeforeImageIfNoNavigationBar = kBeforeImageTopMargin;
   // Set up the label that will indicate the reserved plus address to the user.
   _reservedPlusAddressLabel = [self reservedPlusAddressView:@""];
   NSString* primaryEmailAddress = [_delegate primaryEmailAddress];
