@@ -412,7 +412,8 @@ void InspectMessageHandler::HandleOpenNodeFrontendCommand(
   Profile* profile = Profile::FromWebUI(web_ui());
   if (!profile)
     return;
-  DevToolsWindow::OpenNodeFrontendWindow(profile);
+  DevToolsWindow::OpenNodeFrontendWindow(profile,
+                                         DevToolsOpenedByAction::kInspectLink);
 }
 
 void InspectMessageHandler::HandleLaunchUIDevToolsCommand(
@@ -496,7 +497,8 @@ void InspectUI::Inspect(const std::string& source_id,
   scoped_refptr<DevToolsAgentHost> target = FindTarget(source_id, target_id);
   if (target) {
     Profile* profile = Profile::FromWebUI(web_ui());
-    DevToolsWindow::OpenDevToolsWindow(target, profile);
+    DevToolsWindow::OpenDevToolsWindow(target, profile,
+                                       DevToolsOpenedByAction::kInspectLink);
   }
 }
 
@@ -505,7 +507,8 @@ void InspectUI::InspectFallback(const std::string& source_id,
   scoped_refptr<DevToolsAgentHost> target = FindTarget(source_id, target_id);
   if (target) {
     Profile* profile = Profile::FromWebUI(web_ui());
-    DevToolsWindow::OpenDevToolsWindowWithBundledFrontend(target, profile);
+    DevToolsWindow::OpenDevToolsWindowWithBundledFrontend(
+        target, profile, DevToolsOpenedByAction::kInspectLink);
   }
 }
 
@@ -548,7 +551,8 @@ void InspectUI::Pause(const std::string& source_id,
   content::WebContents* web_contents = target->GetWebContents();
   if (web_contents) {
     DevToolsWindow::OpenDevToolsWindow(web_contents,
-                                       DevToolsToggleAction::PauseInDebugger());
+                                       DevToolsToggleAction::PauseInDebugger(),
+                                       DevToolsOpenedByAction::kInspectLink);
   }
 }
 

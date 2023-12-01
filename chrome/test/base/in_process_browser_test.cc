@@ -779,7 +779,8 @@ void InProcessBrowserTest::SetScreenInstance() {
 void InProcessBrowserTest::OpenDevToolsWindow(
     content::WebContents* web_contents) {
   ASSERT_FALSE(content::DevToolsAgentHost::HasFor(web_contents));
-  DevToolsWindow::OpenDevToolsWindow(web_contents);
+  DevToolsWindow::OpenDevToolsWindow(web_contents,
+                                     DevToolsOpenedByAction::kUnknown);
   ASSERT_TRUE(content::DevToolsAgentHost::HasFor(web_contents));
 }
 

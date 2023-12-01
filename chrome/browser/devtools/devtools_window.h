@@ -50,9 +50,17 @@ enum class DevToolsOpenedByAction {
   kInspectorModeShortcut = 4,
   // Toggle-open via F12
   kToggleShortcut = 5,
+  // Link on chrome://inspect
+  kInspectLink = 6,
+  // Via --auto-open-devtools-for-tabs or "Auto-open DevTools for popups"
+  kAutomaticForNewTarget = 7,
+  // Re-open when some targets (like apps) reload
+  kTargetReload = 8,
+  // Open Node DevTools button in a regular app
+  kOpenForNodeFromAnotherTarget = 9,
   // Add values above this line with a corresponding label in
   // tools/metrics/histograms/enums.xml
-  kMaxValue = kToggleShortcut,
+  kMaxValue = kOpenForNodeFromAnotherTarget,
 };
 
 class DevToolsWindow : public DevToolsUIBindings::Delegate,
@@ -98,24 +106,28 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   // How to get pointer to the created window see comments for
   // ToggleDevToolsWindow().
   static void OpenDevToolsWindow(content::WebContents* inspected_web_contents,
-                                 const DevToolsToggleAction& action);
+                                 const DevToolsToggleAction& action,
+                                 DevToolsOpenedByAction opened_by);
 
   // Open or reveal DevTools window, with no special action.
   // How to get pointer to the created window see comments for
   // ToggleDevToolsWindow().
-  static void OpenDevToolsWindow(content::WebContents* inspected_web_contents);
   static void OpenDevToolsWindow(content::WebContents* inspected_web_contents,
-                                 Profile* profile);
+                                 DevToolsOpenedByAction opened_by);
+  static void OpenDevToolsWindow(content::WebContents* inspected_web_contents,
+                                 Profile* profile,
+                                 DevToolsOpenedByAction opened_by);
 
   // Open or reveal DevTools window, with no special action. Use |profile| to
   // open client window in, default to |host|'s profile if none given.
-  static void OpenDevToolsWindow(
-      scoped_refptr<content::DevToolsAgentHost> host,
-      Profile* profile);
+  static void OpenDevToolsWindow(scoped_refptr<content::DevToolsAgentHost> host,
+                                 Profile* profile,
+                                 DevToolsOpenedByAction opened_by);
   // Similar to previous one, but forces the bundled frontend to be used.
   static void OpenDevToolsWindowWithBundledFrontend(
       scoped_refptr<content::DevToolsAgentHost> host,
-      Profile* profile);
+      Profile* profile,
+      DevToolsOpenedByAction opened_by);
 
   // Perform specified action for current WebContents inside a |browser|.
   // This may close currently open DevTools window.
@@ -136,7 +148,9 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
       DevToolsOpenedByAction opened_by = DevToolsOpenedByAction::kUnknown);
 
   // Node frontend is always undocked.
-  static DevToolsWindow* OpenNodeFrontendWindow(Profile* profile);
+  static DevToolsWindow* OpenNodeFrontendWindow(
+      Profile* profile,
+      DevToolsOpenedByAction opened_by);
 
   static void InspectElement(content::RenderFrameHost* inspected_frame_host,
                              int x,
@@ -262,10 +276,12 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
 
   static void OpenDevToolsWindowForFrame(
       Profile* profile,
-      const scoped_refptr<content::DevToolsAgentHost>& agent_host);
+      const scoped_refptr<content::DevToolsAgentHost>& agent_host,
+      DevToolsOpenedByAction opened_by);
   static void OpenDevToolsWindowForWorker(
       Profile* profile,
-      const scoped_refptr<content::DevToolsAgentHost>& worker_agent);
+      const scoped_refptr<content::DevToolsAgentHost>& worker_agent,
+      DevToolsOpenedByAction opened_by);
 
   // DevTools lifecycle typically follows this way:
   // - Toggle/Open: client call;
@@ -302,17 +318,21 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
                  std::unique_ptr<content::WebContents> main_web_contents,
                  DevToolsUIBindings* bindings,
                  content::WebContents* inspected_web_contents,
-                 bool can_dock);
+                 bool can_dock,
+                 DevToolsOpenedByAction opened_by);
 
   // External frontend is always undocked.
   static void OpenExternalFrontend(
       Profile* profile,
       const std::string& frontend_uri,
       const scoped_refptr<content::DevToolsAgentHost>& agent_host,
-      bool use_bundled_frontend);
+      bool use_bundled_frontend,
+      DevToolsOpenedByAction opened_by);
+
   static void OpenDevToolsWindow(scoped_refptr<content::DevToolsAgentHost> host,
                                  Profile* profile,
-                                 bool use_bundled_frontend);
+                                 bool use_bundled_frontend,
+                                 DevToolsOpenedByAction opened_by);
 
   static DevToolsWindow* Create(Profile* profile,
                                 content::WebContents* inspected_web_contents,
@@ -322,7 +342,8 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
                                 const std::string& settings,
                                 const std::string& panel,
                                 bool has_other_clients,
-                                bool browser_connection);
+                                bool browser_connection,
+                                DevToolsOpenedByAction opened_by);
   static GURL GetDevToolsURL(Profile* profile,
                              FrontendType frontend_type,
                              const std::string& frontend_url,
@@ -468,6 +489,7 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   std::unique_ptr<DevToolsEventForwarder> event_forwarder_;
   std::unique_ptr<DevToolsEyeDropper> eye_dropper_;
 
+  const DevToolsOpenedByAction opened_by_;
   class Throttle;
   Throttle* throttle_ = nullptr;
   bool open_new_window_for_popups_ = false;

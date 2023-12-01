@@ -3926,7 +3926,8 @@ void RenderViewContextMenu::ExecInspectBackgroundPage() {
   DCHECK(platform_app);
   DCHECK(platform_app->is_platform_app());
 
-  extensions::devtools_util::InspectBackgroundPage(platform_app, GetProfile());
+  extensions::devtools_util::InspectBackgroundPage(
+      platform_app, GetProfile(), DevToolsOpenedByAction::kContextMenuInspect);
 }
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)

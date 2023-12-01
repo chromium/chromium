@@ -2014,10 +2014,12 @@ DeveloperPrivateOpenDevToolsFunction::Run() {
       return RespondNow(Error(kInvalidLazyBackgroundPageParameter));
     if (properties.render_process_id == -1) {
       // Start the service worker and open the inspect window.
-      devtools_util::InspectInactiveServiceWorkerBackground(extension, profile);
+      devtools_util::InspectInactiveServiceWorkerBackground(
+          extension, profile, DevToolsOpenedByAction::kInspectLink);
       return RespondNow(NoArguments());
     }
-    devtools_util::InspectServiceWorkerBackground(extension, profile);
+    devtools_util::InspectServiceWorkerBackground(
+        extension, profile, DevToolsOpenedByAction::kInspectLink);
     return RespondNow(NoArguments());
   }
 
@@ -2028,7 +2030,8 @@ DeveloperPrivateOpenDevToolsFunction::Run() {
     if (!BackgroundInfo::HasLazyBackgroundPage(extension))
       return RespondNow(Error(kInvalidRenderProcessId));
     // Wakes up the background page and opens the inspect window.
-    devtools_util::InspectBackgroundPage(extension, profile);
+    devtools_util::InspectBackgroundPage(extension, profile,
+                                         DevToolsOpenedByAction::kInspectLink);
     return RespondNow(NoArguments());
   }
 
@@ -2058,9 +2061,11 @@ DeveloperPrivateOpenDevToolsFunction::Run() {
         DevToolsToggleAction::Reveal(
             base::UTF8ToUTF16(*properties.url),
             properties.line_number ? *properties.line_number - 1 : 0,
-            properties.column_number ? *properties.column_number - 1 : 0));
+            properties.column_number ? *properties.column_number - 1 : 0),
+        DevToolsOpenedByAction::kInspectLink);
   } else {
-    DevToolsWindow::OpenDevToolsWindow(web_contents);
+    DevToolsWindow::OpenDevToolsWindow(web_contents,
+                                       DevToolsOpenedByAction::kInspectLink);
   }
 
   // Once we open the inspector, we focus on the appropriate tab...

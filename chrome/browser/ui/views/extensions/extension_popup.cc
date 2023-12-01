@@ -376,7 +376,8 @@ void ExtensionPopup::ShowBubble() {
 
   if (show_action_ == PopupShowAction::kShowAndInspect) {
     DevToolsWindow::OpenDevToolsWindow(
-        host_->host_contents(), DevToolsToggleAction::ShowConsolePanel());
+        host_->host_contents(), DevToolsToggleAction::ShowConsolePanel(),
+        DevToolsOpenedByAction::kContextMenuInspect);
   }
 
   if (shown_callback_)

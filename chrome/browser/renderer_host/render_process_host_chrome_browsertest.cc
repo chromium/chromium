@@ -516,7 +516,8 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest,
   DCHECK(devtools);
 
   // DevTools start in a separate process.
-  DevToolsWindow::OpenDevToolsWindow(devtools, DevToolsToggleAction::Inspect());
+  DevToolsWindow::OpenDevToolsWindow(devtools, DevToolsToggleAction::Inspect(),
+                                     DevToolsOpenedByAction::kUnknown);
   host_count++;
   EXPECT_EQ(tab_count, browser()->tab_strip_model()->count());
   EXPECT_EQ(host_count, RenderProcessHostCount());
@@ -556,7 +557,8 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest,
   DCHECK(devtools);
 
   // DevTools start in a separate process.
-  DevToolsWindow::OpenDevToolsWindow(devtools, DevToolsToggleAction::Inspect());
+  DevToolsWindow::OpenDevToolsWindow(devtools, DevToolsToggleAction::Inspect(),
+                                     DevToolsOpenedByAction::kUnknown);
   host_count++;
   EXPECT_EQ(tab_count, browser()->tab_strip_model()->count());
   EXPECT_EQ(host_count, RenderProcessHostCount());

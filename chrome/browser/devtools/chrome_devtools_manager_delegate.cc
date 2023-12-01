@@ -163,7 +163,8 @@ ChromeDevToolsManagerDelegate::~ChromeDevToolsManagerDelegate() {
 
 void ChromeDevToolsManagerDelegate::Inspect(
     content::DevToolsAgentHost* agent_host) {
-  DevToolsWindow::OpenDevToolsWindow(agent_host, nullptr);
+  DevToolsWindow::OpenDevToolsWindow(agent_host, nullptr,
+                                     DevToolsOpenedByAction::kInspectLink);
 }
 
 void ChromeDevToolsManagerDelegate::HandleCommand(

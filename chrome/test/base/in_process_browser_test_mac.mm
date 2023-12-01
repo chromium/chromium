@@ -19,7 +19,8 @@ void InProcessBrowserTest::OpenDevToolsWindow(
   // autorelease pool. Flush the pool when this function returns.
   @autoreleasepool {
     ASSERT_FALSE(content::DevToolsAgentHost::HasFor(web_contents));
-    DevToolsWindow::OpenDevToolsWindow(web_contents);
+    DevToolsWindow::OpenDevToolsWindow(web_contents,
+                                       DevToolsOpenedByAction::kUnknown);
     ASSERT_TRUE(content::DevToolsAgentHost::HasFor(web_contents));
   }
 }

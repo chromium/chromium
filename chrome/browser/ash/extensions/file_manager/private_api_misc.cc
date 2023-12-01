@@ -365,17 +365,20 @@ FileManagerPrivateOpenInspectorFunction::Run() {
   switch (params->type) {
     case fmp::InspectionType::kNormal:
       // Open inspector for foreground page.
-      DevToolsWindow::OpenDevToolsWindow(GetSenderWebContents());
+      DevToolsWindow::OpenDevToolsWindow(GetSenderWebContents(),
+                                         DevToolsOpenedByAction::kUnknown);
       break;
     case fmp::InspectionType::kConsole:
       // Open inspector for foreground page and bring focus to the console.
       DevToolsWindow::OpenDevToolsWindow(
-          GetSenderWebContents(), DevToolsToggleAction::ShowConsolePanel());
+          GetSenderWebContents(), DevToolsToggleAction::ShowConsolePanel(),
+          DevToolsOpenedByAction::kUnknown);
       break;
     case fmp::InspectionType::kElement:
       // Open inspector for foreground page in inspect element mode.
       DevToolsWindow::OpenDevToolsWindow(GetSenderWebContents(),
-                                         DevToolsToggleAction::Inspect());
+                                         DevToolsToggleAction::Inspect(),
+                                         DevToolsOpenedByAction::kUnknown);
       break;
     case fmp::InspectionType::kBackground:
       // Open inspector for background page if extension pointer is not null.
@@ -383,7 +386,8 @@ FileManagerPrivateOpenInspectorFunction::Run() {
       // page.
       if (extension()) {
         devtools_util::InspectBackgroundPage(
-            extension(), Profile::FromBrowserContext(browser_context()));
+            extension(), Profile::FromBrowserContext(browser_context()),
+            DevToolsOpenedByAction::kUnknown);
       } else {
         return RespondNow(
             Error(base::StringPrintf("Inspection type(%d) not supported.",

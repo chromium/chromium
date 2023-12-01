@@ -399,8 +399,8 @@ std::string ChromeCameraAppUIDelegate::GetFilePathInArcByName(
 
 void ChromeCameraAppUIDelegate::OpenDevToolsWindow(
     content::WebContents* web_contents) {
-  DevToolsWindow::OpenDevToolsWindow(web_contents,
-                                     DevToolsToggleAction::NoOp());
+  DevToolsWindow::OpenDevToolsWindow(web_contents, DevToolsToggleAction::NoOp(),
+                                     DevToolsOpenedByAction::kUnknown);
 }
 
 void ChromeCameraAppUIDelegate::MonitorFileDeletion(
