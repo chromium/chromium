@@ -2007,6 +2007,12 @@ void RenderViewContextMenu::AppendVideoItems() {
                                     IDS_CONTENT_CONTEXT_COPYVIDEOFRAME);
   }
 
+  menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_COPYAVLOCATION,
+                                  IDS_CONTENT_CONTEXT_COPYVIDEOLOCATION);
+  menu_model_.AddCheckItemWithStringId(IDC_CONTENT_CONTEXT_PICTUREINPICTURE,
+                                       IDS_CONTENT_CONTEXT_PICTUREINPICTURE);
+  AppendMediaRouterItem();
+
   if (base::FeatureList::IsEnabled(media::kContextMenuSearchForVideoFrame)) {
     const auto* provider = GetImageSearchProvider();
     if (!provider) {
@@ -2022,12 +2028,6 @@ void RenderViewContextMenu::AppendVideoItems() {
     }
     MaybePrepareForLensQuery();
   }
-
-  menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_COPYAVLOCATION,
-                                  IDS_CONTENT_CONTEXT_COPYVIDEOLOCATION);
-  menu_model_.AddCheckItemWithStringId(IDC_CONTENT_CONTEXT_PICTUREINPICTURE,
-                                       IDS_CONTENT_CONTEXT_PICTUREINPICTURE);
-  AppendMediaRouterItem();
 }
 
 void RenderViewContextMenu::AppendMediaItems() {
