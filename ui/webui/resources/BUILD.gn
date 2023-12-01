@@ -6,6 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//crypto/features.gni")
 import("//ui/webui/resources/include_polymer.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/webui_features.gni")
 
 generate_grd("build_grd") {
   grd_prefix = "webui"
@@ -73,6 +74,11 @@ generate_grd("build_grd") {
       "$target_gen_dir/cr_components/most_visited/resources.grdp",
       "$target_gen_dir/cr_components/settings_prefs/resources.grdp",
     ]
+
+    if (!optimize_webui) {
+      public_deps += [ "//third_party/lit/v3_0:build_grdp" ]
+      grdp_files += [ "$root_gen_dir/third_party/lit/v3_0/resources.grdp" ]
+    }
 
     if (use_nss_certs) {
       public_deps += [ "cr_components/certificate_manager:build_grdp" ]

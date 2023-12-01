@@ -1,0 +1,109 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+import("//ui/webui/resources/tools/bundle_js.gni")
+import("//ui/webui/webui_features.gni")
+
+# TODO(crbug.com/1503223): Preventing Lit from being used in production. Remove
+# this when experimentation has concluded.
+assert(!optimize_webui)
+
+ts_library("build_ts") {
+  composite = true
+  in_files = [ "lit.ts" ]
+
+  node_modules = "//third_party/node/node_modules"
+  definitions = [
+    "${node_modules}/lit-html/directives/repeat.d.ts",
+    "${node_modules}/lit-html/directives/when.d.ts",
+    "${node_modules}/lit-html/directives/ref.d.ts",
+    "${node_modules}/lit-html/directives/cache.d.ts",
+    "${node_modules}/lit-html/directives/choose.d.ts",
+    "${node_modules}/lit-html/directives/async-append.d.ts",
+    "${node_modules}/lit-html/directives/until.d.ts",
+    "${node_modules}/lit-html/directives/template-content.d.ts",
+    "${node_modules}/lit-html/directives/keyed.d.ts",
+    "${node_modules}/lit-html/directives/style-map.d.ts",
+    "${node_modules}/lit-html/directives/if-defined.d.ts",
+    "${node_modules}/lit-html/directives/join.d.ts",
+    "${node_modules}/lit-html/directives/unsafe-svg.d.ts",
+    "${node_modules}/lit-html/directives/live.d.ts",
+    "${node_modules}/lit-html/directives/guard.d.ts",
+    "${node_modules}/lit-html/directives/async-replace.d.ts",
+    "${node_modules}/lit-html/directives/unsafe-html.d.ts",
+    "${node_modules}/lit-html/directives/map.d.ts",
+    "${node_modules}/lit-html/directives/private-async-helpers.d.ts",
+    "${node_modules}/lit-html/directives/range.d.ts",
+    "${node_modules}/lit-html/directives/class-map.d.ts",
+    "${node_modules}/lit-html/static.d.ts",
+    "${node_modules}/lit-html/lit-html.d.ts",
+    "${node_modules}/lit-html/is-server.d.ts",
+    "${node_modules}/lit-html/async-directive.d.ts",
+    "${node_modules}/lit-html/directive.d.ts",
+    "${node_modules}/lit-html/directive-helpers.d.ts",
+    "${node_modules}/lit-element/lit-element.d.ts",
+    "${node_modules}/lit-element/index.d.ts",
+    "${node_modules}/lit/directives/repeat.d.ts",
+    "${node_modules}/lit/directives/when.d.ts",
+    "${node_modules}/lit/directives/ref.d.ts",
+    "${node_modules}/lit/directives/cache.d.ts",
+    "${node_modules}/lit/directives/choose.d.ts",
+    "${node_modules}/lit/directives/async-append.d.ts",
+    "${node_modules}/lit/directives/until.d.ts",
+    "${node_modules}/lit/directives/template-content.d.ts",
+    "${node_modules}/lit/directives/keyed.d.ts",
+    "${node_modules}/lit/directives/style-map.d.ts",
+    "${node_modules}/lit/directives/if-defined.d.ts",
+    "${node_modules}/lit/directives/join.d.ts",
+    "${node_modules}/lit/directives/unsafe-svg.d.ts",
+    "${node_modules}/lit/directives/live.d.ts",
+    "${node_modules}/lit/directives/guard.d.ts",
+    "${node_modules}/lit/directives/async-replace.d.ts",
+    "${node_modules}/lit/directives/unsafe-html.d.ts",
+    "${node_modules}/lit/directives/map.d.ts",
+    "${node_modules}/lit/directives/range.d.ts",
+    "${node_modules}/lit/directives/class-map.d.ts",
+    "${node_modules}/lit/static-html.d.ts",
+    "${node_modules}/lit/async-directive.d.ts",
+    "${node_modules}/lit/html.d.ts",
+    "${node_modules}/lit/directive.d.ts",
+    "${node_modules}/lit/directive-helpers.d.ts",
+    "${node_modules}/lit/index.d.ts",
+    "${node_modules}/@lit/reactive-element/reactive-controller.d.ts",
+    "${node_modules}/@lit/reactive-element/css-tag.d.ts",
+    "${node_modules}/@lit/reactive-element/reactive-element.d.ts",
+  ]
+
+  path_mappings = [
+    "lit/index.js|" +
+        rebase_path("${node_modules}/lit/index.d.ts", target_gen_dir),
+    "lit-html|" +
+        rebase_path("${node_modules}/lit-html/lit-html.d.ts", target_gen_dir),
+    "@lit/reactive-element|" + rebase_path(
+            "${node_modules}/@lit/reactive-element/reactive-element.d.ts",
+            target_gen_dir),
+  ]
+}
+
+bundle_js("build_bundle") {
+  # Using a dummy value for`host` which is ignored anyway since the code being
+  # bundled below is using a custom config and plugin.
+  host = "_ignored_"
+  input = rebase_path(target_gen_dir, root_build_dir)
+  js_module_in_files = [ "lit.js" ]
+  rollup_config = "rollup.config.mjs"
+  out_manifest = "${target_gen_dir}/build_bundle_manifest.json"
+  deps = [ ":build_ts" ]
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "lit_v3_0"
+  out_grd = "$target_gen_dir/resources.grdp"
+  resource_path_prefix = "lit/v3_0"
+  manifest_files = [ "${target_gen_dir}/build_bundle_manifest.json" ]
+  deps = [ ":build_bundle" ]
+}
