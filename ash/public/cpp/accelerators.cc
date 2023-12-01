@@ -147,8 +147,6 @@ const AcceleratorData kAcceleratorData[] = {
      AcceleratorAction::kSwitchToNextIme},
     {true, ui::VKEY_I, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
      AcceleratorAction::kOpenFeedbackPage},
-    {true, ui::VKEY_I, ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN,
-     AcceleratorAction::kOpenFeedbackPage},
     {true, ui::VKEY_Q, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
      AcceleratorAction::kExit},
     {true, ui::VKEY_N, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
