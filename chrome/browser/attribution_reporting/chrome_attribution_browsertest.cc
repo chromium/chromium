@@ -2,18 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/version.h"
+#include "chrome/browser/component_updater/privacy_sandbox_attestations_component_installer_test_util.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chrome/test/base/test_launcher_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/proto/privacy_sandbox_attestations.pb.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "content/public/browser/web_contents.h"
@@ -23,17 +31,19 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "net/base/schemeful_site.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "url/gurl.h"
 
 // Tests for the Conversion Measurement API that rely on chrome/ layer features.
 // UseCounter recording and multiple browser window behavior is not available
 // content shell.
-class ChromeAttributionBrowserTest : public InProcessBrowserTest {
+class ChromeAttributionBrowserTest : public MixinBasedInProcessBrowserTest {
  public:
   ChromeAttributionBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(
@@ -98,6 +108,8 @@ class ChromeAttributionBrowserTest : public InProcessBrowserTest {
 
   net::EmbeddedTestServer server_{net::EmbeddedTestServer::TYPE_HTTPS};
   base::test::ScopedFeatureList scoped_feature_list_;
+  privacy_sandbox::PrivacySandboxAttestationsMixin
+      privacy_sandbox_attestations_mixin_{&mixin_host_};
 };
 
 struct ExpectedReportWaiter {
@@ -202,4 +214,55 @@ IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
 
   ASSERT_TRUE(console_observer.Wait());
   EXPECT_FALSE(console_observer.messages().empty());
+}
+
+class ChromeAttributionAttestationsBrowserTest
+    : public ChromeAttributionBrowserTest {
+ public:
+  ChromeAttributionAttestationsBrowserTest() = default;
+
+  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    base::CommandLine default_command_line(base::CommandLine::NO_PROGRAM);
+    ChromeAttributionBrowserTest::SetUpDefaultCommandLine(
+        &default_command_line);
+    test_launcher_utils::RemoveCommandLineSwitch(
+        default_command_line, switches::kDisableComponentUpdate, command_line);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ChromeAttributionAttestationsBrowserTest,
+                       PRE_AttribtionUponAttestationsLoading) {
+  privacy_sandbox::PrivacySandboxAttestationsProto proto;
+
+  // Create an attestations file that contains the site with attestation for
+  // Attribution Reporting API.
+  std::string site = net::SchemefulSite(GURL(kReportEndpoint)).Serialize();
+  privacy_sandbox::PrivacySandboxAttestationsProto::
+      PrivacySandboxAttestedAPIsProto site_attestation;
+  site_attestation.add_attested_apis(privacy_sandbox::ATTRIBUTION_REPORTING);
+  (*proto.mutable_site_attestations())[site] = site_attestation;
+
+  ASSERT_TRUE(
+      component_updater::InstallPrivacySandboxAttestationsComponentForTesting(
+          proto, base::Version("1.2.3")));
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeAttributionAttestationsBrowserTest,
+                       AttribtionUponAttestationsLoading) {
+  PrivacySandboxSettingsFactory::GetForProfile(browser()->profile())
+      ->SetAllPrivacySandboxAllowedForTesting();
+
+  ExpectedReportWaiter expected_report(GURL(kReportEndpoint), &server_);
+  ASSERT_TRUE(server_.Start());
+
+  auto* new_contents = RegisterSourceWithNavigation();
+
+  content::WebContentsConsoleObserver console_observer(new_contents);
+  console_observer.SetPattern(
+      "Attestation check for Attribution Reporting on * failed.");
+
+  RegisterTrigger(new_contents);
+
+  expected_report.WaitForRequest();
+  EXPECT_TRUE(console_observer.messages().empty());
 }

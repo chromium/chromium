@@ -355,6 +355,7 @@ static_library("test_support") {
     "//components/network_session_configurator/common:common",
     "//components/privacy_sandbox:features",
     "//components/privacy_sandbox:tracking_protection_prefs",
+    "//components/privacy_sandbox/privacy_sandbox_attestations/proto:proto",
     "//components/reporting/storage:test_support",
     "//components/reporting/util:test_callbacks_support",
     "//components/safe_browsing/content/renderer/phishing_classifier:unit_tests_support",

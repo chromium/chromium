@@ -11,7 +11,12 @@
 
 namespace base {
 class FilePath;
+class Version;
 }
+
+namespace privacy_sandbox {
+class PrivacySandboxAttestationsProto;
+}  // namespace privacy_sandbox
 
 namespace component_updater {
 
@@ -20,6 +25,13 @@ namespace component_updater {
 bool WritePrivacySandboxAttestationsFileForTesting(
     const base::FilePath& install_dir,
     std::string_view contents);
+
+// Install attestations component under DIR_COMPONENT_USER directory with
+// contents `proto`.
+bool InstallPrivacySandboxAttestationsComponentForTesting(
+    const privacy_sandbox::PrivacySandboxAttestationsProto& proto,
+    const base::Version& version);
+
 }  // namespace component_updater
 
 #endif  // CHROME_BROWSER_COMPONENT_UPDATER_PRIVACY_SANDBOX_ATTESTATIONS_COMPONENT_INSTALLER_TEST_UTIL_H_
