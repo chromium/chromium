@@ -601,3 +601,9 @@ crbug.com/1506833 external/wpt/html/anonymous-iframe/embedding.tentative.https.w
 crbug.com/1506833 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?11-11 [ Failure Pass ]
 crbug.com/1506833 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?12-12 [ Failure Pass ]
 crbug.com/1506833 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?13-last [ Failure Pass ]
+
+# Those tests consistently fail on linux-wpt-chromium-rel (142-145)
+crbug.com/1499775 external/wpt/css/css-backgrounds/color-mix-currentcolor-background-repaint.html [ Failure ]
+crbug.com/1499775 external/wpt/css/css-backgrounds/color-mix-currentcolor-outline-repaint.html [ Failure ]
+crbug.com/1499775 external/wpt/css/css-transitions/animations/animate-with-color-mix.html [ Crash ]
+crbug.com/1499775 external/wpt/svg/painting/color-mix-currentcolor-fill-stroke-repaint.html [ Failure ]
