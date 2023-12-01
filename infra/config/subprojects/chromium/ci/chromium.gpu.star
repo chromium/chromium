@@ -10,6 +10,7 @@ load("//lib/builder_health_indicators.star", "health_spec")
 load("//lib/builders.star", "reclient", "sheriff_rotations")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -68,6 +69,18 @@ ci.gpu.linux_builder(
         category = "Android",
     ),
     cq_mirrors_console_view = "mirrors",
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "android_builder",
+            "release_builder",
+            "try_builder",
+            "reclient",
+            "arm64",
+            "static_angle",
+            "android_fastbuild",
+        ],
+    ),
 )
 
 ci.gpu.linux_builder(
@@ -94,6 +107,14 @@ ci.gpu.linux_builder(
         category = "Linux",
     ),
     cq_mirrors_console_view = "mirrors",
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "try_builder",
+            "reclient",
+        ],
+    ),
 )
 
 ci.gpu.linux_builder(
@@ -116,6 +137,13 @@ ci.gpu.linux_builder(
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "Linux",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "debug_builder",
+            "reclient",
+        ],
     ),
 )
 
@@ -144,6 +172,14 @@ ci.gpu.mac_builder(
         category = "Mac",
     ),
     cq_mirrors_console_view = "mirrors",
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "try_builder",
+            "reclient",
+        ],
+    ),
 )
 
 ci.gpu.mac_builder(
@@ -167,6 +203,13 @@ ci.gpu.mac_builder(
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "Mac",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "debug_builder",
+            "reclient",
+        ],
     ),
 )
 
@@ -195,6 +238,15 @@ ci.gpu.windows_builder(
         category = "Windows",
     ),
     cq_mirrors_console_view = "mirrors",
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "try_builder",
+            "reclient",
+            "resource_allowlisting",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
@@ -218,6 +270,13 @@ ci.gpu.windows_builder(
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "Windows",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "debug_builder",
+            "reclient",
+        ],
     ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )

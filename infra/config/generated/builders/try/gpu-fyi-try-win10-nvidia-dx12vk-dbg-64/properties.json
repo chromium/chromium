@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/try/gpu-fyi-try-win10-nvidia-dx12vk-dbg-64/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {

@@ -275,40 +275,6 @@
       'mac-archive-rel-goma-rbe-canary': 'release_bot_minimal_symbols',
     },
 
-    'chromium.gpu': {
-      # These all use the 'trybot' mixins to ensure that dcheck is on.
-      'Android Release (Nexus 5X)': 'gpu_tests_android_release_bot_dcheck_always_on_arm64_fastbuild_reclient',
-      'GPU Linux Builder': 'gpu_tests_release_trybot_minimal_symbols_reclient',
-      'GPU Linux Builder (dbg)': 'gpu_tests_debug_bot_reclient',
-      'GPU Mac Builder': 'gpu_tests_release_trybot_minimal_symbols_reclient',
-      'GPU Mac Builder (dbg)': 'gpu_tests_debug_bot_reclient',
-      'GPU Win x64 Builder': 'gpu_tests_release_bot_dcheck_always_on_resource_allowlisting_reclient',
-      'GPU Win x64 Builder (dbg)': 'gpu_tests_debug_bot_reclient',
-      'GPU Win x64 Builder Code Coverage': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage',
-    },
-
-    'chromium.gpu.fyi': {
-      # These all use the 'trybot' mixins to ensure that dcheck is on.
-      'ChromeOS FYI Release (amd64-generic)': 'gpu_tests_chromeos_amd64_release_trybot_dcheck_off_no_symbols_reclient',
-      'ChromeOS FYI Release Skylab (volteer)': 'gpu_tests_chromeos_volteer_release_trybot_dcheck_off_no_symbols_reclient_skylab',
-      'GPU FYI Android arm Builder': 'gpu_tests_android_release_trybot_reclient',
-      'GPU FYI Android arm64 Builder': 'gpu_tests_android_release_trybot_arm64_reclient',
-      'GPU FYI Lacros x64 Builder': 'gpu_tests_ozone_linux_non_x11_release_trybot_reclient',
-      'GPU FYI Linux Builder': 'gpu_fyi_tests_release_trybot_reclient',
-      'GPU FYI Linux Builder (dbg)': 'gpu_fyi_tests_debug_trybot_reclient',
-      'GPU FYI Mac Builder': 'gpu_fyi_tests_release_trybot_reclient',
-      'GPU FYI Mac Builder (asan)': 'gpu_fyi_tests_release_trybot_asan_reclient',
-      'GPU FYI Mac Builder (dbg)': 'gpu_fyi_tests_debug_trybot_reclient',
-      'GPU FYI Mac arm64 Builder': 'gpu_fyi_tests_release_trybot_arm64_reclient',
-      'GPU FYI Win Builder': 'gpu_fyi_tests_release_trybot_x86_reclient',
-      'GPU FYI Win x64 Builder': 'gpu_fyi_tests_release_trybot_reclient',
-      'GPU FYI Win x64 Builder (dbg)': 'gpu_fyi_tests_debug_trybot_reclient',
-      'GPU FYI Win x64 DX12 Vulkan Builder': 'gpu_fyi_tests_dx12vk_release_trybot_reclient',
-      'GPU FYI Win x64 DX12 Vulkan Builder (dbg)': 'gpu_fyi_tests_dx12vk_debug_trybot_reclient',
-      'GPU FYI XR Win x64 Builder': 'gpu_fyi_tests_release_trybot_reclient',
-      'Linux FYI GPU TSAN Release': 'gpu_fyi_tests_release_trybot_tsan_reclient',
-    },
-
     'chromium.infra.codesearch': {
       'codesearch-gen-chromium-android': 'codesearch_gen_chromium_android_bot_reclient',
       'codesearch-gen-chromium-chromiumos': 'codesearch_gen_chromium_chromiumos_bot_reclient',
@@ -597,19 +563,13 @@
       'android_coverage': 'android_debug_trybot_java_coverage',
       'android_n5x_swarming_dbg': 'android_debug_trybot_arm64_reclient',
       'android_optional_gpu_tests_rel': 'gpu_tests_android_release_trybot_reclient',
-      'gpu-fyi-cq-android-arm64': 'gpu_tests_android_release_trybot_arm64_reclient',
-      'gpu-fyi-try-android-m-nexus-5x-64': 'gpu_tests_android_release_trybot_arm64_reclient',
-      'gpu-fyi-try-android-nvidia-shield-tv': 'gpu_tests_android_release_trybot_reclient',
-      'gpu-fyi-try-android-p-pixel-2-32': 'gpu_tests_android_release_trybot_reclient',
       'gpu-fyi-try-android-pixel-6-64': 'gpu_tests_android_release_trybot_arm64_reclient',
-      'gpu-fyi-try-android-r-pixel-4-32': 'gpu_tests_android_release_trybot_reclient',
       'gpu-try-android-m-nexus-5x-64': 'gpu_tests_android_release_trybot_arm64_reclient',
       'linux_android_dbg_ng': 'android_debug_bot',
     },
 
     'tryserver.chromium.chromiumos': {
       'chromeos-amd64-generic-siso-rel': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized_dchecks_reclient',
-      'gpu-fyi-try-chromeos-amd64-generic': 'gpu_tests_chromeos_amd64_release_trybot_dcheck_off_no_symbols_reclient',
       'gpu-fyi-try-chromeos-skylab-volteer': 'gpu_tests_chromeos_volteer_release_trybot_dcheck_off_no_symbols_reclient_skylab',
       'lacros-amd64-generic-rel': 'chromeos_amd64-generic_lacros_rel_dchecks_skylab_reclient_use_dummy_lastchange',
       'lacros-arm64-generic-rel-skylab-fyi': 'chromeos_arm64-generic_lacros_rel_skylab_reclient',
@@ -636,16 +596,6 @@
     'tryserver.chromium.linux': {
       'cast-binary-size': 'cast_binary_size',
       'chromium_presubmit': 'presubmit',
-      'gpu-fyi-try-lacros-amd-rel': 'gpu_tests_ozone_linux_non_x11_release_trybot_reclient',
-      'gpu-fyi-try-lacros-intel-rel': 'gpu_tests_ozone_linux_non_x11_release_trybot_reclient',
-      'gpu-fyi-try-linux-amd-rel': 'gpu_fyi_tests_release_trybot_reclient',
-      'gpu-fyi-try-linux-intel-exp': 'gpu_fyi_tests_release_trybot_reclient',
-      'gpu-fyi-try-linux-intel-rel': 'gpu_fyi_tests_release_trybot_reclient',
-      'gpu-fyi-try-linux-nvidia-dbg': 'gpu_fyi_tests_debug_trybot_reclient',
-      'gpu-fyi-try-linux-nvidia-exp': 'gpu_fyi_tests_release_trybot_reclient',
-      'gpu-fyi-try-linux-nvidia-rel': 'gpu_fyi_tests_release_trybot_reclient',
-      'gpu-fyi-try-linux-nvidia-tsn': 'gpu_fyi_tests_release_trybot_tsan_reclient',
-      'gpu-try-linux-nvidia-dbg': 'gpu_tests_debug_bot_reclient',
       'gpu-try-linux-nvidia-rel': 'gpu_tests_release_trybot_reclient',
       'linux-afl-asan-rel': 'afl_asan_release_trybot_reclient',
       'linux-annotator-rel': 'release_trybot_reclient',
@@ -680,21 +630,6 @@
 
     'tryserver.chromium.mac': {
       'gpu-fyi-try-mac-amd-pro-rel': 'gpu_fyi_tests_release_trybot_reclient',
-      'gpu-fyi-try-mac-amd-retina-asan': 'gpu_fyi_tests_release_trybot_asan_reclient',
-      'gpu-fyi-try-mac-amd-retina-dbg': 'gpu_fyi_tests_debug_trybot_reclient',
-      'gpu-fyi-try-mac-amd-retina-exp': 'gpu_fyi_tests_release_trybot_reclient',
-      'gpu-fyi-try-mac-amd-retina-rel': 'gpu_fyi_tests_release_trybot_reclient',
-      'gpu-fyi-try-mac-arm64-apple-m1-exp': 'gpu_fyi_tests_release_trybot_arm64_reclient',
-      'gpu-fyi-try-mac-arm64-apple-m1-rel': 'gpu_fyi_tests_release_trybot_arm64_reclient',
-      'gpu-fyi-try-mac-arm64-apple-m2-retina-rel': 'gpu_fyi_tests_release_trybot_arm64_reclient',
-      'gpu-fyi-try-mac-intel-asan': 'gpu_fyi_tests_release_trybot_asan_reclient',
-      'gpu-fyi-try-mac-intel-dbg': 'gpu_fyi_tests_debug_trybot_reclient',
-      'gpu-fyi-try-mac-intel-exp': 'gpu_fyi_tests_release_trybot_reclient',
-      'gpu-fyi-try-mac-intel-rel': 'gpu_fyi_tests_release_trybot_reclient',
-      'gpu-fyi-try-mac-nvidia-retina-exp': 'gpu_fyi_tests_release_trybot_reclient',
-      'gpu-fyi-try-mac-nvidia-retina-rel': 'gpu_fyi_tests_release_trybot_reclient',
-      'gpu-try-mac-amd-retina-dbg': 'gpu_tests_debug_bot_reclient',
-      'gpu-try-mac-intel-dbg': 'gpu_tests_debug_bot_reclient',
       'ios-blink-dbg-fyi': 'ios_simulator_blink_xctest',
       'ios-fieldtrial-rel': 'ios_simulator_debug_static_bot_xctest_arm64_reclient',
       'ios-m1-simulator': 'ios_simulator_debug_static_bot_xctest_arm64_reclient',
@@ -756,16 +691,6 @@
     },
 
     'tryserver.chromium.win': {
-      'gpu-fyi-try-win10-amd-rel-64': 'gpu_fyi_tests_release_trybot_reclient',
-      'gpu-fyi-try-win10-intel-exp-64': 'gpu_fyi_tests_release_trybot_reclient',
-      'gpu-fyi-try-win10-intel-rel-64': 'gpu_fyi_tests_release_trybot_reclient',
-      'gpu-fyi-try-win10-nvidia-dbg-64': 'gpu_fyi_tests_debug_trybot_reclient',
-      'gpu-fyi-try-win10-nvidia-dx12vk-dbg-64': 'gpu_fyi_tests_dx12vk_debug_trybot_reclient',
-      'gpu-fyi-try-win10-nvidia-dx12vk-rel-64': 'gpu_fyi_tests_dx12vk_release_trybot_reclient',
-      'gpu-fyi-try-win10-nvidia-exp-64': 'gpu_fyi_tests_release_trybot_reclient',
-      'gpu-fyi-try-win10-nvidia-rel-32': 'gpu_fyi_tests_release_trybot_x86_reclient',
-      'gpu-fyi-try-win10-nvidia-rel-64': 'gpu_fyi_tests_release_trybot_reclient',
-      'gpu-try-win-nvidia-dbg': 'gpu_tests_debug_bot_reclient',
       'win-annotator-rel': 'release_trybot_reclient',
       'win-celab-try-rel': 'release_bot_minimal_symbols_reclient',
       'win-clobber-rel': 'release_trybot_reclient',
@@ -1314,18 +1239,6 @@
       'official_optimize_reclient_trybot', 'fuchsia',
     ],
 
-    'gpu_fyi_tests_debug_trybot_reclient': [
-      'gpu_fyi_tests', 'debug_bot_reclient', 'disable_nacl', 'use_dummy_lastchange',
-    ],
-
-    'gpu_fyi_tests_dx12vk_debug_trybot_reclient': [
-      'gpu_fyi_tests', 'dx12vk', 'debug_bot_reclient', 'disable_nacl', 'use_dummy_lastchange',
-    ],
-
-    'gpu_fyi_tests_dx12vk_release_trybot_reclient': [
-      'gpu_fyi_tests', 'dx12vk', 'release_trybot_minimal_symbols_reclient', 'disable_nacl',
-    ],
-
     'gpu_fyi_tests_lacros_jacuzzi_release_trybot_dcheck_off_no_symbols_reclient': [
       'chromeos', 'jacuzzi', 'official', 'release_bot_reclient', 'no_symbols',
       'chromeos_device_reclient', 'also_build_lacros_chrome_for_architecture_arm64', 'use_dummy_lastchange',
@@ -1336,33 +1249,12 @@
       'chromeos_device_reclient', 'also_build_lacros_chrome_for_architecture_amd64', 'use_dummy_lastchange',
     ],
 
-    'gpu_fyi_tests_release_trybot_arm64_reclient': [
-      'gpu_fyi_tests', 'release_trybot_minimal_symbols_reclient', 'arm64', 'disable_nacl',
-    ],
-
-    'gpu_fyi_tests_release_trybot_asan_reclient': [
-      'gpu_fyi_tests', 'release_trybot_minimal_symbols_reclient', 'asan', 'disable_nacl',
-    ],
-
     'gpu_fyi_tests_release_trybot_reclient': [
       'gpu_fyi_tests', 'release_trybot_minimal_symbols_reclient', 'disable_nacl',
     ],
 
-    'gpu_fyi_tests_release_trybot_tsan_reclient': [
-      'gpu_fyi_tests', 'release_trybot_minimal_symbols_reclient', 'tsan', 'disable_nacl',
-    ],
-
     'gpu_fyi_tests_release_trybot_x64_reclient': [
       'gpu_fyi_tests', 'release_trybot_minimal_symbols_reclient', 'x64', 'disable_nacl',
-    ],
-
-    'gpu_fyi_tests_release_trybot_x86_reclient': [
-      'gpu_fyi_tests', 'release_trybot_minimal_symbols_reclient', 'x86', 'disable_nacl',
-    ],
-
-    'gpu_tests_android_release_bot_dcheck_always_on_arm64_fastbuild_reclient': [
-      'gpu_tests', 'android', 'release_trybot_minimal_symbols_reclient', 'arm64', 'static_angle',
-      'android_fastbuild',
     ],
 
     'gpu_tests_android_release_trybot_arm64_reclient': [
@@ -1381,11 +1273,6 @@
       'gpu_tests', 'arm64', 'release_bot_reclient', 'minimal_symbols'
     ],
 
-    'gpu_tests_chromeos_amd64_release_trybot_dcheck_off_no_symbols_reclient': [
-      'gpu_tests', 'chromeos_amd64-generic-vm_reclient',
-      'release_trybot_dcheck_off_reclient', 'no_symbols',
-    ],
-
     'gpu_tests_chromeos_jacuzzi_release_trybot_dcheck_off_no_symbols_reclient_skylab': [
       'gpu_tests', 'chromeos_jacuzzi_reclient', 'release_trybot_dcheck_off_reclient', 'no_symbols', 'is_skylab',
     ],
@@ -1400,10 +1287,6 @@
 
     'gpu_tests_debug_bot_arm64': [
       'gpu_tests', 'debug_bot', 'arm64',
-    ],
-
-    'gpu_tests_debug_bot_reclient': [
-      'gpu_tests', 'debug_bot_reclient',
     ],
 
     'gpu_tests_debug_bot_x86_no_symbols': [
@@ -1424,16 +1307,8 @@
       'gpu_tests', 'debug', 'no_symbols', 'dcheck_always_on', 'static', 'reclient', 'use_dummy_lastchange',
     ],
 
-    'gpu_tests_ozone_linux_non_x11_release_trybot_reclient': [
-      'gpu_tests', 'ozone_linux', 'ozone_linux_non_x11', 'release_trybot_minimal_symbols_reclient',
-    ],
-
     'gpu_tests_release_bot': [
       'gpu_tests', 'release_bot',
-    ],
-
-    'gpu_tests_release_bot_dcheck_always_on_resource_allowlisting_reclient': [
-      'gpu_tests', 'release_trybot_minimal_symbols_reclient', 'resource_allowlisting',
     ],
 
     'gpu_tests_release_bot_do_typecheck_reclient': [
@@ -1481,11 +1356,6 @@
 
     'gpu_tests_release_trybot_reclient': [
       'gpu_tests', 'release_trybot_reclient',
-    ],
-
-    'gpu_tests_release_trybot_resource_allowlisting_code_coverage': [
-      'gpu_tests', 'release_trybot', 'no_resource_allowlisting',
-      'use_clang_coverage', 'partial_code_coverage_instrumentation',
     ],
 
     'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient': [
@@ -2306,11 +2176,6 @@
       'gn_args': 'enable_widevine_cdm_host_verification = false'
     },
 
-    'dx12vk': {
-      # TODO(https://crbug.com/1010584): Explicitly enable DirectX 12.
-      'mixins': ['enable_vulkan'],
-    },
-
     # Enables backup ref ptr by changing the default value of the feature flag.
     # This sets the default value of PartitionAllocBackupRefPtr to enabled, with
     # enabled-processes = non-renderer:
@@ -2339,10 +2204,6 @@
     'enable_dangling_raw_ptr_feature_flag': {
       'gn_args': 'enable_dangling_raw_ptr_feature_flag=true',
       'mixins': ["enable_dangling_raw_ptr_checks"],
-    },
-
-    'enable_vulkan': {
-      'gn_args': 'enable_vulkan=true',
     },
 
     # This mixin is used to force configs that use it to fail. It
@@ -2586,18 +2447,6 @@
 
     'ozone_headless': {
       'gn_args': 'ozone_platform_headless=true',
-    },
-
-    'ozone_linux': {
-      'gn_args': 'use_ozone=true ozone_platform="headless" use_bundled_weston=true',
-    },
-
-    # TODO(anglebug.com/4977): Make angle understand what platform it should
-    # use. Otherwise, the ozone_platform_x11 && use_ozone config breaks Linux Ozone FYI (Intel) bot
-    # that exercises angle + ozone (though, it is ozone/drm in reality. We don't support
-    # angle on Linux Ozone/X11/Wayland yet).
-    'ozone_linux_non_x11': {
-      'gn_args': 'ozone_platform_x11=false'
     },
 
     # Used to pass the list of files to instrument for coverage to the compile

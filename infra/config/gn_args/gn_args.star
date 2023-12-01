@@ -480,6 +480,14 @@ gn_args.config(
     },
 )
 
+# TODO(https://crbug.com/1010584): Explicitly enable DirectX 12.
+gn_args.config(
+    "dx12vk",
+    configs = [
+        "enable_vulkan",
+    ],
+)
+
 # Enables backup ref ptr by changing the default value of the feature flag.
 # This sets the default value of PartitionAllocBackupRefPtr to enabled, with
 # enabled-processes = non-renderer:
@@ -511,6 +519,13 @@ gn_args.config(
     configs = [
         "enable_dangling_raw_ptr_checks",
     ],
+)
+
+gn_args.config(
+    "enable_vulkan",
+    args = {
+        "enable_vulkan": True,
+    },
 )
 
 gn_args.config(
@@ -592,6 +607,13 @@ gn_args.config(
     args = {
         "use_goma": True,
     },
+)
+
+gn_args.config(
+    "gpu_fyi_tests",
+    configs = [
+        "gpu_tests",
+    ],
 )
 
 gn_args.config(
@@ -829,6 +851,26 @@ gn_args.config(
     "ozone_headless",
     args = {
         "ozone_platform_headless": True,
+    },
+)
+
+gn_args.config(
+    "ozone_linux",
+    args = {
+        "use_ozone": True,
+        "ozone_platform": "headless",
+        "use_bundled_weston": True,
+    },
+)
+
+# TODO(anglebug.com/4977): Make angle understand what platform it should
+# use. Otherwise, the ozone_platform_x11 && use_ozone config breaks Linux Ozone FYI (Intel) bot
+# that exercises angle + ozone (though, it is ozone/drm in reality. We don't support
+# angle on Linux Ozone/X11/Wayland yet).
+gn_args.config(
+    "ozone_linux_non_x11",
+    args = {
+        "ozone_platform_x11": False,
     },
 )
 
@@ -1145,6 +1187,11 @@ gn_args.config(
     configs = [
         "x64",
     ],
+)
+
+gn_args.config(
+    "volteer",
+    args_file = "//build/args/chromeos/volteer.gni",
 )
 
 gn_args.config(

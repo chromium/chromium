@@ -1221,6 +1221,7 @@ try_.gpu.optional_tests_builder(
     try_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
+    gn_args = "ci/GPU FYI Android arm64 Builder",
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
