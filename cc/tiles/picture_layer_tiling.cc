@@ -72,7 +72,7 @@ PictureLayerTiling::PictureLayerTiling(
       EnclosingContentsRectFromLayerRect(gfx::Rect(raster_source_->GetSize()));
   gfx::Size tiling_size = gfx::Size(content_bounds_rect.bottom_right().x(),
                                     content_bounds_rect.bottom_right().y());
-  tiling_data_.SetTilingSize(tiling_size);
+  SetTilingSize(tiling_size);
   gfx::Size tile_size = client_->CalculateTileSize(tiling_size);
   tiling_data_.SetMaxTextureSize(tile_size);
 }
@@ -189,7 +189,7 @@ bool PictureLayerTiling::SetRasterSourceAndResize(
   gfx::Size tile_size = client_->CalculateTileSize(content_rect.size());
 
   if (tile_size != tiling_data_.max_texture_size()) {
-    tiling_data_.SetTilingSize(content_rect.size());
+    SetTilingSize(content_rect.size());
     tiling_data_.SetMaxTextureSize(tile_size);
     // When the tile size changes, the TilingData positions no longer work
     // as valid keys to the TileMap, so just drop all tiles and clear the live
@@ -219,7 +219,7 @@ bool PictureLayerTiling::SetRasterSourceAndResize(
   // The live_tiles_rect_ is clamped to stay within the tiling size as we
   // change it.
   live_tiles_rect_.Intersect(content_rect);
-  tiling_data_.SetTilingSize(content_rect.size());
+  SetTilingSize(content_rect.size());
 
   int after_right = -1;
   int after_bottom = -1;
@@ -966,6 +966,16 @@ gfx::Rect PictureLayerTiling::EnclosingLayerRectFromContentsRect(
     const gfx::Rect& contents_rect) const {
   return ToEnclosingRect(
       raster_transform_.InverseMapRect(gfx::RectF(contents_rect)));
+}
+
+void PictureLayerTiling::SetTilingSize(const gfx::Size& tiling_size) {
+  gfx::Rect tiling_rect(tiling_size);
+  has_visible_rect_tiles_ = tiling_rect.Intersects(current_visible_rect_);
+  has_skewport_rect_tiles_ = tiling_rect.Intersects(current_skewport_rect_);
+  has_soon_border_rect_tiles_ =
+      tiling_rect.Intersects(current_soon_border_rect_);
+  has_eventually_rect_tiles_ = tiling_rect.Intersects(current_eventually_rect_);
+  tiling_data_.SetTilingSize(tiling_size);
 }
 
 PictureLayerTiling::TileIterator::TileIterator(PictureLayerTiling* tiling)
