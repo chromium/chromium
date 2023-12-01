@@ -465,7 +465,9 @@ bool StructuredMetricsRecorder::IsDeviceEvent(const Event& event) const {
   }
   const auto* project_validator = validators->first;
 
-  return project_validator->id_scope() == IdScope::kPerDevice;
+  // Sequence events are marked as per-device but use the profile keys.
+  return !event.IsEventSequenceType() &&
+         project_validator->id_scope() == IdScope::kPerDevice;
 }
 
 bool StructuredMetricsRecorder::IsProfileEvent(const Event& event) const {
@@ -477,7 +479,9 @@ bool StructuredMetricsRecorder::IsProfileEvent(const Event& event) const {
   }
   const auto* project_validator = validators->first;
 
-  return project_validator->id_scope() == IdScope::kPerProfile;
+  // Sequence events are marked as per-device but use the profile keys.
+  return event.IsEventSequenceType() ||
+         project_validator->id_scope() == IdScope::kPerProfile;
 }
 
 bool StructuredMetricsRecorder::CanProvideMetrics() {
