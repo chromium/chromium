@@ -20,10 +20,7 @@ bool LightweightQuarantineBranch<QuarantineCapacityCount>::Quarantine(
       root_.capacity_in_bytes_.load(std::memory_order_relaxed);
 
   {
-    // It may be possible to narrow down the locked section, but we will not
-    // make any detailed adjustments for now, as we aim to create a lock-free
-    // implementation by having a thread-local list.
-    ScopedGuard guard(lock_);
+    ConditionalScopedGuard guard(lock_required_, lock_);
 
     const size_t size_in_bytes_held_by_others =
         root_.size_in_bytes_.load(std::memory_order_relaxed) -
