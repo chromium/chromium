@@ -481,14 +481,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       PrivacySandboxServiceFactory::GetForProfile(profile);
   bool is_privacy_sandbox_restricted =
       privacy_sandbox_service->IsPrivacySandboxRestricted();
-  bool is_privacy_sandbox_settings_4 =
-      base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4);
   bool is_restricted_notice_enabled =
       privacy_sandbox_service->IsRestrictedNoticeEnabled();
   html_source->AddBoolean("isPrivacySandboxRestricted",
                           is_privacy_sandbox_restricted);
-  html_source->AddBoolean("isPrivacySandboxSettings4",
-                          is_privacy_sandbox_settings_4);
   html_source->AddBoolean("isPrivacySandboxRestrictedNoticeEnabled",
                           is_restricted_notice_enabled);
 
