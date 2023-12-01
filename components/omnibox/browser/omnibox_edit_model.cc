@@ -1306,6 +1306,9 @@ bool OmniboxEditModel::OnSpacePressed() {
   if (!OmniboxFieldTrial::IsKeywordModeRefreshEnabled()) {
     return false;
   }
+  if (!GetPrefService()->GetBoolean(omnibox::kKeywordSpaceTriggeringEnabled)) {
+    return false;
+  }
   if (!is_keyword_hint_ && keyword_.empty() &&
       input_.cursor_position() == input_.text().length()) {
     // Keywords can now be accessed anywhere in the match list. If one is
