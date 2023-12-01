@@ -424,7 +424,6 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://emoji-picker",
     "chrome://family-link-user-internals",
     "chrome://file-manager",
-    "chrome://guest-os-installer",
     "chrome://help-app",
     "chrome://linux-proxy-config",
     "chrome://manage-mirrorsync",

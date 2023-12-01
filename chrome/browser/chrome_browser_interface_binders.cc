@@ -265,8 +265,6 @@
 #include "ash/webui/files_internals/mojom/files_internals.mojom.h"
 #include "ash/webui/firmware_update_ui/firmware_update_app_ui.h"
 #include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom.h"
-#include "ash/webui/guest_os_installer/guest_os_installer_ui.h"
-#include "ash/webui/guest_os_installer/mojom/guest_os_installer.mojom.h"
 #include "ash/webui/help_app_ui/help_app_ui.h"
 #include "ash/webui/help_app_ui/help_app_ui.mojom.h"
 #include "ash/webui/help_app_ui/help_app_untrusted_ui.h"
@@ -1409,10 +1407,6 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       ash::cellular_setup::mojom::ESimManager, ash::settings::OSSettingsUI,
       ash::NetworkUI, ash::OobeUI>(map);
-
-  RegisterWebUIControllerInterfaceBinder<
-      ash::guest_os_installer::mojom::PageHandlerFactory,
-      ash::GuestOSInstallerUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       ash::borealis_installer::mojom::PageHandlerFactory,

@@ -763,10 +763,6 @@
     "META": {"sizes": {"includes": [10],}},
     "includes": [5720],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/guest_os_installer/resources/resources.grd": {
-    "META": {"sizes": {"includes": [10]}},
-    "includes": [5740],
-  },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/common/resources/resources.grd": {
     "META": {"sizes": {"includes": [700]}},
     "includes": [5760],

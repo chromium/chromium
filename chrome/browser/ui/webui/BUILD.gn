@@ -46,7 +46,6 @@ source_set("configs") {
       "//ash/webui/face_ml_app_ui",
       "//ash/webui/file_manager:file_manager_untrusted_ui",
       "//ash/webui/firmware_update_ui",
-      "//ash/webui/guest_os_installer",
       "//ash/webui/help_app_ui",
       "//ash/webui/os_feedback_ui",
       "//ash/webui/print_management",
