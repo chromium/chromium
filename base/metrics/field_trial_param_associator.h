@@ -14,9 +14,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/synchronization/lock.h"
-#include "base/types/pass_key.h"
-
-class AppShimController;
 
 namespace base {
 
@@ -64,11 +61,6 @@ class BASE_EXPORT FieldTrialParamAssociator {
 
   // Clears the internal field_trial_params_ mapping.
   void ClearAllCachedParamsForTesting();
-
-  // Clears the internal field_trial_params_ mapping for use by
-  // AppShimController when switching over from initial "early access" field
-  // trial information to the real long-term field trial information.
-  void ClearAllCachedParams(PassKey<AppShimController>);
 
  private:
   friend struct DefaultSingletonTraits<FieldTrialParamAssociator>;

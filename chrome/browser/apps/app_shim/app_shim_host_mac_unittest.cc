@@ -49,7 +49,6 @@ class TestingAppShim : public chrome::mojom::AppShim {
  private:
   void OnShimConnectedDone(
       chrome::mojom::AppShimLaunchResult result,
-      variations::VariationsCommandLine feature_state,
       mojo::PendingReceiver<chrome::mojom::AppShim> app_shim_receiver) {
     received_launch_done_result_ = true;
     launch_done_result_ = result;

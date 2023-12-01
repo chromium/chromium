@@ -505,10 +505,8 @@ FieldTrialList::~FieldTrialList() {
   // Note: If this DCHECK fires in a test that uses ScopedFeatureList, it is
   // likely caused by nested ScopedFeatureLists being destroyed in a different
   // order than they are initialized.
-  if (!was_reset_) {
-    DCHECK_EQ(this, global_);
-    global_ = nullptr;
-  }
+  DCHECK_EQ(this, global_);
+  global_ = nullptr;
 }
 
 // static
@@ -1026,14 +1024,6 @@ FieldTrialList::GetAllFieldTrialsFromPersistentAllocator(
 // static
 FieldTrialList* FieldTrialList::GetInstance() {
   return global_;
-}
-
-// static
-FieldTrialList* FieldTrialList::ResetInstance() {
-  FieldTrialList* instance = global_;
-  instance->was_reset_ = true;
-  global_ = nullptr;
-  return instance;
 }
 
 // static

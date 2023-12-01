@@ -60,8 +60,7 @@ base::Value::List GetVariationsList() {
 }
 
 base::Value GetVariationsCommandLineAsValue() {
-  return base::Value(
-      variations::VariationsCommandLine::GetForCurrentProcess().ToString());
+  return base::Value(variations::GetVariationsCommandLine());
 }
 
 }  // namespace version_ui

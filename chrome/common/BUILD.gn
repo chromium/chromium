@@ -773,20 +773,6 @@ mojom("mojo_bindings") {
 
   if (is_mac) {
     sources += [ "mac/app_shim.mojom" ]
-    cpp_typemaps = [
-      {
-        types = [
-          {
-            mojom = "chrome.mojom.FeatureState"
-            cpp = "::variations::VariationsCommandLine"
-            move_only = true
-          },
-        ]
-        traits_headers = [ "mac/app_shim_mojom_traits.h" ]
-        traits_sources = [ "mac/app_shim_mojom_traits.cc" ]
-        traits_public_deps = [ "//components/variations/net" ]
-      },
-    ]
   }
 
   if (is_win) {

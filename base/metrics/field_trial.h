@@ -689,10 +689,6 @@ class BASE_EXPORT FieldTrialList {
   // and is not intended to be used widely beyond those cases.
   static FieldTrialList* GetInstance();
 
-  // Returns a pointer to the global instance, and resets the global instance
-  // to null. The returned instance can be destroyed if it is no longer needed.
-  static FieldTrialList* ResetInstance();
-
   // For testing, sets the global instance to null and returns the previous one.
   static FieldTrialList* BackupInstanceForTesting();
 
@@ -879,10 +875,6 @@ class BASE_EXPORT FieldTrialList {
 
   // Tracks whether CreateTrialsInChildProcess() has been called.
   bool create_trials_in_child_process_called_ = false;
-
-  // Tracks if ResetInstance was called for this instance, to avoid resetting
-  // `global_` in the destructor.
-  bool was_reset_ = false;
 };
 
 }  // namespace base

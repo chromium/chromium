@@ -228,7 +228,6 @@ class TestingAppShimHostBootstrap : public AppShimHostBootstrap {
   static void DoTestLaunchDone(
       absl::optional<chrome::mojom::AppShimLaunchResult>* launch_result,
       chrome::mojom::AppShimLaunchResult result,
-      variations::VariationsCommandLine feature_state,
       mojo::PendingReceiver<chrome::mojom::AppShim> app_shim_receiver) {
     if (launch_result)
       launch_result->emplace(result);

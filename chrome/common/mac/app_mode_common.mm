@@ -19,7 +19,6 @@ namespace app_mode {
 const char kAppShimBootstrapNameFragment[] = "apps";
 
 const char kRunningChromeVersionSymlinkName[] = "RunningChromeVersion";
-const char kFeatureStateFileName[] = "ChromeFeatureState";
 
 const char kLaunchedByChromeProcessId[] = "launched-by-chrome-process-id";
 const char kLaunchedByChromeBundlePath[] = "launched-by-chrome-bundle-path";

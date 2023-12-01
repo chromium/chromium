@@ -10,7 +10,6 @@
 #include <stddef.h>
 
 #include "base/base_switches.h"
-#include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
@@ -76,11 +75,6 @@ class EarlyFeatureAccessTracker {
     AutoLock lock(lock_);
     feature_ = nullptr;
     fail_instantly_ = false;
-  }
-
-  const Feature* GetFeature() {
-    AutoLock lock(lock_);
-    return feature_.get();
   }
 
  private:
@@ -433,8 +427,7 @@ void FeatureList::GetCommandLineFeatureOverrides(
 
 // static
 bool FeatureList::IsEnabled(const Feature& feature) {
-  if (!g_feature_list_instance ||
-      !g_feature_list_instance->AllowFeatureAccess(feature)) {
+  if (!g_feature_list_instance) {
     EarlyFeatureAccessTracker::GetInstance()->AccessedFeature(feature);
     return feature.default_state == FEATURE_ENABLED_BY_DEFAULT;
   }
@@ -448,8 +441,7 @@ bool FeatureList::IsValidFeatureOrFieldTrialName(StringPiece name) {
 
 // static
 absl::optional<bool> FeatureList::GetStateIfOverridden(const Feature& feature) {
-  if (!g_feature_list_instance ||
-      !g_feature_list_instance->AllowFeatureAccess(feature)) {
+  if (!g_feature_list_instance) {
     EarlyFeatureAccessTracker::GetInstance()->AccessedFeature(feature);
     // If there is no feature list, there can be no overrides.
     return absl::nullopt;
@@ -459,8 +451,7 @@ absl::optional<bool> FeatureList::GetStateIfOverridden(const Feature& feature) {
 
 // static
 FieldTrial* FeatureList::GetFieldTrial(const Feature& feature) {
-  if (!g_feature_list_instance ||
-      !g_feature_list_instance->AllowFeatureAccess(feature)) {
+  if (!g_feature_list_instance) {
     EarlyFeatureAccessTracker::GetInstance()->AccessedFeature(feature);
     return nullptr;
   }
@@ -560,16 +551,7 @@ FeatureList* FeatureList::GetInstance() {
 
 // static
 void FeatureList::SetInstance(std::unique_ptr<FeatureList> instance) {
-  DCHECK(!g_feature_list_instance ||
-         g_feature_list_instance->IsEarlyAccessInstance());
-  // If there is an existing early-access instance, release it after
-  // updating the caching context sequence.
-  if (g_feature_list_instance) {
-    std::unique_ptr<FeatureList> old_instance =
-        WrapUnique(g_feature_list_instance);
-    instance->caching_context_ = old_instance->caching_context_ + 1;
-    g_feature_list_instance = nullptr;
-  }
+  DCHECK(!g_feature_list_instance);
   instance->FinalizeInitialization();
 
   // Note: Intentional leak of global singleton.
@@ -577,19 +559,14 @@ void FeatureList::SetInstance(std::unique_ptr<FeatureList> instance) {
 
   EarlyFeatureAccessTracker::GetInstance()->AssertNoAccess();
 
-  // Don't configure random bytes field trials for a possibly early access
-  // FeatureList instance, as the state of the involved Features might change
-  // with the final FeatureList for this process.
-  if (!g_feature_list_instance->IsEarlyAccessInstance()) {
 #if !BUILDFLAG(IS_NACL)
-    // Configured first because it takes precedence over the getrandom() trial.
-    internal::ConfigureBoringSSLBackedRandBytesFieldTrial();
+  // Configured first because it takes precedence over the getrandom() trial.
+  internal::ConfigureBoringSSLBackedRandBytesFieldTrial();
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-    internal::ConfigureRandBytesFieldTrial();
+  internal::ConfigureRandBytesFieldTrial();
 #endif
-  }
 
 #if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
   // Update the behaviour of LOGGING_DCHECK to match the Feature configuration.
@@ -607,16 +584,6 @@ void FeatureList::SetInstance(std::unique_ptr<FeatureList> instance) {
     logging::LOGGING_DCHECK = logging::LOG_INFO;
   }
 #endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
-}
-
-// static
-void FeatureList::SetEarlyAccessInstance(
-    std::unique_ptr<FeatureList> instance,
-    base::flat_set<std::string> allowed_feature_names) {
-  CHECK(!g_feature_list_instance);
-  CHECK(!allowed_feature_names.empty());
-  instance->allowed_feature_names_ = std::move(allowed_feature_names);
-  SetInstance(std::move(instance));
 }
 
 // static
@@ -643,21 +610,6 @@ void FeatureList::FailOnFeatureAccessWithoutFeatureList() {
 
 void FeatureList::SetCachingContextForTesting(uint16_t caching_context) {
   caching_context_ = caching_context;
-}
-
-// static
-const Feature* FeatureList::GetEarlyAccessedFeatureForTesting() {
-  return EarlyFeatureAccessTracker::GetInstance()->GetFeature();
-}
-
-// static
-void FeatureList::ResetEarlyFeatureAccessTrackerForTesting() {
-  EarlyFeatureAccessTracker::GetInstance()->Reset();
-}
-
-void FeatureList::AddEarlyAllowedFeatureForTesting(std::string feature_name) {
-  CHECK(IsEarlyAccessInstance());
-  allowed_feature_names_.insert(std::move(feature_name));
 }
 
 void FeatureList::FinalizeInitialization() {
@@ -916,20 +868,6 @@ bool FeatureList::CheckFeatureIdentity(const Feature& feature) const {
   }
   // Compare address of |feature| to the existing tracked entry.
   return it->second == &feature;
-}
-
-bool FeatureList::IsEarlyAccessInstance() const {
-  return !allowed_feature_names_.empty();
-}
-
-bool FeatureList::AllowFeatureAccess(const Feature& feature) const {
-  DCHECK(initialized_);
-  // If this isn't an instance set with SetEarlyAccessInstance all features are
-  // allowed to be checked.
-  if (!IsEarlyAccessInstance()) {
-    return true;
-  }
-  return base::Contains(allowed_feature_names_, feature.name);
 }
 
 FeatureList::OverrideEntry::OverrideEntry(OverrideState overridden_state,
