@@ -260,28 +260,6 @@ LayoutMultiColumnSet::AppendNewFragmentainerGroup() {
   return fragmentainer_groups_.Last();
 }
 
-LayoutUnit LayoutMultiColumnSet::LogicalTopFromMulticolContentEdge() const {
-  NOT_DESTROYED();
-  // We subtract the position of the first column set or spanner placeholder,
-  // rather than the "before" border+padding of the multicol container. This
-  // distinction doesn't matter after layout, but during layout it does:
-  // The flow thread (i.e. the multicol contents) is laid out before the column
-  // sets and spanner placeholders, which means that compesating for a top
-  // border+padding that hasn't yet been baked into the offset will produce the
-  // wrong results in the first layout pass, and we'd end up performing a wasted
-  // layout pass in many cases.
-  const LayoutBox& first_column_box =
-      *MultiColumnFlowThread()->FirstMultiColumnBox();
-  // The top margin edge of the first column set or spanner placeholder is flush
-  // with the top content edge of the multicol container. The margin here never
-  // collapses with other margins, so we can just subtract it. Column sets never
-  // have margins, but spanner placeholders may.
-  LayoutUnit first_column_box_margin_edge =
-      first_column_box.LogicalTop() -
-      first_column_box.MarginBlockStart(MultiColumnBlockFlow()->Style());
-  return LogicalTop() - first_column_box_margin_edge;
-}
-
 LayoutUnit LayoutMultiColumnSet::LogicalTopInFlowThread() const {
   NOT_DESTROYED();
   return FirstFragmentainerGroup().LogicalTopInFlowThread();
@@ -294,11 +272,10 @@ LayoutUnit LayoutMultiColumnSet::LogicalBottomInFlowThread() const {
 
 PhysicalOffset LayoutMultiColumnSet::FlowThreadTranslationAtOffset(
     LayoutUnit block_offset,
-    PageBoundaryRule rule,
-    CoordinateSpaceConversion mode) const {
+    PageBoundaryRule rule) const {
   NOT_DESTROYED();
   return FragmentainerGroupAtFlowThreadOffset(block_offset, rule)
-      .FlowThreadTranslationAtOffset(block_offset, rule, mode);
+      .FlowThreadTranslationAtOffset(block_offset, rule);
 }
 
 LogicalOffset LayoutMultiColumnSet::VisualPointToFlowThreadPoint(

@@ -35,12 +35,6 @@ LogicalOffset MultiColumnFragmentainerGroup::OffsetFromColumnSet() const {
   return LogicalOffset(LayoutUnit(), LogicalTop());
 }
 
-LayoutUnit
-MultiColumnFragmentainerGroup::BlockOffsetInEnclosingFragmentationContext()
-    const {
-  return LogicalTop() + column_set_->LogicalTopFromMulticolContentEdge();
-}
-
 LayoutUnit MultiColumnFragmentainerGroup::LogicalHeightInFlowThreadAt(
     unsigned column_index) const {
   DCHECK(IsLogicalHeightKnown());
@@ -72,8 +66,7 @@ void MultiColumnFragmentainerGroup::ResetColumnHeight() {
 
 PhysicalOffset MultiColumnFragmentainerGroup::FlowThreadTranslationAtOffset(
     LayoutUnit offset_in_flow_thread,
-    LayoutBox::PageBoundaryRule rule,
-    CoordinateSpaceConversion mode) const {
+    LayoutBox::PageBoundaryRule rule) const {
   LayoutMultiColumnFlowThread* flow_thread =
       column_set_->MultiColumnFlowThread();
 
@@ -95,44 +88,7 @@ PhysicalOffset MultiColumnFragmentainerGroup::FlowThreadTranslationAtOffset(
       column_set_->CreateWritingModeConverter().ToPhysical(column_rect);
   physical_column_rect.offset += column_set_->PhysicalLocation();
 
-  PhysicalOffset translation_relative_to_flow_thread =
-      physical_column_rect.offset - portion_rect.offset;
-  if (mode == CoordinateSpaceConversion::kContaining)
-    return translation_relative_to_flow_thread;
-
-  PhysicalOffset enclosing_translation;
-  if (LayoutMultiColumnFlowThread* enclosing_flow_thread =
-          flow_thread->EnclosingFlowThread()) {
-    const MultiColumnFragmentainerGroup& first_row =
-        flow_thread->FirstMultiColumnSet()->FirstFragmentainerGroup();
-    // Translation that would map points in the coordinate space of the
-    // outermost flow thread to visual points in the first column in the first
-    // fragmentainer group (row) in our multicol container.
-    PhysicalOffset enclosing_translation_origin =
-        enclosing_flow_thread->FlowThreadTranslationAtOffset(
-            first_row.BlockOffsetInEnclosingFragmentationContext(),
-            LayoutBox::kAssociateWithLatterPage, mode);
-
-    // Translation that would map points in the coordinate space of the
-    // outermost flow thread to visual points in the first column in this
-    // fragmentainer group.
-    enclosing_translation =
-        enclosing_flow_thread->FlowThreadTranslationAtOffset(
-            BlockOffsetInEnclosingFragmentationContext(),
-            LayoutBox::kAssociateWithLatterPage, mode);
-
-    // What we ultimately return from this method is a translation that maps
-    // points in the coordinate space of our flow thread to a visual point in a
-    // certain column in this fragmentainer group. We had to go all the way up
-    // to the outermost flow thread, since this fragmentainer group may be in a
-    // different outer column than the first outer column that this multicol
-    // container lives in. It's the visual distance between the first
-    // fragmentainer group and this fragmentainer group that we need to add to
-    // the translation.
-    enclosing_translation -= enclosing_translation_origin;
-  }
-
-  return enclosing_translation + translation_relative_to_flow_thread;
+  return physical_column_rect.offset - portion_rect.offset;
 }
 
 LayoutUnit MultiColumnFragmentainerGroup::ColumnLogicalTopForOffset(
@@ -189,16 +145,15 @@ PhysicalRect MultiColumnFragmentainerGroup::FragmentsBoundingBox(
   start_column_rect.Intersect(FlowThreadPortionOverflowRectAt(start_column));
   start_column_rect.offset += PhysicalOffset(
       FlowThreadTranslationAtOffset(LogicalTopInFlowThreadAt(start_column),
-                                    LayoutBox::kAssociateWithLatterPage,
-                                    CoordinateSpaceConversion::kContaining));
+                                    LayoutBox::kAssociateWithLatterPage));
   if (start_column == end_column)
     return start_column_rect;  // It all takes place in one column. We're done.
 
   PhysicalRect end_column_rect(bounding_box_in_flow_thread);
   end_column_rect.Intersect(FlowThreadPortionOverflowRectAt(end_column));
-  end_column_rect.offset += PhysicalOffset(FlowThreadTranslationAtOffset(
-      LogicalTopInFlowThreadAt(end_column), LayoutBox::kAssociateWithLatterPage,
-      CoordinateSpaceConversion::kContaining));
+  end_column_rect.offset += PhysicalOffset(
+      FlowThreadTranslationAtOffset(LogicalTopInFlowThreadAt(end_column),
+                                    LayoutBox::kAssociateWithLatterPage));
   return UnionRect(start_column_rect, end_column_rect);
 }
 

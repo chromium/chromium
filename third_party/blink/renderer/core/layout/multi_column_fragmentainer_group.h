@@ -70,10 +70,6 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
 
   LogicalOffset OffsetFromColumnSet() const;
 
-  // Return the block offset from the enclosing fragmentation context, if
-  // nested. In the coordinate space of the enclosing fragmentation context.
-  LayoutUnit BlockOffsetInEnclosingFragmentationContext() const;
-
   // The top of our flow thread portion
   LayoutUnit LogicalTopInFlowThread() const {
     return logical_top_in_flow_thread_;
@@ -106,9 +102,9 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
 
   void ResetColumnHeight();
 
-  PhysicalOffset FlowThreadTranslationAtOffset(LayoutUnit,
-                                               LayoutBox::PageBoundaryRule,
-                                               CoordinateSpaceConversion) const;
+  PhysicalOffset FlowThreadTranslationAtOffset(
+      LayoutUnit,
+      LayoutBox::PageBoundaryRule) const;
   LayoutUnit ColumnLogicalTopForOffset(LayoutUnit offset_in_flow_thread) const;
 
   // If SnapToColumnPolicy is SnapToColumn, visualPointToFlowThreadPoint() won't

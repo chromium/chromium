@@ -150,9 +150,6 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
 
   MultiColumnFragmentainerGroup& AppendNewFragmentainerGroup();
 
-  // Logical top relative to the content edge of the multicol container.
-  LayoutUnit LogicalTopFromMulticolContentEdge() const;
-
   LayoutUnit LogicalTopInFlowThread() const;
   LayoutUnit LogicalBottomInFlowThread() const;
   LayoutUnit LogicalHeightInFlowThread() const {
@@ -182,8 +179,7 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
   // translation needed to get from flow thread coordinates to visual
   // coordinates.
   PhysicalOffset FlowThreadTranslationAtOffset(LayoutUnit,
-                                               PageBoundaryRule,
-                                               CoordinateSpaceConversion) const;
+                                               PageBoundaryRule) const;
 
   LogicalOffset VisualPointToFlowThreadPoint(
       const PhysicalOffset& visual_point) const;

@@ -345,8 +345,7 @@ void LayoutMultiColumnFlowThread::EvacuateAndDestroy() {
 PhysicalOffset LayoutMultiColumnFlowThread::ColumnOffset(
     const PhysicalOffset& point) const {
   NOT_DESTROYED();
-  return FlowThreadTranslationAtPoint(point,
-                                      CoordinateSpaceConversion::kContaining);
+  return FlowThreadTranslationAtPoint(point);
 }
 
 bool LayoutMultiColumnFlowThread::IsPageLogicalHeightKnown() const {
@@ -356,8 +355,7 @@ bool LayoutMultiColumnFlowThread::IsPageLogicalHeightKnown() const {
 
 PhysicalOffset LayoutMultiColumnFlowThread::FlowThreadTranslationAtOffset(
     LayoutUnit offset_in_flow_thread,
-    PageBoundaryRule rule,
-    CoordinateSpaceConversion mode) const {
+    PageBoundaryRule rule) const {
   NOT_DESTROYED();
   if (!HasValidColumnSetInfo())
     return PhysicalOffset();
@@ -365,13 +363,11 @@ PhysicalOffset LayoutMultiColumnFlowThread::FlowThreadTranslationAtOffset(
       ColumnSetAtBlockOffset(offset_in_flow_thread, rule);
   if (!column_set)
     return PhysicalOffset();
-  return column_set->FlowThreadTranslationAtOffset(offset_in_flow_thread, rule,
-                                                   mode);
+  return column_set->FlowThreadTranslationAtOffset(offset_in_flow_thread, rule);
 }
 
 PhysicalOffset LayoutMultiColumnFlowThread::FlowThreadTranslationAtPoint(
-    const PhysicalOffset& flow_thread_point,
-    CoordinateSpaceConversion mode) const {
+    const PhysicalOffset& flow_thread_point) const {
   NOT_DESTROYED();
   LayoutUnit block_offset = CreateWritingModeConverter()
                                 .ToLogical(flow_thread_point, {})
@@ -383,7 +379,7 @@ PhysicalOffset LayoutMultiColumnFlowThread::FlowThreadTranslationAtPoint(
                               ? kAssociateWithFormerPage
                               : kAssociateWithLatterPage;
 
-  return FlowThreadTranslationAtOffset(block_offset, rule, mode);
+  return FlowThreadTranslationAtOffset(block_offset, rule);
 }
 
 PhysicalOffset LayoutMultiColumnFlowThread::VisualPointToFlowThreadPoint(

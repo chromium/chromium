@@ -35,17 +35,6 @@ namespace blink {
 class LayoutMultiColumnSet;
 class LayoutMultiColumnSpannerPlaceholder;
 
-// What to translate *to* when translating from a flow thread coordinate space.
-enum class CoordinateSpaceConversion {
-  // Just translate to the nearest containing coordinate space (i.e. where our
-  // multicol container lives) of this flow thread, i.e. don't walk ancestral
-  // flow threads, if any.
-  kContaining,
-
-  // Translate to visual coordinates, by walking all ancestral flow threads.
-  kVisual
-};
-
 // Flow thread implementation for CSS multicol. This will be inserted as an
 // anonymous child block of the actual multicol container (i.e. the
 // LayoutBlockFlow whose style computes to non-auto column-count and/or
@@ -206,11 +195,9 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final : public LayoutFlowThread {
   bool IsPageLogicalHeightKnown() const final;
 
   PhysicalOffset FlowThreadTranslationAtOffset(LayoutUnit,
-                                               PageBoundaryRule,
-                                               CoordinateSpaceConversion) const;
+                                               PageBoundaryRule) const;
   PhysicalOffset FlowThreadTranslationAtPoint(
-      const PhysicalOffset& flow_thread_point,
-      CoordinateSpaceConversion) const;
+      const PhysicalOffset& flow_thread_point) const;
 
   PhysicalOffset VisualPointToFlowThreadPoint(
       const PhysicalOffset& visual_point) const final;
