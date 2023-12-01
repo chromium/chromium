@@ -8,7 +8,7 @@
 // META: variant=?include=from-treat-as-public
 //
 // These tests verify that secure contexts can navigate to less-public address
-// spaces via window.open iff the target server responds affirmatively to
+// spaces via an anchor link iff the target server responds affirmatively to
 // preflight requests.
 
 setup(() => {
@@ -19,19 +19,19 @@ setup(() => {
 //
 // All fetches unaffected by Private Network Access.
 
-subsetTestByKey("from-local", promise_test_parallel, t => windowOpenTest(t, {
+subsetTestByKey("from-local", promise_test_parallel, t => anchorTest(t, {
   source: { server: Server.HTTPS_LOCAL },
   target: { server: Server.HTTPS_LOCAL },
   expected: NavigationTestResult.SUCCESS,
 }), "local to local: no preflight required.");
 
-subsetTestByKey("from-local", promise_test_parallel, t => windowOpenTest(t, {
+subsetTestByKey("from-local", promise_test_parallel, t => anchorTest(t, {
   source: { server: Server.HTTPS_LOCAL },
   target: { server: Server.HTTPS_PRIVATE },
   expected: NavigationTestResult.SUCCESS,
 }), "local to private: no preflight required.");
 
-subsetTestByKey("from-local", promise_test_parallel, t => windowOpenTest(t, {
+subsetTestByKey("from-local", promise_test_parallel, t => anchorTest(t, {
   source: { server: Server.HTTPS_LOCAL },
   target: { server: Server.HTTPS_PUBLIC },
   expected: NavigationTestResult.SUCCESS,
@@ -62,7 +62,7 @@ function makePreflightTests({
     treatAsPublic: sourceTreatAsPublic,
   };
 
-  promise_test_parallel(t => windowOpenTest(t, {
+  promise_test_parallel(t => anchorTest(t, {
     source,
     target: {
       server: targetServer,
@@ -71,7 +71,7 @@ function makePreflightTests({
     expected: NavigationTestResult.FAILURE,
   }), prefix + "failed preflight.");
 
-  promise_test_parallel(t => windowOpenTest(t, {
+  promise_test_parallel(t => anchorTest(t, {
     source,
     target: {
       server: targetServer,
@@ -80,7 +80,7 @@ function makePreflightTests({
     expected: NavigationTestResult.FAILURE,
   }), prefix + "missing CORS headers.");
 
-  promise_test_parallel(t => windowOpenTest(t, {
+  promise_test_parallel(t => anchorTest(t, {
     source,
     target: {
       server: targetServer,
@@ -89,7 +89,7 @@ function makePreflightTests({
     expected: NavigationTestResult.FAILURE,
   }), prefix + "missing PNA header.");
 
-  promise_test_parallel(t => windowOpenTest(t, {
+  promise_test_parallel(t => anchorTest(t, {
     source,
     target: {
       server: targetServer,
@@ -111,13 +111,13 @@ subsetTestByKey('from-private', makePreflightTests, {
   targetName: 'local',
 });
 
-subsetTestByKey("from-private", promise_test_parallel, t => windowOpenTest(t, {
+subsetTestByKey("from-private", promise_test_parallel, t => anchorTest(t, {
   source: { server: Server.HTTPS_PRIVATE },
   target: { server: Server.HTTPS_PRIVATE },
   expected: NavigationTestResult.SUCCESS,
 }), "private to private: no preflight required.");
 
-subsetTestByKey("from-private", promise_test_parallel, t => windowOpenTest(t, {
+subsetTestByKey("from-private", promise_test_parallel, t => anchorTest(t, {
   source: { server: Server.HTTPS_PRIVATE },
   target: { server: Server.HTTPS_PUBLIC },
   expected: NavigationTestResult.SUCCESS,
@@ -142,7 +142,7 @@ subsetTestByKey('from-public', makePreflightTests, {
   targetName: "private",
 });
 
-subsetTestByKey("from-public", promise_test_parallel, t => windowOpenTest(t, {
+subsetTestByKey("from-public", promise_test_parallel, t => anchorTest(t, {
   source: { server: Server.HTTPS_PUBLIC },
   target: { server: Server.HTTPS_PUBLIC },
   expected: NavigationTestResult.SUCCESS,
@@ -160,7 +160,7 @@ subsetTestByKey('from-treat-as-public', makePreflightTests, {
 });
 
 subsetTestByKey("from-treat-as-public", promise_test_parallel,
-    t => windowOpenTest(t, {
+    t => anchorTest(t, {
       source: {
         server: Server.HTTPS_LOCAL,
         treatAsPublic: true,
@@ -179,7 +179,7 @@ subsetTestByKey('from-treat-as-public', makePreflightTests, {
 });
 
 subsetTestByKey("from-treat-as-public", promise_test_parallel,
-    t => windowOpenTest(t, {
+    t => anchorTest(t, {
       source: {
         server: Server.HTTPS_LOCAL,
         treatAsPublic: true,
@@ -188,17 +188,3 @@ subsetTestByKey("from-treat-as-public", promise_test_parallel,
       expected: NavigationTestResult.SUCCESS,
     }),
     'treat-as-public-address to public: no preflight required.');
-
-promise_test_parallel(
-    t => windowOpenTest(t, {
-      source: {
-        server: Server.HTTPS_LOCAL,
-        treatAsPublic: true,
-      },
-      target: {
-        server: Server.HTTPS_PUBLIC,
-        behavior: {preflight: PreflightBehavior.optionalSuccess(token())}
-      },
-      expected: NavigationTestResult.SUCCESS,
-    }),
-    'treat-as-public-address to local: optional preflight');
