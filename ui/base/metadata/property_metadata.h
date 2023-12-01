@@ -82,15 +82,18 @@ class ObjectPropertyReadOnlyMetaData : public ui::metadata::MemberMetaDataBase {
   ~ObjectPropertyReadOnlyMetaData() override = default;
 
   std::u16string GetValueAsString(void* obj) const override {
-    if (!kTypeIsSerializable && !kTypeIsReadOnly)
-      return std::u16string();
-    return TConverter::ToString((internal::AsClass<TClass>(obj)->*Get)());
+    if constexpr (kTypeIsSerializable || kTypeIsReadOnly) {
+      return TConverter::ToString((internal::AsClass<TClass>(obj)->*Get)());
+    }
+    return std::u16string();
   }
 
   ui::metadata::PropertyFlags GetPropertyFlags() const override {
-    return kTypeIsSerializable ? (ui::metadata::PropertyFlags::kReadOnly |
-                                  ui::metadata::PropertyFlags::kSerializable)
-                               : ui::metadata::PropertyFlags::kReadOnly;
+    if constexpr (kTypeIsSerializable) {
+      return ui::metadata::PropertyFlags::kReadOnly |
+             ui::metadata::PropertyFlags::kSerializable;
+    }
+    return ui::metadata::PropertyFlags::kReadOnly;
   }
 
   const char* GetMemberNamePrefix() const override {
@@ -128,26 +131,29 @@ class ObjectPropertyMetaData
   ~ObjectPropertyMetaData() override = default;
 
   void SetValueAsString(void* obj, const std::u16string& new_value) override {
-    if (!kTypeIsSerializable || kTypeIsReadOnly)
-      return;
-    if (absl::optional<TValue> result = TConverter::FromString(new_value)) {
-      (internal::AsClass<TClass>(obj)->*Set)(std::move(result.value()));
+    if constexpr (kTypeIsSerializable && !kTypeIsReadOnly) {
+      if (absl::optional<TValue> result = TConverter::FromString(new_value)) {
+        (internal::AsClass<TClass>(obj)->*Set)(std::move(result.value()));
+      }
     }
   }
 
   ui::metadata::MemberMetaDataBase::ValueStrings GetValidValues()
       const override {
-    if (!kTypeIsSerializable)
-      return {};
-    return TConverter::GetValidStrings();
+    if constexpr (kTypeIsSerializable) {
+      return TConverter::GetValidStrings();
+    }
+    return {};
   }
 
   ui::metadata::PropertyFlags GetPropertyFlags() const override {
     ui::metadata::PropertyFlags flags = ui::metadata::PropertyFlags::kEmpty;
-    if (kTypeIsSerializable)
+    if constexpr (kTypeIsSerializable) {
       flags = flags | ui::metadata::PropertyFlags::kSerializable;
-    if (kTypeIsReadOnly)
+    }
+    if constexpr (kTypeIsReadOnly) {
       flags = flags | ui::metadata::PropertyFlags::kReadOnly;
+    }
     return flags;
   }
 
@@ -196,10 +202,12 @@ class ClassPropertyMetaData : public ui::metadata::MemberMetaDataBase {
 
   ui::metadata::PropertyFlags GetPropertyFlags() const override {
     ui::metadata::PropertyFlags flags = ui::metadata::PropertyFlags::kEmpty;
-    if (kTypeIsSerializable)
+    if constexpr (kTypeIsSerializable) {
       flags = flags | ui::metadata::PropertyFlags::kSerializable;
-    if (kTypeIsReadOnly)
+    }
+    if constexpr (kTypeIsReadOnly) {
       flags = flags | ui::metadata::PropertyFlags::kReadOnly;
+    }
     return flags;
   }
 
