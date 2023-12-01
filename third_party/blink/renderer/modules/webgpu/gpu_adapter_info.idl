@@ -15,4 +15,5 @@
   [RuntimeEnabled=WebGPUDeveloperFeatures] readonly attribute DOMString driver;
   [RuntimeEnabled=WebGPUDeveloperFeatures] readonly attribute DOMString backend;
   [RuntimeEnabled=WebGPUDeveloperFeatures] readonly attribute DOMString type;
+  [RuntimeEnabled=WebGPUDeveloperFeatures] readonly attribute FrozenArray<GPUMemoryHeapInfo> memoryHeaps;
 };

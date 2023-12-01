@@ -6,9 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_ADAPTER_INFO_H_
 
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+
+class GPUMemoryHeapInfo;
 
 class GPUAdapterInfo : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -25,6 +28,8 @@ class GPUAdapterInfo : public ScriptWrappable {
   GPUAdapterInfo(const GPUAdapterInfo&) = delete;
   GPUAdapterInfo& operator=(const GPUAdapterInfo&) = delete;
 
+  void AppendMemoryHeapInfo(GPUMemoryHeapInfo*);
+
   // gpu_adapter_info.idl
   const String& vendor() const;
   const String& architecture() const;
@@ -33,6 +38,9 @@ class GPUAdapterInfo : public ScriptWrappable {
   const String& driver() const;
   const String& backend() const;
   const String& type() const;
+  const HeapVector<Member<GPUMemoryHeapInfo>>& memoryHeaps() const;
+
+  void Trace(Visitor*) const override;
 
  private:
   String vendor_;
@@ -42,6 +50,7 @@ class GPUAdapterInfo : public ScriptWrappable {
   String driver_;
   String backend_;
   String type_;
+  HeapVector<Member<GPUMemoryHeapInfo>> memory_heaps_;
 };
 
 }  // namespace blink

@@ -1205,6 +1205,8 @@ bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
     case wgpu::FeatureName::ChromiumExperimentalSubgroups:
     case wgpu::FeatureName::ChromiumExperimentalSubgroupUniformControlFlow:
       return allow_unsafe_apis_;
+    case wgpu::FeatureName::AdapterPropertiesMemoryHeaps:
+      return enable_webgpu_developer_features_;
     case wgpu::FeatureName::DepthClipControl:
     case wgpu::FeatureName::Depth32FloatStencil8:
     case wgpu::FeatureName::TimestampQuery:
