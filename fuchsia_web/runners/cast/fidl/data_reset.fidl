@@ -17,7 +17,6 @@ closed protocol DataReset {
     // occurs. The resulting |succeeded| is true if persistent data stored
     // on behalf of components apps was successfully deleted, and false if
     // the request could not be completed (for example, due to an I/O error).
-    @transitional
     strict DeletePersistentData() -> (struct {
         succeeded bool;
     });

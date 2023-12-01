@@ -80,8 +80,8 @@ source_set("cast_runner_core") {
 
   public_deps = [
     ":common",
-    "./cast/fidl:fidl_cpp",
-    "./cast/fidl:fidl_hlcpp",
+    "//fuchsia_web/runners/cast/fidl:fidl_cpp",
+    "//fuchsia_web/runners/cast/fidl:fidl_hlcpp",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.component.resolution:fuchsia.component.resolution_cpp",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.component.runner:fuchsia.component.runner_hlcpp",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web:fuchsia.web_hlcpp",
@@ -166,6 +166,8 @@ test("cast_runner_unittests") {
     "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//fuchsia_web/common/test:test_support",
+    "//fuchsia_web/runners/cast/fidl:fidl_cpp",
+    "//fuchsia_web/runners/cast/fidl:fidl_cpp_testing",
     "//fuchsia_web/runners/cast/test:test_support",
     "//net:test_support",
     "//testing/gmock",

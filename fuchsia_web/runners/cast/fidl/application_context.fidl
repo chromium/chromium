@@ -23,7 +23,6 @@ closed protocol ApplicationContext {
     /// `exit_code` as would be reported via `ComponentController.OnTerminated()`.
     /// Values less than or equal to zero are `zx.Status` codes.
     /// May be called at most once, immediately prior to termination.
-    @transitional
     strict OnApplicationExit(struct {
         exit_code int64;
     });

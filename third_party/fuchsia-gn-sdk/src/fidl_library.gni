@@ -630,6 +630,13 @@ template("fidl_library") {
     },
 
     {
+      layer = "cpp_testing"
+      headers = [ "fidl/${library_name}/cpp/test_base.h" ]
+      layer_deps = [ "cpp" ]
+      testonly = true
+    },
+
+    {
       layer = "cpp_hlcpp_conversion"
       headers = [ "fidl/${library_name}/cpp/hlcpp_conversion.h" ]
       public_deps = [
