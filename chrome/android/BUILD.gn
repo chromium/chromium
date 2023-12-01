@@ -1294,6 +1294,7 @@ if (current_toolchain == default_toolchain) {
     testonly = true
     sources = [
       "javatests/src/org/chromium/chrome/browser/FederatedIdentityTestUtils.java",
+      "javatests/src/org/chromium/chrome/browser/PwaRestoreBottomSheetTestUtils.java",
       "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabsTestUtils.java",
     ]
   }
@@ -1306,6 +1307,7 @@ if (current_toolchain == default_toolchain) {
     srcjar_deps = [ ":chrome_test_util_jni" ]
     sources = [
       "javatests/src/org/chromium/chrome/browser/FederatedIdentityTestUtils.java",
+      "javatests/src/org/chromium/chrome/browser/PwaRestoreBottomSheetTestUtils.java",
       "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabActivityTestRule.java",
       "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabsTestUtils.java",
       "javatests/src/org/chromium/chrome/browser/modaldialog/ChromeModalDialogTestUtils.java",
@@ -3707,6 +3709,7 @@ source_set("chrome_test_util") {
   sources = [
     "javatests/src/custom_tabs_test_utils.cc",
     "javatests/src/federated_identity_test_utils.cc",
+    "javatests/src/pwa_restore_bottom_sheet_test_utils.cc",
   ]
   deps = [
     ":chrome_test_util_jni",

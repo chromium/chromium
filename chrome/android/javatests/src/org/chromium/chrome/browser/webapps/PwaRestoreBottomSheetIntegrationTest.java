@@ -31,6 +31,7 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.PwaRestoreBottomSheetTestUtils;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -41,7 +42,10 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.webapps.R;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
+
+import java.util.ArrayList;
 
 /** Test the showing of the PWA Restore Bottom Sheet dialog. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -63,6 +67,8 @@ public class PwaRestoreBottomSheetIntegrationTest {
 
     @Before
     public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
+
         mPreferences = ChromeSharedPreferences.getInstance();
 
         // Promos only run *after* the first run experience has completed, so we need to make sure
@@ -73,6 +79,13 @@ public class PwaRestoreBottomSheetIntegrationTest {
         // do the same to make sure the testing environment reflects what happens during normal
         // startup.
         mPreferences.writeBoolean(ChromePreferenceKeys.PROMOS_SKIPPED_ON_FIRST_START, true);
+
+        ArrayList<String[]> appList = new ArrayList<String[]>();
+        appList.add(new String[] {"appId1", "App name 1"});
+        appList.add(new String[] {"appId2", "App name 2"});
+        appList.add(new String[] {"appId3", "App name 3"});
+        PwaRestoreBottomSheetTestUtils.setAppListForRestoring(
+                appList.toArray(new String[appList.size()][]));
     }
 
     @After
@@ -84,7 +97,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
 
     @Test
     @SmallTest
-    @Feature({"PwaRestrore"})
+    @Feature({"PwaRestore"})
     public void testInitialLaunchOnNewProfile() {
         // This test simulates the very first launch of Chrome on a new device. The test makes sure
         // that once the first run experience is triggered, the PwaRestore promo gets notified about
@@ -104,7 +117,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
 
     @Test
     @SmallTest
-    @Feature({"PwaRestrore"})
+    @Feature({"PwaRestore"})
     public void testSecondLaunchAfterBeingNotified() {
         // This test makes sure that on the subsequent launch -- after getting notified about the
         // first run experience having triggered already -- the promo dialog is showing and the
@@ -119,7 +132,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
 
     @Test
     @SmallTest
-    @Feature({"PwaRestrore"})
+    @Feature({"PwaRestore"})
     public void testSecondLaunchAfterBeingNotifiedButNoApps() {
         // This test makes sure that if we get notified to show, but no apps are available to
         // restore,
@@ -134,7 +147,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
 
     @Test
     @SmallTest
-    @Feature({"PwaRestrore"})
+    @Feature({"PwaRestore"})
     public void testEveryLaunchAfterShowing() {
         // This test makes sure that after showing the dialog once, the flag remains set and the
         // dialog is not shown again.
@@ -148,7 +161,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
 
     @Test
     @SmallTest
-    @Feature({"PwaRestrore"})
+    @Feature({"PwaRestore"})
     public void testInitialLaunchOnPreexistingProfile() {
         // This test makes sure that, if the first run experience was completed in the past
         // (simulated by not calling `setFirstRunTriggeredForTesting(true)`), that it is treated
@@ -164,7 +177,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
 
     @Test
     @SmallTest
-    @Feature({"PwaRestrore"})
+    @Feature({"PwaRestore"})
     public void testEveryLaunchAfterDetectingNoShow() {
         // This test makes sure that after determining the profile is too old to show the promo, the
         // flag remains set and the dialog is not shown.
@@ -178,7 +191,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
 
     @Test
     @SmallTest
-    @Feature({"PwaRestrore"})
+    @Feature({"PwaRestore"})
     public void testClickForwarding() {
         // Ensure the promo dialog shows.
         setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
@@ -195,7 +208,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
 
     @Test
     @SmallTest
-    @Feature({"PwaRestrore"})
+    @Feature({"PwaRestore"})
     public void testDeselectAll() {
         // Ensure the promo dialog shows.
         setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
