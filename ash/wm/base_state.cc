@@ -186,13 +186,6 @@ void BaseState::UpdateMinimizedState(WindowState* window_state,
 
 gfx::Rect BaseState::GetSnappedWindowBoundsInParent(
     aura::Window* window,
-    const WindowStateType state_type) {
-  return BaseState::GetSnappedWindowBoundsInParent(window, state_type,
-                                                   chromeos::kDefaultSnapRatio);
-}
-
-gfx::Rect BaseState::GetSnappedWindowBoundsInParent(
-    aura::Window* window,
     const WindowStateType state_type,
     float snap_ratio) {
   DCHECK(chromeos::IsSnappedWindowStateType(state_type));
