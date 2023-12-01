@@ -67,4 +67,122 @@ TEST(UpdaterL10NUtilTest, GetLocalizedStringsFormatted) {
   }
 }
 
+struct UpdaterL10NUtilGetLocalizedStringFCase {
+  const std::wstring lang;
+  const std::wstring expected_localized_string;
+};
+
+class UpdaterL10NUtilGetLocalizedStringF
+    : public ::testing::TestWithParam<UpdaterL10NUtilGetLocalizedStringFCase> {
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    UpdaterL10NUtilGetLocalizedStringFCases,
+    UpdaterL10NUtilGetLocalizedStringF,
+    ::testing::ValuesIn(std::vector<UpdaterL10NUtilGetLocalizedStringFCase>{
+        {L"af", L"Opdateringkontroleringfout: 5555."},
+        {L"am", L"የዝማኔ ፍተሻ ስህተት፦ 5555።"},
+        {L"ar", L"خطأ في عملية التحقق من التحديث: 5555."},
+        {L"as", L"আপডে’ট পৰীক্ষা কৰা সম্পৰ্কীয় আসোঁৱাহ: 5555।"},
+        {L"az", L"Yeniləmə yoxlaması xətası: 5555."},
+        {L"be", L"Не ўдалося праверыць наяўнасць абнаўленняў: 5555."},
+        {L"bg", L"Грешка при проверката за актуализации: 5555."},
+        {L"bn", L"আপডেট চেক করার সময় সমস্যা হয়েছে: 5555।"},
+        {L"bs", L"Greška provjere ažuriranja: 5555."},
+        {L"ca", L"Error de comprovació d'actualització: 5555."},
+        {L"cs", L"Chyba kontroly aktualizace: 5555."},
+        {L"cy", L"Gwall gwiriad diweddaru: 5555."},
+        {L"da", L"Fejl ved søgning efter opdatering: 5555."},
+        {L"de", L"Fehler bei der Prüfung auf Updates: 5555."},
+        {L"el", L"Σφάλμα ελέγχου για ενημερώσεις: 5555."},
+        {L"en-gb", L"Update check error: 5555."},
+        {L"en-us", L"Update check error: 5555."},
+        {L"es", L"Error de comprobación de actualizaciones: 5555."},
+        {L"es-419", L"Error de comprobación de actualizaciones: 5555."},
+        {L"et", L"Värskenduse kontrolli viga: 5555."},
+        {L"eu", L"Eguneratzearen egiaztapenaren errorea: 5555."},
+        {L"fa", L"خطای بررسی به‌روزرسانی: 5555."},
+        {L"fi", L"Virhe päivityksiä tarkistettaessa: 5555."},
+        {L"fil", L"Error sa pagtingin kung may update: 5555."},
+        {L"fr", L"Erreur lors de la recherche de mises à jour : 5555."},
+        {L"fr-ca", L"Erreur de vérification de la mise à jour : 5555."},
+        {L"gl",
+         L"Produciuse un erro durante a comprobación de actualizacións: 5555."},
+        {L"gu", L"અપડેટ ચેક કરવામાં ભૂલ: 5555."},
+        {L"hi", L"अपडेट जांच में यह गड़बड़ी है: 5555."},
+        {L"hr", L"Pogreška provjere ažuriranja: 5555."},
+        {L"hu", L"Frissítés-ellenőrzési hiba: 5555."},
+        {L"hy", L"Թարմացումների ստուգման սխալ՝ 5555։"},
+        {L"id", L"Error pemeriksaan update: 5555."},
+        {L"is", L"Villa við uppfærsluleit: 5555."},
+        {L"it", L"Errore controllo aggiornamenti: 5555."},
+        {L"iw", L"השגיאה בבדיקת העדכון: 5555."},
+        {L"ja", L"更新確認エラー: 5555。"},
+        {L"ka", L"შეცდომა განახლების შემოწმებისასr: 5555."},
+        {L"kk", L"Жаңа нұсқаны тексеру қатесі: 5555."},
+        {L"km",
+         L"បញ្ហា​ក្នុងការរកមើល​កំណែថ្ម"
+         L"ី"
+         L"៖"
+         L" "
+         L"5555។"},
+        {L"kn",
+         L"ಅಪ್‌ಡೇಟ್‌‌ ಪರಿಶೀಲನೆ ದೋಷ: "
+         L"5555."},
+        {L"ko", L"업데이트 확인 오류: 5555"},
+        {L"ky", L"Жаңыртууну текшерүү катасы: 5555."},
+        {L"lo", L"ກວດສອບການອັບເດດຜິດພາດ: 5555."},
+        {L"lt", L"Naujinio patikros klaida: 5555."},
+        {L"lv", L"Atjauninājumu pārbaudes kļūda: 5555."},
+        {L"mk", L"Грешка при проверка за ажурирање: 5555."},
+        {L"ml", L"അപ്ഡേറ്റ് പരിശോധനയിലെ പിശക്: 5555."},
+        {L"mn", L"Шалгалтын алдааг шинэчлэх: 5555."},
+        {L"mr", L"अपडेट तपासणीदरम्यान एरर आली: 5555."},
+        {L"ms", L"Ralat semakan kemaskinian: 5555."},
+        {L"my", L"အပ်ဒိတ်စစ်ဆေးရန် အမှား- 5555။"},
+        {L"ne",
+         L"अपडेट उपलब्ध छ कि छैन भन्ने कुरा जाँच्ने क्रममा निम्न त्रुटि "
+         L"भयो: 5555।"},
+        {L"nl", L"Fout bij updaten: 5555."},
+        {L"no", L"Feil ved oppdateringssjekk: 5555."},
+        {L"or", L"ଅପଡେଟ ଯାଞ୍ଚରେ ତ୍ରୁଟି: 5555।"},
+        {L"pa", L"ਅੱਪਡੇਟ ਦੀ ਜਾਂਚ ਸੰਬੰਧੀ ਗੜਬੜੀ: 5555."},
+        {L"pl", L"Błąd sprawdzania aktualizacji: 5555."},
+        {L"pt-br", L"Erro na verificação de atualização: 5555."},
+        {L"pt-pt", L"Erro na verificação de atualizações: 5555."},
+        {L"ro", L"Eroare de verificare a actualizării: 5555."},
+        {L"ru", L"Ошибка проверки обновлений: 5555."},
+        {L"si", L"යාවත්කාලීන පරීක්ෂාවේ දෝෂය: 5555."},
+        {L"sk", L"Chyba kontroly aktualizácií: 5555."},
+        {L"sl", L"Napaka pri preverjanju posodobitev: 5555."},
+        {L"sq", L"Gabim në kontrollin e përditësimeve: 5555."},
+        {L"sr", L"Грешка са провером ажурирања: 5555."},
+        {L"sr-latn", L"Greška sa proverom ažuriranja: 5555."},
+        {L"sv", L"Fel vid uppdateringskontroll: 5555."},
+        {L"sw", L"Hitilafu ya ukaguzi wa sasisho: 5555."},
+        {L"ta", L"புதுப்பிப்புச் சரிபார்ப்புப் பிழை: 5555."},
+        {L"te",
+         L"అప్‌డేట్‌ల కోసం చెక్ "
+         L"చేసేటప్పుడు "
+         L"ఎర్రర్ "
+         L"ఏర్పడింది: "
+         L"5555."},
+        {L"th", L"ข้อผิดพลาดในการตรวจสอบการอัปเดต: 5555"},
+        {L"tr", L"Güncelleme denetimi hatası: 5555."},
+        {L"uk", L"Помилка перевірки наявності оновлень: 5555."},
+        {L"ur", L"اپ ڈیٹ چیک کرنے میں خرابی: 5555۔"},
+        {L"uz", L"Yangilanishni tekshirishda xato: 5555."},
+        {L"vi", L"Lỗi khi kiểm tra bản cập nhật: 5555."},
+        {L"zh-cn", L"更新检查错误：5555。"},
+        {L"zh-hk", L"更新檢查錯誤：5555。"},
+        {L"zh-tw", L"更新檢查錯誤：5555。"},
+        {L"zu", L"Buyekeza iphutha lokuchekha: 5555."},
+    }));
+
+TEST_P(UpdaterL10NUtilGetLocalizedStringF, TestCases) {
+  EXPECT_EQ(GetLocalizedStringF(IDS_GENERIC_UPDATE_CHECK_ERROR_BASE, L"5555",
+                                GetParam().lang),
+            GetParam().expected_localized_string);
+}
+
 }  // namespace updater
