@@ -1177,8 +1177,6 @@ void ChromeAutofillClient::DismissOfferNotification() {
 
 void ChromeAutofillClient::OnVirtualCardDataAvailable(
     const VirtualCardManualFallbackBubbleOptions& options) {
-  GetFormDataImporter()->CacheFetchedVirtualCard(
-      options.virtual_card.LastFourDigits());
 #if BUILDFLAG(IS_ANDROID)
   // Show the virtual card snackbar only if the ManualFillingComponent component
   // is enabled for credit cards.

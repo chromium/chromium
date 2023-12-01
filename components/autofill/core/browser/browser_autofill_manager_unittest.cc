@@ -65,6 +65,7 @@
 #include "components/autofill/core/browser/test_form_data_importer.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/test_utils/vote_uploads_test_matchers.h"
+#include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/validation.h"
@@ -428,6 +429,10 @@ class MockAutofillClient : public TestAutofillClient {
               (),
               (override));
   MOCK_METHOD(AutofillComposeDelegate*, GetComposeDelegate, (), (override));
+  MOCK_METHOD(void,
+              OnVirtualCardDataAvailable,
+              (const VirtualCardManualFallbackBubbleOptions&),
+              (override));
 };
 
 class MockTouchToFillDelegate : public TouchToFillDelegate {
@@ -2767,22 +2772,6 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
                  PopupItemId::kCreditCardEntry));
 }
 
-TEST_F(BrowserAutofillManagerTest, OnCreditCardFetched_StoreInstrumentId) {
-  FormData form = CreateTestCreditCardFormData(true, false);
-  FormsSeen({form});
-  CreditCard credit_card = test::WithCvc(test::GetMaskedServerCard());
-  browser_autofill_manager_->FillOrPreviewCreditCardForm(
-      mojom::ActionPersistence::kFill, form, form.fields[0], credit_card,
-      {.trigger_source = AutofillTriggerSource::kPopup});
-
-  test_api(*browser_autofill_manager_)
-      .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &credit_card);
-
-  ASSERT_TRUE(form_data_importer().fetched_card_instrument_id().has_value());
-  EXPECT_EQ(form_data_importer().fetched_card_instrument_id().value(),
-            credit_card.instrument_id());
-}
-
 // Test that we return profile and credit card suggestions for combined forms.
 TEST_P(SuggestionMatchingTest, GetAddressAndCreditCardSuggestions) {
   // Set up our form data.
@@ -3816,6 +3805,45 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteUnrecognizedFields_KeyMetrics) {
     histogram_tester.ExpectTotalCount(
         "Autofill.KeyMetrics.FillingAssistance.Address", 0);
   }
+}
+
+TEST_F(BrowserAutofillManagerTest,
+       OnCreditCardFetchedSuccessfully_LocalCreditCard) {
+  const CreditCard local_card = test::GetCreditCard();
+  EXPECT_CALL(autofill_client_, OnVirtualCardDataAvailable).Times(0);
+
+  browser_autofill_manager_->OnCreditCardFetchedSuccessfully(local_card);
+  EXPECT_THAT(form_data_importer().fetched_card_instrument_id(),
+              testing::Optional(local_card.instrument_id()));
+}
+
+TEST_F(BrowserAutofillManagerTest,
+       OnCreditCardFetchedSuccessfully_ServerCreditCard) {
+  const CreditCard server_card = test::GetMaskedServerCard();
+  EXPECT_CALL(autofill_client_, OnVirtualCardDataAvailable).Times(0);
+
+  browser_autofill_manager_->OnCreditCardFetchedSuccessfully(server_card);
+  EXPECT_THAT(form_data_importer().fetched_card_instrument_id(),
+              testing::Optional(server_card.instrument_id()));
+}
+
+TEST_F(BrowserAutofillManagerTest,
+       OnCreditCardFetchedSuccessfully_VirtualCreditCard) {
+  const CreditCard virtual_card = test::WithCvc(test::GetVirtualCard());
+  using Options = VirtualCardManualFallbackBubbleOptions;
+  EXPECT_CALL(
+      autofill_client_,
+      OnVirtualCardDataAvailable(
+          AllOf(Field(&Options::masked_card_name,
+                      virtual_card.CardNameForAutofillDisplay()),
+                Field(&Options::masked_card_number_last_four,
+                      virtual_card.ObfuscatedNumberWithVisibleLastFourDigits()),
+                Field(&Options::virtual_card_cvc, virtual_card.cvc()),
+                Field(&Options::virtual_card, virtual_card))));
+
+  browser_autofill_manager_->OnCreditCardFetchedSuccessfully(virtual_card);
+  EXPECT_THAT(form_data_importer().fetched_card_instrument_id(),
+              testing::Optional(virtual_card.instrument_id()));
 }
 
 // Test that we correctly log FIELD_WAS_AUTOFILLED event in UserHappiness.

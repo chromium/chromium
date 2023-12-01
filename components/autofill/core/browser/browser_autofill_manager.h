@@ -331,6 +331,11 @@ class BrowserAutofillManager : public AutofillManager {
   [[nodiscard]] AutofillField* GetAutofillField(const FormData& form,
                                                 const FormFieldData& field);
 
+  // Notifies the `BrowserAutofillManager` that `credit_card` has been fetched
+  // from the server. Opens a manual filling dialog for virtual credit cards.
+  // Caches the credit card data for server and virtual credit cards.
+  void OnCreditCardFetchedSuccessfully(const CreditCard& credit_card);
+
   autofill_metrics::AutocompleteUnrecognizedFallbackEventLogger&
   GetAutocompleteUnrecognizedFallbackEventLogger() {
     return *autocomplete_unrecognized_fallback_logger_;

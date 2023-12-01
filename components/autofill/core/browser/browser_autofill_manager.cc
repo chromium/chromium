@@ -1892,49 +1892,21 @@ void BrowserAutofillManager::OnCreditCardFetched(
     driver().RendererShouldClearPreviewedForm();
     return;
   }
-
-  // In the failure case, `credit_card` can be nullptr but in the success case
-  // it is non-null.
-  CHECK(credit_card);
-  const std::u16string& cvc = credit_card->cvc();
-  last_unlocked_credit_card_cvc_ = cvc;
-
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   if (!GetCachedFormAndField(credit_card_form_, credit_card_field_,
                              &form_structure, &autofill_field)) {
     return;
   }
-
-  // If synced down card is a virtual card, let the client know so that it can
-  // show the UI to help user to manually fill the form, if needed.
-  if (credit_card->record_type() == CreditCard::RecordType::kVirtualCard) {
-    DCHECK(!cvc.empty());
-
-    VirtualCardManualFallbackBubbleOptions options;
-    options.masked_card_name = credit_card_.CardNameForAutofillDisplay();
-    options.masked_card_number_last_four =
-        credit_card_.ObfuscatedNumberWithVisibleLastFourDigits();
-    options.virtual_card = *credit_card;
-    // TODO(crbug.com/1473481): Remove CVC from
-    // VirtualCardManualFallbackBubbleOptions.
-    options.virtual_card_cvc = cvc;
-    options.card_image = GetCardImage(*credit_card);
-    client().OnVirtualCardDataAvailable(options);
-  }
-
-  // After a server card is fetched, save its instrument id.
-  client().GetFormDataImporter()->SetFetchedCardInstrumentId(
-      credit_card->instrument_id());
+  // In the failure case, `credit_card` can be `nullptr`, but in the success
+  // case it is non-null.
+  CHECK(credit_card);
+  OnCreditCardFetchedSuccessfully(*credit_card);
 
   FillCreditCardForm(
-      credit_card_form_, credit_card_field_, *credit_card, cvc,
+      credit_card_form_, credit_card_field_, *credit_card, credit_card->cvc(),
       {.trigger_source = fetched_credit_card_trigger_source_.value_or(
            AutofillTriggerSource::kCreditCardCvcPopup)});
-  if (credit_card->record_type() == CreditCard::RecordType::kFullServerCard ||
-      credit_card->record_type() == CreditCard::RecordType::kVirtualCard) {
-    credit_card_access_manager_->CacheUnmaskedCardInfo(*credit_card, cvc);
-  }
 }
 
 void BrowserAutofillManager::OnDidEndTextFieldEditingImpl() {
@@ -2717,6 +2689,39 @@ AutofillField* BrowserAutofillManager::GetAutofillField(
     return nullptr;
 
   return autofill_field;
+}
+
+void BrowserAutofillManager::OnCreditCardFetchedSuccessfully(
+    const CreditCard& credit_card) {
+  last_unlocked_credit_card_cvc_ = credit_card.cvc();
+  // If the synced down card is a virtual card, let the client know so that it
+  // can show the UI to help user to manually fill the form, if needed.
+  if (credit_card.record_type() == CreditCard::RecordType::kVirtualCard) {
+    DCHECK(!credit_card.cvc().empty());
+    client().GetFormDataImporter()->CacheFetchedVirtualCard(
+        credit_card.LastFourDigits());
+
+    VirtualCardManualFallbackBubbleOptions options;
+    options.masked_card_name = credit_card.CardNameForAutofillDisplay();
+    options.masked_card_number_last_four =
+        credit_card.ObfuscatedNumberWithVisibleLastFourDigits();
+    options.virtual_card = credit_card;
+    // TODO(crbug.com/1473481): Remove CVC from
+    // VirtualCardManualFallbackBubbleOptions.
+    options.virtual_card_cvc = credit_card.cvc();
+    options.card_image = GetCardImage(credit_card);
+    client().OnVirtualCardDataAvailable(options);
+  }
+
+  // After a server card is fetched, save its instrument id.
+  client().GetFormDataImporter()->SetFetchedCardInstrumentId(
+      credit_card.instrument_id());
+
+  if (credit_card.record_type() == CreditCard::RecordType::kFullServerCard ||
+      credit_card.record_type() == CreditCard::RecordType::kVirtualCard) {
+    credit_card_access_manager_->CacheUnmaskedCardInfo(credit_card,
+                                                       credit_card.cvc());
+  }
 }
 
 std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
