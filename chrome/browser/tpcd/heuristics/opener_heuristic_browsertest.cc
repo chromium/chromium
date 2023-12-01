@@ -568,9 +568,17 @@ IN_PROC_BROWSER_TEST_P(OpenerHeuristicPastInteractionGrantBrowserTest,
             CONTENT_SETTING_BLOCK);
 }
 
+// TODO(crbug.com/1506932) Flaky on mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_AdTaggedPopupPastInteractionIsReported_WithStorageAccessGrant \
+    DISABLED_AdTaggedPopupPastInteractionIsReported_WithStorageAccessGrant
+#else
+#define MAYBE_AdTaggedPopupPastInteractionIsReported_WithStorageAccessGrant \
+    AdTaggedPopupPastInteractionIsReported_WithStorageAccessGrant
+#endif
 IN_PROC_BROWSER_TEST_P(
     OpenerHeuristicPastInteractionGrantBrowserTest,
-    AdTaggedPopupPastInteractionIsReported_WithStorageAccessGrant) {
+    MAYBE_AdTaggedPopupPastInteractionIsReported_WithStorageAccessGrant) {
   GURL opener_url =
       embedded_test_server()->GetURL("a.com", "/ad_tagging/frame_factory.html");
   GURL popup_url = embedded_test_server()->GetURL("c.com", "/title1.html");
