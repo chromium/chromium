@@ -12,9 +12,10 @@ namespace phonehub {
 namespace util {
 
 // Enumeration of possible opt-in entry points for Phone Hub feature. Keep in
-// sync with corresponding enum in tools/metrics/histograms/enums.xml. These
-// values are persisted to logs. Entries should not be renumbered and numeric
-// values should never be reused.
+// sync with the corresponding PhoneHubOptInEntryPoint enum in
+// //tools/metrics/histograms/metadata/phonehub/enums.xml. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
 enum class OptInEntryPoint {
   kSetupFlow = 0,
   kOnboardingFlow = 1,
@@ -23,9 +24,11 @@ enum class OptInEntryPoint {
 };
 
 // Enumeration of possible opt-in entry points for Phone Hub Camera Roll
-// feature. Keep in  sync with corresponding enum in
-// tools/metrics/histograms/enums.xml. These  values are persisted to logs.
-// Entries should not be renumbered and numeric values should never be reused.
+// feature. Keep in sync with the corresponding
+// PhoneHubCameraRollOptInEntryPoint enum in
+// //tools/metrics/histograms/metadata/phonehub/enums.xml. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
 enum class CameraRollOptInEntryPoint {
   kSetupFlow = 0,
   kOnboardingDialog = 1,
@@ -34,9 +37,11 @@ enum class CameraRollOptInEntryPoint {
 };
 
 // Enumeration of results of attempting to download a file from Phone Hub's
-// Camera Roll. Keep in  sync with corresponding enum in
-// tools/metrics/histograms/enums.xml. These values are persisted to logs.
-// Entries should not be renumbered and numeric values should never be reused.
+// Camera Roll. Keep in sync with the corresponding
+// PhoneHubCameraRollDownloadResult enum in
+// //tools/metrics/histograms/metadata/phonehub/enums.xml. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
 enum class CameraRollDownloadResult {
   // The download was successful.
   kSuccess = 0,
@@ -71,9 +76,10 @@ enum class TetherConnectionResult {
   kMaxValue = kSuccess,
 };
 
-// Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
+// Keep in sync with the corresponding PhoneHubMessageResult enum in
+// //tools/metrics/histograms/metadata/phonehub/enums.xml. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
 enum class PhoneHubMessageResult {
   kRequestAttempted = 0,
   kResponseReceived = 1,
@@ -82,10 +88,11 @@ enum class PhoneHubMessageResult {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
-// Keep in sync with PhoneHubPermissionsSetupFlowScreens in
-// chrome/browser/resources/ash/settings/multidevice_page/
-// multidevice_constants.js
+// Keep in sync with the corresponding PhoneHubPermissionsOnboardingSetUpMode
+// enum in //tools/metrics/histograms/metadata/phonehub/enums.xml.
+// Keep in sync with PhoneHubPermissionsSetupMode enum in
+// //chrome/browser/resources/ash/settings/multidevice_page/
+// multidevice_constants.ts
 enum class PermissionsOnboardingSetUpMode {
   kNone = 0,
   kNotification = 1,
@@ -98,9 +105,9 @@ enum class PermissionsOnboardingSetUpMode {
   kMaxValue = kAllPermissions
 };
 
-// Keep in sync with PhoneHubPermissionsSetupFlowScreens in
-// chrome/browser/resources/ash/settings/multidevice_page/
-// multidevice_constants.js
+// Keep in sync with the PhoneHubPermissionsSetupFlowScreens enum in
+// //chrome/browser/resources/ash/settings/multidevice_page/
+// multidevice_constants.ts
 enum class PermissionsOnboardingStep {
   kUnknown = 0,
   kDialogIntroAction = 1,
@@ -114,10 +121,11 @@ enum class PermissionsOnboardingStep {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
-// Keep in sync with PhoneHubPermissionsSetupAction in
-// chrome/browser/resources/ash/settings/multidevice_page/
-// multidevice_constants.js
+// Keep in sync with the corresponding PhoneHubPermissionsOnboardingScreenEvent
+// enum in //tools/metrics/histograms/metadata/phonehub/enums.xml.
+// Keep in sync with the PhoneHubPermissionsSetupAction enum in
+// //chrome/browser/resources/ash/settings/multidevice_page/
+// multidevice_constants.ts
 enum class PermissionsOnboardingScreenEvent {
   kUnknown = 0,
   kShown = 1,

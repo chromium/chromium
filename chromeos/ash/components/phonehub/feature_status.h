@@ -13,10 +13,10 @@ namespace ash::phonehub {
 // that there is no value representing "prohibited" - when the feature is
 // prohibited by enterprise policy, we don't instantiate Phone Hub-related logic
 // at all.
-// Note: This enum is tied directly to a UMA enum defined in
-// //tools/metrics/histograms/enums.xml, and should always reflect it (do not
-// change one without changing the other). Entries should never be modified
-// or deleted. Only additions possible.
+// Note: This enum is tied directly to the PhoneHubFeatureStatus enum defined in
+// //tools/metrics/histograms/metadata/phonehub/enums.xml, and should always
+// reflect it (do not change one without changing the other). Entries should
+// never be modified or deleted. Only additions possible.
 enum class FeatureStatus {
   // The user's devices are not eligible for the feature. This means that either
   // the Chrome OS device or the user's phone (or both) have not enrolled with
