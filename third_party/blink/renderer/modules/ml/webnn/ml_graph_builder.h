@@ -30,6 +30,7 @@ class MLClampOptions;
 class MLConv2dOptions;
 class MLConvTranspose2dOptions;
 class MLEluOptions;
+class MLGatherOptions;
 class MLGemmOptions;
 class MLGraph;
 class MLLeakyReluOptions;
@@ -155,6 +156,11 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
 
   MLOperand* expand(const MLOperand* input,
                     const Vector<uint32_t>& new_shape,
+                    ExceptionState& exception_state);
+
+  MLOperand* gather(const MLOperand* input,
+                    const MLOperand* indices,
+                    const MLGatherOptions* options,
                     ExceptionState& exception_state);
 
   MLOperand* gemm(const MLOperand* a,

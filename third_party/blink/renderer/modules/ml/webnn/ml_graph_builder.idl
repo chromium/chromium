@@ -52,6 +52,10 @@ dictionary MLConvTranspose2dOptions {
   MLActivation activation;
 };
 
+dictionary MLGatherOptions {
+  [EnforceRange] unsigned long axis = 0;
+};
+
 dictionary MLGemmOptions {
   MLOperand c;
   float alpha = 1.0;
@@ -175,6 +179,8 @@ dictionary MLSplitOptions {
 
   [RaisesException] MLOperand expand(MLOperand input, sequence<[EnforceRange] unsigned long> newShape);
 
+  [RaisesException] MLOperand gather(MLOperand input, MLOperand indices, optional MLGatherOptions options = {});
+
   [RaisesException] MLOperand gemm(MLOperand a, MLOperand b, optional MLGemmOptions options = {});
 
   [RaisesException] MLOperand hardSwish(MLOperand x);
@@ -218,6 +224,7 @@ dictionary MLSplitOptions {
   [RaisesException] MLOperand slice(MLOperand input, sequence<[EnforceRange] unsigned long> starts, sequence<[EnforceRange] unsigned long> sizes);
 
   [RaisesException] MLOperand softmax(MLOperand input);
+  [RaisesException] MLActivation softmax();
 
   [RaisesException] MLOperand softsign(MLOperand input);
   [RaisesException] MLActivation softsign();

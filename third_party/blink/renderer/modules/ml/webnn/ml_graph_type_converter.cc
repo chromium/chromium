@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_transpose_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_elu_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gather_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
@@ -558,6 +559,23 @@ OperationPtr CreateElementWiseUnaryOperator(
       std::move(operator_mojo));
 }
 
+OperationPtr CreateGatherOperation(const OperandToIdMap& operand_to_id_map,
+                                   const MLOperator* gather) {
+  auto gather_mojo = webnn::mojom::blink::Gather::New();
+  gather_mojo->input_operand_id =
+      GetOperatorInputId(gather, operand_to_id_map, 0);
+  gather_mojo->indices_operand_id =
+      GetOperatorInputId(gather, operand_to_id_map, 1);
+  gather_mojo->output_operand_id =
+      GetOperatorOutputId(gather, operand_to_id_map);
+
+  const auto* options = static_cast<const MLGatherOptions*>(gather->Options());
+  CHECK(options);
+  gather_mojo->axis = options->axis();
+
+  return webnn::mojom::blink::Operation::NewGather(std::move(gather_mojo));
+}
+
 OperationPtr CreateGemmOperation(const OperandToIdMap& operand_to_id_map,
                                  const MLOperator* gemm) {
   auto gemm_mojo = webnn::mojom::blink::Gemm::New();
@@ -979,6 +997,8 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
           CreateElu(operand_to_id_map, op, false));
     case MLOperator::OperatorKind::kExpand:
       return CreateExpandOperation(operand_to_id_map, op);
+    case MLOperator::OperatorKind::kGather:
+      return CreateGatherOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kGemm:
       return CreateGemmOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kLeakyRelu:

@@ -5639,6 +5639,7 @@ interface MLGraphBuilder
     method exp
     method expand
     method floor
+    method gather
     method gemm
     method hardSwish
     method identity

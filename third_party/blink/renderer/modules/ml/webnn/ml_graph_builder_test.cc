@@ -4821,6 +4821,110 @@ TEST_F(MLGraphBuilderTest, ExpandTest) {
   }
 }
 
+MLOperand* BuildGather(V8TestingScope& scope,
+                       MLGraphBuilder* builder,
+                       const MLOperand* input,
+                       const MLOperand* indices,
+                       const MLGatherOptions* options) {
+  auto* output =
+      builder->gather(input, indices, options, scope.GetExceptionState());
+  EXPECT_NE(output, nullptr);
+  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->DataType(), input->DataType());
+  auto* gather = output->Operator();
+  EXPECT_NE(gather, nullptr);
+  EXPECT_EQ(gather->Kind(), MLOperator::OperatorKind::kGather);
+  EXPECT_TRUE(gather->IsConnected());
+  EXPECT_NE(gather->Options(), nullptr);
+  return output;
+}
+
+TEST_F(MLGraphBuilderTest, GatherTest) {
+  V8TestingScope scope;
+  MLGraphBuilder* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
+  {
+    // Test building gather with default options and 0-D indices.
+    auto* input =
+        BuildInput(builder, "input", {3}, V8MLOperandDataType::Enum::kFloat16,
+                   scope.GetExceptionState());
+    auto* indices =
+        BuildInput(builder, "indices", {}, V8MLOperandDataType::Enum::kUint64,
+                   scope.GetExceptionState());
+    auto* output = BuildGather(scope, builder, input, indices);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({}));
+  }
+  {
+    // Test building gather with axis = 2.
+    auto* input = BuildInput(builder, "input", {1, 2, 3, 4},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* indices = BuildInput(builder, "indices", {5, 6},
+                               V8MLOperandDataType::Enum::kUint32,
+                               scope.GetExceptionState());
+    auto* options = MLGatherOptions::Create();
+    options->setAxis(2);
+    auto* output = BuildGather(scope, builder, input, indices, options);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 2, 5, 6, 4}));
+  }
+  {
+    // Test building gather with 0-D input.
+    auto* input =
+        BuildInput(builder, "input", {}, V8MLOperandDataType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* indices = BuildInput(builder, "indices", {5, 6},
+                               V8MLOperandDataType::Enum::kUint32,
+                               scope.GetExceptionState());
+    auto* options = MLGatherOptions::Create();
+    auto* output =
+        builder->gather(input, indices, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The input should not be a scalar.");
+  }
+  {
+    // Test building gather with `axis` greater than the input rank.
+    auto* input = BuildInput(builder, "input", {1, 2, 3},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* indices = BuildInput(builder, "indices", {5, 6},
+                               V8MLOperandDataType::Enum::kUint32,
+                               scope.GetExceptionState());
+    auto* options = MLGatherOptions::Create();
+    options->setAxis(4);
+    auto* output =
+        builder->gather(input, indices, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(
+        scope.GetExceptionState().Message(),
+        "The axis must be in the range [0, N-1] where N is the rank of input "
+        "tensor.");
+  }
+  {
+    // Test building gather with invalid indices data type.
+    auto* input = BuildInput(builder, "input", {1, 2, 3, 4},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* indices = BuildInput(builder, "indices", {5, 6},
+                               V8MLOperandDataType::Enum::kFloat32,
+                               scope.GetExceptionState());
+    auto* options = MLGatherOptions::Create();
+    auto* output =
+        builder->gather(input, indices, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(
+        scope.GetExceptionState().Message(),
+        "The indices type must be one of the int32,uint32,int64,uint64 types.");
+  }
+}
+
 MLOperand* BuildLeakyRelu(V8TestingScope& scope,
                           MLGraphBuilder* builder,
                           const MLOperand* input,

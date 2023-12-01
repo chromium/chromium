@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 59 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 57 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] idl_test setup
   promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
 [FAIL] NavigatorML must be primary interface of navigator
@@ -56,10 +56,6 @@ Found 59 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: interface prototype object missing non-static operation expected property "lstmCell" missing
 [FAIL] MLGraphBuilder interface: operation l2Pool2d(MLOperand, optional MLPool2dOptions)
   assert_own_property: interface prototype object missing non-static operation expected property "l2Pool2d" missing
-[FAIL] MLGraphBuilder interface: operation softmax(MLOperand)
-  assert_equals: property has wrong .length expected 0 but got 1
-[FAIL] MLGraphBuilder interface: operation softmax()
-  assert_equals: property has wrong .length expected 0 but got 1
 [FAIL] MLGraphBuilder interface: operation softplus(MLOperand, optional MLSoftplusOptions)
   assert_own_property: interface prototype object missing non-static operation expected property "softplus" missing
 [FAIL] MLGraphBuilder interface: operation softplus(optional MLSoftplusOptions)

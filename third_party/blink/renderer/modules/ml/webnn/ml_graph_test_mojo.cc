@@ -1862,6 +1862,146 @@ TEST_P(MLGraphTestMojo, ExpandTest) {
   }
 }
 
+struct GatherTester {
+  OperandInfoBlink input;
+  OperandInfoBlink indices;
+  absl::optional<uint32_t> axis;
+  OperandInfoMojo expected_operand;
+  blink_mojom::Operand::DataType expected_indices_date_type;
+  float expected_axis;
+
+  void Test(MLGraphTestMojo& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder) {
+    // Build the graph.
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
+    auto* indices_operand =
+        BuildInput(builder, "indices", indices.dimensions, indices.data_type,
+                   scope.GetExceptionState());
+    MLGatherOptions* ml_gather_options = MLGatherOptions::Create();
+    if (axis) {
+      ml_gather_options->setAxis(axis.value());
+    }
+    auto* output_operand =
+        builder->gather(input_operand, indices_operand, ml_gather_options,
+                        scope.GetExceptionState());
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    ASSERT_NE(graph, nullptr);
+
+    auto graph_info = helper.GetGraphInfo();
+    // Verify the graph information of mojo are as expected.
+    ASSERT_EQ(graph_info->id_to_operand_map.size(), 3u);
+
+    // Verify the input `mojo::Operand`.
+    ASSERT_EQ(graph_info->input_operands.size(), 2u);
+    auto input_operand_id = graph_info->input_operands[0];
+    auto input_operand_iter =
+        graph_info->id_to_operand_map.find(input_operand_id);
+    ASSERT_TRUE(input_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(input_operand_iter->value->kind,
+              blink_mojom::Operand::Kind::kInput);
+    EXPECT_EQ(input_operand_iter->value->data_type, expected_operand.data_type);
+    EXPECT_EQ(input_operand_iter->value->dimensions, input.dimensions);
+    EXPECT_EQ(input_operand_iter->value->name, "input");
+
+    // Verify the indices `mojo::Operand`.
+    auto indices_operand_id = graph_info->input_operands[1];
+    auto indices_operand_iter =
+        graph_info->id_to_operand_map.find(indices_operand_id);
+    ASSERT_TRUE(indices_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(indices_operand_iter->value->kind,
+              blink_mojom::Operand::Kind::kInput);
+    EXPECT_EQ(indices_operand_iter->value->data_type,
+              expected_indices_date_type);
+    EXPECT_EQ(indices_operand_iter->value->dimensions, indices.dimensions);
+    EXPECT_EQ(indices_operand_iter->value->name, "indices");
+
+    // Verify the output `mojo::Operand`.
+    ASSERT_EQ(graph_info->output_operands.size(), 1u);
+    auto output_operand_id = graph_info->output_operands[0];
+    auto output_operand_iter =
+        graph_info->id_to_operand_map.find(output_operand_id);
+    ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(output_operand_iter->value->kind,
+              blink_mojom::Operand::Kind::kOutput);
+    EXPECT_EQ(output_operand_iter->value->data_type,
+              expected_operand.data_type);
+    EXPECT_EQ(output_operand_iter->value->dimensions,
+              expected_operand.dimensions);
+    EXPECT_EQ(output_operand_iter->value->name, "output");
+
+    // Verify the `mojo::Operator`.
+    ASSERT_EQ(graph_info->operations.size(), 1u);
+    auto& operation = graph_info->operations[0];
+    ASSERT_TRUE(operation->is_gather());
+    auto& gather = operation->get_gather();
+    EXPECT_EQ(gather->input_operand_id, input_operand_id);
+    EXPECT_EQ(gather->indices_operand_id, indices_operand_id);
+    EXPECT_EQ(gather->output_operand_id, output_operand_id);
+    EXPECT_EQ(gather->axis, expected_axis);
+  }
+};
+
+TEST_P(MLGraphTestMojo, GatherTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      webnn::features::kEnableMachineLearningNeuralNetworkService);
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device type.
+  options->setDeviceType(V8MLDeviceType::Enum::kGpu);
+  auto* builder = CreateGraphBuilder(scope, options);
+  ASSERT_NE(builder, nullptr);
+  {
+    // Test building gather with default options.
+    GatherTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {2, 3}},
+        .indices = {.data_type = V8MLOperandDataType::Enum::kUint32,
+                    .dimensions = {4, 5}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {4, 5, 3}},
+        .expected_indices_date_type = blink_mojom::Operand::DataType::kUint32,
+        .expected_axis = 0}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test building gather with axis = 2.
+    GatherTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                  .dimensions = {1, 2, 3, 4}},
+        .indices = {.data_type = V8MLOperandDataType::Enum::kUint64,
+                    .dimensions = {6, 7, 8}},
+        .axis = 2,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat16,
+                             .dimensions = {1, 2, 6, 7, 8, 4}},
+        .expected_indices_date_type = blink_mojom::Operand::DataType::kUint64,
+        .expected_axis = 2}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test building gather with 0-D indices.
+    GatherTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kUint32,
+                  .dimensions = {3}},
+        .indices = {.data_type = V8MLOperandDataType::Enum::kUint64,
+                    .dimensions = {}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kUint32,
+                             .dimensions = {}},
+        .expected_indices_date_type = blink_mojom::Operand::DataType::kUint64,
+        .expected_axis = 0}
+        .Test(*this, scope, builder);
+  }
+}
+
 struct GemmTester {
   OperandInfoBlink a;
   OperandInfoBlink b;

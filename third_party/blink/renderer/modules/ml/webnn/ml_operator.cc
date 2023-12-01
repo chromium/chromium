@@ -70,6 +70,8 @@ String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
       return "elu";
     case MLOperator::OperatorKind::kExpand:
       return "expand";
+    case MLOperator::OperatorKind::kGather:
+      return "gather";
     case MLOperator::OperatorKind::kGemm:
       return "gemm";
     case MLOperator::OperatorKind::kHardSwish:

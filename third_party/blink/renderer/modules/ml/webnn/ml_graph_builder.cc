@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_transpose_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_elu_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gather_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
@@ -898,6 +899,36 @@ MLOperand* MLGraphBuilder::expand(const MLOperand* input,
     return nullptr;
   }
   expand->Connect({input}, {output.value()});
+  return output.value();
+}
+
+MLOperand* MLGraphBuilder::gather(const MLOperand* input,
+                                  const MLOperand* indices,
+                                  const MLGatherOptions* options,
+                                  ExceptionState& exception_state) {
+  auto validated_output = webnn::ValidateGatherAndInferOutput(
+      ConvertToComponentOperand(input), ConvertToComponentOperand(indices),
+      options->axis());
+  if (!validated_output.has_value()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        String::FromUTF8(validated_output.error()));
+    return nullptr;
+  }
+
+  auto* gather = MakeGarbageCollected<MLOperator>(
+      this, MLOperator::OperatorKind::kGather, options);
+  HeapVector<Member<const MLOperand>> inputs = {input, indices};
+  auto output = MLOperand::ValidateAndCreateOutput(
+      this, ComponentOperandTypeToBlink(validated_output->data_type),
+      Vector<uint32_t>(validated_output->dimensions), gather);
+  if (!output.has_value()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      output.error());
+    return nullptr;
+  }
+
+  gather->Connect(std::move(inputs), {output.value()});
   return output.value();
 }
 
