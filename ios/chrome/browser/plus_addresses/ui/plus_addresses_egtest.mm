@@ -154,4 +154,33 @@ id<GREYMatcher> GetMatcherForSettingsLink() {
   [ChromeEarlGrey waitForIncognitoTabCount:oldIncognitoTabCount];
 }
 
+- (void)testSwipeToDismiss {
+  // Tap an element that is eligible for plus_address autofilling.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kEmailFieldId)];
+  id<GREYMatcher> user_chip =
+      grey_text(base::SysUTF8ToNSString(kFakeSuggestionLabel));
+
+  // Ensure the plus_address suggestion appears.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:user_chip];
+
+  // Tapping it will trigger the UI.
+  // TODO(crbug.com/1467623): Flesh this out as more functionality is
+  // implemented. An app interface or demo feature param will be necessary here,
+  // too, such that actions that normally trigger server calls can be mocked
+  // out.
+  [[EarlGrey selectElementWithMatcher:user_chip] performAction:grey_tap()];
+
+  // The primary email address should be shown.
+  id<GREYMatcher> primary_email_label = grey_text(_fakeIdentity.userEmail);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:primary_email_label];
+
+  // Then, swipe down on the bottom sheet.
+  [[EarlGrey selectElementWithMatcher:primary_email_label]
+      performAction:grey_swipeSlowInDirection(kGREYDirectionDown)];
+  // It should no longer be shown.
+  [[EarlGrey selectElementWithMatcher:primary_email_label]
+      assertWithMatcher:grey_notVisible()];
+}
+
 @end

@@ -53,6 +53,7 @@ NSAttributedString* DescriptionMessage() {
 
 @interface PlusAddressBottomSheetViewController () <
     ConfirmationAlertActionHandler,
+    UIAdaptivePresentationControllerDelegate,
     UITextViewDelegate>
 
 @end
@@ -120,6 +121,7 @@ NSAttributedString* DescriptionMessage() {
   [super viewDidLoad];
 
   self.actionHandler = self;
+  self.presentationController.delegate = self;
   // Disable the primary button until such time as the reservation is complete.
   // If reserving an address fails, we should inform the user and not attempt to
   // fill any fields on the page.
@@ -178,6 +180,13 @@ NSAttributedString* DescriptionMessage() {
   [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
   // Returns NO as the app is handling the opening of the URL.
   return NO;
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
 }
 
 #pragma mark - Private
