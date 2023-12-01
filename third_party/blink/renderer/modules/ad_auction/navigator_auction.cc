@@ -2179,14 +2179,6 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
   CopyPerBuyerCurrenciesFromIdlToMojo(auction_handle, auction_id.get(), config,
                                       *mojo_config);
 
-  if (mojo_config->server_response && !is_top_level) {
-    // TODO(1457241): Add support for multi-level auctions including server-side
-    // auctions.
-    exception_state.ThrowTypeError(
-        "Only top-level auctions may have 'serverResponse'.");
-    return mojom::blink::AuctionAdConfigPtr();
-  }
-
   if (config.hasSellerTimeout()) {
     mojo_config->auction_ad_config_non_shared_params->seller_timeout =
         base::Milliseconds(config.sellerTimeout());
@@ -2234,10 +2226,10 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
             "nested componentAuctions.");
         return mojom::blink::AuctionAdConfigPtr();
       }
-      // We need decision logic for component auctions even if they have a
-      // server response. We perform reporting client-side for component
-      // auctions.
-      if (!idl_component_auction->hasDecisionLogicURL()) {
+      // We need decision logic for component auctions unless they have a
+      // server response.
+      if (!idl_component_auction->hasDecisionLogicURL() &&
+          !idl_component_auction->hasServerResponse()) {
         exception_state.ThrowTypeError(ErrorMissingRequired(
             "ad auction config decisionLogicURL or serverResponse"));
         return mojom::blink::AuctionAdConfigPtr();

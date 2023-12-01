@@ -161,7 +161,18 @@ absl::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
       output.seller_reporting = ReportingURLs::TryParse(seller_reporting);
     }
   }
+  std::string* maybe_top_level_seller =
+      input_dict->FindString("topLevelSeller");
+  if (maybe_top_level_seller) {
+    url::Origin top_level_seller =
+        url::Origin::Create(GURL(*maybe_top_level_seller));
+    if (!network::IsOriginPotentiallyTrustworthy(top_level_seller)) {
+      return absl::nullopt;
+    }
+    output.top_level_seller = std::move(top_level_seller);
+  }
 
+  output.result = AuctionResult::kSuccess;
   return std::move(output);
 }
 

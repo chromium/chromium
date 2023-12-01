@@ -296,7 +296,8 @@ bool IsValidBid(double bid) {
 // }
 bool AppendAuctionConfig(AuctionV8Helper* v8_helper,
                          v8::Local<v8::Context> context,
-                         const GURL& decision_logic_url,
+                         const url::Origin& seller,
+                         const absl::optional<GURL>& decision_logic_url,
                          const absl::optional<GURL>& trusted_coding_signals_url,
                          const absl::optional<uint16_t> experiment_group_id,
                          const blink::AuctionConfig::NonSharedParams&
@@ -305,10 +306,10 @@ bool AppendAuctionConfig(AuctionV8Helper* v8_helper,
   v8::Isolate* isolate = v8_helper->isolate();
   v8::Local<v8::Object> auction_config_value = v8::Object::New(isolate);
   gin::Dictionary auction_config_dict(isolate, auction_config_value);
-  if (!auction_config_dict.Set(
-          "seller", url::Origin::Create(decision_logic_url).Serialize()) ||
-      !SetDecisionLogicUrl(isolate, auction_config_value,
-                           decision_logic_url.spec()) ||
+  if (!auction_config_dict.Set("seller", seller.Serialize()) ||
+      (decision_logic_url &&
+       !SetDecisionLogicUrl(isolate, auction_config_value,
+                            decision_logic_url->spec())) ||
       (trusted_coding_signals_url &&
        !SetTrustedScoringSignalsUrl(isolate, auction_config_value,
                                     trusted_coding_signals_url->spec()))) {
@@ -439,11 +440,12 @@ bool AppendAuctionConfig(AuctionV8Helper* v8_helper,
   if (!component_auctions.empty()) {
     v8::LocalVector<v8::Value> component_auction_vector(isolate);
     for (const auto& component_auction : component_auctions) {
-      if (!AppendAuctionConfig(
-              v8_helper, context, *component_auction.decision_logic_url,
-              component_auction.trusted_scoring_signals_url,
-              experiment_group_id, component_auction.non_shared_params,
-              &component_auction_vector)) {
+      if (!AppendAuctionConfig(v8_helper, context, component_auction.seller,
+                               component_auction.decision_logic_url,
+                               component_auction.trusted_scoring_signals_url,
+                               experiment_group_id,
+                               component_auction.non_shared_params,
+                               &component_auction_vector)) {
         return false;
       }
     }
@@ -950,9 +952,10 @@ void SellerWorklet::V8State::ScoreAd(
 
   args.push_back(gin::ConvertToV8(isolate, bid));
 
-  if (!AppendAuctionConfig(v8_helper_.get(), context, decision_logic_url_,
-                           trusted_scoring_signals_url_, experiment_group_id_,
-                           auction_ad_config_non_shared_params, &args)) {
+  if (!AppendAuctionConfig(
+          v8_helper_.get(), context, url::Origin::Create(decision_logic_url_),
+          decision_logic_url_, trusted_scoring_signals_url_,
+          experiment_group_id_, auction_ad_config_non_shared_params, &args)) {
     PostScoreAdCallbackToUserThreadOnError(
         std::move(callback),
         /*scoring_latency=*/elapsed_timer.Elapsed(),
@@ -1400,9 +1403,10 @@ void SellerWorklet::V8State::ReportResult(
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
 
   v8::LocalVector<v8::Value> args(isolate);
-  if (!AppendAuctionConfig(v8_helper_.get(), context, decision_logic_url_,
-                           trusted_scoring_signals_url_, experiment_group_id_,
-                           auction_ad_config_non_shared_params, &args)) {
+  if (!AppendAuctionConfig(
+          v8_helper_.get(), context, url::Origin::Create(decision_logic_url_),
+          decision_logic_url_, trusted_scoring_signals_url_,
+          experiment_group_id_, auction_ad_config_non_shared_params, &args)) {
     PostReportResultCallbackToUserThread(std::move(callback),
                                          /*signals_for_winner=*/absl::nullopt,
                                          /*report_url=*/absl::nullopt,

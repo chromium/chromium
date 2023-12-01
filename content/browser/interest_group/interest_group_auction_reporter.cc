@@ -257,7 +257,8 @@ void InterestGroupAuctionReporter::Start(base::OnceClosure callback) {
 }
 
 void InterestGroupAuctionReporter::InitializeFromServerResponse(
-    const BiddingAndAuctionResponse& response) {
+    const BiddingAndAuctionResponse& response,
+    blink::FencedFrame::ReportingDestination seller_destination) {
   reporter_worklet_state_ = ReporterState::kAllWorkletsCompleted;
 
   if (response.seller_reporting) {
@@ -267,8 +268,7 @@ void InterestGroupAuctionReporter::InitializeFromServerResponse(
     // server did something wrong beyond logging the error.
     AddReportResultResult(
         auction_config_->seller, seller_reporting.reporting_url,
-        seller_reporting.beacon_urls,
-        blink::FencedFrame::ReportingDestination::kSeller, errors_);
+        seller_reporting.beacon_urls, seller_destination, errors_);
   }
   if (response.buyer_reporting) {
     const BiddingAndAuctionResponse::ReportingURLs& buyer_reporting =
@@ -371,6 +371,21 @@ void InterestGroupAuctionReporter::RequestSellerWorklet(
     reporter_worklet_state_ = ReporterState::kComponentSellerReportResult;
   }
   seller_worklet_handle_.reset();
+
+  if (seller_info->saved_response.has_value()) {
+    InitializeFromServerResponse(
+        *seller_info->saved_response,
+        seller_info == &top_level_seller_winning_bid_info_
+            ? blink::FencedFrame::ReportingDestination::kSeller
+            : blink::FencedFrame::ReportingDestination::kComponentSeller);
+
+    // If any event-level reports were queued, send them now, if the winning ad
+    // has been navigated to.
+    SendPendingReportsIfNavigated();
+
+    OnReportingComplete();
+    return;
+  }
   // base::Unretained is safe to use for these callbacks because destroying
   // `seller_worklet_handle_` will prevent the callbacks from being invoked, if
   // `this` is destroyed while still waiting on the callbacks.

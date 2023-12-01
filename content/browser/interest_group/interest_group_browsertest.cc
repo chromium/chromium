@@ -17426,19 +17426,23 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
 IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
                        DecisionLogicURLRequiredForComponent) {
   GURL test_url = https_server_->GetURL("a.test", "/interest_group/empty.html");
+  url::Origin test_origin = url::Origin::Create(test_url);
 
-  std::string auction_config = R"({
-    seller: "https://seller.example.com",
-    serverResponse: new Uint8Array(20),
-    requestId: "00000000-0000-0000-0000-000000000000",
-    componentAuctions: [{
-      seller: "https://seller2.example.com",
-      // No decision logic.
-      interestGroupBuyers: ["https://buyer.example.com"],
-      serverResponse: new Uint8Array(20),
-      requestId: "00000000-0000-0000-0000-000000000000",
-    }]
-  })";
+  std::string auction_config = JsReplace(
+      R"({
+        seller: $1,
+        decisionLogicURL: $2,
+        // Signal to the top-level seller to allow participation in a component
+        // auction.
+        auctionSignals: "sellerAllowsComponentAuction",
+        componentAuctions: [{
+          seller: $1,
+          // No decisionLogicURL
+          interestGroupBuyers: [$1],
+        }]
+      })",
+      test_origin,
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js"));
 
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
@@ -17446,6 +17450,33 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Missing "
       "required field ad auction config decisionLogicURL or serverResponse",
       RunAuctionAndWait(auction_config));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
+                       DecisionLogicURLNotRequiredForServerComponent) {
+  GURL test_url = https_server_->GetURL("a.test", "/interest_group/empty.html");
+  url::Origin test_origin = url::Origin::Create(test_url);
+
+  std::string auction_config = JsReplace(
+      R"({
+        seller: $1,
+        decisionLogicURL: $2,
+        // Signal to the top-level seller to allow participation in a component
+        // auction.
+        auctionSignals: "sellerAllowsComponentAuction",
+        componentAuctions: [{
+          seller: $1,
+          interestGroupBuyers: [$1],
+          serverResponse: new Uint8Array(20),
+          requestId: "00000000-0000-0000-0000-000000000000",
+        }]
+      })",
+      test_origin,
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js"));
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  EXPECT_EQ(nullptr, RunAuctionAndWait(auction_config));
 }
 
 // TODO(crbug.com/1474303): Re-enable this test

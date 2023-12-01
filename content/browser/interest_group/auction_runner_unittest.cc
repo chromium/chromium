@@ -20382,7 +20382,7 @@ TEST_F(AuctionRunnerTest, ServerResponseLogsErrors) {
        true,
        kSellerUrl,
        true,
-       {"runAdAuction(): Could not parse server response"},
+       {"runAdAuction(): Could not parse server response structure"},
        AuctionResult::kInvalidServerResponse},
       {"not witnessed",
        chaff_response,

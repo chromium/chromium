@@ -510,6 +510,10 @@ void AdAuctionServiceImpl::GetInterestGroupAdAuctionData(
     const url::Origin& seller,
     const absl::optional<url::Origin>& coordinator,
     GetInterestGroupAdAuctionDataCallback callback) {
+  if (seller.scheme() != url::kHttpsScheme) {
+    ReportBadMessageAndDeleteThis("Invalid Seller");
+    return;
+  }
   if (coordinator && coordinator->scheme() != url::kHttpsScheme) {
     ReportBadMessageAndDeleteThis("Invalid Bidding and Auction Coordinator");
     return;
@@ -899,6 +903,7 @@ void AdAuctionServiceImpl::OnGotAuctionData(
   }
 
   state.data = std::move(data);
+
   absl::optional<url::Origin> coordinator = state.coordinator;
   scoped_refptr<network::WrapperSharedURLLoaderFactory> loader =
       GetRefCountedTrustedURLLoaderFactory();

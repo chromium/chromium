@@ -166,6 +166,15 @@ MATCHER_P(EqualsBiddingAndAuctionResponse,
         "seller_reporting", &BiddingAndAuctionResponse::seller_reporting,
         testing::Eq(absl::nullopt)));
   }
+  if (other.get().top_level_seller) {
+    matchers.push_back(testing::Field(
+        "top_level_seller", &BiddingAndAuctionResponse::top_level_seller,
+        testing::Optional(testing::Eq(other.get().top_level_seller))));
+  } else {
+    matchers.push_back(testing::Field(
+        "top_level_seller", &BiddingAndAuctionResponse::top_level_seller,
+        testing::Eq(absl::nullopt)));
+  }
   return testing::ExplainMatchResult(testing::AllOfArray(matchers),
                                      std::move(arg), result_listener);
 }
@@ -194,6 +203,8 @@ TEST(BiddingAndAuctionResponseTest, ParseFails) {
                                kOwnerOrigin,
                                base::Value(base::Value::List().Append(
                                    1000)))))),  // out of bounds
+      base::Value(CreateValidResponseDict().Set("topLevelSeller",
+                                                "not a valid Origin")),
   };
 
   for (const auto& test_case : kTestCases) {
@@ -465,6 +476,16 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
             response.seller_reporting.emplace();
             response.seller_reporting->beacon_urls.emplace("click",
                                                            GURL(kReportingURL));
+            return response;
+          }(),
+      },
+      {
+          base::Value(CreateValidResponseDict().Set("topLevelSeller",
+                                                    "https://seller.test")),
+          []() {
+            BiddingAndAuctionResponse response = CreateExpectedValidResponse();
+            response.top_level_seller =
+                url::Origin::Create(GURL("https://seller.test"));
             return response;
           }(),
       },

@@ -292,7 +292,9 @@ bool StructTraits<blink::mojom::AuctionAdConfigDataView, blink::AuctionConfig>::
   }
   for (const auto& component_auction :
        out->non_shared_params.component_auctions) {
-    if (!component_auction.decision_logic_url) {
+    // We need at least 1 of server response and decision logic url.
+    if (!component_auction.server_response &&
+        !component_auction.decision_logic_url) {
       return false;
     }
   }

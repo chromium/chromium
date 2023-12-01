@@ -260,6 +260,9 @@ interface AdAuctionService {
   // Gets the ad auction data for running an external auction on a bidding and
   // auction server. Upon success the request will contain the encrypted ad
   // auction data and `error_message` will be empty.
-  GetInterestGroupAdAuctionData(url.mojom.Origin seller, url.mojom.Origin? coordinator)
-      => (mojo_base.mojom.BigBuffer request, mojo_base.mojom.Uuid? request_id, string error_message);
+  GetInterestGroupAdAuctionData(url.mojom.Origin seller,
+                                url.mojom.Origin? coordinator)
+      => (mojo_base.mojom.BigBuffer request,
+          mojo_base.mojom.Uuid? request_id,
+          string error_message);
 };
