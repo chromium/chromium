@@ -6,3 +6,5 @@
 
 NSString* const kPlusAddressModalDescriptionAccessibilityIdentifier =
     @"plusAddressModalDescriptionAXID";
+
+const CGFloat kPrimaryAddressBottomMargin = 20;

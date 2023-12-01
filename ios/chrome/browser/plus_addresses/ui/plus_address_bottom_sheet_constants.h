@@ -11,4 +11,8 @@
 // the description in automation.
 extern NSString* const kPlusAddressModalDescriptionAccessibilityIdentifier;
 
+// The margin to be shown under the user's primary email address, and above the
+// reserved plus address element in the bottom sheet.
+extern const CGFloat kPrimaryAddressBottomMargin;
+
 #endif  // IOS_CHROME_BROWSER_PLUS_ADDRESSES_UI_PLUS_ADDRESS_BOTTOM_SHEET_CONSTANTS_H_

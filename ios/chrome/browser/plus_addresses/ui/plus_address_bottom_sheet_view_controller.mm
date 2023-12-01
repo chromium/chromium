@@ -31,7 +31,8 @@ NSAttributedString* DescriptionMessage() {
   // Create and format the text.
   NSDictionary* text_attributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
-    NSFontAttributeName : [UIFont preferredFontForTextStyle:UIFontTextStyleBody]
+    NSFontAttributeName :
+        [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]
   };
 
   NSString* message = l10n_util::GetNSString(
@@ -40,7 +41,7 @@ NSAttributedString* DescriptionMessage() {
   NSDictionary* link_attributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
     NSFontAttributeName :
-        [UIFont preferredFontForTextStyle:UIFontTextStyleBody],
+        [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline],
     NSLinkAttributeName : base::SysUTF8ToNSString(
         plus_addresses::kPlusAddressManagementUrl.Get()),
   };
@@ -64,6 +65,8 @@ NSAttributedString* DescriptionMessage() {
   __weak id<BrowserCoordinatorCommands> _browserCoordinatorHandler;
   // The label that will display the reserved plus address, once it is ready.
   UILabel* _reservedPlusAddressLabel;
+  // A loading spinner to indicate to the user that an action is in progress.
+  UIActivityIndicatorView* _activityIndicator;
 }
 
 - (instancetype)initWithDelegate:(id<PlusAddressBottomSheetDelegate>)delegate
@@ -82,6 +85,9 @@ NSAttributedString* DescriptionMessage() {
 - (void)viewDidLoad {
   // Set the properties read by the super when constructing the
   // views in `-[ConfirmationAlertViewController viewDidLoad]`.
+  _activityIndicator = [[UIActivityIndicatorView alloc]
+      initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+  self.aboveTitleView = _activityIndicator;
   self.titleString = l10n_util::GetNSString(IDS_PLUS_ADDRESS_MODAL_TITLE);
   self.primaryActionString =
       l10n_util::GetNSString(IDS_PLUS_ADDRESS_MODAL_OK_TEXT);
@@ -102,6 +108,8 @@ NSAttributedString* DescriptionMessage() {
   verticalStack.layoutMarginsRelativeArrangement = YES;
   verticalStack.layoutMargins = UIEdgeInsetsMake(0, 0, 0, 0);
   verticalStack.translatesAutoresizingMaskIntoConstraints = NO;
+  [verticalStack setCustomSpacing:kPrimaryAddressBottomMargin
+                        afterView:primaryAddressLabel];
   self.underTitleView = verticalStack;
   [super viewDidLoad];
 
@@ -116,6 +124,9 @@ NSAttributedString* DescriptionMessage() {
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
+  self.primaryActionButton.enabled = NO;
+  // Make sure the user perceives that something is happening via a spinner.
+  [_activityIndicator startAnimating];
   [_delegate confirmPlusAddress];
 }
 
@@ -133,6 +144,7 @@ NSAttributedString* DescriptionMessage() {
 }
 
 - (void)didConfirmPlusAddress {
+  [_activityIndicator stopAnimating];
   [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
 }
 
@@ -142,6 +154,7 @@ NSAttributedString* DescriptionMessage() {
   self.primaryActionButton.enabled = NO;
   _reservedPlusAddressLabel.text =
       l10n_util::GetNSString(IDS_PLUS_ADDRESS_MODAL_ERROR_MESSAGE);
+  [_activityIndicator stopAnimating];
 }
 
 #pragma mark - UITextViewDelegate
@@ -171,7 +184,7 @@ NSAttributedString* DescriptionMessage() {
 
   // Limit the size of text to avoid truncation.
   reservedPlusAddressLabel.font = PreferredFontForTextStyleWithMaxCategory(
-      UIFontTextStyleBody, self.traitCollection.preferredContentSizeCategory,
+      UIFontTextStyleTitle2, self.traitCollection.preferredContentSizeCategory,
       UIContentSizeCategoryExtraExtraExtraLarge);
 
   reservedPlusAddressLabel.numberOfLines = 0;
@@ -181,15 +194,18 @@ NSAttributedString* DescriptionMessage() {
 
 // The primary email address is displayed in a separate view with slightly
 // different formatting.
-// TODO(crbug.com/1467623): polish the UI.
 - (UILabel*)primaryEmailAddressView:(NSString*)primaryEmailAddress {
   UILabel* primaryEmailAddressLabel = [[UILabel alloc] init];
   primaryEmailAddressLabel.text = primaryEmailAddress;
 
-  // Limit the size of text to avoid truncation.
-  primaryEmailAddressLabel.font = PreferredFontForTextStyleWithMaxCategory(
-      UIFontTextStyleBody, self.traitCollection.preferredContentSizeCategory,
-      UIContentSizeCategoryExtraExtraExtraLarge);
+  UIFontDescriptor* descriptor = [UIFontDescriptor
+      preferredFontDescriptorWithTextStyle:UIFontTextStyleSubheadline];
+  // Use a bold font for the primary address.
+  UIFont* font = [UIFont systemFontOfSize:descriptor.pointSize
+                                   weight:UIFontWeightBold];
+  UIFontMetrics* fontMetrics =
+      [UIFontMetrics metricsForTextStyle:UIFontTextStyleSubheadline];
+  primaryEmailAddressLabel.font = [fontMetrics scaledFontForFont:font];
 
   primaryEmailAddressLabel.numberOfLines = 0;
   primaryEmailAddressLabel.textAlignment = NSTextAlignmentCenter;
@@ -206,7 +222,8 @@ NSAttributedString* DescriptionMessage() {
   descriptionView.editable = NO;
   descriptionView.delegate = self;
   descriptionView.backgroundColor = [UIColor clearColor];
-  descriptionView.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  descriptionView.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
   descriptionView.adjustsFontForContentSizeCategory = YES;
   descriptionView.translatesAutoresizingMaskIntoConstraints = NO;
   descriptionView.textContainerInset = UIEdgeInsetsZero;
@@ -214,6 +231,7 @@ NSAttributedString* DescriptionMessage() {
   descriptionView.linkTextAttributes =
       @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]};
   descriptionView.attributedText = description;
+  descriptionView.textAlignment = NSTextAlignmentCenter;
   return descriptionView;
 }
 
