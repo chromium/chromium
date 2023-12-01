@@ -9024,9 +9024,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_TOOLTIP_SAVE_CREDIT_CARD_PENDING" desc="The tooltip for the icon that shows the credit card upload is in progress">
         Saving card
       </message>
-      <message name="IDS_TOOLTIP_SAVE_CREDIT_CARD_FAILURE" desc="The tooltip for the icon that shows the credit card is not successfully uploaded">
-        Can't save card right now
-      </message>
       <message name="IDS_TOOLTIP_SAVE_CVC" desc="The tooltip for the icon that shows the save CVC bubble">
         Save CVC
       </message>

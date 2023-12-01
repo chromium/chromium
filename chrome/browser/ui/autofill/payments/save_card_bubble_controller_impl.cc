@@ -159,16 +159,6 @@ void SaveCardBubbleControllerImpl::UpdateIconForSaveCardSuccess() {
   UpdatePageActionIcon();
 }
 
-void SaveCardBubbleControllerImpl::UpdateIconForSaveCardFailure() {
-  current_bubble_type_ = BubbleType::FAILURE;
-  ShowIconOnly();
-}
-
-void SaveCardBubbleControllerImpl::ShowBubbleForSaveCardFailureForTesting() {
-  current_bubble_type_ = BubbleType::FAILURE;
-  ShowBubble();
-}
-
 void SaveCardBubbleControllerImpl::ReshowBubble() {
   // Don't show the bubble if it's already visible.
   if (bubble_view())
@@ -205,8 +195,6 @@ std::u16string SaveCardBubbleControllerImpl::GetWindowTitle() const {
           options_.card_save_type == AutofillClient::CardSaveType::kCvcSaveOnly
               ? IDS_AUTOFILL_CVC_SAVED
               : IDS_AUTOFILL_CARD_SAVED);
-    case BubbleType::FAILURE:
-      return l10n_util::GetStringUTF16(IDS_AUTOFILL_FAILURE_BUBBLE_TITLE);
     case BubbleType::UPLOAD_IN_PROGRESS:
     case BubbleType::INACTIVE:
       NOTREACHED();
@@ -215,9 +203,6 @@ std::u16string SaveCardBubbleControllerImpl::GetWindowTitle() const {
 }
 
 std::u16string SaveCardBubbleControllerImpl::GetExplanatoryMessage() const {
-  if (current_bubble_type_ == BubbleType::FAILURE)
-    return l10n_util::GetStringUTF16(IDS_AUTOFILL_FAILURE_BUBBLE_EXPLANATION);
-
   if (current_bubble_type_ == BubbleType::LOCAL_SAVE &&
       base::FeatureList::IsEnabled(
           features::kAutofillEnableCvcStorageAndFilling)) {
@@ -278,7 +263,6 @@ std::u16string SaveCardBubbleControllerImpl::GetAcceptButtonText() const {
     case BubbleType::MANAGE_CARDS:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_DONE);
     case BubbleType::UPLOAD_IN_PROGRESS:
-    case BubbleType::FAILURE:
     case BubbleType::INACTIVE:
       return std::u16string();
   }
@@ -296,7 +280,6 @@ std::u16string SaveCardBubbleControllerImpl::GetDeclineButtonText() const {
           IDS_AUTOFILL_NO_THANKS_DESKTOP_UPLOAD_SAVE);
     case BubbleType::UPLOAD_IN_PROGRESS:
     case BubbleType::MANAGE_CARDS:
-    case BubbleType::FAILURE:
     case BubbleType::INACTIVE:
       return std::u16string();
   }
@@ -398,7 +381,6 @@ void SaveCardBubbleControllerImpl::OnSaveButton(
                                  is_upload_save_);
       return;
     case BubbleType::UPLOAD_IN_PROGRESS:
-    case BubbleType::FAILURE:
     case BubbleType::INACTIVE:
       NOTREACHED();
   }
@@ -502,11 +484,6 @@ void SaveCardBubbleControllerImpl::OnBubbleClosed(
                /*user_provided_card_details=*/{});
     }
     current_bubble_type_ = BubbleType::INACTIVE;
-  } else if (current_bubble_type_ == BubbleType::FAILURE) {
-    // Unlike other bubbles, the save failure bubble should not be reshown. If
-    // the save card failure bubble is closed, the credit card icon should be
-    // dismissed as well.
-    current_bubble_type_ = BubbleType::INACTIVE;
   }
 
   UpdatePageActionIcon();
@@ -549,8 +526,6 @@ std::u16string SaveCardBubbleControllerImpl::GetSavePaymentIconTooltipText()
               : IDS_TOOLTIP_SAVE_CREDIT_CARD);
     case BubbleType::UPLOAD_IN_PROGRESS:
       return l10n_util::GetStringUTF16(IDS_TOOLTIP_SAVE_CREDIT_CARD_PENDING);
-    case BubbleType::FAILURE:
-      return l10n_util::GetStringUTF16(IDS_TOOLTIP_SAVE_CREDIT_CARD_FAILURE);
     case BubbleType::INACTIVE:
       return std::u16string();
   }
@@ -563,10 +538,6 @@ bool SaveCardBubbleControllerImpl::ShouldShowSavingPaymentAnimation() const {
 bool SaveCardBubbleControllerImpl::ShouldShowPaymentSavedLabelAnimation()
     const {
   return should_show_card_saved_label_animation_;
-}
-
-bool SaveCardBubbleControllerImpl::ShouldShowSaveFailureBadge() const {
-  return current_bubble_type_ == BubbleType::FAILURE;
 }
 
 void SaveCardBubbleControllerImpl::OnAnimationEnded() {
@@ -623,8 +594,6 @@ void SaveCardBubbleControllerImpl::DoShowBubble() {
     case BubbleType::MANAGE_CARDS:
       LogManageCardsPromptMetric(ManageCardsPromptMetric::kManageCardsShown,
                                  is_upload_save_);
-      break;
-    case BubbleType::FAILURE:
       break;
     case BubbleType::UPLOAD_IN_PROGRESS:
     case BubbleType::INACTIVE:
@@ -683,8 +652,6 @@ void SaveCardBubbleControllerImpl::ShowIconOnly() {
       autofill_metrics::LogSaveCvcPromptOfferMetric(
           autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached,
           is_upload_save_, is_reshow_);
-      break;
-    case BubbleType::FAILURE:
       break;
     case BubbleType::UPLOAD_IN_PROGRESS:
     case BubbleType::MANAGE_CARDS:

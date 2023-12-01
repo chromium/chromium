@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_bubble_views.h"
-#include "chrome/browser/ui/views/autofill/payments/save_card_failure_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_manage_cards_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_offer_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_iban_bubble_view.h"
@@ -79,10 +78,6 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveCreditCardBubble(
     case BubbleType::MANAGE_CARDS:
       bubble = new SaveCardManageCardsBubbleViews(anchor_view, web_contents,
                                                   controller);
-      break;
-    case BubbleType::FAILURE:
-      bubble =
-          new SaveCardFailureBubbleViews(anchor_view, web_contents, controller);
       break;
     case BubbleType::UPLOAD_IN_PROGRESS:
     case BubbleType::INACTIVE:

@@ -39,7 +39,6 @@ class SavePaymentIconView : public PageActionIconView {
   // PageActionIconView:
   void OnExecuting(PageActionIconView::ExecuteSource execute_source) override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  const gfx::VectorIcon& GetVectorIconBadge() const override;
 
  private:
   SavePaymentIconController* GetController() const;

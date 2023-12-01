@@ -315,10 +315,6 @@ bool IbanBubbleControllerImpl::ShouldShowPaymentSavedLabelAnimation() const {
   return should_show_iban_saved_label_animation_;
 }
 
-bool IbanBubbleControllerImpl::ShouldShowSaveFailureBadge() const {
-  return false;
-}
-
 void IbanBubbleControllerImpl::OnAnimationEnded() {
   // Do not repeat the animation next time UpdatePageActionIcon() is called,
   // unless explicitly set somewhere else.

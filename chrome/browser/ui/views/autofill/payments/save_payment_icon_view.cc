@@ -106,14 +106,6 @@ const gfx::VectorIcon& SavePaymentIconView::GetVectorIcon() const {
              : kCreditCardIcon;
 }
 
-const gfx::VectorIcon& SavePaymentIconView::GetVectorIconBadge() const {
-  SavePaymentIconController* controller = GetController();
-  if (controller && controller->ShouldShowSaveFailureBadge())
-    return vector_icons::kBlockedBadgeIcon;
-
-  return gfx::kNoneIcon;
-}
-
 std::u16string SavePaymentIconView::GetTextForTooltipAndAccessibleName() const {
   std::u16string text;
 
