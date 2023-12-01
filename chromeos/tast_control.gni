@@ -125,6 +125,20 @@ tast_disabled_tests_from_chrome_all = [
   # b/296913657
   "secagentd.ProcessEvents@amd64-generic",
 
+  # b/308465058, until LKGM 15695
+  "crostini.AppAudacity.bookworm_clamshell_stable",
+  "crostini.AppAudacity.bullseye_clamshell_stable",
+  "crostini.AppEmacs.bookworm_clamshell_stable",
+  "crostini.AppEmacs.bullseye_clamshell_stable",
+  "crostini.AppGedit.bookworm_clamshell_stable",
+  "crostini.AppGedit.bullseye_clamshell_stable",
+  "crostini.AppGeditUnshareFolder.bookworm_clamshell_stable",
+  "crostini.AppGeditUnshareFolder.bullseye_clamshell_stable",
+  "crostini.AppLibreOffice.bookworm_clamshell_stable",
+  "crostini.AppLibreOffice.bullseye_clamshell_stable",
+  "crostini.AppVscode.bookworm_clamshell_stable",
+  "crostini.AppVscode.bullseye_clamshell_stable",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
