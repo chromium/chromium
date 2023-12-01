@@ -227,7 +227,8 @@ enum class NudgeCatalogName {
   kCaptureModeEducationShortcutNudge = 22,
   kCaptureModeEducationShortcutTutorial = 23,
   kCaptureModeEducationQuickSettingsNudge = 24,
-  kMaxValue = kCaptureModeEducationQuickSettingsNudge
+  kGameDashboardControlsNudge = 25,
+  kMaxValue = kGameDashboardControlsNudge
 };
 
 // A living catalog that registers toasts.

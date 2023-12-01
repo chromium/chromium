@@ -118,8 +118,13 @@ class ASH_EXPORT GameDashboardMainMenuView
   // the default UI.
   void UpdateRecordGameTile(bool is_recording_game_window);
 
-  // Performs pulse animation if `game_controls_setup_button_` exists.
-  void MaybePerformPulseAnimation(int pulse_count);
+  // Adds pulse animation and an education nudge for
+  // `game_controls_setup_button_` if it exists.
+  void MaybeDecorateSetupButton();
+  // Performs pulse animation for `game_controls_setup_button_`.
+  void PerformPulseAnimationForSetupButton(int pulse_count);
+  // Shows education nudge for `game_controls_setup_button_`.
+  void ShowNudgeForSetupButton();
 
   // Allows this class to access `GameDashboardContext` owned functions/objects.
   const raw_ptr<GameDashboardContext, ExperimentalAsh> context_;
