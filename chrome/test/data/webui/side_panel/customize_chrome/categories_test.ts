@@ -5,6 +5,7 @@
 import 'chrome://customize-chrome-side-panel.top-chrome/categories.js';
 
 import {CategoriesElement, CHANGE_CHROME_THEME_CLASSIC_ELEMENT_ID, CHROME_THEME_COLLECTION_ELEMENT_ID} from 'chrome://customize-chrome-side-panel.top-chrome/categories.js';
+import {CustomizeChromeAction} from 'chrome://customize-chrome-side-panel.top-chrome/common.js';
 import {BackgroundCollection, CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import {WindowProxy} from 'chrome://customize-chrome-side-panel.top-chrome/window_proxy.js';
@@ -337,6 +338,76 @@ suite('CategoriesTest', () => {
           assertEquals(0, checkedCategories.length);
         }
       });
+    });
+  });
+
+  suite('Metrics', () => {
+    suiteSetup(() => {
+      loadTimeData.overrideValues({
+        'wallpaperSearchEnabled': true,
+      });
+    });
+
+    test('choosing collection sets metric', async () => {
+      await setInitialSettings(1);
+
+      const tile = categoriesElement.shadowRoot!.querySelector('.collection');
+      assertTrue(!!tile);
+      (tile! as HTMLElement).click();
+
+      assertEquals(
+          1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.CustomizeChromeSidePanelAction',
+              CustomizeChromeAction
+                  .CATEGORIES_FIRST_PARTY_COLLECTION_SELECTED));
+    });
+
+    test('choosing default chrome sets metric', async () => {
+      await setInitialSettings(0);
+
+      categoriesElement.$.classicChromeTile.click();
+
+      assertEquals(
+          1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.CustomizeChromeSidePanelAction',
+              CustomizeChromeAction.CATEGORIES_DEFAULT_CHROME_SELECTED));
+    });
+
+    test('choosing wallpaper search sets metric', async () => {
+      await setInitialSettings(0);
+
+      const tile =
+          categoriesElement.shadowRoot!.querySelector('#wallpaperSearchTile');
+      assertTrue(!!tile);
+      (tile! as HTMLElement).click();
+
+      assertEquals(
+          1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.CustomizeChromeSidePanelAction',
+              CustomizeChromeAction.CATEGORIES_WALLPAPER_SEARCH_SELECTED));
+    });
+
+    test('choosing upload sets metric', async () => {
+      await setInitialSettings(0);
+
+      categoriesElement.$.uploadImageTile.click();
+
+      assertEquals(
+          1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.CustomizeChromeSidePanelAction',
+              CustomizeChromeAction.CATEGORIES_UPLOAD_IMAGE_SELECTED));
     });
   });
 });

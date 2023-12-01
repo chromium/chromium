@@ -4,6 +4,7 @@
 
 import 'chrome://customize-chrome-side-panel.top-chrome/themes.js';
 
+import {CustomizeChromeAction} from 'chrome://customize-chrome-side-panel.top-chrome/common.js';
 import {BackgroundCollection, CollectionImage, CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import {CHROME_THEME_BACK_ELEMENT_ID, CHROME_THEME_ELEMENT_ID, ThemesElement} from 'chrome://customize-chrome-side-panel.top-chrome/themes.js';
@@ -312,5 +313,20 @@ suite('ThemesTest', () => {
           [CHROME_THEME_ELEMENT_ID, true],
         ],
     );
+  });
+
+  test('setting theme sets metric', async () => {
+    await setCollection('test', 2);
+
+    const theme =
+        themesElement.shadowRoot!.querySelector('.theme')! as HTMLButtonElement;
+    theme.click();
+
+    assertEquals(1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+    assertEquals(
+        1,
+        metrics.count(
+            'NewTabPage.CustomizeChromeSidePanelAction',
+            CustomizeChromeAction.FIRST_PARTY_COLLECTION_THEME_SELECTED));
   });
 });

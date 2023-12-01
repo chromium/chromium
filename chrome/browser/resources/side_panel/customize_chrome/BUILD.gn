@@ -33,6 +33,7 @@ build_webui("build") {
 
   non_web_component_files = [
     "chrome_cart_proxy.ts",
+    "common.ts",
     "customize_chrome_api_proxy.ts",
     "wallpaper_search/wallpaper_search_proxy.ts",
     "window_proxy.ts",

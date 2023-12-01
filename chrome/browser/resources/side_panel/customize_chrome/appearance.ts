@@ -19,6 +19,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './appearance.html.js';
+import {CustomizeChromeAction, recordCustomizeChromeAction} from './common.js';
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface, Theme} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 
@@ -219,6 +220,7 @@ export class AppearanceElement extends PolymerElement {
   }
 
   private onEditThemeClicked_() {
+    recordCustomizeChromeAction(CustomizeChromeAction.EDIT_THEME_CLICKED);
     if (this.handleClickForManagedThemes_()) {
       return;
     }

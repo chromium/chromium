@@ -5,6 +5,7 @@
 import 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search.js';
 import 'chrome://customize-chrome-side-panel.top-chrome/strings.m.js';
 
+import {CustomizeChromeAction} from 'chrome://customize-chrome-side-panel.top-chrome/common.js';
 import {CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import {Descriptors, UserFeedback, WallpaperSearchClientCallbackRouter, WallpaperSearchClientRemote, WallpaperSearchHandlerInterface, WallpaperSearchHandlerRemote, WallpaperSearchStatus} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.mojom-webui.js';
@@ -16,6 +17,7 @@ import {hexColorToSkColor} from 'chrome://resources/js/color_utils.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertGE, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible, whenCheck} from 'chrome://webui-test/test_util.js';
@@ -25,6 +27,7 @@ import {$$, assertNotStyle, assertStyle, createBackgroundImage, createTheme, ins
 suite('WallpaperSearchTest', () => {
   let callbackRouterRemote: CustomizeChromePageRemote;
   let handler: TestMock<WallpaperSearchHandlerInterface>;
+  let metrics: MetricsTracker;
   let wallpaperSearchCallbackRouterRemote: WallpaperSearchClientRemote;
   let wallpaperSearchElement: WallpaperSearchElement;
   let windowProxy: TestMock<WindowProxy>;
@@ -60,6 +63,7 @@ suite('WallpaperSearchTest', () => {
             .callbackRouter.$.bindNewPipeAndPassRemote();
     callbackRouterRemote = CustomizeChromeApiProxy.getInstance()
                                .callbackRouter.$.bindNewPipeAndPassRemote();
+    metrics = fakeMetricsPrivate();
   });
 
   suite('Misc', () => {
@@ -1023,6 +1027,69 @@ suite('WallpaperSearchTest', () => {
           CrFeedbackOption.UNSPECIFIED,
           wallpaperSearchElement.$.feedbackButtons.selectedOption);
       assertEquals(0, handler.getCallCount('setUserFeedback'));
+    });
+  });
+
+  suite('Metrics', () => {
+    test('clicking submit sets metric', async () => {
+      createWallpaperSearchElementWithDescriptors();
+      await flushTasks();
+
+      wallpaperSearchElement.$.submitButton.click();
+
+      assertEquals(
+          1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.CustomizeChromeSidePanelAction',
+              CustomizeChromeAction.WALLPAPER_SEARCH_PROMPT_SUBMITTED));
+    });
+
+    test('clicking result tile sets metric', async () => {
+      windowProxy.setResultFor('now', 321);
+      handler.setResultFor(
+          'getWallpaperSearchResults',
+          Promise.resolve({results: [{image: '123', id: {high: 10, low: 1}}]}));
+      createWallpaperSearchElementWithDescriptors();
+      await flushTasks();
+
+      wallpaperSearchElement.$.submitButton.click();
+      await waitAfterNextRender(wallpaperSearchElement);
+
+      const result =
+          $$(wallpaperSearchElement, '#wallpaperSearch .tile.result');
+      assertTrue(!!result);
+      (result as HTMLElement).click();
+      assertEquals(
+          2, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.CustomizeChromeSidePanelAction',
+              CustomizeChromeAction.WALLPAPER_SEARCH_RESULT_IMAGE_SELECTED));
+    });
+
+    test('clicking history tile sets metric', async () => {
+      createWallpaperSearchElement();
+
+      wallpaperSearchCallbackRouterRemote.setHistory([
+        {image: '123', id: {high: BigInt(10), low: BigInt(1)}},
+        {image: '456', id: {high: BigInt(8), low: BigInt(2)}},
+      ]);
+      await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
+
+      const historyTile =
+          $$(wallpaperSearchElement, '#historyCard .tile.result');
+      assertTrue(!!historyTile);
+      (historyTile as HTMLElement).click();
+      assertEquals(
+          1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.CustomizeChromeSidePanelAction',
+              CustomizeChromeAction.WALLPAPER_SEARCH_HISTORY_IMAGE_SELECTED));
     });
   });
 });

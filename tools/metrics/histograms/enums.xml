@@ -44642,6 +44642,18 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="NTP URL has customize chrome parameters."/>
 </enum>
 
+<enum name="NTPCustomizeChromeSidePanelAction">
+  <int value="0" label="Button to edit theme selected."/>
+  <int value="1" label="Default chrome selected in categories."/>
+  <int value="2" label="Upload image selected in categories."/>
+  <int value="3" label="Wallpaper search selected in categories."/>
+  <int value="4" label="Wallpaper search prompt submitted."/>
+  <int value="5" label="Wallpaper search result selected."/>
+  <int value="6" label="Wallpaper search recent theme selected as background."/>
+  <int value="7" label="First party collection selected in categories."/>
+  <int value="8" label="First party collection theme selected."/>
+</enum>
+
 <enum name="NTPCustomizedFeatures">
   <int value="0" label="Background customized"/>
   <int value="1" label="Shortcut customized"/>

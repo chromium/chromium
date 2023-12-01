@@ -28,6 +28,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
 import {Debouncer, DomRepeatEvent, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {CustomizeChromeAction, recordCustomizeChromeAction} from '../common.js';
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface, Theme} from '../customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from '../customize_chrome_api_proxy.js';
 import {DescriptorA, DescriptorB, DescriptorDValue, Descriptors, UserFeedback, WallpaperSearchClientCallbackRouter, WallpaperSearchHandlerInterface, WallpaperSearchResult, WallpaperSearchStatus} from '../wallpaper_search.mojom-webui.js';
@@ -416,6 +417,8 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   }
 
   private onHistoryImageClick_(e: DomRepeatEvent<WallpaperSearchResult>) {
+    recordCustomizeChromeAction(
+        CustomizeChromeAction.WALLPAPER_SEARCH_HISTORY_IMAGE_SELECTED);
     this.wallpaperSearchHandler_.setBackgroundToHistoryImage(e.model.item.id);
   }
 
@@ -436,6 +439,9 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       this.status_ = WallpaperSearchStatus.kOffline;
       return;
     }
+
+    recordCustomizeChromeAction(
+        CustomizeChromeAction.WALLPAPER_SEARCH_PROMPT_SUBMITTED);
 
     assert(this.descriptors_);
     const selectedDescriptorA = this.selectedDescriptorA_ ||
@@ -467,6 +473,8 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   }
 
   private async onResultClick_(e: DomRepeatEvent<WallpaperSearchResult>) {
+    recordCustomizeChromeAction(
+        CustomizeChromeAction.WALLPAPER_SEARCH_RESULT_IMAGE_SELECTED);
     this.wallpaperSearchHandler_.setBackgroundToWallpaperSearchResult(
         e.model.item.id, WindowProxy.getInstance().now());
   }

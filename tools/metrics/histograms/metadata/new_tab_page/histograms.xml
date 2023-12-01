@@ -489,6 +489,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.CustomizeChromeSidePanelAction"
+    enum="NTPCustomizeChromeSidePanelAction" expires_after="2024-11-29">
+  <owner>tiborg@chromium.org</owner>
+  <owner>rtatum@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Captures the actions performed for customizing Chrome within the Customize
+    Chrome Side Panel on the New Tab Page. Since most actions are sequential,
+    this may indicate steps in the configuration process where users drop off.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.Customized" enum="NTPCustomizedFeatures"
     expires_after="2024-04-28">
   <owner>tiborg@chromium.org</owner>

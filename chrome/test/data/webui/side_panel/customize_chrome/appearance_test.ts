@@ -5,11 +5,13 @@
 import 'chrome://customize-chrome-side-panel.top-chrome/appearance.js';
 
 import {AppearanceElement} from 'chrome://customize-chrome-side-panel.top-chrome/appearance.js';
+import {CustomizeChromeAction} from 'chrome://customize-chrome-side-panel.top-chrome/common.js';
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import {ManagedDialogElement} from 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -20,6 +22,7 @@ suite('AppearanceTest', () => {
   let appearanceElement: AppearanceElement;
   let callbackRouterRemote: CustomizeChromePageRemote;
   let handler: TestMock<CustomizeChromePageHandlerRemote>;
+  let metrics: MetricsTracker;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -30,6 +33,7 @@ suite('AppearanceTest', () => {
                 mock, new CustomizeChromePageCallbackRouter()));
     callbackRouterRemote = CustomizeChromeApiProxy.getInstance()
                                .callbackRouter.$.bindNewPipeAndPassRemote();
+    metrics = fakeMetricsPrivate();
     appearanceElement = document.createElement('customize-chrome-appearance');
     document.body.appendChild(appearanceElement);
   });
@@ -326,6 +330,20 @@ suite('AppearanceTest', () => {
           eventToPromise('wallpaper-search-click', appearanceElement);
       appearanceElement.$.searchedImageButton.click();
       await clickEvent;
+    });
+  });
+
+  suite('Metrics', () => {
+    test('Clicking edit theme button sets metric', () => {
+      appearanceElement.$.editThemeButton.click();
+
+      assertEquals(
+          1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.CustomizeChromeSidePanelAction',
+              CustomizeChromeAction.EDIT_THEME_CLICKED));
     });
   });
 });
