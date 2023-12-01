@@ -374,6 +374,9 @@ bool CookieSettings::ShouldBlockThirdPartyCookies() const {
 }
 
 bool CookieSettings::MitigationsEnabledFor3pcd() const {
+  if (net::cookie_util::IsForceThirdPartyCookieBlockingEnabled()) {
+    return true;
+  }
   return mitigations_enabled_for_3pcd_;
 }
 

@@ -51,6 +51,8 @@ CookieSettings::CookieSettings(
       is_incognito_(is_incognito),
       extension_scheme_(extension_scheme),
       block_third_party_cookies_(
+          net::cookie_util::IsForceThirdPartyCookieBlockingEnabled()),
+      mitigations_enabled_for_3pcd_(
           net::cookie_util::IsForceThirdPartyCookieBlockingEnabled()) {
   content_settings_observation_.Observe(host_content_settings_map_.get());
   if (tracking_protection_settings_) {
@@ -392,11 +394,8 @@ bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() {
 #endif
 
 bool CookieSettings::MitigationsEnabledFor3pcdInternal() {
-  // Mitigations won't be enabled when Third Party Cookies Blocking is enabled
-  // by `features::kForceThirdPartyCookieBlocking` which is intended to be used
-  // via command-lines by developers for testing.
   if (net::cookie_util::IsForceThirdPartyCookieBlockingEnabled()) {
-    return false;
+    return true;
   }
 
   if (tracking_protection_settings_ &&

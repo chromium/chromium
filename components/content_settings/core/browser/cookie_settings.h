@@ -289,7 +289,7 @@ class CookieSettings
 
   mutable base::Lock lock_;
   bool block_third_party_cookies_ GUARDED_BY(lock_);
-  bool mitigations_enabled_for_3pcd_ GUARDED_BY(lock_) = false;
+  bool mitigations_enabled_for_3pcd_ GUARDED_BY(lock_);
   bool tracking_protection_enabled_for_3pcd_ GUARDED_BY(lock_) = false;
 };
 
