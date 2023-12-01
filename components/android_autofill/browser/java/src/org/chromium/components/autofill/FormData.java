@@ -53,15 +53,6 @@ public class FormData {
      * @param structure out parameter, the structure passed to the framework.
      */
     public void fillViewStructure(ViewStructure structure) {
-        // If the experiment is on, then the root node's children correspond to forms and the actual
-        // fields are leaf nodes with depth 2.
-        if (AndroidAutofillFeatures.ANDROID_AUTOFILL_VIEW_STRUCTURE_WITH_FORM_HIERARCHY_LAYER
-                .isEnabled()) {
-            ViewStructure rootStructure = structure;
-            structure = rootStructure.newChild(rootStructure.addChildCount(1));
-            structure.setAutofillId(
-                    rootStructure.getAutofillId(), toFieldVirtualId(mSessionId, FORM_NODE_ID));
-        }
         structure.setWebDomain(mHost);
         structure.setHtmlInfo(
                 structure.newHtmlInfoBuilder("form").addAttribute("name", mName).build());

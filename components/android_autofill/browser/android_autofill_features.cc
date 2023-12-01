@@ -18,7 +18,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kAndroidAutofillFormSubmissionCheckById,
     &kAndroidAutofillPrefillRequestsForLoginForms,
     &kAndroidAutofillSupportVisibilityChanges,
-    &kAndroidAutofillViewStructureWithFormHierarchyLayer,
 };
 
 }  // namespace
@@ -58,19 +57,6 @@ BASE_FEATURE(kAndroidAutofillPrefillRequestsForLoginForms,
 // for more details on the API.
 BASE_FEATURE(kAndroidAutofillSupportVisibilityChanges,
              "AndroidAutofillSupportVisibilityChanges",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Adds an additional hierarchy layer for forms into the `ViewStructure` that
-// is passed to Android's `AutofillManager`.
-// If the feature is disabled, AutofillProvider.java returns a `ViewStructure`
-// of depth 1: All form field elements are represented as child nodes of the
-// filled `ViewStructure`.
-// If the feature is enabled, there is an additional hierarchy level:
-// * The child nodes of the filled `ViewStructure` correspond to forms.
-// * The child nodes of nodes representing forms correspond to form field
-//   elements of the respective form.
-BASE_FEATURE(kAndroidAutofillViewStructureWithFormHierarchyLayer,
-             "AndroidAutofillViewStructureWithFormHierarchyLayer",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 static jlong JNI_AndroidAutofillFeatures_GetFeature(JNIEnv* env, jint ordinal) {

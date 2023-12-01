@@ -15,29 +15,21 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.autofill.AutofillValue;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 
 import java.util.Arrays;
 
 /** Unit test for {@link AutofillRequest}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Features.DisableFeatures({
-    AndroidAutofillFeatures.ANDROID_AUTOFILL_VIEW_STRUCTURE_WITH_FORM_HIERARCHY_LAYER_NAME
-})
 public class AutofillRequestTest {
     private static final int FORM_SESSION_ID = 123;
     private static final String FORM_DOMAIN = "https://example.com";
     private static final String FORM_NAME = "sample-form-name";
-
-    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     private static FormFieldDataBuilder createTextFieldBuilder() {
         FormFieldDataBuilder builder = new FormFieldDataBuilder();
@@ -105,27 +97,6 @@ public class AutofillRequestTest {
         assertEquals(2, request.getFieldCount());
         TestViewStructure structure = fillStructureForRequest(request);
         assertEquals(2, structure.getChildCount());
-    }
-
-    @Features.EnableFeatures({
-        AndroidAutofillFeatures.ANDROID_AUTOFILL_VIEW_STRUCTURE_WITH_FORM_HIERARCHY_LAYER_NAME
-    })
-    @Test
-    // Tests that there is an additional hierarchy level if the feature
-    // ANDROID_AUTOFILL_VIEW_STRUCTURE_WITH_FORM_HIERARCHY_LAYER is enabled, i.e. the form
-    // is a child node of the ViewStructure filled by the AutofillRequest.
-    public void testFormInformationIsInSeparateNode() {
-        TestViewStructure structure = fillStructureForRequest(createSampleRequest());
-
-        assertEquals(1, structure.getChildCount());
-        TestViewStructure childForm = structure.getChild(0);
-
-        assertEquals(FORM_DOMAIN, childForm.getWebDomain());
-        TestViewStructure.TestHtmlInfo htmlInfoForm = childForm.getHtmlInfo();
-        assertEquals("form", htmlInfoForm.getTag());
-        assertEquals(FORM_NAME, htmlInfoForm.getAttribute("name"));
-
-        assertEquals(2, childForm.getChildCount());
     }
 
     @Test
