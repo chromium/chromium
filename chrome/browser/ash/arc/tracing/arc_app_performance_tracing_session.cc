@@ -33,9 +33,11 @@ constexpr uint64_t kIdleThresholdFrames = 10;
 }  // namespace
 
 ArcAppPerformanceTracingSession::ArcAppPerformanceTracingSession(
-    aura::Window* window)
-    : window_(window) {
+    aura::Window* window,
+    TicksNowCallback ticks_now_callback)
+    : window_(window), ticks_now_callback_(std::move(ticks_now_callback)) {
   DCHECK(window_);
+  DCHECK(ticks_now_callback_);
 }
 
 ArcAppPerformanceTracingSession::~ArcAppPerformanceTracingSession() {
@@ -64,7 +66,7 @@ void ArcAppPerformanceTracingSession::Schedule(
 
 void ArcAppPerformanceTracingSession::Finish() {
   DCHECK(tracing_active_);
-  Analyze(base::TimeTicks::Now() - tracing_start_);
+  Analyze(ticks_now_callback_.Run() - tracing_start_);
 }
 
 void ArcAppPerformanceTracingSession::OnSurfaceDestroying(
@@ -73,10 +75,6 @@ void ArcAppPerformanceTracingSession::OnSurfaceDestroying(
   // first.
   DCHECK(!scoped_surface_ || (scoped_surface_->get() == surface));
   Stop();
-}
-
-void ArcAppPerformanceTracingSession::OnCommit(exo::Surface* surface) {
-  HandleCommit(base::Time::Now());
 }
 
 void ArcAppPerformanceTracingSession::FireTimerForTesting() {
@@ -88,18 +86,13 @@ base::TimeDelta ArcAppPerformanceTracingSession::timer_delay_for_testing()
   return tracing_timer_.GetCurrentDelay();
 }
 
-void ArcAppPerformanceTracingSession::OnCommitForTesting(
-    const base::Time& timestamp) {
-  HandleCommit(timestamp);
-}
-
 void ArcAppPerformanceTracingSession::Start() {
   DCHECK(!tracing_timer_.IsRunning());
 
   VLOG(1) << "Start tracing.";
 
   frame_deltas_.clear();
-  last_commit_timestamp_ = base::Time();
+  last_commit_timestamp_ = base::TimeTicks();
 
   exo::Surface* const surface = exo::GetShellRootSurface(window_);
   DCHECK(surface);
@@ -110,7 +103,7 @@ void ArcAppPerformanceTracingSession::Start() {
       std::make_unique<exo::ScopedSurface>(surface, this /* observer */);
 
   // Schedule result analyzing at the end of tracing.
-  tracing_start_ = base::TimeTicks::Now();
+  tracing_start_ = ticks_now_callback_.Run();
   if (!tracing_period_.is_zero()) {
     // |tracing_period_| is passed to be able to correctly compare expectations
     // in unit tests.
@@ -128,10 +121,10 @@ void ArcAppPerformanceTracingSession::Stop() {
   scoped_surface_.reset();
 }
 
-void ArcAppPerformanceTracingSession::HandleCommit(
-    const base::Time& timestamp) {
+void ArcAppPerformanceTracingSession::OnCommit(exo::Surface* surface) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  const auto timestamp = ticks_now_callback_.Run();
   if (last_commit_timestamp_.is_null()) {
     last_commit_timestamp_ = timestamp;
     return;
@@ -166,7 +159,7 @@ void ArcAppPerformanceTracingSession::Analyze(base::TimeDelta tracing_period) {
   // Check last commit timestamp if we are in idle at this moment.
   if (detect_idles_) {
     const base::TimeDelta last_frame_delta =
-        base::Time::Now() - last_commit_timestamp_;
+        ticks_now_callback_.Run() - last_commit_timestamp_;
     if (last_frame_delta >= kTargetFrameTime * kIdleThresholdFrames) {
       // Current idle state is detected, try next time.
       std::move(on_done_).Run(std::nullopt);

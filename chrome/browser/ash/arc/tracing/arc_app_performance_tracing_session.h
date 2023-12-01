@@ -30,6 +30,8 @@ struct PerfTraceResult {
   double fps, commit_deviation, render_quality;
 };
 
+using TicksNowCallback = base::RepeatingCallback<base::TimeTicks()>;
+
 // Implements Surface commit tracing for the target window.
 class ArcAppPerformanceTracingSession : public exo::SurfaceObserver {
  public:
@@ -41,7 +43,8 @@ class ArcAppPerformanceTracingSession : public exo::SurfaceObserver {
   using DoneCallback =
       base::OnceCallback<void(const std::optional<PerfTraceResult>&)>;
 
-  explicit ArcAppPerformanceTracingSession(aura::Window* window);
+  ArcAppPerformanceTracingSession(aura::Window* window,
+                                  TicksNowCallback ticks_now_callback_);
 
   ArcAppPerformanceTracingSession(const ArcAppPerformanceTracingSession&) =
       delete;
@@ -59,8 +62,6 @@ class ArcAppPerformanceTracingSession : public exo::SurfaceObserver {
   // Returns the delay requested before starting the test the last time Schedule
   // was called.
   base::TimeDelta timer_delay_for_testing() const;
-  // Add one more sample for testing.
-  void OnCommitForTesting(const base::Time& timestamp);
 
   bool tracing_active() const { return tracing_active_; }
   const aura::Window* window() const { return window_; }
@@ -86,10 +87,6 @@ class ArcAppPerformanceTracingSession : public exo::SurfaceObserver {
   // does not invoke callbacks or analyze results.
   void Stop();
 
-  // Handles the next commit update. This is unified handler for testing and
-  // production code.
-  void HandleCommit(const base::Time& timestamp);
-
   // Stops current tracing, analyzes captured tracing results and schedules the
   // next tracing for the current |window_|. |tracing_period| indicates the time
   // spent for tracing.
@@ -114,13 +111,15 @@ class ArcAppPerformanceTracingSession : public exo::SurfaceObserver {
   bool detect_idles_ = false;
 
   // Timestamp of last commit event.
-  base::Time last_commit_timestamp_;
+  base::TimeTicks last_commit_timestamp_;
 
   // Accumulator for commit deltas.
   std::vector<base::TimeDelta> frame_deltas_;
 
   // Indicates that tracing is in active state.
   bool tracing_active_ = false;
+
+  TicksNowCallback ticks_now_callback_;
 
   DoneCallback on_done_;
 };

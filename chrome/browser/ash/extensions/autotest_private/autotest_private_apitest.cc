@@ -447,17 +447,21 @@ class AutotestPrivateArcPerformanceTracing : public AutotestPrivateApiTest {
   // AutotestPrivateApiTest:
   void SetUpOnMainThread() override {
     AutotestPrivateApiTest::SetUpOnMainThread();
+
     tracing_helper_.SetUp(profile());
+    root_surface_ = std::make_unique<exo::Surface>();
     performance_tracing()->SetCustomSessionReadyCallbackForTesting(
         base::BindRepeating(
             &arc::ArcAppPerformanceTracingTestHelper::PlayDefaultSequence,
-            base::Unretained(&tracing_helper())));
+            base::Unretained(&tracing_helper_), root_surface_.get()));
   }
 
   void TearDownOnMainThread() override {
+    root_surface_.reset();
     performance_tracing()->SetCustomSessionReadyCallbackForTesting(
         arc::ArcAppPerformanceTracing::CustomSessionReadyCallback());
     tracing_helper_.TearDown();
+
     AutotestPrivateApiTest::TearDownOnMainThread();
   }
 
@@ -469,14 +473,15 @@ class AutotestPrivateArcPerformanceTracing : public AutotestPrivateApiTest {
     return tracing_helper_.GetTracing();
   }
 
+  std::unique_ptr<exo::Surface> root_surface_;
+
  private:
   arc::ArcAppPerformanceTracingTestHelper tracing_helper_;
 };
 
 IN_PROC_BROWSER_TEST_F(AutotestPrivateArcPerformanceTracing, Basic) {
-  exo::Surface root_surface;
   const auto arc_widget = arc::ArcTaskWindowBuilder()
-                              .SetShellRootSurface(&root_surface)
+                              .SetShellRootSurface(root_surface_.get())
                               .BuildOwnsNativeWidget();
 
   performance_tracing()->OnWindowActivated(

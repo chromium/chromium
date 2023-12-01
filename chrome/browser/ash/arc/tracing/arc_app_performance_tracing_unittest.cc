@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_handler.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_shell_surface.h"
@@ -106,14 +107,18 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
   }
 
   void TearDown() override {
-    ResetRootSurface();
+    shell_root_surface_.reset();
+
     tracing_helper_.TearDown();
     arc_test_.TearDown();
+
     BrowserWithTestWindowTest::TearDown();
   }
 
  protected:
   int64_t task_id = 1;
+  std::unique_ptr<exo::Surface> shell_root_surface_;
+
   // Ensures that tracing is ready to begin, which means up to the point that
   // waiting for the delayed start has just begun.
   views::Widget* PrepareArcAppTracing(const std::string& package_name,
@@ -152,8 +157,6 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
     return PrepareArcAppTracing(kFocusAppPackage, kFocusAppActivity);
   }
 
-  void ResetRootSurface() { shell_root_surface_.reset(); }
-
   ArcAppPerformanceTracingTestHelper& tracing_helper() {
     return tracing_helper_;
   }
@@ -167,7 +170,6 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
   }
 
  private:
-  std::unique_ptr<exo::Surface> shell_root_surface_;
   ArcAppPerformanceTracingTestHelper tracing_helper_;
   ArcAppTest arc_test_;
 };
@@ -255,22 +257,22 @@ TEST_F(ArcAppPerformanceTracingTest, TracingStoppedOnIdle) {
   tracing_helper().GetTracingSession()->FireTimerForTesting();
 
   const base::TimeDelta normal_interval = base::Seconds(1) / 60;
-  base::Time timestamp = base::Time::Now();
-  tracing_helper().GetTracingSession()->OnCommitForTesting(timestamp);
+  shell_root_surface_->Commit();
+
   // Expected updates;
-  timestamp += normal_interval;
-  tracing_helper().GetTracingSession()->OnCommitForTesting(timestamp);
+  tracing_helper().AdvanceTickCount(normal_interval);
+  shell_root_surface_->Commit();
   ASSERT_TRUE(tracing_helper().GetTracingSession());
   EXPECT_TRUE(tracing_helper().GetTracingSession()->tracing_active());
 
-  timestamp += normal_interval * 5;
-  tracing_helper().GetTracingSession()->OnCommitForTesting(timestamp);
+  tracing_helper().AdvanceTickCount(normal_interval * 5);
+  shell_root_surface_->Commit();
   ASSERT_TRUE(tracing_helper().GetTracingSession());
   EXPECT_TRUE(tracing_helper().GetTracingSession()->tracing_active());
 
   // Too long update.
-  timestamp += normal_interval * 10;
-  tracing_helper().GetTracingSession()->OnCommitForTesting(timestamp);
+  tracing_helper().AdvanceTickCount(normal_interval * 10);
+  shell_root_surface_->Commit();
   // Tracing is rescheduled and no longer active.
   ASSERT_TRUE(tracing_helper().GetTracingSession());
   EXPECT_FALSE(tracing_helper().GetTracingSession()->tracing_active());
@@ -283,7 +285,7 @@ TEST_F(ArcAppPerformanceTracingTest, StatisticsReported) {
             kInitTracingDelay);
   tracing_helper().GetTracingSession()->FireTimerForTesting();
 
-  tracing_helper().PlayDefaultSequence();
+  tracing_helper().PlayDefaultSequence(shell_root_surface_.get());
   tracing_helper().FireTimerForTesting();
   EXPECT_EQ(45L, ReadFocusStatistics("FPS2"));
   EXPECT_EQ(216L, ReadFocusStatistics("CommitDeviation2"));
@@ -348,7 +350,7 @@ TEST_F(ArcAppPerformanceTracingTest, ApplicationStatisticsReported) {
     views::Widget* const arc_widget =
         StartArcAppTracing(application.package, application.activity);
 
-    tracing_helper().PlayDefaultSequence();
+    tracing_helper().PlayDefaultSequence(shell_root_surface_.get());
     tracing_helper().FireTimerForTesting();
     EXPECT_EQ(45L, ReadStatistics("FPS2", application.name));
     EXPECT_EQ(216L, ReadStatistics("CommitDeviation2", application.name));
@@ -435,7 +437,7 @@ TEST_F(ArcAppPerformanceTracingTest, DestroySurface) {
   ASSERT_TRUE(tracing_helper().GetTracingSession());
   EXPECT_TRUE(tracing_helper().GetTracingSession()->tracing_active());
   exo::SetShellRootSurface(arc_widget->GetNativeWindow(), nullptr);
-  ResetRootSurface();
+  shell_root_surface_.reset();
   ASSERT_TRUE(tracing_helper().GetTracingSession());
   EXPECT_FALSE(tracing_helper().GetTracingSession()->tracing_active());
 

@@ -10,6 +10,7 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/constants/ash_features.h"
+#include "base/functional/bind.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -198,8 +199,8 @@ bool ArcAppPerformanceTracing::StartCustomTracing() {
   if (!arc_active_window_)
     return false;
 
-  session_ =
-      std::make_unique<ArcAppPerformanceTracingSession>(arc_active_window_);
+  session_ = std::make_unique<ArcAppPerformanceTracingSession>(
+      arc_active_window_, *ticks_now_callback());
 
   custom_trace_result_.reset();
   session_->Schedule(
@@ -475,8 +476,8 @@ void ArcAppPerformanceTracing::MaybeStartTracing() {
     return;
   }
 
-  session_ =
-      std::make_unique<ArcAppPerformanceTracingSession>(arc_active_window_);
+  session_ = std::make_unique<ArcAppPerformanceTracingSession>(
+      arc_active_window_, *ticks_now_callback());
   reporting_.Schedule(session_.get(), category);
 }
 
@@ -511,6 +512,18 @@ void ArcAppPerformanceTracing::DetachActiveWindow() {
 // static
 void ArcAppPerformanceTracing::EnsureFactoryBuilt() {
   ArcAppPerformanceTracingFactory::GetInstance();
+}
+
+// static
+TicksNowCallback* ArcAppPerformanceTracing::ticks_now_callback() {
+  static base::NoDestructor<TicksNowCallback> storage{
+      base::BindRepeating(&base::TimeTicks::Now)};
+  return storage.get();
+}
+
+// static
+void ArcAppPerformanceTracing::reset_ticks_now_callback() {
+  *ticks_now_callback() = base::BindRepeating(&base::TimeTicks::Now);
 }
 
 }  // namespace arc

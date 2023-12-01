@@ -15,6 +15,7 @@
 class Profile;
 
 namespace exo {
+class Surface;
 class WMHelper;
 }
 
@@ -49,18 +50,27 @@ class ArcAppPerformanceTracingTestHelper {
 
   // Sends sequence of commits where each commit is delayed for specific delta
   // from |deltas|.
-  void PlaySequence(const std::vector<base::TimeDelta>& deltas);
+  void PlaySequence(exo::Surface* surface,
+                    const std::vector<base::TimeDelta>& deltas);
 
   // Plays default sequence that has FPS = 45, CommitDeviation = 216 and
   // RenderQuality = 48% for target tracing period as 1/3 seconds.
-  void PlayDefaultSequence();
+  void PlayDefaultSequence(exo::Surface* surface);
 
   // Disables App Syncing for profile.
   void DisableAppSync();
 
+  void AdvanceTickCount(base::TimeDelta delta);
+
+  base::TimeTicks ticks_now() { return ticks_now_; }
+
  private:
   // Unowned pointer.
   raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+
+  // Timestamps used in generated commits.
+  base::TimeTicks ticks_now_ =
+      base::TimeTicks() + base::Microseconds(42'000'042);
 
   std::unique_ptr<exo::WMHelper> wm_helper_;
 };

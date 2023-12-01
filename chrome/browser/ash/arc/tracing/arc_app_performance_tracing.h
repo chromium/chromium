@@ -18,6 +18,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
+#include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing.h"
+#include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_session.h"
 #include "chrome/browser/ash/arc/tracing/uma_perf_reporting.h"
 #include "components/exo/surface_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -106,6 +108,9 @@ class ArcAppPerformanceTracing : public KeyedService,
   ArcAppPerformanceTracingSession* session() { return session_.get(); }
 
   static void EnsureFactoryBuilt();
+
+  static TicksNowCallback* ticks_now_callback();
+  static void reset_ticks_now_callback();
 
  private:
   // May be start tracing session if all conditions are met. Window creating is
