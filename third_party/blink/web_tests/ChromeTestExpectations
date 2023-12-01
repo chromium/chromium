@@ -86,8 +86,6 @@ crbug.com/1499775 external/wpt/html/semantics/embedded-content/the-img-element/i
 crbug.com/1499775 external/wpt/largest-contentful-paint/animated/observe-video.tentative.html [ Pass Timeout ]
 crbug.com/1499775 external/wpt/pointerevents/coalesced_events_attributes_under_load.https.html?pen [ Pass Timeout ]
 crbug.com/1499775 external/wpt/scroll-to-text-fragment/redirects.html [ Pass Timeout ]
-crbug.com/1499775 external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-audio.https.html [ Failure Pass ]
-crbug.com/1499775 external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-video.https.html [ Failure Pass ]
 
 # Chrome specific failures
 crbug.com/1499775 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/crashtests/fieldset-middleclick.html [ Timeout ]
