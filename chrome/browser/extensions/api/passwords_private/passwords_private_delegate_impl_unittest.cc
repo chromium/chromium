@@ -135,7 +135,10 @@ using MockRequestCredentialsDetailsCallback =
 
 class MockPasswordManagerPorter : public PasswordManagerPorterInterface {
  public:
-  MOCK_METHOD(bool, Export, (content::WebContents * web_contents), (override));
+  MOCK_METHOD(bool,
+              Export,
+              (base::WeakPtr<content::WebContents> web_contents),
+              (override));
   MOCK_METHOD(void, CancelExport, (), (override));
   MOCK_METHOD(password_manager::ExportProgressStatus,
               GetExportProgressStatus,
@@ -157,7 +160,9 @@ class MockPasswordManagerPorter : public PasswordManagerPorterInterface {
 
 class FakePasswordManagerPorter : public PasswordManagerPorterInterface {
  public:
-  bool Export(content::WebContents* web_contents) override { return true; }
+  bool Export(base::WeakPtr<content::WebContents> web_contents) override {
+    return true;
+  }
 
   void CancelExport() override {}
 
@@ -1716,6 +1721,12 @@ class PasswordsPrivateDelegateImplMockTaskEnvironmentTest
 
   content::WebContents* web_contents() { return web_contents_; }
 
+  content::TestWebContentsFactory& web_contents_factory() {
+    return web_contents_factory_;
+  }
+
+  TestingProfile* profile() { return profile_; }
+
   scoped_refptr<PasswordsPrivateDelegateImpl> CreateDelegate() {
     return new PasswordsPrivateDelegateImpl(profile_);
   }
@@ -1763,6 +1774,35 @@ TEST_F(PasswordsPrivateDelegateImplMockTaskEnvironmentTest,
   histogram_tester().ExpectUniqueTimeSample(
       "PasswordManager.Settings.AuthenticationTime", base::Seconds(10), 1);
 }
+
+TEST_F(PasswordsPrivateDelegateImplMockTaskEnvironmentTest,
+       ClosingTabDuringExportDoesNotCrashChrome) {
+  content::WebContents* web_contents_ptr =
+      web_contents_factory().CreateWebContents(profile());
+  auto delegate = CreateDelegate();
+
+  auto biometric_authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+
+  device_reauth::DeviceAuthenticator::AuthenticateCallback auth_result_callback;
+  EXPECT_CALL(*biometric_authenticator, AuthenticateWithMessage)
+      .WillOnce(MoveArg<1>(&auth_result_callback));
+
+  delegate->SetDeviceAuthenticatorForTesting(
+      std::move(biometric_authenticator));
+
+  base::MockCallback<base::OnceCallback<void(const std::string&)>> callback;
+  delegate->ExportPasswords(callback.Get(), web_contents_ptr);
+
+  // Simulate closing tab while authentication is still ongoing.
+  web_contents_factory().DestroyWebContents(web_contents_ptr);
+
+  // Now simulate auth is finished with success. Expect export to fail because
+  // the tab is closed.
+  EXPECT_CALL(callback, Run("reauth-failed"));
+  std::move(auth_result_callback).Run(true);
+}
+
 #endif
 
 class PasswordsPrivateDelegateImplFetchFamilyMembersTest

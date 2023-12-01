@@ -78,7 +78,8 @@ PasswordManagerPorter::~PasswordManagerPorter() {
   }
 }
 
-bool PasswordManagerPorter::Export(content::WebContents* web_contents) {
+bool PasswordManagerPorter::Export(
+    base::WeakPtr<content::WebContents> web_contents) {
   if (exporter_ && exporter_->GetProgressStatus() ==
                        password_manager::ExportProgressStatus::kInProgress) {
     return false;
@@ -140,7 +141,7 @@ void PasswordManagerPorter::Import(
   import_results_callback_ = std::move(results_callback);
   to_store_ = to_store;
 
-  PresentFileSelector(web_contents,
+  PresentFileSelector(web_contents->GetWeakPtr(),
                       PasswordManagerPorter::Type::PASSWORD_IMPORT);
 }
 
@@ -195,7 +196,7 @@ void PasswordManagerPorter::SetImporterForTesting(
 }
 
 void PasswordManagerPorter::PresentFileSelector(
-    content::WebContents* web_contents,
+    base::WeakPtr<content::WebContents> web_contents,
     Type type) {
 // This method should never be called on Android (as there is no file selector),
 // and the relevant IDS constants are not present for Android.
@@ -204,7 +205,7 @@ void PasswordManagerPorter::PresentFileSelector(
   if (select_file_dialog_)
     return;
 
-  DCHECK(web_contents);
+  CHECK(web_contents);
 
   // Get the default file extension for password files.
   ui::SelectFileDialog::FileTypeInfo file_type_info;
@@ -215,7 +216,7 @@ void PasswordManagerPorter::PresentFileSelector(
 
   // Present the file selector dialogue.
   select_file_dialog_ = ui::SelectFileDialog::Create(
-      this, std::make_unique<ChromeSelectFilePolicy>(web_contents));
+      this, std::make_unique<ChromeSelectFilePolicy>(web_contents.get()));
 
   ui::SelectFileDialog::Type file_selector_mode =
       ui::SelectFileDialog::SELECT_NONE;
