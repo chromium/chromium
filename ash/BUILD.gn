@@ -1479,6 +1479,8 @@ component("ash") {
     "system/focus_mode/focus_mode_detailed_view.h",
     "system/focus_mode/focus_mode_detailed_view_controller.cc",
     "system/focus_mode/focus_mode_detailed_view_controller.h",
+    "system/focus_mode/focus_mode_ending_moment_view.cc",
+    "system/focus_mode/focus_mode_ending_moment_view.h",
     "system/focus_mode/focus_mode_feature_pod_controller.cc",
     "system/focus_mode/focus_mode_feature_pod_controller.h",
     "system/focus_mode/focus_mode_task_view.cc",
