@@ -29,7 +29,7 @@ import org.chromium.ui.base.ViewUtils;
 public class TabStripTransitionCoordinator implements ComponentCallbacks {
     // Delay to kickoff the transition to avoid frame drops while application is too busy when the
     // configuration changed.
-    private static final int TRANSITION_DELAY_MS = 500;
+    private static final int TRANSITION_DELAY_MS = 200;
 
     /** Observes height of tab strip that could change during run time. */
     public interface TabStripHeightObserver {
@@ -103,23 +103,28 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
 
     @Override
     public void onConfigurationChanged(@NonNull Configuration configuration) {
+        DisplayMetrics displayMetrics = mControlContainer.getResources().getDisplayMetrics();
+        int width = displayMetrics.widthPixels;
+        boolean showTabStrip =
+                width >= ViewUtils.dpToPx(displayMetrics, getScreenWidthThresholdDp());
+
+        if (showTabStrip == mTabStripVisible) return;
+
+        // Kick off tab strip transition once tab strip visibility is confirmed to be changed. Do
+        // not change the mTabStripVisible until the transition actually started.
         if (mLastTransitionTask != null) {
             mHandler.removeCallbacks(mLastTransitionTask);
         }
         mLastTransitionTask =
-                mCallbackController.makeCancelable(this::maybeUpdateTabStripVisibility);
+                mCallbackController.makeCancelable(
+                        () -> maybeUpdateTabStripVisibility(showTabStrip));
         mHandler.postDelayed(mLastTransitionTask, TRANSITION_DELAY_MS);
     }
 
     @Override
     public void onLowMemory() {}
 
-    private void maybeUpdateTabStripVisibility() {
-        DisplayMetrics displayMetrics = mControlContainer.getResources().getDisplayMetrics();
-        int width = displayMetrics.widthPixels;
-        boolean showTabStrip =
-                width >= ViewUtils.dpToPx(displayMetrics, getScreenWidthThresholdDp());
-
+    private void maybeUpdateTabStripVisibility(boolean showTabStrip) {
         if (showTabStrip == mTabStripVisible) return;
         mTabStripVisible = showTabStrip;
 

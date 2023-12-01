@@ -457,6 +457,9 @@ public class TopToolbarCoordinator implements Toolbar {
             mControlContainer = null;
         }
         if (mTabStripTransitionCoordinator != null) {
+            mToolbarLayout
+                    .getContext()
+                    .unregisterComponentCallbacks(mTabStripTransitionCoordinator);
             mTabStripTransitionCoordinator.destroy();
             mTabStripTransitionCoordinator = null;
         }

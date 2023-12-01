@@ -204,6 +204,19 @@ public class TabStripTransitionCoordinatorUnitTest {
         assertTabStripHeightForMargins(TEST_TAB_STRIP_HEIGHT);
     }
 
+    @Test
+    public void destroyDuringDelayedTask() {
+        setConfigurationWithNewWidth(480);
+        ShadowLooper.idleMainLooper(100, TimeUnit.MILLISECONDS);
+        // Tab strip still visible before the delayed transition started.
+        assertTabStripHeightForMargins(TEST_TAB_STRIP_HEIGHT);
+
+        // Destroy the coordinator so the transition task is canceled.
+        mCoordinator.destroy();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertTabStripHeightForMargins(TEST_TAB_STRIP_HEIGHT);
+    }
+
     private void setDeviceWidthDp(int widthDp) {
         Configuration configuration = setConfigurationWithNewWidth(widthDp);
         simulateConfigurationChanged(configuration);
