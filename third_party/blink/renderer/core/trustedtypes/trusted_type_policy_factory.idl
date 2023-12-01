@@ -9,21 +9,23 @@
 ] interface TrustedTypePolicyFactory : EventTarget {
     [RaisesException] TrustedTypePolicy createPolicy(DOMString policyName, optional TrustedTypePolicyOptions policyOptions);
     // All the policy object names that have been created
-    [CallWith=ScriptState] boolean isHTML(any checkedObject);
-    [CallWith=ScriptState] boolean isScript(any checkedObject);
-    [CallWith=ScriptState] boolean isScriptURL(any checkedObject);
+    [CallWith=ScriptState, MeasureAs=TrustedTypesIsCheck] boolean isHTML(any checkedObject);
+    [CallWith=ScriptState, MeasureAs=TrustedTypesIsCheck] boolean isScript(any checkedObject);
+    [CallWith=ScriptState, MeasureAs=TrustedTypesIsCheck] boolean isScriptURL(any checkedObject);
     readonly attribute TrustedHTML emptyHTML;
     readonly attribute TrustedScript emptyScript;
 
 
+    [MeasureAs=TrustedTypesIntrospection]
     DOMString? getAttributeType(DOMString tagName, DOMString attribute,
         optional DOMString? elementNS = "", optional DOMString? attrNs = "");
+    [MeasureAs=TrustedTypesIntrospection]
     DOMString? getPropertyType(DOMString tagName, DOMString property,
         optional DOMString? elementNS = "");
 
     readonly attribute TrustedTypePolicy defaultPolicy;
 
-    [CallWith=ScriptState] object? getTypeMapping(optional DOMString ns);
+    [CallWith=ScriptState, MeasureAs=TrustedTypesIntrospection] object? getTypeMapping(optional DOMString ns);
 
     [RuntimeEnabled=TrustedTypeBeforePolicyCreationEvent] attribute EventHandler onbeforecreatepolicy;
 };

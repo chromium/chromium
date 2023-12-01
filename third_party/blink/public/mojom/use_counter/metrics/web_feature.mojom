@@ -4088,6 +4088,8 @@ enum WebFeature {
   kPseudoFirstLineOnRt = 4749,
   kAutoSizesLazy = 4750,
   kAutoSizesNonLazy = 4751,
+  kTrustedTypesIntrospection = 4752,
+  kTrustedTypesIsCheck = 4753,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

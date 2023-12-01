@@ -24572,6 +24572,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4749" label="PseudoFirstLineOnRt"/>
   <int value="4750" label="AutoSizesLazy"/>
   <int value="4751" label="AutoSizesNonLazy"/>
+  <int value="4752" label="TrustedTypesIntrospection"/>
+  <int value="4753" label="TrustedTypesIsCheck"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
