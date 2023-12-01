@@ -534,6 +534,10 @@ const char kEnterpriseEnableUnifiedStateDetermination[] =
 const char kEnterpriseEnableForcedReEnrollment[] =
     "enterprise-enable-forced-re-enrollment";
 
+// Whether to enable forced enterprise re-enrollment on Flex.
+const char kEnterpriseEnableForcedReEnrollmentOnFlex[] =
+    "enterprise-enable-forced-re-enrollment-on-flex";
+
 // Whether to enable initial enterprise enrollment.
 const char kEnterpriseEnableInitialEnrollment[] =
     "enterprise-enable-initial-enrollment";

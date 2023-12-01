@@ -134,6 +134,7 @@ bool IsBoringSwitch(const std::string& flag) {
     "guest-wallpaper-large",
     "guest-wallpaper-small",
     "enterprise-enable-forced-re-enrollment",
+    "enterprise-enable-forced-re-enrollment-on-flex",
     "enterprise-enrollment-initial-modulus",
     "enterprise-enrollment-modulus-limit",
     "login-profile",
