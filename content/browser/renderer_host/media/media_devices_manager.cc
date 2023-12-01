@@ -150,9 +150,16 @@ bool IsRealAudioDeviceID(const std::string& device_id) {
          !media::AudioDeviceDescription::IsCommunicationsDevice(device_id);
 }
 
-static bool EqualDeviceAndGroupID(const blink::WebMediaDeviceInfo& lhs,
-                                  const blink::WebMediaDeviceInfo& rhs) {
-  return lhs == rhs && lhs.group_id == rhs.group_id;
+bool EqualDeviceExcludingGroupID(const blink::WebMediaDeviceInfo& lhs,
+                                 const blink::WebMediaDeviceInfo& rhs) {
+  return lhs.device_id == rhs.device_id && lhs.label == rhs.label &&
+         lhs.video_facing == rhs.video_facing &&
+         lhs.availability == rhs.availability;
+}
+
+bool EqualDeviceIncludingGroupID(const blink::WebMediaDeviceInfo& lhs,
+                                 const blink::WebMediaDeviceInfo& rhs) {
+  return EqualDeviceExcludingGroupID(lhs, rhs) && lhs.group_id == rhs.group_id;
 }
 
 void ReplaceInvalidFrameRatesWithFallback(media::VideoCaptureFormats* formats) {
@@ -1105,12 +1112,9 @@ void MediaDevicesManager::UpdateSnapshot(
 
   // Update the cached snapshot and send notifications only if the device list
   // has changed.
-  if (!base::ranges::equal(
-          new_snapshot, old_snapshot,
-          ignore_group_id
-              ? [](const blink::WebMediaDeviceInfo& lhs,
-                   const blink::WebMediaDeviceInfo& rhs) { return lhs == rhs; }
-              : EqualDeviceAndGroupID)) {
+  if (!base::ranges::equal(new_snapshot, old_snapshot,
+                           ignore_group_id ? EqualDeviceExcludingGroupID
+                                           : EqualDeviceIncludingGroupID)) {
     // Prevent sending notifications until group IDs are updated using
     // a heuristic in ProcessRequests().
     // TODO(crbug.com/627793): Remove |is_video_with_group_ids| and the

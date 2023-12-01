@@ -629,8 +629,31 @@ TEST_F(MediaDevicesTest, ObserveDeviceChangeEvent) {
       "new_fake_audio_input_device", "new_fake_label", "new_fake_group"));
   NotifyDeviceChanges();
 
-  // Renaming a group ID does not fire the event.
+  // Renaming a device ID fires the event.
+  EXPECT_CALL(*event_listener, Invoke(_, _));
+  dispatcher_host().VideoInputDevices().begin()->device_id = "new_device_id";
+  NotifyDeviceChanges();
+
+  // Renaming a group ID fires the event.
+  EXPECT_CALL(*event_listener, Invoke(_, _));
   dispatcher_host().AudioOutputDevices().begin()->group_id = "new_group_id";
+  NotifyDeviceChanges();
+
+  // Renaming a label fires the event.
+  EXPECT_CALL(*event_listener, Invoke(_, _));
+  dispatcher_host().AudioOutputDevices().begin()->label = "new_label";
+  NotifyDeviceChanges();
+
+  // Changing availability fires the event.
+  EXPECT_CALL(*event_listener, Invoke(_, _));
+  dispatcher_host().VideoInputDevices().begin()->availability =
+      media::CameraAvailability::kUnavailableExclusivelyUsedByOtherApplication;
+  NotifyDeviceChanges();
+
+  // Changing facing mode does not file the event.
+  EXPECT_CALL(*event_listener, Invoke(_, _)).Times(0);
+  dispatcher_host().VideoInputDevices().begin()->video_facing =
+      blink::mojom::FacingMode::kLeft;
   NotifyDeviceChanges();
 
   // Unsubscribe.

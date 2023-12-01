@@ -7,11 +7,13 @@
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
@@ -353,6 +355,12 @@ MediaStreamConstraints* ToMediaStreamConstraints(
     constraints->setMonitorTypeSurfaces(source->monitorTypeSurfaces());
   }
   return constraints;
+}
+
+bool EqualDeviceForDeviceChange(const WebMediaDeviceInfo& lhs,
+                                const WebMediaDeviceInfo& rhs) {
+  return lhs.device_id == rhs.device_id && lhs.label == rhs.label &&
+         lhs.group_id == rhs.group_id && lhs.IsAvailable() == rhs.IsAvailable();
 }
 
 }  // namespace
@@ -850,7 +858,8 @@ void MediaDevices::OnDevicesChanged(
     const Vector<WebMediaDeviceInfo>& device_infos) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(GetExecutionContext());
-  if (current_device_infos_[static_cast<wtf_size_t>(type)] == device_infos) {
+  if (base::ranges::equal(current_device_infos_[static_cast<wtf_size_t>(type)],
+                          device_infos, EqualDeviceForDeviceChange)) {
     return;
   }
 
