@@ -134,12 +134,12 @@ void PromiseAppService::OnPromiseApp(PromiseAppPtr delta) {
     return;
   }
 
-  // Clear out the icons of any promise app marked for deletion.
-  if (IsPromiseAppCompleted(delta->status)) {
+  promise_app_registry_cache_->OnPromiseApp(std::move(delta));
+
+  // If the promise app is newly removed, clear out the icons.
+  if (!promise_app_registry_cache_->HasPromiseApp(package_id)) {
     promise_app_icon_cache_->RemoveIconsForPackageId(package_id);
   }
-
-  promise_app_registry_cache_->OnPromiseApp(std::move(delta));
 
   if (is_existing_registration) {
     return;
