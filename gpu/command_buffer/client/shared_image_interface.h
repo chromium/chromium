@@ -14,8 +14,6 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/gpu_export.h"
-#include "gpu/ipc/common/gpu_memory_buffer_handle_info.h"
-#include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
@@ -55,10 +53,6 @@ struct SharedImageCapabilities;
 class GPU_EXPORT SharedImageInterface {
  public:
   virtual ~SharedImageInterface() = default;
-
-  static std::unique_ptr<gfx::GpuMemoryBuffer>
-  CreateGpuMemoryBufferForUseByScopedMapping(
-      GpuMemoryBufferHandleInfo handle_info);
 
   // Creates a shared image of requested |format|, |size| and |color_space|.
   // |usage| is a combination of |SharedImageUsage| bits that describes which

@@ -142,14 +142,10 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
   }
 
   CHECK(!buffer_handle.is_null());
-
-  // Create and cache a GpuMemoryBuffer for this SharedImage.
-  auto gpu_memory_buffer =
-      SharedImageInterface::CreateGpuMemoryBufferForUseByScopedMapping(
-          GpuMemoryBufferHandleInfo(std::move(buffer_handle), format, size,
-                                    buffer_usage));
-  return base::MakeRefCounted<ClientSharedImage>(AddMailbox(mailbox),
-                                                 std::move(gpu_memory_buffer));
+  return base::MakeRefCounted<ClientSharedImage>(
+      AddMailbox(mailbox),
+      GpuMemoryBufferHandleInfo(std::move(buffer_handle), format, size,
+                                buffer_usage));
 }
 
 scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(

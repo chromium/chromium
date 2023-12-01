@@ -8,7 +8,6 @@
 #include "base/notreached.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/gfx/win/d3d_shared_fence.h"
@@ -40,26 +39,6 @@ void SharedImageInterface::NotifyMailboxAdded(const Mailbox& /*mailbox*/,
 void SharedImageInterface::CopyToGpuMemoryBuffer(const SyncToken& sync_token,
                                                  const Mailbox& mailbox) {
   NOTREACHED();
-}
-
-// static
-std::unique_ptr<gfx::GpuMemoryBuffer>
-SharedImageInterface::CreateGpuMemoryBufferForUseByScopedMapping(
-    GpuMemoryBufferHandleInfo handle_info) {
-  GpuMemoryBufferSupport support;
-
-  // Only single planar buffer formats are supported currently. Multiplanar will
-  // be supported when Multiplanar SharedImages are fully implemented.
-  CHECK(handle_info.format.is_single_plane());
-  auto buffer = support.CreateGpuMemoryBufferImplFromHandle(
-      std::move(handle_info.handle), handle_info.size,
-      viz::SinglePlaneSharedImageFormatToBufferFormat(handle_info.format),
-      handle_info.buffer_usage, base::DoNothing());
-  if (!buffer) {
-    LOG(ERROR) << "Unable to create GpuMemoryBuffer.";
-  }
-
-  return std::move(buffer);
 }
 
 #if BUILDFLAG(IS_WIN)

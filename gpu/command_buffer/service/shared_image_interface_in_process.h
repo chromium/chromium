@@ -245,7 +245,7 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   void GetCapabilitiesOnGpu(base::WaitableEvent* completion,
                             SharedImageCapabilities* out_capabilities);
 
-  std::unique_ptr<gfx::GpuMemoryBuffer> GetGpuMemoryBuffer(
+  GpuMemoryBufferHandleInfo GetGpuMemoryBufferHandleInfo(
       const Mailbox& mailbox);
 
   // Used to schedule work on the gpu thread. This is a raw pointer for now

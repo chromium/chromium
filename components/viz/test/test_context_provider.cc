@@ -204,15 +204,11 @@ TestSharedImageInterface::CreateSharedImage(SharedImageFormat format,
                         usage, std::move(debug_label), surface_handle);
   CHECK(client_shared_image);
   auto mailbox = client_shared_image->mailbox();
-
   auto gmb_handle = CreateGMBHandle(format, size, buffer_usage);
 
-  auto gmb =
-      gpu::SharedImageInterface::CreateGpuMemoryBufferForUseByScopedMapping(
-          gpu::GpuMemoryBufferHandleInfo(std::move(gmb_handle), format, size,
-                                         buffer_usage));
-
-  return base::MakeRefCounted<gpu::ClientSharedImage>(mailbox, std::move(gmb));
+  return base::MakeRefCounted<gpu::ClientSharedImage>(
+      mailbox, gpu::GpuMemoryBufferHandleInfo(std::move(gmb_handle), format,
+                                              size, buffer_usage));
 }
 
 scoped_refptr<gpu::ClientSharedImage>

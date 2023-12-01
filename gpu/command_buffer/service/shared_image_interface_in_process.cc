@@ -350,8 +350,8 @@ SharedImageInterfaceInProcess::CreateSharedImage(
         {});
   }
 
-  return base::MakeRefCounted<ClientSharedImage>(mailbox,
-                                                 GetGpuMemoryBuffer(mailbox));
+  return base::MakeRefCounted<ClientSharedImage>(
+      mailbox, GetGpuMemoryBufferHandleInfo(mailbox));
 }
 
 void SharedImageInterfaceInProcess::CreateSharedImageWithBufferUsageOnGpuThread(
@@ -392,8 +392,9 @@ void SharedImageInterfaceInProcess::CreateSharedImageWithBufferUsageOnGpuThread(
   sync_point_client_state_->ReleaseFenceSync(sync_token.release_count());
 }
 
-std::unique_ptr<gfx::GpuMemoryBuffer>
-SharedImageInterfaceInProcess::GetGpuMemoryBuffer(const Mailbox& mailbox) {
+GpuMemoryBufferHandleInfo
+SharedImageInterfaceInProcess::GetGpuMemoryBufferHandleInfo(
+    const Mailbox& mailbox) {
   base::WaitableEvent completion(
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
@@ -410,8 +411,8 @@ SharedImageInterfaceInProcess::GetGpuMemoryBuffer(const Mailbox& mailbox) {
                      &buffer_usage, &completion),
       {});
   completion.Wait();
-  return SharedImageInterface::CreateGpuMemoryBufferForUseByScopedMapping(
-      GpuMemoryBufferHandleInfo(std::move(handle), format, size, buffer_usage));
+  return GpuMemoryBufferHandleInfo(std::move(handle), format, size,
+                                   buffer_usage);
 }
 
 void SharedImageInterfaceInProcess::GetGpuMemoryBufferHandleInfoOnGpuThread(

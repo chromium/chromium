@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "gpu/command_buffer/client/client_shared_image.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 
 namespace gpu {
 
@@ -74,12 +76,22 @@ void ClientSharedImage::ScopedMapping::OnMemoryDump(
 }
 
 ClientSharedImage::ClientSharedImage(const Mailbox& mailbox)
-    : ClientSharedImage(mailbox, nullptr) {}
+    : mailbox_(mailbox) {}
 
-ClientSharedImage::ClientSharedImage(
-    const Mailbox& mailbox,
-    std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer)
-    : mailbox_(mailbox), gpu_memory_buffer_(std::move(gpu_memory_buffer)) {}
+ClientSharedImage::ClientSharedImage(const Mailbox& mailbox,
+                                     GpuMemoryBufferHandleInfo handle_info)
+    : mailbox_(mailbox),
+      gpu_memory_buffer_(
+          GpuMemoryBufferSupport().CreateGpuMemoryBufferImplFromHandle(
+              std::move(handle_info.handle),
+              handle_info.size,
+              // Only single planar buffer formats are supported currently.
+              // Multiplanar will be supported when Multiplanar SharedImages are
+              // fully implemented.
+              viz::SinglePlaneSharedImageFormatToBufferFormat(
+                  handle_info.format),
+              handle_info.buffer_usage,
+              base::DoNothing())) {}
 
 ClientSharedImage::~ClientSharedImage() = default;
 

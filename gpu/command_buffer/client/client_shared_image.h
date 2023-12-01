@@ -10,6 +10,7 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/gpu_export.h"
+#include "gpu/ipc/common/gpu_memory_buffer_handle_info.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
 namespace gpu {
@@ -71,7 +72,7 @@ class GPU_EXPORT ClientSharedImage
 
   explicit ClientSharedImage(const Mailbox& mailbox);
   ClientSharedImage(const Mailbox& mailbox,
-                    std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer);
+                    GpuMemoryBufferHandleInfo handle_info);
 
   const Mailbox& mailbox() { return mailbox_; }
 
