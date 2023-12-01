@@ -57,6 +57,7 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/metadata/bluetooth/histograms.xml",
       "//tools/metrics/histograms/metadata/bookmarks/enums.xml",
       "//tools/metrics/histograms/metadata/bookmarks/histograms.xml",
+      "//tools/metrics/histograms/metadata/borealis/enums.xml",
       "//tools/metrics/histograms/metadata/borealis/histograms.xml",
       "//tools/metrics/histograms/metadata/bruschetta/histograms.xml",
       "//tools/metrics/histograms/metadata/browser/histograms.xml",

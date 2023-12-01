@@ -1,0 +1,107 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="BorealisAudioPath">
+  <summary>
+    These values describe the audio path in Borealis VM. They are used for both
+    input and output.
+  </summary>
+  <int value="0" label="Proton - ALSA"/>
+  <int value="1" label="PulseAudio"/>
+  <int value="2" label="PipeWire"/>
+</enum>
+
+<enum name="BorealisInstallResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="User cancelled installation"/>
+  <int value="2" label="Borealis is not allowed"/>
+  <int value="3" label="Installation already in progress"/>
+  <int value="4" label="DLC reported an internal error"/>
+  <int value="5" label="Borealis DLC is not supported"/>
+  <int value="6" label="DLC service is busy"/>
+  <int value="7"
+      label="Device has a pending update and needs to be restarted to use
+             Borealis DLC"/>
+  <int value="8" label="Device needs more space to use Borealis DLC"/>
+  <int value="9" label="DLC faced an unknown error"/>
+  <int value="10" label="Device is offline"/>
+  <int value="11" label="DLC couldn't find an image at the correct version"/>
+  <int value="12" label="Unable to first-time launch VM"/>
+  <int value="13" label="Main app never showed up"/>
+</enum>
+
+<enum name="BorealisStartupFsckResult">
+  <summary>
+    These correspond to e2fsck exit codes. Note that 0 differs from e2fsck's man
+    (https://linux.die.net/man/8/e2fsck). 0 is used to capture any errors we
+    don't expect (i.e higher than the sum of all documented errors) and 1
+    captures when fsck exits with multiple errors at once. TODO(b/258589422):
+    Revisit once we have metrics to determine if error 1 is sufficient, or if we
+    need more in-depth enumeration for combined errors.
+  </summary>
+  <int value="0" label="Unexpected result"/>
+  <int value="1" label="Combined error"/>
+  <int value="2" label="No errors"/>
+  <int value="3" label="File system errors corrected"/>
+  <int value="4" label="System should be rebooted"/>
+  <int value="5" label="File system errors left uncorrected"/>
+  <int value="6" label="Operational error"/>
+  <int value="7" label="Usage or syntax error"/>
+  <int value="8" label="Fsck canceled by user request"/>
+  <int value="9" label="Shared library error"/>
+</enum>
+
+<enum name="BorealisStartupResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Cancelled"/>
+  <int value="2" label="Failed mounting DLC"/>
+  <int value="3" label="Failed creating disk image"/>
+  <int value="4" label="Failed starting VM"/>
+  <int value="5" label="Failed awaiting startup"/>
+  <int value="6" label="Failed Syncing Disks"/>
+  <int value="7" label="Failed starting wayland server"/>
+  <int value="8" label="Disallowed"/>
+  <int value="9" label="DLC install was cancelled"/>
+  <int value="10" label="DLC failed because the device is offline"/>
+  <int value="11" label="DLC couldn't find an image at the correct version"/>
+  <int value="12"
+      label="Device has a pending update and needs to be restarted to use
+             Borealis DLC"/>
+  <int value="13" label="Device needs more space to use Borealis DLC"/>
+  <int value="14" label="DLC service is busy"/>
+  <int value="15" label="DLC reported an internal error"/>
+  <int value="16" label="Borealis DLC is not supported"/>
+  <int value="17" label="DLC faced an unknown error"/>
+  <int value="18" label="Concierge was unavailable"/>
+  <int value="19" label="Recieved an empty disk response from Concierge"/>
+  <int value="20" label="Recieved an empty startup response from Concierge"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>
