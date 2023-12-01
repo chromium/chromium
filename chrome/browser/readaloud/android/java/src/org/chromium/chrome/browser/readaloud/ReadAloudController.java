@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelTabObserver;
 import org.chromium.chrome.browser.translate.TranslateBridge;
+import org.chromium.chrome.browser.translate.TranslationObserver;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
@@ -41,6 +42,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
 import java.util.HashMap;
@@ -153,6 +155,18 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
     private final ObservableSupplierImpl<List<PlaybackVoice>> mCurrentLanguageVoices;
     // Selected voice ID.
     private final ObservableSupplierImpl<String> mSelectedVoiceId;
+
+    private long mTranslationObserverHandle;
+    private final TranslationObserver mTranslationObserver =
+            new TranslationObserver() {
+
+                @Override
+                public void onIsPageTranslatedChanged(WebContents webContents) {
+                    if (mCurrentlyPlayingTab != null) {
+                        maybeStopPlayback(mCurrentlyPlayingTab);
+                    }
+                }
+            };
 
     /**
      * Kicks of readability check on a page load iff: the url is valid, no previous result is
@@ -336,7 +350,9 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
 
         resetCurrentPlayback();
         mCurrentlyPlayingTab = tab;
-
+        mTranslationObserverHandle =
+                TranslateBridge.addTranslationObserver(
+                        mCurrentlyPlayingTab.getWebContents(), mTranslationObserver);
         if (!mPlaybackHooks.voicesInitialized()) {
             mPlaybackHooks.initVoices();
         }
@@ -405,10 +421,13 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
             mPlayback.release();
             mPlayback = null;
         }
-        if (mCurrentlyPlayingTab != null) {
-            // TODO: remove translation observer
-            mCurrentlyPlayingTab = null;
+        if (mTranslationObserverHandle != 0L) {
+            assert mCurrentlyPlayingTab != null;
+            TranslateBridge.removeTranslationObserver(
+                    mCurrentlyPlayingTab.getWebContents(), mTranslationObserverHandle);
+            mTranslationObserverHandle = 0L;
         }
+        mCurrentlyPlayingTab = null;
         mGlobalRenderFrameId = null;
         mCurrentPlaybackData = null;
     }
@@ -551,7 +570,8 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
         if (mCurrentlyPlayingTab == null) {
             return false;
         }
-        return timepointsSupported(mCurrentlyPlayingTab);
+        return timepointsSupported(mCurrentlyPlayingTab)
+                && !TranslateBridge.isPageTranslated(mCurrentlyPlayingTab.getWebContents());
     }
 
     @Override
@@ -729,6 +749,10 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
 
     public TabModelTabObserver getTabModelTabObserverforTests() {
         return mTabObserver;
+    }
+
+    public TranslationObserver getTranslationObserverForTest() {
+        return mTranslationObserver;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

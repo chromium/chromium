@@ -943,6 +943,37 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
+    public void testTranslationListenerRegistration() {
+        // Play tab.
+        mFakeTranslateBridge.setCurrentLanguage("en");
+        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
+        mController.playTab(mTab);
+        verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
+        onPlaybackSuccess(mPlayback);
+        assertEquals(1, mFakeTranslateBridge.getObserverCount());
+
+        // stopping playback should unregister a listener
+        mController.maybeStopPlayback(mTab);
+        assertEquals(0, mFakeTranslateBridge.getObserverCount());
+    }
+
+    @Test
+    public void testTranslationStopsPlayback() {
+        // Play tab.
+        mFakeTranslateBridge.setCurrentLanguage("en");
+        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
+        mController.playTab(mTab);
+        verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
+        onPlaybackSuccess(mPlayback);
+
+        // trigger translation. Playback should stop
+        mController
+                .getTranslationObserverForTest()
+                .onIsPageTranslatedChanged(mTab.getWebContents());
+        verify(mPlayback).release();
+    }
+
+    @Test
     public void testStoppingAnyPlayback() {
         // Play tab.
         mFakeTranslateBridge.setCurrentLanguage("en");
@@ -956,6 +987,40 @@ public class ReadAloudControllerUnitTest {
         mController.maybeStopPlayback(null);
         verify(mPlayback).release();
         verify(mPlayerCoordinator).dismissPlayers();
+    }
+
+    @Test
+    public void testIsHighlightingSupported_noPlayback() {
+        mFakeTranslateBridge.setIsPageTranslated(false);
+
+        assertFalse(mController.isHighlightingSupported());
+    }
+
+    @Test
+    public void testIsHighlightingSupported_pageTranslated() {
+        mFakeTranslateBridge.setIsPageTranslated(true);
+        mController.setTimepointsSupportedForTest(mTab.getUrl().getSpec(), true);
+        mController.playTab(mTab);
+
+        assertFalse(mController.isHighlightingSupported());
+    }
+
+    @Test
+    public void testIsHighlightingSupported_notSupported() {
+        mFakeTranslateBridge.setIsPageTranslated(false);
+        mController.setTimepointsSupportedForTest(mTab.getUrl().getSpec(), false);
+        mController.playTab(mTab);
+
+        assertFalse(mController.isHighlightingSupported());
+    }
+
+    @Test
+    public void testIsHighlightingSupported_supported() {
+        mFakeTranslateBridge.setIsPageTranslated(false);
+        mController.setTimepointsSupportedForTest(mTab.getUrl().getSpec(), true);
+        mController.playTab(mTab);
+
+        assertTrue(mController.isHighlightingSupported());
     }
 
     private void onPlaybackSuccess(Playback playback) {

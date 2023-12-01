@@ -219,13 +219,46 @@ public class TranslateBridge {
         return TranslateBridgeJni.get().getCurrentLanguage(webContents);
     }
 
+    /**
+     * Add an observer for translation events.
+     *
+     * @param webContents WebContents to observe.
+     * @param observer Observer.
+     * @return Native observer pointer, needed for removeTranslationObserver().
+     */
+    public static long addTranslationObserver(
+            WebContents webContents, TranslationObserver observer) {
+        return TranslateBridgeJni.get().addTranslationObserver(webContents, observer);
+    }
+
+    /**
+     * Remove a previously added TranslationObserver, destroying the native observer.
+     *
+     * @param webContents WebContents the observer was registered on.
+     * @param observerNativePtr Pointer to the native observer object.
+     */
+    public static void removeTranslationObserver(WebContents webContents, long observerNativePtr) {
+        TranslateBridgeJni.get().removeTranslationObserver(webContents, observerNativePtr);
+    }
+
+    /** Whether or not the WebContents have been translated. */
+    public static boolean isPageTranslated(WebContents webContents) {
+        return TranslateBridgeJni.get().isPageTranslated(webContents);
+    }
+
     @NativeMethods
     public interface Natives {
+        long addTranslationObserver(WebContents webContents, TranslationObserver observer);
+
+        void removeTranslationObserver(WebContents webContents, long observerNativePtr);
+
         void manualTranslateWhenReady(WebContents webContents);
 
         boolean canManuallyTranslate(WebContents webContents, boolean menuLogging);
 
         boolean shouldShowManualTranslateIPH(WebContents webContents);
+
+        boolean isPageTranslated(WebContents webContents);
 
         void setPredefinedTargetLanguage(
                 WebContents webContents, String targetLanguage, boolean shouldAutoTranslate);

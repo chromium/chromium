@@ -6,10 +6,12 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/containers/adapters.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/language/android/jni_headers/TranslateBridge_jni.h"
+#include "chrome/browser/language/android/jni_headers/TranslationObserver_jni.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -33,6 +35,7 @@
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
+using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaArrayOfStrings;
 
@@ -43,6 +46,27 @@ PrefService* GetPrefService() {
       ->GetOriginalProfile()
       ->GetPrefs();
 }
+
+class TranslationObserver
+    : public translate::ContentTranslateDriver::TranslationObserver {
+ public:
+  TranslationObserver(JNIEnv* env,
+                      const base::android::JavaParamRef<jobject>& j_observer)
+      : env_(env), j_observer_(j_observer) {}
+
+  void OnIsPageTranslatedChanged(content::WebContents* source) override {
+    ScopedJavaLocalRef<jobject> jsource_contents;
+    if (source) {
+      jsource_contents = source->GetJavaWebContents();
+    }
+    Java_TranslationObserver_onIsPageTranslatedChanged(env_, j_observer_,
+                                                       jsource_contents);
+  }
+
+ private:
+  raw_ptr<JNIEnv> env_;
+  ScopedJavaGlobalRef<jobject> j_observer_;
+};
 
 }  // namespace
 
@@ -395,6 +419,40 @@ JNI_TranslateBridge_GetCurrentLanguage(
   base::android::ScopedJavaLocalRef<jstring> j_current_language =
       base::android::ConvertUTF8ToJavaString(env, current_language_code);
   return j_current_language;
+}
+
+static jboolean JNI_TranslateBridge_IsPageTranslated(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_web_contents) {
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(j_web_contents);
+  ChromeTranslateClient* client =
+      ChromeTranslateClient::FromWebContents(web_contents);
+  DCHECK(client);
+  return client->GetLanguageState().IsPageTranslated();
+}
+
+static jlong JNI_TranslateBridge_AddTranslationObserver(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_web_contents,
+    const base::android::JavaParamRef<jobject>& j_observer) {
+  auto* observer = new TranslationObserver(env, j_observer);
+  GetTranslateClient(j_web_contents)
+      ->translate_driver()
+      ->AddTranslationObserver(observer);
+  return reinterpret_cast<jlong>(observer);
+}
+
+static void JNI_TranslateBridge_RemoveTranslationObserver(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_web_contents,
+    jlong j_observer_native_ptr) {
+  TranslationObserver* observer =
+      reinterpret_cast<TranslationObserver*>(j_observer_native_ptr);
+  GetTranslateClient(j_web_contents)
+      ->translate_driver()
+      ->RemoveTranslationObserver(observer);
+  delete observer;
 }
 
 static void JNI_TranslateBridge_SetIgnoreMissingKeyForTesting(  // IN-TEST
