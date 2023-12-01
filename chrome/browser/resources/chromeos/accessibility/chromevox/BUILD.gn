@@ -11,7 +11,6 @@ import(
 import("//chrome/common/features.gni")
 import("//chrome/test/base/ash/js2gtest.gni")
 import("//testing/test.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 
 closure_library_dir =
     "//third_party/chromevox/third_party/closure-library/closure/goog"
@@ -462,35 +461,5 @@ if (is_chromeos_ash) {
   }
 }
 
-# Closure type check compilation and associated js libraries.
-js_type_check("closure_compile") {
-  deps = [
-    ":chromevox_es6_library",
-    ":chromevox_library",
-  ]
-}
-
-js_library("chromevox_library") {
-  sources = chromevox_modules
-  deps = [ "//third_party/chromevox/third_party/closure-library:library" ]
-  externs_list = [
-    "background/externs.js",
-    "$externs_path/accessibility_private.js",
-    "$externs_path/audio.js",
-    "$externs_path/automation.js",
-    "$externs_path/braille_display_private.js",
-    "$externs_path/chromeos_info_private.js",
-    "$externs_path/chrome_extensions.js",
-    "$externs_path/clipboard.js",
-    "$externs_path/command_line_private.js",
-    "$externs_path/login_state.js",
-    "$externs_path/metrics_private.js",
-    "$externs_path/settings_private.js",
-    "$externs_path/tts.js",
-    "$externs_path/virtual_keyboard_private.js",
-  ]
-}
-
-js_library("chromevox_es6_library") {
-  sources = chromevox_es6_modules
+group("closure_compile") {
 }
