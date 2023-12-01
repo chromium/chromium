@@ -566,27 +566,6 @@ export class Video extends ModeBase {
                 this.captureConstraints);
       }
     }
-    if (this.recordingImageCapture === null) {
-      this.recordingImageCapture = new CrosImageCapture(this.getVideoTrack());
-    }
-
-    let param: h264.EncoderParameters|null = null;
-    try {
-      param = this.getEncoderParameters();
-      const mimeType = getVideoMimeType(param);
-      if (!MediaRecorder.isTypeSupported(mimeType)) {
-        throw new Error(
-            `The preferred mimeType "${mimeType}" is not supported.`);
-      }
-      const option: MediaRecorderOptions = {mimeType};
-      if (param !== null) {
-        option.videoBitsPerSecond = param.bitrate;
-      }
-      this.mediaRecorder = new MediaRecorder(this.getRecordingStream(), option);
-    } catch (e) {
-      toast.show(I18nString.ERROR_MSG_RECORD_START_FAILED);
-      throw e;
-    }
 
     if (this.stopped) {
       throw new CanceledError('Recording stopped');
@@ -626,6 +605,9 @@ export class Video extends ModeBase {
         duration: this.recordTime.inMilliseconds(),
       })];
     } else if (this.recordingType === RecordType.TIME_LAPSE) {
+      this.recordingImageCapture = new CrosImageCapture(this.getVideoTrack());
+      const param = this.getEncoderParameters();
+
       // TODO(b/279865370): Don't pause when the confirm dialog is shown.
       window.addEventListener('beforeunload', beforeUnloadListener);
 
@@ -656,6 +638,24 @@ export class Video extends ModeBase {
         timeLapseSaver,
       })];
     } else {
+      this.recordingImageCapture = new CrosImageCapture(this.getVideoTrack());
+      try {
+        const param = this.getEncoderParameters();
+        const mimeType = getVideoMimeType(param);
+        if (!MediaRecorder.isTypeSupported(mimeType)) {
+          throw new Error(
+              `The preferred mimeType "${mimeType}" is not supported.`);
+        }
+        const option: MediaRecorderOptions = {mimeType};
+        if (param !== null) {
+          option.videoBitsPerSecond = param.bitrate;
+        }
+        this.mediaRecorder =
+            new MediaRecorder(this.getRecordingStream(), option);
+      } catch (e) {
+        toast.show(I18nString.ERROR_MSG_RECORD_START_FAILED);
+        throw e;
+      }
       this.recordTime.start();
       let videoSaver: VideoSaver|null = null;
 
@@ -667,6 +667,7 @@ export class Video extends ModeBase {
           videoSaver = await this.captureVideo();
         } finally {
           this.recordTime.stop();
+          this.mediaRecorder = null;
           sound.play('recordEnd');
           await this.snapshottingQueue.flush();
         }
@@ -721,6 +722,7 @@ export class Video extends ModeBase {
         window.removeEventListener('beforeunload', beforeUnloadListener);
       }
     }
+    this.recordingImageCapture = null;
   }
 
   /**
@@ -749,7 +751,7 @@ export class Video extends ModeBase {
     const frames = await new Promise<number>((resolve) => {
       let encodedFrames = 0;
       let writtenFrames = 0;
-      let handle = 0;
+      let handle: number;
       function stopRecording() {
         video.cancelVideoFrameCallback(handle);
         videoTrack.removeEventListener('ended', stopRecording);
