@@ -878,6 +878,11 @@ void AppListItemView::UpdateDraggedItem(const AppListItem* dragged_item) {
 gfx::Size AppListItemView::GetPreferredIconSizeForProgressRing() const {
   DCHECK(is_promise_app_);
   CHECK(item_weak_);
+  // Placeholder icons do not change size between states.
+  // TODO(b/314251625): Evaluate the correct size for icons across spec.
+  if (icon_image_model_.IsVectorIcon()) {
+    return gfx::Size(kPlaceholderIconDimension, kPlaceholderIconDimension);
+  }
 
   switch (item_weak_->app_status()) {
     case AppStatus::kPending:
@@ -887,10 +892,6 @@ gfx::Size AppListItemView::GetPreferredIconSizeForProgressRing() const {
     case AppStatus::kInstallCancelled:
     case AppStatus::kInstallSuccess:
     case AppStatus::kPaused:
-      // Placeholder icons do not change size between states.
-      if (icon_image_model_.IsVectorIcon()) {
-        return gfx::Size(kPlaceholderIconDimension, kPlaceholderIconDimension);
-      }
       return gfx::Size(app_list_config_->promise_icon_dimension_installing(),
                        app_list_config_->promise_icon_dimension_installing());
     case AppStatus::kReady:
