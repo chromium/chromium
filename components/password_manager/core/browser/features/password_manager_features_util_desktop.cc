@@ -39,8 +39,6 @@ PasswordForm::Store PasswordStoreFromInt(int value) {
 }
 
 const char kAccountStorageDefaultStoreKey[] = "default_store";
-const char kMoveToAccountStoreOfferedCountKey[] =
-    "move_to_account_store_refused_count";
 
 // Helper class for reading account storage settings for a given account.
 class AccountStorageSettingsReader {
@@ -64,14 +62,6 @@ class AccountStorageSettingsReader {
     return PasswordStoreFromInt(*value);
   }
 
-  int GetMoveOfferedToNonOptedInUserCount() const {
-    if (!account_settings_) {
-      return 0;
-    }
-    return account_settings_->FindInt(kMoveToAccountStoreOfferedCountKey)
-        .value_or(0);
-  }
-
  private:
   // May be null, if no settings for this account were saved yet.
   raw_ptr<const base::Value::Dict> account_settings_ = nullptr;
@@ -91,22 +81,10 @@ class ScopedAccountStorageSettingsUpdate {
     return update_->EnsureDict(account_hash_);
   }
 
-  void ResetMoveToAccountStoreOfferedCount() {
-    base::Value::Dict* account_settings = GetOrCreateAccountSettings();
-    account_settings->Remove(kMoveToAccountStoreOfferedCountKey);
-  }
-
   void SetDefaultStore(PasswordForm::Store default_store) {
     base::Value::Dict* account_settings = GetOrCreateAccountSettings();
     account_settings->Set(kAccountStorageDefaultStoreKey,
                           static_cast<int>(default_store));
-  }
-
-  void RecordMoveOfferedToNonOptedInUser() {
-    base::Value::Dict* account_settings = GetOrCreateAccountSettings();
-    int count = account_settings->FindInt(kMoveToAccountStoreOfferedCountKey)
-                    .value_or(0);
-    account_settings->Set(kMoveToAccountStoreOfferedCountKey, ++count);
   }
 
   void ClearAllSettings() { update_->Remove(account_hash_); }
@@ -224,9 +202,6 @@ void OptInToAccountStorage(PrefService* pref_service,
       sync_service->GetUserSettings();
   sync_user_settings->SetSelectedType(syncer::UserSelectableType::kPasswords,
                                       /*is_type_on=*/true);
-  ScopedAccountStorageSettingsUpdate(pref_service,
-                                     GaiaIdHash::FromGaiaId(gaia_id))
-      .ResetMoveToAccountStoreOfferedCount();
 
   // Record the total number of (now) opted-in accounts.
   base::UmaHistogramExactLinear(
@@ -312,32 +287,6 @@ void KeepAccountStorageSettingsOnlyForUsers(
   for (const std::string& key_to_remove : keys_to_remove) {
     update->Remove(key_to_remove);
   }
-}
-
-void RecordMoveOfferedToNonOptedInUser(
-    PrefService* pref_service,
-    const syncer::SyncService* sync_service) {
-  DCHECK(pref_service);
-  DCHECK(sync_service);
-  std::string gaia_id = sync_service->GetAccountInfo().gaia;
-  DCHECK(!gaia_id.empty());
-  DCHECK(!IsOptedInForAccountStorage(sync_service));
-  ScopedAccountStorageSettingsUpdate(pref_service,
-                                     GaiaIdHash::FromGaiaId(gaia_id))
-      .RecordMoveOfferedToNonOptedInUser();
-}
-
-int GetMoveOfferedToNonOptedInUserCount(
-    const PrefService* pref_service,
-    const syncer::SyncService* sync_service) {
-  DCHECK(pref_service);
-  DCHECK(sync_service);
-  std::string gaia_id = sync_service->GetAccountInfo().gaia;
-  DCHECK(!gaia_id.empty());
-  DCHECK(!IsOptedInForAccountStorage(sync_service));
-  AccountStorageSettingsReader reader(pref_service,
-                                      GaiaIdHash::FromGaiaId(gaia_id));
-  return reader.GetMoveOfferedToNonOptedInUserCount();
 }
 
 void MigrateOptInPrefToSyncSelectedTypes(PrefService* pref_service) {

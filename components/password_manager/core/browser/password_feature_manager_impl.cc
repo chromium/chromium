@@ -112,15 +112,6 @@ bool PasswordFeatureManagerImpl::
   return ShouldShowAccountStorageOptIn() && !IsDefaultPasswordStoreSet();
 }
 
-void PasswordFeatureManagerImpl::RecordMoveOfferedToNonOptedInUser() {
-  features_util::RecordMoveOfferedToNonOptedInUser(pref_service_,
-                                                   sync_service_);
-}
-
-int PasswordFeatureManagerImpl::GetMoveOfferedToNonOptedInUserCount() const {
-  return features_util::GetMoveOfferedToNonOptedInUserCount(pref_service_,
-                                                            sync_service_);
-}
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 }  // namespace password_manager

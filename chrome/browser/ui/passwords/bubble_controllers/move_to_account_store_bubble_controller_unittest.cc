@@ -93,13 +93,6 @@ TEST_F(MoveToAccountStoreBubbleControllerTest, AcceptMoveIfOptedIn) {
   controller()->AcceptMove();
 }
 
-TEST_F(MoveToAccountStoreBubbleControllerTest, AuthenticateMoveIfOptedOut) {
-  ON_CALL(*password_feature_manager(), IsOptedInForAccountStorage)
-      .WillByDefault(Return(false));
-  EXPECT_CALL(*delegate(), AuthenticateUserForAccountStoreOptInAndMovePassword);
-  controller()->AcceptMove();
-}
-
 TEST_F(MoveToAccountStoreBubbleControllerTest, RejectMove) {
   EXPECT_CALL(*delegate(), BlockMovingPasswordToAccountStore);
   controller()->RejectMove();

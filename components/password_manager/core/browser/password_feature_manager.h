@@ -100,17 +100,6 @@ class PasswordFeatureManager {
   // used for saving new credentials and adding blacking listing entries.
   virtual void SetDefaultPasswordStore(const PasswordForm::Store& store) = 0;
 
-  // Increases the count of how many times Chrome automatically offered a user
-  // not opted-in to the account-scoped passwords storage to move a password to
-  // their account. Should only be called if the user is signed-in and not
-  // opted-in.
-  virtual void RecordMoveOfferedToNonOptedInUser() = 0;
-
-  // Gets the count of how many times Chrome automatically offered a user
-  // not opted-in to the account-scoped passwords storage to move a password to
-  // their account. Should only be called if the user is signed-in and not
-  // opted-in.
-  virtual int GetMoveOfferedToNonOptedInUserCount() const = 0;
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 };
 

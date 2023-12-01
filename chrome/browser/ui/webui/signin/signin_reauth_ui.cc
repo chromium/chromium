@@ -67,7 +67,6 @@ bool WasPasswordSavedLocally(signin_metrics::ReauthAccessPoint access_point) {
     case signin_metrics::ReauthAccessPoint::kPasswordSettings:
     case signin_metrics::ReauthAccessPoint::kGeneratePasswordDropdown:
     case signin_metrics::ReauthAccessPoint::kGeneratePasswordContextMenu:
-    case signin_metrics::ReauthAccessPoint::kPasswordMoveBubble:
       return false;
     case signin_metrics::ReauthAccessPoint::kPasswordSaveLocallyBubble:
       return true;

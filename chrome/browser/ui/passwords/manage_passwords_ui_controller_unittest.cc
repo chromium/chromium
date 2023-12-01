@@ -1710,63 +1710,6 @@ TEST_F(ManagePasswordsUIControllerTest, NoMoreToFixBubbleIfPromoStillOpen) {
   ExpectIconAndControllerStateIs(password_manager::ui::MANAGE_STATE);
 }
 
-TEST_F(ManagePasswordsUIControllerTest, ReauthenticateBeforeMove) {
-  std::vector<const PasswordForm*> matches = {&test_local_form()};
-  auto test_form_manager = CreateFormManagerWithBestMatches(&matches);
-  MockPasswordFormManagerForUI* form_manager = test_form_manager.get();
-
-  // A submitted form triggers the move dialog.
-  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility())
-      .Times(AtLeast(1));
-  EXPECT_CALL(*client().GetPasswordFeatureManager(),
-              RecordMoveOfferedToNonOptedInUser);
-  controller()->OnShowMoveToAccountBubble(std::move(test_form_manager));
-  EXPECT_TRUE(controller()->opened_automatic_bubble());
-  ExpectIconAndControllerStateIs(
-      password_manager::ui::CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE);
-
-  // A user confirms the move which closes the dialog but opens a reauth.
-  base::OnceCallback<void(ReauthSucceeded)> reauth_callback;
-  EXPECT_CALL(client(),
-              TriggerReauthForPrimaryAccount(
-                  signin_metrics::ReauthAccessPoint::kPasswordMoveBubble, _))
-      .WillOnce(MoveArg<1>(&reauth_callback));
-  controller()->AuthenticateUserForAccountStoreOptInAndMovePassword();
-
-  // Once the reauth finishes with a success, the passwords is moved.
-  EXPECT_CALL(*form_manager, MoveCredentialsToAccountStore);
-  std::move(reauth_callback).Run(ReauthSucceeded(true));
-  EXPECT_FALSE(controller()->opened_automatic_bubble());
-  ExpectIconAndControllerStateIs(password_manager::ui::MANAGE_STATE);
-}
-
-TEST_F(ManagePasswordsUIControllerTest, ReauthenticateFailsBeforeMove) {
-  std::vector<const PasswordForm*> matches = {&test_local_form()};
-  auto test_form_manager = CreateFormManagerWithBestMatches(&matches);
-
-  // A submitted form triggers the move dialog.
-  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
-  EXPECT_CALL(*client().GetPasswordFeatureManager(),
-              RecordMoveOfferedToNonOptedInUser);
-  controller()->OnShowMoveToAccountBubble(std::move(test_form_manager));
-  EXPECT_TRUE(controller()->opened_automatic_bubble());
-  ExpectIconAndControllerStateIs(
-      password_manager::ui::CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE);
-
-  // A user confirms the move which closes the dialog but opens a reauth.
-  base::OnceCallback<void(ReauthSucceeded)> reauth_callback;
-  EXPECT_CALL(client(),
-              TriggerReauthForPrimaryAccount(
-                  signin_metrics::ReauthAccessPoint::kPasswordMoveBubble, _))
-      .WillOnce(MoveArg<1>(&reauth_callback));
-  controller()->AuthenticateUserForAccountStoreOptInAndMovePassword();
-
-  // Once the reauth finishes with a failure, don't move the password.
-  std::move(reauth_callback).Run(ReauthSucceeded(false));
-  ExpectIconAndControllerStateIs(
-      password_manager::ui::CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE);
-}
-
 TEST_F(ManagePasswordsUIControllerTest, UsernameAdded) {
   std::vector<const PasswordForm*> best_matches;
   auto test_form_manager = CreateFormManagerWithBestMatches(&best_matches);

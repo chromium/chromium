@@ -391,26 +391,6 @@ TEST_F(PasswordManagerFeaturesUtilTest, OptOutClearsStorePreference) {
                                       PasswordForm::Store::kProfileStore, 1);
 }
 
-TEST_F(PasswordManagerFeaturesUtilTest,
-       MovePasswordToAccountStoreOfferedCount) {
-  // Set up a user signed-in, not syncing and not opted-in.
-  CoreAccountInfo account;
-  account.email = "name@account.com";
-  account.gaia = "name";
-  account.account_id = CoreAccountId::FromGaiaId(account.gaia);
-  SetSyncStateTransportActive(account);
-  ASSERT_FALSE(IsOptedInForAccountStorage(&sync_service_));
-
-  EXPECT_EQ(
-      0, GetMoveOfferedToNonOptedInUserCount(&pref_service_, &sync_service_));
-  RecordMoveOfferedToNonOptedInUser(&pref_service_, &sync_service_);
-  EXPECT_EQ(
-      1, GetMoveOfferedToNonOptedInUserCount(&pref_service_, &sync_service_));
-  RecordMoveOfferedToNonOptedInUser(&pref_service_, &sync_service_);
-  EXPECT_EQ(
-      2, GetMoveOfferedToNonOptedInUserCount(&pref_service_, &sync_service_));
-}
-
 TEST_F(PasswordManagerFeaturesUtilTest, MigrateOptInPrefToSyncSelectedTypes) {
   syncer::SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
   CoreAccountInfo account1;

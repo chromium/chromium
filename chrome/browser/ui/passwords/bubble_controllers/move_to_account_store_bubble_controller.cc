@@ -60,12 +60,12 @@ std::u16string MoveToAccountStoreBubbleController::GetTitle() const {
 
 void MoveToAccountStoreBubbleController::AcceptMove() {
   dismissal_reason_ = metrics_util::CLICKED_ACCEPT;
-  if (delegate_->GetPasswordFeatureManager()->IsOptedInForAccountStorage()) {
-    // User has already opted in to the account store. Move without reauth.
-    return delegate_->MovePasswordToAccountStore();
+  if (!delegate_->GetPasswordFeatureManager()->IsOptedInForAccountStorage()) {
+    // The user opted out since the bubble was shown. This should be rare and
+    // ultimately harmless, just do nothing.
+    return;
   }
-  // Otherwise, we should invoke the reauth flow before saving.
-  return delegate_->AuthenticateUserForAccountStoreOptInAndMovePassword();
+  return delegate_->MovePasswordToAccountStore();
 }
 
 void MoveToAccountStoreBubbleController::RejectMove() {

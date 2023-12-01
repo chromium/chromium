@@ -386,8 +386,6 @@ void ManagePasswordsUIController::OnShowMoveToAccountBubble(
       "PasswordManager.AccountStorage.MoveToAccountStoreFlowOffered",
       password_manager::metrics_util::MoveToAccountStoreTrigger::
           kSuccessfulLoginWithProfileStorePassword);
-  if (!GetPasswordFeatureManager()->IsOptedInForAccountStorage())
-    GetPasswordFeatureManager()->RecordMoveOfferedToNonOptedInUser();
   passwords_data_.OnPasswordMovable(std::move(form_to_move));
   // TODO(crbug.com/1100814): Add smartness like OnPasswordSubmitted?
   bubble_status_ = BubbleStatus::SHOULD_POP_UP;
@@ -908,19 +906,6 @@ void ManagePasswordsUIController::RelaunchChrome() {
   chrome::AttemptRestart();
 }
 
-void ManagePasswordsUIController::
-    AuthenticateUserForAccountStoreOptInAndMovePassword() {
-  DCHECK_EQ(GetState(),
-            password_manager::ui::CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE)
-      << GetState();
-  passwords_data_.client()->TriggerReauthForPrimaryAccount(
-      signin_metrics::ReauthAccessPoint::kPasswordMoveBubble,
-      base::BindOnce(&ManagePasswordsUIController::
-                         FinishMovingPasswordAfterAccountStoreOptInAuth,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     passwords_data_.form_manager()));
-}
-
 [[nodiscard]] std::unique_ptr<base::AutoReset<bool>>
 ManagePasswordsUIController::BypassUserAuthtForTesting() {
   return std::make_unique<base::AutoReset<bool>>(&bypass_user_auth_for_testing_,
@@ -1085,17 +1070,6 @@ void ManagePasswordsUIController::OnTriggerPostSaveCompromisedBubble(
   passwords_data_.TransitionToState(state);
   bubble_status_ = BubbleStatus::SHOULD_POP_UP;
   UpdateBubbleAndIconVisibility();
-}
-
-void ManagePasswordsUIController::
-    FinishMovingPasswordAfterAccountStoreOptInAuth(
-        password_manager::PasswordFormManagerForUI* form_manager,
-        password_manager::PasswordManagerClient::ReauthSucceeded
-            reauth_succeeded) {
-  if (!reauth_succeeded || passwords_data_.form_manager() != form_manager) {
-    return;
-  }
-  MovePasswordToAccountStore();
 }
 
 void ManagePasswordsUIController::MoveJustSavedPasswordAfterAccountStoreOptIn(

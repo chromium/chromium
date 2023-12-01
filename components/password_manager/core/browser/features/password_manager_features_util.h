@@ -181,23 +181,6 @@ void KeepAccountStorageSettingsOnlyForUsers(
     PrefService* pref_service,
     const std::vector<std::string>& gaia_ids);
 
-// Increases the count of how many times Chrome automatically offered a user
-// not opted-in to the account-scoped passwords storage to move a password to
-// their account. Should only be called if the user is signed-in and not
-// opted-in. |pref_service| and |sync_service| must be non-null.
-// See PasswordFeatureManager::RecordMoveOfferedToNonOptedInUser().
-void RecordMoveOfferedToNonOptedInUser(PrefService* pref_service,
-                                       const syncer::SyncService* sync_service);
-
-// Gets the count of how many times Chrome automatically offered a user
-// not opted-in to the account-scoped passwords storage to move a password to
-// their account. Should only be called if the user is signed-in and not
-// opted-in. |pref_service| and |sync_service| must be non-null.
-// See PasswordFeatureManager::GetMoveOfferedToNonOptedInUserCount().
-int GetMoveOfferedToNonOptedInUserCount(
-    const PrefService* pref_service,
-    const syncer::SyncService* sync_service);
-
 // Migrates the old password_manager account storage opt-in pref to
 // SyncUserSettings::GetSelectedTypes(), see crbug.com/1484531.
 // TODO(crbug.com/1503112): Delete the migration when appropriate, see bug.

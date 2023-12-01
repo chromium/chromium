@@ -182,7 +182,6 @@ class ManagePasswordsUIController
   void AuthenticateUserForAccountStoreOptInAndSavePassword(
       const std::u16string& username,
       const std::u16string& password) override;
-  void AuthenticateUserForAccountStoreOptInAndMovePassword() override;
   void AuthenticateUserForAccountStoreOptInAfterSavingLocallyAndMovePassword()
       override;
   void MaybeShowIOSPasswordPromo() override;
@@ -296,13 +295,6 @@ class ManagePasswordsUIController
   void OnTriggerPostSaveCompromisedBubble(
       password_manager::PostSaveCompromisedHelper::BubbleType type,
       size_t count_compromised_passwords_);
-
-  // Triggered from a reauthentication flow. If |form_manager| is still valid
-  // and the reauth was successful, the password is moved to the account store.
-  void FinishMovingPasswordAfterAccountStoreOptInAuth(
-      password_manager::PasswordFormManagerForUI* form_manager,
-      password_manager::PasswordManagerClient::ReauthSucceeded
-          reauth_succeeded);
 
   // Called from an opt-in/reauth flow that was triggered after a new
   // account-storage-eligible user saved a password locally. If the opt-in was

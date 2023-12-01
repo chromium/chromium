@@ -100,10 +100,6 @@ class PasswordsModelDelegateMock
               AuthenticateUserForAccountStoreOptInAndSavePassword,
               (const std::u16string&, const std::u16string&),
               (override));
-  MOCK_METHOD(void,
-              AuthenticateUserForAccountStoreOptInAndMovePassword,
-              (),
-              (override));
   MOCK_METHOD(
       void,
       AuthenticateUserForAccountStoreOptInAfterSavingLocallyAndMovePassword,

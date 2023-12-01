@@ -168,11 +168,6 @@ class PasswordsModelDelegate {
       const std::u16string& username,
       const std::u16string& password) = 0;
 
-  // Called from the Move bubble controller when gaia re-auth is needed
-  // to move passwords. This method triggers the reauth flow. Upon successful
-  // reauth, it moves the password.
-  virtual void AuthenticateUserForAccountStoreOptInAndMovePassword() = 0;
-
   // Called from the Save/Update bubble controller when a "new" user (i.e. who
   // hasn't chosen whether to use the account-scoped storage yet) saves a
   // password (locally). If the reauth is successful, this moves the just-saved
