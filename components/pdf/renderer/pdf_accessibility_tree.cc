@@ -2313,9 +2313,6 @@ void PdfAccessibilityTree::AccessibilityModeChanged(const ui::AXMode& mode) {
   if (ocr_service_) {
     return;
   }
-  // TODO(crbug.com/1443341): Ensure that ui::AXMode::kPDFOcr is set in the
-  // AXMode on Windows, Linux, and macOS only when both the PDF OCR pref and
-  // screen reader are on.
   CreateOcrService();
   always_load_or_reload_accessibility = true;
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)

@@ -219,7 +219,7 @@ void SerializeWordBox(const chrome_screen_ai::WordBox& word_box,
       word_box.bounding_box().width(), word_box.bounding_box().height()));
 
   std::vector<int32_t> character_offsets;
-  // TODO(crbug.com/1443341): Handle writing directions other than
+  // TODO(crbug.com/1506085): Handle writing directions other than
   // LEFT_TO_RIGHT.
   int32_t line_offset =
       base::ClampRound(inline_text_box.relative_bounds.bounds.x());

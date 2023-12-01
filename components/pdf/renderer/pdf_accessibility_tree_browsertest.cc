@@ -2968,7 +2968,7 @@ INSTANTIATE_TEST_SUITE_P(
             PdfOcrServiceTestBatchData(105u, 10u),
             PdfOcrServiceTestBatchData(280u, 20u))));
 
-// TODO(crbug.com/1443341): Add test for end result on a non-synthetic
+// TODO(crbug.com/1443346): Add test for end result on a non-synthetic
 // multi-page PDF.
 
 class PdfOcrTest : public PdfAccessibilityTreeTest {

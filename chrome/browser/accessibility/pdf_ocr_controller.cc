@@ -82,7 +82,7 @@ std::vector<content::WebContents*> GetPdfHtmlWebContentses(Profile* profile) {
 
 // Invoke screen reader alert to notify the user of the state.
 void AnnounceToScreenReader(const int message_id) {
-// TODO(crbug.com/1443341): Sending announcements results in a failure in
+// TODO(crbug.com/1442928): Sending announcements results in a failure in
 // `AuraLinuxAccessibilityInProcessBrowserTest::IndexInParentWithModal` and
 // flaky fail when running Chrome.
 #if !BUILDFLAG(IS_LINUX)
