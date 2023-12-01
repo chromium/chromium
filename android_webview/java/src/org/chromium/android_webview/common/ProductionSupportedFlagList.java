@@ -521,6 +521,10 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.WEB_RTC_SEND_PACKET_BATCH,
                 "Sends outgoing WebRTC Video RTP packets in batches."),
         Flag.baseFeature(
+                "WebRtcEncodedTransformsPerStreamCreation",
+                "Allows creating WebRTC Encoded Transforms without the "
+                        + "encodedInsertableStreams RTCPeerConnection Parameter."),
+        Flag.baseFeature(
                 ContentSwitches.DISABLE_DOMAIN_BLOCKING_FOR3DAP_IS,
                 "Disable the per-domain blocking for 3D APIs after GPU reset. "
                         + "This switch is intended only for tests."),
