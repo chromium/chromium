@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_layout.h"
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_to_tab_transition_view.h"
-
 #import "base/check.h"
+#import "base/debug/dump_without_crashing.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_to_tab_transition_view.h"
 
 @interface LegacyGridTransitionLayout ()
 @property(nonatomic, readwrite)
@@ -75,6 +75,11 @@
 }
 
 - (void)populateWithSnapshotsFromView:(UIView*)view middleRect:(CGRect)rect {
+  if (!view) {
+    // TODO(crbug.com/1506555): Temporary investigation to see if there is a
+    // misconfiguration in the transition.
+    base::debug::DumpWithoutCrashing();
+  }
   self.cell.mainTabView = [view resizableSnapshotViewFromRect:rect
                                            afterScreenUpdates:YES
                                                 withCapInsets:UIEdgeInsetsZero];
