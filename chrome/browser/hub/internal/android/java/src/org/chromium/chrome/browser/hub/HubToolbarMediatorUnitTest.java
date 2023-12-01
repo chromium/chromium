@@ -16,6 +16,7 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.ACTION_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.SHOW_ACTION_BUTTON_TEXT;
 
 import androidx.test.filters.SmallTest;
 
@@ -166,5 +167,18 @@ public class HubToolbarMediatorUnitTest {
 
         mTabSwitcherReferenceButtonDataSupplier1.set(mDisplayButtonData);
         verify(mPropertyObserver, times(3)).onPropertyChanged(any(), eq(PANE_SWITCHER_BUTTON_DATA));
+    }
+
+    @Test
+    @SmallTest
+    public void testActionButtonHasText() {
+        new HubToolbarMediator(mModel, mPaneManager);
+        assertFalse(mModel.get(SHOW_ACTION_BUTTON_TEXT));
+
+        mTabSwitcherReferenceButtonDataSupplier1.set(null);
+        assertTrue(mModel.get(SHOW_ACTION_BUTTON_TEXT));
+
+        mBookmarksReferenceButtonDataSupplier2.set(null);
+        assertTrue(mModel.get(SHOW_ACTION_BUTTON_TEXT));
     }
 }

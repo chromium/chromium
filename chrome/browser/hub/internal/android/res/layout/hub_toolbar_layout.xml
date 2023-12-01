@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<org.chromium.chrome.browser.hub.HubToolbarView
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:id="@+id/hub_toolbar"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:orientation="vertical">
+
+  <FrameLayout
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/toolbar_height_no_shadow">
+
+    <org.chromium.ui.widget.ButtonCompat
+      android:id="@+id/toolbar_action_button"
+      android:layout_width="wrap_content"
+      android:layout_height="match_parent"
+      android:layout_gravity="start"
+      android:drawablePadding="16dp"
+      android:minWidth="@dimen/min_touch_target_size"
+      android:paddingStart="16dp"
+      android:paddingEnd="16dp"
+      android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
+      android:visibility="gone"
+      app:buttonColor="@android:color/transparent"
+      app:buttonTextColor="@color/default_text_color_list"
+      app:tint="@macro/default_icon_color"
+      app:verticalInset="0dp" />
+
+    <!-- TODO(https://crbug.com/1496708): Pane switcher goes here. -->
+
+    <!-- TODO(https://crbug.com/1506104): App menu goes here. -->
+  </FrameLayout>
+</org.chromium.chrome.browser.hub.HubToolbarView>

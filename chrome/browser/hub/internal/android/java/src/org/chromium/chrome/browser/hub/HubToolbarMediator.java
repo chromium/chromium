@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.hub;
 
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.ACTION_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.SHOW_ACTION_BUTTON_TEXT;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -91,8 +92,8 @@ public class HubToolbarMediator {
         @Nullable
         DisplayButtonData previous = mCachedPaneSwitcherButtonData.getOrDefault(paneId, null);
         if (!Objects.equals(current, previous)) {
-            rebuildPaneSwitcherButtonData();
             mCachedPaneSwitcherButtonData.put(paneId, current);
+            rebuildPaneSwitcherButtonData();
         }
     }
 
@@ -103,6 +104,7 @@ public class HubToolbarMediator {
                         .map(e -> wrapButtonData(e.getKey(), e.getValue()))
                         .collect(Collectors.toList());
         mPropertyModel.set(PANE_SWITCHER_BUTTON_DATA, buttonDataList);
+        mPropertyModel.set(SHOW_ACTION_BUTTON_TEXT, buttonDataList.size() <= 1);
     }
 
     private FullButtonData wrapButtonData(

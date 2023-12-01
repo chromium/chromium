@@ -14,6 +14,7 @@ android_library("java") {
     "//chrome/test/android:chrome_java_transit",
   ]
   sources = [
+    "android/java/src/org/chromium/chrome/browser/hub/ApplyButtonData.java",
     "android/java/src/org/chromium/chrome/browser/hub/FadeHubLayoutAnimationFactory.java",
     "android/java/src/org/chromium/chrome/browser/hub/FadeHubLayoutAnimationFactoryImpl.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubCoordinator.java",
@@ -60,6 +61,7 @@ android_resources("java_resources") {
   sources = [
     "android/res/layout/hub_layout.xml",
     "android/res/layout/hub_pane_host_layout.xml",
+    "android/res/layout/hub_toolbar_layout.xml",
     "android/res/values/dimens.xml",
   ]
 }
@@ -67,7 +69,10 @@ android_resources("java_resources") {
 android_library("unit_device_javatests") {
   resources_package = "org.chromium.chrome.browser.hub"
   testonly = true
-  sources = [ "android/java/src/org/chromium/chrome/browser/hub/HubPaneHostViewRenderTest.java" ]
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/hub/HubPaneHostViewRenderTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubToolbarViewRenderTest.java",
+  ]
   deps = [
     ":java",
     ":java_resources",
@@ -77,6 +82,7 @@ android_library("unit_device_javatests") {
     "//chrome/browser/ui/android/layouts:java",
     "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//chrome/browser/ui/android/toolbar:java_resources",
     "//chrome/test/android:chrome_java_test_support_common",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/styles/android:java_resources",
@@ -104,6 +110,7 @@ robolectric_library("junit") {
     "android/java/src/org/chromium/chrome/browser/hub/HubPaneHostMediatorUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubPaneHostViewUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubToolbarMediatorUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubToolbarViewUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/PaneBackStackHandlerUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/PaneManagerImplUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/PaneTransitionHelperUnitTest.java",

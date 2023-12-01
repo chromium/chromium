@@ -4,14 +4,9 @@
 
 package org.chromium.chrome.browser.hub;
 
-import static org.chromium.chrome.browser.hub.HubPaneHostProperties.ACTION_BUTTON_DATA;
-import static org.chromium.chrome.browser.hub.HubPaneHostProperties.PANE_ROOT_VIEW;
-
 import android.app.Activity;
 import android.view.LayoutInflater;
-import android.view.View;
 
-import androidx.annotation.ColorInt;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -24,16 +19,19 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 /** Render tests for {@link HubPaneHostView}. */
 @RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
-public class HubPaneHostViewRenderTest {
+@Batch(Batch.PER_CLASS)
+public class HubToolbarViewRenderTest {
+    @Rule
+    public final DisableAnimationsTestRule mDisableAnimationsRule = new DisableAnimationsTestRule();
+
     @Rule
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
@@ -45,11 +43,11 @@ public class HubPaneHostViewRenderTest {
                     .build();
 
     private Activity mActivity;
-    private HubPaneHostView mPaneHost;
+    private HubToolbarView mToolbar;
     private PropertyModel mPropertyModel;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mActivityTestRule.launchActivity(null);
         mActivity = mActivityTestRule.getActivity();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
@@ -58,41 +56,35 @@ public class HubPaneHostViewRenderTest {
 
     private void setUpOnUi() {
         LayoutInflater inflater = LayoutInflater.from(mActivity);
-        mPaneHost = (HubPaneHostView) inflater.inflate(R.layout.hub_pane_host_layout, null, false);
-        mActivity.setContentView(mPaneHost);
+        mToolbar = (HubToolbarView) inflater.inflate(R.layout.hub_toolbar_layout, null, false);
+        mActivity.setContentView(mToolbar);
 
-        mPropertyModel = new PropertyModel(HubPaneHostProperties.ALL_KEYS);
-        PropertyModelChangeProcessor.create(mPropertyModel, mPaneHost, HubPaneHostViewBinder::bind);
+        mPropertyModel = new PropertyModel(HubToolbarProperties.ALL_KEYS);
+        PropertyModelChangeProcessor.create(mPropertyModel, mToolbar, HubToolbarViewBinder::bind);
     }
 
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    public void test() throws Exception {
+    public void testActionButton() throws Exception {
         DisplayButtonData displayButtonData =
                 new ResourceButtonData(
-                        R.string.button_new_tab, R.string.button_new_tab, R.drawable.ic_add);
+                        R.string.button_new_tab, R.string.button_new_tab, R.drawable.new_tab_icon);
         FullButtonData fullButtonData = new DelegateButtonData(displayButtonData, () -> {});
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    @ColorInt int defaultBgColor = SemanticColorUtils.getDefaultBgColor(mActivity);
-                    View rootView = solidColorView(defaultBgColor);
-                    mPropertyModel.set(PANE_ROOT_VIEW, rootView);
-                    mPropertyModel.set(ACTION_BUTTON_DATA, fullButtonData);
-                });
-        mRenderTestRule.render(mPaneHost, "greenAndButton");
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPropertyModel.set(PANE_ROOT_VIEW, null);
-                    mPropertyModel.set(ACTION_BUTTON_DATA, null);
+                    mPropertyModel.set(HubToolbarProperties.ACTION_BUTTON_DATA, fullButtonData);
+                    mPropertyModel.set(HubToolbarProperties.SHOW_ACTION_BUTTON_TEXT, true);
                 });
-        mRenderTestRule.render(mPaneHost, "null");
-    }
+        mRenderTestRule.render(mToolbar, "actionButtonWithText");
 
-    private View solidColorView(@ColorInt int color) {
-        View view = new View(mPaneHost.getContext());
-        view.setBackgroundColor(color);
-        return view;
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mPropertyModel.set(HubToolbarProperties.SHOW_ACTION_BUTTON_TEXT, false));
+        mRenderTestRule.render(mToolbar, "actionButtonOnlyImage");
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mPropertyModel.set(HubToolbarProperties.ACTION_BUTTON_DATA, null));
+        mRenderTestRule.render(mToolbar, "noActionButton");
     }
 }
