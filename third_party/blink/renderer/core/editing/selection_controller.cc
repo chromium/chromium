@@ -31,6 +31,7 @@
 
 #include "base/auto_reset.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
+#include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -589,15 +590,15 @@ bool SelectionController::HandleTapInsideSelection(
   return true;
 }
 
-void SelectionController::UpdateSelectionForMouseDrag(
+WebInputEventResult SelectionController::UpdateSelectionForMouseDrag(
     const HitTestResult& hit_test_result,
     const PhysicalOffset& last_known_mouse_position) {
   if (!mouse_down_may_start_select_)
-    return;
+    return WebInputEventResult::kNotHandled;
 
   Node* target = hit_test_result.InnerPossiblyPseudoNode();
   if (!target)
-    return;
+    return WebInputEventResult::kNotHandled;
 
   // TODO(editing-dev): Use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
@@ -613,24 +614,26 @@ void SelectionController::UpdateSelectionForMouseDrag(
       CreateVisiblePosition(
           FromPositionInDOMTree<EditingInFlatTreeStrategy>(raw_target_position))
           .ToPositionWithAffinity();
+
   // Don't modify the selection if we're not on a node.
   if (target_position.IsNull())
-    return;
+    return WebInputEventResult::kNotHandled;
 
   // Restart the selection if this is the first mouse move. This work is usually
   // done in handleMousePressEvent, but not if the mouse press was on an
   // existing selection.
 
   if (selection_state_ == SelectionState::kHaveNotStartedSelection &&
-      DispatchSelectStart(target) != DispatchEventResult::kNotCanceled)
-    return;
+      DispatchSelectStart(target) != DispatchEventResult::kNotCanceled) {
+    return WebInputEventResult::kHandledApplication;
+  }
 
   // |DispatchSelectStart()| can change |GetDocument()| or invalidate
   // target_position by 'selectstart' event handler.
   // TODO(editing-dev): We should also add a regression test when above
   // behaviour happens. See crbug.com/775149.
   if (!Selection().IsAvailable() || !target_position.IsValidFor(GetDocument()))
-    return;
+    return WebInputEventResult::kNotHandled;
 
   const bool should_extend_selection =
       selection_state_ == SelectionState::kExtendedSelection;
@@ -642,7 +645,7 @@ void SelectionController::UpdateSelectionForMouseDrag(
   if (visible_selection.IsNone()) {
     // TODO(editing-dev): This is an urgent fix to crbug.com/745501. We should
     // find the root cause and replace this by a proper fix.
-    return;
+    return WebInputEventResult::kNotHandled;
   }
 
   const PositionInFlatTreeWithAffinity adjusted_position =
@@ -664,7 +667,7 @@ void SelectionController::UpdateSelectionForMouseDrag(
           : adjusted_selection;
   if (new_visible_selection.IsNone()) {
     // See http://crbug.com/1412880
-    return;
+    return WebInputEventResult::kNotHandled;
   }
   const bool selection_is_directional =
       should_extend_selection ? Selection().IsDirectional() : false;
@@ -675,6 +678,8 @@ void SelectionController::UpdateSelectionForMouseDrag(
           .SetIsDirectional(selection_is_directional)
           .Build(),
       kAdjustEndpointsAtBidiBoundary);
+
+  return WebInputEventResult::kHandledSystem;
 }
 
 bool SelectionController::UpdateSelectionForMouseDownDispatchingSelectStart(
@@ -1136,14 +1141,14 @@ bool SelectionController::HandleMousePressEvent(
   return HandleSingleClick(event);
 }
 
-void SelectionController::HandleMouseDraggedEvent(
+WebInputEventResult SelectionController::HandleMouseDraggedEvent(
     const MouseEventWithHitTestResults& event,
     const gfx::Point& mouse_down_pos,
     const PhysicalOffset& last_known_mouse_position) {
   TRACE_EVENT0("blink", "SelectionController::handleMouseDraggedEvent");
 
   if (!Selection().IsAvailable())
-    return;
+    return WebInputEventResult::kNotHandled;
   if (selection_state_ != SelectionState::kExtendedSelection) {
     HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive);
     HitTestLocation location(mouse_down_pos);
@@ -1152,8 +1157,8 @@ void SelectionController::HandleMouseDraggedEvent(
 
     UpdateSelectionForMouseDrag(result, last_known_mouse_position);
   }
-  UpdateSelectionForMouseDrag(event.GetHitTestResult(),
-                              last_known_mouse_position);
+  return UpdateSelectionForMouseDrag(event.GetHitTestResult(),
+                                     last_known_mouse_position);
 }
 
 void SelectionController::UpdateSelectionForMouseDrag(

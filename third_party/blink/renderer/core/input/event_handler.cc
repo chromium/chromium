@@ -1169,20 +1169,33 @@ WebInputEventResult EventHandler::HandleMouseMoveOrLeaveEvent(
 
   last_mouse_move_event_subframe_ = current_subframe;
 
-  if (event_result != WebInputEventResult::kNotHandled)
+  if (event_result != WebInputEventResult::kNotHandled) {
     return event_result;
+  }
 
   event_result = DispatchMousePointerEvent(WebInputEvent::Type::kPointerMove,
                                            mev.InnerElement(), mev.Event(),
                                            coalesced_events, predicted_events);
   // TODO(crbug.com/346473): Since there is no default action for the mousemove
-  // event we should consider doing drag&drop even when js cancels the
-  // mouse move event.
+  // event, MouseEventManager should handle drag for text selection even when js
+  // cancels the mouse move event.
   // https://w3c.github.io/uievents/#event-type-mousemove
-  if (event_result != WebInputEventResult::kNotHandled)
-    return event_result;
+  if (event_result == WebInputEventResult::kNotHandled ||
+      (RuntimeEnabledFeatures::MouseDragOnCancelledMouseMoveEnabled() &&
+       event_result == WebInputEventResult::kHandledApplication)) {
+    bool mousemove_cancelled =
+        (event_result == WebInputEventResult::kHandledApplication);
 
-  return mouse_event_manager_->HandleMouseDraggedEvent(mev);
+    event_result = mouse_event_manager_->HandleMouseDraggedEvent(mev);
+
+    if (mousemove_cancelled &&
+        event_result == WebInputEventResult::kHandledSystem) {
+      UseCounter::Count(frame_->GetDocument(),
+                        WebFeature::kMouseDragOnCancelledMouseMove);
+    }
+  }
+
+  return event_result;
 }
 
 WebInputEventResult EventHandler::HandleMouseReleaseEvent(

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/input/mouse_event_manager.h"
 
 #include "build/build_config.h"
+#include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_drag_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_event_init.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
@@ -796,8 +797,12 @@ WebInputEventResult MouseEventManager::HandleMouseDraggedEvent(
   should_handle_drag = !is_pen;
 #endif
 
-  if (should_handle_drag && HandleDrag(event, DragInitiator::kMouse))
-    return WebInputEventResult::kHandledSystem;
+  if (should_handle_drag && HandleDrag(event, DragInitiator::kMouse)) {
+    // `HandleDrag()` returns true for both kHandledApplication and
+    // kHandledSystem.  We are returning kHandledApplication here to make the
+    // UseCounter in the caller work.
+    return WebInputEventResult::kHandledApplication;
+  }
 
   Node* target_node = event.InnerNode();
   if (!target_node)
@@ -821,8 +826,11 @@ WebInputEventResult MouseEventManager::HandleMouseDraggedEvent(
 
   mouse_down_may_start_drag_ = false;
 
-  frame_->GetEventHandler().GetSelectionController().HandleMouseDraggedEvent(
-      event, mouse_down_pos_, last_known_mouse_position_in_root_frame_);
+  WebInputEventResult selection_controller_drag_result =
+      frame_->GetEventHandler()
+          .GetSelectionController()
+          .HandleMouseDraggedEvent(event, mouse_down_pos_,
+                                   last_known_mouse_position_in_root_frame_);
 
   // The call into HandleMouseDraggedEvent may have caused a re-layout,
   // so get the LayoutObject again.
@@ -846,9 +854,11 @@ WebInputEventResult MouseEventManager::HandleMouseDraggedEvent(
     }
   }
 
-  return WebInputEventResult::kHandledSystem;
+  return selection_controller_drag_result;
 }
 
+// TODO(mustaq@chromium.org): The return value here is questionable.  Why even a
+// failing `TryStartDrag()` below returns a `true` here?
 bool MouseEventManager::HandleDrag(const MouseEventWithHitTestResults& event,
                                    DragInitiator initiator) {
   DCHECK(event.Event().GetType() == WebInputEvent::Type::kMouseMove);

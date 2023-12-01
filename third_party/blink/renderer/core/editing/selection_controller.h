@@ -27,6 +27,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SELECTION_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SELECTION_CONTROLLER_H_
 
+#include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -52,9 +53,10 @@ class CORE_EXPORT SelectionController final
   void Trace(Visitor*) const override;
 
   bool HandleMousePressEvent(const MouseEventWithHitTestResults&);
-  void HandleMouseDraggedEvent(const MouseEventWithHitTestResults&,
-                               const gfx::Point&,
-                               const PhysicalOffset&);
+  WebInputEventResult HandleMouseDraggedEvent(
+      const MouseEventWithHitTestResults&,
+      const gfx::Point&,
+      const PhysicalOffset&);
   bool HandleMouseReleaseEvent(const MouseEventWithHitTestResults&,
                                const PhysicalOffset&);
   bool HandlePasteGlobalSelection(const WebMouseEvent&);
@@ -63,7 +65,6 @@ class CORE_EXPORT SelectionController final
 
   void UpdateSelectionForMouseDrag(const PhysicalOffset&,
                                    const PhysicalOffset&);
-  void UpdateSelectionForMouseDrag(const HitTestResult&, const PhysicalOffset&);
   template <typename MouseEventObject>
   void UpdateSelectionForContextMenuEvent(const MouseEventObject* mouse_event,
                                           const HitTestResult& hit_test_result,
@@ -90,6 +91,9 @@ class CORE_EXPORT SelectionController final
   };
 
   Document& GetDocument() const;
+
+  WebInputEventResult UpdateSelectionForMouseDrag(const HitTestResult&,
+                                                  const PhysicalOffset&);
 
   // Returns |true| if a word was selected.
   bool SelectClosestWordFromHitTestResult(const HitTestResult&,
