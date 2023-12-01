@@ -101,8 +101,6 @@ class BackgroundImageGeometry {
 
   const ImageResourceObserver& ImageClient() const;
   const ComputedStyle& ImageStyle(const ComputedStyle& fragment_style) const;
-  InterpolationQuality ImageInterpolationQuality() const;
-  cc::PaintFlags::DynamicRangeLimit DynamicRangeLimit() const;
 
   bool CanCompositeBackgroundAttachmentFixed() const;
 
@@ -192,8 +190,6 @@ class BackgroundImageGeometry {
   // When they are different:
   // - ImageClient() uses box_ if painting view, otherwise positioning_box_;
   // - ImageStyle() uses positioning_box_;
-  // - ImageInterpolationQuality() uses box_;
-  // - DynamicRangeLimit() uses box_;
   // - FillLayers come from box_ if painting view, otherwise positioning_box_.
   const LayoutBoxModelObject* const box_;
 

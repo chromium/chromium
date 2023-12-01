@@ -992,17 +992,6 @@ const ComputedStyle& BackgroundImageGeometry::ImageStyle(
   return fragment_style;
 }
 
-InterpolationQuality BackgroundImageGeometry::ImageInterpolationQuality()
-    const {
-  return box_->StyleRef().GetInterpolationQuality();
-}
-
-cc::PaintFlags::DynamicRangeLimit BackgroundImageGeometry::DynamicRangeLimit()
-    const {
-  return static_cast<cc::PaintFlags::DynamicRangeLimit>(
-      box_->StyleRef().DynamicRangeLimit());
-}
-
 PhysicalOffset BackgroundImageGeometry::OffsetInBackground(
     const FillLayer& fill_layer) const {
   if (ShouldUseFixedAttachment(fill_layer))
