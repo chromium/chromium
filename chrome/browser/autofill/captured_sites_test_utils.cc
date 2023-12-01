@@ -781,14 +781,21 @@ bool WebPageReplayServerWrapper::RunWebPageReplayCmd(
           .AppendASCII("autofill")
           .AppendASCII("web_page_replay_support_files");
   full_command.AppendArg(base::StringPrintf(
-      "--https_cert_file=%s",
+      "--https_cert_file=%s,%s",
       FilePathToUTF8(
           web_page_replay_support_file_dir.AppendASCII("wpr_cert.pem").value())
+          .c_str(),
+      FilePathToUTF8(
+          web_page_replay_support_file_dir.AppendASCII("ecdsa_cert.pem")
+              .value())
           .c_str()));
   full_command.AppendArg(base::StringPrintf(
-      "--https_key_file=%s",
+      "--https_key_file=%s,%s",
       FilePathToUTF8(
           web_page_replay_support_file_dir.AppendASCII("wpr_key.pem").value())
+          .c_str(),
+      FilePathToUTF8(
+          web_page_replay_support_file_dir.AppendASCII("ecdsa_key.pem").value())
           .c_str()));
 
   for (const auto& arg : args)
