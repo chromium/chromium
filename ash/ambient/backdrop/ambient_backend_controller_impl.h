@@ -20,7 +20,6 @@
 namespace ash {
 
 class BackdropURLLoader;
-
 // The Backdrop client implementation of AmbientBackendController.
 class AmbientBackendControllerImpl : public AmbientBackendController {
  public:

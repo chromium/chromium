@@ -21,6 +21,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "components/account_id/account_id.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
@@ -79,15 +80,39 @@ AmbientWeatherController::ScopedRefresher::~ScopedRefresher() {
   controller_->OnScopedRefresherDestroyed();
 }
 
-AmbientWeatherController::AmbientWeatherController()
-    : weather_model_(std::make_unique<AmbientWeatherModel>()) {}
+AmbientWeatherController::AmbientWeatherController(
+    SimpleGeolocationProvider* const location_permission_provider)
+    : location_permission_provider_(location_permission_provider),
+      weather_model_(std::make_unique<AmbientWeatherModel>()) {
+  CHECK_NE(location_permission_provider_, nullptr);
+  location_permission_provider_->AddObserver(this);
+}
 
-AmbientWeatherController::~AmbientWeatherController() = default;
+AmbientWeatherController::~AmbientWeatherController() {
+  CHECK_NE(location_permission_provider_, nullptr);
+  location_permission_provider_->RemoveObserver(this);
+}
+
+void AmbientWeatherController::OnGeolocationPermissionChanged(bool enabled) {
+  // When system permission is blocked, stop scheduling new requests.
+  if (!enabled) {
+    weather_refresh_timer_.Stop();
+    return;
+  }
+
+  // System permission is granted, resume scheduler if needed.
+  if (num_active_scoped_refreshers_ > 0) {
+    FetchWeather();
+    weather_refresh_timer_.Start(FROM_HERE, kWeatherRefreshInterval, this,
+                                 &AmbientWeatherController::FetchWeather);
+  }
+}
 
 std::unique_ptr<AmbientWeatherController::ScopedRefresher>
 AmbientWeatherController::CreateScopedRefresher() {
   ++num_active_scoped_refreshers_;
-  if (!weather_refresh_timer_.IsRunning()) {
+  if (!weather_refresh_timer_.IsRunning() &&
+      location_permission_provider_->IsGeolocationUsageAllowedForSystem()) {
     FetchWeather();
     weather_refresh_timer_.Start(FROM_HERE, kWeatherRefreshInterval, this,
                                  &AmbientWeatherController::FetchWeather);

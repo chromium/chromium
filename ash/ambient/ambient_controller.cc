@@ -271,7 +271,8 @@ void AmbientController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 AmbientController::AmbientController(
     mojo::PendingRemote<device::mojom::Fingerprint> fingerprint)
-    : ambient_weather_controller_(std::make_unique<AmbientWeatherController>()),
+    : ambient_weather_controller_(std::make_unique<AmbientWeatherController>(
+          SimpleGeolocationProvider::GetInstance())),
       fingerprint_(std::move(fingerprint)) {
   ambient_photo_cache::SetFileTaskRunner(
       base::ThreadPool::CreateSequencedTaskRunner(

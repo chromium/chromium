@@ -324,7 +324,6 @@ class ASH_EXPORT AmbientController
 
   base::ScopedObservation<BacklightsForcedOffSetter, ScreenBacklightObserver>
       backlights_forced_off_observation_{this};
-  std::unique_ptr<AmbientWeatherController::ScopedRefresher> weather_refresher_;
 
   // Observes user profile prefs for ambient.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
