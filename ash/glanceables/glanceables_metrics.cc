@@ -65,6 +65,12 @@ void RecordAddTaskButtonShown() {
       base::UserMetricsAction("Glanceables_Tasks_AddTaskButtonShown"));
 }
 
+void RecordAddTaskButtonUsageForNewTasksUsersTT(bool pressed) {
+  base::UmaHistogramBoolean(
+      "Ash.Glanceables.TimeManagement.AddTaskButtonUsageForNewTasksUsersTT",
+      pressed);
+}
+
 void RecordLoginToShowTime(base::TimeDelta login_to_show_time) {
   base::UmaHistogramMediumTimes(kLoginToShowTimeHistogram, login_to_show_time);
 }

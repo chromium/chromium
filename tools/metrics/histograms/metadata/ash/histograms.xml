@@ -3550,6 +3550,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Ash.Glanceables.TimeManagement.AddTaskButtonUsageForNewTasksUsersTT"
+    enum="Boolean" expires_after="2024-06-01">
+  <owner>amitrokhin@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    Records true if a new Tasks user has interacted (pressed) the &quot;Add new
+    task&quot; button, false otherwise. &quot;New Tasks users&quot; means the
+    user has only one tasks list with zero tasks in it. Applies only for the
+    Trusted Testers UI. May be recorded multiple times per user.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Glanceables.TimeManagement.LoginToShowTime" units="ms"
     expires_after="2024-08-31">
   <owner>anasalazar@google.com</owner>
