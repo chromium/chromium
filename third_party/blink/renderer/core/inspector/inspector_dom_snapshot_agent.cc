@@ -193,10 +193,8 @@ PhysicalRect InspectorDOMSnapshotAgent::RectInDocument(
 PhysicalRect InspectorDOMSnapshotAgent::TextFragmentRectInDocument(
     const LayoutObject* layout_object,
     const LayoutText::TextBoxInfo& text_box) {
-  PhysicalRect local_coords_text_box_rect =
-      layout_object->FlipForWritingMode(text_box.local_rect.ToLayoutRect());
   PhysicalRect absolute_coords_text_box_rect =
-      layout_object->LocalToAbsoluteRect(local_coords_text_box_rect);
+      layout_object->LocalToAbsoluteRect(text_box.local_rect);
   LocalFrameView* local_frame_view = layout_object->GetFrameView();
   return local_frame_view
              ? local_frame_view->FrameToDocument(absolute_coords_text_box_rect)
