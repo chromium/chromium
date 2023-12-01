@@ -6,5 +6,5 @@ Version: 0.6.4
 Security Critical: no
 Shipped: no
 License: Apache 2.0
-License File: rust/chromium_crates_io/vendor/rand_core-0.6.4/LICENSE-APACHE
+License File: //third_party/rust/chromium_crates_io/vendor/rand_core-0.6.4/LICENSE-APACHE
 Revision: 89a1336b934c68ddce548127c6f8afd910b35a18

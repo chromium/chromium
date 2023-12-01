@@ -109,5 +109,5 @@ pub struct CrateConfig {
     #[serde(default)]
     pub license: Option<String>,
     #[serde(default)]
-    pub license_file: Option<String>,
+    pub license_files: Vec<String>,
 }

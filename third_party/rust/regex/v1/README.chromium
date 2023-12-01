@@ -7,5 +7,5 @@ Version: 1.10.2
 Security Critical: no
 Shipped: no
 License: Apache 2.0
-License File: rust/chromium_crates_io/vendor/regex-1.10.2/LICENSE-APACHE
+License File: //third_party/rust/chromium_crates_io/vendor/regex-1.10.2/LICENSE-APACHE
 Revision: 5f1f1c8b6db4d1fd373ef1ab4eab05a8f66c4235

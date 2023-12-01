@@ -1,16 +1,11 @@
-Name: {{this.name}}
-URL: {{this.url}}
-Description: {{this.description}}
-Version: {{this.version}}
-Security Critical: {{this.security_critical}}
-Shipped: {{this.shipped}}
-License: {{this.license}}
-{{#if this.license_file}}
-License File: {{this.license_file}}
-{{/if}}
-{{#if not this.license_file}}
-License File:
-{{/if}}
-{{#if this.revision}}
-Revision: {{this.revision}}
+Name: {{name}}
+URL: {{url}}
+Description: {{description}}
+Version: {{version}}
+Security Critical: {{security_critical}}
+Shipped: {{shipped}}
+License: {{license}}
+License File:{{#each license_files}}{{#if @first}} {{else}},{{/if}}{{this}}{{/each}}
+{{#if revision}}
+Revision: {{revision}}
 {{/if}}

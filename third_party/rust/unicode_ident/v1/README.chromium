@@ -5,5 +5,5 @@ Version: 1.0.12
 Security Critical: yes
 Shipped: yes
 License: Apache 2.0 AND Unicode License Agreement - Data Files and Software (2016)
-License File: rust/chromium_crates_io/vendor/unicode-ident-1.0.12/LICENCE-*
+License File: //third_party/rust/chromium_crates_io/vendor/unicode-ident-1.0.12/LICENSE-APACHE,//third_party/rust/chromium_crates_io/vendor/unicode-ident-1.0.12/LICENSE-UNICODE
 Revision: ff4d27c49422d8f9e0aa4bc799a02544a2a44baf

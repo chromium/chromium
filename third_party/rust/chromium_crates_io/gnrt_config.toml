@@ -44,7 +44,7 @@
 # license: The name of the license. This should normally be populated from the
 #   crate's Cargo.toml, but it can be specified to override it.
 #
-# license_file: The name of the license file, relative to the crate's root.
+# license_files: A list of license files, relative to the crate's root.
 #   This is normally found automatically based on convention, but it can be
 #   specified to override it. A license file is expected for all shipped
 #   libraries.
@@ -135,7 +135,7 @@ group = 'test'
 group = 'test'
 
 [crate.unicode-ident]
-license_file = 'LICENCE-*'
+license_files = ['LICENSE-APACHE', 'LICENSE-UNICODE']
 
 [crate.unicode-linebreak]
 allow_first_party_usage = false

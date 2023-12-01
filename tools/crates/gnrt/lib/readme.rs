@@ -22,7 +22,7 @@ pub struct ReadmeFile {
     security_critical: &'static str,
     shipped: &'static str,
     license: String,
-    license_file: Option<PathBuf>,
+    license_files: Vec<String>,
     revision: Option<String>,
 }
 
@@ -112,40 +112,42 @@ pub fn readme_file_from_package<'a>(
     };
 
     let path_if_exists = |path: &'a Path| -> Result<Option<&'a Path>> {
-        let mut dir = std::fs::read_dir(crate_dir.join(path).parent().unwrap())?;
-        Ok(dir
-            .find(|d| d.is_ok() && d.as_ref().unwrap().file_name() == path.file_name().unwrap())
-            .map(|_| path))
+        if crate_dir.join(path).try_exists()? { Ok(Some(path)) } else { Ok(None) }
     };
+    let to_crate_dir_string =
+        |path: &Path| -> String { format!("//{}", crate_dir.join(path).to_string_lossy()) };
 
-    let license_file = {
-        if let Some(config_license_file) =
-            crate_config.and_then(|config| config.license_file.as_ref().map(Path::new))
-        {
-            Some(config_license_file)
+    let license_files: Vec<String> = {
+        if let Some(config_license_files) = crate_config.and_then(|config| {
+            if config.license_files.is_empty() {
+                None
+            } else {
+                Some(config.license_files.iter().map(Path::new))
+            }
+        }) {
+            config_license_files.map(to_crate_dir_string).collect()
         } else {
             if let Some(file) = &package.license_file {
-                path_if_exists(file.as_std_path())?
+                path_if_exists(file.as_std_path())?.into_iter().map(to_crate_dir_string).collect()
             } else {
                 EXPECTED_LICENSE_FILE
                     .iter()
                     .filter_map(|(l, path)| {
                         if license == **l {
-                            path_if_exists(Path::new(path)).unwrap_or(None)
+                            path_if_exists(Path::new(path)).unwrap_or(None).map(to_crate_dir_string)
                         } else {
                             None
                         }
                     })
-                    .nth(0)
+                    .collect()
             }
         }
-    }
-    .map(|f| crate_dir.strip_prefix("third_party").unwrap().join(f));
-    if license_file.is_none() && shipped {
+    };
+    if license_files.is_empty() && shipped {
         log::warn!(
             "License file not found for crate {name}.\n  Crates that are \
             marked `shipped` must specify a License File.\n  You can specify \
-            the `license_file` in [crate.{name}] relative to the crate's root \
+            the `license_files` in [crate.{name}] relative to the crate's root \
             directory.",
             name = package.name
         );
@@ -183,7 +185,7 @@ pub fn readme_file_from_package<'a>(
         security_critical: if security_critical { "yes" } else { "no" },
         shipped: if shipped { "yes" } else { "no" },
         license,
-        license_file,
+        license_files,
         revision,
     };
 
