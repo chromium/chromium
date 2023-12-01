@@ -51,17 +51,14 @@ constexpr uint8_t kTemporalLayerPattern[][4] = {
 VaapiVideoEncoderDelegate::Config kDefaultVaapiVideoEncoderDelegateConfig{
     .max_num_ref_frames = kDefaultMaxNumRefFrames};
 
-VideoEncodeAccelerator::Config kDefaultVideoEncodeAcceleratorConfig(
-    PIXEL_FORMAT_I420,
-    gfx::Size(1280, 720),
-    VP9PROFILE_PROFILE0,
-    Bitrate::ConstantBitrate(14000000u)
-    /* = maximum bitrate in bits per second for level 3.1 */,
-    VideoEncodeAccelerator::kDefaultFramerate,
-    absl::nullopt /* gop_length */,
-    absl::nullopt /* h264 output level*/,
-    false /* is_constrained_h264 */,
-    VideoEncodeAccelerator::Config::StorageType::kShmem);
+VideoEncodeAccelerator::Config DefaultVideoEncodeAcceleratorConfig() {
+  VideoEncodeAccelerator::Config vea_config(
+      PIXEL_FORMAT_I420, gfx::Size(1280, 720), VP9PROFILE_PROFILE0,
+      Bitrate::ConstantBitrate(14000000u));
+  vea_config.initial_framerate = VideoEncodeAccelerator::kDefaultFramerate;
+  vea_config.storage_type = VideoEncodeAccelerator::Config::StorageType::kShmem;
+  return vea_config;
+}
 
 constexpr std::array<bool, kVp9NumRefsPerFrame> kRefFramesUsedForKeyFrame = {
     false, false, false};
@@ -158,8 +155,8 @@ VideoBitrateAllocation AdaptBitrateAllocation(
 
 std::vector<gfx::Size> GetDefaultSpatialLayerResolutions(
     size_t num_spatial_layers) {
-  constexpr gfx::Size& kDefaultSize =
-      kDefaultVideoEncodeAcceleratorConfig.input_visible_size;
+  const gfx::Size kDefaultSize =
+      DefaultVideoEncodeAcceleratorConfig().input_visible_size;
   std::vector<gfx::Size> spatial_layer_resolutions(num_spatial_layers);
   for (size_t sid = 0; sid < num_spatial_layers; ++sid) {
     const int denom =
@@ -328,7 +325,7 @@ VP9VaapiVideoEncoderDelegateTest::CreateEncodeJob(
   constexpr VABufferID kDummyVABufferID = 12;
   auto scoped_va_buffer = ScopedVABuffer::CreateForTesting(
       kDummyVABufferID, VAEncCodedBufferType,
-      kDefaultVideoEncodeAcceleratorConfig.input_visible_size.GetArea());
+      DefaultVideoEncodeAcceleratorConfig().input_visible_size.GetArea());
 
   // TODO(b/229358029): Set a valid timestamp and check the timestamp in
   // metadata.
@@ -342,7 +339,7 @@ void VP9VaapiVideoEncoderDelegateTest::InitializeVP9VaapiVideoEncoderDelegate(
     SVCInterLayerPredMode inter_layer_pred,
     size_t num_spatial_layers,
     size_t num_temporal_layers) {
-  auto config = kDefaultVideoEncodeAcceleratorConfig;
+  auto config = DefaultVideoEncodeAcceleratorConfig();
   config.inter_layer_pred = inter_layer_pred;
   auto ave_config = kDefaultVaapiVideoEncoderDelegateConfig;
 
@@ -352,7 +349,7 @@ void VP9VaapiVideoEncoderDelegateTest::InitializeVP9VaapiVideoEncoderDelegate(
 
   auto initial_bitrate_allocation = AllocateDefaultBitrateForTesting(
       num_spatial_layers, num_temporal_layers,
-      kDefaultVideoEncodeAcceleratorConfig.bitrate);
+      DefaultVideoEncodeAcceleratorConfig().bitrate);
   std::vector<gfx::Size> svc_layer_size =
       GetDefaultSpatialLayerResolutions(num_spatial_layers);
   if (num_spatial_layers > 1u || num_temporal_layers > 1u) {
@@ -537,9 +534,9 @@ void VP9VaapiVideoEncoderDelegateTest::UpdateRatesTest(
   };
 
   const uint32_t kBitrate =
-      kDefaultVideoEncodeAcceleratorConfig.bitrate.target_bps();
+      DefaultVideoEncodeAcceleratorConfig().bitrate.target_bps();
   const uint32_t kFramerate =
-      *kDefaultVideoEncodeAcceleratorConfig.initial_framerate;
+      *DefaultVideoEncodeAcceleratorConfig().initial_framerate;
   const uint8_t* expected_temporal_ids =
       kTemporalLayerPattern[num_temporal_layers - 1];
   // Call UpdateRates before Encode.
@@ -703,11 +700,11 @@ TEST_P(VP9VaapiVideoEncoderDelegateTest, DeactivateActivateSpatialLayers) {
   const VideoBitrateAllocation kDefaultBitrateAllocation =
       AllocateDefaultBitrateForTesting(
           num_spatial_layers, VP9SVCLayersStateful::kMaxSupportedTemporalLayers,
-          kDefaultVideoEncodeAcceleratorConfig.bitrate);
+          DefaultVideoEncodeAcceleratorConfig().bitrate);
   const std::vector<gfx::Size> kDefaultSpatialLayers =
       GetDefaultSpatialLayerResolutions(num_spatial_layers);
   const uint32_t kFramerate =
-      *kDefaultVideoEncodeAcceleratorConfig.initial_framerate;
+      *DefaultVideoEncodeAcceleratorConfig().initial_framerate;
 
   for (const auto& query : kQueries[num_spatial_layers - 2]) {
     const auto& active_layers = query.active_layers;
@@ -736,7 +733,7 @@ TEST_P(VP9VaapiVideoEncoderDelegateTest, FailsWithInvalidSpatialLayers) {
   const VideoBitrateAllocation kDefaultBitrateAllocation =
       AllocateDefaultBitrateForTesting(
           num_spatial_layers, num_temporal_layers,
-          kDefaultVideoEncodeAcceleratorConfig.bitrate);
+          DefaultVideoEncodeAcceleratorConfig().bitrate);
   std::vector<VideoBitrateAllocation> invalid_bitrate_allocations;
   constexpr uint32_t kBitrate = 1234u;
   auto bitrate_allocation = kDefaultBitrateAllocation;
@@ -771,7 +768,7 @@ TEST_P(VP9VaapiVideoEncoderDelegateTest, FailsWithInvalidSpatialLayers) {
   }
 
   const uint32_t kFramerate =
-      *kDefaultVideoEncodeAcceleratorConfig.initial_framerate;
+      *DefaultVideoEncodeAcceleratorConfig().initial_framerate;
   for (const auto& invalid_allocation : invalid_bitrate_allocations) {
     InitializeVP9VaapiVideoEncoderDelegate(inter_layer_pred, num_spatial_layers,
                                            num_temporal_layers);

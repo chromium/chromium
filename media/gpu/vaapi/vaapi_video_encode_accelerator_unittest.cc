@@ -49,12 +49,15 @@ constexpr int kSpatialLayersResolutionDenom[][3] = {
     {2, 1, 0},  // For two spatial layers.
     {4, 2, 1},  // For three spatial layers.
 };
-const VideoEncodeAccelerator::Config kDefaultVideoEncodeAcceleratorConfig(
-    PIXEL_FORMAT_I420,
-    kDefaultEncodeSize,
-    VP9PROFILE_PROFILE0,
-    kDefaultBitrate,
-    kDefaultFramerate);
+
+VideoEncodeAccelerator::Config DefaultVideoEncodeAcceleratorConfig() {
+  VideoEncodeAccelerator::Config vea_config(
+      PIXEL_FORMAT_I420, kDefaultEncodeSize, VP9PROFILE_PROFILE0,
+      kDefaultBitrate);
+
+  vea_config.initial_framerate = kDefaultFramerate;
+  return vea_config;
+}
 
 std::vector<VideoEncodeAccelerator::Config::SpatialLayer> GetDefaultSVCLayers(
     size_t num_spatial_layers,
@@ -699,7 +702,7 @@ TEST_P(VaapiVideoEncodeAcceleratorTest, Initialize) {
   const uint8_t num_of_spatial_layers = GetParam().num_of_spatial_layers;
   const SVCInterLayerPredMode inter_layer_pred = GetParam().inter_layer_pred;
 
-  VideoEncodeAccelerator::Config config = kDefaultVideoEncodeAcceleratorConfig;
+  VideoEncodeAccelerator::Config config = DefaultVideoEncodeAcceleratorConfig();
   config.inter_layer_pred = inter_layer_pred;
   const uint8_t num_of_temporal_layers = GetParam().num_of_temporal_layers;
   config.spatial_layers =
@@ -737,7 +740,7 @@ TEST_P(VaapiVideoEncodeAcceleratorTest, EncodeVP9WithSingleSpatialLayer) {
   if (GetParam().num_of_spatial_layers > 1u)
     GTEST_SKIP() << "Test only meant for single spatial layer";
 
-  VideoEncodeAccelerator::Config config = kDefaultVideoEncodeAcceleratorConfig;
+  VideoEncodeAccelerator::Config config = DefaultVideoEncodeAcceleratorConfig();
   const SVCInterLayerPredMode inter_layer_pred = GetParam().inter_layer_pred;
   config.inter_layer_pred = inter_layer_pred;
   VideoEncodeAccelerator::Config::SpatialLayer spatial_layer;
@@ -762,7 +765,7 @@ TEST_P(VaapiVideoEncodeAcceleratorTest, EncodeVP9WithMultipleSpatialLayers) {
     GTEST_SKIP() << "Test only meant for multiple spatial layers configuration";
 
   const uint8_t num_of_temporal_layers = GetParam().num_of_temporal_layers;
-  VideoEncodeAccelerator::Config config = kDefaultVideoEncodeAcceleratorConfig;
+  VideoEncodeAccelerator::Config config = DefaultVideoEncodeAcceleratorConfig();
   const SVCInterLayerPredMode inter_layer_pred = GetParam().inter_layer_pred;
   config.inter_layer_pred = inter_layer_pred;
   config.input_format = PIXEL_FORMAT_NV12;

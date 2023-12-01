@@ -186,8 +186,10 @@ class NdkVideoEncoderAcceleratorTest
     gfx::Size frame_size(640, 480);
     uint32_t framerate = 30;
     auto bitrate = Bitrate::ConstantBitrate(1000000u);
-    auto config = VideoEncodeAccelerator::Config(
-        pixel_format_, frame_size, profile_, bitrate, framerate, 1000);
+    auto config = VideoEncodeAccelerator::Config(pixel_format_, frame_size,
+                                                 profile_, bitrate);
+    config.initial_framerate = framerate;
+    config.gop_length = 1000;
     config.required_encoder_type =
         VideoEncodeAccelerator::Config::EncoderType::kNoPreference;
     return config;

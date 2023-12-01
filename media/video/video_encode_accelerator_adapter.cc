@@ -96,8 +96,9 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
   Bitrate bitrate =
       CreateBitrate(opts.bitrate, opts.frame_size, supported_rc_modes);
   auto config =
-      VideoEncodeAccelerator::Config(format, opts.frame_size, profile, bitrate,
-                                     initial_framerate, opts.keyframe_interval);
+      VideoEncodeAccelerator::Config(format, opts.frame_size, profile, bitrate);
+  config.initial_framerate = initial_framerate;
+  config.gop_length = opts.keyframe_interval;
 
   if (opts.content_hint) {
     switch (*opts.content_hint) {

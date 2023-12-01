@@ -1898,11 +1898,12 @@ int32_t RTCVideoEncoder::InitEncode(
 
   vea_config_ = media::VideoEncodeAccelerator::Config(
       pixel_format, input_visible_size, profile_,
-      media::Bitrate::ConstantBitrate(bitrate_bps),
-      /*initial_framerate=*/absl::nullopt,
-      /*gop_length=*/absl::nullopt,
-      /*h264_output_level=*/absl::nullopt, is_constrained_h264_, storage_type,
-      vea_content_type, spatial_layers, inter_layer_pred);
+      media::Bitrate::ConstantBitrate(bitrate_bps));
+  vea_config_->is_constrained_h264 = is_constrained_h264_;
+  vea_config_->storage_type = storage_type;
+  vea_config_->content_type = vea_content_type;
+  vea_config_->spatial_layers = spatial_layers;
+  vea_config_->inter_layer_pred = inter_layer_pred;
 
   if (!base::FeatureList::IsEnabled(
           features::kWebRtcInitializeEncoderOnFirstFrame)) {

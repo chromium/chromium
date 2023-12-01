@@ -517,11 +517,41 @@ bool StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
   if (!input.ReadRequiredEncoderType(&required_encoder_type))
     return false;
 
-  *output = media::VideoEncodeAccelerator::Config(
-      input_format, input_visible_size, output_profile, bitrate,
-      initial_framerate, gop_length, h264_output_level, is_constrained_h264,
-      storage_type, content_type, spatial_layers, inter_layer_pred);
+  struct CheckVEAConfig {
+    // The variable declaration order must be the same as
+    // VideoEncodeAccelerator::Config.
+    media::VideoPixelFormat input_format;
+    gfx::Size input_visible_size;
+    media::VideoCodecProfile output_profile;
+    media::Bitrate bitrate;
+    absl::optional<uint32_t> initial_framerate;
+    absl::optional<uint32_t> gop_length;
+    absl::optional<uint8_t> h264_output_level;
+    bool is_constrained_h264;
+    absl::optional<media::VideoEncodeAccelerator::Config::StorageType>
+        storage_type;
+    media::VideoEncodeAccelerator::Config::ContentType content_type;
+    std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>
+        spatial_layers;
+    media::SVCInterLayerPredMode inter_layer_pred;
+    bool require_low_delay = true;
+    media::VideoEncodeAccelerator::Config::EncoderType required_encoder_type;
+  };
+  static_assert(
+      sizeof(CheckVEAConfig) == sizeof(media::VideoEncodeAccelerator::Config),
+      "Please apply removed/added values in VideoEncodeAccelerator::Config "
+      "to the following copy and then remove/add the values in CheckVEAConfig");
 
+  *output = media::VideoEncodeAccelerator::Config(
+      input_format, input_visible_size, output_profile, bitrate);
+  output->initial_framerate = initial_framerate;
+  output->gop_length = gop_length;
+  output->h264_output_level = h264_output_level;
+  output->is_constrained_h264 = is_constrained_h264;
+  output->storage_type = storage_type;
+  output->content_type = content_type;
+  output->spatial_layers = spatial_layers;
+  output->inter_layer_pred = inter_layer_pred;
   output->require_low_delay = input.require_low_delay();
   output->required_encoder_type = required_encoder_type;
 

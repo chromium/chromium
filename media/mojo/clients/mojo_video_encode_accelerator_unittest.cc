@@ -225,10 +225,10 @@ class MojoVideoEncodeAcceleratorTest : public ::testing::Test {
             _, kInputVisibleSize,
             VideoFrame::AllocationSize(PIXEL_FORMAT_I420, kInputVisibleSize)));
 
-    const VideoEncodeAccelerator::Config config(
-        PIXEL_FORMAT_I420, kInputVisibleSize, kOutputProfile, kInitialBitrate,
-        absl::nullopt, absl::nullopt, absl::nullopt, false, absl::nullopt,
-        kContentType);
+    VideoEncodeAccelerator::Config config(PIXEL_FORMAT_I420, kInputVisibleSize,
+                                          kOutputProfile, kInitialBitrate);
+    config.content_type = kContentType;
+
     EXPECT_TRUE(mojo_vea()->Initialize(
         config, mock_vea_client, std::make_unique<media::NullMediaLog>()));
     base::RunLoop().RunUntilIdle();

@@ -233,16 +233,7 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     Config(VideoPixelFormat input_format,
            const gfx::Size& input_visible_size,
            VideoCodecProfile output_profile,
-           const Bitrate& bitrate,
-           absl::optional<uint32_t> initial_framerate = absl::nullopt,
-           absl::optional<uint32_t> gop_length = absl::nullopt,
-           absl::optional<uint8_t> h264_output_level = absl::nullopt,
-           bool is_constrained_h264 = false,
-           absl::optional<StorageType> storage_type = absl::nullopt,
-           ContentType content_type = ContentType::kCamera,
-           const std::vector<SpatialLayer>& spatial_layers = {},
-           SVCInterLayerPredMode inter_layer_pred =
-               SVCInterLayerPredMode::kOnKeyPic);
+           const Bitrate& bitrate);
 
     ~Config();
 
@@ -268,7 +259,8 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
 
     // Initial encoding framerate in frames per second. This is optional and
     // VideoEncodeAccelerator should use |kDefaultFramerate| if not given.
-    absl::optional<uint32_t> initial_framerate;
+    absl::optional<uint32_t> initial_framerate =
+        VideoEncodeAccelerator::kDefaultFramerate;
 
     // Group of picture length for encoded output stream, indicates the
     // distance between two key frames, i.e. IPPPIPPP would be represent as 4.
@@ -281,7 +273,7 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     absl::optional<uint8_t> h264_output_level;
 
     // Indicates baseline profile or constrained baseline profile for H264 only.
-    bool is_constrained_h264;
+    bool is_constrained_h264 = false;
 
     // The storage type of video frame provided on Encode().
     // If no value is set, VEA doesn't check the storage type of video frame on
@@ -295,7 +287,7 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     // burstiness of motion and requirements for readability of small text in
     // bright colors. With this content hint the encoder may choose to optimize
     // for the given use case.
-    ContentType content_type;
+    ContentType content_type = ContentType::kCamera;
 
     // The configuration for spatial layers. This is not empty if and only if
     // either spatial or temporal layer encoding is configured. When this is not
@@ -304,7 +296,7 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     std::vector<SpatialLayer> spatial_layers;
 
     // Indicates the inter layer prediction mode for SVC encoding.
-    SVCInterLayerPredMode inter_layer_pred;
+    SVCInterLayerPredMode inter_layer_pred = SVCInterLayerPredMode::kOnKeyPic;
 
     // This flag forces the encoder to use low latency mode, suitable for
     // RTC use cases.
