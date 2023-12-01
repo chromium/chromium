@@ -8,9 +8,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.tasks.tab_management.CustomMessageCardViewProperties.ALL_KEYS;
-import static org.chromium.chrome.browser.tasks.tab_management.CustomMessageCardViewProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.tasks.tab_management.CustomMessageCardViewProperties.MESSAGE_CARD_VIEW;
-import static org.chromium.chrome.browser.tasks.tab_management.CustomMessageCardViewProperties.MESSAGE_CARD_VISIBILITY_CONTROL_IN_REGULAR_AND_INCOGNITO_MODE;
+import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.IS_INCOGNITO;
+import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_CARD_VISIBILITY_CONTROL_IN_REGULAR_AND_INCOGNITO_MODE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 

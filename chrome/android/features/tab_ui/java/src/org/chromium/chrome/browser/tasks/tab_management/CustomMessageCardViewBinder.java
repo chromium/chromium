@@ -27,9 +27,8 @@ public class CustomMessageCardViewBinder {
                     model.get(CustomMessageCardViewProperties.MESSAGE_CARD_VIEW));
         } else if (CARD_ALPHA == propertyKey) {
             viewHolder.mContentView.setAlpha(model.get(CARD_ALPHA));
-        } else if (CustomMessageCardViewProperties.IS_INCOGNITO == propertyKey) {
-            viewHolder.mProvider.setIsIncognito(
-                    model.get(CustomMessageCardViewProperties.IS_INCOGNITO));
+        } else if (MessageCardViewProperties.IS_INCOGNITO == propertyKey) {
+            viewHolder.mProvider.setIsIncognito(model.get(MessageCardViewProperties.IS_INCOGNITO));
         }
     }
 }

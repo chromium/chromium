@@ -382,7 +382,7 @@ public class TabSwitcherCoordinator
                             LargeMessageCardViewBinder::bind);
                 }
 
-                if (shouldRegisterLargeMessageItemType() && mTabSuggestionMessageService != null) {
+                if (shouldRegisterLargeMessageItemType()) {
                     mTabListCoordinator.registerItemType(
                             TabProperties.UiType.CUSTOM_MESSAGE,
                             new LayoutViewBuilder(R.layout.custom_message_card_item),
