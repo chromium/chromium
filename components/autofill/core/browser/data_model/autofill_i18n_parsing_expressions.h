@@ -175,14 +175,12 @@ constexpr ExtractParts kExtractParts_7 = ExtractParts("", kExtractParts_7_Pieces
 // A lookup map for parsing expressions for countries and field types.
 constexpr auto kAutofillParsingRulesMap =
     base::MakeFixedFlatMap<CountryAndFieldType, const AutofillParsingProcess*>({
-      {{"BR", NAME_FULL}, &kDecompositionCascade_3},
       {{"BR", ADDRESS_HOME_STREET_LOCATION}, &kDecompositionList[8]},
       {{"BR", ADDRESS_HOME_SUBPREMISE}, &kExtractParts_0},
       {{"BR", ADDRESS_HOME_OVERFLOW}, &kExtractParts_1},
       {{"BR", ADDRESS_HOME_OVERFLOW_AND_LANDMARK}, &kExtractParts_2},
       {{"BR", ADDRESS_HOME_STREET_ADDRESS}, &kExtractParts_3},
       {{"BR", ADDRESS_HOME_APT}, &kDecompositionList[9]},
-      {{"MX", NAME_FULL}, &kDecompositionCascade_7},
       {{"MX", ADDRESS_HOME_STREET_LOCATION}, &kDecompositionList[13]},
       {{"MX", ADDRESS_HOME_SUBPREMISE}, &kExtractParts_4},
       {{"MX", ADDRESS_HOME_BETWEEN_STREETS}, &kDecompositionList[14]},
@@ -190,7 +188,6 @@ constexpr auto kAutofillParsingRulesMap =
       {{"MX", ADDRESS_HOME_OVERFLOW}, &kExtractParts_6},
       {{"MX", ADDRESS_HOME_STREET_ADDRESS}, &kExtractParts_7},
       {{"MX", ADDRESS_HOME_APT}, &kDecompositionList[15]},
-      {{"XX", NAME_FULL}, &kDecompositionCascade_11},
       {{"XX", ADDRESS_HOME_STREET_ADDRESS}, &kDecompositionList[16]}
       });
 

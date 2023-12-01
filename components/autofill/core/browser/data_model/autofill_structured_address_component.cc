@@ -466,7 +466,9 @@ void AddressComponent::ParseValueAndAssignSubcomponents() {
   }
 
   bool parsing_successful =
-      base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel)
+      base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel) &&
+              GroupTypeOfServerFieldType(GetStorageType()) ==
+                  FieldTypeGroup::kAddress
           ? ParseValueAndAssignSubcomponentsByI18nParsingRules()
           : ParseValueAndAssignSubcomponentsByRegularExpressions();
 
@@ -507,7 +509,9 @@ bool AddressComponent::ParseValueAndAssignSubcomponentsByRegularExpressions() {
 
 void AddressComponent::
     TryParseValueAndAssignSubcomponentsRespectingSetValues() {
-  if (base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel)) {
+  if (base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel) &&
+      GroupTypeOfServerFieldType(GetStorageType()) ==
+          FieldTypeGroup::kAddress) {
     const AddressCountryCode country_code = AddressCountryCode(
         base::UTF16ToUTF8(GetRootNode().GetValueForType(ADDRESS_HOME_COUNTRY)));
 
