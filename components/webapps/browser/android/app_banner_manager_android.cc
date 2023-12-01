@@ -150,15 +150,6 @@ AppBannerManagerAndroid::ParamsToPerformInstallableWebAppCheck() {
       AppBannerManager::ParamsToPerformInstallableWebAppCheck();
   params.prefer_maskable_icon =
       WebappsIconUtils::DoesAndroidSupportMaskableIcons();
-  params.installable_criteria = InstallableCriteria::kValidManifestWithIcons;
-  if (base::FeatureList::IsEnabled(
-          features::kUniversalInstallRootScopeNoManifest)) {
-    params.installable_criteria = InstallableCriteria::kNoManifestAtRootScope;
-  } else if (base::FeatureList::IsEnabled(
-                 features::kUniversalInstallManifest)) {
-    params.installable_criteria =
-        InstallableCriteria::kImplicitManifestFieldsHTML;
-  }
   params.fetch_favicon =
       base::FeatureList::IsEnabled(features::kUniversalInstallIcon);
   return params;

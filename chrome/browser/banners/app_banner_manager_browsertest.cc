@@ -89,18 +89,6 @@ class AppBannerManagerTest : public AppBannerManager {
     return WebappInstallSource::COUNT;
   }
 
-  InstallableParams ParamsToPerformInstallableWebAppCheck() override {
-    InstallableParams params =
-        AppBannerManager::ParamsToPerformInstallableWebAppCheck();
-    params.fetch_metadata = true;
-    params.installable_criteria =
-        base::FeatureList::IsEnabled(features::kUniversalInstallManifest)
-            ? InstallableCriteria::kImplicitManifestFieldsHTML
-            : InstallableCriteria::kValidManifestWithIcons;
-
-    return params;
-  }
-
   void clear_will_show() { banner_shown_.reset(); }
 
   State state() { return AppBannerManager::state(); }
@@ -1063,14 +1051,16 @@ class AppBannerInstallCriteriaTest
   }
 
   void CheckBannerResult(AppBannerManagerTest* manager) {
-    ASSERT_EQ(manager->state(), AppBannerManager::State::COMPLETE);
     if (GetParam() == InstallableCriteriaType::kValidManifestWithIcons) {
+      ASSERT_EQ(manager->state(), AppBannerManager::State::COMPLETE);
       EXPECT_EQ(manager->GetInstallableWebAppCheckResultForTesting(),
                 AppBannerManager::InstallableWebAppCheckResult::kNo);
     } else {  // InstallableCriteriaType::kImplicitManifestFields
+      ASSERT_EQ(manager->state(),
+                AppBannerManager::State::PENDING_PROMPT_NOT_CANCELED);
       EXPECT_EQ(
           manager->GetInstallableWebAppCheckResultForTesting(),
-          AppBannerManager::InstallableWebAppCheckResult::kYes_ByUserRequest);
+          AppBannerManager::InstallableWebAppCheckResult::kYes_Promotable);
     }
   }
 
@@ -1097,8 +1087,12 @@ IN_PROC_BROWSER_TEST_P(AppBannerInstallCriteriaTest, ImplicitName) {
       "/banners/manifest_test_page.html?manifest="
       "manifest_empty_name_short_name.json&application-name=TestApp");
 
+  absl::optional<InstallableStatusCode> expected_histogram_code =
+      (GetParam() == InstallableCriteriaType::kValidManifestWithIcons)
+          ? absl::make_optional(MANIFEST_MISSING_NAME_OR_SHORT_NAME)
+          : absl::nullopt;
   RunBannerTest(web_contents(), manager.get(), test_url,
-                MANIFEST_MISSING_NAME_OR_SHORT_NAME);
+                expected_histogram_code);
 
   CheckBannerResult(manager.get());
   if (GetParam() != InstallableCriteriaType::kValidManifestWithIcons) {
@@ -1114,8 +1108,12 @@ IN_PROC_BROWSER_TEST_P(AppBannerInstallCriteriaTest,
       "/banners/manifest_test_page.html?manifest="
       "manifest_empty_name_short_name.json");
 
+  absl::optional<InstallableStatusCode> expected_histogram_code =
+      (GetParam() == InstallableCriteriaType::kValidManifestWithIcons)
+          ? absl::make_optional(MANIFEST_MISSING_NAME_OR_SHORT_NAME)
+          : absl::nullopt;
   RunBannerTest(web_contents(), manager.get(), test_url,
-                MANIFEST_MISSING_NAME_OR_SHORT_NAME);
+                expected_histogram_code);
 
   CheckBannerResult(manager.get());
   if (GetParam() != InstallableCriteriaType::kValidManifestWithIcons) {
