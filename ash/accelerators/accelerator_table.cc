@@ -38,26 +38,18 @@ const AcceleratorData kDeprecatedAccelerators[] = {
      AcceleratorAction::kShowShortcutViewer},
     {true, ui::VKEY_OEM_2,
      ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN,
-     AcceleratorAction::kShowShortcutViewer},
-    {true, ui::VKEY_OEM_2, ui::EF_CONTROL_DOWN,
-     AcceleratorAction::kOpenGetHelp},
-    {true, ui::VKEY_OEM_2, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
-     AcceleratorAction::kOpenGetHelp},
-};
+     AcceleratorAction::kShowShortcutViewer}};
 
-// `kShowShortcutViewer` and `kOpenGetHelp` both have two accelerators that are
-// deprecated but use the same message.
-const size_t kNumDeprecatedAcceleratorsDuplicate = 2u;
+// `kShowShortcutViewer` has two accelerators that are deprecated but use the
+// same message.
+const size_t kNumDeprecatedAcceleratorsDuplicate = 1u;
 const size_t kDeprecatedAcceleratorsLength = std::size(kDeprecatedAccelerators);
 
 const DeprecatedAcceleratorData kDeprecatedAcceleratorsData[] = {
     {AcceleratorAction::kShowShortcutViewer,
      "Ash.Accelerators.Deprecated.ShowShortcutViewer",
      IDS_DEPRECATED_SHOW_SHORTCUT_VIEWER_MSG,
-     IDS_SHORTCUT_SHOW_SHORTCUT_VIEWER_NEW, false},
-    {AcceleratorAction::kOpenGetHelp,
-     "Ash.Accelerators.Deprecated.ShowShortcutViewer",
-     IDS_DEPRECATED_OPEN_GET_HELP_MSG, IDS_SHORTCUT_OPEN_GET_HELP_NEW, false}};
+     IDS_SHORTCUT_SHOW_SHORTCUT_VIEWER_NEW, false}};
 
 const size_t kDeprecatedAcceleratorsDataLength =
     std::size(kDeprecatedAcceleratorsData);
