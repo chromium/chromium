@@ -82,6 +82,10 @@ if (concurrent_links == -1) {
     #    could be optimized (maybe to 12GB or for different configs like
     #    component build).
     _args = [ "--mem_per_link_gb=16" ]
+  } else if (is_chromeos && is_msan) {
+    # crbug.com/1505350 - CrOS MSan builder consumes more memory and crushes.
+    # Max 25.2GB, Avg: 9.4GB, Median: 7.9GB
+    _args = [ "--mem_per_link_gb=12" ]
   } else {
     _args = []
   }
