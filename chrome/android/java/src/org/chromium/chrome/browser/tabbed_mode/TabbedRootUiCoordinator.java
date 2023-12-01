@@ -169,7 +169,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final ObservableSupplierImpl<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     private Callback<Integer> mOnTabStripHeightChangedCallback;
     private MultiInstanceManager mMultiInstanceManager;
-
     private int mStatusIndicatorHeight;
 
     /**
@@ -572,7 +571,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (ChromeFeatureList.sTabLinkDragDropAndroid.isEnabled()) {
             ChromeTabbedOnDragListener chromeTabbedOnDragListener =
                     new ChromeTabbedOnDragListener(
-                            mMultiInstanceManager, mTabModelSelectorSupplier.get(), mWindowAndroid);
+                            mMultiInstanceManager,
+                            mTabModelSelectorSupplier.get(),
+                            mWindowAndroid,
+                            mLayoutStateProviderOneShotSupplier);
+
             mCompositorViewHolderSupplier.get().setOnDragListener(chromeTabbedOnDragListener);
         }
 

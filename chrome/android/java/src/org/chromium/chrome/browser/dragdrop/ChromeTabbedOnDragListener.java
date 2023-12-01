@@ -8,6 +8,9 @@ import android.view.DragEvent;
 import android.view.View;
 import android.view.View.OnDragListener;
 
+import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -23,6 +26,7 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
     private final MultiInstanceManager mMultiInstanceManager;
     private final TabModelSelector mTabModelSelector;
     private final WindowAndroid mWindowAndroid;
+    private final Supplier<LayoutStateProvider> mLayoutStateProviderSupplier;
 
     /**
      * Drag and Drop listener defines the default behavior {@link ChromeTabbedActivity} receive drag
@@ -35,10 +39,12 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
     public ChromeTabbedOnDragListener(
             MultiInstanceManager multiInstanceManager,
             TabModelSelector tabModelSelector,
-            WindowAndroid windowAndroid) {
+            WindowAndroid windowAndroid,
+            Supplier<LayoutStateProvider> layoutStateProviderSupplier) {
         mMultiInstanceManager = multiInstanceManager;
         mTabModelSelector = tabModelSelector;
         mWindowAndroid = windowAndroid;
+        mLayoutStateProviderSupplier = layoutStateProviderSupplier;
     }
 
     @Override
@@ -54,6 +60,15 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
                 }
                 return true;
             case DragEvent.ACTION_DROP:
+                // This is to prevent tab switcher from receiving drops. We might support dropping
+                // into tab switcher in the future, but this should still be retained to prevent
+                // dropping happens on top of tab switcher toolbar.
+                if (mLayoutStateProviderSupplier.get() == null
+                        || mLayoutStateProviderSupplier
+                                .get()
+                                .isLayoutVisible(LayoutType.TAB_SWITCHER)) {
+                    return false;
+                }
                 if (!isSourceInstance()) {
                     // Reparent the dragged tab to the position immediately following the selected
                     // tab in the destination window.

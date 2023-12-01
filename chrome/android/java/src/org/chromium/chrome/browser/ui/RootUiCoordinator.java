@@ -230,7 +230,7 @@ public class RootUiCoordinator
     private OverlayPanelManager mOverlayPanelManager;
     private OverlayPanelManager.OverlayPanelManagerObserver mOverlayPanelManagerObserver;
 
-    private OneshotSupplier<LayoutStateProvider> mLayoutStateProviderOneShotSupplier;
+    protected OneshotSupplier<LayoutStateProvider> mLayoutStateProviderOneShotSupplier;
     protected LayoutStateProvider mLayoutStateProvider;
     private LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
 

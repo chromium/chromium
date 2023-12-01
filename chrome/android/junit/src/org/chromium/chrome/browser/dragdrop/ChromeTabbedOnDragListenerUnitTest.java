@@ -23,8 +23,11 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -46,6 +49,8 @@ public class ChromeTabbedOnDragListenerUnitTest {
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private Tab mCurrentTab;
     @Mock private WindowAndroid mWindowAndroid;
+    @Mock private LayoutStateProvider mLayoutStateProvider;
+    private OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplierImpl;
     private ClipDescription mClipDescription;
     private Context mContext;
     private ChromeTabbedOnDragListener mChromeTabbedOnDragListener;
@@ -56,9 +61,14 @@ public class ChromeTabbedOnDragListenerUnitTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         mContext = ContextUtils.getApplicationContext();
+        mLayoutStateProviderSupplierImpl = new OneshotSupplierImpl<LayoutStateProvider>();
+        mLayoutStateProviderSupplierImpl.set(mLayoutStateProvider);
         mChromeTabbedOnDragListener =
                 new ChromeTabbedOnDragListener(
-                        mMultiInstanceManager, mTabModelSelector, mWindowAndroid);
+                        mMultiInstanceManager,
+                        mTabModelSelector,
+                        mWindowAndroid,
+                        mLayoutStateProviderSupplierImpl);
         mCompositorViewHolder = new View(mContext);
         mDragDropGlobalState = DragDropGlobalState.getInstance();
         Activity activity = Mockito.mock(Activity.class);
@@ -117,9 +127,18 @@ public class ChromeTabbedOnDragListenerUnitTest {
                 mChromeTabbedOnDragListener.onDrag(
                         mCompositorViewHolder, mockDragEvent(DragEvent.ACTION_DROP, false)));
 
+        // Drop should return false, since it is trying to drop into tab switcher.
+        when(mMultiInstanceManager.getCurrentInstanceId()).thenReturn(1);
+        when(mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER)).thenReturn(true);
+        Assert.assertFalse(
+                "Action drop should return false",
+                mChromeTabbedOnDragListener.onDrag(
+                        mCompositorViewHolder, mockDragEvent(DragEvent.ACTION_DROP, false)));
+
         // Drop should return true, since the destination instance is not the same as the source
         // instance.
         when(mMultiInstanceManager.getCurrentInstanceId()).thenReturn(2);
+        when(mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER)).thenReturn(false);
         Assert.assertTrue(
                 "Action drop should return true",
                 mChromeTabbedOnDragListener.onDrag(
