@@ -90,6 +90,7 @@ crbug.com/1499775 external/wpt/webrtc-encoded-transform/RTCPeerConnection-insert
 crbug.com/1499775 external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-video.https.html [ Failure Pass ]
 
 # Chrome specific failures
+crbug.com/1499775 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/crashtests/fieldset-middleclick.html [ Timeout ]
 crbug.com/1499775 external/wpt/css/css-text/text-transform/text-transform-capitalize-014.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-option-arbitrary-content-not-displayed.tentative.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/html/semantics/embedded-content/the-img-element/image-loading-lazy-base-url-2.html [ Failure ]
