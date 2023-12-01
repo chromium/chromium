@@ -117,6 +117,7 @@ class TestNetworkMetadataObserver : public NetworkMetadataObserver {
 class NetworkMetadataStoreTest : public ::testing::Test {
  public:
   NetworkMetadataStoreTest() {
+    LoginState::Initialize();
     network_configuration_handler_ =
         NetworkConfigurationHandler::InitializeForTest(
             helper_.network_state_handler(),
@@ -180,6 +181,7 @@ class NetworkMetadataStoreTest : public ::testing::Test {
     scoped_user_manager_.reset();
     network_configuration_handler_.reset();
     NetworkHandler::Shutdown();
+    LoginState::Shutdown();
   }
 
   void SetUp() override {

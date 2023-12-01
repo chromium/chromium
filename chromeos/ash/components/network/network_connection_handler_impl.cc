@@ -150,12 +150,33 @@ std::string VPNCheckCredentials(const std::string& service_path,
   return std::string();
 }
 
+bool ShouldUseSharedProfileByDefault(const NetworkState* network) {
+  if (!LoginState::Get()->UserHasNetworkProfile()) {
+    // The session type has no network profile, so use the shared profile.
+    // TODO - b/295521307: This branch may become unnecessary when Managed Guest
+    // Sessions also have a network profile.
+    return true;
+  }
+  if (LoginState::Get()->IsGuestSessionUser()) {
+    // Prefer the "user" profile for guest sessions, even for open WiFi
+    // networks. This must come before the next branch. See b/307555248 for more
+    // details.
+    return false;
+  }
+  if (network && network->type() == shill::kTypeWifi && !network->IsSecure()) {
+    // Insecure networks are persisted in the shared profile by default
+    return true;
+  }
+
+  // Use the user profile if available.
+  return false;
+}
+
 std::string GetDefaultUserProfilePath(const NetworkState* network) {
-  if (!NetworkHandler::IsInitialized() ||
-      (LoginState::IsInitialized() &&
-       !LoginState::Get()->UserHasNetworkProfile()) ||
-      (network && network->type() == shill::kTypeWifi &&
-       !network->IsSecure())) {
+  DCHECK(LoginState::IsInitialized());
+
+  if (ShouldUseSharedProfileByDefault(network) ||
+      !NetworkHandler::IsInitialized()) {
     return NetworkProfileHandler::GetSharedProfilePath();
   }
   const NetworkProfile* profile =

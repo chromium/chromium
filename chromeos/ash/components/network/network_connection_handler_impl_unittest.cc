@@ -306,9 +306,9 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
-  void LoginToRegularUser() {
+  void LoginToUser(LoginState::LoggedInUserType user_type) {
     LoginState::Get()->SetLoggedInState(LoginState::LOGGED_IN_ACTIVE,
-                                        LoginState::LOGGED_IN_USER_REGULAR);
+                                        user_type);
     task_environment_.RunUntilIdle();
   }
 
@@ -543,6 +543,9 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
   FakeTetherDelegate* fake_tether_delegate() {
     return fake_tether_delegate_.get();
   }
+  std::string UserProfilePath() {
+    return helper_.ProfilePathUser();
+  }
 
  private:
   void AddCellularDevice() {
@@ -612,6 +615,28 @@ TEST_F(NetworkConnectionHandlerImplTest,
 }
 
 TEST_F(NetworkConnectionHandlerImplTest,
+       NetworkConnectionHandlerConnectSuccess_GuestUser) {
+  Init();
+
+  ProhibitVpnForNetworkHandler();
+
+  LoginToUser(LoginState::LOGGED_IN_USER_GUEST);
+  std::string wifi0_service_path = ConfigureService(kConfigWifi0Connectable);
+  ASSERT_FALSE(wifi0_service_path.empty());
+  Connect(wifi0_service_path);
+  EXPECT_EQ(kSuccessResult, GetResultAndReset());
+  // Observer expectations
+  EXPECT_TRUE(network_connection_observer()->GetRequested(wifi0_service_path));
+  EXPECT_EQ(kSuccessResult,
+            network_connection_observer()->GetResult(wifi0_service_path));
+  EXPECT_EQ(
+      UserProfilePath(),
+      GetServiceStringProperty(wifi0_service_path, shill::kProfileProperty));
+
+  NetworkHandler::Shutdown();
+}
+
+TEST_F(NetworkConnectionHandlerImplTest,
        NetworkConnectionHandlerConnectBlockedByManagedOnly) {
   Init();
 
@@ -621,7 +646,7 @@ TEST_F(NetworkConnectionHandlerImplTest,
       ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnect, true);
   SetupDevicePolicy("[]", global_config);
   SetupUserPolicy("[]");
-  LoginToRegularUser();
+  LoginToUser(LoginState::LOGGED_IN_USER_REGULAR);
   Connect(wifi0_service_path);
   EXPECT_EQ(NetworkConnectionHandler::kErrorBlockedByPolicy,
             GetResultAndReset());
@@ -646,7 +671,7 @@ TEST_F(NetworkConnectionHandlerImplTest,
   SetupDevicePolicy("[]", global_config);
   SetupUserPolicy("[]");
 
-  LoginToRegularUser();
+  LoginToUser(LoginState::LOGGED_IN_USER_REGULAR);
 
   Connect(wifi0_service_path);
   EXPECT_EQ(NetworkConnectionHandler::kErrorBlockedByPolicy,
