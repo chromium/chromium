@@ -143,19 +143,18 @@ MediaNotificationProviderImpl::GetMediaItemManager() {
 }
 
 void MediaNotificationProviderImpl::OnPrimaryUserSessionStarted() {
-  if (!media_router::GlobalMediaControlsCastStartStopEnabled(GetProfile()) ||
-      !crosapi::CrosapiManager::IsInitialized()) {
-    return;
-  }
-
-  // Since user profile is now active, we can create a
-  // CastMediaNotificationProducer for the MediaItemManager to access media
-  // items being casted.
+  // Since the user profile is now active, we can create a
+  // CastMediaNotificationProducer for the MediaItemManager to access Cast media
+  // items.
   cast_service_ =
       CastMediaNotificationProducerKeyedServiceFactory::GetForProfile(
           GetProfile());
   AddMediaItemManagerToCastService(item_manager_.get());
 
+  if (!media_router::GlobalMediaControlsCastStartStopEnabled(GetProfile()) ||
+      !crosapi::CrosapiManager::IsInitialized()) {
+    return;
+  }
   supplemental_device_picker_producer_ =
       std::make_unique<SupplementalDevicePickerProducer>(item_manager_.get());
   item_manager_->AddItemProducer(supplemental_device_picker_producer_.get());
