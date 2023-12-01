@@ -199,7 +199,7 @@ bool RemoteCommandJob::IsExecutionFinished() const {
 
 std::unique_ptr<std::string> RemoteCommandJob::GetResultPayload() const {
   DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(status_ == SUCCEEDED || status_ == FAILED);
+  DCHECK(status_ == SUCCEEDED || status_ == FAILED || status_ == ACKED);
 
   if (!result_payload_.has_value()) {
     return nullptr;

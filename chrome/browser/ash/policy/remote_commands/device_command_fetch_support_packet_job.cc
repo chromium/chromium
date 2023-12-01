@@ -26,13 +26,20 @@
 #include "base/syslog_logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
+#include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
+#include "chrome/browser/ash/policy/uploading/system_log_uploader.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 #include "chrome/browser/support_tool/data_collector.h"
 #include "chrome/browser/support_tool/support_tool_util.h"
 #include "chrome/browser/ui/webui/support_tool/support_tool_ui_utils.h"
-#include "chromeos/ash/components/login/login_state/login_state.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/feedback/redaction_tool/pii_types.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
@@ -46,6 +53,7 @@
 
 using enterprise_management::FetchSupportPacketResultCode;
 using enterprise_management::FetchSupportPacketResultNote;
+using enterprise_management::UserSessionType;
 
 namespace {
 
@@ -183,48 +191,17 @@ std::string GetCommandResultPayload(
 
 namespace policy {
 
-const char kCommandNotEnabledForUserMessage[] =
-    "FETCH_SUPPORT_PACKET command is not enabled for this user type.";
-
 const char kFetchSupportPacketFailureHistogramName[] =
     "Enterprise.DeviceRemoteCommand.FetchSupportPacket.Failure";
 
 DeviceCommandFetchSupportPacketJob::DeviceCommandFetchSupportPacketJob()
     : target_dir_(kTargetDir) {}
 
-DeviceCommandFetchSupportPacketJob::~DeviceCommandFetchSupportPacketJob() {
-  // Clean-up `login_waiter_`.
-  login_waiter_.reset();
-}
+DeviceCommandFetchSupportPacketJob::~DeviceCommandFetchSupportPacketJob() =
+    default;
 
 SupportPacketDetails::SupportPacketDetails() = default;
 SupportPacketDetails::~SupportPacketDetails() = default;
-
-DeviceCommandFetchSupportPacketJob::LoginWaiter::LoginWaiter() {
-  CHECK(ash::LoginState::IsInitialized());
-  ash::LoginState::Get()->AddObserver(this);
-}
-DeviceCommandFetchSupportPacketJob::LoginWaiter::~LoginWaiter() {
-  ash::LoginState::Get()->RemoveObserver(this);
-}
-
-void DeviceCommandFetchSupportPacketJob::LoginWaiter::WaitForLogin(
-    base::OnceClosure on_user_logged_in_callback) {
-  if (ash::LoginState::Get()->IsUserLoggedIn()) {
-    std::move(on_user_logged_in_callback).Run();
-    return;
-  }
-  SYSLOG(INFO) << "Waiting for a user to login for executing "
-                  "FETCH_SUPPORT_PACKET command.";
-  on_user_logged_in_callback_ = std::move(on_user_logged_in_callback);
-}
-
-void DeviceCommandFetchSupportPacketJob::LoginWaiter::LoggedInStateChanged() {
-  if (!on_user_logged_in_callback_) {
-    return;
-  }
-  std::move(on_user_logged_in_callback_).Run();
-}
 
 enterprise_management::RemoteCommand_Type
 DeviceCommandFetchSupportPacketJob::GetType() const {
@@ -300,38 +277,26 @@ bool DeviceCommandFetchSupportPacketJob::ParseCommandPayloadImpl(
   return true;
 }
 
-// static
-bool DeviceCommandFetchSupportPacketJob::CommandEnabledForUser() {
-  return chromeos::IsKioskSession();
+bool DeviceCommandFetchSupportPacketJob::IsCommandEnabled() const {
+  bool log_upload_enabled;
+  if (!ash::CrosSettings::IsInitialized() ||
+      !ash::CrosSettings::Get()->GetBoolean(ash::kSystemLogUploadEnabled,
+                                            &log_upload_enabled)) {
+    return false;
+  }
+  return log_upload_enabled;
 }
 
 void DeviceCommandFetchSupportPacketJob::RunImpl(
     CallbackWithResult result_callback) {
   result_callback_ = std::move(result_callback);
-
-  // Wait for a user to login to start the execution.
-  CHECK(!login_waiter_.has_value());
-  login_waiter_.emplace();
-  login_waiter_->WaitForLogin(
-      base::BindOnce(&DeviceCommandFetchSupportPacketJob::OnUserLoggedIn,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void DeviceCommandFetchSupportPacketJob::OnUserLoggedIn() {
-  // Clean up the `login_waiter_`.
-  login_waiter_.reset();
-
-  StartJobExecution();
-}
-
-void DeviceCommandFetchSupportPacketJob::StartJobExecution() {
-  // Check if the command is enabled for the user type.
-  if (!CommandEnabledForUser()) {
+  // Check if the command is enabled for the user.
+  if (!IsCommandEnabled()) {
     base::UmaHistogramEnumeration(kFetchSupportPacketFailureHistogramName,
                                   EnterpriseFetchSupportPacketFailureType::
                                       kFailedOnCommandEnabledForUserCheck);
     SYSLOG(ERROR)
-        << "FETCH_SUPPORT_PACKET command is not enabled for this user type.";
+        << "FETCH_SUPPORT_PACKET command is not enabled for the device.";
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -341,16 +306,38 @@ void DeviceCommandFetchSupportPacketJob::StartJobExecution() {
                 notes_)));
     return;
   }
+  StartJobExecution();
+}
 
+bool DeviceCommandFetchSupportPacketJob::IsPiiAllowed() const {
+  UserSessionType session_type = GetCurrentUserSessionType();
+  switch (session_type) {
+    case UserSessionType::AUTO_LAUNCHED_KIOSK_SESSION:
+    case UserSessionType::MANUALLY_LAUNCHED_KIOSK_SESSION:
+    case UserSessionType::AFFILIATED_USER_SESSION:
+      return true;
+
+    case UserSessionType::UNAFFILIATED_USER_SESSION:
+    case UserSessionType::MANAGED_GUEST_SESSION:
+    case UserSessionType::GUEST_SESSION:
+    case UserSessionType::NO_SESSION:
+    case UserSessionType::USER_SESSION_TYPE_UNKNOWN:
+      return false;
+  }
+  return false;
+}
+
+void DeviceCommandFetchSupportPacketJob::StartJobExecution() {
   // Initialize SupportToolHandler with the requested details.
-  support_tool_handler_ =
-      GetSupportToolHandler(support_packet_details_.issue_case_id,
-                            // Leave the email address empty since data
-                            // collection is triggered by the admin remotely.
-                            /*email_address=*/std::string(),
-                            support_packet_details_.issue_description,
-                            ProfileManager::GetActiveUserProfile(),
-                            support_packet_details_.requested_data_collectors);
+  support_tool_handler_ = GetSupportToolHandler(
+      support_packet_details_.issue_case_id,
+      // Leave the email address empty since data collection is triggered by the
+      // admin remotely.
+      /*email_address=*/std::string(),
+      support_packet_details_.issue_description,
+      // TODO(b/253185578): Get sign-in profile on sign-in screen.
+      ProfileManager::GetActiveUserProfile(),
+      support_packet_details_.requested_data_collectors);
 
   // Start data collection.
   support_tool_handler_->CollectSupportData(
@@ -373,8 +360,15 @@ void DeviceCommandFetchSupportPacketJob::OnDataCollected(
       target_dir_, kFilenamePrefix, support_tool_handler_->GetCaseId(),
       base::Time::Now());
 
+  std::set<redaction::PIIType> pii_types =
+      support_packet_details_.requested_pii_types;
+  if (!pii_types.empty() && !IsPiiAllowed()) {
+    notes_.emplace(FetchSupportPacketResultNote::WARNING_PII_NOT_ALLOWED);
+    pii_types.clear();
+  }
+
   support_tool_handler_->ExportCollectedData(
-      support_packet_details_.requested_pii_types, target_file,
+      pii_types, target_file,
       base::BindOnce(&DeviceCommandFetchSupportPacketJob::OnDataExported,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -450,7 +444,11 @@ void DeviceCommandFetchSupportPacketJob::OnEventEnqueued(
         EnterpriseFetchSupportPacketFailureType::kNoFailure);
     SYSLOG(INFO) << "FETCH_SUPPORT_PACKET command job has successfully "
                     "finished execution.";
-    std::move(result_callback_).Run(ResultType::kAcked, absl::nullopt);
+    std::move(result_callback_)
+        .Run(ResultType::kAcked,
+             GetCommandResultPayload(FetchSupportPacketResultCode::
+                                         FETCH_SUPPORT_PACKET_RESULT_SUCCESS,
+                                     notes_));
     return;
   }
 
