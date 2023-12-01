@@ -1004,7 +1004,7 @@ TEST_P(DCLayerOverlayTest, MultipleYUVOverlays) {
         std::move(surface_damage_rect_list), GetOutputSurfacePlane(),
         &dc_layer_list, &damage_rect_, &content_bounds_);
 
-    // Skip overlays.
+    // Skip overlay.
     EXPECT_EQ(0U, dc_layer_list.size());
     EXPECT_EQ(gfx::Rect(0, 0, 220, 220), damage_rect_);
 
@@ -1808,7 +1808,7 @@ TEST_P(DCLayerOverlayTest, HDR10VideoOverlay) {
         std::move(surface_damage_rect_list), GetOutputSurfacePlane(),
         &dc_layer_list, &damage_rect_, &content_bounds_);
 
-    // Should promote overlays.
+    // Should promote overlay.
     EXPECT_EQ(1U, dc_layer_list.size());
   }
 
@@ -1843,7 +1843,7 @@ TEST_P(DCLayerOverlayTest, HDR10VideoOverlay) {
         std::move(surface_damage_rect_list), GetOutputSurfacePlane(),
         &dc_layer_list, &damage_rect_, &content_bounds_);
 
-    // Should skip overlays.
+    // Should skip overlay.
     EXPECT_EQ(0U, dc_layer_list.size());
   }
 
@@ -1860,7 +1860,6 @@ TEST_P(DCLayerOverlayTest, HDR10VideoOverlay) {
 
     // Content has invalid HDR metadata (not satisfied).
     gfx::HDRMetadata invalid_hdr_metadata;
-    invalid_hdr_metadata.cta_861_3 = gfx::HdrMetadataCta861_3(0, 400);
     video_quad->hdr_metadata = invalid_hdr_metadata;
 
     // Content has HDR10 colorspace.
@@ -1880,11 +1879,86 @@ TEST_P(DCLayerOverlayTest, HDR10VideoOverlay) {
         std::move(surface_damage_rect_list), GetOutputSurfacePlane(),
         &dc_layer_list, &damage_rect_, &content_bounds_);
 
-    // Should skip overlays.
+    // Should skip overlay.
     EXPECT_EQ(0U, dc_layer_list.size());
   }
 
-  // Frame 4 should skip overlay as color space not satisfied.
+  // Frame 4 should promote overlay as hdr metadata contains cta_861_3.
+  {
+    auto pass = CreateRenderPass();
+    pass->content_color_usage = gfx::ContentColorUsage::kHDR;
+    YUVVideoDrawQuad* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
+
+    // Content is 10bit P010 content.
+    video_quad->bits_per_channel = 10;
+
+    // Content has HDR metadata which contains cta_861_3.
+    gfx::HDRMetadata cta_861_3_hdr_metadata;
+    cta_861_3_hdr_metadata.cta_861_3 = gfx::HdrMetadataCta861_3(0, 400);
+    video_quad->hdr_metadata = cta_861_3_hdr_metadata;
+
+    // Content has HDR10 colorspace.
+    video_quad->video_color_space = gfx::ColorSpace::CreateHDR10();
+
+    OverlayCandidateList dc_layer_list;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+    damage_rect_ = gfx::Rect(0, 0, 220, 220);
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+    SurfaceDamageRectList surface_damage_rect_list;
+
+    overlay_processor_->ProcessForOverlays(
+        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+        render_pass_filters, render_pass_backdrop_filters,
+        std::move(surface_damage_rect_list), GetOutputSurfacePlane(),
+        &dc_layer_list, &damage_rect_, &content_bounds_);
+
+    // Should promote overlay.
+    EXPECT_EQ(1U, dc_layer_list.size());
+  }
+
+  // Frame 5 should promote overlay as hdr metadata contains smpte_st_2086.
+  {
+    auto pass = CreateRenderPass();
+    pass->content_color_usage = gfx::ContentColorUsage::kHDR;
+    YUVVideoDrawQuad* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
+
+    // Content is 10bit P010 content.
+    video_quad->bits_per_channel = 10;
+
+    // Content has HDR metadata which contains smpte_st_2086.
+    gfx::HDRMetadata smpte_st_2086_hdr_metadata;
+    smpte_st_2086_hdr_metadata.smpte_st_2086 = gfx::HdrMetadataSmpteSt2086(
+        SkNamedPrimariesExt::kRec2020, 1000, 0.0001);
+    video_quad->hdr_metadata = smpte_st_2086_hdr_metadata;
+
+    // Content has HDR10 colorspace.
+    video_quad->video_color_space = gfx::ColorSpace::CreateHDR10();
+
+    OverlayCandidateList dc_layer_list;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+    damage_rect_ = gfx::Rect(0, 0, 220, 220);
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+    SurfaceDamageRectList surface_damage_rect_list;
+
+    overlay_processor_->ProcessForOverlays(
+        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+        render_pass_filters, render_pass_backdrop_filters,
+        std::move(surface_damage_rect_list), GetOutputSurfacePlane(),
+        &dc_layer_list, &damage_rect_, &content_bounds_);
+
+    // Should promote overlay.
+    EXPECT_EQ(1U, dc_layer_list.size());
+  }
+
+  // Frame 6 should skip overlay as color space not satisfied.
   {
     auto pass = CreateRenderPass();
     pass->content_color_usage = gfx::ContentColorUsage::kHDR;
@@ -1915,11 +1989,11 @@ TEST_P(DCLayerOverlayTest, HDR10VideoOverlay) {
         std::move(surface_damage_rect_list), GetOutputSurfacePlane(),
         &dc_layer_list, &damage_rect_, &content_bounds_);
 
-    // Should skip overlays.
+    // Should skip overlay.
     EXPECT_EQ(0U, dc_layer_list.size());
   }
 
-  // Frame 5 should skip overlay as not in fullscreen mode.
+  // Frame 7 should skip overlay as not in fullscreen mode.
   {
     overlay_processor_->SetIsPageFullscreen(false);
 
@@ -1952,14 +2026,14 @@ TEST_P(DCLayerOverlayTest, HDR10VideoOverlay) {
         std::move(surface_damage_rect_list), GetOutputSurfacePlane(),
         &dc_layer_list, &damage_rect_, &content_bounds_);
 
-    // Should skip overlays.
+    // Should skip overlay.
     EXPECT_EQ(0U, dc_layer_list.size());
 
     // Recover config.
     overlay_processor_->SetIsPageFullscreen(true);
   }
 
-  // Frame 6 should skip overlay as no P010 video processor support.
+  // Frame 8 should skip overlay as no P010 video processor support.
   {
     overlay_processor_->set_has_p010_video_processor_support_for_testing(false);
 
@@ -1992,14 +2066,14 @@ TEST_P(DCLayerOverlayTest, HDR10VideoOverlay) {
         std::move(surface_damage_rect_list), GetOutputSurfacePlane(),
         &dc_layer_list, &damage_rect_, &content_bounds_);
 
-    // Should skip overlays.
+    // Should skip overlay.
     EXPECT_EQ(0U, dc_layer_list.size());
 
     // Recover config.
     overlay_processor_->set_has_p010_video_processor_support_for_testing(true);
   }
 
-  // Frame 7 should skip overlay as system HDR is not enabled.
+  // Frame 9 should skip overlay as system HDR is not enabled.
   {
     overlay_processor_->set_system_hdr_enabled_for_testing(false);
 
@@ -2032,14 +2106,14 @@ TEST_P(DCLayerOverlayTest, HDR10VideoOverlay) {
         std::move(surface_damage_rect_list), GetOutputSurfacePlane(),
         &dc_layer_list, &damage_rect_, &content_bounds_);
 
-    // Should skip overlays.
+    // Should skip overlay.
     EXPECT_EQ(0U, dc_layer_list.size());
 
     // Recover config.
     overlay_processor_->set_system_hdr_enabled_for_testing(true);
   }
 
-  // Frame 8 should skip overlay as no rgb10a2 overlay support.
+  // Frame 10 should skip overlay as no rgb10a2 overlay support.
   {
     gl::SetDirectCompositionScaledOverlaysSupportedForTesting(false);
 
@@ -2072,7 +2146,7 @@ TEST_P(DCLayerOverlayTest, HDR10VideoOverlay) {
         std::move(surface_damage_rect_list), GetOutputSurfacePlane(),
         &dc_layer_list, &damage_rect_, &content_bounds_);
 
-    // Should skip overlays.
+    // Should skip overlay.
     EXPECT_EQ(0U, dc_layer_list.size());
 
     // Recover config.
