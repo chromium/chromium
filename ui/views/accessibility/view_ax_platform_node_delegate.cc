@@ -4,6 +4,7 @@
 
 #include "ui/views/accessibility/view_ax_platform_node_delegate.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <set>
@@ -12,6 +13,7 @@
 
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
+#include "base/i18n/rtl.h"
 #include "base/lazy_instance.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
@@ -20,6 +22,7 @@
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -489,6 +492,15 @@ bool ViewAXPlatformNodeDelegate::IsChildOfLeaf() const {
   return AXPlatformNodeDelegate::IsChildOfLeaf();
 }
 
+// Since AtomicViewAXTreeManager only ever contains a single node, we can be
+// sure that we are in a leaf node and only need to return a text position.
+ui::AXNodePosition::AXPositionInstance
+ViewAXPlatformNodeDelegate::CreatePositionAt(
+    int offset,
+    ax::mojom::TextAffinity affinity) const {
+  return CreateTextPositionAt(offset, affinity);
+}
+
 ui::AXNodePosition::AXPositionInstance
 ViewAXPlatformNodeDelegate::CreateTextPositionAt(
     int offset,
@@ -583,6 +595,74 @@ gfx::Rect ViewAXPlatformNodeDelegate::GetBoundsRect(
       NOTIMPLEMENTED();
       return gfx::Rect();
   }
+}
+
+gfx::Rect ViewAXPlatformNodeDelegate::GetInnerTextRangeBoundsRect(
+    const int start_offset,
+    const int end_offset,
+    const ui::AXCoordinateSystem coordinate_system,
+    const ui::AXClippingBehavior clipping_behavior,
+    ui::AXOffscreenResult* offscreen_result) const {
+  switch (coordinate_system) {
+    case ui::AXCoordinateSystem::kScreenDIPs: {
+      if (offscreen_result) {
+        // TODO(accessibility): This is probably not always true, but we'll need
+        // to investigate if scrolling in Views is possible and, if so, adjust
+        // the condition.
+        *offscreen_result = ui::AXOffscreenResult::kOnscreen;
+      }
+      gfx::Rect content_bounds = view()->GetContentsBounds();
+      View::ConvertRectToScreen(view(), &content_bounds);
+      gfx::RectF bounds = GetInlineTextRect(start_offset, end_offset);
+      // Ensure we have a non-zero minimum width when in a text field so that
+      // the text cursor indicator will be represented correctly.
+      if (bounds.IsEmpty() && ui::IsTextField(data_.role)) {
+        const int kMinimumWidth = 1;
+        bounds.set_width(kMinimumWidth);
+        bounds.set_height(content_bounds.height());
+        if (base::i18n::IsRTL()) {
+          bounds.set_x(content_bounds.width() - kMinimumWidth);
+        }
+      }
+      bounds.Offset(content_bounds.x(), content_bounds.y());
+      return gfx::ToEnclosingRect(bounds);
+    }
+    case ui::AXCoordinateSystem::kScreenPhysicalPixels:
+    case ui::AXCoordinateSystem::kRootFrame:
+    case ui::AXCoordinateSystem::kFrame:
+      NOTIMPLEMENTED();
+      return gfx::Rect();
+  }
+}
+
+gfx::RectF ViewAXPlatformNodeDelegate::GetInlineTextRect(
+    const int start_offset,
+    const int end_offset) const {
+  DCHECK(start_offset >= 0 && end_offset >= 0 && start_offset <= end_offset);
+  const std::vector<int32_t>& character_offsets =
+      data_.GetIntListAttribute(ax::mojom::IntListAttribute::kCharacterOffsets);
+  if (character_offsets.empty()) {
+    return gfx::RectF();
+  }
+
+  const size_t adjusted_start =
+      std::min(static_cast<size_t>(start_offset), character_offsets.size() - 1);
+  const size_t adjusted_end =
+      std::min(static_cast<size_t>(end_offset), character_offsets.size() - 1);
+
+  // Finding the left/right most offsets allow us to return the right bounds
+  // whether we're in LTR or RTL.
+  const int left_most_offset = std::min(character_offsets[adjusted_start],
+                                        character_offsets[adjusted_end]);
+  const int right_most_offset = std::max(character_offsets[adjusted_start],
+                                         character_offsets[adjusted_end]);
+
+  if (left_most_offset == right_most_offset) {
+    return gfx::RectF();
+  }
+
+  return gfx::RectF(left_most_offset, 0, right_most_offset - left_most_offset,
+                    view()->GetContentsBounds().height());
 }
 
 gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::HitTestSync(
@@ -680,6 +760,9 @@ ui::AXPlatformNode* ViewAXPlatformNodeDelegate::GetFromNodeID(int32_t id) {
 ui::AXPlatformNode* ViewAXPlatformNodeDelegate::GetFromTreeIDAndNodeID(
     const ui::AXTreeID& ax_tree_id,
     int32_t id) {
+  if (atomic_view_ax_tree_manager_) {
+    return atomic_view_ax_tree_manager_->GetPlatformNodeFromTree(id);
+  }
   return nullptr;
 }
 

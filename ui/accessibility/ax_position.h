@@ -4423,6 +4423,14 @@ class AXPosition {
     return GetAnchor()->IsText();
   }
 
+  // Determines if the anchor containing this position is a text field object.
+  bool IsInTextField() const {
+    if (IsNullPosition()) {
+      return false;
+    }
+    return GetAnchor()->data().IsTextField();
+  }
+
   // Determines if the text representation of this position's anchor contains
   // only whitespace characters; <br> objects span a single '\n' character, so
   // positions inside line breaks are also considered "in whitespace". Note that
