@@ -14353,6 +14353,29 @@
             ]
         }
     ],
+    "ReactivePrefetchDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "use_predictions": "false"
+                    },
+                    "enable_features": [
+                        "LoadingPredictorPrefetch",
+                        "LoadingPredictorUseOptimizationGuide"
+                    ]
+                }
+            ]
+        }
+    ],
     "ReadAnythingRollout": [
         {
             "platforms": [
