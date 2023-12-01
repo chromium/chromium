@@ -1173,7 +1173,7 @@ const std::vector<ash::KeyboardShortcutItem>& GetKeyboardShortcutItemList() {
        IDS_KSV_DESCRIPTION_OPEN_GET_HELP,
        {},
        // |accelerator_ids|
-       {{ui::VKEY_OEM_2, ui::EF_CONTROL_DOWN}}},
+       {{ui::VKEY_H, ui::EF_COMMAND_DOWN}}},
 
       {// |categories|
        {ShortcutCategory::kSystemAndDisplay},
