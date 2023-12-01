@@ -19,6 +19,7 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -27,6 +28,7 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.os.Handler;
 import android.view.View;
 
 import androidx.test.filters.SmallTest;
@@ -44,6 +46,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.UmaRecorderHolder;
@@ -153,12 +156,15 @@ public class TabSwitcherMediatorUnitTest {
     private Tab mTab3;
     private TabSwitcherMediator mMediator;
     private PropertyModel mModel;
+    private Handler mHandler;
 
     @Before
     public void setUp() {
         UmaRecorderHolder.resetForTesting();
 
         MockitoAnnotations.initMocks(this);
+
+        mHandler = spy(new Handler());
 
         mTab1 = prepareTab(TAB1_ID, TAB1_TITLE);
         mTab2 = prepareTab(TAB2_ID, TAB2_TITLE);
@@ -229,6 +235,7 @@ public class TabSwitcherMediatorUnitTest {
                         mMessageItemsController,
                         mPriceWelcomeMessageController,
                         mMultiWindowModeStateDispatcher,
+                        mHandler,
                         TabListCoordinator.TabListMode.GRID,
                         mIncognitoReauthControllerSupplier,
                         null,
@@ -356,6 +363,7 @@ public class TabSwitcherMediatorUnitTest {
                         mMessageItemsController,
                         mPriceWelcomeMessageController,
                         mMultiWindowModeStateDispatcher,
+                        mHandler,
                         TabListCoordinator.TabListMode.GRID,
                         mIncognitoReauthControllerSupplier,
                         null,
@@ -408,9 +416,11 @@ public class TabSwitcherMediatorUnitTest {
     @Test
     public void resetsToNullAfterHidingFinishes() {
         initAndAssertAllProperties();
-        mMediator.setSoftCleanupDelayForTesting(0);
-        mMediator.setCleanupDelayForTesting(0);
+        reset(mHandler);
         mMediator.postHiding();
+        verify(mHandler).postDelayed(eq(mMediator.mSoftClearTabListRunnable), eq(3_000L));
+        verify(mHandler).postDelayed(eq(mMediator.mClearTabListRunnable), eq(30_000L));
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mResetHandler).softCleanup();
         verify(mResetHandler).resetWithTabList(eq(null), eq(false), eq(false));
     }
@@ -445,6 +455,7 @@ public class TabSwitcherMediatorUnitTest {
                         mMessageItemsController,
                         mPriceWelcomeMessageController,
                         mMultiWindowModeStateDispatcher,
+                        mHandler,
                         TabListCoordinator.TabListMode.GRID,
                         mIncognitoReauthControllerSupplier,
                         null,
@@ -1001,6 +1012,7 @@ public class TabSwitcherMediatorUnitTest {
                 mMessageItemsController,
                 mPriceWelcomeMessageController,
                 mMultiWindowModeStateDispatcher,
+                mHandler,
                 TabListCoordinator.TabListMode.GRID,
                 mIncognitoReauthControllerSupplier,
                 null,
@@ -1021,6 +1033,7 @@ public class TabSwitcherMediatorUnitTest {
                 mMessageItemsController,
                 mPriceWelcomeMessageController,
                 mMultiWindowModeStateDispatcher,
+                mHandler,
                 TabListCoordinator.TabListMode.STRIP,
                 mIncognitoReauthControllerSupplier,
                 null,

@@ -653,7 +653,7 @@ public class StartSurfaceCoordinator implements StartSurface {
     @Override
     public boolean onBackPressed() {
         if (mGridTabSwitcher != null) {
-            return mGridTabSwitcher.onBackPressed();
+            return mGridTabSwitcher.getController().onBackPressed();
         }
         return mStartSurfaceMediator.onBackPressed();
     }

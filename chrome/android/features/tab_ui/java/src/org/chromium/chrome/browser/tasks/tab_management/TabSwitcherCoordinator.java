@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Size;
 import android.view.View;
@@ -248,6 +249,7 @@ public class TabSwitcherCoordinator
                             this,
                             this,
                             multiWindowModeStateDispatcher,
+                            new Handler(),
                             mode,
                             incognitoReauthControllerSupplier,
                             backPressManager,
@@ -692,11 +694,6 @@ public class TabSwitcherCoordinator
     }
 
     @Override
-    public boolean onBackPressed() {
-        return mMediator.onBackPressed();
-    }
-
-    @Override
     public int getTabSwitcherTabListModelSize() {
         return mTabListCoordinator.getTabListModelSize();
     }
@@ -789,16 +786,6 @@ public class TabSwitcherCoordinator
     @Override
     public void resetBitmapFetchCountForTesting() {
         TabListMediator.ThumbnailFetcher.sFetchCountForTesting = 0;
-    }
-
-    @Override
-    public int getSoftCleanupDelayForTesting() {
-        return mMediator.getSoftCleanupDelayForTesting();
-    }
-
-    @Override
-    public int getCleanupDelayForTesting() {
-        return mMediator.getCleanupDelayForTesting();
     }
 
     // ResetHandler implementation.

@@ -211,12 +211,6 @@ public interface TabSwitcher {
         /** Reset the current count of thumbnail fetches for testing. */
         default void resetBitmapFetchCountForTesting() {}
 
-        /** Returns the soft cleanup delay for testing. */
-        int getSoftCleanupDelayForTesting();
-
-        /** Returns the cleanup delay for testing. */
-        int getCleanupDelayForTesting();
-
         /** Returns the mode of the list of Tabs. */
         int getListModeForTesting();
     }
@@ -233,9 +227,6 @@ public interface TabSwitcher {
      */
     @Nullable
     TabSwitcherCustomViewManager getTabSwitcherCustomViewManager();
-
-    /** Trigger a back press. */
-    boolean onBackPressed();
 
     /** Returns the number of elements in the tab switcher's tab list model. */
     int getTabSwitcherTabListModelSize();

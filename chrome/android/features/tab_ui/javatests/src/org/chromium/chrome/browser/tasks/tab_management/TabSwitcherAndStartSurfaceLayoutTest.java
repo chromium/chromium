@@ -450,8 +450,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
             throws InterruptedException {
         assertFalse(
                 TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivityTestRule.getActivity()));
-        assertEquals(3_000, mTabListDelegate.getSoftCleanupDelayForTesting());
-        assertEquals(30_000, mTabListDelegate.getCleanupDelayForTesting());
 
         prepareTabs(2, 0, NTP_URL);
         testTabToGrid(mUrl);
@@ -485,8 +483,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
             throws InterruptedException {
         assertFalse(
                 TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivityTestRule.getActivity()));
-        assertEquals(3_000, mTabListDelegate.getSoftCleanupDelayForTesting());
-        assertEquals(30_000, mTabListDelegate.getCleanupDelayForTesting());
 
         prepareTabs(2, 0, NTP_URL);
         testTabToGrid(mUrl);
@@ -514,8 +510,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
             throws InterruptedException {
         assertFalse(
                 TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivityTestRule.getActivity()));
-        assertEquals(3_000, mTabListDelegate.getSoftCleanupDelayForTesting());
-        assertEquals(30_000, mTabListDelegate.getCleanupDelayForTesting());
 
         prepareTabs(2, 0, NTP_URL);
         testTabToGrid(mUrl);

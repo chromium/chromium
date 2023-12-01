@@ -137,18 +137,6 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
                     }
 
                     @Override
-                    public int getSoftCleanupDelayForTesting() {
-                        assert false : "should not reach here";
-                        return 0;
-                    }
-
-                    @Override
-                    public int getCleanupDelayForTesting() {
-                        assert false : "should not reach here";
-                        return 0;
-                    }
-
-                    @Override
                     @VisibleForTesting
                     public int getTabListTopOffset() {
                         return 0;
@@ -258,11 +246,6 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
     @Override
     public @Nullable TabSwitcherCustomViewManager getTabSwitcherCustomViewManager() {
         return null;
-    }
-
-    @Override
-    public boolean onBackPressed() {
-        return false;
     }
 
     @Override

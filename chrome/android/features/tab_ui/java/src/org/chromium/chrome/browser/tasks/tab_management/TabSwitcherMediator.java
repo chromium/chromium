@@ -31,7 +31,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
-import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -92,8 +91,12 @@ class TabSwitcherMediator
     private static final int DEFAULT_CLEANUP_DELAY_MS = 30_000;
 
     private final Handler mHandler;
-    private final Runnable mSoftClearTabListRunnable;
-    private final Runnable mClearTabListRunnable;
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    final Runnable mSoftClearTabListRunnable;
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    final Runnable mClearTabListRunnable;
 
     private final ResetHandler mResetHandler;
     private final PropertyModel mContainerViewModel;
@@ -148,8 +151,6 @@ class TabSwitcherMediator
             };
 
     private CallbackController mCallbackController;
-    private Integer mSoftCleanupDelayMsForTesting;
-    private Integer mCleanupDelayMsForTesting;
     private OneshotSupplier<TabGridDialogMediator.DialogController>
             mTabGridDialogControllerSupplier;
     private TabListEditorCoordinator.TabListEditorController mTabListEditorController;
@@ -266,27 +267,28 @@ class TabSwitcherMediator
 
     /**
      * Basic constructor for the Mediator.
+     *
      * @param context The context to use for accessing {@link android.content.res.Resources}.
      * @param resetHandler The {@link ResetHandler} that handles reset for this Mediator.
      * @param containerViewModel The {@link PropertyModel} to keep state on the View containing the
-     *         grid or carousel.
+     *     grid or carousel.
      * @param tabModelSelector {@link TabModelSelector} to observer for model and selection changes.
      * @param browserControlsStateProvider {@link BrowserControlsStateProvider} to use.
      * @param containerView The container {@link ViewGroup} to use.
      * @param tabContentManager The {@link TabContentManager} for first meaningful paint event.
      * @param multiWindowModeStateDispatcher The {@link MultiWindowModeStateDispatcher} to observe
-     *         for multi-window related changes.
+     *     for multi-window related changes.
+     * @param handler The {@link Handler} for running cleanup callbacks.
      * @param mode One of the {@link TabListMode}.
      * @param incognitoReauthControllerSupplier {@link OneshotSupplier<IncognitoReauthController>}
-     *         to detect pending re-auth when tab switcher is shown.
+     *     to detect pending re-auth when tab switcher is shown.
      * @param backPressManager {@link BackPressManager} to handle back press gesture.
      * @param tabGridDialogControllerSupplier {@link TabGridDialogMediator.DialogController}
-     *         supplier for lazy initialization on first use.
+     *     supplier for lazy initialization on first use.
      * @param onTabSwitcherShownCallback is a callback method to notify {@link
-     *         TabSwitcherCoordinator} class to attach empty view when #showTabSwitcherView is
-     *         invoked.
+     *     TabSwitcherCoordinator} class to attach empty view when #showTabSwitcherView is invoked.
      * @param layoutStateProviderSupplier {@link OneshotSupplier<LayoutStateProvider>} to provide
-     *         layout state changes.
+     *     layout state changes.
      */
     TabSwitcherMediator(
             Context context,
@@ -299,6 +301,7 @@ class TabSwitcherMediator
             MessageItemsController messageItemsController,
             PriceWelcomeMessageController priceWelcomeMessageController,
             MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
+            @NonNull Handler handler,
             @TabListMode int mode,
             @Nullable OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
             @Nullable BackPressManager backPressManager,
@@ -313,6 +316,7 @@ class TabSwitcherMediator
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mMultiWindowModeStateDispatcher = multiWindowModeStateDispatcher;
         mMode = mode;
+        mHandler = handler;
         mContainerViewModel.set(MODE, mode);
         mContext = context;
         mIsStartSurfaceEnabled = ReturnToChromeUtil.isStartSurfaceEnabled(context);
@@ -570,7 +574,6 @@ class TabSwitcherMediator
                     mResetHandler.hardCleanup();
                     mResetHandler.resetWithTabList(null, false, mShowTabsInMruOrder);
                 };
-        mHandler = new Handler();
         mTabContentManager = tabContentManager;
 
         mShowTabsInMruOrder = TabSwitcherCoordinator.isShowingTabsInMRUOrder(mMode);
@@ -615,26 +618,6 @@ class TabSwitcherMediator
                     .getHandleBackPressChangedSupplier()
                     .addObserver(mNotifyBackPressedCallback);
         }
-    }
-
-    int getSoftCleanupDelayForTesting() {
-        return getSoftCleanupDelay();
-    }
-
-    private int getSoftCleanupDelay() {
-        if (mSoftCleanupDelayMsForTesting != null) return mSoftCleanupDelayMsForTesting;
-
-        return DEFAULT_SOFT_CLEANUP_DELAY_MS;
-    }
-
-    int getCleanupDelayForTesting() {
-        return getCleanupDelay();
-    }
-
-    private int getCleanupDelay() {
-        if (mCleanupDelayMsForTesting != null) return mCleanupDelayMsForTesting;
-
-        return DEFAULT_CLEANUP_DELAY_MS;
     }
 
     private void setVisibility(boolean isVisible) {
@@ -1099,10 +1082,10 @@ class TabSwitcherMediator
      * @see TabSwitcher.TabListDelegate#postHiding
      */
     void postHiding() {
-        Log.d(TAG, "SoftCleanupDelay = " + getSoftCleanupDelay());
-        mHandler.postDelayed(mSoftClearTabListRunnable, getSoftCleanupDelay());
-        Log.d(TAG, "CleanupDelay = " + getCleanupDelay());
-        mHandler.postDelayed(mClearTabListRunnable, getCleanupDelay());
+        Log.d(TAG, "SoftCleanupDelay = " + DEFAULT_SOFT_CLEANUP_DELAY_MS);
+        mHandler.postDelayed(mSoftClearTabListRunnable, DEFAULT_SOFT_CLEANUP_DELAY_MS);
+        Log.d(TAG, "CleanupDelay = " + DEFAULT_CLEANUP_DELAY_MS);
+        mHandler.postDelayed(mClearTabListRunnable, DEFAULT_CLEANUP_DELAY_MS);
         mIsTransitionInProgress = false;
         notifyBackPressStateChangedInternal();
         if (ChromeFeatureList.sGridTabSwitcherAndroidAnimations.isEnabled()
@@ -1115,18 +1098,6 @@ class TabSwitcherMediator
             mContainerViewModel.set(
                     ANIMATE_VISIBILITY_CHANGES, previousAnimateVisibilityChangesValue);
         }
-    }
-
-    /** Set the delay for soft cleanup. */
-    void setSoftCleanupDelayForTesting(int timeoutMs) {
-        mSoftCleanupDelayMsForTesting = timeoutMs;
-        ResettersForTesting.register(() -> mSoftCleanupDelayMsForTesting = null);
-    }
-
-    /** Set the delay for lazy cleanup. */
-    void setCleanupDelayForTesting(int timeoutMs) {
-        mCleanupDelayMsForTesting = timeoutMs;
-        ResettersForTesting.register(() -> mCleanupDelayMsForTesting = null);
     }
 
     /** Destroy any members that needs clean up. */
