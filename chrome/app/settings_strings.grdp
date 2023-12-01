@@ -4327,11 +4327,6 @@
     ,
   </message>
 
-  <!-- Experimental enterprise plus_addresses settings strings -->
-  <message name="IDS_PLUS_ADDRESS_SETTINGS_LABEL" desc="A button in settings for management of experimental enterprise plus addresses" translateable="false">
-    Lorem Ipsum
-  </message>
-
   <!-- Experimental settings strings -->
   <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_PAGE_TITLE" desc="Title of page holding experimental settings" translateable="false">
     Advanced

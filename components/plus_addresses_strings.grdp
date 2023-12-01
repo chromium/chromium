@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
-        <!-- Experimental enterprise plus_addresses feature strings -->
+    <!-- Experimental enterprise plus_addresses feature strings -->
+    <!-- Modal strings -->
     <message name="IDS_PLUS_ADDRESS_MODAL_TITLE" desc="Title for the experimental enterprise plus addresses feature modal" translateable="false">
       Lorem Ipsum
     </message>
@@ -42,6 +43,10 @@
     </message>
     <message name="IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_DESCRIPTION_IOS" desc="An illustrative description of the plus addresses modal, with iOS formatting" translateable="false">
       Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua <ph name="BEGIN_LINK">BEGIN_LINK</ph>Ut enim ad minim veniam<ph name="END_LINK">END_LINK</ph>. For
+    </message>
+    <!-- Settings strings -->
+    <message name="IDS_PLUS_ADDRESS_SETTINGS_LABEL" desc="A button in settings for management of experimental enterprise plus addresses" translateable="false">
+      Lorem Ipsum
     </message>
 
 </grit-part>
