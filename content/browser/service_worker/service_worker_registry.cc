@@ -194,7 +194,7 @@ const base::FeatureParam<int> kServiceWorkerRegistrationCacheSize{
 
 BASE_FEATURE(kServiceWorkerScopeCacheLimit,
              "ServiceWorkerScopeCacheLimit",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The cache size for kServiceWorkerScopeCache.
 // (https://crbug.com/1411197)
