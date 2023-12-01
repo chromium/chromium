@@ -190,6 +190,13 @@ BOOL IsShowcaseModelValid(NSArray<showcase::ModelRow*>* model) {
       showcase::kClassForInstantiationKey : @"SCUserPolicyPromptCoordinator",
       showcase::kUseCaseKey : @"User Policy prompt half sheet",
     },
+    @{
+      showcase::
+      kClassForDisplayKey : @"SCContentNotificationPromoViewController",
+      showcase::kClassForInstantiationKey :
+          @"SCContentNotificationFullscreenPromoCoordinator",
+      showcase::kUseCaseKey : @"Contnet Notification fullscreen promo sheet",
+    },
   ];
   DCHECK(IsShowcaseModelValid(model));
   return model;

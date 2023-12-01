@@ -277,3 +277,12 @@ imageset("set_up_list_sparkle9") {
     "set_up_list_sparkle9.imageset/set_up_list_sparkle9.png",
   ]
 }
+imageset("content_notification_promo_banner") {
+  sources = [
+    "content_notification_promo_banner.imageset/Contents.json",
+    "content_notification_promo_banner.imageset/content_notification_promo_banner_dark@2x.png",
+    "content_notification_promo_banner.imageset/content_notification_promo_banner_dark@3x.png",
+    "content_notification_promo_banner.imageset/content_notification_promo_banner_light@2x.png",
+    "content_notification_promo_banner.imageset/content_notification_promo_banner_light@3x.png",
+  ]
+}

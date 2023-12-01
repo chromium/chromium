@@ -1,0 +1,31 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/build/chrome_build.gni")
+
+source_set("content_notification") {
+  sources = [
+    "sc_content_notification_fullscreen_promo_coordinator.h",
+    "sc_content_notification_fullscreen_promo_coordinator.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/ui/content_suggestions/set_up_list:content_notification_promo_ui",
+    "//ios/showcase/common",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "sc_content_notification_fullscreen_promo_egtest.mm" ]
+  deps = [
+    "//base",
+    "//ios/chrome/common/ui/promo_style:constants",
+    "//ios/showcase/test:eg2_test",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

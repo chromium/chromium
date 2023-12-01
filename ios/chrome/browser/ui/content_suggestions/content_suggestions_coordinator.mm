@@ -82,6 +82,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/types.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_content_notification_promo_coordinator.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_content_notification_promo_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_default_browser_promo_coordinator.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_default_browser_promo_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_show_more_view_controller.h"
@@ -111,6 +113,7 @@
     ContentSuggestionsViewControllerAudience,
     MagicStackHalfSheetTableViewControllerDelegate,
     SafetyCheckViewDelegate,
+    SetUpListContentNotificationPromoCoordinatorDelegate,
     SetUpListDefaultBrowserPromoCoordinatorDelegate,
     MagicStackParcelListHalfSheetTableViewControllerDelegate,
     SetUpListViewDelegate>
@@ -139,6 +142,10 @@
   // The coordinator that displays the Default Browser Promo for the Set Up
   // List.
   SetUpListDefaultBrowserPromoCoordinator* _defaultBrowserPromoCoordinator;
+
+  // The coordinator that displays the Content Notification Promo for the Set Up
+  // List.
+  SetUpListContentNotificationPromoCoordinator* _contentNotificationCoordinator;
 
   // The coordinator used to present an action sheet for the Set Up List menu.
   ActionSheetCoordinator* _actionSheetCoordinator;
@@ -639,7 +646,7 @@
         [weakSelf showCredentialProviderPromo];
         break;
       case SetUpListItemType::kContentNotification:
-        // TODO(b/311068390): handle notification opt-in
+        [weakSelf showContentNotificationBottomSheet];
         break;
       case SetUpListItemType::kFollow:
       case SetUpListItemType::kAllSet:
@@ -778,11 +785,32 @@
                                   completion:nil];
 }
 
+- (void)showContentNotificationBottomSheet {
+  // Stop the coordinator if it is already running. If the user swipes to
+  // dismiss a previous instance and then clicks the item again the
+  // previous instance may not have been stopped yet due to the animation.
+  [_contentNotificationCoordinator stop];
+  _contentNotificationCoordinator =
+      [[SetUpListContentNotificationPromoCoordinator alloc]
+          initWithBaseViewController:[self viewController]
+                             browser:self.browser
+                         application:[UIApplication sharedApplication]];
+  _contentNotificationCoordinator.delegate = self;
+  [_contentNotificationCoordinator start];
+}
+
 #pragma mark - SetUpListDefaultBrowserPromoCoordinatorDelegate
 
 - (void)setUpListDefaultBrowserPromoDidFinish:(BOOL)success {
   [_defaultBrowserPromoCoordinator stop];
   _defaultBrowserPromoCoordinator = nil;
+}
+
+#pragma mark - SetUpListContentNotificationPromoCoordinatorDelegate
+
+- (void)setUpListContentNotificationPromoDidFinish {
+  [_contentNotificationCoordinator stop];
+  _contentNotificationCoordinator = nil;
 }
 
 #pragma mark - Helpers
