@@ -168,8 +168,8 @@ OverviewSession::~OverviewSession() {
 // NOTE: The work done in Init() is not done in the constructor because it may
 // cause other, unrelated classes, to make indirect method calls on a partially
 // constructed object.
-void OverviewSession::Init(const WindowList& windows,
-                           const WindowList& hide_windows) {
+void OverviewSession::Init(const aura::Window::Windows& windows,
+                           const aura::Window::Windows& hide_windows) {
   TRACE_EVENT0("ui", "OverviewSession::Init");
 
   Shell::Get()->AddShellObserver(this);
@@ -218,7 +218,7 @@ void OverviewSession::Init(const WindowList& windows,
   // suppressed during overview mode so they don't conflict with overview mode
   // animations.
 
-  // Do not call PrepareForOverview until all items are added to window_list_
+  // Do not call PrepareForOverview until all items are added to `item_list_`
   // as we don't want to cause any window updates until all windows in
   // overview are observed. See http://crbug.com/384495.
   for (std::unique_ptr<OverviewGrid>& overview_grid : grid_list_) {

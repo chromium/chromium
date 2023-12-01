@@ -67,8 +67,6 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
                                    public SplitViewObserver,
                                    public DesksController::Observer {
  public:
-  using WindowList = std::vector<aura::Window*>;
-
   explicit OverviewSession(OverviewDelegate* delegate);
 
   OverviewSession(const OverviewSession&) = delete;
@@ -77,7 +75,8 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   ~OverviewSession() override;
 
   // Initialize with the windows that can be selected.
-  void Init(const WindowList& windows, const WindowList& hide_windows);
+  void Init(const aura::Window::Windows& windows,
+            const aura::Window::Windows& hide_windows);
 
   // Perform cleanup that cannot be done in the destructor.
   void Shutdown();
