@@ -30,9 +30,4 @@ BASE_FEATURE(kSearchEngineChoiceTrigger,
 const base::FeatureParam<bool> kSearchEngineChoiceTriggerForTaggedProfilesOnly{
     &kSearchEngineChoiceTrigger, /*name=*/"for_tagged_profiles_only", false};
 
-const base::FeatureParam<std::string> kSearchEngineChoiceTriggerRepromptParams{
-    &kSearchEngineChoiceTrigger,
-    /*name=*/"reprompt",
-    /*default_value=*/"{}"};
-
 }  // namespace switches

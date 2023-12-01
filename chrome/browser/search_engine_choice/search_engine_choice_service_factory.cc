@@ -135,8 +135,6 @@ SearchEngineChoiceServiceFactory::BuildServiceInstanceForBrowserContext(
   }
 
   auto& profile = CHECK_DEREF(Profile::FromBrowserContext(context));
-  search_engines::PreprocessPrefsForReprompt(CHECK_DEREF(profile.GetPrefs()));
-
   if (!IsProfileEligibleForChoiceScreen(profile)) {
     DVLOG(1) << "Profile not eligible, removing tag for profile "
              << profile.GetBaseName();

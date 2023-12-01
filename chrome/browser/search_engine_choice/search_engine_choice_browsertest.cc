@@ -55,7 +55,6 @@
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_switches.h"
-#include "components/version_info/version_info.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -931,86 +930,3 @@ IN_PROC_BROWSER_TEST_F(TaggedOnlySearchEngineChoiceBrowserTest,
   EXPECT_TRUE(third_service->IsShowingDialog(third_browser));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-class SearchEngineRepromptBrowserTest
-    : public SearchEngineChoiceBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  SearchEngineRepromptBrowserTest()
-      : SearchEngineChoiceBrowserTest(
-            /*use_spy_service=*/false) {
-    // The param looks like: {"*":"6.7.8.9"}, where 6.7.8.9 is the current
-    // Chrome version, and * is the wildcard country.
-    std::string reprompt_param =
-        base::StrCat({"{\"*\":\"", version_info::GetVersionNumber(), "\"}"});
-    base::FieldTrialParams field_trial_params = {
-        {switches::kSearchEngineChoiceTriggerRepromptParams.name,
-         reprompt_param}};
-    if (tagged_profiles_only()) {
-      field_trial_params
-          [switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name] =
-              "true";
-    }
-    feature_list_.InitAndEnableFeatureWithParameters(
-        switches::kSearchEngineChoiceTrigger, std::move(field_trial_params));
-  }
-
-  bool tagged_profiles_only() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(SearchEngineRepromptBrowserTest, PRE_Reprompt) {
-  Profile* profile = browser()->profile();
-  ASSERT_TRUE(profile->IsNewProfile());
-  auto* service = SearchEngineChoiceServiceFactory::GetForProfile(profile);
-  ASSERT_TRUE(service);
-  EXPECT_TRUE(service->CanShowDialog(*browser()));
-
-  // Navigate to a URL. The first load happened while the dialog was
-  // force-disabled for testing.
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(chrome::kChromeUINewTabPageURL),
-      WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  EXPECT_TRUE(service->IsShowingDialog(browser()));
-
-  // Make a choice by grabbing the ID for one of the search engines in the
-  // displayed list.
-  int prepopulate_id = service->GetSearchEngines().at(0)->prepopulate_id();
-  service->NotifyChoiceMade(prepopulate_id, EntryPoint::kDialog);
-
-  // Choice prefs have been written.
-  ASSERT_NE(profile->GetPrefs()->GetInt64(
-                prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp),
-            0);
-  ASSERT_EQ(profile->GetPrefs()->GetString(
-                prefs::kDefaultSearchProviderChoiceScreenCompletionVersion),
-            version_info::GetVersionNumber());
-  // Change the choice version to an earlier version, so that it can
-  // re-trigger.
-  profile->GetPrefs()->SetString(
-      prefs::kDefaultSearchProviderChoiceScreenCompletionVersion, "10.1.2.3");
-}
-
-IN_PROC_BROWSER_TEST_P(SearchEngineRepromptBrowserTest, Reprompt) {
-  Profile* profile = browser()->profile();
-  EXPECT_FALSE(profile->IsNewProfile());
-
-  auto* service = SearchEngineChoiceServiceFactory::GetForProfile(profile);
-  if (tagged_profiles_only()) {
-    // Do not re-trigger when `tagged_profiles_only()` is set.
-    EXPECT_EQ(service, nullptr);
-    return;
-  }
-
-  EXPECT_TRUE(service);
-  EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(chrome::kChromeUINewTabPageURL),
-      WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  EXPECT_TRUE(service->IsShowingDialog(browser()));
-}
-
-INSTANTIATE_TEST_SUITE_P(, SearchEngineRepromptBrowserTest, ::testing::Bool());
