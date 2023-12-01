@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {DialogType} from '../dialog_type.js';
-import {addEntries, ENTRIES, repeatUntil, RootPath, sendTestMessage} from '../test_util.js';
+import {addEntries, createNestedTestFolders, ENTRIES, repeatUntil, RootPath, sendTestMessage} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
@@ -144,6 +144,48 @@ testcase.trashMoveToTrash = async () => {
   // Wait for photos to be removed, and .Trash to be recreated.
   await remoteCall.waitForElementLost(appId, '#file-list [file-name="photos"]');
   await remoteCall.waitForElement(appId, '#file-list [file-name=".Trash"]');
+};
+
+/**
+ * Selects a file and a folder at the same time then deletes both.
+ */
+testcase.trashMultipleEntries = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello, ENTRIES.photos], []);
+
+  // Select all (both the file and the folder).
+  const ctrlA = ['#file-list', 'a', true, false, false];
+  await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, ctrlA);
+
+  // Delete both entries.
+  await remoteCall.clickTrashButton(appId);
+
+  // Wait for both entries to be removed.
+  await remoteCall.waitForElementLost(
+      appId, '#file-list [file-name="hello.txt"]');
+  await remoteCall.waitForElementLost(appId, '#file-list [file-name="photos"]');
+};
+
+/**
+ * Selects a non-empty folder and deletes it.
+ */
+testcase.trashNonEmptyFolder = async () => {
+  // Build folder structure nested-folder0/nested-folder1.
+  const entries = createNestedTestFolders(2);
+
+  // Open files app to a Downloads folder containing nested-folder0.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+
+  // Select the folder.
+  await remoteCall.waitAndClickElement(
+      appId, '#file-list [file-name="nested-folder0"]');
+
+  // Delete the folder.
+  await remoteCall.clickTrashButton(appId);
+
+  // Wait for the folder to be removed.
+  await remoteCall.waitForElementLost(
+      appId, '#file-list [file-name="nested-folder0"]');
 };
 
 /**

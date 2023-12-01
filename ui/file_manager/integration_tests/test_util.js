@@ -1713,6 +1713,46 @@ export function createTestFile(path) {
 }
 
 /**
+ * Creates a folder test entry from a folder |path|.
+ * @param {string} path The folder path.
+ * @return {!TestEntryInfo}
+ */
+export function createTestFolder(path) {
+  const name = path.split('/').pop();
+  return new TestEntryInfo({
+    targetPath: path,
+    nameText: name,
+    type: EntryType.DIRECTORY,
+    lastModifiedTime: 'Jan 1, 1980, 11:59 PM',
+    sizeText: '--',
+    typeText: 'Folder',
+  });
+}
+
+/**
+ * Returns an array of nested folder test entries, where |depth| controls
+ * the nesting. For example, a |depth| of 4 will return:
+ *
+ *   [0]: nested-folder0
+ *   [1]: nested-folder0/nested-folder1
+ *   [2]: nested-folder0/nested-folder1/nested-folder2
+ *   [3]: nested-folder0/nested-folder1/nested-folder2/nested-folder3
+ *
+ * @param {number} depth The nesting depth.
+ * @return {!Array<!TestEntryInfo>}
+ */
+export function createNestedTestFolders(depth) {
+  const nestedFolderTestEntries = [];
+
+  for (let path = 'nested-folder0', i = 0; i < depth; ++i) {
+    nestedFolderTestEntries.push(createTestFolder(path));
+    path += `/nested-folder${i + 1}`;
+  }
+
+  return nestedFolderTestEntries;
+}
+
+/**
  * Returns the count for |value| for the histogram |name|.
  * @param {string} name The histogram to be queried.
  * @param {number} value The value within that histogram to query.
