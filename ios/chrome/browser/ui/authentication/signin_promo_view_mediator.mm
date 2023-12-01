@@ -729,6 +729,7 @@ id<SystemIdentity> GetDisplayedIdentity(
       case SigninPromoAction::kSync:
       case SigninPromoAction::kSigninSheet:
       case SigninPromoAction::kInstantSignin:
+      case SigninPromoAction::kSigninWithNoDefaultIdentity:
         break;
       case SigninPromoAction::kReviewAccountSettings:
         configurator.primaryButtonTitleOverride =
@@ -760,6 +761,7 @@ id<SystemIdentity> GetDisplayedIdentity(
       break;
     case SigninPromoAction::kSigninSheet:
     case SigninPromoAction::kInstantSignin:
+    case SigninPromoAction::kSigninWithNoDefaultIdentity:
       configurator.primaryButtonTitleOverride =
           l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_SIGN_IN);
       break;
@@ -1075,6 +1077,7 @@ id<SystemIdentity> GetDisplayedIdentity(
       signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT;
   signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
   switch (self.signinPromoAction) {
+    case SigninPromoAction::kSigninWithNoDefaultIdentity:
     case SigninPromoAction::kInstantSignin:
       [self showSigninWithIdentity:nil
                          operation:AuthenticationOperation::kInstantSignin
@@ -1118,6 +1121,7 @@ id<SystemIdentity> GetDisplayedIdentity(
                        promoAction:signin_metrics::PromoAction::
                                        PROMO_ACTION_WITH_DEFAULT];
       return;
+    case SigninPromoAction::kSigninWithNoDefaultIdentity:
     case SigninPromoAction::kSigninSheet:
       [self sendImpressionsTillSigninButtonsHistogram];
       [self showSigninWithIdentity:nil
@@ -1163,6 +1167,10 @@ id<SystemIdentity> GetDisplayedIdentity(
       return;
     case SigninPromoAction::kReviewAccountSettings:
       NOTREACHED() << "This action is only valid for a signed in account.";
+      return;
+    case SigninPromoAction::kSigninWithNoDefaultIdentity:
+      NOTREACHED() << "The user should not be able to explicitly select "
+                      "\"other account\".";
       return;
   }
 }

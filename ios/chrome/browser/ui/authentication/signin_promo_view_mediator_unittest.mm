@@ -65,7 +65,6 @@ class SigninPromoViewMediatorTest : public PlatformTest {
  protected:
   void SetUp() override {
     identity_ = [FakeSystemIdentity fakeIdentity1];
-    close_button_hidden_ = YES;
 
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
@@ -209,7 +208,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
                                    SigninPromoViewStyle style) {
     EXPECT_NE(nil, configurator);
     ExpectNoAccountsConfiguration(style);
-    OCMExpect([close_button_ setHidden:close_button_hidden_]);
+    OCMExpect([close_button_ setHidden:YES]);
     OCMExpect([signin_promo_view_ setPromoViewStyle:style]);
     OCMExpect([signin_promo_view_ stopSignInSpinner]);
     if (style == SigninPromoViewStyleCompactVertical ||
@@ -278,7 +277,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
       SigninPromoViewStyle style) {
     EXPECT_NE(nil, configurator);
     ExpectSigninWithAccountConfiguration(style);
-    OCMExpect([close_button_ setHidden:close_button_hidden_]);
+    OCMExpect([close_button_ setHidden:YES]);
     OCMExpect([signin_promo_view_ setPromoViewStyle:style]);
     OCMExpect([signin_promo_view_ stopSignInSpinner]);
     [configurator configureSigninPromoView:signin_promo_view_ withStyle:style];
@@ -333,7 +332,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
       SigninPromoViewStyle style) {
     EXPECT_NE(nil, configurator);
     ExpectSyncPromoConfiguration();
-    OCMExpect([close_button_ setHidden:close_button_hidden_]);
+    OCMExpect([close_button_ setHidden:YES]);
     OCMExpect([signin_promo_view_ setPromoViewStyle:style]);
     OCMExpect([signin_promo_view_ stopSignInSpinner]);
     [configurator configureSigninPromoView:signin_promo_view_ withStyle:style];
@@ -347,7 +346,38 @@ class SigninPromoViewMediatorTest : public PlatformTest {
       SigninPromoViewStyle style) {
     EXPECT_NE(nil, configurator);
     ExpectReviewAccountSettingsPromoConfiguration();
-    OCMExpect([close_button_ setHidden:close_button_hidden_]);
+    // The close button should exist on the promo when shown on the bookmarks
+    // manager UI.
+    OCMExpect([close_button_ setHidden:NO]);
+    OCMExpect([signin_promo_view_ setPromoViewStyle:style]);
+    OCMExpect([signin_promo_view_ stopSignInSpinner]);
+    [configurator configureSigninPromoView:signin_promo_view_ withStyle:style];
+    EXPECT_NE(nil, image_view_profile_image_);
+  }
+
+  // Checks a configurator for recent tabs.
+  void CheckPromoForRecentTabs(SigninPromoViewConfigurator* configurator,
+                               SigninPromoViewStyle style) {
+    EXPECT_NE(nil, configurator);
+    // ExpectReviewAccountSettingsPromoConfiguration();
+    //  The close button should exist on the promo when shown on the bookmarks
+    //  manager UI.
+    OCMExpect([close_button_ setHidden:YES]);
+    OCMExpect([signin_promo_view_
+        setProfileImage:[OCMArg checkWithBlock:^BOOL(id value) {
+          image_view_profile_image_ = value;
+          return YES;
+        }]]);
+    OCMExpect(
+        [signin_promo_view_ setMode:SigninPromoViewModeSigninWithAccount]);
+    OCMExpect([signin_promo_view_
+        configurePrimaryButtonWithTitle:GetNSStringF(
+                                            IDS_IOS_SIGNIN_PROMO_CONTINUE_AS,
+                                            SysNSStringToUTF16(
+                                                identity_.userGivenName))]);
+    OCMExpect([secondary_button_
+        setTitle:GetNSString(IDS_IOS_SIGNIN_PROMO_CHANGE_ACCOUNT)
+        forState:UIControlStateNormal]);
     OCMExpect([signin_promo_view_ setPromoViewStyle:style]);
     OCMExpect([signin_promo_view_ stopSignInSpinner]);
     [configurator configureSigninPromoView:signin_promo_view_ withStyle:style];
@@ -395,8 +425,6 @@ class SigninPromoViewMediatorTest : public PlatformTest {
 
   // Value set by -[SigninPromoView setProfileImage:].
   UIImage* image_view_profile_image_;
-  // Value set by -[close_button_ setHidden:].
-  BOOL close_button_hidden_;
 };
 
 // Tests signin promo view and its configurator with no accounts on the device.
@@ -687,6 +715,21 @@ TEST_F(SigninPromoViewMediatorTest, RemoveSigninPromoWhileSignedIn) {
   mediator_ = nil;
 }
 
+// Tests that promo setup with kSigninWithNoDefaultIdentity creates the expected
+// configurator and promo.
+TEST_F(SigninPromoViewMediatorTest, SigninPromoWithSigninWithNoDefaultIdentity) {
+  AddDefaultIdentity();
+  CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
+  ExpectConfiguratorNotification(NO /* identity changed */);
+  [mediator_ signinPromoViewIsVisible];
+  ExpectConfiguratorNotification(NO /* identity changed */);
+  [mediator_
+      setSigninPromoAction:SigninPromoAction::kSigninWithNoDefaultIdentity];
+  EXPECT_EQ(identity_, mediator_.displayedIdentity);
+  fake_system_identity_manager()->WaitForServiceCallbacksToComplete();
+  CheckPromoForRecentTabs(configurator_, SigninPromoViewStyleStandard);
+}
+
 // Tests that promo setup with review account settings promo action.
 TEST_F(SigninPromoViewMediatorTest,
        SigninPromoWithReviewAccountSettingsAction) {
@@ -703,9 +746,6 @@ TEST_F(SigninPromoViewMediatorTest,
   [mediator_ setSigninPromoAction:SigninPromoAction::kReviewAccountSettings];
   EXPECT_EQ(identity_, mediator_.displayedIdentity);
   fake_system_identity_manager()->WaitForServiceCallbacksToComplete();
-  // The close button should exist on the promo when shown on the bookmarks
-  // manager UI.
-  close_button_hidden_ = NO;
   CheckPromoWithReviewAccountSettingsAction(configurator_,
                                             SigninPromoViewStyleStandard);
 

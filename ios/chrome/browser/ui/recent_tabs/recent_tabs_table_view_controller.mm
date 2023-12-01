@@ -736,13 +736,8 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
              accountSettingsPresenter:nil];
     if (base::FeatureList::IsEnabled(
             syncer::kReplaceSyncPromosWithSignInPromos)) {
-      ChromeAccountManagerService* accountManagerService =
-          ChromeAccountManagerServiceFactory::GetForBrowserState(
-              self.browserState);
       self.signinPromoViewMediator.signinPromoAction =
-          accountManagerService->HasIdentities()
-              ? SigninPromoAction::kSigninSheet
-              : SigninPromoAction::kInstantSignin;
+          SigninPromoAction::kSigninWithNoDefaultIdentity;
     }
     self.signinPromoViewMediator.consumer = self;
   }

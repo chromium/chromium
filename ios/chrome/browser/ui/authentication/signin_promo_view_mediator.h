@@ -57,6 +57,9 @@ enum class SigninPromoAction {
   // Secondary button opens a floating dialog with the available accounts. When
   // an account is tapped, it is signed in instantly.
   kInstantSignin,
+  // Single button. If there is an account, ask which account to use. Otherwise,
+  // add the add account dialog, and then sign-in directly.
+  kSigninWithNoDefaultIdentity,
   // Performs AuthenticationOperationSigninOnly.
   kSigninSheet,
   // Shows account settings.

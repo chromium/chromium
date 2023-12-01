@@ -90,9 +90,7 @@
     if (base::FeatureList::IsEnabled(
             syncer::kReplaceSyncPromosWithSignInPromos)) {
       self.signinPromoMediator.signinPromoAction =
-          accountManagerService->HasIdentities()
-              ? SigninPromoAction::kSigninSheet
-              : SigninPromoAction::kInstantSignin;
+          SigninPromoAction::kSigninWithNoDefaultIdentity;
     }
     self.signinPromoMediator.consumer = self.feedTopSectionMediator;
     self.feedTopSectionMediator.signinPromoMediator = self.signinPromoMediator;
