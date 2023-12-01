@@ -19,6 +19,10 @@ namespace base {
 struct Feature;
 }
 
+namespace autofill {
+class LogManager;
+}
+
 namespace autofill::rationalization {
 
 // Container to hold requirements that need to be all fulfilled for a
@@ -179,6 +183,30 @@ bool IsFieldConditionFulfilledIgnoringLocation(
     const LanguageCode& page_language,
     PatternSource pattern_source,
     const AutofillField& field);
+
+// Returns the first index of a field in `fields` that meets the `condition`
+// when starting at `start_index` and walking in the direction of
+// `condition.location`. Returns std::nullopt if no such field exists.
+std::optional<size_t> FindFieldMeetingCondition(
+    const std::vector<std::unique_ptr<AutofillField>>& fields,
+    size_t start_index,
+    const FieldCondition& condition,
+    const GeoIpCountryCode& client_country,
+    const LanguageCode& page_language,
+    PatternSource pattern_source);
+
+// Performs rationalization according `rule` if the the conditions of the
+// rule are met. The `rule` can be executed multiple times on the `fields`.
+// Note that the `fields` vector is const but the fields are mutable. This
+// constness is inherited from the calling sites.
+void ApplyRuleIfApplicable(
+    const RationalizationRule& rule,
+    const GeoIpCountryCode& client_country,
+    const LanguageCode& page_language,
+    PatternSource pattern_source,
+    const std::vector<std::unique_ptr<AutofillField>>& fields,
+    LogManager* log_manager = nullptr);
+
 }  // namespace internal
 
 }  // namespace autofill::rationalization

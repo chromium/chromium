@@ -5,49 +5,87 @@
 #include "components/autofill/core/browser/form_structure_rationalization_engine.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::rationalization {
 namespace {
 
+using ::testing::ElementsAre;
+
 BASE_FEATURE(kTestFeatureForFormStructureRationalizationEngine,
              "TestFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Verify that the builder classes set all parameters correctly.
+// This should be merged with the logic in
+// form_structure_rationalizer_unittest.cc but our code style does not allow
+// designated list initialization for complex structs, so we cannot move the
+// struct into a shared header. Therefore, this is a minimally viable copy
+// of what's offered in form_structure_rationalizer_unittest.cc.
+struct FieldTemplate {
+  std::u16string label;
+  std::u16string name;
+  ServerFieldType field_type = UNKNOWN_TYPE;
+};
+
+std::vector<std::unique_ptr<AutofillField>> CreateFields(
+    const std::vector<FieldTemplate>& field_templates) {
+  std::vector<std::unique_ptr<AutofillField>> result;
+  result.reserve(field_templates.size());
+  for (const auto& t : field_templates) {
+    const auto& f =
+        result.emplace_back(std::make_unique<AutofillField>(FormFieldData()));
+    f->name = t.name;
+    f->label = t.label;
+    f->SetTypeTo(AutofillType(t.field_type));
+    DCHECK_EQ(f->Type().GetStorableType(), t.field_type);
+  }
+  return result;
+}
+
+std::vector<ServerFieldType> GetTypes(
+    const std::vector<std::unique_ptr<AutofillField>>& fields) {
+  std::vector<ServerFieldType> server_types;
+  base::ranges::transform(
+      fields, std::back_inserter(server_types),
+      [](const auto& field) { return field->Type().GetStorableType(); });
+  return server_types;
+}
+
+RationalizationRule CreateTestRule() {
+  return RationalizationRuleBuilder()
+      .SetRuleName("Fix colonia as address-line2 in MX")
+      .SetEnvironmentCondition(
+          EnvironmentConditionBuilder()
+              .SetCountryList({GeoIpCountryCode("MX")})
+              .SetFeature(&kTestFeatureForFormStructureRationalizationEngine)
+              .Build())
+      .SetTriggerField(FieldCondition{
+          .possible_overall_types = ServerFieldTypeSet{ADDRESS_HOME_LINE2},
+          .regex_reference_match = "ADDRESS_HOME_DEPENDENT_LOCALITY",
+      })
+      .SetOtherFieldConditions({
+          FieldCondition{
+              .location = FieldLocation::kLastClassifiedPredecessor,
+              .possible_overall_types = ServerFieldTypeSet{ADDRESS_HOME_LINE1},
+          },
+      })
+      .SetActions({
+          SetTypeAction{
+              .target = FieldLocation::kLastClassifiedPredecessor,
+              .set_overall_type = ADDRESS_HOME_STREET_ADDRESS,
+          },
+          SetTypeAction{
+              .target = FieldLocation::kTriggerField,
+              .set_overall_type = ADDRESS_HOME_DEPENDENT_LOCALITY,
+          },
+      })
+      .Build();
+}
+
 TEST(FormStructureRationalizationEngine, TestBuilder) {
-  RationalizationRule rule =
-      RationalizationRuleBuilder()
-          .SetRuleName("Fix colonia as address-line2 in MX")
-          .SetEnvironmentCondition(
-              EnvironmentConditionBuilder()
-                  .SetCountryList({GeoIpCountryCode("MX")})
-                  .SetFeature(
-                      &kTestFeatureForFormStructureRationalizationEngine)
-                  .Build())
-          .SetTriggerField(FieldCondition{
-              .possible_overall_types = ServerFieldTypeSet{ADDRESS_HOME_LINE2},
-              .regex_reference_match = "ADDRESS_HOME_DEPENDENT_LOCALITY",
-          })
-          .SetOtherFieldConditions({
-              FieldCondition{
-                  .location = FieldLocation::kLastClassifiedPredecessor,
-                  .possible_overall_types =
-                      ServerFieldTypeSet{ADDRESS_HOME_LINE1},
-              },
-          })
-          .SetActions({
-              SetTypeAction{
-                  .target = FieldLocation::kLastClassifiedPredecessor,
-                  .set_overall_type = ADDRESS_HOME_STREET_ADDRESS,
-              },
-              SetTypeAction{
-                  .target = FieldLocation::kTriggerField,
-                  .set_overall_type = ADDRESS_HOME_DEPENDENT_LOCALITY,
-              },
-          })
-          .Build();
+  RationalizationRule rule = CreateTestRule();
 
   EXPECT_EQ(rule.rule_name, "Fix colonia as address-line2 in MX");
 
@@ -225,6 +263,154 @@ TEST(FormStructureRationalizationEngine,
   field.label = u"nombre de usuario/dirección de correo electrónico";
   EXPECT_FALSE(IsFieldConditionFulfilledIgnoringLocation(
       regex_with_negative_pattern, page_language, pattern_source, field));
+}
+
+// Test that the actions are applied if all conditions are met.
+TEST(FormStructureRationalizationEngine, TestRulesAreApplied) {
+  base::test::ScopedFeatureList feature_list(
+      kTestFeatureForFormStructureRationalizationEngine);
+
+  std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
+      {u"Nombre", u"n", NAME_FIRST},
+      {u"Apellidos", u"a", NAME_LAST},
+      {u"Empresa", u"empresa", COMPANY_NAME},
+      {u"Dirección", u"addressline1", ADDRESS_HOME_LINE1},
+      {u"Colonia", u"addressline2", ADDRESS_HOME_LINE2},
+      {u"Código postal", u"postalcode", ADDRESS_HOME_ZIP},
+      {u"Cuidad", u"city", ADDRESS_HOME_CITY},
+      {u"Estado", u"state", ADDRESS_HOME_STATE},
+  });
+
+  internal::ApplyRuleIfApplicable(CreateTestRule(), GeoIpCountryCode("MX"),
+                                  LanguageCode("es"), PatternSource::kLegacy,
+                                  fields);
+
+  EXPECT_THAT(
+      GetTypes(fields),
+      ElementsAre(NAME_FIRST, NAME_LAST, COMPANY_NAME,
+                  /*changed*/ ADDRESS_HOME_STREET_ADDRESS,
+                  /*changed*/ ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_ZIP,
+                  ADDRESS_HOME_CITY, ADDRESS_HOME_STATE));
+}
+
+// Test that no actions are applied if the trigger field does not exist.
+TEST(FormStructureRationalizationEngine,
+     TestRulesAreNotAppliedWithMissingTriggerField) {
+  base::test::ScopedFeatureList feature_list(
+      kTestFeatureForFormStructureRationalizationEngine);
+
+  std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
+      {u"Nombre", u"n", NAME_FIRST},
+      {u"Apellidos", u"a", NAME_LAST},
+      {u"Empresa", u"empresa", COMPANY_NAME},
+      {u"Dirección", u"addressline1", ADDRESS_HOME_LINE1},
+      /*{u"Colonia", u"addressline2", ADDRESS_HOME_LINE2},*/
+      {u"Código postal", u"postalcode", ADDRESS_HOME_ZIP},
+      {u"Cuidad", u"city", ADDRESS_HOME_CITY},
+      {u"Estado", u"state", ADDRESS_HOME_STATE},
+  });
+
+  internal::ApplyRuleIfApplicable(CreateTestRule(), GeoIpCountryCode("MX"),
+                                  LanguageCode("es"), PatternSource::kLegacy,
+                                  fields);
+
+  EXPECT_THAT(
+      GetTypes(fields),
+      ElementsAre(NAME_FIRST, NAME_LAST, COMPANY_NAME, ADDRESS_HOME_LINE1,
+                  /*ADDRESS_HOME_LINE2,*/ ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY,
+                  ADDRESS_HOME_STATE));
+}
+
+// Test that no actions are applied if the additional condition field does not
+// exist.
+TEST(FormStructureRationalizationEngine,
+     TestRulesAreNotAppliedWithMissingAdditionalCondition) {
+  base::test::ScopedFeatureList feature_list(
+      kTestFeatureForFormStructureRationalizationEngine);
+
+  std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
+      {u"Nombre", u"n", NAME_FIRST},
+      {u"Apellidos", u"a", NAME_LAST},
+      {u"Empresa", u"empresa", COMPANY_NAME},
+      /*{u"Dirección", u"addressline1", ADDRESS_HOME_LINE1},*/
+      {u"Colonia", u"addressline2", ADDRESS_HOME_LINE2},
+      {u"Código postal", u"postalcode", ADDRESS_HOME_ZIP},
+      {u"Cuidad", u"city", ADDRESS_HOME_CITY},
+      {u"Estado", u"state", ADDRESS_HOME_STATE},
+  });
+
+  internal::ApplyRuleIfApplicable(CreateTestRule(), GeoIpCountryCode("MX"),
+                                  LanguageCode("es"), PatternSource::kLegacy,
+                                  fields);
+
+  EXPECT_THAT(
+      GetTypes(fields),
+      ElementsAre(NAME_FIRST, NAME_LAST, COMPANY_NAME, /*ADDRESS_HOME_LINE1,*/
+                  ADDRESS_HOME_LINE2, ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY,
+                  ADDRESS_HOME_STATE));
+}
+
+// Test that no actions are applied if the additional condition asks for
+// a direct classified predecessor but the field meeting the condition is not
+// a direct predecessor.
+TEST(FormStructureRationalizationEngine,
+     TestRulesAreNotAppliedWithViolatedDirectPredecessorRule) {
+  base::test::ScopedFeatureList feature_list(
+      kTestFeatureForFormStructureRationalizationEngine);
+
+  std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
+      {u"Nombre", u"n", NAME_FIRST},
+      {u"Apellidos", u"a", NAME_LAST},
+      // Address line 1 is not a direct classified predecessor, so it is not
+      // found.
+      {u"Dirección", u"addressline1", ADDRESS_HOME_LINE1},
+      {u"Empresa", u"empresa", COMPANY_NAME},
+      {u"Colonia", u"addressline2", ADDRESS_HOME_LINE2},
+      {u"Código postal", u"postalcode", ADDRESS_HOME_ZIP},
+      {u"Cuidad", u"city", ADDRESS_HOME_CITY},
+      {u"Estado", u"state", ADDRESS_HOME_STATE},
+  });
+
+  internal::ApplyRuleIfApplicable(CreateTestRule(), GeoIpCountryCode("MX"),
+                                  LanguageCode("es"), PatternSource::kLegacy,
+                                  fields);
+
+  EXPECT_THAT(GetTypes(fields),
+              ElementsAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_LINE1,
+                          COMPANY_NAME, ADDRESS_HOME_LINE2, ADDRESS_HOME_ZIP,
+                          ADDRESS_HOME_CITY, ADDRESS_HOME_STATE));
+}
+
+// Test that the kLastClassifiedPredecessor can skip unclassified predecessors.
+TEST(FormStructureRationalizationEngine,
+     TestRulesAreAppliedIfLastClassifiedPredecessorNeedsToSkipAField) {
+  base::test::ScopedFeatureList feature_list(
+      kTestFeatureForFormStructureRationalizationEngine);
+
+  std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
+      {u"Nombre", u"n", NAME_FIRST},
+      {u"Apellidos", u"a", NAME_LAST},
+      {u"Empresa", u"empresa", COMPANY_NAME},
+      {u"Dirección", u"addressline1", ADDRESS_HOME_LINE1},
+      // The UNKNOWN_TYPE can be skipped for a
+      // FieldLocation::kLastClassifiedPredecessor.
+      {u"Foo", u"bar", UNKNOWN_TYPE},
+      {u"Colonia", u"addressline2", ADDRESS_HOME_LINE2},
+      {u"Código postal", u"postalcode", ADDRESS_HOME_ZIP},
+      {u"Cuidad", u"city", ADDRESS_HOME_CITY},
+      {u"Estado", u"state", ADDRESS_HOME_STATE},
+  });
+
+  internal::ApplyRuleIfApplicable(CreateTestRule(), GeoIpCountryCode("MX"),
+                                  LanguageCode("es"), PatternSource::kLegacy,
+                                  fields);
+
+  EXPECT_THAT(
+      GetTypes(fields),
+      ElementsAre(NAME_FIRST, NAME_LAST, COMPANY_NAME,
+                  /*changed*/ ADDRESS_HOME_STREET_ADDRESS, UNKNOWN_TYPE,
+                  /*changed*/ ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_ZIP,
+                  ADDRESS_HOME_CITY, ADDRESS_HOME_STATE));
 }
 
 }  // namespace

@@ -5,11 +5,18 @@
 #include "components/autofill/core/browser/form_structure_rationalization_engine.h"
 
 #include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "components/autofill/core/browser/form_parsing/form_field.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
+#include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/common/autofill_internals/log_message.h"
+#include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/logging/log_buffer.h"
+#include "components/autofill/core/common/logging/log_macros.h"
 
 namespace autofill::rationalization {
 
@@ -153,6 +160,109 @@ bool IsFieldConditionFulfilledIgnoringLocation(
 
   return true;
 }
+
+std::optional<size_t> FindFieldMeetingCondition(
+    const std::vector<std::unique_ptr<AutofillField>>& fields,
+    size_t start_index,
+    const FieldCondition& condition,
+    const GeoIpCountryCode& client_country,
+    const LanguageCode& page_language,
+    PatternSource pattern_source) {
+  int direction = [&condition]() {
+    switch (condition.location) {
+      case FieldLocation::kPredecessor:
+      case FieldLocation::kLastClassifiedPredecessor:
+        return -1;
+      case FieldLocation::kTriggerField:
+        NOTREACHED_NORETURN();
+      case FieldLocation::kNextClassifiedSuccessor:
+      case FieldLocation::kSuccessor:
+        return 1;
+    }
+  }();
+
+  for (int i = start_index + direction;
+       i >= 0 && i < static_cast<int>(fields.size()); i += direction) {
+    const AutofillField& candidate_field = *fields[i];
+    if (IsFieldConditionFulfilledIgnoringLocation(
+            condition, page_language, pattern_source, candidate_field)) {
+      return static_cast<size_t>(i);
+    }
+
+    if (candidate_field.Type().GetStorableType() != UNKNOWN_TYPE &&
+        (condition.location == FieldLocation::kLastClassifiedPredecessor ||
+         condition.location == FieldLocation::kNextClassifiedSuccessor)) {
+      // Don't try any further once we have checked the last/next classified
+      // field.
+      break;
+    }
+  }
+
+  return std::nullopt;
+}
+
+void ApplyRuleIfApplicable(
+    const RationalizationRule& rule,
+    const GeoIpCountryCode& client_country,
+    const LanguageCode& page_language,
+    PatternSource pattern_source,
+    const std::vector<std::unique_ptr<AutofillField>>& fields,
+    LogManager* log_manager) {
+  if (rule.environment_condition.has_value() &&
+      !IsEnvironmentConditionFulfilled(rule.environment_condition.value(),
+                                       client_country)) {
+    return;
+  }
+
+  for (size_t i = 0; i < fields.size(); ++i) {
+    const std::unique_ptr<AutofillField>& trigger_field = fields[i];
+
+    // Check whether we have found a trigger field at index i.
+    if (!IsFieldConditionFulfilledIgnoringLocation(
+            rule.trigger_field, page_language, pattern_source,
+            *trigger_field)) {
+      continue;
+    }
+
+    // Check whether all the other conditions are also met for the surrounding
+    // fields.
+    base::flat_map<FieldLocation, size_t> found_fields;
+    for (const FieldCondition& other_field_condition :
+         rule.other_field_conditions) {
+      CHECK_NE(other_field_condition.location, FieldLocation::kTriggerField);
+      std::optional<size_t> match_index = FindFieldMeetingCondition(
+          fields, i, other_field_condition, client_country, page_language,
+          pattern_source);
+      if (!match_index.has_value()) {
+        break;
+      }
+      found_fields[other_field_condition.location] = match_index.value();
+    }
+    // Only proceed if all other conditions were met.
+    if (found_fields.size() != rule.other_field_conditions.size()) {
+      continue;
+    }
+
+    found_fields[FieldLocation::kTriggerField] = i;
+
+    // Apply actions.
+    LogBuffer buffer(IsLoggingActive(log_manager));
+    for (const SetTypeAction& action : rule.actions) {
+      // Actions can only happen for fields that are bound via conditions.
+      CHECK(found_fields.find(action.target) != found_fields.end());
+      AutofillField& field = *fields[found_fields[action.target]];
+      buffer << ", changing field " << found_fields[action.target] << " from "
+             << FieldTypeToStringView(field.Type().GetStorableType()) << " to "
+             << FieldTypeToStringView(action.set_overall_type);
+      field.SetTypeTo(AutofillType(action.set_overall_type));
+    }
+    LOG_AF(log_manager) << LoggingScope::kRationalization
+                        << LogMessage::kRationalization << rule.rule_name
+                        << " applies, performing changes: "
+                        << std::move(buffer);
+  }
+}
+
 }  // namespace internal
 
 }  // namespace autofill::rationalization
