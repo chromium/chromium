@@ -782,6 +782,16 @@ TEST_F(UserAgentUtilsTest, UserAgentMetadata) {
   EXPECT_TRUE(metadata.full_version.empty());
 }
 
+TEST_F(UserAgentUtilsTest, UserAgentMetadataXR) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kClientHintsXRFormFactor);
+  auto metadata = GetUserAgentMetadata();
+  std::vector<std::string> expected_form_factor = {
+      (metadata.mobile ? "Mobile" : "Desktop"), "XR"};
+  EXPECT_EQ(metadata.form_factor, expected_form_factor);
+}
+
 TEST_F(UserAgentUtilsTest, GenerateBrandVersionListUnbranded) {
   blink::UserAgentMetadata metadata;
   metadata.brand_version_list = GenerateBrandVersionList(

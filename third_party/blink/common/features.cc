@@ -505,6 +505,11 @@ BASE_FEATURE(kClientHintsViewportWidth,
              "ClientHintsViewportWidth",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enable `form-factor` client hint for XR devices.
+BASE_FEATURE(kClientHintsXRFormFactor,
+             "ClientHintsXRFormFactor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable legacy `viewport-width` client hint.
 BASE_FEATURE(kClientHintsViewportWidth_DEPRECATED,
              "ClientHintsViewportWidth_DEPRECATED",
