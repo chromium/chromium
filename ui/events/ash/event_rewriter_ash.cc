@@ -39,6 +39,7 @@
 #include "ui/events/event_rewriter.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -52,6 +53,8 @@ namespace {
 // Flag masks for remapping alt+click or search+click to right click.
 constexpr int kAltLeftButton = (EF_ALT_DOWN | EF_LEFT_MOUSE_BUTTON);
 constexpr int kSearchLeftButton = (EF_COMMAND_DOWN | EF_LEFT_MOUSE_BUTTON);
+
+constexpr char kKoreanImeId[] = "ko-t-i0-und";
 
 // Index of the remapped flags in the auto repeat usage metric.
 enum class AutoRepeatUsageModifierFlag : uint32_t {
@@ -304,6 +307,13 @@ bool IsISOLevel5ShiftUsedByCurrentInputMethod() {
   // TODO(yusukes): Remove the restriction.
   auto* manager = ash::input_method::InputMethodManager::Get();
   return manager->IsISOLevel5ShiftUsedByCurrentInputMethod();
+}
+
+bool IsFirstPartyKoreanIME() {
+  auto* manager = ash::input_method::InputMethodManager::Get();
+  auto current_input_method =
+      manager->GetActiveIMEState()->GetCurrentInputMethod();
+  return base::EndsWith(current_input_method.id(), kKoreanImeId);
 }
 
 struct KeyboardRemapping {
@@ -1114,8 +1124,23 @@ bool EventRewriterAsh::RewriteModifierKeys(const KeyEvent& key_event,
           GetRemappedKey(device_id, mojom::ModifierKey::kControl,
                          prefs::kLanguageRemapControlKeyTo, delegate_);
       break;
-    case DomCode::ALT_LEFT:
     case DomCode::ALT_RIGHT:
+      // For the Korean IME, right alt is used for Korean/English mode
+      // switching. It should not be rewritten under any circumstance. Due to
+      // b/311333438, the DomKey from the given keyboard layout is ignored.
+      // Additionally, due to b/311327069, the DomCode and DomKey both get
+      // remapped every time a modifier is pressed, even if it is not remapped.
+      // By special casing right alt only for the Korean IME, we avoid this
+      // problem.
+
+      // TODO(b/311333438, b/311327069): Implement a complete solution to deal
+      // with modifier remapping.
+      if (key_event.GetDomKey() == DomKey::HANGUL_MODE &&
+          IsFirstPartyKoreanIME()) {
+        break;
+      }
+      [[fallthrough]];
+    case DomCode::ALT_LEFT:
       // ALT key
       characteristic_flag = EF_ALT_DOWN;
       remapped_key = GetRemappedKey(device_id, mojom::ModifierKey::kAlt,

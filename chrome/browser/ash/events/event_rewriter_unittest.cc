@@ -20,6 +20,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -39,6 +40,8 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/ime/ash/fake_ime_keyboard.h"
+#include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/base/ime/ash/mock_input_method_manager.h"
 #include "ui/base/ime/ash/mock_input_method_manager_impl.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/ash/event_rewriter_ash.h"
@@ -682,6 +685,11 @@ constexpr TestKeyEvent NumpadArrowUpPressed(
 constexpr TestKeyEvent NumpadPageUpPressed(ui::EventFlags flags = ui::EF_NONE) {
   return {ui::ET_KEY_PRESSED, ui::DomCode::NUMPAD9, ui::DomKey::PAGE_UP,
           ui::VKEY_PRIOR, flags};
+}
+
+constexpr TestKeyEvent HangulModePressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::ALT_RIGHT, ui::DomKey::HANGUL_MODE,
+          ui::VKEY_HANGUL, flags};
 }
 
 std::string EventTypeToString(ui::EventType type) {
@@ -4135,6 +4143,28 @@ TEST_F(EventRewriterTest, ScrollEventDispatchImpl) {
 
     ASSERT_EQ(ui::ET_KEY_RELEASED, events[1]->type());
     EXPECT_EQ(ui::VKEY_CONTROL, events[1]->AsKeyEvent()->key_code());
+  }
+}
+
+TEST_F(EventRewriterTest, HangulDoesNotGetRemapped) {
+  scoped_refptr<input_method::MockInputMethodManagerImpl::State> state =
+      base::MakeRefCounted<input_method::MockInputMethodManagerImpl::State>(
+          input_method_manager_mock_);
+  input_method_manager_mock_->SetState(state);
+
+  for (const auto& keyboard : kAllKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
+
+    state->current_input_method_id = "ko-t-i0-und";
+    EXPECT_EQ(HangulModePressed(), RunRewriter(HangulModePressed()));
+    EXPECT_EQ(LAltPressed(), RunRewriter(LAltPressed()));
+    EXPECT_EQ(RAltPressed(), RunRewriter(RAltPressed()));
+
+    state->current_input_method_id = "xkb:us::eng";
+    EXPECT_EQ(RAltPressed(), RunRewriter(HangulModePressed()));
+    EXPECT_EQ(LAltPressed(), RunRewriter(LAltPressed()));
+    EXPECT_EQ(RAltPressed(), RunRewriter(RAltPressed()));
   }
 }
 
