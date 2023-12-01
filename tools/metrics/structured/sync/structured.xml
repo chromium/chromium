@@ -646,7 +646,7 @@
     </metric>
   </event>
 
-  <event name="OOBE.GaiaSigninRequested">
+  <event name="OOBE.GaiaSigninRequested" force_record="true">
     <summary>
       Recorded after the password is entered for authentication in the GAIA Sign-
       in screen. Note: this is not recorded for SAML flows.
@@ -693,7 +693,7 @@
     </metric>
   </event>
 
-  <event name="OOBE.GaiaSigninCompleted">
+  <event name="OOBE.GaiaSigninCompleted" force_record="true">
     <summary>
       Recorded after a successful authentication in the GAIA Sign-in screen. Note:
       this is not recorded for SAML flows.
@@ -740,7 +740,7 @@
     </metric>
   </event>
 
-  <event name="OOBE.OobeStarted">
+  <event name="OOBE.OobeStarted" force_record="true">
     <summary>
       Recorded at the first start of OOBE before the first OOBE screen is shown.
     </summary>
@@ -756,7 +756,7 @@
     </metric>
   </event>
 
-  <event name="OOBE.PreLoginOobeCompleted">
+  <event name="OOBE.PreLoginOobeCompleted" force_record="true">
     <summary>
       Recorded after the completion of the pre-login part of the flow.
     </summary>
@@ -783,7 +783,7 @@
     </metric>
   </event>
 
-  <event name="OOBE.DeviceRegistered">
+  <event name="OOBE.DeviceRegistered" force_record="true">
     <summary>
       Recorded after the completion of the pre-login part of the flow.
     </summary>
@@ -811,7 +811,7 @@
     </metric>
   </event>
 
-  <event name="OOBE.OobeCompleted">
+  <event name="OOBE.OobeCompleted" force_record="true">
     <summary>
       Recorded after the completion of the last screen in the onboarding flow and
       before the start of the session for the first user.
@@ -852,7 +852,7 @@
     </metric>
   </event>
 
-  <event name="OOBE.OnboardingStarted">
+  <event name="OOBE.OnboardingStarted" force_record="true">
     <summary>
       Recorded after a new user logs-in and before the first onboarding screen is
       shown.
@@ -893,7 +893,7 @@
     </metric>
   </event>
 
-  <event name="OOBE.OnboardingCompleted">
+  <event name="OOBE.OnboardingCompleted" force_record="true">
     <summary>
       Recorded after the completion of the last screen in the onboarding flow and
       before the start of the session.
@@ -934,7 +934,7 @@
     </metric>
   </event>
 
-  <event name="OOBE.PageEntered">
+  <event name="OOBE.PageEntered" force_record="true">
     <summary>
       Recorded after a screen is shown to the user.
     </summary>
@@ -980,7 +980,7 @@
     </metric>
   </event>
 
-  <event name="OOBE.PageSkippedBySystem">
+  <event name="OOBE.PageSkippedBySystem" force_record="true">
     <summary>
       Recorded after a screen was skipped by the system.
     </summary>
@@ -1025,7 +1025,7 @@
     </metric>
   </event>
 
-  <event name="OOBE.PageLeft">
+  <event name="OOBE.PageLeft" force_record="true">
     <summary>
       Recorded after a screeen was exited.
     </summary>
@@ -1075,7 +1075,7 @@
     </metric>
   </event>
 
-  <event name="OOBE.PreLoginOobeResumed">
+  <event name="OOBE.PreLoginOobeResumed" force_record="true">
     <summary>
       Recorded after the determination to resume the pre-login OOBE flow and
       before showing the pending screen.
@@ -1126,7 +1126,7 @@
     </metric>
   </event>
 
-  <event name="OOBE.OnboardingResumed">
+  <event name="OOBE.OnboardingResumed" force_record="true">
     <summary>
       Recorded after the determination to resume the onboarding flow and before
       showing the pending screen.
@@ -1177,7 +1177,7 @@
     </metric>
   </event>
 
-  <event name="OOBE.ChoobeResumed">
+  <event name="OOBE.ChoobeResumed" force_record="true">
     <summary>
       Recorded after the determination to resume the CHOOBE flow and before
       showing the pending screen.
