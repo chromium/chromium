@@ -60,6 +60,7 @@ dictionary AuctionAdInterestGroup {
   [ImplementedAs=trustedBiddingSignalsUrlDeprecated]
   USVString trustedBiddingSignalsUrl;
   sequence<USVString> trustedBiddingSignalsKeys;
+  DOMString trustedBiddingSignalsSlotSizeMode;
   any userBiddingSignals;
   sequence<AuctionAd> ads;
   sequence<AuctionAd> adComponents;

@@ -304,6 +304,23 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   interest_group_update.user_bidding_signals = std::move(user_bidding_signals);
   return true;
 }
+
+// Copies the trustedBiddingSignalsSlotSizeMode JSON field into
+// `trusted_bidding_signals_slot_size_mode`. Always succeeds.
+[[nodiscard]] bool TryToCopyTrustedBiddingSignalsSlotSizeMode(
+    const base::Value::Dict& dict,
+    InterestGroupUpdate& interest_group_update) {
+  const std::string* trusted_bidding_signals_slot_size_mode =
+      dict.FindString("trustedBiddingSignalsSlotSizeMode");
+  if (!trusted_bidding_signals_slot_size_mode) {
+    return true;
+  }
+  interest_group_update.trusted_bidding_signals_slot_size_mode =
+      blink::InterestGroup::ParseTrustedBiddingSignalsSlotSizeMode(
+          *trusted_bidding_signals_slot_size_mode);
+  return true;
+}
+
 // Helper for TryToCopyAds() and TryToCopyAdComponents().
 [[nodiscard]] absl::optional<std::vector<blink::InterestGroup::Ad>> ExtractAds(
     const base::Value::List& ads_list,
@@ -631,6 +648,10 @@ absl::optional<InterestGroupUpdate> ParseUpdateJson(
   if (maybe_trusted_bidding_signals_url) {
     interest_group_update.trusted_bidding_signals_url =
         GURL(*maybe_trusted_bidding_signals_url);
+  }
+  if (!TryToCopyTrustedBiddingSignalsSlotSizeMode(*dict,
+                                                  interest_group_update)) {
+    return absl::nullopt;
   }
   if (!TryToCopyTrustedBiddingSignalsKeys(*dict, interest_group_update)) {
     return absl::nullopt;

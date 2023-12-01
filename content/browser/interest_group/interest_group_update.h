@@ -47,6 +47,8 @@ struct CONTENT_EXPORT InterestGroupUpdate {
   absl::optional<GURL> daily_update_url;
   absl::optional<GURL> trusted_bidding_signals_url;
   absl::optional<std::vector<std::string>> trusted_bidding_signals_keys;
+  absl::optional<blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode>
+      trusted_bidding_signals_slot_size_mode;
   absl::optional<std::string> user_bidding_signals;
   absl::optional<std::vector<blink::InterestGroup::Ad>> ads, ad_components;
   absl::optional<base::flat_map<std::string, blink::AdSize>> ad_sizes;

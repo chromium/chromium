@@ -95,6 +95,20 @@ struct InterestGroup {
     kFrozenContext,
   };
 
+  [Stable, Extensible]
+  enum TrustedBiddingSignalsSlotSizeMode {
+    // No information about ad slot sizes is added as a query param of
+    // trustedBiddingSignalsURL fetches.
+    [Default] kNone,
+    // Only the ad slot size of the current ad slot is added to the query param
+    // of trustedBiddingSignalsURL fetches. It is called "slotSize".
+    kSlotSize,
+    // All add slot sizes specified in the top-level AuctionConfig is added to
+    // the query param of trustedBiddingSignalsURL fetches. They are provided as
+    // a single parameter called "slotSizes".
+    kAllSlotsRequestedSizes,
+  };
+
   mojo_base.mojom.Time expiry;
   // `owner` must match the current frame URL's origin.
   url.mojom.Origin owner;
@@ -122,6 +136,9 @@ struct InterestGroup {
   SellerCapabilities all_sellers_capabilities;
   // `execution_mode` of the interest group.
   ExecutionMode execution_mode = kCompatibilityMode;
+  // `trusted_bidding_signals_slot_size_mode` of the interest group.
+  TrustedBiddingSignalsSlotSizeMode trusted_bidding_signals_slot_size_mode =
+      kNone;
   // `bidding_url` must match the current frame URL's origin.
   url.mojom.Url? bidding_url;
   // `bidding_wasm_helper_url` must match the current frame URL's origin.

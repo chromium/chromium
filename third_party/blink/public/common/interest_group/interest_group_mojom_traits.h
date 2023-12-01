@@ -173,6 +173,12 @@ struct BLINK_COMMON_EXPORT
     return interest_group.trusted_bidding_signals_keys;
   }
 
+  static blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode
+  trusted_bidding_signals_slot_size_mode(
+      const blink::InterestGroup& interest_group) {
+    return interest_group.trusted_bidding_signals_slot_size_mode;
+  }
+
   static const absl::optional<std::string>& user_bidding_signals(
       const blink::InterestGroup& interest_group) {
     return interest_group.user_bidding_signals;

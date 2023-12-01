@@ -56,6 +56,8 @@ bool StructTraits<blink::mojom::InterestGroupDataView, blink::InterestGroup>::
   out->enable_bidding_signals_prioritization =
       data.enable_bidding_signals_prioritization();
   out->execution_mode = data.execution_mode();
+  out->trusted_bidding_signals_slot_size_mode =
+      data.trusted_bidding_signals_slot_size_mode();
   if (!data.ReadExpiry(&out->expiry) || !data.ReadOwner(&out->owner) ||
       !data.ReadName(&out->name) ||
       !data.ReadPriorityVector(&out->priority_vector) ||

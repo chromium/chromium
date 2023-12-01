@@ -56,6 +56,9 @@ class TestInterestGroupBuilder {
       absl::optional<GURL> trusted_bidding_signals_url);
   TestInterestGroupBuilder& SetTrustedBiddingSignalsKeys(
       absl::optional<std::vector<std::string>> trusted_bidding_signals_keys);
+  TestInterestGroupBuilder& SetTrustedBiddingSignalsSlotSizeMode(
+      InterestGroup::TrustedBiddingSignalsSlotSizeMode
+          trusted_bidding_signals_slot_size_mode);
   TestInterestGroupBuilder& SetUserBiddingSignals(
       absl::optional<std::string> user_bidding_signals);
   TestInterestGroupBuilder& SetAds(

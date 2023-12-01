@@ -1417,6 +1417,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
 "trustedBiddingSignalsURL":
   "%s/interest_group/new_trusted_bidding_signals_url.json",
 "trustedBiddingSignalsKeys": ["new_key"],
+"trustedBiddingSignalsSlotSizeMode": "slot-size",
 "userBiddingSignals": {"test":10},
 "updateURL": "%s/interest_group/new_daily_update_partial.json",
 "ads": [{"renderURL": "%s/new_ad_render_url",
@@ -1463,6 +1464,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   interest_group.trusted_bidding_signals_url = kTrustedBiddingSignalsUrlA;
   interest_group.trusted_bidding_signals_keys.emplace();
   interest_group.trusted_bidding_signals_keys->push_back("key1");
+  interest_group.trusted_bidding_signals_slot_size_mode = blink::InterestGroup::
+      TrustedBiddingSignalsSlotSizeMode::kAllSlotsRequestedSizes;
   interest_group.user_bidding_signals.emplace();
   interest_group.user_bidding_signals = "{\"test\":4}";
   interest_group.ads.emplace();
@@ -1544,6 +1547,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   ASSERT_TRUE(group.trusted_bidding_signals_keys.has_value());
   EXPECT_EQ(group.trusted_bidding_signals_keys->size(), 1u);
   EXPECT_EQ(group.trusted_bidding_signals_keys.value()[0], "new_key");
+  EXPECT_EQ(group.trusted_bidding_signals_slot_size_mode,
+            blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::kSlotSize);
   ASSERT_TRUE(group.user_bidding_signals.has_value());
   EXPECT_EQ(group.user_bidding_signals.value(), "{\"test\":10}");
 
@@ -1612,6 +1617,8 @@ TEST_F(AdAuctionServiceImplTest, UpdatePartialPerformsMerge) {
   interest_group.trusted_bidding_signals_url = kTrustedBiddingSignalsUrlA;
   interest_group.trusted_bidding_signals_keys.emplace();
   interest_group.trusted_bidding_signals_keys->push_back("key1");
+  interest_group.trusted_bidding_signals_slot_size_mode = blink::InterestGroup::
+      TrustedBiddingSignalsSlotSizeMode::kAllSlotsRequestedSizes;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
@@ -1644,6 +1651,9 @@ TEST_F(AdAuctionServiceImplTest, UpdatePartialPerformsMerge) {
   ASSERT_TRUE(group.trusted_bidding_signals_keys.has_value());
   EXPECT_EQ(group.trusted_bidding_signals_keys->size(), 1u);
   EXPECT_EQ(group.trusted_bidding_signals_keys.value()[0], "key1");
+  EXPECT_EQ(interest_group.trusted_bidding_signals_slot_size_mode,
+            blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::
+                kAllSlotsRequestedSizes);
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
@@ -1794,6 +1804,34 @@ TEST_F(AdAuctionServiceImplTest, UpdateSucceedsIfOptionalNameOwnerMatch) {
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
             base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
+}
+
+// An unrecognized trustedBiddingSignalsSlotSizeMode should be treated as if it
+// were "none".
+TEST_F(AdAuctionServiceImplTest,
+       UnrecognizedTrustedBiddingSignalsSlotSizeMode) {
+  network_responder_->RegisterUpdateResponse(
+      kUpdateUrlPath,
+      R"({"trustedBiddingSignalsSlotSizeMode": "non-standard value"})");
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.update_url = kUpdateUrlA;
+  interest_group.trusted_bidding_signals_slot_size_mode =
+      blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::kSlotSize;
+  interest_group.ads.emplace();
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  scoped_refptr<StorageInterestGroups> groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups->size(), 1u);
+  const auto& group = groups->GetInterestGroups()[0]->interest_group;
+  EXPECT_EQ(group.name, kInterestGroupName);
+  EXPECT_EQ(group.trusted_bidding_signals_slot_size_mode,
+            blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::kNone);
 }
 
 // For forward compatibility we should silently ignore fields that we don't

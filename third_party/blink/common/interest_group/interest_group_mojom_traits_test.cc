@@ -181,6 +181,17 @@ TEST(InterestGroupMojomTraitsTest,
   SerializeAndDeserializeAndCompare(interest_group);
 }
 
+TEST(InterestGroupMojomTraitsTest,
+     SerializeAndDeserializeTrustedBiddingSignalsSlotSizeMode) {
+  InterestGroup interest_group = CreateInterestGroup();
+  interest_group.trusted_bidding_signals_slot_size_mode =
+      InterestGroup::TrustedBiddingSignalsSlotSizeMode::kSlotSize;
+  SerializeAndDeserializeAndCompare(interest_group);
+  interest_group.trusted_bidding_signals_slot_size_mode =
+      InterestGroup::TrustedBiddingSignalsSlotSizeMode::kAllSlotsRequestedSizes;
+  SerializeAndDeserializeAndCompare(interest_group);
+}
+
 TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeUserBiddingSignals) {
   InterestGroup interest_group = CreateInterestGroup();
   interest_group.user_bidding_signals = "[]";

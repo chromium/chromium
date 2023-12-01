@@ -42,6 +42,8 @@ constexpr char kKAnonKeyForAdNameReportingNamePrefix[] = "NameReport\n";
 // https://github.com/WICG/turtledove/blob/main/FLEDGE.md#11-joining-interest-groups
 struct BLINK_COMMON_EXPORT InterestGroup {
   using ExecutionMode = blink::mojom::InterestGroup_ExecutionMode;
+  using TrustedBiddingSignalsSlotSizeMode =
+      blink::mojom::InterestGroup_TrustedBiddingSignalsSlotSizeMode;
   using AdditionalBidKey = std::array<uint8_t, ED25519_PUBLIC_KEY_LEN>;
   // An advertisement to display for an interest group. Typemapped to
   // blink::mojom::InterestGroupAd.
@@ -101,6 +103,22 @@ struct BLINK_COMMON_EXPORT InterestGroup {
 
   bool IsEqualForTesting(const InterestGroup& other) const;
 
+  // Parses string representation of a TrustedBiddingSignalsSlotSizeMode. A
+  // template so it works on wtf::Strings and std::strings. Returns kNone when
+  // passed an unrecognized mode, for forward compatibility.
+  template <class StringType>
+  static TrustedBiddingSignalsSlotSizeMode
+  ParseTrustedBiddingSignalsSlotSizeMode(const StringType& mode) {
+    if (mode == "slot-size") {
+      return TrustedBiddingSignalsSlotSizeMode::kSlotSize;
+    }
+    if (mode == "all-slots-requested-sizes") {
+      return TrustedBiddingSignalsSlotSizeMode::kAllSlotsRequestedSizes;
+    }
+    // All unrecognized strings (as well as "none") are mapped to kNone.
+    return TrustedBiddingSignalsSlotSizeMode::kNone;
+  }
+
   base::Time expiry;
   url::Origin owner;
   std::string name;
@@ -120,6 +138,8 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   absl::optional<GURL> update_url;
   absl::optional<GURL> trusted_bidding_signals_url;
   absl::optional<std::vector<std::string>> trusted_bidding_signals_keys;
+  TrustedBiddingSignalsSlotSizeMode trusted_bidding_signals_slot_size_mode =
+      TrustedBiddingSignalsSlotSizeMode::kNone;
   absl::optional<std::string> user_bidding_signals;
   absl::optional<std::vector<InterestGroup::Ad>> ads, ad_components;
   absl::optional<base::flat_map<std::string, blink::AdSize>> ad_sizes;
@@ -131,7 +151,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   absl::optional<AdditionalBidKey> additional_bid_key;
   absl::optional<url::Origin> aggregation_coordinator_origin;
 
-  static_assert(__LINE__ == 134, R"(
+  static_assert(__LINE__ == 154, R"(
 If modifying InterestGroup fields, make sure to also modify:
 
 * IsValid(), EstimateSize(), and IsEqualForTesting() in this class
