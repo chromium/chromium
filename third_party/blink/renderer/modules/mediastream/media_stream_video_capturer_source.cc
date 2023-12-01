@@ -14,6 +14,7 @@
 #include "media/capture/video_capture_types.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_captured_wheel_action.h"
@@ -26,6 +27,35 @@
 namespace blink {
 
 using mojom::blink::MediaStreamRequestResult;
+using mojom::blink::SendWheelResult;
+
+namespace {
+
+#if !BUILDFLAG(IS_ANDROID)
+void OnSendWheelResult(base::OnceCallback<void(bool, const String&)> callback,
+                       SendWheelResult result) {
+  String error_string;
+  switch (result) {
+    case SendWheelResult::kSuccess:
+      break;
+    case SendWheelResult::kUnknownError:
+      error_string = "Unknown error.";
+      break;
+    case SendWheelResult::kNoPermissionError:
+      error_string = "No permission.";
+      break;
+    case SendWheelResult::kCapturedSurfaceNotFoundError:
+      error_string =
+          "Captured surface not found (likely stopped asynchronously.)";
+      break;
+  }
+
+  std::move(callback).Run(/*success=*/error_string.empty(),
+                          /*error=*/error_string);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+}  // namespace
 
 MediaStreamVideoCapturerSource::MediaStreamVideoCapturerSource(
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
@@ -201,8 +231,22 @@ void MediaStreamVideoCapturerSource::ChangeSourceImpl(
 void MediaStreamVideoCapturerSource::SendWheel(
     CapturedWheelAction* action,
     base::OnceCallback<void(bool, const String&)> callback) {
-  // TODO(crbug.com/1466247): Forward to GetMediaStreamDispatcherHost.
-  std::move(callback).Run(false, "Not implemented.");
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  const absl::optional<base::UnguessableToken>& session_id =
+      device().serializable_session_id();
+  if (!session_id.has_value()) {
+    std::move(callback).Run(false, "Missing session ID.");
+    return;
+  }
+
+  // TODO(crbug.com/1466247): Use traits to avoid explicit type translation.
+  GetMediaStreamDispatcherHost()->SendWheel(
+      session_id.value(),
+      blink::mojom::blink::CapturedWheelAction::New(action->x(), action->y(),
+                                                    action->wheelDeltaX(),
+                                                    action->wheelDeltaY()),
+      WTF::BindOnce(&OnSendWheelResult, std::move(callback)));
 }
 
 void MediaStreamVideoCapturerSource::ApplySubCaptureTarget(

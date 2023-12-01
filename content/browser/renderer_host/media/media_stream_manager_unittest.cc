@@ -286,6 +286,9 @@ class TestMediaStreamDispatcherHost
   void OnStreamStarted(const std::string& label) override {}
 
 #if !BUILDFLAG(IS_ANDROID)
+  void SendWheel(const base::UnguessableToken& device_id,
+                 blink::mojom::CapturedWheelActionPtr action,
+                 SendWheelCallback callback) override {}
   void FocusCapturedSurface(const std::string& label, bool focus) override {}
   void ApplySubCaptureTarget(const base::UnguessableToken& device_id,
                              media::mojom::SubCaptureTargetType type,

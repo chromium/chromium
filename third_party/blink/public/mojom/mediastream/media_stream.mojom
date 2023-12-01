@@ -149,6 +149,23 @@ struct GetOpenDeviceResponse {
   bool pan_tilt_zoom_allowed;
 };
 
+// Mouse-wheel events to be delivered from a capturing app to a captured tab.
+// https://screen-share.github.io/captured-surface-control/
+struct CapturedWheelAction {
+  int32 x;
+  int32 y;
+  int32 wheel_delta_x;
+  int32 wheel_delta_y;
+};
+
+// The result of a call to SendWheel().
+enum SendWheelResult {
+  kSuccess,
+  kUnknownError,
+  kNoPermissionError,
+  kCapturedSurfaceNotFoundError,
+};
+
 // Per-frame renderer-side interface that receives device stopped/change
 // notifications or pause requests from the browser process.
 interface MediaStreamDeviceObserver {
@@ -269,6 +286,15 @@ interface MediaStreamDispatcherHost {
        mojo_base.mojom.Token sub_capture_target,
        uint32 sub_capture_target_version)
     => (media.mojom.ApplySubCaptureTargetResult result);
+
+  // Deliver a wheel event from a capturing app to a captured tab.
+  //
+  // |device_id| identifies the captured tab.
+  // |action| is the action (mouse event) to be delivered.
+  // |callback| will be invoked with the result.
+  [EnableIfNot=is_android]
+  SendWheel(mojo_base.mojom.UnguessableToken device_id,
+            CapturedWheelAction action) => (SendWheelResult result);
 
   // Get a MediaStreamDevice metadata object which refers to the same flow of
   // media backing an existing MediaStreamDevice.

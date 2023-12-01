@@ -470,7 +470,10 @@ Called by update_bad_message_reasons.py.-->
   <int value="307"
       label="MSDH_EXCLUDE_MONITORS_BUT_PREFERRED_MONITOR_REQUESTED"/>
   <int value="308" label="PSI_REGISTER_PERMISSION_ELEMENT_WITHOUT_FEATURE"/>
-  <int value="309" label="RFH_RECEIVED_INVALID_AD_AUCTION_HEADERS_ATTRIBUTE"/>
+  <int value="309"
+      label="OBSOLETE_RFH_RECEIVED_INVALID_AD_AUCTION_HEADERS_ATTRIBUTE"/>
+  <int value="310" label="MSDH_SEND_WHEEL_BUT_CSC_FEATURE_DISABLED"/>
+  <int value="311" label="MSDH_SEND_WHEEL_INVALID_ACTION"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">
