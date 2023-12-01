@@ -2579,6 +2579,11 @@ buildflag_header("power_monitor_buildflags") {
   flags = [ "HAS_BATTERY_LEVEL_PROVIDER_IMPL=$_has_battery_provider_impl" ]
 }
 
+buildflag_header("fuzzing_buildflags") {
+  header = "fuzzing_buildflags.h"
+  flags = [ "USE_FUZZING_ENGINE=$use_fuzzing_engine" ]
+}
+
 # This is the subset of files from base that should not be used with a dynamic
 # library. Note that this library cannot depend on base because base depends on
 # base_static.
@@ -2590,7 +2595,10 @@ static_library("base_static") {
     "immediate_crash.h",
   ]
 
-  deps = [ "//build:chromeos_buildflags" ]
+  deps = [
+    ":fuzzing_buildflags",
+    "//build:chromeos_buildflags",
+  ]
 
   if (is_win) {
     sources += [

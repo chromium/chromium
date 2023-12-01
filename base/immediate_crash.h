@@ -5,7 +5,12 @@
 #ifndef BASE_IMMEDIATE_CRASH_H_
 #define BASE_IMMEDIATE_CRASH_H_
 
+#include "base/fuzzing_buildflags.h"
 #include "build/build_config.h"
+
+#if BUILDFLAG(USE_FUZZING_ENGINE)
+#include <stdlib.h>
+#endif  // BUILDFLAG(USE_FUZZING_ENGINE)
 
 // Crashes in the fastest possible way with no attempt at logging.
 // There are several constraints; see http://crbug.com/664209 for more context.
@@ -143,7 +148,14 @@
 namespace base {
 
 [[noreturn]] IMMEDIATE_CRASH_ALWAYS_INLINE void ImmediateCrash() {
+#if BUILDFLAG(USE_FUZZING_ENGINE)
+  // If fuzzing, exit in such a way that atexit() handlers are run in order
+  // to write out coverage information or failing fuzz cases. This is similar
+  // behavior to __sanitizer::Die
+  exit(-1);
+#else   // BUILDFLAG(USE_FUZZING_ENGINE)
   TRAP_SEQUENCE_();
+#endif  // BUILDFLAG(USE_FUZZING_ENGINE)
 #if defined(__clang__) || defined(COMPILER_GCC)
   __builtin_unreachable();
 #endif  // defined(__clang__) || defined(COMPILER_GCC)
