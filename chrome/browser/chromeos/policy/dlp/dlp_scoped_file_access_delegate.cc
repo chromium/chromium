@@ -148,6 +148,7 @@ void DlpScopedFileAccessDelegate::RequestDefaultFilesAccess(
 DlpScopedFileAccessDelegate::RequestFilesAccessIOCallback
 DlpScopedFileAccessDelegate::CreateFileAccessCallback(
     const GURL& destination) const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return base::BindPostTask(
       content::GetUIThreadTaskRunner({}),
       base::BindRepeating(

@@ -146,6 +146,15 @@ class FileSystemEntryURLLoader
       net_error = net::ERR_INVALID_URL;
     }
 
+    if (request.request_initiator &&
+        file_access::ScopedFileAccessDelegate::HasInstance()) {
+      file_access_ =
+          file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback(
+              file_access::ScopedFileAccessDelegate::Get()
+                  ->CreateFileAccessCallback(
+                      request.request_initiator->GetURL()));
+    }
+
     io_task_runner->PostTask(
         FROM_HERE, base::BindOnce(&FileSystemEntryURLLoader::StartOnIOThread,
                                   AsWeakPtr(), request, net_error,
@@ -191,15 +200,6 @@ class FileSystemEntryURLLoader
         &FileSystemEntryURLLoader::OnMojoDisconnect, base::Unretained(this)));
 
     client_.Bind(std::move(client_remote));
-
-    if (request.request_initiator &&
-        file_access::ScopedFileAccessDelegate::HasInstance()) {
-      file_access_ =
-          file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback(
-              file_access::ScopedFileAccessDelegate::Get()
-                  ->CreateFileAccessCallback(
-                      request.request_initiator->GetURL()));
-    }
 
     // If checks which were performed on the UI thread failed, don't proceed
     // any further and error out.

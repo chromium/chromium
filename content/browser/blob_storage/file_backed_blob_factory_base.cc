@@ -42,7 +42,8 @@ void ContinueRegisterBlob(
     std::string uuid,
     std::string content_type,
     blink::mojom::DataElementFilePtr file,
-    GURL url_for_file_access_checks,
+    file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback
+        file_access,
     bool security_check_success,
     mojo::ReportBadMessageCallback bad_message_callback,
     scoped_refptr<ChromeBlobStorageContext> blob_storage_context,
@@ -71,7 +72,7 @@ void ContinueRegisterBlob(
   if (file->length > 0) {
     builder->AppendFile(file->path, file->offset, file->length,
                         file->expected_modification_time.value_or(base::Time()),
-                        GetAccessCallback(url_for_file_access_checks));
+                        file_access);
   }
   builder->set_content_type(content_type);
 
@@ -128,7 +129,8 @@ void FileBackedBlobFactoryBase::RegisterBlobSync(
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&ContinueRegisterBlob, std::move(blob), uuid, content_type,
-                     std::move(file), std::move(url_for_file_access_checks),
+                     std::move(file),
+                     GetAccessCallback(url_for_file_access_checks),
                      security_check_success,
                      base::BindPostTask(content::GetUIThreadTaskRunner({}),
                                         GetBadMessageCallback()),
