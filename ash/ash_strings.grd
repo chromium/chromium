@@ -3742,9 +3742,16 @@ Some features are limited to increase battery life.
       <message name="IDS_SHORTCUT_SHOW_SHORTCUT_VIEWER_NEW" desc="the new shortcut to open the shortcut viewer app.">
         ctrl+search+s
       </message>
+      <message name="IDS_SHORTCUT_OPEN_GET_HELP_NEW" desc="the new shortcut to open help in explore app.">
+        search+h
+      </message>
       <message name="IDS_DEPRECATED_SHOW_SHORTCUT_VIEWER_MSG"
                desc="Notification message to tell users about the deprecation of Ctrl+Alt+/ shortcut to show the shortcut viewer app.">
         Open Key Shortcuts app with "<ph name="NEW_SHORTCUT">$1<ex>ctrl + search + s</ex></ph>".
+      </message>
+      <message name="IDS_DEPRECATED_OPEN_GET_HELP_MSG"
+               desc="Notification message to tell users about the deprecation of Ctrl+/ shortcut to open help in explore app.">
+        Open "Help" in Explore app with "<ph name="NEW_SHORTCUT">$1<ex>search + h</ex></ph>".
       </message>
       <message name="IDS_DEPRECATED_SHOW_IME_BUBBLE_MSG"
                desc="Notification message to tell users about the deprecation of Alt+Shift+K shortcut to show the input options menu bubble in the shelf.">

@@ -643,9 +643,6 @@ TEST_F(AcceleratorConfigurationProviderTest, FilterOutHiddenAccelerators) {
        AcceleratorAction::kToggleAppList},
       {/*trigger_on_press=*/true, ui::VKEY_F14, ui::EF_NONE,
        AcceleratorAction::kShowShortcutViewer},
-      {/*trigger_on_press=*/true, ui::VKEY_OEM_2,
-       ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
-       AcceleratorAction::kOpenGetHelp},
       {/*trigger_on_press=*/false, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
        AcceleratorAction::kSwitchToLastUsedIme},
       {/*trigger_on_press=*/true, ui::VKEY_ZOOM, ui::EF_SHIFT_DOWN,
@@ -3036,12 +3033,11 @@ TEST_F(AcceleratorConfigurationProviderTest, GetDefaultAcceleratorsForId) {
       // [kToggleMirrorMode] is normal accelerator.
       {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
        AcceleratorAction::kToggleMirrorMode},
-      // [kOpenHelp] has one accelerator that will be hidden.
-      {/*trigger_on_press=*/true, ui::VKEY_OEM_2,
-       ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
-       AcceleratorAction::kOpenGetHelp},
-      {/*trigger_on_press=*/true, ui::VKEY_OEM_2, ui::EF_CONTROL_DOWN,
-       AcceleratorAction::kOpenGetHelp},
+      // [kToggleFullscreen] has one accelerator that will be hidden.
+      {/*trigger_on_press=*/true, ui::VKEY_ZOOM, ui::EF_SHIFT_DOWN,
+       AcceleratorAction::kToggleFullscreen},
+      {/*trigger_on_press=*/true, ui::VKEY_F, ui::EF_COMMAND_DOWN,
+       AcceleratorAction::kToggleFullscreen},
       // [kBrightnessUp] has alias accelerator.
       {/*trigger_on_press=*/true, ui::VKEY_BRIGHTNESS_UP, ui::EF_NONE,
        AcceleratorAction::kBrightnessUp},
@@ -3069,12 +3065,12 @@ TEST_F(AcceleratorConfigurationProviderTest, GetDefaultAcceleratorsForId) {
 
   // Verify hidden accelerator is filtered.
   provider_->GetDefaultAcceleratorsForId(
-      AcceleratorAction::kOpenGetHelp,
+      AcceleratorAction::kToggleFullscreen,
       base::BindLambdaForTesting(
           [&](const std::vector<ui::Accelerator>& default_accelerators) {
-            // [shift + control + /] is filtered out.
-            const ui::Accelerator expected_accelerator(ui::VKEY_OEM_2,
-                                                       ui::EF_CONTROL_DOWN);
+            // [shift + zoom] is filtered out.
+            const ui::Accelerator expected_accelerator(ui::VKEY_F,
+                                                       ui::EF_COMMAND_DOWN);
             EXPECT_EQ(1u, default_accelerators.size());
             EXPECT_TRUE(expected_accelerator == default_accelerators[0]);
           }));
