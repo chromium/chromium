@@ -21,6 +21,7 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/common/android/bookmark_id.h"
+#include "components/bookmarks/common/android/bookmark_type.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/page_image_service/image_service.h"
@@ -99,7 +100,8 @@ class BookmarkBridgeTest : public testing::Test {
 
     bookmark_bridge_->LoadEmptyPartnerBookmarkShimForTesting(
         AttachCurrentThread());
-    partner_bookmarks_shim_->SetPartnerBookmarksRoot(nullptr);
+    partner_bookmarks_shim_->SetPartnerBookmarksRoot(
+        PartnerBookmarksReader::CreatePartnerBookmarksRootForTesting());
   }
 
   void TearDown() override {
@@ -163,4 +165,19 @@ TEST_F(BookmarkBridgeTest, TestGetTopLevelFolderIds) {
   ASSERT_EQ(u"Mobile bookmarks", folders[0]->GetTitle());
   ASSERT_EQ(u"Bookmarks bar", folders[1]->GetTitle());
   ASSERT_EQ(u"Reading list", folders[2]->GetTitle());
+}
+
+TEST_F(BookmarkBridgeTest, GetChildIdsMobileShowsPartner) {
+  std::vector<const BookmarkNode*> children =
+      bookmark_bridge()->GetChildIdsImpl(bookmark_model()->mobile_node());
+
+  ASSERT_EQ(1u, children.size());
+  ASSERT_EQ(partner_bookmarks_shim_->GetPartnerBookmarksRoot(), children[0]);
+  ASSERT_EQ(bookmarks::BookmarkType::BOOKMARK_TYPE_PARTNER,
+            bookmark_bridge()->GetBookmarkType(children[0]));
+
+  partner_bookmarks_shim_->SetPartnerBookmarksRoot(nullptr);
+  children =
+      bookmark_bridge()->GetChildIdsImpl(bookmark_model()->mobile_node());
+  ASSERT_EQ(0u, children.size());
 }
