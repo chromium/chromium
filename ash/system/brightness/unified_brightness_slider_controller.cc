@@ -12,6 +12,7 @@
 #include "ash/system/brightness/unified_brightness_view.h"
 #include "ash/system/brightness_control_delegate.h"
 #include "ash/system/unified/unified_system_tray_model.h"
+#include "base/dcheck_is_on.h"
 #include "base/memory/scoped_refptr.h"
 
 namespace ash {
@@ -41,10 +42,14 @@ UnifiedBrightnessSliderController::CreateBrightnessSlider() {
 
 std::unique_ptr<UnifiedSliderView>
 UnifiedBrightnessSliderController::CreateView() {
-  DCHECK(!slider_);
-  auto slider =
-      std::make_unique<UnifiedBrightnessView>(this, model_, callback_);
-  slider_ = slider.get();
+#if DCHECK_IS_ON()
+  DCHECK(!created_view_);
+  created_view_ = true;
+#endif
+  // Consuming `callback_` is safe here; `CreateView()` should only be called
+  // once per controller instance per the DCHECK() above.
+  auto slider = std::make_unique<UnifiedBrightnessView>(this, model_,
+                                                        std::move(callback_));
   return slider;
 }
 
