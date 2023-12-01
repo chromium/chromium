@@ -393,6 +393,12 @@ const base::FeatureParam<CaptureModeEducationParam> kCaptureModeEducationParam{
     CaptureModeEducationParam::kShortcutNudge,
     &capture_mode_education_type_options};
 
+// Enables bypassing the 3 times / 24 hours show limits for the Capture Mode
+// education nudges and tutorials.
+BASE_FEATURE(kCaptureModeEducationBypassLimits,
+             "CaptureModeEducationBypassLimits",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, allow eSIM installation bypass the non-cellular internet
 // connectivity check.
 BASE_FEATURE(kCellularBypassESimInstallationConnectivityCheck,
@@ -3190,6 +3196,10 @@ bool IsCaptureModeAudioMixingEnabled() {
 
 bool IsCaptureModeEducationEnabled() {
   return base::FeatureList::IsEnabled(kCaptureModeEducation);
+}
+
+bool IsCaptureModeEducationBypassLimitsEnabled() {
+  return base::FeatureList::IsEnabled(kCaptureModeEducationBypassLimits);
 }
 
 bool IsCellularCarrierLockEnabled() {

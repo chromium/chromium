@@ -114,6 +114,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<CaptureModeEducationParam>
     kCaptureModeEducationParam;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kCaptureModeEducationBypassLimits);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kCellularBypassESimInstallationConnectivityCheck);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCellularCarrierLock);
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -928,6 +930,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBatterySaverAlwaysOn();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBluetoothQualityReportEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptureModeAudioMixingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptureModeEducationEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsCaptureModeEducationBypassLimitsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCellularCarrierLockEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsCheckPasswordsAgainstCryptohomeHelperEnabled();

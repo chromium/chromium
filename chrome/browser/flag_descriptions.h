@@ -3357,6 +3357,9 @@ extern const char kCaptureModeAudioMixingDescription[];
 extern const char kCaptureModeEducationName[];
 extern const char kCaptureModeEducationDescription[];
 
+extern const char kCaptureModeEducationBypassLimitsName[];
+extern const char kCaptureModeEducationBypassLimitsDescription[];
+
 extern const char kCaptureModeGifRecordingName[];
 extern const char kCaptureModeGifRecordingDescription[];
 
