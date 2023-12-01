@@ -819,26 +819,6 @@
     Last visited <ph name="DATE">$1<ex>Apr 4, 2021</ex></ph>
   </message>
 
-  <!-- Ad personalization strings -->
-  <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_HEADER" desc="The header label of the 'Ad personalization' subpage in Page Info bubble.">
-    Ad personalization
-  </message>
-  <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_TOOLTIP" desc="The tooltip of the button that opens the 'Ad personalization' subpage in Page Info bubble.">
-    Show ad personalization details
-  </message>
-  <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_TOPICS_AND_INTEREST_GROUP_DESCRIPTION" desc="The description label that explains to the user that the current site has accessed the Topics API and joined the user to an interest group. The label is located in 'Ad personalization' subpage in page info bubble.">
-    This site defines interests other sites can use to show you ads. This site also gets your interests from Chrome to show you more relevant ads.
-  </message>
-  <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_TOPICS_DESCRIPTION"  desc="The description label that explains to the user that the current site has accessed the Topics API. The label is located in 'Ad personalization' subpage in page info bubble.">
-   This site gets your interests from Chrome to show you more relevant ads
-  </message>
-  <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_INTEREST_GROUP_DESCRIPTION" desc="The description label that explains to the user that the current site has joined the user to an interest group. The label is located in 'Ad personalization' subpage in page info bubble.">
-    This site defines interests other sites can use to show you ads
-  </message>
-  <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_SUBPAGE_MANAGE_BUTTON" desc="The text on the button, that opens privacy sandbox settings page, in 'Ad personalization' subpage in page info bubble. ">
-    Manage interests
-  </message>
-
   <!-- Enterprise interstitial strings -->
   <message name="IDS_PAGE_INFO_ENTERPRISE_WARN_SUMMARY" desc="A one-line summary at the top of the Page Info bubble (which shows when you click the security indicator) if the website has been flagged by your admin to show a warning">
     This site is flagged by your organization
