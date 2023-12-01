@@ -2361,6 +2361,13 @@
        {}
       ]
      ],
+     "counters-container-crash.html": [
+      "d195db937cef83b86292cf9e15beba77ca9a9df7",
+      [
+       null,
+       {}
+      ]
+     ],
      "crashtests": {
       "chrome-counter-in-multicol-details-crash.html": [
        "d992f0a1d96ec24d044c6b03894f4621994cbf88",
@@ -338021,6 +338028,10 @@
        []
       ]
      },
+     "signed-zero-expected.txt": [
+      "e90dc600713c89a0a5b77307cb34eb61d899d55d",
+      []
+     ],
      "signs-abs-computed-expected.txt": [
       "3421b47828cce80bffbd8a465bba7d6b5c5e2822",
       []
@@ -393765,7 +393776,7 @@
      []
     ],
     "reshape.https.any.worker-expected.txt": [
-     "af51d0fb928a936a5865e7b597311674ee08cf38",
+     "7549c89bca5d181c9b8e756775d2b4c63c6f3e76",
      []
     ],
     "resources": {
@@ -393963,7 +393974,7 @@
        []
       ],
       "reshape.json": [
-       "7d48ed3a18f51c175d11b523f43e0652c3a9c17d",
+       "fbb93a8e03cc1130adb81d90e4e8d79462bb36a2",
        []
       ],
       "sigmoid.json": [
@@ -466266,6 +466277,13 @@
      ],
      "round-mod-rem-serialize.html": [
       "f4d8dd305c879cb88252ce6fd880270e71ae03fe",
+      [
+       null,
+       {}
+      ]
+     ],
+     "signed-zero.html": [
+      "6ede4bbb0ecb67ea40ec26e1f41c516d2e9d3a88",
       [
        null,
        {}
