@@ -8,6 +8,7 @@
 #import "base/time/time.h"
 #import "components/bookmarks/common/storage_type.h"
 #import "components/sync/base/features.h"
+#import "ios/chrome/browser/policy/cloud/user_policy_constants.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
 #import "ios/chrome/browser/shared/ui/elements/elements_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -80,6 +81,11 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
+
+  // TODO(b/298795580): Remove this once the User Policy field trial config is
+  // merged.
+  config.features_enabled.push_back(
+      policy::kUserPolicyForSigninAndNoSyncConsentLevel);
 
   // With kReplaceSyncPromosWithSignInPromos enabled, several of the tests here
   // don't apply anymore.

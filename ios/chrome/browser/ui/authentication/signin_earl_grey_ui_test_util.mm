@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
@@ -38,8 +39,10 @@ using chrome_test_util::IdentityCellMatcherForEmail;
 
 namespace {
 
-// Closes the managed account dialog, if `fakeIdentity` is a managed account.
-void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
+// Closes the managed account dialog when necessary, if `fakeIdentity` is a
+// managed account.
+void CloseManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity,
+                                    int acceptButtonLabelID) {
   // Don't expect a managed account dialog when the account isn't considered
   // managed.
   if ([fakeIdentity.userEmail hasSuffix:@"@gmail.com"]) {
@@ -50,10 +53,33 @@ void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
   // under the managed consent dialog. This spinner is started by the sign-in
   // process.
   ScopedSynchronizationDisabler disabler;
+
+  // Verify whether there is a management dialog and interact with it to
+  // complete the sign-in flow if present.
   id<GREYMatcher> acceptButton = [ChromeMatchersAppInterface
-      buttonWithAccessibilityLabelID:IDS_IOS_MANAGED_SIGNIN_ACCEPT_BUTTON];
-  [ChromeEarlGrey waitForMatcher:acceptButton];
-  [[EarlGrey selectElementWithMatcher:acceptButton] performAction:grey_tap()];
+      buttonWithAccessibilityLabelID:acceptButtonLabelID];
+  BOOL hasDialog =
+      [ChromeEarlGrey testUIElementAppearanceWithMatcher:acceptButton
+                                                 timeout:base::Seconds(1)];
+  if (hasDialog) {
+    [[EarlGrey selectElementWithMatcher:acceptButton] performAction:grey_tap()];
+  }
+}
+
+// Closes the managed account dialog for the Sync consent level when necessary,
+// if `fakeIdentity` is a managed account.
+void CloseSyncManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
+  CloseManagedAccountDialogIfAny(fakeIdentity,
+                                 IDS_IOS_MANAGED_SIGNIN_ACCEPT_BUTTON);
+}
+
+// Closes the managed account dialog for the Sign-in consent level when
+// necessary, if `fakeIdentity` is a managed account and the User Policy feature
+// is enabled.
+void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
+  CloseManagedAccountDialogIfAny(
+      fakeIdentity,
+      IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_CONTINUE_BUTTON_LABEL);
 }
 
 }  // namespace
@@ -69,6 +95,7 @@ void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   if (!enableSync) {
     [ChromeEarlGrey signInWithoutSyncWithIdentity:fakeIdentity];
+    CloseSigninManagedAccountDialogIfAny(fakeIdentity);
     ConditionBlock condition = ^bool {
       return [[SigninEarlGreyAppInterface primaryAccountGaiaID]
           isEqualToString:fakeIdentity.gaiaID];
@@ -101,7 +128,7 @@ void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
     [SigninEarlGreyUI maybeTapSigninBottomSheetAndHistoryConfirmationDialog];
   } else {
     [SigninEarlGreyUI tapSigninConfirmationDialog];
-    CloseSigninManagedAccountDialogIfAny(fakeIdentity);
+    CloseSyncManagedAccountDialogIfAny(fakeIdentity);
   }
 
   [[[EarlGrey
