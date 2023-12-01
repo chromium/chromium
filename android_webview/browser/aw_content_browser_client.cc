@@ -1184,7 +1184,7 @@ bool AwContentBrowserClient::SuppressDifferentOriginSubframeJSDialogs(
 }
 
 bool AwContentBrowserClient::ShouldPreconnectNavigation(
-    content::BrowserContext* browser_context) {
+    content::RenderFrameHost* render_frame_host) {
   // This didn't make a performance improvement in WebView.
   return false;
 }

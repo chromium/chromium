@@ -2593,8 +2593,8 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool ShouldDisableOriginAgentClusterDefault(
       BrowserContext* browser_context);
 
-  // Whether a navigation in |browser_context| should preconnect early.
-  virtual bool ShouldPreconnectNavigation(BrowserContext* browser_context);
+  // Whether a navigation in |render_frame_host| should preconnect early.
+  virtual bool ShouldPreconnectNavigation(RenderFrameHost* render_frame_host);
 
   // Returns true if First-Party Sets is enabled. The value of this method
   // should not change in a single browser session.

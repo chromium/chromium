@@ -261,7 +261,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
   bool SuppressDifferentOriginSubframeJSDialogs(
       content::BrowserContext* browser_context) override;
   bool ShouldPreconnectNavigation(
-      content::BrowserContext* browser_context) override;
+      content::RenderFrameHost* render_frame_host) override;
   void OnDisplayInsecureContent(content::WebContents* web_contents) override;
   network::mojom::AttributionSupport GetAttributionSupport(
       AttributionReportingOsApiState state,

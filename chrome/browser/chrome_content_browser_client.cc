@@ -337,6 +337,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/window_container_type.mojom-shared.h"
 #include "device/vr/buildflags/buildflags.h"
+#include "extensions/browser/browser_frame_context_data.h"
 #include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/google_api_keys.h"
@@ -6325,8 +6326,10 @@ bool ChromeContentBrowserClient::WillInterceptWebSocket(
   // BrowserContextKeyedAPI factories for e.g. WebRequest.
   if (!web_request_api)
     return false;
+
   return (web_request_api->MayHaveProxies() ||
-          web_request_api->MayHaveWebsocketProxiesForExtensionTelemetry());
+          web_request_api->MayHaveWebsocketProxiesForExtensionTelemetry() ||
+          web_request_api->IsAvailableToWebViewEmbedderFrame(frame));
 #else
   return false;
 #endif
@@ -7860,15 +7863,19 @@ void ChromeContentBrowserClient::OnKeepaliveTimerFired(
 #endif
 
 bool ChromeContentBrowserClient::ShouldPreconnectNavigation(
-    content::BrowserContext* browser_context) {
+    content::RenderFrameHost* render_frame_host) {
+  content::BrowserContext* browser_context =
+      render_frame_host->GetBrowserContext();
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // An extension could be blocking connections for privacy reasons, so skip
   // optimization if there are any extensions with WebRequest permissions.
   const auto* web_request_api =
       extensions::BrowserContextKeyedAPIFactory<extensions::WebRequestAPI>::Get(
           browser_context);
-  if (!web_request_api || web_request_api->MayHaveProxies())
+  if (!web_request_api || web_request_api->MayHaveProxies() ||
+      web_request_api->IsAvailableToWebViewEmbedderFrame(render_frame_host)) {
     return false;
+  }
 #endif
   return prefetch::IsSomePreloadingEnabled(
              *Profile::FromBrowserContext(browser_context)->GetPrefs()) ==

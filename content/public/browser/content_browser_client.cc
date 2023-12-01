@@ -1535,7 +1535,7 @@ bool ContentBrowserClient::ShouldDisableOriginAgentClusterDefault(
 }
 
 bool ContentBrowserClient::ShouldPreconnectNavigation(
-    BrowserContext* browser_context) {
+    RenderFrameHost* render_frame_host) {
   return false;
 }
 

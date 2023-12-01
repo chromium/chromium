@@ -903,7 +903,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool WillProvidePublicFirstPartySets() override;
 
   bool ShouldPreconnectNavigation(
-      content::BrowserContext* browser_context) override;
+      content::RenderFrameHost* render_frame_host) override;
 
   bool ShouldDisableOriginAgentClusterDefault(
       content::BrowserContext* browser_context) override;

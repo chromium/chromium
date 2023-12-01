@@ -36,6 +36,7 @@
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "ipc/ipc_sender.h"
 #include "net/base/auth.h"
 #include "net/base/completion_once_callback.h"
@@ -217,7 +218,8 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
       scoped_refptr<net::HttpResponseHeaders> response_headers,
       const content::GlobalRequestID& request_id,
       bool is_main_frame,
-      AuthRequestCallback callback);
+      AuthRequestCallback callback,
+      WebViewGuest* web_view_guest);
 
   // Starts proxying the connection with |factory|. This function can be called
   // only when MayHaveProxies() returns true.
@@ -253,6 +255,11 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
   // will be refactored to live somewhere else so that we don't have to
   // create a full proxy just for telemetry.
   bool MayHaveWebsocketProxiesForExtensionTelemetry() const;
+
+  // Indicates whether the WebRequestAPI is available to a RenderFrameHost
+  // that embeds a WebView instance.
+  bool IsAvailableToWebViewEmbedderFrame(
+      content::RenderFrameHost* render_frame_host) const;
 
   bool HasExtraHeadersListenerForTesting();
 
