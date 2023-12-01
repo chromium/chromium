@@ -47,6 +47,8 @@ class FormStructureRationalizer {
   // A helper function to review the predictions and do appropriate adjustments
   // when it considers necessary.
   void RationalizeFieldTypePredictions(const url::Origin& main_origin,
+                                       const GeoIpCountryCode& client_country,
+                                       const LanguageCode& language_code,
                                        LogManager* log_manager);
 
   // Ensures that only a single phone number (which can be split across multiple
@@ -156,6 +158,14 @@ class FormStructureRationalizer {
   // Filters out fields that don't meet the relationship ruleset for their type
   // defined in |type_relationships_rules_|.
   void RationalizeTypeRelationships(LogManager* log_manager);
+
+  // Executes a set of declarative rationalization rules. See
+  // ApplyRationalizationEngineRules in
+  // form_structure_rationalization_engine.cc.
+  void RationalizeByRationalizationEngine(
+      const GeoIpCountryCode& client_country,
+      const LanguageCode& language_code,
+      LogManager* log_manager);
 
   // A vector of all the input fields in the form. The reference is const but
   // the fields are mutable by design.

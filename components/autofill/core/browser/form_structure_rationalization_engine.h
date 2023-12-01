@@ -209,6 +209,17 @@ void ApplyRuleIfApplicable(
 
 }  // namespace internal
 
+// Applies a set of `RationalizationRule`s, which are defined in the function
+// body.
+// Note that the `fields` vector is const but the fields are mutable. This
+// constness is inherited from the calling sites.
+void ApplyRationalizationEngineRules(
+    const GeoIpCountryCode& client_country,
+    const LanguageCode& page_language,
+    PatternSource pattern_source,
+    const std::vector<std::unique_ptr<AutofillField>>& fields,
+    LogManager* log_manager = nullptr);
+
 }  // namespace autofill::rationalization
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_STRUCTURE_RATIONALIZATION_ENGINE_H_

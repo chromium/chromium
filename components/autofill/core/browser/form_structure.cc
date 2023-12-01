@@ -514,7 +514,8 @@ void FormStructure::DetermineHeuristicTypes(
     rationalizer.RationalizeRepeatedFields(
         form_signature_, form_interactions_ukm_logger, log_manager);
   }
-  rationalizer.RationalizeFieldTypePredictions(main_frame_origin_, log_manager);
+  rationalizer.RationalizeFieldTypePredictions(
+      main_frame_origin_, client_country_, current_page_language_, log_manager);
 
   // Log the field type predicted by rationalization.
   // The sections are mapped to consecutive natural numbers starting at 1.
@@ -907,8 +908,9 @@ void FormStructure::ProcessQueryResponse(
     rationalizer.RationalizeAutocompleteAttributes(log_manager);
     rationalizer.RationalizeRepeatedFields(
         form->form_signature_, form_interactions_ukm_logger, log_manager);
-    rationalizer.RationalizeFieldTypePredictions(form->main_frame_origin_,
-                                                 log_manager);
+    rationalizer.RationalizeFieldTypePredictions(
+        form->main_frame_origin_, form->client_country_,
+        form->current_page_language_, log_manager);
     // TODO(crbug.com/1154080): By calling this with true, autocomplete section
     // attributes will be ignored.
     form->IdentifySections(/*ignore_autocomplete=*/true);

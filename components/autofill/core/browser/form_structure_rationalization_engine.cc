@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/form_structure_rationalization_engine.h"
 
+#include <array>
+
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
@@ -12,6 +14,7 @@
 #include "components/autofill/core/browser/form_parsing/form_field.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -264,5 +267,70 @@ void ApplyRuleIfApplicable(
 }
 
 }  // namespace internal
+
+void ApplyRationalizationEngineRules(
+    const GeoIpCountryCode& client_country,
+    const LanguageCode& page_language,
+    PatternSource pattern_source,
+    const std::vector<std::unique_ptr<AutofillField>>& fields,
+    LogManager* log_manager) {
+  auto create_rules = [] {
+    return std::to_array(
+        {RationalizationRuleBuilder()
+             // A name for the rule (for logging purposes).
+             .SetRuleName("Fix colonia as address-line2 in MX")
+
+             // Only if the requirements specified in the environment are all
+             // met, the RationalizationRule is executed.
+             .SetEnvironmentCondition(
+                 EnvironmentConditionBuilder()
+                     .SetCountryList({GeoIpCountryCode("MX")})
+                     .SetFeature(
+                         &features::kAutofillEnableRationalizationEngineForMX)
+                     .Build())
+
+             // This is the core field to which the rule applies.
+             .SetTriggerField(FieldCondition{
+                 // The trigger field needs to be an ADDRESS_HOME_LINE2.
+                 .possible_overall_types =
+                     ServerFieldTypeSet{ADDRESS_HOME_LINE2},
+                 // Lookup in legacy_regex_patterns.
+                 .regex_reference_match = "ADDRESS_HOME_DEPENDENT_LOCALITY",
+             })
+
+             // All of the following conditions need to be met for actions to be
+             // executed. The .location specifies which fields to consider. It
+             // also binds the fields to a label that is later referenced in
+             // actions.
+             .SetOtherFieldConditions({
+                 FieldCondition{
+                     .location = FieldLocation::kLastClassifiedPredecessor,
+                     .possible_overall_types =
+                         ServerFieldTypeSet{ADDRESS_HOME_LINE1},
+                 },
+             })
+
+             // What actions to perform on the trigger fields and other fields
+             // that had conditions.
+             .SetActions({
+                 SetTypeAction{
+                     .target = FieldLocation::kLastClassifiedPredecessor,
+                     .set_overall_type = ADDRESS_HOME_STREET_ADDRESS,
+                 },
+                 SetTypeAction{
+                     .target = FieldLocation::kTriggerField,
+                     .set_overall_type = ADDRESS_HOME_DEPENDENT_LOCALITY,
+                 },
+             })
+             .Build()});
+  };
+  static const base::NoDestructor<decltype(create_rules())>
+      kRationalizationRules(create_rules());
+
+  for (const RationalizationRule& rule : *kRationalizationRules) {
+    internal::ApplyRuleIfApplicable(rule, client_country, page_language,
+                                    pattern_source, fields, log_manager);
+  }
+}
 
 }  // namespace autofill::rationalization

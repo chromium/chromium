@@ -8,6 +8,7 @@
 #include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/credit_card_field.h"
+#include "components/autofill/core/browser/form_structure_rationalization_engine.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/rationalization_util.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -978,6 +979,8 @@ void FormStructureRationalizer::RationalizeRepeatedFields(
 
 void FormStructureRationalizer::RationalizeFieldTypePredictions(
     const url::Origin& main_origin,
+    const GeoIpCountryCode& client_country,
+    const LanguageCode& language_code,
     LogManager* log_manager) {
   RationalizeCreditCardFieldPredictions(log_manager);
   RationalizeMultiOriginCreditCardFields(main_origin, log_manager);
@@ -988,6 +991,8 @@ void FormStructureRationalizer::RationalizeFieldTypePredictions(
   for (const auto& field : *fields_)
     field->SetTypeTo(field->Type());
   RationalizeTypeRelationships(log_manager);
+  RationalizeByRationalizationEngine(client_country, language_code,
+                                     log_manager);
 }
 
 void FormStructureRationalizer::RationalizeTypeRelationships(
@@ -1011,6 +1016,19 @@ void FormStructureRationalizer::RationalizeTypeRelationships(
           << " can only exist if other fields of specific types exist.";
     }
   }
+}
+
+void FormStructureRationalizer::RationalizeByRationalizationEngine(
+    const GeoIpCountryCode& client_country,
+    const LanguageCode& language_code,
+    LogManager* log_manager) {
+  absl::optional<PatternSource> pattern_source = GetActivePatternSource();
+  if (!pattern_source.has_value()) {
+    pattern_source = PatternSource::kLegacy;
+  }
+
+  rationalization::ApplyRationalizationEngineRules(
+      client_country, language_code, *pattern_source, *fields_, log_manager);
 }
 
 }  // namespace autofill

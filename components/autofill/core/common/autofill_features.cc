@@ -231,6 +231,11 @@ BASE_FEATURE(kAutofillEnableParsingOfStreetLocation,
              "AutofillEnableParsingOfStreetLocation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls if special rationalization rules for mexico are enabled.
+BASE_FEATURE(kAutofillEnableRationalizationEngineForMX,
+             "AutofillEnableRationalizationEngineForMX",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls if the heuristic field parsing utilizes shared labels.
 // TODO(crbug.com/1165780): Remove once shared labels are launched.
 BASE_FEATURE(kAutofillEnableSupportForParsingWithSharedLabels,
