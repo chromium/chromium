@@ -169,6 +169,12 @@ class RationalizationRuleBuilder {
   RationalizationRule rule;
 };
 
+// This is only exposed for testing purposes.
+namespace internal {
+bool IsEnvironmentConditionFulfilled(const EnvironmentCondition& env,
+                                     const GeoIpCountryCode& client_country);
+}
+
 }  // namespace autofill::rationalization
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_STRUCTURE_RATIONALIZATION_ENGINE_H_

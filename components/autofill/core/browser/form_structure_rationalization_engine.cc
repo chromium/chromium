@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/form_structure_rationalization_engine.h"
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 
@@ -112,5 +113,21 @@ RationalizationRuleBuilder&& RationalizationRuleBuilder::SetActions(
 RationalizationRule RationalizationRuleBuilder::Build() && {
   return std::move(rule);
 }
+
+namespace internal {
+bool IsEnvironmentConditionFulfilled(const EnvironmentCondition& env,
+                                     const GeoIpCountryCode& client_country) {
+  if (!env.country_list.empty() &&
+      !base::Contains(env.country_list, client_country)) {
+    return false;
+  }
+
+  if (env.feature && !base::FeatureList::IsEnabled(*env.feature)) {
+    return false;
+  }
+
+  return true;
+}
+}  // namespace internal
 
 }  // namespace autofill::rationalization

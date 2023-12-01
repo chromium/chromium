@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/form_structure_rationalization_engine.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -73,6 +74,59 @@ TEST(FormStructureRationalizationEngine, TestBuilder) {
   EXPECT_EQ(rule.actions[0].set_overall_type, ADDRESS_HOME_STREET_ADDRESS);
   EXPECT_EQ(rule.actions[1].target, FieldLocation::kTriggerField);
   EXPECT_EQ(rule.actions[1].set_overall_type, ADDRESS_HOME_DEPENDENT_LOCALITY);
+}
+
+// Verifies that the client country is correctly handled by
+// IsEnvironmentConditionFulfilled.
+TEST(FormStructureRationalizationEngine,
+     IsEnvironmentConditionFulfilled_CheckCountry) {
+  using internal::IsEnvironmentConditionFulfilled;
+  GeoIpCountryCode kMX = GeoIpCountryCode("MX");
+  GeoIpCountryCode kBR = GeoIpCountryCode("BR");
+  GeoIpCountryCode kUS = GeoIpCountryCode("US");
+
+  EnvironmentCondition no_country_required =
+      EnvironmentConditionBuilder().Build();
+  EXPECT_TRUE(IsEnvironmentConditionFulfilled(no_country_required, kMX));
+
+  EnvironmentCondition specific_country_required =
+      EnvironmentConditionBuilder().SetCountryList({kMX}).Build();
+  EXPECT_TRUE(IsEnvironmentConditionFulfilled(specific_country_required, kMX));
+  EXPECT_FALSE(IsEnvironmentConditionFulfilled(specific_country_required, kBR));
+
+  EnvironmentCondition one_of_many =
+      EnvironmentConditionBuilder().SetCountryList({kBR, kMX}).Build();
+  EXPECT_TRUE(IsEnvironmentConditionFulfilled(one_of_many, kBR));
+  EXPECT_TRUE(IsEnvironmentConditionFulfilled(one_of_many, kMX));
+  EXPECT_FALSE(IsEnvironmentConditionFulfilled(one_of_many, kUS));
+}
+
+// Vierifies that the experiment state is checked.
+TEST(FormStructureRationalizationEngine,
+     IsEnvironmentConditionFulfilled_CheckExperiment) {
+  using internal::IsEnvironmentConditionFulfilled;
+  GeoIpCountryCode kMX = GeoIpCountryCode("MX");
+
+  EnvironmentCondition no_experiment_required =
+      EnvironmentConditionBuilder().Build();
+  EnvironmentCondition experiment_required =
+      EnvironmentConditionBuilder()
+          .SetFeature(&kTestFeatureForFormStructureRationalizationEngine)
+          .Build();
+
+  {
+    base::test::ScopedFeatureList enable_feature(
+        kTestFeatureForFormStructureRationalizationEngine);
+    EXPECT_TRUE(IsEnvironmentConditionFulfilled(no_experiment_required, kMX));
+    EXPECT_TRUE(IsEnvironmentConditionFulfilled(experiment_required, kMX));
+  }
+  {
+    base::test::ScopedFeatureList disable_feature;
+    disable_feature.InitAndDisableFeature(
+        kTestFeatureForFormStructureRationalizationEngine);
+    EXPECT_TRUE(IsEnvironmentConditionFulfilled(no_experiment_required, kMX));
+    EXPECT_FALSE(IsEnvironmentConditionFulfilled(experiment_required, kMX));
+  }
 }
 
 }  // namespace
