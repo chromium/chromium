@@ -139,11 +139,6 @@ signin::Tribool MaybeShouldShowChromeSigninBubble(
     const std::string& email,
     signin_metrics::AccessPoint access_point,
     size_t bubble_shown_count) {
-  // The Chrome Signin Bubble is part of the Uno Desktop project.
-  if (!base::FeatureList::IsEnabled(switches::kUnoDesktop)) {
-    return signin::Tribool::kFalse;
-  }
-
   // Do not show the bubble more than `kMaxChromeSigninInterceptionShownCount`
   // times.
   if (bubble_shown_count >= kMaxChromeSigninInterceptionShownCount) {
@@ -325,6 +320,7 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
     bool is_new_account,
     bool is_sync_signin,
     const std::string& email,
+    bool record_signin_metrics,
     const ProfileAttributesEntry** entry) const {
   bool signin_interception_enabled =
       profile_->GetPrefs()->GetBoolean(prefs::kSigninInterceptionEnabled);
@@ -388,13 +384,23 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
       MaybeShouldShowChromeSigninBubble(identity_manager_, email,
                                         state_->access_point_,
                                         GetChromeSigninBubbleShownCount(email));
-  // If the access point is not set, it is unclear if we have to show the bubble
-  // or not, so we must return nullopt.
-  if (should_show_chrome_signin_bubble == signin::Tribool::kUnknown) {
-    return absl::nullopt;
+  if (record_signin_metrics) {
+    // This metric will be recorded both when `switches::kUnoDesktop` is
+    // enabled and disabled when the Chrome Signin bubble is expected to be
+    // shown or not.
+    base::UmaHistogramBoolean(
+        "Signin.Intercept.Heuristic.ShouldShowChromeSigninBubble",
+        should_show_chrome_signin_bubble == signin::Tribool::kTrue);
   }
-  if (TriboolToBoolOrDie(should_show_chrome_signin_bubble)) {
-    return SigninInterceptionHeuristicOutcome::kInterceptChromeSignin;
+  // Showing the Chrome Signin Bubble is part of the Uno Desktop project.
+  if (base::FeatureList::IsEnabled(switches::kUnoDesktop)) {
+    // If the access point is not set, it is unclear if we have to show the
+    // bubble or not, so we must return nullopt.
+    if (should_show_chrome_signin_bubble == signin::Tribool::kUnknown) {
+      return absl::nullopt;
+    } else if (should_show_chrome_signin_bubble == signin::Tribool::kTrue) {
+      return SigninInterceptionHeuristicOutcome::kInterceptChromeSignin;
+    }
   }
 
   // From this point the remaining possible interceptions involve creating a new
@@ -488,7 +494,7 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
   const ProfileAttributesEntry* entry = nullptr;
   absl::optional<SigninInterceptionHeuristicOutcome> heuristic_outcome =
       GetHeuristicOutcome(is_new_account, is_sync_signin, account_info.email,
-                          &entry);
+                          /*record_signin_metrics=*/true, &entry);
   state_->account_id_ = account_id;
   state_->is_interception_in_progress_ = true;
   state_->new_account_interception_ = is_new_account;
@@ -840,7 +846,8 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
         WebSigninInterceptor::SigninInterceptionType::kProfileSwitch;
     RecordSigninInterceptionHeuristicOutcome(
         SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch);
-  } else if (ShouldShowChromeSigninBubble(
+  } else if (base::FeatureList::IsEnabled(switches::kUnoDesktop) &&
+             ShouldShowChromeSigninBubble(
                  identity_manager_, info.email, state_->access_point_,
                  GetChromeSigninBubbleShownCount(info.email))) {
     interception_type =

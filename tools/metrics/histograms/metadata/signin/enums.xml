@@ -158,6 +158,11 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Is Shared"/>
 </enum>
 
+<enum name="BooleanShouldShow">
+  <int value="0" label="Should not show"/>
+  <int value="1" label="Should show"/>
+</enum>
+
 <enum name="BoundSessionCredentialsCookieRotationResult">
   <int value="0" label="Success"/>
   <int value="1" label="Connection error"/>

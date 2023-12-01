@@ -928,6 +928,20 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.Intercept.Heuristic.ShouldShowChromeSigninBubble"
+    enum="BooleanShouldShow" expires_after="2024-04-28">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Recorded when a Signin intercept happens and the heuristic outcome result
+    expects that the Chrome Signin Bubble should be shown later (or not) as part
+    of the intercept. However, since this value is also recorded when the Uno
+    feature is disabled, this metric does not guarantee that the bubble will be
+    shown, but rather that the context is right for the bubble to be shown
+    (disregarding the Uno feature flag).
+  </summary>
+</histogram>
+
 <histogram name="Signin.Intercept.HeuristicLatency" units="ms"
     expires_after="2024-04-28">
   <owner>ljjlee@google.com</owner>
