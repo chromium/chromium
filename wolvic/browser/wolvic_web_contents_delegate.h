@@ -15,6 +15,9 @@ class WolvicWebContentsDelegate
   WolvicWebContentsDelegate(JNIEnv* env, jobject obj);
   ~WolvicWebContentsDelegate() override;
 
+  void LoadingStateChanged(content::WebContents* source,
+                           bool should_show_loading_ui) override;
+
   // See //android_webview/docs/how-does-on-create-window-work.md for more
   // details.
   void AddNewContents(content::WebContents* source,

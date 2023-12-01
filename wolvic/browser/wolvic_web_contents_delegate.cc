@@ -47,4 +47,17 @@ void WolvicWebContentsDelegate::AddNewContents(
   Java_WolvicWebContentsDelegate_onCreateNewWindow(env, java_delegate, java_gurl);
 }
 
+// This adds an extra null check to the parent's behaviour. Seems to be needed
+// in some architectures, otherwise it crashes. This started to be observed in
+// Meta's Quest3 after the M118 update
+void WolvicWebContentsDelegate::LoadingStateChanged(
+    content::WebContents* source,
+    bool should_show_loading_ui) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null())
+    return;
+  WebContentsDelegateAndroid::LoadingStateChanged(source, should_show_loading_ui);
+}
+
 } // namespace wolvic
