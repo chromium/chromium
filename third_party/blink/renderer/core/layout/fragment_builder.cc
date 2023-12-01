@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/ng/ng_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/fragment_builder.h"
 
 #include "base/containers/contains.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"

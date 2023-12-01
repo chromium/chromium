@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/physical_fragment_rare_data.h"
 
+#include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/frame_set_layout_data.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {

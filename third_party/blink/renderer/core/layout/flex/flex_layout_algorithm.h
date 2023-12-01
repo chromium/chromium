@@ -6,11 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEX_FLEX_LAYOUT_ALGORITHM_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_algorithm.h"
-
-#include "third_party/blink/renderer/core/layout/flex/flexible_box_algorithm.h"
+#include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/flex/flex_break_token_data.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/flex/flexible_box_algorithm.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_layout_algorithm.h"
 
 namespace blink {
 

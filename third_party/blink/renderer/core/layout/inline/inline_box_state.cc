@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_box_state.h"
 
 #include "base/containers/adapters.h"
+#include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_result.h"

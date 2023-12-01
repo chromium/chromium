@@ -373,7 +373,7 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [BaselineAlgorithmType]: ../constraint_space.h
 [BidiParagraph]: ../../../platform/text/bidi_paragraph.h
 [BlockNode]: ../block_node.h
-[BoxFragmentBuilder]: ../ng/ng_box_fragment_builder.h
+[BoxFragmentBuilder]: ../box_fragment_builder.h
 [ConstraintSpace]: ../constraint_space.h
 [ConstraintSpaceBuilder]: ../constraint_space_builder.h
 [FontBaseline]: ../../../platform/fonts/font_baseline.h
@@ -386,7 +386,7 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [InlineNode]: inline_node.h
 [LayoutInputNode]: ../layout_input_node.h
 [LineBreaker]: line_breaker.h
-[LogicalBoxFragment]: ../ng/ng_box_fragment.h
+[LogicalBoxFragment]: ../logical_box_fragment.h
 [LogicalLineItem]: logical_line_item.h
 [LogicalLineItems]: logical_line_items.h
 [NGBaselineRequest]: ng_baseline.h

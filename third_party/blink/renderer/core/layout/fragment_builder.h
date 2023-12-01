@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_FRAGMENT_BUILDER_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_FRAGMENT_BUILDER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FRAGMENT_BUILDER_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FRAGMENT_BUILDER_H_
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -13,7 +13,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/list/unpositioned_list_marker.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_logical_link.h"
+#include "third_party/blink/renderer/core/layout/logical_fragment_link.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_style_variant.h"
 #include "third_party/blink/renderer/core/layout/oof_positioned_node.h"
 #include "third_party/blink/renderer/core/layout/physical_fragment.h"
@@ -647,4 +647,4 @@ class CORE_EXPORT FragmentBuilder {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_FRAGMENT_BUILDER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FRAGMENT_BUILDER_H_

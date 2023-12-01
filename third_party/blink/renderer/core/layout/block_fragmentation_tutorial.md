@@ -117,7 +117,7 @@ unbreakable), [LayoutInputNode::IsMonolithic()](layout_input_node.h) will
 return true. Being monolithic means that we cannot break inside the element (but
 we may break before or after it).
 
-([Fragment builders](ng/ng_box_fragment_builder.h) also need to be
+([Fragment builders](box_fragment_builder.h) also need to be
 fragmentation-aware. This is automatically taken care of by the
 [LayoutAlgorithm](ng/ng_layout_algorithm.h) constructor, so algorithm
 implementors need not worry about this.)
@@ -194,7 +194,7 @@ What BreakBeforeChildIfNeeded() returns determines how to proceed. We'll either:
 If (and only if) BreakBeforeChildIfNeeded() returns kContinue, should the
 algorithm add the child to the fragment builder. After the child has been added
 to the builder, check the return value of
-[BoxFragmentBuilder::HasInflowChildBreakInside()](ng/ng_box_fragment_builder.h)
+[BoxFragmentBuilder::HasInflowChildBreakInside()](box_fragment_builder.h)
 to determine if there was a same-flow break inside the builder. If there is no
 same-flow break, the next child can be laid out. Otherwise, the algorithm should
 finish. In this case, a break token has already been created, so the node will

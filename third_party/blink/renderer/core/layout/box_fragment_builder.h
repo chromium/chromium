@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_BOX_FRAGMENT_BUILDER_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_BOX_FRAGMENT_BUILDER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_BOX_FRAGMENT_BUILDER_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_BOX_FRAGMENT_BUILDER_H_
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
@@ -21,7 +21,7 @@
 #include "third_party/blink/renderer/core/layout/inline/fragment_items_builder.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/mathml/mathml_paint_info.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/layout/scrollable_overflow_calculator.h"
 #include "third_party/blink/renderer/core/layout/table/table_borders.h"
@@ -727,4 +727,4 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_BOX_FRAGMENT_BUILDER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_BOX_FRAGMENT_BUILDER_H_

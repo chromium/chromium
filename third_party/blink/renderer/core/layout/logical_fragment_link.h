@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_LOGICAL_LINK_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_LOGICAL_LINK_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LOGICAL_FRAGMENT_LINK_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LOGICAL_FRAGMENT_LINK_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_offset.h"
@@ -38,4 +38,4 @@ using LogicalFragmentLinkVector = HeapVector<LogicalFragmentLink, 4>;
 
 WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::LogicalFragmentLink)
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_LOGICAL_LINK_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LOGICAL_FRAGMENT_LINK_H_
