@@ -45,6 +45,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compose.Dialog.InnerTextShortenedBy" units="bytes"
+    expires_after="2024-03-31">
+  <owner>sophey@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    The amount trimmed from the inner text from the page (in bytes) when the
+    dialog is opened. The text is trimmed to inner_text_max_bytes before being
+    sent to Compose. Logged each time the dialog is opened if the text is
+    trimmed.
+  </summary>
+</histogram>
+
 <histogram name="Compose.Dialog.InnerTextSize" units="bytes"
     expires_after="2024-03-31">
   <owner>sophey@chromium.org</owner>

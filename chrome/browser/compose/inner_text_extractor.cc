@@ -43,6 +43,8 @@ void InnerTextExtractor::InnerTextCallback(
     inner_text = result->inner_text;
     compose::LogComposeDialogInnerTextSize(inner_text.size());
     if (inner_text.size() > config.inner_text_max_bytes) {
+      compose::LogComposeDialogInnerTextShortenedBy(
+          inner_text.size() - config.inner_text_max_bytes);
       // TODO(b/314230455): Reduce the number of times inner_text is copied.
       inner_text.erase(config.inner_text_max_bytes);
     }
