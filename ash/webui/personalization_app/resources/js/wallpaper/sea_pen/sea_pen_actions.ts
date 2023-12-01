@@ -4,7 +4,7 @@
 
 import {Action} from 'chrome://resources/js/store.js';
 
-import {SeaPenThumbnail} from '../../../sea_pen.mojom-webui.js';
+import {SeaPenQuery, SeaPenThumbnail} from '../../../sea_pen.mojom-webui.js';
 import {SeaPenWallpaper} from '../constants.js';
 
 /**
@@ -22,10 +22,10 @@ export type SeaPenActions = BeginSearchSeaPenThumbnailsAction|
 
 export interface BeginSearchSeaPenThumbnailsAction extends Action {
   name: SeaPenActionName.BEGIN_SEARCH_SEA_PEN_THUMBNAILS;
-  query: string;
+  query: SeaPenQuery;
 }
 
-export function beginSearchSeaPenThumbnailsAction(query: string):
+export function beginSearchSeaPenThumbnailsAction(query: SeaPenQuery):
     BeginSearchSeaPenThumbnailsAction {
   return {
     query: query,
@@ -35,7 +35,7 @@ export function beginSearchSeaPenThumbnailsAction(query: string):
 
 export interface SetSeaPenThumbnailsAction extends Action {
   name: SeaPenActionName.SET_SEA_PEN_THUMBNAILS;
-  query: string;
+  query: SeaPenQuery;
   images: SeaPenThumbnail[]|null;
 }
 
@@ -43,7 +43,8 @@ export interface SetSeaPenThumbnailsAction extends Action {
  * Sets the generated thumbnails for the given prompt text.
  */
 export function setSeaPenThumbnailsAction(
-    query: string, images: SeaPenThumbnail[]|null): SetSeaPenThumbnailsAction {
+    query: SeaPenQuery,
+    images: SeaPenThumbnail[]|null): SetSeaPenThumbnailsAction {
   return {name: SeaPenActionName.SET_SEA_PEN_THUMBNAILS, query, images};
 }
 

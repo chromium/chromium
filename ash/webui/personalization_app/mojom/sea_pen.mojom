@@ -7,6 +7,56 @@ module ash.personalization_app.mojom;
 import "mojo/public/mojom/base/file_path.mojom";
 import "url/mojom/url.mojom";
 
+// The unique ID to identify a template.
+enum SeaPenTemplateId {
+  kFlower = 0,
+  kMineral,
+};
+
+// A variable in the template text that can be mapped to multiple option values.
+enum SeaPenTemplateChip {
+  kFlowerType = 0,
+  kFlowerColor,
+  kMineralName,
+  kMineralColor,
+};
+
+// The valid option values of each chip.
+enum SeaPenTemplateOption {
+  // <flower_type> options
+  kFlowerTypeRose = 0,
+  kFlowerTypeCallaLily,
+  kFlowerTypeWindflower,
+  kFlowerTypeTulip,
+  kFlowerTypeLilyOfTheValley,
+  kFlowerTypeBirdOfParadise,
+  kFlowerTypeOrchid,
+  kFlowerTypeRanunculus,
+  kFlowerTypeDaisy,
+  kFlowerTypeHydrangeas,
+  // <flower_color> options
+  kFlowerColorPink,
+  kFlowerColorPurple,
+  kFlowerColorBlue,
+  kFlowerColorWhite,
+  kFlowerColorCoral,
+  kFlowerColorYellow,
+  kFlowerColorGreen,
+  kFlowerColorRed,
+  // <mineral_name> options
+  kMineralNameWhiteQuartz,
+  kMineralNameAmethyst,
+  kMineralNameBlueSapphire,
+  kMineralNameAmberCarnelian,
+  kMineralNameEmerald,
+  kMineralNameRuby,
+  // <mineral_color> options
+  kMineralColorWhite,
+  kMineralColorPeriwinkle,
+  kMineralColorPink,
+  kMineralColorLavender,
+};
+
 // Encapsulates metadata for a thumbnail image, which can be displayed as an
 // image tile in the SeaPen search result page.
 struct SeaPenThumbnail {
@@ -15,6 +65,27 @@ struct SeaPenThumbnail {
 
     // An id that uniquely identifies the image.
     uint32 id;
+};
+
+// The information needed to query template wallpapers. The possible `id` and
+// `options` values are defined in cs/ChromeOsWallpaperQueryProcessor.kt. They
+// are not controlled by the renderer. The browser is responsible for validating
+// the values.
+struct SeaPenTemplateQuery {
+  // A unique template ID.
+  SeaPenTemplateId id;
+
+  // The chips and their selected options.
+  map<SeaPenTemplateChip, SeaPenTemplateOption> options;
+};
+
+// A text or template query for constructing a Manta request.
+union SeaPenQuery {
+  // Set if the query is from text input.
+  string text_query;
+
+  // Set if the query is from template input.
+  SeaPenTemplateQuery template_query;
 };
 
 // Maximum allowable search text length, in bytes.
@@ -34,7 +105,7 @@ interface SeaPenProvider {
     // `images` will be empty array when the request succeeded, but no matching
     // images were returned.
     // `text` must be smaller than `kMaximumSearchWallpaperTextBytes` bytes.
-    SearchWallpaper(string text) => (array<SeaPenThumbnail>? images);
+    SearchWallpaper(SeaPenQuery query) => (array<SeaPenThumbnail>? images);
 
     // Select a thumbnail and set as the system wallpaper for the current user.
     SelectSeaPenThumbnail(uint32 id) => (bool success);

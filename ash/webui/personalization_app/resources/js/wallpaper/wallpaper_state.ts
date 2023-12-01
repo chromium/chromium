@@ -87,7 +87,6 @@ export interface LoadingState {
 }
 
 export interface SeaPenState {
-  query: string|null;
   thumbnails: SeaPenThumbnail[]|null;
   thumbnailsLoading: boolean;
   recentWallpapers: SeaPenWallpaper[]|null;
@@ -170,7 +169,6 @@ export function emptyState(): WallpaperState {
           {albums: null, albumsShared: null, photos: null, photosByAlbumId: {}},
     },
     seaPen: {
-      query: null,
       thumbnails: null,
       thumbnailsLoading: false,
       recentWallpapers: null,

@@ -265,7 +265,6 @@ export async function fetchGooglePhotosPhotos(
   store.dispatch(action.appendGooglePhotosPhotosAction(photos, resumeToken));
 }
 
-
 export async function getDefaultImageThumbnail(
     provider: WallpaperProviderInterface,
     store: PersonalizationStore): Promise<void> {

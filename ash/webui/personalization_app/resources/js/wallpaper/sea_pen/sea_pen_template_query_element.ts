@@ -11,10 +11,14 @@ import '../../../common/icons.html.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 
+import {SeaPenQuery, SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from '../../../sea_pen.mojom-webui.js';
+import {Paths, PersonalizationRouterElement} from '../../personalization_router_element.js';
 import {WithPersonalizationStore} from '../../personalization_store.js';
 import {isNonEmptyArray} from '../../utils.js';
 import {getSampleSeaPenTemplates, parseTemplateText, SeaPenOption, SeaPenTemplate} from '../utils.js';
 
+import {searchSeaPenThumbnails} from './sea_pen_controller.js';
+import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {getTemplate} from './sea_pen_template_query_element.html.js';
 
 /**
@@ -28,14 +32,18 @@ function isChip(word: string): boolean {
   return !!word && word.startsWith('<') && word.endsWith('>');
 }
 
+function toChip(word: string): SeaPenTemplateChip {
+  return parseInt(word.slice(1, -1)) as SeaPenTemplateChip;
+}
+
 /**
  * A template token that is a chip.
  */
 export interface ChipToken {
   // The translated string displayed on the UI.
   translation: string;
-  // The identifier of the chip .e.g. <city> or <style>.
-  id: string;
+  // The identifier of the chip.
+  id: SeaPenTemplateChip;
 }
 
 /**
@@ -92,7 +100,7 @@ export class SeaPenTemplateQueryElement extends WithPersonalizationStore {
   }
 
   private seaPenTemplate_: SeaPenTemplate;
-  private selectedOptions_: Map<string, SeaPenOption>;
+  private selectedOptions_: Map<SeaPenTemplateChip, SeaPenOption>;
   private templateTokens_: TemplateToken[];
   private options_: SeaPenOption[]|null;
   private selectedChip_: ChipToken|null;
@@ -149,7 +157,7 @@ export class SeaPenTemplateQueryElement extends WithPersonalizationStore {
   }
 
   private onSeaPenTemplateChanged_(template: SeaPenTemplate) {
-    const selectedOptions = new Map<string, SeaPenOption>();
+    const selectedOptions = new Map<SeaPenTemplateChip, SeaPenOption>();
     template.options.forEach((options, chip) => {
       if (isNonEmptyArray(options)) {
         const option = options[0];
@@ -166,15 +174,16 @@ export class SeaPenTemplateQueryElement extends WithPersonalizationStore {
   }
 
   private computeTemplateTokens_(
-      template: SeaPenTemplate, selectedOptions: Map<string, SeaPenOption>) {
+      template: SeaPenTemplate,
+      selectedOptions: Map<SeaPenTemplateChip, SeaPenOption>) {
     const strs = parseTemplateText(template.text);
     const tokens: TemplateToken[] = [];
     strs.forEach(str => {
       if (isChip(str)) {
+        const templateChip = toChip(str);
         tokens.push({
-          translation:
-              isChip(str) ? selectedOptions.get(str)?.translation || '' : str,
-          id: str,
+          translation: selectedOptions.get(templateChip)?.translation || '',
+          id: templateChip,
         });
       } else {
         tokens.push(str);
@@ -208,6 +217,28 @@ export class SeaPenTemplateQueryElement extends WithPersonalizationStore {
   private getTextClassName_(selectedChip: TemplateToken|null): string {
     // Use the 'unselected' styling only if a chip has been selected.
     return selectedChip ? 'unselected' : '';
+  }
+
+  private getTemplateRequest_(): SeaPenQuery {
+    const optionMap = new Map<SeaPenTemplateChip, SeaPenTemplateOption>();
+    this.selectedOptions_.forEach((option, chip) => {
+      optionMap.set(chip, option.value);
+    });
+    const id: SeaPenTemplateId = parseInt(this.templateId!, 10);
+    assert(!isNaN(id));
+    return {
+      templateQuery: {
+        id,
+        options: Object.fromEntries(optionMap),
+      },
+    };
+  }
+
+  private onClickSearchButton_() {
+    searchSeaPenThumbnails(
+        this.getTemplateRequest_(), getSeaPenProvider(), this.getStore());
+    PersonalizationRouterElement.instance().goToRoute(
+        Paths.SEA_PEN_RESULTS, {seaPenTemplateId: this.templateId!.toString()});
   }
 }
 

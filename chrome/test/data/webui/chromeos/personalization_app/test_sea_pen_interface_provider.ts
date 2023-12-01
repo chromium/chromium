@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SeaPenProviderInterface, SeaPenThumbnail, SeaPenWallpaper} from 'chrome://personalization/js/personalization_app.js';
+import {SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail, SeaPenWallpaper} from 'chrome://personalization/js/personalization_app.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -54,8 +54,8 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
     ]);
   }
 
-  searchWallpaper(text: string) {
-    this.methodCalled('searchWallpaper', text);
+  searchWallpaper(query: SeaPenQuery) {
+    this.methodCalled('searchWallpaper', query);
     return Promise.resolve({images: this.images});
   }
 

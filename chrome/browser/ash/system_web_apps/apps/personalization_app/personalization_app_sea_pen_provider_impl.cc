@@ -45,9 +45,10 @@ void PersonalizationAppSeaPenProviderImpl::BindInterface(
 }
 
 void PersonalizationAppSeaPenProviderImpl::SearchWallpaper(
-    const std::string& text,
+    const mojom::SeaPenQueryPtr query,
     SearchWallpaperCallback callback) {
-  if (text.length() > mojom::kMaximumSearchWallpaperTextBytes) {
+  if (query->is_text_query() && query->get_text_query().length() >
+                                    mojom::kMaximumSearchWallpaperTextBytes) {
     sea_pen_receiver_.ReportBadMessage(
         "SearchWallpaper exceeded maximum text length");
     return;
@@ -55,9 +56,9 @@ void PersonalizationAppSeaPenProviderImpl::SearchWallpaper(
   auto* sea_pen_fetcher = GetOrCreateSeaPenFetcher();
   CHECK(sea_pen_fetcher);
   sea_pen_fetcher->FetchThumbnails(
-      text, base::BindOnce(
-                &PersonalizationAppSeaPenProviderImpl::OnFetchThumbnailsDone,
-                weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      query, base::BindOnce(
+                 &PersonalizationAppSeaPenProviderImpl::OnFetchThumbnailsDone,
+                 weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void PersonalizationAppSeaPenProviderImpl::SelectSeaPenThumbnail(

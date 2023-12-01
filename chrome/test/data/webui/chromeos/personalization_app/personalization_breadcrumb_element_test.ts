@@ -6,7 +6,7 @@
 
 import 'chrome://personalization/strings.m.js';
 
-import {GooglePhotosAlbum, Paths, PersonalizationBreadcrumbElement, PersonalizationRouterElement, TopicSource} from 'chrome://personalization/js/personalization_app.js';
+import {GooglePhotosAlbum, Paths, PersonalizationBreadcrumbElement, PersonalizationRouterElement, SeaPenTemplateId, TopicSource} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -427,7 +427,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
   test('show breadcrumbs for SeaPen results content', async () => {
     breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {
       'path': Paths.SEA_PEN_RESULTS,
-      'seaPenTemplateId': 'ChromeOSWallpaperTemplateSamplePark',
+      'seaPenTemplateId': SeaPenTemplateId.kFlower.toString(),
     });
 
     const breadcrumbContainer =
@@ -435,7 +435,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(
         breadcrumbContainer,
-        [breadcrumbElement.i18n('wallpaperLabel'), 'Sea Pen', 'Park']);
+        [breadcrumbElement.i18n('wallpaperLabel'), 'Sea Pen', 'Flower']);
 
     const original = PersonalizationRouterElement.instance;
     const goToRoutePromise = new Promise<[Paths, Object]>(resolve => {

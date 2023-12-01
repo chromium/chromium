@@ -10,30 +10,31 @@ import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {CurrentAttribution, CurrentWallpaper, GooglePhotosAlbum, GooglePhotosPhoto, WallpaperImage, WallpaperLayout, WallpaperType} from '../../personalization_app.mojom-webui.js';
+import {SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from '../../sea_pen.mojom-webui.js';
 import {isSeaPenTextInputEnabled} from '../load_time_booleans.js';
 import {getNumberOfGridItemsPerRow, isNonEmptyArray, isNonEmptyString} from '../utils.js';
 
 import {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol, SeaPenWallpaper} from './constants.js';
 import {DailyRefreshState} from './wallpaper_state.js';
 
-export const QUERY: string = 'query';
+export const QUERY: string = 'Query';
 
 export interface SeaPenOption {
   // `value` is the actual option value to be sent to the server side.
-  value: string;
+  value: SeaPenTemplateOption;
   // `translation` is the translated value to be displayed in the UI.
   translation: string;
 }
 
 export interface SeaPenTemplate {
-  preview: Url[];
+  id: string;
   // `title` is the user-visible string in collection titles and breadcrumbs.
   title: string;
+  preview: Url[];
   // `text` is the string that shows up on the sea pen subpage.
   text: string;
-  id: string;
   // `options` are in the form of 'option_name': [option1, option2, ...].
-  options: Map<string, SeaPenOption[]>;
+  options: Map<SeaPenTemplateChip, SeaPenOption[]>;
 }
 
 export function isWallpaperImage(obj: any): obj is WallpaperImage {
@@ -246,36 +247,154 @@ export function parseTemplateText(template: string): string[] {
 export function getSampleSeaPenTemplates(): SeaPenTemplate[] {
   const templates = [
     {
+      id: SeaPenTemplateId.kFlower.toString(),
+      title: 'Flower',
+      text: `Flower type <${SeaPenTemplateChip.kFlowerType}> flower color <${
+          SeaPenTemplateChip.kFlowerColor}>`,
       preview: [{
-        url: 'chrome://personalization/images/no_images.svg',
+        url: 'chrome://personalization/images/sea_pen_tile.svg',
       }],
-      title: 'Park',
-      text: loadTimeData.getStringF('templatePark', '<city>', '<style>'),
-      id: 'ChromeOSWallpaperTemplateSamplePark',
       options: new Map([
         [
-          '<city>',
+          SeaPenTemplateChip.kFlowerType,
           [
             {
-              value: 'Test - Paris',
-              translation: loadTimeData.getString('templateOptionParis'),
+              value: SeaPenTemplateOption.kFlowerTypeRose,
+              translation: 'rose',
             },
             {
-              value: 'Test - New York',
-              translation: loadTimeData.getString('templateOptionNewYork'),
+              value: SeaPenTemplateOption.kFlowerTypeCallaLily,
+              translation: 'calla lily',
+            },
+            {
+              value: SeaPenTemplateOption.kFlowerTypeWindflower,
+              translation: 'windflower',
+            },
+            {
+              value: SeaPenTemplateOption.kFlowerTypeTulip,
+              translation: 'tulip',
+            },
+            {
+              value: SeaPenTemplateOption.kFlowerTypeLilyOfTheValley,
+              translation: 'lily of the valley',
+            },
+            {
+              value: SeaPenTemplateOption.kFlowerTypeBirdOfParadise,
+              translation: 'bird-of-paradise flower',
+            },
+            {
+              value: SeaPenTemplateOption.kFlowerTypeOrchid,
+              translation: 'orchid',
+            },
+            {
+              value: SeaPenTemplateOption.kFlowerTypeRanunculus,
+              translation: 'ranunculus',
+            },
+            {
+              value: SeaPenTemplateOption.kFlowerTypeDaisy,
+              translation: 'daisy',
+            },
+            {
+              value: SeaPenTemplateOption.kFlowerTypeHydrangeas,
+              translation: 'hydrangeas',
             },
           ],
         ],
         [
-          '<style>',
+          SeaPenTemplateChip.kFlowerColor,
           [
             {
-              value: 'Test - photography',
-              translation: loadTimeData.getString('templateOptionPhotography'),
+              value: SeaPenTemplateOption.kFlowerColorPink,
+              translation: 'pink',
             },
             {
-              value: 'Test - watercolor',
-              translation: loadTimeData.getString('templateOptionWatercolor'),
+              value: SeaPenTemplateOption.kFlowerColorPurple,
+              translation: 'purple',
+            },
+            {
+              value: SeaPenTemplateOption.kFlowerColorBlue,
+              translation: 'blue',
+            },
+            {
+              value: SeaPenTemplateOption.kFlowerColorWhite,
+              translation: 'white',
+            },
+            {
+              value: SeaPenTemplateOption.kFlowerColorCoral,
+              translation: 'coral',
+            },
+            {
+              value: SeaPenTemplateOption.kFlowerColorYellow,
+              translation: 'yellow',
+            },
+            {
+              value: SeaPenTemplateOption.kFlowerColorGreen,
+              translation: 'green',
+            },
+            {
+              value: SeaPenTemplateOption.kFlowerColorRed,
+              translation: 'red',
+            },
+          ],
+        ],
+      ]),
+    },
+    {
+      id: SeaPenTemplateId.kMineral.toString(),
+      title: 'Mineral',
+      text: `Mineral name <${SeaPenTemplateChip.kMineralName}> mineral color <${
+          SeaPenTemplateChip.kMineralColor}>`,
+      preview: [{
+        url: 'chrome://personalization/images/sea_pen_tile.svg',
+      }],
+      options: new Map([
+        [
+          SeaPenTemplateChip.kMineralName,
+          [
+            {
+              value: SeaPenTemplateOption.kMineralNameWhiteQuartz,
+              translation: 'white quartz',
+            },
+            {
+              value: SeaPenTemplateOption.kMineralNameAmethyst,
+              translation: 'amethyst',
+            },
+            {
+              value: SeaPenTemplateOption.kMineralNameBlueSapphire,
+              translation: 'blue sapphire',
+            },
+            {
+              value: SeaPenTemplateOption.kMineralNameAmberCarnelian,
+              translation: 'amber carnelian',
+            },
+            {
+              value: SeaPenTemplateOption.kMineralNameEmerald,
+              translation: 'emerald',
+            },
+            {
+              value: SeaPenTemplateOption.kMineralNameRuby,
+              translation: 'ruby',
+            },
+          ],
+        ],
+        [
+          SeaPenTemplateChip.kMineralColor,
+          [
+            {
+              value: SeaPenTemplateOption.kMineralColorWhite,
+              translation: 'white',
+            },
+            {
+              value: SeaPenTemplateOption.kMineralColorPeriwinkle,
+              translation: 'periwinkle',
+            },
+            {
+              value: SeaPenTemplateOption.kMineralColorPink,
+              translation: 'pink',
+            },
+            {
+              value: SeaPenTemplateOption.kMineralColorLavender,
+              translation: 'lavender',
             },
           ],
         ],
@@ -285,7 +404,7 @@ export function getSampleSeaPenTemplates(): SeaPenTemplate[] {
   if (isSeaPenTextInputEnabled()) {
     templates.push({
       preview: [{
-        url: 'chrome://personalization/images/no_images.svg',
+        url: 'chrome://personalization/images/sea_pen_tile.svg',
       }],
       title: 'Freeform',
       text: 'Freeform',

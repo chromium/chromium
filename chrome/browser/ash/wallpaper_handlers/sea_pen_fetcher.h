@@ -10,6 +10,8 @@
 #include <vector>
 
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
+#include "ash/webui/personalization_app/mojom/sea_pen.mojom-forward.h"
+#include "ash/webui/personalization_app/mojom/sea_pen.mojom.h"
 #include "base/functional/callback_forward.h"
 #include "components/manta/proto/manta.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -34,8 +36,9 @@ class SeaPenFetcher {
 
   // Run `query` against the Manta API. `query` is required to be a valid UTF-8
   // string no longer than `kMaximumSearchWallpaperTextBytes`.
-  virtual void FetchThumbnails(const std::string& query,
-                               OnFetchThumbnailsComplete callback) = 0;
+  virtual void FetchThumbnails(
+      const ash::personalization_app::mojom::SeaPenQueryPtr& query,
+      OnFetchThumbnailsComplete callback) = 0;
 
   // Calls the Manta API to fetch a higher resolution image of the thumbnail.
   virtual void FetchWallpaper(const ash::SeaPenImage& thumbnail,

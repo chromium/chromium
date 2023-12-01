@@ -32,8 +32,6 @@ export class SeaPenImagesElement extends WithPersonalizationStore {
     return {
       templateId: String,
 
-      query_: String,
-
       thumbnails_: Object,
 
       thumbnailsLoading_: Boolean,
@@ -41,14 +39,11 @@ export class SeaPenImagesElement extends WithPersonalizationStore {
   }
 
   private templateId: string;
-  private query_: string|null;
   private thumbnails_: SeaPenThumbnail[]|null;
   private thumbnailsLoading_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
-    this.watch<SeaPenImagesElement['query_']>(
-        'query_', state => state.wallpaper.seaPen.query);
     this.watch<SeaPenImagesElement['thumbnails_']>(
         'thumbnails_', state => state.wallpaper.seaPen.thumbnails);
     this.watch<SeaPenImagesElement['thumbnailsLoading_']>(

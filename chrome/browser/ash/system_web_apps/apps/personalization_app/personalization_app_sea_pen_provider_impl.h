@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PERSONALIZATION_APP_PERSONALIZATION_APP_SEA_PEN_PROVIDER_IMPL_H_
 #define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PERSONALIZATION_APP_PERSONALIZATION_APP_SEA_PEN_PROVIDER_IMPL_H_
 
+#include "ash/webui/personalization_app/mojom/sea_pen.mojom.h"
 #include "ash/webui/personalization_app/personalization_app_sea_pen_provider.h"
 
 #include <map>
@@ -47,7 +48,7 @@ class PersonalizationAppSeaPenProviderImpl
   void BindInterface(
       mojo::PendingReceiver<mojom::SeaPenProvider> receiver) override;
 
-  void SearchWallpaper(const std::string& text,
+  void SearchWallpaper(mojom::SeaPenQueryPtr query,
                        SearchWallpaperCallback callback) override;
 
   void SelectSeaPenThumbnail(uint32_t id,

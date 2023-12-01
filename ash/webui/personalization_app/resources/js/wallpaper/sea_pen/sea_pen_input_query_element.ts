@@ -17,7 +17,7 @@ import '../../../css/cros_button_style.css.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {MAXIMUM_SEARCH_WALLPAPER_TEXT_BYTES} from '../../../sea_pen.mojom-webui.js';
+import {MAXIMUM_SEARCH_WALLPAPER_TEXT_BYTES, SeaPenQuery} from '../../../sea_pen.mojom-webui.js';
 import {Paths, PersonalizationRouterElement} from '../../personalization_router_element.js';
 import {WithPersonalizationStore} from '../../personalization_store.js';
 import {QUERY} from '../utils.js';
@@ -38,8 +38,6 @@ export class SeaPenInputQueryElement extends WithPersonalizationStore {
     return {
       textValue_: String,
 
-      query_: String,
-
       thumbnailsLoading_: Boolean,
 
       maxTextLength_: {
@@ -50,13 +48,10 @@ export class SeaPenInputQueryElement extends WithPersonalizationStore {
   }
 
   private textValue_: string;
-  private query_: string|null;
   private thumbnailsLoading_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
-    this.watch<SeaPenInputQueryElement['query_']>(
-        'query_', state => state.wallpaper.seaPen.query);
     this.watch<SeaPenInputQueryElement['thumbnailsLoading_']>(
         'thumbnailsLoading_',
         state => state.wallpaper.seaPen.thumbnailsLoading);
@@ -65,8 +60,10 @@ export class SeaPenInputQueryElement extends WithPersonalizationStore {
 
   private onClickInputQuerySearchButton_() {
     assert(this.textValue_, 'input query should not be empty.');
-    searchSeaPenThumbnails(
-        this.textValue_, getSeaPenProvider(), this.getStore());
+    const query = {
+      textQuery: this.textValue_,
+    } as SeaPenQuery;
+    searchSeaPenThumbnails(query, getSeaPenProvider(), this.getStore());
     PersonalizationRouterElement.instance().goToRoute(
         Paths.SEA_PEN_RESULTS, {seaPenTemplateId: QUERY});
   }

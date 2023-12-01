@@ -644,7 +644,6 @@ function seaPenReducer(
       return {
         ...state,
         thumbnailsLoading: true,
-        query: action.query,
       };
     case SeaPenActionName.SET_SEA_PEN_THUMBNAILS:
       console.log('seaPenReducer, text: ', action.query);
@@ -653,7 +652,6 @@ function seaPenReducer(
       return {
         ...state,
         thumbnailsLoading: false,
-        query: action.query,
         thumbnails: action.images,
       };
     case SeaPenActionName.SET_RECENT_SEA_PEN_IMAGES:

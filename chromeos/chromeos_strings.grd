@@ -2743,23 +2743,6 @@
           Zone <ph name="ZONE_NUMBER">$1<ex>1</ex></ph>
         </message>
 
-        <!-- Personalization App SeaPen strings -->
-        <message name="IDS_PERSONALIZATION_APP_SEA_PEN_TEMPLATE_PARK" desc="SeaPen sample template Park">
-          A park in <ph name="CHIP_CITY">$1<ex>Paris</ex></ph> in the style of <ph name="CHIP_STYLE">$2<ex>photography</ex></ph>.
-        </message>
-        <message name="IDS_PERSONALIZATION_APP_SEA_PEN_CHIP_CITY_OPTION_PARIS" desc="SeaPen sample chip city option Paris">
-          Paris
-        </message>
-        <message name="IDS_PERSONALIZATION_APP_SEA_PEN_CHIP_CITY_OPTION_NEW_YORK" desc="SeaPen sample chip city option New York">
-          New York
-        </message>
-        <message name="IDS_PERSONALIZATION_APP_SEA_PEN_CHIP_STYLE_OPTION_PHOTOGRAPHY" desc="SeaPen sample chip style option photography">
-          photography
-        </message>
-        <message name="IDS_PERSONALIZATION_APP_SEA_PEN_CHIP_STYLE_OPTION_WATERCOLOR" desc="SeaPen sample chip style option watercolor">
-          watercolor
-        </message>
-
         <!-- Personalization App Time of Day strings -->
         <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_VIDEO_CLOUDS_ALBUM_TITLE" desc="Title for the clouds video in the ambient section of the hub.">
           Cloud Flow

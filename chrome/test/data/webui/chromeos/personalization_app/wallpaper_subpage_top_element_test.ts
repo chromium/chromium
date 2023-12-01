@@ -148,9 +148,10 @@ suite('WallpaperSubpageTopElementTest', function() {
   test('shows input element on sea pen results page', async () => {
     loadTimeData.overrideValues(
         {isSeaPenEnabled: true, isSeaPenTextInputEnabled: true});
-    wallpaperSubpageTopElement = initElement(
-        WallpaperSubpageTopElement,
-        {path: Paths.SEA_PEN_RESULTS, 'templateId': 'query'});
+    wallpaperSubpageTopElement = initElement(WallpaperSubpageTopElement, {
+      path: Paths.SEA_PEN_RESULTS,
+      'templateId': 'Query',
+    });
     await waitAfterNextRender(wallpaperSubpageTopElement);
 
     // wallpaper selected page isn't displayed.
@@ -209,13 +210,12 @@ suite('WallpaperSubpageTopElementTest', function() {
     inputQuery.value = 'this is a test query';
     searchButton.click();
 
-    assertEquals('query', selectedTemplateId);
+    assertEquals('Query', selectedTemplateId);
 
     await personalizationStore.waitForAction(
         SeaPenActionName.SET_SEA_PEN_THUMBNAILS);
 
     const expectedState: SeaPenState = {
-      query: 'this is a test query',
       thumbnailsLoading: false,
       thumbnails: [
         {

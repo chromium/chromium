@@ -33,10 +33,10 @@ std::vector<ash::SeaPenImage> MakeFakeImageResults(const std::string& query) {
 MockSeaPenFetcher::MockSeaPenFetcher() {
   ON_CALL(*this, FetchThumbnails)
       .WillByDefault(
-          [](const std::string& text, OnFetchThumbnailsComplete callback) {
-            DVLOG(2) << __PRETTY_FUNCTION__ << " text=" << text;
+          [](const ash::personalization_app::mojom::SeaPenQueryPtr& query,
+             OnFetchThumbnailsComplete callback) {
             base::ThreadPool::PostTaskAndReplyWithResult(
-                FROM_HERE, base::BindOnce(&MakeFakeImageResults, text),
+                FROM_HERE, base::BindOnce(&MakeFakeImageResults, ""),
                 std::move(callback));
           });
 

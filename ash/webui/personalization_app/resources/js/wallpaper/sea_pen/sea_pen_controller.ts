@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SeaPenProviderInterface, SeaPenThumbnail} from '../../../sea_pen.mojom-webui.js';
+import {SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from '../../../sea_pen.mojom-webui.js';
 import {PersonalizationStore} from '../../personalization_store.js';
 import {isNonEmptyArray} from '../../utils.js';
 import {SeaPenWallpaper} from '../constants.js';
@@ -74,7 +74,7 @@ export async function selectRecentSeaPenImage(
 }
 
 export async function searchSeaPenThumbnails(
-    query: string, provider: SeaPenProviderInterface,
+    query: SeaPenQuery, provider: SeaPenProviderInterface,
     store: PersonalizationStore): Promise<void> {
   store.dispatch(seaPenAction.beginSearchSeaPenThumbnailsAction(query));
   const {images} = await provider.searchWallpaper(query);

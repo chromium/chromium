@@ -108,7 +108,7 @@ class MockPersonalizationAppSeaPenProvider
               (override));
   MOCK_METHOD(void,
               SearchWallpaper,
-              (const std::string& text, SearchWallpaperCallback callback),
+              (const mojom::SeaPenQueryPtr, SearchWallpaperCallback callback),
               (override));
   MOCK_METHOD(void,
               SelectSeaPenThumbnail,
