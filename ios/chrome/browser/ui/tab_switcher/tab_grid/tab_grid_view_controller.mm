@@ -303,6 +303,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     self.currentPage = page;
     [self broadcastIncognitoContentVisibility];
     [self configureButtonsForActiveAndCurrentPage];
+    [self.mutator
+        pageChanged:page
+        interaction:TabSwitcherPageChangeInteraction::kAccessibilitySwipe];
+    [self.topToolbar.pageControl setSelectedPage:page animated:YES];
   }
 }
 

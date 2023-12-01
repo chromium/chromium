@@ -722,6 +722,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Page Control Tap"/>
   <int value="3" label="Page Control Drag"/>
   <int value="4" label="Item Drag"/>
+  <int value="5" label="Voice Over Swipe"/>
 </enum>
 
 <enum name="IOSUserInterfaceStyle">
