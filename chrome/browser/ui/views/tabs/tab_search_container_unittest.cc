@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -14,6 +15,8 @@
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/optimization_guide/core/model_execution/model_execution_features.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "fake_base_tab_strip_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
@@ -32,8 +35,11 @@ class TabSearchContainerTest : public ChromeViewsTestBase {
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
 
+    TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
     scoped_feature_list_.InitWithFeatures(
-        {features::kTabOrganization, features::kChromeRefresh2023}, {});
+        {features::kTabOrganization, features::kChromeRefresh2023,
+         features::kChromeWebuiRefresh2023},
+        {});
 
     tab_strip_controller_ =
         std::make_unique<FakeBaseTabStripControllerWithProfile>();

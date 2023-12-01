@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/safety_hub/password_status_check_service.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/recent_tabs_sub_menu_model.h"
@@ -42,6 +43,8 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/optimization_guide/core/model_execution/model_execution_features.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/performance_manager/public/features.h"
@@ -173,7 +176,9 @@ class TestAppMenuModelCR2023 : public AppMenuModelTest {
  public:
   TestAppMenuModelCR2023() {
     feature_list_.InitWithFeatures(
-        {features::kTabOrganization, features::kChromeRefresh2023}, {});
+        {features::kTabOrganization, features::kChromeRefresh2023,
+         features::kChromeWebuiRefresh2023},
+        {});
   }
 
   TestAppMenuModelCR2023(const TestAppMenuModelCR2023&) = delete;
@@ -388,6 +393,7 @@ TEST_F(TestAppMenuModelCR2023, PerformanceItemElevated) {
 }
 
 TEST_F(TestAppMenuModelCR2023, OrganizeTabsItem) {
+  TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
   AppMenuModel model(this, browser());
   model.Init();
   size_t organize_tabs_index =

@@ -1480,6 +1480,8 @@ static_library("ui") {
       "tabs/organization/tab_organization_service_factory.h",
       "tabs/organization/tab_organization_session.cc",
       "tabs/organization/tab_organization_session.h",
+      "tabs/organization/tab_organization_utils.cc",
+      "tabs/organization/tab_organization_utils.h",
       "tabs/organization/trigger.cc",
       "tabs/organization/trigger.h",
       "tabs/organization/trigger_observer.cc",

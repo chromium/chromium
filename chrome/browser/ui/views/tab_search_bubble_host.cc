@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -67,7 +68,7 @@ TabSearchBubbleHost::TabSearchBubbleHost(views::Button* button,
         base::UmaHistogramMediumTimes("Tabs.TabSearch.WindowDisplayedDuration3",
                                       time_elapsed);
       })) {
-  if (features::IsTabOrganization()) {
+  if (TabOrganizationUtils::GetInstance()->IsEnabled(profile)) {
     auto* const tab_organization_service =
         TabOrganizationServiceFactory::GetForProfile(profile);
     if (tab_organization_service) {
@@ -84,7 +85,7 @@ TabSearchBubbleHost::TabSearchBubbleHost(views::Button* button,
 }
 
 TabSearchBubbleHost::~TabSearchBubbleHost() {
-  if (features::IsTabOrganization()) {
+  if (TabOrganizationUtils::GetInstance()->IsEnabled(profile_)) {
     auto* const tab_organization_service =
         TabOrganizationServiceFactory::GetForProfile(profile_);
     if (tab_organization_service) {

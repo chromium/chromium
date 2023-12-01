@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/tabs/existing_tab_group_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/existing_window_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
@@ -147,7 +148,7 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
                 IDS_TAB_CXMENU_MOVE_TABS_TO_NEW_WINDOW, num_tabs));
   }
 
-  if (features::IsTabOrganization()) {
+  if (TabOrganizationUtils::GetInstance()->IsEnabled(tab_strip->profile())) {
     auto* const tab_organization_service =
         TabOrganizationServiceFactory::GetForProfile(tab_strip->profile());
     if (tab_organization_service) {

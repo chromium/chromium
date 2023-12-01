@@ -56,6 +56,7 @@
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
@@ -1705,7 +1706,7 @@ void AppMenuModel::Build() {
           kShowSearchCompanion);
     }
 #endif
-    if (features::IsTabOrganization()) {
+    if (TabOrganizationUtils::GetInstance()->IsEnabled(browser_->profile())) {
       auto* const tab_organization_service =
           TabOrganizationServiceFactory::GetForProfile(browser_->profile());
       if (tab_organization_service) {

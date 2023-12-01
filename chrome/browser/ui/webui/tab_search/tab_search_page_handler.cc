@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -187,9 +188,10 @@ TabSearchPageHandler::TabSearchPageHandler(
           base::BindRepeating(&TabSearchPageHandler::NotifyTabsChanged,
                               base::Unretained(this)))) {
   browser_tab_strip_tracker_.Init();
-  if (features::IsTabOrganization()) {
-    organization_service_ = TabOrganizationServiceFactory::GetForProfile(
-        Profile::FromWebUI(web_ui_));
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  if (TabOrganizationUtils::GetInstance()->IsEnabled(profile)) {
+    organization_service_ =
+        TabOrganizationServiceFactory::GetForProfile(profile);
     if (organization_service_) {
       organization_service_->AddObserver(this);
     }

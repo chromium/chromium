@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/views/tabs/tab_organization_button.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -50,7 +51,8 @@ TabSearchContainer::TabSearchContainer(TabStripController* tab_strip_controller,
                                                     gfx::Insets()),
       this);
 
-  if (features::IsTabOrganization()) {
+  Profile* profile = tab_strip_controller->GetProfile();
+  if (TabOrganizationUtils::GetInstance()->IsEnabled(profile)) {
     tab_organization_service_ = TabOrganizationServiceFactory::GetForProfile(
         tab_strip_controller->GetProfile());
   }
