@@ -103,6 +103,10 @@
     "expires": "Jul 1, 2023"
   },
 
+  "The threaded virtual suite tests with threaded compositing, which is the",
+  "configuration that we ship.  Because this is testing what we ship (in a way",
+  "that the default configuration does not), this virtual suite never expires.",
+
   "The skipped base tests require a compositor, e.g. some uses requestIdleCallback",
   {
     "prefix": "threaded",
@@ -142,7 +146,7 @@
       "--disable-features=DeprecateUnload",
       "--enable-threaded-compositing"
     ],
-    "expires": "Jul 1, 2023"
+    "expires": "never"
   },
   {
     "prefix": "disable-intersection-optimization",
