@@ -838,7 +838,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Screen.SelectedRecommendedPercentage"
-    units="%" expires_after="2023-12-01">
+    units="%" expires_after="2024-06-01">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
@@ -1075,7 +1075,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.UpdateScreen.UpdateDownloadingTime" units="ms"
-    expires_after="2023-12-01">
+    expires_after="2024-06-01">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
