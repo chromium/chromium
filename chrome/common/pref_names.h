@@ -3603,13 +3603,6 @@ inline constexpr char kCACertificateManagementAllowed[] =
     "ca_certificate_management_allowed";
 #endif
 
-#if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
-// Boolean that specifies whether the Chrome Root Store and built-in
-// certificate verifier should be used. If false, Chrome will not use the
-// Chrome Root Store.
-// If not set, Chrome will choose the root store based on experiments.
-inline constexpr char kChromeRootStoreEnabled[] = "chrome_root_store_enabled";
-#endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 inline constexpr char kEnforceLocalAnchorConstraintsEnabled[] =

@@ -220,14 +220,6 @@ class SystemNetworkContextManager {
   // the network process.
   void UpdateExplicitlyAllowedNetworkPorts();
 
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-  static bool IsUsingChromeRootStoreImpl(PrefService* local_state);
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-
-#if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
-  void UpdateChromeRootStoreEnabled();
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   // Applies the current value of the kEnforceLocalAnchorConstraintsEnabled

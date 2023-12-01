@@ -1,51 +1,5 @@
 [
   {
-    "os": [
-      "win",
-      "mac",
-      "linux",
-      "chromeos_ash",
-      "chromeos_lacros"
-    ],
-    "reason_for_missing_test": "Policy was removed on these platforms"
-  },
-  {
-    "os": [
-      "android"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Policy not set. (The actual value isn't used as long as the pref is unmanaged.)",
-        "policies": {},
-        "prefs": {
-          "chrome_root_store_enabled": {
-            "default_value": false,
-            "location": "local_state"
-          }
-        }
-      },
-      {
-        "policies": {
-          "ChromeRootStoreEnabled": false
-        },
-        "prefs": {
-          "chrome_root_store_enabled": {
-            "location": "local_state",
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "ChromeRootStoreEnabled": true
-        },
-        "prefs": {
-          "chrome_root_store_enabled": {
-            "location": "local_state",
-            "value": true
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Policy was removed"
   }
 ]
