@@ -1550,11 +1550,58 @@ TEST_F(AuctionV8HelperTest, SerializeDeserialize) {
           helper_->Deserialize(context, serialized);
       ASSERT_FALSE(deserialized.IsEmpty());
       std::string deserialized_as_json;
-      ASSERT_TRUE(helper_->ExtractJson(context, deserialized.ToLocalChecked(),
-                                       &deserialized_as_json));
+      ASSERT_EQ(helper_->ExtractJson(context, deserialized.ToLocalChecked(),
+                                     &deserialized_as_json),
+                AuctionV8Helper::ExtractJsonResult::kSuccess);
       EXPECT_EQ(R"({"a":false,"b":42,"c":{"d":[1,2,3]}})",
                 deserialized_as_json);
     }
+  }
+}
+
+TEST_F(AuctionV8HelperTest, ExtractJsonTimeout) {
+  // Use a shorter timeout so test runs faster.
+  const base::TimeDelta kTimeout = base::Milliseconds(20);
+  auto time_limit = helper_->CreateTimeLimit(kTimeout);
+  auto time_limit_scope =
+      std::make_unique<AuctionV8Helper::TimeLimitScope>(time_limit.get());
+
+  const char kScript[] = R"(
+    function make() {
+      return {
+        get field() { while(true); }
+      }
+    }
+  )";
+
+  {
+    v8::Local<v8::Context> context = helper_->CreateContext();
+    v8::Context::Scope context_scope(context);
+
+    v8::Local<v8::UnboundScript> script;
+    absl::optional<std::string> compile_error;
+    ASSERT_TRUE(helper_
+                    ->Compile(kScript, GURL("https://foo.test/"),
+                              /*debug_id=*/nullptr, compile_error)
+                    .ToLocal(&script));
+    EXPECT_EQ(compile_error, absl::nullopt);
+
+    std::vector<std::string> error_msgs;
+    v8::Local<v8::Value> result;
+    ASSERT_TRUE(helper_->RunScript(context, script,
+                                   /*debug_id=*/nullptr,
+                                   /*script_timeout=*/nullptr, error_msgs) &&
+                helper_
+                    ->CallFunction(context, /*debug_id=*/nullptr,
+                                   helper_->FormatScriptName(script), "make",
+                                   base::span<v8::Local<v8::Value>>(),
+                                   /*script_timeout=*/nullptr, error_msgs)
+                    .ToLocal(&result));
+    EXPECT_TRUE(error_msgs.empty());
+
+    std::string deserialized_as_json;
+    ASSERT_EQ(helper_->ExtractJson(context, result, &deserialized_as_json),
+              AuctionV8Helper::ExtractJsonResult::kTimeout);
   }
 }
 

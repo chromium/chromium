@@ -1132,6 +1132,15 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueAd) {
       /*expected_data_version=*/absl::nullopt,
       {"https://url.test/ generateBid() bid has invalid ad value."});
 
+  // JSON extraction failing to terminate is also handled.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: {get field() { while(true); } },
+          bid:1, render:"https://response.test/"})",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/ generateBid() serializing bid 'ad' value to JSON "
+       "timed out."});
+
   // Make sure recursive structures aren't allowed in ad field.
   RunGenerateBidWithJavascriptExpectingResult(
       R"(
@@ -1855,6 +1864,21 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
       {"https://url.test/:5 Uncaught TypeError: bid has invalid ad value."});
+
+  // Timeouts can also happen when serializing ad field to json.
+  RunGenerateBidWithJavascriptExpectingResult(
+      R"(
+        function generateBid() {
+          var a = {
+            get field() { while(true); }
+          }
+          setBid({ad: a, bid:1, render:"https://response.test/"});
+          return {};
+        }
+      )",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/ execution of `generateBid` timed out."});
 
   // --------
   // Vary bid

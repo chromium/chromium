@@ -316,9 +316,14 @@ IdlConvert::Status SetBidBindings::SetBidImpl(
   if (!idl.ad.has_value()) {
     ad_json = "null";
   } else {
-    if (!v8_helper_->ExtractJson(context, *idl.ad, &ad_json)) {
+    AuctionV8Helper::ExtractJsonResult json_result =
+        v8_helper_->ExtractJson(context, *idl.ad, &ad_json);
+    if (json_result == AuctionV8Helper::ExtractJsonResult::kFailure) {
       return IdlConvert::Status::MakeErrorMessage(
           base::StrCat({error_prefix, "bid has invalid ad value."}));
+    } else if (json_result == AuctionV8Helper::ExtractJsonResult::kTimeout) {
+      return IdlConvert::Status::MakeTimeout(base::StrCat(
+          {error_prefix, "serializing bid 'ad' value to JSON timed out."}));
     }
   }
 

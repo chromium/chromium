@@ -255,11 +255,12 @@ class CONTENT_EXPORT AuctionV8Helper
                                      base::StringPiece utf8_json,
                                      v8::Local<v8::Object> object);
 
-  // Attempts to convert |value| to JSON and write it to |out|. Returns false on
-  // failure.
-  bool ExtractJson(v8::Local<v8::Context> context,
-                   v8::Local<v8::Value> value,
-                   std::string* out);
+  enum class ExtractJsonResult { kSuccess, kFailure, kTimeout };
+
+  // Attempts to convert |value| to JSON and write it to |out|.
+  ExtractJsonResult ExtractJson(v8::Local<v8::Context> context,
+                                v8::Local<v8::Value> value,
+                                std::string* out);
 
   // Serializes |value| via v8::ValueSerializer and returns it. This is faster
   // than JSON. The return value can be used (and deserialized) in any context,
