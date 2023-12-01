@@ -344,7 +344,8 @@ void FullscreenController::OnTabDetachedFromView(WebContents* old_contents) {
 
 void FullscreenController::OnTabClosing(WebContents* web_contents) {
   if (IsFullscreenWithinTab(web_contents))
-    web_contents->ExitFullscreen();
+    web_contents->ExitFullscreen(
+        /* will_cause_resize */ IsFullscreenCausedByTab());
   else
     ExclusiveAccessControllerBase::OnTabClosing(web_contents);
 }
@@ -368,15 +369,16 @@ void FullscreenController::WindowFullscreenStateChanged() {
   }
 }
 
-void FullscreenController::FullscreenTransitionCompleted() {
+void FullscreenController::FullscreenTransititionCompleted() {
   if (fullscreen_transition_complete_callback_)
     std::move(fullscreen_transition_complete_callback_).Run();
-
+#if DCHECK_IS_ON()
   if (started_fullscreen_transition_ && IsTabFullscreen()) {
     DCHECK(exclusive_access_tab());
     DCHECK_EQ(tab_fullscreen_target_display_id_,
               GetDisplayId(*exclusive_access_tab()));
   }
+#endif  // DCHECK_IS_ON()
   tab_fullscreen_target_display_id_ = display::kInvalidDisplayId;
   started_fullscreen_transition_ = false;
 }
@@ -393,7 +395,8 @@ bool FullscreenController::HandleUserPressedEscape() {
   WebContents* const active_web_contents =
       exclusive_access_manager()->context()->GetActiveWebContents();
   if (IsFullscreenWithinTab(active_web_contents)) {
-    active_web_contents->ExitFullscreen();
+    active_web_contents->ExitFullscreen(
+        /* will_cause_resize */ IsFullscreenCausedByTab());
     return true;
   }
 
@@ -436,17 +439,17 @@ void FullscreenController::NotifyFullscreenChange() {
 }
 
 void FullscreenController::NotifyTabExclusiveAccessLost() {
-  if (!exclusive_access_tab()) {
-    return;
+  if (exclusive_access_tab()) {
+    WebContents* web_contents = exclusive_access_tab();
+    SetTabWithExclusiveAccess(nullptr);
+    requesting_origin_ = GURL();
+    bool will_cause_resize = IsFullscreenCausedByTab();
+    state_prior_to_tab_fullscreen_ = STATE_INVALID;
+    tab_fullscreen_ = false;
+    web_contents->ExitFullscreen(will_cause_resize);
+    exclusive_access_manager()->UpdateExclusiveAccessExitBubbleContent(
+        ExclusiveAccessBubbleHideCallback());
   }
-  WebContents* web_contents = exclusive_access_tab();
-  SetTabWithExclusiveAccess(nullptr);
-  requesting_origin_ = GURL();
-  state_prior_to_tab_fullscreen_ = STATE_INVALID;
-  tab_fullscreen_ = false;
-  web_contents->ExitFullscreen();
-  exclusive_access_manager()->UpdateExclusiveAccessExitBubbleContent(
-      ExclusiveAccessBubbleHideCallback());
 }
 
 void FullscreenController::ToggleFullscreenModeInternal(

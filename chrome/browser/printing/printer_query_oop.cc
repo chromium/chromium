@@ -211,7 +211,7 @@ void PrinterQueryOop::UpdatePrintSettings(base::Value::Dict new_settings,
     // http://crbug.com/728276
     content::WebContents* web_contents = GetWebContents();
     if (web_contents && web_contents->IsFullscreen()) {
-      web_contents->ExitFullscreen();
+      web_contents->ExitFullscreen(true);
     }
 #endif
   } else {
@@ -354,7 +354,7 @@ void PrinterQueryOop::SendAskUserForSettings(uint32_t document_page_count,
   // Running a dialog causes an exit to webpage-initiated fullscreen.
   // http://crbug.com/728276
   if (web_contents && web_contents->IsFullscreen()) {
-    web_contents->ExitFullscreen();
+    web_contents->ExitFullscreen(true);
   }
 
   PrintBackendServiceManager& service_mgr =

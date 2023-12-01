@@ -59,7 +59,8 @@ class DialogOverlayImpl : public ui::ViewAndroidObserver,
   // WebContentsObserver
   void OnVisibilityChanged(content::Visibility visibility) override;
   void WebContentsDestroyed() override;
-  void DidToggleFullscreenModeForTab(bool entered_fullscreen) override;
+  void DidToggleFullscreenModeForTab(bool entered_fullscreen,
+                                     bool will_cause_resize) override;
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
   void RenderFrameHostChanged(RenderFrameHost* old_host,
                               RenderFrameHost* new_host) override;

@@ -1273,7 +1273,7 @@ void WebTestControlHost::OnTestFinished() {
   if (!printer_->output_finished())
     printer_->PrintImageFooter();
   if (main_window_)
-    main_window_->web_contents()->ExitFullscreen();
+    main_window_->web_contents()->ExitFullscreen(/*will_cause_resize=*/false);
   devtools_bindings_.reset();
   devtools_protocol_test_bindings_.reset();
   accumulated_web_test_runtime_flags_changes_.clear();

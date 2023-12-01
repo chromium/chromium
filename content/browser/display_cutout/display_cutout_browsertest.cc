@@ -200,7 +200,9 @@ class DisplayCutoutBrowserTest : public ContentBrowserTest {
         frame, is_fullscreen, blink::mojom::FullscreenOptions::New());
   }
 
-  void SimulateFullscreenExit() { web_contents_impl()->ExitFullscreenMode(); }
+  void SimulateFullscreenExit() {
+    web_contents_impl()->ExitFullscreenMode(true);
+  }
 
   RenderFrameHostImpl* MainFrame() {
     return web_contents_impl()->GetPrimaryMainFrame();

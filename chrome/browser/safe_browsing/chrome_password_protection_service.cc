@@ -415,7 +415,7 @@ void ChromePasswordProtectionService::ShowModalWarning(
 
   // Exit fullscreen if this |web_contents| is showing in fullscreen mode.
   if (web_contents->IsFullscreen())
-    web_contents->ExitFullscreen();
+    web_contents->ExitFullscreen(true);
 
 #if BUILDFLAG(IS_ANDROID)
   (new PasswordReuseControllerAndroid(
@@ -511,7 +511,7 @@ void ChromePasswordProtectionService::ShowInterstitial(
          password_type.account_type() == ReusedPasswordAccountType::GSUITE);
   // Exit fullscreen if this |web_contents| is showing in fullscreen mode.
   if (web_contents->IsFullscreen())
-    web_contents->ExitFullscreen();
+    web_contents->ExitFullscreen(/*will_cause_resize=*/true);
 
   content::OpenURLParams params(
       GURL(chrome::kChromeUIResetPasswordURL), content::Referrer(),

@@ -46,7 +46,8 @@ class FullscreenWebContentsObserver : public content::WebContentsObserver {
       run_loop_.Quit();
     }
   }
-  void DidToggleFullscreenModeForTab(bool entered_fullscreen) override {
+  void DidToggleFullscreenModeForTab(bool entered_fullscreen,
+                                     bool will_cause_resize) override {
     if (!entered_fullscreen) {
       did_exit_ = true;
       run_loop_.Quit();

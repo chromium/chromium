@@ -2340,7 +2340,7 @@ void Browser::SetWebContentsBlocked(content::WebContents* web_contents,
     // class-level comments for further details.
     if (!exclusive_access_manager_->fullscreen_controller()
              ->IsFullscreenWithinTab(web_contents)) {
-      web_contents->ExitFullscreen();
+      web_contents->ExitFullscreen(true);
     }
   }
 

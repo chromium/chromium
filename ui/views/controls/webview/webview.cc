@@ -377,7 +377,8 @@ void WebView::RenderFrameHostChanged(content::RenderFrameHost* old_host,
   SetUpNewMainFrame(new_host);
 }
 
-void WebView::DidToggleFullscreenModeForTab(bool entered_fullscreen) {
+void WebView::DidToggleFullscreenModeForTab(bool entered_fullscreen,
+                                            bool will_cause_resize) {
   // Notify a bounds change on fullscreen change even though it actually
   // doesn't change. Cast needs this see https://crbug.com/1144255.
   OnBoundsChanged(bounds());

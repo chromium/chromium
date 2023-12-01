@@ -172,7 +172,8 @@ class WEBVIEW_EXPORT WebView : public View,
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameHostChanged(content::RenderFrameHost* old_host,
                               content::RenderFrameHost* new_host) override;
-  void DidToggleFullscreenModeForTab(bool entered_fullscreen) override;
+  void DidToggleFullscreenModeForTab(bool entered_fullscreen,
+                                     bool will_cause_resize) override;
   void OnWebContentsFocused(
       content::RenderWidgetHost* render_widget_host) override;
   void AXTreeIDForMainFrameHasChanged() override;

@@ -244,7 +244,7 @@ class MockWebContentsObserver : public WebContentsObserver {
   MOCK_METHOD(void, DidUpdateAudioMutingState, (bool muted), (override));
   MOCK_METHOD(void,
               DidToggleFullscreenModeForTab,
-              (bool entered_fullscreen),
+              (bool entered_fullscreen, bool will_cause_resize),
               (override));
   MOCK_METHOD(void, DidAcquireFullscreen, (RenderFrameHost* rfh), (override));
   MOCK_METHOD(void,

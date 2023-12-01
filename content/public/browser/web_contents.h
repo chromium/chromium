@@ -1268,8 +1268,11 @@ class WebContents : public PageNavigator,
   // changed so that it can be recomputed and sent to the renderer.
   virtual void OnWebPreferencesChanged() = 0;
 
-  // Requests the renderer to exit fullscreen and sends a resize message.
-  virtual void ExitFullscreen() = 0;
+  // Requests the renderer to exit fullscreen.
+  // |will_cause_resize| indicates whether the fullscreen change causes a
+  // view resize. e.g. This will be false when going from tab fullscreen to
+  // browser fullscreen.
+  virtual void ExitFullscreen(bool will_cause_resize) = 0;
 
   // The WebContents is trying to take some action that would cause user
   // confusion if taken while in fullscreen. If this WebContents or any outer

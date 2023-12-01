@@ -318,7 +318,10 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
       const blink::mojom::FullscreenOptions& options) {}
 
   // Notification that the frame wants to go out of fullscreen mode.
-  virtual void ExitFullscreenMode() {}
+  // |will_cause_resize| indicates whether the fullscreen change causes a
+  // view resize. e.g. This will be false when going from tab fullscreen to
+  // browser fullscreen.
+  virtual void ExitFullscreenMode(bool will_cause_resize) {}
 
   // Notification that this frame has changed fullscreen state.
   virtual void FullscreenStateChanged(

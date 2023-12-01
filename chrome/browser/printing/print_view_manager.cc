@@ -452,7 +452,7 @@ void PrintViewManager::OnScriptedPrintPreviewCallback(
   // Running a dialog causes an exit to webpage-initiated fullscreen.
   // http://crbug.com/728276
   if (web_contents()->IsFullscreen())
-    web_contents()->ExitFullscreen();
+    web_contents()->ExitFullscreen(true);
 
   auto* dialog_controller = PrintPreviewDialogController::GetInstance();
   CHECK(dialog_controller);

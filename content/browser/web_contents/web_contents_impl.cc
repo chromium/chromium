@@ -3851,12 +3851,14 @@ void WebContentsImpl::EnterFullscreenMode(
   }
 
   observers_.NotifyObservers(
-      &WebContentsObserver::DidToggleFullscreenModeForTab, IsFullscreen());
+      &WebContentsObserver::DidToggleFullscreenModeForTab, IsFullscreen(),
+      false);
   FullscreenContentsSet(GetBrowserContext())->insert(this);
 }
 
-void WebContentsImpl::ExitFullscreenMode() {
-  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::ExitFullscreenMode");
+void WebContentsImpl::ExitFullscreenMode(bool will_cause_resize) {
+  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::ExitFullscreenMode",
+                        "will_cause_resize", will_cause_resize);
   // When WebView is the `delegate_` we can end up with VisualProperties changes
   // synchronously. Notify the view ahead so it can handle the transition.
   if (auto* view = GetRenderWidgetHostView()) {
@@ -3879,16 +3881,19 @@ void WebContentsImpl::ExitFullscreenMode() {
   // entering "tab fullscreen". Exiting the contents "tab fullscreen" then won't
   // have the side effect of the view resizing, hence the explicit call here is
   // required.
-  if (RenderWidgetHostView* rwhv = GetRenderWidgetHostView()) {
-    if (RenderWidgetHost* render_widget_host = rwhv->GetRenderWidgetHost()) {
-      render_widget_host->SynchronizeVisualProperties();
+  if (!will_cause_resize) {
+    if (RenderWidgetHostView* rwhv = GetRenderWidgetHostView()) {
+      if (RenderWidgetHost* render_widget_host = rwhv->GetRenderWidgetHost()) {
+        render_widget_host->SynchronizeVisualProperties();
+      }
     }
   }
 
   current_fullscreen_frame_id_ = GlobalRenderFrameHostId();
 
   observers_.NotifyObservers(
-      &WebContentsObserver::DidToggleFullscreenModeForTab, IsFullscreen());
+      &WebContentsObserver::DidToggleFullscreenModeForTab, IsFullscreen(),
+      will_cause_resize);
 
   if (safe_area_insets_host_) {
     safe_area_insets_host_->DidExitFullscreen();
@@ -6016,12 +6021,12 @@ bool WebContentsImpl::WasEverAudible() {
   return was_ever_audible_;
 }
 
-void WebContentsImpl::ExitFullscreen() {
+void WebContentsImpl::ExitFullscreen(bool will_cause_resize) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::ExitFullscreen");
   // Clean up related state and initiate the fullscreen exit.
   GetRenderViewHost()->GetWidget()->RejectMouseLockOrUnlockIfNecessary(
       blink::mojom::PointerLockResult::kUserRejected);
-  ExitFullscreenMode();
+  ExitFullscreenMode(will_cause_resize);
 }
 
 base::ScopedClosureRunner WebContentsImpl::ForSecurityDropFullscreen(
@@ -6052,7 +6057,7 @@ base::ScopedClosureRunner WebContentsImpl::ForSecurityDropFullscreen(
     if (is_fullscreen(fullscreen_contents, display_id)) {
       auto opener_contentses = GetAllOpeningWebContents(fullscreen_contents);
       if (opener_contentses.count(this)) {
-        fullscreen_contents->ExitFullscreen();
+        fullscreen_contents->ExitFullscreen(true);
       }
     }
   }
@@ -6068,7 +6073,7 @@ base::ScopedClosureRunner WebContentsImpl::ForSecurityDropFullscreen(
 
   for (auto* opener : GetAllOpeningWebContents(this)) {
     if (is_fullscreen(opener, display_id)) {
-      opener->ExitFullscreen();
+      opener->ExitFullscreen(true);
     }
 
     // ...block the WebContents from entering fullscreen until further notice.
@@ -6412,7 +6417,7 @@ void WebContentsImpl::DidNavigateMainFramePreCommit(
   }
 
   if (IsFullscreen()) {
-    ExitFullscreen();
+    ExitFullscreen(false);
   }
 
   if (base::FeatureList::IsEnabled(
@@ -7964,7 +7969,7 @@ void WebContentsImpl::RenderViewTerminated(RenderViewHost* rvh,
   // Ensure fullscreen mode is exited in the |delegate_| since a crashed
   // renderer may not have made a clean exit.
   if (IsFullscreen()) {
-    ExitFullscreenMode();
+    ExitFullscreenMode(false);
   }
 
   // Ensure any video or document in Picture-in-Picture is exited in the

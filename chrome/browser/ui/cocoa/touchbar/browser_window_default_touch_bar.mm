@@ -216,7 +216,8 @@ class TouchBarNotificationBridge : public CommandObserver,
   }
 
   // WebContentsObserver:
-  void DidToggleFullscreenModeForTab(bool entered_fullscreen) override {
+  void DidToggleFullscreenModeForTab(bool entered_fullscreen,
+                                     bool will_cause_resize) override {
     UpdateTouchBar();
   }
 
