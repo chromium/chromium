@@ -12,6 +12,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
+#include "base/check_op.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -133,7 +134,10 @@ class DeskProfilesButton::MenuController : public ui::SimpleMenuModel::Delegate,
 
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override {
-    // TODO(shidi): Link profile summary to context menu item.
+    // TODO(shidi) : Update the command id to include other operations.
+    CHECK_LT(command_id, static_cast<int>(profiles_.size()));
+    profile_button_->desk_->SetLacrosProfileId(
+        profiles_[command_id].profile_id);
   }
 
   // views::ContextMenuController:
@@ -173,6 +177,7 @@ class DeskProfilesButton::MenuController : public ui::SimpleMenuModel::Delegate,
   // `menu_model_adapter_`.
   void OnMenuClosed() {
     menu_runner_.reset();
+    context_menu_model_.Clear();
     context_menu_adapter_.reset();
   }
 
