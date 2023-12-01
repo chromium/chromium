@@ -702,6 +702,7 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 
 // Scales the tab views relative to the current width of the cell.
 - (void)scaleTabViews {
+  DUMP_WILL_BE_CHECK_NE(_previousTabViewWidth, 0);
   CGFloat scale = self.bounds.size.width / _previousTabViewWidth;
   ScaleView(self.topTabView, scale);
   ScaleView(self.mainTabView, scale);
