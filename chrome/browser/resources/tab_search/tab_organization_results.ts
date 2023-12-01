@@ -82,7 +82,9 @@ export class TabOrganizationResultsElement extends PolymerElement {
   }
 
   private onTabsChange_() {
-    this.lastFocusedIndex_ = 0;
+    if (this.lastFocusedIndex_ > this.tabs.length - 1) {
+      this.lastFocusedIndex_ = 0;
+    }
   }
 
   private getTabIndex_(index: number): number {
@@ -140,10 +142,11 @@ export class TabOrganizationResultsElement extends PolymerElement {
 
   private onTabRemove_(event: DomRepeatEvent<TabData>) {
     const index = this.tabDatas_.indexOf(event.model.item);
-    this.splice('tabs', index, 1);
+    const tab = this.tabs[index];
     this.dispatchEvent(new CustomEvent('remove-tab', {
       bubbles: true,
       composed: true,
+      detail: {tab},
     }));
   }
 

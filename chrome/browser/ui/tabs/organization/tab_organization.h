@@ -70,6 +70,7 @@ class TabOrganization : public TabData::Observer {
   void NotifyObserversOfUpdate();
 
   TabDatas tab_datas_;
+  std::vector<TabData::TabID> user_removed_tab_ids_;
   std::vector<std::u16string> names_;
   absl::variant<size_t, std::u16string> current_name_;
   absl::optional<UserChoice> choice_;

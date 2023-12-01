@@ -237,6 +237,11 @@ export class TabOrganizationPageElement extends PolymerElement {
     this.apiProxy_.startTabGroupTutorial();
   }
 
+  private onRemoveTab_(event: CustomEvent<{tab: Tab}>) {
+    this.apiProxy_.removeTabFromOrganization(
+        this.sessionId_, this.organizationId_, event.detail.tab);
+  }
+
   private onLearnMoreClick_() {
     this.apiProxy_.openHelpPage();
   }

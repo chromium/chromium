@@ -440,6 +440,29 @@ void TabSearchPageHandler::RequestTabOrganization() {
   session->StartRequest();
 }
 
+void TabSearchPageHandler::RemoveTabFromOrganization(
+    int32_t session_id,
+    int32_t organization_id,
+    tab_search::mojom::TabPtr tab) {
+  if (!organization_service_) {
+    return;
+  }
+
+  TabOrganization* organization =
+      GetTabOrganization(organization_service_, session_id, organization_id);
+  if (!organization) {
+    return;
+  }
+
+  for (const auto& tab_data : organization->tab_datas()) {
+    if (extensions::ExtensionTabUtil::GetTabId(tab_data->web_contents()) ==
+        tab->tab_id) {
+      organization->RemoveTabData(tab_data->tab_id());
+      break;
+    }
+  }
+}
+
 void TabSearchPageHandler::SaveRecentlyClosedExpandedPref(bool expanded) {
   Profile::FromWebUI(web_ui_)->GetPrefs()->SetBoolean(
       tab_search_prefs::kTabSearchRecentlyClosedSectionExpanded, expanded);

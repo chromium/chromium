@@ -79,6 +79,9 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
       tab_search::mojom::SwitchToTabInfoPtr switch_to_tab_info) override;
   void OpenRecentlyClosedEntry(int32_t session_id) override;
   void RequestTabOrganization() override;
+  void RemoveTabFromOrganization(int32_t session_id,
+                                 int32_t organization_id,
+                                 tab_search::mojom::TabPtr tab) override;
   void SaveRecentlyClosedExpandedPref(bool expanded) override;
   void SetTabIndex(int32_t index) override;
   void StartTabGroupTutorial() override;

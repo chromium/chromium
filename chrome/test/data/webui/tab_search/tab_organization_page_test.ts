@@ -130,10 +130,19 @@ suite('TabOrganizationPageTest', () => {
   });
 
   test('Tab close removes from tab list', async () => {
-    await tabOrganizationResultsSetup();
+    await tabOrganizationPageSetup();
 
-    const tabRows =
-        tabOrganizationResults.shadowRoot!.querySelectorAll('tab-search-item');
+    testApiProxy.getCallbackRouterRemote().tabOrganizationSessionUpdated(
+        createSession({state: TabOrganizationState.kSuccess}));
+    await flushTasks();
+
+    const results = tabOrganizationPage.shadowRoot!.querySelector(
+        'tab-organization-results');
+    assertTrue(!!results);
+
+    assertEquals(0, testApiProxy.getCallCount('removeTabFromOrganization'));
+
+    const tabRows = results.shadowRoot!.querySelectorAll('tab-search-item');
     assertTrue(!!tabRows);
     assertEquals(3, tabRows.length);
 
@@ -141,12 +150,8 @@ suite('TabOrganizationPageTest', () => {
         tabRows[0]!.shadowRoot!.querySelector('cr-icon-button');
     assertTrue(!!cancelButton);
     cancelButton.click();
-    await flushTasks();
 
-    const tabRowsAfterCancel =
-        tabOrganizationResults.shadowRoot!.querySelectorAll('tab-search-item');
-    assertTrue(!!tabRowsAfterCancel);
-    assertEquals(2, tabRowsAfterCancel.length);
+    assertEquals(1, testApiProxy.getCallCount('removeTabFromOrganization'));
   });
 
   test('Arrow keys traverse focus', async () => {

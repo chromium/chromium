@@ -37,6 +37,9 @@ export interface TabSearchApiProxy {
 
   getCallbackRouter(): PageCallbackRouter;
 
+  removeTabFromOrganization(
+      sessionId: number, organizationId: number, tab: Tab): void;
+
   saveRecentlyClosedExpandedPref(expanded: boolean): void;
 
   setTabIndex(index: number): void;
@@ -118,6 +121,11 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
 
   getCallbackRouter() {
     return this.callbackRouter;
+  }
+
+  removeTabFromOrganization(
+      sessionId: number, organizationId: number, tab: Tab) {
+    this.handler.removeTabFromOrganization(sessionId, organizationId, tab);
   }
 
   saveRecentlyClosedExpandedPref(expanded: boolean) {

@@ -113,9 +113,9 @@ void TabOrganization::RemoveTabData(TabData::TabID tab_id) {
                    });
   CHECK(position != tab_datas_.end());
 
-  // The TabData object will notify observers it is being destroyed which will
-  // notify the TabOrganization observers.
+  user_removed_tab_ids_.push_back(tab_id);
   tab_datas_.erase(position);
+  NotifyObserversOfUpdate();
 }
 
 void TabOrganization::SetCurrentName(
@@ -198,8 +198,14 @@ void TabOrganization::OnTabDataUpdated(const TabData* tab_data) {
 }
 
 void TabOrganization::OnTabDataDestroyed(TabData::TabID tab_id) {
-  invalidated_by_tab_change_ = true;
-  NotifyObserversOfUpdate();
+  // Only invalidate if RemoveTabData was not previously called on this tab id.
+  // Closure of a tab that is a part of an organization should invalidate it,
+  // but removal of the tab from the organization should not.
+  if (std::find(user_removed_tab_ids_.begin(), user_removed_tab_ids_.end(),
+                tab_id) == user_removed_tab_ids_.end()) {
+    invalidated_by_tab_change_ = true;
+    NotifyObserversOfUpdate();
+  }
 }
 
 void TabOrganization::NotifyObserversOfUpdate() {

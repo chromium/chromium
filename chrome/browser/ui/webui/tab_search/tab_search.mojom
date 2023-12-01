@@ -226,6 +226,9 @@ interface PageHandler {
   // Manually trigger a new tab organization request.
   RequestTabOrganization();
 
+  // Remove the tab from the tab organization.
+  RemoveTabFromOrganization(int32 session_id, int32 organization_id, Tab tab);
+
   // Save a user's preference for the state of the expandable 'Recently Closed'
   // list section.
   SaveRecentlyClosedExpandedPref(bool expanded);
