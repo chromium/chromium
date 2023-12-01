@@ -4,6 +4,9 @@
 
 source_set("grid") {
   sources = [
+    "base_grid_coordinator+subclassing.h",
+    "base_grid_coordinator.h",
+    "base_grid_coordinator.mm",
     "base_grid_mediator.h",
     "base_grid_mediator.mm",
     "grid_coordinator_audience.h",
@@ -26,6 +29,7 @@ source_set("grid") {
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/reading_list/model",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",

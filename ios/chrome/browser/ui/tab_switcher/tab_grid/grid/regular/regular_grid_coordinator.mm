@@ -23,39 +23,14 @@
 // Redefined as readwrite.
 @property(nonatomic, readwrite, strong)
     RegularGridViewController* gridViewController;
-@property(nonatomic, readwrite, strong)
-    UIViewController* disabledViewController;
-@property(nonatomic, readwrite, strong)
-    GridContainerViewController* gridContainerViewController;
 
 @end
 
 @implementation RegularGridCoordinator {
   // Mediator of regular grid.
   RegularGridMediator* _mediator;
-  // Mutator that handles toolbars changes.
-  __weak id<GridToolbarsMutator> _toolbarsMutator;
-  // Delegate to handle presenting the action sheet.
-  __weak id<GridMediatorDelegate> _gridMediatorDelegate;
   // Mediator for pinned Tabs.
   PinnedTabsMediator* _pinnedTabsMediator;
-}
-
-- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
-                                   browser:(Browser*)browser
-                           toolbarsMutator:
-                               (id<GridToolbarsMutator>)toolbarsMutator
-                      gridMediatorDelegate:(id<GridMediatorDelegate>)delegate {
-  CHECK(baseViewController);
-  CHECK(browser);
-  if (self = [super initWithBaseViewController:baseViewController
-                                       browser:browser]) {
-    CHECK(toolbarsMutator);
-    CHECK(delegate);
-    _toolbarsMutator = toolbarsMutator;
-    _gridMediatorDelegate = delegate;
-  }
-  return self;
 }
 
 #pragma mark - Property Implementation.
@@ -97,8 +72,8 @@
   _mediator = [[RegularGridMediator alloc] init];
   _mediator.consumer = self.gridViewController;
   _mediator.browser = self.browser;
-  _mediator.delegate = _gridMediatorDelegate;
-  _mediator.toolbarsMutator = _toolbarsMutator;
+  _mediator.delegate = self.gridMediatorDelegate;
+  _mediator.toolbarsMutator = self.toolbarsMutator;
   _mediator.actionWrangler = self.tabGridViewController;
 
   self.tabGridViewController.regularTabsDelegate = _mediator;

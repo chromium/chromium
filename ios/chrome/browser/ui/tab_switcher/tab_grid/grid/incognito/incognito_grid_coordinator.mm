@@ -26,20 +26,11 @@
 // Redefined as readwrite.
 @property(nonatomic, readwrite, strong)
     IncognitoGridViewController* gridViewController;
-@property(nonatomic, readwrite, strong)
-    UIViewController* disabledViewController;
-@property(nonatomic, readwrite, strong)
-    GridContainerViewController* gridContainerViewController;
-
 @end
 
 @implementation IncognitoGridCoordinator {
   // Mediator of incognito grid.
   IncognitoGridMediator* _mediator;
-  // Mutator that handle toolbars changes.
-  __weak id<GridToolbarsMutator> _toolbarsMutator;
-  // Delegate to handle presenting the action sheet.
-  __weak id<GridMediatorDelegate> _gridMediatorDelegate;
   // Reauth scene agent.
   IncognitoReauthSceneAgent* _reauthAgent;
   // Mediator for incognito reauth.
@@ -61,14 +52,13 @@
                       gridMediatorDelegate:(id<GridMediatorDelegate>)delegate {
   CHECK(baseViewController);
   CHECK(browser);
+  CHECK(toolbarsMutator);
+  CHECK(delegate);
   if (self = [super initWithBaseViewController:baseViewController
-                                       browser:browser]) {
-    CHECK(toolbarsMutator);
-    CHECK(delegate);
+                                       browser:browser
+                               toolbarsMutator:toolbarsMutator
+                          gridMediatorDelegate:delegate]) {
     _browser = browser->AsWeakPtr();
-    _toolbarsMutator = toolbarsMutator;
-    _gridMediatorDelegate = delegate;
-
     _incognitoEnabled =
         !IsIncognitoModeDisabled(self.browser->GetBrowserState()
                                      ->GetOriginalChromeBrowserState()
@@ -115,8 +105,8 @@
   }
 
   _mediator.browser = self.browser;
-  _mediator.delegate = _gridMediatorDelegate;
-  _mediator.toolbarsMutator = _toolbarsMutator;
+  _mediator.delegate = self.gridMediatorDelegate;
+  _mediator.toolbarsMutator = self.toolbarsMutator;
   _mediator.actionWrangler = self.tabGridViewController;
   _mediator.incognitoDelegate = self;
   _mediator.reauthSceneAgent = _reauthAgent;
