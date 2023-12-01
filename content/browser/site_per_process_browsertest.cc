@@ -10198,8 +10198,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       root->child_at(0)->child_at(0),
       embedded_test_server()->GetURL("baz.com", "/title1.html")));
 
+  deleted_observer_grandchild.WaitUntilDeleted();
   if (sandboxed_iframes_are_isolated) {
-    deleted_observer_grandchild.WaitUntilDeleted();
     switch (blink::features::kIsolateSandboxedIframesGroupingParam.Get()) {
       case blink::features::IsolateSandboxedIframesGrouping::kPerSite:
       case blink::features::IsolateSandboxedIframesGrouping::kPerOrigin:
