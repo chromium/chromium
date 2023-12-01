@@ -107,19 +107,8 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
       LayoutBox::PageBoundaryRule) const;
   LayoutUnit ColumnLogicalTopForOffset(LayoutUnit offset_in_flow_thread) const;
 
-  // If SnapToColumnPolicy is SnapToColumn, visualPointToFlowThreadPoint() won't
-  // return points that lie outside the bounds of the columns: Before converting
-  // to a flow thread position, if the block direction coordinate is outside the
-  // column, snap to the bounds of the column, and reset the inline direction
-  // coordinate to the start position in the column. The effect of this is that
-  // if the block position is before the column rectangle, we'll get to the
-  // beginning of this column, while if the block position is after the column
-  // rectangle, we'll get to the beginning of the next column. This is behavior
-  // that positionForPoint() depends on.
-  enum SnapToColumnPolicy { kDontSnapToColumn, kSnapToColumn };
   LogicalOffset VisualPointToFlowThreadPoint(
-      const LogicalOffset& visual_point,
-      SnapToColumnPolicy = kDontSnapToColumn) const;
+      const LogicalOffset& visual_point) const;
 
   PhysicalRect FragmentsBoundingBox(
       const PhysicalRect& bounding_box_in_flow_thread) const;

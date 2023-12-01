@@ -99,22 +99,11 @@ LayoutUnit MultiColumnFragmentainerGroup::ColumnLogicalTopForOffset(
 }
 
 LogicalOffset MultiColumnFragmentainerGroup::VisualPointToFlowThreadPoint(
-    const LogicalOffset& visual_point,
-    SnapToColumnPolicy snap) const {
+    const LogicalOffset& visual_point) const {
   unsigned column_index = ColumnIndexAtVisualPoint(visual_point);
   LogicalRect column_rect = ColumnRectAt(column_index);
   LogicalOffset local_point(visual_point);
   local_point -= column_rect.offset;
-  if (snap == kSnapToColumn) {
-    LayoutUnit column_start = column_set_->StyleRef().IsLeftToRightDirection()
-                                  ? LayoutUnit()
-                                  : column_rect.size.inline_size;
-    if (local_point.block_offset < 0) {
-      local_point = LogicalOffset(column_start, LayoutUnit());
-    } else if (local_point.block_offset > ColumnLogicalHeight()) {
-      local_point = LogicalOffset(column_start, ColumnLogicalHeight());
-    }
-  }
   return LogicalOffset(
       local_point.inline_offset,
       local_point.block_offset + LogicalTopInFlowThreadAt(column_index));
