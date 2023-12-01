@@ -47,7 +47,18 @@ struct WebRtcLogUploadFailureReason {
   };
 };
 
+// Changes the crash product under which text and event logs are uploaded
+// to have a "_webrtc" suffix, and removes the "-webrtc" suffix from the
+// crash version field.
+// eg, when enabled: product: "Chrome_Mac_webrtc", version: "121.0.6151.0"
+// when disabled: product: "Chrome_Mac", version: "121.0.6151.0-webrtc"
 BASE_DECLARE_FEATURE(kWebRTCLogUploadSuffix);
+
+// Returns the product string to use for crash log uploads.
+std::string GetLogUploadProduct();
+
+// Returns the version string to use for crash log uploads.
+std::string GetLogUploadVersion();
 
 // WebRtcLogUploader uploads WebRTC logs, keeps count of how many logs have
 // been started and denies further logs if a limit is reached. It also adds
