@@ -261,7 +261,6 @@ export class OobeWelcomeDialog extends OobeWelcomeDialogBase {
    * Play or pause welcome video.
    * @param {boolean} play - whether play or pause welcome video.
    * @private
-   * @suppress {missingProperties}
    */
   setVideoPlay_(play) {
     // Postpone the call until OOBE is loaded, if necessary.
@@ -274,8 +273,9 @@ export class OobeWelcomeDialog extends OobeWelcomeDialogBase {
       return;
     }
 
-    if (this.$$('#welcomeAnimation')) {
-      this.$$('#welcomeAnimation').playing = play;
+    const welcomeAnimation = this.shadowRoot.querySelector('#welcomeAnimation');
+    if (welcomeAnimation) {
+      welcomeAnimation.playing = play;
     }
   }
 
