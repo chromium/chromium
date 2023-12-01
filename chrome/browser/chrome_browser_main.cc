@@ -772,6 +772,10 @@ int ChromeBrowserMainParts::PreEarlyInitialization() {
   // field trials (and all it depends upon).
   browser_process_ = std::make_unique<BrowserProcessImpl>(startup_data_);
 
+#if BUILDFLAG(IS_ANDROID)
+  startup_data_->CreateProfilePrefService();
+#endif
+
   bool failed_to_load_resource_bundle = false;
   const int load_local_state_result =
       OnLocalStateLoaded(&failed_to_load_resource_bundle);

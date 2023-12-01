@@ -943,7 +943,7 @@ absl::optional<int> ChromeMainDelegate::PostEarlyInitialization(
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  chrome_content_browser_client_->startup_data()->CreateProfilePrefService();
+  chrome_content_browser_client_->startup_data()->InitProfileKey();
   net::NetworkChangeNotifier::SetFactory(
       new net::NetworkChangeNotifierFactoryAndroid());
 #endif
