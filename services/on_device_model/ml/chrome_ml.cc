@@ -16,6 +16,8 @@
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "gpu/config/gpu_info_collector.h"
+#include "gpu/config/gpu_util.h"
 #include "gpu/config/webgpu_blocklist_impl.h"
 #include "services/on_device_model/ml/on_device_model_executor.h"
 #include "third_party/dawn/include/dawn/native/DawnNative.h"
@@ -54,6 +56,11 @@ ChromeML* ChromeML::Get() {
 
 // static
 std::unique_ptr<ChromeML> ChromeML::Create() {
+  // Log GPU info for crash reports.
+  gpu::GPUInfo gpu_info;
+  gpu::CollectBasicGraphicsInfo(&gpu_info);
+  gpu::SetKeysForCrashLogging(gpu_info);
+
   base::NativeLibraryLoadError error;
   base::FilePath base_dir;
 #if !BUILDFLAG(IS_ANDROID)

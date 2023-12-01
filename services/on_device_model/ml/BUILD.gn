@@ -22,6 +22,8 @@ source_set("ml") {
 
   deps = [
     "//components/optimization_guide/core:features",
+    "//gpu/config",
+    "//third_party/angle:includes",
     "//third_party/dawn/src/dawn/native",
   ]
   public_deps = [
