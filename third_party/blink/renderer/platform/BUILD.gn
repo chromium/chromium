@@ -369,7 +369,6 @@ component("platform") {
     "audio/dynamics_compressor.h",
     "audio/equal_power_panner.cc",
     "audio/equal_power_panner.h",
-    "audio/ffmpeg/fft_frame_ffmpeg.cc",
     "audio/fft_convolver.cc",
     "audio/fft_convolver.h",
     "audio/fft_frame.cc",
@@ -1834,10 +1833,6 @@ component("platform") {
     sources += [ "audio/cpu/arm/delay_neon.cc" ]
   }
 
-  if (use_webaudio_ffmpeg) {
-    include_dirs += [ "//third_party/ffmpeg" ]
-    deps += [ "//third_party/ffmpeg" ]
-  }
   if (use_webaudio_pffft) {
     include_dirs += [ "//third_party/pffft/src" ]
     deps += [ "//third_party/pffft" ]

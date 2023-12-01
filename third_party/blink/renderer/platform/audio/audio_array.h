@@ -68,7 +68,7 @@ class AudioArray {
 
     // Minimmum alignment requirements for arrays so that we can use
     // SIMD.
-#if defined(ARCH_CPU_X86_FAMILY) || defined(WTF_USE_WEBAUDIO_FFMPEG)
+#if defined(ARCH_CPU_X86_FAMILY)
     const unsigned kAlignment = 32;
 #else
     const unsigned kAlignment = 16;
