@@ -4,11 +4,11 @@
 
 #include "services/network/masked_domain_list/network_service_resource_block_list.h"
 #include "base/containers/contains.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "net/base/schemeful_site.h"
-#include "services/network/public/cpp/features.h"
 
 namespace network {
 
@@ -44,8 +44,8 @@ NetworkServiceResourceBlockList::~NetworkServiceResourceBlockList() = default;
 void NetworkServiceResourceBlockList::AddDomainWithBypassForTesting(
     const std::string& domain,
     net::SchemeHostPortMatcher bypass_matcher) {
-  url_matcher_with_bypass_.AddDomainWithBypass(domain,
-                                               std::move(bypass_matcher));
+  url_matcher_with_bypass_.AddDomainWithBypass(
+      domain, std::move(bypass_matcher), /*include_subdomains=*/true);
 }
 
 size_t NetworkServiceResourceBlockList::EstimateMemoryUsage() const {
