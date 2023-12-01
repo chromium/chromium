@@ -426,6 +426,39 @@
   </event>
 </project>
 
+<project name="NearbyShare">
+  <owner>jackshira@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <id>none</id>
+  <scope>profile</scope>
+  <key-rotation>30</key-rotation>
+  <summary>
+    Metrics for the ChromeOS Nearby Share implementation.
+  </summary>
+
+  <event name="Discovery">
+    <summary>
+      A share target has been discovered by a sender.
+    </summary>
+    <metric name="Platform" type="int">
+      <summary>
+        The platform of the discovered share target.
+      </summary>
+    </metric>
+    <metric name="DeviceRelationship" type="int">
+      <summary>
+        The relationship type of the discovered share target.
+      </summary>
+    </metric>
+    <metric name="TimeToDiscovery" type="int">
+      <summary>
+        The time in milliseconds it took to discovery this share target from the
+        start of the discovery process.
+      </summary>
+    </metric>
+  </event>
+</project>
+
 <project name="StructuredMetrics">
   <owner>jongahn@chromium.org</owner>
   <owner>tby@chromium.org</owner>

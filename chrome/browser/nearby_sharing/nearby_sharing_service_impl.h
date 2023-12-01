@@ -31,6 +31,7 @@
 #include "chrome/browser/nearby_sharing/incoming_frames_reader.h"
 #include "chrome/browser/nearby_sharing/incoming_share_target_info.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager.h"
+#include "chrome/browser/nearby_sharing/metrics/discovery_metric_logger.h"
 #include "chrome/browser/nearby_sharing/nearby_file_handler.h"
 #include "chrome/browser/nearby_sharing/nearby_notification_manager.h"
 #include "chrome/browser/nearby_sharing/nearby_share_feature_usage_metrics.h"
@@ -611,6 +612,10 @@ class NearbySharingServiceImpl
   // screen is locked and visibility is set to kYourDevices.
   nearby_share::mojom::Visibility user_visibility_;
   std::set<std::string> user_allowed_contacts_ = {};
+
+  // Metrics loggers.
+  std::unique_ptr<nearby::share::metrics::DiscoveryMetricLogger>
+      discovery_metric_logger_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
