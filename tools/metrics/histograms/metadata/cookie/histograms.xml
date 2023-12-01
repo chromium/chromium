@@ -191,6 +191,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cookie.CorruptMetaTableRecovered" enum="Boolean"
+    expires_after="2024-06-01">
+  <owner>arichiv@chromium.org</owner>
+  <owner>bingler@chromium.org</owner>
+  <owner>src/net/cookies/OWNERS</owner>
+  <summary>
+    This metric records whether the DB could be reinitialized after corruption.
+    Note that corruption could occur due to attempting to load an unsupported
+    variant of the cookie db (e.g., code supports v15+ and tries to load v12).
+    If recorded as true, recovery was possible. If recorded as false, then
+    recovery was not possible for some reason. The latter should be rare. This
+    metric is recorded when the cookie DB is first initialized.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.Count2" units="units" expires_after="2024-05-19">
   <owner>bingler@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>

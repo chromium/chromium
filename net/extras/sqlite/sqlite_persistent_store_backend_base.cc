@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros_local.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -225,7 +224,8 @@ bool SQLitePersistentStoreBackendBase::MigrateDatabaseSchema() {
     bool recovered = sql::Database::Delete(path_) && db()->Open(path_) &&
                      meta_table_.Init(db(), current_version_number_,
                                       compatible_version_number_);
-    LOCAL_HISTOGRAM_BOOLEAN("Net.SQLite.CorruptMetaTableRecovered", recovered);
+    base::UmaHistogramBoolean(histogram_tag_ + ".CorruptMetaTableRecovered",
+                              recovered);
     if (!recovered) {
       NOTREACHED() << "Unable to reset the " << histogram_tag_ << " DB.";
       meta_table_.Reset();
