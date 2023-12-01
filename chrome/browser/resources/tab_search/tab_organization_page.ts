@@ -136,6 +136,11 @@ export class TabOrganizationPageElement extends PolymerElement {
       case TabOrganizationState.kFailure:
         contentsHeight = this.$.failure.scrollHeight -
             this.getPaddingTopValue_(this.$.failure) + BODY_VERTICAL_MARGIN;
+        if (this.showFRE_) {
+          // If the failure footer is shown, exclude bottom margin as the
+          // footer should extend to the bottom of the bubble.
+          contentsHeight -= BODY_VERTICAL_MARGIN / 2;
+        }
         break;
     }
     this.$.contents.style.height = contentsHeight + 'px';
