@@ -21,7 +21,7 @@ import {XfCloudPanel} from '../../widgets/xf_cloud_panel.js';
 
 import {constants} from './constants.js';
 import {DirectoryModel} from './directory_model.js';
-import {FileSelectionHandler} from './file_selection.js';
+import {EventType, FileSelectionHandler} from './file_selection.js';
 import {A11yAnnounce} from './ui/a11y_announce.js';
 import {Command} from './ui/command.js';
 import {FileListSelectionModel} from './ui/file_list_selection_model.js';
@@ -122,15 +122,13 @@ export class ToolbarController {
     this.store_.subscribe(this);
 
     this.selectionHandler_.addEventListener(
-        FileSelectionHandler.EventType.CHANGE,
-        this.onSelectionChanged_.bind(this));
+        EventType.CHANGE, this.onSelectionChanged_.bind(this));
 
     // Using CHANGE_THROTTLED because updateSharesheetCommand_() uses async
     // API and can update the state out-of-order specially when updating to
     // an empty selection.
     this.selectionHandler_.addEventListener(
-        FileSelectionHandler.EventType.CHANGE_THROTTLED,
-        this.updateSharesheetCommand_.bind(this));
+        EventType.CHANGE_THROTTLED, this.updateSharesheetCommand_.bind(this));
 
     chrome.fileManagerPrivate.onAppsUpdated.addListener(
         this.updateSharesheetCommand_.bind(this));

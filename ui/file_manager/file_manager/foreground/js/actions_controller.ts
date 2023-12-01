@@ -9,7 +9,7 @@ import {XfTree} from '../../widgets/xf_tree.js';
 
 import {Action, ActionsModel} from './actions_model.js';
 import {DirectoryModel} from './directory_model.js';
-import {FileSelectionHandler} from './file_selection.js';
+import {EventType, FileSelectionHandler} from './file_selection.js';
 import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
 import {MetadataSetEvent} from './metadata/metadata_cache_set.js';
 import {MetadataModel} from './metadata/metadata_model.js';
@@ -47,8 +47,7 @@ export class ActionsController {
           'change', this.onNavigationListSelectionChanged_.bind(this), true);
     }
     this.selectionHandler_.addEventListener(
-        FileSelectionHandler.EventType.CHANGE_THROTTLED,
-        this.onSelectionChanged_.bind(this));
+        EventType.CHANGE_THROTTLED, this.onSelectionChanged_.bind(this));
 
     // Attach listeners to events based on user action to show the menu, which
     // updates the DOM.

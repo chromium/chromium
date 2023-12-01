@@ -29,7 +29,7 @@ import {isTreeItem} from '../../widgets/xf_tree_util.js';
 import {FilesToast} from '../elements/files_toast.js';
 
 import {DirectoryModel} from './directory_model.js';
-import {FileSelectionHandler} from './file_selection.js';
+import {EventType, FileSelectionHandler} from './file_selection.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 import {Command} from './ui/command.js';
 import {DirectoryItem, DirectoryTree} from './ui/directory_tree.js';
@@ -339,7 +339,7 @@ export class FileTransferController {
       private filesToast_: FilesToast) {
     // Register the events.
     this.selectionHandler_.addEventListener(
-        FileSelectionHandler.EventType.CHANGE_THROTTLED,
+        EventType.CHANGE_THROTTLED,
         this.onFileSelectionChangedThrottled_.bind(this));
     this.attachDragSource_(this.listContainer_.table.list as FileTableList);
     this.attachFileListDropTarget_(this.listContainer_.table.list);

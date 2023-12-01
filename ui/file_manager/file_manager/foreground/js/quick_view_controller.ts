@@ -19,7 +19,7 @@ import {FilesQuickView} from '../elements/files_quick_view.js';
 import type {FilesTooltip} from '../elements/files_tooltip.js';
 
 import {CommandHandler, DeleteCommand} from './file_manager_commands.js';
-import {FileSelectionHandler} from './file_selection.js';
+import {EventType, FileSelectionHandler} from './file_selection.js';
 import {FileTasks} from './file_tasks.js';
 import {MetadataItem} from './metadata/metadata_item.js';
 import {MetadataModel} from './metadata/metadata_model.js';
@@ -80,7 +80,7 @@ export class QuickViewController {
       private dialogType_: DialogType, private volumeManager_: VolumeManager,
       dialogDom: HTMLElement) {
     this.selectionHandler_.addEventListener(
-        FileSelectionHandler.EventType.CHANGE,
+        EventType.CHANGE,
         this.onFileSelectionChanged_.bind(this) as EventListener);
     this.listContainer_.element.addEventListener(
         'keydown', this.onKeyDownToOpen_.bind(this));

@@ -14,7 +14,7 @@ import {DialogType} from '../../externs/ts/state.js';
 
 import {FileFilter} from './directory_contents.js';
 import {DirectoryModel} from './directory_model.js';
-import {FileSelectionHandler} from './file_selection.js';
+import {EventType, FileSelectionHandler} from './file_selection.js';
 import {LaunchParam} from './launch_param.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 import {NamingController} from './naming_controller.js';
@@ -97,8 +97,7 @@ export class DialogActionController {
     dialogFooter.filenameInput.addEventListener(
         'input', this.updateOkButton_.bind(this));
     fileSelectionHandler.addEventListener(
-        FileSelectionHandler.EventType.CHANGE_THROTTLED,
-        this.onFileSelectionChanged_.bind(this));
+        EventType.CHANGE_THROTTLED, this.onFileSelectionChanged_.bind(this));
     volumeManager.addEventListener(
         'drive-connection-changed', this.updateOkButton_.bind(this));
 
