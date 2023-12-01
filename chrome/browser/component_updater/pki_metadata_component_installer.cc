@@ -38,7 +38,6 @@
 #if BUILDFLAG(IS_CT_SUPPORTED)
 #include "components/certificate_transparency/certificate_transparency.pb.h"
 #include "components/certificate_transparency/certificate_transparency_config.pb.h"
-#include "components/certificate_transparency/ct_features.h"
 #include "services/network/public/mojom/ct_log_info.mojom.h"
 #endif
 
@@ -165,8 +164,7 @@ void PKIMetadataComponentInstallerService::ReconfigureAfterNetworkRestart() {
     return;
   }
   if (base::FeatureList::IsEnabled(
-          certificate_transparency::features::
-              kCertificateTransparencyComponentUpdater)) {
+          features::kCertificateTransparencyAskBeforeEnabling)) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
         base::BindOnce(&LoadBinaryProtoFromDisk,
@@ -471,8 +469,7 @@ void MaybeRegisterPKIMetadataComponent(ComponentUpdateService* cus) {
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
   should_install |= base::FeatureList::IsEnabled(
-      certificate_transparency::features::
-          kCertificateTransparencyComponentUpdater);
+      features::kCertificateTransparencyAskBeforeEnabling);
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)

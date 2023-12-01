@@ -15,7 +15,6 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/net/key_pinning.pb.h"
 #include "components/certificate_transparency/certificate_transparency_config.pb.h"
-#include "components/certificate_transparency/ct_features.h"
 #include "components/certificate_transparency/ct_known_logs.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/mock_component_updater_service.h"
@@ -91,10 +90,10 @@ class PKIMetadataComponentInstallerTest : public testing::Test {
  public:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /* enabled_features = */ {certificate_transparency::features::
-                                      kCertificateTransparencyComponentUpdater,
-                                  features::kKeyPinningComponentUpdater},
-        /* disabled_features = */ {});
+        /*enabled_features=*/{features::
+                                  kCertificateTransparencyAskBeforeEnabling,
+                              features::kKeyPinningComponentUpdater},
+        /*disabled_features=*/{});
     ct_config_.set_disable_ct_enforcement(false);
     ct_config_.mutable_log_list()->set_compatibility_version(
         kMaxSupportedCTCompatibilityVersion);
@@ -533,10 +532,10 @@ class PKIMetadataComponentInstallerDisabledTest
     : public PKIMetadataComponentInstallerTest {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /* enabled_features = */ {},
-        /* disabled_features = */ {certificate_transparency::features::
-                                       kCertificateTransparencyComponentUpdater,
-                                   features::kKeyPinningComponentUpdater});
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+            features::kCertificateTransparencyAskBeforeEnabling,
+            features::kKeyPinningComponentUpdater});
   }
 };
 

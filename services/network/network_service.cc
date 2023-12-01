@@ -111,7 +111,6 @@
 #endif
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
-#include "components/certificate_transparency/ct_features.h"
 #include "services/network/ct_log_list_distributor.h"
 #include "services/network/sct_auditing/sct_auditing_cache.h"
 #endif
@@ -881,13 +880,9 @@ void NetworkService::UpdateCtLogList(std::vector<mojom::CTLogInfoPtr> log_list,
   log_list_ = std::move(log_list);
   ct_log_list_update_time_ = update_time;
 
-  if (base::FeatureList::IsEnabled(
-          certificate_transparency::features::
-              kCertificateTransparencyComponentUpdater)) {
-    ct_log_list_distributor_->OnNewCtConfig(log_list_);
-    for (auto* context : network_contexts_) {
-      context->OnCTLogListUpdated(log_list_, update_time);
-    }
+  ct_log_list_distributor_->OnNewCtConfig(log_list_);
+  for (auto* context : network_contexts_) {
+    context->OnCTLogListUpdated(log_list_, update_time);
   }
   std::move(callback).Run();
 }
@@ -903,9 +898,6 @@ void NetworkService::SetCtEnforcementEnabled(
     bool enabled,
     SetCtEnforcementEnabledCallback callback) {
   ct_enforcement_enabled_ = enabled;
-  DCHECK(base::FeatureList::IsEnabled(
-      certificate_transparency::features::
-          kCertificateTransparencyComponentUpdater));
   for (auto* context : network_contexts_) {
     context->url_request_context()
         ->transport_security_state()

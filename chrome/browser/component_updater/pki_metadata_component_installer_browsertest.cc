@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/component_updater/pki_metadata_component_installer.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/common/chrome_switches.h"
@@ -23,7 +24,6 @@
 #include "chrome/test/base/test_launcher_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/certificate_transparency/certificate_transparency_config.pb.h"
-#include "components/certificate_transparency/ct_features.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/network_service_util.h"
 #include "content/public/test/browser_test.h"
@@ -132,8 +132,7 @@ class PKIMetadataComponentUpdaterTest
   }
 
   base::test::ScopedFeatureList scoped_feature_list_{
-      certificate_transparency::features::
-          kCertificateTransparencyComponentUpdater};
+      features::kCertificateTransparencyAskBeforeEnabling};
   base::ScopedTempDir component_dir_;
 
   base::OnceClosure pki_metadata_config_closure_;
