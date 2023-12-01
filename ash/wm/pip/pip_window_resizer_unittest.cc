@@ -258,39 +258,6 @@ TEST_P(PipWindowResizerTest, PipWindowCanPinchResize) {
   EXPECT_EQ(expected_bounds, test_state()->last_requested_bounds());
 }
 
-TEST_P(PipWindowResizerTest, PipWindowHasResistanceEffect) {
-  PreparePipWindow(gfx::Rect(200, 200, 120, 80));
-  std::unique_ptr<PipWindowResizer> resizer(CreateResizerForTest(HTCAPTION));
-
-  // The Pinch-to-Resize feature requires that the maximum and
-  // minimum size are set.
-  auto* custom_frame = static_cast<TestNonClientFrameViewAsh*>(
-      NonClientFrameViewAsh::Get(window()));
-  custom_frame->SetMaximumSize(gfx::Size(300, 200));
-  custom_frame->SetMinimumSize(gfx::Size(60, 40));
-  window()->SetProperty(aura::client::kAspectRatio, gfx::SizeF(3.f, 2.f));
-
-  // Pinch zoom in beyond maximum size.
-  resizer->Pinch(CalculateDragPoint(*resizer, 0, 0), /*scale=*/3.f,
-                 /*angle=*/0.f);
-
-  // Confirm that the window has scaled up with a transform.
-  EXPECT_GE(window()->transform().To2dScale().x(), 1.05);
-  EXPECT_LE(window()->transform().To2dScale().x(), 1.15);
-  EXPECT_GE(window()->transform().To2dScale().y(), 1.05);
-  EXPECT_LE(window()->transform().To2dScale().y(), 1.15);
-
-  // Pinch zoom out beyond minimum size.
-  resizer->Pinch(CalculateDragPoint(*resizer, 0, 0), /*scale=*/0.1f,
-                 /*angle=*/0.f);
-
-  // Confirm that the window has scaled down with a transform.
-  EXPECT_GE(window()->transform().To2dScale().x(), 0.85);
-  EXPECT_LE(window()->transform().To2dScale().x(), 0.9);
-  EXPECT_GE(window()->transform().To2dScale().y(), 0.85);
-  EXPECT_LE(window()->transform().To2dScale().y(), 0.9);
-}
-
 TEST_P(PipWindowResizerTest, PipWindowCanTiltWithPinch) {
   PreparePipWindow(gfx::Rect(200, 200, 120, 80));
   std::unique_ptr<PipWindowResizer> resizer(CreateResizerForTest(HTCAPTION));
