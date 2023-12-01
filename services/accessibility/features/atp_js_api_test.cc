@@ -988,6 +988,9 @@ TEST_F(SpeechRecognitionJSApiTest, Start) {
     const remote = axtest.mojom.TestBindingInterface.getRemote();
     const options = {};
     chrome.speechRecognitionPrivate.start(options, (type) => {
+      if (chrome.runtime.lastError) {
+        remote.testComplete(/*success=*/false);
+      }
       if (type === 'network') {
         remote.testComplete(/*success=*/true);
       } else {
@@ -1009,6 +1012,9 @@ TEST_F(SpeechRecognitionJSApiTest, StartAndStop) {
       }
 
       chrome.speechRecognitionPrivate.stop(options, () => {
+        if (chrome.runtime.lastError) {
+          remote.testComplete(/*success=*/false);
+        }
         remote.testComplete(/*success=*/true);
       });
     });
@@ -1061,6 +1067,41 @@ TEST_F(SpeechRecognitionJSApiTest, ErrorEvent) {
 
     const options = {};
     chrome.speechRecognitionPrivate.start(options, (type) => {});
+  )JS");
+  WaitForJSTestComplete();
+}
+
+TEST_F(SpeechRecognitionJSApiTest, StartError) {
+  client_->SetSpeechRecognitionStartError("Test start error");
+  ExecuteJS(R"JS(
+    const remote = axtest.mojom.TestBindingInterface.getRemote();
+    const options = {};
+    chrome.speechRecognitionPrivate.start(options, (type) => {
+      if (type !== 'network') {
+        remote.testComplete(/*success=*/false);
+        return;
+      }
+
+      const lastError = chrome.runtime.lastError;
+      if (lastError && lastError.message === 'Test start error') {
+        remote.testComplete(/*success=*/true);
+      }
+    });
+  )JS");
+  WaitForJSTestComplete();
+}
+
+TEST_F(SpeechRecognitionJSApiTest, StopError) {
+  client_->SetSpeechRecognitionStopError("Test stop error");
+  ExecuteJS(R"JS(
+    const remote = axtest.mojom.TestBindingInterface.getRemote();
+    const options = {};
+    chrome.speechRecognitionPrivate.stop(options, () => {
+      const lastError = chrome.runtime.lastError;
+      if (lastError && lastError.message === 'Test stop error') {
+        remote.testComplete(/*success=*/true);
+      }
+    });
   )JS");
   WaitForJSTestComplete();
 }

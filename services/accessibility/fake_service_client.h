@@ -125,6 +125,8 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   void SendSpeechRecognitionStopEvent();
   void SendSpeechRecognitionResultEvent();
   void SendSpeechRecognitionErrorEvent();
+  void SetSpeechRecognitionStartError(const std::string& error);
+  void SetSpeechRecognitionStopError(const std::string& error);
 
   void SetTtsSpeakCallback(
       base::RepeatingCallback<void(const std::string&, mojom::TtsOptionsPtr)>
@@ -167,6 +169,8 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   mojo::ReceiverSet<mojom::SpeechRecognition> sr_receivers_;
   mojo::Remote<ax::mojom::SpeechRecognitionEventObserver> sr_event_observer_;
   base::RepeatingCallback<void()> speech_recognition_start_callback_;
+  absl::optional<std::string> speech_recognition_start_error_;
+  absl::optional<std::string> speech_recognition_stop_error_;
 
   base::RepeatingCallback<void(const std::string&, mojom::TtsOptionsPtr)>
       tts_speak_callback_;

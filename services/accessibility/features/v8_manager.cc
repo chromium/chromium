@@ -189,6 +189,11 @@ void V8Environment::AddV8Bindings() {
                          automation_internal_template);
   }
 
+  // Add chrome.runtime.
+  v8::Local<v8::ObjectTemplate> runtime_template =
+      v8::ObjectTemplate::New(isolate);
+  chrome_template->Set(isolate, "runtime", runtime_template);
+
   // Adds atpconsole.log/warn/error.
   // TODO(crbug.com/1355633): Deprecate and use console.log/warn/error instead.
   BindingsUtils::AddAtpConsoleTemplate(isolate, global_template);

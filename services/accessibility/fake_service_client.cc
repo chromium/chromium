@@ -65,7 +65,14 @@ void FakeServiceClient::Start(ax::mojom::StartOptionsPtr options,
                               StartCallback callback) {
   auto info = mojom::SpeechRecognitionStartInfo::New();
   info->type = mojom::SpeechRecognitionType::kNetwork;
-  info->observer = sr_event_observer_.BindNewPipeAndPassReceiver();
+  if (speech_recognition_start_error_.has_value()) {
+    info->observer_or_error = mojom::ObserverOrError::NewError(
+        speech_recognition_start_error_.value());
+  } else {
+    info->observer_or_error = mojom::ObserverOrError::NewObserver(
+        sr_event_observer_.BindNewPipeAndPassReceiver());
+  }
+
   std::move(callback).Run(std::move(info));
   if (speech_recognition_start_callback_) {
     speech_recognition_start_callback_.Run();
@@ -74,7 +81,7 @@ void FakeServiceClient::Start(ax::mojom::StartOptionsPtr options,
 
 void FakeServiceClient::Stop(ax::mojom::StopOptionsPtr options,
                              StopCallback callback) {
-  std::move(callback).Run();
+  std::move(callback).Run(speech_recognition_stop_error_);
 }
 
 void FakeServiceClient::BindAccessibilityFileLoader(
@@ -259,6 +266,16 @@ void FakeServiceClient::SendSpeechRecognitionErrorEvent() {
   auto event = ax::mojom::SpeechRecognitionErrorEvent::New();
   event->message = "Goodnight world";
   sr_event_observer_->OnError(std::move(event));
+}
+
+void FakeServiceClient::SetSpeechRecognitionStartError(
+    const std::string& error) {
+  speech_recognition_start_error_ = error;
+}
+
+void FakeServiceClient::SetSpeechRecognitionStopError(
+    const std::string& error) {
+  speech_recognition_stop_error_ = error;
 }
 
 void FakeServiceClient::SetTtsSpeakCallback(

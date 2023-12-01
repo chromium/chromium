@@ -125,8 +125,9 @@ class FakeAccessibilityService
       ax::mojom::StartOptionsPtr options,
       base::OnceCallback<void(ax::mojom::SpeechRecognitionStartInfoPtr)>
           callback);
-  void RequestSpeechRecognitionStop(ax::mojom::StopOptionsPtr options,
-                                    base::OnceCallback<void()> callback);
+  void RequestSpeechRecognitionStop(
+      ax::mojom::StopOptionsPtr options,
+      base::OnceCallback<void(const absl::optional<std::string>&)> callback);
 
   //
   // Methods to pretend a TTS request came from the service.

@@ -65,19 +65,28 @@ interface SpeechRecognitionEventObserver {
   OnError(SpeechRecognitionErrorEvent event);
 };
 
+// A union that either holds a SpeechRecognitionEventObserver, in the case
+// that speech recognition started successfully, or an error message, in the
+// case the speech recognition failed to start.
+union ObserverOrError {
+  // An observer that can receive speech recognition events.
+  pending_receiver<SpeechRecognitionEventObserver> observer;
+  // An error message if speech recognition failed to start.
+  string error;
+};
+
 // Information that is returned once speech recognition has started.
 struct SpeechRecognitionStartInfo {
   // The type of speech recognition being used.
   SpeechRecognitionType type;
-  // An observer that can receive speech recognition events.
-  pending_receiver<SpeechRecognitionEventObserver> observer;
+  ObserverOrError observer_or_error;
 };
 
 // Provides speech recognition services. Implemented in the main OS browser
 // process and called from Accessibility Service Javascript.
 interface SpeechRecognition {
   // Starts listening to audio from the user. The callback is invoked when
-  // speech recognition has started.
+  // speech recognition has started or failed to start.
   Start(StartOptions options) => (SpeechRecognitionStartInfo info);
 
   // Stops listening to audio from the user. The callback is invoked when
@@ -85,5 +94,5 @@ interface SpeechRecognition {
   // method on SpeechRecognitionEventObserver, which gets called when speech
   // recognition is stopped in the background without an explicit request from
   // the caller.
-  Stop(StopOptions options) => ();
+  Stop(StopOptions options) => (string? error);
 };

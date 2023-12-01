@@ -208,7 +208,7 @@ void FakeAccessibilityService::RequestSpeechRecognitionStart(
 
 void FakeAccessibilityService::RequestSpeechRecognitionStop(
     ax::mojom::StopOptionsPtr options,
-    base::OnceCallback<void()> callback) {
+    base::OnceCallback<void(const absl::optional<std::string>&)> callback) {
   CHECK_EQ(sr_remotes_.size(), 1u);
   for (auto& remote : sr_remotes_) {
     remote->Stop(std::move(options), std::move(callback));

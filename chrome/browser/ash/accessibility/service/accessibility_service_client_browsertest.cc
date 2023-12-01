@@ -1380,6 +1380,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
       base::BindLambdaForTesting(
           [&start_waiter](ax::mojom::SpeechRecognitionStartInfoPtr info) {
             EXPECT_EQ(ax::mojom::SpeechRecognitionType::kNetwork, info->type);
+            ASSERT_FALSE(info->observer_or_error->is_error());
             start_waiter.Quit();
           }));
   start_waiter.Run();
@@ -1389,7 +1390,11 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
   stop_options->type = ax::mojom::AssistiveTechnologyType::kDictation;
   fake_service_->RequestSpeechRecognitionStop(
       std::move(stop_options),
-      base::BindLambdaForTesting([&stop_waiter]() { stop_waiter.Quit(); }));
+      base::BindLambdaForTesting(
+          [&stop_waiter](const absl::optional<std::string>& error) {
+            ASSERT_FALSE(error.has_value());
+            stop_waiter.Quit();
+          }));
   stop_waiter.Run();
 }
 

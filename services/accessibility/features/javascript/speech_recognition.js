@@ -71,8 +71,15 @@ class AtpSpeechRecognition {
     this.remote_.start(mojoOptions).then(result => {
       const type = AtpSpeechRecognition.convertRecognitionType_(
           result.info.type);
+      const observerOrError = result.info.observerOrError;
+      const error = observerOrError.error;
+      if (error) {
+        this.runCallbackWithError_(error, callback, type);
+        return;
+      }
+
       const observer = new AtpSpeechRecognitionEventObserver(
-        /*pendingReceiver=*/result.info.observer,
+        /*pendingReceiver=*/observerOrError.observer,
         /*onStopCallback=*/() => {
           this.handleOnStop_();
         },
@@ -94,7 +101,13 @@ class AtpSpeechRecognition {
    */
   stop(options, callback) {
     const mojoOptions = AtpSpeechRecognition.convertStopOptions_(options);
-    this.remote_.stop(mojoOptions).then(() => {
+    this.remote_.stop(mojoOptions).then((result) => {
+      const error = result.error;
+      if (error) {
+        this.runCallbackWithError_(error, callback);
+        return;
+      }
+
       this.observers_.delete(mojoOptions.type);
       callback();
     });
@@ -126,6 +139,21 @@ class AtpSpeechRecognition {
       /**
        * @type {!chrome.speechRecognitionPrivate.SpeechRecognitionErrorEvent}
        */ (event));
+  }
+
+  /**
+   * TODO(b/304305202): Move this function to a separate file (runtime.js).
+   * @param {string} error
+   * @param {!Function} callback
+   * @private
+   */
+  runCallbackWithError_(error, callback, ...args) {
+    // To mirror the behavior of extension APIs, we set
+    // chrome.runtime.lastError for the duration of the callback and reset
+    // it after it finishes execution.
+    chrome.runtime.lastError = {message: error};
+    callback(...args);
+    chrome.runtime.lastError = undefined;
   }
 
   /**
