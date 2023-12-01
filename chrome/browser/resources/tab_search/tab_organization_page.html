@@ -85,7 +85,7 @@
         on-create-group-click="onCreateGroupClick_"
         on-remove-tab="updateContentsHeightAfterNextRender"
         on-learn-more-click="onLearnMoreClick_"
-        on-thumbs-down-click="showFeedback_">
+        on-feedback="onFeedback_">
     </tab-organization-results>
     <tab-organization-failure id="failure"
         shown$="[[isState_(tabOrganizationStateEnum_.kFailure, state_)]]"

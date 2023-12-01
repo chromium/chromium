@@ -24,6 +24,13 @@ enum TabOrganizationError {
   kGeneric,
 };
 
+//TODO(b/311697865) move this to a common location.
+enum UserFeedback {
+  kUserFeedBackUnspecified,
+  kUserFeedBackPositive,
+  kUserFeedBackNegative,
+};
+
 // Collection of tab searching details associated with a profile.
 struct ProfileData {
   array<Window> windows;
@@ -244,6 +251,11 @@ interface PageHandler {
 
   // Open the user's sync settings in a new tab.
   OpenSyncSettings();
+
+  // Store the user feedback supplied by the user.
+  SetUserFeedback(int32 session_id,
+                  int32 organization_id,
+                  UserFeedback feedback);
 
   // Notify the backend that the UI is ready to be shown.
   ShowUI();

@@ -124,6 +124,11 @@ void TabOrganization::SetCurrentName(
   NotifyObserversOfUpdate();
 }
 
+void TabOrganization::SetFeedback(
+    optimization_guide::proto::UserFeedback feedback) {
+  feedback_ = feedback;
+}
+
 // TODO(1469128) Add UKM/UMA Logging on user accept.
 void TabOrganization::Accept() {
   CHECK(!choice_.has_value());

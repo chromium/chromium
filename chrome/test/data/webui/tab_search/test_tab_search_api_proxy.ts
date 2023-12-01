@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PageCallbackRouter, PageRemote, ProfileData, SwitchToTabInfo, Tab, TabOrganizationSession, TabSearchApiProxy} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {PageCallbackRouter, PageRemote, ProfileData, SwitchToTabInfo, Tab, TabOrganizationSession, TabSearchApiProxy, UserFeedback} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestTabSearchApiProxy extends TestBrowserProxy implements
@@ -30,6 +30,7 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
       'triggerSignIn',
       'openHelpPage',
       'openSyncSettings',
+      'setUserFeedback',
       'showUi',
     ]);
 
@@ -108,6 +109,10 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
 
   openSyncSettings() {
     this.methodCalled('openSyncSettings');
+  }
+
+  setUserFeedback(feedback: UserFeedback) {
+    this.methodCalled('setUserFeedback', [feedback]);
   }
 
   showUi() {

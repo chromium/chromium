@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/mwb_shared_style.css.js';
@@ -11,6 +11,7 @@ import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import './tab_organization_shared_style.css.js';
 import './tab_search_item.js';
 
+import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -167,14 +168,12 @@ export class TabOrganizationResultsElement extends PolymerElement {
     }));
   }
 
-  private onThumbsUpClick_() {
-    // TODO(emshack): Implement this
-  }
-
-  private onThumbsDownClick_() {
-    this.dispatchEvent(new CustomEvent('thumbs-down-click', {
+  private onFeedbackSelectedOptionChanged_(
+      event: CustomEvent<{value: CrFeedbackOption}>) {
+    this.dispatchEvent(new CustomEvent('feedback', {
       bubbles: true,
       composed: true,
+      detail: {value: event.detail.value},
     }));
   }
 }

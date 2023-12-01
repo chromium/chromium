@@ -4,7 +4,7 @@
 
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 
-import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote, ProfileData, SwitchToTabInfo, Tab, TabOrganizationSession} from './tab_search.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote, ProfileData, SwitchToTabInfo, Tab, TabOrganizationSession, UserFeedback} from './tab_search.mojom-webui.js';
 
 /**
  * These values are persisted to logs and should not be renumbered or re-used.
@@ -52,6 +52,9 @@ export interface TabSearchApiProxy {
   openHelpPage(): void;
 
   openSyncSettings(): void;
+
+  setUserFeedback(
+      sessionId: number, organizationId: number, feedback: UserFeedback): void;
 
   showUi(): void;
 }
@@ -147,6 +150,11 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
 
   openSyncSettings() {
     this.handler.openSyncSettings();
+  }
+
+  setUserFeedback(
+      sessionId: number, organizationId: number, feedback: UserFeedback) {
+    this.handler.setUserFeedback(sessionId, organizationId, feedback);
   }
 
   showUi() {

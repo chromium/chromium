@@ -49,6 +49,7 @@
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/user_education/common/tutorial_identifier.h"
 #include "components/user_education/common/tutorial_service.h"
@@ -528,6 +529,35 @@ void TabSearchPageHandler::OpenSyncSettings() {
                         ui::PageTransition::PAGE_TRANSITION_LINK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&params);
+}
+
+void TabSearchPageHandler::SetUserFeedback(
+    int32_t session_id,
+    int32_t organization_id,
+    tab_search::mojom::UserFeedback feedback) {
+  optimization_guide::proto::UserFeedback user_feedback;
+  switch (feedback) {
+    case tab_search::mojom::UserFeedback::kUserFeedBackPositive:
+      user_feedback =
+          optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_UP;
+      break;
+    case tab_search::mojom::UserFeedback::kUserFeedBackNegative:
+      user_feedback =
+          optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_DOWN;
+      break;
+    case tab_search::mojom::UserFeedback::kUserFeedBackUnspecified:
+      user_feedback =
+          optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
+      break;
+  }
+
+  TabOrganization* organization =
+      GetTabOrganization(organization_service_, session_id, organization_id);
+  if (!organization) {
+    return;
+  }
+
+  organization->SetFeedback(user_feedback);
 }
 
 void TabSearchPageHandler::ShowUI() {

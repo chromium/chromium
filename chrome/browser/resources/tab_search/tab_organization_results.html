@@ -5,13 +5,6 @@
     width: fit-content;
   }
 
-  cr-icon-button {
-    --cr-icon-button-fill-color: var(--color-sys-on-surface-subtle);
-    --cr-icon-button-icon-size: 16px;
-    --cr-icon-button-size: 24px;
-    margin: 0;
-  }
-
   cr-input {
     --cr-input-background-color: transparent;
     --cr-input-border: 1px solid var(--color-side-panel-textfield-border);
@@ -27,11 +20,6 @@
     --cr-input-border: 2px solid var(--cr-focus-outline-color);
     --cr-input-padding-bottom: 8px;
     --cr-input-padding-top: 8px;
-  }
-
-  .button-row {
-    display: flex;
-    gap: 4px;
   }
 
   .feedback {
@@ -98,11 +86,8 @@
         tabindex="0">
       $i18n{learnMore}
     </div>
-    <div class="button-row">
-      <cr-icon-button iron-icon="cr:thumbs-up" on-click="onThumbsUpClick_">
-      </cr-icon-button>
-      <cr-icon-button iron-icon="cr:thumbs-down" on-click="onThumbsDownClick_">
-      </cr-icon-button>
-    </div>
+    <cr-feedback-buttons
+        on-selected-option-changed="onFeedbackSelectedOptionChanged_">
+    </cr-feedback-buttons>
   </div>
 </div>

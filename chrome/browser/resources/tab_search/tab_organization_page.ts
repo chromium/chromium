@@ -12,12 +12,13 @@ import './tab_organization_not_started.js';
 import './tab_organization_results.js';
 import './tab_organization_shared_style.css.js';
 
+import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './tab_organization_page.html.js';
-import {Tab, TabOrganization, TabOrganizationError, TabOrganizationSession, TabOrganizationState} from './tab_search.mojom-webui.js';
+import {Tab, TabOrganization, TabOrganizationError, TabOrganizationSession, TabOrganizationState, UserFeedback} from './tab_search.mojom-webui.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 
 const BODY_VERTICAL_MARGIN: number = 32;
@@ -240,8 +241,26 @@ export class TabOrganizationPageElement extends PolymerElement {
     this.apiProxy_.openHelpPage();
   }
 
-  private showFeedback_() {
-    this.apiProxy_.triggerFeedback(this.sessionId_);
+  private onFeedback_(event: CustomEvent<{value: CrFeedbackOption}>) {
+    switch (event.detail.value) {
+      case CrFeedbackOption.UNSPECIFIED:
+        this.apiProxy_.setUserFeedback(
+            this.sessionId_, this.organizationId_,
+            UserFeedback.kUserFeedBackUnspecified);
+        return;
+      case CrFeedbackOption.THUMBS_UP:
+        this.apiProxy_.setUserFeedback(
+            this.sessionId_, this.organizationId_,
+            UserFeedback.kUserFeedBackPositive);
+        return;
+      case CrFeedbackOption.THUMBS_DOWN:
+        this.apiProxy_.setUserFeedback(
+            this.sessionId_, this.organizationId_,
+            UserFeedback.kUserFeedBackNegative);
+        // Show feedback dialog
+        this.apiProxy_.triggerFeedback(this.sessionId_);
+        return;
+    }
   }
 }
 

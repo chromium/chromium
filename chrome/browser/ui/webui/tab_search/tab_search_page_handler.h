@@ -87,6 +87,9 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
   void TriggerSignIn() override;
   void OpenHelpPage() override;
   void OpenSyncSettings() override;
+  void SetUserFeedback(int32_t session_id,
+                       int32_t organization_id,
+                       tab_search::mojom::UserFeedback feedback) override;
   void ShowUI() override;
 
   // TabStripModelObserver:

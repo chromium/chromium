@@ -97,6 +97,8 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"tipAction", IDS_TAB_ORGANIZATION_TIP_ACTION},
       {"tipBody", IDS_TAB_ORGANIZATION_TIP_BODY},
       {"tipTitle", IDS_TAB_ORGANIZATION_TIP_TITLE},
+      {"thumbsDown", IDS_THUMBS_DOWN},
+      {"thumbsUp", IDS_THUMBS_UP},
   };
   webui::SetupChromeRefresh2023(source);
   source->AddLocalizedStrings(kStrings);
