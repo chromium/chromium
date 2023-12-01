@@ -798,6 +798,12 @@ async function waitForScrollReset(scroller, x = 0, y = 0) {
   });
 }
 
+function waitForWindowScrollTo(options) {
+  const scrollPromise = waitForScrollendEvent(document);
+  window.scrollTo(options);
+  return scrollPromise;
+}
+
 // Verifies that triggered scroll animations smoothly. Requires at least 2
 // scroll updates to be considered smooth.
 function animatedScrollPromise(scrollTarget) {
@@ -975,16 +981,18 @@ function mouseDragScroll(x, y, deltaX, deltaY, scroller, options = {}) {
   return Promise.all([scrollPromise, dragPromise]);
 }
 
-function wheelScroll(x, y, deltaX, deltaY, origin =-"viewport",
-                            duration_ms = 250) {
+function wheelScroll(x, y, deltaX, deltaY, scrollEventListener = document,
+                     origin = "viewport", duration_ms = 250) {
   verifyTestDriverLoaded();
-  const wheelPromise = new Promise(async resolve => {
-    document.addEventListener('wheel', resolve, { once: true });
-  });
+  const promises = [];
+  if (scrollEventListener) {
+    promises.push(waitForScrollendEvent(scrollEventListener));
+  }
   const gesturePromise = new test_driver.Actions()
         .scroll(x, y, deltaX, deltaY, origin, duration_ms)
         .send();
-  return Promise.all([gesturePromise, wheelPromise]);
+  promises.push(gesturePromise);
+  return Promise.all(promises);
 }
 
 function mouseClick(x, y, options = {}) {

@@ -85,8 +85,11 @@ function performGestureScroll(element, startPosition, deltaX, deltaY, gesture,
 
 function performWheelScroll(element, startPosition, scrollAmount,
                             scrollEventTarget = null) {
+  const scroll = (x, y, dx, dy) => {
+    return wheelScroll(x, y, dx, dy, scrollEventTarget);
+  };
   return performGestureScroll(element, startPosition, scrollAmount.dx,
-                              scrollAmount.dy, wheelScroll, scrollEventTarget);
+                              scrollAmount.dy, scroll, scrollEventTarget);
 }
 
 function performTouchDrag(element, startPosition, scrollAmount,

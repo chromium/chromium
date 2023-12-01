@@ -48,7 +48,11 @@
       const postScrollHoverIndex = 3;
       const scrollAmount = postScrollHoverIndex * elementHeight();
       const scrollCallback = () => {
-        window.scrollTo({top: scrollAmount, left: 0, behavior: 'smooth'});
+        return waitForWindowScrollTo({
+          top: scrollAmount,
+          left: 0,
+          behavior: 'smooth'
+        });
       };
       return runHoverStateOnScrollTest(scrollCallback, postScrollHoverIndex);
     }, 'JS smooth scroll on the page, no hover update during scrolling, but ' +
