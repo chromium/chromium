@@ -84,6 +84,7 @@ crbug.com/1499775 external/wpt/pointerevents/coalesced_events_attributes_under_l
 crbug.com/1499775 external/wpt/scroll-to-text-fragment/redirects.html [ Pass Timeout ]
 
 # Chrome specific failures
+crbug.com/1499775 external/wpt/webxr/xr_viewport_scale.https.html [ Pass Timeout ]
 crbug.com/1499775 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/crashtests/fieldset-middleclick.html [ Timeout ]
 crbug.com/1499775 external/wpt/css/css-text/text-transform/text-transform-capitalize-014.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-option-arbitrary-content-not-displayed.tentative.html [ Failure Pass ]
