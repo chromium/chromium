@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] private to local: failed preflight.
+  assert_equals: expected "timeout" but got "success"
+[FAIL] private to local: success.
+  assert_equals: expected "success" but got "timeout"
+Harness: the test ran to completion.
+
