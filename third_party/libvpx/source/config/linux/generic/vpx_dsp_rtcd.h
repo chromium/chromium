@@ -2868,6 +2868,14 @@ void vpx_highbd_sad_skip_8x8x4d_c(const uint8_t* src_ptr,
 int vpx_highbd_satd_c(const tran_low_t* coeff, int length);
 #define vpx_highbd_satd vpx_highbd_satd_c
 
+int64_t vpx_highbd_sse_c(const uint8_t* a8,
+                         int a_stride,
+                         const uint8_t* b8,
+                         int b_stride,
+                         int width,
+                         int height);
+#define vpx_highbd_sse vpx_highbd_sse_c
+
 void vpx_highbd_subtract_block_c(int rows,
                                  int cols,
                                  int16_t* diff_ptr,
@@ -3688,6 +3696,14 @@ void vpx_scaled_vert_c(const uint8_t* src,
                        int w,
                        int h);
 #define vpx_scaled_vert vpx_scaled_vert_c
+
+int64_t vpx_sse_c(const uint8_t* a,
+                  int a_stride,
+                  const uint8_t* b,
+                  int b_stride,
+                  int width,
+                  int height);
+#define vpx_sse vpx_sse_c
 
 uint32_t vpx_sub_pixel_avg_variance16x16_c(const uint8_t* src_ptr,
                                            int src_stride,

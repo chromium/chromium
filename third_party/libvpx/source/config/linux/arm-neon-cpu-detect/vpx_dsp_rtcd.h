@@ -2670,6 +2670,25 @@ void vpx_scaled_vert_c(const uint8_t* src,
                        int h);
 #define vpx_scaled_vert vpx_scaled_vert_c
 
+int64_t vpx_sse_c(const uint8_t* a,
+                  int a_stride,
+                  const uint8_t* b,
+                  int b_stride,
+                  int width,
+                  int height);
+int64_t vpx_sse_neon(const uint8_t* a,
+                     int a_stride,
+                     const uint8_t* b,
+                     int b_stride,
+                     int width,
+                     int height);
+RTCD_EXTERN int64_t (*vpx_sse)(const uint8_t* a,
+                               int a_stride,
+                               const uint8_t* b,
+                               int b_stride,
+                               int width,
+                               int height);
+
 uint32_t vpx_sub_pixel_avg_variance16x16_c(const uint8_t* src_ptr,
                                            int src_stride,
                                            int x_offset,
@@ -4183,6 +4202,10 @@ static void setup_rtcd_internal(void) {
   vpx_scaled_2d = vpx_scaled_2d_c;
   if (flags & HAS_NEON)
     vpx_scaled_2d = vpx_scaled_2d_neon;
+  vpx_sse = vpx_sse_c;
+  if (flags & HAS_NEON) {
+    vpx_sse = vpx_sse_neon;
+  }
   vpx_sub_pixel_avg_variance16x16 = vpx_sub_pixel_avg_variance16x16_c;
   if (flags & HAS_NEON)
     vpx_sub_pixel_avg_variance16x16 = vpx_sub_pixel_avg_variance16x16_neon;

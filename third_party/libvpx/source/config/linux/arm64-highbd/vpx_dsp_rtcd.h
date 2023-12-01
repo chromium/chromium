@@ -5131,6 +5131,20 @@ int vpx_highbd_satd_c(const tran_low_t* coeff, int length);
 int vpx_highbd_satd_neon(const tran_low_t* coeff, int length);
 #define vpx_highbd_satd vpx_highbd_satd_neon
 
+int64_t vpx_highbd_sse_c(const uint8_t* a8,
+                         int a_stride,
+                         const uint8_t* b8,
+                         int b_stride,
+                         int width,
+                         int height);
+int64_t vpx_highbd_sse_neon(const uint8_t* a8,
+                            int a_stride,
+                            const uint8_t* b8,
+                            int b_stride,
+                            int width,
+                            int height);
+#define vpx_highbd_sse vpx_highbd_sse_neon
+
 void vpx_highbd_subtract_block_c(int rows,
                                  int cols,
                                  int16_t* diff_ptr,
@@ -6846,6 +6860,31 @@ void vpx_scaled_vert_c(const uint8_t* src,
                        int h);
 #define vpx_scaled_vert vpx_scaled_vert_c
 
+int64_t vpx_sse_c(const uint8_t* a,
+                  int a_stride,
+                  const uint8_t* b,
+                  int b_stride,
+                  int width,
+                  int height);
+int64_t vpx_sse_neon(const uint8_t* a,
+                     int a_stride,
+                     const uint8_t* b,
+                     int b_stride,
+                     int width,
+                     int height);
+int64_t vpx_sse_neon_dotprod(const uint8_t* a,
+                             int a_stride,
+                             const uint8_t* b,
+                             int b_stride,
+                             int width,
+                             int height);
+RTCD_EXTERN int64_t (*vpx_sse)(const uint8_t* a,
+                               int a_stride,
+                               const uint8_t* b,
+                               int b_stride,
+                               int width,
+                               int height);
+
 uint32_t vpx_sub_pixel_avg_variance16x16_c(const uint8_t* src_ptr,
                                            int src_stride,
                                            int x_offset,
@@ -7913,6 +7952,10 @@ static void setup_rtcd_internal(void) {
   vpx_sad_skip_64x64x4d = vpx_sad_skip_64x64x4d_neon;
   if (flags & HAS_NEON_DOTPROD) {
     vpx_sad_skip_64x64x4d = vpx_sad_skip_64x64x4d_neon_dotprod;
+  }
+  vpx_sse = vpx_sse_neon;
+  if (flags & HAS_NEON_DOTPROD) {
+    vpx_sse = vpx_sse_neon_dotprod;
   }
   vpx_variance16x16 = vpx_variance16x16_neon;
   if (flags & HAS_NEON_DOTPROD) {

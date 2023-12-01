@@ -2034,6 +2034,20 @@ void vpx_scaled_vert_c(const uint8_t* src,
                        int h);
 #define vpx_scaled_vert vpx_scaled_vert_c
 
+int64_t vpx_sse_c(const uint8_t* a,
+                  int a_stride,
+                  const uint8_t* b,
+                  int b_stride,
+                  int width,
+                  int height);
+int64_t vpx_sse_neon(const uint8_t* a,
+                     int a_stride,
+                     const uint8_t* b,
+                     int b_stride,
+                     int width,
+                     int height);
+#define vpx_sse vpx_sse_neon
+
 uint32_t vpx_sub_pixel_avg_variance16x16_c(const uint8_t* src_ptr,
                                            int src_stride,
                                            int x_offset,
