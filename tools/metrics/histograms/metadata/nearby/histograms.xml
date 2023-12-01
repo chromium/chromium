@@ -1557,7 +1557,8 @@ chromium-metrics-reviews@google.com.
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the time between when receiver receives the introduction frame to
-    when all files are successfully transferred.
+    when all files are successfully transferred. Note: This contains user
+    interaction so it may vary significantly.
   </summary>
 </histogram>
 
