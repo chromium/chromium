@@ -74,10 +74,6 @@ crbug.com/1499775 external/wpt/editing/other/join-pre-and-other-block.html?metho
 crbug.com/1499775 external/wpt/editing/other/join-pre-and-other-block.html?method=select-boundary&block=div [ Pass Timeout ]
 crbug.com/1499775 external/wpt/editing/other/join-pre-and-other-block.html?method=select-boundary&block=p [ Pass Timeout ]
 crbug.com/1499775 external/wpt/encoding/unsupported-labels.window.html [ Pass Timeout ]
-crbug.com/1499775 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?12-12 [ Failure Pass ]
-crbug.com/1499775 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?2-2 [ Failure Pass ]
-crbug.com/1499775 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?4-4 [ Failure Pass ]
-crbug.com/1499775 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?5-5 [ Failure Pass ]
 crbug.com/1499775 external/wpt/html/editing/the-hidden-attribute/beforematch-scroll-to-text-fragment.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-cuechange.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-enter-exit.html [ Failure Pass ]
@@ -348,11 +344,6 @@ crbug.com/1499775 external/wpt/fullscreen/rendering/fullscreen-pseudo-class.html
 crbug.com/1499775 external/wpt/fullscreen/rendering/fullscreen-root-block-scroll.html [ Timeout ] # pass on wpt.fyi
 crbug.com/1499775 external/wpt/fullscreen/rendering/fullscreen-root-block-size.html [ Timeout ]
 crbug.com/1499775 external/wpt/fullscreen/rendering/ua-style-iframe.html [ Timeout ] # pass on wpt.fyi
-crbug.com/1499775 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?3-3 [ Failure Pass ]
-crbug.com/1499775 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?7-7 [ Failure Pass ]
-crbug.com/1499775 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?8-8 [ Failure Pass ]
-crbug.com/1499775 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?10-10 [ Failure Pass ]
-crbug.com/1499775 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?11-11 [ Failure Pass ]
 crbug.com/1499775 external/wpt/html/browsers/history/the-location-interface/assign_before_load.html [ Failure ]  # Flaky output
 crbug.com/1499775 external/wpt/html/browsers/history/the-location-interface/assign_after_load.html [ Failure ]  # Flaky output
 crbug.com/1499775 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/cross-origin-top-navigation-with-user-activation-in-parent.window.html [ Timeout ]
@@ -579,3 +570,18 @@ crbug.com/626703 external/wpt/css/css-transforms/transform-box/svgbox-stroke-box
 crbug.com/626703 external/wpt/credential-management/fedcm-disconnect-errors.https.html [ Timeout ]
 crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-023.html [ Failure ]
 crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-024.html [ Failure ]
+
+# Those tests are (rarely) flaky due to crbug.com/1506833
+crbug.com/1506833 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?1-1 [ Failure Pass ]
+crbug.com/1506833 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?2-2 [ Failure Pass ]
+crbug.com/1506833 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?3-3 [ Failure Pass ]
+crbug.com/1506833 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?4-4 [ Failure Pass ]
+crbug.com/1506833 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?5-5 [ Failure Pass ]
+crbug.com/1506833 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?6-6 [ Failure Pass ]
+crbug.com/1506833 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?7-7 [ Failure Pass ]
+crbug.com/1506833 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?8-8 [ Failure Pass ]
+crbug.com/1506833 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?9-9 [ Failure Pass ]
+crbug.com/1506833 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?10-10 [ Failure Pass ]
+crbug.com/1506833 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?11-11 [ Failure Pass ]
+crbug.com/1506833 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?12-12 [ Failure Pass ]
+crbug.com/1506833 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?13-last [ Failure Pass ]
