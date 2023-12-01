@@ -36,7 +36,7 @@
 <translation id="1026655690966755180">Tilføj port</translation>
 <translation id="1026822031284433028">Indlæs billede</translation>
 <translation id="1026959648338730078">Windows Hello eller ekstern sikkerhedsnøgle</translation>
-<translation id="1028700151766901954">Årsag: Emulator til ældre websites forbliver i <ph name="DEFAULT_OPEN_BROWSER" /> som standard.</translation>
+<translation id="1028700151766901954">Årsag: LBS forbliver i <ph name="DEFAULT_OPEN_BROWSER" /> som standard.</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1029526375103058355">Tryk for at klikke</translation>
 <translation id="1031362278801463162">Indlæser eksempel</translation>
@@ -5061,7 +5061,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="504561833207953641">Åbner i eksisterende browsersession.</translation>
 <translation id="5049614114599109018">Brug indtastningshistorik</translation>
 <translation id="5050063070033073713">{NUM_SITES,plural, =1{Dette website har sendt en masse notifikationer for nylig. Du kan forhindre det i at sende notifikationer i fremtiden.}one{Dette website har sendt mange notifikationer for nylig. Du kan forhindre det i at sende notifikationer i fremtiden.}other{Disse websites har sendt mange notifikationer for nylig. Du kan forhindre dem i at sende notifikationer i fremtiden.}}</translation>
-<translation id="5050330054928994520">Oplæsning</translation>
+<translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Download uverificeret fil</translation>
 <translation id="5051836348807686060">Stavekontrol understøttes ikke for de sprog, du har valgt</translation>
 <translation id="5052499409147950210">Rediger website</translation>
@@ -6022,7 +6022,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5852112051279473187">Ups!  Noget gik galt under tilmeldingen af denne enhed.  Prøv igen, eller kontakt din supportrepræsentant.</translation>
 <translation id="5852137567692933493">Genstart og Powerwash</translation>
 <translation id="5853487241227591972">Trin 4 af 4: Diagnostik-data er eksporteret</translation>
-<translation id="5854066326260337683">Emulator til ældre websites er deaktiveret i øjeblikket. Du kan aktivere Emulator til ældre websites ved at konfigurere politikken <ph name="BEGIN_LINK" />{BrowserSwitcherEnabled}<ph name="END_LINK" />.</translation>
+<translation id="5854066326260337683">LBS er deaktiveret i øjeblikket. Du kan aktivere LBS ved at konfigurere politikken <ph name="BEGIN_LINK" />{BrowserSwitcherEnabled}<ph name="END_LINK" />.</translation>
 <translation id="5854912040170951372">Pepperoni</translation>
 <translation id="5855267860608268405">Kendte Wi-Fi-netværk</translation>
 <translation id="5855643921295613558">0,6 sekunder</translation>
@@ -8609,7 +8609,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7947962633355574091">K&amp;opiér webadressen til videoen</translation>
 <translation id="7947964080535614577">Websites viser normalt annoncer, så de kan levere indhold eller tjenester uden omkostninger. Nogle websites er dog kendt for at vise påtrængende eller vildledende annoncer.</translation>
 <translation id="7948407723851303488">Alle sider på <ph name="DOMAIN_NAME" /></translation>
-<translation id="7950629216186736592">Årsag: Emulator til ældre websites understøtter kun http://-, https://- og file://-webadresser.</translation>
+<translation id="7950629216186736592">Årsag: LBS understøtter kun http://-, https://- og file://-webadresser.</translation>
 <translation id="7951265006188088697">Gå til din <ph name="BEGIN_LINK" />Google-konto<ph name="END_LINK" /> for at tilføje eller administrere Google Pay-betalingsmetoder</translation>
 <translation id="795130320946928025">Deaktiver virtuelt kort</translation>
 <translation id="795240231873601803">Brug virksomhedstilmelding til arbejds- og skolekonti</translation>
@@ -9931,7 +9931,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="9019062154811256702">Læse og redigere indstillinger for autofyld</translation>
 <translation id="9019894137004772119">Brug lokation. Tillad, at apps og tjenester med lokationstilladelse kan bruge din enheds lokation. Google kan jævnligt indsamle lokationsdata og bruge disse data på en anonym måde for at forbedre lokationsnøjagtigheden og lokationsbaserede tjenester.</translation>
 <translation id="9019956081903586892">Ordbogen til stavekontrollen kunne ikke downloades</translation>
-<translation id="9020300839812600209">Angiv en webadresse for at se, hvad Emulator til ældre websites ville gøre ved den.</translation>
+<translation id="9020300839812600209">Angiv en webadresse for at se, hvad LBS ville gøre ved den.</translation>
 <translation id="9020362265352758658">4x</translation>
 <translation id="9021662811137657072">Der er fundet en virus</translation>
 <translation id="902236149563113779">Websites registrerer normalt din kameraposition til AR-formål såsom spil eller overlejrede rutevejledninger</translation>
