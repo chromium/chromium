@@ -31,7 +31,9 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/page_info/page_info_infobar_delegate.h"
-#include "chrome/browser/ui/session_crashed_bubble.h"
+#include "chrome/browser/ui/views/frame/app_menu_button.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/headless/clipboard/headless_clipboard.h"     // nogncheck
 #include "components/infobars/content/content_infobar_manager.h"  // nogncheck
@@ -49,14 +51,18 @@
 #include "ui/base/clipboard/clipboard_non_backed.h"
 #include "ui/base/clipboard/clipboard_sequence_number_token.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/models/dialog_model.h"
 #include "ui/display/display_switches.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/switches.h"
+#include "ui/views/bubble/bubble_dialog_model_host.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 using testing::Ge;
 using testing::SizeIs;
+using views::Widget;
 
 namespace headless {
 
@@ -249,37 +255,6 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeUserAgentBrowserTest, UserAgentHasHeadless) {
   EXPECT_THAT(headers_.at("User-Agent"), testing::HasSubstr("HeadlessChrome/"));
 }
 
-IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
-                       SessionCrashedBubbleVisibility) {
-  SessionCrashedBubble::ShowIfNotOffTheRecordProfile(
-      browser(), /*skip_tab_checking=*/true);
-
-  gfx::NativeWindow native_window = browser()->window()->GetNativeWindow();
-  auto* widget = views::Widget::GetWidgetForNativeWindow(native_window);
-  ASSERT_TRUE(widget);
-  EXPECT_TRUE(widget->is_headless());
-
-  views::Widget::Widgets child_widgets;
-  views::Widget::GetAllChildWidgets(widget->GetNativeView(), &child_widgets);
-  EXPECT_THAT(child_widgets, SizeIs(Ge(1lu)));
-
-  for (auto* child_widget : child_widgets) {
-    EXPECT_TRUE(child_widget->is_headless());
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-    // On Windows and Mac in headless mode we still have actual platform
-    // windows which are always hidden, so verify that they are not visible.
-    EXPECT_FALSE(IsPlatformWindowVisible(child_widget));
-#elif BUILDFLAG(IS_LINUX)
-    // On Linux headless mode uses Ozone/Headless where platform windows are not
-    // backed up by any real windows, so verify that their visibility state
-    // matches the widget's visibility state.
-    EXPECT_EQ(IsPlatformWindowVisible(child_widget), child_widget->IsVisible());
-#else
-#error Unsupported platform
-#endif
-  }
-}
-
 // Incognito mode tests ------------------------------------------------------
 
 IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithUserDataDir,
@@ -358,6 +333,66 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, HeadlessClipboardCopyPaste) {
     clipboard->ReadText(buffer, /* data_dst = */ nullptr, &copy_text);
     EXPECT_EQ(paste_text, copy_text);
   }
+}
+
+// Bubble tests --------------------------------------------------------------
+
+class TestBubbleDelegate : public ui::DialogModelDelegate {
+ public:
+  TestBubbleDelegate() = default;
+  ~TestBubbleDelegate() override = default;
+
+  void OnOkButton() { dialog_model()->host()->Close(); }
+};
+
+Widget* ShowTestBubble(Browser* browser) {
+  views::View* anchor_view = BrowserView::GetBrowserViewForBrowser(browser)
+                                 ->toolbar_button_provider()
+                                 ->GetAppMenuButton();
+
+  auto bubble_delegate = std::make_unique<TestBubbleDelegate>();
+  TestBubbleDelegate* bubble_delegate_ptr = bubble_delegate.get();
+
+  ui::DialogModel::Builder dialog_builder(std::move(bubble_delegate));
+  dialog_builder.SetTitle(std::u16string(u"Test bubble"))
+      .AddParagraph(ui::DialogModelLabel(std::u16string(u"Test bubble text")))
+      .AddOkButton(
+          base::BindOnce(&TestBubbleDelegate::OnOkButton,
+                         base::Unretained(bubble_delegate_ptr)),
+          ui::DialogModelButton::Params().SetLabel(std::u16string(u"OK")));
+
+  auto bubble = std::make_unique<views::BubbleDialogModelHost>(
+      dialog_builder.Build(), anchor_view, views::BubbleBorder::TOP_RIGHT);
+
+  Widget* widget = views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
+  widget->Show();
+
+  return widget;
+}
+
+IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, HeadlessBubbleVisibility) {
+  // Desktop window widget should be headless.
+  gfx::NativeWindow desktop_window = browser()->window()->GetNativeWindow();
+  Widget* desktop_widget = Widget::GetWidgetForNativeWindow(desktop_window);
+  ASSERT_TRUE(desktop_widget);
+  ASSERT_TRUE(desktop_widget->is_headless());
+
+  // Bubble widget is expected to be headless.
+  Widget* bubble_widget = ShowTestBubble(browser());
+  EXPECT_TRUE(bubble_widget->is_headless());
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  // On Windows and Mac in headless mode we still have actual platform
+  // windows which are always hidden, so verify that they are not visible.
+  EXPECT_FALSE(IsPlatformWindowVisible(bubble_widget));
+#elif BUILDFLAG(IS_LINUX)
+  // On Linux headless mode uses Ozone/Headless where platform windows are not
+  // backed up by any real windows, so verify that their visibility state
+  // matches the widget's visibility state.
+  EXPECT_EQ(IsPlatformWindowVisible(bubble_widget), bubble_widget->IsVisible());
+#else
+#error Unsupported platform
+#endif
 }
 
 }  // namespace
