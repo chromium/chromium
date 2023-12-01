@@ -143,6 +143,7 @@ class CORE_EXPORT CSSMathExpressionNode
   bool HasPercentage() const {
     return category_ == kCalcPercent || category_ == kCalcPercentLength;
   }
+  virtual bool InvolvesPercentage() const { return HasPercentage(); }
 
   // Returns the unit type of the math expression *without doing any type
   // conversion* (e.g., 1px + 1em needs type conversion to resolve).
@@ -434,6 +435,8 @@ class CORE_EXPORT CSSMathExpressionOperation final
     return IsMinOrMax() || IsClamp() || IsSteppedValueFunction() ||
            IsTrigonometricFunction() || IsSignRelatedFunction();
   }
+
+  bool InvolvesPercentage() const final;
 
   String CSSTextAsClamp() const;
 
