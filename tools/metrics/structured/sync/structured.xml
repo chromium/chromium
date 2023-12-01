@@ -457,6 +457,53 @@
       </summary>
     </metric>
   </event>
+
+  <event name="Throughput">
+    <summary>
+      A snapshot of the transfer rate of an in progress transfer.
+    </summary>
+    <metric name="IsReceiving" type="int">
+      <summary>
+        A boolean value describing if this devices is receiving this transfer.
+        If false, it is assumed to be the sender.
+      </summary>
+    </metric>
+    <metric name="Platform" type="int">
+      <summary>
+        The platform of the share target used for this transfer.
+      </summary>
+    </metric>
+    <metric name="DeviceRelationship" type="int">
+      <summary>
+        The relationship type of the share target used for this transfer.
+      </summary>
+    </metric>
+    <metric name="Medium" type="int">
+      <summary>
+        The medium used during this segment of the transfer.
+      </summary>
+    </metric>
+    <metric name="UpdateBytes" type="int">
+      <summary>
+        The number of bytes transferred during this segment of the transfer.
+      </summary>
+    </metric>
+    <metric name="UpdateMillis" type="int">
+      <summary>
+        The duration in milliseconds of this segment of the transfer.
+      </summary>
+    </metric>
+    <metric name="TransferredBytes" type="int">
+      <summary>
+        The number of bytes transferred so far.
+      </summary>
+    </metric>
+    <metric name="TotalTransferBytes" type="int">
+      <summary>
+        The total size in bytes for this transfer.
+      </summary>
+    </metric>
+  </event>
 </project>
 
 <project name="StructuredMetrics">

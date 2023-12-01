@@ -32,6 +32,7 @@
 #include "chrome/browser/nearby_sharing/incoming_share_target_info.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager.h"
 #include "chrome/browser/nearby_sharing/metrics/discovery_metric_logger.h"
+#include "chrome/browser/nearby_sharing/metrics/throughput_metric_logger.h"
 #include "chrome/browser/nearby_sharing/nearby_file_handler.h"
 #include "chrome/browser/nearby_sharing/nearby_notification_manager.h"
 #include "chrome/browser/nearby_sharing/nearby_share_feature_usage_metrics.h"
@@ -616,6 +617,8 @@ class NearbySharingServiceImpl
   // Metrics loggers.
   std::unique_ptr<nearby::share::metrics::DiscoveryMetricLogger>
       discovery_metric_logger_;
+  std::unique_ptr<nearby::share::metrics::ThroughputMetricLogger>
+      throughput_metric_logger_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
