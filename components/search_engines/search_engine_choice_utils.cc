@@ -8,8 +8,10 @@
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
+#include "base/version.h"
 #include "components/country_codes/country_codes.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
@@ -51,7 +53,7 @@ bool IsSearchEngineChoiceScreenAllowedByPolicy(
   return false;
 }
 
-const base::flat_set<int> GetEeaChoiceCountries() {
+base::flat_set<int> GetEeaChoiceCountries() {
   using country_codes::CountryCharsToCountryID;
 
   // Google-internal reference: http://go/geoscope-comparisons.
@@ -124,6 +126,22 @@ bool IsSearchEngineChoiceCompleted(const PrefService& prefs) {
              prefs::kDefaultSearchProviderChoiceScreenCompletionVersion);
 }
 
+// Returns true if the version is valid and can be compared to the current
+// Chrome version.
+bool IsValidVersionFormat(const base::Version& version) {
+  if (!version.IsValid()) {
+    return false;
+  }
+
+  // The version should have the same number of components as the current Chrome
+  // version.
+  if (version.components().size() !=
+      version_info::GetVersion().components().size()) {
+    return false;
+  }
+  return true;
+}
+
 }  // namespace
 
 const char kSearchEngineChoiceScreenNavigationConditionsHistogram[] =
@@ -167,6 +185,7 @@ bool ShouldShowUpdatedSettings(PrefService& profile_prefs) {
 bool ShouldShowChoiceScreen(const policy::PolicyService& policy_service,
                             const ProfileProperties& profile_properties,
                             TemplateURLService* template_url_service) {
+  PreprocessPrefsForReprompt(*profile_properties.pref_service);
   auto condition = GetStaticChoiceScreenConditions(
       policy_service, profile_properties, CHECK_DEREF(template_url_service));
 
@@ -358,5 +377,58 @@ std::u16string GetMarketingSnippetString(
              : l10n_util::GetStringUTF16(snippet_resource_id);
 }
 #endif
+
+void PreprocessPrefsForReprompt(PrefService& profile_prefs) {
+  // If existing prefs have a wrong format, force a reprompt.
+  base::Version choice_version(profile_prefs.GetString(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionVersion));
+  if (!IsValidVersionFormat(choice_version)) {
+    WipeSearchEngineChoicePrefs(profile_prefs);
+    return;
+  }
+
+  // Check parameters from `switches::kSearchEngineChoiceTriggerRepromptParams`.
+  absl::optional<base::Value::Dict> reprompt_params =
+      base::JSONReader::ReadDict(
+          switches::kSearchEngineChoiceTriggerRepromptParams.Get());
+  if (!reprompt_params) {
+    // No valid reprompt parameters.
+    return;
+  }
+
+  const base::Version& current_version = version_info::GetVersion();
+  int country_id = GetSearchEngineChoiceCountryId(&profile_prefs);
+  // Explicit country key takes precedence over the wildcard.
+  for (const std::string* reprompt_version_string :
+       {reprompt_params->FindString(
+            country_codes::CountryIDToCountryString(country_id)),
+        reprompt_params->FindString("*")}) {
+    if (!reprompt_version_string) {
+      // No version string for this country. Fallback to the wildcard.
+      continue;
+    }
+
+    base::Version reprompt_version(*reprompt_version_string);
+    if (!IsValidVersionFormat(reprompt_version)) {
+      // The version is ill-formatted.
+      break;
+    }
+
+    // Do not reprompt if the current version is too old, to avoid endless
+    // reprompts.
+    if (current_version < reprompt_version) {
+      break;
+    }
+
+    if (choice_version >= reprompt_version) {
+      // No need to reprompt, the choice is recent enough.
+      break;
+    }
+
+    // Wipe the choice to force a reprompt.
+    WipeSearchEngineChoicePrefs(profile_prefs);
+    return;
+  }
+}
 
 }  // namespace search_engines
