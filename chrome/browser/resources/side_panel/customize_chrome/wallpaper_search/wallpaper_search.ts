@@ -40,6 +40,13 @@ import {WallpaperSearchProxy} from './wallpaper_search_proxy.js';
 export const DESCRIPTOR_D_VALUE =
     ['#ef4837', '#0984e3', '#f9cc18', '#23cc6a', '#474747'];
 
+/* Saved descriptors for a set of results. */
+interface ResultsDescriptors {
+  a?: string|null;
+  b?: string|null;
+  c?: string|null;
+}
+
 export interface ErrorState {
   title: string;
   description: string;
@@ -103,6 +110,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         value: false,
       },
       history_: Object,
+      resultsDescriptors_: Object,
       results_: Object,
       selectedFeedbackOption_: {
         type: Number,
@@ -135,6 +143,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private history_: WallpaperSearchResult[];
   private loading_: boolean;
   private results_: WallpaperSearchResult[] = [];
+  private resultsDescriptors_: ResultsDescriptors = {};
   private selectedDefaultColor_: string|undefined;
   private selectedDescriptorA_: string|null;
   private selectedDescriptorB_: string|null;
@@ -323,6 +332,25 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         'wallpaperSearchHistoryTileTitle', index + 1);
   }
 
+  private getResultAriaLabel_(index: number): string {
+    assert(this.resultsDescriptors_.a);
+    if (this.resultsDescriptors_.b && this.resultsDescriptors_.c) {
+      return loadTimeData.getStringF(
+          'wallpaperSearchResultLabelBC', index + 1, this.resultsDescriptors_.a,
+          this.resultsDescriptors_.b, this.resultsDescriptors_.c);
+    } else if (this.resultsDescriptors_.b) {
+      return loadTimeData.getStringF(
+          'wallpaperSearchResultLabelB', index + 1, this.resultsDescriptors_.a,
+          this.resultsDescriptors_.b);
+    } else if (this.resultsDescriptors_.c) {
+      return loadTimeData.getStringF(
+          'wallpaperSearchResultLabelC', index + 1, this.resultsDescriptors_.a,
+          this.resultsDescriptors_.c);
+    }
+    return loadTimeData.getStringF(
+        'wallpaperSearchResultLabel', index + 1, this.resultsDescriptors_.a);
+  }
+
   private isBackgroundSelected_(id: Token): boolean {
     return !!(
         this.theme_ && this.theme_.backgroundImage &&
@@ -423,6 +451,11 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
             this.selectedDescriptorC_, this.selectedDescriptorD_);
     this.loading_ = false;
     this.results_ = results;
+    this.resultsDescriptors_ = {
+      a: this.selectedDescriptorA_,
+      b: this.selectedDescriptorB_,
+      c: this.selectedDescriptorC_,
+    };
     this.status_ = status;
     this.selectedFeedbackOption_ = CrFeedbackOption.UNSPECIFIED;
     this.emptyResultContainers_ = this.calculateEmptyTiles(results);

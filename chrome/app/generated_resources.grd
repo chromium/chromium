@@ -7921,6 +7921,18 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WALLPAPER_SEARCH_TRY_AGAIN_CTA" desc="Call to action displayed when wallpaper search fails that asks user to try again.">
         Try again
       </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_RESULT_LABEL" desc="Accessibility label for a wallpaper search result, with only descriptor A." translateable="false">
+        Image <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="A">$2</ph>
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_RESULT_LABEL_WITH_DESCRIPTOR_B" desc="Accessibility label for a wallpaper search result, with descriptors A and B." translateable="false">
+        Image <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="A">$2</ph>, <ph name="B">$3</ph>
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_RESULT_LABEL_WITH_DESCRIPTOR_C" desc="Accessibility label for a wallpaper search result, with descriptors A and C." translateable="false">
+        Image <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="A">$2</ph>, <ph name="C">$3</ph>.
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_RESULT_LABEL_WITH_DESCRIPTORS_B_AND_C" desc="Accessibility label for a wallpaper search result, with descriptors A, B, and C." translateable="false">
+        Image <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="A">$2</ph>, <ph name="B">$3</ph>, <ph name="C">$4</ph>.
+      </message>
 
       <!-- NTP Modules -->
       <message name="IDS_NTP_MODULES_INFO_BUTTON_TITLE" desc="Text shown in tooltip of info button of an NTP module.">

@@ -13,6 +13,7 @@ import {WallpaperSearchProxy} from 'chrome://customize-chrome-side-panel.top-chr
 import {WindowProxy} from 'chrome://customize-chrome-side-panel.top-chrome/window_proxy.js';
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {hexColorToSkColor} from 'chrome://resources/js/color_utils.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertGE, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -550,6 +551,89 @@ suite('WallpaperSearchTest', () => {
       assertEquals(
           checkedResults[0]!.parentElement!.getAttribute('aria-current'),
           'true');
+    });
+
+    test('labels results', async () => {
+      loadTimeData.overrideValues({
+        'wallpaperSearchResultLabel': 'Image $1 of $2',
+        'wallpaperSearchResultLabelB': 'Image $1 of $2, $3',
+        'wallpaperSearchResultLabelC': 'Image $1 of $2, $3',
+        'wallpaperSearchResultLabelBC': 'Image $1 of $2, $3, $4',
+      });
+      handler.setResultFor('getWallpaperSearchResults', Promise.resolve({
+        results: [
+          {image: '123', id: {high: 10, low: 1}},
+          {image: '123', id: {high: 10, low: 1}},
+        ],
+      }));
+      createWallpaperSearchElement({
+        descriptorA: [{category: 'category', labels: ['Label A1', 'Label A2']}],
+        descriptorB: [{label: 'Label B', imagePath: 'bar.png'}],
+        descriptorC: ['Label C'],
+      });
+      await flushTasks();
+
+      // Select only descriptor A.
+      $$<HTMLElement>(
+          wallpaperSearchElement,
+          '#descriptorComboboxA .category-item')!.click();
+      await flushTasks();
+      $$<HTMLElement>(
+          wallpaperSearchElement,
+          '#descriptorComboboxA .dropdown-item')!.click();
+      wallpaperSearchElement.$.submitButton.click();
+      await waitAfterNextRender(wallpaperSearchElement);
+
+      function getAriaLabelOfTile(index: number): string|null {
+        return wallpaperSearchElement.shadowRoot!
+            .querySelectorAll('.tile')[index]!.ariaLabel;
+      }
+
+      assertEquals('Image 1 of Label A1', getAriaLabelOfTile(0));
+      assertEquals('Image 2 of Label A1', getAriaLabelOfTile(1));
+
+      // Select descriptor B.
+      $$<HTMLElement>(
+          wallpaperSearchElement,
+          '#descriptorComboboxB .dropdown-item')!.click();
+      wallpaperSearchElement.$.submitButton.click();
+      await waitAfterNextRender(wallpaperSearchElement);
+      assertEquals('Image 1 of Label A1, Label B', getAriaLabelOfTile(0));
+      assertEquals('Image 2 of Label A1, Label B', getAriaLabelOfTile(1));
+
+      // Select descriptor C.
+      $$<HTMLElement>(
+          wallpaperSearchElement,
+          '#descriptorComboboxC .dropdown-item')!.click();
+      wallpaperSearchElement.$.submitButton.click();
+      await waitAfterNextRender(wallpaperSearchElement);
+      assertEquals(
+          'Image 1 of Label A1, Label B, Label C', getAriaLabelOfTile(0));
+      assertEquals(
+          'Image 2 of Label A1, Label B, Label C', getAriaLabelOfTile(1));
+
+      // Recreate element to empty out descriptors. Select options for
+      // descriptors A and C only.
+      createWallpaperSearchElement({
+        descriptorA: [{category: 'category', labels: ['Label A1', 'Label A2']}],
+        descriptorB: [{label: 'Label B', imagePath: 'bar.png'}],
+        descriptorC: ['Label C'],
+      });
+      await flushTasks();
+      $$<HTMLElement>(
+          wallpaperSearchElement,
+          '#descriptorComboboxA .category-item')!.click();
+      await flushTasks();
+      $$<HTMLElement>(
+          wallpaperSearchElement,
+          '#descriptorComboboxA .dropdown-item')!.click();
+      $$<HTMLElement>(
+          wallpaperSearchElement,
+          '#descriptorComboboxC .dropdown-item')!.click();
+      wallpaperSearchElement.$.submitButton.click();
+      await waitAfterNextRender(wallpaperSearchElement);
+      assertEquals('Image 1 of Label A1, Label C', getAriaLabelOfTile(0));
+      assertEquals('Image 2 of Label A1, Label C', getAriaLabelOfTile(1));
     });
   });
 

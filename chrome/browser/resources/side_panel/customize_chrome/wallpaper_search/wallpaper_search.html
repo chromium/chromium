@@ -386,6 +386,7 @@
           on-dom-change="onResultsRender_">
         <div class="tile result" tabindex="0" role="button"
             on-click="onResultClick_"
+            aria-label="[[getResultAriaLabel_(index, resultsDescriptors_)]]"
             aria-current$="[[getBackgroundCheckedStatus_(item.id, theme_)]]">
           <customize-chrome-check-mark-wrapper class="image-check-mark"
               checked="[[isBackgroundSelected_(item.id, theme_)]]">
