@@ -1446,6 +1446,10 @@ crbug.com/1343361 external/wpt/css/css-color/currentcolor-003.html [ Failure ]
 # Propagate preferred color-scheme to non-top frames.
 crbug.com/1357623 external/wpt/css/css-color-adjust/rendering/dark-color-scheme/color-scheme-iframe-preferred.html [ Failure ]
 
+# css-color-adjust
+crbug.com/1506446 external/wpt/css/css-color-adjust/rendering/dark-color-scheme/color-scheme-iframe-background-about-blank.tentative.html [ Failure ]
+crbug.com/1506446 virtual/dark-color-scheme/external/wpt/css/css-color-adjust/rendering/dark-color-scheme/color-scheme-iframe-background-about-blank.tentative.html [ Failure ]
+
 # @supports
 crbug.com/1269580 external/wpt/css/css-conditional/at-supports-namespace-001.html [ Failure ]
 crbug.com/1269580 external/wpt/css/css-conditional/at-supports-namespace-002.html [ Failure ]
@@ -2679,12 +2683,10 @@ crbug.com/626703 [ Mac ] virtual/webcodecs-without-task-runner-with-custom-delet
 crbug.com/626703 [ Mac ] virtual/webcodecs-without-task-runner-with-custom-deleter/external/wpt/webcodecs/videoDecoder-codec-specific.https.any.worker.html?h265_hevc [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 external/wpt/css/css-color-adjust/rendering/dark-color-scheme/color-scheme-iframe-background-about-blank.tentative.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-transforms/transform-box/svgbox-stroke-box-003.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-transforms/transform-box/svgbox-stroke-box-004.html [ Failure ]
 crbug.com/626703 virtual/backface-visibility-interop/external/wpt/css/css-transforms/transform-box/svgbox-stroke-box-003.html [ Failure ]
 crbug.com/626703 virtual/backface-visibility-interop/external/wpt/css/css-transforms/transform-box/svgbox-stroke-box-004.html [ Failure ]
-crbug.com/626703 virtual/dark-color-scheme/external/wpt/css/css-color-adjust/rendering/dark-color-scheme/color-scheme-iframe-background-about-blank.tentative.html [ Failure ]
 crbug.com/626703 [ Mac11 ] external/wpt/infrastructure/expected-fail/window-onload-test.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/webnn/elementwise_logical.https.any.worker.html [ Skip Timeout ]
 crbug.com/626703 virtual/webnn-service-enabled/external/wpt/webnn/gpu/elementwise_logical.https.any.worker.html [ Skip Timeout ]
