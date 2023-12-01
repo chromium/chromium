@@ -449,7 +449,7 @@ void ParamTraits<std::u16string>::Log(const param_type& p, std::string* l) {
 bool ParamTraits<std::wstring>::Read(const base::Pickle* m,
                                      base::PickleIterator* iter,
                                      param_type* r) {
-  base::StringPiece16 piece16;
+  std::u16string_view piece16;
   if (!iter->ReadStringPiece16(&piece16))
     return false;
 
