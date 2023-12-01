@@ -20488,13 +20488,24 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "WebAssemblyTurboshaft",
+                        "WebAssemblyTurboshaftInstructionSelection"
+                    ]
+                },
+                {
+                    "name": "EnabledNoInstructionSelection",
+                    "enable_features": [
                         "WebAssemblyTurboshaft"
+                    ],
+                    "disable_features": [
+                        "WebAssemblyTurboshaftInstructionSelection"
                     ]
                 },
                 {
                     "name": "Control",
                     "disable_features": [
-                        "WebAssemblyTurboshaft"
+                        "WebAssemblyTurboshaft",
+                        "WebAssemblyTurboshaftInstructionSelection"
                     ]
                 }
             ]
