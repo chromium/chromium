@@ -277,6 +277,19 @@ void GraphInfoBuilder::BuildTranspose(uint64_t input_operand_id,
       mojom::Operation::NewTranspose(std::move(transpose)));
 }
 
+void GraphInfoBuilder::BuildWhere(uint64_t condition_operand_id,
+                                  uint64_t true_value_operand_id,
+                                  uint64_t false_value_operand_id,
+                                  uint64_t output_operand_id) {
+  mojom::WherePtr where = mojom::Where::New();
+  where->condition_operand_id = condition_operand_id;
+  where->true_value_operand_id = true_value_operand_id;
+  where->false_value_operand_id = false_value_operand_id;
+  where->output_operand_id = output_operand_id;
+  graph_info_->operations.push_back(
+      mojom::Operation::NewWhere(std::move(where)));
+}
+
 void GraphInfoBuilder::BuildSlice(uint64_t input_operand_id,
                                   uint64_t output_operand_id,
                                   std::vector<uint32_t> starts,

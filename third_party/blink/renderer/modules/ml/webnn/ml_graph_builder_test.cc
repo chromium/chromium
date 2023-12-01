@@ -5661,7 +5661,8 @@ TEST_F(MLGraphBuilderTest, WhereTest) {
               "broadcasted from true_value and false_value.");
   }
   {
-    // Test building where with 2-D condition and 2-D input using broadcast.
+    // Test building where with 2-D condition, 2-D true_value and 2-D
+    // false_value using broadcast.
     auto* condition = BuildInput(builder, "condition", {2, 1},
                                  V8MLOperandDataType::Enum::kUint8,
                                  scope.GetExceptionState());
@@ -5676,8 +5677,8 @@ TEST_F(MLGraphBuilderTest, WhereTest) {
     EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({2, 4}));
   }
   {
-    // Test building where with 2-D condition, 2-D input and 3-D other using
-    // broadcast.
+    // Test building where with 2-D condition, 2-D true_value and 3-D
+    // false_value using broadcast.
     auto* condition = BuildInput(builder, "condition", {1, 4},
                                  V8MLOperandDataType::Enum::kUint8,
                                  scope.GetExceptionState());
@@ -5692,8 +5693,8 @@ TEST_F(MLGraphBuilderTest, WhereTest) {
     EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({2, 3, 4}));
   }
   {
-    // Test building where with 3-D condition, 3-D input and 2-D other using
-    // broadcast.
+    // Test building where with 3-D condition, 3-D true_value and 2-D
+    // false_value using broadcast.
     auto* condition = BuildInput(builder, "condition", {2, 1, 4},
                                  V8MLOperandDataType::Enum::kUint8,
                                  scope.GetExceptionState());
@@ -5708,8 +5709,8 @@ TEST_F(MLGraphBuilderTest, WhereTest) {
     EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({2, 3, 4}));
   }
   {
-    // Test building where with 4-D condition, 3-D input and 2-D other using
-    // broadcast.
+    // Test building where with 4-D condition, 3-D true_value and 2-D
+    // false_value using broadcast.
     auto* condition = BuildInput(builder, "condition", {2, 3, 4, 5},
                                  V8MLOperandDataType::Enum::kUint8,
                                  scope.GetExceptionState());

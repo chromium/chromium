@@ -3972,6 +3972,209 @@ TEST_F(WebNNGraphImplTest, TransposeTest) {
   }
 }
 
+struct WhereTester {
+  OperandInfo condition;
+  OperandInfo true_value;
+  OperandInfo false_value;
+  OperandInfo output;
+  bool expected;
+
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t condition_operand_id =
+        builder.BuildInput("condition", condition.dimensions, condition.type);
+    uint64_t true_value_operand_id = builder.BuildInput(
+        "true_value", true_value.dimensions, true_value.type);
+    uint64_t false_value_operand_id = builder.BuildInput(
+        "false_value", false_value.dimensions, false_value.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildWhere(condition_operand_id, true_value_operand_id,
+                       false_value_operand_id, output_operand_id);
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, WhereTest) {
+  {
+    // Test the invalid graph when the condition data type is not uint8.
+    WhereTester{.condition = {.type = mojom::Operand::DataType::kFloat32,
+                              .dimensions = {2, 4}},
+                .true_value = {.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {2, 4}},
+                .false_value = {.type = mojom::Operand::DataType::kFloat32,
+                                .dimensions = {2, 4}},
+                .output = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {2, 4}},
+                .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the the data types of true_value and
+    // false_value don't match.
+    WhereTester{.condition = {.type = mojom::Operand::DataType::kUint8,
+                              .dimensions = {2, 4}},
+                .true_value = {.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {2, 4}},
+                .false_value = {.type = mojom::Operand::DataType::kFloat16,
+                                .dimensions = {2, 4}},
+                .output = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {2, 4}},
+                .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the the data types of output and
+    // true_value don't match.
+    WhereTester{.condition = {.type = mojom::Operand::DataType::kUint8,
+                              .dimensions = {2, 4}},
+                .true_value = {.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {2, 4}},
+                .false_value = {.type = mojom::Operand::DataType::kFloat32,
+                                .dimensions = {2, 4}},
+                .output = {.type = mojom::Operand::DataType::kFloat16,
+                           .dimensions = {2, 4}},
+                .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the the shape of output is wrong.
+    WhereTester{.condition = {.type = mojom::Operand::DataType::kUint8,
+                              .dimensions = {2, 4}},
+                .true_value = {.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {2, 4}},
+                .false_value = {.type = mojom::Operand::DataType::kFloat32,
+                                .dimensions = {2, 4}},
+                .output = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {2, 5}},
+                .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the shapes of true_value and false_value are
+    // not broadcastable.
+    WhereTester{.condition = {.type = mojom::Operand::DataType::kUint8,
+                              .dimensions = {2, 4}},
+                .true_value = {.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {2, 4}},
+                .false_value = {.type = mojom::Operand::DataType::kFloat32,
+                                .dimensions = {2, 3}},
+                .output = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {2, 4}},
+                .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the condition shape is not broadcastable.
+    WhereTester{.condition = {.type = mojom::Operand::DataType::kUint8,
+                              .dimensions = {2, 4}},
+                .true_value = {.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {2, 3}},
+                .false_value = {.type = mojom::Operand::DataType::kFloat32,
+                                .dimensions = {2, 1}},
+                .output = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {2, 4}},
+                .expected = false}
+        .Test();
+  }
+  {
+    // Test where with 2-D condition, 2-D true_value and 2-D false_value using
+    // broadcast.
+    WhereTester{.condition = {.type = mojom::Operand::DataType::kUint8,
+                              .dimensions = {2, 1}},
+                .true_value = {.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {2, 4}},
+                .false_value = {.type = mojom::Operand::DataType::kFloat32,
+                                .dimensions = {2, 4}},
+                .output = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {2, 4}},
+                .expected = true}
+        .Test();
+  }
+  {
+    // Test where with 2-D condition, 2-D true_value and 3-D false_value using
+    // broadcast.
+    WhereTester{.condition = {.type = mojom::Operand::DataType::kUint8,
+                              .dimensions = {1, 4}},
+                .true_value = {.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {3, 4}},
+                .false_value = {.type = mojom::Operand::DataType::kFloat32,
+                                .dimensions = {2, 3, 4}},
+                .output = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {2, 3, 4}},
+                .expected = true}
+        .Test();
+  }
+  {
+    // Test where with 3-D condition, 3-D true_value and 3-D false_value using
+    // broadcast.
+    WhereTester{.condition = {.type = mojom::Operand::DataType::kUint8,
+                              .dimensions = {2, 1, 4}},
+                .true_value = {.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {2, 3, 4}},
+                .false_value = {.type = mojom::Operand::DataType::kFloat32,
+                                .dimensions = {1, 4}},
+                .output = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {2, 3, 4}},
+                .expected = true}
+        .Test();
+  }
+  {
+    // Test where with 4-D condition, 3-D true_value and 2-D false_value using
+    // broadcast.
+    WhereTester{.condition = {.type = mojom::Operand::DataType::kUint8,
+                              .dimensions = {2, 3, 4, 5}},
+                .true_value = {.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {3, 4, 5}},
+                .false_value = {.type = mojom::Operand::DataType::kFloat32,
+                                .dimensions = {4, 5}},
+                .output = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {2, 3, 4, 5}},
+                .expected = true}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the condition is as same as output.
+    GraphInfoBuilder builder;
+    uint64_t condition_operand_id = builder.BuildInput(
+        "condition", {2, 4}, mojom::Operand::DataType::kUint8);
+    uint64_t true_value_operand_id = builder.BuildInput(
+        "true_value", {2, 4}, mojom::Operand::DataType::kFloat32);
+    uint64_t false_value_operand_id = builder.BuildInput(
+        "false_value", {2, 4}, mojom::Operand::DataType::kFloat32);
+    builder.BuildWhere(condition_operand_id, true_value_operand_id,
+                       false_value_operand_id, condition_operand_id);
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
+  }
+  {
+    // Test the invalid graph when the true_value is as same as output.
+    GraphInfoBuilder builder;
+    uint64_t condition_operand_id = builder.BuildInput(
+        "condition", {2, 4}, mojom::Operand::DataType::kUint8);
+    uint64_t true_value_operand_id = builder.BuildInput(
+        "true_value", {2, 4}, mojom::Operand::DataType::kFloat32);
+    uint64_t false_value_operand_id = builder.BuildInput(
+        "false_value", {2, 4}, mojom::Operand::DataType::kFloat32);
+    builder.BuildWhere(condition_operand_id, true_value_operand_id,
+                       false_value_operand_id, true_value_operand_id);
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
+  }
+  {
+    // Test the invalid graph when the false_value is as same as output.
+    GraphInfoBuilder builder;
+    uint64_t condition_operand_id = builder.BuildInput(
+        "condition", {2, 4}, mojom::Operand::DataType::kUint8);
+    uint64_t true_value_operand_id = builder.BuildInput(
+        "true_value", {2, 4}, mojom::Operand::DataType::kFloat32);
+    uint64_t false_value_operand_id = builder.BuildInput(
+        "false_value", {2, 4}, mojom::Operand::DataType::kFloat32);
+    builder.BuildWhere(condition_operand_id, true_value_operand_id,
+                       false_value_operand_id, false_value_operand_id);
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
+  }
+}
+
 TEST_F(WebNNGraphImplTest, ValidateInputsTest) {
   const std::vector<uint32_t> dimensions = {3, 5};
   // Build the graph with mojo type.

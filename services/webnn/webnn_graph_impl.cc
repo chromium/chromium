@@ -964,6 +964,35 @@ bool ValidateTranspose(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
+bool ValidateWhere(const IdToOperandMap& id_to_operand_map,
+                   const mojom::WherePtr& where) {
+  auto* condition =
+      GetMojoOperand(id_to_operand_map, where->condition_operand_id);
+  auto* true_value =
+      GetMojoOperand(id_to_operand_map, where->true_value_operand_id);
+  auto* false_value =
+      GetMojoOperand(id_to_operand_map, where->false_value_operand_id);
+  auto* output = GetMojoOperand(id_to_operand_map, where->output_operand_id);
+  if (!condition || !true_value || !false_value || !output ||
+      output == condition || output == true_value || output == false_value) {
+    // The where operator is invalid.
+    return false;
+  }
+
+  auto validated_output =
+      ValidateWhereAndInferOutput(ConvertToComponentOperand(condition),
+                                  ConvertToComponentOperand(true_value),
+                                  ConvertToComponentOperand(false_value));
+  if (!validated_output.has_value()) {
+    return false;
+  }
+  if (validated_output != ConvertToComponentOperand(output)) {
+    return false;
+  }
+
+  return true;
+}
+
 bool ValidateReduce(const IdToOperandMap& id_to_operand_map,
                     const mojom::ReducePtr& reduce) {
   auto* input = GetMojoOperand(id_to_operand_map, reduce->input_operand_id);
@@ -1063,6 +1092,8 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
                                     DataTypeConstraint::kFloat);
     case mojom::Operation::Tag::kTranspose:
       return ValidateTranspose(id_to_operand_map, operation->get_transpose());
+    case mojom::Operation::Tag::kWhere:
+      return ValidateWhere(id_to_operand_map, operation->get_where());
   }
   NOTREACHED_NORETURN();
 }

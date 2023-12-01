@@ -3626,6 +3626,169 @@ TEST_P(MLGraphTestMojo, TransposeTest) {
   }
 }
 
+struct WhereTester {
+  OperandInfoBlink condition;
+  OperandInfoBlink true_value;
+  OperandInfoBlink false_value;
+  OperandInfoMojo expected_operand;
+
+  void Test(MLGraphTestMojo& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder) {
+    // Build the graph.
+    auto* condition_operand =
+        BuildInput(builder, "condition", condition.dimensions,
+                   condition.data_type, scope.GetExceptionState());
+    auto* true_value_operand =
+        BuildInput(builder, "true_value", true_value.dimensions,
+                   true_value.data_type, scope.GetExceptionState());
+    auto* false_value_operand =
+        BuildInput(builder, "false_value", false_value.dimensions,
+                   false_value.data_type, scope.GetExceptionState());
+    auto* output_operand =
+        builder->where(condition_operand, true_value_operand,
+                       false_value_operand, scope.GetExceptionState());
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    ASSERT_NE(graph, nullptr);
+
+    auto graph_info = helper.GetGraphInfo();
+    // Verify the graph information of mojo are as expected.
+    EXPECT_EQ(graph_info->id_to_operand_map.size(), 4u);
+    EXPECT_EQ(graph_info->input_operands.size(), 3u);
+
+    // Verify the condition `mojo::Operand`.
+    auto condition_operand_id = graph_info->input_operands[0];
+    auto condition_operand_iter =
+        graph_info->id_to_operand_map.find(condition_operand_id);
+    ASSERT_TRUE(condition_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(condition_operand_iter->value->kind,
+              blink_mojom::Operand::Kind::kInput);
+    EXPECT_EQ(condition_operand_iter->value->data_type,
+              blink_mojom::Operand::DataType::kUint8);
+    EXPECT_EQ(condition_operand_iter->value->dimensions, condition.dimensions);
+    EXPECT_EQ(condition_operand_iter->value->name, "condition");
+
+    // Verify the true value `mojo::Operand`.
+    auto true_value_operand_id = graph_info->input_operands[1];
+    auto true_value_operand_iter =
+        graph_info->id_to_operand_map.find(true_value_operand_id);
+    ASSERT_TRUE(true_value_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(true_value_operand_iter->value->kind,
+              blink_mojom::Operand::Kind::kInput);
+    EXPECT_EQ(true_value_operand_iter->value->data_type,
+              expected_operand.data_type);
+    EXPECT_EQ(true_value_operand_iter->value->dimensions,
+              true_value.dimensions);
+    EXPECT_EQ(true_value_operand_iter->value->name, "true_value");
+
+    // Verify the false value `mojo::Operand`.
+    auto false_value_operand_id = graph_info->input_operands[2];
+    auto false_value_operand_iter =
+        graph_info->id_to_operand_map.find(false_value_operand_id);
+    ASSERT_TRUE(false_value_operand_iter !=
+                graph_info->id_to_operand_map.end());
+    EXPECT_EQ(false_value_operand_iter->value->kind,
+              blink_mojom::Operand::Kind::kInput);
+    EXPECT_EQ(false_value_operand_iter->value->data_type,
+              expected_operand.data_type);
+    EXPECT_EQ(false_value_operand_iter->value->dimensions,
+              false_value.dimensions);
+    EXPECT_EQ(false_value_operand_iter->value->name, "false_value");
+
+    // Verify the output `mojo::Operand`.
+    ASSERT_EQ(graph_info->output_operands.size(), 1u);
+    auto output_operand_id = graph_info->output_operands[0];
+    auto output_operand_iter =
+        graph_info->id_to_operand_map.find(output_operand_id);
+    ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(output_operand_iter->value->data_type,
+              expected_operand.data_type);
+    EXPECT_EQ(output_operand_iter->value->dimensions,
+              expected_operand.dimensions);
+    EXPECT_EQ(output_operand_iter->value->name, "output");
+
+    // Verify the `mojo::Operator`.
+    ASSERT_EQ(graph_info->operations.size(), 1u);
+    auto& operation = graph_info->operations[0];
+    EXPECT_EQ(operation->is_where(), true);
+  }
+};
+
+TEST_P(MLGraphTestMojo, WhereTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      webnn::features::kEnableMachineLearningNeuralNetworkService);
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device type.
+  options->setDeviceType(V8MLDeviceType::Enum::kGpu);
+  auto* builder = CreateGraphBuilder(scope, options);
+  ASSERT_NE(builder, nullptr);
+  {
+    // Test building where with 2-D condition, 2-D true_value and 2-D
+    // false_value using broadcast.
+    WhereTester{
+        .condition = {.data_type = V8MLOperandDataType::Enum::kUint8,
+                      .dimensions = {2, 1}},
+        .true_value = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                       .dimensions = {2, 4}},
+        .false_value = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                        .dimensions = {2, 4}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {2, 4}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test building where with 2-D condition, 2-D true_value and 3-D
+    // false_value using broadcast.
+    WhereTester{
+        .condition = {.data_type = V8MLOperandDataType::Enum::kUint8,
+                      .dimensions = {1, 4}},
+        .true_value = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                       .dimensions = {3, 4}},
+        .false_value = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                        .dimensions = {2, 3, 4}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {2, 3, 4}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test building where with 3-D condition, 3-D true_value and 2-D
+    // false_value using broadcast.
+    WhereTester{
+        .condition = {.data_type = V8MLOperandDataType::Enum::kUint8,
+                      .dimensions = {2, 1, 4}},
+        .true_value = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                       .dimensions = {2, 3, 4}},
+        .false_value = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                        .dimensions = {1, 4}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {2, 3, 4}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test building where with 4-D condition, 3-D true_value and 2-D
+    // false_value using broadcast.
+    WhereTester{
+        .condition = {.data_type = V8MLOperandDataType::Enum::kUint8,
+                      .dimensions = {2, 3, 4, 5}},
+        .true_value = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                       .dimensions = {3, 4, 5}},
+        .false_value = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                        .dimensions = {4, 5}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {2, 3, 4, 5}}}
+        .Test(*this, scope, builder);
+  }
+}
+
 struct ReduceTester {
   OperandInfoBlink input;
   absl::optional<Vector<uint32_t>> axes;

@@ -893,6 +893,20 @@ OperationPtr CreateTransposeOperation(const OperandToIdMap& operand_to_id_map,
   return blink_mojom::Operation::NewTranspose(std::move(transpose_mojo));
 }
 
+OperationPtr CreateWhereOperation(const OperandToIdMap& operand_to_id_map,
+                                  const MLOperator* where) {
+  auto where_mojo = blink_mojom::Where::New();
+  where_mojo->condition_operand_id =
+      GetOperatorInputId(where, operand_to_id_map, 0);
+  where_mojo->true_value_operand_id =
+      GetOperatorInputId(where, operand_to_id_map, 1);
+  where_mojo->false_value_operand_id =
+      GetOperatorInputId(where, operand_to_id_map, 2);
+  where_mojo->output_operand_id = GetOperatorOutputId(where, operand_to_id_map);
+
+  return blink_mojom::Operation::NewWhere(std::move(where_mojo));
+}
+
 }  // namespace
 
 // TODO(crbug.com/1504405): Use a lookup table to simplifie the switch logic.
@@ -1014,6 +1028,8 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
       return CreateTanhOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kTranspose:
       return CreateTransposeOperation(operand_to_id_map, op);
+    case MLOperator::OperatorKind::kWhere:
+      return CreateWhereOperation(operand_to_id_map, op);
     default:
       return base::unexpected(MLOperator::OperatorKindToString(op->Kind()) +
                               " is not implemented.");

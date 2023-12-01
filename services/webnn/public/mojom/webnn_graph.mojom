@@ -555,6 +555,29 @@ struct Resample2d {
   array<uint32, 2> axes;
 };
 
+// Select the values from the true value or the false value tensor depending
+// on the corresponding Boolean values of the condition tensor. Non-zero
+// elements of condition tensor select from true value tensor, while
+// zero-valued elements select from false value tensor.
+struct Where {
+  // Constraints:
+  // * The shapes of all input operands must be bidirectionally broadcastable.
+  // * The data type of condition operand must be uint8.
+  // * The data types of true value, false value and output operands must be
+  // the same.
+  // * The output operand must be a different operand from condition, true
+  // value and false value operands.
+
+  // The id of condition operand.
+  uint64 condition_operand_id;
+  // The id of true value operand.
+  uint64 true_value_operand_id;
+  // The id of false value operand.
+  uint64 false_value_operand_id;
+  // The id of output operand.
+  uint64 output_operand_id;
+};
+
 // Represents the `MLActivation` which describes an activation function type
 // to create other operations (Conv2d, BatchNormalization, for example).
 union Activation {
@@ -594,6 +617,7 @@ union Operation {
   Split split;
   Tanh tanh;
   Transpose transpose;
+  Where where;
 };
 
 // Describes an entire WebNN graph information.

@@ -231,7 +231,7 @@ dictionary MLSplitOptions {
   [RaisesException] MLOperand transpose(
       MLOperand input, optional MLTransposeOptions options = {});
 
-  [RaisesException] MLOperand where(MLOperand condition, MLOperand input, MLOperand other);
+  [RaisesException] MLOperand where(MLOperand condition, MLOperand true_value, MLOperand false_value);
 
   [
     CallWith=ScriptState,

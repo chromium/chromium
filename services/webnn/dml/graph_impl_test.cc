@@ -3588,7 +3588,7 @@ struct MatmulTester {
 };
 
 // Test building and computing a DML graph with single operator matmul.
-TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorMatmul) {
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorMatmul) {
   // DML_GEMM_OPERATOR_DESC support for 2~4 dimensions was introduced in
   // DML_FEATURE_LEVEL_4_0.
   SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_4_0));
@@ -4486,6 +4486,170 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeGraphWithTransposeAndTwoOutputs) {
   //    [ 2  6 20]]]] with shape (1, 2, 2, 3)
   EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output2"])),
             std::vector<float>({0, 0, 0, 1, 3, 10, 0, 0, 0, 2, 6, 20}));
+}
+
+template <typename T>
+struct WhereTester {
+  OperandInfo<uint8_t> condition;
+  OperandInfo<T> true_value;
+  OperandInfo<T> false_value;
+  OperandInfo<T> output;
+
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t condition_operand_id =
+        builder.BuildInput("condition", condition.dimensions, condition.type);
+    uint64_t true_value_operand_id = builder.BuildInput(
+        "true_value", true_value.dimensions, true_value.type);
+    uint64_t false_value_operand_id = builder.BuildInput(
+        "false_value", false_value.dimensions, false_value.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildWhere(condition_operand_id, true_value_operand_id,
+                       false_value_operand_id, output_operand_id);
+
+    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+    named_inputs.insert({"condition", VectorToBigBuffer(condition.values)});
+    named_inputs.insert({"true_value", VectorToBigBuffer(true_value.values)});
+    named_inputs.insert({"false_value", VectorToBigBuffer(false_value.values)});
+    base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+
+    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                    named_outputs);
+
+    VerifyIsEqual(std::move(named_outputs["output"]), output);
+  }
+};
+
+// Test building and computing a DML graph with single operator where.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorWhere) {
+  // Test where with 2-D condition, 2-D true_value and 2-D false_value.
+  {
+    WhereTester<float>{
+        .condition = {.type = mojom::Operand::DataType::kUint8,
+                      .dimensions = {2, 3},
+                      .values = {1, 1, 0, 0, 1, 0}},
+        .true_value = {.type = mojom::Operand::DataType::kFloat32,
+                       .dimensions = {2, 3},
+                       .values = {1, 2, 3, 4, 5, 64}},
+        .false_value = {.type = mojom::Operand::DataType::kFloat32,
+                        .dimensions = {2, 3},
+                        .values = {6, 3, 5, 7, 8, 0}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 3},
+                   .values = {1, 2, 5, 7, 5, 0}}}
+        .Test();
+  }
+  // Test where with 1-D condition, 2-D true_value and 2-D false_value using
+  // broadcast.
+  {
+    WhereTester<float>{
+        .condition = {.type = mojom::Operand::DataType::kUint8,
+                      .dimensions = {3},
+                      .values = {1, 1, 0}},
+        .true_value = {.type = mojom::Operand::DataType::kFloat32,
+                       .dimensions = {2, 3},
+                       .values = {1, 2, 3, 4, 5, 64}},
+        .false_value = {.type = mojom::Operand::DataType::kFloat32,
+                        .dimensions = {2, 3},
+                        .values = {7, 8, 9, 10, 11, 12}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 3},
+                   .values = {1, 2, 9, 4, 5, 12}}}
+        .Test();
+  }
+  // Test where with 2-D condition, 2-D true_value and 1-D false_value using
+  // broadcast.
+  {
+    WhereTester<float>{
+        .condition = {.type = mojom::Operand::DataType::kUint8,
+                      .dimensions = {2, 3},
+                      .values = {1, 1, 0, 0, 0, 1}},
+        .true_value = {.type = mojom::Operand::DataType::kFloat32,
+                       .dimensions = {2, 3},
+                       .values = {1, 2, 3, 4, 5, 64}},
+        .false_value = {.type = mojom::Operand::DataType::kFloat32,
+                        .dimensions = {3},
+                        .values = {7, 8, 9}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 3},
+                   .values = {1, 2, 9, 7, 8, 64}}}
+        .Test();
+  }
+  // Test where with 1-D condition, 2-D true_value and 3-D false_value using
+  // broadcast.
+  {
+    WhereTester<float>{
+        .condition = {.type = mojom::Operand::DataType::kUint8,
+                      .dimensions = {3},
+                      .values = {1, 1, 0}},
+        .true_value = {.type = mojom::Operand::DataType::kFloat32,
+                       .dimensions = {2, 3},
+                       .values = {1, 2, 3, 4, 5, 64}},
+        .false_value = {.type = mojom::Operand::DataType::kFloat32,
+                        .dimensions = {2, 2, 3},
+                        .values = {7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+                                   18}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 2, 3},
+                   .values = {1, 2, 9, 4, 5, 12, 1, 2, 15, 4, 5, 18}}}
+        .Test();
+  }
+  // Test where with 3-D condition, 2-D true_value and 1-D false_value using
+  // broadcast.
+  {
+    WhereTester<float>{
+        .condition = {.type = mojom::Operand::DataType::kUint8,
+                      .dimensions = {2, 2, 3},
+                      .values = {1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0}},
+        .true_value = {.type = mojom::Operand::DataType::kFloat32,
+                       .dimensions = {2, 3},
+                       .values = {1, 2, 3, 4, 5, 64}},
+        .false_value = {.type = mojom::Operand::DataType::kFloat32,
+                        .dimensions = {3},
+                        .values = {7, 8, 9}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 2, 3},
+                   .values = {1, 2, 9, 4, 5, 9, 1, 2, 9, 4, 5, 9}}}
+        .Test();
+  }
+  // Test where with 2-D condition, 2-D true_value and 2-D false_value, and
+  // condition value !=0 should be true.
+  {
+    WhereTester<float>{
+        .condition = {.type = mojom::Operand::DataType::kUint8,
+                      .dimensions = {2, 3},
+                      .values = {2, 3, 0, 0, 5, 0}},
+        .true_value = {.type = mojom::Operand::DataType::kFloat32,
+                       .dimensions = {2, 3},
+                       .values = {1, 2, 3, 4, 5, 64}},
+        .false_value = {.type = mojom::Operand::DataType::kFloat32,
+                        .dimensions = {2, 3},
+                        .values = {6, 3, 5, 7, 8, 0}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 3},
+                   .values = {1, 2, 5, 7, 5, 0}}}
+        .Test();
+  }
+  // Test where with 2-D condition, 0-D scalar true_value and 2-D false_value
+  // using broadcast.
+  {
+    WhereTester<float>{
+        .condition = {.type = mojom::Operand::DataType::kUint8,
+                      .dimensions = {2, 3},
+                      .values = {1, 1, 0, 0, 1, 0}},
+        .true_value = {.type = mojom::Operand::DataType::kFloat32,
+                       .dimensions = {},
+                       .values = {6}},
+        .false_value = {.type = mojom::Operand::DataType::kFloat32,
+                        .dimensions = {2, 3},
+                        .values = {6, 3, 5, 7, 8, 0}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 3},
+                   .values = {6, 6, 5, 7, 6, 0}}}
+        .Test();
+  }
 }
 
 }  // namespace webnn::dml

@@ -185,14 +185,16 @@ std::string OpTagToString(Operation::Tag tag) {
       return "sigmoid";
     case Operation::Tag::kSlice:
       return "slice";
+    case Operation::Tag::kSoftmax:
+      return "softmax";
     case Operation::Tag::kSplit:
       return "split";
     case Operation::Tag::kTanh:
       return "tanh";
     case Operation::Tag::kTranspose:
       return "transpose";
-    case Operation::Tag::kSoftmax:
-      return "softmax";
+    case Operation::Tag::kWhere:
+      return "where";
   }
   NOTREACHED_NORETURN();
 }
@@ -1671,6 +1673,61 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTranspose(
   return base::ok();
 }
 
+base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForWhere(
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::WherePtr& where,
+    GraphBuilder& graph_builder,
+    IdToNodeOutputMap& id_to_node_output_map) {
+  const NodeOutput* condition = GetNodeOutputForOperand(
+      id_to_node_output_map, where->condition_operand_id);
+  auto condition_tensor_desc = condition->GetTensorDesc();
+
+  const NodeOutput* true_value = GetNodeOutputForOperand(
+      id_to_node_output_map, where->true_value_operand_id);
+  auto true_value_tensor_desc = true_value->GetTensorDesc();
+
+  const NodeOutput* false_value = GetNodeOutputForOperand(
+      id_to_node_output_map, where->false_value_operand_id);
+  auto false_value_tensor_desc = false_value->GetTensorDesc();
+
+  uint64_t output_id = where->output_operand_id;
+  const auto output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+  const auto output_tensor_dims = output_tensor_desc.GetDimensions();
+
+  // Broadcast each of the inputs to the output.
+  if (condition_tensor_desc.GetDimensions() != output_tensor_dims) {
+    condition_tensor_desc.BroadcastTo(output_tensor_dims);
+  }
+  if (true_value_tensor_desc.GetDimensions() != output_tensor_dims) {
+    true_value_tensor_desc.BroadcastTo(output_tensor_dims);
+  }
+  if (false_value_tensor_desc.GetDimensions() != output_tensor_dims) {
+    false_value_tensor_desc.BroadcastTo(output_tensor_dims);
+  }
+
+  DML_ELEMENT_WISE_IF_OPERATOR_DESC where_operator_desc{
+      .ConditionTensor = &condition_tensor_desc.GetDMLTensorDesc(),
+      .ATensor = &true_value_tensor_desc.GetDMLTensorDesc(),
+      .BTensor = &false_value_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc()};
+
+  std::array<const NodeOutput*, 3> inputs{condition, true_value, false_value};
+  const OperatorNode* where_node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_ELEMENT_WISE_IF, &where_operator_desc, inputs);
+  if (!where_node) {
+    return base::unexpected(mojom::Error::New(
+        mojom::Error::Code::kUnknownError, "Failed to create where operator."));
+  }
+
+  const NodeOutput* output = graph_builder.CreateNodeOutput(
+      where_node, std::move(output_tensor_desc), 0);
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
+
+  return base::ok();
+}
+
 }  // namespace
 
 GraphImpl::GraphBufferBindingInfo::GraphBufferBindingInfo() = default;
@@ -2263,6 +2320,12 @@ void GraphImpl::CreateAndBuild(
       case Operation::Tag::kTranspose: {
         create_operator_result = CreateOperatorNodeForTranspose(
             id_to_operand_map, operation->get_transpose(), graph_builder,
+            id_to_node_output_map);
+        break;
+      }
+      case Operation::Tag::kWhere: {
+        create_operator_result = CreateOperatorNodeForWhere(
+            id_to_operand_map, operation->get_where(), graph_builder,
             id_to_node_output_map);
         break;
       }
