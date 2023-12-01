@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/uuid.h"
@@ -84,7 +85,9 @@ class CorpHostStarter : public HostStarter,
 
   void GetOAuthTokens();
 
-  void NotifyError(const ProtobufHttpStatus& status);
+  void HandleHttpStatusError(const ProtobufHttpStatus& status);
+
+  void ReportProvisioningError(const std::string& message, Result result);
 
   Params start_host_params_;
   std::string host_refresh_token_;
@@ -191,11 +194,12 @@ void CorpHostStarter::OnGetUserEmailResponse(const std::string& user_email) {
   }
 
   if (service_account_email_.compare(base::ToLowerASCII(user_email)) != 0) {
-    LOG(ERROR)
-        << "authorization_code was created for `" << user_email << "` "
-        << "which does not match the service account created for the host: `"
-        << service_account_email_ << "`";
-    std::move(on_done_).Run(OAUTH_ERROR);
+    ReportProvisioningError(
+        base::StringPrintf(
+            "authorization_code was created for `%s` which does not "
+            "match the service account created for the host: `%s`",
+            user_email.c_str(), service_account_email_.c_str()),
+        OAUTH_ERROR);
     return;
   }
 
@@ -214,20 +218,20 @@ void CorpHostStarter::OnProvisionCorpMachineResponse(
   }
 
   if (!status.ok()) {
-    NotifyError(status);
-    return;
-  }
-
-  authorization_code_ = internal::GetAuthorizationCode(*response);
-  if (authorization_code_.empty()) {
-    LOG(ERROR) << "No authorization code returned by the Directory.";
-    std::move(on_done_).Run(REGISTRATION_ERROR);
+    HandleHttpStatusError(status);
     return;
   }
 
   service_account_email_ =
       base::ToLowerASCII(internal::GetServiceAccount(*response));
   start_host_params_.id = internal::GetHostId(*response);
+
+  authorization_code_ = internal::GetAuthorizationCode(*response);
+  if (authorization_code_.empty()) {
+    ReportProvisioningError("No authorization code returned by the Directory.",
+                            REGISTRATION_ERROR);
+    return;
+  }
 
   if (has_existing_host_instance_) {
     daemon_controller_->Stop(
@@ -301,10 +305,9 @@ void CorpHostStarter::OnHostStarted(DaemonController::AsyncResult result) {
     return;
   }
   if (result != DaemonController::RESULT_OK) {
-    LOG(ERROR) << "Failed to start host: " << result;
-    // TODO(joedow): Decide whether to delete the host instance or update its
-    // offline reason in the Directory instead.
-    std::move(on_done_).Run(START_ERROR);
+    ReportProvisioningError(base::StringPrintf("Failed to start host: %d",
+                                               static_cast<int>(result)),
+                            START_ERROR);
     return;
   }
   std::move(on_done_).Run(START_COMPLETE);
@@ -331,7 +334,7 @@ void CorpHostStarter::OnNetworkError(int response_code) {
   std::move(on_done_).Run(NETWORK_ERROR);
 }
 
-void CorpHostStarter::NotifyError(const ProtobufHttpStatus& status) {
+void CorpHostStarter::HandleHttpStatusError(const ProtobufHttpStatus& status) {
   ProtobufHttpStatus::Code error_code = status.error_code();
   LOG(ERROR) << "\n  Received error code: " << static_cast<int>(error_code)
              << ", message: " << status.error_message();
@@ -361,6 +364,25 @@ void CorpHostStarter::NotifyError(const ProtobufHttpStatus& status) {
     default:
       std::move(on_done_).Run(NETWORK_ERROR);
   }
+}
+
+void CorpHostStarter::ReportProvisioningError(const std::string& message,
+                                              Result result) {
+  const std::string& host_id = start_host_params_.id;
+  LOG(ERROR) << "Reporting provisioning error for host id `" << host_id
+             << "`: " << message;
+  corp_service_client_->ReportProvisioningError(
+      host_id, message,
+      base::BindOnce(
+          [](CompletionCallback on_done, Result result,
+             const ProtobufHttpStatus& status, std::unique_ptr<Empty>) {
+            if (!status.ok()) {
+              LOG(ERROR) << "Failed to report provisioning error: "
+                         << static_cast<int>(status.error_code());
+            }
+            std::move(on_done).Run(result);
+          },
+          std::move(on_done_), result));
 }
 
 }  // namespace
