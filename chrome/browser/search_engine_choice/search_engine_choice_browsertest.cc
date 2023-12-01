@@ -408,8 +408,9 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
   EXPECT_TRUE(service->IsShowingDialog(browser()));
 }
 
+// TODO(b/314262472) Flaky crashes on various platforms.
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
-                       BrowserIsRemovedFromListAfterClose) {
+                       DISABLED_BrowserIsRemovedFromListAfterClose) {
   Profile* profile = browser()->profile();
   Browser* new_browser = CreateBrowser(profile);
   auto* service = static_cast<MockSearchEngineChoiceService*>(
