@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/v8.h"
 
@@ -24,13 +25,12 @@ namespace v8_compile_hints {
 class CORE_EXPORT V8LocalCompileHintsProducer
     : public GarbageCollected<V8LocalCompileHintsProducer> {
  public:
-  V8LocalCompileHintsProducer();
+  explicit V8LocalCompileHintsProducer(LocalFrame* frame);
   ~V8LocalCompileHintsProducer() = default;
-  void RecordScript(LocalFrame* frame,
-                    ExecutionContext* execution_context,
+  void RecordScript(ExecutionContext* execution_context,
                     const v8::Local<v8::Script> script,
                     ClassicScript* classic_script);
-  void GenerateData(LocalFrame* frame);
+  void GenerateData();
 
   void Trace(Visitor* visitor) const;
 
@@ -39,9 +39,10 @@ class CORE_EXPORT V8LocalCompileHintsProducer
       uint64_t prefix);
 
  private:
-  HeapVector<Member<ClassicScript>> classic_scripts_;
+  HeapVector<Member<CachedMetadataHandler>> cache_handlers_;
   WTF::Vector<v8::Global<v8::Script>> v8_scripts_;
   bool should_generate_data_;
+  Member<LocalFrame> frame_;
 };
 
 }  // namespace v8_compile_hints

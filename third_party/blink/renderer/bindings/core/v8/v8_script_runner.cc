@@ -650,7 +650,7 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
             frame, execution_context, script, script_state);
 #endif  // BUILDFLAG(ENABLE_V8_COMPILE_HINTS)
         frame->GetV8LocalCompileHintsProducer().RecordScript(
-            frame, execution_context, script, classic_script);
+            execution_context, script, classic_script);
       }
     }
 

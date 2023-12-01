@@ -12,34 +12,33 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 
 namespace blink::v8_compile_hints {
 
-V8LocalCompileHintsProducer::V8LocalCompileHintsProducer() {
-  static bool enabled =
+V8LocalCompileHintsProducer::V8LocalCompileHintsProducer(LocalFrame* frame)
+    : frame_(frame) {
+  should_generate_data_ =
       base::FeatureList::IsEnabled(features::kLocalCompileHints);
-  should_generate_data_ = enabled;
 }
 
 void V8LocalCompileHintsProducer::RecordScript(
-    LocalFrame* frame,
     ExecutionContext* execution_context,
     const v8::Local<v8::Script> script,
     ClassicScript* classic_script) {
   if (!should_generate_data_) {
     return;
   }
-  if (classic_script->CacheHandler() == nullptr) {
+  CachedMetadataHandler* cache_handler = classic_script->CacheHandler();
+  if (cache_handler == nullptr) {
     return;
   }
   v8::Isolate* isolate = execution_context->GetIsolate();
   v8_scripts_.emplace_back(v8::Global<v8::Script>(isolate, script));
-  classic_scripts_.emplace_back(Persistent<ClassicScript>(classic_script));
+  cache_handlers_.emplace_back(cache_handler);
 }
 
-void V8LocalCompileHintsProducer::GenerateData(LocalFrame* frame) {
-  LocalDOMWindow* window = frame->DomWindow();
+void V8LocalCompileHintsProducer::GenerateData() {
+  LocalDOMWindow* window = frame_->DomWindow();
   CHECK(window);
   ExecutionContext* execution_context = window->GetExecutionContext();
   v8::Isolate* isolate = execution_context->GetIsolate();
@@ -47,11 +46,9 @@ void V8LocalCompileHintsProducer::GenerateData(LocalFrame* frame) {
       ExecutionContext::GetCodeCacheHostFromContext(execution_context);
   v8::HandleScope handle_scope(isolate);
 
-  DCHECK_EQ(classic_scripts_.size(), v8_scripts_.size());
-  for (wtf_size_t i = 0; i < classic_scripts_.size(); ++i) {
-    const ClassicScript& classic_script = *classic_scripts_.at(i);
-    CachedMetadataHandler* cache_handler = classic_script.CacheHandler();
-    CHECK(cache_handler);
+  DCHECK_EQ(cache_handlers_.size(), v8_scripts_.size());
+  for (wtf_size_t i = 0; i < cache_handlers_.size(); ++i) {
+    CachedMetadataHandler* cache_handler = cache_handlers_.at(i);
 
     v8::Local<v8::Script> script = v8_scripts_[i].Get(isolate);
     std::vector<int> compile_hints = script->GetProducedCompileHints();
@@ -69,6 +66,8 @@ void V8LocalCompileHintsProducer::GenerateData(LocalFrame* frame) {
         code_cache_host, V8CodeCache::TagForCompileHints(cache_handler),
         data->data, data->length);
   }
+  cache_handlers_.clear();
+  v8_scripts_.clear();
 }
 
 v8::ScriptCompiler::CachedData*
@@ -105,7 +104,8 @@ V8LocalCompileHintsProducer::CreateCompileHintsCachedDataForScript(
 }
 
 void V8LocalCompileHintsProducer::Trace(Visitor* visitor) const {
-  visitor->Trace(classic_scripts_);
+  visitor->Trace(cache_handlers_);
+  visitor->Trace(frame_);
 }
 
 }  // namespace blink::v8_compile_hints

@@ -1720,8 +1720,8 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
                               ? interface_registry
                               : InterfaceRegistry::GetEmptyInterfaceRegistry()),
       v8_local_compile_hints_producer_(
-          MakeGarbageCollected<
-              v8_compile_hints::V8LocalCompileHintsProducer>()) {
+          MakeGarbageCollected<v8_compile_hints::V8LocalCompileHintsProducer>(
+              this)) {
   auto frame_tracking_result =
       GetLocalFramesMap().insert(FrameToken::Hasher()(GetFrameToken()), this);
   CHECK(frame_tracking_result.stored_value) << "Inserting a duplicate item.";
@@ -2577,7 +2577,7 @@ void LocalFrame::MainFrameInteractive() {
   if (Page* page = GetPage()) {
     page->GetV8CrowdsourcedCompileHintsProducer().GenerateData();
   }
-  v8_local_compile_hints_producer_->GenerateData(this);
+  v8_local_compile_hints_producer_->GenerateData();
 }
 
 mojom::blink::ReportingServiceProxy* LocalFrame::GetReportingService() {
