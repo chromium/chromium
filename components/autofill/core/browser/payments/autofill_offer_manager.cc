@@ -29,7 +29,8 @@ AutofillOfferData ToAutofillOfferData(
       discount_info.id,
       base::Time::FromSecondsSinceUnixEpoch(discount_info.expiry_time_sec),
       {url}, url, DisplayStrings{discount_info.description_detail},
-      discount_info.discount_code.value_or(""), discount_info.is_merchant_wide);
+      discount_info.discount_code.value_or(""), discount_info.is_merchant_wide,
+      discount_info.terms_and_conditions);
 }
 
 AutofillOfferManager::AutofillOfferManager(

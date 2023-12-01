@@ -355,8 +355,7 @@ void StyledLabel::ClickFirstLinkForTesting() {
 
 views::Link* StyledLabel::GetFirstLinkForTesting() {
   const auto it = base::ranges::find_if(children(), &IsViewClass<LinkFragment>);
-  DCHECK(it != children().cend());
-  return static_cast<views::Link*>(*it);
+  return (it == children().cend()) ? nullptr : static_cast<views::Link*>(*it);
 }
 
 int StyledLabel::StartX(int excess_space) const {

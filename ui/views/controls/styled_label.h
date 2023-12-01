@@ -193,7 +193,7 @@ class VIEWS_EXPORT StyledLabel : public View {
   // one such child exists.
   void ClickFirstLinkForTesting();
 
-  // Get the first child that is a link.
+  // Gets the first child that is a link. Returns nullptr if there isn't any.
   views::Link* GetFirstLinkForTesting();
 
  private:
