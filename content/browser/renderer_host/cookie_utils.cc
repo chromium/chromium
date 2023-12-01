@@ -4,16 +4,27 @@
 
 #include "content/browser/renderer_host/cookie_utils.h"
 
+#include <cstddef>
+#include <ostream>
+#include <string>
+
+#include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/navigation_or_document_handle.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/cookie_access_details.h"
+#include "content/public/browser/legacy_tech_cookie_issue_details.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -175,6 +186,7 @@ void RecordSchemefulContextDowngradeUKM(
   }
 }
 
+// LINT.IfChange(should_report_dev_tools)
 bool ShouldReportDevToolsIssueForStatus(
     const net::CookieInclusionStatus& status) {
   return status.ShouldWarn() ||
@@ -186,8 +198,22 @@ bool ShouldReportDevToolsIssueForStatus(
          status.HasExclusionReason(
              net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT);
 }
+// LINT.ThenChange(//content/browser/renderer_host/cookie_utils.cc:should_report_legacy_tech_report)
 
-// Logs cookie warnings to DevTools Issues Panel and logs events to UseCounters
+// LINT.IfChange(should_report_legacy_tech_report)
+bool ShouldReportLegacyTechIssueForStatus(
+    const net::CookieInclusionStatus& status) {
+  return status.HasExclusionReason(
+             net::CookieInclusionStatus::
+                 EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET) ||
+         status.HasExclusionReason(
+             net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT) ||
+         status.HasWarningReason(
+             net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT);
+}
+// LINT.ThenChange(//content/browser/renderer_host/cookie_utils.cc:should_report_dev_tools)
+
+// Logs cookie issues to DevTools Issues Panel and logs events to UseCounters
 // and UKM for a single cookie-accessed event. Does not log to the JS console.
 // TODO(crbug.com/977040): Remove when no longer needed.
 void EmitCookieWarningsAndMetricsOnce(
@@ -381,6 +407,65 @@ void EmitCookieWarningsAndMetricsOnce(
   }
 }
 
+// Logs cookie issues to Legacy Technology Report.
+void ReportLegacyTechEvent(
+    RenderFrameHostImpl* render_frame_host,
+    NavigationRequest* navigation_request,
+    const network::mojom::CookieAccessDetailsPtr& cookie_details) {
+  if (!base::FeatureList::IsEnabled(
+          features::kLegacyTechReportEnableCookieIssueReports)) {
+    return;
+  }
+  CHECK(render_frame_host);
+
+  for (const network::mojom::CookieOrLineWithAccessResultPtr& cookie :
+       cookie_details->cookie_list) {
+    const net::CookieInclusionStatus& status = cookie->access_result.status;
+    if (ShouldReportLegacyTechIssueForStatus(status) &&
+        cookie->cookie_or_line->is_cookie()) {
+      std::string type;
+      if (status.HasExclusionReason(
+              net::CookieInclusionStatus::
+                  EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET) ||
+          status.HasExclusionReason(
+              net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT)) {
+        type = "ThirdPartyCookieAccessError";
+      } else if (status.HasWarningReason(
+                     net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT)) {
+        type = "ThirdPartyCookieAccessWarning";
+      } else {
+        DLOG(ERROR) << "Unexpected call of ReportLegacyTechEvent.";
+      }
+
+      GURL url = render_frame_host->GetOutermostMainFrameOrEmbedder()
+                     ->GetLastCommittedURL();
+      GURL frame_url = render_frame_host->GetLastCommittedURL();
+      if (navigation_request != nullptr) {
+        if (!navigation_request->frame_tree_node()
+                 ->GetParentOrOuterDocumentOrEmbedder()) {
+          url = navigation_request->GetURL();
+          frame_url = navigation_request->GetURL();
+        } else {
+          frame_url = navigation_request->GetURL();
+        }
+      }
+
+      LegacyTechCookieIssueDetails cookie_issue_details = {
+          cookie_details->url.spec(),
+          cookie->cookie_or_line->get_cookie().Name(),
+          cookie->cookie_or_line->get_cookie().Domain(),
+          cookie->cookie_or_line->get_cookie().Path(),
+          cookie_details->type == CookieAccessDetails::Type::kChange
+              ? LegacyTechCookieIssueDetails::AccessOperation::kWrite
+              : LegacyTechCookieIssueDetails::AccessOperation::kRead};
+
+      GetContentClient()->browser()->ReportLegacyTechEvent(
+          render_frame_host, type, url, frame_url, /*filename=*/"", /*line=*/0,
+          /*column=*/0, cookie_issue_details);
+    }
+  }
+}
+
 }  // namespace
 
 void SplitCookiesIntoAllowedAndBlocked(
@@ -450,7 +535,9 @@ void SplitCookiesIntoAllowedAndBlocked(
 
 void EmitCookieWarningsAndMetrics(
     RenderFrameHostImpl* rfh,
+    NavigationRequest* navigation_request,
     const network::mojom::CookieAccessDetailsPtr& cookie_details) {
+  ReportLegacyTechEvent(rfh, navigation_request, cookie_details);
   for (size_t i = 0; i < cookie_details->count; ++i) {
     EmitCookieWarningsAndMetricsOnce(rfh, cookie_details);
   }

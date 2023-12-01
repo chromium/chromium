@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <tuple>
 #include <unordered_map>
 #include <utility>
@@ -8378,13 +8379,13 @@ void RenderFrameHostImpl::SendLegacyTechEvent(
         this, type,
         /*url=*/GetOutermostMainFrameOrEmbedder()->GetLastCommittedURL(),
         /*frame_url=*/GetLastCommittedURL(), code_location->filename,
-        code_location->line, code_location->column);
+        code_location->line, code_location->column, std::nullopt);
   } else {
     GetContentClient()->browser()->ReportLegacyTechEvent(
         this, type,
         /*url=*/GetLastCommittedURL(),
         /*frame_url=*/GURL(""), code_location->filename, code_location->line,
-        code_location->column);
+        code_location->column, std::nullopt);
   }
 }
 
@@ -15550,7 +15551,8 @@ void RenderFrameHostImpl::OnCookiesAccessed(
   size_t access_sum = 0;
   for (auto& details : details_vector) {
     access_sum += details->count * details->cookie_list.size();
-    EmitCookieWarningsAndMetrics(this, details);
+    EmitCookieWarningsAndMetrics(/*rfh=*/this, /*navigation_request=*/nullptr,
+                                 details);
 
     CookieAccessDetails allowed;
     CookieAccessDetails blocked;

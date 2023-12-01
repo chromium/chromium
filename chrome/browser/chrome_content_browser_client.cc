@@ -7,6 +7,7 @@
 #include <iterator>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string_view>
 #include <tuple>
@@ -314,6 +315,7 @@
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/file_url_loader.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
+#include "content/public/browser/legacy_tech_cookie_issue_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/overlay_window.h"
@@ -7099,7 +7101,8 @@ void ChromeContentBrowserClient::ReportLegacyTechEvent(
     const GURL& frame_url,
     const std::string& filename,
     uint64_t line,
-    uint64_t column) {
+    uint64_t column,
+    std::optional<content::LegacyTechCookieIssueDetails> cookie_issue_details) {
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(render_frame_host);
   DCHECK(web_contents);
@@ -7109,7 +7112,8 @@ void ChromeContentBrowserClient::ReportLegacyTechEvent(
     return;
   }
   enterprise_reporting::LegacyTechServiceFactory::GetForProfile(profile)
-      ->ReportEvent(type, url, frame_url, filename, line, column);
+      ->ReportEvent(type, url, frame_url, filename, line, column,
+                    cookie_issue_details);
 }
 
 bool ChromeContentBrowserClient::CanAcceptUntrustedExchangesIfNeeded() {

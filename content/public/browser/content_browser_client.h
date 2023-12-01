@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -36,6 +37,7 @@
 #include "content/public/browser/generated_code_cache_settings.h"
 #include "content/public/browser/interest_group_api_operation.h"
 #include "content/public/browser/interest_group_manager.h"
+#include "content/public/browser/legacy_tech_cookie_issue_details.h"
 #include "content/public/browser/login_delegate.h"
 #include "content/public/browser/mojo_binder_policy_map.h"
 #include "content/public/browser/privacy_sandbox_invoking_api.h"
@@ -2403,7 +2405,8 @@ class CONTENT_EXPORT ContentBrowserClient {
       const GURL& frame_url,
       const std::string& filename,
       uint64_t line,
-      uint64_t column);
+      uint64_t column,
+      std::optional<LegacyTechCookieIssueDetails> cookie_issue_details);
 
   // Check whether paste is allowed. To paste, an implementation may require
   // a `render_frame_host` to have user activation or various permissions.

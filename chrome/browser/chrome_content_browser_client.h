@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -30,6 +31,7 @@
 #include "components/safe_browsing/content/browser/web_api_handshake_checker.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/legacy_tech_cookie_issue_details.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/alternative_error_page_override_info.mojom-forward.h"
 #include "extensions/buildflags/buildflags.h"
@@ -1058,13 +1060,16 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   // Try to upload an enterprise legacy tech event to the enterprise management
   // server for admins.
-  void ReportLegacyTechEvent(content::RenderFrameHost* render_frame_host,
-                             const std::string type,
-                             const GURL& url,
-                             const GURL& frame_url,
-                             const std::string& filename,
-                             uint64_t line,
-                             uint64_t column) override;
+  void ReportLegacyTechEvent(
+      content::RenderFrameHost* render_frame_host,
+      const std::string type,
+      const GURL& url,
+      const GURL& frame_url,
+      const std::string& filename,
+      uint64_t line,
+      uint64_t column,
+      std::optional<content::LegacyTechCookieIssueDetails> cookie_issue_details)
+      override;
 
   void SafeBrowsingWebApiHandshakeChecked(
       std::unique_ptr<safe_browsing::WebApiHandshakeChecker> checker,

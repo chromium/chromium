@@ -14,49 +14,25 @@
 #include "base/time/time.h"
 #include "components/enterprise/browser/reporting/real_time_report_generator.h"
 #include "components/enterprise/common/proto/legacy_tech_events.pb.h"
+#include "content/public/browser/legacy_tech_cookie_issue_details.h"
 #include "url/gurl.h"
 
 namespace enterprise_reporting {
 
 class LegacyTechReportGenerator {
  public:
-  struct LegacyTechCookieIssueDetails {
-    enum AccessOperation { kRead, kWrite };
-    LegacyTechCookieIssueDetails();
-    LegacyTechCookieIssueDetails(const std::string& transfer_or_script_url,
-                                 const std::string& name,
-                                 const std::string& domain,
-                                 const std::string& path,
-                                 AccessOperation access_operation);
-    LegacyTechCookieIssueDetails(const LegacyTechCookieIssueDetails&) = delete;
-    LegacyTechCookieIssueDetails(LegacyTechCookieIssueDetails&& other);
-    LegacyTechCookieIssueDetails& operator=(
-        const LegacyTechCookieIssueDetails&) = delete;
-    LegacyTechCookieIssueDetails& operator=(
-        LegacyTechCookieIssueDetails&& other);
-    ~LegacyTechCookieIssueDetails();
-
-    bool operator==(const LegacyTechCookieIssueDetails& other) const;
-
-    std::string transfer_or_script_url;
-    std::string name;
-    std::string domain;
-    std::string path;
-    AccessOperation access_operation;
-  };
-
   struct LegacyTechData : public RealTimeReportGenerator::Data {
     LegacyTechData();
-    LegacyTechData(
-        const std::string& type,
-        const base::Time& timestamp,
-        const GURL& url,
-        const GURL& frame_url,
-        const std::string& matched_url,
-        const std::string& filename,
-        uint64_t line,
-        uint64_t column,
-        std::optional<LegacyTechCookieIssueDetails> cookie_issue_details);
+    LegacyTechData(const std::string& type,
+                   const base::Time& timestamp,
+                   const GURL& url,
+                   const GURL& frame_url,
+                   const std::string& matched_url,
+                   const std::string& filename,
+                   uint64_t line,
+                   uint64_t column,
+                   std::optional<content::LegacyTechCookieIssueDetails>
+                       cookie_issue_details);
     LegacyTechData(const LegacyTechData&) = delete;
     LegacyTechData(LegacyTechData&& other);
     LegacyTechData& operator=(const LegacyTechData&) = delete;
@@ -73,7 +49,7 @@ class LegacyTechReportGenerator {
     std::string filename;
     uint64_t line;
     uint64_t column;
-    std::optional<LegacyTechCookieIssueDetails> cookie_issue_details;
+    std::optional<content::LegacyTechCookieIssueDetails> cookie_issue_details;
   };
 
   LegacyTechReportGenerator();

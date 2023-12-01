@@ -8926,7 +8926,7 @@ void NavigationRequest::OnCookiesAccessed(
     // (potentially unrelated) ongoing navigation, but at the moment we don't
     // have another way to add messages to DevTools console.
     EmitCookieWarningsAndMetrics(frame_tree_node()->current_frame_host(),
-                                 details);
+                                 /*navigation_request=*/this, details);
 
     CookieAccessDetails allowed;
     CookieAccessDetails blocked;

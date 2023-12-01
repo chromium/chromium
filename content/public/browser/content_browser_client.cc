@@ -4,6 +4,7 @@
 
 #include "content/public/browser/content_browser_client.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -28,6 +29,7 @@
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
+#include "content/public/browser/legacy_tech_cookie_issue_details.h"
 #include "content/public/browser/login_delegate.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/navigation_ui_data.h"
@@ -1395,7 +1397,8 @@ void ContentBrowserClient::ReportLegacyTechEvent(
     const GURL& frame_url,
     const std::string& filename,
     uint64_t line,
-    uint64_t column) {}
+    uint64_t column,
+    std::optional<LegacyTechCookieIssueDetails> cookie_issue_details) {}
 
 bool ContentBrowserClient::IsClipboardPasteAllowed(
     content::RenderFrameHost* render_frame_host) {
