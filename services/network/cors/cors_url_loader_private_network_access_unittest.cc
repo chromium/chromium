@@ -247,7 +247,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, MissingResponseHeaderSimple) {
   });
   RunUntilComplete();
 
-  EXPECT_EQ(client().completion_status().error_code, net::ERR_FAILED);
+  EXPECT_EQ(client().completion_status().error_code,
+            net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
   EXPECT_EQ(
       client().completion_status().private_network_access_preflight_result,
       mojom::PrivateNetworkAccessPreflightResult::kError);
@@ -282,7 +283,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, MissingResponseHeaderPreflight) {
   });
   RunUntilComplete();
 
-  EXPECT_EQ(client().completion_status().error_code, net::ERR_FAILED);
+  EXPECT_EQ(client().completion_status().error_code,
+            net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
   EXPECT_EQ(
       client().completion_status().private_network_access_preflight_result,
       mojom::PrivateNetworkAccessPreflightResult::kError);
@@ -317,7 +319,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, InvalidResponseHeaderSimple) {
   });
   RunUntilComplete();
 
-  EXPECT_EQ(client().completion_status().error_code, net::ERR_FAILED);
+  EXPECT_EQ(client().completion_status().error_code,
+            net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
   EXPECT_EQ(
       client().completion_status().private_network_access_preflight_result,
       mojom::PrivateNetworkAccessPreflightResult::kError);
@@ -354,7 +357,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, InvalidResponseHeaderPreflight) {
   });
   RunUntilComplete();
 
-  EXPECT_EQ(client().completion_status().error_code, net::ERR_FAILED);
+  EXPECT_EQ(client().completion_status().error_code,
+            net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
   EXPECT_EQ(
       client().completion_status().private_network_access_preflight_result,
       mojom::PrivateNetworkAccessPreflightResult::kError);
@@ -1370,7 +1374,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnPreflightNetError) {
   NotifyLoaderClientOnComplete(net::ERR_INVALID_ARGUMENT);
   RunUntilComplete();
 
-  EXPECT_EQ(client().completion_status().error_code, net::ERR_INVALID_ARGUMENT);
+  EXPECT_EQ(client().completion_status().error_code,
+            net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
   EXPECT_EQ(
       client().completion_status().private_network_access_preflight_result,
       mojom::PrivateNetworkAccessPreflightResult::kError);
@@ -1430,7 +1435,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnPreflightCorsError) {
   NotifyLoaderClientOnReceiveResponse();
   RunUntilComplete();
 
-  EXPECT_EQ(client().completion_status().error_code, net::ERR_FAILED);
+  EXPECT_EQ(client().completion_status().error_code,
+            net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
   EXPECT_EQ(
       client().completion_status().private_network_access_preflight_result,
       mojom::PrivateNetworkAccessPreflightResult::kError);
@@ -1850,7 +1856,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyBlockNetError) {
   NotifyLoaderClientOnComplete(net::ERR_INVALID_ARGUMENT);
   RunUntilComplete();
 
-  EXPECT_EQ(client().completion_status().error_code, net::ERR_INVALID_ARGUMENT);
+  EXPECT_EQ(client().completion_status().error_code,
+            net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
   EXPECT_EQ(
       client().completion_status().private_network_access_preflight_result,
       mojom::PrivateNetworkAccessPreflightResult::kError);
@@ -1906,7 +1913,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyBlockCorsError) {
   NotifyLoaderClientOnReceiveResponse();
   RunUntilComplete();
 
-  EXPECT_EQ(client().completion_status().error_code, net::ERR_FAILED);
+  EXPECT_EQ(client().completion_status().error_code,
+            net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
   EXPECT_THAT(client().completion_status().cors_error_status,
               Optional(CorsErrorStatus(
                   mojom::CorsError::kPreflightMissingAllowOriginHeader,
@@ -1990,7 +1998,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest,
   });
   RunUntilComplete();
 
-  EXPECT_EQ(client().completion_status().error_code, net::ERR_FAILED);
+  EXPECT_EQ(client().completion_status().error_code,
+            net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
   EXPECT_EQ(
       client().completion_status().private_network_access_preflight_result,
       mojom::PrivateNetworkAccessPreflightResult::kError);
@@ -2072,7 +2081,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest,
   });
   RunUntilComplete();
 
-  EXPECT_EQ(client().completion_status().error_code, net::ERR_FAILED);
+  EXPECT_EQ(client().completion_status().error_code,
+            net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
   EXPECT_EQ(
       client().completion_status().private_network_access_preflight_result,
       mojom::PrivateNetworkAccessPreflightResult::kError);
@@ -2141,7 +2151,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyOnRequestOnly) {
   NotifyLoaderClientOnComplete(net::ERR_INVALID_ARGUMENT);
   RunUntilComplete();
 
-  EXPECT_EQ(client().completion_status().error_code, net::ERR_INVALID_ARGUMENT);
+  EXPECT_EQ(client().completion_status().error_code,
+            net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
 }
 
 // This test verifies that when the loader factory params carry a client
@@ -2177,7 +2188,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyOnFactoryOnly) {
   NotifyLoaderClientOnComplete(net::ERR_INVALID_ARGUMENT);
   RunUntilComplete();
 
-  EXPECT_EQ(client().completion_status().error_code, net::ERR_INVALID_ARGUMENT);
+  EXPECT_EQ(client().completion_status().error_code,
+            net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
 }
 
 // This test verifies that when both the `ResourceRequest`  and the loader
@@ -2220,7 +2232,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyOnFactoryAndRequest) {
   NotifyLoaderClientOnComplete(net::ERR_INVALID_ARGUMENT);
   RunUntilComplete();
 
-  EXPECT_EQ(client().completion_status().error_code, net::ERR_INVALID_ARGUMENT);
+  EXPECT_EQ(client().completion_status().error_code,
+            net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
 }
 
 }  // namespace

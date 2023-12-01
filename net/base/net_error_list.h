@@ -817,6 +817,9 @@ NET_ERROR(INCONSISTENT_IP_ADDRESS_SPACE, -383)
 NET_ERROR(CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_POLICY,
           -384)
 
+// The connection is blocked by private network access checks.
+NET_ERROR(BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS, -385)
+
 // The cache does not have the requested entry.
 NET_ERROR(CACHE_MISS, -400)
 

@@ -69,6 +69,7 @@ enum NAV_SUGGESTIONS {
   SUGGEST_NAVIGATE_TO_ORIGIN = 1 << 12,
   SUGGEST_SECURE_DNS_CONFIG = 1 << 13,
   SUGGEST_CAPTIVE_PORTAL_SIGNIN = 1 << 14,
+  SUGGEST_RELOAD_PRIVATE_NETWORK_ACCESS = 1 << 15,
 };
 
 enum SHOW_BUTTONS {
@@ -289,6 +290,12 @@ const LocalizedErrorMap net_error_options[] = {
    IDS_ERRORPAGES_HEADING_BLOCKED,
    IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_CLIENT,
    SUGGEST_NONE,
+   SHOW_BUTTON_RELOAD,
+  },
+  {net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
+   IDS_ERRORPAGES_HEADING_BLOCKED,
+   IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
+   SUGGEST_RELOAD_PRIVATE_NETWORK_ACCESS,
    SHOW_BUTTON_RELOAD,
   },
   {net::ERR_BLOCKED_BY_CSP,
@@ -635,6 +642,11 @@ void GetSuggestionsSummaryList(int error_code,
     return;
   }
   DCHECK(!IsSuggested(suggestions, SUGGEST_REPOST_RELOAD));
+
+  if (IsSuggested(suggestions, SUGGEST_RELOAD_PRIVATE_NETWORK_ACCESS)) {
+    suggestions_summary_list.Append(SingleEntryDictionary(
+        "summary", IDS_ERRORPAGES_SUGGESTION_RELOAD_PRIVATE_NETWORK_ACCESS));
+  }
 
   if (IsOnlySuggestion(suggestions, SUGGEST_NAVIGATE_TO_ORIGIN)) {
     DCHECK(suggestions_summary_list.empty());

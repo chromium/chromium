@@ -1283,7 +1283,7 @@ int URLLoader::OnConnected(net::URLRequest* url_request,
             PrivateNetworkAccessCheckResult::kBlockedByTargetIpAddressSpace) {
       return net::ERR_INCONSISTENT_IP_ADDRESS_SPACE;
     }
-    return net::ERR_FAILED;
+    return net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS;
   }
 
   if (!accept_ch_frame_observer_ || info.accept_ch_frame.empty() ||

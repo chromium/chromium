@@ -1002,16 +1002,16 @@ absl::optional<URLLoaderCompletionStatus> CorsURLLoader::ConvertPreflightResult(
   // Failure.
   CHECK(net_error != net::OK);
 
+  base::UmaHistogramEnumeration(kPreflightErrorHistogramName, histogram_error);
+  auto result = status ? URLLoaderCompletionStatus(*std::move(status))
+                       : URLLoaderCompletionStatus(net_error);
+
   if (*reason == PreflightRequiredReason::kPrivateNetworkAccess) {
     pna_preflight_result_ = mojom::PrivateNetworkAccessPreflightResult::kError;
+    result.error_code = net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS;
   }
 
-  base::UmaHistogramEnumeration(kPreflightErrorHistogramName, histogram_error);
-  if (status) {
-    return URLLoaderCompletionStatus(*std::move(status));
-  }
-
-  return URLLoaderCompletionStatus(net_error);
+  return result;
 }
 
 void CorsURLLoader::OnPreflightRequestComplete(
