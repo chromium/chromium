@@ -517,9 +517,11 @@ void MaybeRegisterChromeFeaturePromos(
   if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
     // kIPHSidePanelGenericMenuFeature:
     registry.RegisterFeature(std::move(
-        FeaturePromoSpecification::CreateForSnoozePromo(
+        FeaturePromoSpecification::CreateForToastPromo(
             feature_engagement::kIPHSidePanelGenericMenuFeature,
-            kToolbarAppMenuButtonElementId, IDS_SIDE_PANEL_GENERIC_MENU_IPH)
+            kToolbarAppMenuButtonElementId, IDS_SIDE_PANEL_GENERIC_MENU_IPH,
+            IDS_SIDE_PANEL_GENERIC_MENU_IPH_SCREENREADER,
+            FeaturePromoSpecification::AcceleratorInfo())
             .SetBubbleArrow(HelpBubbleArrow::kTopRight)));
 
     // kIPHSidePanelGenericPinnableFeature:
