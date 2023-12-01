@@ -5,11 +5,14 @@
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 
 #include <algorithm>
+#include <functional>
+#include <optional>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/base64url.h"
 #include "base/command_line.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -66,10 +69,10 @@ constexpr std::pair<int, int> kAutofillExperimentRanges[] = {
     {3314445, 3314448}, {3314854, 3314883},
 };
 
-const size_t kAutofillCrowdsourcingManagerMaxFormCacheSize = 16;
-const size_t kMaxFieldsPerQueryRequest = 100;
+constexpr size_t kAutofillCrowdsourcingManagerMaxFormCacheSize = 16;
+constexpr size_t kMaxFieldsPerQueryRequest = 100;
 
-const net::BackoffEntry::Policy kAutofillBackoffPolicy = {
+constexpr net::BackoffEntry::Policy kAutofillBackoffPolicy = {
     // Number of initial errors (in sequence) to ignore before applying
     // exponential back-off rules.
     0,
@@ -95,8 +98,14 @@ const net::BackoffEntry::Policy kAutofillBackoffPolicy = {
     false,
 };
 
-const char kDefaultAutofillServerURL[] =
+constexpr char kDefaultAutofillServerURL[] =
     "https://content-autofill.googleapis.com/";
+
+// Header for API key.
+constexpr char kGoogApiKey[] = "X-Goog-Api-Key";
+// Header to get base64 encoded serialized proto from API for safety.
+constexpr char kGoogEncodeResponseIfExecutable[] =
+    "X-Goog-Encode-Response-If-Executable";
 
 // The default number of days after which to reset the registry of autofill
 // events for which an upload has been sent.
@@ -104,12 +113,6 @@ const base::FeatureParam<int> kAutofillUploadThrottlingPeriodInDays(
     &features::test::kAutofillUploadThrottling,
     switches::kAutofillUploadThrottlingPeriodInDays,
     28);
-
-// Header for API key.
-constexpr char kGoogApiKey[] = "X-Goog-Api-Key";
-// Header to get base64 encoded serialized proto from API for safety.
-constexpr char kGoogEncodeResponseIfExecutable[] =
-    "X-Goog-Encode-Response-If-Executable";
 
 // The maximum number of attempts for a given autofill request.
 const base::FeatureParam<int> kAutofillMaxServerAttempts(
@@ -160,7 +163,7 @@ base::TimeDelta GetThrottleResetPeriod() {
   return base::Days(std::max(1, kAutofillUploadThrottlingPeriodInDays.Get()));
 }
 
-// Returns true if |id| is within |kAutofillExperimentRanges|.
+// Returns true if `id` is within `kAutofillExperimentRanges`.
 bool IsAutofillExperimentId(int id) {
   return base::ranges::any_of(kAutofillExperimentRanges, [id](auto range) {
     const auto& [low, high] = range;
@@ -168,22 +171,20 @@ bool IsAutofillExperimentId(int id) {
   });
 }
 
-const char* RequestTypeToString(AutofillCrowdsourcingManager::RequestType type)
-{
-  switch (type) {
-    case AutofillCrowdsourcingManager::REQUEST_QUERY:
-      return "Query";
-    case AutofillCrowdsourcingManager::REQUEST_UPLOAD:
-      return "Upload";
-  }
-  NOTREACHED_NORETURN();
-}
-
 std::string GetMetricName(
   AutofillCrowdsourcingManager::RequestType request_type,
                           std::string_view suffix) {
-  return base::StrCat(
-      {"Autofill.", RequestTypeToString(request_type), ".", suffix});
+  auto TypeToName =
+      [](AutofillCrowdsourcingManager::RequestType type) -> std::string_view {
+    switch (type) {
+      case AutofillCrowdsourcingManager::REQUEST_QUERY:
+        return "Query";
+      case AutofillCrowdsourcingManager::REQUEST_UPLOAD:
+        return "Upload";
+    }
+    NOTREACHED_NORETURN();
+  };
+  return base::StrCat({"Autofill.", TypeToName(request_type), ".", suffix});
 }
 
 net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
@@ -401,10 +402,10 @@ LogBuffer& operator<<(LogBuffer& out, const AutofillUploadContents& upload) {
   return out;
 }
 
-// Returns true if an upload of |form| triggered by |form.submission_source()|
-// can be throttled/suppressed. This is true if |prefs| indicates that this
-// upload has already happened within the last update window. Updates |prefs|
-// account for the upload for |form|.
+// Returns true if an upload of `form` triggered by `form.submission_source()`
+// can be throttled/suppressed. This is true if `prefs` indicates that this
+// upload has already happened within the last update window. Updates `prefs`
+// account for the upload for `form`.
 bool CanThrottleUpload(const FormStructure& form,
                        base::TimeDelta throttle_reset_period,
                        PrefService* pref_service) {
@@ -453,13 +454,13 @@ bool IsHttpSuccess(int response_code) {
   return response_code >= 200 && response_code < 300;
 }
 
-absl::optional<std::string> GetUploadPayloadForApi(
+std::optional<std::string> GetUploadPayloadForApi(
     const AutofillUploadContents& upload) {
   AutofillUploadRequest upload_request;
   *upload_request.mutable_upload() = upload;
   std::string payload;
   if (!upload_request.SerializeToString(&payload)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return std::move(payload);
 }
@@ -489,7 +490,7 @@ std::string GetAPIMethodUrl(AutofillCrowdsourcingManager::RequestType type,
 }
 
 // Gets HTTP body payload for API POST request.
-absl::optional<std::string> GetAPIBodyPayload(
+std::optional<std::string> GetAPIBodyPayload(
     std::string payload,
     AutofillCrowdsourcingManager::RequestType type) {
   // Don't do anything for payloads not related to Query.
@@ -501,17 +502,17 @@ absl::optional<std::string> GetAPIBodyPayload(
   request.set_serialized_request(std::move(payload));
   payload = {};
   if (!request.SerializeToString(&payload)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return std::move(payload);
 }
 
 // Gets the data payload for API Query (POST and GET).
-absl::optional<std::string> GetAPIQueryPayload(
+std::optional<std::string> GetAPIQueryPayload(
     const AutofillPageQueryRequest& query) {
   std::string serialized_query;
   if (!query.SerializeToString(&serialized_query))
-    return absl::nullopt;
+    return std::nullopt;
 
   std::string payload;
   base::Base64UrlEncode(serialized_query,
@@ -540,7 +541,7 @@ struct AutofillCrowdsourcingManager::FormRequestData {
   base::WeakPtr<Observer> observer;
   std::vector<FormSignature> form_signatures;
   RequestType request_type;
-  absl::optional<net::IsolationInfo> isolation_info;
+  std::optional<net::IsolationInfo> isolation_info;
   std::string payload;
   int num_attempts = 0;
 };
@@ -613,7 +614,7 @@ bool AutofillCrowdsourcingManager::StartQueryRequest(
   for (int id : *active_experiments_)
     query.mutable_experiments()->Add(id);
 
-  absl::optional<std::string> payload = GetAPIQueryPayload(query);
+  std::optional<std::string> payload = GetAPIQueryPayload(query);
   if (!payload) {
     return false;
   }
@@ -683,7 +684,7 @@ bool AutofillCrowdsourcingManager::StartUploadRequest(
     }
 
     // Get the POST payload that contains upload data.
-    absl::optional<std::string> payload = GetUploadPayloadForApi(upload);
+    std::optional<std::string> payload = GetUploadPayloadForApi(upload);
     if (!payload) {
       return false;
     }
@@ -692,7 +693,7 @@ bool AutofillCrowdsourcingManager::StartUploadRequest(
         .observer = observer,
         .form_signatures = {form.form_signature()},
         .request_type = AutofillCrowdsourcingManager::REQUEST_UPLOAD,
-        .isolation_info = absl::nullopt,
+        .isolation_info = std::nullopt,
         .payload = std::move(payload).value(),
     };
 
@@ -732,7 +733,7 @@ size_t AutofillCrowdsourcingManager::GetPayloadLength(
 std::tuple<GURL, std::string> AutofillCrowdsourcingManager::GetRequestURLAndMethod(
     const FormRequestData& request_data) const {
   // ID of the resource to add to the API request URL. Nothing will be added if
-  // |resource_id| is empty.
+  // `resource_id` is empty.
   std::string resource_id;
   std::string method = "POST";
 
@@ -740,11 +741,11 @@ std::tuple<GURL, std::string> AutofillCrowdsourcingManager::GetRequestURLAndMeth
     if (GetPayloadLength(request_data.payload) <= kMaxQueryGetSize) {
       resource_id = request_data.payload;
       method = "GET";
-      base::UmaHistogramBoolean("Autofill.Query.ApiUrlIsTooLong", false);
+      base::UmaHistogramBoolean(kUmaApiUrlIsTooLong, false);
     } else {
-      base::UmaHistogramBoolean("Autofill.Query.ApiUrlIsTooLong", true);
+      base::UmaHistogramBoolean(kUmaApiUrlIsTooLong, true);
     }
-    base::UmaHistogramBoolean("Autofill.Query.Method", method != "GET");
+    base::UmaHistogramBoolean(kUmaMethod, method != "GET");
   }
 
   // Make the canonical URL to query the API, e.g.,
@@ -776,7 +777,7 @@ bool AutofillCrowdsourcingManager::StartRequest(FormRequestData request_data) {
   // thousands when rich metadata is enabled.
   if (request_data.request_type == AutofillCrowdsourcingManager::REQUEST_QUERY &&
       method == "GET") {
-    base::UmaHistogramCounts100000("Autofill.Query.GetUrlLength",
+    base::UmaHistogramCounts100000(kUmaGetUrlLength,
                                    request_url.spec().length());
   }
 
@@ -827,7 +828,7 @@ bool AutofillCrowdsourcingManager::StartRequest(FormRequestData request_data) {
 
   if (method == "POST") {
     static constexpr char content_type[] = "application/x-protobuf";
-    absl::optional<std::string> payload = GetAPIBodyPayload(
+    std::optional<std::string> payload = GetAPIBodyPayload(
         std::move(request_data.payload), request_data.request_type);
     if (!payload) {
       return false;
@@ -839,7 +840,7 @@ bool AutofillCrowdsourcingManager::StartRequest(FormRequestData request_data) {
 
   // Transfer ownership of the loader into url_loaders_. Temporarily hang
   // onto the raw pointer to use it as a key and to kick off the request;
-  // transferring ownership (std::move) invalidates the |simple_loader|
+  // transferring ownership (std::move) invalidates the `simple_loader`
   // variable.
   auto* raw_simple_loader = simple_loader.get();
   url_loaders_.push_back(std::move(simple_loader));
@@ -928,12 +929,6 @@ void AutofillCrowdsourcingManager::OnSimpleLoaderComplete(
   if (!success) {
     std::string error_message =
         (response_body != nullptr) ? *response_body : "";
-    DVLOG(1) << "AutofillCrowdsourcingManager: "
-             << RequestTypeToString(request_data.request_type)
-             << " request has failed with net error "
-             << simple_loader->NetError() << " and HTTP response code "
-             << response_code << " and error message from the server "
-             << error_message;
     base::UmaHistogramCounts100000(
         GetMetricName(request_data.request_type, "FailingPayloadSize"),
         request_data.payload.length());
@@ -971,7 +966,7 @@ void AutofillCrowdsourcingManager::OnSimpleLoaderComplete(
   switch (request_data.request_type) {
     case REQUEST_QUERY: {
       CacheQueryRequest(request_data.form_signatures, *response_body);
-      base::UmaHistogramBoolean("Autofill.Query.WasInCache",
+      base::UmaHistogramBoolean(kUmaWasInCache,
                                 simple_loader->LoadedFromCache());
       if (request_data.observer) {
         request_data.observer->OnLoadedServerPredictions(
@@ -980,7 +975,6 @@ void AutofillCrowdsourcingManager::OnSimpleLoaderComplete(
       return;
     }
     case REQUEST_UPLOAD:
-      DVLOG(1) << "AutofillCrowdsourcingManager: upload request has succeeded.";
       if (request_data.observer) {
         request_data.observer->OnUploadedPossibleFieldTypes();
       }
@@ -996,21 +990,24 @@ void AutofillCrowdsourcingManager::InitActiveExperiments() {
 
   // TODO(crbug.com/1331322): Retire the hardcoded GWS ID ranges and only read
   // the finch parameter.
-  base::flat_set<int> active_experiments(
+  std::vector<int> active_experiments =
       variations_ids_provider->GetVariationsVector(
           {variations::GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT,
-           variations::GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY}));
-  base::EraseIf(active_experiments, base::not_fn(&IsAutofillExperimentId));
+           variations::GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY});
+  std::erase_if(active_experiments, std::not_fn(&IsAutofillExperimentId));
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillServerBehaviors)) {
-    active_experiments.insert(
+    active_experiments.push_back(
         autofill::features::kAutofillServerBehaviorsParam.Get());
   }
+  std::sort(active_experiments.begin(), active_experiments.end());
+  active_experiments.erase(
+      std::unique(active_experiments.begin(), active_experiments.end()),
+      active_experiments.end());
 
   delete active_experiments_;
-  active_experiments_ = new std::vector<int>(active_experiments.begin(),
-                                             active_experiments.end());
-  std::sort(active_experiments_->begin(), active_experiments_->end());
+  active_experiments_ = new std::vector<int>();
+  *active_experiments_ = std::move(active_experiments);
 }
 
 // static

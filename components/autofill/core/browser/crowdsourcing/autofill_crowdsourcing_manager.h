@@ -53,6 +53,13 @@ class AutofillCrowdsourcingManager {
     REQUEST_UPLOAD,
   };
 
+  // Names of UMA metrics recorded in this class.
+  static constexpr char kUmaApiUrlIsTooLong[] =
+      "Autofill.Query.ApiUrlIsTooLong";
+  static constexpr char kUmaGetUrlLength[] = "Autofill.Query.GetUrlLength";
+  static constexpr char kUmaMethod[] = "Autofill.Query.Method";
+  static constexpr char kUmaWasInCache[] = "Autofill.Query.WasInCache";
+
   // An interface used to notify clients of AutofillCrowdsourcingManager.
   class Observer {
    public:
