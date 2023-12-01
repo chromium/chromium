@@ -929,6 +929,11 @@
                   'chrome/android/java/src/org/chromium/chrome/browser/app/creator/|' \
                   'chrome/browser/creator/',
     },
+    'cros_commercial_enrollment': {
+      'filepath': 'chrome/browser/ash/login/enrollment/'\
+                  '|chrome/browser/ash/policy/enrollment/'\
+                  '|chrome/browser/ui/webui/ash/login/enrollment_screen_handler.*'
+    },
     'cros_commercial_policy': {
       'filepath': 'ash/components/arc/enterprise/'\
                   '|ash/policy/'\
@@ -2784,6 +2789,7 @@
               'sophey+watch-creator@chromium.org',
               'wiss+watch-creator@chromium.org',
               'wry+watch-creator@chromium.org',],
+    'cros_commercial_enrollment': ['asumaneev+watch@google.com'],
     'cros_commercial_policy': ['enterprise-policy-review@google.com'],
     'cros_commercial_policy_proto': ['vsavu+watch@google.com'],
     'cros_reporting': ['cros-reporting-reviews@google.com'],
