@@ -33,8 +33,17 @@ chromium-metrics-reviews@google.com.
   <variant name="en-US" summary="English language code"/>
   <variant name="es-ES" summary="Spanish language code"/>
   <variant name="fr-FR" summary="French language code"/>
+  <variant name="hi-IN" summary="Hindi language code"/>
+  <variant name="id-ID" summary="Indonesian language code"/>
   <variant name="it-IT" summary="Italian language code"/>
   <variant name="ja-JP" summary="Japanese language code"/>
+  <variant name="ko-KR" summary="Korean language code"/>
+  <variant name="pl-PL" summary="Polish language code"/>
+  <variant name="pt-BR" summary="Portuguese (Brazil) language code"/>
+  <variant name="th-TH" summary="Thai language code"/>
+  <variant name="tr-TR" summary="Turkish language code"/>
+  <variant name="zh-CN" summary="Chinese (Simplified) language code"/>
+  <variant name="zh-TW" summary="Chinese (Traditional) code"/>
 </variants>
 
 <histogram name="Accessibility.ActiveTime" units="ms"
