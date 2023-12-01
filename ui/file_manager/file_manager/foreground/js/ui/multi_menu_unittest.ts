@@ -6,8 +6,8 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
+import {decorate} from '../../../common/js/cr_ui.js';
 import {queryDecoratedElement} from '../../../common/js/dom_utils.js';
-import {decorate} from '../../../common/js/ui.js';
 
 import {Command} from './command.js';
 import {Menu} from './menu.js';

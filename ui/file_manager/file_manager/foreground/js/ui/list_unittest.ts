@@ -5,7 +5,7 @@
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {ArrayDataModel} from '../../../common/js/array_data_model.js';
-import {decorate} from '../../../common/js/ui.js';
+import {decorate} from '../../../common/js/cr_ui.js';
 
 import {List} from './list.js';
 

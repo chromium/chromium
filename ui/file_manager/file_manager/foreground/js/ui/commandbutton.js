@@ -10,7 +10,6 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {decorate} from '../../../common/js/cr_ui.js';
-import {decorate as deprecatedDecorate} from '../../../common/js/ui.js';
 
 import {Command} from './command.js';
 
@@ -92,7 +91,7 @@ export class CommandButton extends CrButtonElement {
       assert(command[0] == '#');
       command = /** @type {!Command} */
           (this.ownerDocument.body.querySelector(command));
-      deprecatedDecorate(command, Command);
+      decorate(command, Command);
     }
 
     this.command_ = command;

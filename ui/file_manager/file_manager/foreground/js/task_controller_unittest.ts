@@ -7,11 +7,11 @@ import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertDeepEquals, assertEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {createCrostiniForTest} from '../../background/js/mock_crostini.js';
+import {decorate} from '../../common/js/cr_ui.js';
 import {queryDecoratedElement} from '../../common/js/dom_utils.js';
 import {isSameEntries} from '../../common/js/entry_utils.js';
 import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
-import {decorate} from '../../common/js/ui.js';
 import {descriptorEqual} from '../../common/js/util.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
@@ -69,7 +69,9 @@ export function setUp() {
 `;
 
   // Initialize Command with the <command>s.
-  decorate('command', Command);
+  for (const command of document.querySelectorAll<Command>('command')) {
+    decorate(command, Command);
+  }
 
   setUpFileManagerOnWindow();
   const volumeManager = window.fileManager.volumeManager;

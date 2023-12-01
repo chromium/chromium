@@ -94,3 +94,8 @@ export function decorate<T extends HTMLElement>(
 
   return el as unknown as T;
 }
+
+export interface DecoratableElement<T> {
+  new(...args: any): T;
+  decorate(el: HTMLElement): void;
+}

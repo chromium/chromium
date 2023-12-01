@@ -27,7 +27,6 @@ static_js_files = [
   "file_manager/common/js/filtered_volume_manager.js",
   "file_manager/common/js/mock_chrome.js",
   "file_manager/common/js/mock_entry.js",
-  "file_manager/common/js/ui.js",
 
   # Externs:
   "file_manager/externs/background/crostini.js",

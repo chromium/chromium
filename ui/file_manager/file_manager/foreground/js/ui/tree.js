@@ -5,7 +5,6 @@
 import {assert, assertInstanceof} from 'chrome://resources/ash/common/assert.js';
 import {dispatchSimpleEvent, getPropertyDescriptor, PropertyKind} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
-import {define as crUiDefine, limitInputWidth} from '../../../common/js/ui.js';
 
 /**
  * The number of pixels to indent per level.
@@ -13,6 +12,180 @@ import {define as crUiDefine, limitInputWidth} from '../../../common/js/ui.js';
  * @const
  */
 const INDENT = 20;
+
+/**
+ * Decorates elements as an instance of a class.
+ * @param {string|!Element} source The way to find the element(s) to decorate.
+ *     If this is a string then {@code querySeletorAll} is used to find the
+ *     elements to decorate.
+ * @param {!Function} constr The constructor to decorate with. The constr
+ *     needs to have a {@code decorate} function.
+ * @closurePrimitive {asserts.matchesReturn}
+ */
+export function decorate(source, constr) {
+  let elements;
+  if (typeof source === 'string') {
+    elements = document.querySelectorAll(source);
+  } else {
+    elements = [source];
+  }
+
+  for (const el of elements) {
+    if (!(el instanceof constr)) {
+      // @ts-ignore: error TS2339: Property 'decorate' does not exist on type
+      // 'Function'.
+      constr.decorate(el);
+    }
+  }
+}
+
+/**
+ * Helper function for creating new element for define.
+ */
+// @ts-ignore: error TS7006: Parameter 'opt_bag' implicitly has an 'any' type.
+function createElementHelper(tagName, opt_bag) {
+  // Allow passing in ownerDocument to create in a different document.
+  let doc;
+  if (opt_bag && opt_bag.ownerDocument) {
+    doc = opt_bag.ownerDocument;
+  } else {
+    doc = document;
+  }
+  return doc.createElement(tagName);
+}
+
+/**
+ * Creates the constructor for a UI element class.
+ *
+ * Usage:
+ * <pre>
+ * var List = cr.ui.define('list');
+ * List.prototype = {
+ *   __proto__: HTMLUListElement.prototype,
+ *   decorate() {
+ *     ...
+ *   },
+ *   ...
+ * };
+ * </pre>
+ *
+ * @param {string|Function} tagNameOrFunction The tagName or
+ *     function to use for newly created elements. If this is a function it
+ *     needs to return a new element when called.
+ * @return {function(Record<string, any>=):HTMLElement} The constructor function
+ *     which takes an optional property bag. The function also has a static
+ *     {@code decorate} method added to it.
+ */
+export function define(tagNameOrFunction) {
+  /** @type {Function} */
+  let createFunction;
+  /** @type {string} */
+  let tagName;
+  if (typeof tagNameOrFunction === 'function') {
+    createFunction = tagNameOrFunction;
+    tagName = '';
+  } else {
+    createFunction = createElementHelper;
+    tagName = tagNameOrFunction;
+  }
+
+  /**
+   * Creates a new UI element constructor.
+   * @param {Record<string, any>=} opt_propertyBag Optional bag of properties to
+   *     set on the object after created. The property {@code ownerDocument} is
+   *     special cased and it allows you to create the element in a different
+   *     document than the default.
+   */
+  function f(opt_propertyBag) {
+    /** @type {HTMLElement} */
+    const el = createFunction(tagName, opt_propertyBag);
+    f.decorate(el);
+    for (const propertyName in opt_propertyBag) {
+      // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+      // because expression of type 'string' can't be used to index type
+      // 'Object'.
+      el[propertyName] = opt_propertyBag[propertyName];
+    }
+    return el;
+  }
+
+  /**
+   * Decorates an element as a UI element class.
+   * @param {!HTMLElement} el The element to decorate.
+   */
+  f.decorate = function(el) {
+    if (f.prototype.isPrototypeOf(el)) {
+      return;
+    }
+
+    Object.setPrototypeOf(el, f.prototype);
+    if ('decorate' in el) {
+      // @ts-ignore: error TS2339: Property 'decorate' does not exist on type
+      // 'Element'.
+      el.decorate();
+    }
+  };
+
+  return f;
+}
+
+/**
+ * Input elements do not grow and shrink with their content. This is a simple
+ * (and not very efficient) way of handling shrinking to content with support
+ * for min width and limited by the width of the parent element.
+ * @param el {HTMLElement} The element to limit the width for.
+ * @param parentEl {HTMLElement} The parent element that should limit the size.
+ * @param min {number} The minimum width.
+ * @param scale {number=} Optional scale factor to apply to the width.
+ */
+export function limitInputWidth(el, parentEl, min, scale) {
+  // Needs a size larger than borders
+  el.style.width = '9px';
+  const doc = el.ownerDocument;
+  const win = /** @type {Window} */ (doc.defaultView);
+  const computedStyle = win.getComputedStyle(el);
+  const parentComputedStyle = win.getComputedStyle(parentEl);
+  const rtl = computedStyle.direction === 'rtl';
+
+  // To get the max width we get the width of the treeItem minus the position
+  // of the input.
+  const inputRect = el.getBoundingClientRect();  // box-sizing
+  const parentRect = parentEl.getBoundingClientRect();
+  const startPos = rtl ? parentRect.right - inputRect.right :
+                         inputRect.left - parentRect.left;
+
+  // Add up border and padding of the input.
+  const inner = parseInt(computedStyle.borderLeftWidth, 9) +
+      parseInt(computedStyle.paddingLeft, 9) +
+      parseInt(computedStyle.paddingRight, 9) +
+      parseInt(computedStyle.borderRightWidth, 9);
+
+  // We also need to subtract the padding of parent to prevent it to overflow.
+  const parentPadding = rtl ? parseInt(parentComputedStyle.paddingLeft, 9) :
+                              parseInt(parentComputedStyle.paddingRight, 9);
+
+  let max = parentEl.clientWidth - startPos - inner - parentPadding;
+  if (scale) {
+    max *= scale;
+  }
+
+  function limit() {
+    if (el.scrollWidth > max) {
+      el.style.width = max + 'px';
+    } else {
+      el.style.width = '-1';
+      const sw = el.scrollWidth;
+      if (sw < min) {
+        el.style.width = min + 'px';
+      } else {
+        el.style.width = sw + 'px';
+      }
+    }
+  }
+
+  el.addEventListener('input', limit);
+  limit();
+}
 
 /**
  * A custom rowElement depth (indent) style handler where undefined uses the
@@ -54,7 +227,7 @@ function findTreeItem(node) {
  * @extends {HTMLElement}
  */
 // @ts-ignore: error TS8022: JSDoc '@extends' is not attached to a class.
-export const Tree = crUiDefine('tree');
+export const Tree = define('tree');
 
 Tree.prototype = {
   __proto__: HTMLElement.prototype,
@@ -468,7 +641,7 @@ const treeItemProto = (function() {
  * @extends {HTMLElement}
  */
 // @ts-ignore: error TS8022: JSDoc '@extends' is not attached to a class.
-export const TreeItem = crUiDefine(function() {
+export const TreeItem = define(function() {
   const treeItem = treeItemProto.cloneNode(true);
   // @ts-ignore: error TS2339: Property 'id' does not exist on type 'Node'.
   treeItem.id = 'tree-item-autogen-id-' + treeItemAutoGeneratedIdCounter++;

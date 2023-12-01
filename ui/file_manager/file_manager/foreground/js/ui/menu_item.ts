@@ -6,7 +6,6 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {boolAttrSetter, decorate} from '../../../common/js/cr_ui.js';
-import {swallowDoubleClick} from '../../../common/js/ui.js';
 
 import {Command} from './command.js';
 
@@ -320,4 +319,42 @@ export class MenuItem extends HTMLElement {
   set checkable(value: boolean) {
     boolAttrSetter(this, 'checkable', value);
   }
+}
+
+
+/**
+ * Users complain they occasionally use doubleclicks instead of clicks
+ * (http://crbug.com/140364). To fix it we freeze click handling for the
+ * double-click time interval.
+ * @param e Initial click event.
+ */
+function swallowDoubleClick(e: MouseEvent) {
+  const target = e.target as HTMLElement;
+  const doc = target.ownerDocument;
+  let counter = Math.min(1, e.detail);
+
+  function swallow(e: MouseEvent) {
+    e.stopPropagation();
+    e.preventDefault();
+  }
+
+  function onclick(e: MouseEvent) {
+    if (e.detail > counter) {
+      counter = e.detail;
+      // Swallow the click since it's a click inside the double-click timeout.
+      swallow(e);
+    } else {
+      // Stop tracking clicks and let regular handling.
+      doc.removeEventListener('dblclick', swallow, true);
+      doc.removeEventListener('click', onclick, true);
+    }
+  }
+
+  // The following 'click' event (if e.type === 'mouseup') mustn't be taken
+  // into account (it mustn't stop tracking clicks). Start event listening
+  // after zero timeout.
+  setTimeout(function() {
+    doc.addEventListener('click', onclick, true);
+    doc.addEventListener('dblclick', swallow, true);
+  });
 }

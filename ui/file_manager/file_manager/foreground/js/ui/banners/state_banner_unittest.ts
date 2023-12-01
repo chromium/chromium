@@ -6,8 +6,8 @@ import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_butto
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
+import {decorate} from '../../../../common/js/cr_ui.js';
 import {waitUntil} from '../../../../common/js/test_error_reporting.js';
-import {decorate} from '../../../../common/js/ui.js';
 import {getLastVisitedURL} from '../../../../common/js/util.js';
 import {Command} from '../command.js';
 
@@ -124,7 +124,7 @@ export async function testCommandsCanBeUsedForExtraButtons(done: () => void) {
         </button>
       </state-banner>
   `;
-  decorate('command', Command);
+  decorate(document.querySelector<Command>('command')!, Command);
 
   // Add a listener to wait for the #format command to be received and keep
   // track of the event it received. Given the actual command is not properly

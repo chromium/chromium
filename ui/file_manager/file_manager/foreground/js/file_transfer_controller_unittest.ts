@@ -10,8 +10,8 @@ import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
+import {decorate} from '../../common/js/cr_ui.js';
 import {MockDirectoryEntry, MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
-import {decorate} from '../../common/js/ui.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {DialogType} from '../../externs/ts/state.js';
@@ -79,8 +79,9 @@ export function setUp() {
   `;
 
   // Initialize Command with the <command>s.
-  decorate('command', Command);
-
+  for (const command of document.querySelectorAll<Command>('command')) {
+    decorate(command, Command);
+  }
   // Fake confirmation callback.
   const confirmationDialog = () => Promise.resolve(true);
 

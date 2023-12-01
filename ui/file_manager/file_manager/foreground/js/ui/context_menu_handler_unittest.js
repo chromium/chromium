@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-import {decorate} from '../../../common/js/ui.js';
+import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
+
+import {decorate} from '../../../common/js/cr_ui.js';
+
 import {contextMenuHandler} from './context_menu_handler.js';
 import {Menu} from './menu.js';
 
-import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
-
-// clang-format on
 
 export function testShowAndHideEvents() {
   // Keep original Date.now not to affect other code.

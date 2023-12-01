@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {decorate} from '../../../common/js/ui.js';
+import {decorate} from '../../../common/js/cr_ui.js';
 
 import {FilesMenuItem} from './files_menu.js';
 import {MenuItem} from './menu_item.js';
