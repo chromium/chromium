@@ -1188,7 +1188,6 @@ android_library("cronet_fake_javatests") {
 
 cronet_javatests_deps_to_package = [
   ":cronet_common_javatests",
-  ":cronet_fake_javatests",
   ":cronet_test_apk_java",
   ":flags_java_proto",
   "//base:base_java",
@@ -1201,6 +1200,11 @@ cronet_javatests_deps_to_package = [
   "//url:url_java",
   "//third_party/androidx:androidx_annotation_annotation_experimental_java",
 ]
+
+if (!is_cronet_for_aosp_build) {
+  # Don't bundle FakeCronetEngine or its tests for AOSP.
+  cronet_javatests_deps_to_package += [":cronet_fake_javatests"]
+}
 
 generate_jni("cronet_tests_jni_headers") {
   testonly = true
