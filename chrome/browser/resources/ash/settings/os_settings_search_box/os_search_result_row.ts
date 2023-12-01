@@ -691,7 +691,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kSwitchAccess:
         return 'os-settings:switch-access';
       case SearchResultIcon.kAvatar:
-        return 'cr:person';
+        return isRevampEnabled ? 'os-settings:privacy-manage-people' :
+                                 'cr:person';
       case SearchResultIcon.kBluetooth:
         return 'cr:bluetooth';
       case SearchResultIcon.kCamera:
@@ -753,7 +754,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kLaptop:
         return 'os-settings:laptop-chromebook';
       case SearchResultIcon.kLock:
-        return 'os-settings:lock';
+        return isRevampEnabled ? 'os-settings:lock-revamp' : 'os-settings:lock';
       case SearchResultIcon.kMagnifyingGlass:
         return 'cr:search';
       case SearchResultIcon.kMicrophone:
@@ -782,6 +783,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'os-settings:power';
       case SearchResultIcon.kPrinter:
         return 'os-settings:print';
+      case SearchResultIcon.kPrivacyControls:
+        return 'os-settings:privacy-controls';
       case SearchResultIcon.kReleaseNotes:
         return 'os-settings:about-release-notes';
       case SearchResultIcon.kReset:
@@ -799,7 +802,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kStylus:
         return 'os-settings:stylus';
       case SearchResultIcon.kSync:
-        return 'os-settings:sync';
+        return isRevampEnabled ? 'os-settings:sync-revamp' : 'os-settings:sync';
       case SearchResultIcon.kSystemPreferences:
         return 'os-settings:system-preferences';
       case SearchResultIcon.kWallpaper:

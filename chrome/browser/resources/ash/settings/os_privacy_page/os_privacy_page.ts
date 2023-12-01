@@ -235,8 +235,8 @@ export class OsSettingsPrivacyPageElement extends
           if (isRevampWayfindingEnabled()) {
             return {
               privacyHub: 'os-settings:privacy-controls',
-              sync: 'os-settings:privacy-sync',
-              lockScreen: 'os-settings:privacy-lock-screen',
+              sync: 'os-settings:sync-revamp',
+              lockScreen: 'os-settings:lock-revamp',
               manageOtherPeople: 'os-settings:privacy-manage-people',
               smartPrivacy: 'os-settings:privacy-smart-privacy',
               suggestedContent: 'os-settings:content-recommend',

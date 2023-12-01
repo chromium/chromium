@@ -272,7 +272,9 @@ const std::vector<SearchConcept>& GetPrivacyControlsSearchConcepts() {
     if (ash::features::IsCrosPrivacyHubV0Enabled()) {
       init_tags.push_back({IDS_OS_SETTINGS_TAG_PRIVACY_CONTROLS,
                            mojom::kPrivacyHubSubpagePath,
-                           mojom::SearchResultIcon::kShield,
+                           ash::features::IsOsSettingsRevampWayfindingEnabled()
+                               ? mojom::SearchResultIcon::kPrivacyControls
+                               : mojom::SearchResultIcon::kShield,
                            mojom::SearchResultDefaultRank::kMedium,
                            mojom::SearchResultType::kSubpage,
                            {.subpage = mojom::Subpage::kPrivacyHub}});

@@ -55,6 +55,7 @@ enum SearchResultIcon {
   kPluginVm,
   kPower,
   kPrinter,
+  kPrivacyControls,
   kReleaseNotes,
   kReset,
   kRestore,
