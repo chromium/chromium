@@ -747,14 +747,12 @@ void ChromeDownloadManagerDelegate::ShouldCompleteDownloadInternal(
   DownloadItem* item = download_manager_->GetDownload(download_id);
   if (!item)
     return;
-  // This should be called only once.
-  base::RepeatingClosure callback = base::BindRepeating(
-      [](base::OnceClosure callback) { std::move(callback).Run(); },
-      base::Passed(&user_complete_callback));
-  if (ShouldCompleteDownload(item, callback)) {
-    // |callback| should not have run when ShouldCompleteDownload() returns
-    // true.
-    std::move(callback).Run();
+  auto [async_completion, sync_completion] =
+      base::SplitOnceCallback(std::move(user_complete_callback));
+  if (ShouldCompleteDownload(item, std::move(async_completion))) {
+    // If `ShouldCompleteDownload()` returns true, `async_completion` will never
+    // run.
+    std::move(sync_completion).Run();
   }
 }
 
