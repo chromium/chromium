@@ -32,43 +32,58 @@ _CWD = getcwd()
 sys.path.append(path.join(_SRC_PATH, 'third_party', 'node'))
 import node
 
-# Template for non-Polymer elements.
-_NON_POLYMER_ELEMENT_TEMPLATE = """import {getTrustedHTML} from '%(scheme)s//resources/js/static_types.js';
+# Template for native web component HTML templates.
+_NATIVE_ELEMENT_TEMPLATE = """import {getTrustedHTML} from '%(scheme)s//resources/js/static_types.js';
 export function getTemplate() {
   return getTrustedHTML`<!--_html_template_start_-->%(content)s<!--_html_template_end_-->`;
 }"""
 
-# Template for Polymer elements.
-_ELEMENT_TEMPLATE = """import {html} from '%(scheme)s//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+# Template for Polymer web component HTML templates.
+_POLYMER_ELEMENT_TEMPLATE = """import {html} from '%(scheme)s//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 export function getTemplate() {
   return html`<!--_html_template_start_-->%(content)s<!--_html_template_end_-->`;
 }"""
 
-_ICONS_TEMPLATE = """import '%(scheme)s//resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
+# Template for Lit component HTML templates.
+_LIT_ELEMENT_TEMPLATE = """import {html} from '%(scheme)s//resources/lit/v3_0/lit.rollup.js';
+import type {%(class_name)s} from './%(file_name)s.js';
+
+export function getHtml(this: %(class_name)s) {
+  return html`<!--_html_template_start_-->%(content)s<!--_html_template_end_-->`;
+}"""
+
+# Template for Polymer icon HTML files.
+_POLYMER_ICONS_TEMPLATE = """import '%(scheme)s//resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import {html} from '%(scheme)s//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 const template = html`%(content)s`;
 document.head.appendChild(template.content);
 """
 
-# Token used to detect whether the underlying custom element is based on
-# Polymer.
+# Tokens used to detect whether the underlying custom element is based on
+# Polymer or Lit.
 POLYMER_TOKEN = '//resources/polymer/v3_0/polymer/polymer_bundled.min.js'
+LIT_TOKEN = '//resources/lit/v3_0/lit.rollup.js'
+
+# Map holding all the different types of HTML files to generate wrappers for.
+TEMPLATE_MAP = {
+    'lit': _LIT_ELEMENT_TEMPLATE,
+    'native': _NATIVE_ELEMENT_TEMPLATE,
+    'polymer_icons': _POLYMER_ICONS_TEMPLATE,
+    'polymer': _POLYMER_ELEMENT_TEMPLATE,
+}
 
 
-# Detects whether the element to be wrapped is using Polymer or native APIs.
-def get_wrapper_element_template(template_type, definition_file):
-  if template_type == 'native':
-    return _NON_POLYMER_ELEMENT_TEMPLATE
+def detect_template_type(definition_file):
+  with io.open(definition_file, encoding='utf-8', mode='r') as f:
+    content = f.read()
 
-  if template_type == 'polymer':
-    return _ELEMENT_TEMPLATE
+    if POLYMER_TOKEN in content:
+      return 'polymer'
+    elif LIT_TOKEN in content:
+      return 'lit'
 
-  if template_type == 'detect':
-    with io.open(definition_file, encoding='utf-8', mode='r') as f:
-      content = f.read()
-      return _ELEMENT_TEMPLATE if POLYMER_TOKEN in content else \
-          _NON_POLYMER_ELEMENT_TEMPLATE
+    return 'native'
 
 
 def main(argv):
@@ -79,7 +94,7 @@ def main(argv):
   parser.add_argument('--minify', action='store_true')
   parser.add_argument('--use_js', action='store_true')
   parser.add_argument('--template',
-                      choices=['polymer', 'native', 'detect'],
+                      choices=['polymer', 'lit', 'native', 'detect'],
                       default='polymer')
   parser.add_argument('--scheme',
                       choices=['chrome', 'relative'],
@@ -130,22 +145,35 @@ def main(argv):
       html_content = f.read()
 
       template = None
+      template_type = args.template
       filename = path.basename(in_file)
       if filename == 'icons.html' or filename.endswith('_icons.html'):
-        assert args.template != 'native', (
-            'Polymer icons files not supported with template="native"')
-        template = _ICONS_TEMPLATE
-      else:
+        assert args.template == 'polymer' or args.template == 'detect', (
+            r'Polymer icons files not supported with template="%s"' %
+            args.template)
+        template_type = 'polymer_icons'
+      elif template_type == 'detect':
         # Locate the file that holds the web component's definition. Assumed to
         # be in the same folder as input HTML template file.
         definition_file = path.splitext(path.join(in_folder,
                                                   in_file))[0] + extension
-        template = get_wrapper_element_template(args.template, definition_file)
+        template_type = detect_template_type(definition_file)
 
-      wrapper = template % {
+      substitutions = {
           'content': html_content,
           'scheme': 'chrome:' if args.scheme == 'chrome' else '',
       }
+
+      if template_type == 'lit':
+        # Add Lit specific substitutions.
+        basename = path.splitext(path.basename(in_file))[0]
+        # Derive class name from file name. For example
+        # foo_bar.html -> FooBarElement.
+        class_name = ''.join(map(str.title, basename.split('_'))) + 'Element'
+        substitutions['class_name'] = class_name
+        substitutions['file_name'] = basename
+
+      wrapper = TEMPLATE_MAP[template_type] % substitutions
 
       out_folder_for_file = path.join(out_folder, path.dirname(in_file))
       makedirs(out_folder_for_file, exist_ok=True)
