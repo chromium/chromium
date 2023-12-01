@@ -20,7 +20,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/dom_distiller/core/url_utils.h"
-#include "components/favicon/content/large_favicon_provider_getter.h"
+#include "components/favicon/content/large_icon_service_getter.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/webapps/browser/android/webapps_icon_utils.h"
@@ -297,7 +297,7 @@ void AddToHomescreenDataFetcher::FetchFavicon() {
   // otherwise using the largest icon among all available icons.
   int threshold_to_get_any_largest_icon =
       WebappsIconUtils::GetIdealHomescreenIconSizeInPx() - 1;
-  favicon::GetLargeFaviconProvider(web_contents_->GetBrowserContext())
+  favicon::GetLargeIconService(web_contents_->GetBrowserContext())
       ->GetLargeIconRawBitmapForPageUrl(
           shortcut_info_.url, threshold_to_get_any_largest_icon,
           base::BindOnce(&AddToHomescreenDataFetcher::OnFaviconFetched,

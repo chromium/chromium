@@ -10,7 +10,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "components/favicon/android/jni_headers/LargeIconBridge_jni.h"
-#include "components/favicon/content/large_favicon_provider_getter.h"
+#include "components/favicon/content/large_icon_service_getter.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/fallback_icon_style.h"
 #include "components/favicon_base/favicon_callback.h"
@@ -88,8 +88,7 @@ jboolean LargeIconBridge::GetLargeIconForURL(
   if (!browser_context)
     return false;
 
-  LargeIconService* large_icon_service =
-      GetLargeFaviconProvider(browser_context);
+  LargeIconService* large_icon_service = GetLargeIconService(browser_context);
   if (!large_icon_service) {
     return false;
   }
@@ -123,8 +122,7 @@ void LargeIconBridge::
     return;
   }
 
-  LargeIconService* large_icon_service =
-      GetLargeFaviconProvider(browser_context);
+  LargeIconService* large_icon_service = GetLargeIconService(browser_context);
   if (!large_icon_service) {
     return;
   }
@@ -153,8 +151,7 @@ void LargeIconBridge::TouchIconFromGoogleServer(
     return;
   }
 
-  LargeIconService* large_icon_service =
-      GetLargeFaviconProvider(browser_context);
+  LargeIconService* large_icon_service = GetLargeIconService(browser_context);
   if (!large_icon_service) {
     return;
   }

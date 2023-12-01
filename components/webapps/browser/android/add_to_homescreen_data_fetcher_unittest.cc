@@ -19,7 +19,7 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/favicon/content/large_favicon_provider_getter.h"
+#include "components/favicon/content/large_icon_service_getter.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/webapps/browser/features.h"
@@ -243,7 +243,7 @@ class AddToHomescreenDataFetcherTest
     installable_manager_ = static_cast<TestInstallableManager*>(
         web_contents()->GetUserData(TestInstallableManager::UserDataKey()));
 
-    favicon::SetLargeFaviconProviderGetter(base::BindRepeating(
+    favicon::SetLargeIconServiceGetter(base::BindRepeating(
         [](favicon::LargeIconService* service,
            content::BrowserContext* context) { return service; },
         &null_large_icon_service_));
