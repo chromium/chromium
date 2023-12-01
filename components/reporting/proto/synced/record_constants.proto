@@ -21,8 +21,9 @@ enum Destination {
   // Devices. For more information, see go/reliable-meet-device-telemetry.
   MEET_DEVICE_TELEMETRY = 2;
 
-  // |WEB_PROTECT| legacy web protect event handler
-  WEB_PROTECT = 3;
+  // |WEB_PROTECT| legacy web protect event handler that will be deleted and
+  // replaced by the |CHROME_BROWSER_ENTERPRISE| destination.
+  WEB_PROTECT = 3 [deprecated = true];
 
   // |ARC_INSTALL| legacy arc app installation event handler
   ARC_INSTALL = 4;
@@ -108,6 +109,9 @@ enum Destination {
   // |KIOSK_HEARTBEAT_EVENTS| is for events from Kiosk/MGS devices that write
   // heartbeats to dds based on the telemetry pipeline using ERP
   KIOSK_HEARTBEAT_EVENTS = 29;
+
+  // |CHROME_BROWSER_ENTERPRISE| is for CBE Security and Integrations events
+  CHROME_BROWSER_ENTERPRISE = 30;
 
   reserved 8;
 }

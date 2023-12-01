@@ -15491,6 +15491,7 @@ Called by update_document_policy_enum.py.-->
   <int value="27" label="LOG_UPLOAD"/>
   <int value="28" label="CROS_SECURITY_USER"/>
   <int value="29" label="KIOSK_HEARTBEAT_EVENTS"/>
+  <int value="30" label="CHROME_BROWSER_ENTERPRISE"/>
 </enum>
 
 <enum name="EnterpriseCloudReportingStatusCode">
