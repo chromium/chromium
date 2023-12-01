@@ -79,21 +79,24 @@ void ContactsProviderAndroid::AddContact(
   absl::optional<std::vector<std::string>> names;
   if (names_java) {
     std::vector<std::string> names_vector;
-    AppendJavaStringArrayToStringVector(env, names_java, &names_vector);
+    base::android::AppendJavaStringArrayToStringVector(env, names_java,
+                                                       &names_vector);
     names = std::move(names_vector);
   }
 
   absl::optional<std::vector<std::string>> emails;
   if (emails_java) {
     std::vector<std::string> emails_vector;
-    AppendJavaStringArrayToStringVector(env, emails_java, &emails_vector);
+    base::android::AppendJavaStringArrayToStringVector(env, emails_java,
+                                                       &emails_vector);
     emails = std::move(emails_vector);
   }
 
   absl::optional<std::vector<std::string>> tel;
   if (tel_java) {
     std::vector<std::string> tel_vector;
-    AppendJavaStringArrayToStringVector(env, tel_java, &tel_vector);
+    base::android::AppendJavaStringArrayToStringVector(env, tel_java,
+                                                       &tel_vector);
     tel = std::move(tel_vector);
   }
 

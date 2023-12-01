@@ -11,6 +11,7 @@
 #include "device/fido/authenticator_data.h"
 #include "device/fido/fido_constants.h"
 
+using base::android::JavaByteArrayToByteVector;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaByteArray;

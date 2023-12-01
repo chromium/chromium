@@ -22,6 +22,7 @@
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
+using base::android::AppendJavaStringArrayToStringVector;
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;

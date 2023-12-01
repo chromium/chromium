@@ -91,7 +91,7 @@ blink::UserAgentMetadata FromJavaAwUserAgentMetadata(
 
   ua_metadata.wow64 = Java_AwUserAgentMetadata_isWow64(env, java_ua_metadata);
 
-  AppendJavaStringArrayToStringVector(
+  base::android::AppendJavaStringArrayToStringVector(
       env, Java_AwUserAgentMetadata_getFormFactor(env, java_ua_metadata),
       &ua_metadata.form_factor);
 

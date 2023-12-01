@@ -109,12 +109,14 @@
 
 struct AwDrawSWFunctionTable;
 
+using base::android::AppendJavaStringArrayToStringVector;
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::HasException;
+using base::android::JavaIntArrayToIntVector;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
@@ -528,8 +530,8 @@ void AwContents::AddVisitedLinks(
     const JavaParamRef<jobjectArray>& jvisited_links) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::vector<std::u16string> visited_link_strings;
-  base::android::AppendJavaStringArrayToStringVector(env, jvisited_links,
-                                                     &visited_link_strings);
+  AppendJavaStringArrayToStringVector(env, jvisited_links,
+                                      &visited_link_strings);
 
   std::vector<GURL> visited_link_gurls;
   std::vector<std::u16string>::const_iterator itr;
@@ -1118,8 +1120,8 @@ gfx::Point AwContents::GetLocationOnScreen() {
   if (!obj)
     return gfx::Point();
   std::vector<int> location;
-  base::android::JavaIntArrayToIntVector(
-      env, Java_AwContents_getLocationOnScreen(env, obj), &location);
+  JavaIntArrayToIntVector(env, Java_AwContents_getLocationOnScreen(env, obj),
+                          &location);
   return gfx::Point(location[0], location[1]);
 }
 

@@ -224,7 +224,8 @@ static jlong JNI_CronetUrlRequestContext_CreateRequestContextConfig(
 
   std::vector<uint8_t> serializedProto;
 
-  JavaByteArrayToByteVector(env, javaSerializedProto, &serializedProto);
+  base::android::JavaByteArrayToByteVector(env, javaSerializedProto,
+                                           &serializedProto);
 
   if (!configOptions.ParseFromArray(serializedProto.data(),
                                     serializedProtoLength)) {
