@@ -9,9 +9,11 @@
 
 #include "base/containers/cxx20_erase.h"
 #include "base/debug/stack_trace.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/returned_resource.h"
@@ -118,19 +120,23 @@ struct ClientResourceProvider::ImportedResource {
   gpu::SyncToken returned_sync_token;
   bool returned_lost = false;
 
+  ResourceEvictedCallback evicted_callback;
+
 #if DCHECK_IS_ON()
   base::debug::StackTrace stack_trace;
 #endif
 
   ImportedResource(ResourceId id,
                    const TransferableResource& resource,
-                   ReleaseCallback release_callback)
+                   ReleaseCallback release_callback,
+                   ResourceEvictedCallback evicted_callback)
       : resource(resource),
         release_callback(std::move(release_callback)),
         // If the resource is immediately deleted, it returns the same SyncToken
         // it came with. The client may need to wait on that before deleting the
         // backing or reusing it.
-        returned_sync_token(resource.mailbox_holder.sync_token) {
+        returned_sync_token(resource.mailbox_holder.sync_token),
+        evicted_callback(std::move(evicted_callback)) {
     // Replace the |resource| id with the local id from this
     // ClientResourceProvider.
     this->resource.id = id;
@@ -366,11 +372,13 @@ void ClientResourceProvider::ReceiveReturnsFromParent(
 
 ResourceId ClientResourceProvider::ImportResource(
     const TransferableResource& resource,
-    ReleaseCallback release_callback) {
+    ReleaseCallback release_callback,
+    ResourceEvictedCallback evicted_callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   ResourceId id = id_generator_.GenerateNextId();
   auto result = imported_resources_.emplace(
-      id, ImportedResource(id, resource, std::move(release_callback)));
+      id, ImportedResource(id, resource, std::move(release_callback),
+                           std::move(evicted_callback)));
   DCHECK(result.second);  // If false, the id was already in the map.
   return id;
 }
@@ -381,6 +389,9 @@ void ClientResourceProvider::RemoveImportedResource(ResourceId id) {
   DCHECK(it != imported_resources_.end());
   ImportedResource& imported = it->second;
   imported.marked_for_deletion = true;
+  // We clear the callback here, as we will hold onto `imported` until it has
+  // been returned. Which could occur after the lifetime of the importer.
+  imported.evicted_callback = ResourceEvictedCallback();
   if (imported.exported_count == 0) {
     std::move(imported.release_callback)
         .Run(imported.returned_sync_token, imported.returned_lost);
@@ -455,7 +466,7 @@ void ClientResourceProvider::SetEvicted(bool evicted) {
     return;
   }
   evicted_ = evicted;
-  ValidateEviction();
+  HandleEviction();
 }
 
 void ClientResourceProvider::SetVisible(bool visible) {
@@ -463,10 +474,10 @@ void ClientResourceProvider::SetVisible(bool visible) {
     return;
   }
   visible_ = visible;
-  ValidateEviction();
+  HandleEviction();
 }
 
-void ClientResourceProvider::ValidateEviction() {
+void ClientResourceProvider::HandleEviction() {
   // The eviction and visibility change messages are racy. The Renderer
   // Main-thread can be slow enough that we are still considered visible when
   // the eviction signal is received. We do not count the locked resources
@@ -479,15 +490,30 @@ void ClientResourceProvider::ValidateEviction() {
   int locked = 0;
   size_t total_mem = 0u;
   base::flat_map<TransferableResource::ResourceSource, size_t> mem_per_source;
-  for (auto& imported : imported_resources_) {
-    if (!imported.second.marked_for_deletion) {
+  std::vector<ResourceId> ids_to_unlock;
+  for (auto& [id, imported] : imported_resources_) {
+    if (!imported.marked_for_deletion) {
       ++locked;
+      auto resource_source = imported.resource.resource_source;
       size_t resource_mem =
-          imported.second.resource.format.EstimatedSizeInBytes(
-              imported.second.resource.size);
+          imported.resource.format.EstimatedSizeInBytes(imported.resource.size);
       total_mem += resource_mem;
-      mem_per_source[imported.second.resource.resource_source] += resource_mem;
+      mem_per_source[resource_source] += resource_mem;
+
+      if (!base::FeatureList::IsEnabled(features::kEvictionUnlocksResources) ||
+          !imported.evicted_callback) {
+        continue;
+      }
+      ids_to_unlock.push_back(id);
     }
+  }
+
+  for (const auto id : ids_to_unlock) {
+    auto imported = imported_resources_.find(id);
+    if (imported == imported_resources_.end()) {
+      continue;
+    }
+    std::move(imported->second.evicted_callback).Run();
   }
 
   // Only report when there are locked resources. Evictions where all resources

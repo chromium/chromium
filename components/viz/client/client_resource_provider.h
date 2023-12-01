@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_CLIENT_CLIENT_RESOURCE_PROVIDER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -76,9 +77,14 @@ class VIZ_CLIENT_EXPORT ClientResourceProvider {
       std::vector<ReturnedResource> transferable_resources);
 
   // Receives a resource from an external client that can be used in compositor
-  // frames, via the returned ResourceId.
+  // frames, via the returned ResourceId. Can be provided with an optional
+  // `evicted_callback`, which will be invoked once we are no longer visible and
+  // have been evicted. When `evicted_callback` is called the client should
+  // invoke `RemoveImportedResources` to unlock the resource. Allowing the
+  // resource to be released when it is returned from the parent.
   ResourceId ImportResource(const TransferableResource& resource,
-                            ReleaseCallback release_callback);
+                            ReleaseCallback release_callback,
+                            ResourceEvictedCallback evicted_callback = {});
   // Removes an imported resource, which will call the ReleaseCallback given
   // originally, once the resource is no longer in use by any compositor frame.
   void RemoveImportedResource(ResourceId resource_id);
@@ -122,7 +128,12 @@ class VIZ_CLIENT_EXPORT ClientResourceProvider {
       base::OnceCallback<void(std::vector<GLbyte*>* tokens)>
           verify_sync_tokens);
 
-  void ValidateEviction();
+  // Validates the memory impact of resources that are locked once we are both
+  // evicted and no longer visible. This will also notify clients of eviction
+  // via any `RemoveImportedResources`. If resources have been already returned
+  // by the parent (the Display Compositor's FrameSink) this can lead to them
+  // being returned to the client (such as cc::LayerTreeHostImpl.)
+  void HandleEviction();
 
   THREAD_CHECKER(thread_checker_);
 

@@ -339,6 +339,12 @@ BASE_FEATURE(kHideDelegatedFrameHostMac,
              "HideDelegatedFrameHostMac",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, ClientResourceProvider will attempt to unlock and delete
+// TransferableResources that have been returned as a part of eviction.
+BASE_FEATURE(kEvictionUnlocksResources,
+             "EvictionUnlocksResources",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsDelegatedCompositingEnabled() {
   return base::FeatureList::IsEnabled(kDelegatedCompositing);
 }

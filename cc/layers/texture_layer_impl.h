@@ -82,6 +82,7 @@ class CC_EXPORT TextureLayerImpl : public LayerImpl {
 
   const char* LayerTypeAsString() const override;
   void FreeTransferableResource();
+  void OnResourceEvicted();
 
   bool premultiplied_alpha_ = true;
   bool blend_background_color_ = false;
