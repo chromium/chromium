@@ -156,14 +156,6 @@ export class Oobe extends DisplayManager {
   }  // loginForTesting
 
   /**
-   * Finish enterprise enrollment for telemetry.
-   */
-  static enterpriseEnrollmentDone() {
-    // TODO(crbug.com/1100910): migrate logic to dedicated test api.
-    chrome.send('oauthEnrollClose', ['done']);
-  }
-
-  /**
    * Returns true if enrollment was successful. Dismisses the enrollment
    * attribute screen if it's present.
    *
