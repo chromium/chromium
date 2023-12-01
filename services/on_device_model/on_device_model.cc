@@ -74,7 +74,7 @@ OnDeviceModelService::CreateModel(mojom::LoadModelParamsPtr params) {
 
 // static
 mojom::PerformanceClass OnDeviceModelService::GetEstimatedPerformanceClass() {
-  return mojom::PerformanceClass::kError;
+  return mojom::PerformanceClass::kFailedToLoadLibrary;
 }
 
 }  // namespace on_device_model

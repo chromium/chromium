@@ -42,6 +42,10 @@ function getPerformanceClassText(performanceClass: PerformanceClass): string {
       return 'High';
     case PerformanceClass.kVeryHigh:
       return 'Very High';
+    case PerformanceClass.kGpuBlocked:
+      return 'GPU blocked';
+    case PerformanceClass.kFailedToLoadLibrary:
+      return 'Failed to load native library';
     default:
       return 'Error';
   }
