@@ -2677,20 +2677,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.AndroidRegistrationResult.{Type}2"
-    enum="ConversionAndroidRegistrationResult" expires_after="2024-05-12">
+<histogram name="Conversions.AndroidOperationResult.{Operation}"
+    enum="ConversionAndroidOperationResult" expires_after="2024-05-12">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
-    Measures how often attribution OS registrations were successfully registered
-    with Android or failed and why. Only recorded on Android when the
+    Measures how often attribution OS operations were successfully delegated to
+    Android or failed and why. Only recorded on Android when the
     AttributionReportingCrossAppWeb feature is enabled. Recorded for each OS
-    registration processed by the Java attribution OS-level manager.
+    operation processed by the Java attribution OS-level manager.
   </summary>
-  <token key="Type">
-    <variant name="Source"/>
-    <variant name="Trigger"/>
+  <token key="Operation">
+    <variant name="DeleteRegistrations"/>
+    <variant name="GetMeasurementApiStatus"/>
+    <variant name="RegisterSource"/>
+    <variant name="RegisterTrigger"/>
+    <variant name="RegisterWebSource"/>
+    <variant name="RegisterWebTrigger"/>
   </token>
 </histogram>
 

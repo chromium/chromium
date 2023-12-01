@@ -9425,7 +9425,7 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Not seen, from Long-press"/>
 </enum>
 
-<enum name="ConversionAndroidRegistrationResult">
+<enum name="ConversionAndroidOperationResult">
   <int value="0" label="Success"/>
   <int value="1" label="Unknown error"/>
   <int value="2" label="Illegal argument error"/>
@@ -9436,6 +9436,8 @@ Called by update_net_error_codes.py.-->
   <int value="7" label="Limit exceeded error"/>
   <int value="8" label="Internal error"/>
   <int value="9" label="Background caller error"/>
+  <int value="10" label="Version unsupported"/>
+  <int value="11" label="Permission ungranted"/>
 </enum>
 
 <enum name="ConversionAssembleAggregatableReportStatus">
