@@ -33,6 +33,9 @@ class CrossThreadSharedBitmap;
 }
 
 namespace gpu {
+
+class ClientSharedImage;
+
 namespace gles2 {
 class GLES2Interface;
 }
@@ -168,7 +171,7 @@ class TestPlugin : public blink::WebPlugin, public cc::TextureLayerClient {
       bool lost);
   static void ReleaseSharedImage(
       scoped_refptr<ContextProviderRef> context_provider,
-      const gpu::Mailbox& mailbox,
+      scoped_refptr<gpu::ClientSharedImage> shared_image,
       const gpu::SyncToken& sync_token,
       bool lost);
 
@@ -179,7 +182,7 @@ class TestPlugin : public blink::WebPlugin, public cc::TextureLayerClient {
   gfx::Rect rect_;
   scoped_refptr<ContextProviderRef> context_provider_;
   raw_ptr<gpu::gles2::GLES2Interface, ExperimentalRenderer> gl_;
-  gpu::Mailbox mailbox_;
+  scoped_refptr<gpu::ClientSharedImage> shared_image_;
   gpu::SyncToken sync_token_;
   scoped_refptr<cc::CrossThreadSharedBitmap> shared_bitmap_;
   bool content_changed_ = false;

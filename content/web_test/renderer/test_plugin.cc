@@ -270,11 +270,10 @@ void TestPlugin::UpdateGeometry(const gfx::Rect& window_rect,
     return;
   rect_ = clip_rect;
 
-  if (!mailbox_.IsZero()) {
+  if (shared_image_) {
     DCHECK(context_provider_);
     auto* sii = context_provider_->data->SharedImageInterface();
-    sii->DestroySharedImage(sync_token_, mailbox_);
-    mailbox_ = gpu::Mailbox();
+    sii->DestroySharedImage(sync_token_, std::exchange(shared_image_, nullptr));
     sync_token_ = gpu::SyncToken();
   }
 
@@ -283,17 +282,16 @@ void TestPlugin::UpdateGeometry(const gfx::Rect& window_rect,
   } else if (gl_) {
     DCHECK(context_provider_);
     auto* sii = context_provider_->data->SharedImageInterface();
-    auto client_shared_image = sii->CreateSharedImage(
+    shared_image_ = sii->CreateSharedImage(
         viz::SinglePlaneFormat::kRGBA_8888, rect_.size(), gfx::ColorSpace(),
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
         gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
         "TestLabel", gpu::kNullSurfaceHandle);
-    CHECK(client_shared_image);
-    mailbox_ = client_shared_image->mailbox();
+    CHECK(shared_image_);
     gl_->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
-    GLuint color_texture =
-        gl_->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox_.name);
+    GLuint color_texture = gl_->CreateAndTexStorage2DSharedImageCHROMIUM(
+        shared_image_->mailbox().name);
     gl_->BeginSharedImageAccessDirectCHROMIUM(
         color_texture, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
 
@@ -349,11 +347,11 @@ void TestPlugin::ReleaseSharedMemory(
 // static
 void TestPlugin::ReleaseSharedImage(
     scoped_refptr<ContextProviderRef> context_provider,
-    const gpu::Mailbox& mailbox,
+    scoped_refptr<gpu::ClientSharedImage> shared_image,
     const gpu::SyncToken& sync_token,
     bool lost) {
   auto* sii = context_provider->data->SharedImageInterface();
-  sii->DestroySharedImage(sync_token, mailbox);
+  sii->DestroySharedImage(sync_token, std::exchange(shared_image, nullptr));
 }
 
 bool TestPlugin::PrepareTransferableResource(
@@ -363,14 +361,13 @@ bool TestPlugin::PrepareTransferableResource(
   if (!content_changed_)
     return false;
   gfx::Size size(rect_.size());
-  if (!mailbox_.IsZero()) {
+  if (shared_image_) {
     *resource = viz::TransferableResource::MakeGpu(
-        mailbox_, GL_TEXTURE_2D, sync_token_, size,
+        shared_image_, GL_TEXTURE_2D, sync_token_, size,
         viz::SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
     // We pass ownership of the shared image to the callback.
-    *release_callback =
-        base::BindOnce(&ReleaseSharedImage, context_provider_, mailbox_);
-    mailbox_ = gpu::Mailbox();
+    *release_callback = base::BindOnce(&ReleaseSharedImage, context_provider_,
+                                       std::exchange(shared_image_, nullptr));
     sync_token_ = gpu::SyncToken();
   } else if (shared_bitmap_) {
     // The |bitmap_data_| is only used for a single compositor frame, so we know
@@ -506,10 +503,10 @@ void TestPlugin::DestroyScene() {
     framebuffer_ = 0;
   }
 
-  if (!mailbox_.IsZero()) {
+  if (shared_image_) {
     DCHECK(context_provider_);
     auto* sii = context_provider_->data->SharedImageInterface();
-    sii->DestroySharedImage(sync_token_, mailbox_);
+    sii->DestroySharedImage(sync_token_, std::exchange(shared_image_, nullptr));
   }
 }
 
