@@ -191,8 +191,7 @@ std::unique_ptr<views::View> AppStreamLauncherView::CreateAppListView() {
 }
 
 void AppStreamLauncherView::AppIconActivated(
-    phonehub::Notification::AppMetadata app,
-    const ui::Event& event) {
+    phonehub::Notification::AppMetadata app) {
   auto* interaction_handler_ =
       phone_hub_manager_->GetRecentAppsInteractionHandler();
   if (!interaction_handler_)

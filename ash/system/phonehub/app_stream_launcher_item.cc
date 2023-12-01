@@ -4,7 +4,10 @@
 
 #include "ash/system/phonehub/app_stream_launcher_item.h"
 
+#include <utility>
+
 #include "ash/strings/grit/ash_strings.h"
+#include "base/functional/callback.h"
 #include "base/hash/hash.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
@@ -68,7 +71,7 @@ END_METADATA
 }  // namespace
 
 AppStreamLauncherItem::AppStreamLauncherItem(
-    views::ImageButton::PressedCallback callback,
+    base::RepeatingClosure callback,
     const phonehub::Notification::AppMetadata& app_metadata) {
   SetPreferredSize(kEcheAppItemSize);
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -107,8 +110,8 @@ AppStreamLauncherItem::AppStreamLauncherItem(
   recent_app_button_->SetTooltipText(accessible_name);
   recent_app_button_->SetEnabled(enabled);
 
-  label_ = AddChildView(
-      std::make_unique<AppNameLabel>(callback, app_metadata.visible_app_name));
+  label_ = AddChildView(std::make_unique<AppNameLabel>(
+      std::move(callback), app_metadata.visible_app_name));
   label_->SetEnabled(enabled);
   label_->SetAccessibleName(accessible_name);
   label_->SetTooltipText(accessible_name);
