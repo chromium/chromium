@@ -21,5 +21,7 @@
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Fjalëkalim i ri për këtë sajt}other{Fjalëkalime të reja për këtë sajt}}</translation>
 <translation id="7286867818472074330">Zgjidh çelësin e kalimit</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> nga <ph name="ITEMS_TOTAL" />.</translation>
+<translation id="7738288782501322815">Ke marrë fjalëkalime për <ph name="SITE_NAME" /></translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> ka ndarë një fjalëkalim me ty për <ph name="SITE_NAME" /></translation>
 <translation id="8891372124884726271">Lista e kredencialeve është mbyllur.</translation>
 </translationbundle>

@@ -66,7 +66,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1225748608451425081">Il Chromebook è bloccato a causa di un problema noto. Potrai accedere dopo: <ph name="TIME_LEFT" />.</translation>
 <translation id="1226877728704622336">scrivania non attiva</translation>
 <translation id="1229194443904279055">Interrompi la selezione</translation>
-<translation id="1233979878541157665">Prova a cercare "tramonto" o "albero" anziché il nome del file. Puoi disattivare la ricerca immagini nella barra di ricerca.</translation>
 <translation id="1235458158152011030">Reti note</translation>
 <translation id="1239161794459865856">La funzionalità <ph name="FEATURE_NAME" /> è connessa.</translation>
 <translation id="1240638468526743569">Un'app</translation>
@@ -1141,6 +1140,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="5620979661744857819">Consente l'accesso per <ph name="APP_NAME" />, tutte le app e tutti i siti web che hanno le autorizzazioni di accesso al microfono e alla fotocamera. Potresti dover aggiornare la pagina web o riavviare l'app.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Impossibile verificare la password. Riprova.</translation>
+<translation id="5632485077360054581">Mostrami come fare</translation>
 <translation id="5648021990716966815">Jack per microfono</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> richiede la tua attenzione.</translation>
 <translation id="5662075790140998213">Scrivania 10</translation>
@@ -1334,7 +1334,6 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="643593192654616063">Spazio di archiviazione in uso: <ph name="STORAGE_IN_USE_SIZE" /> su un totale di <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> su <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
-<translation id="6446225358675593408">Trova le tue immagini in base ai contenuti</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> evento</translation>
 <translation id="6449483711453944360">Al momento le app Linux e le finestre di navigazione in incognito non sono supportate</translation>
 <translation id="6450245544201845082">La scorciatoia per fare clic con il tasto destro del mouse è attualmente disattivata</translation>
@@ -1518,6 +1517,7 @@ Nuova installazione</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Ripristino della risoluzione precedente tra <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Apri Impostazioni</translation>
 <translation id="7180611975245234373">Aggiorna</translation>
 <translation id="7188494361780961876">Menu spostato nell'angolo in alto a sinistra dello schermo.</translation>
 <translation id="7189412385142492784">Quanto è distante Venere</translation>
@@ -1537,7 +1537,6 @@ Nuova installazione</translation>
 <translation id="7312210124139670355">Il tuo amministratore sta reimpostando l'eSIM. Questa operazione può richiedere alcuni minuti.</translation>
 <translation id="7313193732017069507">Espandi fotocamera</translation>
 <translation id="7316261577130609484">Aggiungi nuova attività</translation>
-<translation id="7321889295239318128">Premi Maiusc più Tab per scoprire di più</translation>
 <translation id="7330397557116570022">Vai a un campo di testo per utilizzare la dettatura</translation>
 <translation id="7331646370422660166">Alt + Freccia giù</translation>
 <translation id="7340731148882810149">Menu Clic automatici</translation>

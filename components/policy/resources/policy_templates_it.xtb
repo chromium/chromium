@@ -2398,7 +2398,6 @@ comportamento dei tasti funzione e questa impostazione non sarà modificabile da
           Se imposti questo criterio, gli utenti non potranno modificarlo o ignorarlo.
 
           Se questo criterio non viene impostato, inizialmente il puntatore grande è disattivato nella schermata di accesso, ma l'utente può attivarlo in qualsiasi momento.</translation>
-<translation id="3027837632741099453">La modalità Risparmio energetico viene attivata quando il dispositivo è alimentato a batteria.</translation>
 <translation id="3030000825273123558">Attiva rapporti sulle metriche</translation>
 <translation id="30300807616984726">Consente di generare report sui dati dell'inventario per app per gli utenti affiliati.
 
@@ -4401,13 +4400,6 @@ Per i dispositivi non gestiti, l'utente può decidere di inviare le metriche.</t
 
       Se questo criterio non viene impostato o viene attivato, i controlli dell'intercettazione DNS vengono eseguiti. Se viene disattivato, i controlli non vengono eseguiti.</translation>
 <translation id="4700190441681139987">Non consentire a nessun sito di accedere ai sensori</translation>
-<translation id="4701899474784891858">Questo criterio attiva o disattiva l'impostazione della modalità Risparmio energetico. Questa impostazione fa sì che la frequenza fotogrammi venga limitata per ridurre il consumo energetico.
-      Se questo criterio non viene configurato, l'utente finale può controllare questa impostazione in chrome://settings/performance.
-      I diversi livelli sono:
-      <ph name="BATTERY_SAVER_MODE_DISABLED" /> (0): la modalità Risparmio energetico viene disattivata.
-      <ph name="BATTERY_SAVER_MODE_ENABLED_BELOW_THRESHOLD" /> (1): la modalità Risparmio energetico viene attivata quando il dispositivo è alimentato a batteria e il livello batteria è basso.
-      <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2): la modalità Risparmio energetico viene attivata quando il dispositivo è alimentato a batteria.
-      </translation>
 <translation id="4703402283970867140">Attiva il modello di oscuramento smart per ritardare l'oscuramento dello schermo</translation>
 <translation id="4704958130749494760">Concedi automaticamente ai siti l'autorizzazione a connettersi a dispositivi seriali USB</translation>
 <translation id="4705329890928008808">Se il criterio è impostato su CopyCaCerts, per le app ARC sono disponibili tutti i certificati CA installati su ONC con <ph name="WEB_TRUSTED_BIT" />.

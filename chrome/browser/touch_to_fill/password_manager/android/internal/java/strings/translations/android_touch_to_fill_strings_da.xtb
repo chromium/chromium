@@ -21,5 +21,7 @@
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Ny adgangskode til dette website}one{Ny adgangskode til dette website}other{Nye adgangskoder til dette website}}</translation>
 <translation id="7286867818472074330">Vælg adgangsnøgle</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> af <ph name="ITEMS_TOTAL" /></translation>
+<translation id="7738288782501322815">Du har modtaget adgangskoder til <ph name="SITE_NAME" /></translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> har delt en adgangskode med dig til <ph name="SITE_NAME" /></translation>
 <translation id="8891372124884726271">Listen over loginoplysninger er lukket.</translation>
 </translationbundle>

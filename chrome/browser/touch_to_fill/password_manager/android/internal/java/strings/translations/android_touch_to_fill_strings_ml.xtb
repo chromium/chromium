@@ -21,5 +21,7 @@
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{ഈ സൈറ്റിനായി പുതിയ പാസ്‌വേഡ്}other{ഈ സൈറ്റുകൾക്കായി പുതിയ പാസ്‌വേഡുകൾ}}</translation>
 <translation id="7286867818472074330">പാസ്‌കീ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEMS_TOTAL" />-ൽ <ph name="ITEM_POSITION" />.</translation>
+<translation id="7738288782501322815"><ph name="SITE_NAME" /> എന്നതിന്റെ പാസ്‍വേഡുകൾ നിങ്ങൾക്ക് ലഭിച്ചു</translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> എന്നയാൾ <ph name="SITE_NAME" /> എന്നതിന്റെ പാസ്‌വേഡ് നിങ്ങളുമായി പങ്കിട്ടു</translation>
 <translation id="8891372124884726271">ക്രെഡൻഷ്യലുകളുടെ ലിസ്റ്റ് അടച്ചിരിക്കുന്നു.</translation>
 </translationbundle>

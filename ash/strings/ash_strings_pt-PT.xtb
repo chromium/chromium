@@ -66,7 +66,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1225748608451425081">O seu Chromebook está bloqueado devido a um problema conhecido. Poderá iniciar sessão dentro de <ph name="TIME_LEFT" />.</translation>
 <translation id="1226877728704622336">espaço de trabalho inativo</translation>
 <translation id="1229194443904279055">Parar seleção</translation>
-<translation id="1233979878541157665">Experimente pesquisar "pôr do sol" ou "árvore" em vez do nome do ficheiro. Pode desativar a pesquisa de imagens na barra de pesquisa.</translation>
 <translation id="1235458158152011030">Redes conhecidas</translation>
 <translation id="1239161794459865856">A funcionalidade <ph name="FEATURE_NAME" /> está ligada.</translation>
 <translation id="1240638468526743569">Uma app</translation>
@@ -1144,6 +1143,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="5620979661744857819">Isto permite o acesso para a app <ph name="APP_NAME" /> e todas as apps e Websites com as autorizações da câmara e do microfone. Pode ter de atualizar a página Web ou reiniciar a app.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Não foi possível validar a sua palavra-passe. Tente novamente.</translation>
+<translation id="5632485077360054581">Mostrar-me como</translation>
 <translation id="5648021990716966815">Entrada para microfone</translation>
 <translation id="5652575806481723716">A app <ph name="FOCUSED_APP_NAME" /> solicita a sua atenção.</translation>
 <translation id="5662075790140998213">Espaço de trabalho 10</translation>
@@ -1337,7 +1337,6 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="643593192654616063">A usar <ph name="STORAGE_IN_USE_SIZE" /> de armazenamento, de um total de <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> no recetor <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
-<translation id="6446225358675593408">Encontre as imagens pelo conteúdo</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> evento</translation>
 <translation id="6449483711453944360">De momento, as apps para Linux e as janelas de navegação anónima não são suportadas</translation>
 <translation id="6450245544201845082">O atalho do clique com o botão direito do rato está atualmente desativado</translation>
@@ -1521,6 +1520,7 @@ Nova instalação</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">A reverter para a resolução antiga dentro de <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Abrir Definições</translation>
 <translation id="7180611975245234373">Atualizar</translation>
 <translation id="7188494361780961876">O menu foi movido para o canto superior esquerdo do ecrã.</translation>
 <translation id="7189412385142492784">Qual é a distância para Vénus?</translation>
@@ -1540,7 +1540,6 @@ Nova instalação</translation>
 <translation id="7312210124139670355">O seu administrador está a repor o eSIM. Esta ação pode demorar alguns minutos.</translation>
 <translation id="7313193732017069507">Expanda a câmara</translation>
 <translation id="7316261577130609484">Adicionar nova tarefa</translation>
-<translation id="7321889295239318128">Prima shift mais Tab para saber mais</translation>
 <translation id="7330397557116570022">Aceda a um campo de texto para usar o ditado</translation>
 <translation id="7331646370422660166">alt + seta para baixo</translation>
 <translation id="7340731148882810149">Menu de cliques automáticos</translation>

@@ -612,7 +612,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1477654881618305065">Twoja organizacja nie pozwala udostępniać tej zawartości. Jeśli potrzebujesz pomocy, skontaktuj się z administratorem.</translation>
 <translation id="1478340334823509079">Szczegóły: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">Instalacja nie została włączona</translation>
-<translation id="1480571698637441426">Aby otrzymywać dostosowane odpowiedzi na swoje pytania, zezwól Asystentowi na dostęp do zrzutu bieżącej zawartości ekranu. Mogą tam znajdować się też informacje o odtwarzanych piosenkach i filmach.</translation>
 <translation id="1480663089572535854">Możesz wrócić, aby zmienić przypisanie do czynności „Wybierz”. Zawsze możesz wyłączyć automatyczne skanowanie w Ustawieniach.</translation>
 <translation id="1481537595330271162">Błąd podczas zmiany rozmiaru dysku</translation>
 <translation id="1482626744466814421">Dodaj tę kartę do zakładek...</translation>
@@ -1111,7 +1110,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1848219224579402567">Wyloguj, gdy pokrywa jest zamknięta</translation>
 <translation id="184862733444771842">Prośba o dodanie funkcji</translation>
 <translation id="1849016657376805933">Dowolne urządzenie HID</translation>
-<translation id="1849186935225320012">Ta strona ma pełny dostęp do sterowania urządzeniami MIDI.</translation>
 <translation id="1850145825777333687">Dane logowania urządzenia</translation>
 <translation id="1850508293116537636">Obróć w &amp;prawo</translation>
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Przed rejestracją musisz wyczyścić TPM, aby system operacyjny <ph name="DEVICE_OS" /> mógł uzyskać prawo własności do tego urządzenia.<ph name="END_PARAGRAPH1" />
@@ -1607,7 +1605,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2224444042887712269">To ustawienie należy do <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Edytuj nazwę folderu</translation>
 <translation id="2225927550500503913">Karta wirtualna została włączona</translation>
-<translation id="2226449515541314767">Pełny dostęp do sterowania urządzeniami MIDI został dla tej witryny zablokowany.</translation>
 <translation id="2226826835915474236">Nieaktywne skróty</translation>
 <translation id="2226907662744526012">Odblokuj automatycznie po wpisaniu kodu PIN</translation>
 <translation id="2227179592712503583">Usuń sugestię</translation>
@@ -1905,7 +1902,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2450849356604136918">Brak aktywnych widoków</translation>
 <translation id="2451298179137331965">2 x</translation>
 <translation id="245322989586167203">Strony zwykle łączą się z portami szeregowymi w celu obsługi funkcji związanych z przesyłaniem danych, na przykład aby skonfigurować sieć</translation>
-<translation id="2453706416476934374">Aby otrzymywać dostosowane odpowiedzi, gdy <ph name="SUPERVISED_USER_NAME" /> zadaje pytania, zezwól Asystentowi na dostęp do zrzutu bieżącej zawartości ekranu użytkownika <ph name="SUPERVISED_USER_NAME" />. Mogą tam znajdować się też informacje o odtwarzanych piosenkach i filmach.</translation>
 <translation id="2453860139492968684">Zakończ</translation>
 <translation id="2454206500483040640">Rozdzielone</translation>
 <translation id="2454247629720664989">Słowo kluczowe</translation>
@@ -2535,7 +2531,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="2932483646085333864">Wyloguj się i zaloguj się ponownie, by rozpocząć synchronizację</translation>
 <translation id="2932883381142163287">Zgłoś nadużycie</translation>
 <translation id="2933632078076743449">Ostatnia aktualizacja</translation>
-<translation id="2934999512438267372">Zezwolono na pełną kontrolę nad urządzeniami MIDI</translation>
 <translation id="2935225303485967257">Zarządzaj profilami</translation>
 <translation id="2935314715123552088">Wyłącz aktywny profil eSIM</translation>
 <translation id="2935654492420446828">Późniejsze dodawanie konta szkolnego</translation>
@@ -2922,7 +2917,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3262986719682892278">Za duży</translation>
 <translation id="3264544094376351444">Czcionka bezszeryfowa</translation>
 <translation id="3264582393905923483">Kontekst</translation>
-<translation id="3265032511221679826">Włączyć dostęp do dokładnej lokalizacji?</translation>
 <translation id="3265459715026181080">Zamknij okno</translation>
 <translation id="3266022278425892773">Środowisko programistyczne Linuksa</translation>
 <translation id="3266274118485960573">Trwa kontrola zabezpieczeń.</translation>
@@ -3973,7 +3967,6 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="4087089424473531098">Utworzono rozszerzenie:
 
 <ph name="EXTENSION_FILE" /></translation>
-<translation id="408721682677442104">Zabroniono pełnej kontroli nad urządzeniami MIDI</translation>
 <translation id="4087328411748538168">Pokaż po prawej</translation>
 <translation id="4089235344645910861">Ustawienia zapisane. Synchronizacja rozpoczęta.</translation>
 <translation id="4089817585533500276">Shift + <ph name="TOP_ROW_KEY" /></translation>
@@ -4483,7 +4476,6 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="4507128560633489176">Dane zostały wyczyszczone.</translation>
 <translation id="4507373251891673233">Wszystkie rozszerzenia mają zablokowany dostęp do witryny <ph name="HOST" /></translation>
 <translation id="4507401683427517298">Kliknij „Dodaj skrót”</translation>
-<translation id="4508032221004253235">Ta funkcja sprawia, że aplikacje i strony, które mają dostęp do lokalizacji, a także ChromeOS, mogą korzystać z lokalizacji określonej za pomocą Wi-Fi lub sieci komórkowych. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="4508150454272293946">Zezwól aplikacjom i stronom internetowym na dostęp do kamer podłączonych do tego urządzenia. Jeśli nadal masz problem z kamerą, uruchom ponownie aplikację lub odśwież stronę.</translation>
 <translation id="450867954911715010">Ustawienia ułatwień dostępu</translation>
 <translation id="4508765956121923607">Wyświetl ź&amp;ródło</translation>
@@ -6856,7 +6848,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6434325376267409267">Zanim będzie można używać <ph name="APP_NAME" />, musisz zaktualizować urządzenie.</translation>
 <translation id="6435339218366409950">Wybierz język, na który chcesz przetłumaczyć napisy</translation>
 <translation id="6436164536244065364">Zobacz w Chrome Web Store</translation>
-<translation id="6436610005579237680">Aby otrzymywać lepiej dostosowane odpowiedzi na swoje pytania, zezwól Asystentowi na dostęp do zrzutu bieżącej zawartości ekranu. Asystent może też używać informacji o odtwarzanych piosenkach i filmach.</translation>
 <translation id="6436778875248895551">Rozszerzenie „<ph name="EXTENSION_NAME" />” zablokował administrator</translation>
 <translation id="6438234780621650381">Resetowanie ustawień</translation>
 <translation id="6438475350605608554">Importujesz już hasła na innej karcie</translation>
@@ -7047,7 +7038,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6592808042417736307">Twój odcisk został zarejestrowany</translation>
 <translation id="6593881952206664229">Mogą nie być odtwarzane multimedia objęte prawami autorskimi</translation>
 <translation id="6594011207075825276">Szukam urządzeń szeregowych...</translation>
-<translation id="6595187330192059106">Nigdy nie zezwalaj stronie <ph name="HOST" /> na pełną kontrolę nad urządzeniami MIDI.</translation>
 <translation id="6595322909015878027">Bez zezwolenia na automatyczne włączanie obrazu w obrazie</translation>
 <translation id="6595408197871512625">{COUNT,plural, =1{Zmieniono przejęte hasło.
 
@@ -7923,7 +7913,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7299337219131431707">Zezwalaj na logowanie jako gość</translation>
 <translation id="7299515639584427954">Zmienić domyślną aplikację do obsługiwanych linków?</translation>
 <translation id="7299588179200441056"><ph name="URL" /> – <ph name="FOLDER" /></translation>
-<translation id="7301470816294041580">Możesz zapytać: „OK Google, co to za piosenka?” lub „OK Google, co widać na moim ekranie?”</translation>
 <translation id="7301812050652048720">Klucz dostępu został usunięty</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Ta aplikacja może uniemożliwiać prawidłowe działanie Chrome.}few{Te aplikacje mogą uniemożliwiać prawidłowe działanie Chrome.}many{Te aplikacje mogą uniemożliwiać prawidłowe działanie Chrome.}other{Te aplikacje mogą uniemożliwiać prawidłowe działanie Chrome.}}</translation>
 <translation id="7303281435234579599">Ups! Podczas konfigurowania trybu demonstracyjnego coś poszło nie tak.</translation>
@@ -8521,6 +8510,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7757787379047923882">Tekst udostępniony z urządzenia <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Dostosuj krawędzie ekranu</translation>
+<translation id="7759809451544302770">Opcjonalne</translation>
 <translation id="7762024824096060040">Nie można użyć tego konta</translation>
 <translation id="7762243782113123335">Coś poszło nie tak. Prześlij opinię z hashtagiem #bruschetta w opisie. Kod błędu: <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Dodaj adres</translation>
@@ -8915,7 +8905,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8050038245906040378">Podpisywanie kodu handlowego firmy Microsoft</translation>
 <translation id="8050191834453426339">Zweryfikuj ponownie</translation>
 <translation id="8051193500142930381">Nie będą działać funkcje, które potrzebują kamery</translation>
-<translation id="8051390370038326517">Zawsze zezwalaj stronie <ph name="HOST" /> na pełną kontrolę nad urządzeniami MIDI</translation>
 <translation id="8052218774860457016">Zarządzaj synchronizacją przeglądarki</translation>
 <translation id="8053278772142718589">Pliki PKCS #12</translation>
 <translation id="8053390638574070785">Załaduj ponownie tę stronę</translation>
@@ -8995,7 +8984,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8109109153262930486">Awatar domyślny</translation>
 <translation id="8110393529211831722">Subskrypcja jest instalowana tylko na tym urządzeniu i nie synchronizuje się z innymi urządzeniami na Twoim koncie. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Pobieram listę kontaktów…</translation>
-<translation id="8113476325385351118">Nadal nie zezwalaj tej stronie na pełną kontrolę nad urządzeniami MIDI</translation>
 <translation id="8115139559594092084">Z Twojego Dysku Google</translation>
 <translation id="8116972784401310538">&amp;Menedżer zakładek</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> pamięta Twoje dane logowania i automatycznie loguje Cię, gdy jest to możliwe. Jeśli ta funkcja jest wyłączona, przed każdym zalogowaniem się zobaczysz prośbę o potwierdzenie.</translation>
@@ -9391,7 +9379,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8425492902634685834">Przypnij na pasku zadań</translation>
 <translation id="8425768983279799676">Kodu PIN możesz używać do odblokowywania urządzenia.</translation>
 <translation id="8426111352542548860">Zapisz grupę</translation>
-<translation id="8426713856918551002">Włączam</translation>
 <translation id="8427213022735114808">Dyktowanie wysyła Twój głos do Google, by umożliwić pisanie głosowe w dowolnym polu tekstowym.</translation>
 <translation id="8427292751741042100">umieszczone na dowolnym hoście</translation>
 <translation id="8428213095426709021">Ustawienia</translation>
@@ -9600,7 +9587,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8608618451198398104">Dodawanie zgłoszenia Kerberos</translation>
 <translation id="8609465669617005112">W górę</translation>
 <translation id="8610103157987623234">Nieprawidłowy format – spróbuj ponownie</translation>
-<translation id="8611682088849615761">Nadal zezwalaj tej stronie na pełną kontrolę nad urządzeniami MIDI</translation>
 <translation id="8613164732773110792">Możesz użyć tylko małych liter, cyfr, podkreśleń i myślników</translation>
 <translation id="8613504115484579584">Metody logowania</translation>
 <translation id="8613645710357126807">Nie zezwolono na używanie rozszerzeń</translation>
@@ -9773,6 +9759,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8729133765463465108">Użyj aparatu, aby zeskanować kod QR</translation>
 <translation id="8730621377337864115">Gotowe</translation>
 <translation id="8731029916209785242">Uprawnienia (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731268612289859741">Kod bezpieczeństwa</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> prosi o uprawnienia: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Numer portu</translation>
 <translation id="8732030010853991079">Aby użyć tego rozszerzenia, kliknij jego ikonę.</translation>
@@ -10424,7 +10411,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="936646668635477464">Kamera i mikrofon</translation>
 <translation id="936801553271523408">Systemowe dane diagnostyczne</translation>
 <translation id="93766956588638423">Napraw rozszerzenie</translation>
-<translation id="938568644810664664">Zapytaj „OK Google, co to za piosenka?” lub „OK Google, co widać na moim ekranie?”</translation>
 <translation id="938623846785894166">Nietypowy plik</translation>
 <translation id="939401694733344652">Te konta nie są obecnie używane z aplikacjami na Androida. Jeśli wybierzesz konto do używania z tą aplikacją na Androida, będzie go też można używać z innymi aplikacjami tego typu. Dostęp do aplikacji na Androida możesz zmienić, klikając <ph name="LINK_BEGIN" />Ustawienia &gt; Konta<ph name="LINK_END" />.</translation>
 <translation id="939553663881639126">Określ, czy chcesz otrzymywać dodatkowe sugestie wyszukiwania</translation>

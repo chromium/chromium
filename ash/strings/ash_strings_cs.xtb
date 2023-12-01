@@ -66,7 +66,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1225748608451425081">Chromebook je zamknut kvůli známému problému. Budete se moci přihlásit po: <ph name="TIME_LEFT" />.</translation>
 <translation id="1226877728704622336">neaktivní plocha</translation>
 <translation id="1229194443904279055">Ukončit výběr</translation>
-<translation id="1233979878541157665">Zkuste místo názvu souboru vyhledat „západ slunce“ nebo „strom“. Vyhledávání obrázků můžete ve vyhledávacím poli vypnout.</translation>
 <translation id="1235458158152011030">Známé sítě</translation>
 <translation id="1239161794459865856">Funkce <ph name="FEATURE_NAME" /> je připojena.</translation>
 <translation id="1240638468526743569">Aplikace</translation>
@@ -1144,6 +1143,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="5620979661744857819">Tímto povolíte přístup aplikaci <ph name="APP_NAME" /> a všem aplikacím a webům, které mají oprávnění používat kameru a mikrofon. Možná budete muset obnovit webovou stránku nebo restartovat aplikaci.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Heslo se nepodařilo ověřit. Zkuste to znovu.</translation>
+<translation id="5632485077360054581">Ukázat postup</translation>
 <translation id="5648021990716966815">Konektor mikrofonu</translation>
 <translation id="5652575806481723716">Aplikace <ph name="FOCUSED_APP_NAME" /> vyžaduje vaši pozornost.</translation>
 <translation id="5662075790140998213">Plocha 10</translation>
@@ -1337,7 +1337,6 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="643593192654616063">Je využito <ph name="STORAGE_IN_USE_SIZE" /> z celkem <ph name="STORAGE_TOTAL_SIZE" /> úložiště</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> na přijímači <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">procesor</translation>
-<translation id="6446225358675593408">Najděte své obrázky podle obsahu</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> událost</translation>
 <translation id="6449483711453944360">Linuxové aplikace a anonymní okna v současné době nejsou podporovány</translation>
 <translation id="6450245544201845082">Zkratka ke kliknutí pravým tlačítkem je momentálně vypnutá</translation>
@@ -1520,6 +1519,7 @@ Nová instalace</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />, <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Původní rozlišení bude obnoveno za <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Otevřít nastavení</translation>
 <translation id="7180611975245234373">Obnovit</translation>
 <translation id="7188494361780961876">Nabídka byla přesunuta do levého horního rohu obrazovky.</translation>
 <translation id="7189412385142492784">Jak daleko je Venuše</translation>
@@ -1539,7 +1539,6 @@ Nová instalace</translation>
 <translation id="7312210124139670355">Administrátor resetuje vaši eSIM. Může to trvat několik minut.</translation>
 <translation id="7313193732017069507">Rozbalit fotoaparát</translation>
 <translation id="7316261577130609484">Přidat nový úkol</translation>
-<translation id="7321889295239318128">Další informace získáte stisknutím klávesy Shift a tabulátoru</translation>
 <translation id="7330397557116570022">Pokud chcete použít diktování, přejděte do textového pole</translation>
 <translation id="7331646370422660166">alt + šipka dolů</translation>
 <translation id="7340731148882810149">Nabídka automatických kliknutí</translation>

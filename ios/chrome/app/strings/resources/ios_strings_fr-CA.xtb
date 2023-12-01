@@ -13,7 +13,6 @@
 <translation id="1053651653201045802">Déconnecté. Reconnectez-vous pour utiliser les favoris, les mots de passe et plus dans votre compte.</translation>
 <translation id="1054045277222934172">Vous pouvez changer l'affichage du site par défaut pour le mode Bureau dans Paramètres, puis Paramètres de contenu</translation>
 <translation id="1054745118061919935">En continuant, vous acceptez les <ph name="BEGIN_LINK" />conditions d'utilisation<ph name="END_LINK" />.</translation>
-<translation id="1063454504051558093">Utiliser un autre mot de passe…</translation>
 <translation id="1066060668811609597">Gérer la synchronisation</translation>
 <translation id="1069154182096085577">Le mot de passe existe déjà</translation>
 <translation id="1076421457278169141">Code numérisé</translation>
@@ -315,7 +314,6 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2664621323652615289">Arrêter</translation>
 <translation id="2666092431469916601">Haut</translation>
 <translation id="2669454659051515572">Toute personne utilisant cet appareil peut voir les fichiers téléchargés</translation>
-<translation id="2671426118752779020">Vous pouvez utiliser les mots de passe que vous avez enregistrés dans le gestionnaire de mots de passe Google pour d'autres applications sur votre iPhone.</translation>
 <translation id="2690858294534178585">La caméra est en cours d'utilisation</translation>
 <translation id="2691653761409724435">Indisponible hors ligne</translation>
 <translation id="2695507686909505111">Page traduite</translation>
@@ -378,8 +376,6 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="2923448633003185837">Coller et rechercher</translation>
 <translation id="292639812446257861">Marquer comme non lu</translation>
 <translation id="2931440415625410757">Afficher les instructions</translation>
-<translation id="2932085390869194046">Suggérer un mot de passe…</translation>
-<translation id="2932765531295814441">Ajouter des mots de passe manuellement</translation>
 <translation id="2952246431280799028">Maintenez le doigt sur une adresse.</translation>
 <translation id="2952278131021475699">Recherche avec Lentille Google au moyen de l'appareil photo</translation>
 <translation id="2952581218264071393">1. Ouvrez les paramètres de Chrome</translation>
@@ -564,7 +560,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3922310737605261887">Rechercher le texte copié</translation>
 <translation id="3928666092801078803">Combiner mes données</translation>
 <translation id="3929457972718048006">Adresses</translation>
-<translation id="3943492037546055397">Mots de passe</translation>
 <translation id="3955822496205734389">Vous avez des mots de passe faibles.</translation>
 <translation id="3959736869653157332">Menu → Nouvel onglet de navigation privée</translation>
 <translation id="3967822245660637423">Téléchargement terminé</translation>
@@ -578,7 +573,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4021931095789478915">Ajouter ${url} à la Liste de lecture</translation>
 <translation id="4038354071007134711">Auc. app. sur cet appareil ne peut ouv. le fichier</translation>
 <translation id="4042870976416480368">Rechercher dans la page</translation>
-<translation id="40433179647657191">Créez et partagez un lien direct vers une partie d'une page que vous avez mise en surbrillance.</translation>
 <translation id="4045648459118332842">Utilisez vos mots de passe enregistrés dans n'importe quelle application en un seul clic</translation>
 <translation id="4049507953662678203">Assurez-vous d'avoir une connexion réseau et réessayez.</translation>
 <translation id="4066639687323968621">Connectez-vous avec votre compte Google pour synchroniser vos favoris, votre historique et bien plus encore.</translation>
@@ -679,7 +673,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4619615317237390068">Onglets ouverts sur d'autres appareils</translation>
 <translation id="4620246317052452550">Pages que vous avez lues</translation>
 <translation id="4620888520263267479">Afficher les aperçus des liens</translation>
-<translation id="4622477750832577849">Activer le suivi</translation>
 <translation id="4630540211544979320">Traduire les pages</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> mots de passe réutilisés</translation>
 <translation id="4634124774493850572">Utiliser le mot de passe</translation>
@@ -708,7 +701,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4766112107778026136">Découvrir et suivre</translation>
 <translation id="47677902929517676">Pour enregistrer des mots de passe dans votre compte, vous devez d'abord définir un mot de passe sur votre appareil.</translation>
 <translation id="4775879719735953715">Navigateur par défaut</translation>
-<translation id="4778644898150334464">Utiliser un autre mot de passe</translation>
 <translation id="4779732376610430319">Accéder aux paramètres…</translation>
 <translation id="478808905805139173">Ouvrir en mode de navigation privée?</translation>
 <translation id="4803185665210547709">Géré par votre organisation.
@@ -799,7 +791,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="519530786644929958">Le téléchargement a échoué et ne peut pas être réessayé.</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5211488077761630279">Autoriser « <ph name="SITE_NAME" /> » à utiliser votre <ph name="PERMISSION" />?</translation>
-<translation id="5215990399368742238">Suivi automatique de tous les colis détectés</translation>
 <translation id="5219295696240154694">Contribuer à l'amélioration de la sécurité sur le Web pour tous</translation>
 <translation id="5220945116117011963">Créer des événements d'agenda à partir de dates</translation>
 <translation id="5221339005270097309">Vérif. mots de passe…</translation>
@@ -822,7 +813,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5318298563956633672">Vous suivez déjà ce produit.</translation>
 <translation id="5329451663851195956">Vous pouvez tirer l'écran vers le bas pour actualiser la page.</translation>
 <translation id="5339316356165661760">Activer la synchronisation</translation>
-<translation id="5345598430982201510">Ne jamais détecter automatiquement les colis</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Suivre ce colis?}one{Suivre {COUNT} colis?}other{Suivre {COUNT} colis?}}</translation>
 <translation id="536067926684072644">Afficher les favoris</translation>
 <translation id="5360976571138293719">Pour accéder à d'autres paramètres liés à la confidentialité, à la sécurité et à la collecte de données, consultez la rubrique <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" /></translation>
@@ -848,7 +838,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5497202150450073388">Tentative de livraison effectuée. Nouvel essai à venir</translation>
 <translation id="5511959326926949696">Protection extrême facultative pour votre navigateur. Elle ne doit être utilisée que si vous soupçonnez être la cible d'une cyberattaque très sophistiquée.</translation>
 <translation id="5513681519188741830">il y a <ph name="TIME" /> h</translation>
-<translation id="5520466080178053306">Touchez Gestionnaire de mots de passe, puis Ajouter</translation>
 <translation id="5525095647255982834">Pour envoyer cet onglet vers un autre appareil, connectez-vous à Chrome sur ce dernier.</translation>
 <translation id="5525269841082836315">Créer phrase passe</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} mot de passe faible}one{{COUNT} mot de passe faible}other{{COUNT} mots de passe faibles}}</translation>
@@ -910,7 +899,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5817176759448082654">Vérification de mot de passe</translation>
 <translation id="5819208479324046259">Géré par <ph name="MANAGER" />. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="5827650163984030263">Masquer le gestionnaire de mots de passe</translation>
-<translation id="5833643789537100742">Enregistrez les mots de passe, les modes de paiement et les adresses pour que Chrome les remplisse automatiquement par la suite.</translation>
 <translation id="5834415013958049700">Image de Lentille que vous avez copiée</translation>
 <translation id="5844284118433003733">Lorsque vous êtes connecté, ces données sont associées à votre compte Google pour vous protéger dans l'ensemble des services Google. Elles permettent, par exemple, de renforcer la protection dans Gmail à la suite d'un incident de sécurité.</translation>
 <translation id="5846482154967366008">Moteur de recherche</translation>
@@ -932,7 +920,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5922999516621365983">Faites glisser l'onglet ici pour l'épingler.</translation>
 <translation id="5938160824633642847">Votre appareil est presque plein. Libérez de l'espace et réessayez.</translation>
 <translation id="5948291296578561264">Cela vous permet d'enregistrer vos photos dans votre bibliothèque de photos.</translation>
-<translation id="5951816930277761335">Partager le lien</translation>
 <translation id="5955891643922670672">Affichage de la version hors ligne</translation>
 <translation id="5957613098218939406">Autres options</translation>
 <translation id="595769230373966252">Rechercher avec <ph name="SEARCH_PROVIDER" /></translation>
@@ -1059,9 +1046,6 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 
 Vos données sont chiffrées avec votre phrase de passe. Saisissez-la pour utiliser et enregistrer les données Chrome dans votre compte Google.</translation>
 <translation id="6494931198667773526">Fin</translation>
-<translation id="6497772452874122664">Si vous faites confiance à <ph name="TIME" />, vous pouvez utiliser un mot de passe enregistré pour un autre site.
-
-Tâchez d'utiliser un mot de passe différent pour chaque site.</translation>
 <translation id="6497850081273517953">Chrome est obsolète; effectuez la mise à jour vers la version la plus récente pour rester en sécurité.</translation>
 <translation id="650279896687777322">En savoir plus…</translation>
 <translation id="6507973708545996744">Connectez-vous pour obtenir votre liste de lecture sur tous vos appareils.</translation>
@@ -1207,14 +1191,12 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7284359491594949826">{COUNT,plural, =1{Nouveau colis suivi}one{Nouveau colis suivi}other{Nouveaux colis suivis}}</translation>
 <translation id="7291368939935408496">Préparation des mots de passe en cours…</translation>
 <translation id="7302503784943202842">Utiliser des mots de passe sur tous vos appareils</translation>
-<translation id="730958329302570991">Ajoutez facilement et à tout moment des mots de passe de site au gestionnaire de mots de passe de Google.</translation>
 <translation id="7313347584264171202">Vous trouverez vos onglets de navigation privée ici</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> pour cent téléchargé(s)</translation>
 <translation id="7340958967809483333">Options pour Découvertes</translation>
 <translation id="7346909386216857016">OK, j'ai compris</translation>
 <translation id="734758817008927353">Options pour enregistrer la carte</translation>
 <translation id="7349129508108954623">Autorisez Chrome à utiliser Google Maps pour vous fournir des itinéraires et des informations locales sur les adresses détectées.</translation>
-<translation id="7351537303876921605">Toucher Créer un lien dans le menu contextuel</translation>
 <translation id="7352651011704765696">Une erreur s’est produite</translation>
 <translation id="7353432112255316844">Confirmer que c'est bien vous</translation>
 <translation id="7367530036083223701">Accédez en toute sécurité à vos mots de passe depuis l'écran d'accueil avec le widget gestionnaire de mots de passe.</translation>
@@ -1314,7 +1296,6 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="784551991304901159">Pour afficher du contenu, sélectionnez Activer dans le menu</translation>
 <translation id="7853202427316060426">Activité</translation>
 <translation id="7856733331829174190">Échec du téléchargement</translation>
-<translation id="785938070103630874">Ouvrir les mots de passe, les modes de paiement, l'adresse et plus</translation>
 <translation id="7859704718976024901">Historique de navigation</translation>
 <translation id="7866501058614003444">Ce colis n'est plus suivi.</translation>
 <translation id="7866993391592926595">Masquer cette carte désactivera le suivi des colis et retirera toutes vos données</translation>
@@ -1398,7 +1379,6 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="826614135184049678">Vous avez été déconnecté de votre compte <ph name="USER_NAME" /> lors de la réinitialisation de votre iPad. Pour vous reconnecter, touchez « Continuer » ci-dessous.</translation>
 <translation id="8271720166617117963">Accepter et se connecter</translation>
 <translation id="8273982424131314219">Vous remplirez les renseignements dans <ph name="URL" /></translation>
-<translation id="8278938988428169257">Saisir un mot ou une phrase</translation>
 <translation id="8281781826761538115">Paramètres régionaux par défaut - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Ignorer</translation>
 <translation id="8283172974887967105">Définir…</translation>
@@ -1406,7 +1386,6 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8299417921174340354">Pour utiliser les mots de passe, vous devez d'abord définir un mot de passe sur votre appareil.</translation>
 <translation id="8299613349954694191">Ouvrez un onglet de navigation privée pour naviguer sur le Web de manière incognito.</translation>
 <translation id="8311853334103696030">Masquer « Suivre le prix »</translation>
-<translation id="8316944564970119719">Saisir le site et le mot de passe, puis enregistrer</translation>
 <translation id="8319076807703933069">Nouvelle recherche</translation>
 <translation id="8328777765163860529">Tout fermer</translation>
 <translation id="8343993175958086504">Sauvegardez vos données et utilisez-les sur n'importe quel appareil</translation>
@@ -1497,7 +1476,6 @@ Vos données ont été chiffrées avec votre phrase de passe sur <ph name="TIME"
 <translation id="8780076847684176174">{count,plural, =1{Vérifier l'onglet…}one{Vérifier l'onglet…}other{Vérifier tous les onglets…}}</translation>
 <translation id="8787968206789828143">Recherchez sur le Web</translation>
 <translation id="8792626944327216835">Microphone</translation>
-<translation id="8793366654064127924">Toujours me demander</translation>
 <translation id="8803639129939845298">Sécuritaire</translation>
 <translation id="8806823403540278281">Votre organisation vous demande de naviguer en mode privé. Les onglets ne sont pas enregistrés en mode de navigation privée.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
@@ -1524,9 +1502,7 @@ Vos données ont été chiffrées avec votre phrase de passe sur <ph name="TIME"
 <translation id="890565330728586731">Retour</translation>
 <translation id="8909135823018751308">Partager...</translation>
 <translation id="8909459547399237818">Sélectionnez Gestionnaire de mots de passe, puis touchez Ajouter un widget</translation>
-<translation id="8911759861431145525">Toucher Ajouter, puis saisir vos renseignements</translation>
 <translation id="891282356902782456">Ce mot de passe est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google, <ph name="EMAIL" />.</translation>
-<translation id="891658175948553296">Mettre du texte en surbrillance sur un site</translation>
 <translation id="8917490105272468696">Oui, j'accepte</translation>
 <translation id="8928133177108699615">Bureau</translation>
 <translation id="894191600409472540">Créez des mots de passe forts</translation>

@@ -260,6 +260,7 @@
 <translation id="2872961005593481000">Завершити роботу</translation>
 <translation id="2873483161362553159">Навігація у веб-переглядачі</translation>
 <translation id="2874939134665556319">Попередня композиція</translation>
+<translation id="2875812231449496375">Щоб фоновий малюнок виглядав якнайкраще, увімкніть цю функцію. Ви завжди можете її вимкнути.</translation>
 <translation id="2878387241690264070">Акумулятор розрядився на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> с.</translation>
 <translation id="2880569433548999039">Заставка "Плин хмар"</translation>
 <translation id="2926057806159140518">Введіть ім’я користувача та пароль або зіскануйте QR-код</translation>
@@ -552,6 +553,7 @@
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5137451382116112100">На весь екран</translation>
 <translation id="5142961317498132443">Автентифікація</translation>
+<translation id="5145081769226915336">Вмикати темний режим автоматично?</translation>
 <translation id="5154917547274118687">Пам’ять</translation>
 <translation id="5160857336552977725">Увійдіть в обліковий запис на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="5166918508782100047">Налаштування швидких відповідей</translation>

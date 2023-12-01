@@ -66,7 +66,6 @@
 <translation id="1225748608451425081">உங்கள் Chromebook பூட்டப்பட்டது, இதற்கான காரணத்தை அறிவோம். <ph name="TIME_LEFT" /> கடந்ததும் உங்களால் உள்நுழைய முடியும்.</translation>
 <translation id="1226877728704622336">செயலில் இல்லாத டெஸ்க்</translation>
 <translation id="1229194443904279055">தேர்ந்தெடுப்பதை நிறுத்து</translation>
-<translation id="1233979878541157665">ஃபைல் பெயருக்குப் பதிலாக "சூரியன் மறைவு" அல்லது "மரம்" என்று தேடலாம். தேடல் பட்டியில் படத் தேடலை முடக்கலாம்.</translation>
 <translation id="1235458158152011030">தெரிந்த நெட்வொர்க்குகள்autof</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> இணைக்கப்பட்டது.</translation>
 <translation id="1240638468526743569">ஆப்ஸ்</translation>
@@ -1144,6 +1143,7 @@
 <translation id="5620979661744857819">இது <ph name="APP_NAME" /> ஆப்ஸுக்கும், கேமராவையும் மைக்ரோஃபோனையும் பயன்படுத்த அனுமதி உள்ள பிற ஆப்ஸ், இணையதளங்கள் ஆகியவற்றுக்கும் அணுகலை வழங்கும். இணையப் பக்கத்தை ரெஃப்ரெஷ் செய்ய வேண்டியிருக்கலாம் அல்லது ஆப்ஸை மீண்டும் தொடங்க வேண்டியிருக்கலாம்.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">உங்கள் கடவுச்சொல்லைச் சரிபார்க்க முடியவில்லை. மீண்டும் முயலவும்.</translation>
+<translation id="5632485077360054581">எப்படி எனக் காட்டு</translation>
 <translation id="5648021990716966815">மைக் ஜாக்</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> ஆப்ஸில் புதிய அறிவிப்புகள் உள்ளன.</translation>
 <translation id="5662075790140998213">டெஸ்க் 10</translation>
@@ -1337,7 +1337,6 @@
 <translation id="643593192654616063"><ph name="STORAGE_TOTAL_SIZE" /> மொத்த நினைவகத்தில் <ph name="STORAGE_IN_USE_SIZE" /> பயன்படுத்தப்பட்டுள்ளது</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" />க்கு <ph name="ROUTE_TITLE" />ஐ அனுப்புகிறது</translation>
 <translation id="6445915701151710649">CPU</translation>
-<translation id="6446225358675593408">உள்ளடக்கத்தின்படி படங்களைக் கண்டறிதல்</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> நிகழ்வு</translation>
 <translation id="6449483711453944360">Linux ஆப்ஸையும் மறைநிலைச் சாளரங்களையும் தற்போது பயன்படுத்த முடியாது</translation>
 <translation id="6450245544201845082">வலது கிளிக் ஷார்ட்கட் தற்போது முடக்கப்பட்டுள்ளது</translation>
@@ -1521,6 +1520,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> வினாடிகளில் பழைய தெளிவுதிறனுக்கு மாற்றியமைக்கப்படும்</translation>
+<translation id="7173114856073700355">ஒத்திசைவு அமைப்புகளைப் பார்க்கவும்</translation>
 <translation id="7180611975245234373">புதுப்பி</translation>
 <translation id="7188494361780961876">திரையின் மேல் இடது மூலைக்கு மெனு நகர்த்தப்பட்டது.</translation>
 <translation id="7189412385142492784">வெள்ளி கிரகம் எவ்வளவு தொலைவில் உள்ளது?</translation>
@@ -1540,7 +1540,6 @@
 <translation id="7312210124139670355">நிர்வாகி உங்கள் eSIMமை மீட்டமைக்கிறார். இதற்குச் சில நிமிடங்கள் ஆகலாம்.</translation>
 <translation id="7313193732017069507">கேமராவை விரிவாக்கும்</translation>
 <translation id="7316261577130609484">புதிய பணியைச் சேர்</translation>
-<translation id="7321889295239318128">மேலும் தெரிந்துகொள்ள shift மற்றும் Tab அழுத்தவும்</translation>
 <translation id="7330397557116570022">சொல்வதை எழுதும் வசதியைப் பயன்படுத்த வார்த்தைப் புலத்திற்குச் செல்லவும்</translation>
 <translation id="7331646370422660166">Alt + கீழ்நோக்கிய அம்புக்குறி</translation>
 <translation id="7340731148882810149">தானியங்குக் கிளிக்குகள் மெனு</translation>

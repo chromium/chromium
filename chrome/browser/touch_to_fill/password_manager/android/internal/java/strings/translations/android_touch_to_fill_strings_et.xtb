@@ -21,5 +21,7 @@
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Uus parool selle saidi jaoks}other{Uued paroolid selle saidi jaoks}}</translation>
 <translation id="7286867818472074330">Pääsuvõtme valimine</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" />/<ph name="ITEMS_TOTAL" />.</translation>
+<translation id="7738288782501322815">Olete saanud saidi <ph name="SITE_NAME" /> paroolid</translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> jagas teiega veebisaidi <ph name="SITE_NAME" /> parooli</translation>
 <translation id="8891372124884726271">Mandaatide loend on suletud.</translation>
 </translationbundle>

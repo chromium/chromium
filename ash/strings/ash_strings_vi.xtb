@@ -66,7 +66,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1225748608451425081">Chromebook của bạn đã bị khóa do một vấn đề đã biết. Bạn có thể đăng nhập sau: <ph name="TIME_LEFT" />.</translation>
 <translation id="1226877728704622336">không gian làm việc không hoạt động</translation>
 <translation id="1229194443904279055">Dừng chọn</translation>
-<translation id="1233979878541157665">Hãy thử tìm "hoàng hôn" hoặc "cây cối" thay vì tên tệp. Bạn có thể tắt tính năng tìm kiếm hình ảnh trong thanh tìm kiếm.</translation>
 <translation id="1235458158152011030">Mạng đã biết</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> đã kết nối.</translation>
 <translation id="1240638468526743569">Một ứng dụng</translation>
@@ -1144,6 +1143,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="5620979661744857819">Nếu bạn bật, <ph name="APP_NAME" /> và tất cả ứng dụng cũng như trang web có quyền truy cập máy ảnh và micrô sẽ có thể sử dụng máy ảnh và micrô. Bạn có thể cần làm mới trang web hoặc khởi động lại ứng dụng.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Chưa xác minh được mật khẩu của bạn. Hãy thử lại.</translation>
+<translation id="5632485077360054581">Chỉ cho tôi cách làm</translation>
 <translation id="5648021990716966815">Giắc cắm micrô</translation>
 <translation id="5652575806481723716">Có thông báo từ <ph name="FOCUSED_APP_NAME" />.</translation>
 <translation id="5662075790140998213">Không gian làm việc 10</translation>
@@ -1337,7 +1337,6 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="643593192654616063">Đã sử dụng <ph name="STORAGE_IN_USE_SIZE" /> trong tổng số <ph name="STORAGE_TOTAL_SIZE" /> bộ nhớ</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> trên <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
-<translation id="6446225358675593408">Tìm hình ảnh theo nội dung</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> sự kiện</translation>
 <translation id="6449483711453944360">Hiện không hỗ trợ ứng dụng Linux và cửa sổ ẩn danh</translation>
 <translation id="6450245544201845082">Phím tắt cho thao tác nhấp chuột phải hiện đang tắt</translation>
@@ -1521,6 +1520,7 @@ Mới cài đặt</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Sẽ hoàn nguyên về độ phân giải cũ sau <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Mở phần Cài đặt</translation>
 <translation id="7180611975245234373">Làm mới</translation>
 <translation id="7188494361780961876">Đã di chuyển trình đơn vào góc trên cùng bên trái màn hình.</translation>
 <translation id="7189412385142492784">Sao Kim cách đây bao xa</translation>
@@ -1540,7 +1540,6 @@ Mới cài đặt</translation>
 <translation id="7312210124139670355">Quản trị viên đang đặt lại eSIM của bạn. Quá trình này có thể mất vài phút.</translation>
 <translation id="7313193732017069507">Mở rộng máy ảnh</translation>
 <translation id="7316261577130609484">Thêm việc mới cần làm</translation>
-<translation id="7321889295239318128">Nhấn tổ hợp phím Shift + Tab để tìm hiểu thêm</translation>
 <translation id="7330397557116570022">Vào một trường văn bản để dùng tính năng Nhập bằng giọng nói</translation>
 <translation id="7331646370422660166">alt + mũi tên xuống</translation>
 <translation id="7340731148882810149">Trình đơn nhấp tự động</translation>

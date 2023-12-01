@@ -13,7 +13,6 @@
 <translation id="1053651653201045802">已退出账号。重新登录即可使用账号中的书签、密码等信息。</translation>
 <translation id="1054045277222934172">您可在“设置”&gt;“内容设置”中将默认网站视图改为桌面版视图</translation>
 <translation id="1054745118061919935">继续操作即表示您同意遵守<ph name="BEGIN_LINK" />服务条款<ph name="END_LINK" />。</translation>
-<translation id="1063454504051558093">使用其他密码…</translation>
 <translation id="1066060668811609597">管理同步数据</translation>
 <translation id="1069154182096085577">密码已存在</translation>
 <translation id="1076421457278169141">已扫描代码</translation>
@@ -207,6 +206,7 @@
 <translation id="2050196510205866090">{count,plural, =1{键盘上方显示了 {count} 种已保存的付款方式。}other{键盘上方显示了 {count} 种已保存的付款方式。}}</translation>
 <translation id="2055515971416882518">打开“设置”。</translation>
 <translation id="2059166748188874810">自治市</translation>
+<translation id="2062410130322589403">隐私控制选项指南</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> 天前曾有活动</translation>
 <translation id="2074131957428911366">您始终可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中选择要同步的内容。</translation>
 <translation id="2079545284768500474">撤消</translation>
@@ -313,7 +313,6 @@
 <translation id="2664621323652615289">停止</translation>
 <translation id="2666092431469916601">顶部</translation>
 <translation id="2669454659051515572">任何使用此设备的用户都能看到已下载的文件</translation>
-<translation id="2671426118752779020">您可在 iPhone 上的其他应用内使用已保存至 Google 密码管理器的密码。</translation>
 <translation id="2690858294534178585">相机正在使用中</translation>
 <translation id="2691653761409724435">无法离线查看</translation>
 <translation id="2695507686909505111">网页翻译完毕</translation>
@@ -376,8 +375,6 @@
 <translation id="2923448633003185837">粘贴并转到</translation>
 <translation id="292639812446257861">标记为未读</translation>
 <translation id="2931440415625410757">显示说明</translation>
-<translation id="2932085390869194046">建议密码…</translation>
-<translation id="2932765531295814441">手动添加密码</translation>
 <translation id="2952246431280799028">轻触并按住相应地址。</translation>
 <translation id="2952278131021475699">智能镜头拍照搜索</translation>
 <translation id="2952581218264071393">1. 打开 Chrome 设置</translation>
@@ -562,7 +559,6 @@
 <translation id="3922310737605261887">搜索复制的文字</translation>
 <translation id="3928666092801078803">合并我的数据</translation>
 <translation id="3929457972718048006">地址</translation>
-<translation id="3943492037546055397">密码</translation>
 <translation id="3955822496205734389">您有安全系数低的密码。</translation>
 <translation id="3959736869653157332">菜单 → 打开新的无痕式标签页</translation>
 <translation id="3967822245660637423">下载完毕</translation>
@@ -576,7 +572,6 @@
 <translation id="4021931095789478915">将 ${url} 添加到阅读清单</translation>
 <translation id="4038354071007134711">此设备上没有可以打开该文件的应用。</translation>
 <translation id="4042870976416480368">在网页中查找</translation>
-<translation id="40433179647657191">为您突出显示的部分网页内容创建直接链接并分享。</translation>
 <translation id="4045648459118332842">在任意应用中点按一下即可获取您已保存的密码</translation>
 <translation id="4049507953662678203">请确保已连接到网络，然后重试。</translation>
 <translation id="4066639687323968621">只需使用您的 Google 账号登录，即可同步您的书签、历史记录等信息。</translation>
@@ -677,7 +672,6 @@
 <translation id="4619615317237390068">从其他设备打开的标签页</translation>
 <translation id="4620246317052452550">您浏览过的网页</translation>
 <translation id="4620888520263267479">显示链接预览</translation>
-<translation id="4622477750832577849">启用跟踪功能</translation>
 <translation id="4630540211544979320">翻译网页</translation>
 <translation id="4631335160486397366">有 <ph name="COUNT" /> 个重复使用的密码</translation>
 <translation id="4634124774493850572">使用密码</translation>
@@ -706,7 +700,6 @@
 <translation id="4766112107778026136">探索与关注</translation>
 <translation id="47677902929517676">若要将密码保存到您的账号，您必须先在设备上设置屏幕解锁密码。</translation>
 <translation id="4775879719735953715">默认浏览器</translation>
-<translation id="4778644898150334464">使用其他密码</translation>
 <translation id="4779732376610430319">前往“设置”…</translation>
 <translation id="478808905805139173">在无痕模式下打开？</translation>
 <translation id="4803185665210547709">由贵单位管理。
@@ -797,7 +790,6 @@
 <translation id="519530786644929958">下载失败，无法重试。</translation>
 <translation id="5197255632782567636">互联网</translation>
 <translation id="5211488077761630279">允许“<ph name="SITE_NAME" />”使用您的<ph name="PERMISSION" />？</translation>
-<translation id="5215990399368742238">自动跟踪检测到的所有包裹</translation>
 <translation id="5219295696240154694">帮助我们为所有人改善网络安全环境</translation>
 <translation id="5220945116117011963">根据日期创建日历活动</translation>
 <translation id="5221339005270097309">正在检查密码…</translation>
@@ -820,7 +812,6 @@
 <translation id="5318298563956633672">您已在跟踪此产品。</translation>
 <translation id="5329451663851195956">下拉即可刷新。</translation>
 <translation id="5339316356165661760">开启同步功能</translation>
-<translation id="5345598430982201510">一律不自动检测包裹</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{要跟踪此包裹吗？}other{要跟踪这 {COUNT} 个包裹吗？}}</translation>
 <translation id="536067926684072644">显示书签</translation>
 <translation id="5360976571138293719">如需了解更多与隐私、安全和数据收集相关的设置，请前往 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />部分。</translation>
@@ -846,7 +837,6 @@
 <translation id="5497202150450073388">递送尝试失败。将重试</translation>
 <translation id="5511959326926949696">可选的浏览器极端保护措施。除非您认为自己可能会受到高度复杂的网络攻击，否则不应使用此选项。</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> 小时前</translation>
-<translation id="5520466080178053306">点按“密码管理工具”，然后点按“添加”</translation>
 <translation id="5525095647255982834">若要将此标签页发送到另一设备，请在该设备上登录 Chrome。</translation>
 <translation id="5525269841082836315">创建密码</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{有 {COUNT} 个安全系数低的密码}other{有 {COUNT} 个安全系数低的密码}}</translation>
@@ -908,7 +898,6 @@
 <translation id="5817176759448082654">密码安全检查</translation>
 <translation id="5819208479324046259">由 <ph name="MANAGER" /> 管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="5827650163984030263">隐藏“密码管理工具”</translation>
-<translation id="5833643789537100742">保存密码、付款方式和地址，以便 Chrome 日后自动填充。</translation>
 <translation id="5834415013958049700">使用智能镜头搜索您复制的图片</translation>
 <translation id="5844284118433003733">当您登录后，这些数据将与您的 Google 账号关联，以便在各种 Google 服务中保护您，例如：于安全事件发生后在 Gmail 中加强对您的保护力度。</translation>
 <translation id="5846482154967366008">搜索引擎</translation>
@@ -930,7 +919,6 @@
 <translation id="5922999516621365983">将标签页拖到此处即可固定。</translation>
 <translation id="5938160824633642847">您设备上的存储空间即将用尽，请释放空间并重试。</translation>
 <translation id="5948291296578561264">这样，您便可将照片保存到您的照片库中。</translation>
-<translation id="5951816930277761335">分享链接</translation>
 <translation id="5955891643922670672">正在查看离线版本</translation>
 <translation id="5957613098218939406">更多选项</translation>
 <translation id="595769230373966252">使用 <ph name="SEARCH_PROVIDER" /> 进行搜索</translation>
@@ -1055,9 +1043,6 @@
 <translation id="6482629121755362506">删除了<ph name="NUMBER_OF_SELECTED_BOOKMARKS" />项</translation>
 <translation id="6484712497741564393">目前登录的账号是 <ph name="EMAIL" />。您的数据已使用您的口令加密。请输入该口令，以便将 Chrome 数据保存在您的 Google 账号中并使用这些数据。</translation>
 <translation id="6494931198667773526">结束日期</translation>
-<translation id="6497772452874122664">如果您信任 <ph name="TIME" />，则可使用您为另一网站保存的密码。
-
-请尽量为每个网站使用独一无二的密码。</translation>
 <translation id="6497850081273517953">Chrome 版本过旧，请更新到最新版本以确保安全。</translation>
 <translation id="650279896687777322">了解详情…</translation>
 <translation id="6507973708545996744">登录后即可将您的阅读清单同步到您的所有设备上。</translation>
@@ -1203,14 +1188,12 @@
 <translation id="7284359491594949826">{COUNT,plural, =1{已跟踪新包裹}other{已跟踪新包裹}}</translation>
 <translation id="7291368939935408496">正在准备密码…</translation>
 <translation id="7302503784943202842">在您的所有设备上使用密码</translation>
-<translation id="730958329302570991">随时都可轻松将登录网站时所用的密码添加到 Google 密码管理工具中。</translation>
 <translation id="7313347584264171202">您已打开的无痕模式标签页会显示在此处</translation>
 <translation id="7336264872878993241">已下载<ph name="PERCENT" />%</translation>
 <translation id="7340958967809483333">“探索”功能的选项</translation>
 <translation id="7346909386216857016">知道了</translation>
 <translation id="734758817008927353">卡片信息保存选项</translation>
 <translation id="7349129508108954623">允许 Chrome 使用 Google 地图针对检测到的地址为您提供路线和当地信息。</translation>
-<translation id="7351537303876921605">点按上下文菜单中的“创建链接”</translation>
 <translation id="7352651011704765696">出了点问题</translation>
 <translation id="7353432112255316844">请验证是您本人在操作</translation>
 <translation id="7367530036083223701">使用“密码管理工具”小组件从主屏幕安全地获取您的密码。</translation>
@@ -1310,7 +1293,6 @@
 <translation id="784551991304901159">如需查看内容，请从菜单中选择“开启”</translation>
 <translation id="7853202427316060426">活动</translation>
 <translation id="7856733331829174190">无法下载</translation>
-<translation id="785938070103630874">打开“密码”“付款方式”或“地址”等</translation>
 <translation id="7859704718976024901">浏览记录</translation>
 <translation id="7866501058614003444">已成功取消跟踪此包裹。</translation>
 <translation id="7866993391592926595">隐藏此卡片会关闭包裹跟踪功能，并移除您的所有数据</translation>
@@ -1394,7 +1376,6 @@
 <translation id="826614135184049678">您在 iPad 重置过程中退出了账号 <ph name="USER_NAME" />。如需重新登录，请点按下方的“继续”。</translation>
 <translation id="8271720166617117963">接受并登录</translation>
 <translation id="8273982424131314219">您的信息将会自动填充到 <ph name="URL" /> 中</translation>
-<translation id="8278938988428169257">输入字词或词组</translation>
 <translation id="8281781826761538115">默认语言区域 - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">跳过</translation>
 <translation id="8283172974887967105">设置…</translation>
@@ -1402,7 +1383,6 @@
 <translation id="8299417921174340354">您必须先在设备上设置密码，才能使用密码。</translation>
 <translation id="8299613349954694191">打开一个无痕式标签页即可私密地浏览网页。</translation>
 <translation id="8311853334103696030">隐藏“跟踪价格”</translation>
-<translation id="8316944564970119719">输入网站和密码，然后保存</translation>
 <translation id="8319076807703933069">新搜索</translation>
 <translation id="8328777765163860529">全部关闭</translation>
 <translation id="8343993175958086504">备份您的资料，以便在任意设备上使用。</translation>
@@ -1491,7 +1471,6 @@
 <translation id="8780076847684176174">{count,plural, =1{查看标签页…}other{查看所有标签页…}}</translation>
 <translation id="8787968206789828143">在网络上搜索</translation>
 <translation id="8792626944327216835">麦克风</translation>
-<translation id="8793366654064127924">每次都向我询问</translation>
 <translation id="8803639129939845298">安全</translation>
 <translation id="8806823403540278281">贵单位要求您进行无痕浏览。在无痕模式下，系统不会保存标签页。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -1518,9 +1497,7 @@
 <translation id="890565330728586731">返回</translation>
 <translation id="8909135823018751308">分享…</translation>
 <translation id="8909459547399237818">选择“密码管理工具”，然后点按“添加小组件”</translation>
-<translation id="8911759861431145525">点按“添加”，然后输入您的信息</translation>
 <translation id="891282356902782456">这个密码仅会保存到此设备上。如果想在您的其他设备上使用它，请将它保存到您的 Google 账号 <ph name="EMAIL" /> 中。</translation>
-<translation id="891658175948553296">在网站上突出显示文字</translation>
 <translation id="8917490105272468696">我同意</translation>
 <translation id="8928133177108699615">桌面版</translation>
 <translation id="894191600409472540">创建安全系数高的密码</translation>

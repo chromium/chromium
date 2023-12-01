@@ -21,5 +21,7 @@
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{ଏହି ସାଇଟ ପାଇଁ ନୂଆ ପାସୱାର୍ଡ}other{ଏହି ସାଇଟ ପାଇଁ ନୂଆ ପାସୱାର୍ଡଗୁଡ଼ିକ}}</translation>
 <translation id="7286867818472074330">ପାସକୀ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEMS_TOTAL" />ରୁ <ph name="ITEM_POSITION" /> ନମ୍ବର।</translation>
+<translation id="7738288782501322815">ଆପଣ <ph name="SITE_NAME" /> ପାଇଁ ପାସୱାର୍ଡଗୁଡ଼ିକ ପାଇଛନ୍ତି</translation>
+<translation id="8614995815226664591"><ph name="SITE_NAME" /> ପାଇଁ <ph name="SENDER_NAME" /> ଆପଣଙ୍କ ସହ ଏକ ପାସୱାର୍ଡ ସେୟାର କରିଛନ୍ତି</translation>
 <translation id="8891372124884726271">କ୍ରେଡେନସିଆଲଗୁଡ଼ିକର ତାଲିକା ବନ୍ଦ ଅଛି।</translation>
 </translationbundle>

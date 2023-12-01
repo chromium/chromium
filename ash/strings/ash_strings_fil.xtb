@@ -66,7 +66,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1225748608451425081">Na-lock ang iyong Chromebook dahil sa hindi alam na isyu. Makakapag-sign in ka pagkalipas ng: <ph name="TIME_LEFT" />.</translation>
 <translation id="1226877728704622336">hindi aktibong desk</translation>
 <translation id="1229194443904279055">Ihinto ang pagpili</translation>
-<translation id="1233979878541157665">Subukang hanapin ang "paglubog ng araw" o "puno" sa halip na pangalan ng file. Puwede mong i-off ang paghahanap ng larawan sa search bar.</translation>
 <translation id="1235458158152011030">Mga kilalang network</translation>
 <translation id="1239161794459865856">Nakakonekta ang <ph name="FEATURE_NAME" />.</translation>
 <translation id="1240638468526743569">Isang app</translation>
@@ -1144,6 +1143,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="5620979661744857819">Pinapayagan nito ang access para sa <ph name="APP_NAME" /> at lahat ng app at website na may mga pahintulot sa camera at mikropono. Posibleng kailanganin mong i-refresh ang web page o i-restart ang app.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Hindi ma-verify ang iyong password. Subukan ulit.</translation>
+<translation id="5632485077360054581">Ipakita sa akin kung paano</translation>
 <translation id="5648021990716966815">Jack ng mikropono</translation>
 <translation id="5652575806481723716">Hinihiling ng <ph name="FOCUSED_APP_NAME" /> ang iyong atensyon.</translation>
 <translation id="5662075790140998213">Desk 10</translation>
@@ -1337,7 +1337,6 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="643593192654616063">Ginagamit ang <ph name="STORAGE_IN_USE_SIZE" /> na storage sa kabuuang <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> sa <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
-<translation id="6446225358675593408">Hanapin ang iyong mga larawan ayon sa content</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> event</translation>
 <translation id="6449483711453944360">Kasalukuyang hindi sinusuportahan ang mga Linux app at Incognito window</translation>
 <translation id="6450245544201845082">Kasalukuyang naka-off ang shortcut para sa pag-right click</translation>
@@ -1520,6 +1519,7 @@ Kaka-install lang</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />, <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Magre-revert sa lumang resolution sa loob ng <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Buksan ang Mga Setting</translation>
 <translation id="7180611975245234373">I-refresh</translation>
 <translation id="7188494361780961876">Inilipat ang menu sa kaliwang sulok sa itaas ng screen.</translation>
 <translation id="7189412385142492784">Gaano kalayo ang Venus</translation>
@@ -1539,7 +1539,6 @@ Kaka-install lang</translation>
 <translation id="7312210124139670355">Nire-reset ng iyong administrator ang eSIM mo. Puwede itong tumagal nang ilang minuto.</translation>
 <translation id="7313193732017069507">Palawakin ang camera</translation>
 <translation id="7316261577130609484">Magdagdag ng bagong gawain</translation>
-<translation id="7321889295239318128">Pindutin ang shift plus tab para matuto pa</translation>
 <translation id="7330397557116570022">Pumunta sa isang field ng text para magamit ang Dictation</translation>
 <translation id="7331646370422660166">alt + pababang arrow</translation>
 <translation id="7340731148882810149">Menu ng mga awtomatikong pag-click</translation>

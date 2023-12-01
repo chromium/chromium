@@ -66,7 +66,6 @@
 <translation id="1225748608451425081">알려진 문제로 인해 Chromebook이 잠겼습니다. <ph name="TIME_LEFT" /> 후에 다시 로그인할 수 있습니다.</translation>
 <translation id="1226877728704622336">비활성 데스크</translation>
 <translation id="1229194443904279055">선택 중지</translation>
-<translation id="1233979878541157665">파일 이름 대신 '일몰' 또는 '나무'를 검색해 보세요. 검색창에서 이미지 검색을 사용 중지할 수 있습니다.</translation>
 <translation id="1235458158152011030">알려진 네트워크</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" />이 연결되었습니다.</translation>
 <translation id="1240638468526743569">앱</translation>
@@ -1144,6 +1143,7 @@
 <translation id="5620979661744857819">카메라 및 마이크 액세스 권한이 있는 <ph name="APP_NAME" /> 등 모든 앱과 웹사이트에서 액세스할 수 있게 됩니다. 웹페이지를 새로고침하거나 앱을 다시 시작해야 할 수도 있습니다.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">비밀번호를 확인할 수 없습니다. 다시 시도하세요.</translation>
+<translation id="5632485077360054581">방법 보기</translation>
 <translation id="5648021990716966815">마이크 잭</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> 알림이 있습니다.</translation>
 <translation id="5662075790140998213">데스크 10</translation>
@@ -1337,7 +1337,6 @@
 <translation id="643593192654616063">총 <ph name="STORAGE_TOTAL_SIZE" /> 저장용량 중 <ph name="STORAGE_IN_USE_SIZE" /> 사용 중</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" />에 <ph name="ROUTE_TITLE" /> 전송 중</translation>
 <translation id="6445915701151710649">CPU</translation>
-<translation id="6446225358675593408">콘텐츠로 이미지 찾기</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, 일정 <ph name="NUMBER" />개</translation>
 <translation id="6449483711453944360">Linux 앱 및 시크릿 창은 현재 지원되지 않습니다.</translation>
 <translation id="6450245544201845082">현재 마우스 오른쪽 버튼 클릭 단축키가 사용 중지되어 있습니다.</translation>
@@ -1521,6 +1520,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" />초 후 기존 해상도로 돌아갑니다.</translation>
+<translation id="7173114856073700355">설정 열기</translation>
 <translation id="7180611975245234373">새로고침</translation>
 <translation id="7188494361780961876">메뉴가 화면 왼쪽 상단으로 이동했습니다.</translation>
 <translation id="7189412385142492784">금성까지의 거리</translation>
@@ -1540,7 +1540,6 @@
 <translation id="7312210124139670355">관리자가 eSIM을 재설정하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
 <translation id="7313193732017069507">카메라 펼치기</translation>
 <translation id="7316261577130609484">새 할 일 추가</translation>
-<translation id="7321889295239318128">자세히 알아보려면 Shift + Tab 키를 누르세요.</translation>
 <translation id="7330397557116570022">음성기록을 사용하려면 텍스트 필드로 이동하세요.</translation>
 <translation id="7331646370422660166">Alt + 아래쪽 화살표</translation>
 <translation id="7340731148882810149">자동 클릭 메뉴</translation>

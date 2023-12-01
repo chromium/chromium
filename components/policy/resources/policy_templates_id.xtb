@@ -2456,7 +2456,6 @@ perilaku tombol fungsi, dan setelan ini tidak akan dapat diubah oleh pengguna.</
           Jika kebijakan ini ditetapkan, pengguna tidak dapat mengubah atau menggantinya.
 
           Jika kebijakan ini tidak ditetapkan, kursor besar mula-mula akan dinonaktifkan di layar login, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
-<translation id="3027837632741099453">Mode Penghemat Baterai akan diaktifkan saat perangkat menggunakan daya baterai.</translation>
 <translation id="3030000825273123558">Aktifkan pelaporan metrik</translation>
 <translation id="30300807616984726">Melaporkan data inventaris aplikasi untuk pengguna terafiliasi.
 
@@ -4530,13 +4529,6 @@ Untuk perangkat yang tidak dikelola, pengguna dapat membuat keputusan untuk meng
 
       Saat kebijakan ini tidak ditetapkan, atau diaktifkan, pemeriksaan intersepsi DNS akan dilakukan. Pemeriksaan tidak dilakukan ketika kebijakan dinonaktifkan secara eksplisit.</translation>
 <translation id="4700190441681139987">Jangan izinkan situs apa pun mengakses sensor</translation>
-<translation id="4701899474784891858">Kebijakan ini mengaktifkan atau menonaktifkan setelan Mode Penghemat Baterai. Setelan ini membuat kecepatan frame di-throttle agar mengurangi konsumsi daya.
-      Jika kebijakan ini tidak disetel, pengguna akhir dapat mengontrol setelan ini di chrome://settings/performance.
-      Level yang berbeda adalah:
-      <ph name="BATTERY_SAVER_MODE_DISABLED" /> (0): Mode Penghemat Baterai akan dinonaktifkan.
-      <ph name="BATTERY_SAVER_MODE_ENABLED_BELOW_THRESHOLD" /> (1): Mode Penghemat Baterai akan diaktifkan saat perangkat menggunakan daya baterai dan level baterai rendah.
-      <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2): Mode Penghemat Baterai akan diaktifkan saat perangkat menggunakan daya baterai.
-      </translation>
 <translation id="4703402283970867140">Aktifkan model redup smart untuk memperpanjang waktu hingga layar diredupkan</translation>
 <translation id="4704958130749494760">Otomatis memberikan izin ke situs untuk terhubung ke perangkat serial USB.</translation>
 <translation id="4705329890928008808">Jika kebijakan disetel ke CopyCaCerts, semua sertifikat CA yang diinstal ONC dengan <ph name="WEB_TRUSTED_BIT" /> akan tersedia untuk aplikasi ARC.

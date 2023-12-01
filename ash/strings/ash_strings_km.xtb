@@ -66,7 +66,6 @@
 <translation id="1225748608451425081">Chromebook របស់អ្នក​ជាប់សោ ដោយសារបញ្ហាដែលស្គាល់។ អ្នកនឹងអាចចូលគណនី បន្ទាប់ពីរយៈពេល៖ <ph name="TIME_LEFT" /> ទៀត។</translation>
 <translation id="1226877728704622336">តុអសកម្ម</translation>
 <translation id="1229194443904279055">ឈប់​ជ្រើសរើស</translation>
-<translation id="1233979878541157665">សាកល្បងស្វែងរក "ថ្ងៃលិច" ឬ "ដើមឈើ" ជំនួសឱ្យឈ្មោះឯកសារ។ អ្នកអាចបិទការស្វែងរករូបភាពនៅក្នុងរបារស្វែងរក។</translation>
 <translation id="1235458158152011030">បណ្តាញដែលស្គាល់</translation>
 <translation id="1239161794459865856">បានភ្ជាប់ <ph name="FEATURE_NAME" />។</translation>
 <translation id="1240638468526743569">កម្មវិធី​មួយ</translation>
@@ -1144,6 +1143,7 @@
 <translation id="5620979661744857819">ការធ្វើបែបនេះ​ផ្ដល់​សិទ្ធិចូលប្រើ​ដល់ <ph name="APP_NAME" /> ព្រមទាំង​គ្រប់​កម្មវិធី និង​គេហទំព័រ​ដែលមាន​ការអនុញ្ញាត​ឱ្យចូលប្រើ​កាមេរ៉ា និង​មីក្រូហ្វូន។ អ្នកអាចនឹង​ត្រូវផ្ទុក​ទំព័របណ្ដាញ​ឡើងវិញ ឬ​ចាប់ផ្ដើម​កម្មវិធីនេះ​ឡើងវិញ។</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">មិនអាចផ្ទៀងផ្ទាត់ពាក្យសម្ងាត់របស់អ្នកបានទេ។ សូមព្យាយាមម្ដងទៀត។</translation>
+<translation id="5632485077360054581">បង្ហាញខ្ញុំ​អំពី​របៀប</translation>
 <translation id="5648021990716966815">ឌុយ​មីក្រូហ្វូន</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> ស្នើឱ្យអ្នកយកចិត្តទុកដាក់។</translation>
 <translation id="5662075790140998213">តុទី 10</translation>
@@ -1337,7 +1337,6 @@
 <translation id="643593192654616063">កំពុង​ប្រើប្រាស់​ទំហំផ្ទុក <ph name="STORAGE_IN_USE_SIZE" /> នៃទំហំផ្ទុក​សរុប <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> នៅលើ <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
-<translation id="6446225358675593408">ស្វែងរករូបភាពរបស់អ្នកតាមខ្លឹមសារ</translation>
 <translation id="6447111710783417522">ថ្ងៃទី <ph name="DATE" />, ព្រឹត្តិការណ៍ <ph name="NUMBER" /></translation>
 <translation id="6449483711453944360">បច្ចុប្បន្ន មិនអាចប្រើ​ផ្ទាំងឯកជន និងកម្មវិធី Linux បានទេ</translation>
 <translation id="6450245544201845082">បច្ចុប្បន្ន ផ្លូវ​កាត់សម្រាប់ចុចកណ្ដុរខាងស្ដាំត្រូវបានបិទ</translation>
@@ -1520,6 +1519,7 @@
 <translation id="7165278925115064263">Alt+ប្ដូរ (Shift)+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />, <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">កំពុងត្រលប់ទៅកម្រិតច្បាស់ចាស់នៅក្នុង <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">បើកការកំណត់</translation>
 <translation id="7180611975245234373">ធ្វើឲ្យថ្មីឡើងវិញ…</translation>
 <translation id="7188494361780961876">ម៉ឺនុយ​ត្រូវបានផ្លាស់ទី​ទៅ​ជ្រុងខាងលើ​ផ្នែកខាងឆ្វេង​នៃអេក្រង់​។</translation>
 <translation id="7189412385142492784">តើភពសុក្រនៅ​ឆ្ងាយ​ប៉ុណ្ណា</translation>
@@ -1539,7 +1539,6 @@
 <translation id="7312210124139670355">អ្នកគ្រប់គ្រងរបស់អ្នកកំពុងកំណត់ eSIM របស់អ្នកឡើងវិញ។ ការកំណត់ឡើងវិញនេះ​អាចចំណាយមួយភ្លែត។</translation>
 <translation id="7313193732017069507">ពង្រីកកាមេរ៉ា</translation>
 <translation id="7316261577130609484">បញ្ចូល​កិច្ចការ​ថ្មី</translation>
-<translation id="7321889295239318128">ចុច shift រួមជាមួយ tab ដើម្បី​ស្វែងយល់បន្ថែម</translation>
 <translation id="7330397557116570022">ចូល​ទៅកាន់​កន្លែងបញ្ចូលអក្សរ ដើម្បីប្រើ​ការសរសេរ​តាមអាន</translation>
 <translation id="7331646370422660166">alt + ព្រួញចុះក្រោម</translation>
 <translation id="7340731148882810149">ម៉ឺនុយចុចដោយស្វ័យប្រវត្តិ</translation>

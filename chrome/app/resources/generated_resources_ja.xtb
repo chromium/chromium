@@ -610,7 +610,6 @@
 <translation id="1477654881618305065">お客様の組織では、このコンテンツの共有は許可されていません。サポートが必要な場合は、管理者にお問い合わせください。</translation>
 <translation id="1478340334823509079">詳細: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">インストールが有効になっていません</translation>
-<translation id="1480571698637441426">質問したときに適切な回答が得られるようにするには、画面上の情報のスクリーンショットへのアクセスをアシスタントに許可してください。これには再生中の曲や動画に関する情報も含まれます。</translation>
 <translation id="1480663089572535854">戻って「選択」の割り当てを変更できます。設定でいつでも自動スキャンをオフにできます。</translation>
 <translation id="1481537595330271162">ディスクのサイズ変更中にエラーが発生しました</translation>
 <translation id="1482626744466814421">このタブをブックマークに追加...</translation>
@@ -665,7 +664,7 @@
 <translation id="1523279371236772909">過去 1 か月以内に表示</translation>
 <translation id="1523978563989812243">テキスト読み上げエンジン</translation>
 <translation id="1524430321211440688">キーボード</translation>
-<translation id="1524563461097350801">自動チェックアウトしない</translation>
+<translation id="1524563461097350801">スキップ</translation>
 <translation id="1525740877599838384">Wi-Fi のみを使用して現在地を特定する</translation>
 <translation id="152629053603783244">Linux を再起動</translation>
 <translation id="1526560967942511387">無題のドキュメント</translation>
@@ -1112,7 +1111,6 @@
 <translation id="1848219224579402567">ディスプレイを閉じたときにログアウトする</translation>
 <translation id="184862733444771842">機能リクエスト</translation>
 <translation id="1849016657376805933">すべての HID デバイス</translation>
-<translation id="1849186935225320012">このページは MIDI デバイスのフル コントロールが許可されています。</translation>
 <translation id="1850145825777333687">デバイスの認証情報</translation>
 <translation id="1850508293116537636">時計回りに回転(&amp;C)</translation>
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />登録する前に、<ph name="DEVICE_OS" /> がデバイスのオーナー権限を取得できるよう TPM を消去する必要があります。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />デバイスの TPM を完全にオフにすることもできます。データは、ソフトウェアによる暗号化で引き続き安全に保存されますが、ハードウェア式証明書など、特定のセキュリティ機能は無効になります。<ph name="END_PARAGRAPH2" /><ph name="BEGIN_PARAGRAPH3" />TPM の設定を変更するには、再起動してシステム BIOS / UEFI の設定に入ってください。手順はデバイスモデルに応じて異なります。詳しくは、再起動する前に別のデバイスで <ph name="DEVICE_OS" /> のドキュメントをご確認ください: g.co/flex/TPMHelp<ph name="END_PARAGRAPH3" /></translation>
@@ -1607,7 +1605,6 @@
 <translation id="2224444042887712269">この設定は <ph name="OWNER_EMAIL" /> に帰属します。</translation>
 <translation id="2224551243087462610">フォルダ名の編集</translation>
 <translation id="2225927550500503913">仮想カードはオンになっています</translation>
-<translation id="2226449515541314767">このサイトには MIDI デバイスのフル コントロールは許可されていません。</translation>
 <translation id="2226826835915474236">無効なショートカット</translation>
 <translation id="2226907662744526012">PIN を入力して自動的にロックを解除する</translation>
 <translation id="2227179592712503583">候補を削除</translation>
@@ -1773,6 +1770,7 @@
 <translation id="2344032937402519675">サーバーに接続できませんでした。ネットワーク接続を確認して、もう一度お試しください。接続を確認しても問題が解決しない場合は、Chromebook を再起動してみてください。</translation>
 <translation id="234559068082989648">古いバージョンの Chrome アプリを使用できるのは、2022 年 12 月までです。管理者にお問い合わせのうえ、新しいバージョンに更新するか、アプリを削除してください。</translation>
 <translation id="2345723121311404059">1 ページを <ph name="PRINTER_NAME" /> に送信しました</translation>
+<translation id="2347930112185157300">モバイル ネットワーク プロバイダがロックされています</translation>
 <translation id="2348176352564285430">アプリ: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - 権限がリクエストされました。対応するには、Ctrl+Forward キーを押してください</translation>
 <translation id="234889437187286781">データの読み込み中にエラーが発生しました</translation>
@@ -1914,7 +1912,6 @@
 <translation id="2450849356604136918">アクティブ ビューなし</translation>
 <translation id="2451298179137331965">2 倍</translation>
 <translation id="245322989586167203">多くのサイトは、ネットワークを設定するなど、データ転送機能を使用するためにシリアルポートに接続します</translation>
-<translation id="2453706416476934374"><ph name="SUPERVISED_USER_NAME" /> さんが質問したときに適切な回答が得られるようにするには、<ph name="SUPERVISED_USER_NAME" /> さんの画面上の情報のスクリーンショットへのアクセスをアシスタントに許可してください。これには再生中の曲や動画に関する情報も含まれます。</translation>
 <translation id="2453860139492968684">終了</translation>
 <translation id="2454206500483040640">分割</translation>
 <translation id="2454247629720664989">キーワード</translation>
@@ -2545,7 +2542,6 @@
 <translation id="2932483646085333864">同期を開始するには、ログアウトして再度ログインします</translation>
 <translation id="2932883381142163287">不正行為を報告</translation>
 <translation id="2933632078076743449">最終更新日</translation>
-<translation id="2934999512438267372">MIDI デバイスのフル コントロールが許可されています</translation>
 <translation id="2935225303485967257">プロフィールを管理</translation>
 <translation id="2935314715123552088">アクティブな eSIM プロファイルを無効にする</translation>
 <translation id="2935654492420446828">学校用アカウントは後で追加します</translation>
@@ -2932,7 +2928,6 @@
 <translation id="3262986719682892278">ファイルが大きすぎます</translation>
 <translation id="3264544094376351444">Sans Serif フォント</translation>
 <translation id="3264582393905923483">コンテキスト</translation>
-<translation id="3265032511221679826">正確な位置情報へのアクセスをオンにしますか？</translation>
 <translation id="3265459715026181080">ウインドウを閉じる</translation>
 <translation id="3266022278425892773">Linux 開発環境</translation>
 <translation id="3266274118485960573">安全チェックを実行しています。</translation>
@@ -3982,7 +3977,6 @@
 <translation id="4087089424473531098">拡張機能を作成しました:
 
 <ph name="EXTENSION_FILE" /></translation>
-<translation id="408721682677442104">MIDI デバイスのフル コントロールは許可されていません</translation>
 <translation id="4087328411748538168">右側に表示</translation>
 <translation id="4089235344645910861">設定が保存され、同期が始まりました。</translation>
 <translation id="4089817585533500276">Shift+<ph name="TOP_ROW_KEY" /></translation>
@@ -4491,7 +4485,6 @@
 <translation id="4507128560633489176">データを消去しました。</translation>
 <translation id="4507373251891673233"><ph name="HOST" /> のすべての拡張機能をブロックしました</translation>
 <translation id="4507401683427517298">[ショートカットを追加] をクリックします</translation>
-<translation id="4508032221004253235">位置情報へのアクセスを許可したアプリとウェブサイト、ChromeOS で、ご使用の Wi-Fi またはモバイル ネットワークによって判定された位置情報を使用できるようになります。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="4508150454272293946">アプリやウェブページがこのデバイスに接続されているカメラを使用できるようにします。カメラの問題が解決しない場合は、アプリを再起動するか、ウェブページを更新してみてください。</translation>
 <translation id="450867954911715010">ユーザー補助機能の設定</translation>
 <translation id="4508765956121923607">ソースを表示(&amp;O)</translation>
@@ -4909,6 +4902,7 @@
 <translation id="4839303808932127586">名前を付けて動画を保存(&amp;V)...</translation>
 <translation id="4839910546484524995">デバイスを確認する</translation>
 <translation id="4840096453115567876">シークレット モードを終了してもよろしいですか？</translation>
+<translation id="4841475798258477260">このデバイスは特定のモバイル ネットワークにのみ接続できます。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4841741146571978176">必要な仮想マシンが存在しません。続行するには <ph name="VM_TYPE" /> を設定してください</translation>
 <translation id="4842976633412754305">このページは承認されていないソースからのスクリプトを読み込もうとしています。</translation>
 <translation id="4844333629810439236">他のキーボード</translation>
@@ -6459,6 +6453,7 @@
 <translation id="6104068876731806426">Google アカウント</translation>
 <translation id="6104311680260824317">デバイスをドメインに追加できません。指定した Kerberos 暗号化タイプがサーバーでサポートされていません。[その他のオプション] で暗号化の設定をご確認ください。</translation>
 <translation id="6104796831253957966">プリンタのキューに空きがありません</translation>
+<translation id="610487644502954950">サイドパネルの固定を解除しました</translation>
 <translation id="6104929924898022309">検索キーを使用してファンクション キーの動作を変更する</translation>
 <translation id="6106167152849320869">前の手順で診断データと使用状況データを送信するよう選択した場合、インストール済みのアプリでこれらのデータが収集されます。</translation>
 <translation id="6111718295497931251">Google ドライブへのアクセスを削除</translation>
@@ -6863,7 +6858,6 @@
 <translation id="6434325376267409267"><ph name="APP_NAME" /> を使用するには、先にデバイスを更新する必要があります。</translation>
 <translation id="6435339218366409950">字幕の訳文言語を選択してください</translation>
 <translation id="6436164536244065364">ウェブストアで見る</translation>
-<translation id="6436610005579237680">質問時の画面上の情報のスクリーンショットへのアクセスを Google アシスタントに許可すると、より適切な回答が得られます。再生中の曲や動画に関する情報も使用される可能性があります。</translation>
 <translation id="6436778875248895551">拡張機能「<ph name="EXTENSION_NAME" />」は管理者によってブロックされました</translation>
 <translation id="6438234780621650381">設定のリセット</translation>
 <translation id="6438475350605608554">すでに別のタブにパスワードをインポートしています</translation>
@@ -7053,7 +7047,6 @@
 <translation id="6592808042417736307">指紋を登録しました</translation>
 <translation id="6593881952206664229">著作権が設定されたメディアは再生できません</translation>
 <translation id="6594011207075825276">シリアル デバイスを検出しています...</translation>
-<translation id="6595187330192059106"><ph name="HOST" /> による MIDI デバイスのフル コントロールを常にブロックする</translation>
 <translation id="6595322909015878027">ピクチャー イン ピクチャーの自動開始を許可しないサイト</translation>
 <translation id="6595408197871512625">{COUNT,plural, =1{不正使用されたパスワードを変更しました。
 
@@ -7925,7 +7918,6 @@
 <translation id="7299337219131431707">ゲストのブラウジングを許可する</translation>
 <translation id="7299515639584427954">対応リンクを開くデフォルトのアプリを変更しますか？</translation>
 <translation id="7299588179200441056"><ph name="URL" />～<ph name="FOLDER" /></translation>
-<translation id="7301470816294041580">「OK Google、この曲は何？」、「OK Google、画面に何が表示されている？」などと尋ねることができます。</translation>
 <translation id="7301812050652048720">パスキーを削除しました</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{このアプリケーションは、Chrome の正常な動作を妨げる可能性があります。}other{これらのアプリケーションは、Chrome の正常な動作を妨げる可能性があります。}}</translation>
 <translation id="7303281435234579599">デモモードの設定中にエラーが発生しました。</translation>
@@ -8523,6 +8515,7 @@
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> からテキストが共有されました</translation>
 <translation id="7758143121000533418">ファミリー リンク</translation>
 <translation id="7758450972308449809">ディスプレイの外枠を調整します</translation>
+<translation id="7759809451544302770">省略可</translation>
 <translation id="7762024824096060040">このアカウントを使用することはできません</translation>
 <translation id="7762243782113123335">エラーが発生しました。説明に #bruschetta と入力してフィードバックを送信してください。エラーコード: <ph name="ERROR" />。</translation>
 <translation id="7764225426217299476">住所を追加</translation>
@@ -8917,7 +8910,6 @@
 <translation id="8050038245906040378">Microsoft 商用コード署名</translation>
 <translation id="8050191834453426339">もう一度ご確認ください</translation>
 <translation id="8051193500142930381">カメラを必要とする機能は動作しなくなります</translation>
-<translation id="8051390370038326517"><ph name="HOST" /> による MIDI デバイスのフル コントロールを常に許可する</translation>
 <translation id="8052218774860457016">ブラウザの同期を管理</translation>
 <translation id="8053278772142718589">PKCS #12 ファイル</translation>
 <translation id="8053390638574070785">ページを再読み込み</translation>
@@ -8997,7 +8989,6 @@
 <translation id="8109109153262930486">デフォルトのアバター</translation>
 <translation id="8110393529211831722">登録はこのデバイスにのみインストールされ、アカウントの他のデバイスとは同期されません。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">連絡先リストをダウンロードしています...</translation>
-<translation id="8113476325385351118">このサイトによる MIDI デバイスのフル コントロールを引き続きブロックする</translation>
 <translation id="8115139559594092084">Google ドライブから</translation>
 <translation id="8116972784401310538">ブックマーク マネージャ(&amp;B)</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> でログイン方法を記憶し、可能な場合は自動的にログインします。オフにすると、毎回確認を求められます。</translation>
@@ -9150,6 +9141,7 @@
 <translation id="8241040075392580210">シェイディ</translation>
 <translation id="8241806945692107836">デバイスの設定を確認しています...</translation>
 <translation id="8241868517363889229">ブックマークの読み取りと変更</translation>
+<translation id="8242273718576931540">お使いのデバイスはこのネットワークに接続できません。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8242370300221559051">Play ストアの有効化</translation>
 <translation id="8242426110754782860">続行</translation>
 <translation id="8243948765190375130">メディアの品質が低下する可能性があります</translation>
@@ -9393,7 +9385,6 @@
 <translation id="8425492902634685834">タスクバーに固定</translation>
 <translation id="8425768983279799676">PIN を使用してデバイスのロックを解除できます。</translation>
 <translation id="8426111352542548860">グループを保存する</translation>
-<translation id="8426713856918551002">有効にしています</translation>
 <translation id="8427213022735114808">音声入力では、テキスト欄で音声入力できるように Google に音声を送信します。</translation>
 <translation id="8427292751741042100">ホストに埋め込まれたページ</translation>
 <translation id="8428213095426709021">設定</translation>
@@ -9602,7 +9593,6 @@
 <translation id="8608618451198398104">Kerberos チケットの追加</translation>
 <translation id="8609465669617005112">上に移動</translation>
 <translation id="8610103157987623234">無効な形式です。もう一度お試しください</translation>
-<translation id="8611682088849615761">このサイトによる MIDI デバイスのフル コントロールを引き続き許可する</translation>
 <translation id="8613164732773110792">英小文字、数字、アンダースコア、ダッシュのみ</translation>
 <translation id="8613504115484579584">ログイン方法</translation>
 <translation id="8613645710357126807">拡張機能の使用を許可しないサイト</translation>
@@ -9638,6 +9628,7 @@
 <translation id="8636284842992792762">拡張機能を初期化しています…</translation>
 <translation id="8636323803535540285">すばやくアクセスできるよう、<ph name="BRAND" /> へのショートカットを追加できます</translation>
 <translation id="8636500887554457830">サイトにポップアップの送信やリダイレクトの使用を許可しない</translation>
+<translation id="8636514272606969031">サイドパネルを固定しました</translation>
 <translation id="8637688295594795546">システムのアップデートが見つかりました。ダウンロードの準備をしています...</translation>
 <translation id="8638719155236856752">ChromeOS ネットワーク健全性</translation>
 <translation id="8639635302972078117">使用状況データや診断データを送信します。このデバイスは現在、診断データやデバイスとアプリの使用状況データを Google に自動送信するように設定されています。この情報を使ってお子様個人が特定されることはありません。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。</translation>
@@ -9777,6 +9768,7 @@
 <translation id="8729133765463465108">カメラを使用して QR コードをスキャンする</translation>
 <translation id="8730621377337864115">完了</translation>
 <translation id="8731029916209785242">権限（<ph name="FORMATTED_ORIGIN" />）</translation>
+<translation id="8731268612289859741">セキュリティ コード</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> が次の許可を求めています: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">ポート番号</translation>
 <translation id="8732030010853991079">この拡張機能を使用するには、このアイコンをクリックします。</translation>
@@ -10429,7 +10421,6 @@
 <translation id="936646668635477464">カメラとマイク</translation>
 <translation id="936801553271523408">システム診断データ</translation>
 <translation id="93766956588638423">拡張機能を修復</translation>
-<translation id="938568644810664664">「OK Google, この曲はなに？」、「OK Google, 画面になにが表示されている？」のようにきいてみましょう。</translation>
 <translation id="938623846785894166">一般的ではないファイル</translation>
 <translation id="939401694733344652">これらのアカウントは現在、Android アプリで使用されていません。この Android アプリで使用するアカウントを選択した場合、そのアカウントは他の Android アプリでも使用できるようになります。Android アプリのアクセス権限は、<ph name="LINK_BEGIN" />[設定] &gt; [アカウント]<ph name="LINK_END" /> で変更できます。</translation>
 <translation id="939553663881639126">追加の検索候補を表示するかどうかを選択</translation>

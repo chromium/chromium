@@ -66,7 +66,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1225748608451425081">Jūsu Chromebook dators ir bloķēts zināmas problēmas dēļ. Jūs varēsiet pierakstīties pēc šāda laika perioda: <ph name="TIME_LEFT" />.</translation>
 <translation id="1226877728704622336">neaktīva darbvieta</translation>
 <translation id="1229194443904279055">Apturēt atlasīšanu</translation>
-<translation id="1233979878541157665">Mēģiniet meklēt tādus vārdus kā “saulriets” vai “koks”, nevis faila nosaukumu. Meklēšanas joslā varat izslēgt attēlu meklēšanu.</translation>
 <translation id="1235458158152011030">Zināmie tīkli</translation>
 <translation id="1239161794459865856">Izveidots savienojums ar funkciju <ph name="FEATURE_NAME" />.</translation>
 <translation id="1240638468526743569">Lietotne</translation>
@@ -1144,6 +1143,7 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="5620979661744857819">Tādējādi piekļuve tiek atļauta lietotnei <ph name="APP_NAME" /> un visām lietotnēm un vietnēm, kurām ir kameras un mikrofona atļauja. Iespējams, jums būs jāatsvaidzina tīmekļa lapa vai jārestartē lietotne.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Nevarēja verificēt jūsu paroli. Mēģiniet vēlreiz.</translation>
+<translation id="5632485077360054581">Parādīt, kā</translation>
 <translation id="5648021990716966815">Mikrofona ligzda</translation>
 <translation id="5652575806481723716">Lietotne <ph name="FOCUSED_APP_NAME" /> aicina pievērst tai uzmanību.</translation>
 <translation id="5662075790140998213">10. darbvieta</translation>
@@ -1337,7 +1337,6 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="643593192654616063">Izmantoti <ph name="STORAGE_IN_USE_SIZE" /> no <ph name="STORAGE_TOTAL_SIZE" /> kopējās krātuves</translation>
 <translation id="6445835306623867477">“<ph name="ROUTE_TITLE" />” apraide ierīcē “<ph name="RECEIVER_NAME" />”</translation>
 <translation id="6445915701151710649">centrālais procesors</translation>
-<translation id="6446225358675593408">Atrodiet attēlus pēc satura</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> pasākums</translation>
 <translation id="6449483711453944360">Linux lietotnes un inkognito režīma logi pašlaik netiek atbalstīti.</translation>
 <translation id="6450245544201845082">Īsinājumtaustiņi noklikšķināšanai ar peles labo pogu pašlaik ir izslēgti.</translation>
@@ -1521,6 +1520,7 @@ Jauna instalācija</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />.
         <ph name="NETWORK" />.</translation>
 <translation id="7168224885072002358">Iepriekšējā izšķirtspēja tiks atgriezta pēc <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Atvērt iestatījumus</translation>
 <translation id="7180611975245234373">Atsvaidzināt</translation>
 <translation id="7188494361780961876">Izvēlne pārvietota uz ekrāna augšējo kreiso malu.</translation>
 <translation id="7189412385142492784">Cik tālu atrodas Venera?</translation>
@@ -1540,7 +1540,6 @@ Jauna instalācija</translation>
 <translation id="7312210124139670355">Administrators atiestata jūsu eSIM. Atiestatīšana var ilgt dažas minūtes.</translation>
 <translation id="7313193732017069507">Izvērst kameru</translation>
 <translation id="7316261577130609484">Pievienot jaunu uzdevumu</translation>
-<translation id="7321889295239318128">Lai uzzinātu vairāk, vienlaikus nospiediet pārslēgšanas taustiņu un tabulēšanas taustiņu</translation>
 <translation id="7330397557116570022">Lai izmantotu diktēšanu, pārejiet uz teksta lauku.</translation>
 <translation id="7331646370422660166">Alt + lejupvērstā bultiņa</translation>
 <translation id="7340731148882810149">Automātisko klikšķu izvēlne</translation>

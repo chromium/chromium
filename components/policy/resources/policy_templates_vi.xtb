@@ -2403,7 +2403,6 @@ Nếu bạn bật chính sách này, phím trình chạy/phím tìm kiếm sẽ 
           Nếu bạn đặt chính sách này, thì người dùng sẽ không thể thay đổi hay ghi đè chính sách.
 
           Nếu bạn không đặt chính sách này, thì ban đầu, con trỏ lớn sẽ tắt trên màn hình đăng nhập nhưng người dùng có thể bật bất cứ lúc nào.</translation>
-<translation id="3027837632741099453">Chế độ tiết kiệm pin sẽ bật khi thiết bị đang chạy pin.</translation>
 <translation id="3030000825273123558">Bật báo cáo số liệu</translation>
 <translation id="30300807616984726">Báo cáo dữ liệu khoảng không quảng cáo trên ứng dụng cho người dùng liên kết.
 
@@ -4468,13 +4467,6 @@ Sau quá trình thiết lập ban đầu, người dùng có thể bật hoặc 
 
       Khi bạn không đặt chính sách này hoặc đặt chính sách thành bật, các tùy chọn kiểm tra chặn DNS sẽ được áp dụng. Khi bạn tắt hoàn toàn chính sách này, các tùy chọn kiểm tra nói trên sẽ không được áp dụng.</translation>
 <translation id="4700190441681139987">Không cho phép bất kỳ trang web nào sử dụng cảm biến</translation>
-<translation id="4701899474784891858">Chính sách này bật hoặc tắt Chế độ tiết kiệm pin. Chế độ cài đặt này điều chỉnh tốc độ khung hình để giảm mức tiêu thụ điện năng.
-      Nếu bạn không đặt chính sách này, thì người dùng cuối có thể kiểm soát chế độ cài đặt này trong chrome://settings/performance.
-      Các cấp độ khác nhau là:
-      <ph name="BATTERY_SAVER_MODE_DISABLED" /> (0): Chế độ tiết kiệm pin sẽ tắt.
-      <ph name="BATTERY_SAVER_MODE_ENABLED_BELOW_THRESHOLD" /> (1): Chế độ tiết kiệm pin sẽ bật khi thiết bị đang chạy pin ở mức pin yếu.
-      <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2): Chế độ tiết kiệm pin sẽ bật khi thiết bị đang chạy pin.
-      </translation>
 <translation id="4703402283970867140">Bật mô hình giảm độ sáng thông minh để kéo dài thời gian cho đến khi màn hình tối đi</translation>
 <translation id="4704958130749494760">Tự động cấp quyền cho các trang web để kết nối với thiết bị nối tiếp USB.</translation>
 <translation id="4705329890928008808">Nếu bạn đặt chính sách này thành CopyCaCerts, thì tất cả các chứng chỉ CA được cài đặt trên ONC có <ph name="WEB_TRUSTED_BIT" /> sẽ áp dụng cho ứng dụng dùng ARC.

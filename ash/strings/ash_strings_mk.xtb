@@ -66,7 +66,6 @@
 <translation id="1225748608451425081">Вашиот Chromebook е заклучен поради познат проблем. Ќе може да се најавите по: <ph name="TIME_LEFT" />.</translation>
 <translation id="1226877728704622336">неактивна работна површина</translation>
 <translation id="1229194443904279055">Сопрете со избирање</translation>
-<translation id="1233979878541157665">Обидете се да пребарате „залез“ или „дрво“ наместо името на датотеката. „Пребарувањето со слики“ може да го исклучите во полето за пребарување.</translation>
 <translation id="1235458158152011030">Познати мрежи</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> е поврзана.</translation>
 <translation id="1240638468526743569">Некоја апликација</translation>
@@ -1145,6 +1144,7 @@
 <translation id="5620979661744857819">Ова овозможува пристап за <ph name="APP_NAME" /> и сите апликации и веб-сајтови со дозволи за камерата и микрофонот. Можеби ќе треба да ја освежите веб-страницата или да ја рестартирате апликацијата.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Не можеше да се потврди лозинката. Обидете се повторно.</translation>
+<translation id="5632485077360054581">Покажи ми како</translation>
 <translation id="5648021990716966815">Приклучок за микрофон</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> го бара вашето внимание.</translation>
 <translation id="5662075790140998213">Работна површина 10</translation>
@@ -1338,7 +1338,6 @@
 <translation id="643593192654616063">Искористен простор: <ph name="STORAGE_IN_USE_SIZE" /> од вкупно: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> се емитува на <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">цпу</translation>
-<translation id="6446225358675593408">Најдете ги вашите слики според содржините</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> настан</translation>
 <translation id="6449483711453944360">Апликациите на Linux и прозорците „Инкогнито“ не се поддржани моментално</translation>
 <translation id="6450245544201845082">Кратенката со кликнување со десно копче во моментов е исклучена</translation>
@@ -1522,6 +1521,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Се навраќа на стара резолуција за <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Отвори „Поставки“</translation>
 <translation id="7180611975245234373">Освежи</translation>
 <translation id="7188494361780961876">Менито е преместено во горниот лев агол на екранот.</translation>
 <translation id="7189412385142492784">Колку е оддалечена Венера</translation>
@@ -1541,7 +1541,6 @@
 <translation id="7312210124139670355">Администраторот ја ресетира вашата eSIM. Може да потрае неколку минути.</translation>
 <translation id="7313193732017069507">Прошири ја камерата</translation>
 <translation id="7316261577130609484">Додајте нова задача</translation>
-<translation id="7321889295239318128">Притиснете Shift плус Tab за да дознаете повеќе</translation>
 <translation id="7330397557116570022">Одете на текстуално поле за да користите „Диктирање“</translation>
 <translation id="7331646370422660166">alt + стрелка надолу</translation>
 <translation id="7340731148882810149">Мени за автоматски кликнувања</translation>

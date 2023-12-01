@@ -66,7 +66,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1225748608451425081">Dein Chromebook wurde aufgrund eines bekannten Problems gesperrt. Eine Anmeldung ist wieder möglich in: <ph name="TIME_LEFT" />.</translation>
 <translation id="1226877728704622336">Inaktiver Desktop</translation>
 <translation id="1229194443904279055">Auswahl beenden</translation>
-<translation id="1233979878541157665">Suche statt nach dem Dateinamen zum Beispiel nach „Sonnenuntergang“ oder „Baum“. Deaktivieren kannst du die Bildersuche in der Suchleiste.</translation>
 <translation id="1235458158152011030">Bekannte Netzwerke</translation>
 <translation id="1239161794459865856">"<ph name="FEATURE_NAME" />" ist verbunden.</translation>
 <translation id="1240638468526743569">Eine App</translation>
@@ -1144,6 +1143,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="5620979661744857819">Dadurch erhalten „<ph name="APP_NAME" />“ sowie alle Apps und Websites mit Kamera- und Mikrofonberechtigung Zugriff. Möglicherweise musst du die Webseite aktualisieren oder die App neu starten.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Dein Passwort konnte nicht bestätigt werden. Versuche es noch einmal.</translation>
+<translation id="5632485077360054581">Zeigen</translation>
 <translation id="5648021990716966815">Mikrofonanschluss</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> erfordert deine Aufmerksamkeit.</translation>
 <translation id="5662075790140998213">Desktop 10</translation>
@@ -1337,7 +1337,6 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="643593192654616063"><ph name="STORAGE_IN_USE_SIZE" /> von insgesamt <ph name="STORAGE_TOTAL_SIZE" /> Speicherplatz belegt</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> auf <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">CPU</translation>
-<translation id="6446225358675593408">Bildersuche nach Bildinhalt</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> Termin</translation>
 <translation id="6449483711453944360">Linux-Apps und Inkognitofenster werden derzeit nicht unterstützt</translation>
 <translation id="6450245544201845082">Die Tastenkombination für den Rechtsklick ist derzeit deaktiviert</translation>
@@ -1521,6 +1520,7 @@ Neuinstallation</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Alte Auflösung wird in <ph name="TIMEOUT_SECONDS" /> wiederhergestellt.</translation>
+<translation id="7173114856073700355">Einstellungen öffnen</translation>
 <translation id="7180611975245234373">Aktualisieren</translation>
 <translation id="7188494361780961876">Menü wurde nach links oben auf dem Bildschirm verschoben.</translation>
 <translation id="7189412385142492784">Wie weit ist die Venus entfernt?</translation>
@@ -1540,7 +1540,6 @@ Neuinstallation</translation>
 <translation id="7312210124139670355">Dein Administrator setzt deine eSIM zurück. Das kann einige Minuten dauern.</translation>
 <translation id="7313193732017069507">Kamera maximieren</translation>
 <translation id="7316261577130609484">Neue Aufgabe hinzufügen</translation>
-<translation id="7321889295239318128">Für weitere Informationen Umschalttaste + Tabulatortaste drücken</translation>
 <translation id="7330397557116570022">Du musst ein Textfeld aufrufen, um die Spracheingabe zu verwenden</translation>
 <translation id="7331646370422660166">Alt + Abwärtspfeil</translation>
 <translation id="7340731148882810149">Menü „Automatische Klicks“</translation>

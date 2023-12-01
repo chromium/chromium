@@ -66,7 +66,6 @@
 <translation id="1225748608451425081">कुनै ज्ञात समस्याका कारण तपाईंको Chromebook लक गरिएको छ। तपाईं यति समयपछि साइन इन गर्न सक्नु हुने छ: <ph name="TIME_LEFT" />।</translation>
 <translation id="1226877728704622336">निष्क्रिय डेस्क</translation>
 <translation id="1229194443904279055">पाठ चयन गर्न छाडियोस्</translation>
-<translation id="1233979878541157665">फाइलको नामको साटो "सूर्यास्त" वा "रूख" खोजी हेर्नुहोस्। तपाईं सर्च बारमा गई फोटो प्रयोग गरी खोज्ने सुविधा अफ गर्न सक्नुहुन्छ।</translation>
 <translation id="1235458158152011030">ज्ञात नेटवर्कहरू</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> कनेक्ट गरिएको छ।</translation>
 <translation id="1240638468526743569">कुनै एप</translation>
@@ -1144,6 +1143,7 @@
 <translation id="5620979661744857819">तपाईंले यसो गर्नुभयो भने <ph name="APP_NAME" /> र क्यामेरा तथा माइक्रोफोन प्रयोग गर्ने अनुमति भएका सबै एप तथा वेबसाइटहरूलाई क्यामेरा तथा माइक्रोफोन प्रयोग गर्ने अनुमति दिइन्छ। तपाईंले वेबपेज रिफ्रेस गर्नु पर्ने वा एप रिस्टार्ट गर्नु पर्ने हुन सक्छ।</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">तपाईंको पासवर्ड पुष्टि गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="5632485077360054581">यसो गर्ने तरिका देखाइयोस्</translation>
 <translation id="5648021990716966815">माइकको ज्याक</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> तपाईंको ध्यानाकर्षण गराउन चाहन्छ।</translation>
 <translation id="5662075790140998213">डेस्क १०</translation>
@@ -1337,7 +1337,6 @@
 <translation id="643593192654616063">कुल <ph name="STORAGE_TOTAL_SIZE" /> भण्डारणमध्ये <ph name="STORAGE_IN_USE_SIZE" /> भण्डारण प्रयोग भइरहेको छ</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> मा <ph name="ROUTE_TITLE" /></translation>
 <translation id="6445915701151710649">CPU</translation>
-<translation id="6446225358675593408">फोटोमा भएको सामग्री हालेर फोटो खोज्नुहोस्</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> कार्यक्रम</translation>
 <translation id="6449483711453944360">Linux एप र इन्कोग्निटो विन्डो हाल प्रयोग गर्न मिल्दैन</translation>
 <translation id="6450245544201845082">राइट क्लिक सर्टकट अहिले अफ छ</translation>
@@ -1521,6 +1520,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> सेकेन्डमा पुरानो रिजोल्युसनमा फिर्ता जाँदै</translation>
+<translation id="7173114856073700355">सेटिङहरू खोल्नुहोस्</translation>
 <translation id="7180611975245234373">ताजा गर्नुहोस्</translation>
 <translation id="7188494361780961876">मेनु सारेर स्क्रिनको सिरानको बायाँ कुनामा लगियो।</translation>
 <translation id="7189412385142492784">शुक्र ग्रह पृथ्वीबाट कति टाढा छ</translation>
@@ -1540,7 +1540,6 @@
 <translation id="7312210124139670355">तपाईंका एड्मिन तपाईंको eSIM रिसेट गर्दै हुनुहुन्छ। यो कार्य पूरा हुन केही बेर लाग्न सक्छ।</translation>
 <translation id="7313193732017069507">क्यामेरा एक्स्पान्ड गर्नुहोस्</translation>
 <translation id="7316261577130609484">नयाँ कार्य हाल्नुहोस्</translation>
-<translation id="7321889295239318128">थप जान्न सिफ्ट र ट्याब थिच्नुहोस्</translation>
 <translation id="7330397557116570022">स्पिच-टु-टेक्स्ट प्रयोग गर्न टेक्स्ट फिल्डमा जानुहोस्</translation>
 <translation id="7331646370422660166">alt + डाउन एरो</translation>
 <translation id="7340731148882810149">स्वतः क्लिक गर्ने सुविधाको मेनु</translation>

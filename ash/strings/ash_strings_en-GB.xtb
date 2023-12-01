@@ -66,7 +66,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1225748608451425081">Your Chromebook is locked due to a known issue. You will be able to sign in after: <ph name="TIME_LEFT" />.</translation>
 <translation id="1226877728704622336">inactive desk</translation>
 <translation id="1229194443904279055">Stop selecting</translation>
-<translation id="1233979878541157665">Try searching 'sunset' or 'tree' instead of the file name. You can turn off image search in the search bar.</translation>
 <translation id="1235458158152011030">Known networks</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> is connected.</translation>
 <translation id="1240638468526743569">An app</translation>
@@ -1144,6 +1143,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="5620979661744857819">This allows access for <ph name="APP_NAME" /> and all apps and websites with the camera and microphone permissions. You may need to refresh the web page or restart the app.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Your password couldn't be verified. Try again.</translation>
+<translation id="5632485077360054581">Show me how</translation>
 <translation id="5648021990716966815">Mic jack</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> requests your attention.</translation>
 <translation id="5662075790140998213">Desk 10</translation>
@@ -1337,7 +1337,6 @@ Some features are limited to increase battery life.</translation>
 <translation id="643593192654616063">Storage <ph name="STORAGE_IN_USE_SIZE" /> in use out of <ph name="STORAGE_TOTAL_SIZE" /> total</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> on <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
-<translation id="6446225358675593408">Find your images by the content</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> event</translation>
 <translation id="6449483711453944360">Linux apps and incognito windows aren’t currently supported</translation>
 <translation id="6450245544201845082">The right-click shortcut is currently off</translation>
@@ -1521,6 +1520,7 @@ New install</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Reverting to old resolution in <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Open settings</translation>
 <translation id="7180611975245234373">Refresh</translation>
 <translation id="7188494361780961876">Menu moved to the top-left corner of the screen.</translation>
 <translation id="7189412385142492784">How far is Venus</translation>
@@ -1540,7 +1540,6 @@ New install</translation>
 <translation id="7312210124139670355">Your administrator is resetting your eSIM. This may take a few minutes.</translation>
 <translation id="7313193732017069507">Expand camera</translation>
 <translation id="7316261577130609484">Add new task</translation>
-<translation id="7321889295239318128">Press Shift plus Tab to learn more</translation>
 <translation id="7330397557116570022">Go to a text field to use dictation</translation>
 <translation id="7331646370422660166">alt + down arrow</translation>
 <translation id="7340731148882810149">Automatic clicks menu</translation>

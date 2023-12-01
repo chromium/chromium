@@ -21,5 +21,7 @@
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{இந்தத் தளத்திற்கான புதிய கடவுச்சொல்}other{இந்தத் தளத்திற்கான புதிய கடவுச்சொற்கள்}}</translation>
 <translation id="7286867818472074330">கடவுச்சாவியைத் தேர்ந்தெடு</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEMS_TOTAL" />ல் <ph name="ITEM_POSITION" />வது.</translation>
+<translation id="7738288782501322815"><ph name="SITE_NAME" /> தளத்திற்கான கடவுச்சொற்களைப் பெற்றுள்ளீர்கள்</translation>
+<translation id="8614995815226664591"><ph name="SITE_NAME" /> தளத்திற்கான கடவுச்சொல்லை <ph name="SENDER_NAME" /> உங்களுடன் பகிர்ந்துள்ளார்</translation>
 <translation id="8891372124884726271">அனுமதிச் சான்றுகளின் பட்டியல் மூடப்பட்டது.</translation>
 </translationbundle>

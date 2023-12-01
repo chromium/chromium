@@ -66,7 +66,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1225748608451425081">Bloqueouse o teu Chromebook por un problema coñecido. Poderás iniciar sesión despois de: <ph name="TIME_LEFT" />.</translation>
 <translation id="1226877728704622336">escritorio inactivo</translation>
 <translation id="1229194443904279055">Deixar de seleccionar</translation>
-<translation id="1233979878541157665">Proba a buscar "solpor" ou "árbore" en lugar do nome do ficheiro. Podes desactivar a busca de imaxes na barra de busca.</translation>
 <translation id="1235458158152011030">Redes coñecidas</translation>
 <translation id="1239161794459865856">A función <ph name="FEATURE_NAME" /> está conectada.</translation>
 <translation id="1240638468526743569">Unha aplicación</translation>
@@ -1145,6 +1144,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="5620979661744857819">Desta forma, <ph name="APP_NAME" /> e todas as aplicacións e sitios web que teñan permisos de cámara e micrófono poderán acceder. É posible que teñas que actualizar a páxina web ou reiniciar a aplicación.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Non se puido verificar o teu contrasinal. Téntao de novo.</translation>
+<translation id="5632485077360054581">Ver como facelo</translation>
 <translation id="5648021990716966815">Conector do micrófono</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> require a túa atención.</translation>
 <translation id="5662075790140998213">Escritorio 10</translation>
@@ -1338,7 +1338,6 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="643593192654616063">Almacenamento: <ph name="STORAGE_IN_USE_SIZE" /> en uso dun total de <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> no receptor <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
-<translation id="6446225358675593408">Busca as túas imaxes polo contido</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> evento</translation>
 <translation id="6449483711453944360">As aplicacións de Linux e as ventás do modo de incógnito agora mesmo non son compatibles</translation>
 <translation id="6450245544201845082">O atallo para facer clic co botón dereito está desactivado</translation>
@@ -1522,6 +1521,7 @@ Nova instalación</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Volvendo á resolución anterior dentro de <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Abrir Configuración</translation>
 <translation id="7180611975245234373">Actualizar</translation>
 <translation id="7188494361780961876">O menú moveuse á esquina superior esquerda da pantalla.</translation>
 <translation id="7189412385142492784">A que distancia está Venus?</translation>
@@ -1541,7 +1541,6 @@ Nova instalación</translation>
 <translation id="7312210124139670355">O teu administrador está restablecendo a eSIM. Esta acción pode tardar uns minutos.</translation>
 <translation id="7313193732017069507">Despregar a cámara</translation>
 <translation id="7316261577130609484">Engadir nova tarefa</translation>
-<translation id="7321889295239318128">Preme Maiúsculas + Tabulador para obter máis información</translation>
 <translation id="7330397557116570022">Vai a un campo de texto para usar a función de ditado</translation>
 <translation id="7331646370422660166">alt + frecha abaixo</translation>
 <translation id="7340731148882810149">Menú de clics automáticos</translation>

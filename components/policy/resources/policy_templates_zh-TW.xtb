@@ -2370,7 +2370,6 @@
           設定這項政策後，使用者即無法變更或覆寫。
 
           如果不設定這項政策，系統會在初次顯示登入畫面時停用大型游標，但使用者隨時可以啟用。</translation>
-<translation id="3027837632741099453">使用電池供電時，裝置會啟用省電模式。</translation>
 <translation id="3030000825273123558">啟用計量回報功能</translation>
 <translation id="30300807616984726">回報關聯使用者的應用程式廣告空間資料。
 
@@ -4324,13 +4323,6 @@
 
       如果不設定這項政策或設為啟用，系統會執行 DNS 攔截檢查。如果明確指定停用這項政策，系統就不會執行 DNS 攔截檢查。</translation>
 <translation id="4700190441681139987">不允許任何網站存取感應器</translation>
-<translation id="4701899474784891858">這項政策會啟用或停用省電模式設定。當這項設定啟用時，系統會降低畫面更新率，以降低耗電量。
-      如果不設定這項政策，使用者可前往 chrome://settings/performance 控管這項設定。
-      這項設定有以下不同層級：
-      <ph name="BATTERY_SAVER_MODE_DISABLED" /> (0)：裝置將停用省電模式。
-      <ph name="BATTERY_SAVER_MODE_ENABLED_BELOW_THRESHOLD" /> (1)：使用電池供電且電量太低時，裝置會啟用省電模式。
-      <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2)：使用電池供電時，裝置會啟用省電模式。
-      </translation>
 <translation id="4703402283970867140">啟用智慧型調光模式來延長使用時間，直到螢幕變暗為止</translation>
 <translation id="4704958130749494760">自動授權網站連線至 USB 序列裝置。</translation>
 <translation id="4705329890928008808">如果將這項政策設為 CopyCaCerts，ARC 應用程式可以使用所有已安裝 ONC 且具有 <ph name="WEB_TRUSTED_BIT" /> 的 CA 憑證。

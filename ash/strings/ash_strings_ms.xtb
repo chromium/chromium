@@ -66,7 +66,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1225748608451425081">Chromebook anda dikunci kerana isu yang diketahui. Anda akan dapat log masuk selepas: <ph name="TIME_LEFT" />.</translation>
 <translation id="1226877728704622336">meja tidak aktif</translation>
 <translation id="1229194443904279055">Berhenti memilih</translation>
-<translation id="1233979878541157665">Cuba cari "matahari terbenam" atau "pokok", bukannya nama fail. Anda boleh mematikan carian imej dalam bar carian.</translation>
 <translation id="1235458158152011030">Rangkaian yang diketahui</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> disambungkan.</translation>
 <translation id="1240638468526743569">Apl</translation>
@@ -1144,6 +1143,7 @@ Sesetengah ciri dihadkan untuk meningkatkan hayat bateri.</translation>
 <translation id="5620979661744857819">Tindakan ini akan membenarkan akses kepada <ph name="APP_NAME" /> dan semua apl serta laman web dengan kebenaran kamera dan mikrofon. Anda mungkin perlu menyegarkan semula halaman web atau memulakan semula apl.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Identiti anda tidak dapat disahkan. Cuba lagi.</translation>
+<translation id="5632485077360054581">Tunjukkan caranya</translation>
 <translation id="5648021990716966815">Bicu mikrofon</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> meminta perhatian anda.</translation>
 <translation id="5662075790140998213">Meja 10</translation>
@@ -1337,7 +1337,6 @@ Sesetengah ciri dihadkan untuk meningkatkan hayat bateri.</translation>
 <translation id="643593192654616063"><ph name="STORAGE_IN_USE_SIZE" /> storan digunakan daripada jumlah <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> pada <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
-<translation id="6446225358675593408">Cari imej anda berdasarkan kandungan</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> acara</translation>
 <translation id="6449483711453944360">Apl Linux dan tetingkap inkognito tidak disokong pada masa ini</translation>
 <translation id="6450245544201845082">Pintasan klik kanan dimatikan pada masa ini</translation>
@@ -1521,6 +1520,7 @@ Pemasangan baharu</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Kembali kepada peleraian lama dalam <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Buka Tetapan</translation>
 <translation id="7180611975245234373">Muat semula</translation>
 <translation id="7188494361780961876">Menu dialihkan ke sudut atas sebelah kiri skrin.</translation>
 <translation id="7189412385142492784">Berapa jauhkah Venus</translation>
@@ -1540,7 +1540,6 @@ Pemasangan baharu</translation>
 <translation id="7312210124139670355">Pentadbir sedang menetapkan semula eSIM anda. Proses ini mungkin mengambil masa beberapa minit.</translation>
 <translation id="7313193732017069507">Kembangkan kamera</translation>
 <translation id="7316261577130609484">Tambahkan tugasan baharu</translation>
-<translation id="7321889295239318128">Tekan Shift dan Tab serentak untuk mengetahui lebih lanjut</translation>
 <translation id="7330397557116570022">Navigasi kepada medan teks untuk menggunakan Pengimlakan</translation>
 <translation id="7331646370422660166">alt + anak panah ke bawah</translation>
 <translation id="7340731148882810149">Menu klik automatik</translation>

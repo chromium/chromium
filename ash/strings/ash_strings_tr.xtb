@@ -66,7 +66,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1225748608451425081">Chromebook'unuz, bilinen bir sorun yüzünden kilitlendi. Tekrar oturum açabilmenize <ph name="TIME_LEFT" /> kaldı.</translation>
 <translation id="1226877728704622336">Etkin olmayan masa</translation>
 <translation id="1229194443904279055">Seçmeyi durdur</translation>
-<translation id="1233979878541157665">Dosya adı yerine "gün batımı" veya "ağaç" ifadeleriyle arama yapmayı deneyin. Arama çubuğunda görsel aramayı kapatabilirsiniz.</translation>
 <translation id="1235458158152011030">Bilinen ağlar</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> bağlı.</translation>
 <translation id="1240638468526743569">Uygulama</translation>
@@ -1144,6 +1143,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="5620979661744857819">Bu işlem, <ph name="APP_NAME" /> uygulamasının yanı sıra kamera ve mikrofon izni olan tüm uygulamaların ve web sitelerinin erişmesine izin verir. Web sayfasını yenilemeniz veya uygulamayı yeniden başlatmanız gerekebilir.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Kimliğiniz doğrulanamadı. Tekrar deneyin.</translation>
+<translation id="5632485077360054581">Nasıl yapıldığını göster</translation>
 <translation id="5648021990716966815">Mikrofon jakı</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" />, ilgilenmenizi gerektiriyor.</translation>
 <translation id="5662075790140998213">Masa 10</translation>
@@ -1337,7 +1337,6 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="643593192654616063">Toplam <ph name="STORAGE_TOTAL_SIZE" /> depolama alanından <ph name="STORAGE_IN_USE_SIZE" /> kullanılıyor</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> adlı alıcıya <ph name="ROUTE_TITLE" /></translation>
 <translation id="6445915701151710649">cpu</translation>
-<translation id="6446225358675593408">Görsellerinizi içeriğe göre bulun</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> etkinlik</translation>
 <translation id="6449483711453944360">Linux uygulamaları ve gizli pencereler şu anda desteklenmiyor</translation>
 <translation id="6450245544201845082">Sağ tıklama kısayolu şu anda devre dışı</translation>
@@ -1521,6 +1520,7 @@ Yeni yüklenmiş</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> saniye içinde eski çözünürlüğe dönülüyor</translation>
+<translation id="7173114856073700355">Ayarları Aç</translation>
 <translation id="7180611975245234373">Yenile</translation>
 <translation id="7188494361780961876">Menü, ekranın sol üst köşesine taşındı.</translation>
 <translation id="7189412385142492784">Venüs ne kadar uzak</translation>
@@ -1540,7 +1540,6 @@ Yeni yüklenmiş</translation>
 <translation id="7312210124139670355">Yöneticiniz eSIM'inizi sıfırlıyor. Bu işlem birkaç dakika sürebilir.</translation>
 <translation id="7313193732017069507">Kamerayı genişlet</translation>
 <translation id="7316261577130609484">Yeni görev ekle</translation>
-<translation id="7321889295239318128">Daha fazla bilgi edinmek için üst karakter ve sekme tuşlarına basın</translation>
 <translation id="7330397557116570022">Dikte özelliğini kullanmak için bir metin alanına gidin</translation>
 <translation id="7331646370422660166">alt + aşağı ok</translation>
 <translation id="7340731148882810149">Otomatik tıklamalar menüsü</translation>

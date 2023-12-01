@@ -2395,7 +2395,6 @@ Zie https://www.chromestatus.com/feature/4664843055398912.</translation>
           Als je dit beleid instelt, kunnen gebruikers het niet wijzigen of overschrijven.
 
           Als dit beleid niet is ingesteld, staat de grote cursor in eerste instantie uit op het inlogscherm, maar kan de gebruiker deze op elk gewenst moment aanzetten.</translation>
-<translation id="3027837632741099453">De batterijbesparingsmodus wordt aangezet als het apparaat op de batterij werkt.</translation>
 <translation id="3030000825273123558">Rapportage van statistieken aanzetten</translation>
 <translation id="30300807616984726">Rapporteert app-voorraadgegevens voor aangesloten gebruikers.
 
@@ -4377,13 +4376,6 @@ Voor onbeheerde apparaten kan de gebruiker ervoor kiezen om de statistieken te s
 
       Als dit beleid niet is ingesteld of als het is toegepast, worden de controles voor DNS-onderschepping uitgevoerd. Als het beleid expliciet niet is toegepast, is dit niet het geval.</translation>
 <translation id="4700190441681139987">Geen sites toegang geven tot sensoren</translation>
-<translation id="4701899474784891858">Met dit beleid kun je de instelling voor batterijbesparing aan- of uitzetten. Met deze instelling wordt de framesnelheid beperkt voor een lager stroomverbruik.
-      Als je dit beleid niet instelt, kan de eindgebruiker deze instelling beheren in chrome://settings/performance.
-      Dit zijn de verschillende niveaus:
-<ph name="BATTERY_SAVER_MODE_DISABLED" /> (0): De batterijbesparingsmodus wordt uitgezet.
-      <ph name="BATTERY_SAVER_MODE_ENABLED_BELOW_THRESHOLD" /> (1): De batterijbesparingsmodus wordt aangezet als het apparaat op de batterij werkt en het batterijniveau laag is.
-      <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2): De batterijbesparingsmodus wordt aangezet als het apparaat op de batterij werkt.
-      </translation>
 <translation id="4703402283970867140">Slim dimmodel aanzetten, zodat het langer duurt tot het scherm wordt gedimd</translation>
 <translation id="4704958130749494760">Automatisch toestemming aan sites geven om verbinding te maken met seriële USB-apparaten.</translation>
 <translation id="4705329890928008808">Als je het beleid instelt op CopyCaCerts, zijn alle door ONC geïnstalleerde CA-certificaten met <ph name="WEB_TRUSTED_BIT" /> beschikbaar voor ARC-apps.

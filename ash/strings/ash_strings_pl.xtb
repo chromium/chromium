@@ -66,7 +66,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1225748608451425081">Ten Chromebook został zablokowany z powodu znanego błędu. Zalogowanie się będzie możliwe za <ph name="TIME_LEFT" />.</translation>
 <translation id="1226877728704622336">biurko nieaktywne</translation>
 <translation id="1229194443904279055">Wyjdź z trybu wybierania danych</translation>
-<translation id="1233979878541157665">Zamiast nazwy pliku spróbuj wyszukać „zachód słońca” lub „drzewo”. Możesz wyłączyć wyszukiwanie obrazów na pasku wyszukiwania.</translation>
 <translation id="1235458158152011030">Znane sieci</translation>
 <translation id="1239161794459865856">Funkcja <ph name="FEATURE_NAME" /> ma połączenie.</translation>
 <translation id="1240638468526743569">Aplikacja</translation>
@@ -1144,6 +1143,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="5620979661744857819">Zezwala na dostęp aplikacji <ph name="APP_NAME" /> oraz wszystkim aplikacjom i stronom internetowym, które mają uprawnienia do korzystania z kamery i mikrofonu. Konieczne może być odświeżenie strony lub ponowne uruchomienie aplikacji.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Nie udało się zweryfikować Twojego hasła. Spróbuj ponownie.</translation>
+<translation id="5632485077360054581">Pokaż jak</translation>
 <translation id="5648021990716966815">Gniazdo mikrofonu</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> wymaga Twojej reakcji.</translation>
 <translation id="5662075790140998213">Biurko 10</translation>
@@ -1337,7 +1337,6 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="643593192654616063">Wykorzystano <ph name="STORAGE_IN_USE_SIZE" /> z <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> na urządzeniu <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
-<translation id="6446225358675593408">Znajdź obrazy według zawartości</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> zdarzenie</translation>
 <translation id="6449483711453944360">Aplikacje na Linuksa ani okna incognito nie są obecnie obsługiwane</translation>
 <translation id="6450245544201845082">Skrót symulujący kliknięcie prawym przyciskiem myszy jest obecnie wyłączony</translation>
@@ -1520,6 +1519,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Powrót do wcześniejszej rozdzielczości za <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Otwórz Ustawienia</translation>
 <translation id="7180611975245234373">Odśwież</translation>
 <translation id="7188494361780961876">Menu zostało przeniesione w lewy górny róg ekranu.</translation>
 <translation id="7189412385142492784">Jak daleko jest Wenus</translation>
@@ -1539,7 +1539,6 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="7312210124139670355">Administrator resetuje Twoją kartę eSIM. Może to potrwać kilka minut.</translation>
 <translation id="7313193732017069507">Otwórz aparat</translation>
 <translation id="7316261577130609484">Dodaj nowe zadanie</translation>
-<translation id="7321889295239318128">Aby dowiedzieć się więcej, naciśnij Shift + Tab</translation>
 <translation id="7330397557116570022">Aby używać dyktowania, przejdź do pola tekstowego</translation>
 <translation id="7331646370422660166">Alt + strzałka w dół</translation>
 <translation id="7340731148882810149">Menu automatycznego klikania</translation>

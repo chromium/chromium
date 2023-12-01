@@ -13,7 +13,6 @@
 <translation id="1053651653201045802">Одјавени сте. Најавете се повторно за да ги користите обележувачите, лозинките и друго во вашата сметка.</translation>
 <translation id="1054045277222934172">Може да го промените стандардниот приказ на сајтот на приказ за компјутер во „Поставки“, а потоа „Поставки за содржини“</translation>
 <translation id="1054745118061919935">Ако продолжите, се согласувате со <ph name="BEGIN_LINK" />Условите за користење<ph name="END_LINK" />.</translation>
-<translation id="1063454504051558093">Употребете друга лозинка…</translation>
 <translation id="1066060668811609597">Управувајте со синхронизацијата</translation>
 <translation id="1069154182096085577">Лозинката веќе постои</translation>
 <translation id="1076421457278169141">Кодот е скениран</translation>
@@ -209,6 +208,7 @@
 <translation id="2050196510205866090">{count,plural, =1{{count} зачуван начин на плаќање достапен над тастатурата.}one{{count} зачуван начин на плаќање достапни над тастатурата.}other{{count} зачувани начини на плаќање достапни над тастатурата.}}</translation>
 <translation id="2055515971416882518">Отворете „Поставки“</translation>
 <translation id="2059166748188874810">Општина</translation>
+<translation id="2062410130322589403">Упатство за вашите опции за приватност</translation>
 <translation id="2073572773299281212">Активен пред <ph name="DAYS" /> дена</translation>
 <translation id="2074131957428911366">Секогаш може да изберете што да синхронизирате во <ph name="BEGIN_LINK" />Поставки<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Врати</translation>
@@ -315,7 +315,6 @@
 <translation id="2664621323652615289">Запри</translation>
 <translation id="2666092431469916601">Горе</translation>
 <translation id="2669454659051515572">Сите кои го користат уредов може да ги видат преземените датотеки</translation>
-<translation id="2671426118752779020">Може да ги користите лозинките што сте ги зачувале во „Управникот со лозинки на Google“ во други апликации на вашиот iPhone.</translation>
 <translation id="2690858294534178585">Камерата е во употреба</translation>
 <translation id="2691653761409724435">Не се достапни офлајн</translation>
 <translation id="2695507686909505111">Страницата е преведена</translation>
@@ -378,8 +377,6 @@
 <translation id="2923448633003185837">Залепи и оди</translation>
 <translation id="292639812446257861">Означи како непрочитано</translation>
 <translation id="2931440415625410757">Прикажи ги упатствата</translation>
-<translation id="2932085390869194046">Предложете лозинка…</translation>
-<translation id="2932765531295814441">Додавајте лозинки рачно</translation>
 <translation id="2952246431280799028">Допрете и задржете адреса.</translation>
 <translation id="2952278131021475699">Пребарување со камерата на Lens</translation>
 <translation id="2952581218264071393">1. Отворете ги поставките за Chrome</translation>
@@ -564,7 +561,6 @@
 <translation id="3922310737605261887">Пребарајте го копираниот текст</translation>
 <translation id="3928666092801078803">Комбинирај ги моите податоци</translation>
 <translation id="3929457972718048006">Адреси</translation>
-<translation id="3943492037546055397">Лозинки</translation>
 <translation id="3955822496205734389">Имате слаби лозинки.</translation>
 <translation id="3959736869653157332">Мени → Нова картичка „Инкогнито“</translation>
 <translation id="3967822245660637423">Преземањето е завршено</translation>
@@ -578,7 +574,6 @@
 <translation id="4021931095789478915">Додајте ${url} во „Список за читање“</translation>
 <translation id="4038354071007134711">Ниедна апликација на уредот не може да ја отвори датотеката.</translation>
 <translation id="4042870976416480368">Пронајдете на страницата</translation>
-<translation id="40433179647657191">Создајте и споделете директен линк до делот од страницата што сте го нагласиле.</translation>
 <translation id="4045648459118332842">Добивајте ги зачуваните лозинки во која било апликација со еден допир</translation>
 <translation id="4049507953662678203">Проверете дали имате мрежна врска и обидете се повторно.</translation>
 <translation id="4066639687323968621">Најавете се со сметката на Google за да ги синхронизирате вашите обележувачи, историја и друго.</translation>
@@ -679,7 +674,6 @@
 <translation id="4619615317237390068">Картички од другите уреди</translation>
 <translation id="4620246317052452550">Прочитани страници</translation>
 <translation id="4620888520263267479">Прикажи прегледи на линк</translation>
-<translation id="4622477750832577849">Овозможете следење</translation>
 <translation id="4630540211544979320">Преведувај страници</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> повторно употребени лозинки</translation>
 <translation id="4634124774493850572">Употреби ја лозинката</translation>
@@ -701,13 +695,13 @@
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} и уште 1}one{{website_1}, {website_2} и уште {more_count}}other{{website_1}, {website_2} и уште {more_count}}}</translation>
 <translation id="4737560986434232178">Пребарајте ги „Неодамнешните картички“</translation>
 <translation id="473775607612524610">Ажурирај</translation>
+<translation id="4744428388659507035">За да ги добиете обележувачите на сите ваши уреди, вклучете „Обележувачи“ во „Поставки“.</translation>
 <translation id="4746926359847517643">Секогаш може да ги вратите во историјата.</translation>
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, Само на уредов, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Нова инкогнито картичка</translation>
 <translation id="4766112107778026136">Откриј и следи</translation>
 <translation id="47677902929517676">За да зачувувате лозинки во вашата сметка, прво мора да поставите код за најавување на вашиот уред.</translation>
 <translation id="4775879719735953715">Стандарден прелистувач</translation>
-<translation id="4778644898150334464">Употребете друга лозинка</translation>
 <translation id="4779732376610430319">Оди во „Поставки“…</translation>
 <translation id="478808905805139173">Да се отвори во „Инкогнито“?</translation>
 <translation id="4803185665210547709">Управувано од вашата организација.
@@ -798,7 +792,6 @@
 <translation id="519530786644929958">Преземањето не успеа и не може да се повтори.</translation>
 <translation id="5197255632782567636">Интернет</translation>
 <translation id="5211488077761630279">Дозволувате „<ph name="SITE_NAME" />“ да користи <ph name="PERMISSION" />?</translation>
-<translation id="5215990399368742238">Автоматски следи ги сите откриени пакети</translation>
 <translation id="5219295696240154694">Помогнете да се подобри безбедноста на интернет за сите</translation>
 <translation id="5220945116117011963">Создајте настани во календар од датуми</translation>
 <translation id="5221339005270097309">Се проверуваат лозинките…</translation>
@@ -821,7 +814,6 @@
 <translation id="5318298563956633672">Веќе го следите производов.</translation>
 <translation id="5329451663851195956">Може да повлечете надолу за да освежите.</translation>
 <translation id="5339316356165661760">Вклучи синхронизација</translation>
-<translation id="5345598430982201510">Никогаш не откривај пакети автоматски</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Да се следи пакетов?}one{Да се следат {COUNT} пакет?}other{Да се следат {COUNT} пакети?}}</translation>
 <translation id="536067926684072644">Прикажи ги обележувачите</translation>
 <translation id="5360976571138293719">За повеќе поставки што се однесуваат на приватноста, безбедноста и прибирањето податоци, одете на <ph name="BEGIN_LINK" />Услуги на Google<ph name="END_LINK" />.</translation>
@@ -847,7 +839,6 @@
 <translation id="5497202150450073388">Се обидовме да испорачаме. Ќе се обидеме пак.</translation>
 <translation id="5511959326926949696">Екстремна незадолжителна заштита за вашиот прелистувач. Треба да се користи само ако сметате дека можеби сте цел на прилично софистициран компјутерски напад.</translation>
 <translation id="5513681519188741830">пред <ph name="TIME" /> ч.</translation>
-<translation id="5520466080178053306">Допрете „Password Manager“, а потоа допрете „Додај“</translation>
 <translation id="5525095647255982834">За да ја испратите картичкава на друг уред, најавете се на Chrome таму.</translation>
 <translation id="5525269841082836315">Создај пристапна фраза</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} слаба лозинка}one{{COUNT} слаба лозинка}other{{COUNT} слаби лозинки}}</translation>
@@ -909,7 +900,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="5817176759448082654">Password Checkup</translation>
 <translation id="5819208479324046259">Управувано од <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="5827650163984030263">Скриј Password Manager</translation>
-<translation id="5833643789537100742">Зачувувајте лозинки, начини на плаќање и адреси за да може Chrome автоматски да ги пополнува подоцна.</translation>
 <translation id="5834415013958049700">Слика што ја копиравте со Lens</translation>
 <translation id="5844284118433003733">Кога сте најавени, податоциве се поврзуваат со вашата сметка на Google за да ве штитат на услугите на Google, на пример, зголемување на заштитата во Gmail по безбедносен инцидент.</translation>
 <translation id="5846482154967366008">Пребарувач</translation>
@@ -931,7 +921,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="5922999516621365983">Повлечете ја картичката тука за да ја закачите.</translation>
 <translation id="5938160824633642847">Уредот е речиси полн. Ослободете простор и обидете се повторно.</translation>
 <translation id="5948291296578561264">Ова ви овозможува да ги зачувате фотографиите во збирката со фотографии.</translation>
-<translation id="5951816930277761335">Споделете го линкот</translation>
 <translation id="5955891643922670672">Се прегледува офлајн верзија</translation>
 <translation id="5957613098218939406">Повеќе опции</translation>
 <translation id="595769230373966252">Пребарување со <ph name="SEARCH_PROVIDER" /></translation>
@@ -1058,9 +1047,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 
 Вашите податоци се шифрирани со вашата лозинка. Внесете ја за да користите и зачувувате податоци од Chrome во вашата сметка на Google.</translation>
 <translation id="6494931198667773526">Завршува</translation>
-<translation id="6497772452874122664">Ако имате доверба во <ph name="TIME" />, може да користите зачувана лозинка од друг сајт.
-
-Добро би било да користите единствена лозинка за секој сајт.</translation>
 <translation id="6497850081273517953">Chrome е застарен. За да се заштитите, ажурирајте на најновата верзија.</translation>
 <translation id="650279896687777322">Дознајте повеќе…</translation>
 <translation id="6507973708545996744">Најавете се за да ја добиете „Список за читање“ на сите ваши уреди.</translation>
@@ -1206,14 +1192,12 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7284359491594949826">{COUNT,plural, =1{Новиот пакет се следи}one{Новите пакети се следат}other{Новите пакети се следат}}</translation>
 <translation id="7291368939935408496">Се подготвуваат лозинките…</translation>
 <translation id="7302503784943202842">Користете ги лозинките на сите ваши уреди</translation>
-<translation id="730958329302570991">Лесно додавајте лозинки за сајтови во Google Password Manager во секое време.</translation>
 <translation id="7313347584264171202">Вашите картички „Инкогнито“ ќе ги најдете тука</translation>
 <translation id="7336264872878993241">Преземено <ph name="PERCENT" /> проценти</translation>
 <translation id="7340958967809483333">Опции за Discover</translation>
 <translation id="7346909386216857016">Добро, сфатив</translation>
 <translation id="734758817008927353">Опции за „Зачувај ја картичката“</translation>
 <translation id="7349129508108954623">Дозволете Chrome да користи „Карти на Google“ за да ви обезбедува насоки и локални информации за откриените адреси.</translation>
-<translation id="7351537303876921605">Допрете „Создај линк“ во контекстуалното мени</translation>
 <translation id="7352651011704765696">Нешто не е во ред</translation>
 <translation id="7353432112255316844">Потврдете дека сте вие</translation>
 <translation id="7367530036083223701">Со виџетот за Password Manager, безбедно пристапувајте до вашите лозинки од почетниот екран.</translation>
@@ -1243,6 +1227,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7491131399623468277">Отворете „Поставки“…</translation>
 <translation id="7492574581995589075">Вашата организација ја исклучи способноста да се користат и зачувуваат податоци од Chrome во вашата сметка на Google. Новите обележувачи, лозинки и друго ќе се зачувуваат само на овој уред.</translation>
 <translation id="749854780843431406">Нова картичка може да отворите од копчето за <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
+<translation id="7500419352370346534">Отсега може да ги контролирате сите ваши поставки за сметка на едно место</translation>
 <translation id="750149195207506638">Дестинацијата „Обележувачи“ е скриена</translation>
 <translation id="750228856503700085">Ажурирања не се достапни</translation>
 <translation id="750493650310597496">0 избрани</translation>
@@ -1312,7 +1297,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="784551991304901159">За да ги видите содржините, изберете „Вклучи“ од менито</translation>
 <translation id="7853202427316060426">Активност</translation>
 <translation id="7856733331829174190">Не може да се преземе</translation>
-<translation id="785938070103630874">Отворете лозинки, начини на плаќање или адреси и друго</translation>
 <translation id="7859704718976024901">Историја на прелистувањето</translation>
 <translation id="7866501058614003444">Следењето на пакетов е успешно сопрено.</translation>
 <translation id="7866993391592926595">Ако ја скриете картичкава, ќе се исклучи следењето пакети и ќе се отстранат сите податоци</translation>
@@ -1396,7 +1380,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="826614135184049678">Одјавени сте од сметката, <ph name="USER_NAME" />, како дел од ресетирањето на вашиот iPad. За да се најавите повторно, допрете „Продолжи“ подолу.</translation>
 <translation id="8271720166617117963">Прифати и најави се</translation>
 <translation id="8273982424131314219">Ќе ги пополните податоците на <ph name="URL" /></translation>
-<translation id="8278938988428169257">Внесете збор или фраза</translation>
 <translation id="8281781826761538115">Стандардно - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Прескокни</translation>
 <translation id="8283172974887967105">Постави…</translation>
@@ -1404,7 +1387,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8299417921174340354">За да ги користите лозинките, прво мора да поставите лозинка на вашиот уред.</translation>
 <translation id="8299613349954694191">Отворете картичка „Инкогнито“ за да прелистувате приватно на интернет.</translation>
 <translation id="8311853334103696030">Скриј „Следење цени“</translation>
-<translation id="8316944564970119719">Внесете сајт и лозинка, а потоа зачувајте</translation>
 <translation id="8319076807703933069">Ново пребарување</translation>
 <translation id="8328777765163860529">Затвори ги сите</translation>
 <translation id="8343993175958086504">Направете бекап од вашите работи и користете ги на сите уреди.</translation>
@@ -1495,7 +1477,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8780076847684176174">{count,plural, =1{Прегледајте ја картичката…}one{Прегледајте ги сите картички…}other{Прегледајте ги сите картички…}}</translation>
 <translation id="8787968206789828143">Пребарувајте на интернет</translation>
 <translation id="8792626944327216835">микрофон</translation>
-<translation id="8793366654064127924">Прашувај ме секогаш</translation>
 <translation id="8803639129939845298">Безбедно</translation>
 <translation id="8806823403540278281">Вашата организација бара да прелистувате „Инкогнито“. Картичките не се зачувуваат во режимот „Инкогнито“.
 <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
@@ -1522,9 +1503,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="890565330728586731">Назад</translation>
 <translation id="8909135823018751308">Сподели…</translation>
 <translation id="8909459547399237818">Изберете Password Manager, па допрете „Додај виџет“</translation>
-<translation id="8911759861431145525">Допрете „Додај“, а потоа внесете ги вашите податоци</translation>
 <translation id="891282356902782456">Лозинкава ќе се зачува само на овој уред. За да ја користите на другите ваши уреди, зачувајте ја на вашата сметка на Google, <ph name="EMAIL" />.</translation>
-<translation id="891658175948553296">Нагласете текст на сајт</translation>
 <translation id="8917490105272468696">Да, прифаќам</translation>
 <translation id="8928133177108699615">Компјутер</translation>
 <translation id="894191600409472540">Создајте силни лозинки</translation>

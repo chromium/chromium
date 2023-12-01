@@ -66,7 +66,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1225748608451425081">Votre Chromebook est verrouillé en raison d'un problème connu. Vous pourrez vous connecter dans <ph name="TIME_LEFT" />.</translation>
 <translation id="1226877728704622336">bureau inactif</translation>
 <translation id="1229194443904279055">Arrêter la sélection</translation>
-<translation id="1233979878541157665">Essayez de rechercher "coucher de soleil" ou "arbre" au lieu du nom de fichier. Vous pouvez désactiver la recherche d'images dans la barre de recherche.</translation>
 <translation id="1235458158152011030">Réseaux connus</translation>
 <translation id="1239161794459865856">La fonctionnalité <ph name="FEATURE_NAME" /> est connectée.</translation>
 <translation id="1240638468526743569">Une appli</translation>
@@ -1144,6 +1143,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="5620979661744857819">L'accès est accordé à <ph name="APP_NAME" />, ainsi qu'à l'ensemble des applis et sites Web ayant l'autorisation d'accéder à l'appareil photo et au micro. Vous devrez peut-être actualiser la page Web ou redémarrer l'appli.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Impossible de valider votre mot de passe. Réessayez.</translation>
+<translation id="5632485077360054581">Démonstration</translation>
 <translation id="5648021990716966815">Connecteur micro</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> requiert votre attention.</translation>
 <translation id="5662075790140998213">Bureau 10</translation>
@@ -1337,7 +1337,6 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="643593192654616063"><ph name="STORAGE_IN_USE_SIZE" /> d'espace de stockage utilisé sur un total de <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> vers <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">CPU</translation>
-<translation id="6446225358675593408">Trouver des images par contenu</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> événement</translation>
 <translation id="6449483711453944360">Les applis Linux et les fenêtres de navigation privée ne sont pas prises en charge actuellement</translation>
 <translation id="6450245544201845082">Le raccourci par clic droit est actuellement désactivé</translation>
@@ -1521,6 +1520,7 @@ Nouvelle installation</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Rétablissement de la résolution précédente dans <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Paramètres</translation>
 <translation id="7180611975245234373">Actualiser</translation>
 <translation id="7188494361780961876">Le menu a été déplacé dans l'angle supérieur gauche de l'écran.</translation>
 <translation id="7189412385142492784">À quelle distance se trouve Vénus</translation>
@@ -1541,7 +1541,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="7312210124139670355">Votre administrateur réinitialise votre eSIM. Cela peut prendre quelques minutes.</translation>
 <translation id="7313193732017069507">Développer la caméra</translation>
 <translation id="7316261577130609484">Ajouter une tâche</translation>
-<translation id="7321889295239318128">Appuyez sur Maj plus Tabulation pour en savoir plus</translation>
 <translation id="7330397557116570022">Accédez à un champ de texte pour utiliser la dictée</translation>
 <translation id="7331646370422660166">Alt+Flèche vers le bas</translation>
 <translation id="7340731148882810149">Menu des clics automatiques</translation>

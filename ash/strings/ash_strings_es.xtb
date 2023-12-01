@@ -66,7 +66,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1225748608451425081">Se ha bloqueado tu Chromebook debido a un problema conocido. Podrás volver a iniciar sesión dentro de <ph name="TIME_LEFT" />.</translation>
 <translation id="1226877728704622336">escritorio inactivo</translation>
 <translation id="1229194443904279055">Dejar de seleccionar</translation>
-<translation id="1233979878541157665">Prueba a buscar "atardecer" o "árbol" en lugar del nombre del archivo. Puedes desactivar la búsqueda de imágenes en la barra de búsqueda.</translation>
 <translation id="1235458158152011030">Redes conocidas</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> se ha conectado.</translation>
 <translation id="1240638468526743569">Una aplicación</translation>
@@ -1145,6 +1144,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5620979661744857819">Esto permite que accedan <ph name="APP_NAME" /> y todas las aplicaciones y sitios web con los permisos de cámara y micrófono. Es posible que tengas que actualizar la página web o reiniciar la aplicación.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">No se ha podido verificar tu contraseña. Inténtalo de nuevo.</translation>
+<translation id="5632485077360054581">Muéstrame cómo</translation>
 <translation id="5648021990716966815">Conector jack para micrófono</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> solicita tu atención.</translation>
 <translation id="5662075790140998213">Escritorio 10</translation>
@@ -1338,7 +1338,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="643593192654616063"><ph name="STORAGE_IN_USE_SIZE" /> de espacio de almacenamiento en uso de un total de <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> en <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">CPU</translation>
-<translation id="6446225358675593408">Busca tus imágenes por el contenido</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, eventos: <ph name="NUMBER" /></translation>
 <translation id="6449483711453944360">Las aplicaciones Linux y las ventanas de Incógnito no se admiten actualmente</translation>
 <translation id="6450245544201845082">La combinación de teclas para hacer clic con el botón derecho está desactivada en este momento</translation>
@@ -1522,6 +1521,7 @@ Nueva instalación</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Restableciendo la resolución anterior en <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Abrir Configuración</translation>
 <translation id="7180611975245234373">Actualizar</translation>
 <translation id="7188494361780961876">Se ha movido el menú a la esquina superior izquierda de la pantalla.</translation>
 <translation id="7189412385142492784">¿A qué distancia está Venus?</translation>
@@ -1541,7 +1541,6 @@ Nueva instalación</translation>
 <translation id="7312210124139670355">Tu administrador está restableciendo tu eSIM. Este proceso puede tardar unos minutos.</translation>
 <translation id="7313193732017069507">Ampliar cámara</translation>
 <translation id="7316261577130609484">Añadir tarea nueva</translation>
-<translation id="7321889295239318128">Pulsa Mayús + Tabulador para obtener más información</translation>
 <translation id="7330397557116570022">Ve a un campo de texto para usar el dictado</translation>
 <translation id="7331646370422660166">Alt + flecha hacia abajo</translation>
 <translation id="7340731148882810149">Menú de clics automáticos</translation>

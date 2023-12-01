@@ -21,5 +21,7 @@
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Nowe hasło do tej witryny}few{Nowe hasła do tej witryny}many{Nowe hasła do tej witryny}other{Nowe hasła do tej witryny}}</translation>
 <translation id="7286867818472074330">Wybierz klucz dostępu</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> z <ph name="ITEMS_TOTAL" />.</translation>
+<translation id="7738288782501322815">Ktoś przesłał Ci hasła do strony <ph name="SITE_NAME" /></translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> udostępnia Ci hasło do strony <ph name="SITE_NAME" /></translation>
 <translation id="8891372124884726271">Lista danych logowania jest zamknięta.</translation>
 </translationbundle>

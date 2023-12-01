@@ -66,7 +66,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1225748608451425081">Váš Chromebook je uzamknutý pre známy problém. Prihlásiť sa budete môcť po uplynutí tohto času: <ph name="TIME_LEFT" />.</translation>
 <translation id="1226877728704622336">plocha je neaktívna</translation>
 <translation id="1229194443904279055">Ukončiť výber</translation>
-<translation id="1233979878541157665">Skúste namiesto názvu súboru vyhľadať výraz „západ slnka“ alebo „strom“. Vyhľadávanie podľa obrázkov môžete vypnúť vo vyhľadávacom paneli.</translation>
 <translation id="1235458158152011030">Známe siete</translation>
 <translation id="1239161794459865856">Funkcia <ph name="FEATURE_NAME" /> je pripojená.</translation>
 <translation id="1240638468526743569">Aplikácia</translation>
@@ -1144,6 +1143,7 @@ Niektoré funkcie sú obmedzené, aby sa predĺžila výdrž batérie.</translat
 <translation id="5620979661744857819">Týmto povolíte prístup aplikácii <ph name="APP_NAME" /> aj všetkým aplikáciám a webom s povoleniami používať kameru a mikrofón. Zrejme budete musieť obnoviť webovú stránku alebo reštartovať aplikáciu.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Vaše heslo sa nepodarilo overiť. Skúste to znova.</translation>
+<translation id="5632485077360054581">Ukázať postup</translation>
 <translation id="5648021990716966815">Konektor mikrofónu</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> vyžaduje vašu pozornosť.</translation>
 <translation id="5662075790140998213">10. plocha</translation>
@@ -1337,7 +1337,6 @@ Niektoré funkcie sú obmedzené, aby sa predĺžila výdrž batérie.</translat
 <translation id="643593192654616063">Využívaný priestor z celkovej kapacity <ph name="STORAGE_TOTAL_SIZE" />: <ph name="STORAGE_IN_USE_SIZE" /></translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> do zariadenia <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">procesor</translation>
-<translation id="6446225358675593408">Vyhľadávajte obrázky podľa obsahu</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> udalosť</translation>
 <translation id="6449483711453944360">Aplikácie pre Linux a okná inkognito nie sú momentálne podporované.</translation>
 <translation id="6450245544201845082">Skratka kliknutia pravým tlačidlom je momentálne vypnutá</translation>
@@ -1521,6 +1520,7 @@ Nová inštalácia</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Vrátenie starého rozlíšenia prebehne o <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Otvoriť Nastavenia</translation>
 <translation id="7180611975245234373">Obnoviť</translation>
 <translation id="7188494361780961876">Ponuka bola presunutá do ľavého horného rohu obrazovky.</translation>
 <translation id="7189412385142492784">Ako ďaleko je Venuša</translation>
@@ -1540,7 +1540,6 @@ Nová inštalácia</translation>
 <translation id="7312210124139670355">Správca resetuje vašu eSIM kartu. Môže trvať niekoľko minút.</translation>
 <translation id="7313193732017069507">Rozbaliť kameru</translation>
 <translation id="7316261577130609484">Pridať novú úlohu</translation>
-<translation id="7321889295239318128">Viac sa dozviete stlačením klávesov Shift a Tab</translation>
 <translation id="7330397557116570022">Ak chcete použiť diktovanie, prejdite do textového poľa</translation>
 <translation id="7331646370422660166">Alt + šípka nadol</translation>
 <translation id="7340731148882810149">Ponuka automatických kliknutí</translation>

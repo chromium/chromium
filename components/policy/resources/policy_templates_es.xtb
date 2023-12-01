@@ -2399,7 +2399,6 @@ Si se habilita esta política, el menú de aplicaciones/la tecla de búsqueda po
           Si asignas un valor a esta política, los usuarios no podrán cambiarlo ni anularlo.
 
           Si no asignas ningún valor a esta política, el cursor grande se inhabilitará inicialmente en la pantalla de inicio de sesión, pero el usuario podrá habilitarlo en cualquier momento.</translation>
-<translation id="3027837632741099453">El modo Ahorro de batería se habilitará cuando el dispositivo funcione con batería.</translation>
 <translation id="3030000825273123558">Habilitar los informes estadísticos</translation>
 <translation id="30300807616984726">Envía informes sobre el inventario de aplicaciones de usuarios afiliados.
 
@@ -4408,13 +4407,6 @@ En el caso de los dispositivos no gestionados, el usuario puede decidir si quier
 
       Si esta política se habilita o no se establece, se realizarán las comprobaciones de interceptación de DNS. Si se inhabilita, no se realizarán las comprobaciones.</translation>
 <translation id="4700190441681139987">No permitir a ningún sitio web acceder a los sensores</translation>
-<translation id="4701899474784891858">Esta política habilita o inhabilita el ajuste del modo Ahorro de batería. Este ajuste permite limitar la velocidad de fotogramas para reducir el consumo de energía.
-      Si no se define esta política, el usuario final podrá controlar este ajuste en chrome://settings/performance.
-      Los diferentes niveles son:
-      <ph name="BATTERY_SAVER_MODE_DISABLED" /> (0): se inhabilitará el modo Ahorro de batería.
-      <ph name="BATTERY_SAVER_MODE_ENABLED_BELOW_THRESHOLD" /> (1): el modo Ahorro de batería se habilitará cuando el dispositivo funcione con batería y el nivel de la batería sea bajo.
-      <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2): el modo Ahorro de batería se habilitará cuando el dispositivo funcione con batería.
-      </translation>
 <translation id="4703402283970867140">Habilitar el modelo de atenuación inteligente para alargar el tiempo que pasa hasta que la pantalla se atenúe.</translation>
 <translation id="4704958130749494760">Permite conceder permiso automáticamente a sitios para conectarse a dispositivos serie USB.</translation>
 <translation id="4705329890928008808">Si se le asigna el valor CopyCaCerts a esta política, todos los certificados de CA instalados en ONC con <ph name="WEB_TRUSTED_BIT" /> estarán disponibles para las aplicaciones ARC.

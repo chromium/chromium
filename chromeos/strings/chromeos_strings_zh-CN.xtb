@@ -260,6 +260,7 @@
 <translation id="2872961005593481000">关机</translation>
 <translation id="2873483161362553159">浏览器导航</translation>
 <translation id="2874939134665556319">上一首</translation>
+<translation id="2875812231449496375">启用此设置可让该壁纸呈现最佳效果。您可以随时关闭此设置。</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> 秒内释放了 <ph name="RATE" /> 的电量。</translation>
 <translation id="2880569433548999039">“云朵的动态变化”屏保</translation>
 <translation id="2926057806159140518">输入您的用户名和密码，或扫描您的二维码</translation>
@@ -552,6 +553,7 @@
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5137451382116112100">全屏</translation>
 <translation id="5142961317498132443">身份验证</translation>
+<translation id="5145081769226915336">要自动开启深色模式吗？</translation>
 <translation id="5154917547274118687">内存</translation>
 <translation id="5160857336552977725">登录您的<ph name="DEVICE_TYPE" /></translation>
 <translation id="5166918508782100047">快速解答设置</translation>

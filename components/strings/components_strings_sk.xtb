@@ -663,6 +663,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2262243747453050782">Chyba protokolu HTTP</translation>
 <translation id="226481340855943334">Rodokmeň a genealógia</translation>
 <translation id="2265192657948645752">Práca v maloobchode</translation>
+<translation id="2265356434276802347">Toto pravidlo by nemalo mať viac ako tento počet vstupov: <ph name="MAX_ITEMS_LIMIT" />.</translation>
 <translation id="2267047181501709434">Prebieha overenie totožnosti…</translation>
 <translation id="2268743667444073169">Telenovely</translation>
 <translation id="2270484714375784793">Telefónne číslo</translation>

@@ -66,7 +66,6 @@
 <translation id="1225748608451425081">Белгилүү бир себептен улам сиздин Chromebook кулпуланды. Төмөнкү убакыттан кийин кире аласыз: <ph name="TIME_LEFT" />.</translation>
 <translation id="1226877728704622336">жигерсиз иш такта</translation>
 <translation id="1229194443904279055">Тандоону токтотуу</translation>
-<translation id="1233979878541157665">Файлдын аталышынын ордуна "күндүн батышы" же "дарак" деп издеп көрүңүз. Сүрөт издөө функциясын издөө тилкесинен өчүрө аласыз.</translation>
 <translation id="1235458158152011030">Белгилүү тармактар</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> туташты.</translation>
 <translation id="1240638468526743569">Колдонмо</translation>
@@ -1144,6 +1143,7 @@
 <translation id="5620979661744857819">Камера менен микрофонго уруксаты бар колдонмолордун жана вебсайттардын баарына жана <ph name="APP_NAME" /> колдонмосуна аларды пайдалануу мүмкүнчүлүгү берилет. Веб бетти жаңыртуу же колдонмону өчүрүп күйгүзүү керектелиши мүмкүн.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Сырсөзүңүз ырасталган жок. Кайталап көрүңүз.</translation>
+<translation id="5632485077360054581">Кантип?</translation>
 <translation id="5648021990716966815">Микрофондун оюкчасы</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> колдонмосун караңыз.</translation>
 <translation id="5662075790140998213">10-иш такта</translation>
@@ -1337,7 +1337,6 @@
 <translation id="643593192654616063">Сактагычта <ph name="STORAGE_TOTAL_SIZE" /> ичинен <ph name="STORAGE_IN_USE_SIZE" /> колдонулду</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> бөлмөсүндөгү <ph name="ROUTE_TITLE" /></translation>
 <translation id="6445915701151710649">процессор</translation>
-<translation id="6446225358675593408">Сүрөттөрдү контент боюнча издеңиз</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> иш-чара</translation>
 <translation id="6449483711453944360">Linux колдонмолору жана жашыруун терезелер учурда колдоого алынбайт</translation>
 <translation id="6450245544201845082">"Чычкандын оң баскычын чыкылдатуу" ыкчам баскычы учурда өчүк</translation>
@@ -1521,6 +1520,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> кийин эски чечилишине кайтарылат</translation>
+<translation id="7173114856073700355">Параметрлерди ачуу</translation>
 <translation id="7180611975245234373">Жаңылоо</translation>
 <translation id="7188494361780961876">Меню экрандын жогорку сол бурчуна жылдырылды.</translation>
 <translation id="7189412385142492784">Венера канчалык алыс жайгашкан?</translation>
@@ -1540,7 +1540,6 @@
 <translation id="7312210124139670355">Администраторуңуз eSIM-картаны баштапкы абалга келтирүүдө. Бул бир нече мүнөткө созулушу мүмкүн.</translation>
 <translation id="7313193732017069507">Камераны жайып көрсөтүү</translation>
 <translation id="7316261577130609484">Жаңы иш кошуу</translation>
-<translation id="7321889295239318128">Кеңири маалымат алуу үчүн Shift + Tab баскычын басыңыз</translation>
 <translation id="7330397557116570022">Текстти айтып терүү үчүн текст талаасына өтүңүз</translation>
 <translation id="7331646370422660166">alt + ылдый жебе</translation>
 <translation id="7340731148882810149">Автоматташтырылган чыкылдатуулар менюсу</translation>

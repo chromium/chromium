@@ -66,7 +66,6 @@
 <translation id="1225748608451425081">એક જાણીતી સમસ્યાને કારણે તમારું Chromebook લૉક થઈ ગયું છે. અહીં જણાવેલા સમય પછી તમે સાઇન ઇન કરી શકશો: <ph name="TIME_LEFT" />.</translation>
 <translation id="1226877728704622336">નિષ્ક્રિય ડેસ્ક</translation>
 <translation id="1229194443904279055">પસંદ કરવાનું બંધ કરો</translation>
-<translation id="1233979878541157665">ફાઇલનું નામ શોધવાને બદલે "સૂર્યાસ્ત" કે "ઝાડ" શોધવાનો પ્રયાસ કરી જુઓ. તમે શોધ બારમાં જઈને છબી વડે શોધની સુવિધા બંધ કરી શકો છો.</translation>
 <translation id="1235458158152011030">જાણીતા નેટવર્ક્સ</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> કનેક્ટ કરેલું છે.</translation>
 <translation id="1240638468526743569">ઍપ</translation>
@@ -1144,6 +1143,7 @@
 <translation id="5620979661744857819">આમ કરવાથી કૅમેરા અને માઇક્રોફોનની પરવાનગીઓ ધરાવતી <ph name="APP_NAME" /> અને બધી ઍપ તથા વેબસાઇટ માટે, ઍક્સેસની મંજૂરી આપવામાં આવે છે. તમારે વેેબપેજ રિફ્રેશ કરવાની અથવા ઍપ ફરી શરૂ કરવાની જરૂર પડી શકે છે.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">તમારો પાસવર્ડ ચકાસી શકાયો નથી. ફરી પ્રયાસ કરો.</translation>
+<translation id="5632485077360054581">મને બતાવો કે કેવી રીતે</translation>
 <translation id="5648021990716966815">માઇક જેક</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> તમને ધ્યાન આપવાની વિનંતી કરે છે.</translation>
 <translation id="5662075790140998213">ડેસ્ક 10</translation>
@@ -1337,7 +1337,6 @@
 <translation id="643593192654616063">કુલ <ph name="STORAGE_TOTAL_SIZE" />માંથી <ph name="STORAGE_IN_USE_SIZE" /> સ્ટોરેજનો ઉપયોગ થઈ રહ્યો છે</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> પર <ph name="ROUTE_TITLE" /></translation>
 <translation id="6445915701151710649">CPU</translation>
-<translation id="6446225358675593408">છબીમાંના કન્ટેન્ટ વડે તમારી છબીઓ શોધો</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> ઇવેન્ટ</translation>
 <translation id="6449483711453944360">Linux ઍપ અને છૂપી વિન્ડોને હાલમાં સપોર્ટ કરવામાં આવતો નથી</translation>
 <translation id="6450245544201845082">રાઇટ ક્લિક શૉર્ટકટ હાલમાં બંધ છે</translation>
@@ -1521,6 +1520,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">જૂના રિઝોલ્યુશન પર પાછા ફરી રહ્યાં છે <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">સેટિંગ ખોલો</translation>
 <translation id="7180611975245234373">રિફ્રેશ કરો</translation>
 <translation id="7188494361780961876">મેનૂને સ્ક્રીનની ઉપરના ડાબા ખૂણામાં ખસેડ્યું.</translation>
 <translation id="7189412385142492784">શુક્રનો ગ્રહ પૃથ્વીથી કેટલી દૂરીએ?</translation>
@@ -1540,7 +1540,6 @@
 <translation id="7312210124139670355">તમારા ઍડમિનિસ્ટ્રેટર તમારા ઇ-સિમને રીસેટ કરી રહ્યાં છે. આમાં થોડો સમય લાગી શકે છે.</translation>
 <translation id="7313193732017069507">કૅમેરાને મોટો કરો</translation>
 <translation id="7316261577130609484">નવું કાર્ય ઉમેરો</translation>
-<translation id="7321889295239318128">વધુ જાણવા માટે shift વત્તા ટૅબ કી દબાવો</translation>
 <translation id="7330397557116570022">ડિક્ટેશનનો ઉપયોગ કરવા માટે, ટેક્સ્ટ ફીલ્ડ પર જાઓ</translation>
 <translation id="7331646370422660166">alt + નીચેની ઍરો કી</translation>
 <translation id="7340731148882810149">ઑટોમૅટિક રીતે ક્લિક કરતું મેનૂ</translation>

@@ -21,5 +21,7 @@
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Iphasiwedi entsha yaleli sayithi}one{Amaphasiwedi amasha waleli sayithi}other{Amaphasiwedi amasha waleli sayithi}}</translation>
 <translation id="7286867818472074330">Khetha ukhiye wokudlula</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> kokungu-<ph name="ITEMS_TOTAL" />.</translation>
+<translation id="7738288782501322815">Uthole amaphasiwedi we-<ph name="SITE_NAME" /></translation>
+<translation id="8614995815226664591">U-<ph name="SENDER_NAME" /> wabelane nawe ngephasiwedi ye-<ph name="SITE_NAME" /></translation>
 <translation id="8891372124884726271">Uhlu lwemininingwane luvaliwe.</translation>
 </translationbundle>

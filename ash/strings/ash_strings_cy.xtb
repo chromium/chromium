@@ -66,7 +66,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1225748608451425081">Mae eich Chromebook wedi'i gloi oherwydd problem hysbys. Byddwch yn gallu mewngofnodi ar ôl: <ph name="TIME_LEFT" />.</translation>
 <translation id="1226877728704622336">desg anweithredol</translation>
 <translation id="1229194443904279055">Stopio dewis</translation>
-<translation id="1233979878541157665">Rhowch gynnig ar chwilio am 'machlud haul' neu 'coeden' yn lle enw'r ffeil. Gallwch ddiffodd chwilio lluniau yn y bar chwilio.</translation>
 <translation id="1235458158152011030">Rhwydweithiau hysbys</translation>
 <translation id="1239161794459865856">Mae <ph name="FEATURE_NAME" /> wedi'i gysylltu.</translation>
 <translation id="1240638468526743569">Ap</translation>
@@ -1144,6 +1143,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="5620979661744857819">Mae hyn yn caniatáu mynediad ar gyfer <ph name="APP_NAME" /> a phob ap a gwefan sydd â'r caniatadau camera a meicroffon. Mae'n bosib y bydd angen i chi ail-lwytho'r dudalen gwe neu ailddechrau'r ap.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Ni fu modd dilysu'ch cyfrinair. Rhowch gynnig arall arni.</translation>
+<translation id="5632485077360054581">Dangoswch i fi sut</translation>
 <translation id="5648021990716966815">Cysylltydd meic</translation>
 <translation id="5652575806481723716">Mae angen eich sylw ar <ph name="FOCUSED_APP_NAME" />.</translation>
 <translation id="5662075790140998213">Desg 10</translation>
@@ -1337,7 +1337,6 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="643593192654616063">Mae <ph name="STORAGE_IN_USE_SIZE" /> o le storio yn cael ei ddefnyddio allan o gyfanswm o <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> ar <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
-<translation id="6446225358675593408">Dod o hyd i'ch delweddau yn ôl y cynnwys</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> digwyddiad</translation>
 <translation id="6449483711453944360">Ni chefnogir apiau Linux a ffenestri anhysbys ar hyn o bryd</translation>
 <translation id="6450245544201845082">Mae'r llwybr byr de-glicio wedi'i ddiffodd ar hyn o bryd</translation>
@@ -1521,6 +1520,7 @@ Gosodiad newydd</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Wrthi'n dychwelyd i'r hen gyfraniad yn <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Agor y Gosodiadau</translation>
 <translation id="7180611975245234373">Ail-lwytho</translation>
 <translation id="7188494361780961876">Cafodd y ddewislen ei symud i gornel chwith uchaf y sgrîn.</translation>
 <translation id="7189412385142492784">Pa mor bell yw'r blaned Gwener</translation>
@@ -1540,7 +1540,6 @@ Gosodiad newydd</translation>
 <translation id="7312210124139670355">Mae eich gweinyddwr yn ailosod eich eSIM. Gallai hyn gymryd ychydig funudau.</translation>
 <translation id="7313193732017069507">Ehangu'r camera</translation>
 <translation id="7316261577130609484">Ychwanegu tasg newydd</translation>
-<translation id="7321889295239318128">Pwyswch Shift a Tab i ddysgu rhagor</translation>
 <translation id="7330397557116570022">Ewch i faes testun i ddefnyddio Arddweud</translation>
 <translation id="7331646370422660166">alt + saeth i lawr</translation>
 <translation id="7340731148882810149">Dewislen cliciau awtomatig</translation>

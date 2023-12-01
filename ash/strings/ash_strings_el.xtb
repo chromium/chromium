@@ -66,7 +66,6 @@
 <translation id="1225748608451425081">Το Chromebook κλειδώθηκε λόγω γνωστού προβλήματος. Θα μπορέσετε να συνδεθείτε σε: <ph name="TIME_LEFT" />.</translation>
 <translation id="1226877728704622336">ανενεργό γραφείο</translation>
 <translation id="1229194443904279055">Διακοπή επιλογής</translation>
-<translation id="1233979878541157665">Δοκιμάστε να αναζητήσετε τη λέξη "ηλιοβασίλεμα" ή "δέντρο" αντί για το όνομα του αρχείου. Μπορείτε να απενεργοποιήσετε την αναζήτηση με εικόνες στη γραμμή αναζήτησης.</translation>
 <translation id="1235458158152011030">Γνωστά δίκτυα</translation>
 <translation id="1239161794459865856">Η λειτουργία <ph name="FEATURE_NAME" /> συνδέθηκε.</translation>
 <translation id="1240638468526743569">Μια εφαρμογή</translation>
@@ -1144,6 +1143,7 @@
 <translation id="5620979661744857819">Αυτό επιτρέπει την πρόσβαση για την εφαρμογή <ph name="APP_NAME" /> και όλες τις εφαρμογές και ιστοτόπους με άδειες κάμερας και μικροφώνου. Ίσως χρειαστεί να ανανεώσετε την ιστοσελίδα ή να επανεκκινήσετε την εφαρμογή.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Δεν ήταν δυνατή η επαλήθευση του κωδικού πρόσβασής σας. Δοκιμάστε ξανά.</translation>
+<translation id="5632485077360054581">Οδηγίες</translation>
 <translation id="5648021990716966815">Υποδοχή μικροφώνου</translation>
 <translation id="5652575806481723716">Η εφαρμογή <ph name="FOCUSED_APP_NAME" /> χρειάζεται την προσοχή σας.</translation>
 <translation id="5662075790140998213">Γραφείο 10</translation>
@@ -1337,7 +1337,6 @@
 <translation id="643593192654616063"><ph name="STORAGE_IN_USE_SIZE" /> αποθηκευτικού χώρου σε χρήση από σύνολο <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> σε <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
-<translation id="6446225358675593408">Βρείτε τις εικόνες σας βάσει του περιεχομένου</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> συμβάν</translation>
 <translation id="6449483711453944360">Προς το παρόν, δεν υποστηρίζονται οι εφαρμογές Linux και τα παράθυρα για ανώνυμη περιήγηση</translation>
 <translation id="6450245544201845082">Η συντόμευση δεξιού κλικ είναι απενεργοποιημένη αυτήν τη στιγμή</translation>
@@ -1521,6 +1520,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Επαναφορά στην προηγούμενη ανάλυση σε <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Άνοιγμα ρυθμίσεων</translation>
 <translation id="7180611975245234373">Ανανέωση</translation>
 <translation id="7188494361780961876">Το μενού μεταφέρθηκε στην επάνω αριστερή γωνία της οθόνης.</translation>
 <translation id="7189412385142492784">Πόσο απέχει η Αφροδίτη</translation>
@@ -1540,7 +1540,6 @@
 <translation id="7312210124139670355">Ο διαχειριστής σας επαναφέρει την eSIM. Ενδέχεται να χρειαστούν μερικά λεπτά.</translation>
 <translation id="7313193732017069507">Επέκταση κάμερας</translation>
 <translation id="7316261577130609484">Προσθήκη νέας εργασίας</translation>
-<translation id="7321889295239318128">Πατήστε το shift και το tab για να μάθετε περισσότερα</translation>
 <translation id="7330397557116570022">Μεταβείτε σε ένα πεδίο κειμένου για να χρησιμοποιήσετε την Υπαγόρευση</translation>
 <translation id="7331646370422660166">alt + κάτω βέλος</translation>
 <translation id="7340731148882810149">Μενού αυτόματων κλικ</translation>

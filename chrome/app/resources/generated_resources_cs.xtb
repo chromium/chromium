@@ -612,7 +612,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1477654881618305065">Vaše organizace nepovoluje sdílet tento obsah. Pokud potřebujete pomoc, obraťte se na administrátora.</translation>
 <translation id="1478340334823509079">Podrobnosti: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">Instalace není povolena</translation>
-<translation id="1480571698637441426">Pokud na otázky chcete dostávat přizpůsobené odpovědi, poskytněte Asistentovi přístup ke snímkům obsahu na obrazovce. Mohou být zahrnuty i informace o přehrávaných skladbách nebo videích.</translation>
 <translation id="1480663089572535854">Můžete se vrátit zpět a změnit přiřazení pro akci Vybrat. Automatické prohledávání můžete kdykoliv vypnout v sekci Nastavení.</translation>
 <translation id="1481537595330271162">Při změně velikosti disku došlo k chybě</translation>
 <translation id="1482626744466814421">Přidat tuto kartu do záložek...</translation>
@@ -1115,7 +1114,6 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="1848219224579402567">Při zavření víka se odhlásit</translation>
 <translation id="184862733444771842">Žádost o funkci</translation>
 <translation id="1849016657376805933">Libovolné zařízení HID</translation>
-<translation id="1849186935225320012">Tato stránka má úplnou kontrolu nad zařízeními MIDI.</translation>
 <translation id="1850145825777333687">Identifikační údaje zařízení</translation>
 <translation id="1850508293116537636">Otočit &amp;ve směru hodinových ručiček</translation>
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Před registrací je čip TPM potřeba vymazat, aby systém <ph name="DEVICE_OS" /> mohl převzít jeho vlastnictví.<ph name="END_PARAGRAPH1" />
@@ -1612,7 +1610,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2224444042887712269">Toto nastavení patří uživateli <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Upravit název složky</translation>
 <translation id="2225927550500503913">Virtuální karta je zapnutá</translation>
-<translation id="2226449515541314767">U tohoto webu byla zablokována úplná kontrola zařízení MIDI.</translation>
 <translation id="2226826835915474236">Neaktivní zkratky</translation>
 <translation id="2226907662744526012">Po zadání kódu PIN odemykat automaticky</translation>
 <translation id="2227179592712503583">Odebrat návrh</translation>
@@ -1921,7 +1918,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2450849356604136918">Žádná aktivní zobrazení</translation>
 <translation id="2451298179137331965">2×</translation>
 <translation id="245322989586167203">Weby se k sériovým portům obvykle připojují kvůli přenosu dat, například při nastavování sítě</translation>
-<translation id="2453706416476934374">Pokud chcete, aby uživatel <ph name="SUPERVISED_USER_NAME" /> dostával přizpůsobené odpovědi na otázky, poskytněte Asistentovi přístup ke snímkům obsahu na obrazovce uživatele <ph name="SUPERVISED_USER_NAME" />. Mohou být zahrnuty i informace o přehrávaných skladbách nebo videích.</translation>
 <translation id="2453860139492968684">Dokončit</translation>
 <translation id="2454206500483040640">Rozděleno na oddíly</translation>
 <translation id="2454247629720664989">Klíčové slovo</translation>
@@ -2553,7 +2549,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="2932483646085333864">Chcete-li zahájit synchronizaci, odhlaste se a poté se znovu přihlaste.</translation>
 <translation id="2932883381142163287">Nahlásit zneužití</translation>
 <translation id="2933632078076743449">Poslední aktualizace</translation>
-<translation id="2934999512438267372">Úplné ovládání zařízení MIDI bylo povoleno</translation>
 <translation id="2935225303485967257">Spravovat profily</translation>
 <translation id="2935314715123552088">Deaktivovat aktivní profil eSIM karty</translation>
 <translation id="2935654492420446828">Školní účet přidáte později</translation>
@@ -2940,7 +2935,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3262986719682892278">Příliš velké</translation>
 <translation id="3264544094376351444">Bezpatkové písmo</translation>
 <translation id="3264582393905923483">Kontext</translation>
-<translation id="3265032511221679826">Zapnout přístup k přesné poloze?</translation>
 <translation id="3265459715026181080">Zavřít okno</translation>
 <translation id="3266022278425892773">Vývojové prostředí Linux</translation>
 <translation id="3266274118485960573">Bezpečnostní kontrola je spuštěna.</translation>
@@ -3897,6 +3891,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4005817994523282006">Metoda zjišťování časového pásma</translation>
 <translation id="4007856537951125667">Skrýt zkratky</translation>
 <translation id="4008291085758151621">V režimu virtuální reality informace o webu nejsou k dispozici</translation>
+<translation id="4010746393007464819">Je k dispozici upgrade na Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001">Chcete-li své záložky mít na mobilním zařízení, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Opravit rozšíření <ph name="EXTENSION_NAME" />?</translation>
 <translation id="4015163439792426608">Používáte rozšíření? <ph name="BEGIN_LINK" />Spravujte rozšíření<ph name="END_LINK" /> snadno na jednom místě.</translation>
@@ -3989,7 +3984,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4087089424473531098">Bylo vytvořeno rozšíření:
 
 <ph name="EXTENSION_FILE" /></translation>
-<translation id="408721682677442104">Úplné ovládání zařízení MIDI bylo odepřeno</translation>
 <translation id="4087328411748538168">Zobrazit vpravo</translation>
 <translation id="4089235344645910861">Nastavení byla uložena. Synchronizace byla zahájena.</translation>
 <translation id="4089817585533500276">shift + <ph name="TOP_ROW_KEY" /></translation>
@@ -4499,7 +4493,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4507128560633489176">Data byla vymazána.</translation>
 <translation id="4507373251891673233">Zablokovali jste všechna rozšíření ze zdroje <ph name="HOST" /></translation>
 <translation id="4507401683427517298">Klikněte na Přidat zástupce</translation>
-<translation id="4508032221004253235">Všechny aplikace a weby s oprávněním pro přístup k poloze a systém ChromeOS budou moci používat vaši polohu určenou podle Wi-Fi nebo mobilních sítí. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="4508150454272293946">Povolit aplikacím a webovým stránkám používat kamery připojené k tomuto zařízení. Pokud s kamerou máte stále problém, zkuste aplikaci restartovat nebo obnovit webovou stránku.</translation>
 <translation id="450867954911715010">Nastavení usnadnění přístupu</translation>
 <translation id="4508765956121923607">Z&amp;obrazit zdrojový kód</translation>
@@ -6057,6 +6050,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5782040878821624922">K dispozici na kterémkoliv zařízení</translation>
 <translation id="5782227691023083829">Překládání...</translation>
 <translation id="57838592816432529">Ztlumit</translation>
+<translation id="5784291589716625675">Změnit jazyk aplikace</translation>
 <translation id="5785583009707899920">Nástroje Chrome pro práci se soubory</translation>
 <translation id="5787146423283493983">Smlouva o klíči</translation>
 <translation id="5787420647064736989">Název zařízení</translation>
@@ -6530,6 +6524,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6151323131516309312">Stiskněte <ph name="SEARCH_KEY" /> pro vyhledávání <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">Soubor již existuje ve složce staženého obsahu.</translation>
 <translation id="6152918902620844577">Čeká se na další operaci</translation>
+<translation id="6153439704237222699">Další informace o záhlaví Do Not Track</translation>
 <translation id="6154240335466762404">Odebrat všechny porty</translation>
 <translation id="615436196126345398">Protokol</translation>
 <translation id="6155141482566063812">Karta na pozadí sdílí vaši obrazovku</translation>
@@ -6868,7 +6863,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6434325376267409267">Aplikaci <ph name="APP_NAME" /> budete moci používat až poté, co zařízení aktualizujete.</translation>
 <translation id="6435339218366409950">Vyberte jazyk, do kterého chcete stránku přeložit</translation>
 <translation id="6436164536244065364">Zobrazit v Internetovém obchodu</translation>
-<translation id="6436610005579237680">Pokud chcete dostávat lépe přizpůsobené odpovědi, umožněte Asistentovi Google přístup ke snímku obsahu na obrazovce, když se na něco zeptáte. Asistent také může používat informace o přehrávaných skladbách nebo videích.</translation>
 <translation id="6436778875248895551">Rozšíření <ph name="EXTENSION_NAME" /> váš administrátor zablokoval:</translation>
 <translation id="6438234780621650381">Reset nastavení</translation>
 <translation id="6438475350605608554">Hesla už importujete na jiné kartě</translation>
@@ -7059,7 +7053,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6592808042417736307">Otisk prstu byl sejmut</translation>
 <translation id="6593881952206664229">Mediální obsah chráněný autorskými právy se nemusí přehrávat</translation>
 <translation id="6594011207075825276">Hledání zařízení se sériovým portem…</translation>
-<translation id="6595187330192059106">Webu <ph name="HOST" /> vždy blokovat úplné ovládání zařízení MIDI</translation>
 <translation id="6595322909015878027">Zákaz automaticky aktivovat režim obrazu v obraze</translation>
 <translation id="6595408197871512625">{COUNT,plural, =1{Úspěšně jste změnili prolomené heslo.
 
@@ -7937,7 +7930,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7299337219131431707">Povolit prohlížení v roli hosta</translation>
 <translation id="7299515639584427954">Změnit výchozí aplikaci pro podporované odkazy?</translation>
 <translation id="7299588179200441056"><ph name="URL" /> – <ph name="FOLDER" /></translation>
-<translation id="7301470816294041580">Můžete se zeptat „Ok Google, co je tohle za skladbu?“ nebo „Ok Google, co je na obrazovce?“</translation>
 <translation id="7301812050652048720">Přístupový klíč byl smazán</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Tato aplikace by Chromu mohla bránit ve správném fungování.}few{Tyto aplikace by Chromu mohly bránit ve správném fungování.}many{Tyto aplikace by Chromu mohly bránit ve správném fungování.}other{Tyto aplikace by Chromu mohly bránit ve správném fungování.}}</translation>
 <translation id="7303281435234579599">Jejda! Při nastavování ukázkového režimu se něco pokazilo.</translation>
@@ -8535,6 +8527,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7757787379047923882">Text sdílený ze zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Úprava ohraničení zobrazení</translation>
+<translation id="7759809451544302770">Volitelné</translation>
 <translation id="7762024824096060040">Tento účet nelze použít</translation>
 <translation id="7762243782113123335">Litujeme, něco se pokazilo. Zašlete nám prosím zpětnou vazbu s hashtagem #bruschetta v popisu. Kód chyby je <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Přidat adresu</translation>
@@ -8852,6 +8845,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7988805580376093356">Ponechat si stávající operační systém a spustit <ph name="DEVICE_OS" /> z USB</translation>
 <translation id="7988876720343145286">Další nastavení a oprávnění systému Android</translation>
 <translation id="7990863024647916394">Hlas <ph name="DISPLAY_NAME" /> <ph name="COUNT" /></translation>
+<translation id="7990958035181555539">Automaticky přenést Wi-Fi z telefonu Android</translation>
 <translation id="7991296728590311172">Nastavení přístupu pomocí přepínačů</translation>
 <translation id="7992203134935383159">Syntéza řeči</translation>
 <translation id="7994515119120860317">Přeložit text na obrázku pomocí služby <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -8928,7 +8922,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8050038245906040378">Komerční podepisování kódu Microsoft</translation>
 <translation id="8050191834453426339">Ověřit znovu</translation>
 <translation id="8051193500142930381">Funkce vyžadující fotoaparát nebudou k dispozici</translation>
-<translation id="8051390370038326517">Webu <ph name="HOST" /> vždy povolit úplné ovládání zařízení MIDI</translation>
 <translation id="8052218774860457016">Správa synchronizace prohlížeče</translation>
 <translation id="8053278772142718589">Soubory PKCS #12</translation>
 <translation id="8053390638574070785">Načíst tuto stránku znovu</translation>
@@ -9008,7 +9001,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8109109153262930486">Výchozí avatar</translation>
 <translation id="8110393529211831722">Předplatné je nainstalováno pouze na tomto zařízení a není synchronizováno s jinými zařízeními pod vaším účtem. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Stahování seznamu kontaktů…</translation>
-<translation id="8113476325385351118">Tomuto webu úplné ovládání zařízení MIDI nadále blokovat</translation>
 <translation id="8115139559594092084">Z vašeho Disku Google</translation>
 <translation id="8116972784401310538">&amp;Správce záložek</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> si pamatuje, jak jste se přihlásili, a když je to možné, přihlásí vás automaticky. Když je tato funkce vypnutá, zobrazuje se pokaždé žádost o potvrzení.</translation>
@@ -9404,7 +9396,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8425492902634685834">Připnout na hlavní panel</translation>
 <translation id="8425768983279799676">Pomocí kódu PIN můžete odemknout zařízení.</translation>
 <translation id="8426111352542548860">Uložit skupinu</translation>
-<translation id="8426713856918551002">Aktivování</translation>
 <translation id="8427213022735114808">Diktování odesílá váš hlas do Googlu, aby bylo možné hlasově zadávat do libovolného textového pole.</translation>
 <translation id="8427292751741042100">vloženo na libovolném webu</translation>
 <translation id="8428213095426709021">Nastavení</translation>
@@ -9613,7 +9604,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8608618451198398104">Přidat lístek Kerberos</translation>
 <translation id="8609465669617005112">Posunout nahoru</translation>
 <translation id="8610103157987623234">Nesprávný formát, zkuste to znovu</translation>
-<translation id="8611682088849615761">I nadále tomuto webu povolit úplné ovládání zařízení MIDI</translation>
 <translation id="8613164732773110792">Jen malá písmena, číslice, podtržítka nebo spojovníky</translation>
 <translation id="8613504115484579584">Způsoby přihlášení</translation>
 <translation id="8613645710357126807">Používání rozšíření není povoleno</translation>
@@ -9787,6 +9777,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8729133765463465108">Naskenovat QR kód pomocí fotoaparátu</translation>
 <translation id="8730621377337864115">Hotovo</translation>
 <translation id="8731029916209785242">Oprávnění (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731268612289859741">Bezpečnostní kód</translation>
 <translation id="8731629443331803108">Web <ph name="SITE_NAME" /> žádá o tato oprávnění: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Číslo portu</translation>
 <translation id="8732030010853991079">Toto rozšíření aktivujete kliknutím na tuto ikonu.</translation>
@@ -9798,6 +9789,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8736288397686080465">Tento web byl na pozadí aktualizován.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Vyberte jazyk, do kterého chcete stránku přeložit</translation>
+<translation id="8738418093147087440">Vyhledat podle zemí, jazyka nebo názvů metod zadávání</translation>
 <translation id="8740086188450289493">Použít heslo k účtu Google</translation>
 <translation id="8740247629089392745">Tento Chromebook můžete předat uživateli <ph name="SUPERVISED_USER_NAME" />. Nastavení je skoro hotové. Pak bude čas prozkoumat obsah.</translation>
 <translation id="8740672167979365981">Je vyžadována aktualizace systému ChromeOS Flex</translation>
@@ -10440,7 +10432,6 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="936646668635477464">Kamera a mikrofon</translation>
 <translation id="936801553271523408">Diagnostická data o systému</translation>
 <translation id="93766956588638423">Opravit rozšíření</translation>
-<translation id="938568644810664664">Zkuste „Ok Google, co je tohle za skladbu?“ nebo „Ok Google, co je na obrazovce?“</translation>
 <translation id="938623846785894166">Neobvyklý soubor</translation>
 <translation id="939401694733344652">Tyto účty se momentálně nepoužívají s aplikacemi pro Android. Pokud vyberete účet k použití s touto aplikací pro Android, bude ho možné používat také s jinými aplikacemi pro Android. Přístup aplikací pro Android můžete změnit v <ph name="LINK_BEGIN" />Nastavení &gt; Účty<ph name="LINK_END" />.</translation>
 <translation id="939553663881639126">Zvolte, zda chcete dostávat další návrhy ve vyhledávání</translation>

@@ -66,7 +66,6 @@
 <translation id="1225748608451425081">Chromebookját ismert probléma miatt zároltuk. Ennyi idő után jelentkezhet be újra: <ph name="TIME_LEFT" />.</translation>
 <translation id="1226877728704622336">inaktív asztal</translation>
 <translation id="1229194443904279055">Kijelölés leállítása</translation>
-<translation id="1233979878541157665">A fájl neve helyett inkább keressen a „naplemente” vagy a „fa” kifejezésre. A képkeresést a keresősávban kapcsolhatja ki.</translation>
 <translation id="1235458158152011030">Ismert hálózatok</translation>
 <translation id="1239161794459865856">A(z) <ph name="FEATURE_NAME" /> csatlakozik.</translation>
 <translation id="1240638468526743569">Az egyik alkalmazás</translation>
@@ -1145,6 +1144,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="5620979661744857819">Ezzel engedélyezi a hozzáférést a(z) <ph name="APP_NAME" />, valamint a kamera- és mikrofonhasználati engedéllyel rendelkező összes alkalmazás és webhely számára. Előfordulhat, hogy frissítenie kell a weboldalt, vagy újra kell indítania az alkalmazást.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Jelszavának ellenőrzése nem sikerült. Próbálja újra.</translation>
+<translation id="5632485077360054581">Bemutató</translation>
 <translation id="5648021990716966815">Mikrofon jack csatlakozója</translation>
 <translation id="5652575806481723716">A(z) <ph name="FOCUSED_APP_NAME" /> alkalmazás a figyelmét igényli.</translation>
 <translation id="5662075790140998213">10. asztal</translation>
@@ -1338,7 +1338,6 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="643593192654616063"><ph name="STORAGE_IN_USE_SIZE" /> foglalt a teljes <ph name="STORAGE_TOTAL_SIZE" /> tárhelyből</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> itt: <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
-<translation id="6446225358675593408">Képkeresés képtartalom alapján</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> esemény</translation>
 <translation id="6449483711453944360">A Linux-alkalmazások és az inkognitó ablakok jelenleg nem támogatottak.</translation>
 <translation id="6450245544201845082">A jobb egérgombos kattintás billentyűparancsa jelenleg ki van kapcsolva</translation>
@@ -1522,6 +1521,7 @@ Frissen telepítve</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Visszaállítás a régi felbontásra <ph name="TIMEOUT_SECONDS" /> mp múlva</translation>
+<translation id="7173114856073700355">Beállítások megnyitása</translation>
 <translation id="7180611975245234373">Frissítés</translation>
 <translation id="7188494361780961876">A menü a képernyő bal felső sarkába került.</translation>
 <translation id="7189412385142492784">Milyen messze van a Vénusz?</translation>
@@ -1541,7 +1541,6 @@ Frissen telepítve</translation>
 <translation id="7312210124139670355">A rendszergazda visszaállítja az Ön eSIM-jét. Ez eltarthat néhány percig.</translation>
 <translation id="7313193732017069507">Kamera kibontása</translation>
 <translation id="7316261577130609484">Új feladat felvétele</translation>
-<translation id="7321889295239318128">További információért nyomja meg a Shift + Tab billentyűkombinációt</translation>
 <translation id="7330397557116570022">A diktálás funkció használatához lépjen valamelyik szövegmezőbe</translation>
 <translation id="7331646370422660166">alt + lefelé mutató nyíl</translation>
 <translation id="7340731148882810149">Automatikus kattintások menü</translation>

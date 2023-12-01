@@ -66,7 +66,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1225748608451425081">Je Chromebook is vergrendeld vanwege een bekend probleem. Je kunt inloggen over: <ph name="TIME_LEFT" />.</translation>
 <translation id="1226877728704622336">inactief bureau</translation>
 <translation id="1229194443904279055">Selecteren stoppen</translation>
-<translation id="1233979878541157665">Zoek eens naar 'zonsondergang' of 'boom' in plaats van naar de bestandsnaam. Je kunt de zoekfunctie voor afbeeldingen uitzetten in de zoekbalk.</translation>
 <translation id="1235458158152011030">Bekende netwerken</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> is verbonden.</translation>
 <translation id="1240638468526743569">Een app</translation>
@@ -1144,6 +1143,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="5620979661744857819">Hiermee geef je toegang aan <ph name="APP_NAME" /> en alle apps en websites met camera- en microfoonrechten. Je moet misschien de webpagina vernieuwen of de app opnieuw starten.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Je wachtwoord kan niet worden geverifieerd. Probeer het opnieuw.</translation>
+<translation id="5632485077360054581">Laten zien</translation>
 <translation id="5648021990716966815">Microfoonaansluiting</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> vraagt om je aandacht.</translation>
 <translation id="5662075790140998213">Bureau 10</translation>
@@ -1337,7 +1337,6 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="643593192654616063"><ph name="STORAGE_IN_USE_SIZE" /> opslag van in totaal <ph name="STORAGE_TOTAL_SIZE" /> in gebruik</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> in <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
-<translation id="6446225358675593408">Je afbeeldingen zoeken op basis van de content</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> afspraak</translation>
 <translation id="6449483711453944360">Linux-apps en incognitovensters worden momenteel niet ondersteund</translation>
 <translation id="6450245544201845082">De sneltoets voor klikken met de rechtermuisknop staat op dit moment uit</translation>
@@ -1521,6 +1520,7 @@ Nieuwe installatie</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
 <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Terugzetten naar oude resolutie over <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Instellingen openen</translation>
 <translation id="7180611975245234373">Vernieuwen</translation>
 <translation id="7188494361780961876">Menu verplaatst naar linksboven in het scherm.</translation>
 <translation id="7189412385142492784">Hoe ver weg is Venus</translation>
@@ -1540,7 +1540,6 @@ Nieuwe installatie</translation>
 <translation id="7312210124139670355">Je beheerder reset je e-simkaart. Dit kan een paar minuten duren.</translation>
 <translation id="7313193732017069507">Camera uitvouwen</translation>
 <translation id="7316261577130609484">Nieuwe taak toevoegen</translation>
-<translation id="7321889295239318128">Druk op Shift + Tab voor meer informatie</translation>
 <translation id="7330397557116570022">Ga naar een tekstveld om dicteren te gebruiken</translation>
 <translation id="7331646370422660166">alt + pijl-omlaag</translation>
 <translation id="7340731148882810149">Menu Automatische klikken</translation>

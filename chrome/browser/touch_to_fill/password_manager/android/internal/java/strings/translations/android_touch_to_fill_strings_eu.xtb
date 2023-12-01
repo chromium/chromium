@@ -21,5 +21,7 @@
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Webgunerako pasahitz berria}other{Webgunerako pasahitz berriak}}</translation>
 <translation id="7286867818472074330">Hautatu sarbide-gakoa</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEMS_TOTAL" /> posiziotatik <ph name="ITEM_POSITION" />garrena.</translation>
+<translation id="7738288782501322815"><ph name="SITE_NAME" /> webgunerako pasahitzak jaso dituzu</translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> erabiltzaileak <ph name="SITE_NAME" /> webgunerako pasahitz bat partekatu du zurekin</translation>
 <translation id="8891372124884726271">Kredentzialen zerrenda itxita dago.</translation>
 </translationbundle>

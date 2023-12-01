@@ -66,7 +66,6 @@
 <translation id="1225748608451425081">由於發生已知問題，因此 Chromebook 已鎖定。您將可在 <ph name="TIME_LEFT" />後登入。</translation>
 <translation id="1226877728704622336">唔係用緊嘅桌面</translation>
 <translation id="1229194443904279055">停止選取</translation>
-<translation id="1233979878541157665">請搜尋「日落」或「樹木」，而不是搜尋檔案名稱。你可在搜尋列中關閉圖片搜尋功能。</translation>
 <translation id="1235458158152011030">已知網絡</translation>
 <translation id="1239161794459865856">「<ph name="FEATURE_NAME" />」已連線。</translation>
 <translation id="1240638468526743569">有應用程式</translation>
@@ -1143,6 +1142,7 @@
 <translation id="5620979661744857819">此操作會允許「<ph name="APP_NAME" />」和所有具備相機和麥克風權限的應用程式和網站存取。系統可能會要求你重新整理網頁或重新啟動應用程式。</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">無法驗證您的密碼。請再試一次。</translation>
+<translation id="5632485077360054581">顯示方法</translation>
 <translation id="5648021990716966815">麥克風插孔</translation>
 <translation id="5652575806481723716">「<ph name="FOCUSED_APP_NAME" />」有新嘅要求需要你處理。</translation>
 <translation id="5662075790140998213">桌面 10</translation>
@@ -1336,7 +1336,6 @@
 <translation id="643593192654616063">用咗 <ph name="STORAGE_IN_USE_SIZE" /> 儲存空間 (總空間 <ph name="STORAGE_TOTAL_SIZE" />)</translation>
 <translation id="6445835306623867477">在<ph name="RECEIVER_NAME" />投放 <ph name="ROUTE_TITLE" /></translation>
 <translation id="6445915701151710649">CPU</translation>
-<translation id="6446225358675593408">按內容搜尋圖片</translation>
 <translation id="6447111710783417522"><ph name="DATE" />，<ph name="NUMBER" /> 個活動</translation>
 <translation id="6449483711453944360">目前不支援 Linux 應用程式和無痕式視窗</translation>
 <translation id="6450245544201845082">右鍵快速鍵目前已關閉</translation>
@@ -1519,6 +1518,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />，
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">系統將在 <ph name="TIMEOUT_SECONDS" /> 秒後還原成原來的解像度</translation>
+<translation id="7173114856073700355">開啟設定</translation>
 <translation id="7180611975245234373">重新整理</translation>
 <translation id="7188494361780961876">已經將選單移去螢幕左上角。</translation>
 <translation id="7189412385142492784">金星距離幾遠</translation>
@@ -1538,7 +1538,6 @@
 <translation id="7312210124139670355">管理員正在重設您的 eSIM 卡。這項操作可能需時數分鐘。</translation>
 <translation id="7313193732017069507">展開相機調整大小的按鈕</translation>
 <translation id="7316261577130609484">新增工作</translation>
-<translation id="7321889295239318128">㩒 Shift 同 Tab 制就可以了解詳情</translation>
 <translation id="7330397557116570022">將焦點放到文字欄位以使用「語音聽寫」</translation>
 <translation id="7331646370422660166">Alt 鍵 + 向下箭咀鍵</translation>
 <translation id="7340731148882810149">自動點擊選單</translation>

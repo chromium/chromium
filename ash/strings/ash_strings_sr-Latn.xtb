@@ -66,7 +66,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1225748608451425081">Chromebook je zaključan zbog poznatog problema. Moći ćete da se prijavite za: <ph name="TIME_LEFT" />.</translation>
 <translation id="1226877728704622336">neaktivna radna površina</translation>
 <translation id="1229194443904279055">Izađi iz režima biranja</translation>
-<translation id="1233979878541157665">Probajte da potražite „zalazak sunca“ ili „stablo“ umesto naziva fajla. Možete da isključite pretragu slika u traci za pretragu.</translation>
 <translation id="1235458158152011030">Poznate mreže</translation>
 <translation id="1239161794459865856">Funkcija <ph name="FEATURE_NAME" /> je povezana.</translation>
 <translation id="1240638468526743569">Aplikacija</translation>
@@ -1145,6 +1144,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="5620979661744857819">Ovo omogućava pristup aplikaciji <ph name="APP_NAME" /> i svim aplikacijama i veb-sajtovima koji imaju dozvole za kameru i mikrofon. Možda ćete morati da osvežite veb-stranicu ili restartujete aplikaciju.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Verifikacija lozinke nije uspela. Probajte ponovo.</translation>
+<translation id="5632485077360054581">Pokaži mi kako</translation>
 <translation id="5648021990716966815">Utikač za mikrofon</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> zahteva vašu pažnju.</translation>
 <translation id="5662075790140998213">Radna površina 10</translation>
@@ -1338,7 +1338,6 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="643593192654616063">Koristi se <ph name="STORAGE_IN_USE_SIZE" /> memorijskog prostora od ukupno <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> na uređaju <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">procesor</translation>
-<translation id="6446225358675593408">Pronađite slike prema sadržaju</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> događaj</translation>
 <translation id="6449483711453944360">Linux aplikacije i prozori bez arhiviranja trenutno nisu podržani</translation>
 <translation id="6450245544201845082">Prečica za desni klik je trenutno isključena</translation>
@@ -1522,6 +1521,7 @@ Novo instaliranje</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Vraćanje na staru rezoluciju za <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Otvori Podešavanja</translation>
 <translation id="7180611975245234373">Osveži</translation>
 <translation id="7188494361780961876">Meni je premešten u gornji levi ugao ekrana.</translation>
 <translation id="7189412385142492784">Koliko daleko je Venera</translation>
@@ -1542,7 +1542,6 @@ Priključite uređaj na napajanje.</translation>
 <translation id="7312210124139670355">Administrator resetuje eSIM. To može da potraje nekoliko minuta.</translation>
 <translation id="7313193732017069507">Proširite kameru</translation>
 <translation id="7316261577130609484">Dodaj novi zadatak</translation>
-<translation id="7321889295239318128">Pritisnite Shift + Tab da biste saznali više</translation>
 <translation id="7330397557116570022">Idite u polje za tekst da biste koristili diktiranje</translation>
 <translation id="7331646370422660166">alt + strelica nadole</translation>
 <translation id="7340731148882810149">Meni za automatske klikove</translation>

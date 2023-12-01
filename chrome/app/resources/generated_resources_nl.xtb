@@ -610,7 +610,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1477654881618305065">Je organisatie staat niet toe dat je deze content deelt. Als je hulp nodig hebt, neem je contact op met de beheerder.</translation>
 <translation id="1478340334823509079">Details: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">Installatie is niet mogelijk</translation>
-<translation id="1480571698637441426">Laat de Assistent een screenshot van je scherm zien om afgestemde reacties te krijgen als je vragen stelt. Hieronder kan ook informatie vallen over muzieknummers of video's die worden afgespeeld.</translation>
 <translation id="1480663089572535854">Je kunt teruggaan om de toewijzing voor Selecteren te wijzigen. Je kunt Automatische scan altijd uitzetten via Instellingen.</translation>
 <translation id="1481537595330271162">Fout bij aanpassen van schijfgrootte</translation>
 <translation id="1482626744466814421">Bookmark toevoegen voor dit tabblad…</translation>
@@ -1113,7 +1112,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1848219224579402567">Uitloggen wanneer de klep wordt gesloten</translation>
 <translation id="184862733444771842">Functieverzoek</translation>
 <translation id="1849016657376805933">Elk HID-apparaat</translation>
-<translation id="1849186935225320012">Deze pagina heeft volledig beheer van MIDI-apparaten.</translation>
 <translation id="1850145825777333687">Inloggegevens van apparaat</translation>
 <translation id="1850508293116537636">Rechtsom &amp;draaien</translation>
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Voordat je je inschrijft, moet je de TPM wissen, zodat <ph name="DEVICE_OS" /> eigenaar van het apparaat kan worden.<ph name="END_PARAGRAPH1" />
@@ -1610,7 +1608,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2224444042887712269">Deze instelling hoort bij <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Mapnaam bewerken</translation>
 <translation id="2225927550500503913">Virtuele kaart staat aan</translation>
-<translation id="2226449515541314767">Deze site is geblokkeerd voor volledig beheer van MIDI-apparaten.</translation>
 <translation id="2226826835915474236">Inactieve snelkoppelingen</translation>
 <translation id="2226907662744526012">Automatisch ontgrendelen zodra de pincode wordt ingevoerd</translation>
 <translation id="2227179592712503583">Suggestie verwijderen</translation>
@@ -1778,6 +1775,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2344032937402519675">Kan geen verbinding maken met de server. Check je netwerkverbinding en probeer het opnieuw. Als je nog steeds problemen ondervindt, start je de Chromebook opnieuw op.</translation>
 <translation id="234559068082989648">Oude versies van Chrome-apps worden na december 2022 niet meer geopend. Neem contact op met je beheerder als je wilt updaten naar een nieuwe versie of verwijder deze app.</translation>
 <translation id="2345723121311404059">1 pagina naar <ph name="PRINTER_NAME" /></translation>
+<translation id="2347930112185157300">Mobiele provider is vergrendeld</translation>
 <translation id="2348176352564285430">App: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" />: rechten gevraagd, druk op Ctrl + Volgende om te reageren</translation>
 <translation id="234889437187286781">Fout bij laden van gegevens</translation>
@@ -1919,7 +1917,6 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="2450849356604136918">Geen actieve weergaven</translation>
 <translation id="2451298179137331965">2x</translation>
 <translation id="245322989586167203">Sites maken meestal verbinding met seriële poorten voor functies voor gegevensoverdracht zoals je netwerk instellen</translation>
-<translation id="2453706416476934374">Laat de Assistent een screenshot van het scherm van <ph name="SUPERVISED_USER_NAME" /> zien om afgestemde reacties te krijgen als <ph name="SUPERVISED_USER_NAME" /> vragen stelt. Hieronder kan ook informatie vallen over muzieknummers of video's die worden afgespeeld.</translation>
 <translation id="2453860139492968684">Voltooien</translation>
 <translation id="2454206500483040640">Gepartitioneerd</translation>
 <translation id="2454247629720664989">Zoekwoord</translation>
@@ -2551,7 +2548,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2932483646085333864">Log uit en weer in om de synchronisatie te starten</translation>
 <translation id="2932883381142163287">Misbruik melden</translation>
 <translation id="2933632078076743449">Laatste update</translation>
-<translation id="2934999512438267372">Volledig beheer van MIDI-apparaten toegestaan</translation>
 <translation id="2935225303485967257">Profielen beheren</translation>
 <translation id="2935314715123552088">Actief e-simkaartprofiel uitzetten</translation>
 <translation id="2935654492420446828">Later een schoolaccount toevoegen</translation>
@@ -2938,7 +2934,6 @@ Je kunt instellingen op deze kaart altijd beheren of meer opties bekijken in het
 <translation id="3262986719682892278">Te groot</translation>
 <translation id="3264544094376351444">Sans-Serif-lettertype</translation>
 <translation id="3264582393905923483">Context</translation>
-<translation id="3265032511221679826">Toegang tot exacte locatie aanzetten?</translation>
 <translation id="3265459715026181080">Sluit venster</translation>
 <translation id="3266022278425892773">Linux-ontwikkelomgeving</translation>
 <translation id="3266274118485960573">Veiligheidscheck wordt uitgevoerd.</translation>
@@ -3989,7 +3984,6 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="4087089424473531098">De volgende extensie is gemaakt:
 
 <ph name="EXTENSION_FILE" /></translation>
-<translation id="408721682677442104">Volledig beheer van MIDI-apparaten geweigerd</translation>
 <translation id="4087328411748538168">Aan de rechterkant tonen</translation>
 <translation id="4089235344645910861">Instellingen opgeslagen. Synchronisatie gestart.</translation>
 <translation id="4089817585533500276">Shift + <ph name="TOP_ROW_KEY" /></translation>
@@ -4498,7 +4492,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4507128560633489176">Gegevens zijn gewist.</translation>
 <translation id="4507373251891673233">Je hebt alle extensies van <ph name="HOST" /> geblokkeerd</translation>
 <translation id="4507401683427517298">Klik op Snelkoppeling toevoegen</translation>
-<translation id="4508032221004253235">Hierdoor kunnen apps en websites met locatierechten en ChromeOS de locatie gebruiken die wordt bepaald door je wifi of mobiele netwerken. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="4508150454272293946">Apps en webpagina's toestaan de camera('s) te gebruiken die met dit apparaat zijn verbonden. Als je nog steeds problemen met je camera hebt, start je de app opnieuw of vernieuw je de webpagina.</translation>
 <translation id="450867954911715010">Toegankelijkheidsinstellingen</translation>
 <translation id="4508765956121923607">Br&amp;on bekijken</translation>
@@ -4915,6 +4908,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4839303808932127586">&amp;Video opslaan als...</translation>
 <translation id="4839910546484524995">Het apparaat checken</translation>
 <translation id="4840096453115567876">Incognitomodus toch afsluiten?</translation>
+<translation id="4841475798258477260">Dit apparaat kan alleen verbinding maken met een specifiek mobiel netwerk. <ph name="BEGIN_LINK_LEARN_MORE" />Meer informatie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4841741146571978176">Een vereiste virtuele machine bestaat niet. Stel <ph name="VM_TYPE" /> in om door te gaan.</translation>
 <translation id="4842976633412754305">Deze pagina probeert scripts van niet-geverifieerde bronnen te laden.</translation>
 <translation id="4844333629810439236">Andere toetsenborden</translation>
@@ -6464,6 +6458,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="6104068876731806426">Google-accounts</translation>
 <translation id="6104311680260824317">Kan het apparaat niet aan het domein koppelen. De server ondersteunt de opgegeven typen Kerberos-versleuteling niet. De instellingen voor versleuteling vind je bij 'Meer opties'.</translation>
 <translation id="6104796831253957966">Printerwachtrij is vol</translation>
+<translation id="610487644502954950">Zijvenster losgemaakt</translation>
 <translation id="6104929924898022309">De zoektoets gebruiken om het gedrag van functietoetsen te wijzigen</translation>
 <translation id="6106167152849320869">Als je er in de vorige stap ook voor hebt gekozen diagnostische en gebruiksgegevens te sturen, worden deze gegevens verzameld voor geïnstalleerde apps.</translation>
 <translation id="6111718295497931251">Toegang tot Google Drive intrekken</translation>
@@ -6867,7 +6862,6 @@ Zichtbaar als <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6434325376267409267">Je apparaat moet worden geüpdatet voordat je <ph name="APP_NAME" /> kunt gebruiken.</translation>
 <translation id="6435339218366409950">Kies de taal waarnaar je de ondertiteling wilt vertalen</translation>
 <translation id="6436164536244065364">Bekijken in Web Store</translation>
-<translation id="6436610005579237680">Als je reacties wilt krijgen die beter op jou zijn afgestemd, laat je de Google Assistent een screenshot van je scherm zien als je vragen stelt. De Assistent kan ook informatie gebruiken over muzieknummers of video's die worden afgespeeld.</translation>
 <translation id="6436778875248895551">De extensie <ph name="EXTENSION_NAME" /> is geblokkeerd door je beheerder</translation>
 <translation id="6438234780621650381">Instellingen resetten</translation>
 <translation id="6438475350605608554">Je importeert al wachtwoorden op een ander tabblad.</translation>
@@ -7058,7 +7052,6 @@ Zichtbaar als <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6592808042417736307">Je vingerafdruk is geregistreerd</translation>
 <translation id="6593881952206664229">Media met auteursrecht wordt misschien niet afgespeeld</translation>
 <translation id="6594011207075825276">Zoeken naar seriële apparaten...</translation>
-<translation id="6595187330192059106">Volledig beheer van MIDI-apparaten altijd blokkeren voor <ph name="HOST" /></translation>
 <translation id="6595322909015878027">Geen toestemming om automatisch scherm-in-scherm te openen</translation>
 <translation id="6595408197871512625">{COUNT,plural, =1{Het gehackte wachtwoord is gewijzigd.
 
@@ -7931,7 +7924,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7299337219131431707">Gebruiken als gast toestaan</translation>
 <translation id="7299515639584427954">Standaard-app voor ondersteunde links wijzigen?</translation>
 <translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
-<translation id="7301470816294041580">Je kunt bijvoorbeeld vragen 'Hey Google, welk nummer is dit?' of 'Hey Google, wat staat er op mijn scherm?'</translation>
 <translation id="7301812050652048720">Toegangssleutel verwijderd</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Deze app kan ervoor zorgen dat Chrome niet goed functioneert.}other{Deze apps kunnen ervoor zorgen dat Chrome niet goed functioneert.}}</translation>
 <translation id="7303281435234579599">Er is een probleem opgetreden bij het instellen van de demomodus.</translation>
@@ -8528,6 +8520,7 @@ Je kunt instellingen voor deze kaart beheren via het kaartmenu of meer opties be
 <translation id="7757787379047923882">Tekst gedeeld vanaf <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">De grenzen van je display aanpassen</translation>
+<translation id="7759809451544302770">Optioneel</translation>
 <translation id="7762024824096060040">Kan dit account niet gebruiken</translation>
 <translation id="7762243782113123335">Er is iets misgegaan. Dien je feedback in met #bruschetta in de beschrijving. De foutcode is <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Adres toevoegen</translation>
@@ -8921,7 +8914,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8050038245906040378">Commerciële handtekening bij programmacode van Microsoft</translation>
 <translation id="8050191834453426339">Opnieuw verifiëren</translation>
 <translation id="8051193500142930381">Functies waarvoor een camera nodig is, werken niet</translation>
-<translation id="8051390370038326517">Volledig beheer van MIDI-apparaten altijd toestaan voor <ph name="HOST" /></translation>
 <translation id="8052218774860457016">Browsersynchronisatie beheren</translation>
 <translation id="8053278772142718589">Bestanden van het type PKCS #12</translation>
 <translation id="8053390638574070785">Laad pagina opnieuw</translation>
@@ -9001,7 +8993,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8109109153262930486">Standaard avatar</translation>
 <translation id="8110393529211831722">Het abonnement is alleen op dit apparaat geïnstalleerd en wordt niet gesynchroniseerd met andere apparaten onder je account. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Contactenlijst downloaden...</translation>
-<translation id="8113476325385351118">Volledig beheer van MIDI-apparaten blijven blokkeren voor deze site</translation>
 <translation id="8115139559594092084">Vanaf je Google Drive</translation>
 <translation id="8116972784401310538">&amp;Bladwijzerbeheer</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> onthoudt hoe je bent ingelogd en logt je automatisch in als dat mogelijk is. Als dit uitstaat, wordt je elke keer om bevestiging gevraagd.</translation>
@@ -9154,6 +9145,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8241040075392580210">Wolkje</translation>
 <translation id="8241806945692107836">Apparaatconfiguratie bepalen...</translation>
 <translation id="8241868517363889229">Je bookmarks lezen en wijzigen</translation>
+<translation id="8242273718576931540">Je apparaat kan geen verbinding maken met dit netwerk. <ph name="BEGIN_LINK_LEARN_MORE" />Meer informatie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8242370300221559051">Play Store aanzetten</translation>
 <translation id="8242426110754782860">Doorgaan</translation>
 <translation id="8243948765190375130">De kwaliteit van media kan minder worden</translation>
@@ -9397,7 +9389,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8425492902634685834">Vastzetten op taakbalk</translation>
 <translation id="8425768983279799676">Je kunt je pincode gebruiken om je apparaat te ontgrendelen.</translation>
 <translation id="8426111352542548860">Groep opslaan</translation>
-<translation id="8426713856918551002">Aanzetten</translation>
 <translation id="8427213022735114808">Bij dicteren wordt je stem verzonden naar Google, waardoor spraakgestuurd typen in tekstvelden mogelijk wordt.</translation>
 <translation id="8427292751741042100">ingesloten in een host</translation>
 <translation id="8428213095426709021">Instellingen</translation>
@@ -9606,7 +9597,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8608618451198398104">Een Kerberos-ticket toevoegen</translation>
 <translation id="8609465669617005112">Omhoog</translation>
 <translation id="8610103157987623234">Onjuiste indeling. Probeer het opnieuw.</translation>
-<translation id="8611682088849615761">Volledig beheer van MIDI-apparaten blijven toestaan voor deze site</translation>
 <translation id="8613164732773110792">Alleen kleine letters, cijfers, underscores of koppeltekens</translation>
 <translation id="8613504115484579584">Inlogmethoden</translation>
 <translation id="8613645710357126807">Geen toestemming om extensies te gebruiken</translation>
@@ -9642,6 +9632,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8636284842992792762">Extensies initialiseren…</translation>
 <translation id="8636323803535540285">Voeg een snelkoppeling toe naar <ph name="BRAND" /> om hier sneller te komen</translation>
 <translation id="8636500887554457830">Niet toestaan dat sites pop-ups sturen of omleidingen gebruiken</translation>
+<translation id="8636514272606969031">Zijvenster vastgezet</translation>
 <translation id="8637688295594795546">Systeemupdate beschikbaar. Download voorbereiden...</translation>
 <translation id="8638719155236856752">ChromeOS-netwerkstatus</translation>
 <translation id="8639635302972078117">Stuur gebruiks- en diagnostische gegevens. Dit apparaat stuurt momenteel automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google. Deze gegevens worden niet gebruikt om je kind te identificeren en kunnen helpen om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Daarnaast zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Als je de instelling voor aanvullende Web- en app-activiteit hebt aangezet voor je kind, kunnen deze gegevens worden opgeslagen in het Google-account van je kind.</translation>
@@ -9781,6 +9772,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8729133765463465108">Camera gebruiken om QR-code te scannen</translation>
 <translation id="8730621377337864115">Klaar</translation>
 <translation id="8731029916209785242">Rechten (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731268612289859741">Beveiligingscode</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> wil het volgende: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Poortnummer</translation>
 <translation id="8732030010853991079">Gebruik deze extensie door op dit icoon te klikken.</translation>
@@ -10434,7 +10426,6 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="936646668635477464">Camera en microfoon</translation>
 <translation id="936801553271523408">Diagnostische systeemgegevens</translation>
 <translation id="93766956588638423">Extensie repareren</translation>
-<translation id="938568644810664664">Probeer 'Hey Google, welk nummer is dit?' of 'Hey Google, wat staat er op mijn scherm?'</translation>
 <translation id="938623846785894166">Ongebruikelijk bestand</translation>
 <translation id="939401694733344652">Deze accounts worden momenteel niet met Android-apps gebruikt. Als je een account selecteert dat je met deze Android-app wilt gebruiken, kan het account ook worden gebruikt met andere Android-apps. Je kunt de toegang tot Android-apps wijzigen in <ph name="LINK_BEGIN" />Instellingen &gt; Accounts<ph name="LINK_END" />.</translation>
 <translation id="939553663881639126">Geef aan of je aanvullende zoeksuggesties wilt krijgen</translation>

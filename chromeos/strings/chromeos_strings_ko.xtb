@@ -260,6 +260,7 @@
 <translation id="2872961005593481000">종료</translation>
 <translation id="2873483161362553159">브라우저 탐색</translation>
 <translation id="2874939134665556319">이전 트랙</translation>
+<translation id="2875812231449496375">이 배경화면으로 최상의 결과를 얻으려면 이 기능을 사용 설정하세요. 이 설정은 언제든지 사용 중지할 수 있습니다.</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" />초 내에 <ph name="RATE" /> 방전됨</translation>
 <translation id="2880569433548999039">구름 흐름 화면 보호기</translation>
 <translation id="2926057806159140518">사용자 이름과 비밀번호를 입력하거나 QR 코드를 스캔하세요.</translation>
@@ -552,6 +553,7 @@
 <translation id="5090362543162270857">IPsec(IKEv2)</translation>
 <translation id="5137451382116112100">전체</translation>
 <translation id="5142961317498132443">인증</translation>
+<translation id="5145081769226915336">어두운 모드를 자동으로 사용 설정하시겠습니까?</translation>
 <translation id="5154917547274118687">메모리</translation>
 <translation id="5160857336552977725"><ph name="DEVICE_TYPE" />에 로그인</translation>
 <translation id="5166918508782100047">빠른 답변 설정</translation>

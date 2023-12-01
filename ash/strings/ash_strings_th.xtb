@@ -66,7 +66,6 @@
 <translation id="1225748608451425081">Chromebook ของคุณถูกล็อกเนื่องจากปัญหาที่ทราบแล้ว คุณจะลงชื่อเข้าใช้ได้ในอีก <ph name="TIME_LEFT" /></translation>
 <translation id="1226877728704622336">เดสก์ที่ไม่ได้ใช้งาน</translation>
 <translation id="1229194443904279055">หยุดเลือก</translation>
-<translation id="1233979878541157665">ลองค้นหา "พระอาทิตย์ตก" หรือ "ต้นไม้" แทนชื่อไฟล์ คุณปิดการค้นหารูปภาพในแถบค้นหาได้</translation>
 <translation id="1235458158152011030">เครือข่ายที่รู้จัก</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> เชื่อมต่อแล้ว</translation>
 <translation id="1240638468526743569">แอป</translation>
@@ -1139,6 +1138,7 @@
 <translation id="5620979661744857819">การดำเนินการนี้ช่วยให้ <ph name="APP_NAME" /> รวมถึงแอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์สามารถเข้าถึงกล้องและไมโครโฟนได้ คุณอาจต้องรีเฟรชหน้าเว็บหรือรีสตาร์ทแอป</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">ยืนยันรหัสผ่านของคุณไม่ได้ โปรดลองอีกครั้ง</translation>
+<translation id="5632485077360054581">แสดงวิธีการ</translation>
 <translation id="5648021990716966815">ช่องเสียบไมโครโฟน</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> ส่งคำขอให้คุณดำเนินการ</translation>
 <translation id="5662075790140998213">เดสก์ที่ 10</translation>
@@ -1332,7 +1332,6 @@
 <translation id="643593192654616063">กำลังใช้พื้นที่เก็บข้อมูล <ph name="STORAGE_IN_USE_SIZE" /> จากทั้งหมด <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> ใน<ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
-<translation id="6446225358675593408">ค้นหารูปภาพตามเนื้อหา</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> กิจกรรม</translation>
 <translation id="6449483711453944360">ขณะนี้ยังไม่รองรับแอป Linux และหน้าต่างที่ไม่ระบุตัวตน</translation>
 <translation id="6450245544201845082">แป้นพิมพ์ลัดสำหรับการคลิกขวาปิดอยู่</translation>
@@ -1516,6 +1515,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">เปลี่ยนกลับไปเป็นความละเอียดเดิมภายใน <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">เปิดการตั้งค่า</translation>
 <translation id="7180611975245234373">รีเฟรช</translation>
 <translation id="7188494361780961876">เมนูได้ย้ายไปอยู่ที่มุมซ้ายบนของหน้าจอ</translation>
 <translation id="7189412385142492784">ดาวศุกร์อยู่ไกลแค่ไหน</translation>
@@ -1535,7 +1535,6 @@
 <translation id="7312210124139670355">ผู้ดูแลระบบกำลังรีเซ็ต eSIM การดำเนินการนี้อาจใช้เวลาสักครู่</translation>
 <translation id="7313193732017069507">ขยายขนาดกล้อง</translation>
 <translation id="7316261577130609484">เพิ่มงานใหม่</translation>
-<translation id="7321889295239318128">กด Shift + Tab เพื่อดูข้อมูลเพิ่มเติม</translation>
 <translation id="7330397557116570022">ไปที่ช่องข้อความเพื่อใช้การพิมพ์ตามคําบอก</translation>
 <translation id="7331646370422660166">Alt + ลูกศรลง</translation>
 <translation id="7340731148882810149">เมนูการคลิกอัตโนมัติ</translation>

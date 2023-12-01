@@ -21,7 +21,7 @@
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Nova lozinka za ovu web lokaciju}one{Nove lozinke za ovu web lokaciju}few{Nove lozinke za ovu web lokaciju}other{Nove lozinke za ovu web lokaciju}}</translation>
 <translation id="7286867818472074330">Odaberite pristupni ključ</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> od <ph name="ITEMS_TOTAL" />.</translation>
-<translation id="7738288782501322815">Dobili ste zaporke za web-lokaciju <ph name="SITE_NAME" /></translation>
-<translation id="8614995815226664591"><ph name="SENDER_NAME" /> s vama dijeli zaporku za web-lokaciju <ph name="SITE_NAME" /></translation>
+<translation id="7738288782501322815">Dobili ste lozinke za web lokaciju <ph name="SITE_NAME" /></translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> je s vama podijelio/la lozinku za web lokaciju <ph name="SITE_NAME" /></translation>
 <translation id="8891372124884726271">Lista akreditiva je zatvorena.</translation>
 </translationbundle>

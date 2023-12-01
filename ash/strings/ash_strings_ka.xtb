@@ -66,7 +66,6 @@
 <translation id="1225748608451425081">თქვენი Chromebook დაბლოკილია ცნობილი პრობლემის გამო. შესვლას შეძლებთ გარკვეული დროის შემდეგ: <ph name="TIME_LEFT" />.</translation>
 <translation id="1226877728704622336">არააქტიური სამუშაო მაგიდა</translation>
 <translation id="1229194443904279055">არჩევის შეწყვეტა</translation>
-<translation id="1233979878541157665">ცადეთ, ფაილის სახელის ნაცვლად მოიძიოთ „მზის ჩასვლა“ ან „ხე“. სურათების ძიების გამორთვა შეგიძლიათ ძიების ზოლიდან.</translation>
 <translation id="1235458158152011030">ცნობილი ქსელები</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> დაკავშირებულია.</translation>
 <translation id="1240638468526743569">აპი</translation>
@@ -1144,6 +1143,7 @@
 <translation id="5620979661744857819">წვდომა მიენიჭება <ph name="APP_NAME" />-ს, ასევე, ყველა აპსა და ვებსაიტს, რომლებსაც კამერისა და მიკროფონის გამოყენების ნებართვა აქვს. შესაძლოა, დაგჭირდეთ ვებგვერდის განახლება ან აპის გადატვირთვა.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">თქვენი პაროლი ვერ დადასტურდა. ცადეთ ხელახლა.</translation>
+<translation id="5632485077360054581">ინსტრუქციის ნახვა</translation>
 <translation id="5648021990716966815">მიკროფონის ჯეკი</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> საჭიროებს ყურადღების მიქცევას.</translation>
 <translation id="5662075790140998213">სამუშაო მაგიდა 10</translation>
@@ -1337,7 +1337,6 @@
 <translation id="643593192654616063">ჯამში <ph name="STORAGE_TOTAL_SIZE" /> მეხსიერებიდან გამოიყენება <ph name="STORAGE_IN_USE_SIZE" /></translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> „<ph name="RECEIVER_NAME" />“-ში</translation>
 <translation id="6445915701151710649">cpu</translation>
-<translation id="6446225358675593408">იპოვეთ თქვენი სურათები კონტენტის მიხედვით</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> მოვლენა</translation>
 <translation id="6449483711453944360">Linux აპები და ინკოგნიტო ფანჯრები ამჟამად მხარდაუჭერელია</translation>
 <translation id="6450245544201845082">მარჯვენა დაწკაპუნების მალსახმობი ამჟამად გამორთულია</translation>
@@ -1521,6 +1520,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">დრო ძველ გარჩევადობაზე დაბრუნებამდე: <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">პარამეტრების გახსნა</translation>
 <translation id="7180611975245234373">განახლება</translation>
 <translation id="7188494361780961876">მენიუ გადატანილია ეკრანის ზედა მარცხენა კუთხეში.</translation>
 <translation id="7189412385142492784">რა მანძილია ვენერამდე</translation>
@@ -1540,7 +1540,6 @@
 <translation id="7312210124139670355">ადმინისტრატორი ახორციელებს თქვენი eSIM-ის გადაყენებას. ამას შეიძლება რამდენიმე წუთი დასჭირდეს.</translation>
 <translation id="7313193732017069507">კამერის გაფართოება</translation>
 <translation id="7316261577130609484">ახალი ამოცანის დამატება</translation>
-<translation id="7321889295239318128">დამატებითი ინფორმაციისთვის დააჭირეთ კლავიშთა კომბინაციას Shift + Tab</translation>
 <translation id="7330397557116570022">კარნახის გამოსაყენებლად გადადით ტექსტურ ველზე</translation>
 <translation id="7331646370422660166">alt + ქვემოთ მიმართული ისარი</translation>
 <translation id="7340731148882810149">ავტომატური დაწკაპუნებების მენიუ</translation>

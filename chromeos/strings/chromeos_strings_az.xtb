@@ -260,6 +260,7 @@
 <translation id="2872961005593481000">Qapadın</translation>
 <translation id="2873483161362553159">Brauzer naviqasiyası</translation>
 <translation id="2874939134665556319">Öncəki trek</translation>
+<translation id="2875812231449496375">Optimal divar kağızı nəticələri üçün bunu aktiv edin. Bu ayarı deaktiv edə bilərsiniz.</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> saniyədə <ph name="RATE" /> deşarj edilib.</translation>
 <translation id="2880569433548999039">"Bulud axını" ekran qoruyucusu</translation>
 <translation id="2926057806159140518">İstifadəçi adınızı və parolunuzu daxil edin və ya QR kodunuzu skan edin</translation>
@@ -552,6 +553,7 @@
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5137451382116112100">Tam</translation>
 <translation id="5142961317498132443">İdentifikasiya</translation>
+<translation id="5145081769226915336">Qaranlıq rejim avtomatik aktiv edilsin?</translation>
 <translation id="5154917547274118687">Yaddaş</translation>
 <translation id="5160857336552977725"><ph name="DEVICE_TYPE" /> cihazınıza daxil olun</translation>
 <translation id="5166918508782100047">Cəld cavab ayarları</translation>

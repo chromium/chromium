@@ -2398,7 +2398,6 @@ Si cette règle est activée, la touche du Lanceur d'applications/de recherche p
           Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier ni l'ignorer.
 
           Si cette règle n'est pas configurée, le grand curseur est initialement désactivé sur l'écran de connexion, mais les utilisateurs peuvent l'activer à tout moment.</translation>
-<translation id="3027837632741099453">Le mode Économiseur de batterie est activé quand l'appareil est sur batterie.</translation>
 <translation id="3030000825273123558">Activer la génération de rapports sur les statistiques</translation>
 <translation id="30300807616984726">Créer des rapports sur les données d'inventaire d'applis pour les utilisateurs affiliés.
 
@@ -4397,13 +4396,6 @@ Pour les appareils non gérés, l'utilisateur peut décider d'envoyer les métri
 
       Si cette règle n'est pas configurée ou qu'elle est activée, les contrôles d'interception des requêtes DNS ont lieu. Si elle est explicitement désactivée, les contrôles n'ont pas lieu.</translation>
 <translation id="4700190441681139987">Interdire à tous les sites d'accéder aux capteurs</translation>
-<translation id="4701899474784891858">Cette règle active ou désactive le mode Économiseur de batterie. Avec ce paramètre, la fréquence d'images est limitée à une consommation d'énergie inférieure.
-      Si cette règle n'est pas configurée, l'utilisateur final peut contrôler ce paramètre dans chrome://settings/performance.
-      Voici les différents niveaux :
-      <ph name="BATTERY_SAVER_MODE_DISABLED" /> (0) : le mode Économiseur de batterie est désactivé.
-      <ph name="BATTERY_SAVER_MODE_ENABLED_BELOW_THRESHOLD" /> (1) : le mode Économiseur de batterie est activé quand l'appareil est sur batterie et que le niveau de la batterie est faible.
-      <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2) : le mode Économiseur de batterie est activé quand l'appareil est sur batterie.
-      </translation>
 <translation id="4703402283970867140">Activer le modèle de réduction intelligente de la luminosité pour augmenter le délai d'assombrissement de l'écran</translation>
 <translation id="4704958130749494760">Autoriser automatiquement les sites à se connecter aux appareils série USB.</translation>
 <translation id="4705329890928008808">Si cette règle est définie sur "CopyCaCerts", tous les certificats CA installés via ONC avec <ph name="WEB_TRUSTED_BIT" /> sont disponibles pour les applis ARC.

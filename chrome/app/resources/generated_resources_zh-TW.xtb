@@ -610,7 +610,6 @@
 <translation id="1477654881618305065">貴機構不允許你分享這項內容。如需協助，請與系統管理員聯絡。</translation>
 <translation id="1478340334823509079">詳細資料：<ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">未啟用安裝功能</translation>
-<translation id="1480571698637441426">如要在提問後取得更貼近個人需求的回覆，請允許 Google 助理存取畫面內容的螢幕截圖，這也包括當下所播放歌曲或影片的相關資訊。</translation>
 <translation id="1480663089572535854">你可以返回變更「選取」的指派設定，而且隨時都能前往設定頁面關閉自動掃描功能。</translation>
 <translation id="1481537595330271162">調整磁碟大小時發生錯誤</translation>
 <translation id="1482626744466814421">將此分頁加入書籤...</translation>
@@ -1113,7 +1112,6 @@
 <translation id="1848219224579402567">蓋上機蓋時登出帳戶</translation>
 <translation id="184862733444771842">功能要求</translation>
 <translation id="1849016657376805933">任何 HID 裝置</translation>
-<translation id="1849186935225320012">這個網頁可完整控制 MIDI 裝置。</translation>
 <translation id="1850145825777333687">裝置憑證</translation>
 <translation id="1850508293116537636">順時針旋轉(&amp;C)</translation>
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />進行註冊前，你必須清除 TPM，<ph name="DEVICE_OS" /> 才能取得裝置的擁有權。<ph name="END_PARAGRAPH1" />
@@ -1610,7 +1608,6 @@
 <translation id="2224444042887712269">這項設定屬於 <ph name="OWNER_EMAIL" />。</translation>
 <translation id="2224551243087462610">編輯資料夾名稱</translation>
 <translation id="2225927550500503913">虛擬卡片已啟用</translation>
-<translation id="2226449515541314767">這個網站已遭封鎖，無法完整控制 MIDI 裝置。</translation>
 <translation id="2226826835915474236">已停用的快捷字詞</translation>
 <translation id="2226907662744526012">輸入 PIN 碼後自動解鎖</translation>
 <translation id="2227179592712503583">移除建議</translation>
@@ -1778,6 +1775,7 @@
 <translation id="2344032937402519675">無法連上伺服器。請檢查網路連線，然後再試一次。如果問題仍然無法解決，請嘗試重新啟動 Chromebook。</translation>
 <translation id="234559068082989648">2022 年 12 月之後，舊版 Chrome 應用程式將無法開啟。請與系統管理員聯絡以更新至新版本，或移除這個應用程式。</translation>
 <translation id="2345723121311404059">將 1 個網頁傳送至「<ph name="PRINTER_NAME" />」列印</translation>
+<translation id="2347930112185157300">已綁定行動網路供應商</translation>
 <translation id="2348176352564285430">應用程式：<ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - 已要求權限，按下 Ctrl + Forward 鍵即可回覆</translation>
 <translation id="234889437187286781">載入資料時發生錯誤</translation>
@@ -1919,7 +1917,6 @@
 <translation id="2450849356604136918">沒有運作中的檢視畫面</translation>
 <translation id="2451298179137331965">2 倍</translation>
 <translation id="245322989586167203">網站通常會連線至序列埠，以提供設定網路等資料移轉功能</translation>
-<translation id="2453706416476934374">如要讓<ph name="SUPERVISED_USER_NAME" />在提問後取得更貼近個人需求的回覆，請允許 Google 助理存取<ph name="SUPERVISED_USER_NAME" />畫面內容的螢幕截圖，這也包括當下所播放歌曲或影片的相關資訊。</translation>
 <translation id="2453860139492968684">結束</translation>
 <translation id="2454206500483040640">已分區</translation>
 <translation id="2454247629720664989">關鍵字</translation>
@@ -2551,7 +2548,6 @@
 <translation id="2932483646085333864">如要開始同步處理，請先登出，再重新登入</translation>
 <translation id="2932883381142163287">檢舉濫用情形</translation>
 <translation id="2933632078076743449">上次更新時間</translation>
-<translation id="2934999512438267372">已允許取得 MIDI 裝置的完整控制權限</translation>
 <translation id="2935225303485967257">管理個人資料</translation>
 <translation id="2935314715123552088">停用使用中的 eSIM 卡設定檔</translation>
 <translation id="2935654492420446828">稍後再新增學校帳戶</translation>
@@ -2938,7 +2934,6 @@
 <translation id="3262986719682892278">檔案過大</translation>
 <translation id="3264544094376351444">Sans-serif 字型</translation>
 <translation id="3264582393905923483">內容</translation>
-<translation id="3265032511221679826">要開啟精確位置存取權嗎？</translation>
 <translation id="3265459715026181080">關閉視窗</translation>
 <translation id="3266022278425892773">Linux 開發環境</translation>
 <translation id="3266274118485960573">正在執行安全檢查。</translation>
@@ -3988,7 +3983,6 @@
 <translation id="4087089424473531098">已建立以下擴充功能：
 
 <ph name="EXTENSION_FILE" /></translation>
-<translation id="408721682677442104">已拒絕提供 MIDI 裝置的完整控制權限</translation>
 <translation id="4087328411748538168">顯示在右側</translation>
 <translation id="4089235344645910861">設定儲存完畢，已開始同步處理。</translation>
 <translation id="4089817585533500276">Shift + <ph name="TOP_ROW_KEY" /> 鍵</translation>
@@ -4498,7 +4492,6 @@
 <translation id="4507128560633489176">已清除資料。</translation>
 <translation id="4507373251891673233">你已封鎖來自 <ph name="HOST" /> 的所有擴充功能</translation>
 <translation id="4507401683427517298">按一下「新增捷徑」</translation>
-<translation id="4508032221004253235">這項操作會允許具有位置存取權的應用程式/網站和 ChromeOS 使用 Wi-Fi 或行動網路判斷的位置資訊。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4508150454272293946">允許應用程式和網頁使用連上這部裝置的攝影機。如果攝影機仍無法正常使用，建議你重新啟動應用程式或重新整理網頁。</translation>
 <translation id="450867954911715010">協助工具設定</translation>
 <translation id="4508765956121923607">檢視原始碼(&amp;O)</translation>
@@ -4916,6 +4909,7 @@
 <translation id="4839303808932127586">將影片另存為(&amp;V)...</translation>
 <translation id="4839910546484524995">檢查裝置</translation>
 <translation id="4840096453115567876">確定要結束無痕模式嗎？</translation>
+<translation id="4841475798258477260">這部裝置只能連線到特定行動網路。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4841741146571978176">必要的虛擬機器不存在。如要繼續，請嘗試設定「<ph name="VM_TYPE" />」</translation>
 <translation id="4842976633412754305">這個網頁正在嘗試載入來源未經驗證的指令碼。</translation>
 <translation id="4844333629810439236">其他鍵盤</translation>
@@ -6464,6 +6458,7 @@
 <translation id="6104068876731806426">Google 帳戶</translation>
 <translation id="6104311680260824317">無法將這個裝置加入網域，伺服器不支援指定的 Kerberos 加密類型。請前往「更多選項」檢查加密設定。</translation>
 <translation id="6104796831253957966">印表機佇列已滿</translation>
+<translation id="610487644502954950">已取消固定側邊面板</translation>
 <translation id="6104929924898022309">使用搜尋鍵變更功能鍵的行為</translation>
 <translation id="6106167152849320869">如果也在上一個步驟中選擇傳送診斷和使用資料，系統會針對已安裝的應用程式收集這類資料。</translation>
 <translation id="6111718295497931251">移除 Google 雲端硬碟存取權</translation>
@@ -6868,7 +6863,6 @@
 <translation id="6434325376267409267">必須先更新裝置才能使用「<ph name="APP_NAME" />」。</translation>
 <translation id="6435339218366409950">請選擇字幕的譯文語言</translation>
 <translation id="6436164536244065364">在線上應用程式商店中查看</translation>
-<translation id="6436610005579237680">如要取得更貼近個人需求的回覆，請讓 Google 助理在你提問時存取畫面內容的螢幕截圖，Google 助理可能也會使用當下所播放歌曲或影片的相關資訊。</translation>
 <translation id="6436778875248895551">系統管理員已封鎖「<ph name="EXTENSION_NAME" />」擴充功能</translation>
 <translation id="6438234780621650381">重設設定</translation>
 <translation id="6438475350605608554">你已在其他分頁中匯入密碼</translation>
@@ -7059,7 +7053,6 @@
 <translation id="6592808042417736307">已擷取你的指紋</translation>
 <translation id="6593881952206664229">系統可能不會播放受版權保護的媒體</translation>
 <translation id="6594011207075825276">正在尋找序列裝置…</translation>
-<translation id="6595187330192059106">一律禁止 <ph name="HOST" /> 取得 MIDI 裝置的完整控制權限。</translation>
 <translation id="6595322909015878027">不允許自動進入子母畫面</translation>
 <translation id="6595408197871512625">{COUNT,plural, =1{已成功變更遭外洩的密碼。
 
@@ -7933,7 +7926,6 @@
 <translation id="7299337219131431707">啟用訪客瀏覽</translation>
 <translation id="7299515639584427954">是否變更開啟支援連結的預設應用程式？</translation>
 <translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
-<translation id="7301470816294041580">你可以詢問「Ok Google，這是什麼歌？」或「Ok Google，螢幕上顯示的是什麼？」</translation>
 <translation id="7301812050652048720">密碼金鑰已刪除</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{這個應用程式可能會造成 Chrome 無法正常運作。}other{這些應用程式可能會造成 Chrome 無法正常運作。}}</translation>
 <translation id="7303281435234579599">糟糕！設定示範模式時出了點狀況。</translation>
@@ -8532,6 +8524,7 @@
 <translation id="7757787379047923882">透過「<ph name="DEVICE_NAME" />」分享的文字</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">調整顯示畫面邊界</translation>
+<translation id="7759809451544302770">選用</translation>
 <translation id="7762024824096060040">無法使用這個帳戶</translation>
 <translation id="7762243782113123335">抱歉，系統發生錯誤。請提供意見回饋，並在說明中加上 #bruschetta。錯誤代碼：<ph name="ERROR" />。</translation>
 <translation id="7764225426217299476">新增地址</translation>
@@ -8926,7 +8919,6 @@
 <translation id="8050038245906040378">Microsoft 商用程式碼簽署</translation>
 <translation id="8050191834453426339">再次驗證</translation>
 <translation id="8051193500142930381">需要攝影機的功能將無法運作</translation>
-<translation id="8051390370038326517">一律允許 <ph name="HOST" /> 取得 MIDI 裝置的完整控制權限</translation>
 <translation id="8052218774860457016">管理瀏覽器同步設定</translation>
 <translation id="8053278772142718589">PKCS #12 檔案</translation>
 <translation id="8053390638574070785">重新載入此網頁</translation>
@@ -9006,7 +8998,6 @@
 <translation id="8109109153262930486">預設顯示圖片</translation>
 <translation id="8110393529211831722">訂閱項目只會安裝在這部裝置上，不會同步到帳戶中的其他裝置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">正在下載聯絡人清單...</translation>
-<translation id="8113476325385351118">繼續禁止這個網站取得 MIDI 裝置的完整控制權限</translation>
 <translation id="8115139559594092084">來自你的 Google 雲端硬碟</translation>
 <translation id="8116972784401310538">書籤管理員(&amp;B)</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" />會記住你的登入資訊，並在情況允許時自動登入。如果關閉這項功能，系統每次都會詢問你是否要登入。</translation>
@@ -9159,6 +9150,7 @@
 <translation id="8241040075392580210">晴時多雲</translation>
 <translation id="8241806945692107836">正在確定裝置設定...</translation>
 <translation id="8241868517363889229">讀取及變更你的書籤</translation>
+<translation id="8242273718576931540">你的裝置無法連上這個網路。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8242370300221559051">啟用 Play 商店</translation>
 <translation id="8242426110754782860">Proceed</translation>
 <translation id="8243948765190375130">媒體品質可能會降低</translation>
@@ -9402,7 +9394,6 @@
 <translation id="8425492902634685834">固定至工作列</translation>
 <translation id="8425768983279799676">你可以使用 PIN 碼將裝置解鎖。</translation>
 <translation id="8426111352542548860">儲存群組</translation>
-<translation id="8426713856918551002">啟用中</translation>
 <translation id="8427213022735114808">語音輸入功能會將你的語音資料傳送給 Google，讓你使用自己的語音在任何文字欄位中輸入內容。</translation>
 <translation id="8427292751741042100">嵌入任何主機</translation>
 <translation id="8428213095426709021">設定</translation>
@@ -9611,7 +9602,6 @@
 <translation id="8608618451198398104">新增 Kerberos 票證</translation>
 <translation id="8609465669617005112">上移</translation>
 <translation id="8610103157987623234">格式不正確，請再試一次</translation>
-<translation id="8611682088849615761">繼續允許這個網站取得 MIDI 裝置的完整控制權限</translation>
 <translation id="8613164732773110792">僅限小寫字元、數字、底線或破折號</translation>
 <translation id="8613504115484579584">登入方法</translation>
 <translation id="8613645710357126807">不允許執行擴充功能</translation>
@@ -9647,6 +9637,7 @@
 <translation id="8636284842992792762">正在初始化擴充功能...</translation>
 <translation id="8636323803535540285">新增 <ph name="BRAND" />捷徑即可快速使用這項服務</translation>
 <translation id="8636500887554457830">禁止網站傳送彈出式視窗或使用重新導向</translation>
+<translation id="8636514272606969031">已固定側邊面板</translation>
 <translation id="8637688295594795546">可安裝系統更新，正在準備下載…</translation>
 <translation id="8638719155236856752">ChromeOS 網路健康狀態</translation>
 <translation id="8639635302972078117">傳送使用狀況與診斷資料。這部裝置目前會自動將診斷資料、裝置和應用程式的使用資料傳送給 Google。這些資料將有助於改善系統和應用程式的穩定性與其他功能，並不會用於識別貴子女的身分。此外，部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改善自己的產品和服務。如果貴子女的「其他網路和應用程式活動」設定為開啟，這些資料可能會儲存在他們的 Google 帳戶中。</translation>
@@ -9786,6 +9777,7 @@
 <translation id="8729133765463465108">使用相機掃描 QR 圖碼</translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="8731029916209785242">權限 (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731268612289859741">安全碼</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> 要求<ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">連接埠號碼</translation>
 <translation id="8732030010853991079">按一下這個圖示，即可使用這項擴充功能。</translation>
@@ -10438,7 +10430,6 @@
 <translation id="936646668635477464">攝影機和麥克風</translation>
 <translation id="936801553271523408">系統診斷資料</translation>
 <translation id="93766956588638423">修復擴充功能</translation>
-<translation id="938568644810664664">試著詢問「Ok Google，這是什麼歌？」或「Ok Google，螢幕上顯示的是什麼？」</translation>
 <translation id="938623846785894166">不常見的檔案</translation>
 <translation id="939401694733344652">目前這些帳戶並未用於 Android 應用程式。如果你選擇將某個帳戶用於此 Android 應用程式，該帳戶也將能用於其他 Android 應用程式。如要變更 Android 應用程式存取權，請依序前往<ph name="LINK_BEGIN" />「設定」&gt;「帳戶」<ph name="LINK_END" />。</translation>
 <translation id="939553663881639126">選擇是否要取得其他搜尋建議</translation>

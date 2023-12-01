@@ -66,7 +66,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1225748608451425081">Teie Chromebook on teadaoleva probleemi tõttu lukustatud. Saate sisse logida pärast <ph name="TIME_LEFT" /> möödumist.</translation>
 <translation id="1226877728704622336">mitteaktiivne töölaud</translation>
 <translation id="1229194443904279055">Valimise peatamine</translation>
-<translation id="1233979878541157665">Proovige failinime asemel otsida „päikeseloojang” või „puu”. Pildiotsingu saate otsinguribal välja lülitada.</translation>
 <translation id="1235458158152011030">Teadaolevad võrgud</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> on ühendatud.</translation>
 <translation id="1240638468526743569">Rakendus</translation>
@@ -1145,6 +1144,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5620979661744857819">Sisselülitamisel antakse juurdepääsuluba rakendusele <ph name="APP_NAME" /> ning kõikidele kaamerale ja mikrofonile juurdepääsemise loaga rakendustele ning veebisaitidele. Võimalik, et peate veebilehte värskendama või rakenduse taaskäivitama.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Teie parooli ei õnnestunud kinnitada. Proovige uuesti.</translation>
+<translation id="5632485077360054581">Kuva juhised</translation>
 <translation id="5648021990716966815">Mikrofoni pistikupesa</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> vajab teie tähelepanu.</translation>
 <translation id="5662075790140998213">Töölaud 10</translation>
@@ -1338,7 +1338,6 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="643593192654616063"><ph name="STORAGE_IN_USE_SIZE" /> salvestusruumi on kasutusel, kokku <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> asukohas <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">protsessor</translation>
-<translation id="6446225358675593408">Piltide otsimine sisu järgi</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> sündmus</translation>
 <translation id="6449483711453944360">Linuxi rakendusi ja inkognito aknaid praegu ei toetata.</translation>
 <translation id="6450245544201845082">Paremkliki otsetee on praegu välja lülitatud</translation>
@@ -1522,6 +1521,7 @@ Uus installimine</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Ekraan ennistatakse vanale eraldusvõimele <ph name="TIMEOUT_SECONDS" /> pärast</translation>
+<translation id="7173114856073700355">Ava seaded</translation>
 <translation id="7180611975245234373">Värskenda</translation>
 <translation id="7188494361780961876">Menüü teisaldati ekraanikuva vasakusse ülanurka.</translation>
 <translation id="7189412385142492784">Kui kaugel on Veenus</translation>
@@ -1541,7 +1541,6 @@ Uus installimine</translation>
 <translation id="7312210124139670355">Administraator lähtestab teie eSIM-i. See võib võtta mõne minuti.</translation>
 <translation id="7313193732017069507">Kaamera laiendamine</translation>
 <translation id="7316261577130609484">Lisa uus ülesanne</translation>
-<translation id="7321889295239318128">Lisateabe saamiseks vajutage tõstuklahvi ja tabulaatorit</translation>
 <translation id="7330397557116570022">Dikteerimise kasutamiseks minge järgmisele väljale</translation>
 <translation id="7331646370422660166">alt + allanool</translation>
 <translation id="7340731148882810149">Automaatsete klikkide menüü</translation>

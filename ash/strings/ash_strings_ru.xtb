@@ -66,7 +66,6 @@
 <translation id="1225748608451425081">Устройство Chromebook заблокировано в связи с известной проблемой. Время, по истечении которого можно будет выполнить вход: <ph name="TIME_LEFT" />.</translation>
 <translation id="1226877728704622336">неактивный рабочий стол</translation>
 <translation id="1229194443904279055">Остановить выбор текста</translation>
-<translation id="1233979878541157665">В поисковом запросе не указывайте название файла, а опишите, что изображено на картинке, например "закат" или "дерево". Поиск картинок можно отключить в строке поиска.</translation>
 <translation id="1235458158152011030">Сохраненные сети</translation>
 <translation id="1239161794459865856">Функция "<ph name="FEATURE_NAME" />" подключена.</translation>
 <translation id="1240638468526743569">приложение</translation>
@@ -1144,6 +1143,7 @@
 <translation id="5620979661744857819">Доступ будет предоставлен приложению "<ph name="APP_NAME" />", а также всем приложениям и сайтам с разрешениями "Камера" и "Микрофон". Возможно, потребуется обновить веб-страницу или перезапустить приложение.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Введен неверный пароль. Повторите попытку.</translation>
+<translation id="5632485077360054581">Показать</translation>
 <translation id="5648021990716966815">Микрофонный разъем</translation>
 <translation id="5652575806481723716">Приложение "<ph name="FOCUSED_APP_NAME" />" требует вашего внимания.</translation>
 <translation id="5662075790140998213">Рабочий стол 10</translation>
@@ -1337,7 +1337,6 @@
 <translation id="643593192654616063">Хранилище: используется <ph name="STORAGE_IN_USE_SIZE" /> из <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6445835306623867477">Трансляция <ph name="ROUTE_TITLE" /> на устройство "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="6445915701151710649">процессор</translation>
-<translation id="6446225358675593408">Поиск картинок по описанию</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, мероприятий: <ph name="NUMBER" /></translation>
 <translation id="6449483711453944360">Приложения для Linux и окна в режиме инкогнито пока не поддерживаются</translation>
 <translation id="6450245544201845082">Сочетание клавиш для действия "нажать правой кнопкой мыши" отключено</translation>
@@ -1521,6 +1520,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Возврат к предыдущему разрешению через <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Открыть настройки</translation>
 <translation id="7180611975245234373">Обновить</translation>
 <translation id="7188494361780961876">Меню перемещено в левый верхний угол экрана.</translation>
 <translation id="7189412385142492784">Расстояние до Венеры</translation>
@@ -1540,7 +1540,6 @@
 <translation id="7312210124139670355">Администратор выполняет сброс eSIM. Это может занять несколько минут.</translation>
 <translation id="7313193732017069507">Показать кнопку изменения размера</translation>
 <translation id="7316261577130609484">Добавить задачу</translation>
-<translation id="7321889295239318128">Чтобы узнать больше, нажмите Shift + Tab</translation>
 <translation id="7330397557116570022">Чтобы использовать голосовой ввод, перейдите к текстовому полю</translation>
 <translation id="7331646370422660166">Alt + Стрелка вниз</translation>
 <translation id="7340731148882810149">Меню автоматического нажатия</translation>

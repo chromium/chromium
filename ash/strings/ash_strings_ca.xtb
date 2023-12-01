@@ -66,7 +66,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1225748608451425081">El Chromebook està bloquejat a causa d'un problema conegut. Podràs iniciar-hi la sessió d'aquí a: <ph name="TIME_LEFT" />.</translation>
 <translation id="1226877728704622336">escriptori inactiu</translation>
 <translation id="1229194443904279055">Deixa de seleccionar</translation>
-<translation id="1233979878541157665">Prova de cercar "capvespre" o "arbre" en comptes del nom del fitxer. Pots desactivar la cerca d'imatges a la barra de cerca.</translation>
 <translation id="1235458158152011030">Xarxes conegudes</translation>
 <translation id="1239161794459865856">La funció <ph name="FEATURE_NAME" /> està connectada.</translation>
 <translation id="1240638468526743569">Una aplicació</translation>
@@ -1144,6 +1143,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="5620979661744857819">Permet l'accés a <ph name="APP_NAME" /> i a totes les aplicacions i tots els llocs web amb permís per accedir a la càmera i al micròfon. És possible que hagis d'actualitzar la pàgina web o reiniciar l'aplicació.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">No s'ha pogut verificar la contrasenya. Torna-ho a provar.</translation>
+<translation id="5632485077360054581">Mostra'm com</translation>
 <translation id="5648021990716966815">Connector per al micròfon</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> sol·licita la teva atenció.</translation>
 <translation id="5662075790140998213">Escriptori 10</translation>
@@ -1337,7 +1337,6 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="643593192654616063"><ph name="STORAGE_IN_USE_SIZE" /> d'emmagatzematge en ús d'un total de <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> a <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
-<translation id="6446225358675593408">Cerca imatges per contingut</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> esdeveniment</translation>
 <translation id="6449483711453944360">Les aplicacions de Linux i les finestres d'incògnit no s'admeten actualment</translation>
 <translation id="6450245544201845082">La drecera amb el botó dret està desactivada en aquest moment</translation>
@@ -1521,6 +1520,7 @@ Instal·lació nova</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Es revertirà a la resolució anterior d'aquí a <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Obre Configuració</translation>
 <translation id="7180611975245234373">Actualitza</translation>
 <translation id="7188494361780961876">El menú s'ha mogut a l'extrem superior esquerre de la pantalla.</translation>
 <translation id="7189412385142492784">A quina distància es troba Venus?</translation>
@@ -1540,7 +1540,6 @@ Instal·lació nova</translation>
 <translation id="7312210124139670355">L'administrador està restablint l'eSIM. Aquest procés pot tardar uns minuts.</translation>
 <translation id="7313193732017069507">Desplega la càmera</translation>
 <translation id="7316261577130609484">Afegeix una tasca nova</translation>
-<translation id="7321889295239318128">Prem Majúscules més Tabulador per obtenir més informació</translation>
 <translation id="7330397557116570022">Ves a un camp de text per utilitzar el dictat</translation>
 <translation id="7331646370422660166">Alt+fletxa avall</translation>
 <translation id="7340731148882810149">Menú de clics automàtics</translation>

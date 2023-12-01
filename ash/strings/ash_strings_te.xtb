@@ -66,7 +66,6 @@
 <translation id="1225748608451425081">తెలిసిన సమస్య కారణంగా మీ Chromebook లాక్ చేయబడింది. మీరు ఈ సమయం తర్వాత సైన్ ఇన్ చేయగలరు: <ph name="TIME_LEFT" />.</translation>
 <translation id="1226877728704622336">ఇన్‌యాక్టివ్ డెస్క్</translation>
 <translation id="1229194443904279055">ఎంచుకోవడం ఆపివేయండి</translation>
-<translation id="1233979878541157665">ఫైల్ పేరుకు బదులుగా "సూర్యాస్తమయం" లేదా "చెట్టు" అని సెర్చ్ చేయడానికి ట్రై చేయండి. మీరు సెర్చ్ బార్‌లో ఇమేజ్ సెర్చ్‌ను ఆఫ్ చేయవచ్చు.</translation>
 <translation id="1235458158152011030">తెలిసిన నెట్‌వర్క్‌లు</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> కనెక్ట్ చేయబడింది.</translation>
 <translation id="1240638468526743569">ఒక యాప్</translation>
@@ -1145,6 +1144,7 @@
 <translation id="5620979661744857819">కెమెరా, మైక్రోఫోన్ అనుమతులతో ఇది <ph name="APP_NAME" />‌తో పాటు, అన్ని యాప్‌లు, వెబ్‌సైట్‌లకు యాక్సెస్‌ను అనుమతిస్తుంది. మీరు వెబ్ పేజీని రిఫ్రెష్ చేయాల్సి రావచ్చు లేదా యాప్‌ను రీస్టార్ట్ చేయాల్సి రావచ్చు.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">మీ పాస్‌వర్డ్ వెరిఫై చేయడం సాధ్యం కాలేదు. మళ్లీ ట్రై చేయండి.</translation>
+<translation id="5632485077360054581">ఎలా చేయాలో నాకు చూపించు</translation>
 <translation id="5648021990716966815">మైక్ జాక్</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" />, మీ అటెన్షన్ కోసం రిక్వెస్ట్ చేస్తోంది.</translation>
 <translation id="5662075790140998213">డెస్క్ 10</translation>
@@ -1338,7 +1338,6 @@
 <translation id="643593192654616063">మొత్తం <ph name="STORAGE_TOTAL_SIZE" />‌లో, <ph name="STORAGE_IN_USE_SIZE" /> స్టోరేజ్ ఉపయోగంలో ఉంది</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" />లో <ph name="ROUTE_TITLE" /></translation>
 <translation id="6445915701151710649">CPU</translation>
-<translation id="6446225358675593408">కంటెంట్ ఆధారంగా మీ ఇమేజ్‌లను కనుగొనండి</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> ఈవెంట్</translation>
 <translation id="6449483711453944360">Linux యాప్‌లు, అజ్ఞాత విండోలు ప్రస్తుత సపోర్ట్ చేయవు</translation>
 <translation id="6450245544201845082">కుడి-క్లిక్ షార్ట్‌కట్ ప్రస్తుతం ఆఫ్‌లో ఉంది</translation>
@@ -1522,6 +1521,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" />లో తిరిగి పాత రిజల్యూషన్‌కి మార్చబడుతుంది</translation>
+<translation id="7173114856073700355">సెట్టింగ్‌లను తెరువు</translation>
 <translation id="7180611975245234373">రిఫ్రెష్ చేయండి</translation>
 <translation id="7188494361780961876">స్క్రీన్‌లో పైన ఎడమ వైపు మూలకు మెనూ తరలించబడింది.</translation>
 <translation id="7189412385142492784">శుక్రుడు ఎంత దూరంలో ఉన్నాడు</translation>
@@ -1541,7 +1541,6 @@
 <translation id="7312210124139670355">మీ అడ్మినిస్ట్రేటర్ మీ eSIMను రీసెట్ చేస్తున్నారు. దీనికి కొన్ని నిమిషాలు పట్టవచ్చు.</translation>
 <translation id="7313193732017069507">కెమెరాను విస్తరించండి</translation>
 <translation id="7316261577130609484">కొత్త టాస్క్‌ను జోడించండి</translation>
-<translation id="7321889295239318128">మరింత తెలుసుకోవడానికి షిఫ్ట్ ప్లస్ ట్యాబ్‌ను నొక్కండి</translation>
 <translation id="7330397557116570022">డిక్టేషన్‌ను ఉపయోగించడానికి టెక్స్ట్ ఫీల్డ్‌కు వెళ్లండి</translation>
 <translation id="7331646370422660166">alt + కింది వైపు బాణం గుర్తు</translation>
 <translation id="7340731148882810149">ఆటోమేటిక్ క్లిక్‌ల మెనూ</translation>

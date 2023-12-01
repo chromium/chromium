@@ -2391,7 +2391,6 @@ Wenn diese Richtlinie aktiviert ist, kann das Verhalten von Funktionstasten mit 
           Wenn du diese Richtlinie konfigurierst, kann sie vom Nutzer nicht geändert oder überschrieben werden.
 
           Wird sie nicht konfiguriert, ist der große Cursor auf dem Anmeldebildschirm anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
-<translation id="3027837632741099453">Der Energiesparmodus wird aktiviert, wenn das Gerät über den Akku betrieben wird.</translation>
 <translation id="3030000825273123558">Messdatenberichte aktivieren</translation>
 <translation id="30300807616984726">Meldet App-Inventar-Daten für verknüpfte Nutzer.
 
@@ -4381,13 +4380,6 @@ Bei nicht verwalteten Geräten kann der Nutzer entscheiden, ob Messwerte gesende
 
       Wenn diese Richtlinie nicht konfiguriert oder aktiviert ist, werden die DNS-Abfangprüfungen durchgeführt. Nur wenn sie ausdrücklich deaktiviert ist, finden sie nicht statt.</translation>
 <translation id="4700190441681139987">Keiner Website erlauben, auf Sensoren zuzugreifen</translation>
-<translation id="4701899474784891858">Mit dieser Richtlinie wird der Energiesparmodus aktiviert oder deaktiviert. Mit dieser Einstellung wird die Framerate gedrosselt, um den Stromverbrauch zu senken.
-      Wenn die Richtlinie nicht konfiguriert ist, kann der Endnutzer diese Einstellung unter chrome://settings/performance verwalten.
-      Die verschiedenen Stufen sind:
-      <ph name="BATTERY_SAVER_MODE_DISABLED" /> (0): Der Energiesparmodus wird deaktiviert.
-      <ph name="BATTERY_SAVER_MODE_ENABLED_BELOW_THRESHOLD" /> (1): Der Energiesparmodus wird aktiviert, wenn das Gerät über den Akku betrieben wird und der Akkustand niedrig ist.
-      <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2): Der Energiesparmodus wird aktiviert, wenn das Gerät über den Akku betrieben wird.
-      </translation>
 <translation id="4703402283970867140">Intelligentem Dimmmodell erlauben, den Zeitraum bis zum Dimmen des Bildschirms zu verlängern</translation>
 <translation id="4704958130749494760">Websites automatisch die Berechtigung erteilen, eine Verbindung zu seriellen USB-Geräten herzustellen.</translation>
 <translation id="4705329890928008808">Wenn die Richtlinie auf „CopyCaCerts“ gesetzt ist, werden alle über ONC installierten CA-Zertifikate mit <ph name="WEB_TRUSTED_BIT" /> für ARC-Apps verfügbar.

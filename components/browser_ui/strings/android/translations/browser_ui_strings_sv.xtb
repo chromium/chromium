@@ -144,7 +144,7 @@
 <translation id="3362437373201486687">Söker efter Bluetooth-enheter</translation>
 <translation id="3386292677130313581">Fråga innan webbplatser tillåts att veta var du befinner dig (rekommenderas)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="344449859752187052">Cookies från tredje part har blockerats</translation>
+<translation id="344449859752187052">Tredjepartscookies har blockerats</translation>
 <translation id="3448554387819310837">När detta är aktiverat kan webbplatser be om att få använda kameran. När detta är inaktiverat får webbplatser inte använda kameran.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Cookies blockeras i Chrome igen i morgon}other{Cookies blockeras i Chrome igen om # dagar}}</translation>
 <translation id="3521663503435878242">Webbplatser under <ph name="DOMAIN" /></translation>
@@ -287,7 +287,7 @@
 <translation id="5887687176710214216">Besöktes senast i går</translation>
 <translation id="5916664084637901428">På</translation>
 <translation id="5922853908706496913">Delar skärmen</translation>
-<translation id="5922967540311291836">Blockera cookies från tredje part</translation>
+<translation id="5922967540311291836">Blockera tredjepartscookies</translation>
 <translation id="5923512600150154850"><ph name="DATASIZE" /> data och cookies som har sparats av webbplatser raderas.</translation>
 <translation id="5939518447894949180">Återställ</translation>
 <translation id="5964247741333118902">Inbäddat innehåll</translation>
@@ -308,7 +308,7 @@
 <translation id="6192792657125177640">Undantag</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Cookies blockeras i Chrome igen i morgon}other{# dagar tills cookies blockeras igen}}</translation>
 <translation id="6195163219142236913">Tredjepartscookies är begränsade</translation>
-<translation id="6196640612572343990">Blockera cookies från tredje part</translation>
+<translation id="6196640612572343990">Blockera tredjepartscookies</translation>
 <translation id="6205314730813004066">Annonsintegritet</translation>
 <translation id="6207207788774442484">Radera data och återställ behörigheter</translation>
 <translation id="6231752747840485235">Vill du avinstallera <ph name="APP_NAME" />?</translation>

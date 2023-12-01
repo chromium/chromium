@@ -66,7 +66,6 @@
 <translation id="1225748608451425081">由于发生了一个已知问题，您的 Chromebook 已被锁定。您可以在 <ph name="TIME_LEFT" />后重新登录。</translation>
 <translation id="1226877728704622336">闲置的桌面</translation>
 <translation id="1229194443904279055">停止选择</translation>
-<translation id="1233979878541157665">尝试搜索“日落”或“树”而非文件名。您可在搜索栏中关闭图片搜索功能。</translation>
 <translation id="1235458158152011030">已知网络</translation>
 <translation id="1239161794459865856">已连接“<ph name="FEATURE_NAME" />”。</translation>
 <translation id="1240638468526743569">某个应用</translation>
@@ -1142,6 +1141,7 @@
 <translation id="5620979661744857819">这将允许“<ph name="APP_NAME" />”以及所有具有摄像头和麦克风使用权限的应用和网站使用摄像头/麦克风。您可能需要刷新网页或重启应用。</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">无法验证您的密码。请重试。</translation>
+<translation id="5632485077360054581">操作步骤</translation>
 <translation id="5648021990716966815">麦克风耳机插孔</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" />中有需要您关注的新动态。</translation>
 <translation id="5662075790140998213">桌面 10</translation>
@@ -1335,7 +1335,6 @@
 <translation id="643593192654616063">已使用 <ph name="STORAGE_IN_USE_SIZE" /> 的存储空间，总共 <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6445835306623867477">正在将“<ph name="ROUTE_TITLE" />”投放至“<ph name="RECEIVER_NAME" />”</translation>
 <translation id="6445915701151710649">CPU</translation>
-<translation id="6446225358675593408">按内容查找图片</translation>
 <translation id="6447111710783417522"><ph name="DATE" />，<ph name="NUMBER" /> 个事件</translation>
 <translation id="6449483711453944360">尚不支持 Linux 应用和无痕式窗口</translation>
 <translation id="6450245544201845082">“右键点击”对应的快捷键目前处于停用状态</translation>
@@ -1519,6 +1518,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />，
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" />秒后恢复到原分辨率</translation>
+<translation id="7173114856073700355">打开“设置”</translation>
 <translation id="7180611975245234373">刷新</translation>
 <translation id="7188494361780961876">菜单已移至屏幕的左上角。</translation>
 <translation id="7189412385142492784">金星有多远</translation>
@@ -1538,7 +1538,6 @@
 <translation id="7312210124139670355">您的管理员正在重置您的 eSIM 卡。这可能需要几分钟的时间。</translation>
 <translation id="7313193732017069507">展开相机</translation>
 <translation id="7316261577130609484">添加新任务</translation>
-<translation id="7321889295239318128">按 Shift + Tab 键可了解详情</translation>
 <translation id="7330397557116570022">需要选择一个文本字段才能使用语音输入</translation>
 <translation id="7331646370422660166">alt + 向下键</translation>
 <translation id="7340731148882810149">“自动点击”菜单</translation>

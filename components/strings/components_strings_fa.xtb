@@ -663,6 +663,7 @@
 <translation id="2262243747453050782">‏خطای HTTP</translation>
 <translation id="226481340855943334">شجره‌نامه و سلسله‌شناسی</translation>
 <translation id="2265192657948645752">مشاغل خرده‌فروشی</translation>
+<translation id="2265356434276802347">این خط‌مشی نباید بیشتر از <ph name="MAX_ITEMS_LIMIT" /> ورودی ویژه داشته باشد.</translation>
 <translation id="2267047181501709434">درحال فعال کردن هویت…</translation>
 <translation id="2268743667444073169">مجموعه تلویزیونی سبک</translation>
 <translation id="2270484714375784793">شماره تلفن</translation>

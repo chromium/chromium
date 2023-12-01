@@ -66,7 +66,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1225748608451425081">Chromebooken er låst på grunn av en kjent feil. Du kan logge på om <ph name="TIME_LEFT" />.</translation>
 <translation id="1226877728704622336">Inaktivt skrivebord</translation>
 <translation id="1229194443904279055">Slutt å merke</translation>
-<translation id="1233979878541157665">Prøv å søke etter «solnedgang» eller «tre» i stedet for filnavnet. Du kan slå av bildesøk i søkefeltet.</translation>
 <translation id="1235458158152011030">Kjente nettverk:</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> er tilkoblet.</translation>
 <translation id="1240638468526743569">En app</translation>
@@ -1144,6 +1143,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="5620979661744857819">Dette gir tilgang til <ph name="APP_NAME" /> og alle apper og nettsteder som har kamera- og mikrofontillatelsen. Det kan hende du må laste inn nettsiden på nytt eller starte appen på nytt.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Passordet ditt kunne ikke verifiseres. Prøv på nytt.</translation>
+<translation id="5632485077360054581">Vis meg hvordan</translation>
 <translation id="5648021990716966815">Mikrofonkontakt</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> ber om din oppmerksomhet.</translation>
 <translation id="5662075790140998213">Skrivebord 10</translation>
@@ -1337,7 +1337,6 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="643593192654616063">Lagringsplass: <ph name="STORAGE_IN_USE_SIZE" /> er i bruk av totalt <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> på <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">prosessor</translation>
-<translation id="6446225358675593408">Finn bildene dine basert på innhold</translation>
 <translation id="6447111710783417522"><ph name="DATE" /> – <ph name="NUMBER" /> hendelse</translation>
 <translation id="6449483711453944360">Linux-apper og inkognitovinduer støttes ikke for øyeblikket</translation>
 <translation id="6450245544201845082">Høyreklikk-hurtigtasten er avslått</translation>
@@ -1521,6 +1520,7 @@ Nylig installert</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Går tilbake til den gamle oppløsningen om <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Åpne Innstillinger</translation>
 <translation id="7180611975245234373">Last inn på nytt</translation>
 <translation id="7188494361780961876">Menyen ble flyttet til øvre venstre hjørne av skjermen.</translation>
 <translation id="7189412385142492784">Hvor langt unna er Venus?</translation>
@@ -1540,7 +1540,6 @@ Nylig installert</translation>
 <translation id="7312210124139670355">Administratoren holder på å tilbakestille eSIM-kortet ditt. Dette kan ta noen minutter.</translation>
 <translation id="7313193732017069507">Vis kameraet</translation>
 <translation id="7316261577130609484">Legg til et nytt gjøremål</translation>
-<translation id="7321889295239318128">Trykk på Shift + Tab for å finne ut mer</translation>
 <translation id="7330397557116570022">Gå til et tekstfelt for å bruke diktering</translation>
 <translation id="7331646370422660166">alt + nedoverpil</translation>
 <translation id="7340731148882810149">Automatisk klikk-meny</translation>

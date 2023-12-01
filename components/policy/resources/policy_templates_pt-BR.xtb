@@ -2450,7 +2450,6 @@ comportamento das teclas de função, e essa configuração não poderá ser mod
           Se você definir esta política, o usuário não poderá alterá-la ou modificá-la.
 
           Se esta política não for definida, o cursor grande estará desativado na tela de login, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
-<translation id="3027837632741099453">O modo Economia de bateria vai ser ativado quando o dispositivo estiver usando a energia da bateria.</translation>
 <translation id="3030000825273123558">Ativa relatórios de métricas</translation>
 <translation id="30300807616984726">Informa os dados de inventário do app para usuários afiliados.
 
@@ -4521,13 +4520,6 @@ No caso de dispositivos não gerenciados, o usuário pode decidir enviar as mét
 
       Quando essa política não for definida ou estiver ativada, as verificações de interceptação de DNS são executadas. Quando a política é desativada explicitamente, elas não são executadas.</translation>
 <translation id="4700190441681139987">Não permitir o acesso de nenhum site aos sensores</translation>
-<translation id="4701899474784891858">Esta política ativa ou desativa a configuração do modo de Economia de bateria. Essa configuração limita o consumo de energia do frame rate.
-      Se a política for deixada sem definição, o usuário final vai poder controlar essa configuração em chrome://settings/performance.
-      Os diferentes níveis são:
-      <ph name="BATTERY_SAVER_MODE_DISABLED" /> (0): o modo Economia de bateria vai ser desativado.
-      <ph name="BATTERY_SAVER_MODE_ENABLED_BELOW_THRESHOLD" /> (1): o modo Economia de bateria vai ser ativado quando o dispositivo estiver usando a energia da bateria e o nível dela estiver baixo.
-      <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2): o modo Economia de bateria vai ser ativado quando o dispositivo estiver usando a energia da bateria.
-      </translation>
 <translation id="4703402283970867140">Ativar modelo de escurecimento inteligente para aumentar o tempo que a tela permanece ativa</translation>
 <translation id="4704958130749494760">Permitir automaticamente que os sites se conectem a dispositivos seriais USB.</translation>
 <translation id="4705329890928008808">Se a política for definida como "CopyCaCerts", todos os certificados de CA instalados por ONC com <ph name="WEB_TRUSTED_BIT" /> vão ficar disponíveis para apps ARC.

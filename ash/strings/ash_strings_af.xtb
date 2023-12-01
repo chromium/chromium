@@ -66,7 +66,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1225748608451425081">Jou Chromebook is gesluit weens 'n bekende probleem. Jy sal kan aanmeld ná: <ph name="TIME_LEFT" />.</translation>
 <translation id="1226877728704622336">onaktiewe lessenaar</translation>
 <translation id="1229194443904279055">Hou op kies</translation>
-<translation id="1233979878541157665">Probeer “sonsondergang” of “boom” in plaas van die lêernaam soek. Jy kan prentsoektog in die soekbalk afskakel.</translation>
 <translation id="1235458158152011030">Bekende netwerke</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> is gekoppel.</translation>
 <translation id="1240638468526743569">’n Program</translation>
@@ -1145,6 +1144,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="5620979661744857819">Dit gee toegang vir <ph name="APP_NAME" /> en alle apps en webwerwe met die kamera- en mikrofoontoestemming. Jy sal die webblasy moet herlaai of die app moet herbegin.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Jou wagwoord kon nie geverifieer word nie. Probeer weer.</translation>
+<translation id="5632485077360054581">Wys my hoe</translation>
 <translation id="5648021990716966815">Mikrofoonsok</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> vereis jou aandag.</translation>
 <translation id="5662075790140998213">Lessenaar 10</translation>
@@ -1338,7 +1338,6 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="643593192654616063"><ph name="STORAGE_IN_USE_SIZE" /> berging in gebruik uit totaal van <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> op <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">CPU</translation>
-<translation id="6446225358675593408">Vind jou prente volgens die inhoud</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> geleentheid</translation>
 <translation id="6449483711453944360">Linux-programme en Incognito-vensters word nie tans gesteun nie</translation>
 <translation id="6450245544201845082">Die regsklikkortpad is tans af</translation>
@@ -1522,6 +1521,7 @@ Nuwe installasie</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Stel oor <ph name="TIMEOUT_SECONDS" /> terug na ou resolusie</translation>
+<translation id="7173114856073700355">Maak Instellings oop</translation>
 <translation id="7180611975245234373">Herlaai</translation>
 <translation id="7188494361780961876">Kieslys is na die skerm se hoek links onder geskuif.</translation>
 <translation id="7189412385142492784">Hoe ver is Venus</translation>
@@ -1541,7 +1541,6 @@ Nuwe installasie</translation>
 <translation id="7312210124139670355">Jou administrateur stel tans jou e-SIM terug. Dit kan 'n paar minute neem.</translation>
 <translation id="7313193732017069507">Vou kamera uit</translation>
 <translation id="7316261577130609484">Voeg nuwe taak by</translation>
-<translation id="7321889295239318128">Druk shift plus tab om meer te wete te kom</translation>
 <translation id="7330397557116570022">Gaan na ’n teksveld om diktering te gebruik</translation>
 <translation id="7331646370422660166">alt + afpyl</translation>
 <translation id="7340731148882810149">Outomatiese Klikke-kieslys</translation>

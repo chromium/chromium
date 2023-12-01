@@ -21,5 +21,7 @@
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Bu site için yeni şifre mevcut}other{Bu site için yeni şifreler mevcut}}</translation>
 <translation id="7286867818472074330">Geçiş anahtarı seç</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" />/<ph name="ITEMS_TOTAL" />.</translation>
+<translation id="7738288782501322815"><ph name="SITE_NAME" /> için birden fazla şifre aldınız</translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> sizinle <ph name="SITE_NAME" /> için bir şifre paylaştı</translation>
 <translation id="8891372124884726271">Kimlik bilgisi listesi kapatıldı.</translation>
 </translationbundle>

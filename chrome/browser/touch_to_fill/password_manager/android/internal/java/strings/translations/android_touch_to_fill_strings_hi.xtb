@@ -21,5 +21,7 @@
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{इस साइट के लिए नया पासवर्ड}one{इस साइट के लिए नया पासवर्ड}other{इस साइट के लिए नए पासवर्ड}}</translation>
 <translation id="7286867818472074330">पासकी चुनें</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEMS_TOTAL" /> में से <ph name="ITEM_POSITION" />.</translation>
+<translation id="7738288782501322815">आपको <ph name="SITE_NAME" /> के लिए पासवर्ड मिल गए हैं</translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> ने <ph name="SITE_NAME" /> के लिए आपके साथ एक पासवर्ड शेयर किया है</translation>
 <translation id="8891372124884726271">क्रेडेंशियल की सूची बंद है.</translation>
 </translationbundle>

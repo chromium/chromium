@@ -66,7 +66,6 @@
 <translation id="1225748608451425081">Тодорхой асуудлаас болоод таны Chromebook-г түгжлээ. Та <ph name="TIME_LEFT" />-н дараа нэвтрэх боломжтой.</translation>
 <translation id="1226877728704622336">идэвхгүй дэлгэц</translation>
 <translation id="1229194443904279055">Сонголтыг зогсоох</translation>
-<translation id="1233979878541157665">Файлын нэрийн оронд "нар жаргах" эсвэл "мод" гэж хайж үзнэ үү. Та хайлтын талбарт зурган хайлтыг унтраах боломжтой.</translation>
 <translation id="1235458158152011030">Мэдэгдэж байгаа сүлжээ</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> холбогдсон.</translation>
 <translation id="1240638468526743569">Апп</translation>
@@ -1145,6 +1144,7 @@
 <translation id="5620979661744857819">Энэ нь <ph name="APP_NAME" /> болон камер, микрофоны зөвшөөрөлтэй бүх апп, вебсайтын хандалтыг зөвшөөрнө. Та веб хуудсыг сэргээх эсвэл аппыг дахин эхлүүлэх шаардлагатай байж магадгүй.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Таны нууц үгийг баталгаажуулж чадсангүй. Дахин оролдоно уу.</translation>
+<translation id="5632485077360054581">Надад хэрхэн хийхийг харуулна уу</translation>
 <translation id="5648021990716966815">Микрофоны чихэвчний оролт</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> танаас анхаарал тавихыг хүсэж байна.</translation>
 <translation id="5662075790140998213">10-р дэлгэц</translation>
@@ -1338,7 +1338,6 @@
 <translation id="643593192654616063">Нийт <ph name="STORAGE_TOTAL_SIZE" />-н хадгалах сангаас <ph name="STORAGE_IN_USE_SIZE" />-г ашиглаж байна</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" />-д <ph name="ROUTE_TITLE" /></translation>
 <translation id="6445915701151710649">төв процессорын нэгж</translation>
-<translation id="6446225358675593408">Зургуудаа контентоор хайх</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> үйл явдал</translation>
 <translation id="6449483711453944360">Linux аппууд болон Нууцлалтай цонхнуудыг одоогоор дэмждэггүй</translation>
 <translation id="6450245544201845082">Баруун талыг товших товчлол одоогоор унтраалттай байна</translation>
@@ -1522,6 +1521,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" />-д хуучин хэмэжээнд нь буцааж оруулах</translation>
+<translation id="7173114856073700355">Тохиргоог нээх</translation>
 <translation id="7180611975245234373">Дахин сэргээх</translation>
 <translation id="7188494361780961876">Цэсийг дэлгэцийн зүүн дээд булан руу зөөсөн.</translation>
 <translation id="7189412385142492784">Сугар гараг хэр хол вэ?</translation>
@@ -1541,7 +1541,6 @@
 <translation id="7312210124139670355">Таны администратор eSIM-г тань шинэчилж байна. Үүнд хэдэн минут шаардлагатай.</translation>
 <translation id="7313193732017069507">Камерыг дэлгэх</translation>
 <translation id="7316261577130609484">Шинэ ажил нэмэх</translation>
-<translation id="7321889295239318128">Нэмэлт мэдээлэл авахын тулд shift болон tab-г дарна уу</translation>
 <translation id="7330397557116570022">Дуу хоолойгоор бичихийг ашиглахын тулд текстийн талбар луу очно уу</translation>
 <translation id="7331646370422660166">alt + доош сум</translation>
 <translation id="7340731148882810149">Автомат товшилтын цэс</translation>

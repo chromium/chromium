@@ -66,7 +66,6 @@
 <translation id="1225748608451425081">एका माहीत असलेल्या समस्येमुळे तुमचे Chromebook लॉक झाले आहे. तुम्हाला या वेळेनंतर साइन इन करता येईल: <ph name="TIME_LEFT" />.</translation>
 <translation id="1226877728704622336">इनॅक्टिव्ह डेस्‍क</translation>
 <translation id="1229194443904279055">निवडणे थांबवा</translation>
-<translation id="1233979878541157665">फाइलच्या नावाऐवजी "सूर्यास्त" किंवा "झाड" असे शोधण्याचा प्रयत्न करा. तुम्ही शोध बारमध्ये इमेज शोध बंद करू शकता.</translation>
 <translation id="1235458158152011030">ज्ञात नेटवर्क</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> शी कनेक्ट केले.</translation>
 <translation id="1240638468526743569">ॲप</translation>
@@ -1144,6 +1143,7 @@
 <translation id="5620979661744857819">हे <ph name="APP_NAME" /> आणि कॅमेरा व मायक्रोफोन वापरण्याच्या परवानग्यांसह सर्व अ‍ॅप्स आणि वेबसाइट अ‍ॅक्सेस करण्यास अनुमती देते. तुम्हाला वेब पेज रिफ्रेश करावे लागू शकते किंवा ॲप रीस्टार्ट करावे लागू शकते.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">तुमच्या पासवर्डची पडताळणी करता आली नाही. पुन्हा प्रयत्न करा.</translation>
+<translation id="5632485077360054581">मला कसे ते दाखवा</translation>
 <translation id="5648021990716966815">माइक जॅक</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> तुम्हाला लक्ष देण्याची विनंती करते.</translation>
 <translation id="5662075790140998213">डेस्‍क १०</translation>
@@ -1337,7 +1337,6 @@
 <translation id="643593192654616063">एकूण <ph name="STORAGE_TOTAL_SIZE" /> पैकी <ph name="STORAGE_IN_USE_SIZE" /> स्टोरेज वापरात आहे</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> वर <ph name="ROUTE_TITLE" /></translation>
 <translation id="6445915701151710649">CPU</translation>
-<translation id="6446225358675593408">आशयानुसार तुमच्या इमेज शोधा</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> इव्हेंट</translation>
 <translation id="6449483711453944360">Linux अ‍ॅप्स आणि गुप्त विंडोना सध्या सपोर्ट नाही</translation>
 <translation id="6450245544201845082">राइट-क्लिक शॉर्टकट सध्या बंद आहे</translation>
@@ -1521,6 +1520,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> मध्ये जुन्या रिझोल्युशनवर परत करत आहे</translation>
+<translation id="7173114856073700355">सेटिंग्ज उघडा</translation>
 <translation id="7180611975245234373">रिफ्रेश करा</translation>
 <translation id="7188494361780961876">मेनू स्क्रीनच्या वरच्या डाव्या कोपर्‍यात हलवला.</translation>
 <translation id="7189412385142492784">शुक्र किती दूर आहे</translation>
@@ -1540,7 +1540,6 @@
 <translation id="7312210124139670355">तुमचा ॲडमिनिस्ट्रेटर तुमचा eSIM रीसेट करत आहे. याला काही मिनिटे लागू शकतात.</translation>
 <translation id="7313193732017069507">कॅमेराचा विस्तार करा</translation>
 <translation id="7316261577130609484">नवीन टास्क जोडा</translation>
-<translation id="7321889295239318128">अधिक जाणून घेण्यासाठी shift + tab प्रेस करा</translation>
 <translation id="7330397557116570022">डिक्टेशन वापरण्यासाठी मजकूर फील्डवर जा</translation>
 <translation id="7331646370422660166">alt + down arrow</translation>
 <translation id="7340731148882810149">ऑटोमॅटिक क्लिक मेनू</translation>

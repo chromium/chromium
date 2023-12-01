@@ -66,7 +66,6 @@
 <translation id="1225748608451425081">Chromebook заблакіраваны з-за вядомай праблемы. Вы зможаце ўвайсці праз: <ph name="TIME_LEFT" />.</translation>
 <translation id="1226877728704622336">неактыўны працоўны стол</translation>
 <translation id="1229194443904279055">Спыніць выбар</translation>
-<translation id="1233979878541157665">У пошукавым запыце не ўказвайце назву файла, а апішыце, што на відарысе (напрыклад, "захад сонца" або "дрэва"). Пошук відарысаў можна адключыць у радку пошуку.</translation>
 <translation id="1235458158152011030">Вядомыя сеткі</translation>
 <translation id="1239161794459865856">Функцыя "<ph name="FEATURE_NAME" />" падключана.</translation>
 <translation id="1240638468526743569">адна з праграм</translation>
@@ -1144,6 +1143,7 @@
 <translation id="5620979661744857819">Доступ атрымае праграма "<ph name="APP_NAME" />" і ўсе праграмы і вэб-сайты, якія маюць дазволы выкарыстоўваць мікрафон і камеру. Магчыма, трэба будзе абнавіць вэб-старонку або перазапусціць праграму.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Уведзены пароль аказаўся несапраўдным. Паўтарыце спробу.</translation>
+<translation id="5632485077360054581">Паказаць</translation>
 <translation id="5648021990716966815">Раздым для мікрафона</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> патрабуе вашай увагі.</translation>
 <translation id="5662075790140998213">Працоўны стол 10</translation>
@@ -1337,7 +1337,6 @@
 <translation id="643593192654616063">Аб'ём сховішча, якое выкарыстоўваецца: <ph name="STORAGE_IN_USE_SIZE" />. Агульны аб'ём сховішча: <ph name="STORAGE_TOTAL_SIZE" />.</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> на <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">цэнтральны працэсар</translation>
-<translation id="6446225358675593408">Пошук відарысаў па апісанні таго, што на іх адлюстравана</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, падзей: <ph name="NUMBER" /></translation>
 <translation id="6449483711453944360">Вокны ў рэжыме інкогніта і праграмы Linux зараз не падтрымліваюцца</translation>
 <translation id="6450245544201845082">Зараз спалучэнне клавіш для дзеяння "націснуць правай кнопкай мышы" выключана</translation>
@@ -1521,6 +1520,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Вяртанне да старой раздзяляльнасці праз <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Адкрыць Налады</translation>
 <translation id="7180611975245234373">Абнавіць</translation>
 <translation id="7188494361780961876">Меню перамешчана ў левы верхні вугал экрана.</translation>
 <translation id="7189412385142492784">Якая адлегласць да Венеры</translation>
@@ -1540,7 +1540,6 @@
 <translation id="7312210124139670355">Адміністратар выконвае скід вашай eSIM-карты. Гэта можа заняць некалькі хвілін.</translation>
 <translation id="7313193732017069507">Разгарнуць кнопку камеры</translation>
 <translation id="7316261577130609484">Дадаць новую задачу</translation>
-<translation id="7321889295239318128">Каб даведацца больш, націсніце Shift + Tab</translation>
 <translation id="7330397557116570022">Каб выкарыстоўваць галасавы ўвод, перайдзіце ў тэкставае поле</translation>
 <translation id="7331646370422660166">Alt + стрэлка ўніз</translation>
 <translation id="7340731148882810149">Меню аўтаматычных націсканняў</translation>

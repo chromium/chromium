@@ -66,7 +66,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1225748608451425081">Chromebook har låsts på grund av ett känt problem. Du kan logga in om <ph name="TIME_LEFT" />.</translation>
 <translation id="1226877728704622336">inaktivt skrivbord</translation>
 <translation id="1229194443904279055">Sluta markera</translation>
-<translation id="1233979878541157665">Testa att söka efter ”solnedgång” eller ”träd” i stället för filnamnet. Du kan inaktivera bildsökning i sökfältet.</translation>
 <translation id="1235458158152011030">Kända nätverk</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> har anslutits.</translation>
 <translation id="1240638468526743569">En app</translation>
@@ -1144,6 +1143,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="5620979661744857819">Detta ger åtkomst för <ph name="APP_NAME" /> och alla appar och webbplatser med kamera- och mikrofonbehörighet. Du kan behöva uppdatera webbsidan eller starta om appen.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Det gick inte att verifiera lösenordet. Försök igen.</translation>
+<translation id="5632485077360054581">Visa hur man gör</translation>
 <translation id="5648021990716966815">Mikrofonuttag</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> begär din uppmärksamhet.</translation>
 <translation id="5662075790140998213">Skrivbord 10</translation>
@@ -1337,7 +1337,6 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="643593192654616063">Lagringsutrymme: <ph name="STORAGE_IN_USE_SIZE" /> lagringsutrymme av totalt <ph name="STORAGE_TOTAL_SIZE" /> används</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> på <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
-<translation id="6446225358675593408">Hitta dina bilder efter innehållet</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> händelse</translation>
 <translation id="6449483711453944360">Linux-appar och inkognitofönster stöds inte för närvarande</translation>
 <translation id="6450245544201845082">Kortkommandot för högerklick är inaktiverat</translation>
@@ -1521,6 +1520,7 @@ Nyligen installerad</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Återgår till den gamla upplösningen om <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Inställningar</translation>
 <translation id="7180611975245234373">Uppdatera</translation>
 <translation id="7188494361780961876">Menyn har flyttats till skärmens övre vänstra hörn.</translation>
 <translation id="7189412385142492784">Hår långt är det till Venus</translation>
@@ -1540,7 +1540,6 @@ Nyligen installerad</translation>
 <translation id="7312210124139670355">eSIM-kortet återställs av administratören. Det kan ta några minuter.</translation>
 <translation id="7313193732017069507">Utöka kameran</translation>
 <translation id="7316261577130609484">Lägg till ny uppgift</translation>
-<translation id="7321889295239318128">Tryck på Skift + Tabb om du vill läsa mer</translation>
 <translation id="7330397557116570022">Öppna ett textfält om du vill använda diktering</translation>
 <translation id="7331646370422660166">alt + nedåtpil</translation>
 <translation id="7340731148882810149">Meny för automatiska klick</translation>
