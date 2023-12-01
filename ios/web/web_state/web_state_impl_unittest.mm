@@ -381,9 +381,12 @@ TEST_F(WebStateImplTest, DelegateTest) {
   // Test that ShowRepostFormWarningDialog() is called.
   EXPECT_FALSE(delegate.last_repost_form_request());
   base::OnceCallback<void(bool)> repost_callback;
-  web_state.ShowRepostFormWarningDialog(std::move(repost_callback));
+  web_state.ShowRepostFormWarningDialog(web::FormWarningType::kRepost,
+                                        std::move(repost_callback));
   ASSERT_TRUE(delegate.last_repost_form_request());
   EXPECT_EQ(delegate.last_repost_form_request()->web_state, &web_state);
+
+  // TODO(crbug.com/1501150): Check web::FormWarningType::kInsecureForm as well.
 
   // Test that GetJavaScriptDialogPresenter() is called.
   FakeJavaScriptDialogPresenter* presenter =

@@ -476,9 +476,11 @@ void WebStateImpl::RealizedWebState::SendChangeLoadProgress(double progress) {
 }
 
 void WebStateImpl::RealizedWebState::ShowRepostFormWarningDialog(
+    FormWarningType warning_type,
     base::OnceCallback<void(bool)> callback) {
   if (delegate_) {
-    delegate_->ShowRepostFormWarningDialog(owner_, std::move(callback));
+    delegate_->ShowRepostFormWarningDialog(owner_, warning_type,
+                                           std::move(callback));
   } else {
     std::move(callback).Run(true);
   }

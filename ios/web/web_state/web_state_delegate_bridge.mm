@@ -44,6 +44,7 @@ WebState* WebStateDelegateBridge::OpenURLFromWebState(
 
 void WebStateDelegateBridge::ShowRepostFormWarningDialog(
     WebState* source,
+    FormWarningType warning_type,
     base::OnceCallback<void(bool)> callback) {
   SEL selector = @selector(webState:runRepostFormDialogWithCompletionHandler:);
   if ([delegate_ respondsToSelector:selector]) {
@@ -51,7 +52,9 @@ void WebStateDelegateBridge::ShowRepostFormWarningDialog(
         runRepostFormDialogWithCompletionHandler:base::CallbackToBlock(
                                                      std::move(callback))];
   } else {
-    std::move(callback).Run(true);
+    bool default_response =
+        warning_type == FormWarningType::kRepost ? true : false;
+    std::move(callback).Run(default_response);
   }
 }
 

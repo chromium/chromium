@@ -258,7 +258,9 @@ web::WebState* WebStateDelegateBrowserAgent::OpenURLFromWebState(
 
 void WebStateDelegateBrowserAgent::ShowRepostFormWarningDialog(
     web::WebState* source,
+    web::FormWarningType warning_type,
     base::OnceCallback<void(bool)> callback) {
+  CHECK_EQ(warning_type, web::FormWarningType::kRepost);
   if (!container_view_provider_) {
     // There's no way to show the dialog so treat it as if the user said no.
     std::move(callback).Run(false);
@@ -267,6 +269,8 @@ void WebStateDelegateBrowserAgent::ShowRepostFormWarningDialog(
   // TODO(crbug.com/1266052) : Clean up this API.
   RepostFormTabHelper::FromWebState(source)->PresentDialog(
       [container_view_provider_ dialogLocation], std::move(callback));
+
+  // TODO(crbug.com/1501150): Handle FormWarningType::kInsecureForm.
 }
 
 web::JavaScriptDialogPresenter*

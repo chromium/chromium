@@ -345,8 +345,10 @@ void WebStateImpl::SendChangeLoadProgress(double progress) {
 }
 
 void WebStateImpl::ShowRepostFormWarningDialog(
+    FormWarningType warning_type,
     base::OnceCallback<void(bool)> callback) {
-  RealizedState()->ShowRepostFormWarningDialog(std::move(callback));
+  RealizedState()->ShowRepostFormWarningDialog(warning_type,
+                                               std::move(callback));
 }
 
 void WebStateImpl::RunJavaScriptAlertDialog(const GURL& origin_url,

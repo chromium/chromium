@@ -108,7 +108,8 @@ TEST_F(WebStateDelegateBridgeTest, ShowRepostFormWarningDialog) {
   EXPECT_FALSE([delegate_ repostFormWarningRequested]);
   EXPECT_FALSE([delegate_ webState]);
   base::OnceCallback<void(bool)> callback;
-  bridge_->ShowRepostFormWarningDialog(&fake_web_state_, std::move(callback));
+  bridge_->ShowRepostFormWarningDialog(
+      &fake_web_state_, web::FormWarningType::kRepost, std::move(callback));
   EXPECT_TRUE([delegate_ repostFormWarningRequested]);
   EXPECT_EQ(&fake_web_state_, [delegate_ webState]);
 }
@@ -118,7 +119,8 @@ TEST_F(WebStateDelegateBridgeTest, ShowRepostFormWarningDialog) {
 TEST_F(WebStateDelegateBridgeTest, ShowRepostFormWarningWithNoDelegateMethod) {
   __block bool callback_called = false;
   empty_delegate_bridge_->ShowRepostFormWarningDialog(
-      nullptr, base::BindOnce(^(bool should_repost) {
+      nullptr, web::FormWarningType::kRepost,
+      base::BindOnce(^(bool should_repost) {
         EXPECT_TRUE(should_repost);
         callback_called = true;
       }));

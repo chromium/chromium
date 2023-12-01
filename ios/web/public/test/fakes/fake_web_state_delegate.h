@@ -81,6 +81,7 @@ class FakeWebStateDelegate : public WebStateDelegate {
   JavaScriptDialogPresenter* GetJavaScriptDialogPresenter(WebState*) override;
   void ShowRepostFormWarningDialog(
       WebState* source,
+      web::FormWarningType warning_type,
       base::OnceCallback<void(bool)> callback) override;
   FakeJavaScriptDialogPresenter* GetFakeJavaScriptDialogPresenter();
   void OnAuthRequired(WebState* source,

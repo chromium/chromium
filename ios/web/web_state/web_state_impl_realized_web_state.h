@@ -140,7 +140,8 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   UserAgentType GetUserAgentForSessionRestoration() const;
   void SendChangeLoadProgress(double progress);
   void HandleContextMenu(const ContextMenuParams& params);
-  void ShowRepostFormWarningDialog(base::OnceCallback<void(bool)> callback);
+  void ShowRepostFormWarningDialog(FormWarningType warning_type,
+                                   base::OnceCallback<void(bool)> callback);
   void RunJavaScriptAlertDialog(const GURL& origin_url,
                                 NSString* message_text,
                                 base::OnceClosure callback);
