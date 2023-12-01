@@ -1445,20 +1445,19 @@ void HandleExpandedPaths(
                 clipboard_paste_data;
             auto blocked = fsd->IndexesToBlock(result.paths_results);
             if (blocked.size() != paths.size()) {
-              // Build the data string of the allowed paths.
-              std::vector<std::string> string_paths;
-              string_paths.reserve(paths.size());
+              std::vector<base::FilePath> allowed_paths;
+              allowed_paths.reserve(paths.size());
               for (size_t i = 0; i < paths.size(); ++i) {
                 if (base::Contains(blocked, i)) {
                   result.paths_results[i] = false;
                 } else {
-                  string_paths.push_back(paths[i].AsUTF8Unsafe());
+                  allowed_paths.push_back(paths[i]);
                   DCHECK(result.paths_results[i]);
                 }
               }
               clipboard_paste_data =
                   ChromeContentBrowserClient::ClipboardPasteData(
-                      std::string(), std::string(), std::move(string_paths));
+                      std::string(), std::string(), std::move(allowed_paths));
             }
             std::move(callback).Run(std::move(clipboard_paste_data));
           },
@@ -7532,11 +7531,7 @@ void ChromeContentBrowserClient::IsClipboardPasteContentAllowed(
       enterprise_connectors::ContentAnalysisRequest::CLIPBOARD_PASTE;
 
   if (is_files) {
-    auto string_paths = std::move(clipboard_paste_data.file_paths);
-    std::vector<base::FilePath> paths;
-    paths.reserve(string_paths.size());
-    base::ranges::transform(string_paths, std::back_inserter(paths),
-                            base::FilePath::FromASCII);
+    auto paths = std::move(clipboard_paste_data.file_paths);
     auto fsd = std::make_unique<enterprise_connectors::FilesScanData>(paths);
     auto* fsd_ptr = fsd.get();
     fsd_ptr->ExpandPaths(base::BindOnce(&HandleExpandedPaths, std::move(fsd),

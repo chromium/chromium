@@ -280,7 +280,7 @@ class SmartCardDelegate;
 struct CONTENT_EXPORT ClipboardPasteData {
   ClipboardPasteData(std::string text,
                      std::string image,
-                     std::vector<std::string> file_paths);
+                     std::vector<base::FilePath> file_paths);
   ClipboardPasteData();
   ClipboardPasteData(const ClipboardPasteData&);
   ClipboardPasteData(ClipboardPasteData&&);
@@ -296,7 +296,7 @@ struct CONTENT_EXPORT ClipboardPasteData {
   std::string image;
 
   // A list of full file paths to scan.
-  std::vector<std::string> file_paths;
+  std::vector<base::FilePath> file_paths;
 };
 
 // Embedder API (or SPI) for participating in browser logic, to be implemented

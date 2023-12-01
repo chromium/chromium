@@ -89,7 +89,7 @@ namespace content {
 
 ClipboardPasteData::ClipboardPasteData(std::string text,
                                        std::string image,
-                                       std::vector<std::string> file_paths)
+                                       std::vector<base::FilePath> file_paths)
     : text(std::move(text)),
       image(std::move(image)),
       file_paths(std::move(file_paths)) {}

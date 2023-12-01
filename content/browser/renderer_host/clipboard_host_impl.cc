@@ -8,6 +8,7 @@
 #include <set>
 #include <utility>
 
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -421,16 +422,15 @@ void ClipboardHostImpl::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
   auto data_dst = CreateDataEndpoint();
   clipboard->ReadFilenames(clipboard_buffer, data_dst.get(), &filenames);
 
-  // Convert the vector of ui::FileInfo into a vector of std::string so that
+  // Convert the vector of ui::FileInfo into a vector of base::FilePath so that
   // it can be passed to PerformPasteIfContentAllowed() for analysis.  When
   // the latter is called with ui::ClipboardFormatType::FilenamesType() the
   // data to be analyzed is expected to be a newline-separated list of full
   // paths.
-  std::vector<std::string> paths;
+  std::vector<base::FilePath> paths;
   paths.reserve(filenames.size());
-  base::ranges::transform(
-      filenames, std::back_inserter(paths),
-      [](const ui::FileInfo& info) { return info.path.AsUTF8Unsafe(); });
+  base::ranges::transform(filenames, std::back_inserter(paths),
+                          [](const ui::FileInfo& info) { return info.path; });
   ClipboardPasteData clipboard_paste_data =
       ClipboardPasteData(std::string(), std::string(), std::move(paths));
 
@@ -466,15 +466,13 @@ void ClipboardHostImpl::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
               // A subset of the files can be copied.  Remove any files that
               // should be blocked.  First build a list of the files that are
               // allowed.
-              std::vector<std::string> allowed_files_vector =
-                  std::move(clipboard_paste_data->file_paths);
-              std::set<std::string> allowed_files(
-                  std::move_iterator(allowed_files_vector.begin()),
-                  std::move_iterator(allowed_files_vector.end()));
+              std::set<base::FilePath> allowed_files(
+                  std::move_iterator(clipboard_paste_data->file_paths.begin()),
+                  std::move_iterator(clipboard_paste_data->file_paths.end()));
 
               for (auto it = result->files.begin();
                    it != result->files.end();) {
-                if (allowed_files.find(it->get()->path.AsUTF8Unsafe()) !=
+                if (allowed_files.find(it->get()->path) !=
                     allowed_files.end()) {
                   it = std::next(it);
                 } else {
