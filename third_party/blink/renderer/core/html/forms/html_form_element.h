@@ -92,6 +92,9 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   void requestSubmit(HTMLElement* submitter, ExceptionState& exception_state);
   void reset();
 
+  void AttachLayoutTree(AttachContext& context) override;
+  void DetachLayoutTree(bool performing_reattach) override;
+
   void SubmitImplicitly(const Event&, bool from_implicit_submission_trigger);
 
   String GetName() const;

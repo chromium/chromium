@@ -68,6 +68,7 @@
 #include "third_party/blink/public/web/web_element_collection.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_form_element.h"
+#include "third_party/blink/public/web/web_form_related_change_type.h"
 #include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_node.h"
@@ -1274,6 +1275,10 @@ void AutofillAgent::HidePopup() {
 void AutofillAgent::DidChangeFormRelatedElementDynamically(
     const WebElement& element,
     blink::WebFormRelatedChangeType form_related_change) {
+  if (form_related_change == blink::WebFormRelatedChangeType::kHide) {
+    form_tracker_->ElementDisappeared(element);
+    return;
+  }
   if (form_related_change == blink::WebFormRelatedChangeType::kRemove &&
       !base::FeatureList::IsEnabled(
           features::kAutofillDetectRemovedFormControls)) {

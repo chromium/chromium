@@ -7,7 +7,7 @@
 
 namespace blink {
 
-enum class WebFormRelatedChangeType { kAdd, kRemove, kReassociate };
+enum class WebFormRelatedChangeType { kAdd, kRemove, kReassociate, kHide };
 
 }  // namespace blink
 

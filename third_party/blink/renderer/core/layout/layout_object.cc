@@ -3212,6 +3212,12 @@ void LayoutObject::StyleDidChange(StyleDifference diff,
 
   if (StyleRef().AnchorName())
     MarkMayHaveAnchorQuery();
+
+  const bool style_focusability = style_ && style_->IsFocusable();
+  const bool old_style_focusability = old_style && old_style->IsFocusable();
+  if (!style_focusability && old_style_focusability) {
+    node_->FocusabilityLost();
+  }
 }
 
 void LayoutObject::ApplyPseudoElementStyleChanges(

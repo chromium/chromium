@@ -19,6 +19,7 @@
 #include "components/autofill/content/renderer/form_tracker.h"
 #include "components/autofill/content/renderer/password_generation_agent.h"
 #include "components/autofill/content/renderer/test_password_autofill_agent.h"
+#include "components/autofill/content/renderer/test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
@@ -33,7 +34,9 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
+#include "third_party/blink/public/web/web_frame_widget.h"
 
 using ::testing::_;
 using ::testing::AllOf;
@@ -490,6 +493,90 @@ TEST_F(AutofillAgentTest, UndoAutofillSetsLastQueriedElement) {
   autofill_agent_->ApplyFormAction(mojom::ActionType::kUndo,
                                    mojom::ActionPersistence::kFill, form);
   EXPECT_FALSE(autofill_agent_->focused_element().IsNull());
+}
+
+TEST_F(AutofillAgentTest, HideElementTriggersFormTracker_DisplayNone) {
+  LoadHTML(R"(
+    <form id="form_id">
+      <input id="field_id">
+    </form>
+  )");
+  blink::WebElement element =
+      GetElementById(GetMainFrame()->GetDocument(), "field_id");
+
+  EXPECT_CALL(form_tracker(), ElementDisappeared(element));
+  ExecuteJavaScriptForTests(
+      R"(document.forms[0].elements[0].style.display = 'none';)");
+  GetWebFrameWidget()->UpdateAllLifecyclePhases(
+      blink::DocumentUpdateReason::kTest);
+}
+
+TEST_F(AutofillAgentTest, HideElementTriggersFormTracker_VisibilityHidden) {
+  LoadHTML(R"(
+    <form id="form_id">
+      <input id="field_id">
+    </form>
+  )");
+  blink::WebElement element =
+      GetElementById(GetMainFrame()->GetDocument(), "field_id");
+
+  EXPECT_CALL(form_tracker(), ElementDisappeared(element));
+  ExecuteJavaScriptForTests(
+      R"(document.forms[0].elements[0].style.visibility = 'hidden';)");
+  GetWebFrameWidget()->UpdateAllLifecyclePhases(
+      blink::DocumentUpdateReason::kTest);
+}
+
+TEST_F(AutofillAgentTest, HideElementTriggersFormTracker_TypeHidden) {
+  LoadHTML(R"(
+    <form id="form_id">
+      <input id="field_id">
+    </form>
+  )");
+  blink::WebElement element =
+      GetElementById(GetMainFrame()->GetDocument(), "field_id");
+
+  EXPECT_CALL(form_tracker(), ElementDisappeared(element));
+  ExecuteJavaScriptForTests(
+      R"(document.forms[0].elements[0].setAttribute('type', 'hidden');)");
+  GetWebFrameWidget()->UpdateAllLifecyclePhases(
+      blink::DocumentUpdateReason::kTest);
+}
+
+TEST_F(AutofillAgentTest, HideElementTriggersFormTracker_HiddenTrue) {
+  LoadHTML(R"(
+    <form id="form_id">
+      <input id="field_id">
+    </form>
+  )");
+  blink::WebElement element =
+      GetElementById(GetMainFrame()->GetDocument(), "field_id");
+
+  EXPECT_CALL(form_tracker(), ElementDisappeared(element));
+  ExecuteJavaScriptForTests(
+      R"(document.forms[0].elements[0].setAttribute('hidden', 'true');)");
+  GetWebFrameWidget()->UpdateAllLifecyclePhases(
+      blink::DocumentUpdateReason::kTest);
+}
+
+TEST_F(AutofillAgentTest, HideElementTriggersFormTracker_ShadowDom) {
+  LoadHTML(R"(
+   <form id="form_id">
+    <div>
+      <template shadowrootmode="open">
+        <slot></slot>
+      </template>
+      <input id="field_id">
+    </div>
+  </form>
+  )");
+  blink::WebElement element =
+      GetElementById(GetMainFrame()->GetDocument(), "field_id");
+
+  EXPECT_CALL(form_tracker(), ElementDisappeared(element));
+  ExecuteJavaScriptForTests(R"(field_id.slot = "unknown";)");
+  GetWebFrameWidget()->UpdateAllLifecyclePhases(
+      blink::DocumentUpdateReason::kTest);
 }
 
 }  // namespace
