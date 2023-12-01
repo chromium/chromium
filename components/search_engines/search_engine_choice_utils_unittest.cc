@@ -30,6 +30,8 @@
 
 using ::testing::NiceMock;
 
+namespace search_engines {
+
 class SearchEngineChoiceUtilsTest : public ::testing::Test {
  public:
   SearchEngineChoiceUtilsTest()
@@ -471,6 +473,58 @@ TEST_F(SearchEngineChoiceUtilsTest, RecordChoiceMade) {
       SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
 }
 
+TEST_F(SearchEngineChoiceUtilsTest, IsChoiceScreenFlagEnabled) {
+  feature_list()->Reset();
+  feature_list()->InitWithFeaturesAndParameters(
+      /*enabled_features=*/{}, /*disabled_features=*/{
+          switches::kSearchEngineChoiceTrigger,
+          switches::kSearchEngineChoiceFre,
+          switches::kSearchEngineChoice,
+      });
+
+  EXPECT_FALSE(IsChoiceScreenFlagEnabled(ChoicePromo::kAny));
+  EXPECT_FALSE(IsChoiceScreenFlagEnabled(ChoicePromo::kFre));
+  EXPECT_FALSE(IsChoiceScreenFlagEnabled(ChoicePromo::kDialog));
+
+  feature_list()->Reset();
+  feature_list()->InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{switches::kSearchEngineChoiceTrigger,
+        {
+            {switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
+             "false"},
+        }}},
+      /*disabled_features=*/{
+          switches::kSearchEngineChoiceFre,
+          switches::kSearchEngineChoice,
+      });
+
+  EXPECT_TRUE(IsChoiceScreenFlagEnabled(ChoicePromo::kAny));
+  EXPECT_TRUE(IsChoiceScreenFlagEnabled(ChoicePromo::kFre));
+  EXPECT_TRUE(IsChoiceScreenFlagEnabled(ChoicePromo::kDialog));
+
+  feature_list()->Reset();
+  feature_list()->InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{switches::kSearchEngineChoiceTrigger,
+        {
+            {switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
+             "true"},
+        }}},
+      /*disabled_features=*/{
+          switches::kSearchEngineChoiceFre,
+          switches::kSearchEngineChoice,
+      });
+
+  EXPECT_TRUE(IsChoiceScreenFlagEnabled(ChoicePromo::kAny));
+  EXPECT_TRUE(IsChoiceScreenFlagEnabled(ChoicePromo::kFre));
+#if BUILDFLAG(IS_IOS)
+  EXPECT_FALSE(IsChoiceScreenFlagEnabled(ChoicePromo::kDialog));
+#else
+  EXPECT_TRUE(IsChoiceScreenFlagEnabled(ChoicePromo::kDialog));
+#endif
+}
+
 struct RepromptTestParam {
   // Whether the user should be reprompted or not.
   bool expects_reprompt = false;
@@ -595,3 +649,5 @@ constexpr RepromptTestParam kRepromptTestParams[] = {
 INSTANTIATE_TEST_SUITE_P(,
                          SearchEngineChoiceUtilsParamTest,
                          ::testing::ValuesIn(kRepromptTestParams));
+
+}  // namespace search_engines

@@ -160,6 +160,15 @@ const char kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram[] =
 // user flow.
 bool IsChoiceScreenFlagEnabled(ChoicePromo promo) {
   if (base::FeatureList::IsEnabled(switches::kSearchEngineChoiceTrigger)) {
+#if BUILDFLAG(IS_IOS)
+    // Chrome on iOS does not tag profiles, so this param instead determines
+    // whether we show the choice screen outside of the FRE or not.
+    if (switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.Get() &&
+        promo == ChoicePromo::kDialog) {
+      return false;
+    }
+#endif
+
     // This flag is a coordinating flag, which supersedes the flags below that
     // are guarding individual screens making up the feature.
     // TODO(b/310593464): Remove checks for the other flags.
