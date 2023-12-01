@@ -121,7 +121,9 @@ void LoginBigUserView::RequestFocus() {
 }
 
 void LoginBigUserView::OnWallpaperBlurChanged() {
-  if (Shell::Get()->wallpaper_controller()->IsWallpaperBlurredForLockState()) {
+  if (Shell::Get()->wallpaper_controller()->IsWallpaperBlurredForLockState() ||
+      Shell::Get()->session_controller()->GetSessionState() !=
+          session_manager::SessionState::LOCKED) {
     SetPaintToLayer(ui::LayerType::LAYER_NOT_DRAWN);
     SetBackground(nullptr);
   } else {
