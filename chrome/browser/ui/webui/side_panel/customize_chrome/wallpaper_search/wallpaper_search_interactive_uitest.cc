@@ -18,6 +18,7 @@
 #include "content/public/test/url_loader_interceptor.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 
@@ -40,7 +41,9 @@ class WallpaperSearchInteractiveTest : public InteractiveBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{ntp_features::kCustomizeChromeWallpaperSearch,
                               optimization_guide::features::
-                                  kOptimizationGuideModelExecution},
+                                  kOptimizationGuideModelExecution,
+                              features::kChromeRefresh2023,
+                              features::kChromeWebuiRefresh2023},
         /*disabled_features=*/{});
     InteractiveBrowserTest::SetUp();
   }

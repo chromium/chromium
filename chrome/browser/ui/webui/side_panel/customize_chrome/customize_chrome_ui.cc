@@ -79,7 +79,8 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(
           ntp_features::kCustomizeChromeWallpaperSearch) &&
       base::FeatureList::IsEnabled(
-          optimization_guide::features::kOptimizationGuideModelExecution);
+          optimization_guide::features::kOptimizationGuideModelExecution) &&
+      features::IsChromeWebuiRefresh2023();
   if (wallpaper_search_flags_enabled) {
     wallpaper_search_background_manager_ =
         std::make_unique<WallpaperSearchBackgroundManager>(profile_);
