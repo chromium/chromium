@@ -51,10 +51,6 @@ void ShelfButton::OnThemeChanged() {
   }
 }
 
-const char* ShelfButton::GetClassName() const {
-  return "ash/ShelfButton";
-}
-
 gfx::Rect ShelfButton::GetAnchorBoundsInScreen() const {
   gfx::Rect bounds = Button::GetAnchorBoundsInScreen();
   // Padding used to position bubbles offset from the shelf. Note that this
