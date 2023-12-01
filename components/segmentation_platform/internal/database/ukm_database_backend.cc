@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/segmentation_platform/internal/database/ukm_metrics_table.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
@@ -275,15 +276,30 @@ void UkmDatabaseBackend::RunReadonlyQueries(QueryList&& queries,
     debug_query +=
         " Bind values: " + BindValuesToStatement(query.bind_values, statement);
 
-    if (!statement.is_valid() || !statement.Step()) {
+    if (!statement.is_valid()) {
+      VLOG(1) << "Failed to run SQL query " << debug_query;
+      success = false;
+      break;
+    }
+    while (statement.Step()) {
+      float output = GetSingleFloatOutput(statement);
+      result[index].push_back(processing::ProcessedValue::FromFloat(output));
+    }
+    if (!result.count(index) || result.at(index).empty() ||
+        !statement.Succeeded()) {
       VLOG(1) << "Failed to run SQL query " << debug_query;
       success = false;
       break;
     }
 
-    float output = GetSingleFloatOutput(statement);
-    VLOG(1) << "Output from SQL query " << debug_query << " Result: " << output;
-    result[index].push_back(processing::ProcessedValue(output));
+    if (VLOG_IS_ON(1)) {
+      std::string outputs;
+      for (const auto& val : result[index]) {
+        outputs.append(base::StringPrintf("%f,", val.float_val));
+      }
+      VLOG(1) << "Output from SQL query " << debug_query
+              << " Result: " << outputs;
+    }
   }
   callback_task_runner_->PostTask(
       FROM_HERE,

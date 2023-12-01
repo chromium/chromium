@@ -12,12 +12,14 @@
 #include "components/segmentation_platform/internal/database/ukm_database_test_utils.h"
 #include "components/segmentation_platform/internal/database/ukm_metrics_table.h"
 #include "components/segmentation_platform/internal/database/ukm_url_table.h"
+#include "components/segmentation_platform/public/types/processed_value.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace segmentation_platform {
 namespace {
 
+using ::segmentation_platform::processing::ProcessedValue;
 using ::segmentation_platform::test_util::UrlMatcher;
 using ::testing::Contains;
 using ::testing::ElementsAre;
@@ -567,14 +569,18 @@ TEST_F(UkmDatabaseBackendTest, ReadOnlyQueries) {
       processing::ProcessedValue(after1)};
   UkmDatabase::QueryList queries2;
   queries2.emplace(0, UkmDatabase::CustomSqlQuery(
-                          "SELECT AVG(metric_value) FROM metrics",
+                          "SELECT AVG(metric_value) FROM metrics "
+                          "GROUP BY metric_hash ORDER BY metric_hash",
                           std::vector<processing::ProcessedValue>()));
   queries2.emplace(
       1, UkmDatabase::CustomSqlQuery(kBindValuesQuery, std::move(bind_values)));
 
-  ExpectQueryResult(std::move(queries2), true,
-                    {{0, {processing::ProcessedValue(101.00f)}},
-                     {1, {processing::ProcessedValue(100.00f)}}});
+  ExpectQueryResult(
+      std::move(queries2), true,
+      {{0,
+        {ProcessedValue::FromFloat(100), ProcessedValue::FromFloat(101),
+         ProcessedValue::FromFloat(102)}},
+       {1, {ProcessedValue::FromFloat(100)}}});
 
   UkmDatabase::QueryList queries3;
   queries3.emplace(0, UkmDatabase::CustomSqlQuery("SELECT bad query", {}));
