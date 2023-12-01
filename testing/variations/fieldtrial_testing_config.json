@@ -3445,6 +3445,22 @@
             ]
         }
     ],
+    "ChromeOSGrowthFramework": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledInDemoMode",
+                    "enable_features": [
+                        "GrowthCampaignsInDemoMode",
+                        "GrowthFramework"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSHWVBREncoding": [
         {
             "platforms": [
