@@ -158,6 +158,9 @@ class BLINK_EXPORT WebDocument : public WebNode {
   // Returns true if the document is in prerendering.
   bool IsPrerendering();
 
+  // Returns true if the document has a Document Picture-in-Picture window.
+  bool HasDocumentPictureInPictureWindow() const;
+
   // Return true if  accessibility processing has been enabled.
   bool IsAccessibilityEnabled();
 

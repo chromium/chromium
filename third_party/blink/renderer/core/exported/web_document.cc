@@ -308,6 +308,10 @@ bool WebDocument::IsPrerendering() {
   return ConstUnwrap<Document>()->IsPrerendering();
 }
 
+bool WebDocument::HasDocumentPictureInPictureWindow() const {
+  return ConstUnwrap<Document>()->HasDocumentPictureInPictureWindow();
+}
+
 bool WebDocument::IsAccessibilityEnabled() {
   return ConstUnwrap<Document>()->IsAccessibilityEnabled();
 }

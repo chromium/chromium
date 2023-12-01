@@ -757,3 +757,21 @@ IN_PROC_BROWSER_TEST_P(DocumentPictureInPictureWindowControllerBrowserTest,
       gfx::Point(window_diff_width - buffer, window_diff_height - buffer);
   ASSERT_EQ(window_bounds.origin(), expected_origin);
 }
+
+IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
+                       DoNotDeferMediaLoadIfWindowOpened) {
+  LoadTabAndEnterPictureInPicture(browser());
+  auto* opener_web_contents = window_controller()->GetWebContents();
+
+  // Open a new foreground tab.
+  GURL test_page_url = ui_test_utils::GetTestUrl(
+      base::FilePath(base::FilePath::kCurrentDirectory),
+      base::FilePath(kPictureInPictureDocumentPipPage));
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), test_page_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  EXPECT_NE(browser()->tab_strip_model()->GetActiveWebContents(),
+            opener_web_contents);
+
+  ASSERT_EQ(true, EvalJs(opener_web_contents, "loadAndPlayVideo();"));
+}

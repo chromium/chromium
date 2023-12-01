@@ -404,6 +404,8 @@ class CORE_EXPORT Document : public ContainerNode,
 
   bool IsPrerendering() const { return is_prerendering_; }
 
+  bool HasDocumentPictureInPictureWindow() const;
+
   void SetIsTrackingSoftNavigationHeuristics(bool value) {
     is_tracking_soft_navigation_heuristics_ = value;
   }

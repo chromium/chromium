@@ -350,6 +350,10 @@ LocalDOMWindow* PictureInPictureControllerImpl::documentPictureInPictureWindow()
   return document_picture_in_picture_window_.Get();
 }
 
+bool PictureInPictureControllerImpl::HasDocumentPictureInPictureWindow() const {
+  return document_picture_in_picture_window_;
+}
+
 void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
     ScriptState* script_state,
     LocalDOMWindow& opener,
