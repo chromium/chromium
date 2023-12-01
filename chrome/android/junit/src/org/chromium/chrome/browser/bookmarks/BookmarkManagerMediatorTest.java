@@ -142,7 +142,6 @@ import java.util.function.Consumer;
 @EnableFeatures({
     ChromeFeatureList.BOOKMARKS_REFRESH,
     ChromeFeatureList.SHOPPING_LIST,
-    ChromeFeatureList.EMPTY_STATES
 })
 public class BookmarkManagerMediatorTest {
     private static final GURL EXAMPLE_URL = JUnitTestGURLs.EXAMPLE_URL;
@@ -569,31 +568,7 @@ public class BookmarkManagerMediatorTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.EMPTY_STATES})
     public void testEmptyView_Bookmark() {
-        // Setup and open Bookmark folder.
-        finishLoading();
-        assertEquals(BookmarkUiMode.LOADING, mMediator.getCurrentUiMode());
-        mMediator.openFolder(mFolderId1);
-
-        // Verify empty view initialized.
-        verify(mSelectableListLayout).setEmptyViewText(R.string.bookmarks_folder_empty);
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.EMPTY_STATES})
-    public void testEmptyView_ReadingList() {
-        // Setup and open Reading list folder.
-        finishLoading();
-        assertEquals(BookmarkUiMode.LOADING, mMediator.getCurrentUiMode());
-        mMediator.openFolder(mReadingListFolderId);
-
-        // Verify empty view initialized.
-        verify(mSelectableListLayout).setEmptyViewText(R.string.reading_list_empty_list_title);
-    }
-
-    @Test
-    public void testEmptyView_EmptyState_Bookmark() {
         // Setup and open Bookmark folder.
         finishLoading();
         assertEquals(BookmarkUiMode.LOADING, mMediator.getCurrentUiMode());
@@ -609,7 +584,7 @@ public class BookmarkManagerMediatorTest {
     }
 
     @Test
-    public void testEmptyView_EmptyState_ReadingList() {
+    public void testEmptyView_ReadingList() {
         // Setup and open Reading list folder.
         finishLoading();
         assertEquals(BookmarkUiMode.LOADING, mMediator.getCurrentUiMode());

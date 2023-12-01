@@ -131,7 +131,7 @@ public class TabSwitcherCoordinator
     private final ViewGroup mRootView;
     private TabContentManager mTabContentManager;
     private IncognitoReauthPromoMessageService mIncognitoReauthPromoMessageService;
-    private boolean mHasEmptyView;
+    private final boolean mHasEmptyView;
 
     /**
      * TODO(crbug.com/1227656): Refactor this to pass a supplier instead to ensure we re-use the
@@ -278,9 +278,7 @@ public class TabSwitcherCoordinator
 
             long startTimeMs = SystemClock.uptimeMillis();
 
-            mHasEmptyView =
-                    ChromeFeatureList.sEmptyStates.isEnabled()
-                            && (mMode == TabListMode.GRID || mMode == TabListMode.LIST);
+            mHasEmptyView = (mMode == TabListMode.GRID || mMode == TabListMode.LIST);
 
             if (mHasEmptyView) {
                 int emptyImageResId =

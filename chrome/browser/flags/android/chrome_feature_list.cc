@@ -243,7 +243,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kDrawWebEdgeToEdge,
     &kDynamicTopChrome,
     &kEarlyInitializeStartupMetrics,
-    &kEmptyStates,
     &kExperimentsForAgsa,
     &kExploreSites,
     &kFocusOmniboxInIncognitoTabIntents,
@@ -780,8 +779,6 @@ BASE_FEATURE(kDynamicTopChrome,
 BASE_FEATURE(kEarlyInitializeStartupMetrics,
              "EarlyInitializeStartupMetrics",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEmptyStates, "EmptyStates", base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExperimentsForAgsa,
              "ExperimentsForAgsa",

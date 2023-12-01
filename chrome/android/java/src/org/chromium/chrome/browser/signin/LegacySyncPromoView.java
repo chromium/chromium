@@ -16,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
@@ -81,13 +80,11 @@ public class LegacySyncPromoView extends FrameLayout
         // @Todo(crbug.com/1465523) Refactor Recent Tabs Empty States implementation. We don't want
         // this implementation to live in this class and we can add another subclass of PromoGroup
         // similar to the one used for LegacySyncPromoView.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.EMPTY_STATES)) {
-            ViewStub emptyViewStub = findViewById(R.id.recent_tab_empty_state_view_stub);
-            mEmptyView = emptyViewStub.inflate();
-            mEmptyStateTitle = findViewById(R.id.empty_state_text_title);
-            mEmptyStateDescription = findViewById(R.id.empty_state_text_description);
-            mEmptyStateImage = findViewById(R.id.empty_state_icon);
-        }
+        ViewStub emptyViewStub = findViewById(R.id.recent_tab_empty_state_view_stub);
+        mEmptyView = emptyViewStub.inflate();
+        mEmptyStateTitle = findViewById(R.id.empty_state_text_title);
+        mEmptyStateDescription = findViewById(R.id.empty_state_text_description);
+        mEmptyStateImage = findViewById(R.id.empty_state_icon);
         mOldEmptyCardView = findViewById(R.id.card_view);
         mTitle = findViewById(R.id.title);
         mDescription = findViewById(R.id.description);
@@ -124,8 +121,7 @@ public class LegacySyncPromoView extends FrameLayout
             viewState.apply(mDescription, mPositiveButton, mEmptyView, mOldEmptyCardView);
         } else {
             viewState = getStateForStartUsing();
-            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.EMPTY_STATES)
-                    || mAccessPoint == SigninAccessPoint.BOOKMARK_MANAGER) {
+            if (mAccessPoint == SigninAccessPoint.BOOKMARK_MANAGER) {
                 viewState.apply(mDescription, mPositiveButton, mEmptyView, mOldEmptyCardView);
             } else {
                 viewState.applyEmptyView(
@@ -252,8 +248,7 @@ public class LegacySyncPromoView extends FrameLayout
         // State is updated before this view is removed, so this invalid state happens, but is not
         // visible. I want there to be a guarantee that this state is never seen, but to do so would
         // require some code restructuring.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.EMPTY_STATES)
-                && mAccessPoint != SigninAccessPoint.BOOKMARK_MANAGER) {
+        if (mAccessPoint != SigninAccessPoint.BOOKMARK_MANAGER) {
             int emptyViewImageResId =
                     DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())
                             ? R.drawable.tablet_recent_tab_empty_state_illustration

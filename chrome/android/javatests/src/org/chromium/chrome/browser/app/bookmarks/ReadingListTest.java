@@ -318,26 +318,6 @@ public class ReadingListTest {
     @Test
     @SmallTest
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
-    @DisableFeatures({ChromeFeatureList.EMPTY_STATES})
-    // @TODO(crbug.com/1468380): clean up after Empty States is fully launched.
-    public void testReadingListEmptyView() throws Exception {
-        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
-        openBookmarkManager();
-        openRootFolder();
-        openReadingList();
-
-        // We should see an empty view with reading list text.
-        onView(withText(R.string.reading_list_empty_list_title)).check(matches(isDisplayed()));
-
-        // Open other folders will show the default empty view text.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> getBookmarkDelegate().openFolder(mBookmarkModel.getMobileFolderId()));
-        onView(withText(R.string.bookmarks_folder_empty)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @SmallTest
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testReadingListEmptyStateView() throws Exception {
         BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
         openBookmarkManager();

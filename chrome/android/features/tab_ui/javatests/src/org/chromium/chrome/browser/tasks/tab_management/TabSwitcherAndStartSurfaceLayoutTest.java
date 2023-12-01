@@ -156,7 +156,6 @@ import java.util.concurrent.atomic.AtomicReference;
 })
 @EnableFeatures({
     ChromeFeatureList.DEFER_TAB_SWITCHER_LAYOUT_CREATION,
-    ChromeFeatureList.EMPTY_STATES
 })
 @Restriction({
     UiRestriction.RESTRICTION_TYPE_PHONE,

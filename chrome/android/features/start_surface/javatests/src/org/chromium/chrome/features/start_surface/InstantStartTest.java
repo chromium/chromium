@@ -98,7 +98,7 @@ import java.util.concurrent.CountDownLatch;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     "force-fieldtrials=Study/Group"
 })
-@EnableFeatures({ChromeFeatureList.INSTANT_START, ChromeFeatureList.EMPTY_STATES})
+@EnableFeatures({ChromeFeatureList.INSTANT_START})
 @DisableFeatures({ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID})
 @Restriction({
     Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE,

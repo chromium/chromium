@@ -106,7 +106,6 @@ import java.util.concurrent.atomic.AtomicInteger;
     ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study,",
     ChromeFeatureList.START_SURFACE_ANDROID + "<Study",
     ChromeFeatureList.INSTANT_START,
-    ChromeFeatureList.EMPTY_STATES
 })
 @DisableFeatures({ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID})
 @Restriction({

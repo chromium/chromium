@@ -1938,9 +1938,6 @@ extern const char kTabSearchFuzzySearchDescription[];
 extern const char kTabletToolbarReorderingAndroidName[];
 extern const char kTabletToolbarReorderingAndroidDescription[];
 
-extern const char kEmptyStatesAndroidName[];
-extern const char kEmptyStatesAndroidDescription[];
-
 extern const char kTabStripStartupRefactoringName[];
 extern const char kTabStripStartupRefactoringDescription[];
 

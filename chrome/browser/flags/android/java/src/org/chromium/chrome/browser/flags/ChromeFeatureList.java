@@ -268,7 +268,6 @@ public abstract class ChromeFeatureList {
             "EnableBookmarkFoldersForAccountStorage";
     public static final String ENABLE_PROTO_API_FOR_CLASSIFY_URL = "EnableProtoApiForClassifyUrl";
     public static final String EXPERIMENTS_FOR_AGSA = "ExperimentsForAgsa";
-    public static final String EMPTY_STATES = "EmptyStates";
     public static final String FEATURE_NOTIFICATION_GUIDE = "FeatureNotificationGuide";
     public static final String FEED_BACK_TO_TOP = "FeedBackToTop";
     public static final String FEED_DYNAMIC_COLORS = "FeedDynamicColors";
@@ -571,7 +570,6 @@ public abstract class ChromeFeatureList {
             new CachedFlag(DRAW_WEB_EDGE_TO_EDGE, false);
     public static final CachedFlag sEarlyInitializeStartupMetrics =
             new CachedFlag(EARLY_INITIALIZE_STARTUP_METRICS, false);
-    public static final CachedFlag sEmptyStates = new CachedFlag(EMPTY_STATES, true);
     public static final CachedFlag sExperimentsForAgsa = new CachedFlag(EXPERIMENTS_FOR_AGSA, true);
     public static final CachedFlag sFeedLoadingPlaceholder =
             new CachedFlag(FEED_LOADING_PLACEHOLDER, false);
@@ -688,7 +686,6 @@ public abstract class ChromeFeatureList {
                     sDrawNativeEdgeToEdge,
                     sDrawWebEdgeToEdge,
                     sEarlyInitializeStartupMetrics,
-                    sEmptyStates,
                     sFeedLoadingPlaceholder,
                     sFriendlierSafeBrowsingSettingsEnhancedProtection,
                     sFriendlierSafeBrowsingSettingsStandardProtection,

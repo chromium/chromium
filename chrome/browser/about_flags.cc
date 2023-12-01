@@ -7283,10 +7283,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabletToolbarReorderingAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabletToolbarReordering)},
 
-    {"enable-empty-states", flag_descriptions::kEmptyStatesAndroidName,
-     flag_descriptions::kEmptyStatesAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kEmptyStates)},
-
     {"enable-tab-strip-startup-refactoring",
      flag_descriptions::kTabStripStartupRefactoringName,
      flag_descriptions::kTabStripStartupRefactoringDescription, kOsAndroid,
@@ -11292,10 +11288,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          content_settings::features::kContentSettingsPartitioning)},
 
-    // NOTE: Adding a new flag requires adding a corresponding entry to enum
-    // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
-    // Histograms" in tools/metrics/histograms/README.md (run the
-    // AboutFlagsHistogramTest unit test to verify this process).
+// NOTE: Adding a new flag requires adding a corresponding entry to enum
+// "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
+// Histograms" in tools/metrics/histograms/README.md (run the
+// AboutFlagsHistogramTest unit test to verify this process).
 
 #if BUILDFLAG(IS_ANDROID)
     {"enable-vertical-automotive-back-button-toolbar",

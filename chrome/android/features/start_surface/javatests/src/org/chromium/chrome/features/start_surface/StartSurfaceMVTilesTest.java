@@ -86,7 +86,6 @@ import java.util.concurrent.TimeoutException;
 })
 @EnableFeatures({
     ChromeFeatureList.START_SURFACE_ANDROID + "<Study",
-    ChromeFeatureList.EMPTY_STATES
 })
 @DisableFeatures({ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID})
 @DoNotBatch(reason = "StartSurface*Test tests startup behaviours and thus can't be batched.")

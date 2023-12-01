@@ -31,8 +31,7 @@ const char kCapturedSurfaceControlDescription[] =
     "Enables an API that allows an application to control scroll and zoom on "
     "the tab which it is capturing.";
 
-    const char kAcceleratedVideoDecodeName[] =
-        "Hardware-accelerated video decode";
+const char kAcceleratedVideoDecodeName[] = "Hardware-accelerated video decode";
 const char kAcceleratedVideoDecodeDescription[] =
     "Hardware-accelerated video decode where available.";
 
@@ -2650,7 +2649,7 @@ const char kOptimizationGuideModelExecutionDescription[] =
 
 const char kOptimizationGuideOnDeviceModelName[] =
     "Enables optimization guide on device";
-const char kOptimizationGuideOnDeviceModelDescription[]=
+const char kOptimizationGuideOnDeviceModelDescription[] =
     "Enables the optimization guide to execute models on device.";
 
 const char kOptimizationGuidePersonalizedFetchingName[] =
@@ -4547,12 +4546,6 @@ const char kTabletToolbarReorderingAndroidDescription[] =
     "Enable Tablet Toolbar Reordering on Android - Reorder the toolbar by "
     "placing the Home button from 1st to the 4th position after the Refresh"
     "button to match the Desktop toolbar";
-
-const char kEmptyStatesAndroidName[] = "Empty States Android.";
-const char kEmptyStatesAndroidDescription[] =
-    "Enabled Clank Empty States on Android - Add illustrations to Clank empty "
-    "states to update tab switcher UI, recent tabs, bookmarks, reading list "
-    "and history zero states";
 
 const char kTabStripStartupRefactoringName[] =
     "Refactor for tablet tab strip startup.";

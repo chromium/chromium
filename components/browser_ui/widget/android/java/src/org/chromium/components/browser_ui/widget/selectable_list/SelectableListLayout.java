@@ -44,10 +44,10 @@ import java.util.List;
  * Contains UI elements common to selectable list views: a loading view, empty view, selection
  * toolbar, shadow, and RecyclerView.
  *
- * After the SelectableListLayout is inflated, it should be initialized through calls to
- * #initializeRecyclerView(), #initializeToolbar(), and #initializeEmptyView().
+ * <p>After the SelectableListLayout is inflated, it should be initialized through calls to
+ * #initializeRecyclerView(), #initializeToolbar(), and #initializeEmptyStateView().
  *
- * Must call #onDestroyed() to destroy SelectableListLayout properly, otherwise this would cause
+ * <p>Must call #onDestroyed() to destroy SelectableListLayout properly, otherwise this would cause
  * memory leak consistently.
  *
  * @param <E> The type of the selectable items this layout holds.
