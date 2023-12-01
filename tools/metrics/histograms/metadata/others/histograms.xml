@@ -5156,7 +5156,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FetchKeepAlive.Browser.Metrics"
-    enum="FetchKeepAliveBrowserMetricType" expires_after="2024-01-10">
+    enum="FetchKeepAliveBrowserMetricType" expires_after="2024-04-10">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>
   <summary>
@@ -5166,7 +5166,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FetchKeepAlive.Browser.Total" enum="Boolean"
-    expires_after="2024-01-10">
+    expires_after="2024-04-10">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>
   <summary>
@@ -5180,7 +5180,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FetchKeepAlive.Browser.Total.Finished" enum="Boolean"
-    expires_after="2024-01-10">
+    expires_after="2024-04-10">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>
   <summary>
@@ -5195,7 +5195,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FetchKeepAlive.Browser.Total.ReceivedResponse" enum="Boolean"
-    expires_after="2024-01-10">
+    expires_after="2024-04-10">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>
   <summary>
@@ -5208,7 +5208,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FetchKeepAlive.Browser.Total.Redirected" enum="Boolean"
-    expires_after="2024-01-10">
+    expires_after="2024-04-10">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>
   <summary>
@@ -5221,7 +5221,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FetchKeepAlive.Browser.Total.Started" enum="Boolean"
-    expires_after="2024-01-10">
+    expires_after="2024-04-10">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>
   <summary>
@@ -5232,7 +5232,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FetchKeepAlive.Renderer.Metrics"
-    enum="FetchKeepAliveRendererMetricType" expires_after="2024-01-10">
+    enum="FetchKeepAliveRendererMetricType" expires_after="2024-04-10">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>
   <summary>
@@ -5242,7 +5242,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FetchKeepAlive.Renderer.Total" enum="Boolean"
-    expires_after="2024-01-10">
+    expires_after="2024-04-10">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>
   <summary>
@@ -5257,7 +5257,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FetchKeepAlive.Renderer.Total.Finished" enum="Boolean"
-    expires_after="2024-01-10">
+    expires_after="2024-04-10">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>
   <summary>
@@ -5271,7 +5271,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FetchKeepAlive.Renderer.Total.ReceivedResponse" enum="Boolean"
-    expires_after="2024-01-10">
+    expires_after="2024-04-10">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>
   <summary>
@@ -5284,7 +5284,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FetchKeepAlive.Renderer.Total.Redirected" enum="Boolean"
-    expires_after="2024-01-10">
+    expires_after="2024-04-10">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>
   <summary>
@@ -5297,7 +5297,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FetchKeepAlive.Renderer.Total.Started" enum="Boolean"
-    expires_after="2024-01-10">
+    expires_after="2024-04-10">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>
   <summary>
@@ -5310,7 +5310,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FetchLater.Browser.Metrics" enum="FetchLaterBrowserMetricType"
-    expires_after="2024-01-10">
+    expires_after="2024-04-10">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>
   <summary>
@@ -5320,7 +5320,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FetchLater.Browser.Total" enum="Boolean"
-    expires_after="2024-01-10">
+    expires_after="2024-04-10">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>
   <summary>
@@ -5335,7 +5335,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FetchLater.Browser.Total.Started" enum="Boolean"
-    expires_after="2024-01-10">
+    expires_after="2024-04-10">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>
   <summary>
@@ -5348,7 +5348,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FetchLater.Renderer.Metrics"
-    enum="FetchLaterRendererMetricType" expires_after="2024-01-10">
+    enum="FetchLaterRendererMetricType" expires_after="2024-04-10">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>
   <summary>
@@ -5358,7 +5358,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FetchLater.Renderer.Total" enum="Boolean"
-    expires_after="2024-01-10">
+    expires_after="2024-04-10">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>
   <summary>
