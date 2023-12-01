@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] .grid 16: Percentage padding, min-content
-  assert_equals: \n<div class="grid border border-box pad-percent" style="width: min-content; height: min-content;" data-expected-width="300" data-expected-height="160" title="Percentage padding, min-content">\n    <div class="item" data-offset-x="130" data-offset-y="80" data-expected-width="100" data-expected-height="50"></div>\n  </div>\nwidth expected 300 but got 260
-[FAIL] .grid 19: Percentage padding, max-content
-  assert_equals: \n<div class="grid border border-box pad-percent" style="width: max-content; height: max-content;" data-expected-width="300" data-expected-height="160" title="Percentage padding, max-content">\n    <div class="item" data-offset-x="130" data-offset-y="80" data-expected-width="100" data-expected-height="50"></div>\n  </div>\nwidth expected 300 but got 260
-Harness: the test ran to completion.
-
