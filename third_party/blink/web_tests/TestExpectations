@@ -5219,9 +5219,6 @@ crbug.com/1256763 [ Linux ] virtual/gpu-rasterization/images/color-profile-image
 crbug.com/1256763 [ Linux ] images/color-profile-background-clip-text.html [ Failure Pass ]
 crbug.com/1259277 fast/events/message-port-multi.html [ Crash Failure Pass Timeout ]
 
-# Temporarily disable to roll DevTools into Chromium
-crbug.com/1264670 http/tests/devtools/resource-tree/resource-tree-frame-add.js [ Failure Pass ]
-
 # TODO(https://crbug.com/1265311): Make the test behave the same way on all platforms
 crbug.com/1265311 http/tests/navigation/location-change-repeated-from-blank.html [ Failure Pass ]
 

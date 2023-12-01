@@ -4,7 +4,6 @@
 
 import {TestRunner} from 'test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
-import {ConsoleTestRunner} from 'console_test_runner';
 
 (async function() {
   TestRunner.addResult(
@@ -15,7 +14,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
   TestRunner.addResult('Before addition');
   TestRunner.addResult('====================================');
   ApplicationTestRunner.dumpResourceTreeEverything();
-  ConsoleTestRunner.addConsoleSniffer(step2);
   TestRunner.evaluateInPageAnonymously(`
     (function createIframe() {
       var iframe = document.createElement("iframe");
@@ -24,11 +22,14 @@ import {ConsoleTestRunner} from 'console_test_runner';
     })();
   `);
 
-  function step2() {
-    TestRunner.addResult('');
-    TestRunner.addResult('After addition');
-    TestRunner.addResult('====================================');
-    ApplicationTestRunner.dumpResourceTreeEverything();
-    TestRunner.completeTest();
-  }
+  await Promise.all([
+    TestRunner.waitForUISourceCode('styles-navigated.css'),
+    TestRunner.waitForUISourceCode('script-navigated.js'),
+    TestRunner.waitForUISourceCode('resource-tree-frame-add-iframe.html'),
+  ]);
+  TestRunner.addResult('');
+  TestRunner.addResult('After addition');
+  TestRunner.addResult('====================================');
+  ApplicationTestRunner.dumpResourceTreeEverything();
+  TestRunner.completeTest();
 })();
