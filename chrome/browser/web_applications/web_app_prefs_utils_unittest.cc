@@ -11,9 +11,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/common/pref_names.h"
-#include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/common/web_app_id.h"
@@ -25,13 +23,6 @@ namespace web_app {
 
 namespace {
 const webapps::AppId app_id = "test_app";
-const webapps::AppId app_id_2 = "test_app_2";
-const base::Time time_before_app_mute =
-    base::Time::Now() - base::Days(kIphAppSpecificMuteTimeSpanDays) -
-    base::Hours(1);
-const base::Time time_before_global_mute =
-    base::Time::Now() - base::Days(kIphAppAgnosticMuteTimeSpanDays) -
-    base::Hours(1);
 }  // namespace
 
 class WebAppPrefsUtilsTest : public testing::Test {
@@ -48,95 +39,6 @@ class WebAppPrefsUtilsTest : public testing::Test {
  private:
   sync_preferences::TestingPrefServiceSyncable prefs_;
 };
-
-TEST_F(WebAppPrefsUtilsTest, TestIphIgnoreRecorded) {
-  EXPECT_FALSE(GetIntWebAppPref(prefs(), kIphIgnoreCount, app_id).has_value());
-  EXPECT_FALSE(
-      GetTimeWebAppPref(prefs(), app_id, kIphLastIgnoreTime).has_value());
-
-  RecordInstallIphIgnored(prefs(), app_id, base::Time::Now());
-  EXPECT_EQ(GetIntWebAppPref(prefs(), app_id, kIphIgnoreCount).value_or(0), 1);
-  auto last_ignore_time =
-      GetTimeWebAppPref(prefs(), app_id, kIphLastIgnoreTime);
-  EXPECT_TRUE(last_ignore_time.has_value());
-  {
-    const auto& dict = prefs()->GetDict(prefs::kWebAppsAppAgnosticIphState);
-    EXPECT_EQ(dict.FindInt(kIphIgnoreCount).value_or(0), 1);
-    EXPECT_EQ(base::ValueToTime(dict.Find(kIphLastIgnoreTime)),
-              last_ignore_time.value());
-  }
-}
-
-TEST_F(WebAppPrefsUtilsTest, TestIphIgnoreRecordUpdated) {
-  RecordInstallIphIgnored(prefs(), app_id, base::Time::Now());
-  auto last_ignore_time =
-      GetTimeWebAppPref(prefs(), app_id, kIphLastIgnoreTime);
-  EXPECT_TRUE(last_ignore_time.has_value());
-
-  RecordInstallIphIgnored(prefs(), app_id, base::Time::Now());
-  EXPECT_EQ(GetIntWebAppPref(prefs(), app_id, kIphIgnoreCount).value_or(0), 2);
-  EXPECT_NE(GetTimeWebAppPref(prefs(), app_id, kIphLastIgnoreTime).value(),
-            last_ignore_time.value());
-  {
-    const auto& dict = prefs()->GetDict(prefs::kWebAppsAppAgnosticIphState);
-    EXPECT_EQ(dict.FindInt(kIphIgnoreCount).value_or(0), 2);
-    EXPECT_NE(base::ValueToTime(dict.Find(kIphLastIgnoreTime)),
-              last_ignore_time.value());
-  }
-}
-
-TEST_F(WebAppPrefsUtilsTest, TestIphInstallResetCounters) {
-  RecordInstallIphIgnored(prefs(), app_id, base::Time::Now());
-  EXPECT_EQ(GetIntWebAppPref(prefs(), app_id, kIphIgnoreCount).value_or(0), 1);
-  {
-    const auto& dict = prefs()->GetDict(prefs::kWebAppsAppAgnosticIphState);
-    EXPECT_EQ(dict.FindInt(kIphIgnoreCount).value_or(0), 1);
-  }
-  RecordInstallIphInstalled(prefs(), app_id);
-  EXPECT_EQ(GetIntWebAppPref(prefs(), app_id, kIphIgnoreCount).value_or(0), 0);
-  {
-    const auto& dict = prefs()->GetDict(prefs::kWebAppsAppAgnosticIphState);
-    EXPECT_EQ(dict.FindInt(kIphIgnoreCount).value_or(0), 0);
-  }
-}
-
-TEST_F(WebAppPrefsUtilsTest, TestIphAppIgnoredRecently) {
-  EXPECT_TRUE(ShouldShowIph(prefs(), app_id));
-  RecordInstallIphIgnored(prefs(), app_id, base::Time::Now());
-  EXPECT_FALSE(ShouldShowIph(prefs(), app_id));
-}
-
-TEST_F(WebAppPrefsUtilsTest, TestIphGlobalIgnoredRecently) {
-  EXPECT_TRUE(ShouldShowIph(prefs(), app_id));
-  RecordInstallIphIgnored(prefs(), app_id_2, base::Time::Now());
-  EXPECT_FALSE(ShouldShowIph(prefs(), app_id));
-}
-
-TEST_F(WebAppPrefsUtilsTest, TestIphGlobalIgnoredPassedMuteTime) {
-  RecordInstallIphIgnored(prefs(), app_id_2, time_before_global_mute);
-  EXPECT_TRUE(ShouldShowIph(prefs(), app_id));
-}
-
-TEST_F(WebAppPrefsUtilsTest, TestIphAppIgnoredPassedMuteTime) {
-  RecordInstallIphIgnored(prefs(), app_id, time_before_app_mute);
-  EXPECT_TRUE(ShouldShowIph(prefs(), app_id));
-}
-
-TEST_F(WebAppPrefsUtilsTest, TestIphConsecutiveAppIgnore) {
-  RecordInstallIphIgnored(prefs(), app_id, time_before_app_mute);
-  UpdateIntWebAppPref(prefs(), app_id, kIphIgnoreCount,
-                      kIphMuteAfterConsecutiveAppSpecificIgnores);
-  EXPECT_FALSE(ShouldShowIph(prefs(), app_id));
-}
-
-TEST_F(WebAppPrefsUtilsTest, TestGlobalConsecutiveAppIgnore) {
-  RecordInstallIphIgnored(prefs(), app_id_2, time_before_global_mute);
-  {
-    ScopedDictPrefUpdate update(prefs(), prefs::kWebAppsAppAgnosticIphState);
-    update->Set(kIphIgnoreCount, kIphMuteAfterConsecutiveAppAgnosticIgnores);
-  }
-  EXPECT_FALSE(ShouldShowIph(prefs(), app_id));
-}
 
 TEST_F(WebAppPrefsUtilsTest, MLInstallIgnored) {
   EXPECT_FALSE(GetTimeWebAppPref(prefs(), app_id, kLastTimeMlInstallIgnored)

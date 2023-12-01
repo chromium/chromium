@@ -21,11 +21,10 @@ class AppBannerManager;
 class PwaInstallView : public PageActionIconView, public TabStripModelObserver {
  public:
   METADATA_HEADER(PwaInstallView);
-  explicit PwaInstallView(
-      CommandUpdater* command_updater,
-      IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
-      PageActionIconView::Delegate* page_action_icon_delegate,
-      Browser* browser);
+  PwaInstallView(CommandUpdater* command_updater,
+                 IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
+                 PageActionIconView::Delegate* page_action_icon_delegate,
+                 Browser* browser);
   PwaInstallView(const PwaInstallView&) = delete;
   PwaInstallView& operator=(const PwaInstallView&) = delete;
   ~PwaInstallView() override;
@@ -44,8 +43,6 @@ class PwaInstallView : public PageActionIconView, public TabStripModelObserver {
   const gfx::VectorIcon& GetVectorIcon() const override;
 
  private:
-  raw_ptr<Browser> browser_ = nullptr;
-
   // Called when IPH is closed.
   void OnIphClosed();
 
@@ -56,6 +53,7 @@ class PwaInstallView : public PageActionIconView, public TabStripModelObserver {
   bool ShouldShowIph(content::WebContents* web_contents,
                      webapps::AppBannerManager* manager);
 
+  raw_ptr<Browser> browser_ = nullptr;
   base::WeakPtrFactory<PwaInstallView> weak_ptr_factory_{this};
 };
 

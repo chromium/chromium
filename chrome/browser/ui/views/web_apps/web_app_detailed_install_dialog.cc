@@ -25,7 +25,7 @@
 #include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_prefs_utils.h"
+#include "chrome/browser/web_applications/web_app_pref_guardrails.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/feature_engagement/public/event_constants.h"
@@ -442,8 +442,8 @@ void WebAppDetailedInstallDialogDelegate::OnAccept() {
   base::RecordAction(base::UserMetricsAction("WebAppDetailedInstallAccepted"));
   if (iph_state_ == PwaInProductHelpState::kShown) {
     webapps::AppId app_id =
-        web_app::GenerateAppIdFromManifestId(install_info_->manifest_id);
-    web_app::RecordInstallIphInstalled(prefs_, app_id);
+        GenerateAppIdFromManifestId(install_info_->manifest_id);
+    WebAppPrefGuardrails::GetForDesktopInstallIph(prefs_).RecordAccept(app_id);
     tracker_->NotifyEvent(feature_engagement::events::kDesktopPwaInstalled);
   }
 
@@ -508,8 +508,9 @@ void WebAppDetailedInstallDialogDelegate::MeasureIphOnDialogClose() {
 
   if (iph_state_ == PwaInProductHelpState::kShown && install_info_) {
     webapps::AppId app_id =
-        web_app::GenerateAppIdFromManifestId(install_info_->manifest_id);
-    web_app::RecordInstallIphIgnored(prefs_, app_id, base::Time::Now());
+        GenerateAppIdFromManifestId(install_info_->manifest_id);
+    WebAppPrefGuardrails::GetForDesktopInstallIph(prefs_).RecordIgnore(
+        app_id, base::Time::Now());
   }
 
   if (install_info_) {

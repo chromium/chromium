@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_pref_guardrails.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -41,7 +42,7 @@ base::Value::Dict& UpdateWebAppDictionary(
 }
 
 // Returns whether the time occurred within X days.
-bool TimeOccurredWithinDays(absl::optional<base::Time> time, int days) {
+bool TimeOccurredWithinDaysInternal(absl::optional<base::Time> time, int days) {
   return time && (base::Time::Now() - time.value()).InDays() < days;
 }
 
@@ -73,12 +74,68 @@ bool ShouldResetMLPromosBlockData(PrefService* pref_service) {
 
   // We only want to clear the ML guardrails if
   // kMaxDaysForMLPromotionGuardrailStorage is crossed.
-  return !TimeOccurredWithinDays(
+  return !TimeOccurredWithinDaysInternal(
       last_time_ml_promo_blocked,
       webapps::features::kMaxDaysForMLPromotionGuardrailStorage.Get());
 }
 
 }  // namespace
+
+bool TimeOccurredWithinDays(absl::optional<base::Time> time, int days) {
+  return TimeOccurredWithinDaysInternal(time, days);
+}
+
+absl::optional<int> GetIntWebAppPref(const PrefService* pref_service,
+                                     const webapps::AppId& app_id,
+                                     base::StringPiece path) {
+  const base::Value::Dict* web_app_prefs =
+      GetWebAppDictionary(pref_service, app_id);
+  if (web_app_prefs) {
+    return web_app_prefs->FindIntByDottedPath(path);
+  }
+  return absl::nullopt;
+}
+
+void UpdateIntWebAppPref(PrefService* pref_service,
+                         const webapps::AppId& app_id,
+                         base::StringPiece path,
+                         int value) {
+  ScopedDictPrefUpdate update(pref_service, prefs::kWebAppsPreferences);
+
+  base::Value::Dict& web_app_prefs = UpdateWebAppDictionary(update, app_id);
+  web_app_prefs.SetByDottedPath(path, value);
+}
+
+absl::optional<base::Time> GetTimeWebAppPref(const PrefService* pref_service,
+                                             const webapps::AppId& app_id,
+                                             base::StringPiece path) {
+  if (const auto* web_app_prefs = GetWebAppDictionary(pref_service, app_id)) {
+    if (auto* value = web_app_prefs->FindByDottedPath(path)) {
+      return base::ValueToTime(value);
+    }
+  }
+
+  return absl::nullopt;
+}
+
+void UpdateTimeWebAppPref(PrefService* pref_service,
+                          const webapps::AppId& app_id,
+                          base::StringPiece path,
+                          base::Time value) {
+  ScopedDictPrefUpdate update(pref_service, prefs::kWebAppsPreferences);
+
+  auto& web_app_prefs = UpdateWebAppDictionary(update, app_id);
+  web_app_prefs.SetByDottedPath(path, base::TimeToValue(value));
+}
+
+void RemoveWebAppPref(PrefService* pref_service,
+                      const webapps::AppId& app_id,
+                      base::StringPiece path) {
+  ScopedDictPrefUpdate update(pref_service, prefs::kWebAppsPreferences);
+
+  base::Value::Dict& web_app_prefs = UpdateWebAppDictionary(update, app_id);
+  web_app_prefs.RemoveByDottedPath(path);
+}
 
 // The stored preferences look like:
 //   "web_app_ids": {
@@ -122,9 +179,6 @@ bool ShouldResetMLPromosBlockData(PrefService* pref_service) {
 //   }
 //
 
-const char kIphIgnoreCount[] = "IPH_num_of_consecutive_ignore";
-const char kIphLastIgnoreTime[] = "IPH_last_ignore_time";
-
 void WebAppPrefsUtilsRegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(::prefs::kWebAppsPreferences);
@@ -134,113 +188,6 @@ void WebAppPrefsUtilsRegisterProfilePrefs(
                                 false);
   registry->RegisterBooleanPref(
       ::prefs::kErrorLoadedPolicyAppMigrationCompleted, false);
-}
-
-absl::optional<int> GetIntWebAppPref(const PrefService* pref_service,
-                                     const webapps::AppId& app_id,
-                                     base::StringPiece path) {
-  const base::Value::Dict* web_app_prefs =
-      GetWebAppDictionary(pref_service, app_id);
-  if (web_app_prefs)
-    return web_app_prefs->FindIntByDottedPath(path);
-  return absl::nullopt;
-}
-
-void UpdateIntWebAppPref(PrefService* pref_service,
-                         const webapps::AppId& app_id,
-                         base::StringPiece path,
-                         int value) {
-  ScopedDictPrefUpdate update(pref_service, prefs::kWebAppsPreferences);
-
-  base::Value::Dict& web_app_prefs = UpdateWebAppDictionary(update, app_id);
-  web_app_prefs.SetByDottedPath(path, value);
-}
-
-absl::optional<base::Time> GetTimeWebAppPref(const PrefService* pref_service,
-                                             const webapps::AppId& app_id,
-                                             base::StringPiece path) {
-  if (const auto* web_app_prefs = GetWebAppDictionary(pref_service, app_id)) {
-    if (auto* value = web_app_prefs->FindByDottedPath(path))
-      return base::ValueToTime(value);
-  }
-
-  return absl::nullopt;
-}
-
-void UpdateTimeWebAppPref(PrefService* pref_service,
-                          const webapps::AppId& app_id,
-                          base::StringPiece path,
-                          base::Time value) {
-  ScopedDictPrefUpdate update(pref_service, prefs::kWebAppsPreferences);
-
-  auto& web_app_prefs = UpdateWebAppDictionary(update, app_id);
-  web_app_prefs.SetByDottedPath(path, base::TimeToValue(value));
-}
-
-void RemoveWebAppPref(PrefService* pref_service,
-                      const webapps::AppId& app_id,
-                      base::StringPiece path) {
-  ScopedDictPrefUpdate update(pref_service, prefs::kWebAppsPreferences);
-
-  base::Value::Dict& web_app_prefs = UpdateWebAppDictionary(update, app_id);
-  web_app_prefs.RemoveByDottedPath(path);
-}
-
-void RecordInstallIphIgnored(PrefService* pref_service,
-                             const webapps::AppId& app_id,
-                             base::Time time) {
-  absl::optional<int> ignored_count =
-      GetIntWebAppPref(pref_service, app_id, kIphIgnoreCount);
-  int new_count = base::saturated_cast<int>(1 + ignored_count.value_or(0));
-
-  UpdateIntWebAppPref(pref_service, app_id, kIphIgnoreCount, new_count);
-  UpdateTimeWebAppPref(pref_service, app_id, kIphLastIgnoreTime, time);
-
-  ScopedDictPrefUpdate update(pref_service, prefs::kWebAppsAppAgnosticIphState);
-  int global_count = update->FindInt(kIphIgnoreCount).value_or(0);
-  update->Set(kIphIgnoreCount, base::saturated_cast<int>(global_count + 1));
-  update->Set(kIphLastIgnoreTime, base::TimeToValue(time));
-}
-
-void RecordInstallIphInstalled(PrefService* pref_service,
-                               const webapps::AppId& app_id) {
-  // The ignored count is meant to track consecutive occurrences of the user
-  // ignoring IPH, to help determine when IPH should be muted. Therefore
-  // resetting ignored count on successful install.
-  UpdateIntWebAppPref(pref_service, app_id, kIphIgnoreCount, 0);
-
-  ScopedDictPrefUpdate update(pref_service, prefs::kWebAppsAppAgnosticIphState);
-  update->Set(kIphIgnoreCount, 0);
-}
-
-bool ShouldShowIph(PrefService* pref_service, const webapps::AppId& app_id) {
-  // Do not show IPH if the user ignored the last N+ promos for this app.
-  int app_ignored_count =
-      GetIntWebAppPref(pref_service, app_id, kIphIgnoreCount).value_or(0);
-  if (app_ignored_count >= kIphMuteAfterConsecutiveAppSpecificIgnores)
-    return false;
-  // Do not show IPH if the user ignored a promo for this app within N days.
-  auto app_last_ignore =
-      GetTimeWebAppPref(pref_service, app_id, kIphLastIgnoreTime);
-  if (TimeOccurredWithinDays(app_last_ignore,
-                             kIphAppSpecificMuteTimeSpanDays)) {
-    return false;
-  }
-
-  const base::Value::Dict& dict =
-      pref_service->GetDict(prefs::kWebAppsAppAgnosticIphState);
-
-  // Do not show IPH if the user ignored the last N+ promos for any app.
-  int global_ignored_count = dict.FindInt(kIphIgnoreCount).value_or(0);
-  if (global_ignored_count >= kIphMuteAfterConsecutiveAppAgnosticIgnores)
-    return false;
-  // Do not show IPH if the user ignored a promo for any app within N days.
-  auto global_last_ignore = base::ValueToTime(dict.Find(kIphLastIgnoreTime));
-  if (TimeOccurredWithinDays(global_last_ignore,
-                             kIphAppAgnosticMuteTimeSpanDays)) {
-    return false;
-  }
-  return true;
 }
 
 const char kLastTimeMlInstallIgnored[] = "ML_last_time_install_ignored";

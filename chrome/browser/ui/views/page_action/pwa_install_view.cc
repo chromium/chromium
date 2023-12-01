@@ -22,7 +22,7 @@
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_prefs_utils.h"
+#include "chrome/browser/web_applications/web_app_pref_guardrails.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -163,12 +163,13 @@ void PwaInstallView::OnIphClosed() {
   if (!manager) {
     return;
   }
+
   PrefService* prefs =
       Profile::FromBrowserContext(web_contents->GetBrowserContext())
           ->GetPrefs();
 
-  web_app::RecordInstallIphIgnored(
-      prefs, web_app::GenerateAppIdFromManifest(manager->manifest()),
+  web_app::WebAppPrefGuardrails::GetForDesktopInstallIph(prefs).RecordIgnore(
+      web_app::GenerateAppIdFromManifest(manager->manifest()),
       base::Time::Now());
 }
 
@@ -229,8 +230,11 @@ bool PwaInstallView::ShouldShowIph(content::WebContents* web_contents,
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   auto score = site_engagement::SiteEngagementService::Get(profile)->GetScore(
       web_contents->GetVisibleURL());
+
   return score > kIphSiteEngagementThresholdParam.Get() &&
-         web_app::ShouldShowIph(profile->GetPrefs(), app_id);
+         !web_app::WebAppPrefGuardrails::GetForDesktopInstallIph(
+              profile->GetPrefs())
+              .IsBlockedByGuardrails(app_id);
 }
 
 BEGIN_METADATA(PwaInstallView, PageActionIconView)

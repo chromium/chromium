@@ -15,8 +15,10 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_pref_guardrails.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -153,14 +155,20 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
           ->GetPrefs();
   webapps::AppId app_id =
       GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
-  EXPECT_EQ(GetIntWebAppPref(pref_service, app_id, kIphIgnoreCount).value(), 1);
-  EXPECT_TRUE(
-      GetTimeWebAppPref(pref_service, app_id, kIphLastIgnoreTime).has_value());
+
+  EXPECT_EQ(GetIntWebAppPref(pref_service, app_id,
+                             kIphPrefNames.not_accepted_count_name)
+                .value(),
+            1);
+  EXPECT_TRUE(GetTimeWebAppPref(pref_service, app_id,
+                                kIphPrefNames.last_ignore_time_name)
+                  .has_value());
   {
     const auto& dict =
         pref_service->GetDict(prefs::kWebAppsAppAgnosticIphState);
-    EXPECT_EQ(dict.FindInt(kIphIgnoreCount).value_or(0), 1);
-    EXPECT_TRUE(dict.contains(kIphLastIgnoreTime));
+    EXPECT_EQ(dict.FindInt(kIphPrefNames.not_accepted_count_name).value_or(0),
+              1);
+    EXPECT_TRUE(dict.contains(kIphPrefNames.last_ignore_time_name));
   }
 }
 
@@ -176,12 +184,9 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
                                       ->GetActiveWebContents()
                                       ->GetBrowserContext())
           ->GetPrefs();
-  UpdateIntWebAppPref(pref_service, app_id, kIphIgnoreCount, 1);
-  {
-    ScopedDictPrefUpdate update(pref_service,
-                                prefs::kWebAppsAppAgnosticIphState);
-    update->Set(kIphIgnoreCount, 1);
-  }
+
+  WebAppPrefGuardrails::GetForDesktopInstallIph(pref_service)
+      .RecordIgnore(app_id, base::Time::Now());
   base::RunLoop loop;
   // Show the PWA install dialog.
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
@@ -202,11 +207,15 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
   bubble_dialog->AcceptDialog();
   loop.Run();
 
-  EXPECT_EQ(GetIntWebAppPref(pref_service, app_id, kIphIgnoreCount).value(), 0);
+  EXPECT_EQ(GetIntWebAppPref(pref_service, app_id,
+                             kIphPrefNames.not_accepted_count_name)
+                .value(),
+            0);
   {
     const auto& dict =
         pref_service->GetDict(prefs::kWebAppsAppAgnosticIphState);
-    EXPECT_EQ(dict.FindInt(kIphIgnoreCount).value_or(0), 0);
+    EXPECT_EQ(dict.FindInt(kIphPrefNames.not_accepted_count_name).value_or(0),
+              0);
   }
 }
 

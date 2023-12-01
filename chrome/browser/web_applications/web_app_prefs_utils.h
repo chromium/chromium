@@ -18,8 +18,9 @@ class PrefRegistrySyncable;
 
 namespace web_app {
 
-extern const char kIphIgnoreCount[];
-extern const char kIphLastIgnoreTime[];
+// TODO(b/313491176): Remove all these public utilities once this utility file
+// is retired.
+bool TimeOccurredWithinDays(absl::optional<base::Time> time, int days);
 
 absl::optional<int> GetIntWebAppPref(const PrefService* pref_service,
                                      const webapps::AppId& app_id,
@@ -45,17 +46,6 @@ void RemoveWebAppPref(PrefService* pref_service,
 
 void WebAppPrefsUtilsRegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry);
-
-void RecordInstallIphIgnored(PrefService* pref_service,
-                             const webapps::AppId& app_id,
-                             base::Time time);
-
-void RecordInstallIphInstalled(PrefService* pref_service,
-                               const webapps::AppId& app_id);
-
-// Returns whether Web App Install In Product Help should be shown based on
-// previous interactions with this promo.
-bool ShouldShowIph(PrefService* pref_service, const webapps::AppId& app_id);
 
 // -------------------------ML Promotion Guardrails-------------------------
 // Pref entries
