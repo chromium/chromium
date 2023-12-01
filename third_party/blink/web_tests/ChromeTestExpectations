@@ -65,12 +65,14 @@ crbug.com/1499775 external/wpt/css/css-transitions/retargetted-transition-with-b
 crbug.com/1499775 external/wpt/css/css-ui/compute-kind-widget-generated/kind-of-widget-fallback-button-background-image-001.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/css/css-ui/compute-kind-widget-generated/kind-of-widget-fallback-button-border-inline-start-style-001.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/css/css-ui/compute-kind-widget-generated/kind-of-widget-fallback-input-reset-border-inline-start-color-001.html [ Failure Pass ]
+crbug.com/1499775 external/wpt/css/css-ui/compute-kind-widget-generated/kind-of-widget-fallback-input-search-border-left-width-001.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/css/css-ui/compute-kind-widget-generated/kind-of-widget-fallback-input-search-text-background-size-001.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/css/css-ui/compute-kind-widget-generated/kind-of-widget-fallback-input-text-border-image-repeat-001.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/css/css-ui/compute-kind-widget-generated/kind-of-widget-fallback-input-text-border-inline-start-style-001.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/css/css-ui/compute-kind-widget-generated/kind-of-widget-fallback-textarea-border-block-end-width-001.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/css/motion/offset-path-shape-circle-007.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/css/motion/offset-path-ray-012.html [ Failure Pass ]
+crbug.com/1499775 external/wpt/css/css-text/text-transform/text-transform-capitalize-003.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/css/css-text/text-transform/text-transform-capitalize-030.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/editing/other/join-pre-and-other-block.html?method=backspace&block=blockquote [ Pass Timeout ]
 crbug.com/1499775 external/wpt/editing/other/join-pre-and-other-block.html?method=backspace&block=div [ Pass Timeout ]
@@ -84,6 +86,7 @@ crbug.com/1499775 external/wpt/html/anonymous-iframe/embedding.tentative.https.w
 crbug.com/1499775 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?2-2 [ Failure Pass ]
 crbug.com/1499775 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?4-4 [ Failure Pass ]
 crbug.com/1499775 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?5-5 [ Failure Pass ]
+crbug.com/1499775 external/wpt/html/editing/the-hidden-attribute/beforematch-scroll-to-text-fragment.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-cuechange.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-enter-exit.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/html/semantics/embedded-content/the-img-element/invisible-image.html [ Failure Pass ]
@@ -136,6 +139,7 @@ crbug.com/1499775 external/wpt/css/css-ui/compute-kind-widget-generated/kind-of-
 crbug.com/1499775 external/wpt/css/css-ui/compute-kind-widget-generated/kind-of-widget-fallback-input-search-text-border-inline-start-color-001.html [ Failure ]
 crbug.com/1499775 external/wpt/css/css-ui/compute-kind-widget-generated/kind-of-widget-fallback-input-submit-border-block-end-color-001.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/css/printing/input-file-print.html [ Failure ]
+crbug.com/1499775 external/wpt/mathml/presentation-markup/operators/embellished-op-3-2.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/mathml/presentation-markup/operators/operator-dictionary-arabic-002.html [ Failure ]
 crbug.com/1499775 external/wpt/svg/linking/reftests/view-viewbox-override.html [ Failure ]
 crbug.com/1499775 wpt_internal/css/css-pseudo/spelling-error-color-001.html [ Failure ]
@@ -308,6 +312,7 @@ crbug.com/1499775 external/wpt/css/filter-effects/backdrop-filter-isolation.html
 crbug.com/1499775 external/wpt/css/filter-effects/backdrop-filter-plus-filter.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 external/wpt/css/filter-effects/backdrop-filter-reference-filter.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 external/wpt/css/filter-effects/css-filters-animation-opacity.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 external/wpt/css/css-page/page-name-fixed-pos-001-print.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/css/printing/monolithic-overflow-024-print.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 external/wpt/css/printing/monolithic-overflow-025-print.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 external/wpt/css/printing/page-margin-001-print.html [ Failure ]  # Reftest image failure
@@ -356,6 +361,7 @@ crbug.com/1499775 external/wpt/fullscreen/rendering/fullscreen-pseudo-class.html
 crbug.com/1499775 external/wpt/fullscreen/rendering/fullscreen-root-block-scroll.html [ Timeout ] # pass on wpt.fyi
 crbug.com/1499775 external/wpt/fullscreen/rendering/fullscreen-root-block-size.html [ Timeout ]
 crbug.com/1499775 external/wpt/fullscreen/rendering/ua-style-iframe.html [ Timeout ] # pass on wpt.fyi
+crbug.com/1499775 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?3-3 [ Failure Pass ]
 crbug.com/1499775 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?7-7 [ Failure Pass ]
 crbug.com/1499775 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?8-8 [ Failure Pass ]
 crbug.com/1499775 external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?10-10 [ Failure Pass ]
@@ -535,6 +541,7 @@ crbug.com/1499775 external/wpt/fullscreen/rendering/backdrop-iframe.html [ Timeo
 crbug.com/1499775 external/wpt/fullscreen/rendering/backdrop-object.html [ Timeout ]
 crbug.com/1499775 external/wpt/fullscreen/rendering/fullscreen-root-fills-page.html [ Timeout ]
 crbug.com/1499775 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-option-arbitrary-content-displayed.tentative.html [ Timeout ]
+crbug.com/1499775 external/wpt/sanitizer-api/sanitizer-config.https.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/service-workers/cache-storage/crashtests/cache-response-clone.https.html [ Timeout ]
 crbug.com/1499775 external/wpt/shadow-dom/crashtests/move-to-new-tree-1343016.html [ Timeout ]
 crbug.com/1499775 external/wpt/signed-exchange/reporting/sxg-reporting-navigation-cert_fetch_error-downgraded.tentative.html [ Timeout ]
