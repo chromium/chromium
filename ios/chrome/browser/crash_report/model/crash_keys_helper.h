@@ -103,6 +103,9 @@ void MediaStreamPlaybackDidStart();
 // the same number of times as MediaStreamPlaybackDidStart.
 void MediaStreamPlaybackDidStop();
 
+// Sets whether VoiceOver is currently running or not.
+void SetVoiceOverRunning(bool running);
+
 }  // namespace crash_keys
 
 #endif  // IOS_CHROME_BROWSER_CRASH_REPORT_MODEL_CRASH_KEYS_HELPER_H_

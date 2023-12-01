@@ -165,6 +165,14 @@ void FlushCookieStoreOnIOThread(
                name:UISceneWillConnectNotification
              object:nil];
 
+    // Observe the status of VoiceOver for crash logging.
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(voiceOverStatusDidChange:)
+               name:UIAccessibilityVoiceOverStatusDidChangeNotification
+             object:nil];
+    crash_keys::SetVoiceOverRunning(UIAccessibilityIsVoiceOverRunning());
+
     [self addObserver:self];
   }
   return self;
@@ -657,6 +665,12 @@ void FlushCookieStoreOnIOThread(
 
   [self.observers appState:self sceneConnected:sceneState];
   crash_keys::SetConnectedScenesCount([self connectedScenes].count);
+}
+
+#pragma mark - Voice Over lifecycle
+
+- (void)voiceOverStatusDidChange:(NSNotification*)notification {
+  crash_keys::SetVoiceOverRunning(UIAccessibilityIsVoiceOverRunning());
 }
 
 #pragma mark - AppStateObserver

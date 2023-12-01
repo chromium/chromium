@@ -76,6 +76,7 @@ TEST_F(CrashHelperTest, CrashReportUserApplicationStateAllKeys) {
       @"to_view_controller", @"presenting_view_controller",
       @"presented_view_controller", @"parent_view_controller");
   crash_keys::MediaStreamPlaybackDidStart();
+  crash_keys::SetVoiceOverRunning(true);
 
   // Set a max-length breadcrumbs string.
   std::string breadcrumbs(breadcrumbs::kMaxDataLength, 'A');
@@ -101,7 +102,7 @@ TEST_F(CrashHelperTest, CrashReportUserApplicationStateAllKeys) {
               @"{\"OTRTabs\":999,\"avplay\":1,\"destroyingAndRebuildingOTR\":1,"
               @"\"fgScenes\":999,\"inactiveTabs\":999,\"orient\":37,\"pdf\":1,"
               @"\"regTabs\":999,\"scenes\":999,\"signIn\":1,\"sizeclass\":2,"
-              @"\"user_interface_style\":2}");
+              @"\"user_interface_style\":2,\"voiceOver\":1}");
   EXPECT_NSEQ(reportParameters[@"free_disk_in_kb"], @"12345");
   EXPECT_NSEQ(reportParameters[@"memory_warning_in_progress"], @"yes");
 }
