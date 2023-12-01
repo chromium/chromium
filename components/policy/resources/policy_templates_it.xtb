@@ -1620,6 +1620,7 @@ La funzionalità non è disponibile se la sincronizzazione delle password viene 
       Se il criterio viene impostato su Disattivato, questa funzionalità non è disponibile.</translation>
 <translation id="2342066287156668839">Attiva la quota permanente.</translation>
 <translation id="2345547870894930157">Attiva DNS over HTTPS senza fallback non sicuro</translation>
+<translation id="2347695338560092641">Driver di stampa out-of-process consentiti</translation>
 <translation id="234856189825555040">Questo criterio consente di stabilire se i plug-in <ph name="PEPPER_NAME" /> possono usare il nuovo decodificatore per comunicare con i decodificatori hardware anziché il decodificatore video precedente.
 
 La migrazione interessa solo i dettagli di implementazione interni e non deve modificare alcun comportamento. Tuttavia, questo criterio può essere utilizzato nel caso in cui eventuali applicazioni PPAPI non funzionino come previsto.
@@ -2803,6 +2804,7 @@ Se il criterio è impostato su False o non è impostato, la tastiera riprodurrà
 <translation id="3362584244602846824">Utilizza Fast Transition quando il punto di accesso wireless lo supporta</translation>
 <translation id="3363360928811201045">Aggiungi limitazioni agli account gestiti</translation>
 <translation id="3364400740222114778">Recupero dell'account</translation>
+<translation id="3366156659815091184">La stampa della piattaforma utilizza il processo di servizio.</translation>
 <translation id="3367361756115023251">Consente all'utente l'accesso root ai contenitori Crostini.
 
 Se il criterio viene impostato su true o se non viene configurato, all'utente verrà concesso l'accesso root ai contenitori Crostini.
@@ -7050,6 +7052,13 @@ Se il criterio viene impostato su Disabled o se non viene configurato, verrà ap
 Se configuri il criterio, gli utenti non possono modificarlo. Se il criterio non è configurato, la lente d'ingrandimento risulta disattivata all'inizio, ma gli utenti possono attivarla in qualsiasi momento.</translation>
 <translation id="6940243892299228102">Gli utenti non possono usare i modelli di scrivanie</translation>
 <translation id="6943577887654905793">Nome di preferenza per Mac/Linux:</translation>
+<translation id="694602410134474029">Consente di stabilire se <ph name="PRODUCT_NAME" /> interagisce con i driver di stampa da un processo di servizio separato. Le chiamate della stampa della piattaforma per eseguire query sulle stampanti disponibili, ottenere le impostazioni dei driver di stampa e inviare documenti per la stampa alle stampanti locali vengono effettuate tramite un processo di servizio. Lo spostamento di queste chiamate all'esterno del processo del browser contribuisce a migliorare la stabilità e a ridurre il comportamento dell'UI bloccata nell'anteprima di stampa.
+
+Se questo criterio viene attivato o se non viene configurato, <ph name="PRODUCT_NAME" /> userà un processo di servizio separato per le attività di stampa della piattaforma.
+
+Se questo criterio viene disattivato, <ph name="PRODUCT_NAME" /> userà il processo del browser per le attività di stampa della piattaforma.
+
+Questo criterio verrà rimosso in futuro, una volta completata l'implementazione della funzionalità dei driver di stampa out-of-process.</translation>
 <translation id="6946652757373377924">
       Questo criterio è stato rimosso da M77.
       Questo criterio si applica alla schermata di accesso. Vedi anche il criterio <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> che viene applicato alla sessione utente.
@@ -7966,6 +7975,7 @@ Se questo criterio non viene impostato, il renderer del PDF viene scelto dal bro
       È consigliabile eseguire la migrazione dei server alle suite di crittografia ECDHE. Se non sono disponibili, assicurati che sia attiva una suite di crittografia che utilizza lo scambio di chiavi RSA.</translation>
 <translation id="7709470712369261710">Non usare i servizi Google per fornire le descrizioni immagini automatiche</translation>
 <translation id="7712109699186360774">Chiedi ogni volta che un sito vuole accedere alla fotocamera e/o al microfono</translation>
+<translation id="7712245244073542805">Stampa dalla piattaforma dal processo del browser.</translation>
 <translation id="7713608076604149344">Limitazioni dei download</translation>
 <translation id="7713845740295404764">Segnala eventi di accesso/uscita</translation>
 <translation id="7715711044277116530">Percentuale di regolazione del ritardo di oscuramento dello schermo in modalità di presentazione</translation>

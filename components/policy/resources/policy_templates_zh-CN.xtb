@@ -1616,6 +1616,7 @@ Related Website Set 中的所有网站都必须是采用 HTTPS 协议的可注�
       如果此政策已停用，用户则无法使用该功能。</translation>
 <translation id="2342066287156668839">启用永久配额。</translation>
 <translation id="2345547870894930157">启用 DNS-over-HTTPS，且禁止改用不安全的查询</translation>
+<translation id="2347695338560092641">允许使用进程外的打印驱动程序</translation>
 <translation id="234856189825555040">此政策用于控制 <ph name="PEPPER_NAME" /> 插件能否使用新版解码器（而非旧版视频解码器）与硬件解码器通信。
 
 迁移只会影响内部实现细节，应该不会改变任何行为。不过，如有任何 PPAPI 应用无法正常运行，可以使用此政策。
@@ -2787,6 +2788,7 @@ Related Website Set 中的所有网站都必须是采用 HTTPS 协议的可注�
 <translation id="3362584244602846824">使用快速切换功能（如果无线接入点支持该功能的话）</translation>
 <translation id="3363360928811201045">针对受管理的账号添加限制</translation>
 <translation id="3364400740222114778">账号恢复</translation>
+<translation id="3366156659815091184">使用服务进程执行平台打印任务。</translation>
 <translation id="3367361756115023251">允许此用户拥有 Crostini 容器的 root 权限。
 
 如果此政策设为 true 或未设置，用户会获得对 Crostini 容器的 root 权限；
@@ -6982,6 +6984,13 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 如果您设置了此政策，用户便无法更改该功能的状态。如果您未设置此政策，屏幕放大镜最初会处于关闭状态，但用户可随时开启它。</translation>
 <translation id="6940243892299228102">不允许用户使用桌面模板</translation>
 <translation id="6943577887654905793">Mac/Linux 偏好设置名称：</translation>
+<translation id="694602410134474029">控制 <ph name="PRODUCT_NAME" /> 是否使用独立的服务进程与打印机驱动程序交互。用于查询可用打印机、获取打印驱动程序设置、将待打印的文档提交至本地打印机的平台打印任务调用，均通过一项服务进程执行。将这类调用从浏览器进程中移出有助于提升稳定性，并减少打印预览中的界面冻结行为。
+
+如果此政策已启用或未设置，<ph name="PRODUCT_NAME" /> 将会使用独立的服务进程执行平台打印任务。
+
+如果此政策已停用，<ph name="PRODUCT_NAME" /> 将会使用浏览器进程执行平台打印任务。
+
+日后，待进程外打印驱动程序功能全面推出后，此政策将被移除。</translation>
 <translation id="6946652757373377924">
       此政策已从 M77 中移除。
       此政策适用于登录屏幕。另请参阅适用于用户会话的 <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> 政策。
@@ -7896,6 +7905,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       我们建议您让服务器改用 ECDHE 加密套件。如果这些加密套件不可用，请确保让使用 RSA 密钥交换机制的加密套件处于启用状态。</translation>
 <translation id="7709470712369261710">不使用 Google 服务提供自动图片说明</translation>
 <translation id="7712109699186360774">每当有网站要使用摄像头和/或麦克风时都要询问</translation>
+<translation id="7712245244073542805">使用浏览器进程执行平台打印任务。</translation>
 <translation id="7713608076604149344">下载限制</translation>
 <translation id="7713845740295404764">报告登录/退出事件</translation>
 <translation id="7715711044277116530">演示模式下屏幕变暗延迟时间的调整幅度（百分比）</translation>

@@ -990,7 +990,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="6219688215832490856">Không bao giờ dịch</translation>
 <translation id="6223816392543092032">Sử dụng dấu trang, danh sách trang web đã truy cập, mật khẩu và các chế độ cài đặt khác trên mọi thiết bị của bạn.</translation>
 <translation id="6224759905509595045">Xác minh danh tính của bạn…</translation>
-<translation id="6229318421047648685">Yêu cầu trang web dành cho máy tính</translation>
+<translation id="6229318421047648685">Yêu cầu trang máy tính</translation>
 <translation id="6229719094394196779">Tiết kiệm thời gian và công sức nhập</translation>
 <translation id="6231782223312638214">Ðược đề xuất</translation>
 <translation id="6232329973559504466">Tìm kiếm ẩn danh</translation>
@@ -1134,7 +1134,7 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 <translation id="6831043979455480757">Dịch</translation>
 <translation id="6839843088069935119">{count,plural, =1{Đã lưu dấu trang vào "{title}". Dấu trang chỉ được lưu vào thiết bị này.}other{Đã lưu dấu trang vào "{title}". Dấu trang chỉ được lưu vào thiết bị này.}}</translation>
 <translation id="6842136130964845393">Hãy xác minh danh tính của bạn để đảm bảo bạn luôn có thể truy cập mật khẩu đã lưu</translation>
-<translation id="6851516051005285358">Yêu cầu trang web cho máy tính</translation>
+<translation id="6851516051005285358">Yêu cầu trang máy tính</translation>
 <translation id="6852222216891664518">Đóng thẻ được ghim</translation>
 <translation id="6858855187367714033">Đã quét</translation>
 <translation id="6859944681507688231">Để quét mã QR hoặc thẻ tín dụng, hãy bật máy ảnh trong phần cài đặt.</translation>

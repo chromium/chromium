@@ -1124,7 +1124,7 @@
 <translation id="1859339856433307593">هناك كلمة مرور لهذا الحساب (<ph name="USER_EMAIL" />) محفوظة حاليًا في "<ph name="BRAND" />".</translation>
 <translation id="1859517534163232041">‏تشفير عناوين URL التي يتم إدخالها في المتصفِّح</translation>
 <translation id="1861262398884155592">هذا المجلد فارغ</translation>
-<translation id="1862311223300693744">‏هل لديك شبكة افتراضية خاصة (VPN) أو خادم وكيل أو جدار ناري أو برنامج NAS مثبت؟</translation>
+<translation id="1862311223300693744">‏هل لديك شبكة افتراضية خاصة (VPN) أو خادم وكيل أو جدار حماية أو برنامج NAS مثبت؟</translation>
 <translation id="1863047423483329595">‏ميزة "الحماية من التتبُّع" غير متاحة مؤقتًا. ويمكن للمواقع الإلكترونية، أثناء تحديث Chrome لهذه الميزة، استخدام ملفات تعريف الارتباط التابعة لجهات خارجية مؤقتًا ما لم تحظرها. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="1863182668524159459">لم يتم العثور على منافذ تسلسلية</translation>
 <translation id="1863207472175483351">جارٍ التثبيت…</translation>
@@ -2292,7 +2292,7 @@
 <translation id="2738030019664645674">عدم السماح للمواقع الإلكترونية باستخدام أشكال الخط المثبَّتة على جهازك</translation>
 <translation id="2738771556149464852">آخر يوم للصلاحية</translation>
 <translation id="2739191690716947896">تصحيح الأخطاء</translation>
-<translation id="2739240477418971307">تغيير إعدادات إمكانية الوصول</translation>
+<translation id="2739240477418971307">تغيير إعدادات تسهيل الاستخدام</translation>
 <translation id="2739331588276254426">متصل بالإنترنت من خلال "<ph name="HOST_DEVICE_NAME" />"</translation>
 <translation id="274029851662193272">منخفضة</translation>
 <translation id="2740531572673183784">حسنًا</translation>
@@ -3408,7 +3408,7 @@
 <translation id="3653160965917900914">مشاركات ملفات الشبكة</translation>
 <translation id="3653887973853407813">‏لا يمكنك استخدام هذه الإضافة. أوقف أحد والدَيك أو الوصي عليك "الأذونات اللازمة للمواقع الإلكترونية والتطبيقات والإضافات" لمتصفِّح Chrome.</translation>
 <translation id="3653999333232393305">مواصلة السماح لـ <ph name="HOST" /> بالدخول إلى الميكروفون</translation>
-<translation id="3654045516529121250">الاطّلاع على إعدادات إمكانية الوصول</translation>
+<translation id="3654045516529121250">الاطّلاع على إعدادات تسهيل الاستخدام</translation>
 <translation id="3654682977761834281">البيانات الواردة من المواقع الإلكترونية المضمّنة</translation>
 <translation id="3656328935986149999">سرعة المؤشر</translation>
 <translation id="3658871634334445293">‏تسارع TrackPoint</translation>
@@ -3735,7 +3735,7 @@
 <translation id="389313931326656921">تخصيص مفتاح تحكّم للإجراء "التالي"</translation>
 <translation id="3893268973182382220">لا يمكن تحميل هذه اللوحة الآن.</translation>
 <translation id="3893295674388762059">لمحو البيانات، عليك إغلاق جميع نوافذ التصفُّح المتخفي.</translation>
-<translation id="3893536212201235195">قراءة وتغيير إعدادات إمكانية الوصول</translation>
+<translation id="3893536212201235195">قراءة وتغيير إعدادات تسهيل الاستخدام</translation>
 <translation id="3893630138897523026">‏ChromeVox (التعليق المنطوق)</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3894123633473837029">‏تضمين سجل "مساعد Google" الأخير عبر Sherlog. قد يتضمن هذا الهوية والموقع الجغرافي ومعلومات تصحيح الأخطاء. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
@@ -10097,7 +10097,7 @@
 <translation id="8968766641738584599">حفظ البطاقة</translation>
 <translation id="8968906873893164556">اختيار الحساب المُراد استخدامه لعملية الإعداد</translation>
 <translation id="89720367119469899">خروج</translation>
-<translation id="8972513834460200407">‏يُرجى التحقق مع مشرف الشبكة للتأكد من عدم حظر الجدار الناري للتنزيلات من خوادم Google.</translation>
+<translation id="8972513834460200407">‏يُرجى التحقق مع مشرف الشبكة للتأكد من عدم حظر جدار الحماية للتنزيلات من خوادم Google.</translation>
 <translation id="8973263196882835828">&amp;تفعيل ميزة "النسخ النصي التلقائي"</translation>
 <translation id="8973557916016709913">إزالة مستوى التكبير أو التصغير</translation>
 <translation id="8973596347849323817">يمكنك تخصيص هذا الجهاز للتوافق مع احتياجاتك. ويمكن تغيير ميزات إمكانية الوصول هذه لاحقًا من خلال الإعدادات.</translation>

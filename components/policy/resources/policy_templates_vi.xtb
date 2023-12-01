@@ -1637,6 +1637,7 @@ Tính năng này không hoạt động nếu tính năng đồng bộ hoá Mật
       Nếu bạn đặt chính sách này thành Tắt, tính năng này sẽ không sử dụng được.</translation>
 <translation id="2342066287156668839">Bật hạn mức ổn định.</translation>
 <translation id="2345547870894930157">Bật chế độ DNS qua HTTPS không có phương án dự phòng cho truy vấn không an toàn</translation>
+<translation id="2347695338560092641">Cho phép trình điều khiển in ngoài quy trình</translation>
 <translation id="234856189825555040">Chính sách này kiểm soát việc các trình bổ trợ <ph name="PEPPER_NAME" /> có thể sử dụng bộ giải mã mới để giao tiếp với các bộ giải mã phần cứng thay vì bộ giải mã video cũ hay không.
 
 Quá trình di chuyển chỉ ảnh hưởng đến thông tin triển khai nội bộ và không thay đổi hành vi nào. Tuy nhiên, bạn có thể sử dụng chính sách này trong trường hợp một ứng dụng PPAPI nào đó hoạt động không như dự kiến.
@@ -2811,6 +2812,7 @@ Nếu bạn đặt thành False hoặc không đặt chính sách này, thì bà
 <translation id="3362584244602846824">Sử dụng chính sách Chuyển đổi nhanh khi điểm truy cập không dây hỗ trợ chính sách đó</translation>
 <translation id="3363360928811201045">Thêm các quy định hạn chế đối với tài khoản được quản lý</translation>
 <translation id="3364400740222114778">Khôi phục tài khoản</translation>
+<translation id="3366156659815091184">In trên nền tảng bằng quy trình dịch vụ.</translation>
 <translation id="3367361756115023251">Cho phép người dùng này truy cập ở cấp gốc vào vùng chứa Crostini.
 
 Nếu bạn không đặt hoặc đặt chính sách này thành true, thì người dùng này sẽ có quyền truy cập ở cấp gốc vào vùng chứa Crostini.
@@ -7168,6 +7170,13 @@ tức là chặn những yêu cầu này, sẽ được áp dụng.</translation
 Nếu bạn đặt chính sách này, thì người dùng sẽ không thể thay đổi được. Nếu bạn không đặt chính sách này, thì ban đầu, trình phóng to màn hình sẽ tắt, nhưng người dùng có thể bật tính năng này bất cứ lúc nào.</translation>
 <translation id="6940243892299228102">Không cho phép người dùng sử dụng các mẫu không gian làm việc</translation>
 <translation id="6943577887654905793">Tên tùy chọn Mac/Linux:</translation>
+<translation id="694602410134474029">Kiểm soát việc <ph name="PRODUCT_NAME" /> có tương tác với trình điều khiển máy in qua một quy trình dịch vụ riêng biệt hay không. Lệnh gọi in trên nền tảng để truy vấn máy in hiện có, lấy chế độ cài đặt trình điều khiển in và gửi tài liệu cần in tới máy in cục bộ sẽ được đưa ra từ một quy trình dịch vụ. Việc chuyển các lệnh gọi này ra khỏi quy trình của trình duyệt giúp cải thiện độ ổn định và giảm hành vi giao diện người dùng bị treo trong chế độ Xem trước bản in.
+
+Khi bạn đặt chính sách này thành Enabled (Bật) hoặc không đặt, <ph name="PRODUCT_NAME" /> sẽ sử dụng một quy trình dịch vụ riêng biệt cho các tác vụ in trên nền tảng.
+
+Khi bạn đặt chính sách này thành Disabled (Tắt), <ph name="PRODUCT_NAME" /> sẽ sử dụng quy trình của trình duyệt cho các tác vụ in trên nền tảng.
+
+Chính sách này sẽ bị xoá trong tương lai, sau khi chúng tôi triển khai đầy đủ tính năng của trình điều khiển in ngoài quy trình.</translation>
 <translation id="6946652757373377924">
       Chính sách này đã bị loại bỏ trong phiên bản M77.
       Chính sách này áp dụng cho màn hình đăng nhập. Vui lòng xem cả chính sách <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> áp dụng cho phiên người dùng.
@@ -8090,6 +8099,7 @@ Khi bạn không đặt chính sách này, trình duyệt sẽ chọn trình k�
       Máy chủ nên chuyển sang bộ thuật toán mật mã ECDHE. Nếu không có các bộ thuật toán này, hãy đảm bảo bộ thuật toán mật mã sử dụng phương thức trao đổi khoá RSA được kích hoạt.</translation>
 <translation id="7709470712369261710">Không sử dụng các dịch vụ của Google để cung cấp nội dung mô tả hình ảnh tự động</translation>
 <translation id="7712109699186360774">Hỏi mỗi lần trang web muốn truy cập vào máy ảnh và/hoặc micrô</translation>
+<translation id="7712245244073542805">In trên nền tảng từ quy trình của trình duyệt.</translation>
 <translation id="7713608076604149344">Hạn chế tải xuống</translation>
 <translation id="7713845740295404764">Báo cáo các lần đăng nhập/đăng xuất</translation>
 <translation id="7715711044277116530">Tỷ lệ phần trăm theo đó xác định độ trễ mờ màn hình ở chế độ bản trình bày</translation>

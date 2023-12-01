@@ -1627,6 +1627,7 @@ URL로 입력된 측정항목 수집이 허용되거나 사용자가 이를 사�
       정책을 사용 중지하면 이 기능을 사용할 수 없습니다.</translation>
 <translation id="2342066287156668839">영구 할당량을 사용 설정합니다.</translation>
 <translation id="2345547870894930157">안전하지 않은 대체 없이 DNS-over-HTTPS 사용</translation>
+<translation id="2347695338560092641">out-of-process 인쇄 드라이버 허용됨</translation>
 <translation id="234856189825555040">이 정책은 <ph name="PEPPER_NAME" /> 플러그인이 하드웨어 디코더와 통신하기 위해 기존 동영상 디코더 대신 새 디코더를 사용하는지를 제어합니다.
 
 이전은 내부 구현 세부정보에만 영향을 미치며 동작을 변경하지는 않습니다. 하지만 이 정책은 PPAPI 애플리케이션이 예상대로 작동하지 않는 경우에 사용할 수 있습니다.
@@ -2804,6 +2805,7 @@ URL 목록에 <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" />를 사용 �
 <translation id="3362584244602846824">무선 액세스 포인트가 지원하는 경우 빠른 전환 사용</translation>
 <translation id="3363360928811201045">관리 계정에 제한사항 추가</translation>
 <translation id="3364400740222114778">계정 복구</translation>
+<translation id="3366156659815091184">플랫폼 인쇄는 서비스 프로세스를 사용합니다.</translation>
 <translation id="3367361756115023251">이 사용자에게 Crostini 컨테이너에 대한 루트 액세스 권한을 허용합니다.
 
 이 정책이 true로 설정되어 있거나 아무런 설정도 되어 있지 않은 경우 Crostini 컨테이너에 대한 루트 액세스 권한이 사용자에게 부여됩니다.
@@ -7039,6 +7041,13 @@ False로 설정하거나 설정하지 않으면 레이아웃을 사용할 수 �
 정책을 설정하면 사용자가 변경할 수 없습니다. 설정하지 않으면 처음에는 화면 돋보기가 사용 중지되지만 사용자가 언제든지 사용 설정할 수 있습니다.</translation>
 <translation id="6940243892299228102">사용자가 데스크 템플릿을 사용하도록 허용하지 않음</translation>
 <translation id="6943577887654905793">Mac 및 Linux 환경설정 이름:</translation>
+<translation id="694602410134474029"><ph name="PRODUCT_NAME" />이 별도의 서비스 프로세스에서 프린터 드라이버와 상호작용하는지 제어합니다. 사용 가능한 프린터를 쿼리하고, 인쇄 드라이버 설정을 가져오고, 로컬 프린터로 인쇄하기 위한 문서를 제출하는 플랫폼 인쇄 호출은 서비스 프로세스에서 이루어집니다. 이러한 호출을 브라우저 프로세스 밖으로 옮기면 안정성을 개선하고 인쇄 미리보기에서 정지된 UI 동작을 줄이는 데 도움이 됩니다.
+
+정책을 사용으로 설정하거나 설정하지 않으면 <ph name="PRODUCT_NAME" />에서 플랫폼 인쇄 작업 시 별도의 서비스 프로세스를 사용합니다.
+
+정책을 사용 안함으로 설정하면 <ph name="PRODUCT_NAME" />에서 플랫폼 인쇄 작업 시 브라우저 프로세스를 사용합니다.
+
+이 정책은 out-of-process 인쇄 드라이버 기능이 완전히 출시되면 향후 삭제될 예정입니다.</translation>
 <translation id="6946652757373377924">
       이 정책은 M77에서 삭제되었습니다.
       로그인 화면에 적용되는 정책입니다. 사용자 세션에 적용되는 <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> 정책도 확인하세요.
@@ -7961,6 +7970,7 @@ Chrome 앱은 ID(예: <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHRO
       서버는 ECDHE 암호화 스위트로 이전하는 것이 좋습니다. 이전할 수 없는 경우 RSA 키 교환을 사용하는 암호화 스위트를 사용 설정하세요.</translation>
 <translation id="7709470712369261710">자동 생성된 이미지 설명을 제공하는 Google 서비스를 사용하지 않음</translation>
 <translation id="7712109699186360774">사이트가 카메라 또는 마이크에 액세스하려고 할 때마다 확인함</translation>
+<translation id="7712245244073542805">브라우저 프로세스의 플랫폼 인쇄입니다.</translation>
 <translation id="7713608076604149344">다운로드 제한</translation>
 <translation id="7713845740295404764">로그인/로그아웃 이벤트 보고</translation>
 <translation id="7715711044277116530">프레젠테이션 모드에서 화면 어둡게 하기 지연 시간이 조정되는 비율</translation>

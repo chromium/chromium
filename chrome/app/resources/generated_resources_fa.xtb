@@ -1247,7 +1247,7 @@
 <translation id="1944535645109964458">گذرکلیدی موجود نیست</translation>
 <translation id="1944921356641260203">به‌روزرسانی پیدا شد</translation>
 <translation id="1947136734041527201">مجاز می‌شوید بااستفاده از حسابی که در سرویس تعیین هویت دارید به سیستم سایت وارد شوید</translation>
-<translation id="1948632501103125383">ذخیره قاب ویدیو به‌صورت…</translation>
+<translation id="1948632501103125383">ذخیره فریم ویدیو به‌صورت…</translation>
 <translation id="1949332606889020901">شناسه‌های خرابی</translation>
 <translation id="1949584741547056205">پاسخ‌های سریع</translation>
 <translation id="1949849604471335579">شخصی کردن کاغذدیواری، محافظ صفحه‌نمایش، رنگ‌های تأکیدی، و موارد دیگر</translation>
@@ -2754,7 +2754,7 @@
 <translation id="3088325635286126843">&amp;تغییر‌نام...</translation>
 <translation id="3089137131053189723">جستجو پاک شد</translation>
 <translation id="3089941350495701096">&amp;فهرست خواندن</translation>
-<translation id="3089948625237571254">کپی کردن قاب ویدیو</translation>
+<translation id="3089948625237571254">کپی کردن فریم ویدیو</translation>
 <translation id="3090227230165225418">اعلام اعلان‌های بارگیری</translation>
 <translation id="3090819949319990166">‏فایل خارجی crx در <ph name="TEMP_CRX_FILE" /> کپی نمی‌شود.</translation>
 <translation id="3090871774332213558">«<ph name="DEVICE_NAME" />» مرتبط شد</translation>
@@ -5326,7 +5326,7 @@
 <translation id="5173668317844998239">اثرانگشت به کلید امنیتی اضافه کنید یا اثرهای انگشت ذخیره‌شده در آن را حذف کنید</translation>
 <translation id="5174169235862638850">گذرواژه در بریده‌دان کپی شد</translation>
 <translation id="5175379009094579629">نام دستگاه نامعتبر است. برای امتحان مجدد نام دستگاه معتبری وارد کنید.</translation>
-<translation id="5176787661653201403">کپی کردن قاب ویدیو</translation>
+<translation id="5176787661653201403">کپی کردن فریم ویدیو</translation>
 <translation id="5177479852722101802">ادامه مسدود کردن دسترسی به دوربین و میکروفن</translation>
 <translation id="5177549709747445269">از داده تلفن همراه استفاده می‌کنید</translation>
 <translation id="5178667623289523808">یافتن قبلی</translation>
@@ -8844,7 +8844,7 @@
 <translation id="7974936243149753750">تصویر بزرگ‌تر از صفحه</translation>
 <translation id="7975504106303186033">‏باید این دستگاه Chrome Education را در «حساب آموزشی» ثبت‌نام کنید. برای ساخت حساب جدید، لطفاً به g.co/workspace/edusignup بروید.</translation>
 <translation id="7977451675950311423">اگر از گذرواژه‌ای استفاده کنید که در سرقت اطلاعات شبکه لو رفته باشد، به شما هشدار می‌دهد.</translation>
-<translation id="7978053509627908242">ذخیره قاب ویدیو به‌صورت…</translation>
+<translation id="7978053509627908242">ذخیره فریم ویدیو به‌صورت…</translation>
 <translation id="7978412674231730200">کلید خصوصی</translation>
 <translation id="7978450511781612192">‏با این کار از سیستم حساب Google خود خارج می‌شوید. نشانک‌ها، سابقه، گذرواژه‌ها و سایر موارد دیگر همگام‌سازی نمی‌شوند.</translation>
 <translation id="7980084013673500153">شناسه دارایی: <ph name="ASSET_ID" /></translation>

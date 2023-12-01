@@ -1097,7 +1097,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="184183613002882946">Nein, nur 1 Schalter</translation>
 <translation id="184273675144259287">Linux-Apps und -Dateien durch eine vorherige Sicherung ersetzen</translation>
 <translation id="1842766183094193446">Möchtest du den Demomodus wirklich aktivieren?</translation>
-<translation id="1845060436536902492">Der Screenreader unter ChromeOS Flex, ChromeVox, wird vor allem von Menschen verwendet, die blind sind oder ein eingeschränktes Sehvermögen haben, um auf dem Bildschirm dargestellten Text mit einem Sprachsynthesizer oder einer Braillezeile zu lesen. Drücke die Leertaste, um ChromeVox zu aktivieren. Wenn ChromeVox aktiviert ist, erhältst du eine kurze Einführung.</translation>
+<translation id="1845060436536902492">Der Screenreader unter ChromeOS, ChromeVox, wird vor allem von Menschen mit Sehbehinderung oder eingeschränktem Sehvermögen verwendet, um auf dem Bildschirm dargestellten Text mit einem Sprachsynthesizer oder einer Braillezeile zu lesen. Drücke die Leertaste, um ChromeVox zu aktivieren. Wenn ChromeVox aktiviert ist, erhältst du eine kurze Einführung.</translation>
 <translation id="1845727111305721124">Dürfen Ton abspielen</translation>
 <translation id="1846308012215045257">Zum Ausführen von <ph name="PLUGIN_NAME" /> die Strg-Taste drücken und mit der Maus klicken</translation>
 <translation id="1848219224579402567">Beim Zuklappen abmelden</translation>
@@ -3072,7 +3072,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3388788256054548012">Diese Datei ist verschlüsselt. Bitte den Inhaber, sie zu entschlüsseln.</translation>
 <translation id="3390013585654699824">App-Details</translation>
 <translation id="3390530051434634135">Hinweis: <ph name="NOTE" /></translation>
-<translation id="3391721320619127327">Der Screenreader unter ChromeOS Flex, ChromeVox, wird vor allem von Menschen verwendet, die blind sind oder ein eingeschränktes Sehvermögen haben, um auf dem Bildschirm dargestellten Text mit einem Sprachsynthesizer oder einer Braillezeile zu lesen. Halte beide Lautstärketasten fünf Sekunden gedrückt, um ChromeVox zu aktivieren. Wenn ChromeVox aktiviert ist, erhältst du eine kurze Einführung.</translation>
+<translation id="3391721320619127327">Der Screenreader unter ChromeOS, ChromeVox, wird vor allem von Menschen mit Sehbehinderung oder eingeschränktem Sehvermögen verwendet, um auf dem Bildschirm dargestellten Text mit einem Sprachsynthesizer oder einer Braillezeile zu lesen. Halte beide Lautstärketasten fünf Sekunden gedrückt, um ChromeVox zu aktivieren. Wenn ChromeVox aktiviert ist, erhältst du eine kurze Einführung.</translation>
 <translation id="3393554941209044235">Chrome-Dokumentenanalyse</translation>
 <translation id="3393582007140394275">Bildschirm kann nicht gestreamt werden.</translation>
 <translation id="3394850431319394743">Darf Kennungen verwenden, um geschützte Inhalte wiederzugeben</translation>
@@ -4541,7 +4541,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> möchte diese Erweiterung verwenden:</translation>
 <translation id="4546692474302123343">Google Assistant-Spracheingabe</translation>
 <translation id="4547659257713117923">Keine Tabs von anderen Geräten</translation>
-<translation id="4547672827276975204">Automatisch festlegen</translation>
+<translation id="4547672827276975204">Automatische Einstellung</translation>
 <translation id="4548858987594081919">Nutzername für diese Website hinzufügen, damit der Google Passwortmanager deine Anmeldedaten speichern kann</translation>
 <translation id="4549791035683739768">Auf deinem Sicherheitsschlüssel sind keine Fingerabdrücke gespeichert</translation>
 <translation id="4550926046134589611">Einige unterstützte Links werden weiterhin in <ph name="APP_NAME" /> geöffnet.</translation>
@@ -5378,7 +5378,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5233231016133573565">Prozess-ID</translation>
 <translation id="5233638681132016545">Neuer Tab</translation>
 <translation id="5233736638227740678">&amp;Einfügen</translation>
-<translation id="5234523649284990414">Der Screenreader unter ChromeOS, ChromeVox, wird vor allem von Menschen verwendet, die blind sind oder ein eingeschränktes Sehvermögen haben, um auf dem Bildschirm dargestellten Text mit einem Sprachsynthesizer oder einer Braillezeile zu lesen. Drücke die Leertaste, um ChromeVox zu aktivieren. Wenn ChromeVox aktiviert ist, erhältst du eine kurze Einführung.</translation>
+<translation id="5234523649284990414">Der Screenreader unter ChromeOS, ChromeVox, wird vor allem von Menschen mit Sehbehinderung oder eingeschränktem Sehvermögen verwendet, um auf dem Bildschirm dargestellten Text mit einem Sprachsynthesizer oder einer Braillezeile zu lesen. Drücke die Leertaste, um ChromeVox zu aktivieren. Wenn ChromeVox aktiviert ist, erhältst du eine kurze Einführung.</translation>
 <translation id="5234764350956374838">Schließen</translation>
 <translation id="5235050375939235066">App deinstallieren?</translation>
 <translation id="523505283826916779">Einstellungen für Bedienungshilfen</translation>
@@ -8153,7 +8153,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="747459581954555080">Alle wiederherstellen</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Sofortige Rückgabe erforderlich}other{<ph name="DEVICE_TYPE" /> innerhalb von {NUM_DAYS} Tagen zurückgeben}}</translation>
 <translation id="7475671414023905704">Netscape-URL für vergessene Passwörter</translation>
-<translation id="7475742997309661417">Der Screenreader unter ChromeOS, ChromeVox, wird vor allem von Menschen verwendet, die blind sind oder ein eingeschränktes Sehvermögen haben, um auf dem Bildschirm dargestellten Text mit einem Sprachsynthesizer oder einer Braillezeile zu lesen. Halte beide Lautstärketasten fünf Sekunden gedrückt, um ChromeVox zu aktivieren. Wenn ChromeVox aktiviert ist, erhältst du eine kurze Einführung.</translation>
+<translation id="7475742997309661417">Der Screenreader unter ChromeOS, ChromeVox, wird vor allem von Menschen mit Sehbehinderung oder eingeschränktem Sehvermögen verwendet, um auf dem Bildschirm dargestellten Text mit einem Sprachsynthesizer oder einer Braillezeile zu lesen. Halte beide Lautstärketasten fünf Sekunden gedrückt, um ChromeVox zu aktivieren. Wenn ChromeVox aktiviert ist, erhältst du eine kurze Einführung.</translation>
 <translation id="7476454130948140105">Der Akku ist für ein Update zu schwach (<ph name="BATTERY_PERCENT" /> %)</translation>
 <translation id="7476989672001283112"><ph name="PERMISSION" /> und <ph name="COUNT" /> weitere automatisch blockiert</translation>
 <translation id="7477460499687558352">eSIM-Profil zum Herunterladen auswählen</translation>

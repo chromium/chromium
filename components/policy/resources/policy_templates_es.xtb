@@ -1628,6 +1628,7 @@ La función no está disponible si la sincronización de contraseñas está desa
       Si se inhabilita esta política, esta función no estará disponible.</translation>
 <translation id="2342066287156668839">Habilitar la cuota persistente.</translation>
 <translation id="2345547870894930157">Habilitar DNS-over-HTTPS sin alternativa no segura</translation>
+<translation id="2347695338560092641">Controladores de impresión independientes permitidos</translation>
 <translation id="234856189825555040">Esta política controla si los complementos de <ph name="PEPPER_NAME" /> pueden usar el nuevo decodificador para comunicarse con los decodificadores por hardware en lugar de con el decodificador de vídeo antiguo.
 
 La migración solo afecta a detalles de implementación interna y no debería cambiar ningún comportamiento. No obstante, esta política se puede utilizar en caso de que alguna aplicación PPAPI no funcione correctamente.
@@ -2808,6 +2809,7 @@ Si se le asigna el valor False o no se define, las teclas del teclado vuelven a 
 <translation id="3362584244602846824">Usar la transición rápida cuando el punto de acceso inalámbrico lo permita</translation>
 <translation id="3363360928811201045">Añadir restricciones a las cuentas gestionadas</translation>
 <translation id="3364400740222114778">Recuperación de cuenta</translation>
+<translation id="3366156659815091184">La impresión de plataforma usa el proceso de servicio.</translation>
 <translation id="3367361756115023251">Permite a este usuario el acceso root a los contenedores de Crostini.
 
 Si se asigna el valor true a esta política o no se establece, el usuario tendrá acceso root a los contenedores de Crostini.
@@ -7056,6 +7058,13 @@ Si se inhabilita esta política o no se define, se aplicará el comportamiento p
 Si se define esta política, los usuarios no pueden cambiarla. Si no se define, la lupa estará desactivada inicialmente, pero los usuarios podrán activarla en cualquier momento.</translation>
 <translation id="6940243892299228102">No permitir que los usuarios usen plantillas de escritorio</translation>
 <translation id="6943577887654905793">Nombre de preferencia en Mac/Linux:</translation>
+<translation id="694602410134474029">Controla si <ph name="PRODUCT_NAME" /> interactúa con controladores de impresión desde un proceso de servicio independiente. Las solicitudes de impresión de plataforma para consultar impresoras disponibles, obtener configuración de controladores de impresión y enviar documentos para imprimirlos en impresoras locales se realizan mediante un proceso de servicio. Retirar estas solicitudes del proceso del navegador, ayuda a mejorar la estabilidad y reducir los bloqueos de la interfaz de usuario en la vista previa de impresión.
+
+Si se habilita esta política o no se define, <ph name="PRODUCT_NAME" /> usará el proceso de un servicio independiente para las tareas de impresión de plataforma.
+
+Si se inhabilita esta política, <ph name="PRODUCT_NAME" /> usará el proceso del navegador para las tareas de impresión de plataforma.
+
+Esta política se eliminará en el futuro, cuando se haya lanzado por completo la función de los controladores de impresión independientes.</translation>
 <translation id="6946652757373377924">
       Esta política se retiró en la versión M77.
       Esta política se aplica a la pantalla de inicio de sesión. También puedes consultar la política <ph name="ISOLATE_ORIGINS_POLICY_NAME" />, que se aplica a la sesión del usuario.
@@ -7979,6 +7988,7 @@ Si no se establece esta política, el navegador seleccionará el renderizador de
       Recomendamos migrar los servidores a los paquetes de cifrado ECDHE. Si no están disponibles, asegúrate de que se ha habilitado un paquete de cifrado usando el intercambio de claves RSA.</translation>
 <translation id="7709470712369261710">No usar los servicios de Google para proporcionar descripciones de imágenes de forma automática</translation>
 <translation id="7712109699186360774">Preguntar siempre que un sitio quiera acceder a mi cámara o a mi micrófono</translation>
+<translation id="7712245244073542805">Impresión de plataforma mediante proceso de navegador.</translation>
 <translation id="7713608076604149344">Restricciones de descarga</translation>
 <translation id="7713845740295404764">Informar de eventos de inicio o cierre de sesión</translation>
 <translation id="7715711044277116530">Porcentaje que permite ajustar el retraso de inactividad de la pantalla en el modo de presentación</translation>

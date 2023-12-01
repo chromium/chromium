@@ -1643,6 +1643,7 @@ La función no está disponible si se desactiva la sincronización de Contraseñ
       Si la inhabilitas, esta acción hará que la función no esté disponible.</translation>
 <translation id="2342066287156668839">Habilitar la cuota persistente</translation>
 <translation id="2345547870894930157">Habilitar DNS-over-HTTPS sin resguardo inseguro</translation>
+<translation id="2347695338560092641">Permitir controladores de impresión fuera del proceso</translation>
 <translation id="234856189825555040">Esta política controla si los complementos de <ph name="PEPPER_NAME" /> pueden
 usar el nuevo decodificador para comunicarse con los decodificadores de hardware en lugar del decodificador de video
 heredado.
@@ -2862,6 +2863,7 @@ Si la estableces como falsa o no la estableces, el teclado generará comandos de
 <translation id="3362584244602846824">Usar la transición rápida si el punto de acceso inalámbrico lo admite</translation>
 <translation id="3363360928811201045">Agregar restricciones en cuentas administradas</translation>
 <translation id="3364400740222114778">Recuperación de la cuenta</translation>
+<translation id="3366156659815091184">Imprimir desde la plataforma a partir del proceso del servicio</translation>
 <translation id="3367361756115023251">Permite que el usuario acceda con permisos de administrador a los contenedores de Crostini.
 
 Si se establece esta política como verdadera o no se establece, el usuario tendrá acceso con permisos de administrador a los contenedores de Crostini.
@@ -7268,6 +7270,13 @@ el comportamiento predeterminado para bloquear esas solicitudes.</translation>
 Si estableces la política, los usuarios no podrán cambiarla. Si no la estableces, la lupa estará desactivada al principio, pero los usuarios podrán activarla en cualquier momento.</translation>
 <translation id="6940243892299228102">No permitir que los usuarios utilicen plantillas de escritorio</translation>
 <translation id="6943577887654905793">Nombre de preferencia de Mac/Linux:</translation>
+<translation id="694602410134474029">Controla si <ph name="PRODUCT_NAME" /> interactúa con los controladores de las impresoras desde un proceso de servicio independiente. Las llamadas de impresión desde la plataforma para consultar las impresoras disponibles, obtener la configuración de los controladores de impresión y enviar documentos para imprimir en impresoras locales se realizan desde un proceso de servicio. Quitar esas llamadas del proceso del navegador ayuda a mejorar la estabilidad y reducir el comportamiento de IU bloqueada en la vista previa de impresión.
+
+Si habilitas esta política o no la estableces, <ph name="PRODUCT_NAME" /> usará un proceso de servicio independiente para las tareas de impresión desde la plataforma.
+
+Si la inhabilitas, <ph name="PRODUCT_NAME" /> usará el proceso del navegador para las tareas de impresión desde la plataforma.
+
+Esta política se quitará en el futuro, cuando se lance por completo la función de controladores de impresión fuera del proceso.</translation>
 <translation id="6946652757373377924">En la versión M77, se quitó esta política.
       Esta política se aplica a la pantalla de acceso. Consulta también la política <ph name="ISOLATE_ORIGINS_POLICY_NAME" />, que se aplica a la sesión de usuario.
       Si habilitas la política, cada origen designado en una lista de elementos separados por comas se ejecutará en su propio proceso. Esta acción también aislará los orígenes designados mediante subdominios; p. ej., al especificar https://example.com/, también se aislará https://foo.example.com/ como parte del sitio https://example.com/.
@@ -8190,6 +8199,7 @@ Si no estableces esta política, el navegador elegirá el renderizador de PDF.</
       Se recomienda que los servidores migren a los conjuntos de algoritmos de cifrado ECDHE. Si no están disponibles, asegúrate de habilitar un conjunto de algoritmos de cifrado que use un intercambio de clave RSA.</translation>
 <translation id="7709470712369261710">No permite que los servicios de Google proporcionen descripciones automáticas de imágenes</translation>
 <translation id="7712109699186360774">Preguntar siempre que un sitio quiera acceder a la cámara o al micrófono</translation>
+<translation id="7712245244073542805">Imprimir desde la plataforma a partir del proceso del navegador</translation>
 <translation id="7713608076604149344">Restricciones de descarga</translation>
 <translation id="7713845740295404764">Informar eventos de acceso y salida</translation>
 <translation id="7715711044277116530">Indica el porcentaje en el que debe ajustarse la demora de inactividad de la pantalla en el modo de presentación.</translation>

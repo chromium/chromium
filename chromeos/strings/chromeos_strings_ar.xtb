@@ -11,7 +11,7 @@
 <translation id="1059913517121127803">تعذَّر إجراء عملية المسح الضوئي.</translation>
 <translation id="1062823486781306604">‫<ph name="INDEX" /> من أصل <ph name="COUNT" />، <ph name="NAME" /></translation>
 <translation id="1070066693520972135">WEP</translation>
-<translation id="1071587090247825784">تم العثور على جدار ناري.</translation>
+<translation id="1071587090247825784">تم العثور على جدار حماية.</translation>
 <translation id="1075811647922107217">حجم الصفحة</translation>
 <translation id="1082009148392559545">جارٍ تنزيل شاشة الاستراحة</translation>
 <translation id="1094693127011229778">‏عنوان IP غير متوفّر.</translation>
@@ -405,7 +405,7 @@
 <translation id="4130035430755296270">استمِر في تمرير مؤشر الماوس هنا للاطّلاع على المزيد من خيارات التنسيق.</translation>
 <translation id="4131410914670010031">أبيض وأسود</translation>
 <translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{تم بدء تشغيل "<ph name="APP_NAME_1" />" تلقائيًا}zero{تم بدء تشغيل # تطبيق تلقائيًا}two{تم بدء تشغيل تطبيقَين تلقائيًا}few{تم بدء تشغيل # تطبيقات تلقائيًا}many{تم بدء تشغيل # تطبيقًا تلقائيًا}other{تم بدء تشغيل # تطبيق تلقائيًا}}</translation>
-<translation id="4145784616224233563">‏الجدار الناري لبروتوكل HTTP</translation>
+<translation id="4145784616224233563">‏جدار الحماية لبروتوكل HTTP</translation>
 <translation id="4147897805161313378">‏صور Google‏‏</translation>
 <translation id="4150201353443180367">عرض</translation>
 <translation id="4155551848414053977">يُرجى التأكُّد من تشغيل الماسح الضوئي وتوفّره من خلال شبكتك أو الاتصال المباشر.</translation>
@@ -479,7 +479,7 @@
 <translation id="4654549501020883054">التغيير يوميًا</translation>
 <translation id="4665014895760275686">جهة التصنيع</translation>
 <translation id="467510802200863975">كلمتا المرور غير متطابقتين.</translation>
-<translation id="467715984478005772">تم الاشتباه في جدار ناري.</translation>
+<translation id="467715984478005772">تم الاشتباه في جدار حماية.</translation>
 <translation id="4691278870498629773">توقّفت الطابعة - دُرج الورق غير متوفّر</translation>
 <translation id="469379815867856270">قوة الإشارة</translation>
 <translation id="4731797938093519117">وصول أحد الوالدين</translation>
@@ -529,7 +529,7 @@
 <translation id="4972592110715526173">تغيير الوضع</translation>
 <translation id="498186245079027698">يجب التحقُّق من جهاز "المسح الضوئي" ثم إعادة المحاولة. ويجب التأكّد من توفّر مساحة على الجهاز لحفظ الملفات التي تم "مسحها ضوئيًا".</translation>
 <translation id="4985509611418653372">تشغيل</translation>
-<translation id="4987769320337599931">الجدار الناري</translation>
+<translation id="4987769320337599931">جدار الحماية</translation>
 <translation id="4988526792673242964">الصفحات</translation>
 <translation id="4999333166442584738">إخفاء التقرير</translation>
 <translation id="500920857929044050">إيقاف الاختبار</translation>
@@ -829,7 +829,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">استنشاق النسيم</translation>
 <translation id="7287310195820267359">مجموعات الخلفيات</translation>
-<translation id="7297226631177386107">‏تعذَّر اجتياز الجدار الناري للاتصال بالمواقع الإلكترونية التي تستخدم بروتوكول HTTPS.</translation>
+<translation id="7297226631177386107">‏تعذَّر اجتياز جدار الحماية للاتصال بالمواقع الإلكترونية التي تستخدم بروتوكول HTTPS.</translation>
 <translation id="7297726121602187087">أخضر داكن</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">‏شبكة EDGE</translation>
@@ -955,7 +955,7 @@
 <translation id="8286154143153872371">يُرجى الاتصال بإحدى الشبكات وإعادة تحميل الصفحة لعرض الخلفية.</translation>
 <translation id="8291967909914612644">بلد مقدم الخدمة الرئيسي</translation>
 <translation id="8294431847097064396">المصدر</translation>
-<translation id="8302368968391049045">‏الجدار الناري لبروتوكول HTTPS</translation>
+<translation id="8302368968391049045">‏جدار الحماية لبروتوكول HTTPS</translation>
 <translation id="8312330582793120272">تشغيل الوسائط</translation>
 <translation id="8318753676953949627">ما مِن صور.</translation>
 <translation id="8329018942023753850">تطبيق "الآلة الحاسبة"</translation>
@@ -984,7 +984,7 @@
 <translation id="8476942730579767658">النوافذ وأسطح المكتب</translation>
 <translation id="8477551185774834963">وقت استجابة "نظام أسماء النطاقات" أعلى بقليل من الحدّ الأقصى المسموح به.</translation>
 <translation id="8483248364096924578">‏عنوان IP</translation>
-<translation id="8491311378305535241">‏تعذَّر اجتياز الجدار الناري للاتصال بالمواقع الإلكترونية التي تستخدم بروتوكول HTTP من خلال تطبيقات Android.</translation>
+<translation id="8491311378305535241">‏تعذَّر اجتياز جدار الحماية للاتصال بالمواقع الإلكترونية التي تستخدم بروتوكول HTTP من خلال تطبيقات Android.</translation>
 <translation id="8498220429738806196">عدّادات حركة بيانات الشبكة</translation>
 <translation id="8503813439785031346">اسم المستخدم</translation>
 <translation id="8503836310948963452">يُرجى الانتظار بضع دقائق فقط…</translation>
@@ -1028,7 +1028,7 @@
 <translation id="8834539327799336565">الأجهزة المتصلة حاليًا</translation>
 <translation id="8845001906332463065">الحصول على مساعدة</translation>
 <translation id="8851859208664803097">تم إيقاف مَهمّة الطباعة: لا يمكن الوصول إلى الطابعة.</translation>
-<translation id="8855781559874488009">‏تعذَّر اجتياز الجدار الناري للاتصال بالمواقع الإلكترونية التي تستخدم بروتوكول HTTP.</translation>
+<translation id="8855781559874488009">‏تعذَّر اجتياز جدار الحماية للاتصال بالمواقع الإلكترونية التي تستخدم بروتوكول HTTP.</translation>
 <translation id="885701979325669005">التخزين</translation>
 <translation id="885704831271383379">إضاءة داكنة للوحة المفاتيح</translation>
 <translation id="8863170912498892583">تفعيل المظهر الداكن</translation>

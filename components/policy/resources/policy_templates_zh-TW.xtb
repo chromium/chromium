@@ -1606,6 +1606,7 @@
       如果將這項政策設為停用，使用者就無法使用這項功能。</translation>
 <translation id="2342066287156668839">啟用永久配額。</translation>
 <translation id="2345547870894930157">啟用 DNS-over-HTTPS，而且禁止改用不安全查詢</translation>
+<translation id="2347695338560092641">允許使用獨立程序的列印驅動程式</translation>
 <translation id="234856189825555040">這項政策會控管 <ph name="PEPPER_NAME" /> 外掛程式是否可使用新版解碼器 (而非舊版影片解碼器) 與硬體解碼器進行通訊。
 
 遷移作業只會影響內部實作詳細資料，且不應該變更任何行為。不過，如有任何 PPAPI 應用程式未正常運作，也可以使用這項政策。
@@ -2760,6 +2761,7 @@
 <translation id="3362584244602846824">在無線存取點支援時，使用快速轉換功能</translation>
 <translation id="3363360928811201045">對受管理帳戶設定限制</translation>
 <translation id="3364400740222114778">帳戶救援</translation>
+<translation id="3366156659815091184">平台會使用服務程序列印。</translation>
 <translation id="3367361756115023251">允許這位使用者擁有 Crostini 容器的 Root 權限。
 
 如果將這項政策設為 True 或不設定，系統會將 Crostini 容器的 Root 權限授予這位使用者。
@@ -6901,6 +6903,13 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
 如果設定這項政策，使用者將無法變更啟用設定。如果未設定，系統會先停用放大鏡，但使用者隨時可以啟用。</translation>
 <translation id="6940243892299228102">禁止使用者使用桌面範本</translation>
 <translation id="6943577887654905793">Mac/Linux 偏好設定名稱：</translation>
+<translation id="694602410134474029">控制 <ph name="PRODUCT_NAME" /> 是否透過獨立的服務程序與印表機驅動程式互動。用於查詢可用印表機、取得印表機驅動程式設定、將待列印文件傳送至本機印表機的平台列印呼叫，是透過服務程序完成。如果將這類呼叫移出瀏覽器程序，將有助於提升穩定性，並減少列印預覽的使用者介面行為當機問題。
+
+如果將這項政策設為啟用或未設定，<ph name="PRODUCT_NAME" /> 將使用獨立的服務程序執行平台列印工作。
+
+如果將這項政策設為停用，<ph name="PRODUCT_NAME" /> 會使用瀏覽器程序執行平台列印工作。
+
+未來使用獨立程序的列印驅動程式功能全面推出後，我們將移除這項政策。</translation>
 <translation id="6946652757373377924">
       這項政策已在 M77 版中移除。
       這項政策適用於登入畫面。另請查看適用於使用者工作階段的 <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> 政策。
@@ -7805,6 +7814,7 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
       建議你讓伺服器改用 ECDHE 加密套件。如果無法使用這個套件，請確保啟用的加密套件使用 RSA 金鑰交換機制。</translation>
 <translation id="7709470712369261710">不要使用 Google 服務提供自動產生的圖片說明</translation>
 <translation id="7712109699186360774">每當有任何網站要使用攝影機和/或麥克風時詢問我</translation>
+<translation id="7712245244073542805">平台會透過瀏覽器程序列印。</translation>
 <translation id="7713608076604149344">下載限制</translation>
 <translation id="7713845740295404764">回報登入/登出事件</translation>
 <translation id="7715711044277116530">簡報模式中的螢幕調暗延遲時間延長百分比</translation>

@@ -112,7 +112,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="1509960214886564027">Birçok sitedeki özellikler çalışmayabilir</translation>
 <translation id="152234381334907219">Hiç Kaydedilmeyecekler</translation>
 <translation id="1523341279170789507">Tüm Çerezlere İzin Ver</translation>
-<translation id="1524563461097350801">Hayır, teşekkürler</translation>
+<translation id="1524563461097350801">Hayır, Teşekkürler</translation>
 <translation id="1535268707340844072">Geçerli ayarlarınız bazı sitelerin bozulmasına neden olabilir. Çerezlerin tüm siteler için nasıl yönetileceğini <ph name="BEGIN_LINK" />Çerez Ayarları<ph name="END_LINK" /> sayfasından öğrenebilirsiniz.</translation>
 <translation id="1540800554400757039">Adres 1</translation>
 <translation id="1545749641540134597">QR Kodunu Tara</translation>
@@ -1251,7 +1251,7 @@ Gizli moddayken siteler, örneğin reklamları kişiselleştirmek amacıyla fark
 <translation id="7527917367892640435">Kargo Halihazırda Takip Ediliyor</translation>
 <translation id="7531345132340165516">Geçerli Site</translation>
 <translation id="7537586195939242955">Maalesef Pass'iniz şu anda Passbook'a yüklenemiyor.</translation>
-<translation id="754655535278952384"><ph name="TIME" /> işaretlendi</translation>
+<translation id="754655535278952384"><ph name="TIME" /> kontrol edildi</translation>
 <translation id="7552154146060018538"><ph name="SOURCE_DEVICE" /> Cihazında Kullanılan Son Sekme</translation>
 <translation id="7553234618121028547">Özelliği kapatmak için <ph name="BEGIN_LINK" />Ayarlar<ph name="END_LINK" />'ı açıp Şifre Seçenekleri bölümüne gidin.</translation>
 <translation id="7554645225856321710">Tümünü Kapat</translation>

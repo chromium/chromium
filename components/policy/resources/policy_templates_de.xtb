@@ -1619,6 +1619,7 @@ Die Funktion ist nicht verfügbar, wenn die Synchronisierung von Passwörtern de
       Ist diese Richtlinie deaktiviert, ist diese Funktion nicht verfügbar.</translation>
 <translation id="2342066287156668839">Persistentes Kontingent aktivieren.</translation>
 <translation id="2345547870894930157">DoH-Modus ohne unsicheres Fallback-Verhalten aktivieren</translation>
+<translation id="2347695338560092641">Out-of-Process-Druckertreiber zulässig</translation>
 <translation id="234856189825555040">Mit dieser Richtlinie wird festgelegt, ob <ph name="PEPPER_NAME" />-Plug-ins den neuen Videodecoder statt des alten Decoders verwenden können, um mit Hardwaredecodern zu kommunizieren.
 
 Die Migration wirkt sich nur auf Details der internen Implementierung aus und sollte das Verhalten nicht ändern. Diese Richtlinie kann jedoch verwendet werden, wenn PPAPI-Anwendungen nicht wie erwartet funktionieren.
@@ -2795,6 +2796,7 @@ Wenn du die Richtlinie auf „False“ setzt oder nicht konfigurierst, führt di
 <translation id="3362584244602846824">„Fast Transition“ verwenden, wenn das vom WLAN-Zugangspunkt unterstützt wird</translation>
 <translation id="3363360928811201045">Einschränkungen für verwaltete Konten hinzufügen</translation>
 <translation id="3364400740222114778">Kontowiederherstellung</translation>
+<translation id="3366156659815091184">Für das Drucken über die Plattform wird ein Dienstprozess verwendet.</translation>
 <translation id="3367361756115023251">Gewährt diesem Nutzer Root-Zugriff auf Crostini-Container.
 
 Wenn diese Richtlinie auf „true“ gesetzt oder nicht konfiguriert ist, wird dem Nutzer Root-Zugriff auf Crostini-Container gewährt.
@@ -6997,6 +6999,13 @@ Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, gilt das Standardve
 Wenn du diese Richtlinie konfigurierst, kann sie von Nutzern nicht geändert werden. Wird sie nicht konfiguriert, ist die Lupe erst einmal deaktiviert, kann aber jederzeit von Nutzern aktiviert werden.</translation>
 <translation id="6940243892299228102">Nutzer dürfen keine Desktopvorlagen verwenden</translation>
 <translation id="6943577887654905793">Bevorzugter Mac-/Linux-Name:</translation>
+<translation id="694602410134474029">Legt fest, ob <ph name="PRODUCT_NAME" /> mit Druckertreibern aus einem separaten Dienstprozess interagiert. Aufrufe zum Drucken über die Plattform, um verfügbare Drucker abzufragen, Druckertreiber-Einstellungen abzurufen und Dokumente zum Druck an lokale Drucker zu übermitteln, erfolgen über einen Dienstprozess. Wenn man solche Aufrufe aus dem Browserprozess hinaus verschiebt, verbessert dies die Stabilität und reduziert das Einfrieren der Benutzeroberfläche in der Druckvorschau.
+
+Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, verwendet <ph name="PRODUCT_NAME" /> einen separaten Dienstprozess für das Drucken über die Plattform.
+
+Wenn diese Richtlinie deaktiviert ist, verwendet <ph name="PRODUCT_NAME" /> den Browserprozess für das Drucken über die Plattform.
+
+Diese Richtlinie wird entfernt, nachdem die Funktion für Out-of-Process-Druckertreiber vollständig eingeführt wurde.</translation>
 <translation id="6946652757373377924">Diese Richtlinie wurde in M77 entfernt.
       Diese Richtlinie gilt für die Anmeldeseite. Sieh dir auch die Richtlinie "<ph name="ISOLATE_ORIGINS_POLICY_NAME" />" für die eigentliche Nutzersitzung an.
       Wenn die Richtlinie aktiviert ist, wird für jeden der benannten Ursprünge in einer durch Kommas getrennten Liste ein eigener Prozess ausgeführt. Dabei werden auch durch Subdomains benannte Ursprünge isoliert. Wenn du z. B. https://example.com/ angibst, wird auch https://foo.example.com/ als Teil der Website https://example.com/ isoliert.
@@ -7911,6 +7920,7 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird der PDF-Renderer vom Browser 
       Server sollten zu ECDHE-Cipher Suites migriert werden. Wenn diese nicht verfügbar sind, prüfen Sie, ob eine Cipher Suite mit RSA-Schlüsselaustausch aktiviert ist.</translation>
 <translation id="7709470712369261710">Google-Dienste nicht zur Bereitstellung von automatischen Bildbeschreibungen verwenden</translation>
 <translation id="7712109699186360774">Nachfragen, wenn eine Website auf meine Kamera bzw. mein Mikrofon zugreifen möchte</translation>
+<translation id="7712245244073542805">Drucken über die Plattform aus einem Browserprozess.</translation>
 <translation id="7713608076604149344">Download-Einschränkungen</translation>
 <translation id="7713845740295404764">Anmelde-/Abmeldeereignisse melden</translation>
 <translation id="7715711044277116530">Prozentsatz für die Skalierung der Spanne für die Bildschirmabdunkelung im Präsentationsmodus</translation>

@@ -3154,7 +3154,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3442674350323953953">Låt Google använda din maskinvarudata för att förbättra <ph name="DEVICE_OS" />. Om du nekar skickas denna data ändå till Google i syfte att fastställa lämpliga uppdateringar, men den varken lagras eller används på andra sätt.</translation>
 <translation id="3443744348829035122"><ph name="BRAND" /> överskred tidsgränsen</translation>
 <translation id="3443754338602062261">Du har redan lösenord för dessa konton på <ph name="BRAND" />. Om du väljer att importera ett av lösenorden nedan ersätts det befintliga.</translation>
-<translation id="344449859752187052">Cookies från tredje part har blockerats</translation>
+<translation id="344449859752187052">Tredjepartscookies har blockerats</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> får läsbehörighet till <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Snabba svar från Google Assistent</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
@@ -6587,7 +6587,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6195155925303302899">Centrera</translation>
 <translation id="6195163219142236913">Tredjepartscookies är begränsade</translation>
 <translation id="6195693561221576702">Den här enheten kan inte konfigureras i offlinedemoläge.</translation>
-<translation id="6196640612572343990">Blockera cookies från tredje part</translation>
+<translation id="6196640612572343990">Blockera tredjepartscookies</translation>
 <translation id="6196854373336333322">Tillägget <ph name="EXTENSION_NAME" /> har tagit kontroll över dina proxyinställningar, vilket innebär att det kan ändra, knäcka eller tjuvlyssna på allt du gör på webben. Om du inte vet varför den här ändringen inträffade är den troligen inte önskvärd.</translation>
 <translation id="6197128521826316819">Skapa QR-kod för den här sidan</translation>
 <translation id="6198223452299275399">Svep mellan sidor</translation>

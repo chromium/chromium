@@ -1633,6 +1633,7 @@ Politika, Devre Dışı değerine ayarlanırsa kullanıcılar Şifre Yöneticisi
       Politika, Devre Dışı değerine ayarlanırsa bu özellik kullanılamaz.</translation>
 <translation id="2342066287156668839">Kalıcı kotayı etkinleştir.</translation>
 <translation id="2345547870894930157">DNS-over-HTTPS'i güvenli olmayan geçiş olmadan etkinleştir</translation>
+<translation id="2347695338560092641">İşlem dışı yazıcı sürücülerine izin veriliyor</translation>
 <translation id="234856189825555040">Bu politika, <ph name="PEPPER_NAME" /> eklentilerinin, donanım kod
 çözücülerle konuşmak için eski video kod çözücü yerine yeni kod çözücüyü kullanıp kullanamayacağını
 kontrol eder.
@@ -2832,6 +2833,7 @@ Yanlış değerine ayarlanırsa veya ayarlanmazsa klavye varsayılan olarak medy
 <translation id="3362584244602846824">Kablosuz erişim noktası desteklerse hızlı geçişi kullan</translation>
 <translation id="3363360928811201045">Yönetilen hesaplara kısıtlama ekleme</translation>
 <translation id="3364400740222114778">Hesap kurtarma</translation>
+<translation id="3366156659815091184">Platform yazdırma, hizmet işlemini kullanır.</translation>
 <translation id="3367361756115023251">Bu kullanıcının, Crostini kapsayıcılarına root erişimine izin verilir.
 
 Politika, Doğru değerine ayarlanırsa veya ayarlanmadan bırakılırsa kullanıcıya Crostini kapsayıcılarına root erişimi izni verilir.
@@ -7124,6 +7126,13 @@ olarak bu tür istekleri engelleme davranışı geçerli olur.</translation>
       Bu politikayı ayarlarsanız kullanıcılar değiştiremez. Ayarlanmazsa ekran büyüteci ilk başta kapalıdır, ancak kullanıcılar istedikleri zaman açabilir.</translation>
 <translation id="6940243892299228102">Kullanıcıların masa şablonları kullanmalarına izin verme</translation>
 <translation id="6943577887654905793">Mac/Linux tercih adı:</translation>
+<translation id="694602410134474029"><ph name="PRODUCT_NAME" /> öğesinin, yazıcı sürücüleriyle ayrı bir hizmet işleminden etkileşime geçip geçmediğini kontrol eder. Mevcut yazıcıları sorgulamak, yazdırma sürücüsü ayarlarını almak ve doküman göndererek yerel yazıcılara yazdırmak için yapılan platform yazdırma çağrıları, hizmet işleminden gerçekleştirilir. Bu tür çağrıları, tarayıcı işleminin dışına taşımak, kararlılığı iyileştirmeye ve Yazdırma Önizleme'deki donmuş kullanıcı arayüzü davranışını azaltmaya yardımcı olur.
+
+Bu politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" />, platform yazdırma görevleri için ayrı bir hizmet işlemi kullanır.
+
+Bu politika Devre Dışı değerine ayarlanırsa <ph name="PRODUCT_NAME" />, platform yazdırma görevleri için tarayıcı işlemini kullanır.
+
+Bu politika, gelecekte işlem dışı yazıcı sürücüleri özelliği tamamen kullanıma sunulduktan sonra kaldırılacaktır.</translation>
 <translation id="6946652757373377924">
       Bu politika M77'de kaldırıldı.
       Bu politika, oturum açma ekranı için geçerlidir. Lütfen kullanıcı oturumu için geçerli olan <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> politikasına da bakın.
@@ -8049,6 +8058,7 @@ Bu politika ayarlanmadan bırakılırsa PDF oluşturucu tarayıcı tarafından s
       Sunucuların, ECDHE şifre paketlerine taşınması önerilir. Bunlar kullanılamadığı takdirde, RSA anahtarı takası kullanan bir şifre paketinin etkinleştirildiğinden emin olun.</translation>
 <translation id="7709470712369261710">Otomatik resim açıklamaları sağlamak için Google hizmetlerini kullanma</translation>
 <translation id="7712109699186360774">Bir site kamera ve/veya mikrofona erişmek istediğinde her zaman sor</translation>
+<translation id="7712245244073542805">Tarayıcı işleminden platform yazdırma.</translation>
 <translation id="7713608076604149344">İndirme kısıtlamaları</translation>
 <translation id="7713845740295404764">Giriş/çıkış etkinliklerini raporla</translation>
 <translation id="7715711044277116530">Sunum modunda ekranın kararma gecikmesinin ölçekleneceği yüzde</translation>

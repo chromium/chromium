@@ -1623,6 +1623,7 @@ De functie is niet beschikbaar als synchronisatie van wachtwoorden uitstaat (via
       Als je het beleid niet toepast, is deze functie niet beschikbaar.</translation>
 <translation id="2342066287156668839">Permanent quotum aanzetten.</translation>
 <translation id="2345547870894930157">DNS-over-HTTPS zonder onbeveiligde fallback aanzetten</translation>
+<translation id="2347695338560092641">Printerstuurprogramma's buiten het proces toegestaan</translation>
 <translation id="234856189825555040">Dit beleid bepaalt of <ph name="PEPPER_NAME" />-plug-ins de nieuwe decoder in plaats van de verouderde videodecoder kunnen gebruiken om te communiceren met hardwaredecoders.
 
 De migratie heeft alleen invloed op interne implementatiegegevens en verandert niets aan het gedrag. Dit beleid kan worden gebruikt als PPAPI-apps niet werken zoals verwacht.
@@ -2796,6 +2797,7 @@ Als je dit beleid instelt op False, of niet instelt, voert het toetsenbord stand
 <translation id="3362584244602846824">Fast Transition gebruiken als dit wordt ondersteund door het draadloze toegangspunt</translation>
 <translation id="3363360928811201045">Beperkingen op beheerde accounts beheren</translation>
 <translation id="3364400740222114778">Accountherstel</translation>
+<translation id="3366156659815091184">Platformgebaseerd afdrukken maakt gebruik van een serviceproces.</translation>
 <translation id="3367361756115023251">De gebruiker toestemming geven voor roottoegang tot Crostini-containers.
 
 Als je het beleid instelt op True of niet instelt, krijgt de gebruiker toestemming voor roottoegang tot Crostini-containers.
@@ -6989,6 +6991,13 @@ Als je het beleid niet toepast of niet instelt, is het standaardgedrag van toepa
 Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je dit beleid niet instelt, staat het vergrootglas in eerste instantie uit, maar kunnen gebruikers dit op elk moment aanzetten.</translation>
 <translation id="6940243892299228102">Niet toestaan dat gebruikers bureautemplates gebruiken</translation>
 <translation id="6943577887654905793">Voorkeursnaam voor Mac/Linux:</translation>
+<translation id="694602410134474029">Bepaalt of <ph name="PRODUCT_NAME" /> interactie heeft met printerstuurprogramma's vanuit een afzonderlijk serviceproces. Platformgebaseerde afdrukaanroepen om beschikbare printers op te vragen, instellingen voor printerstuurprogramma's op te halen en documenten in te dienen om af te drukken op lokale printers worden gedaan vanuit een serviceproces. Als je dit soort aanroepen uit het browserproces verplaatst, verbeter je de stabiliteit en verminder je het vastlopen van de UI in het afdrukvoorbeeld.
+
+Als je dit beleid toepast of niet instelt, gebruikt <ph name="PRODUCT_NAME" /> een afzonderlijk serviceproces voor platformgebaseerde afdruktaken.
+
+Als je dit beleid niet toepast, gebruikt <ph name="PRODUCT_NAME" /> het browserproces voor platformgebaseerde afdruktaken.
+
+Dit beleid wordt in de toekomst verwijderd nadat de functie voor afdrukstuurprogramma's buiten het proces helemaal is uitgerold.</translation>
 <translation id="6946652757373377924">Dit beleid is verwijderd in M77.
       Dit beleid is van toepassing op het inlogscherm. Zie ook het beleid <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> dat van toepassing is op de gebruikerssessie.
       Als het beleid is toegepast, wordt elk van de benoemde oorsprongen in een door komma's gescheiden lijst uitgevoerd in een eigen proces. Hiermee worden ook oorsprongen geïsoleerd die worden benoemd door subdomeinen. Als je bijvoorbeeld https://example.com/ opgeeft, wordt ook https://foo.example.com/ geïsoleerd als onderdeel van de site https://example.com/.
@@ -7906,6 +7915,7 @@ Als je dit beleid niet instelt, wordt het pdf-weergaveprogramma gekozen door de 
       Servers kunnen het beste worden gemigreerd naar ECDHE cipher suites. Als deze niet beschikbaar zijn, zorg je dat er een cipher suite aanstaat die gebruikmaakt van RSA-sleuteluitwisseling.</translation>
 <translation id="7709470712369261710">Google-services niet gebruiken om automatische beschrijvingen van afbeeldingen te leveren</translation>
 <translation id="7712109699186360774">Altijd goedkeuring vragen wanneer een site toegang wil hebben tot de camera en/of microfoon</translation>
+<translation id="7712245244073542805">Platformgebaseerd afdrukken vanuit een browserproces.</translation>
 <translation id="7713608076604149344">Downloadbeperkingen</translation>
 <translation id="7713845740295404764">Inlog-/uitloggebeurtenissen rapporteren</translation>
 <translation id="7715711044277116530">Percentage waarmee de dimvertraging van het scherm in de presentatiemodus wordt geschaald</translation>

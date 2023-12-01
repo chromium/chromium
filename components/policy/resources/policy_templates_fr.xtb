@@ -1626,6 +1626,7 @@ Cette fonctionnalité n'est pas disponible si la synchronisation des mots de pas
       Si cette règle est désactivée, cette fonctionnalité n'est pas disponible.</translation>
 <translation id="2342066287156668839">Activer le quota persistant.</translation>
 <translation id="2345547870894930157">Activer DNS-over-HTTPS sans solution de secours à risque</translation>
+<translation id="2347695338560092641">Pilotes d'impression hors processus autorisés</translation>
 <translation id="234856189825555040">Cette règle permet de définir si les plug-ins <ph name="PEPPER_NAME" /> peuvent utiliser le nouveau décodeur pour communiquer avec des décodeurs matériels au lieu de l'ancien décodeur vidéo.
 
 La migration n'affecte que les détails de l'implémentation interne et ne devrait modifier aucun comportement. Toutefois, cette règle peut être utilisée si des applications PPAPI ne fonctionnent pas comme prévu.
@@ -2800,6 +2801,7 @@ Si cette règle est définie sur "False" ou n'est pas configurée, les touches s
 <translation id="3362584244602846824">Utiliser la transition rapide lorsque le point d'accès sans fil la prend en charge</translation>
 <translation id="3363360928811201045">Ajouter des restrictions aux comptes gérés</translation>
 <translation id="3364400740222114778">Récupération de compte</translation>
+<translation id="3366156659815091184">Impression de plate-forme à l'aide d'un processus de service.</translation>
 <translation id="3367361756115023251">Autoriser cet utilisateur à accéder à la racine des conteneurs Crostini.
 
 Si la règle est définie sur "True" ou n'est pas définie, l'utilisateur a accès à la racine des conteneurs Crostini.
@@ -7021,6 +7023,13 @@ Si la règle est désactivée ou n'est pas configurée, le comportement par déf
 Si vous définissez cette règle, les utilisateurs ne peuvent pas modifier la configuration. Si vous ne la définissez pas, la loupe est désactivée par défaut, mais les utilisateurs peuvent l'activer à tout moment.</translation>
 <translation id="6940243892299228102">Ne pas autoriser les utilisateurs à se servir de modèles de bureau</translation>
 <translation id="6943577887654905793">Nom de préférence Mac/Linux :</translation>
+<translation id="694602410134474029">Détermine si <ph name="PRODUCT_NAME" /> interagit avec les pilotes de l'imprimante via un processus de service distinct. Les appels d'impression de plate-forme pour interroger les imprimantes disponibles, obtenir les paramètres du pilote d'impression et envoyer des documents pour impression sur des imprimantes locales sont effectués via un processus de service. Retirer ces appels du processus du navigateur permet d'améliorer la stabilité et de réduire les blocages de l'UI dans l'aperçu avant impression.
+
+Si cette règle est activée ou n'est pas configurée, <ph name="PRODUCT_NAME" /> utilise un processus de service distinct pour les tâches d'impression de plate-forme.
+
+Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> utilise le processus du navigateur pour les tâches d'impression de plate-forme.
+
+Cette règle sera supprimée quand la fonctionnalité de pilotes d'impression hors processus sera entièrement déployée.</translation>
 <translation id="6946652757373377924">
       Cette règle a été supprimée dans M77.
       Cette règle s'applique à l'écran de connexion. Veuillez également consulter celle applicable à la session utilisateur (<ph name="ISOLATE_ORIGINS_POLICY_NAME" />).
@@ -7937,6 +7946,7 @@ Si cette règle n'est pas configurée, le moteur de rendu des PDF est sélection
       Nous recommandons la migration des serveurs vers des suites de chiffrement ECDHE. Si celles-ci ne sont pas disponibles, veillez à ce qu'une suite de chiffrement utilisant l'échange de clés RSA soit activée.</translation>
 <translation id="7709470712369261710">Ne pas utiliser les services Google pour qu'une description soit ajoutée automatiquement aux images</translation>
 <translation id="7712109699186360774">Demander chaque fois qu'un site essaie d'accéder à la caméra et/ou au microphone</translation>
+<translation id="7712245244073542805">Impression de plate-forme à partir d'un processus de navigateur.</translation>
 <translation id="7713608076604149344">Restrictions de téléchargement</translation>
 <translation id="7713845740295404764">Signaler les événements de connexion/déconnexion</translation>
 <translation id="7715711044277116530">Pourcentage d'adaptation du délai d'assombrissement de l'écran en mode Présentation</translation>

@@ -99,7 +99,7 @@ Dikkate alınması gereken noktalar:
 <translation id="4251174643044751591">Chrome'daki ödeme yöntemi ayarları sayfasını açar.</translation>
 <translation id="4453284704333523777">Chrome ayarlarını yönet</translation>
 <translation id="4471662743048412085">Chrome'da Algılanan Kargoları Takip Et</translation>
-<translation id="4508370294876102450">Chrome'u İstediğiniz Uygulamadan Açın</translation>
+<translation id="4508370294876102450">Chrome'u istediğiniz uygulamadan açın</translation>
 <translation id="4523886039239821078">Bazı eklentiler Chrome'un kilitlenmesine neden oluyor. Lütfen şunların yüklemelerini kaldırın:</translation>
 <translation id="4633328489441962921">Chrome, güncellemeleri denetleyemiyor</translation>
 <translation id="4636900170638246267">Bu sitede ve Chrome'da oturum açın.</translation>
@@ -231,7 +231,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome verilerini temizleyin<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Google Şifre Yöneticisi, şifrelerin tümünü kontrol edemedi. Yarın tekrar deneyin.</translation>
 <translation id="8897749957032330183">Şifreler bu cihazda Google Şifre Yöneticisi'ne kaydedilir.</translation>
-<translation id="8949681853939555434">Chrome'u varsayılan tarayıcınız olarak ayarlama</translation>
+<translation id="8949681853939555434">Chrome'u varsayılan tarayıcınız olarak ayarlayın</translation>
 <translation id="8969290730818637510">İzni kabul ederek:
 <ph name="BEGIN_INDENT" />  • Sizinkine benzer kullanımı olan kişiler için Chrome'u daha iyi hale getirmemize yardımcı olun.<ph name="END_INDENT" />
 

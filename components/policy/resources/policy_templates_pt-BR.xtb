@@ -1640,6 +1640,7 @@ O recurso não vai estar disponível se a sincronização de senhas estiver desa
       Se a política for definida como "Desativada", esse recurso não estará disponível.</translation>
 <translation id="2342066287156668839">Ativar cota persistente.</translation>
 <translation id="2345547870894930157">Ativar DNS sobre HTTPS sem substituto inseguro</translation>
+<translation id="2347695338560092641">Drivers de impressão fora do processo são permitidos</translation>
 <translation id="234856189825555040">Esta política controla se os plug-ins do <ph name="PEPPER_NAME" /> podem
 usar o novo decodificador para se comunicar com os de hardware, em vez do decodificador
 de vídeo legado.
@@ -2856,6 +2857,7 @@ Se a política for definida como falsa, as teclas vão funcionar como comandos d
 <translation id="3362584244602846824">Usar a transição rápida quando o ponto de acesso sem fio oferecer suporte para isso</translation>
 <translation id="3363360928811201045">Adicionar restrições em contas gerenciadas</translation>
 <translation id="3364400740222114778">Recuperação de conta</translation>
+<translation id="3366156659815091184">A impressão da plataforma usa o processo de serviço.</translation>
 <translation id="3367361756115023251">Permitir acesso root deste usuário aos contêineres do Crostini.
 
 Se a política for definida como verdadeira ou não for definida, o acesso root aos contêineres do Crostini será concedido ao usuário.
@@ -7255,6 +7257,13 @@ bloqueio dessas solicitações será aplicado.</translation>
 Se você definir a política, os usuários não poderão mudá-la. Se a política não for definida, a lupa será inicialmente desativada, mas os usuários poderão ativá-la quando quiserem.</translation>
 <translation id="6940243892299228102">Não permitir que os usuários usem modelos de espaço de trabalho</translation>
 <translation id="6943577887654905793">Nome de preferência Mac/Linux:</translation>
+<translation id="694602410134474029">Controla se o <ph name="PRODUCT_NAME" /> interage com os drivers de impressora de um processo de serviço separado. As chamadas de impressão da plataforma são feitas com base em um processo de serviço. Elas são usadas para consultar as impressoras disponíveis, acessar as configurações do driver de impressão e enviar documentos para impressoras locais. Remover essas chamadas do processo do navegador ajuda a melhorar a estabilidade e reduzir o comportamento congelado da interface na visualização da impressão.
+
+Se esta política for ativada ou deixada sem definição, o <ph name="PRODUCT_NAME" /> vai usar um processo de serviço separado para tarefas de impressão da plataforma.
+
+Se for desativada, o <ph name="PRODUCT_NAME" /> vai usar o processo do navegador para tarefas de impressão da plataforma.
+
+Esta política será removida após o lançamento do recurso de drivers de impressão fora de processo.</translation>
 <translation id="6946652757373377924">
       Esta política foi removida na versão M77.
       Ela se aplica à tela de login. Consulte também a política <ph name="ISOLATE_ORIGINS_POLICY_NAME" />, que se aplica à sessão do usuário.
@@ -8182,6 +8191,7 @@ Quando ela for deixada sem definição, o renderizador de PDF será escolhido pe
       Recomendamos que os servidores migrem para pacotes de criptografia ECDHE. Se eles não estiverem disponíveis, garanta um pacote de criptografia com a troca de chaves RSA ativada.</translation>
 <translation id="7709470712369261710">Não permitir que os Serviços do Google forneçam descrições automáticas de imagens</translation>
 <translation id="7712109699186360774">Perguntar toda vez que um site quiser acessar minha câmera e/ou meu microfone</translation>
+<translation id="7712245244073542805">Impressão da plataforma pelo processo do navegador.</translation>
 <translation id="7713608076604149344">Restrições de downloads</translation>
 <translation id="7713845740295404764">Informar eventos de login/logout</translation>
 <translation id="7715711044277116530">Percentual pelo qual calcular o intervalo de escurecimento da tela no modo de apresentação</translation>
