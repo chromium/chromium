@@ -149,7 +149,7 @@ BASE_FEATURE(kAutofillSendUnidentifiedKeyAfterFill,
 // instead of static counters.
 BASE_FEATURE(kAutofillUseDomNodeIdForRendererId,
              "AutofillUseDomNodeIdForRendererId",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Apply lazy-loading to ad frames which have embeds likely impacting Core Web
 // Vitals.
