@@ -237,7 +237,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
     return autofill_manager()
         ->client()
         .GetFormDataImporter()
-        ->credit_card_save_manager_.get();
+        ->GetCreditCardSaveManager();
   }
 
   // CreditCardSaveManager::ObserverForTest:

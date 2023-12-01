@@ -21,6 +21,7 @@
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/form_data_importer.h"
+#include "components/autofill/core/browser/form_data_importer_test_api.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/payments/iban_save_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -108,10 +109,9 @@ class IbanBubbleViewFullFormBrowserTest
     WaitForPersonalDataManagerToBeLoaded(GetProfile(0));
 
     // Set up this class as the ObserverForTest implementation.
-    iban_save_manager_ = autofill_manager()
-                             ->client()
-                             .GetFormDataImporter()
-                             ->iban_save_manager_for_testing();
+    iban_save_manager_ =
+        test_api(*autofill_manager()->client().GetFormDataImporter())
+            .iban_save_manager();
     iban_save_manager_->SetEventObserverForTesting(this);
     AddEventObserverToController();
   }
@@ -366,7 +366,7 @@ class IbanBubbleViewFullFormBrowserTest
     return iban_bubble_controller->GetPaymentBubbleView();
   }
 
-  std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;
+  std::unique_ptr<EventWaiter<DialogEvent>> event_waiter_;
   TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
 };
 

@@ -23,6 +23,7 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/core/browser/form_data_importer.h"
+#include "components/autofill/core/browser/form_data_importer_test_api.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "content/public/test/browser_test.h"
@@ -391,7 +392,7 @@ class SaveCardOfferObserver
                    ->GetAutofillManager()
                    .client()
                    .GetFormDataImporter()
-                   ->credit_card_save_manager_.get();
+                   ->GetCreditCardSaveManager();
     manager_->SetEventObserverForTesting(this);
   }
 

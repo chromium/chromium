@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/form_data_importer.h"
+#include "components/autofill/core/browser/form_data_importer_test_api.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
@@ -222,13 +223,15 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
       }
 
       // Extract the profile.
-      auto extracted_data = form_data_importer_->ExtractFormData(
-          form_structure,
-          /*profile_autofill_enabled=*/true,
-          /*payment_methods_autofill_enabled=*/true);
-      form_data_importer_->ProcessAddressProfileImportCandidates(
-          extracted_data.address_profile_import_candidates,
-          /*allow_prompt=*/true);
+      auto extracted_data =
+          test_api(*form_data_importer_)
+              .ExtractFormData(form_structure,
+                               /*profile_autofill_enabled=*/true,
+                               /*payment_methods_autofill_enabled=*/true);
+      test_api(*form_data_importer_)
+          .ProcessAddressProfileImportCandidates(
+              extracted_data.address_profile_import_candidates,
+              /*allow_prompt=*/true);
       EXPECT_FALSE(extracted_data.extracted_credit_card);
 
       // Clear the |form| to start a new profile.

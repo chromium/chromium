@@ -185,11 +185,6 @@ FormDataImporter::~FormDataImporter() {
     personal_data_manager_->RemoveObserver(this);
 }
 
-void FormDataImporter::set_credit_card_save_manager_for_testing(
-    std::unique_ptr<CreditCardSaveManager> credit_card_save_manager) {
-  credit_card_save_manager_ = std::move(credit_card_save_manager);
-}
-
 FormDataImporter::AddressProfileImportCandidate::
     AddressProfileImportCandidate() = default;
 FormDataImporter::AddressProfileImportCandidate::AddressProfileImportCandidate(
@@ -412,7 +407,7 @@ size_t FormDataImporter::ExtractAddressProfiles(
 AutofillProfile FormDataImporter::ConstructProfileFromObservedValues(
     const base::flat_map<ServerFieldType, std::u16string>& observed_values,
     LogBuffer* import_log_buffer,
-    autofill::ProfileImportMetadata& import_metadata) {
+    ProfileImportMetadata& import_metadata) {
   AutofillProfile candidate_profile(
       i18n_model_definition::kLegacyHierarchyCountryCode);
 

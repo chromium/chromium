@@ -205,7 +205,7 @@ class SaveCardInfobarEGTestHelper
         ->GetAutofillManager()
         .client()
         .GetFormDataImporter()
-        ->credit_card_save_manager_.get();
+        ->GetCreditCardSaveManager();
   }
 
   // Access the PaymentsNetworkInterface.

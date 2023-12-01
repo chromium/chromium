@@ -211,7 +211,8 @@ class LocalCardMigrationBrowserTest
 
     // Set up this class as the ObserverForTest implementation.
     client->GetFormDataImporter()
-        ->local_card_migration_manager_->SetEventObserverForTesting(this);
+        ->local_card_migration_manager()
+        ->SetEventObserverForTesting(this);
     personal_data_ = PersonalDataManagerFactory::GetForProfile(GetProfile(0));
 
     // Wait for Personal Data Manager to be fully loaded to prevent that

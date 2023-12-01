@@ -791,6 +791,7 @@ static_library("test_support") {
     "data_model/autofill_structured_address_test_utils.h",
     "data_model/test_autofill_data_model.cc",
     "data_model/test_autofill_data_model.h",
+    "form_data_importer_test_api.h",
     "form_forest_test_api.cc",
     "form_forest_test_api.h",
     "form_structure_test_api.cc",

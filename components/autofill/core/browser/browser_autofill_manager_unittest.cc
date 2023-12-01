@@ -40,6 +40,7 @@
 #include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/form_data_importer_test_api.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
@@ -3813,7 +3814,7 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_CALL(autofill_client_, OnVirtualCardDataAvailable).Times(0);
 
   browser_autofill_manager_->OnCreditCardFetchedSuccessfully(local_card);
-  EXPECT_THAT(form_data_importer().fetched_card_instrument_id(),
+  EXPECT_THAT(test_api(form_data_importer()).fetched_card_instrument_id(),
               testing::Optional(local_card.instrument_id()));
 }
 
@@ -3823,7 +3824,7 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_CALL(autofill_client_, OnVirtualCardDataAvailable).Times(0);
 
   browser_autofill_manager_->OnCreditCardFetchedSuccessfully(server_card);
-  EXPECT_THAT(form_data_importer().fetched_card_instrument_id(),
+  EXPECT_THAT(test_api(form_data_importer()).fetched_card_instrument_id(),
               testing::Optional(server_card.instrument_id()));
 }
 
@@ -3842,7 +3843,7 @@ TEST_F(BrowserAutofillManagerTest,
                 Field(&Options::virtual_card, virtual_card))));
 
   browser_autofill_manager_->OnCreditCardFetchedSuccessfully(virtual_card);
-  EXPECT_THAT(form_data_importer().fetched_card_instrument_id(),
+  EXPECT_THAT(test_api(form_data_importer()).fetched_card_instrument_id(),
               testing::Optional(virtual_card.instrument_id()));
 }
 
