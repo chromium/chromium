@@ -198,6 +198,11 @@ std::u16string GetMarketingSnippetString(
     const TemplateURLData& template_url_data);
 #endif
 
+// Checks if the search engine choice should be prompted again, based on
+// experiment parameters. If a reprompt is needed, some preferences related to
+// the choice are cleared, which triggers a reprompt on the next page load.
+void PreprocessPrefsForReprompt(PrefService& profile_prefs);
+
 }  // namespace search_engines
 
 #endif  // COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINE_CHOICE_UTILS_H_
