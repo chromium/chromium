@@ -198,6 +198,59 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithPassthroughSession) {
       true, 1);
 }
 
+TEST_F(ModelExecutionManagerTest, LogsContextToExecutionTimeHistogram) {
+  base::HistogramTester histogram_tester;
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "test_email", signin::ConsentLevel::kSignin);
+  auto session = model_execution_manager()->StartSession(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE);
+  auto execute_model = [&] {
+    base::RunLoop run_loop;
+    proto::ComposeRequest request;
+    request.mutable_generate_params()->set_user_input("some test");
+    session->ExecuteModel(
+        request, base::BindRepeating(
+                     [](base::RunLoop* run_loop,
+                        OptimizationGuideModelStreamingExecutionResult result,
+                        std::unique_ptr<ModelQualityLogEntry> log_entry) {
+                       run_loop->Quit();
+                     },
+                     &run_loop));
+    identity_test_env()
+        ->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+            "access_token", base::Time::Max());
+    CheckPendingRequestMessage("some test");
+    EXPECT_TRUE(SimulateSuccessfulResponse());
+    run_loop.Run();
+  };
+
+  constexpr char kHistogramName[] =
+      "OptimizationGuide.ModelExecution.ContextStartToExecutionTime.Compose";
+
+  // Execute without context should not log.
+  execute_model();
+  histogram_tester.ExpectTotalCount(kHistogramName, 0);
+
+  // Just adding context should not log.
+  proto::ComposeRequest context;
+  context.mutable_generate_params()->set_user_input("context");
+  session->AddContext(context);
+  histogram_tester.ExpectTotalCount(kHistogramName, 0);
+
+  // First execute call after context should log.
+  execute_model();
+  histogram_tester.ExpectTotalCount(kHistogramName, 1);
+
+  // Next execute call should not log.
+  execute_model();
+  histogram_tester.ExpectTotalCount(kHistogramName, 1);
+
+  // Add context again and execute should log.
+  session->AddContext(context);
+  execute_model();
+  histogram_tester.ExpectTotalCount(kHistogramName, 2);
+}
+
 TEST_F(ModelExecutionManagerTest,
        ExecuteModelWithPassthroughSessionAddContext) {
   base::RunLoop run_loop;

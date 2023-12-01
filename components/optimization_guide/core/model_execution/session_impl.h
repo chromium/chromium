@@ -179,6 +179,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   ExecuteRemoteFn execute_remote_fn_;
 
   std::unique_ptr<google::protobuf::MessageLite> context_;
+  base::TimeTicks context_start_time_;
 
   // Last message executed.
   std::unique_ptr<google::protobuf::MessageLite> last_message_;

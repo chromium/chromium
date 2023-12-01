@@ -503,6 +503,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.ModelExecution.ContextStartToExecutionTime.{ModelExecutionFeature}"
+    units="ms" expires_after="2024-05-29">
+  <owner>cduvall@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records time from when context was first added to the session to when the
+    first execute call was made. Recorded on the first execute call for a
+    session following a new context being added.
+  </summary>
+  <token key="ModelExecutionFeature" variants="ModelExecutionFeature"/>
+</histogram>
+
+<histogram
     name="OptimizationGuide.ModelExecution.FeatureCurrentlyEnabledResult.{ModelExecutionFeature}"
     enum="FeatureCurrentlyEnabledResult" expires_after="2024-05-12">
   <owner>tbansal@chromium.org</owner>

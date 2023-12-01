@@ -138,6 +138,7 @@ SessionImpl::AddContextResult SessionImpl::AddContextImpl(
     const google::protobuf::MessageLite& request_metadata) {
   context_.reset(request_metadata.New());
   context_->CheckTypeAndMergeFrom(request_metadata);
+  context_start_time_ = base::TimeTicks::Now();
 
   if (!ShouldUseOnDeviceModel()) {
     DestroyOnDeviceState();
@@ -176,6 +177,15 @@ void SessionImpl::ExecuteModel(
   std::unique_ptr<ExecuteModelHistogramLogger> logger =
       std::make_unique<ExecuteModelHistogramLogger>(feature_);
   last_message_ = MergeContext(request_metadata);
+  if (context_start_time_ != base::TimeTicks()) {
+    base::UmaHistogramLongTimes(
+        base::StrCat(
+            {"OptimizationGuide.ModelExecution.ContextStartToExecutionTime.",
+             GetStringNameForModelExecutionFeature(feature_)}),
+        base::TimeTicks::Now() - context_start_time_);
+    // Only interested in logging the first request after adding context.
+    context_start_time_ = base::TimeTicks();
+  }
 
   if (!ShouldUseOnDeviceModel()) {
     DestroyOnDeviceState();
