@@ -30,6 +30,10 @@ const base::FeatureParam<double> kTemperature{
     &optimization_guide::features::kOptimizationGuideOnDeviceModel,
     "on_device_model_temperature", 1.0};
 
+const base::FeatureParam<int> kTopK{
+    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
+    "on_device_model_topk", 1};
+
 // Helper to bind object methods as weak task-posting callback functions.
 template <typename R, typename C, typename... Args>
 std::function<R(Args...)> CreateWeakCallbackFn(R (C::*method)(Args...),
@@ -337,6 +341,7 @@ LoadModelResult OnDeviceModelExecutor::Init(
       .model_data = &data,
       .max_tokens = params->max_tokens,
       .temperature = static_cast<float>(kTemperature.Get()),
+      .top_k = kTopK.Get(),
   };
   if (ts_data_.IsValid()) {
     CHECK(ts_sp_model_.IsValid());
