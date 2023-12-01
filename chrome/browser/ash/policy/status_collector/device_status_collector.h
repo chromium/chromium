@@ -161,6 +161,13 @@ class DeviceStatusCollector : public StatusCollector,
       const EMMCLifetimeFetcher& emmc_lifetime_fetcher,
       const StatefulPartitionInfoFetcher& stateful_partition_info_fetcher,
       const GraphicsStatusFetcher& graphics_status_fetcher,
+      // Please do not add new code that uses the crashes reported here. These
+      // crashes are now reported via the Encrypted Reporting Pipeline (ERP)
+      // located at
+      // chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/.
+      // However, the crash reported via this pipeline may still be used by the
+      // server and some customers. Please consult relevant parties if cleaning
+      // up crash reporting here is desired.
       const CrashReportInfoFetcher& crash_report_info_fetcher,
       base::Clock* clock = base::DefaultClock::GetInstance());
 
