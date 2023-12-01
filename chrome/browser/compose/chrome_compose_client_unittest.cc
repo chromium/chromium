@@ -19,6 +19,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/common/compose/compose.mojom.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -31,6 +32,7 @@
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
+#include "components/unified_consent/pref_names.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -128,6 +130,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
         {compose::features::kEnableCompose,
          optimization_guide::features::kOptimizationGuideModelExecution},
         {});
+    SetPrefsForComposeConsentState(compose::mojom::ConsentState::kConsented);
     AddTab(browser(), GetPageUrl());
     client_ = ChromeComposeClient::FromWebContents(web_contents());
     client_->SetModelExecutorForTest(&model_executor_);
@@ -155,6 +158,21 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
                               optimization_guide::proto::LogAiDataRequest>())));
             })));
     test_timer_ = std::make_unique<base::ScopedMockElapsedTimersForTest>();
+  }
+
+  void SetPrefsForComposeConsentState(
+      compose::mojom::ConsentState consent_state) {
+    PrefService* prefs = GetProfile()->GetPrefs();
+    prefs->SetBoolean(prefs::kPrefHasAcceptedComposeConsent, false);
+    prefs->SetBoolean(unified_consent::prefs::kPageContentCollectionEnabled,
+                      false);
+    if (consent_state != compose::mojom::ConsentState::kUnset) {
+      prefs->SetBoolean(unified_consent::prefs::kPageContentCollectionEnabled,
+                        true);
+    }
+    if (consent_state == compose::mojom::ConsentState::kConsented) {
+      prefs->SetBoolean(prefs::kPrefHasAcceptedComposeConsent, true);
+    }
   }
 
   void ShowDialogAndBindMojo(ComposeCallback callback = base::NullCallback()) {
@@ -1071,10 +1089,9 @@ TEST_F(ChromeComposeClientTest, CloseButtonHistogramTest) {
 }
 
 TEST_F(ChromeComposeClientTest, ConsentUICloseReasonHistogramTest) {
-  // Show the dialog and set unset consent state
+  // Set unset consent state and show the dialog
+  SetPrefsForComposeConsentState(compose::mojom::ConsentState::kUnset);
   ShowDialogAndBindMojo();
-  client().SetActiveSessionConsentStateForTest(
-      compose::mojom::ConsentState::kUnset);
 
   // Closing the dialog from the consent UI should not log metrics.
   // TODO(b/312295685): Add metrics for consent dialog related close reasons.
@@ -1085,8 +1102,6 @@ TEST_F(ChromeComposeClientTest, ConsentUICloseReasonHistogramTest) {
 
   // Show the dialog a second time.
   ShowDialogAndBindMojo();
-  client().SetActiveSessionConsentStateForTest(
-      compose::mojom::ConsentState::kUnset);
 
   client().CloseUI(compose::mojom::CloseReason::kPageContentConsentDeclined);
   histograms().ExpectTotalCount(compose::kComposeSessionCloseReason, 0);
@@ -1095,10 +1110,9 @@ TEST_F(ChromeComposeClientTest, ConsentUICloseReasonHistogramTest) {
 }
 
 TEST_F(ChromeComposeClientTest, ConsentUpdatedHistogramTest) {
-  // Show the dialog and set unset consent state
+  // Set unset consent state and show the dialog
+  SetPrefsForComposeConsentState(compose::mojom::ConsentState::kUnset);
   ShowDialogAndBindMojo();
-  client().SetActiveSessionConsentStateForTest(
-      compose::mojom::ConsentState::kUnset);
 
   // If consent is given in this session, then session metrics should be logged.
   client().UpdateAllSessionsWithConsentApproved();
@@ -1302,6 +1316,22 @@ TEST_F(ChromeComposeClientTest, TestAutoComposeWithRepeatedRightClick) {
   result = open_test_future.Take();
   EXPECT_TRUE(result->compose_state->has_pending_request);
   EXPECT_EQ(base::UTF16ToUTF8(selection), result->initial_input);
+}
+
+TEST_F(ChromeComposeClientTest, TestNoAutoComposeWithoutConsent) {
+  EXPECT_CALL(session(), ExecuteModel(_, _)).Times(0);
+
+  SetPrefsForComposeConsentState(compose::mojom::ConsentState::kUnset);
+  // Valid selection for auto compose to use.
+  std::u16string selection = u"testing alpha bravo charlie";
+  SetSelection(selection);
+  ShowDialogAndBindMojo();
+
+  // Without consent auto compose should not execute.
+  base::test::TestFuture<compose::mojom::OpenMetadataPtr> open_test_future;
+  page_handler()->RequestInitialState(open_test_future.GetCallback());
+  compose::mojom::OpenMetadataPtr result = open_test_future.Take();
+  EXPECT_FALSE(result->compose_state->has_pending_request);
 }
 
 TEST_F(ChromeComposeClientTest, TestComposeQualitySessionId) {

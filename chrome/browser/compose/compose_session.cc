@@ -467,7 +467,8 @@ void ComposeSession::InitializeWithText(
   initial_input_ = text.value();
 
   if (!IsValidComposePrompt(initial_input_) ||
-      !compose::GetComposeConfig().auto_submit_with_selection) {
+      !compose::GetComposeConfig().auto_submit_with_selection ||
+      initial_consent_state_ != compose::mojom::ConsentState::kConsented) {
     return;
   }
 

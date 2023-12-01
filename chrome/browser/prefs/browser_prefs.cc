@@ -2113,7 +2113,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
                                 false);
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_COMPOSE)
   registry->RegisterBooleanPref(prefs::kPrefHasAcceptedComposeConsent, false);
 #endif
 }

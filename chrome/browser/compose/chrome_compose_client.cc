@@ -230,11 +230,7 @@ void ChromeComposeClient::CreateOrUpdateSession(
         utf8_chars.has_value() ? utf8_chars.value() : 0);
   }
 
-  // Assume full consent for tests, otherwise compute from prefs.
-  auto consent_state = skip_show_dialog_for_test_
-                           ? compose::mojom::ConsentState::kConsented
-                           : GetConsentStateFromPrefs();
-  current_session->set_initial_consent_state(consent_state);
+  current_session->set_initial_consent_state(GetConsentStateFromPrefs());
 
   // If we are resuming then don't send the selected text - we want to keep the
   // prior selection and not trigger another Compose.
@@ -283,10 +279,8 @@ compose::mojom::ConsentState ChromeComposeClient::GetConsentStateFromPrefs() {
   bool page_content_collection_enabled = pref_service_->GetBoolean(
       unified_consent::prefs::kPageContentCollectionEnabled);
   bool consent_acknowledged_through_compose = false;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   consent_acknowledged_through_compose =
       pref_service_->GetBoolean(prefs::kPrefHasAcceptedComposeConsent);
-#endif
   if (page_content_collection_enabled) {
     // Page content collection can be enabled from the Compose UI or through
     // other UIs. If the latter, then a specific disclaimer dialog should be
@@ -365,16 +359,6 @@ void ChromeComposeClient::SetModelQualityLogsUploaderForTest(
 
 void ChromeComposeClient::SetSkipShowDialogForTest(bool should_skip) {
   skip_show_dialog_for_test_ = should_skip;
-}
-
-void ChromeComposeClient::SetActiveSessionConsentStateForTest(
-    compose::mojom::ConsentState consent_state) {
-  if (active_compose_field_id_.has_value()) {
-    auto it = sessions_.find(active_compose_field_id_.value());
-    if (it != sessions_.end()) {
-      it->second->set_initial_consent_state(consent_state);
-    }
-  }
 }
 
 void ChromeComposeClient::SetSessionIdForTest(base::Token session_id) {

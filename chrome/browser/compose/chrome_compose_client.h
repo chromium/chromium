@@ -94,10 +94,6 @@ class ChromeComposeClient
       optimization_guide::OptimizationGuideModelExecutor* model_executor);
   void SetSkipShowDialogForTest(bool should_skip);
   void SetSessionIdForTest(base::Token session_id);
-  // Enable tests for consent and disclaimer dialogs to set the dialog's
-  // initial consent state accordingly.
-  void SetActiveSessionConsentStateForTest(
-      compose::mojom::ConsentState consent_state);
 
   // content::WebContentsObserver implementation.
   // Called when the primary page location changes. This includes reloads.
