@@ -117,6 +117,7 @@
     (SigninPromoViewMediator*)mediator {
   [self.NTPDelegate handleFeedTopSectionClosed];
   [self.consumer hidePromo];
+  [self.NTPDelegate updateFeedLayout];
 }
 
 #pragma mark - Private

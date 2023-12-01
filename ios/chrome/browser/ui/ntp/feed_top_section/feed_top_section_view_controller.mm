@@ -206,6 +206,7 @@ NSArray<NSLayoutConstraint*>* SameConstraintsWithInsets(
 
 // TODO(b/312248486): Assign configurator and delegate here.
 - (NotificationsPromoView*)createNotificationsPromoView {
+  DCHECK(IsContentPushNotificationsPromoEnabled());
   NotificationsPromoView* promoView =
       [[NotificationsPromoView alloc] initWithFrame:CGRectZero];
   promoView.translatesAutoresizingMaskIntoConstraints = NO;
