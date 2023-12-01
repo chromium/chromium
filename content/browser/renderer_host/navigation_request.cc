@@ -8780,19 +8780,23 @@ NavigationRequest::BuildClientSecurityStateForNavigationFetch() {
     //
     // [1] https://fetch.spec.whatwg.org/#concept-request-client
     //
-    // This intentionally only applies to subframes (of any frame tree). Main
-    // frames of primary and secondary frame trees are handled separately.
+    // The `kPrimaryMainFrame` case also covers portals
+    // (https://crbug.com/1254770) and guest views (https://crbug.com/1261928)
+    // since those do not use MPArch.
+    //
+    // TODO(https://crbug.com/1420576): Determine how to treat portals.
+    // TODO(https://crbug.com/1420577): Determine how to treat guest views.
     //
     // NOTE: ShadowDOM-based fenced frames are treated as `kSubframe`.
+    case FrameType::kPrimaryMainFrame:
     case FrameType::kSubframe: {
-      CHECK(!IsInMainFrame());
       if (!policy_container_builder_->InitiatorPolicies()) {
         return nullptr;
       }
 
       network::mojom::ClientSecurityStatePtr state = DeriveClientSecurityState(
           *policy_container_builder_->InitiatorPolicies(),
-          PrivateNetworkRequestContext::kIframe);
+          PrivateNetworkRequestContext::kNavigation);
 
       // Remove the initiator's COEP, it is unused. For iframes, the parent's
       // COEP should be used: that is checked in `EnforceCOEP()`. The value
@@ -8851,23 +8855,13 @@ NavigationRequest::BuildClientSecurityStateForNavigationFetch() {
           DerivePrivateNetworkRequestPolicy(
               client_security_state->ip_address_space,
               client_security_state->is_web_secure_context,
-              PrivateNetworkRequestContext::kIframe);
+              PrivateNetworkRequestContext::kNavigation);
 
       return client_security_state;
     }
 
-    // TODO(https://crbug.com/1129326): Figure out the UX story for main-frame
-    // navigations, then revisit the exception made in that case.
-    //
-    // The `kPrimaryMainFrame` case also covers portals
-    // (https://crbug.com/1254770) and guest views (https://crbug.com/1261928)
-    // since those do not use MPArch.
-    //
-    // TODO(https://crbug.com/1420576): Determine how to treat portals.
-    // TODO(https://crbug.com/1420577): Determine how to treat guest views.
     // TODO(https://crbug.com/1420574): Determine how to treat prerendered
     // main frames.
-    case FrameType::kPrimaryMainFrame:
     case FrameType::kPrerenderMainFrame:
       return nullptr;
   }

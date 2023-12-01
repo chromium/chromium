@@ -2701,7 +2701,7 @@ crbug.com/626703 external/wpt/png/apng/fcTL-dispose-before-region-background.htm
 crbug.com/626703 external/wpt/png/apng/fcTL-dispose-in-region-background.html [ Timeout ]
 crbug.com/626703 external/wpt/png/apng/fcTL-dispose-previous-first.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/can-load-api.https.html [ Timeout ]
-crbug.com/626703 [ Mac11 ] virtual/pna-iframes-enabled/external/wpt/fetch/private-network-access/window-open.tentative.https.window.html [ Timeout ]
+crbug.com/626703 [ Mac11 ] virtual/pna-navigations-enabled/external/wpt/fetch/private-network-access/window-open.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/css/css-backgrounds/background-image-007.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/fetch/private-network-access/window-open.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/pna-workers-enabled/external/wpt/fetch/private-network-access/window-open.tentative.https.window.html [ Timeout ]
@@ -2777,7 +2777,7 @@ crbug.com/626703 [ Mac12 ] external/wpt/performance-timeline/back-forward-cache-
 crbug.com/626703 [ Mac12 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/response/response-clone.any.sharedworker.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/element-img.https.sub.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/regression-1399759.https.sub.html?pipe=header(Origin-Agent-Cluster,%253F0) [ Timeout ]
-crbug.com/626703 [ Mac12 ] virtual/pna-iframes-warning/external/wpt/fetch/private-network-access/shared-worker-fetch.tentative.https.window.html [ Timeout ]
+crbug.com/626703 [ Mac12 ] virtual/pna-navigations-warning/external/wpt/fetch/private-network-access/shared-worker-fetch.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/pna-workers-disabled/external/wpt/fetch/private-network-access/mixed-content-fetch.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/pna-workers-disabled/external/wpt/fetch/private-network-access/shared-worker-blob-fetch.tentative.window.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/pna-workers-enabled/external/wpt/fetch/private-network-access/worker-blob-fetch.tentative.window.html [ Timeout ]
@@ -7068,8 +7068,8 @@ crbug.com/1502794 external/wpt/html/semantics/invokers/invoketarget-on-video-beh
 crbug.com/1503108 [ Mac ] external/wpt/credential-management/fedcm-disconnect.sub.https.html [ Timeout ]
 crbug.com/1503051 [ Mac ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Failure Pass ]
 crbug.com/1503067 [ Linux ] virtual/plz-dedicated-worker-disabled/external/wpt/fetch/private-network-access/window-open.tentative.https.window.html [ Failure Pass ]
-crbug.com/1503067 [ Linux ] virtual/pna-iframes-warning/external/wpt/fetch/private-network-access/window-open.tentative.https.window.html [ Failure Pass ]
-crbug.com/1503067 [ Linux ] virtual/pna-iframes-enabled/external/wpt/fetch/private-network-access/iframe.tentative.https.window.html [ Failure Pass ]
+crbug.com/1503067 [ Linux ] virtual/pna-navigations-warning/external/wpt/fetch/private-network-access/window-open.tentative.https.window.html [ Failure Pass ]
+crbug.com/1503067 [ Linux ] virtual/pna-navigations-enabled/external/wpt/fetch/private-network-access/iframe.tentative.https.window.html [ Failure Pass ]
 crbug.com/1503119 [ Mac11 ] external/wpt/webtransport/echo-large-bidirectional-streams.https.any.html [ Timeout ]
 
 # Gardener 2023-11-21

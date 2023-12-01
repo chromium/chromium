@@ -12,7 +12,7 @@ setup(() => {
   assert_false(window.isSecureContext);
 });
 
-promise_test(t => windowOpenTest(t, {
+promise_test_parallel(t => windowOpenTest(t, {
   source: { server: Server.HTTP_LOCAL },
   target: { server: Server.HTTP_LOCAL },
   expected: WindowOpenTestResult.SUCCESS,

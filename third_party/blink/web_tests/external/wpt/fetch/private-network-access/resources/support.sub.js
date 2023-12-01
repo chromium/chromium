@@ -446,6 +446,10 @@ async function iframeTest(t, { source, target, expected }) {
   const targetUrl = preflightUrl(target);
   targetUrl.searchParams.set("file", "iframed.html");
   targetUrl.searchParams.set("iframe-uuid", uuid);
+  targetUrl.searchParams.set(
+    "file-if-no-preflight-received",
+    "iframed-no-preflight-received.html",
+  );
 
   const sourceUrl =
       resolveUrl("resources/iframer.html", sourceResolveOptions(source));
@@ -472,11 +476,16 @@ async function iframeTest(t, { source, target, expected }) {
 
 const WindowOpenTestResult = {
   SUCCESS: "success",
-  FAILURE: "failure",
+  FAILURE: "timeout",
 };
 
 async function windowOpenTest(t, { source, target, expected }) {
   const targetUrl = preflightUrl(target);
+  targetUrl.searchParams.set("file", "openee.html");
+  targetUrl.searchParams.set(
+    "file-if-no-preflight-received",
+    "no-preflight-received.html",
+  );
 
   const sourceUrl =
       resolveUrl("resources/opener.html", sourceResolveOptions(source));
@@ -487,7 +496,14 @@ async function windowOpenTest(t, { source, target, expected }) {
 
   iframe.contentWindow.postMessage({ url: targetUrl.href }, "*");
 
-  assert_equals(await reply, expected);
+  const result = await Promise.race([
+      reply,
+      new Promise((resolve) => {
+        t.step_timeout(() => resolve("timeout"), 3000 /* ms */);
+      }),
+  ]);
+
+  assert_equals(result, expected);
 }
 
 // Similar to `iframeTest`, but replaced iframes with fenced frames.

@@ -49,14 +49,14 @@ FeatureState FeatureStateForContext(RequestContext request_context) {
       }
 
       return FeatureState::kEnabled;
-    case RequestContext::kIframe:
+    case RequestContext::kNavigation:
       if (!base::FeatureList::IsEnabled(
-              features::kPrivateNetworkAccessForIframes)) {
+              features::kPrivateNetworkAccessForNavigations)) {
         return FeatureState::kDisabled;
       }
 
       if (base::FeatureList::IsEnabled(
-              features::kPrivateNetworkAccessForIframesWarningOnly)) {
+              features::kPrivateNetworkAccessForNavigationsWarningOnly)) {
         return FeatureState::kWarningOnly;
       }
 
