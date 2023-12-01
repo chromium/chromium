@@ -197,6 +197,16 @@ void MessagePort::close() {
   closed_ = true;
 }
 
+void MessagePort::OnConnectionError() {
+  close();
+  // When the entangled port is disconnected, this error handler is executed,
+  // so in this error handler, we dispatch the close event if close event is
+  // enabled.
+  if (RuntimeEnabledFeatures::MessagePortCloseEventEnabled()) {
+    DispatchEvent(*Event::Create(event_type_names::kClose));
+  }
+}
+
 void MessagePort::Entangle(MessagePortDescriptor port_descriptor,
                            MessagePort* port) {
   DCHECK(port_descriptor.IsValid());
@@ -220,7 +230,7 @@ void MessagePort::Entangle(MessagePortDescriptor port_descriptor,
   // 2. when the execution context is destroyed, the connector_ is reset.
   connector_->set_incoming_receiver(this);
   connector_->set_connection_error_handler(
-      WTF::BindOnce(&MessagePort::close, WrapWeakPersistent(this)));
+      WTF::BindOnce(&MessagePort::OnConnectionError, WrapWeakPersistent(this)));
 }
 
 void MessagePort::Entangle(MessagePortChannel channel) {
@@ -239,6 +249,10 @@ bool MessagePort::HasPendingActivity() const {
   // We'll also stipulate that the queue needs to be open (if the app drops its
   // reference to the port before start()-ing it, then it's not really entangled
   // as it's unreachable).
+  // Between close() and dispatching a close event, IsEntangled() starts
+  // returning false, but it is not garbage collected because a function on the
+  // MessagePort is running, and the MessagePort is retained on the stack at
+  // that time.
   return started_ && IsEntangled();
 }
 

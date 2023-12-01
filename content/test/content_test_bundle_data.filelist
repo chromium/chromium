@@ -7101,6 +7101,7 @@ data/service_worker/install_event_caches_script.js
 data/service_worker/install_event_caches_script_with_hint.js
 data/service_worker/long_lived_import.js
 data/service_worker/long_lived_import.js.mock-http-headers
+data/service_worker/message_port_close_event.js
 data/service_worker/maybe_offline_support.js
 data/service_worker/navigation_preload_worker.js
 data/service_worker/navigation_preload_worker.js.mock-http-headers
