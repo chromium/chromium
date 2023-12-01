@@ -75,14 +75,13 @@ AutofillProfile ConstructCompleteProfile(
   profile.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_STREET_ADDRESS,
       u"123 Fake St. Premise Marcos y Oliva\n"
-      u"Apt. 10 Floor 2 Red tree",
+      u"Apt. 10 Floor 2",
       VerificationStatus::kObserved);
 
   // Set testing values and statuses for the address.
   EXPECT_EQ(u"123 Fake St. Premise Marcos y Oliva",
             profile.GetRawInfo(ADDRESS_HOME_LINE1));
-  EXPECT_EQ(u"Apt. 10 Floor 2 Red tree",
-            profile.GetRawInfo(ADDRESS_HOME_LINE2));
+  EXPECT_EQ(u"Apt. 10 Floor 2", profile.GetRawInfo(ADDRESS_HOME_LINE2));
 
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_CITY, u"Mountain View",
                                            VerificationStatus::kObserved);
@@ -92,9 +91,6 @@ AutofillProfile ConstructCompleteProfile(
 
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ZIP, u"94043",
                                            VerificationStatus::kObserved);
-
-  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_LANDMARK, u"Red tree",
-                                           VerificationStatus::kParsed);
 
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ADMIN_LEVEL2, u"Oxaca",
                                            VerificationStatus::kObserved);
@@ -306,10 +302,10 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
   // Address lines are derived from the home street address and do not have an
   // independent status.
   specifics.set_address_home_line1("123 Fake St. Premise Marcos y Oliva");
-  specifics.set_address_home_line2("Apt. 10 Floor 2 Red tree");
+  specifics.set_address_home_line2("Apt. 10 Floor 2");
   specifics.set_address_home_street_address(
       "123 Fake St. Premise Marcos y Oliva\n"
-      "Apt. 10 Floor 2 Red tree");
+      "Apt. 10 Floor 2");
   specifics.set_address_home_street_address_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus::
           AutofillProfileSpecifics_VerificationStatus_OBSERVED);
@@ -354,10 +350,6 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
   specifics.set_address_home_country_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
 
-  specifics.set_address_home_landmark("Red tree");
-  specifics.set_address_home_landmark_status(
-      sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
-
   specifics.set_address_home_admin_level_2("Oxaca");
   specifics.set_address_home_admin_level_2_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
@@ -383,6 +375,12 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
   // always set during `ContactInfoSpecificsFromAutofillProfile()`, potentially
   // with empty values. If these are not set explicitly on the tests (even with
   // empty values), the serialized values won't match.
+
+  specifics.set_address_home_landmark("");
+  specifics.set_address_home_landmark_status(
+      sync_pb::
+          AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
+
   specifics.set_address_home_between_streets("");
   specifics.set_address_home_between_streets_status(
       sync_pb::

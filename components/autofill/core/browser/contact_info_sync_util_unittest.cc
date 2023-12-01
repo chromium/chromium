@@ -95,8 +95,6 @@ AutofillProfile ConstructCompleteProfile(
                                            VerificationStatus::kParsed);
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_FLOOR, u"2",
                                            VerificationStatus::kParsed);
-  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_LANDMARK, u"Red tree",
-                                           VerificationStatus::kParsed);
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ADMIN_LEVEL2, u"Oxaca",
                                            VerificationStatus::kObserved);
 
@@ -304,14 +302,14 @@ ContactInfoSpecifics ConstructCompleteSpecifics() {
            ContactInfoSpecifics::PARSED);
   SetToken(specifics.mutable_address_floor(), "2",
            ContactInfoSpecifics::PARSED);
-  SetToken(specifics.mutable_address_landmark(), "Red tree",
-           ContactInfoSpecifics::PARSED);
   SetToken(specifics.mutable_address_admin_level_2(), "Oxaca",
            ContactInfoSpecifics::OBSERVED);
 
   // All of the following types are not part of the default address model, but
   // rather belong to a model customized for a particular country. Nevertheless
   // they should be listed here for completeness.
+  SetToken(specifics.mutable_address_landmark(), "",
+           ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
   SetToken(specifics.mutable_address_between_streets(), "",
            ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
   SetToken(specifics.mutable_address_between_streets_1(), "",

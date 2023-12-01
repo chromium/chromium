@@ -1276,13 +1276,11 @@ TEST(AutofillProfileTest, Compare) {
 
 // For each structured profile tokens, test the comparison operator for both the
 // value and the status.
+// TODO(crbug.com/1464568): Extend this test to cover i18n profiles.
 TEST(AutofillProfileTest, Compare_StructuredTypes) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {autofill::features::kAutofillEnableSupportForLandmark,
-       autofill::features::kAutofillEnableSupportForBetweenStreets,
-       autofill::features::kAutofillEnableSupportForAdminLevel2},
-      {});
+      {autofill::features::kAutofillEnableSupportForAdminLevel2}, {});
   // Those types do store a verification status.
   ServerFieldTypeSet structured_types{
       NAME_FULL,
@@ -1299,8 +1297,6 @@ TEST(AutofillProfileTest, Compare_StructuredTypes) {
       ADDRESS_HOME_ZIP,
       ADDRESS_HOME_SORTING_CODE,
       ADDRESS_HOME_COUNTRY,
-      ADDRESS_HOME_LANDMARK,
-      ADDRESS_HOME_BETWEEN_STREETS,
       ADDRESS_HOME_HOUSE_NUMBER,
       ADDRESS_HOME_STREET_NAME,
       ADDRESS_HOME_SUBPREMISE,
@@ -1407,18 +1403,24 @@ TEST(AutofillProfileTest, SetRawInfoDoesntTrimWhitespace) {
 }
 
 TEST(AutofillProfileTest, SetRawInfoWorksForLandmark) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillEnableSupportForLandmark);
-  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({features::kAutofillEnableSupportForLandmark,
+                                 features::kAutofillUseI18nAddressModel},
+                                {});
+
+  AutofillProfile profile(AddressCountryCode("MX"));
 
   profile.SetRawInfo(ADDRESS_HOME_LANDMARK, u"Red tree");
   EXPECT_EQ(u"Red tree", profile.GetRawInfo(ADDRESS_HOME_LANDMARK));
 }
 
 TEST(AutofillProfileTest, SetRawInfoWorksForBetweenStreets) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillEnableSupportForBetweenStreets);
-  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kAutofillEnableSupportForBetweenStreets,
+       features::kAutofillUseI18nAddressModel},
+      {});
+  AutofillProfile profile(AddressCountryCode("MX"));
 
   profile.SetRawInfo(ADDRESS_HOME_BETWEEN_STREETS, u"Between streets example");
   EXPECT_EQ(u"Between streets example",
