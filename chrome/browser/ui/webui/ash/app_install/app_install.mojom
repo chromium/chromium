@@ -13,7 +13,9 @@ struct DialogArgs {
 
   string description;
 
-  // TODO(crbug.com/1488697): Add icons and screenshots.
+  url.mojom.Url iconUrl;
+
+  // TODO(crbug.com/1488697): Add screenshots.
 };
 
 // Lives in the browser process. A renderer uses this to create a page handler

@@ -16,7 +16,7 @@
 namespace ash::app_install {
 
 struct ChromeOsAppInstallDialogParams {
-  std::optional<SkBitmap> icon_bitmap;
+  GURL icon_url;
   std::string name;
   GURL url;
   std::string description;

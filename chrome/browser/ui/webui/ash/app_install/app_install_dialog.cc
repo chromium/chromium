@@ -18,31 +18,30 @@ namespace {
 
 const int kIconSize = 32;
 
-// Gets the first `SkBitmap` larger than `kIconSize` from `iconMap`. If none
-// exist, returns the largest bitmap in the map. Returns nullopt if map is
-// empty.
-std::optional<SkBitmap> GetDialogIcon(
-    const std::map<web_app::SquareSizePx, SkBitmap>& icon_map) {
-  if (icon_map.empty()) {
-    return std::nullopt;
+// Gets the first icon larger than `kIconSize` from `manifest_icons` and returns
+// the url. If none exist, returns the url of the largest icon. Returns empty
+// GURL if vector is empty.
+GURL GetIconUrl(std::vector<apps::IconInfo> manifest_icons) {
+  if (manifest_icons.empty()) {
+    return GURL::EmptyGURL();
   }
 
-  const SkBitmap* bitmap_ptr = nullptr;
-  for (const auto& [size, bitmap] : icon_map) {
-    bitmap_ptr = &bitmap;
-    if (size >= kIconSize) {
+  GURL icon_url = GURL::EmptyGURL();
+  for (const auto& icon_info : manifest_icons) {
+    icon_url = icon_info.url;
+    if (icon_info.square_size_px > kIconSize) {
       break;
     }
   }
 
-  return *bitmap_ptr;
+  return icon_url;
 }
 }  // namespace
 
 ChromeOsAppInstallDialogParams::ChromeOsAppInstallDialogParams(
     const web_app::WebAppInstallInfo& web_app_info,
     std::vector<webapps::Screenshot> screenshots)
-    : icon_bitmap(GetDialogIcon(web_app_info.icon_bitmaps.any)),
+    : icon_url(GetIconUrl(web_app_info.manifest_icons)),
       name(base::UTF16ToUTF8(web_app_info.title)),
       url(web_app_info.start_url),
       description(base::UTF16ToUTF8(web_app_info.description)),
@@ -73,6 +72,7 @@ void AppInstallDialog::Show(
   dialog_args_->description = base::UTF16ToUTF8(gfx::TruncateString(
       base::UTF8ToUTF16(params.description), webapps::kMaximumDescriptionLength,
       gfx::CHARACTER_BREAK));
+  dialog_args_->iconUrl = params.icon_url;
 
   this->ShowSystemDialog(parent);
 }

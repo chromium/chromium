@@ -3,14 +3,15 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import './strings.m.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {BrowserProxy} from './browser_proxy.js';
 import {getTemplate} from './app_install_dialog.html.js';
+import {BrowserProxy} from './browser_proxy.js';
 
 /**
  * @fileoverview
@@ -54,6 +55,11 @@ class AppInstallDialogElement extends HTMLElement {
       const descriptionElement = this.$<HTMLSpanElement>('#description');
       assert(descriptionElement);
       descriptionElement.textContent = dialogArgs.args.description;
+
+      const iconElement = this.$<HTMLImageElement>('#icon');
+      assert(iconElement);
+      iconElement.setAttribute('auto-src', dialogArgs.args.iconUrl.url);
+
     } catch (e) {
       // TODO(crbug.com/1488697) Define expected behavior.
       console.error(`Unable to get dialog arguments . Error: ${e}.`);
