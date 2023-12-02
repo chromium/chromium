@@ -28936,6 +28936,16 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="Intent picker dialog shown automatically"/>
 </enum>
 
+<enum name="InterestGroupAdAuctionRoundUpdateResult">
+  <int value="0" label="Round update is successful"/>
+  <int value="1" label="Round update is cancelled due to timeout"/>
+</enum>
+
+<enum name="InterestGroupAdAuctionUpdateBatchOperation">
+  <int value="0" label="Batch remains unsplit"/>
+  <int value="1" label="Batch is split due to different joining origin"/>
+</enum>
+
 <enum name="InterestGroupAdAuctionUrlLoaderInterceptorStartRequestOutcome">
   <int value="0" label="There was no initiator frame"/>
   <int value="1" label="Start request in fenced frame is not allowed"/>

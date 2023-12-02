@@ -68,6 +68,28 @@ constexpr base::TimeDelta kMaxUpdateRoundDuration = base::Minutes(10);
 // The maximum number of groups that can be updated at the same time.
 constexpr int kMaxParallelUpdates = 5;
 
+// For group update duration metrics.
+constexpr base::TimeDelta kGroupUpdateDurationMin = base::Milliseconds(1);
+constexpr base::TimeDelta kGroupUpdateDurationMax = base::Seconds(30);
+constexpr int kGroupUpdateDurationBuckets = 100;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// For group update round result count.
+enum class GroupUpdateRoundResult {
+  kSuccess = 0,  // Round update is successful
+  kTimeout,      // Round update is cancelled due to timeout
+  kMaxValue = kTimeout,
+};
+
+// For group update batch operation count.
+enum class GroupUpdateBatchOperation {
+  kNonSplit = 0,  // Batch remains non-split
+  kSplit,         // Batch is split due to different joining origin
+  kMaxValue = kSplit,
+};
+
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("interest_group_update_fetcher", R"(
         semantics {
@@ -798,6 +820,11 @@ void InterestGroupUpdateManager::MaybeContinueUpdatingCurrentOwner() {
   if (owners_to_update_.Empty()) {
     // This update round is finished, there's no more work to do.
     last_update_started_ = base::TimeTicks::Min();
+
+    base::UmaHistogramEnumeration(
+        "Ads.InterestGroup.Auction.GroupUpdate.RoundResult",
+        GroupUpdateRoundResult::kSuccess);
+
     return;
   }
 
@@ -810,6 +837,11 @@ void InterestGroupUpdateManager::MaybeContinueUpdatingCurrentOwner() {
     // We've been updating for too long; cancel all outstanding updates.
     owners_to_update_.Clear();
     last_update_started_ = base::TimeTicks::Min();
+
+    base::UmaHistogramEnumeration(
+        "Ads.InterestGroup.Auction.GroupUpdate.RoundResult",
+        GroupUpdateRoundResult::kTimeout);
+
     return;
   }
 
@@ -849,6 +881,7 @@ void InterestGroupUpdateManager::UpdateInterestGroupByBatch(
 
   for (auto& [interest_group_key, update_url, joining_origin] :
        update_parameters) {
+    base::TimeTicks start_time = base::TimeTicks::Now();
     manager_->QueueKAnonymityUpdateForInterestGroup(interest_group_key);
     ++num_in_flight_updates_;
     base::UmaHistogramCounts100000(
@@ -881,7 +914,7 @@ void InterestGroupUpdateManager::UpdateInterestGroupByBatch(
             base::BindOnce(&InterestGroupUpdateManager::
                                DidUpdateInterestGroupsOfOwnerNetFetch,
                            weak_factory_.GetWeakPtr(), simple_url_loader_it,
-                           interest_group_key),
+                           interest_group_key, start_time),
             kMaxUpdateSize);
   }
 
@@ -955,6 +988,10 @@ void InterestGroupUpdateManager::DidUpdateInterestGroupsOfOwnerDbLoad(
            .joining_origin.IsSameOriginWith(
                update_parameters.at(max_parallel_updates_).joining_origin)) {
     update_parameters.resize(max_parallel_updates_);
+
+    base::UmaHistogramEnumeration(
+        "Ads.InterestGroup.Auction.GroupUpdate.BatchOperation",
+        GroupUpdateBatchOperation::kNonSplit);
   } else {
     // Interest groups with same joining origin cannot be put into
     // different batches, unless it can fill all the batches except the
@@ -970,6 +1007,10 @@ void InterestGroupUpdateManager::DidUpdateInterestGroupsOfOwnerDbLoad(
                pop_out_origin)) {
       update_parameters.pop_back();
     }
+
+    base::UmaHistogramEnumeration(
+        "Ads.InterestGroup.Auction.GroupUpdate.BatchOperation",
+        GroupUpdateBatchOperation::kSplit);
   }
 
   UpdateInterestGroupByBatch(owner, std::move(update_parameters));
@@ -979,6 +1020,7 @@ void InterestGroupUpdateManager::DidUpdateInterestGroupsOfOwnerDbLoad(
 void InterestGroupUpdateManager::DidUpdateInterestGroupsOfOwnerNetFetch(
     UrlLoadersList::iterator simple_url_loader_it,
     blink::InterestGroupKey group_key,
+    base::TimeTicks start_time,
     std::unique_ptr<std::string> fetch_body) {
   DCHECK_EQ(group_key.owner, owners_to_update_.FrontOwner());
   DCHECK_GT(num_in_flight_updates_, 0);
@@ -997,6 +1039,12 @@ void InterestGroupUpdateManager::DidUpdateInterestGroupsOfOwnerNetFetch(
   }
   base::UmaHistogramCounts100000(
       "Ads.InterestGroup.Net.ResponseSizeBytes.Update", fetch_body->size());
+  base::UmaHistogramCustomCounts(
+      "Ads.InterestGroup.Auction.GroupUpdate.Duration",
+      (base::TimeTicks::Now() - start_time).InMilliseconds(),
+      kGroupUpdateDurationMin.InMilliseconds(),
+      kGroupUpdateDurationMax.InMilliseconds(), kGroupUpdateDurationBuckets);
+
   data_decoder::DataDecoder::ParseJsonIsolated(
       *fetch_body,
       base::BindOnce(
