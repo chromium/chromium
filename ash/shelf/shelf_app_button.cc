@@ -90,10 +90,6 @@ constexpr int kInkDropRippleActivationTimeMs = 650;
 // The drag and drop app icon should get scaled by this factor.
 constexpr float kAppIconScale = 1.2f;
 
-// The icon for promise apps should be scaled down by this factor on installing
-// state.
-constexpr float kPromiseIconScaleInstalling = 28.0f / 36.0f;
-
 // The preferred promise icon size for a placeholder icon. Placeholder icons do
 // not change size between states.
 constexpr int kPlaceholderIconDimension = 24;
@@ -828,12 +824,17 @@ void ShelfAppButton::AnimateInFromPromiseApp(
 
   gfx::Rect icon_bounds(GetIconViewBounds(GetContentsBounds(), 1.0f,
                                           /*ignore_shadow_insets=*/false));
+  const float starting_size =
+      fallback_icon_image_model_.IsVectorIcon()
+          ? kPlaceholderIconDimension
+          : static_cast<float>(kPromiseIconDimensionInstalling);
   // TODO(b/297866814): Shadow insets are ignored for promise apps when
   // calculating icon bounds - make `GetIconViewBounds()` explicitly ignore
   // them.
-  gfx::Rect promise_icon_bounds =
-      GetIconViewBounds(GetContentsBounds(), kPromiseIconScaleInstalling,
-                        /*ignore_shadow_insets=*/true);
+  gfx::Rect promise_icon_bounds = GetIconViewBounds(
+      GetContentsBounds(),
+      starting_size / static_cast<float>(shelf_view_->GetButtonIconSize()),
+      /*ignore_shadow_insets=*/true);
   icon_view_->layer()->SetTransform(gfx::TransformBetweenRects(
       gfx::RectF(icon_bounds), gfx::RectF(promise_icon_bounds)));
 

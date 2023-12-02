@@ -119,9 +119,6 @@ static const int kTouchDragImageVerticalOffset = 25;
 // The drag and drop app icon should get scaled by this factor.
 constexpr float kDragDropAppIconScale = 1.2f;
 
-// The icon for promise apps should be scaled down by this factor on installing.
-constexpr float kPromiseIconScaleInstalling = 28.0f / 36.0f;
-
 // The promise app placeholder icon should use this size.
 constexpr int kPlaceholderIconDimension = 24;
 
@@ -1900,8 +1897,16 @@ void AppListItemView::AnimateInFromPromiseApp(
   new_install_dot_->layer()->SetOpacity(0.0f);
 
   const gfx::Point center_point = gfx::Rect(GetIconSize()).CenterPoint();
-  icon_view->layer()->SetTransform(
-      gfx::GetScaleTransform(center_point, kPromiseIconScaleInstalling));
+  const float starting_size =
+      fallback_icon_image_model_.IsVectorIcon()
+          ? kPlaceholderIconDimension
+          : static_cast<float>(
+                app_list_config_->promise_icon_dimension_installing());
+
+  icon_view->layer()->SetTransform(gfx::GetScaleTransform(
+      center_point,
+      starting_size /
+          static_cast<float>(app_list_config_->grid_icon_dimension())));
 
   // Animate the app list view out of the promise app state.
   views::AnimationBuilder animation;
