@@ -77,7 +77,6 @@ GLclampf z_far;
 GLenum front_face;
 GLenum hint_generate_mipmap;
 GLenum hint_fragment_shader_derivative;
-GLenum hint_texture_filtering;
 GLfloat line_width;
 GLint pack_alignment;
 GLint unpack_alignment;

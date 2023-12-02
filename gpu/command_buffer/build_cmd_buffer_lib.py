@@ -432,13 +432,6 @@ _STATE_INFO = {
         'enum': 'GL_FRAGMENT_SHADER_DERIVATIVE_HINT_OES',
         'default': 'GL_DONT_CARE',
         'extension_flag': 'oes_standard_derivatives'
-      },
-      {
-        'name': 'hint_texture_filtering',
-        'type': 'GLenum',
-        'enum': 'GL_TEXTURE_FILTERING_HINT_CHROMIUM',
-        'default': 'GL_NICEST',
-        'extension_flag': 'chromium_texture_filtering_hint'
       }
     ],
   },

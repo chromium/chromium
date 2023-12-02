@@ -3479,10 +3479,6 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
     InitializeGLDebugLogging(true, GLDebugMessageCallback, &logger_);
   }
 
-  if (feature_info_->feature_flags().chromium_texture_filtering_hint) {
-    api()->glHintFn(GL_TEXTURE_FILTERING_HINT_CHROMIUM, GL_NICEST);
-  }
-
   if (CheckResetStatus()) {
     // If the context was lost at any point before or during initialization, the
     // values queried from the driver could be bogus, and potentially
