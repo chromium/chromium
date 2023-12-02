@@ -44,6 +44,7 @@ class SubpageView : public views::View {
   void SetTitle(const std::u16string& title);
   void SetContentView(std::unique_ptr<views::View> content);
   void SetHeaderView(std::unique_ptr<views::View> header_view);
+  void SetFootnoteView(std::unique_ptr<views::View> footnote_view);
 
  private:
   void SetUpSubpageTitle(views::Button::PressedCallback callback);
@@ -57,6 +58,7 @@ BEGIN_VIEW_BUILDER(/* no export */, SubpageView, views::View)
 VIEW_BUILDER_PROPERTY(const std::u16string&, Title)
 VIEW_BUILDER_METHOD(SetContentView, std::unique_ptr<views::View>)
 VIEW_BUILDER_METHOD(SetHeaderView, std::unique_ptr<views::View>)
+VIEW_BUILDER_METHOD(SetFootnoteView, std::unique_ptr<views::View>)
 END_VIEW_BUILDER
 
 DEFINE_VIEW_BUILDER(/* no export */, SubpageView)

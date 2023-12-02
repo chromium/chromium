@@ -97,5 +97,9 @@ void SubpageView::SetHeaderView(std::unique_ptr<views::View> header_view) {
   bubble_frame_view_->SetHeaderView(std::move(header_view));
 }
 
+void SubpageView::SetFootnoteView(std::unique_ptr<views::View> footnote_view) {
+  bubble_frame_view_->SetFootnoteView(std::move(footnote_view));
+}
+
 BEGIN_METADATA(SubpageView, views::View)
 END_METADATA

@@ -22,6 +22,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/strings/grit/components_strings.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -152,15 +153,22 @@ void OfferNotificationBubbleViews::InitWithFreeListingCouponOfferContent() {
       gfx::Insets::TLBR(dialog_insets.top(), 0, dialog_insets.bottom(), 0));
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
+
+  GURL url = web_contents()->GetLastCommittedURL();
+  std::string seller_domain =
+      net::registry_controlled_domains::GetDomainAndRegistry(
+          url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+
   free_listing_coupon_page_container_ =
       AddChildView(std::make_unique<PageSwitcherView>(
           CreateFreeListingCouponOfferMainPageContent(
-              *(controller_->GetOffer()))));
+              *(controller_->GetOffer()), seller_domain)));
 }
 
 std::unique_ptr<views::View>
 OfferNotificationBubbleViews::CreateFreeListingCouponOfferMainPageContent(
-    const AutofillOfferData& offer) {
+    const AutofillOfferData& offer,
+    const std::string& seller_domain) {
   CHECK(!offer.GetPromoCode().empty());
 
   auto main_page_view = std::make_unique<views::View>();
@@ -267,7 +275,7 @@ OfferNotificationBubbleViews::CreateFreeListingCouponOfferMainPageContent(
       size_t terms_and_conditions_offset = offsets[1];
       base::RepeatingCallback<void()> callback = base::BindRepeating(
           &OfferNotificationBubbleViews::OpenTermsAndConditionsPage,
-          weak_factory_.GetWeakPtr(), offer);
+          weak_factory_.GetWeakPtr(), offer, seller_domain);
       views::StyledLabel::RangeStyleInfo terms_and_conditions_style_info =
           views::StyledLabel::RangeStyleInfo::CreateForLink(
               std::move(callback));
@@ -371,15 +379,20 @@ void OfferNotificationBubbleViews::UpdateButtonTooltipsAndAccessibleNames() {
 }
 
 void OfferNotificationBubbleViews::OpenTermsAndConditionsPage(
-    AutofillOfferData offer) {
+    AutofillOfferData offer,
+    std::string seller_domain) {
   ResetPointersToFreeListingCouponOfferMainPageContent();
 
+  auto footer_message =
+      l10n_util::GetStringFUTF16(IDS_SELLER_TERMS_AND_CONDITIONS_DIALOG_FOOTER,
+                                 base::ASCIIToUTF16(seller_domain));
   free_listing_coupon_page_container_->SwitchToPage(
       views::Builder<SubpageView>(
           std::make_unique<SubpageView>(
               base::BindRepeating(&OfferNotificationBubbleViews::
                                       OpenFreeListingCouponOfferMainPage,
-                                  weak_factory_.GetWeakPtr(), offer),
+                                  weak_factory_.GetWeakPtr(), offer,
+                                  seller_domain),
               GetBubbleFrameView()))
           .SetTitle(l10n_util::GetStringUTF16(
               IDS_SELLER_TERMS_AND_CONDITIONS_DIALOG_TITLE))
@@ -391,6 +404,16 @@ void OfferNotificationBubbleViews::OpenTermsAndConditionsPage(
                   .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
                   .Build())
           .SetHeaderView(nullptr)
+          .SetFootnoteView(
+              // TODO(b:289240484): Need to elide the front of the seller_domain
+              // if needed.
+              views::Builder<views::Label>()
+                  .SetText(footer_message)
+                  .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+                  .SetMultiLine(true)
+                  .SetMaxLines(2)
+                  .SetAllowCharacterBreak(true)
+                  .Build())
           .Build());
   SizeToContents();
 }
@@ -429,13 +452,15 @@ OfferNotificationBubbleViews::CreateFreeListingCouponOfferMainPageTitleView(
 }
 
 void OfferNotificationBubbleViews::OpenFreeListingCouponOfferMainPage(
-    AutofillOfferData offer) {
+    AutofillOfferData offer,
+    std::string seller_domain) {
   GetBubbleFrameView()->SetHeaderView(
       CreateFreeListingCouponOfferMainPageHeaderView());
   GetBubbleFrameView()->SetTitleView(
       CreateFreeListingCouponOfferMainPageTitleView(offer));
+  GetBubbleFrameView()->SetFootnoteView(nullptr);
   free_listing_coupon_page_container_->SwitchToPage(
-      CreateFreeListingCouponOfferMainPageContent(offer));
+      CreateFreeListingCouponOfferMainPageContent(offer, seller_domain));
   SizeToContents();
 }
 

@@ -95,14 +95,17 @@ class OfferNotificationBubbleViews : public AutofillBubbleBase,
 
   void UpdateButtonTooltipsAndAccessibleNames();
 
-  void OpenTermsAndConditionsPage(AutofillOfferData offer);
+  void OpenTermsAndConditionsPage(AutofillOfferData offer,
+                                  std::string seller_domain);
 
   std::unique_ptr<views::View> CreateFreeListingCouponOfferMainPageHeaderView();
   std::unique_ptr<views::View> CreateFreeListingCouponOfferMainPageTitleView(
       const AutofillOfferData& offer);
   std::unique_ptr<views::View> CreateFreeListingCouponOfferMainPageContent(
-      const AutofillOfferData& offer);
-  void OpenFreeListingCouponOfferMainPage(AutofillOfferData offer);
+      const AutofillOfferData& offer,
+      const std::string& seller_domain);
+  void OpenFreeListingCouponOfferMainPage(AutofillOfferData offer,
+                                          std::string seller_domain);
 
   void ResetPointersToFreeListingCouponOfferMainPageContent();
 
