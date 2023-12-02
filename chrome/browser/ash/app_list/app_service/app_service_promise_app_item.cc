@@ -66,7 +66,6 @@ void AppServicePromiseAppItem::OnPromiseAppUpdate(
     const apps::PromiseAppUpdate& update) {
   // Each status has its own set of visual effects.
   if (update.StatusChanged()) {
-    LoadIcon();
     SetAppStatus(ShelfControllerHelper::ConvertPromiseStatusToAppStatus(
         update.Status()));
     SetName(base::UTF16ToUTF8(
@@ -78,6 +77,7 @@ void AppServicePromiseAppItem::OnPromiseAppUpdate(
   if (update.ProgressChanged() && update.Progress().has_value()) {
     SetProgress(update.Progress().value());
   }
+  LoadIcon();
 }
 
 void AppServicePromiseAppItem::LoadIcon() {
@@ -112,7 +112,6 @@ void AppServicePromiseAppItem::InitializeItem(
       ShelfControllerHelper::ConvertPromiseStatusToAppStatus(update.Status()));
   apps::RecordPromiseAppLifecycleEvent(
       apps::PromiseAppLifecycleEvent::kCreatedInLauncher);
-  LoadIcon();
 }
 
 void AppServicePromiseAppItem::GetContextMenuModel(

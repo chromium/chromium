@@ -73,6 +73,7 @@ class ChromeAppListItem {
   bool is_new_install() const { return metadata_->is_new_install; }
   bool is_ephemeral() const { return metadata_->is_ephemeral; }
   float progress() const { return metadata_->progress; }
+  bool is_placeholder_icon() const { return metadata_->is_placeholder_icon; }
   const std::string accessible_name() const {
     return metadata_->accessible_name;
   }
