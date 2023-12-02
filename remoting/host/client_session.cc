@@ -550,8 +550,13 @@ void ClientSession::OnConnectionAuthenticated() {
   host_capabilities_.append(protocol::kRtcLogTransferCapability);
   host_capabilities_.append(" ");
   host_capabilities_.append(protocol::kWebrtcIceSdpRestartAction);
+
+  // TODO: crbug.com/1507189 - Remove this check when the ChromeOS bug has been
+  // fixed.
+#if !BUILDFLAG(IS_CHROMEOS)
   host_capabilities_.append(" ");
   host_capabilities_.append(protocol::kFractionalCoordinatesCapability);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // Create the object that controls the screen resolution.
   screen_controls_ = desktop_environment_->CreateScreenControls();
