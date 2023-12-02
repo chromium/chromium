@@ -136,8 +136,9 @@ def is_in_fuchsia(node_id: str) -> bool:
     has a workable network or ssh connection.
     This function asserts the existence of serialio and waits at most ~60
     seconds."""
-    if not _serialio_send_and_wait(node_id, ['echo', 'yes-i-am-healthy'],
-                                   'yes-i-am-healthy'):
+    if not _serialio_send_and_wait(
+            node_id, ['echo', 'yes-i-am-healthy', '|', 'sha1sum'],
+            '89d517b7db104aada669a83bc3c3a906e00671f7'):
         logging.error(
             'Device %s did not respond echo, '
             'it may not be running fuchsia', node_id)
