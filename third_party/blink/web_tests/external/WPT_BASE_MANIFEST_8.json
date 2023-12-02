@@ -319216,10 +319216,6 @@
       []
      ],
      "grid-definition": {
-      "grid-auto-repeat-max-size-001-expected.txt": [
-       "711f10dda088d8ff5ea5593c1ed9feaaaf773cff",
-       []
-      ],
       "grid-auto-repeat-multiple-values-002-ref.html": [
        "754fec3fa0f34787bcd1394c41b67b1c8b02cbb1",
        []
@@ -369713,6 +369709,10 @@
        []
       ],
       "pseudo-classes": {
+       "checked-indeterminate.window-expected.txt": [
+        "15e63a9a7ad831ff201eb05ee60f1c6b2ce189ee",
+        []
+       ],
        "focus-iframe.html": [
         "a269f1c671774b34885af42e233d5ca4a260f62a",
         []
@@ -447759,8 +447759,8 @@
         {}
        ]
       ],
-      "grid-auto-repeat-max-size-001.html": [
-       "08d23c6b60526a8b1494a9df7f6529e8ff5d68f3",
+      "grid-auto-repeat-max-size-001.tentative.html": [
+       "144ded9f36fd2e832ff261255f77d4d4d9b8fc46",
        [
         null,
         {}
@@ -571199,6 +571199,13 @@
         "b7c3644bdbad02f7775c3ae4a341715d082870c2",
         [
          null,
+         {}
+        ]
+       ],
+       "checked-indeterminate.window.js": [
+        "167cbdd37fa1d4fe99b099417a8677381a0ae353",
+        [
+         "html/semantics/selectors/pseudo-classes/checked-indeterminate.window.html",
          {}
         ]
        ],
