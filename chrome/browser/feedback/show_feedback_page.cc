@@ -223,23 +223,28 @@ void RequestFeedbackFlow(const GURL& page_url,
   bool include_bluetooth_logs = false;
   bool show_questionnaire = false;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (IsGoogleInternalAccount(profile)) {
-    flow = feedback_private::FeedbackFlow::kGoogleInternal;
-    include_bluetooth_logs = IsFromUserInteraction(source);
-    show_questionnaire = IsFromUserInteraction(source);
-  }
-  // Disable the new feedback tool for kiosk, when SWAs are disabled there.
-  if (!chromeos::IsKioskSession() ||
-      base::FeatureList::IsEnabled(ash::features::kKioskEnableSystemWebApps)) {
-    // TODO(crbug.com/1407646): Include autofill metadata into CrOS new feedback
-    // tool.
-    ash::SystemAppLaunchParams params;
-    params.url = BuildFeedbackUrl(
-        extra_diagnostics, description_template, description_placeholder_text,
-        category_tag, page_url, source, std::move(autofill_metadata));
-    ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::OS_FEEDBACK,
-                                 std::move(params));
-    return;
+  // TODO(crbug.com/1501057) Support ChromeOS feedback dialog for
+  // `kFeedbackSourceAI`.
+  if (source != kFeedbackSourceAI) {
+    if (IsGoogleInternalAccount(profile)) {
+      flow = feedback_private::FeedbackFlow::kGoogleInternal;
+      include_bluetooth_logs = IsFromUserInteraction(source);
+      show_questionnaire = IsFromUserInteraction(source);
+    }
+    // Disable the new feedback tool for kiosk, when SWAs are disabled there.
+    if (!chromeos::IsKioskSession() ||
+        base::FeatureList::IsEnabled(
+            ash::features::kKioskEnableSystemWebApps)) {
+      // TODO(crbug.com/1407646): Include autofill metadata into CrOS new
+      // feedback tool.
+      ash::SystemAppLaunchParams params;
+      params.url = BuildFeedbackUrl(
+          extra_diagnostics, description_template, description_placeholder_text,
+          category_tag, page_url, source, std::move(autofill_metadata));
+      ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::OS_FEEDBACK,
+                                   std::move(params));
+      return;
+    }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

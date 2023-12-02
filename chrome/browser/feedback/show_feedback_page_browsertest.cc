@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -274,6 +275,18 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
                                ->GetVisibleURL();
   EXPECT_TRUE(visible_url.has_query());
   EXPECT_EQ(expected_url, visible_url);
+}
+
+IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest, FeedbackFlowAI) {
+  std::string unused;
+  chrome::ShowFeedbackPage(browser(), chrome::kFeedbackSourceAI,
+                           /*description_template=*/unused,
+                           /*description_placeholder_text=*/unused,
+                           /*category_tag=*/unused,
+                           /*extra_diagnostics=*/unused,
+                           /*autofill_metadata=*/base::Value::Dict());
+  EXPECT_EQ(chrome::kChromeUIFeedbackURL,
+            FeedbackDialog::GetInstanceForTest()->GetDialogContentURL());
 }
 
 }  // namespace ash
