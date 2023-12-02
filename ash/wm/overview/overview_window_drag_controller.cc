@@ -8,6 +8,7 @@
 
 #include "ash/display/mouse_cursor_event_filter.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/cros_next_desk_icon_button.h"
@@ -467,6 +468,15 @@ void OverviewWindowDragController::ActivateDraggedWindow() {
     // Explicitly set `item_` to null to avoid being accessed after been
     // released in `OverviewGrid::RemoveItem()`. See UaF reported in
     // b/301368132.
+    item_ = nullptr;
+    event_source_item_ = nullptr;
+  } else if (auto* split_view_overview_session =
+                 RootWindowController::ForWindow(item_->GetWindow())
+                     ->split_view_overview_session();
+             split_view_overview_session &&
+             split_view_overview_session->auto_snap_controller()) {
+    // If `SplitViewOverviewSession` is active, let it handle the autosnap.
+    overview_session_->SelectWindow(event_source_item_);
     item_ = nullptr;
     event_source_item_ = nullptr;
   } else if (split_view_controller->CanSnapWindow(item_->GetWindow())) {

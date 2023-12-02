@@ -436,7 +436,7 @@ TEST_F(FasterSplitScreenTest, DragToPartialOverview) {
   VerifySplitViewOverviewSession(w1.get());
   EXPECT_TRUE(overview_session->IsWindowInOverview(w2.get()));
 
-  // Select `w2`. Test it snaps.
+  // Select `w2`. Test it snaps and we end overview.
   auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseTo(
       gfx::ToRoundedPoint(GetOverviewItemForWindow(w2.get())
@@ -445,6 +445,9 @@ TEST_F(FasterSplitScreenTest, DragToPartialOverview) {
   event_generator->ClickLeftButton();
   EXPECT_EQ(chromeos::WindowStateType::kSecondarySnapped,
             WindowState::Get(w2.get())->GetStateType());
+  EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
+            WindowState::Get(w1.get())->GetStateType());
+  EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
 }
 
 TEST_F(FasterSplitScreenTest, MultiDisplay) {
