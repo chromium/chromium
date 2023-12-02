@@ -78,7 +78,7 @@ class CorpHostStarter : public HostStarter,
 
   void OnProvisionCorpMachineResponse(
       const ProtobufHttpStatus& status,
-      std::unique_ptr<internal::RemoteAccessHostV1Proto> response);
+      std::unique_ptr<internal::ProvisionCorpMachineResponse> response);
 
   void OnHostStarted(DaemonController::AsyncResult result);
   void OnHostStopped(DaemonController::AsyncResult result);
@@ -208,7 +208,7 @@ void CorpHostStarter::OnGetUserEmailResponse(const std::string& user_email) {
 
 void CorpHostStarter::OnProvisionCorpMachineResponse(
     const ProtobufHttpStatus& status,
-    std::unique_ptr<internal::RemoteAccessHostV1Proto> response) {
+    std::unique_ptr<internal::ProvisionCorpMachineResponse> response) {
   if (!main_task_runner_->BelongsToCurrentThread()) {
     main_task_runner_->PostTask(
         FROM_HERE,
@@ -224,6 +224,7 @@ void CorpHostStarter::OnProvisionCorpMachineResponse(
 
   service_account_email_ =
       base::ToLowerASCII(internal::GetServiceAccount(*response));
+  // TODO(joedow): Check owner_email against what was provided by the user.
   start_host_params_.id = internal::GetHostId(*response);
 
   authorization_code_ = internal::GetAuthorizationCode(*response);

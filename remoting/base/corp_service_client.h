@@ -38,7 +38,7 @@ class CorpServiceClient {
  public:
   using ProvisionCorpMachineCallback = base::OnceCallback<void(
       const ProtobufHttpStatus&,
-      std::unique_ptr<internal::RemoteAccessHostV1Proto>)>;
+      std::unique_ptr<internal::ProvisionCorpMachineResponse>)>;
   using ReportProvisioningErrorCallback =
       base::OnceCallback<void(const ProtobufHttpStatus&,
                               std::unique_ptr<Empty>)>;
