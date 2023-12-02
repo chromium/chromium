@@ -910,7 +910,7 @@ TEST_P(PredictionManagerTest, AddObserverForOptimizationTargetModel) {
 TEST_P(PredictionManagerTest,
        AddObserverForOptimizationTargetModelAddAnotherObserverForSameTarget) {
   // Fails under "threadsafe" mode.
-  testing::GTEST_FLAG(death_test_style) = "fast";
+  GTEST_FLAG_SET(death_test_style, "fast");
 
   CreatePredictionManager();
 
