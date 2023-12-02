@@ -54,6 +54,9 @@
   <message name="IDS_COMPOSE_SUBMIT_BUTTON" desc="The button to submit the input." translateable="false">
   Submit
   </message>
+  <message name="IDS_COMPOSE_EDIT" desc="Label for button that allows user to edit their input." translateable="false">
+  Edit
+  </message>
   <message name="IDS_COMPOSE_EDIT_UPDATE_BUTTON" desc="The button that confirms the edited input." translateable="false">
   Update
   </message>
@@ -79,6 +82,12 @@
   </message>
   <message name="IDS_COMPOSE_MENU_2_OPTION_2" desc="The second option for the second style." translateable="false">
   Formal
+  </message>
+  <message name="IDS_COMPOSE_UNDO" desc="Label for button that user clicks to undo to the last result." translateable="false">
+  Undo
+  </message>
+  <message name="IDS_COMPOSE_RESUBMIT" desc="Label for button that user clicks to resubmit input." translateable="false">
+  Resubmit
   </message>
 
   <!-- Errors -->

@@ -37,6 +37,7 @@ ComposeUI::ComposeUI(content::WebUI* web_ui)
 
   // Localized strings.
   static constexpr webui::LocalizedString kStrings[] = {
+      {"close", IDS_CLOSE},
       {"consentTitle", IDS_COMPOSE_CONSENT_TITLE},
       {"consentMainTop", IDS_COMPOSE_CONSENT_MAIN_TOP},
       {"consentMainBottom", IDS_COMPOSE_CONSENT_MAIN_BOTTOM},
@@ -63,9 +64,11 @@ ComposeUI::ComposeUI(content::WebUI* web_ui)
       {"errorRequestNotSuccessful", IDS_COMPOSE_ERROR_REQUEST_NOT_SUCCESSFUL},
       {"errorPermissionDenied", IDS_COMPOSE_ERROR_REQUEST_NOT_SUCCESSFUL},
       {"errorGeneric", IDS_COMPOSE_ERROR_GENERIC},
-      {"editButton", IDS_EDIT},
+      {"editButton", IDS_COMPOSE_EDIT},
       {"editCancelButton", IDS_CANCEL},
       {"editUpdateButton", IDS_COMPOSE_EDIT_UPDATE_BUTTON},
+      {"undo", IDS_COMPOSE_UNDO},
+      {"resubmit", IDS_COMPOSE_RESUBMIT},
       {"thumbsDown", IDS_THUMBS_DOWN},
       {"thumbsUp", IDS_THUMBS_UP},
   };
