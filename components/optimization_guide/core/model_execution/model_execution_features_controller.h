@@ -57,13 +57,6 @@ class ModelExecutionFeaturesController
   void SimulateBrowserRestartForTesting();
 
  private:
-  // Enumerates the reasons an user is invalid.
-  enum class UserValidityResult {
-    kValid,
-    kInvalidUnsignedUser,
-    kInvalidEnterprisePolicy,
-  };
-
   // Called when the main setting toggle pref is changed.
   void OnMainToggleSettingStatePrefChanged();
 
@@ -81,13 +74,9 @@ class ModelExecutionFeaturesController
   prefs::FeatureOptInState GetPrefState(
       proto::ModelExecutionFeature feature) const;
 
-  // Returns the current validity result for user is eligible to be shown
-  // settings for `feature`.
-  UserValidityResult GetCurrentUserValidityResult(
-      proto::ModelExecutionFeature feature) const;
-
-  // Returns whether the `feature` is allowed by enterprise policy.
-  bool IsAllowedByEnterprisePolicy(proto::ModelExecutionFeature feature) const;
+  // Returns true if the user is an eligible user to be shown settings for
+  // `feature`.
+  bool IsCurrentlyAValidUser(proto::ModelExecutionFeature feature) const;
 
   // Initializes the state of the different features at startup.
   void InitializeFeatureSettings();

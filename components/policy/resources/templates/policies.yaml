@@ -1184,7 +1184,6 @@ policies:
   1183: DeskAPIDeskSaveAndShareEnabled
   1184: OopPrintDriversAllowed
   1185: DeviceHardwareVideoDecodingEnabled
-  1186: TabOrganizationAllowed
 atomic_groups:
   1: Homepage
   2: RemoteAccess

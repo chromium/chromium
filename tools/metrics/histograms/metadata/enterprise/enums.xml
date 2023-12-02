@@ -1991,7 +1991,6 @@ chromium-metrics-reviews@google.com.
   <int value="1183" label="DeskAPIDeskSaveAndShareEnabled"/>
   <int value="1184" label="OopPrintDriversEnabled"/>
   <int value="1185" label="DeviceHardwareVideoDecodingEnabled"/>
-  <int value="1186" label="TabOrganizationAllowed"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
