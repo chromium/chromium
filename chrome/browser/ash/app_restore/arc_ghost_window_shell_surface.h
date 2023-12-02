@@ -21,9 +21,6 @@ enum class GhostWindowType;
 
 namespace ash::full_restore {
 
-// Explicitly identifies ARC ghost surface.
-extern const aura::WindowProperty<bool>* const kArcGhostSurface;
-
 class ArcGhostWindowView;
 
 // ArcGhostWindowShellSurface class is a shell surface which controlled its

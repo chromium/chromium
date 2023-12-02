@@ -20,13 +20,14 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/arc/arc_package_syncable_service.h"
-#include "chrome/browser/ash/app_restore/arc_ghost_window_shell_surface.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_session.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/app_restore/window_properties.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
+#include "components/exo/surface_observer.h"
+#include "components/exo/window_properties.h"
 #include "components/exo/wm_helper.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -121,6 +122,17 @@ class AppToCategoryMapper {
 
 }  // namespace
 
+struct ArcAppPerformanceTracing::ActiveTask {
+  ActiveTask(exo::Surface* root_surface, exo::SurfaceObserver* observer, int id)
+      : root_surface(root_surface, observer), id(id) {}
+
+  // Used for automatic observer adding/removing.
+  exo::ScopedSurface root_surface;
+
+  // ARC task id of the window.
+  const int id;
+};
+
 ArcAppPerformanceTracing::ArcAppPerformanceTracing(
     content::BrowserContext* context,
     ArcBridgeService* bridge)
@@ -133,14 +145,7 @@ ArcAppPerformanceTracing::ArcAppPerformanceTracing(
 }
 
 // Releasing resources in DTOR is not safe, see |Shutdown|.
-ArcAppPerformanceTracing::~ArcAppPerformanceTracing() {
-  if (arc_active_window_) {
-    exo::Surface* const surface = exo::GetShellRootSurface(arc_active_window_);
-    // Surface might be destroyed.
-    if (surface)
-      surface->RemoveSurfaceObserver(this);
-  }
-}
+ArcAppPerformanceTracing::~ArcAppPerformanceTracing() = default;
 
 // static
 ArcAppPerformanceTracing* ArcAppPerformanceTracing::GetForBrowserContext(
@@ -175,7 +180,7 @@ void ArcAppPerformanceTracing::Shutdown() {
 
   MaybeStopTracing();
 
-  // |session_|. Make sure that |arc_active_window_| is detached.
+  // |session_|. Make sure that |active_window_| is detached.
   DetachActiveWindow();
 
   ArcAppListPrefs::Get(context_)->RemoveObserver(this);
@@ -196,11 +201,12 @@ void ArcAppPerformanceTracing::OnCustomTraceDone(
 }
 
 bool ArcAppPerformanceTracing::StartCustomTracing() {
-  if (!arc_active_window_)
+  if (!active_window_) {
     return false;
+  }
 
   session_ = std::make_unique<ArcAppPerformanceTracingSession>(
-      arc_active_window_, *ticks_now_callback());
+      active_window_, *ticks_now_callback());
 
   custom_trace_result_.reset();
   session_->Schedule(
@@ -240,23 +246,46 @@ void ArcAppPerformanceTracing::OnWindowActivated(ActivationReason reason,
   // Detach previous active window if it is set.
   DetachActiveWindow();
 
-  // Ignore any non-ARC++ window.
-  const auto maybe_task_id = arc::GetWindowTaskId(gained_active);
-  if (!maybe_task_id.has_value()) {
+  if (!gained_active) {
     return;
   }
 
-  // Ghost window is not an actual app window.
-  if (gained_active->GetProperty(ash::full_restore::kArcGhostSurface))
-    return;
+  active_window_ = gained_active;
+  active_window_->AddObserver(this);
+  TrackIfTaskIsActive();
 
-  exo::Surface* const surface = exo::GetShellRootSurface(gained_active);
+  if (!active_task_ && !GetWindowSessionId(gained_active)) {
+    // No need to observe if this is not a task or an ARC ghost window.
+    DetachActiveWindow();
+  }
+}
+
+void ArcAppPerformanceTracing::TrackIfTaskIsActive() {
+  DCHECK(active_window_);
+
+  if (active_task_) {
+    return;
+  }
+
+  auto task_id = arc::GetWindowTaskId(active_window_);
+  if (!task_id) {
+    // Not a task window, so is not traceable, but if this is a ghost window,
+    // it may be traceable later.
+    return;
+  }
+
+  exo::Surface* const surface = exo::GetShellRootSurface(active_window_);
+  // Should never happen, but check against a task with unset root surface.
   if (!surface) {
     return;
   }
 
   // Observe active ARC++ window.
-  AttachActiveWindow(gained_active, surface);
+  // Use scoped surface observer to be safe on the surface
+  // destruction. |exo::GetShellRootSurface| would fail in case
+  // the surface gets destroyed before widget.
+  active_task_ =
+      std::make_unique<ActiveTask>(surface, this /* observer */, *task_id);
 
   StartJankinessTracing();
 
@@ -265,13 +294,21 @@ void ArcAppPerformanceTracing::OnWindowActivated(ActivationReason reason,
 
 void ArcAppPerformanceTracing::OnWindowDestroying(aura::Window* window) {
   // ARC++ window will be destroyed.
-  DCHECK_EQ(arc_active_window_, window);
+  DCHECK_EQ(active_window_, window);
 
   CancelJankinessTracing();
 
   MaybeStopTracing();
 
   DetachActiveWindow();
+}
+
+void ArcAppPerformanceTracing::OnWindowPropertyChanged(aura::Window* window,
+                                                       const void* key,
+                                                       intptr_t old) {
+  if (key == exo::kApplicationIdKey) {
+    TrackIfTaskIsActive();
+  }
 }
 
 void ArcAppPerformanceTracing::OnTaskCreated(int32_t task_id,
@@ -297,10 +334,9 @@ void ArcAppPerformanceTracing::StartJankinessTracing() {
 }
 
 void ArcAppPerformanceTracing::HandleActiveAppRendered(base::Time timestamp) {
-  auto task_id = arc::GetWindowTaskId(arc_active_window_);
-  DCHECK(task_id);
+  DCHECK(active_task_);
 
-  const std::string& app_id = task_id_to_app_id_[*task_id].first;
+  const std::string& app_id = task_id_to_app_id_[active_task_->id].first;
   const base::Time launch_request_time =
       ArcAppListPrefs::Get(context_)->PollLaunchRequestTime(app_id);
   if (!launch_request_time.is_null()) {
@@ -319,8 +355,8 @@ void ArcAppPerformanceTracing::OnCommit(exo::Surface* surface) {
 void ArcAppPerformanceTracing::OnSurfaceDestroying(exo::Surface* surface) {
   // |scoped_surface_| might be already reset in case window is destroyed
   // first.
-  DCHECK(!scoped_surface_ || (scoped_surface_->get() == surface));
-  scoped_surface_.reset();
+  DCHECK(!active_task_ || (active_task_->root_surface.get() == surface));
+  DetachActiveWindow();
 }
 
 void ArcAppPerformanceTracing::CancelJankinessTracing() {
@@ -336,13 +372,11 @@ void ArcAppPerformanceTracing::FinalizeJankinessTracing(bool stopped_early) {
 
   // Check if we have all conditions met, ARC++ window is active and information
   // is available for associated task.
-  if (!arc_active_window_)
+  if (!active_task_) {
     return;
+  }
 
-  auto task_id = arc::GetWindowTaskId(arc_active_window_);
-  DCHECK(task_id);
-
-  const auto it = task_id_to_app_id_.find(*task_id);
+  const auto it = task_id_to_app_id_.find(active_task_->id);
   if (it == task_id_to_app_id_.end())
     // It is normal that information might not be available at this time.
     return;
@@ -420,19 +454,17 @@ void ArcAppPerformanceTracing::OnGfxMetrics(const std::string& package_name,
 void ArcAppPerformanceTracing::MaybeStartTracing() {
   if (session_) {
     // We are already tracing, ignore.
-    DCHECK_EQ(session_->window(), arc_active_window_);
+    DCHECK_EQ(session_->window(), active_window_);
     return;
   }
 
   // Check if we have all conditions met, ARC++ window is active and information
   // is available for associated task.
-  if (!arc_active_window_)
+  if (!active_task_) {
     return;
+  }
 
-  auto task_id = arc::GetWindowTaskId(arc_active_window_);
-  DCHECK(task_id);
-
-  const auto it = task_id_to_app_id_.find(*task_id);
+  const auto it = task_id_to_app_id_.find(active_task_->id);
   if (it == task_id_to_app_id_.end()) {
     // It is normal that information might not be available at this time.
     return;
@@ -477,7 +509,7 @@ void ArcAppPerformanceTracing::MaybeStartTracing() {
   }
 
   session_ = std::make_unique<ArcAppPerformanceTracingSession>(
-      arc_active_window_, *ticks_now_callback());
+      active_window_, *ticks_now_callback());
   reporting_.Schedule(session_.get(), category);
 }
 
@@ -486,27 +518,14 @@ void ArcAppPerformanceTracing::MaybeStopTracing() {
   session_.reset();
 }
 
-void ArcAppPerformanceTracing::AttachActiveWindow(aura::Window* window,
-                                                  exo::Surface* surface) {
-  DCHECK(window);
-  DCHECK(!arc_active_window_);
-  arc_active_window_ = window;
-  arc_active_window_->AddObserver(this);
-
-  // Use scoped surface observer to be safe on the surface
-  // destruction. |exo::GetShellRootSurface| would fail in case
-  // the surface gets destroyed before widget.
-  scoped_surface_ =
-      std::make_unique<exo::ScopedSurface>(surface, this /* observer */);
-}
-
 void ArcAppPerformanceTracing::DetachActiveWindow() {
-  if (!arc_active_window_)
+  if (!active_window_) {
     return;
+  }
 
-  scoped_surface_.reset();
-  arc_active_window_->RemoveObserver(this);
-  arc_active_window_ = nullptr;
+  active_task_.reset();
+  active_window_->RemoveObserver(this);
+  active_window_ = nullptr;
 }
 
 // static

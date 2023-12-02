@@ -85,7 +85,9 @@ int64_t ReadFocusStatistics(const std::string& name) {
 // be possible to use directly.
 class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
  public:
-  ArcAppPerformanceTracingTest() = default;
+  ArcAppPerformanceTracingTest()
+      : BrowserWithTestWindowTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   ArcAppPerformanceTracingTest(const ArcAppPerformanceTracingTest&) = delete;
   ArcAppPerformanceTracingTest& operator=(const ArcAppPerformanceTracingTest&) =
@@ -468,7 +470,7 @@ TEST_F(ArcAppPerformanceTracingTest, NoTracingForArcGhostWindow) {
   ASSERT_TRUE(ghost_window);
 
   // Associate ghost window with real app.
-  ghost_window->SetApplicationId("org.chromium.arc.1");
+  ghost_window->SetApplicationId("org.chromium.arc.session.1");
 
   // This creates window.
   ghost_window->SetSystemUiVisibility(false /* autohide */);
@@ -487,6 +489,39 @@ TEST_F(ArcAppPerformanceTracingTest, NoTracingForArcGhostWindow) {
 
   // Ghost window should not trigger tracing sessions.
   DCHECK(!tracing_helper().GetTracingSession());
+}
+
+TEST_F(ArcAppPerformanceTracingTest, GhostWindowTurnsIntoTaskWindow) {
+  // TODO(b/312215591): Use ghost window utilities to simulate the
+  // transformation of a ghost window into a task window?
+  constexpr int kTaskId = 9486;
+  constexpr char kAppId[] = "org.chromium.arc.9486";
+
+  // By default it is inactive.
+  EXPECT_FALSE(tracing_helper().GetTracingSession());
+
+  auto ghost_surface = std::make_unique<exo::Surface>();
+
+  views::Widget* const widget = ArcTaskWindowBuilder()
+                                    .SetTaskId(kTaskId)
+                                    .SetShellRootSurface(ghost_surface.get())
+                                    .BuildOwnedByNativeWidget();
+  exo::SetShellApplicationId(widget->GetNativeWindow(),
+                             "org.chromium.arc.session.1");
+  tracing_helper().GetTracing()->OnTaskCreated(
+      kTaskId, kFocusAppPackage, kFocusAppActivity, std::string() /* intent */,
+      0 /* session_id */);
+
+  exo::SetShellRootSurface(widget->GetNativeWindow(), ghost_surface.get());
+  widget->Show();
+
+  ASSERT_FALSE(tracing_helper().GetTracingSession());
+
+  auto task_surface = std::make_unique<exo::Surface>();
+  exo::SetShellRootSurface(widget->GetNativeWindow(), ghost_surface.get());
+  exo::SetShellApplicationId(widget->GetNativeWindow(), kAppId);
+
+  ASSERT_TRUE(tracing_helper().GetTracingSession());
 }
 
 }  // namespace arc

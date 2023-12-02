@@ -29,9 +29,6 @@
 
 namespace ash::full_restore {
 
-// Explicitly identifies ARC ghost surface.
-DEFINE_UI_CLASS_PROPERTY_KEY(bool, kArcGhostSurface, false)
-
 ArcGhostWindowShellSurface::ArcGhostWindowShellSurface(
     std::unique_ptr<exo::Surface> surface,
     int container,
@@ -184,7 +181,6 @@ void ArcGhostWindowShellSurface::OverrideInitParams(
     views::Widget::InitParams* params) {
   ClientControlledShellSurface::OverrideInitParams(params);
   SetShellAppId(&params->init_properties_container, app_id_);
-  params->init_properties_container.SetProperty(kArcGhostSurface, true);
 }
 
 exo::Surface* ArcGhostWindowShellSurface::controller_surface() {
