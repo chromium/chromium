@@ -177,8 +177,6 @@ void AddNativeUiColorMixer(ColorProvider* provider,
   mixer[kColorSliderTrack] = AlphaBlend(
       kColorNativeHighlight, kColorNativeWindow, gfx::kGoogleGreyAlpha400);
 
-  CompleteControlsForcedColorsDefinition(mixer);
-
   // Window Background
   mixer[kColorBubbleFooterBackground] = {kColorNativeWindow};
   mixer[kColorButtonBackgroundProminentDisabled] = {kColorNativeWindow};

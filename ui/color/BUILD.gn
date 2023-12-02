@@ -187,7 +187,6 @@ component("mixers") {
   } else if (is_win) {
     sources += [
       "win/forced_colors_mixer_win.cc",
-      "win/forced_colors_mixer_win.h",
       "win/native_color_mixers_win.cc",
     ]
     deps += [ ":accent_color_observer" ]
