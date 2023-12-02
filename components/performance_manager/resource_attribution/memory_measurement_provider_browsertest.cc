@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/test/bind.h"
+#include "build/build_config.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
@@ -88,9 +89,13 @@ auto MemorySummaryResultIsPositive() {
       Field("metadata", &MemorySummaryResult::metadata,
             Field("measurement_time", &ResultMetadata::measurement_time,
                   AllOf(Gt(base::TimeTicks()), Lt(base::TimeTicks::Now())))),
-      Field("resident_set_size_kb", &MemorySummaryResult::resident_set_size_kb,
-            Gt(0u)),
+#if BUILDFLAG(IS_IOS)
+  // iOS doesn't support private_memory_footprint, so it's always 0.
+#else
       Field("private_footprint_kb", &MemorySummaryResult::private_footprint_kb,
+            Gt(0u)),
+#endif
+      Field("resident_set_size_kb", &MemorySummaryResult::resident_set_size_kb,
             Gt(0u))));
 }
 
