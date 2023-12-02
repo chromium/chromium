@@ -755,8 +755,6 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'os-settings:laptop-chromebook';
       case SearchResultIcon.kLock:
         return isRevampEnabled ? 'os-settings:lock-revamp' : 'os-settings:lock';
-      case SearchResultIcon.kMagnifyingGlass:
-        return 'cr:search';
       case SearchResultIcon.kMicrophone:
         return 'os-settings:microphone';
       case SearchResultIcon.kMouse:
@@ -792,6 +790,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kRestore:
         return isRevampEnabled ? 'os-settings:restore-revamp' :
                                  'os-settings:startup';
+      case SearchResultIcon.kSearch:
+        return isRevampEnabled ? 'os-settings:explore' : 'cr:search';
       case SearchResultIcon.kSelectToSpeak:
         return 'os-settings:select-to-speak';
       case SearchResultIcon.kShield:

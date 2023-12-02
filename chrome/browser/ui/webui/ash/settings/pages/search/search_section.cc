@@ -56,7 +56,7 @@ const std::vector<SearchConcept>& GetSearchPageSearchConcepts(
     static const base::NoDestructor<std::vector<SearchConcept>> tags({
         {IDS_OS_SETTINGS_TAG_PREFERRED_SEARCH_ENGINE,
          mojom::kSearchSubpagePath,
-         mojom::SearchResultIcon::kMagnifyingGlass,
+         mojom::SearchResultIcon::kSearch,
          mojom::SearchResultDefaultRank::kMedium,
          mojom::SearchResultType::kSetting,
          {.setting = mojom::Setting::kPreferredSearchEngine}},
@@ -67,7 +67,7 @@ const std::vector<SearchConcept>& GetSearchPageSearchConcepts(
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_PREFERRED_SEARCH_ENGINE,
        section_path,
-       mojom::SearchResultIcon::kMagnifyingGlass,
+       mojom::SearchResultIcon::kSearch,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kPreferredSearchEngine}},
@@ -79,7 +79,7 @@ const std::vector<SearchConcept>& GetQuickAnswersSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_QUICK_ANSWERS,
        mojom::kSearchSubpagePath,
-       mojom::SearchResultIcon::kMagnifyingGlass,
+       mojom::SearchResultIcon::kSearch,
        mojom::SearchResultDefaultRank::kLow,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kQuickAnswersOnOff},
@@ -94,19 +94,19 @@ const std::vector<SearchConcept>& GetQuickAnswersOnSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_QUICK_ANSWERS_DEFINITION,
        mojom::kSearchSubpagePath,
-       mojom::SearchResultIcon::kMagnifyingGlass,
+       mojom::SearchResultIcon::kSearch,
        mojom::SearchResultDefaultRank::kLow,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kQuickAnswersDefinition}},
       {IDS_OS_SETTINGS_TAG_QUICK_ANSWERS_TRANSLATION,
        mojom::kSearchSubpagePath,
-       mojom::SearchResultIcon::kMagnifyingGlass,
+       mojom::SearchResultIcon::kSearch,
        mojom::SearchResultDefaultRank::kLow,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kQuickAnswersTranslation}},
       {IDS_OS_SETTINGS_TAG_QUICK_ANSWERS_UNIT_CONVERSION,
        mojom::kSearchSubpagePath,
-       mojom::SearchResultIcon::kMagnifyingGlass,
+       mojom::SearchResultIcon::kSearch,
        mojom::SearchResultDefaultRank::kLow,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kQuickAnswersUnitConversion}},
@@ -348,7 +348,7 @@ mojom::Section SearchSection::GetSection() const {
 }
 
 mojom::SearchResultIcon SearchSection::GetSectionIcon() const {
-  return mojom::SearchResultIcon::kMagnifyingGlass;
+  return mojom::SearchResultIcon::kSearch;
 }
 
 const char* SearchSection::GetSectionPath() const {
@@ -373,8 +373,8 @@ void SearchSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   // Search.
   generator->RegisterTopLevelSubpage(
       IDS_SETTINGS_SEARCH_SUBPAGE_TITLE, mojom::Subpage::kSearch,
-      mojom::SearchResultIcon::kMagnifyingGlass,
-      mojom::SearchResultDefaultRank::kMedium, mojom::kSearchSubpagePath);
+      mojom::SearchResultIcon::kSearch, mojom::SearchResultDefaultRank::kMedium,
+      mojom::kSearchSubpagePath);
   // Register Preferred search engine under Search subpage if Quick answers is
   // available.
   if (ShouldShowQuickAnswersSettings()) {
