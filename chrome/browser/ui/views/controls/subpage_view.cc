@@ -25,6 +25,7 @@ namespace {
 constexpr int kSeparatorBottomMargin = 16;
 constexpr int kBackIconSize = 16;
 constexpr int kBackIconSizeRefreshStyle = 20;
+constexpr int kSpaceBetweenBackArrowAndTitle = 8;
 }  // namespace
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kSubpageViewId);
@@ -71,6 +72,9 @@ void SubpageView::SetUpSubpageTitle(views::Button::PressedCallback callback) {
           .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .Build());
+  title_->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::TLBR(0, kSpaceBetweenBackArrowAndTitle, 0, 0));
 
   bubble_frame_view_->SetTitleView(std::move(title_view));
 }
