@@ -83,10 +83,12 @@ class MockDelegate : public AppShimManager::Delegate {
                   web_app::ShimLaunchMode launch_mode,
                   ShimLaunchedCallback launched_callback,
                   ShimTerminatedCallback terminated_callback) override {
-    if (launch_shim_callback_capture_)
+    if (launch_shim_callback_capture_) {
       *launch_shim_callback_capture_ = std::move(launched_callback);
-    if (terminated_shim_callback_capture_)
+    }
+    if (terminated_shim_callback_capture_) {
       *terminated_shim_callback_capture_ = std::move(terminated_callback);
+    }
     DoLaunchShim(profile, app_id, update_behavior, launch_mode);
   }
   void SetCaptureShimLaunchedCallback(ShimLaunchedCallback* callback) {
@@ -130,8 +132,9 @@ class TestingAppShimManager : public AppShimManager {
   }
   void RebuildProfileMenuItemsFromAvatarMenu() override {
     profile_menu_items_.clear();
-    for (const auto& item : new_profile_menu_items_)
+    for (const auto& item : new_profile_menu_items_) {
       profile_menu_items_.push_back(item.Clone());
+    }
   }
 
   void SetAcceptablyCodeSigned(bool is_acceptable_code_signed) {
@@ -213,8 +216,9 @@ class TestingAppShimHostBootstrap : public AppShimHostBootstrap {
     auto app_shim_info = chrome::mojom::AppShimInfo::New();
     app_shim_info->profile_path = profile_path_;
     app_shim_info->app_id = app_id_;
-    if (is_from_bookmark_)
+    if (is_from_bookmark_) {
       app_shim_info->app_url = GURL("https://example.com");
+    }
     app_shim_info->launch_type = launch_type;
     app_shim_info->files = files;
     app_shim_info->urls = urls;
@@ -229,8 +233,9 @@ class TestingAppShimHostBootstrap : public AppShimHostBootstrap {
       absl::optional<chrome::mojom::AppShimLaunchResult>* launch_result,
       chrome::mojom::AppShimLaunchResult result,
       mojo::PendingReceiver<chrome::mojom::AppShim> app_shim_receiver) {
-    if (launch_result)
+    if (launch_result) {
       launch_result->emplace(result);
+    }
   }
 
   base::WeakPtr<TestingAppShimHostBootstrap> GetWeakPtr() {
@@ -243,7 +248,8 @@ class TestingAppShimHostBootstrap : public AppShimHostBootstrap {
   const bool is_from_bookmark_;
   // Note that |launch_result_| is optional so that we can track whether or not
   // the callback to set it has arrived.
-  raw_ptr<absl::optional<chrome::mojom::AppShimLaunchResult>> launch_result_;
+  raw_ptr<absl::optional<chrome::mojom::AppShimLaunchResult>> launch_result_ =
+      nullptr;
   base::WeakPtrFactory<TestingAppShimHostBootstrap> weak_factory_;
 };
 
@@ -471,6 +477,7 @@ class AppShimManagerTest : public testing::Test {
     host_ba_unique_.reset();
     host_bb_unique_.reset();
     host_aa_duplicate_unique_.reset();
+    delegate_ = nullptr;
     manager_->SetHostForCreate(nullptr);
     manager_.reset();
 
@@ -499,8 +506,9 @@ class AppShimManagerTest : public testing::Test {
       const std::vector<base::FilePath>& files,
       const std::vector<GURL>& urls,
       chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state) {
-    if (host)
+    if (host) {
       manager_->SetHostForCreate(std::move(host));
+    }
     bootstrap->DoTestLaunch(launch_type, files, urls, login_item_restore_state);
   }
 
@@ -541,7 +549,7 @@ class AppShimManagerTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  raw_ptr<MockDelegate, DanglingUntriaged> delegate_;
+  raw_ptr<MockDelegate> delegate_ = nullptr;
   std::unique_ptr<TestingAppShimManager> manager_;
   base::FilePath profile_path_a_;
   base::FilePath profile_path_b_;
