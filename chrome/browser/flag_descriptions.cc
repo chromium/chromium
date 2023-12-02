@@ -3279,6 +3279,7 @@ const char kSuppressToolbarCapturesName[] = "Suppress Toolbar Captures";
 const char kSuppressToolbarCapturesDescription[] =
     "Suppress Toolbar Captures except when certain properties change.";
 
+const char kAutofillContentEditablesId[] = "autofill-content-editables";
 const char kAutofillContentEditablesName[] = "Autofill Content Editables";
 const char kAutofillContentEditablesDescription[] =
     "When enabled, adds support for content editables in autofill.";
@@ -7848,6 +7849,7 @@ const char kEnableAudioFocusEnforcementDescription[] =
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_COMPOSE)
+const char kComposeId[] = "CCO";
 const char kComposeName[] = "CCO Edits";
 const char kComposeDescription[] = "Enables CCO editing feature";
 #endif  // BUILDFLAG(ENABLE_COMPOSE)

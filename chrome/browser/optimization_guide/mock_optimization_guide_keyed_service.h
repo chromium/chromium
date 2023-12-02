@@ -21,7 +21,9 @@ class TestingPrefServiceSimple;
 class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
  public:
   static void Initialize(TestingPrefServiceSimple* local_state);
+  static void InitializeWithExistingTestLocalState();
   static void TearDown();
+  static void ResetForTesting();
 
   explicit MockOptimizationGuideKeyedService(
       content::BrowserContext* browser_context);

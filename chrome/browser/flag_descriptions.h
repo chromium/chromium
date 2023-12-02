@@ -1892,6 +1892,7 @@ extern const char kSystemKeyboardLockDescription[];
 extern const char kSystemSoundsName[];
 extern const char kSystemSoundsDescription[];
 
+extern const char kAutofillContentEditablesId[];
 extern const char kAutofillContentEditablesName[];
 extern const char kAutofillContentEditablesDescription[];
 
@@ -4539,6 +4540,7 @@ extern const char kEnableAudioFocusEnforcementDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_COMPOSE)
+extern const char kComposeId[];
 extern const char kComposeName[];
 extern const char kComposeDescription[];
 #endif  // BUILDFLAG(ENABLE_COMPOSE)

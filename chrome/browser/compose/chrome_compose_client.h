@@ -119,7 +119,7 @@ class ChromeComposeClient
   optimization_guide::OptimizationGuideDecider* GetOptimizationGuide();
   base::Token GetSessionId();
   std::unique_ptr<TranslateLanguageProvider> translate_language_provider_;
-  ComposeEnabling compose_enabling_;
+  std::unique_ptr<ComposeEnabling> compose_enabling_;
 
  private:
   friend class content::WebContentsUserData<ChromeComposeClient>;

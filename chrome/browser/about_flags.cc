@@ -11119,7 +11119,8 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_COMPOSE)
-    {"CCO", flag_descriptions::kComposeName, flag_descriptions::kComposeName,
+    {flag_descriptions::kComposeId, flag_descriptions::kComposeName,
+     flag_descriptions::kComposeDescription,
      kOsWin | kOsLinux | kOsMac | kOsCrOS,
      FEATURE_VALUE_TYPE(compose::features::kEnableCompose)},
 #endif
@@ -11266,7 +11267,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardBenefits)},
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-    {"autofill-content-editables",
+    {flag_descriptions::kAutofillContentEditablesId,
      flag_descriptions::kAutofillContentEditablesName,
      flag_descriptions::kAutofillContentEditablesDescription,
      kOsWin | kOsLinux | kOsMac,

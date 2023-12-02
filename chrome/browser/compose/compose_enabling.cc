@@ -6,14 +6,18 @@
 
 #include "chrome/browser/compose/compose_enabling.h"
 
+#include "base/check.h"
+#include "chrome/browser/about_flags.h"
 #include "chrome/browser/compose/proto/compose_optimization_guide.pb.h"
+#include "chrome/browser/flag_descriptions.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/compose/buildflags.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/compose/core/browser/compose_metrics.h"
 #include "components/compose/core/browser/config.h"
+#include "components/flags_ui/feature_entry.h"
+#include "components/flags_ui/flags_storage.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
-#include "compose_enabling.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
 
@@ -27,12 +31,35 @@ bool AutocompleteAllowed(std::string_view autocomplete_attribute) {
 }  // namespace
 
 ComposeEnabling::ComposeEnabling(
-    TranslateLanguageProvider* translate_language_provider) {
-  enabled_for_testing_ = false;
+    TranslateLanguageProvider* translate_language_provider,
+    Profile* profile)
+    : optimization_guide::SettingsEnabledObserver(
+          optimization_guide::proto::MODEL_EXECUTION_FEATURE_COMPOSE),
+      profile_(profile) {
+  // TODO(b/314325398): Use this instance member profile in other methods.
+  DCHECK(profile_);
   translate_language_provider_ = translate_language_provider;
+  opt_guide_ = OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
+#if !BUILDFLAG(IS_CHROMEOS)
+  // TODO(b/314325398): Better handle the fact that ChromeOS is unsupported.
+  if (opt_guide_) {
+    // TODO(b/314199871): Add test when this call becomes mock-able.
+    opt_guide_->AddModelExecutionSettingsEnabledObserver(this);
+  } else {
+    LOG(WARNING) << "ComposeEnabling not monitoring for settings change. This "
+                    "is expected when running unrelated tests.";
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-ComposeEnabling::~ComposeEnabling() = default;
+ComposeEnabling::~ComposeEnabling() {
+#if !BUILDFLAG(IS_CHROMEOS)
+  // TODO(b/314325398): Better handle the fact that ChromeOS is unsupported.
+  if (opt_guide_) {
+    opt_guide_->RemoveModelExecutionSettingsEnabledObserver(this);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}
 
 void ComposeEnabling::SetEnabledForTesting() {
   enabled_for_testing_ = true;
@@ -42,18 +69,13 @@ void ComposeEnabling::ClearEnabledForTesting() {
   enabled_for_testing_ = false;
 }
 
-void ComposeEnabling::SetOptimizationGuideForTest(
-    optimization_guide::OptimizationGuideDecider* opt_guide) {
-  opt_guide_ = opt_guide;
+void ComposeEnabling::SkipUserEnabledCheckForTesting(bool skip) {
+  skip_user_check_for_testing_ = skip;
 }
 
 compose::ComposeHintDecision ComposeEnabling::GetOptimizationGuidanceForUrl(
     const GURL& url,
     Profile* profile) {
-  // Use the test value if set, otherwise get from the profile.
-  if (!opt_guide_) {
-    opt_guide_ = OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-  }
 
   if (!opt_guide_) {
     DVLOG(2) << "Optimization guide not found, returns unspecified";
@@ -130,8 +152,16 @@ base::expected<void, compose::ComposeShowStatus> ComposeEnabling::IsEnabled(
     return base::unexpected(compose::ComposeShowStatus::kSignedOut);
   }
 
-  // TODO(b/305245821): Check age.
-  // TODO(b/305246349): Check finch (or maybe labs).
+  // TODO(b/314199871): Remove test bypass once this check becomes mock-able.
+  if (!skip_user_check_for_testing_ &&
+      !opt_guide_->ShouldFeatureBeCurrentlyEnabledForUser(
+          optimization_guide::proto::ModelExecutionFeature::
+              MODEL_EXECUTION_FEATURE_COMPOSE)) {
+    DVLOG(2) << "Feature not available for this user " << __func__;
+    return base::unexpected(
+        compose::ComposeShowStatus::kUserNotAllowedByOptimizationGuide);
+  }
+
   // TODO(b/305245736): Check consent once it is available to check.
 
   return base::ok();
@@ -226,6 +256,35 @@ bool ComposeEnabling::ShouldTriggerContextMenu(
   }
   compose::LogComposeContextMenuShowStatus(show_status.error());
   return false;
+}
+
+// TODO(b/314327112): add a browser test to confirm correct enabling.
+void ComposeEnabling::PrepareToEnableOnRestart() {
+  std::unique_ptr<flags_ui::FlagsStorage> flags_storage;
+  about_flags::GetStorage(
+      profile_, base::BindOnce(
+                    [](std::unique_ptr<flags_ui::FlagsStorage>* final_storage,
+                       std::unique_ptr<flags_ui::FlagsStorage> storage,
+                       flags_ui::FlagAccess access) {
+                      CHECK(access == flags_ui::FlagAccess::kOwnerAccessToFlags)
+                          << "ChromeOS is not yet supported";
+                      *final_storage = std::move(storage);
+                    },
+                    base::Unretained(&flags_storage)));
+  CHECK(flags_storage) << "Flags storage must be set synchronously; ChromeOS "
+                          "(Ash) is not yet supported";
+
+  // Enable required features.
+  const std::string enabled_suffix =
+      std::string({flags_ui::kMultiSeparatorChar, '1'});
+  const std::string compose_enabled_name =
+      flag_descriptions::kComposeId + enabled_suffix;
+  about_flags::SetFeatureEntryEnabled(flags_storage.get(), compose_enabled_name,
+                                      true);
+  const std::string autofill_ce_enabled_name =
+      flag_descriptions::kAutofillContentEditablesId + enabled_suffix;
+  about_flags::SetFeatureEntryEnabled(flags_storage.get(),
+                                      autofill_ce_enabled_name, true);
 }
 
 base::expected<void, compose::ComposeShowStatus>

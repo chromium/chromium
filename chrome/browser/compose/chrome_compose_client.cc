@@ -65,16 +65,17 @@ ChromeComposeClient::ChromeComposeClient(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<ChromeComposeClient>(*web_contents),
       translate_language_provider_(new TranslateLanguageProvider()),
-      compose_enabling_(translate_language_provider_.get()),
       manager_(this),
       client_page_receiver_(this) {
   profile_ = Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
   opt_guide_ = OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
   pref_service_ = profile_->GetPrefs();
+  compose_enabling_ = std::make_unique<ComposeEnabling>(
+      translate_language_provider_.get(), profile_);
 
   if (GetOptimizationGuide()) {
     std::vector<optimization_guide::proto::OptimizationType> types;
-    if (compose_enabling_.IsEnabledForProfile(profile_).has_value()) {
+    if (compose_enabling_->IsEnabledForProfile(profile_).has_value()) {
       types.push_back(optimization_guide::proto::OptimizationType::COMPOSE);
     }
 
@@ -297,7 +298,7 @@ compose::ComposeManager& ChromeComposeClient::GetManager() {
 }
 
 ComposeEnabling& ChromeComposeClient::GetComposeEnabling() {
-  return compose_enabling_;
+  return *compose_enabling_;
 }
 
 bool ChromeComposeClient::ShouldTriggerPopup(
@@ -309,7 +310,7 @@ bool ChromeComposeClient::ShouldTriggerPopup(
 
   GURL url = GetWebContents().GetPrimaryMainFrame()->GetLastCommittedURL();
 
-  return compose_enabling_.ShouldTriggerPopup(
+  return compose_enabling_->ShouldTriggerPopup(
       form_field_data.autocomplete_attribute, profile_, translate_manager,
       HasSession(form_field_data.global_id()),
       top_level_frame->GetLastCommittedOrigin(), form_field_data.origin, url);
@@ -320,8 +321,8 @@ bool ChromeComposeClient::ShouldTriggerContextMenu(
     content::ContextMenuParams& params) {
   translate::TranslateManager* translate_manager =
       ChromeTranslateClient::GetManagerFromWebContents(&GetWebContents());
-  return compose_enabling_.ShouldTriggerContextMenu(profile_, translate_manager,
-                                                    rfh, params);
+  return compose_enabling_->ShouldTriggerContextMenu(
+      profile_, translate_manager, rfh, params);
 }
 
 optimization_guide::ModelQualityLogsUploader*

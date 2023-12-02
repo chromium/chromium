@@ -12,18 +12,22 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/compose/core/browser/compose_metrics.h"
-#include "components/optimization_guide/core/optimization_guide_decision.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/model_execution/settings_enabled_observer.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
 
-class ComposeEnabling {
+class ComposeEnabling : public optimization_guide::SettingsEnabledObserver {
  public:
   explicit ComposeEnabling(
-      TranslateLanguageProvider* translate_language_provider);
-  ~ComposeEnabling();
+      TranslateLanguageProvider* translate_language_provider,
+      Profile* profile);
+  ~ComposeEnabling() override;
+
+  ComposeEnabling(const ComposeEnabling&) = delete;
+  ComposeEnabling& operator=(const ComposeEnabling&) = delete;
+
   base::expected<void, compose::ComposeShowStatus> IsEnabledForProfile(
       Profile* profile);
   base::expected<void, compose::ComposeShowStatus> IsEnabled(
@@ -31,9 +35,7 @@ class ComposeEnabling {
       signin::IdentityManager* identity_manager);
   void SetEnabledForTesting();
   void ClearEnabledForTesting();
-  void SetOptimizationGuideForTest(
-      optimization_guide::OptimizationGuideDecider* opt_guide);
-  std::string GetLanguage();
+  void SkipUserEnabledCheckForTesting(bool skip);
   bool ShouldTriggerPopup(std::string_view autocomplete_attribute,
                           Profile* profile,
                           translate::TranslateManager* translate_manager,
@@ -49,10 +51,17 @@ class ComposeEnabling {
   compose::ComposeHintDecision GetOptimizationGuidanceForUrl(const GURL& url,
                                                              Profile* profile);
 
+  // SettingsEnabledObserver implementation
+  // TODO(b/314201066): This should be moved to another class that is
+  // instantiated once per-profile.
+  void PrepareToEnableOnRestart() override;
+
  private:
   raw_ptr<TranslateLanguageProvider> translate_language_provider_;
-  raw_ptr<optimization_guide::OptimizationGuideDecider> opt_guide_;
-  bool enabled_for_testing_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<OptimizationGuideKeyedService> opt_guide_;
+  bool enabled_for_testing_{false};
+  bool skip_user_check_for_testing_{false};
 
   base::expected<void, compose::ComposeShowStatus> PageLevelChecks(
       Profile* profile,
