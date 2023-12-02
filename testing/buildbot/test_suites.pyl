@@ -4244,7 +4244,6 @@
         ],
         'timeout_sec': 10800,
         'shards': 2,
-        'experiment_percentage': 100,
       },
     },
 

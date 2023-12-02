@@ -4969,8 +4969,6 @@ targets.legacy_basic_suite(
                 "has_native_resultdb_integration",
             ],
             timeout_sec = 10800,
-            # TODO(crbug.com/1499803) re-enable when we have the required OS versions.
-            experiment_percentage = 100,
             shards = 2,
         ),
     },
