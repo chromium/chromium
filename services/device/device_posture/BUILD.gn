@@ -8,6 +8,8 @@ source_set("device_posture") {
   sources = [
     "device_posture_platform_provider.cc",
     "device_posture_platform_provider.h",
+    "device_posture_platform_provider_default.cc",
+    "device_posture_platform_provider_default.h",
     "device_posture_provider_impl.cc",
     "device_posture_provider_impl.h",
   ]

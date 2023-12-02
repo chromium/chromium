@@ -2722,6 +2722,17 @@ void WebFrameWidgetImpl::SetResizable(bool resizable) {
       MediaValueChange::kOther);
 }
 
+void WebFrameWidgetImpl::OverrideDevicePostureForEmulation(
+    device::mojom::blink::DevicePostureType device_posture_param) {
+  LocalFrame* frame = LocalRootImpl()->GetFrame();
+  frame->OverrideDevicePostureForEmulation(device_posture_param);
+}
+
+void WebFrameWidgetImpl::DisableDevicePostureOverrideForEmulation() {
+  LocalFrame* frame = LocalRootImpl()->GetFrame();
+  frame->DisableDevicePostureOverrideForEmulation();
+}
+
 void WebFrameWidgetImpl::SetWindowSegments(
     const std::vector<gfx::Rect>& window_segments_param) {
   WebVector<gfx::Rect> window_segments(window_segments_param);

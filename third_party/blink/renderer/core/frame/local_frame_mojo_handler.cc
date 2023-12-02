@@ -424,20 +424,48 @@ mojom::blink::ReportingServiceProxy* LocalFrameMojoHandler::ReportingService() {
   return reporting_service_.get();
 }
 
+device::mojom::blink::DevicePostureProvider*
+LocalFrameMojoHandler::DevicePostureProvider() {
+  if (!frame_->IsLocalRoot()) {
+    return frame_->LocalFrameRoot().GetDevicePostureProvider();
+  }
+
+  DCHECK(frame_->IsLocalRoot());
+  if (!device_posture_provider_service_.is_bound()) {
+    auto task_runner = frame_->GetTaskRunner(TaskType::kInternalDefault);
+    frame_->GetBrowserInterfaceBroker().GetInterface(
+        device_posture_provider_service_.BindNewPipeAndPassReceiver(
+            task_runner));
+  }
+  return device_posture_provider_service_.get();
+}
+
 device::mojom::blink::DevicePostureType
 LocalFrameMojoHandler::GetDevicePosture() {
+  if (!frame_->IsLocalRoot()) {
+    return frame_->LocalFrameRoot().GetDevicePosture();
+  }
+
+  DCHECK(frame_->IsLocalRoot());
   if (device_posture_provider_service_.is_bound())
     return current_device_posture_;
 
   auto task_runner = frame_->GetTaskRunner(TaskType::kInternalDefault);
-  frame_->GetBrowserInterfaceBroker().GetInterface(
-      device_posture_provider_service_.BindNewPipeAndPassReceiver(task_runner));
-
-  device_posture_provider_service_->AddListenerAndGetCurrentPosture(
+  DevicePostureProvider()->AddListenerAndGetCurrentPosture(
       device_posture_receiver_.BindNewPipeAndPassRemote(task_runner),
       WTF::BindOnce(&LocalFrameMojoHandler::OnPostureChanged,
                     WrapPersistent(this)));
   return current_device_posture_;
+}
+
+void LocalFrameMojoHandler::OverrideDevicePostureForEmulation(
+    device::mojom::blink::DevicePostureType device_posture_param) {
+  DevicePostureProvider()->OverrideDevicePostureForEmulation(
+      device_posture_param);
+}
+
+void LocalFrameMojoHandler::DisableDevicePostureOverrideForEmulation() {
+  DevicePostureProvider()->DisableDevicePostureOverrideForEmulation();
 }
 
 Page* LocalFrameMojoHandler::GetPage() const {

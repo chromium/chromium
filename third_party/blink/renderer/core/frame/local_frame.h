@@ -442,6 +442,9 @@ class CORE_EXPORT LocalFrame final
       StyleEnvironmentVariables& vars,
       const WebVector<gfx::Rect>& window_segments);
 
+  void OverrideDevicePostureForEmulation(
+      device::mojom::blink::DevicePostureType device_posture_param);
+  void DisableDevicePostureOverrideForEmulation();
   device::mojom::blink::DevicePostureType GetDevicePosture();
 
   String SelectedText() const;
@@ -656,6 +659,7 @@ class CORE_EXPORT LocalFrame final
   SmoothScrollSequencer* GetSmoothScrollSequencer() const;
 
   mojom::blink::ReportingServiceProxy* GetReportingService();
+  device::mojom::blink::DevicePostureProvider* GetDevicePostureProvider();
 
   // Returns the frame host ptr. The interface returned is backed by an
   // associated interface with the legacy Chrome IPC channel.

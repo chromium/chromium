@@ -43,11 +43,21 @@ class DevicePostureProviderImpl : public mojom::DevicePostureProvider {
   void AddListenerAndGetCurrentViewportSegments(
       mojo::PendingRemote<mojom::DeviceViewportSegmentsClient> client,
       AddListenerAndGetCurrentViewportSegmentsCallback callback) override;
+  void OverrideDevicePostureForEmulation(
+      mojom::DevicePostureType posture) override;
+  void DisableDevicePostureOverrideForEmulation() override;
   void OnReceiverConnectionError();
+
+  struct DevicePostureClientInformation {
+    bool is_emulated = false;
+    mojo::RemoteSet<mojom::DevicePostureClient> clients;
+    DevicePostureClientInformation();
+    ~DevicePostureClientInformation();
+  };
 
   std::unique_ptr<DevicePosturePlatformProvider> platform_provider_;
   mojo::ReceiverSet<mojom::DevicePostureProvider> receivers_;
-  mojo::RemoteSet<mojom::DevicePostureClient> posture_clients_;
+  std::map<mojo::ReceiverId, DevicePostureClientInformation> posture_clients_;
   mojo::RemoteSet<mojom::DeviceViewportSegmentsClient>
       viewport_segments_clients_;
   base::WeakPtrFactory<DevicePostureProviderImpl> weak_ptr_factory_{this};

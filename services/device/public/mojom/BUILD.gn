@@ -105,13 +105,6 @@ mojom("device_service") {
     enabled_features += [ "enable_hid" ]
   }
 
-  # While the device posture API applies to all platforms, only Android and
-  # Windows can fetch posture information so we only build mojo bindings on
-  # these platforms
-  if (is_android || is_win) {
-    enabled_features += [ "enable_device_posture" ]
-  }
-
   public_deps = [
     ":generic_sensor",
     ":geolocation_internals",

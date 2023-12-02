@@ -14,7 +14,8 @@ enum DevicePostureType {
 };
 
 // This interface is used to get the posture of the device from
-// DevicePostureService.
+// DevicePostureService. This service is hosted in the browser process and
+// exposes the Posture and Viewport Segments to the renderer via LocalFrame.
 interface DevicePostureProvider {
   // Associates an interface to the posture provider. The initial posture
   // will also be returned.
@@ -27,6 +28,11 @@ interface DevicePostureProvider {
   AddListenerAndGetCurrentViewportSegments(
     pending_remote<DeviceViewportSegmentsClient> client)
       => (array<gfx.mojom.Rect> segments);
+
+  // This is used by DevTools to emulate a device posture.
+  OverrideDevicePostureForEmulation(DevicePostureType posture);
+  // This is used by DevTools to disable emulation of a device posture.
+  DisableDevicePostureOverrideForEmulation();
 };
 
 // Interface that client of the DevicePostureProvider interface must implement

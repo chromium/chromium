@@ -68,6 +68,7 @@ class LocalFrameMojoHandler
   }
 
   mojom::blink::ReportingServiceProxy* ReportingService();
+  device::mojom::blink::DevicePostureProvider* DevicePostureProvider();
   mojom::blink::BackForwardCacheControllerHost&
   BackForwardCacheControllerHostRemote();
 
@@ -78,6 +79,9 @@ class LocalFrameMojoHandler
 #endif
 
   device::mojom::blink::DevicePostureType GetDevicePosture();
+  void OverrideDevicePostureForEmulation(
+      device::mojom::blink::DevicePostureType device_posture_param);
+  void DisableDevicePostureOverrideForEmulation();
 
  private:
   Page* GetPage() const;
@@ -273,8 +277,15 @@ class LocalFrameMojoHandler
   HeapMojoRemote<mojom::blink::ReportingServiceProxy> reporting_service_{
       nullptr};
 
+  // Device posture fields should only be used, e.g. non-null, on local roots.
   HeapMojoRemote<device::mojom::blink::DevicePostureProvider>
       device_posture_provider_service_{nullptr};
+  // LocalFrameMojoHandler can be reused by multiple ExecutionContext.
+  HeapMojoReceiver<device::mojom::blink::DevicePostureClient,
+                   LocalFrameMojoHandler>
+      device_posture_receiver_{this, nullptr};
+  device::mojom::blink::DevicePostureType current_device_posture_ =
+      device::mojom::blink::DevicePostureType::kContinuous;
 
   HeapMojoAssociatedRemote<mojom::blink::LocalFrameHost>
       local_frame_host_remote_{nullptr};
@@ -296,14 +307,6 @@ class LocalFrameMojoHandler
   HeapMojoAssociatedReceiver<mojom::blink::FullscreenVideoElementHandler,
                              LocalFrameMojoHandler>
       fullscreen_video_receiver_{this, nullptr};
-
-  // LocalFrameMojoHandler can be reused by multiple ExecutionContext.
-  HeapMojoReceiver<device::mojom::blink::DevicePostureClient,
-                   LocalFrameMojoHandler>
-      device_posture_receiver_{this, nullptr};
-
-  device::mojom::blink::DevicePostureType current_device_posture_ =
-      device::mojom::blink::DevicePostureType::kContinuous;
 };
 
 class ActiveURLMessageFilter : public mojo::MessageFilter {

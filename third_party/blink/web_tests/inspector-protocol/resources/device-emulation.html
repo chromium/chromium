@@ -85,6 +85,15 @@ function dumpMetrics(full)
     return results.join("\n");
 }
 
+function dumpDevicePosture() {
+  let output = [];
+  output.push("Main frame Posture:");
+  output = output.concat(navigator.devicePosture.type);
+  output.push("Iframe Posture:");
+  output = output.concat(window.frames[0].navigator.devicePosture.type);
+  return output.join("\n");
+}
+
 function dumpWindowSegments() {
     let output = [];
     output.push("Main frame segments:");

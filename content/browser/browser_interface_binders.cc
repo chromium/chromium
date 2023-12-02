@@ -696,20 +696,9 @@ void BindPressureManager(
   GetDeviceService().BindPressureManager(std::move(receiver));
 }
 
-DevicePostureProviderBinder& GetDevicePostureProviderBinderOverride() {
-  static base::NoDestructor<DevicePostureProviderBinder> binder;
-  return *binder;
-}
-
 void BindDevicePostureProvider(
     mojo::PendingReceiver<device::mojom::DevicePostureProvider> receiver) {
-  const auto& binder = GetDevicePostureProviderBinderOverride();
-  if (binder)
-    binder.Run(std::move(receiver));
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
-  else if (base::FeatureList::IsEnabled(features::kDevicePosture))
-    GetDeviceService().BindDevicePostureProvider(std::move(receiver));
-#endif
+  GetDeviceService().BindDevicePostureProvider(std::move(receiver));
 }
 
 VibrationManagerBinder& GetVibrationManagerBinderOverride() {
@@ -1656,11 +1645,6 @@ AgentSchedulingGroupHost* GetContextForHost(AgentSchedulingGroupHost* host) {
 }
 
 }  // namespace internal
-
-void OverrideDevicePostureProviderBinderForTesting(
-    DevicePostureProviderBinder binder) {
-  internal::GetDevicePostureProviderBinderOverride() = std::move(binder);
-}
 
 void OverrideBatteryMonitorBinderForTesting(BatteryMonitorBinder binder) {
   internal::GetBatteryMonitorBinderOverride() = std::move(binder);
