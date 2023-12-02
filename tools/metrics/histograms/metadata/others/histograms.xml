@@ -6611,26 +6611,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="LowPriorityIframes.IframeRequestPriority"
-    enum="WebURLRequestPriority" expires_after="M77">
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    Original Blink priority of the request that belongs to an iframe. Recorded
-    for every request fetched via Blink, but only when the experiment to lower
-    the priority of iframes is enabled.
-  </summary>
-</histogram>
-
-<histogram name="LowPriorityIframes.MainFrameRequestPriority"
-    enum="WebURLRequestPriority" expires_after="M85">
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    Original Blink priority of the request that belongs to the main frame.
-    Recorded for every request fetched via Blink, but only when the experiment
-    to lower the priority of iframes is enabled.
-  </summary>
-</histogram>
-
 <histogram name="Mac.FileMenuNativeShare" enum="BooleanSuccess"
     expires_after="2023-07-16">
   <owner>nasims@google.com</owner>

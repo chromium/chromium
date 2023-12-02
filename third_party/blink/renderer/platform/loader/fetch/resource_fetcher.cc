@@ -504,14 +504,7 @@ ResourceLoadPriority ResourceFetcher::ComputeLoadPriority(
                                  resource_width, resource_height);
 
   if (properties_->IsSubframeDeprioritizationEnabled()) {
-    if (properties_->IsOutermostMainFrame()) {
-      UMA_HISTOGRAM_ENUMERATION(
-          "LowPriorityIframes.MainFrameRequestPriority", priority,
-          static_cast<int>(ResourceLoadPriority::kHighest) + 1);
-    } else {
-      UMA_HISTOGRAM_ENUMERATION(
-          "LowPriorityIframes.IframeRequestPriority", priority,
-          static_cast<int>(ResourceLoadPriority::kHighest) + 1);
+    if (!properties_->IsOutermostMainFrame()) {
       // When enabled, the priority of all resources in subframe is dropped.
       // Non-delayable resources are assigned a priority of kLow, and the rest
       // of them are assigned a priority of kLowest. This ensures that if the
