@@ -390,8 +390,20 @@ enum WaylandTimingEvent {
   kZcrVsyncTimingUpdate = 10,
 };
 
+// Enumerates the types of select ARC KeyMint error codes.
+[Extensible]
+enum ArcKeyMintError {
+  [Default] kOther = 0,
+  kOk = 1,
+  kUnknownError = 2,
+  kInvalidKeyBlob = 3,
+  kInvalidArgument = 4,
+  kUnsupportedAlgorithm = 5,
+  kUnimplemented = 6,
+};
+
 // Deprecated method IDs: 25
-// Next method ID: 35
+// Next method ID: 36
 interface MetricsHost {
   // Reports boot progress events from ARC instance.
   ReportBootProgress@0(array<BootProgressEvent> events,
@@ -547,6 +559,9 @@ interface MetricsHost {
   // conversion code at the entry or exit of mojo data.
   // Range of perc arg will be [0, 100].
   [MinVersion=30] ReportQosSocketPercentage@34(int32 perc);
+
+  // Reports select error codes on select KeyMint calls (on ARC T+ only).
+  [MinVersion=31] ReportArcKeyMintError@35(ArcKeyMintError error);
 };
 
 // Deprecated method IDs: 0

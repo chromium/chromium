@@ -939,6 +939,11 @@ void ArcMetricsService::ReportQosSocketPercentage(int perc) {
   base::UmaHistogramCounts100("Arc.Qos.QosSocketPercentage", perc);
 }
 
+void ArcMetricsService::ReportArcKeyMintError(mojom::ArcKeyMintError error) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  base::UmaHistogramEnumeration("Arc.KeyMint.KeyMintError", error);
+}
+
 void ArcMetricsService::OnWindowActivated(
     wm::ActivationChangeObserver::ActivationReason reason,
     aura::Window* gained_active,

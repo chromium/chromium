@@ -1323,6 +1323,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Arc.KeyMint.KeyMintError" enum="ArcKeyMintError"
+    expires_after="2024-11-30">
+  <owner>yaohuali@google.com</owner>
+  <owner>arc-commercial@google.com</owner>
+  <summary>
+    Emitted for errors on KeyMint calls. Coverage includes some error types and
+    only on certain KeyMint calls.
+  </summary>
+</histogram>
+
 <histogram name="Arc.LaunchedWithGhostWindow" units="apps"
     expires_after="2024-05-19">
   <owner>sstan@chromium.org</owner>

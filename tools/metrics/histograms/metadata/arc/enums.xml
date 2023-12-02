@@ -236,6 +236,16 @@ chromium-metrics-reviews@google.com.
       label="inotify exceeds its limit while processing a filesystem change"/>
 </enum>
 
+<enum name="ArcKeyMintError">
+  <int value="0" label="Other unspecified error code"/>
+  <int value="1" label="OK"/>
+  <int value="2" label="Unknown error"/>
+  <int value="3" label="Invalid Key Blob"/>
+  <int value="4" label="Invalid Arguement"/>
+  <int value="5" label="Unsupported Algorithm"/>
+  <int value="6" label="Unimplemented"/>
+</enum>
+
 <enum name="ArcMainAccountHashMigrationStatus">
   <int value="0" label="Hash code migration not required as v2 is not set."/>
   <int value="1" label="Hash code migration from v2 to v3 successful"/>
