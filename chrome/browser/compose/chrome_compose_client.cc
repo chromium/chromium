@@ -370,6 +370,15 @@ int ChromeComposeClient::GetSessionCountForTest() {
   return sessions_.size();
 }
 
+void ChromeComposeClient::OpenFeedbackPageForTest(std::string feedback_id) {
+  if (active_compose_field_id_.has_value()) {
+    auto it = sessions_.find(active_compose_field_id_.value());
+    if (it != sessions_.end()) {
+      it->second->OpenFeedbackPage(feedback_id);
+    }
+  }
+}
+
 void ChromeComposeClient::PrimaryPageChanged(content::Page& page) {
   RemoveAllSessions();
 

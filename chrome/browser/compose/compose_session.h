@@ -112,6 +112,10 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   // inner text. Calls Compose immediately if the initial input is valid.
   void InitializeWithText(const std::optional<std::string>& text);
 
+  // Opens the Chrome Feedback UI for Compose. |feedback_id| is returned from
+  // OptimizationGuideModel result.
+  void OpenFeedbackPage(std::string feedback_id);
+
   // Saves the last OK response state to the undo stack.
   void SaveMostRecentOkStateToUndoStack();
 

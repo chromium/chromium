@@ -670,7 +670,6 @@ suite('ComposeApp', () => {
       composed: true,
       detail: {value: CrFeedbackOption.THUMBS_DOWN},
     }));
-    await testProxy.whenCalled('openBugReportingLink');
     const args = await testProxy.whenCalled('setUserFeedback');
     assertEquals(args.reason, args.UserFeedback);
   });

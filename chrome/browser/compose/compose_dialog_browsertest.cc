@@ -10,9 +10,11 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_service.h"
@@ -21,12 +23,13 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/views/interaction/interaction_test_util_views.h"
 
 using ComposeClientPrefsBrowserTest = InProcessBrowserTest;
 
 namespace compose {
 
-class ComposeSessionBrowserTest : public InProcessBrowserTest {
+class ComposeSessionBrowserTest : public InteractiveBrowserTest {
  public:
   void SetUp() override {
     feature_list()->InitWithFeatures(
@@ -73,6 +76,36 @@ IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest,
                                                    TabCloseTypes::CLOSE_NONE);
 }
 
+// The feedback dialog on CrOS & LaCrOS happens at the system level which
+// cannot be tested in a browser test.
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest, OpenFeedbackPage) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/compose/test2.html")));
+  ASSERT_NE(nullptr, ChromeComposeClient::FromWebContents(web_contents));
+  auto* client = ChromeComposeClient::FromWebContents(web_contents);
+  client->GetComposeEnabling().SetEnabledForTesting();
+
+  // get point of element
+  gfx::PointF textarea_center =
+      content::GetCenterCoordinatesOfElementWithId(web_contents, "elem1");
+  autofill::FormFieldData field_data;
+  field_data.bounds = gfx::RectF((textarea_center), gfx::SizeF(1, 1));
+
+  client->ShowComposeDialog(
+      autofill::AutofillComposeDelegate::UiEntryPoint::kAutofillPopup,
+      field_data, std::nullopt, base::NullCallback());
+
+  client->OpenFeedbackPageForTest("test_id");
+
+  RunTestSequence(
+      InAnyContext(WaitForShow(FeedbackDialog::kFeedbackDialogForTesting)));
+}
+#endif  // !IS_CHROMEOS
+
+// Start ClientPrefsBrowserTest methods.
 IN_PROC_BROWSER_TEST_F(ComposeClientPrefsBrowserTest,
                        GetConsentStateFromPrefs) {
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();

@@ -112,6 +112,10 @@ class ChromeComposeClient
 
   int GetSessionCountForTest();
 
+  // If there is an active session calls the OpenFeedbackPage method on it.
+  // Used only for testing.
+  void OpenFeedbackPageForTest(std::string feedback_id);
+
  protected:
   explicit ChromeComposeClient(content::WebContents* web_contents);
   optimization_guide::ModelQualityLogsUploader* GetModelQualityLogsUploader();

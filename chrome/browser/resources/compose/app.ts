@@ -537,7 +537,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
         return;
       case CrFeedbackOption.THUMBS_DOWN:
         this.apiProxy_.setUserFeedback(UserFeedback.kUserFeedbackNegative);
-        this.apiProxy_.openBugReportingLink();
         return;
     }
   }

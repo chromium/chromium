@@ -124,4 +124,8 @@
     <ph name="BEGIN_SURVEY_LINK">&lt;a href="#" id="surveyLink" role="button"&gt;</ph>survey<ph name="END_SURVEY_LINK">&lt;/a&gt;</ph>
   </message>
 
+  <!-- Miscellaneous -->
+  <message name="IDS_COMPOSE_FEEDBACK_PLACEHOLDER" desc="Placeholder text for feedback text field" translateable="false">
+    Send feedback for Autofill
+  </message>
 </grit-part>

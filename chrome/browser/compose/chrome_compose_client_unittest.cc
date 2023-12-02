@@ -992,7 +992,7 @@ TEST_F(ChromeComposeClientTest, TestAcceptComposeResultCallback) {
   EXPECT_EQ(u"Cucumbers", accept_callback.Take());
 }
 
-TEST_F(ChromeComposeClientTest, ThumbsDownOpensCorrectURL) {
+TEST_F(ChromeComposeClientTest, BugReportOpensCorrectURL) {
   GURL bug_url("https://goto.google.com/ccbrfd");
 
   ShowDialogAndBindMojo();

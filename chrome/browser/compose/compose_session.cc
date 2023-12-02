@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -431,6 +432,20 @@ void ComposeSession::OpenFeedbackSurveyLink() {
       /* is_renderer_initiated= */ false));
 }
 
+void ComposeSession::OpenFeedbackPage(std::string feedback_id) {
+  Browser* browser = chrome::FindLastActive();
+  base::Value::Dict feedback_metadata;
+  feedback_metadata.Set("log_id", feedback_id);
+  chrome::ShowFeedbackPage(
+      browser, chrome::kFeedbackSourceAI,
+      /*description_template=*/std::string(),
+      /*description_placeholder_text=*/
+      l10n_util::GetStringUTF8(IDS_COMPOSE_FEEDBACK_PLACEHOLDER),
+      /*category_tag=*/"compose",
+      /*extra_diagnostics=*/std::string(),
+      /*autofill_metadata=*/base::Value::Dict(), std::move(feedback_metadata));
+}
+
 void ComposeSession::SetUserFeedback(compose::mojom::UserFeedback feedback) {
   if (!most_recent_ok_state_->mojo_state()) {
     // If there is no recent State there is nothing that we should be applying
@@ -454,6 +469,14 @@ void ComposeSession::SetUserFeedback(compose::mojom::UserFeedback feedback) {
             ->quality_data<optimization_guide::ComposeFeatureTypeMap>();
     if (quality) {
       quality->set_user_feedback(user_feedback);
+    }
+    if (feedback == compose::mojom::UserFeedback::kUserFeedbackNegative) {
+      // Open the Feedback Page for a thumbs down using current request log.
+      std::string feedback_id = most_recent_ok_state_->modeling_log_entry()
+                                    ->log_ai_data_request()
+                                    ->mutable_model_execution_info()
+                                    ->server_execution_id();
+      OpenFeedbackPage(feedback_id);
     }
   }
 }
