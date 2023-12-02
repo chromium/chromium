@@ -36,8 +36,10 @@
           if="[[shouldShowSelectedKey(pendingKeyEvent.*,
                                       pendingPrerewrittenKeyEvent.*)]]">
         <shortcut-input-key id="confirmKey"
-            key="[[getKey(pendingKeyEvent.*, pendingPrerewrittenKeyEvent.*)]]"
-            key-state="alpha-numeric-selected">
+            key="[[getConfirmKey(pendingKeyEvent.*,
+                                 pendingPrerewrittenKeyEvent.*)]]"
+            key-state="[[getConfirmKeyState(pendingKeyEvent.*,
+                                            pendingPrerewrittenKeyEvent.*)]]">
         </shortcut-input-key>
       </template>
     </div>

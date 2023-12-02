@@ -276,6 +276,32 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
     return KeyInputState.NOT_SELECTED;
   }
 
+  getConfirmKey(): string {
+    const keyEvent = this.getPendingKeyEvent();
+    if (keyEvent && keyEvent.keyDisplay != '') {
+      const keyDisplay = keyEvent.keyDisplay;
+      if (keyDisplay in KeyToIconNameMap) {
+        return keyDisplay;
+      }
+      return keyDisplay.toLowerCase();
+    }
+    // TODO(dpad, b/286930911): Reset to localized default empty state.
+    return 'key';
+  }
+
+  getConfirmKeyState(): string {
+    const keyEvent = this.getPendingKeyEvent();
+    if (keyEvent && keyEvent.keyDisplay != '' && this.isModifier(keyEvent)) {
+      return KeyInputState.MODIFIER_SELECTED;
+    }
+
+    if (keyEvent && keyEvent.keyDisplay != '') {
+      return KeyInputState.ALPHANUMERIC_SELECTED;
+    }
+
+    return KeyInputState.NOT_SELECTED;
+  }
+
   shouldShowEditView(): boolean {
     return this.isCapturing || this.updateOnKeyPress;
   }
