@@ -87,7 +87,8 @@ SystemNudgeView::SystemNudgeView(AnchoredNudgeData& nudge_data) {
   SetupViewCornerRadius(this, kNudgeCornerRadius);
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
-  SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
+  SetBackground(views::CreateThemedSolidBackground(
+      nudge_data.background_color_id.value_or(kColorAshShieldAndBase80)));
   SetBorder(std::make_unique<views::HighlightBorder>(
       kNudgeCornerRadius,
       views::HighlightBorder::Type::kHighlightBorderOnShadow));
@@ -167,6 +168,11 @@ SystemNudgeView::SystemNudgeView(AnchoredNudgeData& nudge_data) {
             .SetImage(nudge_data.image_model)
             .Build());
     SetupViewCornerRadius(image_view, kImageViewCornerRadius);
+
+    if (nudge_data.image_background_color_id) {
+      image_view->SetBackground(views::CreateThemedSolidBackground(
+          *nudge_data.image_background_color_id));
+    }
 
     AddPaddingView(image_and_text_container, kImageViewTrailingPadding,
                    kImageViewSize);
