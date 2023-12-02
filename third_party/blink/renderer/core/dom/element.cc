@@ -3690,9 +3690,11 @@ StyleRecalcChange Element::RecalcOwnStyle(
 
   // Update style containment tree if the style containment of the element
   // has changed.
-  if ((!new_style && old_style && old_style->ContainsStyle()) ||
-      (old_style && new_style &&
-       old_style->ContainsStyle() != new_style->ContainsStyle())) {
+  // Don't update if the style containment tree has not been initialized.
+  if (GetDocument().GetStyleEngine().GetStyleContainmentScopeTree() &&
+      ((!new_style && old_style && old_style->ContainsStyle()) ||
+       (old_style && new_style &&
+        old_style->ContainsStyle() != new_style->ContainsStyle()))) {
     StyleContainmentScopeTree& tree =
         GetDocument().GetStyleEngine().EnsureStyleContainmentScopeTree();
     if (old_style && old_style->ContainsStyle()) {
