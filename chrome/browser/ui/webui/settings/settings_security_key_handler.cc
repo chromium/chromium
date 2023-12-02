@@ -10,6 +10,7 @@
 
 #include "base/base64.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
@@ -1060,13 +1061,11 @@ void SecurityKeysPhonesHandler::HandleRename(const base::Value::List& args) {
           Profile::FromBrowserContext(browser_ctx));
 
   // Remove the device that is getting renamed from the set of linked devices.
-  auto new_end = std::remove_if(
-      known_devices->linked_devices.begin(),
-      known_devices->linked_devices.end(),
-      [&public_key](const std::unique_ptr<device::cablev2::Pairing>& device)
-          -> bool { return device->peer_public_key_x962 == public_key; });
-  known_devices->linked_devices.erase(new_end,
-                                      known_devices->linked_devices.end());
+  base::EraseIf(
+      known_devices->linked_devices,
+      [&public_key](const std::unique_ptr<device::cablev2::Pairing>& device) {
+        return device->peer_public_key_x962 == public_key;
+      });
 
   PrefService* const prefs =
       Profile::FromBrowserContext(browser_ctx)->GetPrefs();
