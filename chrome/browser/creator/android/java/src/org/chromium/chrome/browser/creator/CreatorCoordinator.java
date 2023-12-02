@@ -309,8 +309,8 @@ public class CreatorCoordinator
     private class StreamsMediatorImpl implements Stream.StreamsMediator {
         @Override
         public void disableFollowButton() {
-            mRecyclerView.findViewById(R.id.creator_follow_button).setEnabled(false);
-            mRecyclerView.findViewById(R.id.creator_following_button).setEnabled(false);
+            mProfileView.findViewById(R.id.creator_follow_button).setEnabled(false);
+            mProfileView.findViewById(R.id.creator_following_button).setEnabled(false);
         }
     }
 
