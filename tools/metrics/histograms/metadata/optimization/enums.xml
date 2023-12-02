@@ -271,8 +271,11 @@ chromium-metrics-reviews@google.com.
   </int>
   <int value="5" label="GPU blocked">The GPU is blocked.</int>
   <int value="6" label="Too many recent crashes">
-    The service running the on-device model has experienced too many recent
-    crashes.
+    The service running the on-device model has experienced too many crashes in
+    a row.
+  </int>
+  <int value="7" label="Too many recent timeouts">
+    The service took too long to respond too many times in a row.
   </int>
 </enum>
 

@@ -512,6 +512,11 @@ int GetOnDeviceModelMaxTokensForOutput();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 int GetOnDeviceModelCrashCountBeforeDisable();
 
+// Returns the number of sessions that timed out before the on-device model
+// won't be used.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+int GetOnDeviceModelTimeoutCountBeforeDisable();
+
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 base::TimeDelta GetOnDeviceStartupMetricDelay();
 

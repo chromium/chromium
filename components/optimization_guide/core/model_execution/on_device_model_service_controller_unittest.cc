@@ -944,4 +944,29 @@ TEST_F(OnDeviceModelServiceControllerTest,
       total_time, 1);
 }
 
+TEST_F(OnDeviceModelServiceControllerTest, UseServerWithRepeatedDelays) {
+  g_execute_delay = features::GetOnDeviceModelTimeForInitialResponse() * 2;
+
+  // Create a bunch of sessions that all timeout.
+  for (int i = 0; i < features::GetOnDeviceModelTimeoutCountBeforeDisable();
+       ++i) {
+    auto session = test_controller_->CreateSession(
+        kFeature, CreateExecuteRemoteFn(), &logger_);
+    ASSERT_TRUE(session);
+    ExecuteModel(*session, "2z");
+    task_environment_.FastForwardBy(
+        features::GetOnDeviceModelTimeForInitialResponse() +
+        base::Milliseconds(1));
+    EXPECT_TRUE(streamed_responses_.empty());
+    EXPECT_FALSE(response_received_);
+    EXPECT_TRUE(remote_execute_called_);
+    remote_execute_called_ = false;
+  }
+
+  // As we reached GetOnDeviceModelTimeoutCountBeforeDisable() timeouts, the
+  // next session should use the server.
+  EXPECT_EQ(nullptr, test_controller_->CreateSession(
+                         kFeature, base::DoNothing(), &logger_));
+}
+
 }  // namespace optimization_guide

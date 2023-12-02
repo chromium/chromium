@@ -117,6 +117,10 @@ const char kOnDeviceModelChromeVersion[] =
 const char kOnDeviceModelCrashCount[] =
     "optimization_guide.on_device.model_crash_count";
 
+// Preference where number of timeouts of on device model is stored.
+const char kOnDeviceModelTimeoutCount[] =
+    "optimization_guide.on_device.timeout_count";
+
 // A dictionary pref that stores the file paths that need to be deleted as keys.
 // The value will not be used.
 const char kStoreFilePathsToDelete[] =
@@ -154,6 +158,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(localstate::kModelStoreMetadata);
   registry->RegisterDictionaryPref(localstate::kModelCacheKeyMapping);
   registry->RegisterIntegerPref(localstate::kOnDeviceModelCrashCount, 0);
+  registry->RegisterIntegerPref(localstate::kOnDeviceModelTimeoutCount, 0);
   registry->RegisterDictionaryPref(localstate::kStoreFilePathsToDelete);
 }
 

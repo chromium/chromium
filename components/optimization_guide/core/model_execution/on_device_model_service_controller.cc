@@ -175,12 +175,6 @@ void OnDeviceModelServiceController::OnModelAssetsLoaded(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void OnDeviceModelServiceController::OnResponseCompleted(
-    base::PassKey<SessionImpl>,
-    SessionImpl& session) {
-  access_controller_->OnResponseCompleted();
-}
-
 void OnDeviceModelServiceController::OnLoadModelResult(
     on_device_model::mojom::LoadModelResult result) {
   base::UmaHistogramEnumeration(

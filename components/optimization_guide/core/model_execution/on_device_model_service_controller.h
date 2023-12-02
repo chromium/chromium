@@ -75,8 +75,9 @@ class OnDeviceModelServiceController
   void GetEstimatedPerformanceClass(
       GetEstimatedPerformanceClassCallback callback);
 
-  // A session completed successfully.
-  void OnResponseCompleted(base::PassKey<SessionImpl>, SessionImpl& session);
+  OnDeviceModelAccessController* access_controller(base::PassKey<SessionImpl>) {
+    return access_controller_.get();
+  }
 
   bool ShouldStartNewSession() const;
 

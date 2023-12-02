@@ -33,6 +33,9 @@ class OnDeviceModelAccessController {
   // Called if using the gpu is blocked.
   void OnGpuBlocked();
 
+  // Called if the session times out.
+  void OnSessionTimedOut();
+
  private:
   raw_ref<PrefService> pref_service_;
   bool is_gpu_blocked_ = false;

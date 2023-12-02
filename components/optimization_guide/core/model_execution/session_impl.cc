@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_config_interpreter.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -294,7 +295,7 @@ void SessionImpl::OnComplete(on_device_model::mojom::ResponseStatus status) {
            GetStringNameForModelExecutionFeature(feature_)}),
       base::TimeTicks::Now() - on_device_state_->start);
   if (controller_) {
-    controller_->OnResponseCompleted({}, *this);
+    controller_->access_controller(/*pass_key=*/{})->OnResponseCompleted();
   }
   SendResponse(/*is_complete=*/true);
   on_device_state_->ResetRequestState();
@@ -390,6 +391,9 @@ bool SessionImpl::ShouldUseOnDeviceModel() const {
 
 void SessionImpl::DestroyOnDeviceStateAndFallbackToRemote(
     ExecuteModelResult result) {
+  if (result == ExecuteModelResult::kTimedOut && controller_) {
+    controller_->access_controller(/*pass_key=*/{})->OnSessionTimedOut();
+  }
   if (on_device_state_->histogram_logger) {
     on_device_state_->histogram_logger->set_result(result);
   }

@@ -60,6 +60,8 @@ extern const char kOnDeviceModelChromeVersion[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kOnDeviceModelCrashCount[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kOnDeviceModelTimeoutCount[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kStoreFilePathsToDelete[];
 
 }  // namespace localstate

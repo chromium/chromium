@@ -256,12 +256,14 @@ enum class OnDeviceModelEligibilityReason {
   kGpuBlocked = 5,
   // The on-device model process crashed too many times for this version.
   kTooManyRecentCrashes = 6,
+  // The on-device model took too long too many times for this version.
+  kTooManyRecentTimeouts = 7,
 
   // This must be kept in sync with
   // OptimizationGuideOnDeviceModelEligibilityReason in optimization/enums.xml.
 
   // Insert new values before this line.
-  kMaxValue = kTooManyRecentCrashes,
+  kMaxValue = kTooManyRecentTimeouts,
 };
 
 // Performance class of this device.

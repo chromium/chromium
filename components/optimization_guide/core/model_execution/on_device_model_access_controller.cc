@@ -13,14 +13,16 @@ namespace optimization_guide {
 
 using prefs::localstate::kOnDeviceModelChromeVersion;
 using prefs::localstate::kOnDeviceModelCrashCount;
+using prefs::localstate::kOnDeviceModelTimeoutCount;
 
 OnDeviceModelAccessController::OnDeviceModelAccessController(
     PrefService& pref_service)
     : pref_service_(pref_service) {
   if (pref_service_->GetString(kOnDeviceModelChromeVersion) !=
       version_info::GetVersionNumber()) {
-    // When the version changes, reset the crash count so that we try again.
+    // When the version changes, reset the counts so that we try again.
     pref_service_->SetInteger(kOnDeviceModelCrashCount, 0);
+    pref_service_->SetInteger(kOnDeviceModelTimeoutCount, 0);
     pref_service_->SetString(kOnDeviceModelChromeVersion,
                              version_info::GetVersionNumber());
   }
@@ -37,11 +39,16 @@ OnDeviceModelAccessController::ShouldStartNewSession() const {
       features::GetOnDeviceModelCrashCountBeforeDisable()) {
     return OnDeviceModelEligibilityReason::kTooManyRecentCrashes;
   }
+  if (pref_service_->GetInteger(kOnDeviceModelTimeoutCount) >=
+      features::GetOnDeviceModelTimeoutCountBeforeDisable()) {
+    return OnDeviceModelEligibilityReason::kTooManyRecentTimeouts;
+  }
   return OnDeviceModelEligibilityReason::kSuccess;
 }
 
 void OnDeviceModelAccessController::OnResponseCompleted() {
   pref_service_->SetInteger(kOnDeviceModelCrashCount, 0);
+  pref_service_->SetInteger(kOnDeviceModelTimeoutCount, 0);
 }
 
 void OnDeviceModelAccessController::OnDisconnectedFromRemote() {
@@ -52,6 +59,12 @@ void OnDeviceModelAccessController::OnDisconnectedFromRemote() {
 
 void OnDeviceModelAccessController::OnGpuBlocked() {
   is_gpu_blocked_ = true;
+}
+
+void OnDeviceModelAccessController::OnSessionTimedOut() {
+  pref_service_->SetInteger(
+      kOnDeviceModelTimeoutCount,
+      pref_service_->GetInteger(kOnDeviceModelTimeoutCount) + 1);
 }
 
 }  // namespace optimization_guide

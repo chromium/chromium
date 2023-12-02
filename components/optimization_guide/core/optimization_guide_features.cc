@@ -967,6 +967,13 @@ int GetOnDeviceModelCrashCountBeforeDisable() {
   return kOnDeviceModelDisableCrashCount.Get();
 }
 
+int GetOnDeviceModelTimeoutCountBeforeDisable() {
+  static const base::FeatureParam<int> kOnDeviceModelDisableTimeoutCount{
+      &kOptimizationGuideOnDeviceModel, "on_device_model_disable_timeout_count",
+      2};
+  return kOnDeviceModelDisableTimeoutCount.Get();
+}
+
 base::TimeDelta GetOnDeviceStartupMetricDelay() {
   static const base::FeatureParam<base::TimeDelta> kOnDeviceStartupMetricDelay{
       &kLogOnDeviceMetricsOnStartup, "on_device_startup_metric_delay",
@@ -978,7 +985,7 @@ base::TimeDelta GetOnDeviceModelTimeForInitialResponse() {
   static const base::FeatureParam<base::TimeDelta>
       kOnDeviceModelTimeForInitialResponse{
           &kOptimizationGuideOnDeviceModel,
-          "on_device_time_for_initial_response", base::Seconds(30)};
+          "on_device_time_for_initial_response", base::Seconds(15)};
   return kOnDeviceModelTimeForInitialResponse.Get();
 }
 
