@@ -39,22 +39,27 @@ chromium-metrics-reviews@google.com.
 <enum name="FeatureCurrentlyEnabledResult">
   <summary>Records whether a feature is currently enabled.</summary>
   <int value="0" label="Unknown"/>
-  <int value="1" label="Not enabled because user is invalid"/>
+  <int value="1" label="Not enabled because user is not signed-in"/>
   <int value="2"
       label="Returned result as enabled because feature was enabled at
              startup"/>
   <int value="3"
       label="Returned result as not enabled because feature was not enabled
              at startup"/>
+  <int value="4"
+      label="Returned result as not enabled because feature was disabled by
+             enterprise policy"/>
 </enum>
 
 <enum name="FeaturesSettingsVisibilityResult">
   <summary>Records visibility of different features.</summary>
   <int value="0" label="Unknown"/>
-  <int value="1" label="Not visible because user is invalid"/>
+  <int value="1" label="Not visible because user is not signed-in"/>
   <int value="2" label="Visible because feature is already enabled"/>
   <int value="3" label="Not visible because field trial is disabled"/>
   <int value="4" label="Visible because field trial is enabled"/>
+  <int value="5"
+      label="Not visible because feature was disabled by enterprise policy"/>
 </enum>
 
 <enum name="HintCacheStoreEntryType">
