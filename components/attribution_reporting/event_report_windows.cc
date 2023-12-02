@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include <algorithm>
-#include <functional>
 #include <iterator>
 #include <utility>
 #include <vector>
@@ -15,6 +14,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/not_fn.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -51,7 +51,7 @@ bool IsReportWindowValid(base::TimeDelta report_window) {
 }
 
 bool IsStrictlyIncreasing(const std::vector<base::TimeDelta>& end_times) {
-  return base::ranges::adjacent_find(end_times, std::not_fn(std::less{})) ==
+  return base::ranges::adjacent_find(end_times, base::not_fn(std::less{})) ==
          end_times.end();
 }
 

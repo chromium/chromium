@@ -4,8 +4,7 @@
 
 #include "chrome/browser/password_manager/android/all_passwords_bottom_sheet_helper.h"
 
-#include <functional>
-
+#include "base/functional/not_fn.h"
 #include "base/ranges/algorithm.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
@@ -37,7 +36,7 @@ void AllPasswordsBottomSheetHelper::ClearUpdateCallback() {
 void AllPasswordsBottomSheetHelper::OnGetPasswordStoreResults(
     std::vector<std::unique_ptr<password_manager::PasswordForm>> results) {
   available_credentials_ = base::ranges::count_if(
-      results, std::not_fn(&password_manager::PasswordForm::blocked_by_user));
+      results, base::not_fn(&password_manager::PasswordForm::blocked_by_user));
   if (available_credentials_.value() == 0)
     return;  // Don't update if sheet still wouldn't be available.
   if (update_callback_.is_null())
