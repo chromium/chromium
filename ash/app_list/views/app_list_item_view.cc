@@ -126,7 +126,7 @@ constexpr float kPromiseIconScaleInstalling = 28.0f / 36.0f;
 constexpr int kPlaceholderIconDimension = 24;
 
 // The width of the promise app progress ring.
-constexpr float kPromiseRingStrokeSize = 2.0f;
+constexpr int kPromiseRingStrokeSize = 2;
 
 // The duration of the animation to animate an app list item view in as a
 // promise app replacement.
@@ -778,6 +778,10 @@ void AppListItemView::SetIcon(const gfx::ImageSkia& icon) {
 
   gfx::ImageSkia resized = gfx::ImageSkiaOperations::CreateResizedImage(
       icon, skia::ImageOperations::RESIZE_BEST, icon_size);
+  if (is_promise_app_ || ShouldUseFallbackIconImageModel()) {
+    resized = gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
+        icon_size.width(), resized);
+  }
   icon_->SetImage(resized);
 
   Layout();
@@ -2185,7 +2189,8 @@ void AppListItemView::UpdateProgressIndicatorState() {
             base::Unretained(this)));
     progress_indicator_->SetInnerIconVisible(false);
     progress_indicator_->SetInnerRingVisible(false);
-    progress_indicator_->SetOuterRingStrokeWidth(kPromiseRingStrokeSize);
+    progress_indicator_->SetOuterRingStrokeWidth(
+        static_cast<float>(kPromiseRingStrokeSize));
     EnsureLayer();
     layer()->Add(progress_indicator_->CreateLayer(base::BindRepeating(
         [](AppListItemView* view, ui::ColorId color_id) {
@@ -2226,6 +2231,10 @@ void AppListItemView::UpdateProgressRingBounds() {
           : kProgressRingMarginPending;
 
   progress_bounds.Inset(progress_ring_padding);
+
+  // The Progress indicator paints the ring within the bounds of the layer, so
+  // add padding for the promise ring.
+  progress_bounds.Inset(-gfx::Insets(kPromiseRingStrokeSize));
 
   progress_indicator_->layer()->SetBounds(progress_bounds);
 

@@ -104,6 +104,9 @@ constexpr int kPromiseIconDimensionInstalling = 28;
 // The preferred promise icon size if the app is currently pending.
 constexpr int kPromiseIconDimensionPending = 24;
 
+// The width of the promise app progress ring.
+constexpr int kPromiseRingStrokeSize = 2;
+
 // The amount of space between the progress ring and the promise app background
 // and icon.
 constexpr gfx::Insets kProgressRingMarginInstalling = gfx::Insets(-1);
@@ -578,12 +581,17 @@ gfx::ImageSkia ShelfAppButton::GetIconImage() const {
                      .GetImageSkia(color_provider);
   }
   const gfx::Size preferred_size = GetPreferredIconSize(image_model);
-  if (icon_image.size() == preferred_size) {
-    return icon_image;
+  if (icon_image.size() != preferred_size) {
+    icon_image = gfx::ImageSkiaOperations::CreateResizedImage(
+        icon_image, skia::ImageOperations::RESIZE_BEST, preferred_size);
   }
 
-  return gfx::ImageSkiaOperations::CreateResizedImage(
-      icon_image, skia::ImageOperations::RESIZE_BEST, preferred_size);
+  if (is_promise_app_ || force_fallback_icon_) {
+    icon_image = gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
+        preferred_size.width(), icon_image);
+  }
+
+  return icon_image;
 }
 
 void ShelfAppButton::SetHostBadgeImage(const gfx::ImageSkia& host_badge_image) {
@@ -1450,7 +1458,8 @@ void ShelfAppButton::UpdateProgressRingBounds() {
             base::Unretained(this)));
     progress_indicator_->SetInnerIconVisible(false);
     progress_indicator_->SetInnerRingVisible(false);
-    progress_indicator_->SetOuterRingStrokeWidth(2.0);
+    progress_indicator_->SetOuterRingStrokeWidth(
+        static_cast<float>(kPromiseRingStrokeSize));
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
     layer()->Add(progress_indicator_->CreateLayer(base::BindRepeating(
@@ -1479,13 +1488,17 @@ void ShelfAppButton::UpdateProgressRingBounds() {
 
   progress_indicator_bounds.Inset(progress_ring_padding);
 
-  SetBackground(std::make_unique<PromiseIconBackground>(
-      cros_tokens::kCrosSysSystemOnBase, progress_indicator_bounds,
-      progress_ring_padding));
+  // The Progress indicator paints the ring within the bounds of the layer, so
+  // add padding for the promise ring.
+  progress_indicator_bounds.Inset(-gfx::Insets(kPromiseRingStrokeSize));
 
   progress_indicator_->layer()->SetBounds(progress_indicator_bounds);
   layer()->StackAtBottom(progress_indicator_->layer());
   progress_indicator_->InvalidateLayer();
+
+  SetBackground(std::make_unique<PromiseIconBackground>(
+      cros_tokens::kCrosSysSystemOnBase, progress_indicator_bounds,
+      progress_ring_padding));
 }
 
 ProgressIndicator* ShelfAppButton::GetProgressIndicatorForTest() const {

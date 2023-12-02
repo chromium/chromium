@@ -66,6 +66,7 @@ void AppServicePromiseAppItem::OnPromiseAppUpdate(
     const apps::PromiseAppUpdate& update) {
   // Each status has its own set of visual effects.
   if (update.StatusChanged()) {
+    LoadIcon();
     SetAppStatus(ShelfControllerHelper::ConvertPromiseStatusToAppStatus(
         update.Status()));
     SetName(base::UTF16ToUTF8(
@@ -73,7 +74,6 @@ void AppServicePromiseAppItem::OnPromiseAppUpdate(
     SetAccessibleName(base::UTF16ToUTF8(
         ShelfControllerHelper::GetAccessibleLabelForPromiseStatus(
             update.Name(), update.Status())));
-    LoadIcon();
   }
   if (update.ProgressChanged() && update.Progress().has_value()) {
     SetProgress(update.Progress().value());
@@ -84,7 +84,7 @@ void AppServicePromiseAppItem::LoadIcon() {
   apps::AppServiceProxyFactory::GetForProfile(profile())->LoadPromiseIcon(
       package_id_,
       ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
-      apps::IconEffects::kCrOsStandardMask,
+      apps::IconEffects::kNone,
       base::BindOnce(&AppServicePromiseAppItem::OnLoadIcon,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -112,6 +112,7 @@ void AppServicePromiseAppItem::InitializeItem(
       ShelfControllerHelper::ConvertPromiseStatusToAppStatus(update.Status()));
   apps::RecordPromiseAppLifecycleEvent(
       apps::PromiseAppLifecycleEvent::kCreatedInLauncher);
+  LoadIcon();
 }
 
 void AppServicePromiseAppItem::GetContextMenuModel(
