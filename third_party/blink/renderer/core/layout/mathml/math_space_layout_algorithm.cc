@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/layout/mathml/math_space_layout_algorithm.h"
 
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
+#include "third_party/blink/renderer/core/layout/length_utils.h"
 
 namespace blink {
 

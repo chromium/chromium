@@ -148,7 +148,7 @@ class CORE_EXPORT GridLayoutData {
 
 // Subgrid layout relies on the root grid to perform the track sizing algorithm
 // for every level of nested subgrids. This class contains the finalized layout
-// data of every node in a grid tree (see `ng_grid_subtree.h`), which will be
+// data of every node in a grid tree (see `grid_subtree.h`), which will be
 // passed down to the constraint space of a subgrid to perform layout.
 //
 // Note that this class allows subtrees to be compared for equality; this is

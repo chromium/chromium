@@ -5,7 +5,7 @@ of Blink's new layout engine "LayoutNG".
 
 This README can be viewed in formatted form [here](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/layout/inline/README.md).
 
-Other parts of LayoutNG is explained [here](../ng/README.md).
+Other parts of LayoutNG is explained [here](../layout_ng.md).
 
 ## What is Inline Layout ##
 
@@ -98,7 +98,7 @@ three separate steps or stages that are executed in order:
     all non-atomic inlines and `TextNodes`s. Atomic inlines are represented as a
     unicode object replacement character but are otherwise skipped.
     Each non-atomic inline and `TextNodes` is fed to a
-    [InlineItemsBuilder](ng_inline_items_builder.h) instance which collects
+    [InlineItemsBuilder](inline_items_builder.h) instance which collects
     the text content for all non-atomic inlines in the container.
 
     During this process white-space is collapsed and normalized according to CSS
@@ -391,7 +391,7 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [LogicalLineItems]: logical_line_items.h
 [NGBaselineRequest]: ng_baseline.h
 [NGPhysicalTextFragment]: ng_physical_text_fragment.h
-[OffsetMapping]: ng_offset_mapping.h
+[OffsetMapping]: offset_mapping.h
 [PhysicalBoxFragment]: ../physical_box_fragment.h
 [PhysicalFragment]: ../physical_fragment.h
 [PhysicalLineBoxFragment]: physical_line_box_fragment.h

@@ -3,9 +3,9 @@
 This directory contains the list implementation
 of Blink's new layout engine "LayoutNG".
 
-This README can be viewed in formatted form [here](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/layout/ng/list/README.md).
+This README can be viewed in formatted form [here](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/layout/list/README.md).
 
-Other parts of LayoutNG is explained [here](../README.md).
+Other parts of LayoutNG is explained [here](../layout_ng.md).
 
 ## Outside list marker
 
@@ -133,11 +133,11 @@ and still easy to implement across implementations.
 [list-style-position]: https://drafts.csswg.org/css-lists-3/#propdef-list-style-position
 [marker positioning]: https://drafts.csswg.org/css-lists-3/#positioning
 
-[BlockLayoutAlgorithm]: ../ng/ng_block_layout_algorithm.h
-[InlineItem]: ../ng/inline/ng_inline_item.h
-[InlineLayoutAlgorithm]: ../inline/ng_inline_layout_algorithm.h
+[BlockLayoutAlgorithm]: ../block_layout_algorithm.h
+[InlineItem]: ../inline/inline_item.h
+[InlineLayoutAlgorithm]: ../inline/inline_layout_algorithm.h
 [LayoutListItem]: layout_list_item.h
 [LayoutInsideListMarker]: layout_inside_list_marker.h
 [LayoutOutsideListMarker]: layout_outside_list_marker.h
 [LayoutResult]: ../layout_result.h
-[PaintLayer]: ../../paint/PaintLayer.h
+[PaintLayer]: ../../paint/paint_layer.h

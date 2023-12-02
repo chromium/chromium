@@ -3,7 +3,7 @@
 *How to add block fragmentation support to a layout algorithm*
 
 This tutorial can be viewed in formatted form
-[here](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/layout/ng/block-fragmentation-tutorial.md).
+[here](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/layout/block_fragmentation_tutorial.md).
 
 Main spec: https://www.w3.org/TR/css-break-3/
 
@@ -119,7 +119,7 @@ we may break before or after it).
 
 ([Fragment builders](box_fragment_builder.h) also need to be
 fragmentation-aware. This is automatically taken care of by the
-[LayoutAlgorithm](ng/ng_layout_algorithm.h) constructor, so algorithm
+[LayoutAlgorithm](layout_algorithm.h) constructor, so algorithm
 implementors need not worry about this.)
 
 **Important:** When laying out a child that participates in block fragmentation,
@@ -154,7 +154,7 @@ is that all the layout algorithm needs to do when laying out children, is:
 * Figure out where to begin - which child is the first that wasn't fully laid
   out in the previous fragmentainer (if any)? Check the incoming break token for
   the node that was passed to the layout algorithm, by calling
-  [GetBreakToken()](ng/ng_layout_algorithm.h). There will be a child break token
+  [GetBreakToken()](layout_algorithm.h). There will be a child break token
   for each unfinished child. Block break tokens form a tree. Children are found
   in [BlockBreakToken::ChildBreakTokens()](block_break_token.h). These will
   need to be resumed and laid out by passing the corresponding child break token
@@ -263,9 +263,9 @@ When we break before or inside a node, we attach a [break
 token](block_break_token.h) to the resulting fragment. The break tokens form
 a tree structure for each parent we need to break and resume inside of, which
 we'll traverse when resuming layout in the next fragmentainer. See for instance
-[BlockChildIterator](ng/ng_block_child_iterator.h), and how it makes use of the
+[BlockChildIterator](block_child_iterator.h), and how it makes use of the
 break token tree structure during child layout in
-[BlockLayoutAlgorithm::Layout()](ng/ng_block_layout_algorithm.cc).
+[BlockLayoutAlgorithm::Layout()](block_layout_algorithm.cc).
 
 Note that the mere existence of a break token for a node doesn't imply that any
 fragment has been generated for a node, since we also create break tokens
@@ -282,7 +282,7 @@ a child break token for each child node that we need to break *before*.
 For multicol layout, a break token tree is built all the way up to the
 containing column fragment, and there it will serve as input to the next
 column. The column fragments are produced by the regular
-[BlockLayoutAlgorithm](ng/ng_block_layout_algorithm.h), while the multicol
+[BlockLayoutAlgorithm](block_layout_algorithm.h), while the multicol
 container itself produces multicol container fragments (we may be nested inside
 of another fragmentation context; otherwise there'll only be one multicol
 container fragment) using
@@ -395,7 +395,7 @@ the [EarlyBreak](early_break.h) structure.
 An algorithm can be rerun to break at the appealing early breakpoint by passing
 said early breakpoint to the algorithm's constructor. This can be done in the
 algorithm by calling and returning the result from
-[LayoutAlgorithm::RelayoutAndBreakEarlier()](ng/ng_layout_algorithm.h). This will
+[LayoutAlgorithm::RelayoutAndBreakEarlier()](layout_algorithm.h). This will
 set the early_break_ member and relayout. Any compliant algorithm needs to
 check if an early break has been set, and, if so, break when reaching that
 node.
@@ -420,7 +420,7 @@ and relayout without block fragmentation, so that the node from this point will
 be treated as monolithic.
 
 The correct response to this is to abort layout of the node and relayout using
-[LayoutAlgorithm::RelayoutWithoutFragmentation()](ng/ng_layout_algorithm.h).
+[LayoutAlgorithm::RelayoutWithoutFragmentation()](layout_algorithm.h).
 
 ## Parallel flows ##
 

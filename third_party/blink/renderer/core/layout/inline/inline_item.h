@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_item_segment.h"
 #include "third_party/blink/renderer/core/layout/inline/text_item_type.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_style_variant.h"
+#include "third_party/blink/renderer/core/layout/style_variant.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/run_segmenter.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 

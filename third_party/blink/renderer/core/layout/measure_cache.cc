@@ -6,7 +6,7 @@
 
 #include "third_party/blink/renderer/core/layout/geometry/fragment_geometry.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_utils.h"
+#include "third_party/blink/renderer/core/layout/layout_utils.h"
 
 namespace blink {
 

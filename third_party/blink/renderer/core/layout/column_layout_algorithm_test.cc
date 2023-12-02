@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/core/layout/column_layout_algorithm.h"
 
-#include "third_party/blink/renderer/core/layout/ng/ng_base_layout_algorithm_test.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_block_layout_algorithm.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
+#include "third_party/blink/renderer/core/layout/base_layout_algorithm_test.h"
+#include "third_party/blink/renderer/core/layout/block_layout_algorithm.h"
+#include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 

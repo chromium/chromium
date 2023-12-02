@@ -6,13 +6,13 @@
 
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/layout/constraint_space.h"
+#include "third_party/blink/renderer/core/layout/disable_layout_side_effects_scope.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/geometry/fragment_geometry.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
+#include "third_party/blink/renderer/core/layout/layout_utils.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_disable_side_effects_scope.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 
 namespace blink {
@@ -437,7 +437,7 @@ const LayoutResult* LayoutBox::CachedLayoutResult(
           //
           // NOTE: It's fine to use LayoutResult::BlockSizeForFragmentation()
           // directly here, rather than the helper BlockSizeForFragmentation()
-          // in ng_fragmentation_utils.cc, since what the latter does shouldn't
+          // in fragmentation_utils.cc, since what the latter does shouldn't
           // matter, since we're not monolithic content
           // (HasBlockFragmentation() is true), and we're not a line box.
           LayoutUnit block_size_for_fragmentation =

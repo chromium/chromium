@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/core/layout/frame_set_layout_algorithm.h"
 
 #include "third_party/blink/renderer/core/html/html_frame_set_element.h"
+#include "third_party/blink/renderer/core/layout/disable_layout_side_effects_scope.h"
 #include "third_party/blink/renderer/core/layout/frame_set_layout_data.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_disable_side_effects_scope.h"
 
 namespace blink {
 
