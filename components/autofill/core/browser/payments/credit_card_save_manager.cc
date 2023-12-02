@@ -799,9 +799,22 @@ void CreditCardSaveManager::OnUserDidDecideOnCvcLocalSave(
                                              card_save_candidate_.cvc());
       break;
     case AutofillClient::SaveCardOfferUserDecision::kDeclined:
+      // If the user rejected save and the offer-to-save bubble, treat
+      // that as a final strike and block this feature.
+      if (auto* cvc_storage_strike_db = GetCvcStorageStrikeDatabase()) {
+        int strike_difference =
+            cvc_storage_strike_db->GetMaxStrikesLimit() -
+            cvc_storage_strike_db->GetStrikes(card_save_candidate_.guid());
+        if (strike_difference > 0) {
+          cvc_storage_strike_db->AddStrikes(
+              /*strikes_increase=*/strike_difference,
+              /*id=*/card_save_candidate_.guid());
+        }
+      }
+      break;
     case AutofillClient::SaveCardOfferUserDecision::kIgnored:
       if (show_save_prompt_.value_or(false) && GetCvcStorageStrikeDatabase()) {
-        // If the user rejected or ignored save and the offer-to-save bubble or
+        // If the user ignored save and the offer-to-save bubble or
         // infobar was actually shown (NOT just the icon if on desktop), count
         // that as a strike against offering upload in the future.
         GetCvcStorageStrikeDatabase()->AddStrike(card_save_candidate_.guid());
@@ -1105,9 +1118,24 @@ void CreditCardSaveManager::OnUserDidDecideOnCvcUploadSave(
       break;
     }
     case AutofillClient::SaveCardOfferUserDecision::kDeclined:
+      // If the user rejected save and the offer-to-save bubble, treat
+      // that as a final strike and block this feature.
+      if (auto* cvc_storage_strike_db = GetCvcStorageStrikeDatabase()) {
+        int strike_difference =
+            cvc_storage_strike_db->GetMaxStrikesLimit() -
+            cvc_storage_strike_db->GetStrikes(
+                base::NumberToString(card_save_candidate_.instrument_id()));
+        if (strike_difference > 0) {
+          cvc_storage_strike_db->AddStrikes(
+              /*strikes_increase=*/strike_difference,
+              /*id=*/base::NumberToString(
+                  card_save_candidate_.instrument_id()));
+        }
+      }
+      break;
     case AutofillClient::SaveCardOfferUserDecision::kIgnored:
       if (show_save_prompt_.value_or(false) && GetCvcStorageStrikeDatabase()) {
-        // If the user rejected or ignored save and the offer-to-save bubble or
+        // If the user ignored save and the offer-to-save bubble or
         // infobar was actually shown (NOT just the icon if on desktop), count
         // that as a strike against offering upload in the future.
         GetCvcStorageStrikeDatabase()->AddStrike(
