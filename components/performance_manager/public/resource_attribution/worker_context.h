@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_WORKER_CONTEXT_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_WORKER_CONTEXT_H_
 
+#include <compare>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
@@ -58,40 +59,25 @@ class WorkerContext {
   // convenience.
   std::string ToString() const;
 
- private:
-  friend bool operator<(const WorkerContext&, const WorkerContext&);
-  friend bool operator==(const WorkerContext&, const WorkerContext&);
+  // Compare WorkerContexts by WorkerToken.
+  constexpr friend auto operator<=>(const WorkerContext& a,
+                                    const WorkerContext& b) {
+    return a.token_ <=> b.token_;
+  }
 
+  // Test WorkerContexts for equality by WorkerToken.
+  constexpr friend bool operator==(const WorkerContext& a,
+                                   const WorkerContext& b) {
+    return a.token_ == b.token_;
+  }
+
+ private:
   WorkerContext(const blink::WorkerToken& token,
                 base::WeakPtr<WorkerNode> weak_node);
 
   blink::WorkerToken token_;
   base::WeakPtr<WorkerNode> weak_node_;
 };
-
-inline bool operator<(const WorkerContext& a, const WorkerContext& b) {
-  return a.token_ < b.token_;
-}
-
-inline bool operator==(const WorkerContext& a, const WorkerContext& b) {
-  return a.token_ == b.token_;
-}
-
-inline bool operator!=(const WorkerContext& a, const WorkerContext& b) {
-  return !(a == b);
-}
-
-inline bool operator<=(const WorkerContext& a, const WorkerContext& b) {
-  return !(b < a);
-}
-
-inline bool operator>(const WorkerContext& a, const WorkerContext& b) {
-  return !(a < b || a == b);
-}
-
-inline bool operator>=(const WorkerContext& a, const WorkerContext& b) {
-  return !(a > b);
-}
 
 }  // namespace performance_manager::resource_attribution
 
