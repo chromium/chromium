@@ -506,4 +506,37 @@ suite('internet-detail-dialog', () => {
         await flushAsync();
         assertFalse(!!getErrorToast());
       });
+
+  test('MacAddress not shown when invalid', async function() {
+    mojoApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
+    const wifiNetwork = getManagedProperties(NetworkType.kWiFi, 'wifi_user');
+    wifiNetwork.source = OncSource.kUser;
+    wifiNetwork.connectable = true;
+    wifiNetwork.connectionState = ConnectionStateType.kConnected;
+
+    mojoApi_.setManagedPropertiesForTest(wifiNetwork);
+    mojoApi_.setDeviceStateForTest({
+      type: NetworkType.kWiFi,
+      deviceState: DeviceStateType.kEnabled,
+      macAddress: '01:10:10:10:10:10',
+    });
+    await flushAsync();
+
+    init();
+    await flushAsync();
+    let macAddress = getElement('#macAddress');
+
+    assertTrue(!!macAddress);
+    assertFalse(macAddress.hidden);
+
+    mojoApi_.setDeviceStateForTest({
+      type: NetworkType.kWiFi,
+      deviceState: DeviceStateType.kEnabled,
+      macAddress: '00:00:00:00:00:00',
+    });
+    await flushAsync();
+
+    macAddress = getElement('#macAddress');
+    assertTrue(macAddress.hidden);
+  });
 });

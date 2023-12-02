@@ -220,7 +220,8 @@
   <div class="cr-row">
     <!-- MAC Address. -->
     <div class="property-box single-column two-line"
-        hidden$="[[!deviceState_.macAddress]]">
+        id="macAddress"
+        hidden$="[[!shouldShowMacAddress_(deviceState_.macAddress)]]">
       <div>$i18n{OncMacAddress}</div>
       <div class="secondary">[[deviceState_.macAddress]]</div>
     </div>

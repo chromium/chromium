@@ -910,4 +910,13 @@ Polymer({
     this.errorToastMessage_ = event.detail;
     this.shadowRoot.querySelector('#errorToast').show();
   },
+
+  /**
+   * @param {string} macAddress
+   * @return {boolean}
+   */
+  shouldShowMacAddress_(macAddress) {
+    return !!macAddress && macAddress.length > 0 &&
+        macAddress !== '00:00:00:00:00:00';
+  },
 });
