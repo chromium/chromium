@@ -304,7 +304,14 @@ BASE_DECLARE_FEATURE(kMacClipboardWriteImageWithPng);
 // ChromeRefresh2023 is enabled.
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kCr2023MacFontSmoothing);
-#endif
+#endif  // BUILDFLAG(IS_APPLE)
+
+#if BUILDFLAG(IS_WIN)
+// Use font settings for contrast and gamma as specified in system settings.
+// If not set, these values fall back to the pre-defined Skia defaults.
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kUseGammaContrastRegistrySettings);
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace features
 

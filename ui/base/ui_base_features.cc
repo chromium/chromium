@@ -620,6 +620,12 @@ BASE_FEATURE(kMacClipboardWriteImageWithPng,
 BASE_FEATURE(kCr2023MacFontSmoothing,
              "Cr2023MacFontSmoothing",
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
+#endif  // BUILDFLAG(IS_APPLE)
+
+#if BUILDFLAG(IS_WIN)
+BASE_FEATURE(kUseGammaContrastRegistrySettings,
+             "UseGammaContrastRegistrySettings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace features
