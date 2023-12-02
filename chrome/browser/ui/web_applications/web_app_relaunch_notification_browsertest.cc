@@ -10,6 +10,7 @@
 #include "base/scoped_observation.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -39,6 +40,11 @@ class WebAppRelaunchNotificationBrowserTest
     : public InProcessBrowserTest,
       public NotificationDisplayService::Observer {
  public:
+  WebAppRelaunchNotificationBrowserTest()
+      : task_runner_(base::MakeRefCounted<base::TestMockTimeTaskRunner>()) {
+    GetTaskRunnerForTesting() = task_runner_;
+  }
+
   // NotificationDisplayService::Observer:
   MOCK_METHOD(void,
               OnNotificationDisplayed,
@@ -106,6 +112,8 @@ class WebAppRelaunchNotificationBrowserTest
   }
 
  protected:
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
+
   base::ScopedObservation<NotificationDisplayService,
                           WebAppRelaunchNotificationBrowserTest>
       notification_observation_{this};
@@ -142,6 +150,14 @@ IN_PROC_BROWSER_TEST_F(WebAppRelaunchNotificationBrowserTest,
   NotifyAppRelaunchState("placeholder_app_id", "final_app_id",
                          u"finall app title", profile()->GetWeakPtr(),
                          AppRelaunchState::kAppRelaunched);
+
+  // The notification is still shown due to minimal visibility time after the
+  // app was relaunched.
+  EXPECT_EQ(1u, GetDisplayedNotificationsCount());
+
+  // After two seconds the notification should be gone.
+  task_runner_->FastForwardBy(
+      base::Seconds(kSecondsToShowNotificationPostAppRelaunch));
   EXPECT_EQ(0u, GetDisplayedNotificationsCount());
 }
 
@@ -198,11 +214,21 @@ IN_PROC_BROWSER_TEST_F(WebAppRelaunchNotificationBrowserTest,
   NotifyAppRelaunchState("placeholder_app_id_1", "final_app_id_1",
                          u"finall app title 1", profile()->GetWeakPtr(),
                          AppRelaunchState::kAppRelaunched);
+  EXPECT_EQ(2u, GetDisplayedNotificationsCount());
+
+  // After two seconds the notification should be gone.
+  task_runner_->FastForwardBy(
+      base::Seconds(kSecondsToShowNotificationPostAppRelaunch));
   EXPECT_EQ(1u, GetDisplayedNotificationsCount());
 
   NotifyAppRelaunchState("placeholder_app_id_2", "final_app_id_2",
                          u"finall app title 2", profile()->GetWeakPtr(),
                          AppRelaunchState::kAppRelaunched);
+  EXPECT_EQ(1u, GetDisplayedNotificationsCount());
+
+  // After two seconds the notification should be gone.
+  task_runner_->FastForwardBy(
+      base::Seconds(kSecondsToShowNotificationPostAppRelaunch));
   EXPECT_EQ(0u, GetDisplayedNotificationsCount());
 }
 

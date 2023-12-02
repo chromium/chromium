@@ -6,8 +6,11 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_handler.h"
@@ -25,6 +28,8 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/notifier_catalogs.h"
 #endif
+
+namespace web_app {
 
 namespace {
 
@@ -68,8 +73,6 @@ message_center::Notification CreateNotification(
 
 }  // namespace
 
-namespace web_app {
-
 void NotifyAppRelaunchState(const webapps::AppId& placeholder_app_id,
                             const webapps::AppId& final_app_id,
                             const std::u16string& final_app_name,
@@ -91,14 +94,37 @@ void NotifyAppRelaunchState(const webapps::AppId& placeholder_app_id,
       // TODO(b/311711416): Implement progress bar.
       break;
     case web_app::AppRelaunchState::kAppRelaunched:
-      // TODO(b/311711416): Implement minimum showing duration.
-      // The `NotificationDisplayService::Close` function can be called even if
-      // the notification is not shown anymore.
-      NotificationDisplayService::GetForProfile(profile.get())
-          ->Close(NotificationHandler::Type::TRANSIENT,
-                  CreateNotificationId(placeholder_app_id));
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner;
+      if (GetTaskRunnerForTesting()) {            // IN-TEST
+        task_runner = GetTaskRunnerForTesting();  // IN-TEST
+      } else {
+        task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
+      }
+      task_runner->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(
+              [](webapps::AppId app_id, base::WeakPtr<Profile> profile) {
+                if (!profile) {
+                  return;
+                }
+
+                // The `NotificationDisplayService::Close` function can be
+                // called even if
+                // the notification is not shown anymore.
+                NotificationDisplayService::GetForProfile(profile.get())
+                    ->Close(NotificationHandler::Type::TRANSIENT,
+                            CreateNotificationId(app_id));
+              },
+              placeholder_app_id, std::move(profile)),
+          base::Seconds(kSecondsToShowNotificationPostAppRelaunch));
       break;
   }
+}
+
+scoped_refptr<base::SingleThreadTaskRunner>& GetTaskRunnerForTesting() {
+  static base::NoDestructor<scoped_refptr<base::SingleThreadTaskRunner>>
+      task_runner_for_testing;
+  return *task_runner_for_testing;
 }
 
 }  // namespace web_app
