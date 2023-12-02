@@ -361,7 +361,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.input_ = this.editedInput_;
     this.selectedLength_ = Length.kUnset;
     this.selectedTone_ = Tone.kUnset;
-    this.compose_();
+    this.compose_(true);
   }
 
   private onAccept_() {
@@ -416,13 +416,13 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
   }
 
-  private compose_() {
+  private compose_(inputEdited: boolean = false) {
     assert(this.$.textarea.validate());
     assert(this.submitted_);
     this.loading_ = true;
     this.response_ = undefined;
     this.saveComposeAppState_();  // Ensure state is saved before compose call.
-    this.apiProxy_.compose(this.input_);
+    this.apiProxy_.compose(this.input_, inputEdited);
   }
 
   private rewrite_(style: StyleModifiers) {

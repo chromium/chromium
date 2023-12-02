@@ -55,8 +55,8 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
     this.methodCalled('closeUi', reason);
   }
 
-  compose(input: string): void {
-    this.methodCalled('compose', {input});
+  compose(input: string, edited: boolean): void {
+    this.methodCalled('compose', {input, edited});
   }
 
   rewrite(style: StyleModifiers): void {
@@ -581,6 +581,7 @@ suite('ComposeApp', () => {
     const args = await testProxy.whenCalled('compose');
     await mockResponse('new response');
     assertEquals('Here is an even better input.', args.input);
+    assertTrue(args.edited);
     assertTrue(app.$.resultContainer.textContent!.includes('new response'));
   });
 

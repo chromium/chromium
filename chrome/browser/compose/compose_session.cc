@@ -202,10 +202,10 @@ void ComposeSession::Bind(
 }
 
 // ComposeSessionPageHandler
-void ComposeSession::Compose(const std::string& input) {
+void ComposeSession::Compose(const std::string& input, bool is_input_edited) {
   optimization_guide::proto::ComposeRequest request;
   request.mutable_generate_params()->set_user_input(input);
-  MakeRequest(std::move(request));
+  MakeRequest(std::move(request), is_input_edited);
 }
 
 void ComposeSession::Rewrite(compose::mojom::StyleModifiersPtr style) {
@@ -219,11 +219,12 @@ void ComposeSession::Rewrite(compose::mojom::StyleModifiersPtr style) {
   }
   request.mutable_rewrite_params()->set_previous_response(
       most_recent_ok_state_->mojo_state()->response->result);
-  MakeRequest(std::move(request));
+  MakeRequest(std::move(request), false);
 }
 
 void ComposeSession::MakeRequest(
-    optimization_guide::proto::ComposeRequest request) {
+    optimization_guide::proto::ComposeRequest request,
+    bool is_input_edited) {
   current_state_->has_pending_request = true;
   current_state_->feedback =
       compose::mojom::UserFeedback::kUserFeedbackUnspecified;
@@ -239,18 +240,19 @@ void ComposeSession::MakeRequest(
   compose_count_ += 1;
 
   if (skip_inner_text_ || inner_text_.has_value()) {
-    RequestWithSession(std::move(request));
+    RequestWithSession(std::move(request), is_input_edited);
   } else {
     // Prepare the compose call, which will be invoked when inner text
     // extraction is completed.
-    continue_compose_ =
-        base::BindOnce(&ComposeSession::RequestWithSession,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(request));
+    continue_compose_ = base::BindOnce(&ComposeSession::RequestWithSession,
+                                       weak_ptr_factory_.GetWeakPtr(),
+                                       std::move(request), is_input_edited);
   }
 }
 
 void ComposeSession::RequestWithSession(
-    const optimization_guide::proto::ComposeRequest& request) {
+    const optimization_guide::proto::ComposeRequest& request,
+    bool is_input_edited) {
   if (skip_inner_text_) {
     // Make sure context is added for sessions with no inner text.
     AddPageContentToSession("");
@@ -262,12 +264,14 @@ void ComposeSession::RequestWithSession(
   session_->ExecuteModel(
       request, base::BindRepeating(&ComposeSession::ModelExecutionCallback,
                                    weak_ptr_factory_.GetWeakPtr(),
-                                   std::move(request_timer), request_id_));
+                                   std::move(request_timer), request_id_,
+                                   is_input_edited));
 }
 
 void ComposeSession::ModelExecutionCallback(
     const base::ElapsedTimer& request_timer,
     int request_id,
+    bool was_input_edited,
     optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   base::TimeDelta request_delta = request_timer.Elapsed();
@@ -299,7 +303,6 @@ void ComposeSession::ModelExecutionCallback(
     SendQualityLogEntryUponError(std::move(log_entry), request_delta);
     return;
   }
-
   DCHECK(result->is_complete ||
          base::FeatureList::IsEnabled(
              optimization_guide::features::kOptimizationGuideOnDeviceModel));
@@ -322,6 +325,8 @@ void ComposeSession::ModelExecutionCallback(
   }
 
   if (log_entry) {
+    log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+        ->set_was_generated_via_edit(was_input_edited);
     log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
         ->set_request_latency_ms(request_delta.InMilliseconds());
     optimization_guide::proto::Int128* token =
@@ -472,7 +477,7 @@ void ComposeSession::InitializeWithText(
     return;
   }
 
-  Compose(initial_input_);
+  Compose(initial_input_, false);
 }
 
 void ComposeSession::OpenComposeSettings() {

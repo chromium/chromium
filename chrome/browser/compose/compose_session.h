@@ -68,7 +68,7 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   // Requests a compose response for `input`. The result will be sent through
   // the ComposeDialog interface rather than through a callback, as it might
   // complete after the originating WebUI has been destroyed.
-  void Compose(const std::string& input) override;
+  void Compose(const std::string& input, bool is_input_edited) override;
 
   // Requests a rewrite the last response. `style` specifies how the response
   // should be changed. An empty `style` without a tone or length requests a
@@ -147,18 +147,21 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   void ModelExecutionCallback(
       const base::ElapsedTimer& request_start,
       int request_id,
+      bool was_input_edited,
       optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
   // Adds page content to the session context.
   void AddPageContentToSession(const std::string& inner_text);
 
   // Makes compose or rewrite request.
-  void MakeRequest(optimization_guide::proto::ComposeRequest request);
+  void MakeRequest(optimization_guide::proto::ComposeRequest request,
+                   bool is_input_edited);
 
   // RequestWithSession can either be called synchronously or on a later event
   // loop
   void RequestWithSession(
-      const optimization_guide::proto::ComposeRequest& request);
+      const optimization_guide::proto::ComposeRequest& request,
+      bool is_input_edited);
 
   void UpdateInnerTextAndContinueComposeIfNecessary(
       const std::string& inner_text);

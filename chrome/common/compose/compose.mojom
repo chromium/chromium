@@ -138,8 +138,10 @@ enum UserFeedback {
 
 // Interface for calls from Compose dialog JS into the Browser process.
 interface ComposeSessionPageHandler {
-  // Asks the Browser to compose `input`.
-  Compose(string input);
+  // Asks the Browser to compose `input`, informing the Browser if the compose
+  // call was based on the user input being 'edited' in the dialog after the
+  // initial compose response.
+  Compose(string input, bool edited);
 
   // Asks the Browser to rewrite the last response. `style` specifies how the
   // response should be changed. A null `style` requests a rewrite without
