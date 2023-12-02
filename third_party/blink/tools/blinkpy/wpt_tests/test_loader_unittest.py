@@ -118,7 +118,6 @@ class TestLoaderTestCase(unittest.TestCase):
                 This is a testharness.js-based test.
                 CONSOLE WARNING: warning
                 Harness Error. harness_status.status = 1 , harness_status.message = Uncaught ReferenceError: AriaUtils is not defined
-                [PASS] subtest1
                 [FAIL] subtest2
                   assert_unreached:\\n  message 2
                 [NOTRUN] sub\\n  test3
@@ -251,7 +250,6 @@ class TestLoaderTestCase(unittest.TestCase):
                 This is a testharness.js-based test.
                 [FAIL] subtest1
                   assert_equals: message
-                [PASS] subtest2
                 Harness: the test ran to completion.
 
                 """))

@@ -561,6 +561,9 @@ crbug.com/1499775 external/wpt/html/browsers/windows/auxiliary-browsing-contexts
 crbug.com/1499775 external/wpt/html/semantics/embedded-content/the-img-element/image-loading-lazy-base-url.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/preload/preload-strict-dynamic.sub.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/webusb/usbDevice-iframe.https.html [ Pass Timeout ]
+# An additional subtest fails with variable durations in the output, so
+# `-expected.txt` cannot be used.
+crbug.com/1499775 external/wpt/long-animation-frame/tentative/loaf-desired-exec-time.html [ Failure ]
 
 # These tests fail when run with timeout multipler is 2
 crbug.com/1507050 external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/after-prepare-createHTMLDocument-fetch-error-external-classic.html [ Failure Pass ]

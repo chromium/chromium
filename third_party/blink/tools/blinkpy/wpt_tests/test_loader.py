@@ -12,6 +12,7 @@ translation to the metadata serialization format and dealing with character
 escaping.
 """
 
+import contextlib
 import functools
 import logging
 from typing import Container, List, Optional, Tuple
@@ -140,6 +141,9 @@ class TestLoader(testloader.TestLoader):
         }:
             # The `[ Failure ]` line for this test was only masking subtest
             # failures, but the harness is actually OK.
+            #
+            # ERROR and PRECONDITION_FAILED (if applicable) were already
+            # translated from `ResultType.Failure`.
             test_statuses.add('OK')
 
         assert test_statuses, exp_line.to_string()
@@ -149,6 +153,9 @@ class TestLoader(testloader.TestLoader):
         # anything. To mimic this, skip creating any explicit subtests, and rely
         # on implicit subtest creation.
         if ResultType.Failure in exp_line.results:
+            expect_any = wptnode.KeyValueNode('expect_any_subtests')
+            expect_any.append(wptnode.AtomNode(True))
+            test_ast.append(expect_any)
             return test_ast
 
         for line in filter(lambda line: line.subtest, testharness_lines):
@@ -208,12 +215,19 @@ def data_cls_getter(output_node, visited_node):
 
 class TestNode(manifestexpected.TestNode):
     def get_subtest(self, name: str):
-        if name not in self.subtests and can_have_subtests(self.test_type):
+        chromium_statuses = frozenset([ResultType.Pass])
+        with contextlib.suppress(KeyError):
             # Create an implicit subtest that accepts any status. This supports
             # testharness tests marked with `[ Failure ]` without a checked-in
             # baseline, which would pass when run with `run_web_tests.py`.
-            statuses = chromium_to_wptrunner_statuses(
-                frozenset(WPTResult.status_priority), self.test_type, True)
+            #
+            # We still create PASS-only subtests in case the test can time out
+            # overall (see below for adding TIMEOUT, NOTRUN).
+            if self.get('expect_any_subtests'):
+                chromium_statuses = frozenset(WPTResult.status_priority)
+        if name not in self.subtests and can_have_subtests(self.test_type):
+            statuses = chromium_to_wptrunner_statuses(chromium_statuses,
+                                                      self.test_type, True)
             subtest_ast = _build_expectation_ast(name,
                                                  normalize_statuses(statuses))
             self.node.append(subtest_ast)
@@ -224,9 +238,14 @@ class TestNode(manifestexpected.TestNode):
                     data_cls_getter=lambda x, y: manifestexpected.SubtestNode,
                     test_path=self.parent.test_path))
         subtest = super().get_subtest(name)
-        if 'TIMEOUT' in {self.expected, *self.known_intermittent}:
+        # When a test times out in `run_web_tests.py`, the text output is still
+        # diffed but mismatches don't affect pass/fail status or retries. For
+        # wptrunner to mimic this behavior with variations in timing (i.e.,
+        # which subtest times out can differ between runs), any subtest is
+        # allowed to time out or not run if the overall test is expected to
+        # time out.
+        if subtest and 'TIMEOUT' in {self.expected, *self.known_intermittent}:
             expected = [subtest.expected, *subtest.known_intermittent]
-            # Ignore which subtest timed out.
             for status in ['TIMEOUT', 'NOTRUN']:
                 if status not in expected:
                     expected.append(status)
