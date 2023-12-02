@@ -46,7 +46,7 @@
   Lorem ipsum
   </message>
   <message name="IDS_COMPOSE_INPUT_PLACEHOLDER" desc="A placeholder text used in the input textfield." translateable="false">
-  We can Autofill many things (e.g., adresses, passwords, user names, credit card.). You can autofill any fields you want.
+  We can Autofill many things (e.g., addresses, passwords, user names, credit card.). You can autofill any fields you want.
   </message>
   <message name="IDS_COMPOSE_INPUT_FOOTER" desc="The footer text for the input dialog." translateable="false">
   Your bookmark is saved to <ph name="START">&lt;a href="chrome://bookmarks"&gt;</ph>Bookmark UI<ph name="END">&lt;/a&gt;</ph>.
