@@ -7643,6 +7643,13 @@
      }
     },
     "crashtests": {
+     "color-mix-crashtest.html": [
+      "91d29464f50d12985e791d889abfc482a188f767",
+      [
+       null,
+       {}
+      ]
+     ],
      "get-computed-timing-crash.html": [
       "b666eea91f67d1f26cbc88f1f26d4008ceb76af6",
       [
@@ -338033,7 +338040,7 @@
       []
      ],
      "signs-abs-computed-expected.txt": [
-      "3421b47828cce80bffbd8a465bba7d6b5c5e2822",
+      "ecd3d456377aa8d2f925ce2730ed5ecf261e1ff5",
       []
      ],
      "signs-abs-invalid-expected.txt": [
@@ -344337,7 +344344,7 @@
       []
      ],
      "color-testcommon.js": [
-      "44ca0bbb33c9e9571415c14180372ca0b96780a6",
+      "18ab4420f67946664380f4cabeb830d56ba74210",
       []
      ],
      "computed-testcommon.js": [
@@ -351782,6 +351789,22 @@
       "a69aab487239021088f944b0a8cee2dad4b3d111",
       []
      ],
+     "anchor.tentative.https.window_include=from-private-expected.txt": [
+      "a1f71342af938b921068edb09a61ee9f7c7d56af",
+      []
+     ],
+     "anchor.tentative.https.window_include=from-public-expected.txt": [
+      "d14171bc367dbc44dd4e8888d5a9cc1b943ce793",
+      []
+     ],
+     "anchor.tentative.https.window_include=from-treat-as-public-expected.txt": [
+      "aa8c3d8001da1c0aaa3c81d6264ed4bf658725bc",
+      []
+     ],
+     "anchor.tentative.window-expected.txt": [
+      "06cd1f13ec8f52bf10fdfd2a6bfcc6e0578c4753",
+      []
+     ],
      "fenced-frame-no-preflight-required.tentative.https.window-expected.txt": [
       "6d23b2ad5bfa38f06271a71229833f587eacab8a",
       []
@@ -351839,6 +351862,10 @@
       []
      ],
      "resources": {
+      "anchor.html": [
+       "0780b3fa502d1651cdf93332bfa957f15f2425ff",
+       []
+      ],
       "executor.html": [
        "d71212951cb63ebd310820d1df7c8789b5fbd316",
        []
@@ -351924,7 +351951,7 @@
        []
       ],
       "support.sub.js": [
-       "15bd685810c1da2831a7d9f68c4804c157141ca4",
+       "920ded6cff7feae1aa9337405a7cc3402b787c57",
        []
       ],
       "worker-blob-fetcher.html": [
@@ -374479,7 +374506,7 @@
     ]
    },
    "lint.ignore": [
-    "c82f8027f690cb7184fd41053d3e02f972dcc80e",
+    "a39705ddf866dbb05ea5321e9da3f706d487631a",
     []
    ],
    "loading": {
@@ -382344,6 +382371,10 @@
      },
      "timeline-offset-keyframes-hidden-subject-expected.txt": [
       "d71247919cc5f4267ddd3490d0d2e7462696e276",
+      []
+     ],
+     "view-timeline-shorthand-expected.txt": [
+      "96fbbc1cb40dca154e8b4005f4a598ebfb14dd4c",
       []
      ]
     },
@@ -436902,6 +436933,13 @@
        {}
       ]
      ],
+     "animate-with-color-mix.html": [
+      "0b6d9bb4ab3ae911e7291e1da5e2259c0afbd0fc",
+      [
+       null,
+       {}
+      ]
+     ],
      "animation-base-response-001.html": [
       "c6731e179823584577f42a649f6f3665611a522a",
       [
@@ -448144,7 +448182,7 @@
        ]
       ],
       "grid-minimum-size-grid-items-021.html": [
-       "d2c221521a51552887b5f0804ad8a55f82125e92",
+       "114f90a29224bc408b67afeaaa56313a06082a37",
        [
         null,
         {}
@@ -461905,6 +461943,13 @@
       ]
      ],
      "animations": {
+      "animate-with-color-mix.html": [
+       "3e630a7a2b1e190e3529de8b98ce239ecbda3f89",
+       [
+        null,
+        {}
+       ]
+      ],
       "change-duration-during-transition.html": [
        "cf03f2e1207988fbdb8df6e884422b43f9acc012",
        [
@@ -466314,7 +466359,7 @@
       ]
      ],
      "signs-abs-computed.html": [
-      "73b1e0d1c326673d9e2628efed4f2e716ddf2202",
+      "8bad89e557b8e7a042a24732e380e815c12de2ab",
       [
        null,
        {}
@@ -466847,7 +466892,7 @@
       ]
      ],
      "no-crash-set-exception.html": [
-      "06e519e447c016cf244cb84bb9c0fdc30771fdd3",
+      "e1596cf76e58ca82df683c27587c683529b40f84",
       [
        null,
        {}
@@ -509795,6 +509840,187 @@
      ]
     },
     "private-network-access": {
+     "anchor.tentative.https.window.js": [
+      "8ad99b1ee9c9ece0720553ddb1e1409d117de025",
+      [
+       "fetch/private-network-access/anchor.tentative.https.window.html?include=from-local",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ],
+         [
+          "variant",
+          "?include=from-treat-as-public"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/private-network-access/anchor.tentative.https.window.html?include=from-private",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ],
+         [
+          "variant",
+          "?include=from-treat-as-public"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/private-network-access/anchor.tentative.https.window.html?include=from-public",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ],
+         [
+          "variant",
+          "?include=from-treat-as-public"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/private-network-access/anchor.tentative.https.window.html?include=from-treat-as-public",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ],
+         [
+          "variant",
+          "?include=from-treat-as-public"
+         ]
+        ]
+       }
+      ]
+     ],
+     "anchor.tentative.window.js": [
+      "60ccbde74d6d3c92f375e4562978c0702f50e06a",
+      [
+       "fetch/private-network-access/anchor.tentative.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
      "fenced-frame-no-preflight-required.tentative.https.window.js": [
       "33e94d57f1a3b04452b2609fb1c3ed0f828666ae",
       [
@@ -510818,7 +511044,7 @@
       ]
      ],
      "window-open.tentative.https.window.js": [
-      "b99f21c97bf99594beed79b4b272b1d6b91ac241",
+      "c91ec2355119ad4a5cc2de360ffccc9c76796549",
       [
        "fetch/private-network-access/window-open.tentative.https.window.html?include=from-local",
        {
@@ -510977,7 +511203,7 @@
       ]
      ],
      "window-open.tentative.window.js": [
-      "04023f224a8d9ddf07e3404f466af75a0bc13002",
+      "18a0260cb10f1af3c58a04d565bee9a1d4f1d9d0",
       [
        "fetch/private-network-access/window-open.tentative.window.html",
        {
@@ -581911,7 +582137,7 @@
       ]
      ],
      "loaf-source-location-redirect.html": [
-      "f8d5d3d2498342759168733732a664b455f1a3e0",
+      "013742354c15f25fe51aac6d44ea90966a6993ce",
       [
        null,
        {
@@ -613599,7 +613825,7 @@
       ]
      ],
      "view-timeline-shorthand.html": [
-      "c14c1c880678102ab031a480d28f0fabc2bf9ed6",
+      "9027eb0b09dc7dd348d2d3a0df94720b0de76150",
       [
        null,
        {}
