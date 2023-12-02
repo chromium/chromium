@@ -188,9 +188,6 @@ def isDependencyAllowed(is_ash_target, raw_dep, target_path):
   exceptions = [
       # TODO(https://crbug.com/1506299): Remove this incorrect dependency
       'chrome/browser/resources/settings',
-      # TODO(https://crbug.com/1347740): Move remaining Ash-only test files to
-      # chrome/test/data/webui/chromeos.
-      'chrome/test/data/webui',
   ]
 
   return target_path in exceptions
