@@ -14,6 +14,17 @@
 
 namespace media {
 
+TEST(SVCScalabilityModeTest, RoundTrip) {
+  auto hw_supported_svc_modes =
+      ::media::GetSupportedScalabilityModesByHWEncoderForTesting();
+  for (::media::SVCScalabilityMode input_svc_mode : hw_supported_svc_modes) {
+    SVCScalabilityMode output_svc_mode;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SVCScalabilityMode>(
+        input_svc_mode, output_svc_mode));
+    EXPECT_EQ(input_svc_mode, output_svc_mode);
+  }
+}
+
 TEST(VideoEncodeAcceleratorSupportedProfile, RoundTrip) {
   ::media::VideoEncodeAccelerator::SupportedProfile input;
   input.profile = VP9PROFILE_PROFILE0;
@@ -25,6 +36,8 @@ TEST(VideoEncodeAcceleratorSupportedProfile, RoundTrip) {
                              VideoEncodeAccelerator::kVariableMode;
   input.scalability_modes.push_back(::media::SVCScalabilityMode::kL1T3);
   input.scalability_modes.push_back(::media::SVCScalabilityMode::kL3T3Key);
+  input.scalability_modes.push_back(::media::SVCScalabilityMode::kS2T3);
+  input.scalability_modes.push_back(::media::SVCScalabilityMode::kS3T1);
 
   ::media::VideoEncodeAccelerator::SupportedProfile output;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<

@@ -159,6 +159,18 @@ struct EnumTraits<media::mojom::SVCScalabilityMode, media::SVCScalabilityMode> {
         return media::mojom::SVCScalabilityMode::kL1T2;
       case media::SVCScalabilityMode::kL1T3:
         return media::mojom::SVCScalabilityMode::kL1T3;
+      case media::SVCScalabilityMode::kL2T1:
+        return media::mojom::SVCScalabilityMode::kL2T1;
+      case media::SVCScalabilityMode::kL2T2:
+        return media::mojom::SVCScalabilityMode::kL2T2;
+      case media::SVCScalabilityMode::kL2T3:
+        return media::mojom::SVCScalabilityMode::kL2T3;
+      case media::SVCScalabilityMode::kL3T1:
+        return media::mojom::SVCScalabilityMode::kL3T1;
+      case media::SVCScalabilityMode::kL3T2:
+        return media::mojom::SVCScalabilityMode::kL3T2;
+      case media::SVCScalabilityMode::kL3T3:
+        return media::mojom::SVCScalabilityMode::kL3T3;
       case media::SVCScalabilityMode::kL2T1Key:
         return media::mojom::SVCScalabilityMode::kL2T1Key;
       case media::SVCScalabilityMode::kL2T2Key:
@@ -171,24 +183,24 @@ struct EnumTraits<media::mojom::SVCScalabilityMode, media::SVCScalabilityMode> {
         return media::mojom::SVCScalabilityMode::kL3T2Key;
       case media::SVCScalabilityMode::kL3T3Key:
         return media::mojom::SVCScalabilityMode::kL3T3Key;
-      case media::SVCScalabilityMode::kL2T1:
-      case media::SVCScalabilityMode::kL2T2:
-      case media::SVCScalabilityMode::kL2T3:
-      case media::SVCScalabilityMode::kL3T1:
-      case media::SVCScalabilityMode::kL3T2:
-      case media::SVCScalabilityMode::kL3T3:
+      case media::SVCScalabilityMode::kS2T1:
+        return media::mojom::SVCScalabilityMode::kS2T1;
+      case media::SVCScalabilityMode::kS2T2:
+        return media::mojom::SVCScalabilityMode::kS2T2;
+      case media::SVCScalabilityMode::kS2T3:
+        return media::mojom::SVCScalabilityMode::kS2T3;
+      case media::SVCScalabilityMode::kS3T1:
+        return media::mojom::SVCScalabilityMode::kS3T1;
+      case media::SVCScalabilityMode::kS3T2:
+        return media::mojom::SVCScalabilityMode::kS3T2;
+      case media::SVCScalabilityMode::kS3T3:
+        return media::mojom::SVCScalabilityMode::kS3T3;
       case media::SVCScalabilityMode::kL2T1h:
       case media::SVCScalabilityMode::kL2T2h:
       case media::SVCScalabilityMode::kL2T3h:
-      case media::SVCScalabilityMode::kS2T1:
-      case media::SVCScalabilityMode::kS2T2:
-      case media::SVCScalabilityMode::kS2T3:
       case media::SVCScalabilityMode::kS2T1h:
       case media::SVCScalabilityMode::kS2T2h:
       case media::SVCScalabilityMode::kS2T3h:
-      case media::SVCScalabilityMode::kS3T1:
-      case media::SVCScalabilityMode::kS3T2:
-      case media::SVCScalabilityMode::kS3T3:
       case media::SVCScalabilityMode::kS3T1h:
       case media::SVCScalabilityMode::kS3T2h:
       case media::SVCScalabilityMode::kS3T3h:
@@ -214,6 +226,24 @@ struct EnumTraits<media::mojom::SVCScalabilityMode, media::SVCScalabilityMode> {
       case media::mojom::SVCScalabilityMode::kL1T3:
         *output = media::SVCScalabilityMode::kL1T3;
         return true;
+      case media::mojom::SVCScalabilityMode::kL2T1:
+        *output = media::SVCScalabilityMode::kL2T1;
+        return true;
+      case media::mojom::SVCScalabilityMode::kL2T2:
+        *output = media::SVCScalabilityMode::kL2T2;
+        return true;
+      case media::mojom::SVCScalabilityMode::kL2T3:
+        *output = media::SVCScalabilityMode::kL2T3;
+        return true;
+      case media::mojom::SVCScalabilityMode::kL3T1:
+        *output = media::SVCScalabilityMode::kL3T1;
+        return true;
+      case media::mojom::SVCScalabilityMode::kL3T2:
+        *output = media::SVCScalabilityMode::kL3T2;
+        return true;
+      case media::mojom::SVCScalabilityMode::kL3T3:
+        *output = media::SVCScalabilityMode::kL3T3;
+        return true;
       case media::mojom::SVCScalabilityMode::kL2T1Key:
         *output = media::SVCScalabilityMode::kL2T1Key;
         return true;
@@ -231,6 +261,24 @@ struct EnumTraits<media::mojom::SVCScalabilityMode, media::SVCScalabilityMode> {
         return true;
       case media::mojom::SVCScalabilityMode::kL3T3Key:
         *output = media::SVCScalabilityMode::kL3T3Key;
+        return true;
+      case media::mojom::SVCScalabilityMode::kS2T1:
+        *output = media::SVCScalabilityMode::kS2T1;
+        return true;
+      case media::mojom::SVCScalabilityMode::kS2T2:
+        *output = media::SVCScalabilityMode::kS2T2;
+        return true;
+      case media::mojom::SVCScalabilityMode::kS2T3:
+        *output = media::SVCScalabilityMode::kS2T3;
+        return true;
+      case media::mojom::SVCScalabilityMode::kS3T1:
+        *output = media::SVCScalabilityMode::kS3T1;
+        return true;
+      case media::mojom::SVCScalabilityMode::kS3T2:
+        *output = media::SVCScalabilityMode::kS3T2;
+        return true;
+      case media::mojom::SVCScalabilityMode::kS3T3:
+        *output = media::SVCScalabilityMode::kS3T3;
         return true;
     }
 
