@@ -8,6 +8,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/containers/adapters.h"
+#include "base/containers/contains.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros_local.h"
@@ -609,9 +610,7 @@ void PageContentAnnotationsService::OnZeroSuggestResponseUpdated(
   for (const auto& result : suggest_results) {
     const auto subtypes = result.subtypes();
     // Suggestions with HIVEMIND subtype are considered "related searches".
-    auto it = std::find(subtypes.begin(), subtypes.end(),
-                        omnibox::SuggestSubtype::SUBTYPE_HIVEMIND);
-    if (it != subtypes.end()) {
+    if (base::Contains(subtypes, omnibox::SuggestSubtype::SUBTYPE_HIVEMIND)) {
       related_searches.push_back(base::UTF16ToUTF8(
           base::CollapseWhitespace(result.suggestion(), true)));
     }
