@@ -32,6 +32,38 @@ struct TypeConverter<extensions::api::document_scan::GetScannerListResponse,
       const crosapi::mojom::GetScannerListResponsePtr& input);
 };
 
+template <>
+struct TypeConverter<extensions::api::document_scan::OpenScannerResponse,
+                     crosapi::mojom::OpenScannerResponsePtr> {
+  static extensions::api::document_scan::OpenScannerResponse Convert(
+      const crosapi::mojom::OpenScannerResponsePtr& input);
+};
+
+template <>
+struct TypeConverter<extensions::api::document_scan::CloseScannerResponse,
+                     crosapi::mojom::CloseScannerResponsePtr> {
+  static extensions::api::document_scan::CloseScannerResponse Convert(
+      const crosapi::mojom::CloseScannerResponsePtr& input);
+};
+
+// Test wrappers for type conversions that don't need to be done explicitly.
+// This lets them be tested in isolation without fully exposing the
+// TypeConverter instances.
+extensions::api::document_scan::OptionType ConvertForTesting(
+    crosapi::mojom::OptionType input);
+extensions::api::document_scan::OptionUnit ConvertForTesting(
+    crosapi::mojom::OptionUnit input);
+extensions::api::document_scan::ConstraintType ConvertForTesting(
+    crosapi::mojom::OptionConstraintType input);
+extensions::api::document_scan::Configurability ConvertForTesting(
+    crosapi::mojom::OptionConfigurability input);
+extensions::api::document_scan::OptionConstraint ConvertForTesting(
+    const crosapi::mojom::OptionConstraintPtr& input);
+extensions::api::document_scan::ScannerOption::Value ConvertForTesting(
+    const crosapi::mojom::OptionValuePtr& input);
+extensions::api::document_scan::ScannerOption ConvertForTesting(
+    const crosapi::mojom::ScannerOptionPtr& input);
+
 }  // namespace mojo
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_DOCUMENT_SCAN_DOCUMENT_SCAN_TYPE_CONVERTERS_H_

@@ -44,6 +44,10 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI {
       absl::optional<std::string> error)>;
   using GetScannerListCallback =
       base::OnceCallback<void(api::document_scan::GetScannerListResponse)>;
+  using OpenScannerCallback =
+      base::OnceCallback<void(api::document_scan::OpenScannerResponse)>;
+  using CloseScannerCallback =
+      base::OnceCallback<void(api::document_scan::CloseScannerResponse)>;
 
   static std::unique_ptr<DocumentScanAPIHandler> CreateForTesting(
       content::BrowserContext* browser_context,
@@ -82,6 +86,21 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI {
                       api::document_scan::DeviceFilter filter,
                       GetScannerListCallback callback);
 
+  // Given `scanner_id` previously returned from `GetScannerList`, opens the
+  // device for exclusive access.  The result containing a handle and the set of
+  // current device options will be passed to `callback`.
+  void OpenScanner(scoped_refptr<const Extension> extension,
+                   const std::string& scanner_id,
+                   OpenScannerCallback callback);
+
+  // Given `scanner_handle` previously returned from `OpenScanner`, closes the
+  // handle.  No further operations on this handle can be performed even if the
+  // result code does not indicate success.  The result of closing the handle on
+  // the backend will be passed to `callback`.
+  void CloseScanner(scoped_refptr<const Extension> extension,
+                    const std::string& scanner_handle,
+                    CloseScannerCallback callback);
+
  private:
   // Needed for BrowserContextKeyedAPI implementation.
   friend class BrowserContextKeyedAPIFactory<DocumentScanAPIHandler>;
@@ -95,6 +114,10 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI {
     // Map from unguessable token scanner IDs given out by `getScannerList` back
     // to the internal connection strings needed by the backend.
     std::map<std::string, std::string> scanner_ids;
+
+    // Map from scanner handles that have been returned by `openScanner` back to
+    // the original connection string used to open them.
+    std::map<std::string, std::string> scanner_handles;
   };
 
   // BrowserContextKeyedAPI:
@@ -123,6 +146,14 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI {
       std::unique_ptr<ScannerDiscoveryRunner> discovery_runner,
       GetScannerListCallback callback,
       crosapi::mojom::GetScannerListResponsePtr response);
+  void OnOpenScannerResponse(const ExtensionId& extension_id,
+                             const std::string& scanner_id,
+                             OpenScannerCallback callback,
+                             crosapi::mojom::OpenScannerResponsePtr response);
+  void OnCloseScannerResponse(CloseScannerCallback callback,
+                              crosapi::mojom::CloseScannerResponsePtr response);
+  bool IsValidScannerHandle(const ExtensionId& extension_id,
+                            const std::string& scanner_handle);
 
   raw_ptr<content::BrowserContext> browser_context_;
   raw_ptr<crosapi::mojom::DocumentScan> document_scan_;

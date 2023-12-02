@@ -15,4 +15,16 @@ crosapi::mojom::ScannerInfoPtr CreateTestScannerInfo() {
   return scanner;
 }
 
+crosapi::mojom::ScannerOptionPtr CreateTestScannerOption(
+    const std::string& name,
+    int32_t val) {
+  auto option = crosapi::mojom::ScannerOption::New();
+  option->name = name;
+  option->title = name + " title";
+  option->description = name + " description";
+  option->value = crosapi::mojom::OptionValue::NewIntValue(val);
+  option->isActive = true;
+  return option;
+}
+
 }  // namespace extensions

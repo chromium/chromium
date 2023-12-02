@@ -5,11 +5,16 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_DOCUMENT_SCAN_DOCUMENT_SCAN_TEST_UTILS_H_
 #define CHROME_BROWSER_EXTENSIONS_API_DOCUMENT_SCAN_DOCUMENT_SCAN_TEST_UTILS_H_
 
+#include <string>
+
 #include "chromeos/crosapi/mojom/document_scan.mojom.h"
 
 namespace extensions {
 
 crosapi::mojom::ScannerInfoPtr CreateTestScannerInfo();
+crosapi::mojom::ScannerOptionPtr CreateTestScannerOption(
+    const std::string& name,
+    int32_t val);
 
 }  // namespace extensions
 

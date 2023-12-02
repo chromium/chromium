@@ -7,7 +7,9 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/notreached.h"
+#include "chrome/browser/extensions/api/document_scan/document_scan_test_utils.h"
 
 namespace extensions {
 
@@ -37,6 +39,17 @@ void FakeDocumentScanAsh::GetScannerList(
   response->result = crosapi::mojom::ScannerOperationResult::kSuccess;
   for (const auto& scanner : scanners_) {
     response->scanners.emplace_back(scanner.Clone());
+
+    // Since this scanner will be listed, also create an entry that allows
+    // callers to open it.
+    auto open_response = crosapi::mojom::OpenScannerResponse::New();
+    open_response->result = crosapi::mojom::ScannerOperationResult::kSuccess;
+    open_response->scanner_id = scanner->id;
+    open_response->scanner_handle = scanner->id + "-handle-" + client_id;
+    open_response->options.emplace();
+    open_response->options.value()["option1"] =
+        CreateTestScannerOption("option1", 5);
+    open_responses_[scanner->id] = std::move(open_response);
   }
   std::move(callback).Run(std::move(response));
 }
@@ -44,14 +57,51 @@ void FakeDocumentScanAsh::GetScannerList(
 void FakeDocumentScanAsh::OpenScanner(const std::string& client_id,
                                       const std::string& scanner_id,
                                       OpenScannerCallback callback) {
-  // TODO(b/297435720): Implement this when adding the extension handler.
-  NOTIMPLEMENTED();
+  // If a response for scanner_id hasn't been set, this is the equivalent
+  // of trying to open a device that has been unplugged or disappeared off the
+  // network.
+  if (!base::Contains(open_responses_, scanner_id)) {
+    auto response = crosapi::mojom::OpenScannerResponse::New();
+    response->scanner_id = scanner_id;
+    response->result = crosapi::mojom::ScannerOperationResult::kDeviceMissing;
+    std::move(callback).Run(std::move(response));
+    return;
+  }
+  // If the scanner is already open by a different client, the real backend will
+  // report DEVICE_BUSY to any other clients trying to open it.  Do the same
+  // here.
+  for (const auto& [handle, original] : open_scanners_) {
+    if (original.connection_string == scanner_id &&
+        original.client_id != client_id) {
+      auto response = crosapi::mojom::OpenScannerResponse::New();
+      response->scanner_id = scanner_id;
+      response->result = crosapi::mojom::ScannerOperationResult::kDeviceBusy;
+      std::move(callback).Run(std::move(response));
+      return;
+    }
+  }
+
+  crosapi::mojom::OpenScannerResponsePtr response =
+      open_responses_[scanner_id].Clone();
+  open_scanners_[response->scanner_handle.value_or(scanner_id + "-handle")] =
+      OpenScannerState{
+          .client_id = client_id,
+          .connection_string = scanner_id,
+      };
+  std::move(callback).Run(std::move(response));
 }
 
 void FakeDocumentScanAsh::CloseScanner(const std::string& scanner_handle,
                                        CloseScannerCallback callback) {
-  // TODO(b/297435720): Implement this when adding the extension handler.
-  NOTIMPLEMENTED();
+  auto response = crosapi::mojom::CloseScannerResponse::New();
+  response->scanner_handle = scanner_handle;
+  if (base::Contains(open_scanners_, scanner_handle)) {
+    response->result = crosapi::mojom::ScannerOperationResult::kSuccess;
+  } else {
+    response->result = crosapi::mojom::ScannerOperationResult::kInvalid;
+  }
+  open_scanners_.erase(scanner_handle);
+  std::move(callback).Run(std::move(response));
 }
 
 void FakeDocumentScanAsh::StartPreparedScan(
@@ -83,6 +133,12 @@ void FakeDocumentScanAsh::SetScanResponse(
 
 void FakeDocumentScanAsh::AddScanner(crosapi::mojom::ScannerInfoPtr scanner) {
   scanners_.emplace_back(std::move(scanner));
+}
+
+void FakeDocumentScanAsh::SetOpenScannerResponse(
+    const std::string& connection_string,
+    crosapi::mojom::OpenScannerResponsePtr response) {
+  open_responses_[connection_string] = std::move(response);
 }
 
 }  // namespace extensions

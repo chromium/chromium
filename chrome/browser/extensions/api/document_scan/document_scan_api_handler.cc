@@ -217,6 +217,8 @@ void DocumentScanAPIHandler::GetScannerList(
   // remain valid if they still point to the same device.
   for (auto& [id, state] : extension_state_) {
     state.scanner_ids.clear();
+    // Exclusive handles that are already open remain valid even after calling
+    // sane_get_devices, so deliberately do not clear them.
   }
 
   auto discovery_runner = std::make_unique<ScannerDiscoveryRunner>(
@@ -247,6 +249,126 @@ void DocumentScanAPIHandler::OnScannerListReceived(
   }
 
   std::move(callback).Run(std::move(api_response));
+}
+
+void DocumentScanAPIHandler::OpenScanner(
+    scoped_refptr<const Extension> extension,
+    const std::string& scanner_id,
+    OpenScannerCallback callback) {
+  // If this extension doesn't have saved state, it must be calling openScanner
+  // without previously calling getScannerList.  This means any scanner ID it
+  // supplies is invalid.
+  if (!base::Contains(extension_state_, extension->id())) {
+    auto response = crosapi::mojom::OpenScannerResponse::New();
+    response->scanner_id = scanner_id;
+    response->result = crosapi::mojom::ScannerOperationResult::kInvalid;
+    OnOpenScannerResponse(extension->id(), scanner_id, std::move(callback),
+                          std::move(response));
+    return;
+  }
+  const ExtensionState& state = extension_state_.at(extension->id());
+
+  // Convert the supplied scanner id to the internal connection string needed by
+  // the backend.
+  if (!base::Contains(state.scanner_ids, scanner_id)) {
+    auto response = crosapi::mojom::OpenScannerResponse::New();
+    response->scanner_id = scanner_id;
+    response->result = crosapi::mojom::ScannerOperationResult::kInvalid;
+    OnOpenScannerResponse(extension->id(), scanner_id, std::move(callback),
+                          std::move(response));
+    return;
+  }
+  const std::string& connection_string = state.scanner_ids.at(scanner_id);
+
+  document_scan_->OpenScanner(
+      extension->id(), connection_string,
+      base::BindOnce(&DocumentScanAPIHandler::OnOpenScannerResponse,
+                     weak_ptr_factory_.GetWeakPtr(), extension->id(),
+                     scanner_id, std::move(callback)));
+}
+
+void DocumentScanAPIHandler::OnOpenScannerResponse(
+    const ExtensionId& extension_id,
+    const std::string& scanner_id,
+    OpenScannerCallback callback,
+    crosapi::mojom::OpenScannerResponsePtr response) {
+  auto response_out = response.To<api::document_scan::OpenScannerResponse>();
+
+  // Replace the internal connection string with the originally requested token.
+  const std::string& connection_string = response_out.scanner_id;
+  response_out.scanner_id = scanner_id;
+
+  if (response_out.result != api::document_scan::OperationResult::kSuccess) {
+    std::move(callback).Run(std::move(response_out));
+    return;
+  }
+
+  // Since the call succeeded, the backend has closed any previous handle opened
+  // to the same scanner.  Remove these from the list of valid handles.
+  auto& open_handles = extension_state_[extension_id].scanner_handles;
+  for (auto i = open_handles.begin(); i != open_handles.end();) {
+    if (i->second == connection_string) {
+      i = open_handles.erase(i);
+      continue;
+    }
+    ++i;
+  }
+
+  // Track that this handle belongs to this extension.  This prevents other
+  // extensions from using it and allows quick preliminary validity checks
+  // without doing an IPC.
+  if (response_out.scanner_handle.has_value()) {
+    open_handles.try_emplace(response_out.scanner_handle.value(),
+                             connection_string);
+  }
+
+  std::move(callback).Run(std::move(response_out));
+}
+
+bool DocumentScanAPIHandler::IsValidScannerHandle(
+    const ExtensionId& extension_id,
+    const std::string& scanner_handle) {
+  // If this extension doesn't have saved state, it must be trying to use a
+  // handle without previously calling openScanner.  This means any scanner
+  // handle it supplies is invalid.
+  if (!base::Contains(extension_state_, extension_id)) {
+    return false;
+  }
+
+  // Make sure the scanner handle is an active handle that was previously given
+  // to this extension.
+  return base::Contains(extension_state_.at(extension_id).scanner_handles,
+                        scanner_handle);
+}
+
+void DocumentScanAPIHandler::CloseScanner(
+    scoped_refptr<const Extension> extension,
+    const std::string& scanner_handle,
+    CloseScannerCallback callback) {
+  if (!IsValidScannerHandle(extension->id(), scanner_handle)) {
+    auto response = crosapi::mojom::CloseScannerResponse::New();
+    response->scanner_handle = scanner_handle;
+    response->result = crosapi::mojom::ScannerOperationResult::kInvalid;
+    OnCloseScannerResponse(std::move(callback), std::move(response));
+    return;
+  }
+
+  // Erase the scanner handle even though the response hasn't been received yet.
+  // The backend will reject any further calls on a closed handle, so there's no
+  // benefit in allowing additional operations to be attempted.
+  extension_state_[extension->id()].scanner_handles.erase(scanner_handle);
+
+  document_scan_->CloseScanner(
+      scanner_handle,
+      base::BindOnce(&DocumentScanAPIHandler::OnCloseScannerResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void DocumentScanAPIHandler::OnCloseScannerResponse(
+    CloseScannerCallback callback,
+    crosapi::mojom::CloseScannerResponsePtr response) {
+  std::move(callback).Run(
+      response.To<api::document_scan::CloseScannerResponse>());
 }
 
 template <>
