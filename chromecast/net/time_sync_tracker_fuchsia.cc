@@ -4,9 +4,7 @@
 
 #include "chromecast/net/time_sync_tracker_fuchsia.h"
 
-#include <lib/async/default.h>
 #include <lib/zx/clock.h>
-#include <zircon/time.h>
 #include <zircon/utc.h>
 
 #include "base/fuchsia/fuchsia_logging.h"
@@ -18,7 +16,8 @@
 namespace chromecast {
 namespace {
 
-const unsigned int kTimeSyncRetrySeconds = 1;
+// How often zx::clock is polled in seconds.
+const unsigned int kPollPeriodSeconds = 1;
 
 zx_handle_t GetUtcClockHandle() {
   zx_handle_t clock_handle = zx_utc_reference_get();
@@ -40,34 +39,41 @@ TimeSyncTrackerFuchsia::TimeSyncTrackerFuchsia(
 TimeSyncTrackerFuchsia::~TimeSyncTrackerFuchsia() = default;
 
 void TimeSyncTrackerFuchsia::OnNetworkConnected() {
-  if (is_time_synced_)
-    return;
-  if (wait_for_utc_ && wait_for_utc_->is_pending())
-    return;
-  wait_for_utc_ = std::make_unique<async::WaitOnce>(
-      utc_clock_->get(), ZX_USER_SIGNAL_0, /*options=*/0);
-  auto wait_for_utc_status = wait_for_utc_->Begin(
-      async_get_default_dispatcher(),
-      [this](auto*, auto*, const zx_status_t status, ...) mutable {
-        if (status == ZX_OK) {
-          is_time_synced_ = true;
-          Notify();
-        } else {
-          DVLOG(2) << "Syncing time with external clock failed with status,"
-                   << "will try again. status failed with" << status;
-          task_runner_->PostDelayedTask(
-              FROM_HERE,
-              base::BindOnce(&TimeSyncTrackerFuchsia::OnNetworkConnected,
-                             weak_this_),
-              base::TimeDelta::FromSeconds(kTimeSyncRetrySeconds));
-        }
-      });
-  ZX_DCHECK(wait_for_utc_status == ZX_OK, wait_for_utc_status)
-      << "zx_wait_for_utc_begin";
+  if (!is_polling_ && !is_time_synced_) {
+    is_polling_ = true;
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&TimeSyncTrackerFuchsia::Poll, weak_this_));
+  }
 }
 
 bool TimeSyncTrackerFuchsia::IsTimeSynced() const {
   return is_time_synced_;
+}
+
+void TimeSyncTrackerFuchsia::Poll() {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(is_polling_);
+
+  zx_clock_details_v1_t details;
+  zx_status_t status = utc_clock_->get_details(&details);
+  ZX_CHECK(status == ZX_OK, status) << "zx_clock_get_details";
+
+  is_time_synced_ =
+    details.backstop_time != details.ticks_to_synthetic.synthetic_offset;
+  DVLOG(2) << __func__ << ": backstop_time=" << details.backstop_time
+           << ", synthetic_offset=" << details.ticks_to_synthetic.synthetic_offset
+           << ", synced=" << is_time_synced_;
+
+  if (!is_time_synced_) {
+    task_runner_->PostDelayedTask(
+        FROM_HERE, base::BindOnce(&TimeSyncTrackerFuchsia::Poll, weak_this_),
+        base::Seconds(kPollPeriodSeconds));
+    return;
+  }
+
+  is_polling_ = false;
+  Notify();
 }
 
 }  // namespace chromecast
