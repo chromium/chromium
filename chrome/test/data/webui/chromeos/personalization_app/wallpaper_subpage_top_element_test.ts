@@ -235,7 +235,8 @@ suite('WallpaperSubpageTopElementTest', function() {
           image: {url: 'https://sea-pen-images.googleusercontent.com/4'},
         },
       ],
-      recentWallpapers: null,
+      recentImages: null,
+      recentImageData: {},
     };
     assertDeepEquals(
         expectedState,

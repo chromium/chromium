@@ -16,8 +16,8 @@ export const kDefaultImageSymbol: unique symbol =
 
 export type DefaultImageSymbol = typeof kDefaultImageSymbol;
 
-export type DisplayableImage = FilePath|GooglePhotosPhoto|WallpaperImage|
-    DefaultImageSymbol|SeaPenWallpaper;
+export type DisplayableImage =
+    FilePath|GooglePhotosPhoto|WallpaperImage|DefaultImageSymbol;
 
 export const kMaximumLocalImagePreviews = 4;
 
@@ -32,12 +32,4 @@ export interface ImageTile {
   preview: Url[];
   isTimeOfDayWallpaper?: boolean;
   hasPreviewImage?: boolean;
-}
-
-// TODO(b/304576846): remove this interface after the real struct is created in
-// mojom.
-export interface SeaPenWallpaper {
-  url: Url;
-  query_info: string;
-  file_path: FilePath;
 }

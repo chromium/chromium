@@ -106,7 +106,7 @@ export {UserPreviewElement} from './user/user_preview_element.js';
 export {UserSubpageElement} from './user/user_subpage_element.js';
 export {GetUserMediaProxy, getWebcamUtils, setWebcamUtilsForTesting} from './user/webcam_utils_proxy.js';
 export {getCountText, getNumberOfGridItemsPerRow, staticColorIds} from './utils.js';
-export {DefaultImageSymbol, DisplayableImage, SeaPenWallpaper, kDefaultImageSymbol, kMaximumLocalImagePreviews} from './wallpaper/constants.js';
+export {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol, kMaximumLocalImagePreviews} from './wallpaper/constants.js';
 export {GooglePhotosAlbumsElement} from './wallpaper/google_photos_albums_element.js';
 export {GooglePhotosCollectionElement, GooglePhotosTab} from './wallpaper/google_photos_collection_element.js';
 export {GooglePhotosPhotosByAlbumIdElement} from './wallpaper/google_photos_photos_by_album_id_element.js';
@@ -115,6 +115,7 @@ export {GooglePhotosSharedAlbumDialogElement, AcceptEvent} from './wallpaper/goo
 export {GooglePhotosZeroStateElement} from './wallpaper/google_photos_zero_state_element.js';
 export {DEFAULT_COLOR_SCHEME} from './theme/utils.js';
 export {LocalImagesElement} from './wallpaper/local_images_element.js';
+export {RecentSeaPenData} from './wallpaper/sea_pen/constants.js';
 export * from './wallpaper/sea_pen/sea_pen_actions.js';
 export {SeaPenImagesElement} from './wallpaper/sea_pen/sea_pen_images_element.js';
 export {SeaPenRecentWallpapersElement} from './wallpaper/sea_pen/sea_pen_recent_wallpapers_element.js';

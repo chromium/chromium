@@ -253,6 +253,54 @@ function loadingReducer(
           photos: false,
         },
       };
+    case SeaPenActionName.BEGIN_LOAD_RECENT_SEA_PEN_IMAGES:
+      return {
+        ...state,
+        seaPen: {
+          ...state.seaPen,
+          recentImages: true,
+        },
+      };
+    case SeaPenActionName.SET_RECENT_SEA_PEN_IMAGES:
+      const newRecentImages: FilePath[] =
+          Array.isArray(action.recentImages) ? action.recentImages : [];
+      // Only keep loading state for most recent Sea Pen images.
+      return {
+        ...state,
+        seaPen: {
+          ...state.seaPen,
+          recentImageData: newRecentImages.reduce(
+              (result, next) => {
+                const path = next.path;
+                if (state.seaPen.recentImageData.hasOwnProperty(path)) {
+                  result[path] = state.seaPen.recentImageData[path];
+                }
+                return result;
+              },
+              {} as Record<FilePath['path'], boolean>),
+          // Recent image list is done loading.
+          recentImages: false,
+        },
+      };
+    case SeaPenActionName.BEGIN_LOAD_RECENT_SEA_PEN_IMAGE_DATA:
+      return {
+        ...state,
+        seaPen: {
+          ...state.seaPen,
+          recentImageData: {...state.seaPen.recentImageData, [action.id]: true},
+        },
+      };
+    case SeaPenActionName.SET_RECENT_SEA_PEN_IMAGE_DATA:
+      return {
+        ...state,
+        seaPen: {
+          ...state.seaPen,
+          recentImageData: {
+            ...state.seaPen.recentImageData,
+            [action.id]: false,
+          },
+        },
+      };
     default:
       return state;
   }
@@ -646,16 +694,37 @@ function seaPenReducer(
         thumbnailsLoading: true,
       };
     case SeaPenActionName.SET_SEA_PEN_THUMBNAILS:
-      console.log('seaPenReducer, text: ', action.query);
       assert(!!action.query, 'input text is empty.');
-      console.log('seapenReducer, thumbnails: ', action.images);
       return {
         ...state,
         thumbnailsLoading: false,
         thumbnails: action.images,
       };
     case SeaPenActionName.SET_RECENT_SEA_PEN_IMAGES:
-      return {...state, recentWallpapers: action.recentWallpapers};
+      const newRecentImages: FilePath[] =
+          Array.isArray(action.recentImages) ? action.recentImages : [];
+      return {
+        ...state,
+        recentImages: newRecentImages,
+        // Only keep the image data if the image is still in |newRecentImages|.
+        recentImageData: newRecentImages.reduce(
+            (result, next) => {
+              const key = next.path;
+              if (key && state.recentImageData.hasOwnProperty(key)) {
+                result[key] = state.recentImageData[key];
+              }
+              return result;
+            },
+            {} as typeof state.recentImageData),
+      };
+    case SeaPenActionName.SET_RECENT_SEA_PEN_IMAGE_DATA:
+      return {
+        ...state,
+        recentImageData: {
+          ...state.recentImageData,
+          [action.id]: action.data,
+        },
+      };
     default:
       return state;
   }

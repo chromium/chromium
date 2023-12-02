@@ -112,4 +112,13 @@ interface SeaPenProvider {
 
     // Sets the given Sea Pen image as the user's background.
     SelectRecentSeaPenImage(mojo_base.mojom.FilePath path) => (bool success);
+
+    // Gets the recently used sea pen wallpapers. `images` will be null
+    // on failure.
+    GetRecentSeaPenImages() => (array<mojo_base.mojom.FilePath>? images);
+
+    // Fetch a thumbnail data url for the given recent sea pen image path.
+    // `url` will be empty on failure.
+    GetRecentSeaPenImageThumbnail(mojo_base.mojom.FilePath path) =>
+        (url.mojom.Url url);
 };

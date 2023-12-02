@@ -119,6 +119,15 @@ class MockPersonalizationAppSeaPenProvider
               (const base::FilePath& file_path,
                SelectRecentSeaPenImageCallback),
               (override));
+  MOCK_METHOD(void,
+              GetRecentSeaPenImages,
+              (GetRecentSeaPenImagesCallback),
+              (override));
+  MOCK_METHOD(void,
+              GetRecentSeaPenImageThumbnail,
+              (const base::FilePath& file_path,
+               GetRecentSeaPenImageThumbnailCallback),
+              (override));
 };
 
 class MockPersonalizationAppThemeProvider

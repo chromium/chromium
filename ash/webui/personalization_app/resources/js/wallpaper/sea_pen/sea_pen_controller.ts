@@ -2,51 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+
 import {SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from '../../../sea_pen.mojom-webui.js';
 import {PersonalizationStore} from '../../personalization_store.js';
 import {isNonEmptyArray} from '../../utils.js';
-import {SeaPenWallpaper} from '../constants.js';
 import {isImageEqualToSelected} from '../utils.js';
 import * as action from '../wallpaper_actions.js';
 
 import * as seaPenAction from './sea_pen_actions.js';
 
-export async function getRecentSeaPenImages(store: PersonalizationStore):
-    Promise<void> {
-  // TODO(b/304576846): remove the function, use the real api to get the images
-  // and dispatch the action in sea pen observer.
-  const images = [
-    {
-      query_info: 'a close up of a flower with water drops on it',
-      url: {
-        url:
-            'https://lh5.googleusercontent.com/proxy/POggSGKiyt380V63sTRjua4Q6s6v02wNfTyeDhTK1TKjlZrEnRiZNHa4lDSXu_3mvdUGQe2HF0s_Z8J45ygrJ3jM9R6bZUcF-CN61iacGXrOVWr6YdbaDwuhZu7N2RxJRMKT2Wnrifc',
-      },
-      file_path: {path: '/sea_pen/111.jpg'},
-    },
-    {
-      query_info:
-          'a large white ball in the middle of a field with soap bubbles',
-      url: {
-        url:
-            'https://lh4.googleusercontent.com/proxy/yRB8hlnV86jWE3XgtAOd2Hniso9cv5YynGEBQrnVr26onWSvNWARKahdFxiSgv5CKVDnpgZ4LunQ7cxTX5ZGf4nZNVHjQ88xJzQnZ9yMWeOtA7r69Ep6G6Ns9fl5TwdHIC6M_YSLtFGjg_z3fHq5ooqyCTgq',
-      },
-      file_path: {path: '/sea_pen/222.jpg'},
-    },
-    {
-      query_info: 'a large rock sitting on top of a hill in the desert',
-      url: {
-        url:
-            'https://lh5.googleusercontent.com/proxy/Don1aDsf2x5AOn25kN1-NdumW-Dc2QF5wbOVmn2WTpgC8ja0YfBZqqajhIXWsoqvnXdn6u57tHsAjD_ht6JywKiFFjAaum99YjAlkXuSX_Uwvi_OXuKyznUc4TR44bUlAXSYOhGeUn6pv-3vEXec',
-      },
-      file_path: {path: '/sea_pen/333.jpg'},
-    },
-  ];
-  store.dispatch(seaPenAction.setRecentSeaPenImagesAction(images));
-}
-
 export async function selectRecentSeaPenImage(
-    image: SeaPenWallpaper, provider: SeaPenProviderInterface,
+    image: FilePath, provider: SeaPenProviderInterface,
     store: PersonalizationStore): Promise<void> {
   const currentWallpaper = store.data.wallpaper.currentSelected;
   if (currentWallpaper && isImageEqualToSelected(image, currentWallpaper)) {
@@ -59,7 +26,7 @@ export async function selectRecentSeaPenImage(
   store.dispatch(action.beginLoadSelectedImageAction());
   store.endBatchUpdate();
 
-  const {success} = await provider.selectRecentSeaPenImage(image.file_path);
+  const {success} = await provider.selectRecentSeaPenImage(image);
 
   store.beginBatchUpdate();
   store.dispatch(action.endSelectImageAction(image, success));
@@ -89,4 +56,83 @@ export async function selectSeaPenWallpaper(
     provider: SeaPenProviderInterface): Promise<void> {
   // TODO(b/305965517) show loading state.
   await provider.selectSeaPenThumbnail(thumbnail.id);
+}
+
+export async function getRecentSeaPenImages(
+    provider: SeaPenProviderInterface,
+    store: PersonalizationStore): Promise<void> {
+  store.dispatch(seaPenAction.beginLoadRecentSeaPenImagesAction());
+
+  const {images} = await provider.getRecentSeaPenImages();
+  if (images == null) {
+    console.warn('Failed to fetch recent sea pen images');
+  }
+
+  store.dispatch(seaPenAction.setRecentSeaPenImagesAction(images));
+}
+
+
+/**
+ * Gets list of recent Sea Pen images, then fetches image data for each recent
+ * Sea Pen image.
+ */
+export async function fetchRecentSeaPenData(
+    provider: SeaPenProviderInterface,
+    store: PersonalizationStore): Promise<void> {
+  // Do not restart loading local image list if a load is already in progress.
+  if (!store.data.wallpaper.loading.seaPen.recentImages) {
+    await getRecentSeaPenImages(provider, store);
+  }
+  await getMissingRecentSeaPenImageData(provider, store);
+}
+
+/**
+ * Because data loading can happen asynchronously and is triggered
+ * on page load and on window focus, multiple "threads" can be fetching
+ * data simultaneously. Synchronize them with a task queue.
+ */
+const recentSeaPenImageDataToFetch = new Set<FilePath['path']>();
+
+/**
+ * Get an sea pen data one at a time for every recent Sea Pen image that does
+ * not have the data yet.
+ */
+async function getMissingRecentSeaPenImageData(
+    provider: SeaPenProviderInterface,
+    store: PersonalizationStore): Promise<void> {
+  if (!Array.isArray(store.data.wallpaper.seaPen.recentImages)) {
+    console.warn('Cannot fetch thumbnails with invalid image list');
+    return;
+  }
+  // Set correct loading state for each image thumbnail. Do in a batch update to
+  // reduce number of times that polymer must re-render.
+  store.beginBatchUpdate();
+  for (const image of store.data.wallpaper.seaPen.recentImages) {
+    if (store.data.wallpaper.seaPen.recentImageData[image.path] ||
+        store.data.wallpaper.loading.seaPen.recentImageData[image.path] ||
+        recentSeaPenImageDataToFetch.has(image.path)) {
+      // Do not re-load thumbnail if already present, or already loading.
+      continue;
+    }
+    recentSeaPenImageDataToFetch.add(image.path);
+    store.dispatch(seaPenAction.beginLoadRecentSeaPenImageDataAction(image));
+  }
+  store.endBatchUpdate();
+
+  // There may be multiple async tasks triggered that pull off this queue.
+  while (recentSeaPenImageDataToFetch.size) {
+    await Promise.all(
+        Array.from(recentSeaPenImageDataToFetch).map(async path => {
+          recentSeaPenImageDataToFetch.delete(path);
+          const {url} = await provider.getRecentSeaPenImageThumbnail({path});
+          // TODO(b/312783231): add real API to get the image query info.
+          const queryInfo =
+              'query ' + Math.floor(Math.random() * 100 + 1).toString();
+          if (!url) {
+            console.warn('Failed to fetch recent Sea Pen image data', path);
+          }
+          store.dispatch(seaPenAction.setRecentSeaPenImageDataAction(
+              {path}, {url, queryInfo}));
+        }));
+  }
 }

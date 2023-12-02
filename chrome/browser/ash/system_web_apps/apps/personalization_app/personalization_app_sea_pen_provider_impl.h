@@ -13,9 +13,11 @@
 #include <string>
 
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
+#include "base/files/file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace content {
 class WebUI;
@@ -58,6 +60,12 @@ class PersonalizationAppSeaPenProviderImpl
       const base::FilePath& path,
       SelectRecentSeaPenImageCallback callback) override;
 
+  void GetRecentSeaPenImages(GetRecentSeaPenImagesCallback callback) override;
+
+  void GetRecentSeaPenImageThumbnail(
+      const base::FilePath& path,
+      GetRecentSeaPenImageThumbnailCallback callback) override;
+
  private:
   wallpaper_handlers::SeaPenFetcher* GetOrCreateSeaPenFetcher();
 
@@ -67,6 +75,13 @@ class PersonalizationAppSeaPenProviderImpl
   void OnFetchWallpaperDone(SelectSeaPenThumbnailCallback callback,
                             absl::optional<SeaPenImage> image);
 
+  void OnGetRecentSeaPenImages(GetRecentSeaPenImagesCallback callback,
+                               const std::vector<base::FilePath>& images);
+
+  void OnGetRecentSeaPenImageThumbnail(
+      GetRecentSeaPenImageThumbnailCallback callback,
+      const gfx::ImageSkia& image);
+
   // Pointer to profile of user that opened personalization SWA. Not owned.
   const raw_ptr<Profile> profile_;
 
@@ -75,6 +90,11 @@ class PersonalizationAppSeaPenProviderImpl
 
   // A map of image id to image.
   std::map<uint32_t, const SeaPenImage> sea_pen_images_;
+
+  // When recent sea pen images are fetched, store the valid file paths in the
+  // set. This is checked when the SWA requests thumbnail data or sets an image
+  // as the user's background.
+  std::set<base::FilePath> recent_sea_pen_images_;
 
   // Perform a network request to search/upscale available wallpapers.
   // Constructed lazily at the time of the first request and then persists for

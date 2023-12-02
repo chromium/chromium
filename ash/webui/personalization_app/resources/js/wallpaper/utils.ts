@@ -14,7 +14,7 @@ import {SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from '../../
 import {isSeaPenTextInputEnabled} from '../load_time_booleans.js';
 import {getNumberOfGridItemsPerRow, isNonEmptyArray, isNonEmptyString} from '../utils.js';
 
-import {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol, SeaPenWallpaper} from './constants.js';
+import {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol} from './constants.js';
 import {DailyRefreshState} from './wallpaper_state.js';
 
 export const QUERY: string = 'Query';
@@ -54,11 +54,6 @@ export function isGooglePhotosPhoto(obj: any): obj is GooglePhotosPhoto {
   return !!obj && typeof obj.id === 'string';
 }
 
-/** Checks whether |obj| is an instance of |SeaPenWallpaper|. */
-export function isSeaPenWallpaper(obj: any): obj is SeaPenWallpaper {
-  return !!obj && isFilePath(obj.file_path);
-}
-
 /** Returns whether |image| is a match for the specified |key|. */
 export function isImageAMatchForKey(
     image: DisplayableImage, key: string|DefaultImageSymbol): boolean {
@@ -70,9 +65,6 @@ export function isImageAMatchForKey(
   }
   if (isFilePath(image)) {
     return key === image.path;
-  }
-  if (isSeaPenWallpaper(image)) {
-    return key === image.file_path.path;
   }
   assert(isGooglePhotosPhoto(image));
   // NOTE: Old clients may not support |dedupKey| when setting Google Photos
