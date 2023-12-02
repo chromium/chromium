@@ -17,6 +17,7 @@ class ImageButton;
 namespace ash {
 
 class FocusModeCountdownView;
+class ProgressIndicator;
 class TrayBubbleWrapper;
 
 // Status area tray which is visible when focus mode is enabled. A circular
@@ -82,6 +83,8 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
   // Animates resizing the bubble view after `task_item_view_` has been removed
   // from the bubble.
   void AnimateBubbleResize();
+  // Updates the progression of the progress indicator.
+  void UpdateProgressRing();
 
   // Image view of the focus mode lamp.
   const raw_ptr<views::ImageView> image_view_;
@@ -97,6 +100,9 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
 
   // The bubble that appears after clicking the tray button.
   std::unique_ptr<TrayBubbleWrapper> bubble_;
+
+  // An object that draws and updates the progress ring.
+  std::unique_ptr<ProgressIndicator> progress_indicator_;
 
   base::WeakPtrFactory<FocusModeTray> weak_ptr_factory_{this};
 };

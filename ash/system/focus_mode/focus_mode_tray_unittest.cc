@@ -8,6 +8,7 @@
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
+#include "ash/system/progress_indicator/progress_indicator.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/test/ash_test_base.h"
@@ -50,6 +51,10 @@ class FocusModeTrayTest : public AshTestBase {
 
   FocusModeTray::TaskItemView* GetTaskItemView() {
     return focus_mode_tray_->task_item_view_.get();
+  }
+
+  ProgressIndicator* GetProgressIndicator() {
+    return focus_mode_tray_->progress_indicator_.get();
   }
 
  protected:
@@ -95,19 +100,23 @@ TEST_F(FocusModeTrayTest, ClickActivateDeactivate) {
   controller->ToggleFocusMode();
   EXPECT_TRUE(focus_mode_tray_->GetVisible());
   EXPECT_FALSE(focus_mode_tray_->is_active());
+  EXPECT_EQ(1, GetProgressIndicator()->layer()->opacity());
 
   // Click the tray to activate the button. The tray should be active.
   LeftClickOn(focus_mode_tray_);
   EXPECT_TRUE(focus_mode_tray_->is_active());
+  EXPECT_EQ(0, GetProgressIndicator()->layer()->opacity());
 
   // Clicking the tray button again should deactivate it.
   LeftClickOn(focus_mode_tray_);
   EXPECT_FALSE(focus_mode_tray_->is_active());
+  EXPECT_EQ(1, GetProgressIndicator()->layer()->opacity());
 
   // Clicking anywhere outside of the bubble, in this case the center of the
   // screen, should also deactivate the tray.
   LeftClickOn(focus_mode_tray_);
   EXPECT_TRUE(focus_mode_tray_->is_active());
+  EXPECT_EQ(0, GetProgressIndicator()->layer()->opacity());
   auto* event_generator = GetEventGenerator();
   const gfx::Rect work_area =
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
@@ -115,6 +124,7 @@ TEST_F(FocusModeTrayTest, ClickActivateDeactivate) {
   event_generator->MoveMouseTo(work_area.CenterPoint());
   event_generator->ClickLeftButton();
   EXPECT_FALSE(focus_mode_tray_->is_active());
+  EXPECT_EQ(1, GetProgressIndicator()->layer()->opacity());
 }
 
 // Tests that when the user clicks the radio button to mark a selected task as
@@ -155,6 +165,31 @@ TEST_F(FocusModeTrayTest, MarkTaskAsCompleted) {
   EXPECT_GT(bubble_view_layer->bounds().y(), bubble_view->y());
   // `task_item_view` will be removed at the start of the animation.
   EXPECT_FALSE(GetTaskItemView());
+}
+
+// Tests that the progress indicator progresses as the focus session progresses.
+TEST_F(FocusModeTrayTest, ProgressIndicatorProgresses) {
+  FocusModeController* controller = FocusModeController::Get();
+  controller->SetSessionDuration(base::Minutes(40));
+  controller->ToggleFocusMode();
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  // Define a margin of error for floating point math.
+  constexpr float allowed_difference = 0.001f;
+
+  // Progress should start near zero.
+  EXPECT_NEAR(0.0, GetProgressIndicator()->progress().value(),
+              allowed_difference);
+
+  // Progress one quarter the way through the session should be near 0.25.
+  task_environment()->FastForwardBy(base::Minutes(10));
+  EXPECT_NEAR(0.25, GetProgressIndicator()->progress().value(),
+              allowed_difference);
+
+  // Progress half way through the session should be near .5.
+  task_environment()->FastForwardBy(base::Minutes(10));
+  EXPECT_NEAR(0.5, GetProgressIndicator()->progress().value(),
+              allowed_difference);
 }
 
 }  // namespace ash

@@ -11,6 +11,7 @@
 #include "ash/style/typography.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_countdown_view.h"
+#include "ash/system/progress_indicator/progress_indicator.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_utils.h"
@@ -35,7 +36,9 @@ constexpr int kIconSize = 20;
 constexpr int kBubbleInset = 16;
 constexpr int kTaskItemViewInsets = 6;
 constexpr int kTaskItemViewCornerRadius = 16;
+constexpr int kProgressIndicatorThickness = 2;
 constexpr auto kTaskTitleLabelInsets = gfx::Insets::TLBR(0, 12, 0, 18);
+constexpr auto kProgressIndicatorBounds = gfx::Rect(2, 0, 32, 32);
 constexpr base::TimeDelta kStartAnimationDelay = base::Milliseconds(300);
 constexpr base::TimeDelta kTaskItemViewFadeOutDuration =
     base::Milliseconds(200);
@@ -120,6 +123,38 @@ FocusModeTray::FocusModeTray(Shelf* shelf)
   image_view_->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
   image_view_->SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
 
+  tray_container()->SetPaintToLayer();
+  tray_container()->layer()->SetFillsBoundsOpaquely(false);
+  progress_indicator_ =
+      ProgressIndicator::CreateDefaultInstance(base::BindRepeating(
+          [](FocusModeTray* view) -> std::optional<float> {
+            auto* controller = FocusModeController::Get();
+            if (view->is_active() || !controller->in_focus_session()) {
+              // `kProgressComplete` causes the layer to not be painted, hiding
+              // the progress indicator.
+              return ProgressIndicator::kProgressComplete;
+            }
+            const base::TimeDelta session_duration =
+                controller->session_duration();
+            const base::TimeDelta time_elapsed =
+                session_duration - (controller->end_time() - base::Time::Now());
+            return time_elapsed / session_duration;
+          },
+          base::Unretained(this)));
+  progress_indicator_->SetInnerIconVisible(false);
+  progress_indicator_->SetInnerRingVisible(false);
+  progress_indicator_->SetOuterRingStrokeWidth(kProgressIndicatorThickness);
+  progress_indicator_->SetColorId(cros_tokens::kCrosSysPrimary);
+
+  tray_container()->layer()->Add(
+      progress_indicator_->CreateLayer(base::BindRepeating(
+          [](TrayContainer* view, ui::ColorId color_id) {
+            return view->GetColorProvider()->GetColor(color_id);
+          },
+          base::Unretained(tray_container()))));
+  UpdateProgressRing();
+  progress_indicator_->layer()->SetBounds(kProgressIndicatorBounds);
+
   auto* controller = FocusModeController::Get();
   SetVisiblePreferred(controller->in_focus_session());
   controller->AddObserver(this);
@@ -176,6 +211,8 @@ void FocusModeTray::CloseBubble() {
   task_item_view_ = nullptr;
   bubble_view_container_ = nullptr;
   SetIsActive(false);
+  progress_indicator_->layer()->SetOpacity(1);
+  UpdateProgressRing();
 }
 
 void FocusModeTray::ShowBubble() {
@@ -216,6 +253,8 @@ void FocusModeTray::ShowBubble() {
   bubble_->ShowBubble(std::move(bubble_view));
 
   SetIsActive(true);
+  progress_indicator_->layer()->SetOpacity(0);
+  UpdateProgressRing();
 }
 
 void FocusModeTray::UpdateTrayItemColor(bool is_active) {
@@ -229,16 +268,20 @@ void FocusModeTray::OnThemeChanged() {
 }
 
 void FocusModeTray::OnFocusModeChanged(bool in_focus_session) {
-  if (!in_focus_session) {
+  if (in_focus_session) {
+    UpdateProgressRing();
+  } else {
     CloseBubble();
   }
 }
 
 void FocusModeTray::OnTimerTick() {
+  UpdateProgressRing();
   MaybeUpdateCountdownViewUI();
 }
 
 void FocusModeTray::OnSessionDurationChanged() {
+  UpdateProgressRing();
   MaybeUpdateCountdownViewUI();
 }
 
@@ -325,6 +368,11 @@ void FocusModeTray::AnimateBubbleResize() {
       .SetDuration(kTaskItemViewFadeOutDuration)
       .SetBounds(bubble_->bubble_view()->layer(), target_bounds,
                  gfx::Tween::EASE_OUT);
+}
+
+void FocusModeTray::UpdateProgressRing() {
+  // Schedule a repaint of the indicator.
+  progress_indicator_->InvalidateLayer();
 }
 
 BEGIN_METADATA(FocusModeTray)
