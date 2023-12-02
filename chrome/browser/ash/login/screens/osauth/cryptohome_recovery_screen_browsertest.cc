@@ -13,13 +13,17 @@
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_window_visibility_waiter.h"
+#include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_password_changed_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
+#include "chrome/test/base/fake_gaia_mixin.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
+#include "components/account_id/account_id.h"
+#include "components/user_manager/user.h"
 #include "content/public/test/browser_test.h"
 
 namespace ash {
@@ -36,7 +40,6 @@ const test::UIPath kManualRecoveryButton = {"cryptohome-recovery",
 const test::UIPath kRetryButton = {"cryptohome-recovery", "retryButton"};
 const test::UIPath kReauthButton = {"cryptohome-recovery", "reauthButton"};
 
-const char kOldPassword[] = "old user password";
 const char kNewPassword[] = "new user password";
 }  // namespace
 
@@ -56,11 +59,9 @@ class CryptohomeRecoveryScreenTestBase : public OobeBaseTest {
     FakeUserDataAuthClient::TestApi::Get()->set_enable_auth_check(true);
   }
 
-  void AddFakeUser(const std::string& password) {
-    cryptohome_.MarkUserAsExisting(test_user_.account_id);
-    cryptohome_.AddGaiaPassword(test_user_.account_id, password);
-    fake_gaia_.SetupFakeGaiaForLogin(FakeGaiaMixin::kFakeUserEmail,
-                                     FakeGaiaMixin::kFakeUserGaiaId,
+  void SetupFakeGaia(const LoginManagerMixin::TestUserInfo& user) {
+    fake_gaia_.SetupFakeGaiaForLogin(user.account_id.GetUserEmail(),
+                                     user.account_id.GetGaiaId(),
                                      FakeGaiaMixin::kFakeRefreshToken);
   }
 
@@ -158,6 +159,7 @@ class CryptohomeRecoveryScreenTest : public CryptohomeRecoveryScreenTestBase {
       : CryptohomeRecoveryScreenTestBase(LoginManagerMixin::TestUserInfo{
             AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
                                            FakeGaiaMixin::kFakeUserGaiaId),
+            {ash::AshAuthFactor::kGaiaPassword, ash::AshAuthFactor::kRecovery},
             user_manager::UserType::USER_TYPE_REGULAR,
             user_manager::User::OAuthTokenStatus::
                 OAUTH2_TOKEN_STATUS_INVALID}) {}
@@ -169,10 +171,27 @@ class CryptohomeRecoveryScreenTest : public CryptohomeRecoveryScreenTestBase {
       const CryptohomeRecoveryScreenTest& other) = delete;
 };
 
+class CryptohomeRecoveryScreenNoRecoveryTest
+    : public CryptohomeRecoveryScreenTestBase {
+ public:
+  CryptohomeRecoveryScreenNoRecoveryTest()
+      : CryptohomeRecoveryScreenTestBase(LoginManagerMixin::TestUserInfo{
+            AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
+                                           FakeGaiaMixin::kFakeUserGaiaId),
+            test::kDefaultAuthSetup, user_manager::UserType::USER_TYPE_REGULAR,
+            user_manager::User::OAuthTokenStatus::
+                OAUTH2_TOKEN_STATUS_INVALID}) {}
+  ~CryptohomeRecoveryScreenNoRecoveryTest() override = default;
+
+  CryptohomeRecoveryScreenNoRecoveryTest(
+      const CryptohomeRecoveryScreenNoRecoveryTest& other) = delete;
+  CryptohomeRecoveryScreenNoRecoveryTest& operator=(
+      const CryptohomeRecoveryScreenNoRecoveryTest& other) = delete;
+};
+
 // Successful recovery after password change is detected.
 IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, SuccessfulRecovery) {
-  AddFakeUser(kOldPassword);
-  cryptohome_.AddRecoveryFactor(test_user_.account_id);
+  SetupFakeGaia(test_user_);
 
   OpenGaiaDialog(test_user_.account_id);
 
@@ -197,8 +216,9 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, SuccessfulRecovery) {
 
 // Verifies that recovery is skipped and GaiaPasswordChangedScreen is shown when
 // recovery factor is not configured.
-IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, NoRecoveryFactor) {
-  AddFakeUser(kOldPassword);
+IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenNoRecoveryTest,
+                       NoRecoveryFactor) {
+  SetupFakeGaia(test_user_);
 
   OpenGaiaDialog(test_user_.account_id);
   EXPECT_EQ(LoginDisplayHost::default_host()
@@ -221,8 +241,7 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, NoRecoveryFactor) {
 // Verifies that we could fallback to the manual recovery when there is error
 // during recovery.
 IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, ManualRecoveryAfterError) {
-  AddFakeUser(kOldPassword);
-  cryptohome_.AddRecoveryFactor(test_user_.account_id);
+  SetupFakeGaia(test_user_);
   fake_recovery_service_.SetErrorResponse("/v1/cryptorecovery",
                                           net::HTTP_BAD_REQUEST);
 
@@ -242,8 +261,7 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, ManualRecoveryAfterError) {
 
 // Verifies that we could retry when there is error during recovery.
 IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, RetryAfterError) {
-  AddFakeUser(kOldPassword);
-  cryptohome_.AddRecoveryFactor(test_user_.account_id);
+  SetupFakeGaia(test_user_);
   fake_recovery_service_.SetErrorResponse("/v1/cryptorecovery",
                                           net::HTTP_BAD_REQUEST);
 
@@ -279,8 +297,7 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, RetryAfterError) {
 // when password change is detected.
 IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest,
                        MissingReauthTokenDuringRecovery) {
-  AddFakeUser(kOldPassword);
-  cryptohome_.AddRecoveryFactor(test_user_.account_id);
+  SetupFakeGaia(test_user_);
 
   // Entering the add person flow with an existing account. Reauth token was not
   // fetched in this case.
@@ -316,8 +333,7 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest,
 
 // Recovery is cancelled after timeout.
 IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, CancelledOnTimeout) {
-  AddFakeUser(kOldPassword);
-  cryptohome_.AddRecoveryFactor(test_user_.account_id);
+  SetupFakeGaia(test_user_);
 
   OpenGaiaDialog(test_user_.account_id);
   EXPECT_EQ(LoginDisplayHost::default_host()
@@ -344,6 +360,7 @@ class CryptohomeRecoveryScreenChildTest
       : CryptohomeRecoveryScreenTestBase(LoginManagerMixin::TestUserInfo{
             AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
                                            FakeGaiaMixin::kFakeUserGaiaId),
+            {ash::AshAuthFactor::kGaiaPassword, ash::AshAuthFactor::kRecovery},
             user_manager::UserType::USER_TYPE_CHILD,
             user_manager::User::OAuthTokenStatus::
                 OAUTH2_TOKEN_STATUS_INVALID}) {}
@@ -355,10 +372,27 @@ class CryptohomeRecoveryScreenChildTest
       const CryptohomeRecoveryScreenChildTest& other) = delete;
 };
 
+class CryptohomeRecoveryScreenChildNoRecoveryTest
+    : public CryptohomeRecoveryScreenTestBase {
+ public:
+  CryptohomeRecoveryScreenChildNoRecoveryTest()
+      : CryptohomeRecoveryScreenTestBase(LoginManagerMixin::TestUserInfo{
+            AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
+                                           FakeGaiaMixin::kFakeUserGaiaId),
+            test::kDefaultAuthSetup, user_manager::UserType::USER_TYPE_CHILD,
+            user_manager::User::OAuthTokenStatus::
+                OAUTH2_TOKEN_STATUS_INVALID}) {}
+  ~CryptohomeRecoveryScreenChildNoRecoveryTest() override = default;
+
+  CryptohomeRecoveryScreenChildNoRecoveryTest(
+      const CryptohomeRecoveryScreenChildNoRecoveryTest& other) = delete;
+  CryptohomeRecoveryScreenChildNoRecoveryTest& operator=(
+      const CryptohomeRecoveryScreenChildNoRecoveryTest& other) = delete;
+};
+
 // Successful recovery after password change is detected for child users.
 IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenChildTest, SuccessfulRecovery) {
-  AddFakeUser(kOldPassword);
-  cryptohome_.AddRecoveryFactor(test_user_.account_id);
+  SetupFakeGaia(test_user_);
 
   OpenGaiaDialog(test_user_.account_id);
   EXPECT_EQ(LoginDisplayHost::default_host()
@@ -382,8 +416,9 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenChildTest, SuccessfulRecovery) {
 
 // Verifies that recovery is skipped for child users when recovery factor is not
 // configured.
-IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenChildTest, NoRecoveryFactor) {
-  AddFakeUser(kOldPassword);
+IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenChildNoRecoveryTest,
+                       NoRecoveryFactor) {
+  SetupFakeGaia(test_user_);
 
   OpenGaiaDialog(test_user_.account_id);
   EXPECT_EQ(LoginDisplayHost::default_host()

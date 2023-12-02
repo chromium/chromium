@@ -43,6 +43,7 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
+#include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -878,7 +879,7 @@ class ReauthWebviewLoginTest : public WebviewLoginTest {
   LoginManagerMixin::TestUserInfo reauth_user_{
       AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
                                      FakeGaiaMixin::kFakeUserGaiaId),
-      user_manager::USER_TYPE_REGULAR,
+      test::kDefaultAuthSetup, user_manager::USER_TYPE_REGULAR,
       /* invalid token status to force online signin */
       user_manager::User::OAUTH2_TOKEN_STATUS_INVALID};
   LoginManagerMixin login_manager_mixin_{&mixin_host_, {reauth_user_}};
@@ -1019,7 +1020,7 @@ class ReauthEndpointWebviewLoginTest : public WebviewLoginTest {
   LoginManagerMixin::TestUserInfo reauth_user_{
       AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
                                      FakeGaiaMixin::kFakeUserGaiaId),
-      user_manager::USER_TYPE_CHILD,
+      test::kDefaultAuthSetup, user_manager::USER_TYPE_CHILD,
       /* invalid token status to force online signin */
       user_manager::User::OAUTH2_TOKEN_STATUS_INVALID};
   LoginManagerMixin login_manager_mixin_{&mixin_host_, {reauth_user_}};
@@ -1419,7 +1420,7 @@ class WebviewClientCertsLoginTest : public WebviewClientCertsLoginTestBase {
   LoginManagerMixin::TestUserInfo test_user_{
       AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
                                      FakeGaiaMixin::kFakeUserGaiaId),
-      user_manager::USER_TYPE_REGULAR};
+      test::kDefaultAuthSetup, user_manager::USER_TYPE_REGULAR};
   LoginManagerMixin login_manager_mixin_{&mixin_host_, {test_user_}};
 
  private:

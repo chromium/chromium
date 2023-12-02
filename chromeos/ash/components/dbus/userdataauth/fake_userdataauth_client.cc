@@ -535,8 +535,7 @@ void FakeUserDataAuthClient::TestApi::AddKey(
   UserCryptohomeState& user_state = GetUserState(account_id);
 
   const auto [factor_it, was_inserted] =
-      user_state.auth_factors.insert(KeyToFakeAuthFactor(
-          key, FakeUserDataAuthClient::Get()->enable_auth_check_));
+      user_state.auth_factors.insert(KeyToFakeAuthFactor(key, true));
   CHECK(was_inserted) << "Factor already exists";
 }
 

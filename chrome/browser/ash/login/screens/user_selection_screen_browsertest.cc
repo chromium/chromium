@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/login/test/offline_login_test_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
+#include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
@@ -217,15 +218,15 @@ class UserSelectionScreenBlockOfflineTest : public LoginManagerTest,
 
   const LoginManagerMixin::TestUserInfo test_user_over_the_limit_{
       AccountId::FromUserEmailGaiaId(kUser1Email, kGaia1ID),
-      user_manager::UserType::USER_TYPE_REGULAR,
+      test::kDefaultAuthSetup, user_manager::UserType::USER_TYPE_REGULAR,
       user_manager::User::OAuthTokenStatus::OAUTH2_TOKEN_STATUS_INVALID};
   const LoginManagerMixin::TestUserInfo test_user_under_the_limit_{
       AccountId::FromUserEmailGaiaId(kUser2Email, kGaia2ID),
-      user_manager::UserType::USER_TYPE_REGULAR,
+      test::kDefaultAuthSetup, user_manager::UserType::USER_TYPE_REGULAR,
       user_manager::User::OAuthTokenStatus::OAUTH2_TOKEN_STATUS_INVALID};
   const LoginManagerMixin::TestUserInfo test_user_limit_not_set_{
       AccountId::FromUserEmailGaiaId(kUser3Email, kGaia3ID),
-      user_manager::UserType::USER_TYPE_REGULAR,
+      test::kDefaultAuthSetup, user_manager::UserType::USER_TYPE_REGULAR,
       user_manager::User::OAuthTokenStatus::OAUTH2_TOKEN_STATUS_INVALID};
   LoginManagerMixin login_mixin_{
       &mixin_host_,

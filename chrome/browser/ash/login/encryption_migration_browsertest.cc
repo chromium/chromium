@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
+#include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -239,7 +240,7 @@ class EncryptionMigrationChildUserTest : public EncryptionMigrationTestBase {
   EncryptionMigrationChildUserTest()
       : EncryptionMigrationTestBase(LoginManagerMixin::TestUserInfo{
             AccountId::FromUserEmailGaiaId("userchild@gmail.com", "userchild"),
-            user_manager::USER_TYPE_CHILD}) {}
+            test::kDefaultAuthSetup, user_manager::USER_TYPE_CHILD}) {}
   ~EncryptionMigrationChildUserTest() override = default;
 
   EncryptionMigrationChildUserTest(
