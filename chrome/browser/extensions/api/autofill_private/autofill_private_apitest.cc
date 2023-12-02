@@ -116,6 +116,22 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddAndUpdateCreditCard) {
   EXPECT_TRUE(RunAutofillSubtest("addAndUpdateCreditCard")) << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddCreditCard_Cvc) {
+  base::UserActionTester user_action_tester;
+  EXPECT_TRUE(RunAutofillSubtest("addNewCreditCard")) << message_;
+  EXPECT_EQ(1, user_action_tester.GetActionCount("AutofillCreditCardsAdded"));
+  EXPECT_EQ(
+      1, user_action_tester.GetActionCount("AutofillCreditCardsAddedWithCvc"));
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddCreditCard_NoCvc) {
+  base::UserActionTester user_action_tester;
+  EXPECT_TRUE(RunAutofillSubtest("addNewCreditCardWithoutCvc")) << message_;
+  EXPECT_EQ(1, user_action_tester.GetActionCount("AutofillCreditCardsAdded"));
+  EXPECT_EQ(
+      0, user_action_tester.GetActionCount("AutofillCreditCardsAddedWithCvc"));
+}
+
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddNewIban_NoNickname) {
   base::UserActionTester user_action_tester;
   EXPECT_TRUE(RunAutofillSubtest("addNewIbanNoNickname")) << message_;

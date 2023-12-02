@@ -330,7 +330,8 @@ var availableTests = [
         chrome.test.callbackPass(function(cardList) {
           chrome.test.assertEq([], cardList);
 
-          // Setup the callback that verifies that the card was correctly added.
+          // Set up the callback that verifies that the card was correctly
+          // added.
           chrome.test.listenOnce(
               chrome.autofillPrivate.onPersonalDataChanged,
               chrome.test.callbackPass(function(addressList, cardList) {
@@ -352,6 +353,49 @@ var availableTests = [
             expirationMonth: EXP_MONTH,
             expirationYear: EXP_YEAR,
             cvc: CVC
+          });
+        }));
+  },
+
+  function addNewCreditCardWithoutCvc() {
+    function filterCardProperties(cards) {
+      return cards.map(cards => {
+        var filteredCards = {};
+        ['name', 'cardNumber', 'expirationMonth', 'expirationYear', 'nickname',
+         'cvc']
+            .forEach(property => {
+              filteredCards[property] = cards[property];
+            });
+        return filteredCards;
+      });
+    }
+
+    chrome.autofillPrivate.getCreditCardList(
+        chrome.test.callbackPass(function(cardList) {
+          chrome.test.assertEq([], cardList);
+
+          // Set up the callback that verifies that the card was correctly
+          // added.
+          chrome.test.listenOnce(
+              chrome.autofillPrivate.onPersonalDataChanged,
+              chrome.test.callbackPass(function(addressList, cardList) {
+                chrome.test.assertEq(
+                    [{
+                      name: CARD_NAME,
+                      cardNumber: MASKED_NUMBER,
+                      expirationMonth: EXP_MONTH,
+                      expirationYear: EXP_YEAR,
+                      nickname: undefined,
+                      cvc: undefined
+                    }],
+                    filterCardProperties(cardList));
+              }));
+
+          chrome.autofillPrivate.saveCreditCard({
+            name: CARD_NAME,
+            cardNumber: NUMBER,
+            expirationMonth: EXP_MONTH,
+            expirationYear: EXP_YEAR
           });
         }));
   },

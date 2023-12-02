@@ -402,6 +402,10 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveCreditCardFunction::Run() {
       base::RecordAction(
           base::UserMetricsAction("AutofillCreditCardsAddedWithNickname"));
     }
+    if (!credit_card.cvc().empty()) {
+      base::RecordAction(
+          base::UserMetricsAction("AutofillCreditCardsAddedWithCvc"));
+    }
   }
   return RespondNow(NoArguments());
 }

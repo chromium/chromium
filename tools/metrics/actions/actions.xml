@@ -4373,6 +4373,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="AutofillCreditCardsAddedWithCvc">
+  <owner>koulvipul@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <description>
+    Recorded when user adds a card with CVC via settings page.
+  </description>
+</action>
+
 <action name="AutofillCreditCardsAddedWithNickname">
   <owner>sujiezhu@google.com</owner>
   <owner>jsaul@google.com</owner>
