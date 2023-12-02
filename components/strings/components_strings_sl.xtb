@@ -346,7 +346,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1633941398432788136">Načrtovanje dogodka</translation>
 <translation id="1634828734222219955">Total</translation>
 <translation id="163669211644121865">Priprava in načrtovanje davka</translation>
-<translation id="1638780421120290329">Kartice ni mogoče shraniti</translation>
 <translation id="1639239467298939599">Nalaganje</translation>
 <translation id="1640180200866533862">Uporabniški pravilniki</translation>
 <translation id="1640244768702815859">Poskusite <ph name="BEGIN_LINK" />obiskati domačo stran spletnega mesta<ph name="END_LINK" />.</translation>
@@ -663,6 +662,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2262243747453050782">Napaka HTTP</translation>
 <translation id="226481340855943334">Predniki in rodoslovje</translation>
 <translation id="2265192657948645752">Zaposlitev na področju trgovine</translation>
+<translation id="2265356434276802347">V tem pravilniku je lahko največ toliko izpostavljenih vnosov: <ph name="MAX_ITEMS_LIMIT" />.</translation>
 <translation id="2267047181501709434">Preverjanje vaše identitete …</translation>
 <translation id="2268743667444073169">Televizijske limonade</translation>
 <translation id="2270484714375784793">Telefonska številka</translation>
@@ -689,7 +689,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2324604504973636700">Gospodinjski aparati</translation>
 <translation id="2328651992442742497">Dovoljeno (privzeto)</translation>
 <translation id="2328955282645810595">Gradbena in električna orodja</translation>
-<translation id="2329473609445770916">To spletno mesto določa zanimanja, ki jih druga spletna mesta lahko uporabijo pri prikazovanju oglasov.</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, poteče <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Nastavitev nadzira vaš skrbnik</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> želi izvesti seznanitev</translation>
@@ -1118,7 +1117,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite prilagoditi videz brskalnika.</translation>
 <translation id="3240791268468473923">Preglednica za neujemanje poverilnic poverilnice za varno plačilo je odprta</translation>
 <translation id="324180406144491771">Povezave gostitelja »<ph name="HOST_NAME" />« so blokirane</translation>
-<translation id="3248611290851046188">To spletno mesto določa zanimanja, ki jih druga spletna mesta lahko uporabijo pri prikazovanju oglasov. To spletno mesto tudi pridobi vaša zanimanja iz Chroma, da vam prikaže ustreznejše oglase.</translation>
 <translation id="3249151924975132674">Študentska posojila in financiranje študija</translation>
 <translation id="3249845759089040423">Razgibano</translation>
 <translation id="3250640885957938546">Oglaševanje in trženje</translation>
@@ -1586,7 +1584,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4177501066905053472">Teme oglasov</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Prekliči spremljanje cene</translation>
-<translation id="4194250254487269611">Kartice trenutno ni mogoče shraniti</translation>
 <translation id="4195459680867822611">Gumb za ogled nasvetov za Chrome, aktivirajte, če želite izvedeti več o funkcijah Chroma</translation>
 <translation id="4195643157523330669">Odpri v novem zavihku</translation>
 <translation id="4196861286325780578">&amp;Uveljavi premik</translation>
@@ -1726,7 +1723,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4424024547088906515">Strežniku ni uspelo dokazati, da je <ph name="DOMAIN" />; Chrome ne zaupa njegovemu varnostnemu potrdilu. Razlog za to je lahko napačna konfiguracija ali napadalčevo prestrezanje povezave.</translation>
 <translation id="4425173294238317796">List za potrditev ključa za dostop</translation>
 <translation id="4425750422187370446">Športna oblačila</translation>
-<translation id="4428065317363009941">Osebno prilagajanje oglasov</translation>
 <translation id="443121186588148776">Serijska vrata</translation>
 <translation id="4432688616882109544">Spletno mesto <ph name="HOST_NAME" /> ni sprejelo potrdila za prijavo ali pa to ni bilo posredovano.</translation>
 <translation id="4432792777822557199">Strani v jeziku <ph name="SOURCE_LANGUAGE" /> bodo od zdaj naprej prevedene v jezik <ph name="TARGET_LANGUAGE" /></translation>
@@ -2208,7 +2204,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="540969355065856584">Strežniku ni uspelo dokazati, da je <ph name="DOMAIN" />; njegovo varnostno potrdilo trenutno ni veljavno. Razlog za to je lahko napačna konfiguracija ali napadalčevo prestrezanje povezave.</translation>
 <translation id="5411462078004183575">Možnost z nizko ceno</translation>
 <translation id="5412040515238827314">Neveljavna oblika: Pričakovan je seznam vzorcev.</translation>
-<translation id="5412236728747081950">To spletno mesto pridobi vaša zanimanja iz Chroma, da vam pokaže ustreznejše oglase.</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Zlagalnik 4</translation>
 <translation id="5414446060143308245">Pred prenosom je zahtevan pregled</translation>
@@ -2796,7 +2791,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6613866251791999074">Preberite več o iskalniku v Chromu</translation>
 <translation id="6615297766614333076">Zlagalnik 2</translation>
 <translation id="6624427990725312378">Podatki o stiku</translation>
-<translation id="6627727261837091711">Prikaz podrobnosti osebnega prilagajanja oglasov</translation>
 <translation id="6628463337424475685">Iskanje <ph name="ENGINE" /></translation>
 <translation id="6629652037942826935">Luksuzna potovanja</translation>
 <translation id="6630043285902923878">Iskanje naprav USB …</translation>
@@ -3308,7 +3302,6 @@ Dodatne podrobnosti:
 <translation id="7574998639136359461">Oprema za zimske športe</translation>
 <translation id="7575207903026901870">Gumb za odstranitev predloga, pritisnite Enter za odstranitev tega predloga</translation>
 <translation id="7575887283389198269">Mobilni telefoni</translation>
-<translation id="7577900504646297215">Upravljanje zanimanj</translation>
 <translation id="7578104083680115302">Hitro plačevanje na spletnih mestih in v aplikacijah v vseh napravah s karticami, ki ste jih shranili v Googlu.</translation>
 <translation id="7579442726219254162">Neznana spremenljivka »<ph name="VARIABLE" />« v upravljani konfiguraciji za »<ph name="APPLICATION_ID" />«.</translation>
 <translation id="7581199239021537589">Pomik slike na 2. strani v Y</translation>

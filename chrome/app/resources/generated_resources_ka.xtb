@@ -2544,6 +2544,7 @@
 <translation id="2927017729816812676">ქეშის მეხსიერება</translation>
 <translation id="2928795416630981206">თქვენი კამერის პოზიციისთვის თვალის მიდევნება დაშვებულია</translation>
 <translation id="2931157624143513983">ბეჭდვად არეზე მორგება</translation>
+<translation id="2931342457001070961">მიკროფონი დაკავშირებული არ არის</translation>
 <translation id="2932085390869194046">პაროლის შემოთავაზება…</translation>
 <translation id="2932483646085333864">სინქრონიზაციის დასაწყებად, გადით სისტემიდან და შედით ხელახლა</translation>
 <translation id="2932883381142163287">არასათანადო მოპყრობის შესახებ შეტყობინება</translation>
@@ -4674,6 +4675,7 @@
 <translation id="4647836961514597010">ფერის ამომრჩეველი</translation>
 <translation id="4648491805942548247">არასაკმარისი ნებართვები</translation>
 <translation id="4650037136970677721">მეხსიერების დაზოგილია</translation>
+<translation id="4650364565596261010">სისტემის ნაგულისხმევი</translation>
 <translation id="4650591383426000695">თქვენი ტელეფონის კავშირის გაწვეტა <ph name="DEVICE_TYPE" />-თან</translation>
 <translation id="4651484272688821107">დემო-რეჟიმის რესურსებიანი ონლაინ-კომპონენტის ჩატვირთვა ვერ მოხერხდა.</translation>
 <translation id="4651921906638302153">ამ ანგარიშით შესვლა ვერ ხერხდება</translation>
@@ -8818,7 +8820,6 @@
 <translation id="7968982339740310781">დეტალების დათვალიერება</translation>
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Ethernet-ის დეტალები</translation>
-<translation id="7970882136539140748">ბარათის შენახვა ამჟამად ვერ მოხერდა</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 RSA დაშიფვრით</translation>
 <translation id="7973776233567882054">ჩამოთვლილიდან რომელი შეესაბამება ყველაზე მეტად თქვენი ქსელის აღწერილობას?</translation>
 <translation id="797394244396603170">აირჩიეთ მოწყობილობაზე, რომელთანაც გსურთ ფაილების გაზიარება</translation>

@@ -1781,6 +1781,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2344032937402519675">Ei saanud serveriga ühendust. Kontrollige võrguühendust ja proovige uuesti. Kui teil on endiselt probleeme, proovige Chromebook taaskäivitada.</translation>
 <translation id="234559068082989648">Chrome'i rakenduste vanad versioonid pärast 2022. aasta detsembrit enam ei avane. Uuele versioonile värskendamiseks võtke ühendust administraatoriga või eemaldage see rakendus.</translation>
 <translation id="2345723121311404059">Üks leht printerisse <ph name="PRINTER_NAME" /></translation>
+<translation id="2347930112185157300">Mobiilsidevõrguteenuse pakkuja on lukus</translation>
 <translation id="2348176352564285430">Rakendus: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – taotleti luba, vastamiseks vajutage klahvikombinatsiooni Ctrl + edasinool</translation>
 <translation id="234889437187286781">Viga andmete laadimisel</translation>
@@ -2549,6 +2550,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2927017729816812676">Vahemälu</translation>
 <translation id="2928795416630981206">Lubatud jälgida teie kaamera asendit</translation>
 <translation id="2931157624143513983">Sobita prinditavale alale</translation>
+<translation id="2931342457001070961">Mikrofoni pole ühendatud</translation>
 <translation id="2932085390869194046">Soovita parooli …</translation>
 <translation id="2932483646085333864">Sünkroonimise alustamiseks logige välja ja seejärel uuesti sisse</translation>
 <translation id="2932883381142163287">Teata väärkasutusest</translation>
@@ -4679,6 +4681,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4647836961514597010">Värvivalija</translation>
 <translation id="4648491805942548247">Ebapiisav luba</translation>
 <translation id="4650037136970677721">Mälu salvestatud</translation>
+<translation id="4650364565596261010">Süsteemi vaikeseade</translation>
 <translation id="4650591383426000695">Katkestage telefoni ja seadme <ph name="DEVICE_TYPE" /> ühendus</translation>
 <translation id="4651484272688821107">Demorežiimi ressurssidega veebipõhist komponenti ei saanud laadida.</translation>
 <translation id="4651921906638302153">Selle kontoga ei saa sisse logida</translation>
@@ -4915,6 +4918,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4839303808932127586">Sa&amp;lvesta video nimega ...</translation>
 <translation id="4839910546484524995">Seadme kontrollimine</translation>
 <translation id="4840096453115567876">Kas sulgeda ikka inkognito režiim?</translation>
+<translation id="4841475798258477260">See seade saab luua ühenduse ainult kindla mobiilsidevõrguga. <ph name="BEGIN_LINK_LEARN_MORE" />Lisateave<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4841741146571978176">Nõutavat virtuaalmasinat ei ole olemas. Jätkamiseks üritage seadistada <ph name="VM_TYPE" /></translation>
 <translation id="4842976633412754305">See leht üritab skripte laadida volitamata allikatest.</translation>
 <translation id="4844333629810439236">Muud klaviatuurid</translation>
@@ -6467,6 +6471,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6104068876731806426">Google'i kontod</translation>
 <translation id="6104311680260824317">Seadet ei saa domeeniga ühendada. Server ei toeta määratud Kerberose krüpteerimistüüpe. Krüpteerimisseaded leiate jaotisest „Rohkem valikuid”.</translation>
 <translation id="6104796831253957966">Printeri järjekord on täis</translation>
+<translation id="610487644502954950">Külgpaneel on vabastatud</translation>
 <translation id="6104929924898022309">Otsinguklahvi kasutamine funktsiooniklahvide käitumise muutmiseks</translation>
 <translation id="6106167152849320869">Kui valisite eelmise sammu käigus diagnostika- ja kasutusandmete saatmise, kogutakse installitud rakenduste puhul neid andmeid.</translation>
 <translation id="6111718295497931251">Google Drive’ile juurdepääsu eemaldamine</translation>
@@ -8823,7 +8828,6 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7968982339740310781">Kuva üksikasjad</translation>
 <translation id="7969046989155602842">Käsuklahv</translation>
 <translation id="7970673414865679092">Etherneti üksikasjad</translation>
-<translation id="7970882136539140748">Kaarti ei saa praegu salvestada</translation>
 <translation id="7972714317346275248">PKCS 1 SHA-384 koos RSA krüpteerimisega</translation>
 <translation id="7973776233567882054">Milline järgmine väide kirjeldab kõige paremini teie võrku?</translation>
 <translation id="797394244396603170">Valige seade, millega soovite faile jagada</translation>
@@ -9158,6 +9162,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8241040075392580210">Pilvine</translation>
 <translation id="8241806945692107836">Seadme konfiguratsiooni määramine ...</translation>
 <translation id="8241868517363889229">Järjehoidjate lugemine ja muutmine</translation>
+<translation id="8242273718576931540">Teie seade ei saa selle võrguga ühendust luua. <ph name="BEGIN_LINK_LEARN_MORE" />Lisateave<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8242370300221559051">Play poe lubamine</translation>
 <translation id="8242426110754782860">Jätka</translation>
 <translation id="8243948765190375130">Meedia kvaliteeti võidakse vähendada</translation>
@@ -9644,6 +9649,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8636284842992792762">Laienduste lähtestamine …</translation>
 <translation id="8636323803535540285">Kui soovite siia kiiremini jõuda, lisage teenuse <ph name="BRAND" /> otsetee</translation>
 <translation id="8636500887554457830">Ära luba saitidel saata hüpikaknaid ega kasutada ümbersuunamisi</translation>
+<translation id="8636514272606969031">Külgpaneel on kinnitatud</translation>
 <translation id="8637688295594795546">Süsteemiuuendus on saadaval. Allalaadimiseks valmistumine …</translation>
 <translation id="8638719155236856752">ChromeOS-i võrgu seisukord</translation>
 <translation id="8639635302972078117">Kasutus- ja diagnostikaandmete saatmine. See seade saadab Google'ile praegu automaatselt seadme teavet ning rakenduse kasutus- ja diagnostikaandmeid. Neid andmeid ei kasutata teie lapse isiku tuvastamiseks ning need aitavad parandada süsteemi ja rakenduse stabiilsust ning muud. Teatud koondandmed on abiks ka Google'i rakendustele ja partneritele, näiteks Androidi arendajatele. Kui täiendavad veebi- ja rakendustegevused on teie lapse jaoks sisse lülitatud, võidakse need andmed salvestada tema Google'i kontole.</translation>

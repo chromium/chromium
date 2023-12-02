@@ -346,7 +346,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1633941398432788136">Evenemangsplanering</translation>
 <translation id="1634828734222219955">Totalt</translation>
 <translation id="163669211644121865">Skattefrågor och skatteplanering</translation>
-<translation id="1638780421120290329">Det gick inte att spara kortet</translation>
 <translation id="1639239467298939599">Profilen läses in</translation>
 <translation id="1640180200866533862">Användarpolicyer</translation>
 <translation id="1640244768702815859">Testa att <ph name="BEGIN_LINK" />besöka webbplatsens startsida<ph name="END_LINK" />.</translation>
@@ -690,7 +689,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2324604504973636700">Hushållsapparater</translation>
 <translation id="2328651992442742497">Tillåts (standard)</translation>
 <translation id="2328955282645810595">Bygg- och elverktyg</translation>
-<translation id="2329473609445770916">På den här webbplatsen definieras intressen som andra webbplatser kan använda för sina annonser</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" /> upphör att gälla den <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Inställningen styrs av administratören</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> vill kopplas</translation>
@@ -1119,7 +1117,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill anpassa webbläsarens utseende</translation>
 <translation id="3240791268468473923">Arbetsblad för användaruppgifter för säker betalning utan överensstämmande användaruppgifter är öppet</translation>
 <translation id="324180406144491771"><ph name="HOST_NAME" />-länkarna har blockerats</translation>
-<translation id="3248611290851046188">På den här webbplatsen definieras intressen som andra webbplatser kan använda för sina annonser. Webbplatsen hämtar dessutom dina intressen från Chrome för att visa mer relevanta annonser för dig.</translation>
 <translation id="3249151924975132674">Studielån och studiefinansiering</translation>
 <translation id="3249845759089040423">Tuff</translation>
 <translation id="3250640885957938546">Reklam och marknadsföring</translation>
@@ -1587,7 +1584,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4177501066905053472">Annonsämnen</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Ta bort prisbevakning</translation>
-<translation id="4194250254487269611">Det går tyvärr inte att spara kortet just nu</translation>
 <translation id="4195459680867822611">Knappen Visa tips om Chrome: aktivera om du vill läsa mer om funktioner i Chrome</translation>
 <translation id="4195643157523330669">Öppna i ny flik</translation>
 <translation id="4196861286325780578">&amp;Gör om Flytta</translation>
@@ -1727,7 +1723,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4424024547088906515">Servern kunde inte bevisa att den är <ph name="DOMAIN" /> eftersom Chrome inte litar på dess säkerhetscertifikat. Detta kan orsakas av en felaktig konfigurering eller att någon spärrar anslutningen.</translation>
 <translation id="4425173294238317796">Bekräftelseark för nyckel</translation>
 <translation id="4425750422187370446">Sportkläder</translation>
-<translation id="4428065317363009941">Personliga annonspreferenser</translation>
 <translation id="443121186588148776">Serieport</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> godkände inte inloggningscertifikatet eller så har inget inloggningscertifikat angetts.</translation>
 <translation id="4432792777822557199">Sidor på <ph name="SOURCE_LANGUAGE" /> översätts till <ph name="TARGET_LANGUAGE" /> från och med nu</translation>
@@ -2209,7 +2204,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="540969355065856584">Servern kunde inte bevisa att det är <ph name="DOMAIN" />. Dess säkerhetscertifikat är inte giltigt för närvarande. Detta kan bero på en felaktig konfiguration eller att någon kapat din anslutning.</translation>
 <translation id="5411462078004183575">Lågprisalternativ</translation>
 <translation id="5412040515238827314">Ogiltigt format: En lista med mönster förväntas.</translation>
-<translation id="5412236728747081950">Den här webbplatsen hämtar dina intressen från Chrome för att visa mer relevanta annonser för dig</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Utmatningsfack 4</translation>
 <translation id="5414446060143308245">Granskning krävs innan du överför</translation>
@@ -2797,7 +2791,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6613866251791999074">Läs mer om din sökmotor i Chrome</translation>
 <translation id="6615297766614333076">Utmatningsfack 2</translation>
 <translation id="6624427990725312378">Kontaktuppgifter</translation>
-<translation id="6627727261837091711">Visa information om annonsanpassning</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> Sök</translation>
 <translation id="6629652037942826935">Lyxresor</translation>
 <translation id="6630043285902923878">Söker efter USB-enheter …</translation>
@@ -3309,7 +3302,6 @@ Mer information.
 <translation id="7574998639136359461">Vintersportsutrustning</translation>
 <translation id="7575207903026901870">Knappen Ta bort förslag, tryck på retur om du vill ta bort förslaget</translation>
 <translation id="7575887283389198269">Mobiltelefoner</translation>
-<translation id="7577900504646297215">Hantera intressen</translation>
 <translation id="7578104083680115302">Betala snabbt på webbplatser och i appar på olika enheter med kort som du har sparat hos Google.</translation>
 <translation id="7579442726219254162">Okänd variabel, <ph name="VARIABLE" />, i den hanterade konfigurationen av <ph name="APPLICATION_ID" />.</translation>
 <translation id="7581199239021537589">Sida 2 bild Y – byte</translation>

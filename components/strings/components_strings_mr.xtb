@@ -346,7 +346,6 @@
 <translation id="1633941398432788136">इव्हेंट प्लॅनिंग</translation>
 <translation id="1634828734222219955">एकूण</translation>
 <translation id="163669211644121865">कर भरणा आणि नियोजन</translation>
-<translation id="1638780421120290329">कार्ड सेव्ह करू शकलो नाही</translation>
 <translation id="1639239467298939599">लोड करत आहे</translation>
 <translation id="1640180200866533862">वापरकर्ता धोरणे</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />साइटच्या होमवर भेट देऊन<ph name="END_LINK" /> पहा.</translation>
@@ -690,7 +689,6 @@
 <translation id="2324604504973636700">घरातील उपकरणे</translation>
 <translation id="2328651992442742497">अनुमती आहे (डीफॉल्ट)</translation>
 <translation id="2328955282645810595">बांधकाम आणि मोटारद्वारे चालवली जाणारी टूल</translation>
-<translation id="2329473609445770916">ही साइट तुम्हाला जाहिराती दाखवण्यासाठी इतर साइट वापरू शकतात अशी स्वारस्ये परिभाषित करते</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" /> रोजी एक्स्पायर होईल</translation>
 <translation id="2337852623177822836">सेटिंग तुमच्या ॲडमिनिस्ट्रेटरने नियंत्रित केलेले आहे</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> जोडू इच्छिते</translation>
@@ -1119,7 +1117,6 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, तुमच्या ब्राउझरचे रूप कस्टमाइझ करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="3240791268468473923">सुरक्षित पेमेंट क्रेडेंशियल याची जुळणारे कोणतेही क्रेडेंशियल नाही ही शीट उघडली आहे</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” लिंक ब्लॉक केल्या आहेत</translation>
-<translation id="3248611290851046188">ही साइट तुम्हाला जाहिराती दाखवण्यासाठी इतर साइट वापरू शकतात अशी स्वारस्ये परिभाषित करते. तुम्हाला आणखी उपयुक्त जाहिराती दाखवण्यासाठी ही साइट Chrome मधून तुमची स्वारस्येदेखील मिळवते.</translation>
 <translation id="3249151924975132674">शैक्षणिक कर्ज आणि शैक्षणिक वित्तव्यवस्था</translation>
 <translation id="3249845759089040423">आधुनिक</translation>
 <translation id="3250640885957938546">जाहिरात आणि मार्केटिंग</translation>
@@ -1586,7 +1583,6 @@
 <translation id="4177501066905053472">जाहिरातीचे विषय</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">किमतीचा बंद ठेवणे बंद करा</translation>
-<translation id="4194250254487269611">तुमचे कार्ड आता सेव्ह केले जाऊ शकत नाही</translation>
 <translation id="4195459680867822611">Chrome शी संबंधित टिपा पहा बटण, Chrome च्या वैशिष्‍ट्यांविषयी जाणून घेण्यासाठी अ‍ॅक्टिव्हेट करा</translation>
 <translation id="4195643157523330669">नवीन टॅबमध्ये उघडा</translation>
 <translation id="4196861286325780578">&amp;हलवा पुन्हा करा</translation>
@@ -1726,7 +1722,6 @@
 <translation id="4424024547088906515">हा सर्व्हर हे <ph name="DOMAIN" /> असल्याचे सिद्ध करू शकला नाही; त्याचे सुरक्षितता सर्टिफिकेट Chrome द्वारे विश्वसनीय नाही. हे कदाचित एका चुकीच्या कॉंफिगरेशनमुळे किंवा हल्लेखोराने तुमचे कनेक्शन इंटरसेप्ट केल्यामुळे झाले असू शकते.</translation>
 <translation id="4425173294238317796">पासकी कंफर्मेशन शीट</translation>
 <translation id="4425750422187370446">ॲथलेटिक पोशाख</translation>
-<translation id="4428065317363009941">जाहिरात पर्सनलायझेशन</translation>
 <translation id="443121186588148776">सिरीअल पोर्ट</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> ने तुमचे लॉग इन सर्टिफिकेट स्वीकारले नाही किंवा कदाचित दिले गेले नसावे.</translation>
 <translation id="4432792777822557199">आतापासून पेज <ph name="SOURCE_LANGUAGE" />मधून <ph name="TARGET_LANGUAGE" />मध्ये भाषांतरित केली जातील</translation>
@@ -2208,7 +2203,6 @@
 <translation id="540969355065856584">हा सर्व्हर <ph name="DOMAIN" /> असल्याचे सिद्ध करू शकला नाही; त्याचे सुरक्षितता सर्टिफिकेट यावेळी वैध नाही. हे कदाचित चुकीच्या कॉंफिगरेशनमुळे किंवा हल्लेखोर तुमचे कनेक्शन इंटरसेप्ट करत असल्‍यामुळे होऊ शकते.</translation>
 <translation id="5411462078004183575">कमी किमतीचे पर्याय</translation>
 <translation id="5412040515238827314">फॉरमॅट चुकीचा आहे: सूचीचा पॅटर्न अपेक्षित आहे.</translation>
-<translation id="5412236728747081950">तुम्हाला आणखी उपयुक्त जाहिराती दाखवण्यासाठी ही साइट Chrome मधून तुमची स्वारस्ये मिळवते</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">स्टॅकर ४</translation>
 <translation id="5414446060143308245">ट्रान्सफर करण्यापूर्वी पुनरावलोकन करणे आवश्यक आहे</translation>
@@ -2797,7 +2791,6 @@
 <translation id="6613866251791999074">Chrome मध्ये तुमच्या शोध इंजीनबद्दल अधिक जाणून घ्या</translation>
 <translation id="6615297766614333076">स्टॅकर २</translation>
 <translation id="6624427990725312378">संपर्क माहिती</translation>
-<translation id="6627727261837091711">जाहिरात पर्सनलायझेशनचे तपशील दाखवा</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> शोध</translation>
 <translation id="6629652037942826935">लक्झरी प्रवास</translation>
 <translation id="6630043285902923878">USB डिव्हाइस शोधत आहे…</translation>
@@ -3309,7 +3302,6 @@
 <translation id="7574998639136359461">हिवाळ्यातील क्रीडा उपकरणे</translation>
 <translation id="7575207903026901870">सूचना बटण काढा, ही सूचना काढण्यासाठी एंटर प्रेस करा</translation>
 <translation id="7575887283389198269">मोबाइल फोन</translation>
-<translation id="7577900504646297215">स्वारस्ये व्यवस्थापित करा</translation>
 <translation id="7578104083680115302">तुम्ही Google सह सेव्ह केलेल्या कार्डचा वापर करून डिव्‍हाइसेसवरून द्रुतपणे साइट आणि ॲप्सवर पेमेंट करा.</translation>
 <translation id="7579442726219254162">"<ph name="APPLICATION_ID" />" च्या व्यवस्थापित कॉंफिगरेशनमध्ये "<ph name="VARIABLE" />" हा अज्ञात व्हेरिएबल आहे.</translation>
 <translation id="7581199239021537589">साइन २ इमेज Y शिफ्ट</translation>

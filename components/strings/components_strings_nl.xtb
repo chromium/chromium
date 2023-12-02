@@ -346,7 +346,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1633941398432788136">Evenementenplanning</translation>
 <translation id="1634828734222219955">Totaal</translation>
 <translation id="163669211644121865">Belastingaangifte en belastingservices</translation>
-<translation id="1638780421120290329">Kan kaart niet opslaan</translation>
 <translation id="1639239467298939599">Laden</translation>
 <translation id="1640180200866533862">Gebruikersbeleid</translation>
 <translation id="1640244768702815859">Probeer <ph name="BEGIN_LINK" />de homepage van de site te bezoeken<ph name="END_LINK" />.</translation>
@@ -690,7 +689,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2324604504973636700">Huishoudelijke apparatuur</translation>
 <translation id="2328651992442742497">Toegestaan (standaard)</translation>
 <translation id="2328955282645810595">Bouw- en elektrisch gereedschap</translation>
-<translation id="2329473609445770916">Deze site definieert interesses waarmee andere sites je advertenties kunnen laten zien</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, verloopt op <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Instelling beheerd door je beheerder</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> wil koppelen</translation>
@@ -1116,7 +1114,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om het uiterlijk van je browser aan te passen</translation>
 <translation id="3240791268468473923">Pagina geopend waarop staat dat er geen overeenkomende inloggegevens zijn voor beveiligde betaling</translation>
 <translation id="324180406144491771">Links van <ph name="HOST_NAME" /> zijn geblokkeerd</translation>
-<translation id="3248611290851046188">Deze site definieert interesses waarmee andere sites je advertenties kunnen laten zien. Deze site krijgt ook je interesses van Chrome zodat de site je relevantere advertenties kan laten zien</translation>
 <translation id="3249151924975132674">Studentenleningen en studiefinanciering</translation>
 <translation id="3249845759089040423">Groovy</translation>
 <translation id="3250640885957938546">Reclame en marketing</translation>
@@ -1582,7 +1579,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4177501066905053472">Advertentieonderwerpen</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Prijs volgen</translation>
-<translation id="4194250254487269611">Je kaart kan op dit moment niet worden opgeslagen</translation>
 <translation id="4195459680867822611">Knop Chrome-tips bekijken. Activeer deze voor meer informatie over Chrome-functies.</translation>
 <translation id="4195643157523330669">Openen op nieuw tabblad</translation>
 <translation id="4196861286325780578">&amp;Opnieuw verplaatsen</translation>
@@ -1722,7 +1718,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4424024547088906515">De server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het beveiligingscertificaat van de server wordt niet vertrouwd door Chrome. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.</translation>
 <translation id="4425173294238317796">Bevestigingsblad voor toegangssleutel</translation>
 <translation id="4425750422187370446">Sportkleding</translation>
-<translation id="4428065317363009941">Advertentiepersonalisatie</translation>
 <translation id="443121186588148776">Seriële poort</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> heeft je inlogcertificaat niet geaccepteerd of er is geen inlogcertificaat geleverd.</translation>
 <translation id="4432792777822557199">Pagina's in het <ph name="SOURCE_LANGUAGE" /> worden vanaf nu vertaald naar het <ph name="TARGET_LANGUAGE" /></translation>
@@ -2204,7 +2199,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="540969355065856584">Deze server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het beveiligingscertificaat is momenteel niet geldig. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.</translation>
 <translation id="5411462078004183575">Goedkope optie</translation>
 <translation id="5412040515238827314">Ongeldige indeling: er wordt een lijst met patronen verwacht.</translation>
-<translation id="5412236728747081950">Deze site krijgt je interesses van Chrome zodat de site je relevantere advertenties kan laten zien</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Stapeleenheid 4</translation>
 <translation id="5414446060143308245">Check bestanden voordat je ze overzet</translation>
@@ -2791,7 +2785,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6613866251791999074">Meer informatie over je zoekmachine in Chrome</translation>
 <translation id="6615297766614333076">Stapeleenheid 2</translation>
 <translation id="6624427990725312378">Contactgegevens</translation>
-<translation id="6627727261837091711">Alle gegevens voor advertentiepersonalisatie tonen</translation>
 <translation id="6628463337424475685">Zoeken via <ph name="ENGINE" /></translation>
 <translation id="6629652037942826935">Luxereizen</translation>
 <translation id="6630043285902923878">Zoeken naar USB-apparaten...</translation>
@@ -3303,7 +3296,6 @@ Aanvullende informatie:
 <translation id="7574998639136359461">Benodigdheden voor wintersport</translation>
 <translation id="7575207903026901870">Suggestieknop verwijderen, druk op Enter om deze suggestie te verwijderen</translation>
 <translation id="7575887283389198269">Mobiele telefoons</translation>
-<translation id="7577900504646297215">Interesses beheren</translation>
 <translation id="7578104083680115302">Betaal op verschillende apparaten snel op sites en in apps met passen die je hebt opgeslagen via Google.</translation>
 <translation id="7579442726219254162">Onbekende variabele <ph name="VARIABLE" /> in de beheerde configuratie van <ph name="APPLICATION_ID" />.</translation>
 <translation id="7581199239021537589">Beeldverschuiving Y van zijde 2</translation>

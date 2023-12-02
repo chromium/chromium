@@ -346,7 +346,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1633941398432788136">Planiranje događaja</translation>
 <translation id="1634828734222219955">Ukupno</translation>
 <translation id="163669211644121865">Priprema i planiranje poreza</translation>
-<translation id="1638780421120290329">Nije moguće sačuvati karticu</translation>
 <translation id="1639239467298939599">Učitavanje</translation>
 <translation id="1640180200866533862">Korisnička pravila</translation>
 <translation id="1640244768702815859">Probajte <ph name="BEGIN_LINK" />posjetiti početnu stranicu web lokacije<ph name="END_LINK" /></translation>
@@ -663,7 +662,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2262243747453050782">HTTP greška</translation>
 <translation id="226481340855943334">Porijeklo i genealogija</translation>
 <translation id="2265192657948645752">Poslovi u maloprodaji</translation>
-<translation id="2265356434276802347">Broj istaknutih unosa u ovom pravilu ne smije biti veći od <ph name="MAX_ITEMS_LIMIT" />.</translation>
+<translation id="2265356434276802347">Najveći broj istaknutih unosa koja pravila mogu imati je <ph name="MAX_ITEMS_LIMIT" />.</translation>
 <translation id="2267047181501709434">Potvrđivanje vašeg identiteta...</translation>
 <translation id="2268743667444073169">TV sapunice</translation>
 <translation id="2270484714375784793">Broj telefona</translation>
@@ -690,7 +689,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2324604504973636700">Kućanski aparati</translation>
 <translation id="2328651992442742497">Dozvoljeno je (zadano)</translation>
 <translation id="2328955282645810595">Građevinski i električni alati</translation>
-<translation id="2329473609445770916">Ova web lokacija definira koja interesovanja mogu koristiti druge web lokacije da vam prikažu oglase</translation>
 <translation id="2330137317877982892">Kartica <ph name="CREDIT_CARD" />, ističe <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Postavkom upravlja administrator</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> se želi upariti</translation>
@@ -1119,7 +1117,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da prilagodite izgled preglednika</translation>
 <translation id="3240791268468473923">Otvorena je tabela obavještenja da nema akreditiva za sigurno plaćanje koji se podudaraju</translation>
 <translation id="324180406144491771">Linkovi hosta "<ph name="HOST_NAME" />" su blokirani</translation>
-<translation id="3248611290851046188">Ova web lokacija definira koja interesovanja mogu koristiti druge web lokacije da vam prikažu oglase. Ova web lokacija prikuplja vaša interesovanja iz Chromea da vam prikazuje relevantnije oglase.</translation>
 <translation id="3249151924975132674">Studentski krediti i finansiranje fakulteta</translation>
 <translation id="3249845759089040423">Cool</translation>
 <translation id="3250640885957938546">Oglašavanje i marketing</translation>
@@ -1587,7 +1584,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4177501066905053472">Teme oglasa</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Prestani pratiti cijenu</translation>
-<translation id="4194250254487269611">Trenutno nije moguće sačuvati vašu karticu</translation>
 <translation id="4195459680867822611">Dugme Prikaži savjete za Chrome, aktivirajte da saznate više o funkcijama Chromea</translation>
 <translation id="4195643157523330669">Otvori u novoj kartici</translation>
 <translation id="4196861286325780578">&amp;Ponovi premještanje</translation>
@@ -1727,7 +1723,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4424024547088906515">Ovaj server nije uspio dokazati da predstavlja domenu <ph name="DOMAIN" />. Chrome ne smatra njenu potvrdu sigurnosti pouzdanom. Uzrok tome može biti pogrešna konfiguracija ili napadač koji je prekinuo vašu vezu.</translation>
 <translation id="4425173294238317796">Tabela za potvrdu pristupnog ključa</translation>
 <translation id="4425750422187370446">Sportska odjeća</translation>
-<translation id="4428065317363009941">Personalizacija oglasa</translation>
 <translation id="443121186588148776">Serijski priključak</translation>
 <translation id="4432688616882109544">Host računar <ph name="HOST_NAME" /> nije prihvatio vašu potvrdu za prijavu, ili potvrda nije poslana.</translation>
 <translation id="4432792777822557199">Stranice na <ph name="SOURCE_LANGUAGE" /> jeziku će se od sada prevoditi na <ph name="TARGET_LANGUAGE" /> jezik</translation>
@@ -2209,7 +2204,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="540969355065856584">Ovaj server nije uspio dokazati da je <ph name="DOMAIN" />; njegova potvrda sigurnosti trenutno nije važeća. Uzrok tome može biti pogrešna konfiguracija ili napadač koji je prekinuo vašu vezu.</translation>
 <translation id="5411462078004183575">Opcija s niskom cijenom</translation>
 <translation id="5412040515238827314">Nevažeći format: Očekivana je lista uzoraka.</translation>
-<translation id="5412236728747081950">Ova web lokacija prikuplja vaša interesovanja iz Chromea da vam prikazuje relevantnije oglase</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Slagač 4</translation>
 <translation id="5414446060143308245">Potreban je pregled prije prijenosa</translation>
@@ -2797,7 +2791,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6613866251791999074">Više informacija o pretraživaču u Chromeu</translation>
 <translation id="6615297766614333076">Slagač 2</translation>
 <translation id="6624427990725312378">Kontakt podaci</translation>
-<translation id="6627727261837091711">Prikaži detalje personalizacije oglasa</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> pretraživanje</translation>
 <translation id="6629652037942826935">Luksuzna putovanja</translation>
 <translation id="6630043285902923878">Pronalaženje USB uređaja…</translation>
@@ -3309,7 +3302,6 @@ Dodatni detalji:
 <translation id="7574998639136359461">Oprema za zimske sportove</translation>
 <translation id="7575207903026901870">Dugme za uklanjanje prijedloga. Pritisnite Enter da uklonite ovaj prijedlog</translation>
 <translation id="7575887283389198269">Mobilni telefoni</translation>
-<translation id="7577900504646297215">Upravljajte interesovanjima</translation>
 <translation id="7578104083680115302">Plaćajte brzo na web lokacijama i aplikacijama sa svih uređaja pomoću kartica koje sačuvate na Googleu.</translation>
 <translation id="7579442726219254162">Nepoznata varijabla "<ph name="VARIABLE" />" u upravljanoj konfiguraciji za "<ph name="APPLICATION_ID" />".</translation>
 <translation id="7581199239021537589">Pomak slike Y sa strane 2</translation>

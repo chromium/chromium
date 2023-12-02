@@ -2557,6 +2557,7 @@
 <translation id="2927017729816812676">কেশ্বৰ ষ্ট'ৰেজ</translation>
 <translation id="2928795416630981206">আপোনাৰ কেমেৰাৰ স্থান ট্ৰেক কৰাৰ অনুমতি আছে</translation>
 <translation id="2931157624143513983">প্ৰিণ্ট কৰিব পৰা ঠাইত খাপ খুৱাওক</translation>
+<translation id="2931342457001070961">কোনো মাইক্ৰ’ফ’ন সংযোগ হৈ থকা নাই</translation>
 <translation id="2932085390869194046">পাছৱৰ্ডৰ পৰামৰ্শ দিয়ক...</translation>
 <translation id="2932483646085333864">ছিংক আৰম্ভ কৰিবলৈ ছাইন আউট হৈ পুনৰ ছাইন ইন হওক</translation>
 <translation id="2932883381142163287">দুৰ্ব্যৱহাৰৰ অভিযোগ দিয়ক</translation>
@@ -4687,6 +4688,7 @@
 <translation id="4647836961514597010">ৰং বাছনি কৰোঁতা</translation>
 <translation id="4648491805942548247">অপর্যাপ্ত অনুমতি</translation>
 <translation id="4650037136970677721">মেম’ৰী ছেভ কৰা হৈছে</translation>
+<translation id="4650364565596261010">ছিষ্টেম ডিফ’ল্ট</translation>
 <translation id="4650591383426000695"><ph name="DEVICE_TYPE" />ৰ পৰা আপোনাৰ ফ’নটোৰ সংযোগ বিচ্ছিন্ন কৰক</translation>
 <translation id="4651484272688821107">ডেম’ ম’ডৰ সংসাধনৰ সৈতে অনলাইন কম্প’নেণ্ট ল’ড কৰিব পৰা নগ’ল৷</translation>
 <translation id="4651921906638302153">এই একাউণ্টটোৰে ছাইন ইন কৰিব নোৱাৰি</translation>
@@ -8834,7 +8836,6 @@
 <translation id="7968982339740310781">সবিশেষ চাওক</translation>
 <translation id="7969046989155602842">নিৰ্দেশনা</translation>
 <translation id="7970673414865679092">ইথাৰনেটৰ সবিশেষ</translation>
-<translation id="7970882136539140748">এই মুহূৰ্তত কার্ডখন ছেভ কৰিব নোৱাৰি</translation>
 <translation id="7972714317346275248">RSA এনক্ৰিপশ্বনৰ সৈতে PKCS #1 SHA-384</translation>
 <translation id="7973776233567882054">তলৰ কোনটোৱে আপোনাৰ নেটৱৰ্কটো সকলোতকৈ ভালকৈ বৰ্ণনা কৰে?</translation>
 <translation id="797394244396603170">আপুনি যিটো ডিভাইচৰ সৈতে ফাইল শ্বেয়াৰ কৰিবলৈ বিচাৰে সেই ডিভাইচটো বাছনি কৰক</translation>

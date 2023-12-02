@@ -2548,6 +2548,7 @@
 <translation id="2927017729816812676">مساحة التخزين لذاكرة التخزين المؤقت</translation>
 <translation id="2928795416630981206">المواقع الإلكترونية التي يُسمح لها بتتبّع موضع الكاميرا</translation>
 <translation id="2931157624143513983">ملاءمة المنطقة القابلة للطباعة</translation>
+<translation id="2931342457001070961">ما من ميكروفون متصل بالجهاز.</translation>
 <translation id="2932085390869194046">اقتراح كلمة مرور...</translation>
 <translation id="2932483646085333864">الخروج ثم إعادة تسجيل الدخول لبدء المزامنة</translation>
 <translation id="2932883381142163287">الإبلاغ عن إساءة الاستخدام</translation>
@@ -4676,6 +4677,7 @@
 <translation id="4647836961514597010">علبة الألوان</translation>
 <translation id="4648491805942548247">أذونات غير كافية</translation>
 <translation id="4650037136970677721">تم حفظ هذه الذكرى.</translation>
+<translation id="4650364565596261010">الإعداد التلقائي للنظام</translation>
 <translation id="4650591383426000695">إلغاء ربط الهاتف من الجهاز <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">تعذَّر تحميل المكوِّن على الإنترنت باستخدام موارد الوضع التجريبي.</translation>
 <translation id="4651921906638302153">لا يمكن تسجيل الدخول باستخدام هذا الحساب</translation>
@@ -8830,7 +8832,6 @@
 <translation id="7968982339740310781">عرض التفاصيل</translation>
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">تفاصيل إيثرنت</translation>
-<translation id="7970882136539140748">يتعذّر حفظ البطاقة الآن.</translation>
 <translation id="7972714317346275248">‏PKCS #1 SHA-384 مع ترميز RSA</translation>
 <translation id="7973776233567882054">أي من العبارات التالية تمثل أفضل وصف لشبكتك؟</translation>
 <translation id="797394244396603170">اختَر الجهاز الذي تريد مشاركة الملفات معه.</translation>

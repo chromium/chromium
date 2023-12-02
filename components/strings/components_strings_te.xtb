@@ -341,7 +341,6 @@
 <translation id="1633941398432788136">ఈవెంట్ ప్లానింగ్</translation>
 <translation id="1634828734222219955">మొత్తం</translation>
 <translation id="163669211644121865">ట్యాక్స్ రూపకల్పన &amp; ప్లానింగ్</translation>
-<translation id="1638780421120290329">కార్డ్‌ను సేవ్ చేయలేకపోయింది</translation>
 <translation id="1639239467298939599">లోడ్ చేస్తోంది</translation>
 <translation id="1640180200866533862">వినియోగదారు విధానాలు</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />సైట్ యొక్క హోమ్‌పేజీని సందర్శించడం<ph name="END_LINK" /> ప్రయత్నించండి.</translation>
@@ -685,7 +684,6 @@
 <translation id="2324604504973636700">గృహోపకరణాలు</translation>
 <translation id="2328651992442742497">అనుమతించబడుతుంది (ఆటోమేటిక్ సెట్టింగ్)</translation>
 <translation id="2328955282645810595">నిర్మాణం &amp; పవర్ టూల్స్</translation>
-<translation id="2329473609445770916">మీకు యాడ్‌లను చూపడానికి ఇతర సైట్‌లు ఉపయోగించగల ఆసక్తులను ఈ సైట్ నిర్వచిస్తుంది</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, గడువు <ph name="EXPIRATION_DATE_ABBR" />న ముగుస్తుంది</translation>
 <translation id="2337852623177822836">సెట్టింగ్‌ను మీ నిర్వాహకులు నియంత్రిస్తున్నారు</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> దీనితో జత చేయాలనుకుంటోంది</translation>
@@ -1114,7 +1112,6 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, మీ బ్రౌజర్ రూపాన్ని అనుకూలంగా మార్చడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
 <translation id="3240791268468473923">సురక్షితమైన పేమెంట్ ఆధారానికి సంబంధించిన మ్యాచ్ అయ్యే ఆధారాల షీట్ ఏదీ తెరవబడలేదు</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” లింక్‌లు బ్లాక్ చేయబడ్డాయి</translation>
-<translation id="3248611290851046188">మీకు యాడ్‌లను చూపడానికి ఇతర సైట్‌లు ఉపయోగించగల ఆసక్తులను ఈ సైట్ నిర్వచిస్తుంది. మీకు మరింత సందర్భోచితమైన యాడ్‌లను చూపడానికి ఈ సైట్ మీ ఆసక్తులను Chrome నుండి కూడా పొందుతుంది.</translation>
 <translation id="3249151924975132674">విద్యార్థి రుణాలు &amp; కళాశాలకు ఫైనాన్సింగ్</translation>
 <translation id="3249845759089040423">సొగసైనది</translation>
 <translation id="3250640885957938546">అడ్వర్టైజింగ్ &amp; మార్కెటింగ్</translation>
@@ -1582,7 +1579,6 @@
 <translation id="4177501066905053472">యాడ్ టాపిక్‌లు</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">ధరను అన్‌ట్రాక్ చేయండి</translation>
-<translation id="4194250254487269611">మీ కార్డ్‌ను ప్రస్తుతం సేవ్ చేయలేము</translation>
 <translation id="4195459680867822611">'Chrome చిట్కాలను చూడండి' బటన్, Chrome ఫీచర్‌ల గురించి తెలుసుకోవడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="4195643157523330669">కొత్త ట్యాబ్‌లో తెరువు</translation>
 <translation id="4196861286325780578">&amp;తరలించడాన్ని రిపీట్‌ చేయి</translation>
@@ -1722,7 +1718,6 @@
 <translation id="4424024547088906515">ఈ సర్వర్ <ph name="DOMAIN" /> అని నిరూపించుకోలేకపోయింది; దీని భద్రతా ప్రమాణపత్రాన్ని Chrome విశ్వసించలేదు. ఇది తప్పుగా కాన్ఫిగర్ చేయడం వలన లేదా దాడిచేసే వ్యక్తి మీ కనెక్షన్‌కు అంతరాయం కలిగించడం వలన జరిగి ఉండవచ్చు.</translation>
 <translation id="4425173294238317796">పాస్-కీ నిర్ధారణ షీట్</translation>
 <translation id="4425750422187370446">క్రీడా సంబంధ దుస్తులు</translation>
-<translation id="4428065317363009941">యాడ్ వ్యక్తిగతీకరణ</translation>
 <translation id="443121186588148776">శ్రేణీకృత పోర్ట్</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> మీ లాగిన్ ప్రమాణపత్రాన్ని ఆమోదించలేదు లేదా ఏదీ అందించి ఉండకపోవచ్చు.</translation>
 <translation id="4432792777822557199">ఇప్పటి నుండి <ph name="SOURCE_LANGUAGE" />లో ఉన్న పేజీలు <ph name="TARGET_LANGUAGE" />కు అనువదించబడతాయి</translation>
@@ -2204,7 +2199,6 @@
 <translation id="540969355065856584">ఈ సర్వర్ <ph name="DOMAIN" /> అని నిరూపించుకోలేకపోయింది; దీని భద్రతా ప్రమాణపత్రం ప్రస్తుతం చెల్లదు. ఇది తప్పుగా కాన్ఫిగర్ చేయడం వలన లేదా దాడి చేసే వ్యక్తి మీ కనెక్షన్‌కు అంతరాయం కలిగించడం వలన జరిగి ఉండవచ్చు.</translation>
 <translation id="5411462078004183575">తక్కువ ధర ఉన్న ఆప్షన్</translation>
 <translation id="5412040515238827314">చెల్లని ఫార్మాట్: ఈ ఆకృతుల లిస్ట్‌లో ఒకటి అయి ఉంటుందని ఊహించాము.</translation>
-<translation id="5412236728747081950">మీకు మరింత సందర్భోచితమైన యాడ్‌లను చూపడానికి ఈ సైట్ మీ ఆసక్తులను Chrome నుండి పొందుతుంది</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">స్టాకర్ 4</translation>
 <translation id="5414446060143308245">బదిలీ చేసే ముందు, రివ్యూ చేయడం ముఖ్యం</translation>
@@ -2792,7 +2786,6 @@
 <translation id="6613866251791999074">Chromeలో మీ సెర్చ్ ఇంజిన్ గురించి మరింత తెలుసుకోండి</translation>
 <translation id="6615297766614333076">స్టాకర్ 2</translation>
 <translation id="6624427990725312378">సంప్రదింపు సమాచారం</translation>
-<translation id="6627727261837091711">యాడ్ వ్యక్తిగతీకరణ వివరాలను చూడండి</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> శోధన</translation>
 <translation id="6629652037942826935">లగ్జరీ ట్రావెల్</translation>
 <translation id="6630043285902923878">USB పరికరాలను కనుగొంటోంది...</translation>
@@ -3304,7 +3297,6 @@
 <translation id="7574998639136359461">శీతాకాలపు క్రీడలకు సంబంధించిన ఎక్విప్‌మెంట్</translation>
 <translation id="7575207903026901870">సూచన బటన్‌ను తీసివేసి, ఈ సూచనను తీసివేయడానికి ఎంటర్ నొక్కండి</translation>
 <translation id="7575887283389198269">మొబైల్ ఫోన్‌లు</translation>
-<translation id="7577900504646297215">ఆసక్తులను మేనేజ్ చేయండి</translation>
 <translation id="7578104083680115302">మీరు Googleతో సేవ్ చేసిన కార్డ్‌లను ఉపయోగించి పరికరాల్లోని సైట్‌లు మరియు యాప్‌లలో శీఘ్రంగా పేమెంట్ చేయండి.</translation>
 <translation id="7579442726219254162">మేనేజ్ చేసిన కాన్ఫిగరేషన్ "<ph name="APPLICATION_ID" />"లో తెలియని వేరియబుల్ "<ph name="VARIABLE" />" ఉంది.</translation>
 <translation id="7581199239021537589">2వ వైపు ప్రింట్‌లో చిత్రాన్ని Y అక్షంలో జరపు</translation>

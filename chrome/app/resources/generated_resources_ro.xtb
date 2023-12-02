@@ -2545,6 +2545,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="2927017729816812676">Stocarea pentru memoria cache</translation>
 <translation id="2928795416630981206">Au permisiunea de a urmări poziția camerei</translation>
 <translation id="2931157624143513983">Potrivește în funcție de zona care se poate printa</translation>
+<translation id="2931342457001070961">Niciun microfon conectat</translation>
 <translation id="2932085390869194046">Sugerează o parolă...</translation>
 <translation id="2932483646085333864">Deconectează-te și conectează-te din nou pentru a începe sincronizarea</translation>
 <translation id="2932883381142163287">Raportează un abuz</translation>
@@ -4675,6 +4676,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4647836961514597010">Selector de culoare</translation>
 <translation id="4648491805942548247">Permisiuni insuficiente</translation>
 <translation id="4650037136970677721">Amintirea a fost salvată</translation>
+<translation id="4650364565596261010">Setare prestabilită a sistemului</translation>
 <translation id="4650591383426000695">Deconectează telefonul de la <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Componenta online nu a putut fi încărcată cu resurse pentru modul demo.</translation>
 <translation id="4651921906638302153">Nu te poți conecta cu acest cont</translation>
@@ -8823,7 +8825,6 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7968982339740310781">Afișați detaliile</translation>
 <translation id="7969046989155602842">Tasta Command</translation>
 <translation id="7970673414865679092">Detalii despre Ethernet</translation>
-<translation id="7970882136539140748">Nu se poate salva cardul în acest moment</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 cu criptare RSA</translation>
 <translation id="7973776233567882054">Care dintre următoarele descrie cel mai bine rețeaua ta?</translation>
 <translation id="797394244396603170">Selectează dispozitivul căruia vrei să îi trimiți fișiere</translation>

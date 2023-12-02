@@ -2560,6 +2560,7 @@
 <translation id="2927017729816812676">Склад за кеш</translation>
 <translation id="2928795416630981206">Дозволено им е да ја следат позицијата на камерата</translation>
 <translation id="2931157624143513983">Приспособи според областа за печатење</translation>
+<translation id="2931342457001070961">Не е поврзан микрофон</translation>
 <translation id="2932085390869194046">Предложете лозинка…</translation>
 <translation id="2932483646085333864">Одјавете се, па повторно најавете се за да започнете со синхронизација</translation>
 <translation id="2932883381142163287">Пријави злоупотреба</translation>
@@ -4691,6 +4692,7 @@
 <translation id="4647836961514597010">Избирач на боја</translation>
 <translation id="4648491805942548247">Недоволно дозволи</translation>
 <translation id="4650037136970677721">Споменот се зачуван</translation>
+<translation id="4650364565596261010">Стандардна поставка за системот</translation>
 <translation id="4650591383426000695">Прекинете ја врската помеѓу телефонот и <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Не може да се вчита онлајн компонентата со ресурси во демо-режим.</translation>
 <translation id="4651921906638302153">Не може да се најавите со сметкава</translation>
@@ -8838,7 +8840,6 @@
 <translation id="7968982339740310781">Погледнете детали</translation>
 <translation id="7969046989155602842">Наредба</translation>
 <translation id="7970673414865679092">Детали за етернет</translation>
-<translation id="7970882136539140748">Картичката не може да се зачува во моментов</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 со шифрирање RSA</translation>
 <translation id="7973776233567882054">Кои од следниве најдобро ја опишуваат вашата мрежа?</translation>
 <translation id="797394244396603170">Изберете го уредот со којшто сакате да споделите датотеки</translation>

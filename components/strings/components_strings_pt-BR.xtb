@@ -346,7 +346,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1633941398432788136">Planejamento de eventos</translation>
 <translation id="1634828734222219955">Total</translation>
 <translation id="163669211644121865">Declaração e planejamento de impostos</translation>
-<translation id="1638780421120290329">Não é possível salvar o cartão</translation>
 <translation id="1639239467298939599">Carregando</translation>
 <translation id="1640180200866533862">Políticas de usuário</translation>
 <translation id="1640244768702815859">Tente <ph name="BEGIN_LINK" />visitar a página inicial do site<ph name="END_LINK" />.</translation>
@@ -663,6 +662,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2262243747453050782">Erro HTTP</translation>
 <translation id="226481340855943334">Descendência e genealogia</translation>
 <translation id="2265192657948645752">Empregos de varejo</translation>
+<translation id="2265356434276802347">Essa política não pode ter mais que <ph name="MAX_ITEMS_LIMIT" /> entradas em destaque.</translation>
 <translation id="2267047181501709434">Verificando sua identidade…</translation>
 <translation id="2268743667444073169">Novelas de TV</translation>
 <translation id="2270484714375784793">Número do telefone</translation>
@@ -689,7 +689,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2324604504973636700">Aparelhos domésticos</translation>
 <translation id="2328651992442742497">Com permissão (padrão)</translation>
 <translation id="2328955282645810595">Ferramentas de construção e elétricas</translation>
-<translation id="2329473609445770916">Este site define interesses que outros sites podem usar para mostrar anúncios</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, expira em <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Configuração controlada pelo administrador</translation>
 <translation id="2340263603246777781">O <ph name="ORIGIN" /> deseja realizar o pareamento</translation>
@@ -1118,7 +1117,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para personalizar a aparência do navegador</translation>
 <translation id="3240791268468473923">A página de credenciais para pagamento seguro sem correspondência está aberta</translation>
 <translation id="324180406144491771">Os links de “<ph name="HOST_NAME" />” são bloqueados</translation>
-<translation id="3248611290851046188">Este site define interesses que outros sites podem usar para mostrar anúncios. Este site acessa seus interesses no Chrome para mostrar anúncios mais relevantes.</translation>
 <translation id="3249151924975132674">Empréstimos para estudantes e financiamento universitário</translation>
 <translation id="3249845759089040423">Maravilhoso</translation>
 <translation id="3250640885957938546">Publicidade e marketing</translation>
@@ -1586,7 +1584,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4177501066905053472">Temas de anúncios</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" />: <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Não acompanhar preço</translation>
-<translation id="4194250254487269611">Não é possível salvar seu cartão no momento</translation>
 <translation id="4195459680867822611">Botão "Ver dicas do Chrome". Ative para saber mais sobre os recursos do Chrome</translation>
 <translation id="4195643157523330669">Abrir em uma nova guia</translation>
 <translation id="4196861286325780578">&amp;Refazer mover</translation>
@@ -1726,7 +1723,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4424024547088906515">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança não é confiável para o Chrome. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
 <translation id="4425173294238317796">Página de confirmação da chave de acesso</translation>
 <translation id="4425750422187370446">Roupas para esporte</translation>
-<translation id="4428065317363009941">Personalização de anúncios</translation>
 <translation id="443121186588148776">Porta serial</translation>
 <translation id="4432688616882109544">O certificado de login não foi aceito por <ph name="HOST_NAME" /> ou não foi fornecido.</translation>
 <translation id="4432792777822557199">Páginas em <ph name="SOURCE_LANGUAGE" /> serão traduzidas para <ph name="TARGET_LANGUAGE" /> de agora em diante</translation>
@@ -2208,7 +2204,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="540969355065856584">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança dele não é válido no momento. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
 <translation id="5411462078004183575">Opção com preço baixo</translation>
 <translation id="5412040515238827314">Formato inválido: é esperada uma lista de padrões.</translation>
-<translation id="5412236728747081950">Este site acessa seus interesses no Chrome para mostrar anúncios mais relevantes</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Empilhador 4</translation>
 <translation id="5414446060143308245">Revise antes de transferir os arquivos</translation>
@@ -2796,7 +2791,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6613866251791999074">Saiba mais sobre seu mecanismo de pesquisa no Chrome</translation>
 <translation id="6615297766614333076">Empilhador 2</translation>
 <translation id="6624427990725312378">Informações de Contato</translation>
-<translation id="6627727261837091711">Mostrar detalhes da personalização de anúncios</translation>
 <translation id="6628463337424475685">Pesquisa do <ph name="ENGINE" /></translation>
 <translation id="6629652037942826935">Viagens de luxo</translation>
 <translation id="6630043285902923878">Procurando dispositivos USB…</translation>
@@ -3308,7 +3302,6 @@ Mais detalhes:
 <translation id="7574998639136359461">Equipamento para esportes de inverno</translation>
 <translation id="7575207903026901870">Botão "Remover sugestão", pressione Enter para remover essa sugestão</translation>
 <translation id="7575887283389198269">Smartphones</translation>
-<translation id="7577900504646297215">Gerenciar interesses</translation>
 <translation id="7578104083680115302">Pague rapidamente em sites e aplicativos em vários dispositivos usando os cards que você salvou com o Google.</translation>
 <translation id="7579442726219254162">Variável "<ph name="VARIABLE" />" desconhecida na configuração gerenciada de "<ph name="APPLICATION_ID" />".</translation>
 <translation id="7581199239021537589">Mudança Y no lado 2 da imagem</translation>

@@ -2560,6 +2560,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2927017729816812676">Cachelagring</translation>
 <translation id="2928795416630981206">Har tilladelse til at spore din kameraposition</translation>
 <translation id="2931157624143513983">Tilpas til området, der kan udskrives</translation>
+<translation id="2931342457001070961">Der er ikke tilsluttet nogen mikrofon</translation>
 <translation id="2932085390869194046">Foreslå adgangskode...</translation>
 <translation id="2932483646085333864">Log ud og ind igen for at starte synkroniseringen</translation>
 <translation id="2932883381142163287">Rapportér misbrug</translation>
@@ -4691,6 +4692,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4647836961514597010">Farvevælger</translation>
 <translation id="4648491805942548247">Utilstrækkelige tilladelser</translation>
 <translation id="4650037136970677721">Mindet er gemt</translation>
+<translation id="4650364565596261010">Systemstandard</translation>
 <translation id="4650591383426000695">Afbryd forbindelsen mellem din telefon og <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Onlinekomponenten med ressourcer til demotilstand kunne ikke indlæses.</translation>
 <translation id="4651921906638302153">Du kan ikke logge ind med denne konto</translation>
@@ -8838,7 +8840,6 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7968982339740310781">Se info</translation>
 <translation id="7969046989155602842">Kommando</translation>
 <translation id="7970673414865679092">Info om Ethernet</translation>
-<translation id="7970882136539140748">Kortet kan ikke gemmes lige nu</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 med RSA-kryptering</translation>
 <translation id="7973776233567882054">Hvilket af følgende udsagn beskriver bedst dit netværk?</translation>
 <translation id="797394244396603170">Vælg den enhed, du vil dele filer med</translation>

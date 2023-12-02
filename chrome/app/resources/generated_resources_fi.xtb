@@ -2558,6 +2558,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2927017729816812676">Välimuistin tallennustila</translation>
 <translation id="2928795416630981206">Kameran asennon seuraaminen sallittu</translation>
 <translation id="2931157624143513983">Sovita tulostettavalle alueelle</translation>
+<translation id="2931342457001070961">Mikrofonia ei ole yhdistetty</translation>
 <translation id="2932085390869194046">Ehdota salasanaa…</translation>
 <translation id="2932483646085333864">Aloita synkronointi kirjautumalla ulos ja uudelleen sisään.</translation>
 <translation id="2932883381142163287">Ilmoita väärinkäytöstä</translation>
@@ -4686,6 +4687,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4647836961514597010">Värinvalitsin</translation>
 <translation id="4648491805942548247">Luvat eivät riitä</translation>
 <translation id="4650037136970677721">Muisto tallennettu</translation>
+<translation id="4650364565596261010">Järjestelmän oletusarvo</translation>
 <translation id="4650591383426000695">Irrota <ph name="DEVICE_TYPE" /> puhelimesta</translation>
 <translation id="4651484272688821107">Verkkoelementtiä ei voitu ladata esittelytilan resursseilla.</translation>
 <translation id="4651921906638302153">Tällä tilillä ei voi kirjautua</translation>
@@ -8831,7 +8833,6 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7968982339740310781">Näytä tiedot</translation>
 <translation id="7969046989155602842">Komento</translation>
 <translation id="7970673414865679092">Ethernet-tiedot</translation>
-<translation id="7970882136539140748">Ei voi tallentaa korttia juuri nyt</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 ja RSA-salaus</translation>
 <translation id="7973776233567882054">Mikä seuraavista kuvaa parhaiten verkkoasi?</translation>
 <translation id="797394244396603170">Valitse laite, jolle haluat jakaa tiedostoja</translation>

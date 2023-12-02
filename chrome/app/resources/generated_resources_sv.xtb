@@ -2559,6 +2559,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2927017729816812676">Cachelagring</translation>
 <translation id="2928795416630981206">Får registrera kamerans position</translation>
 <translation id="2931157624143513983">Anpassa till det utskrivbara området</translation>
+<translation id="2931342457001070961">Ingen mikrofon är ansluten</translation>
 <translation id="2932085390869194046">Föreslå lösenord …</translation>
 <translation id="2932483646085333864">Synkroniseringen påbörjas när du har loggat ut och loggat in igen</translation>
 <translation id="2932883381142163287">Anmäl otillåten användning</translation>
@@ -4690,6 +4691,7 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="4647836961514597010">Färgval</translation>
 <translation id="4648491805942548247">Otillräckliga behörigheter</translation>
 <translation id="4650037136970677721">Minnet har sparats</translation>
+<translation id="4650364565596261010">Systemets standardinställning</translation>
 <translation id="4650591383426000695">Koppla från mobilen från <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Det gick inte att läsa in onlinekomponenten med resurser för demoläge.</translation>
 <translation id="4651921906638302153">Det går inte att logga in med det här kontot</translation>
@@ -8836,7 +8838,6 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7968982339740310781">Visa information</translation>
 <translation id="7969046989155602842">Kommando</translation>
 <translation id="7970673414865679092">Information om Ethernet</translation>
-<translation id="7970882136539140748">Det går inte att spara kortet just nu</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 med RSA-kryptering</translation>
 <translation id="7973776233567882054">Vilket av följande beskriver ditt nätverk bäst?</translation>
 <translation id="797394244396603170">Välj den enhet som du vill dela filer med</translation>

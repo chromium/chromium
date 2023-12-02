@@ -2560,6 +2560,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="2927017729816812676">Storage ng Cache</translation>
 <translation id="2928795416630981206">Pinapayagang i-track ang posisyon ng iyong camera</translation>
 <translation id="2931157624143513983">Pagkasyahin sa napi-print na bahagi</translation>
+<translation id="2931342457001070961">Walang nakakonektang mikropono</translation>
 <translation id="2932085390869194046">Magmungkahi ng Password...</translation>
 <translation id="2932483646085333864">Mag-sign out pagkatapos ay muling mag-sign in upang simulan ang pag-sync</translation>
 <translation id="2932883381142163287">I-ulat ang pang-aabuso</translation>
@@ -4691,6 +4692,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4647836961514597010">Tagapili ng kulay</translation>
 <translation id="4648491805942548247">Hindi sapat na mga pagpapahintulot</translation>
 <translation id="4650037136970677721">Natipid na memory</translation>
+<translation id="4650364565596261010">Default ng system</translation>
 <translation id="4650591383426000695">Idiskonekta ang iyong telepono sa <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Hindi ma-load ang online na bahagi gamit ang mga resource ng demo mode.</translation>
 <translation id="4651921906638302153">Hindi makapag-sign in gamit ang account na ito</translation>
@@ -8839,7 +8841,6 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7968982339740310781">Tingnan ang mga detalye</translation>
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Mga detalye ng ethernet</translation>
-<translation id="7970882136539140748">Hindi ma-save ang card sa ngayon</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 na May RSA Encryption</translation>
 <translation id="7973776233567882054">Alin sa sumusunod ang pinakamahusay na naglalarawan sa iyong network?</translation>
 <translation id="797394244396603170">Piliin ang device kung saan mo gustong magbahagi ng mga file</translation>

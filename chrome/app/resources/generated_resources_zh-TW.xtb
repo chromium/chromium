@@ -2544,6 +2544,7 @@
 <translation id="2927017729816812676">快取儲存空間</translation>
 <translation id="2928795416630981206">可以追蹤攝影機位置</translation>
 <translation id="2931157624143513983">依可列印範圍自動調整</translation>
+<translation id="2931342457001070961">未連上任何麥克風</translation>
 <translation id="2932085390869194046">建議密碼...</translation>
 <translation id="2932483646085333864">如要開始同步處理，請先登出，再重新登入</translation>
 <translation id="2932883381142163287">檢舉濫用情形</translation>
@@ -4673,6 +4674,7 @@
 <translation id="4647836961514597010">顏色選擇器</translation>
 <translation id="4648491805942548247">權限不足</translation>
 <translation id="4650037136970677721">已釋出記憶體</translation>
+<translation id="4650364565596261010">系統預設</translation>
 <translation id="4650591383426000695">中斷手機與 <ph name="DEVICE_TYPE" /> 的連線</translation>
 <translation id="4651484272688821107">無法使用示範模式的資源載入線上元件。</translation>
 <translation id="4651921906638302153">無法登入這個帳戶</translation>
@@ -8815,7 +8817,6 @@
 <translation id="7968982339740310781">查看詳細資料</translation>
 <translation id="7969046989155602842">Command 鍵</translation>
 <translation id="7970673414865679092">乙太網路詳細資料</translation>
-<translation id="7970882136539140748">目前無法儲存信用卡</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 (使用 RSA 加密)</translation>
 <translation id="7973776233567882054">下列何者最符合你的網路使用情形？</translation>
 <translation id="797394244396603170">選取你要分享檔案的裝置</translation>

@@ -1772,6 +1772,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2344032937402519675">No fue posible establecer una conexión con el servidor. Verifica tu conexión de red y vuelve a intentarlo. Si los problemas persisten, reinicia tu Chromebook.</translation>
 <translation id="234559068082989648">Las versiones anteriores de las Apps de Chrome dejarán de funcionar después de diciembre de 2022. Comunícate con el administrador para actualizar a una versión nueva o quitar esta app.</translation>
 <translation id="2345723121311404059">1 página a <ph name="PRINTER_NAME" /></translation>
+<translation id="2347930112185157300">El operador de red móvil está bloqueado</translation>
 <translation id="2348176352564285430">App: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - Se solicitó un permiso; para responder, presiona Ctrl + flecha hacia adelante</translation>
 <translation id="234889437187286781">Se produjo un error al cargar los datos</translation>
@@ -2540,6 +2541,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2927017729816812676">Almacenamiento en caché</translation>
 <translation id="2928795416630981206">Puede realizar un seguimiento de la posición de la cámara</translation>
 <translation id="2931157624143513983">Ajustar al área de impresión</translation>
+<translation id="2931342457001070961">No hay ningún micrófono conectado</translation>
 <translation id="2932085390869194046">Sugerir contraseña…</translation>
 <translation id="2932483646085333864">Salir y volver a acceder para iniciar la sincronización</translation>
 <translation id="2932883381142163287">Informar sobre abusos</translation>
@@ -4670,6 +4672,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4647836961514597010">Selector de color</translation>
 <translation id="4648491805942548247">Permisos insuficientes</translation>
 <translation id="4650037136970677721">Memoria ahorrada</translation>
+<translation id="4650364565596261010">Predeterminado del sistema</translation>
 <translation id="4650591383426000695">Desconecta el teléfono de tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">No se pudo cargar el componente en línea con los recursos del modo de demostración.</translation>
 <translation id="4651921906638302153">No puedes acceder con esta cuenta</translation>
@@ -4906,6 +4909,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4839303808932127586">Guardar video como...</translation>
 <translation id="4839910546484524995">Verifica tu dispositivo</translation>
 <translation id="4840096453115567876">¿Deseas salir del modo Incógnito de todas formas?</translation>
+<translation id="4841475798258477260">Este dispositivo solo se puede conectar a una red móvil específica. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4841741146571978176">Una máquina virtual obligatoria no existe. Para continuar, configura <ph name="VM_TYPE" /></translation>
 <translation id="4842976633412754305">Esta página está tratando de cargar scripts de fuentes no autenticadas.</translation>
 <translation id="4844333629810439236">Otros teclados</translation>
@@ -6458,6 +6462,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6104068876731806426">Cuentas de Google</translation>
 <translation id="6104311680260824317">No se puede unir el dispositivo con el dominio. El servidor no es compatible con los tipos de encriptación de Kerberos especificados. Para conocer la configuración de la encriptación, consulta "Más opciones".</translation>
 <translation id="6104796831253957966">La cola de la impresora está completa</translation>
+<translation id="610487644502954950">Se dejó de fijar el panel lateral</translation>
 <translation id="6104929924898022309">Usar la tecla de búsqueda para cambiar el comportamiento de las teclas de función</translation>
 <translation id="6106167152849320869">Si además elegiste enviar datos de uso y diagnóstico en el paso anterior, se recopilarán estos datos para las apps instaladas.</translation>
 <translation id="6111718295497931251">Quitar el acceso a Google Drive</translation>
@@ -8814,7 +8819,6 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7968982339740310781">Ver los detalles</translation>
 <translation id="7969046989155602842">Comando</translation>
 <translation id="7970673414865679092">Detalles de Ethernet</translation>
-<translation id="7970882136539140748">No se puede guardar la tarjeta en este momento</translation>
 <translation id="7972714317346275248">PKCS N. º 1, SHA-384 con encriptación RSA</translation>
 <translation id="7973776233567882054">¿Cuál de las siguientes respuestas describe mejor la red?</translation>
 <translation id="797394244396603170">Selecciona el dispositivo con el que quieres compartir archivos.</translation>
@@ -9149,6 +9153,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8241040075392580210">Nublado</translation>
 <translation id="8241806945692107836">Determinando configuración del dispositivo…</translation>
 <translation id="8241868517363889229">Leer y cambiar los favoritos</translation>
+<translation id="8242273718576931540">Tu dispositivo no se puede conectar a esta red. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8242370300221559051">Habilitar Play Store</translation>
 <translation id="8242426110754782860">Continuar</translation>
 <translation id="8243948765190375130">Es posible que se reduzca la calidad del contenido multimedia.</translation>
@@ -9635,6 +9640,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8636284842992792762">Inicializando extensiones…</translation>
 <translation id="8636323803535540285">Para acceder aquí más rápido, agrega un acceso directo a <ph name="BRAND" /></translation>
 <translation id="8636500887554457830">No permitir que los sitios envíen ventanas emergentes ni utilicen redireccionamientos</translation>
+<translation id="8636514272606969031">Se fijó el panel lateral</translation>
 <translation id="8637688295594795546">Actualización del sistema disponible. Preparando para descargar...</translation>
 <translation id="8638719155236856752">Estado de la red de ChromeOS</translation>
 <translation id="8639635302972078117">Envía datos de uso y diagnóstico. De forma automática, este dispositivo está enviando a Google datos de diagnóstico y sobre el uso del dispositivo y las apps. Esta información no se usará para identificar a tu hijo y ayudará a lograr la estabilidad de las apps y el sistema, entre otras mejoras. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android. Si habilitaste la Actividad de web y de aplicaciones adicional en la Cuenta de Google de tu hijo, es posible que se almacenen estos datos en esa cuenta.</translation>

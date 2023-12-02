@@ -2559,6 +2559,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2927017729816812676">Penyimpanan Cache</translation>
 <translation id="2928795416630981206">Diizinkan melacak posisi kamera Anda</translation>
 <translation id="2931157624143513983">Paskan ke area yang dapat dicetak</translation>
+<translation id="2931342457001070961">Tidak ada mikrofon yang terhubung</translation>
 <translation id="2932085390869194046">Sarankan Sandi...</translation>
 <translation id="2932483646085333864">Keluar dan masuk lagi untuk memulai sinkronisasi</translation>
 <translation id="2932883381142163287">Laporkan penyalahgunaan</translation>
@@ -4690,6 +4691,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4647836961514597010">Pemilih warna</translation>
 <translation id="4648491805942548247">Izin tidak mencukupi</translation>
 <translation id="4650037136970677721">Memori dihemat</translation>
+<translation id="4650364565596261010">Default sistem</translation>
 <translation id="4650591383426000695">Memutuskan sambungan ponsel Anda dari <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Tidak dapat memuat komponen online dengan resource mode demo.</translation>
 <translation id="4651921906638302153">Tidak dapat login dengan akun ini</translation>
@@ -8835,7 +8837,6 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7968982339740310781">Lihat detail</translation>
 <translation id="7969046989155602842">Tombol Perintah</translation>
 <translation id="7970673414865679092">Detail ethernet</translation>
-<translation id="7970882136539140748">Saat ini tidak dapat menyimpan kartu</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 Dengan Enkripsi RSA</translation>
 <translation id="7973776233567882054">Manakah dari pernyataan berikut yang paling mendeskripsikan jaringan Anda?</translation>
 <translation id="797394244396603170">Pilih perangkat penerima file yang akan Anda bagikan</translation>

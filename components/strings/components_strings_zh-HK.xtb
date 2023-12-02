@@ -346,7 +346,6 @@
 <translation id="1633941398432788136">活動規劃</translation>
 <translation id="1634828734222219955">總計</translation>
 <translation id="163669211644121865">稅務籌劃</translation>
-<translation id="1638780421120290329">無法儲存付款卡</translation>
 <translation id="1639239467298939599">載入中</translation>
 <translation id="1640180200866533862">使用者政策</translation>
 <translation id="1640244768702815859">請嘗試<ph name="BEGIN_LINK" />瀏覽網站首頁<ph name="END_LINK" />。</translation>
@@ -690,7 +689,6 @@
 <translation id="2324604504973636700">家庭電器</translation>
 <translation id="2328651992442742497">已允許 (預設)</translation>
 <translation id="2328955282645810595">建築和電動工具</translation>
-<translation id="2329473609445770916">其他網站可使用此網站定義的興趣來向您展示廣告</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />，到期日：<ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">由管理員控制的設定</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> 要求與下列藍牙裝置配對</translation>
@@ -1119,7 +1117,6 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以自訂瀏覽器外觀</translation>
 <translation id="3240791268468473923">開咗冇相符安全付款憑證工作表</translation>
 <translation id="324180406144491771">已封鎖「<ph name="HOST_NAME" />」連結</translation>
-<translation id="3248611290851046188">其他網站可使用此網站定義的興趣來向您展示廣告。此網站亦會從 Chrome 取得您的興趣，以便為您顯示更相關的廣告。</translation>
 <translation id="3249151924975132674">學生貸款和大專貸款</translation>
 <translation id="3249845759089040423">型格</translation>
 <translation id="3250640885957938546">廣告和市場推廣</translation>
@@ -1586,7 +1583,6 @@
 <translation id="4177501066905053472">廣告主題</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">取消追蹤價格</translation>
-<translation id="4194250254487269611">目前無法儲存您的信用卡</translation>
 <translation id="4195459680867822611">睇 Chrome 提示按鈕，啟用之後就可以了解解各項 Chrome 功能</translation>
 <translation id="4195643157523330669">在新分頁中開啟</translation>
 <translation id="4196861286325780578">重做移動(&amp;R)</translation>
@@ -1726,7 +1722,6 @@
 <translation id="4424024547088906515">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證未取得 Chrome 的信任。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
 <translation id="4425173294238317796">密鑰確認工作表</translation>
 <translation id="4425750422187370446">運動服裝</translation>
-<translation id="4428065317363009941">廣告個人化</translation>
 <translation id="443121186588148776">序列連接埠</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> 不接受您的登入憑證，或您尚未提供登入憑證。</translation>
 <translation id="4432792777822557199">從現在開始，來源語言為<ph name="SOURCE_LANGUAGE" />的網頁一律會翻譯成<ph name="TARGET_LANGUAGE" /></translation>
@@ -2208,7 +2203,6 @@
 <translation id="540969355065856584">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證目前無效。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
 <translation id="5411462078004183575">低價選項</translation>
 <translation id="5412040515238827314">格式無效：輸入的值需要是模式清單。</translation>
-<translation id="5412236728747081950">此網站會從 Chrome 取得您的喜好，為您顯示更相關的廣告</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">堆疊器 4</translation>
 <translation id="5414446060143308245">轉移檔案前請務必確認</translation>
@@ -2796,7 +2790,6 @@
 <translation id="6613866251791999074">進一步了解你喺 Chrome 入面嘅搜尋引擎</translation>
 <translation id="6615297766614333076">堆疊器 2</translation>
 <translation id="6624427990725312378">聯絡人資料</translation>
-<translation id="6627727261837091711">顯示廣告個人化詳情</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> 搜尋</translation>
 <translation id="6629652037942826935">豪華旅遊</translation>
 <translation id="6630043285902923878">正在尋找 USB 裝置…</translation>
@@ -3308,7 +3301,6 @@
 <translation id="7574998639136359461">冬季運動用品</translation>
 <translation id="7575207903026901870">移除建議按鈕，㩒一下 Enter 鍵就可以移除呢個建議</translation>
 <translation id="7575887283389198269">手機</translation>
-<translation id="7577900504646297215">管理興趣</translation>
 <translation id="7578104083680115302">在不同的裝置上透過網站和應用程式消費時，使用您儲存在 Google 的信用卡即可快速付款。</translation>
 <translation id="7579442726219254162">受管理的「<ph name="APPLICATION_ID" />」設定中含有不明變數「<ph name="VARIABLE" />」。</translation>
 <translation id="7581199239021537589">側邊 2 圖片 Y 軸移動</translation>

@@ -1793,6 +1793,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2344032937402519675">Ni se bilo mogoče povezati s strežnikom. Preverite omrežno povezavo in poskusite znova. Če imate še vedno težave, poskusite znova zagnati Chromebook.</translation>
 <translation id="234559068082989648">Stare različice aplikacij za Chrome se po decembru 2022 ne bodo odprle. Obrnite se na skrbnika, da to aplikacijo posodobi na novo različico ali jo odstrani.</translation>
 <translation id="2345723121311404059">1 stran s tiskalnikom <ph name="PRINTER_NAME" /></translation>
+<translation id="2347930112185157300">Ponudnik mobilnega omrežja je zaklenjen</translation>
 <translation id="2348176352564285430">Aplikacija: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – Zahtevano je dovoljenje; pritisnite Ctrl + tipko za naprej, če se želite odzvati.</translation>
 <translation id="234889437187286781">Napaka pri nalaganju podatkov</translation>
@@ -2561,6 +2562,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="2927017729816812676">Shramba predpomnilnika</translation>
 <translation id="2928795416630981206">Dovoljeno je spremljanje položaja kamere</translation>
 <translation id="2931157624143513983">Ustrezanje velikosti območja, ki omogoča tiskanje</translation>
+<translation id="2931342457001070961">Noben mikrofon ni priključen.</translation>
 <translation id="2932085390869194046">Predlagaj geslo …</translation>
 <translation id="2932483646085333864">Odjavite se in nato znova prijavite, če želite začeti sinhronizacijo</translation>
 <translation id="2932883381142163287">Prijavite zlorabo</translation>
@@ -4692,6 +4694,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4647836961514597010">Izbirnik barve</translation>
 <translation id="4648491805942548247">Nezadostna dovoljenja</translation>
 <translation id="4650037136970677721">Prihranjeno pomnilnika</translation>
+<translation id="4650364565596261010">Sistemsko privzeto</translation>
 <translation id="4650591383426000695">Prekinitev povezave telefona z napravo <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Spletne komponente ni bilo mogoče naložiti s sredstvi predstavitvenega načina.</translation>
 <translation id="4651921906638302153">S tem računom se ni mogoče prijaviti</translation>
@@ -4928,6 +4931,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4839303808932127586">Shr&amp;ani videoposnetek kot ...</translation>
 <translation id="4839910546484524995">Preverjanje naprave</translation>
 <translation id="4840096453115567876">Ali želite vseeno zapustiti anonimni način?</translation>
+<translation id="4841475798258477260">Ta naprava lahko vzpostavi povezavo samo z določenim mobilnim omrežjem. <ph name="BEGIN_LINK_LEARN_MORE" />Več o tem<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4841741146571978176">Zahtevani navidezni računalnik ne obstaja. Če želite nadaljevati, poskusite nastaviti navidezni računalnik <ph name="VM_TYPE" />.</translation>
 <translation id="4842976633412754305">Ta stran poskuša naložiti skripte iz virov, ki nimajo preverjene pristnosti.</translation>
 <translation id="4844333629810439236">Druge tipkovnice</translation>
@@ -6482,6 +6486,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6104068876731806426">Google Računi</translation>
 <translation id="6104311680260824317">Naprave ni mogoče pridružiti domeni. Strežnik ne podpira navedenih vrst šifriranja Kerberos. Oglejte si nastavitve šifriranja v razdelku »Več možnosti«.</translation>
 <translation id="6104796831253957966">Čakalna vrsta tiskalnika je polna</translation>
+<translation id="610487644502954950">Stransko podokno je odpeto</translation>
 <translation id="6104929924898022309">Spreminjanje delovanja funkcijskih tipk s tipko za iskanje</translation>
 <translation id="6106167152849320869">Če ste v prejšnjem koraku izbrali tudi pošiljanje diagnostičnih podatkov in podatkov o uporabi, se ti podatki zbirajo za nameščene aplikacije.</translation>
 <translation id="6111718295497931251">Odstrani dostop do Googla Drive</translation>
@@ -8844,7 +8849,6 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7968982339740310781">Prikaži podrobnosti</translation>
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Podrobnosti etherneta</translation>
-<translation id="7970882136539140748">Kartice trenutno ni mogoče shraniti</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 s šifriranjem RSA</translation>
 <translation id="7973776233567882054">Kaj od tega najbolje opiše vaše omrežje?</translation>
 <translation id="797394244396603170">Izberite napravo, s katero želite deliti datoteke</translation>
@@ -9179,6 +9183,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8241040075392580210">Oblačno</translation>
 <translation id="8241806945692107836">Ugotavljanje konfiguracije naprave ...</translation>
 <translation id="8241868517363889229">Branje in spreminjanje zaznamkov</translation>
+<translation id="8242273718576931540">Naprava ne more vzpostaviti povezave s tem omrežjem. <ph name="BEGIN_LINK_LEARN_MORE" />Več o tem<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8242370300221559051">Omogočanje Trgovine Play</translation>
 <translation id="8242426110754782860">Naprej</translation>
 <translation id="8243948765190375130">Kakovost predstavnosti bo morda zmanjšana.</translation>
@@ -9665,6 +9670,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8636284842992792762">Inicializacija razširitev …</translation>
 <translation id="8636323803535540285">Če želite hitreje priti sem, dodajte bližnjico sem: <ph name="BRAND" />.</translation>
 <translation id="8636500887554457830">Spletnim mestom ni dovoljeno pošiljati pojavnih oken ali uporabljati preusmeritev.</translation>
+<translation id="8636514272606969031">Stransko podokno je pripeto</translation>
 <translation id="8637688295594795546">Na voljo je sistemska posodobitev. Priprava za prenos ...</translation>
 <translation id="8638719155236856752">Stanje omrežja v sistemu ChromeOS</translation>
 <translation id="8639635302972078117">Pošiljanje podatkov o uporabi in diagnostičnih podatkov. Ta naprava trenutno Googlu samodejno pošilja diagnostične podatke ter podatke o uporabi naprave in aplikacij. Teh podatkov ne bomo uporabljali, da bi prepoznali vašega otroka, temveč za izboljšanje stabilnosti sistema in izvajanja aplikacij ter drugega. Nekateri združeni podatki bodo pomagali tudi Googlovim aplikacijam in partnerjem, na primer razvijalcem za Android. Če ste za otroka vklopili dodatno beleženje dejavnosti v spletu in aplikacijah, bodo ti podatki morda shranjeni v njegovem računu Google.</translation>

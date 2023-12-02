@@ -208,6 +208,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e 
 <translation id="2050196510205866090">{count,plural, =1{{count} mënyrë e ruajtur pagese e disponueshme mbi tastierën tënde.}other{{count} mënyra të ruajtura pagese të disponueshme mbi tastierën tënde.}}</translation>
 <translation id="2055515971416882518">Hap "Settings".</translation>
 <translation id="2059166748188874810">Komunë</translation>
+<translation id="2062410130322589403">Një udhëzues për zgjedhjet e tua të privatësisë</translation>
 <translation id="2073572773299281212">Aktiv <ph name="DAYS" /> ditë më parë</translation>
 <translation id="2074131957428911366">Mund të zgjedhësh gjithmonë se çfarë do të sinkronizosh te <ph name="BEGIN_LINK" />cilësimet<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Zhbëj</translation>
@@ -622,6 +623,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="430793432425771671">Sinkronizo gjithçka</translation>
 <translation id="4309403553630140242">Trokit dy herë për më shumë informacion</translation>
 <translation id="430967081421617822">Gjatë të gjithë kohës</translation>
+<translation id="4322394346347055525">Mbyll skedat e tjera</translation>
 <translation id="4331177082088332784">Mund ta menaxhosh këtë te BEGIN_LINK Cilësimet e përmbajtjes END_LINK</translation>
 <translation id="4334428914252001502">1 artikull i palexuar.</translation>
 <translation id="4338650699862464074">Dërgon te Google URL-të e faqeve që ti viziton.</translation>

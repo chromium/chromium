@@ -2559,6 +2559,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2927017729816812676">Kasberging</translation>
 <translation id="2928795416630981206">Mag jou kameraposisie naspoor</translation>
 <translation id="2931157624143513983">Pas op drukbare gebied</translation>
+<translation id="2931342457001070961">Geen mikrofoon is gekoppel nie</translation>
 <translation id="2932085390869194046">Stel wagwoord voor …</translation>
 <translation id="2932483646085333864">Meld af en meld dan weer aan om te begin sinkroniseer</translation>
 <translation id="2932883381142163287">Gee misbruik aan</translation>
@@ -4690,6 +4691,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4647836961514597010">Kleurkieser</translation>
 <translation id="4648491805942548247">Onvoldoende toestemmings</translation>
 <translation id="4650037136970677721">Geheue gestoor</translation>
+<translation id="4650364565596261010">Stelsel se verstek</translation>
 <translation id="4650591383426000695">Ontkoppel jou foon van jou <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Kon nie aanlyn komponent met demonstrasiemodus-hulpbronne laai nie.</translation>
 <translation id="4651921906638302153">Kan nie met hierdie rekening aanmeld nie</translation>
@@ -8836,7 +8838,6 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7968982339740310781">Bekyk details</translation>
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Ethernet-besonderhede</translation>
-<translation id="7970882136539140748">Kan nie kaart nou stoor nie</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 met RSA-enkripsie</translation>
 <translation id="7973776233567882054">Watter van die volgende beskryf jou netwerk die beste?</translation>
 <translation id="797394244396603170">Kies die toestel waarmee jy lêers wil deel</translation>

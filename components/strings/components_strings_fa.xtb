@@ -346,7 +346,6 @@
 <translation id="1633941398432788136">برنامه‌ریزی رویداد</translation>
 <translation id="1634828734222219955">مجموع</translation>
 <translation id="163669211644121865">آماده‌سازی و برنامه‌ریزی مالیاتی</translation>
-<translation id="1638780421120290329">نمی‌توان کارت را ذخیره کرد</translation>
 <translation id="1639239467298939599">در حال بارگیری</translation>
 <translation id="1640180200866533862">خط‌مشی‌های کاربر</translation>
 <translation id="1640244768702815859">از<ph name="BEGIN_LINK" />صفحه اصلی سایت دیدن کنید<ph name="END_LINK" />.</translation>
@@ -690,7 +689,6 @@
 <translation id="2324604504973636700">لوازم خانگی</translation>
 <translation id="2328651992442742497">مجاز است (پیش‌فرض)</translation>
 <translation id="2328955282645810595">ابزارهای ساختمانی و برقی</translation>
-<translation id="2329473609445770916">این سایت علایقی را که دیگر سایت‌ها برای نمایش آگهی استفاده می‌کنند مشخص می‌کند</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />، در <ph name="EXPIRATION_DATE_ABBR" /> منقضی می‌شود</translation>
 <translation id="2337852623177822836">تنظیم توسط سرپرست کنترل می‌شود</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> می‌خواهد مرتبط شود</translation>
@@ -1119,7 +1117,6 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای سفارشی کردن ظاهر مرورگر، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="3240791268468473923">برگ «اطلاعات کاربری مطابقت ندارد» در روند وارد کردن اطلاعات کاربری پرداخت امن باز شد</translation>
 <translation id="324180406144491771">پیوندهای «<ph name="HOST_NAME" />» مسدود شده است</translation>
-<translation id="3248611290851046188">‏این سایت علایقی را که دیگر سایت‌ها برای نمایش آگهی استفاده می‌کنند مشخص می‌کند. این سایت علایقتان را نیز از Chrome می‌گیرد تا آگهی‌های مرتبط‌تری به شما نشان دهد.</translation>
 <translation id="3249151924975132674">وام دانشجویی و مخارج دانشگاه</translation>
 <translation id="3249845759089040423">شیک</translation>
 <translation id="3250640885957938546">تبلیغات و بازاریابی</translation>
@@ -1587,7 +1584,6 @@
 <translation id="4177501066905053472">موضوع‌های آگهی</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">لغو پیگیری قیمت</translation>
-<translation id="4194250254487269611">متأسفیم، درحال‌حاضر نمی‌توان کارت شما را ذخیره کرد</translation>
 <translation id="4195459680867822611">‏دکمه نکته‌های Chrome؛ برای اطلاع از ویژگی‌های جدید Chrome، آن را فعال کنید</translation>
 <translation id="4195643157523330669">باز کردن در برگهٔ جدید</translation>
 <translation id="4196861286325780578">&amp;انجام مجدد انتقال</translation>
@@ -1727,7 +1723,6 @@
 <translation id="4424024547088906515">‏این سرور نتوانست اثبات کند که این <ph name="DOMAIN" /> است؛ گواهی امنیتی آن مورداعتماد Chrome نیست. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجی اتصال شما را قطع کرده است.</translation>
 <translation id="4425173294238317796">برگ تأیید گذرکلید</translation>
 <translation id="4425750422187370446">پوشاک ورزشی</translation>
-<translation id="4428065317363009941">شخصی‌سازی آگهی</translation>
 <translation id="443121186588148776">درگاه سریالی</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> گواهی ورود به سیستمتان را نپذیرفت یا ممکن است گواهی‌ای ارائه نشده باشد.</translation>
 <translation id="4432792777822557199">از این به بعد، صفحه‌های <ph name="SOURCE_LANGUAGE" />، به <ph name="TARGET_LANGUAGE" /> ترجمه خواهند شد</translation>
@@ -2209,7 +2204,6 @@
 <translation id="540969355065856584">این سرور نتوانست ثابت کند که <ph name="DOMAIN" /> است؛ در حال حاضر، گواهی امنیتی آن معتبر نیست. ممکن است این مشکل به دلیل پیکربندی نادرست یا قطع اتصال شما توسط حمله‌کننده ایجاد شده باشد.</translation>
 <translation id="5411462078004183575">گزینه ارزان‌قیمت</translation>
 <translation id="5412040515238827314">قالب نامعتبر است: انتظار می‌رود فهرستی از الگوها وجود داشته باشد.</translation>
-<translation id="5412236728747081950">‏این سایت علایقتان را از Chrome می‌گیرد تا آگهی‌های مرتبط‌تری به شما نشان دهد</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">پشته‌ساز ۴</translation>
 <translation id="5414446060143308245">قبل‌از انتقال باید بررسی شود</translation>
@@ -2797,7 +2791,6 @@
 <translation id="6613866251791999074">‏درباره موتور جستجویتان در Chrome بیشتر بدانید</translation>
 <translation id="6615297766614333076">پشته‌ساز ۲</translation>
 <translation id="6624427990725312378">اطلاعات تماس</translation>
-<translation id="6627727261837091711">نمایش جزئیات شخصی‌سازی آگهی</translation>
 <translation id="6628463337424475685">جستجوی <ph name="ENGINE" /></translation>
 <translation id="6629652037942826935">سفر تجملی</translation>
 <translation id="6630043285902923878">‏درحال پیدا کردن دستگاه‌های USB…</translation>
@@ -3309,7 +3302,6 @@
 <translation id="7574998639136359461">تجهیزات ورزش‌های زمستانی</translation>
 <translation id="7575207903026901870">‏برداشتن دکمه «پیشنهاد»، برای برداشتن این پیشنهاد، دکمه Enter را فشار دهید</translation>
 <translation id="7575887283389198269">تلفن همراه</translation>
-<translation id="7577900504646297215">مدیریت علایق</translation>
 <translation id="7578104083680115302">‏با استفاده از کارت‌هایی که با Google ذخیره کرده‌اید به‌سرعت در همه دستگاه‌هایتان پرداخت‌های سایت‌ها و برنامه‌ها را انجام دهید.</translation>
 <translation id="7579442726219254162">متغیر نامعلوم «<ph name="VARIABLE" />» در پیکربندی تحت‌مدیریت «<ph name="APPLICATION_ID" />».</translation>
 <translation id="7581199239021537589">‏روی ۲، تغییر جهت تصویر حول محور Y</translation>

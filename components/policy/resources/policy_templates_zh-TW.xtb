@@ -4642,14 +4642,6 @@
 <translation id="5030415914668947893">允許輸入網址指標收集功能</translation>
 <translation id="5033070732967197381">允許來自 TLS 憑證無效網站的 WebAuthn API 要求。</translation>
 <translation id="5034504101537897433">啟用裝置當機報告資訊回報功能</translation>
-<translation id="5034734406205213733">如果將這項政策設為啟用，<ph name="PRODUCT_NAME" /> 會在驗證伺服器憑證時使用內建憑證驗證器和 Chrome Root Store 做為公開信任來源。
-如果將這項政策設為停用，<ph name="PRODUCT_NAME" /> 將使用系統憑證驗證器和系統根憑證。
-
-如果不設定這項政策，系統可能會使用 Chrome Root Store 或系統提供的根憑證。
-
-我們計劃在 <ph name="ANDROID_NAME" /> 121 版的 <ph name="PRODUCT_NAME" /> 中移除這項政策，屆時將停止支援平台提供的根憑證。
-
-這項政策已在 <ph name="MS_WIN_NAME" />、<ph name="MAC_OS_NAME" /> 113 版和 <ph name="PRODUCT_OS_NAME" /> 120 版適用的 <ph name="PRODUCT_NAME" />，以及 <ph name="LINUX_OS_NAME" /> 120 版適用的 <ph name="PRODUCT_NAME" /> 中移除，並停止支援平台提供的憑證驗證器和根憑證。</translation>
 <translation id="5036013147560568855">憑證佈建通訊協定的版本，預設為 1。1 是「靜態」通訊協定，2 是「動態」通訊協定。</translation>
 <translation id="5039110755072335605">CORS 非萬用字元要求標頭支援</translation>
 <translation id="504116558738617678">只有在裝置未受管理或只有一位使用者時，才顯示磁碟空間不足的警告</translation>

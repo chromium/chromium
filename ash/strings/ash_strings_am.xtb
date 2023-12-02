@@ -659,6 +659,7 @@
 <translation id="36813544980941320">የWi-Fi አውታረ መረቦች በስልክዎ እና በ<ph name="DEVICE_NAME" /> መካከል ይጋራሉ</translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> በመቀጠል <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">ድር ጣቢያዎች</translation>
+<translation id="3697991387880191195">የቅጽበታዊ ገጽ እይታ አቋራጭን ይጫኑ</translation>
 <translation id="3702809606464356667">አሁን ካለው ዴስክ ላይ መስኮቶችን በማሳየት ላይ፣ መስኮቶችን ከሁሉም ዴስኮች ለማሳየት የላይ ቀስት ቁልፍን ይጫኑ</translation>
 <translation id="3702846122927433391">ናይጄሪያ ውስጥ የሕዝብ ብዛት</translation>
 <translation id="3705722231355495246">-</translation>
@@ -834,6 +835,7 @@
 <translation id="4389184120735010762">የተተከለ የማጉያ የቁልፍ ሰሌዳ አቋራጩን ተጭነዋል። ሊያበሩት ይፈልጋሉ?</translation>
 <translation id="439598569299422042">ባለበት ቆሟል፣ <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">ማያገጽ መቅርጽ ማስቀመጥ አይቻልም</translation>
+<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> ተገናኝቷል እና ጥቅም ላይ ለመዋል ዝግጁ ነው። መዳፊትዎን በቅንብሮች ውስጥ ማበጀት ይችላሉ።</translation>
 <translation id="4405151984121254935">የተገናኘው የዳርቻ ዓይነት አይደገፍም</translation>
 <translation id="4406883609789734330">የቀጥታ ስርጭት መግለጫ ጽሁፍ</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ጠፍቷል</translation>
@@ -1293,6 +1295,7 @@
 <translation id="6199775032047436064">የአሁኑን ገፅ ዳግም ይጭናል</translation>
 <translation id="6200515304866777730">በመተግበሪያ አይደገፍም</translation>
 <translation id="6210042900243040400">ከዚህ ቀደም በ<ph name="EMAIL" /> ላይ ከተቀመጠ <ph name="NAME" /> ጋር ይገናኙ</translation>
+<translation id="6212097153736801627">የእርስዎን <ph name="PERIPHERAL_NAME" /> ያብጁ</translation>
 <translation id="6213808132343683860">ከፊል ቅጽበታዊ ገፅ ዕይታ ወይም የማያ ገፅ ቅጂ አንሳ</translation>
 <translation id="6220928844947387476">አሁን እራስዎን እና ማያ ገጽዎን በተመሳሳይ ጊዜ መቅረጽ ይችላሉ</translation>
 <translation id="622484624075952240">ታች</translation>
@@ -1535,6 +1538,7 @@
 <translation id="726276584504105859">የተከፈለ ማያ ገጽን ለመጠቀም ወደዚህ ይጎትቱ</translation>
 <translation id="7262906531272962081">አስታዋሽ ይፍጠሩ</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + የኋሊት መደምሰሻ</translation>
+<translation id="7285232777292757180">ቅጽበታዊ ገጽ እይታዎችን ለማንሳት የማያ ገጽ ቀረጻ መሳሪያውን በፈጣን ቅንብሮች ውስጥ ይጠቀሙ</translation>
 <translation id="7302889331339392448">የቀጥታ መግለጫ ጽሁፍ ጠፍቷል።</translation>
 <translation id="7303365578352795231">በሌላ መሣሪያ ላይ ምላሽ በመስጠት ላይ።</translation>
 <translation id="7305884605064981971">ኤጅ</translation>
@@ -1919,6 +1923,7 @@
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> እስከመጨረሻው ይሰረዛል</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% ባትሪ ይቀራል (<ph name="TIME_LEFT" /> አካባቢ)።
 መሣሪያዎን ከኃይል ጋር ያገናኙ።</translation>
+<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> ተገናኝቷል እና ጥቅም ላይ ለመዋል ዝግጁ ነው። የግራፊክስ ጡባዊዎን በቅንብሮች ውስጥ ማበጀት ይችላሉ።</translation>
 <translation id="88986195241502842">ገፅ ወደ ታች</translation>
 <translation id="8905919797434099235">(ርዕስ የለም)</translation>
 <translation id="890616557918890486">ምንጭ ይለውጡ</translation>

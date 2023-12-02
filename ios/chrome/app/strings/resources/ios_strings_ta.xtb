@@ -208,6 +208,7 @@
 <translation id="2050196510205866090">{count,plural, =1{சேமிக்கப்பட்ட {count} பேமெண்ட் முறை உங்கள் கீபோர்டுக்கு மேலே காட்டப்படும்.}other{சேமிக்கப்பட்ட {count} பேமெண்ட் முறைகள் உங்கள் கீபோர்டுக்கு மேலே காட்டப்படும்.}}</translation>
 <translation id="2055515971416882518">"அமைப்புகள்" என்பதைத் தேர்ந்தெடுக்கவும்.</translation>
 <translation id="2059166748188874810">நகராட்சி</translation>
+<translation id="2062410130322589403">உங்கள் தனியுரிமை விருப்பங்களுக்கான வழிகாட்டி</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> நாட்களுக்கு முன் பயன்படுத்தியுள்ளார்</translation>
 <translation id="2074131957428911366">எவற்றை ஒத்திசைக்க வேண்டும் என்பதை <ph name="BEGIN_LINK" />அமைப்புகளில்<ph name="END_LINK" /> எப்போது வேண்டுமானாலும் தேர்வுசெய்யலாம்.</translation>
 <translation id="2079545284768500474">செயல்தவிர்</translation>
@@ -622,6 +623,7 @@
 <translation id="430793432425771671">எல்லாவற்றையும் ஒத்திசை</translation>
 <translation id="4309403553630140242">மேலும் தகவல்களுக்கு இருமுறை தட்டவும்</translation>
 <translation id="430967081421617822">முழுமையும்</translation>
+<translation id="4322394346347055525">பிற தாவல்களை மூடுக</translation>
 <translation id="4331177082088332784">BEGIN_LINK உள்ளடக்க அமைப்புகள் END_LINK என்பதில் இதை நீங்கள் நிர்வகிக்கலாம்</translation>
 <translation id="4334428914252001502">படிக்காத கட்டுரை 1 உள்ளது.</translation>
 <translation id="4338650699862464074">நீங்கள் பார்வையிடும் பக்கங்களின் URLகளை Googleளுக்கு அனுப்பும்.</translation>

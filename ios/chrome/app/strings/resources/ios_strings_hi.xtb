@@ -208,6 +208,7 @@
 <translation id="2050196510205866090">{count,plural, =1{सेव किया गया पैसे चुकाने का {count} तरीका, आपके कीबोर्ड के ऊपर उपलब्ध है.}one{सेव किया गया पैसे चुकाने का {count} तरीका, आपके कीबोर्ड के ऊपर उपलब्ध है.}other{सेव किए गए पैसे चुकाने के {count} तरीके, आपके कीबोर्ड के ऊपर उपलब्ध हैं.}}</translation>
 <translation id="2055515971416882518">"सेटिंग" खोलें.</translation>
 <translation id="2059166748188874810">नगरपालिका</translation>
+<translation id="2062410130322589403">आपकी निजता के विकल्पों की गाइड</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> दिन पहले चालू था</translation>
 <translation id="2074131957428911366">आपके पास <ph name="BEGIN_LINK" />सेटिंग<ph name="END_LINK" /> में जाकर अपने हिसाब से चीज़ें सिंक करने का विकल्प है.</translation>
 <translation id="2079545284768500474">पहले जैसा करें</translation>
@@ -622,6 +623,7 @@
 <translation id="430793432425771671">सब कुछ सिंक करें</translation>
 <translation id="4309403553630140242">ज़्यादा जानकारी के लिए दो बार टैप करें</translation>
 <translation id="430967081421617822">पूरा</translation>
+<translation id="4322394346347055525">अन्य टैब बंद करें</translation>
 <translation id="4331177082088332784">इसे BEGIN_LINK कॉन्टेंट सेटिंग END_LINK में मैनेज किया जा सकता है</translation>
 <translation id="4334428914252001502">1 नहीं पढ़ा गया लेख.</translation>
 <translation id="4338650699862464074">जिन पेजों को ब्राउज़ किया जाता है उनके यूआरएल Google को भेजती है</translation>

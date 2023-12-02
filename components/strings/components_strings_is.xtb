@@ -346,7 +346,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1633941398432788136">Viðburðastjórnun</translation>
 <translation id="1634828734222219955">Samtals</translation>
 <translation id="163669211644121865">Framtalsgerð og skattaáætlanir</translation>
-<translation id="1638780421120290329">Ekki er hægt að vista kort</translation>
 <translation id="1639239467298939599">Hleður</translation>
 <translation id="1640180200866533862">Notendareglur</translation>
 <translation id="1640244768702815859">Prófaðu að <ph name="BEGIN_LINK" />fara á heimasíðu vefsvæðisins<ph name="END_LINK" />.</translation>
@@ -690,7 +689,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2324604504973636700">Heimilistæki</translation>
 <translation id="2328651992442742497">Heimilað (sjálfgefið)</translation>
 <translation id="2328955282645810595">Byggingarverkfæri og vélknúin verkfæri</translation>
-<translation id="2329473609445770916">Þetta vefsvæði skilgreinir áhugasvið sem önnur vefsvæði geta notað til að birta þér auglýsingar</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, rennur út <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Kerfisstjóri stýrir þessari stillingu</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> vill parast</translation>
@@ -1119,7 +1117,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á dálkalykilinn (Tab) og svo Enter til að sérstilla útlit vafrans</translation>
 <translation id="3240791268468473923">Skilríki öruggrar greiðslu — tilkynningasíða um engin samsvarandi skilríki var opnuð</translation>
 <translation id="324180406144491771">Lokað er á „<ph name="HOST_NAME" />“ tengla</translation>
-<translation id="3248611290851046188">Þetta vefsvæði skilgreinir áhugasvið sem önnur vefsvæði geta notað til að birta þér auglýsingar. Þetta vefsvæði fær einnig upplýsingar um áhugasvið þín frá Chrome til að birta þér viðeigandi auglýsingar.</translation>
 <translation id="3249151924975132674">Námslán og fjármögnun háskólanáms</translation>
 <translation id="3249845759089040423">Mergjað</translation>
 <translation id="3250640885957938546">Auglýsingar og markaðsmál</translation>
@@ -1587,7 +1584,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4177501066905053472">Umfjöllunarefni auglýsinga</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Hætta að vakta verð</translation>
-<translation id="4194250254487269611">Ekki er hægt að vista kortið þitt núna</translation>
 <translation id="4195459680867822611">Hnappurinn „Sjá ábendingar um Chrome“, virkjaðu til að fá frekari upplýsingar um eiginleika Chrome</translation>
 <translation id="4195643157523330669">Opna í nýjum flipa</translation>
 <translation id="4196861286325780578">&amp;Endurtaka flutning</translation>
@@ -1727,7 +1723,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4424024547088906515">Þessi þjónn gat ekki sannað að hann væri <ph name="DOMAIN" />; Chrome treystir ekki öryggisvottorðinu hans. Þetta kann að orsakast af vanstillingu eða tölvuþrjóti sem komist hefur inn í tenginguna.</translation>
 <translation id="4425173294238317796">Staðfestingarblað aðgangslykils</translation>
 <translation id="4425750422187370446">Íþróttafatnaður</translation>
-<translation id="4428065317363009941">Sérsniðnar auglýsingar</translation>
 <translation id="443121186588148776">Raðtengi</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> samþykkti ekki innskráningarvottorðið þitt eða það var ekki gefið upp.</translation>
 <translation id="4432792777822557199">Síður á málinu „<ph name="SOURCE_LANGUAGE" />“ verða héðan í frá þýddar yfir á eftirfarandi tungumál: <ph name="TARGET_LANGUAGE" /></translation>
@@ -2209,7 +2204,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="540969355065856584">Þessi þjónn gat ekki sannað að hann væri <ph name="DOMAIN" />; öryggisvottorð hans er ekki gilt eins og er. Þetta kann að orsakast af vanstillingu eða þá að tölvuþrjótur er að reyna að komast inn í tenginguna þína.</translation>
 <translation id="5411462078004183575">Lágt verð</translation>
 <translation id="5412040515238827314">Ógilt snið: Búist var við lista yfir mynstur.</translation>
-<translation id="5412236728747081950">Þetta vefsvæði fær upplýsingar um áhugasvið þín frá Chrome til að birta þér viðeigandi auglýsingar</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Staflari 4</translation>
 <translation id="5414446060143308245">Yfirferðar er krafist fyrir flutning</translation>
@@ -2797,7 +2791,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6613866251791999074">Frekari upplýsingar um leitarvélina þína í Chrome</translation>
 <translation id="6615297766614333076">Staflari 2</translation>
 <translation id="6624427990725312378">Upplýsingar um tengilið</translation>
-<translation id="6627727261837091711">Sýna upplýsingar um sérsniðnar auglýsingar</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> leit</translation>
 <translation id="6629652037942826935">Lúxusferðalög</translation>
 <translation id="6630043285902923878">Leitar að USB-tækjum...</translation>
@@ -3309,7 +3302,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7574998639136359461">Búnaður fyrir vetraríþróttir</translation>
 <translation id="7575207903026901870">Hnappur til að fjarlægja tillögu, ýttu á færslulykilinn til að fjarlægja þessa tillögu</translation>
 <translation id="7575887283389198269">Farsímar</translation>
-<translation id="7577900504646297215">Stjórna áhugamálum</translation>
 <translation id="7578104083680115302">Borgaðu með hraði á vefsvæðum og forritum úr öllum tækjum með því að nota greiðslukort sem þú hefur vistað hjá Google.</translation>
 <translation id="7579442726219254162">Óþekkt breyta „<ph name="VARIABLE" />“ í stýrðri stillingu „<ph name="APPLICATION_ID" />“.</translation>
 <translation id="7581199239021537589">Y-færsla myndar á hlið 2</translation>

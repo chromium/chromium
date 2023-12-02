@@ -346,7 +346,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1633941398432788136">Planeamento de eventos</translation>
 <translation id="1634828734222219955">Total</translation>
 <translation id="163669211644121865">Preparação e planeamento de impostos</translation>
-<translation id="1638780421120290329">Não é possível guardar o cartão</translation>
 <translation id="1639239467298939599">A carregar…</translation>
 <translation id="1640180200866533862">Políticas do utilizador</translation>
 <translation id="1640244768702815859">Experimente <ph name="BEGIN_LINK" />aceder à página inicial do site<ph name="END_LINK" />.</translation>
@@ -690,7 +689,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2324604504973636700">Eletrodomésticos</translation>
 <translation id="2328651992442742497">Permitido (predefinição)</translation>
 <translation id="2328955282645810595">Ferramentas de construção e elétricas</translation>
-<translation id="2329473609445770916">Este site define os interesses que outros sites podem usar para lhe mostrar anúncios</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, expira a <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Definição controlada pelo gestor</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> quer sincronizar</translation>
@@ -1119,7 +1117,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para personalizar o aspeto do seu navegador</translation>
 <translation id="3240791268468473923">A página de credenciais de pagamento seguro sem correspondência com as credenciais está aberta</translation>
 <translation id="324180406144491771">Os links do anfitrião "<ph name="HOST_NAME" />" estão bloqueados</translation>
-<translation id="3248611290851046188">Este site define os interesses que outros sites podem usar para lhe mostrar anúncios. Este site também obtém os seus interesses do Chrome para lhe mostrar anúncios mais relevantes.</translation>
 <translation id="3249151924975132674">Empréstimos para estudantes e financiamento do ensino superior</translation>
 <translation id="3249845759089040423">Descontraído</translation>
 <translation id="3250640885957938546">Publicidade e marketing</translation>
@@ -1587,7 +1584,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4177501066905053472">Tópicos de anúncios</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Desativar acompanhamento de preços</translation>
-<translation id="4194250254487269611">Não é possível guardar o seu cartão neste momento.</translation>
 <translation id="4195459680867822611">Botão Ver sugestões do Chrome; ative para saber mais acerca das funcionalidades do Chrome</translation>
 <translation id="4195643157523330669">Abrir num novo separador</translation>
 <translation id="4196861286325780578">&amp;Refazer movimentação</translation>
@@ -1727,7 +1723,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4424024547088906515">Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" />; o Chrome não confia no respetivo certificado de segurança. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.</translation>
 <translation id="4425173294238317796">Página de confirmação da chave de acesso</translation>
 <translation id="4425750422187370446">Vestuário de desporto</translation>
-<translation id="4428065317363009941">Personalização de anúncios</translation>
 <translation id="443121186588148776">Porta de série</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> não aceitou o seu certificado de início de sessão ou este pode não ter sido fornecido.</translation>
 <translation id="4432792777822557199">As páginas em <ph name="SOURCE_LANGUAGE" /> serão traduzidas para <ph name="TARGET_LANGUAGE" /> a partir de agora</translation>
@@ -2209,7 +2204,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="540969355065856584">Este servidor não conseguiu provar que é <ph name="DOMAIN" />; de momento, o respetivo certificado de segurança não é válido. Isto pode ser provocado por uma configuração incorreta ou por um atacante que esteja a intercetar a sua ligação.</translation>
 <translation id="5411462078004183575">Opção de preço baixo</translation>
 <translation id="5412040515238827314">Formato inválido: esperava-se uma lista de padrões.</translation>
-<translation id="5412236728747081950">Este site obtém os seus interesses do Chrome para lhe mostrar anúncios mais relevantes</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Empilhador 4</translation>
 <translation id="5414446060143308245">É necessária uma revisão antes de transferir</translation>
@@ -2797,7 +2791,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6613866251791999074">Saber mais sobre o seu motor de pesquisa no Chrome</translation>
 <translation id="6615297766614333076">Empilhador 2</translation>
 <translation id="6624427990725312378">Informações de contacto</translation>
-<translation id="6627727261837091711">Mostre detalhes da personalização de anúncios</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> Pesquisar</translation>
 <translation id="6629652037942826935">Viagens de luxo</translation>
 <translation id="6630043285902923878">A procurar dispositivos USB…</translation>
@@ -3308,7 +3301,6 @@ Detalhes adicionais:
 <translation id="7574998639136359461">Equipamento de desportos de inverno</translation>
 <translation id="7575207903026901870">Botão Remover sugestão, prima Enter para remover esta sugestão.</translation>
 <translation id="7575887283389198269">Telemóveis</translation>
-<translation id="7577900504646297215">Gerir interesses</translation>
 <translation id="7578104083680115302">Pague rapidamente em sites e aplicações em todos os dispositivos com cartões que tenha guardado com o Google.</translation>
 <translation id="7579442726219254162">Variável "<ph name="VARIABLE" />" desconhecida na configuração gerida de "<ph name="APPLICATION_ID" />".</translation>
 <translation id="7581199239021537589">Turno Y da imagem 2 lateral</translation>

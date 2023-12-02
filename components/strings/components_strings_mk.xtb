@@ -346,7 +346,6 @@
 <translation id="1633941398432788136">Планирање настани</translation>
 <translation id="1634828734222219955">Вкупно</translation>
 <translation id="163669211644121865">Подготовка и планирање даноци</translation>
-<translation id="1638780421120290329">Не може да се зачува картичката</translation>
 <translation id="1639239467298939599">Се вчитува</translation>
 <translation id="1640180200866533862">Правила за корисникот</translation>
 <translation id="1640244768702815859">Обидете се да ја <ph name="BEGIN_LINK" />посетите почетната страница на сајтов<ph name="END_LINK" />.</translation>
@@ -690,7 +689,6 @@
 <translation id="2324604504973636700">Домашни апарати</translation>
 <translation id="2328651992442742497">Дозволено (стандардно)</translation>
 <translation id="2328955282645810595">Алати за градежништво и електрични алати</translation>
-<translation id="2329473609445770916">Сајтов ги дефинира интересите што другите сајтови може да ги користат за да ви прикажуваат реклами</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, истекува на <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Поставка што ја контролира администраторот</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> сака да се спари</translation>
@@ -1119,7 +1117,6 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да го приспособите изгледот на прелистувачот</translation>
 <translation id="3240791268468473923">Листот што означува дека нема акредитив што се совпаѓа за акредитивот за безбедно плаќање е отворен</translation>
 <translation id="324180406144491771">Линковите до „<ph name="HOST_NAME" />“ се блокирани</translation>
-<translation id="3248611290851046188">Сајтов ги дефинира интересите што другите сајтови може да ги користат за да ви прикажуваат реклами. Сајтов ги добива вашите интереси и од Chrome за да ви прикажува порелевантни реклами.</translation>
 <translation id="3249151924975132674">Студентски заеми и факултетско финансирање</translation>
 <translation id="3249845759089040423">Модерен</translation>
 <translation id="3250640885957938546">Рекламирање и маркетинг</translation>
@@ -1587,7 +1584,6 @@
 <translation id="4177501066905053472">Теми на реклами</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Отследи ја цената</translation>
-<translation id="4194250254487269611">Вашата картичка не може да се зачува во моментов</translation>
 <translation id="4195459680867822611">Копче за гледање совети за Chrome, активирајте го за да дознаете за функциите на Chrome</translation>
 <translation id="4195643157523330669">Отвори во нова картичка</translation>
 <translation id="4196861286325780578">&amp;Повтори преместување</translation>
@@ -1727,7 +1723,6 @@
 <translation id="4424024547088906515">Серверот не може да докаже дека е <ph name="DOMAIN" />; Chrome не му верува на неговиот безбедносен сертификат. Тоа може да се должи на погрешна конфигурација или на напаѓач што го пресретнува поврзувањето.</translation>
 <translation id="4425173294238317796">Лист за потврдување на криптографскиот клуч</translation>
 <translation id="4425750422187370446">Атлетска облека</translation>
-<translation id="4428065317363009941">Персонализирање на рекламите</translation>
 <translation id="443121186588148776">Сериска порта</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> не го прифати вашиот сертификат за најавување или можеби таков сертификат не е обезбеден.</translation>
 <translation id="4432792777822557199">Отсега-натаму, страниците на <ph name="SOURCE_LANGUAGE" /> ќе се преведуваат на <ph name="TARGET_LANGUAGE" /></translation>
@@ -2209,7 +2204,6 @@
 <translation id="540969355065856584">Серверот не може да докаже дека е <ph name="DOMAIN" />; неговиот безбедносен сертификат не е важечки во моментов. Тоа може да се должи на погрешна конфигурација или на напаѓач што го пресретнува поврзувањето.</translation>
 <translation id="5411462078004183575">Опција со ниски цени</translation>
 <translation id="5412040515238827314">Неважечки формат: се очекува список со шеми.</translation>
-<translation id="5412236728747081950">Сајтов ги добива вашите интереси од Chrome за да ви прикажува порелевантни реклами</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Фиока за складирање 4</translation>
 <translation id="5414446060143308245">Потребен е преглед пред префрлањето</translation>
@@ -2797,7 +2791,6 @@
 <translation id="6613866251791999074">Дознајте повеќе за вашиот пребарувач во Chrome</translation>
 <translation id="6615297766614333076">Фиока за складирање 2</translation>
 <translation id="6624427990725312378">Податоци за контакт</translation>
-<translation id="6627727261837091711">Прикажи ги деталите за персонализирање на рекламите</translation>
 <translation id="6628463337424475685">Пребарување на <ph name="ENGINE" /></translation>
 <translation id="6629652037942826935">Луксузно патување</translation>
 <translation id="6630043285902923878">Се бараат USB-уреди…</translation>
@@ -3309,7 +3302,6 @@
 <translation id="7574998639136359461">Опрема за зимски спортови</translation>
 <translation id="7575207903026901870">Копче за отстранување предлог, притиснете Enter за да го отстраните предлогов</translation>
 <translation id="7575887283389198269">Мобилни телефони</translation>
-<translation id="7577900504646297215">Управувајте со она што ве интересира</translation>
 <translation id="7578104083680115302">Плаќајте брзо на сајтови и апликации од сите уреди со користење на картичките што сте ги зачувале на Google.</translation>
 <translation id="7579442726219254162">Непозната променлива „<ph name="VARIABLE" />“ во управуваната конфигурација на „<ph name="APPLICATION_ID" />“.</translation>
 <translation id="7581199239021537589">Промена на страната 2 на сликата Y</translation>

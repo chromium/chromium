@@ -260,6 +260,7 @@
 <translation id="2872961005593481000">Zaustavitev</translation>
 <translation id="2873483161362553159">Premikanje po brskalniku</translation>
 <translation id="2874939134665556319">Prejšnja skladba</translation>
+<translation id="2875812231449496375">Če želite najboljše rezultate s tem zaslonskim ozadjem, vklopite to nastavitev. Kadar koli jo lahko izklopite.</translation>
 <translation id="2878387241690264070">Izpraznjeno: <ph name="RATE" /> v <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="2880569433548999039">Ohranjevalnik zaslona premika oblakov</translation>
 <translation id="2926057806159140518">Vnesite uporabniško ime in geslo ali optično preberite kodo QR.</translation>
@@ -552,6 +553,7 @@
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5137451382116112100">Cel zaslon</translation>
 <translation id="5142961317498132443">Preverjanje pristnosti</translation>
+<translation id="5145081769226915336">Želite samodejno vklopiti temni način?</translation>
 <translation id="5154917547274118687">Pomnilnik</translation>
 <translation id="5160857336552977725">Prijavite se v napravo <ph name="DEVICE_TYPE" /></translation>
 <translation id="5166918508782100047">Nastavitve hitrih odgovorov</translation>

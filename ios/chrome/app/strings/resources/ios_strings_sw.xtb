@@ -174,6 +174,7 @@ Ili kubadilisha mpangilio huu, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="1883255238294161206">Kunja orodha</translation>
 <translation id="1889872080060107187">Utaingia katika akaunti kwenye <ph name="URL" /></translation>
 <translation id="1890237935065108104">Mipangilio hii haipatikani.</translation>
+<translation id="1891199774460536658">Fuatilia Kiotomatiki Vifurushi Vyote Vilivyogunduliwa</translation>
 <translation id="1894023287452300670">Fuatilia bei hapa</translation>
 <translation id="189531189292803889">IPad yako ilirejeshwa katika hali yake ya awali hivi karibuni, hatua ambayo huenda imebadilisha kivinjari chako chaguomsingi.</translation>
 <translation id="1910975740091000991">Chrome inayotumika kwenye iOS</translation>
@@ -623,6 +624,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="430793432425771671">Sawazisha Kila kitu</translation>
 <translation id="4309403553630140242">Gusa mara mbili ili upate maelezo zaidi</translation>
 <translation id="430967081421617822">Muda Wote</translation>
+<translation id="4322394346347055525">Funga Vichupo Vingine</translation>
 <translation id="4331177082088332784">Unaweza kudhibiti hili kwenye BEGIN_LINK Mipangilio ya Maudhui END_LINK</translation>
 <translation id="4334428914252001502">Hujasoma makala 1.</translation>
 <translation id="4338650699862464074">Hutuma URL za kurasa unazotembelea kwa Google.</translation>
@@ -652,6 +654,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4493604894403585654">Umeingia katika akaunti ukitumia <ph name="USER_EMAIL" />. Unaweza kuacha kusawazisha wakati wowote katika mipangilio. Google inaweza kuweka mapendeleo kwenye huduma ya Tafuta na huduma nyinginezo kulingana na historia yako.</translation>
 <translation id="4502566650163919158">Kagua Sasa</translation>
 <translation id="4508750114462689118">Funga matangazo ya kuingia kwenye akaunti</translation>
+<translation id="4509449376545878717">Kamwe Usigundue Vifurushi Kiotomatiki</translation>
 <translation id="4514889972748124117">Pendekeza Nenosiri Thabiti...</translation>
 <translation id="4520798012560649652">Pata maelezo zaidi kuhusu Hali fiche</translation>
 <translation id="452503091941773389">{count,plural, =1{Alamisho {count}}other{Alamisho {count}}}</translation>
@@ -1335,6 +1338,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8023878949384262191">Hupanua sehemu.</translation>
 <translation id="8027581147000338959">Fungua Katika Dirisha Jipya</translation>
 <translation id="8032569120109842252">Unafuatilia</translation>
+<translation id="8040207962129315716">Niulize Kila Wakati</translation>
 <translation id="804225253087497565">Huenda <ph name="BEGIN_LINK" />historia ya mambo uliyotafuta<ph name="END_LINK" /> na <ph name="BEGIN_LINK" />aina nyingine za shughuli<ph name="END_LINK" /> zikahifadhiwa kwenye Akaunti yako ya Google ukiwa umeingia katika akaunti. Unaweza kuzifuta wakati wowote.</translation>
 <translation id="804427445359061970">Utapata vichupo vyako kwenye vifaa vingine hapa</translation>
 <translation id="8044568254381073661">Kuhifadhi Bila Usimbaji Fiche</translation>
@@ -1435,6 +1439,7 @@ Data yako ilisimbwa kwa njia fiche kwa kutumia kauli ya siri <ph name="TIME" />.
 <translation id="8556590991644167667">{count,plural, =1{Umeondoa onyo {count}}other{Umeondoa maonyo {count}}}</translation>
 <translation id="8558480467877843976">Sasa unaweza kutumia Chrome wakati wowote unapovinjari au kugusa viungo kwenye ujumbe, hati na programu nyingine.</translation>
 <translation id="8560253818350321773">Onyesha vipengee vinavyotumika mara kwa mara kwanza.</translation>
+<translation id="8562944214838973419">Ruhusu Ufuatiliaji wa Kifurushi</translation>
 <translation id="8569721750632860947">Je, ungependa kuweka URL gani kwenye orodha yako ya kusoma?</translation>
 <translation id="8588404856427128947">Imezimwa</translation>
 <translation id="8591976964826315682">Zuia Vidakuzi vya Tovuti Nyingine katika Hali Fiche</translation>

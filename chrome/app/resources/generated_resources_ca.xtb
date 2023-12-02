@@ -2544,6 +2544,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2927017729816812676">Emmagatzematge a la memòria cau</translation>
 <translation id="2928795416630981206">Amb permís per fer un seguiment de la posició de la càmera</translation>
 <translation id="2931157624143513983">Ajusta a l'àrea imprimible</translation>
+<translation id="2931342457001070961">No hi ha cap micròfon connectat</translation>
 <translation id="2932085390869194046">Suggereix una contrasenya...</translation>
 <translation id="2932483646085333864">Tanca la sessió i torna-la a iniciar per començar la sincronització</translation>
 <translation id="2932883381142163287">Informa d'un ús abusiu</translation>
@@ -4673,6 +4674,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4647836961514597010">Selector de color</translation>
 <translation id="4648491805942548247">Permisos insuficients</translation>
 <translation id="4650037136970677721">Memòria estalviada</translation>
+<translation id="4650364565596261010">Opció predeterminada del sistema</translation>
 <translation id="4650591383426000695">Desconnecta el telèfon del dispositiu <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">No s'ha pogut carregar el component en línia amb recursos del mode de demostració.</translation>
 <translation id="4651921906638302153">No pots iniciar la sessió amb aquest compte</translation>
@@ -8818,7 +8820,6 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7968982339740310781">Mostra els detalls</translation>
 <translation id="7969046989155602842">Ordre</translation>
 <translation id="7970673414865679092">Detalls d'Ethernet</translation>
-<translation id="7970882136539140748">Ara mateix no es pot desar la targeta</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 amb encriptació RSA</translation>
 <translation id="7973776233567882054">Quina de les opcions següents descriu millor la teva xarxa?</translation>
 <translation id="797394244396603170">Selecciona el dispositiu amb què vols compartir fitxers</translation>

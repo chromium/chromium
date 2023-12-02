@@ -208,6 +208,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="2050196510205866090">{count,plural, =1{{count} zapisana forma płatności dostępna nad klawiaturą.}few{{count} zapisane formy płatności dostępne nad klawiaturą.}many{{count} zapisanych form płatności dostępnych nad klawiaturą.}other{{count} zapisanej formy płatności dostępnej nad klawiaturą.}}</translation>
 <translation id="2055515971416882518">Otwórz „Ustawienia”.</translation>
 <translation id="2059166748188874810">Gmina</translation>
+<translation id="2062410130322589403">Przewodnik po ustawieniach prywatności</translation>
 <translation id="2073572773299281212">Aktywność <ph name="DAYS" /> dni temu</translation>
 <translation id="2074131957428911366">W <ph name="BEGIN_LINK" />ustawieniach<ph name="END_LINK" /> możesz wybrać, co chcesz synchronizować.</translation>
 <translation id="2079545284768500474">Cofnij</translation>
@@ -622,6 +623,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="430793432425771671">Synchronizuj wszystko</translation>
 <translation id="4309403553630140242">Kliknij dwukrotnie, by dowiedzieć się więcej</translation>
 <translation id="430967081421617822">Od początku</translation>
+<translation id="4322394346347055525">Zamknij inne karty</translation>
 <translation id="4331177082088332784">Tymi informacjami możesz zarządzać w START_LINKUstawieniach treściEND_LINK</translation>
 <translation id="4334428914252001502">Jeden nieprzeczytany artykuł.</translation>
 <translation id="4338650699862464074">Adresy URL odwiedzanych stron będą wysyłane do Google.</translation>

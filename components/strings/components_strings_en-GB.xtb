@@ -346,7 +346,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1633941398432788136">Event Planning</translation>
 <translation id="1634828734222219955">Total</translation>
 <translation id="163669211644121865">Tax preparation and planning</translation>
-<translation id="1638780421120290329">Can't save card</translation>
 <translation id="1639239467298939599">Loading</translation>
 <translation id="1640180200866533862">User policies</translation>
 <translation id="1640244768702815859">Try <ph name="BEGIN_LINK" />visiting the site's homepage<ph name="END_LINK" />.</translation>
@@ -663,6 +662,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2262243747453050782">HTTP error</translation>
 <translation id="226481340855943334">Ancestry and genealogy</translation>
 <translation id="2265192657948645752">Retail Jobs</translation>
+<translation id="2265356434276802347">This policy should not have more than <ph name="MAX_ITEMS_LIMIT" /> featured entries.</translation>
 <translation id="2267047181501709434">Verifying your identity...</translation>
 <translation id="2268743667444073169">TV soap operas</translation>
 <translation id="2270484714375784793">Phone number</translation>
@@ -689,7 +689,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2324604504973636700">Home appliances</translation>
 <translation id="2328651992442742497">Allowed (default)</translation>
 <translation id="2328955282645810595">Construction and Power Tools</translation>
-<translation id="2329473609445770916">This site defines interests that other sites can use to show you ads</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, expires on <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Setting controlled by your administrator</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> wants to pair</translation>
@@ -1118,7 +1117,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />; press tab and then Enter to customise the look of your browser</translation>
 <translation id="3240791268468473923">Secure payment credential no matching credential sheet is opened</translation>
 <translation id="324180406144491771">'<ph name="HOST_NAME" />' links are blocked</translation>
-<translation id="3248611290851046188">This site defines interests that other sites can use to show you ads. This site also gets your interests from Chrome to show you more relevant ads.</translation>
 <translation id="3249151924975132674">Student loans and university financing</translation>
 <translation id="3249845759089040423">Groovy</translation>
 <translation id="3250640885957938546">Advertising and marketing</translation>
@@ -1586,7 +1584,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4177501066905053472">Ad topics</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Untrack price</translation>
-<translation id="4194250254487269611">Your card can't be saved at the moment</translation>
 <translation id="4195459680867822611">See Chrome tips button, activate to learn about Chrome features</translation>
 <translation id="4195643157523330669">Open in new tab</translation>
 <translation id="4196861286325780578">&amp;Redo move</translation>
@@ -1726,7 +1723,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4424024547088906515">This server could not prove that it is <ph name="DOMAIN" />; its security certificate is not trusted by Chrome. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
 <translation id="4425173294238317796">Passkey confirmation sheet</translation>
 <translation id="4425750422187370446">Athletic Apparel</translation>
-<translation id="4428065317363009941">Ad personalisation</translation>
 <translation id="443121186588148776">Serial port</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> didn’t accept your login certificate, or one may not have been provided.</translation>
 <translation id="4432792777822557199">Pages in <ph name="SOURCE_LANGUAGE" /> will be translated to <ph name="TARGET_LANGUAGE" /> from now on</translation>
@@ -2208,7 +2204,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="540969355065856584">This server could not prove that it is <ph name="DOMAIN" />; its security certificate is not valid at this time. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
 <translation id="5411462078004183575">Low-priced option</translation>
 <translation id="5412040515238827314">Invalid format: Expected a list of patterns.</translation>
-<translation id="5412236728747081950">This site gets your interests from Chrome to show you more relevant ads</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Stacker 4</translation>
 <translation id="5414446060143308245">Review is required before transferring</translation>
@@ -2796,7 +2791,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6613866251791999074">Learn more about your search engine in Chrome</translation>
 <translation id="6615297766614333076">Stacker 2</translation>
 <translation id="6624427990725312378">Contact Info</translation>
-<translation id="6627727261837091711">Show ad personalisation details</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> Search</translation>
 <translation id="6629652037942826935">Luxury Travel</translation>
 <translation id="6630043285902923878">Finding USB devices…</translation>
@@ -3308,7 +3302,6 @@ Additional details:
 <translation id="7574998639136359461">Winter Sports Equipment</translation>
 <translation id="7575207903026901870">Remove Suggestion button, press Enter to remove this suggestion</translation>
 <translation id="7575887283389198269">Mobile Phones</translation>
-<translation id="7577900504646297215">Manage interests</translation>
 <translation id="7578104083680115302">Pay quickly on sites and apps across devices using cards that you have saved with Google.</translation>
 <translation id="7579442726219254162">Unknown variable '<ph name="VARIABLE" />' in the managed configuration of '<ph name="APPLICATION_ID" />'.</translation>
 <translation id="7581199239021537589">Side 2 image Y shift</translation>

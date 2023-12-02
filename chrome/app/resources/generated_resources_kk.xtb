@@ -2541,6 +2541,7 @@
 <translation id="2927017729816812676">Кэш жады</translation>
 <translation id="2928795416630981206">Камераңыздың орнын қадағалауға рұқсаты барлар</translation>
 <translation id="2931157624143513983">Басып шығару аймағына сәйкестендіру</translation>
+<translation id="2931342457001070961">Ешқандай микрофон жалғанбаған.</translation>
 <translation id="2932085390869194046">Құпия сөз жасау...</translation>
 <translation id="2932483646085333864">Синхрондауды бастау үшін жүйеден шығып, қайта кіріп көріңіз</translation>
 <translation id="2932883381142163287">Бұзақылық туралы хабарлау</translation>
@@ -4671,6 +4672,7 @@
 <translation id="4647836961514597010">Түс таңдағыш</translation>
 <translation id="4648491805942548247">Рұқсаттар жеткіліксіз</translation>
 <translation id="4650037136970677721">Жад сақталды</translation>
+<translation id="4650364565596261010">Жүйенің әдепкі параметрі</translation>
 <translation id="4650591383426000695">Телефонды <ph name="DEVICE_TYPE" /> құрылғысынан ажыратыңыз.</translation>
 <translation id="4651484272688821107">Демо режиміндегі ресурстары бар онлайн компонент жүктелмеді.</translation>
 <translation id="4651921906638302153">Бұл аккаунтпен кіру мүмкін емес</translation>
@@ -8812,7 +8814,6 @@
 <translation id="7968982339740310781">Мәліметтерді көру</translation>
 <translation id="7969046989155602842">Пәрмен</translation>
 <translation id="7970673414865679092">Ethernet мәліметтері</translation>
-<translation id="7970882136539140748">Картаны дәл қазір сақтау мүмкін емес.</translation>
 <translation id="7972714317346275248">RSA шифрлауы бар PKCS #1 SHA-384</translation>
 <translation id="7973776233567882054">Келесілердің қайсысы желіңізді ең жақсы сипаттайды?</translation>
 <translation id="797394244396603170">Файлдарды бөліскіңіз келетін құрылғыны таңдаңыз.</translation>

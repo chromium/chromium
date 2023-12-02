@@ -346,7 +346,6 @@
 <translation id="1633941398432788136">ইভেন্ট প্ল্যানিং</translation>
 <translation id="1634828734222219955">মোট</translation>
 <translation id="163669211644121865">ট্যাক্স প্রস্তুতি এবং পরিকল্পনা</translation>
-<translation id="1638780421120290329">ক্রেডিট কার্ড সেভ করা যাচ্ছে না</translation>
 <translation id="1639239467298939599">লোড হচ্ছে</translation>
 <translation id="1640180200866533862">ব্যবহারকারীর নীতিসমূহ</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />এই সাইটের হোমপেজটি ঘুরে দেখুন<ph name="END_LINK" />।</translation>
@@ -691,7 +690,6 @@
 <translation id="2324604504973636700">গৃহস্থালির জিনিসপত্র</translation>
 <translation id="2328651992442742497">অনুমতি আছে (ডিফল্ট)</translation>
 <translation id="2328955282645810595">নির্মাণ ও পাওয়ার টুল</translation>
-<translation id="2329473609445770916">এই সাইটটি আপনাকে বিজ্ঞাপন দেখানোর জন্য অন্যান্য সাইটগুলি ব্যবহার করতে পারে এমন আগ্রহগুলিকে ব্যাখা করে</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />-এর মেয়াদ, <ph name="EXPIRATION_DATE_ABBR" /> তারিখে শেষ হবে</translation>
 <translation id="2337852623177822836">সেটিংস আপনার প্রশাসক নিয়ন্ত্রণ করে</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> এদের সঙ্গে যুক্ত হতে চাচ্ছে</translation>
@@ -1120,7 +1118,6 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপনার ব্রাউজার কেমন দেখাবে তা কাস্টমাইজ করতে Tab প্রেস করার পর Enter প্রেস করুন</translation>
 <translation id="3240791268468473923">সুরক্ষিত পেমেন্ট ক্রেডেনশিয়ালের সাথে মিল নেই এমন পেমেন্ট ক্রেডেনশিয়ালের শিট খোলা আছে</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” লিঙ্ক ব্লক করা হয়েছে</translation>
-<translation id="3248611290851046188">এই সাইটটি আপনাকে বিজ্ঞাপন দেখানোর জন্য অন্যান্য সাইটগুলি ব্যবহার করতে পারে এমন আগ্রহগুলিকে ব্যাখ্যা করে। এই সাইটটি আপনাকে আরও প্রাসঙ্গিক বিজ্ঞাপন দেখানোর জন্য Chrome থেকে আপনার আগ্রহগুলি নেয়।</translation>
 <translation id="3249151924975132674">স্টুডেন্ট লোন এবং কলেজ ফাইন্যান্সিং</translation>
 <translation id="3249845759089040423">গ্ৰুভি</translation>
 <translation id="3250640885957938546">বিজ্ঞাপন এবং মার্কেটিং</translation>
@@ -1588,7 +1585,6 @@
 <translation id="4177501066905053472">বিজ্ঞাপনের বিষয়</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">দাম ট্র্যাক করার বিকল্প বন্ধ করুন</translation>
-<translation id="4194250254487269611">এই মুহূর্তে আপনার কার্ডটি সেভ করা যাবে না</translation>
 <translation id="4195459680867822611">'Chrome সংক্রান্ত পরামর্শ দেখুন' বোতাম, Chrome ফিচার সম্পর্কে আরও জানতে এটি চালু করুন</translation>
 <translation id="4195643157523330669">নতুন ট্যাবে খুলুন</translation>
 <translation id="4196861286325780578">&amp;সরানোর কাজটি আবার করুন</translation>
@@ -1728,7 +1724,6 @@
 <translation id="4424024547088906515">এই সার্ভার প্রমাণ করতে পারেনি যে এটি <ph name="DOMAIN" />; এর নিরাপত্তা সার্টিফিকেট Chrome এর নিকট বিশ্বাসযোগ্য নয়। কোনো ভুল কনফিগারেশনের কারণে অথবা কোনো আক্রমণকারী আপনার সংযোগ মাঝপথে আটকে দিচ্ছে বলে এমনটা হতে পারে।</translation>
 <translation id="4425173294238317796">পাসকী কনফার্মেশন শিট</translation>
 <translation id="4425750422187370446">অ্যাথলিট পোশাক</translation>
-<translation id="4428065317363009941">পছন্দ অনুযায়ী বিজ্ঞাপন বেছে নেওয়া</translation>
 <translation id="443121186588148776">সিরিয়াল পোর্ট</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> আপনার লগ-ইন সার্টিফিকেটটি স্বীকার করেনি, অথবা কোনো সার্টিফিকেট দেওয়া হয়নি।</translation>
 <translation id="4432792777822557199">এখন থেকে <ph name="SOURCE_LANGUAGE" /> ভাষার পৃষ্ঠাগুলিকে <ph name="TARGET_LANGUAGE" /> ভাষায় অনুবাদ করা হবে</translation>
@@ -2210,7 +2205,6 @@
 <translation id="540969355065856584">এই সার্ভার প্রমাণ করতে পারেনি যে এটি <ph name="DOMAIN" />; এর নিরাপত্তা সার্টিফিকেট এই সময়ে বৈধ নয়। কোনো ভুল কনফিগারেশনের কারণে অথবা কোনো আক্রমণকারী আপনার সংযোগ মাঝপথে আটকে দিচ্ছে বলে এমনটা হতে পারে।</translation>
 <translation id="5411462078004183575">কম দাম সম্পর্কিত বিকল্প</translation>
 <translation id="5412040515238827314">ভুল ফর্ম্যাট: প্রত্যাশিত প্যাটার্নের তালিকা।</translation>
-<translation id="5412236728747081950">এই সাইটটি আপনাকে আরও প্রাসঙ্গিক বিজ্ঞাপন দেখানোর জন্য Chrome থেকে আপনার আগ্রহগুলি নেয়।</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">স্ট্যাকার ৪</translation>
 <translation id="5414446060143308245">ট্রান্সফার করার আগেই পর্যালোচনা করা প্রয়োজন</translation>
@@ -2797,7 +2791,6 @@
 <translation id="6613866251791999074">Chrome-এ ব্যবহৃত সার্চ ইঞ্জিন সম্পর্কে আরও জানুন</translation>
 <translation id="6615297766614333076">স্ট্যাকার ২</translation>
 <translation id="6624427990725312378">পরিচিতির তথ্য</translation>
-<translation id="6627727261837091711">পছন্দ অনুযায়ী বিজ্ঞাপন বেছে নেওয়ার বিবরণ দেখান</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> সার্চ</translation>
 <translation id="6629652037942826935">লাক্সারি ট্রাভেল</translation>
 <translation id="6630043285902923878">USB ডিভাইস খোঁজা হচ্ছে...</translation>
@@ -3309,7 +3302,6 @@
 <translation id="7574998639136359461">শীতকালীন খেলাধুলার সরঞ্জাম</translation>
 <translation id="7575207903026901870">সাজেশন বোতাম সরান, এই সাজেশন সরাতে 'Enter' কী প্রেস করুন</translation>
 <translation id="7575887283389198269">মোবাইল ফোন</translation>
-<translation id="7577900504646297215">আপনার পছন্দ ম্যানেজ করুন</translation>
 <translation id="7578104083680115302">আপনি Google এর সাথে সংরক্ষণ করেছেন এমন কার্ড ব্যবহার করে ডিভাইস জুড়ে সাইট এবং অ্যাপ্লিকেশানগুলিতে দ্রুত অর্থ পরিশোধ করুন।</translation>
 <translation id="7579442726219254162">"<ph name="APPLICATION_ID" />"-এর ম্যানেজ করা কনফিগারেশনে অজানা ভেরিয়েবল "<ph name="VARIABLE" />"।</translation>
 <translation id="7581199239021537589">সাইড 2 ছবি Y শিফ্ট</translation>

@@ -659,6 +659,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="36813544980941320">Siete Wi‑Fi sa budú zdieľať medzi vaším telefónom a zariadením <ph name="DEVICE_NAME" /></translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, potom <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Webové stránky</translation>
+<translation id="3697991387880191195">Stlačte skratku snímky obrazovky</translation>
 <translation id="3702809606464356667">Keď sa zobrazujú okná aktuálnej plochy, stlačením šípky nahor zobrazíte okná všetkých plôch.</translation>
 <translation id="3702846122927433391">Počet obyvateľov Nigérie</translation>
 <translation id="3705722231355495246">-</translation>
@@ -834,6 +835,7 @@ Niektoré funkcie sú obmedzené, aby sa predĺžila výdrž batérie.</translat
 <translation id="4389184120735010762">Stlačili ste klávesovú skratku ukotvenej lupy. Chcete ju zapnúť?</translation>
 <translation id="439598569299422042">Pozastavené, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Záznam z obrazovky sa nedá uložiť</translation>
+<translation id="4403371424034411727">Periféria <ph name="PERIPHERAL_NAME" /> je pripojená a pripravená na používanie. Myš si môžete prispôsobiť v Nastaveniach.</translation>
 <translation id="4405151984121254935">Pripojený typ periférie nie je podporovaný</translation>
 <translation id="4406883609789734330">Živý prepis</translation>
 <translation id="4412944820643904175">Funkcia <ph name="FEATURE_NAME" /> je vypnutá.</translation>
@@ -1293,6 +1295,7 @@ Niektoré funkcie sú obmedzené, aby sa predĺžila výdrž batérie.</translat
 <translation id="6199775032047436064">Opätovné načítanie aktuálnej stránky</translation>
 <translation id="6200515304866777730">Aplikácia to nepodporuje</translation>
 <translation id="6210042900243040400">Pripojte zariadenie <ph name="NAME" />, ktoré bolo v minulosti uložené v účte <ph name="EMAIL" /></translation>
+<translation id="6212097153736801627">Prispôsobte si perifériu <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Vytvorenie čiastočnej snímky obrazovky alebo záznamu obrazovky</translation>
 <translation id="6220928844947387476">Teraz môžete súčasne nahrať seba aj svoju obrazovku</translation>
 <translation id="622484624075952240">Dole</translation>
@@ -1534,6 +1537,7 @@ Nová inštalácia</translation>
 <translation id="726276584504105859">Presuňte okno sem a použite tak rozdelenú obrazovku</translation>
 <translation id="7262906531272962081">Vytvoriť pripomenutie</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + Backspace</translation>
+<translation id="7285232777292757180">Ak chcete vytvoriť snímky obrazovky, použite nástroj na snímanie obrazovky v rýchlych nastaveniach</translation>
 <translation id="7302889331339392448">Živý prepis je vypnutý.</translation>
 <translation id="7303365578352795231">Odpoveď dostanete v inom zariadení.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1916,6 +1920,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="888982883502837004">Pre vaše zariadenie sú k dispozícii aktualizácie firmvéru. Kliknutím si ich zobrazte a firmvér aktualizujte.</translation>
 <translation id="8896630965521842259">Šablóna <ph name="DESK_TEMPLATE_NAME" /> bude natrvalo odstránená</translation>
 <translation id="889790758758811533">Zostávajúca batéria: <ph name="PERCENTAGE" /> % (približne <ph name="TIME_LEFT" />). Pripojte svoje zariadenie k napájaniu.</translation>
+<translation id="8897940060812808966">Periféria <ph name="PERIPHERAL_NAME" /> je pripojená a pripravená na používanie. Tablet na grafiku si môžete prispôsobiť v Nastaveniach.</translation>
 <translation id="88986195241502842">Posunúť stránku nadol</translation>
 <translation id="8905919797434099235">(Bez názvu)</translation>
 <translation id="890616557918890486">Zmeniť zdroj</translation>

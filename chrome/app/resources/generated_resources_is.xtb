@@ -2560,6 +2560,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2927017729816812676">Geymslurými í biðminni</translation>
 <translation id="2928795416630981206">Mega fylgjast með stöðu myndavélarinnar</translation>
 <translation id="2931157624143513983">Laga að prentsvæði</translation>
+<translation id="2931342457001070961">Enginn hljóðnemi tengdur</translation>
 <translation id="2932085390869194046">Tillaga að aðgangsorði...</translation>
 <translation id="2932483646085333864">Skráðu þig út og inn aftur til að hefja samstillingu</translation>
 <translation id="2932883381142163287">Tilkynna misnotkun</translation>
@@ -4691,6 +4692,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4647836961514597010">Litaval</translation>
 <translation id="4648491805942548247">Ekki nægar heimildir</translation>
 <translation id="4650037136970677721">Minning vistuð</translation>
+<translation id="4650364565596261010">Sjálfgildi kerfis</translation>
 <translation id="4650591383426000695">Aftengdu símann þinn og <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Ekki var hægt að hlaða nettengdum íhluta með tilföngum prufustillingar.</translation>
 <translation id="4651921906638302153">Ekki er hægt að skrá inn með þessum reikningi</translation>
@@ -8838,7 +8840,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7968982339740310781">Skoða upplýsingar</translation>
 <translation id="7969046989155602842">Skipun</translation>
 <translation id="7970673414865679092">Upplýsingar um ethernet</translation>
-<translation id="7970882136539140748">Ekki er hægt að vista kortið núna</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 með RSA-dulkóðun</translation>
 <translation id="7973776233567882054">Hvert af eftirtöldu lýsir netinu þínu best?</translation>
 <translation id="797394244396603170">Veldu tækið sem þú vilt deila skrám með</translation>

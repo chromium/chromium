@@ -208,6 +208,7 @@
 <translation id="2050196510205866090">{count,plural, =1{Վճարման {count} պահված եղանակ ցուցադրվում է ստեղնաշարի վերևում։}one{Վճարման {count} պահված եղանակ ցուցադրվում է ստեղնաշարի վերևում։}other{Վճարման {count} պահված եղանակ ցուցադրվում է ստեղնաշարի վերևում։}}</translation>
 <translation id="2055515971416882518">Բացեք «Կարգավորումներ» բաժինը։</translation>
 <translation id="2059166748188874810">Մունիցիպալիտետ</translation>
+<translation id="2062410130322589403">Գաղտնիության կարգավորումների ուղեցույց</translation>
 <translation id="2073572773299281212">Ակտիվ է եղել <ph name="DAYS" /> օր առաջ</translation>
 <translation id="2074131957428911366">Ցանկացած ժամանակ կարող եք անցնել <ph name="BEGIN_LINK" />կարգավորումներ<ph name="END_LINK" /> և ընտրել, թե ինչն եք ուզում համաժամացնել:</translation>
 <translation id="2079545284768500474">Հետարկել</translation>
@@ -622,6 +623,7 @@
 <translation id="430793432425771671">Համաժամացնել բոլորը</translation>
 <translation id="4309403553630140242">Կրկնակի հպեք՝ լրացուցիչ տեղեկություններ ստանալու համար</translation>
 <translation id="430967081421617822">Ամբողջ ժամանակաշրջանի</translation>
+<translation id="4322394346347055525">Փակել մյուս ներդիրները</translation>
 <translation id="4331177082088332784">BEGIN_LINK Բովանդակության կարգավորումներում END_LINK կարող եք սա կառավարել</translation>
 <translation id="4334428914252001502">1 չընթերցված հոդված։</translation>
 <translation id="4338650699862464074">Ուղարկում է Google-ին ձեր այցելած էջերի հասցեները</translation>

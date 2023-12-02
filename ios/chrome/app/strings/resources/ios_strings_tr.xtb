@@ -208,6 +208,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="2050196510205866090">{count,plural, =1{Klavyenizin üzerinde {count} tane kayıtlı ödeme yöntemi mevcut.}other{Klavyenizin üzerinde {count} tane kayıtlı ödeme yöntemi mevcut.}}</translation>
 <translation id="2055515971416882518">Ayarlar'ı açın.</translation>
 <translation id="2059166748188874810">Belediye</translation>
+<translation id="2062410130322589403">Gizlilik Tercihlerinizle İlgili Kılavuz</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> Gün Önce Etkindi</translation>
 <translation id="2074131957428911366">Neyin senkronize edileceğini istediğiniz zaman <ph name="BEGIN_LINK" />ayarlardan<ph name="END_LINK" /> seçebilirsiniz.</translation>
 <translation id="2079545284768500474">Geri al</translation>
@@ -622,6 +623,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="430793432425771671">Her Şeyi Senkronize Et</translation>
 <translation id="4309403553630140242">Daha fazla bilgi için iki kez dokunun</translation>
 <translation id="430967081421617822">Tüm Zamanlar</translation>
+<translation id="4322394346347055525">Diğer Sekmeleri Kapat</translation>
 <translation id="4331177082088332784">Bunu BEGIN_LINK İçerik Ayarları END_LINK bölümünden yönetebilirsiniz</translation>
 <translation id="4334428914252001502">1 okunmamış makale.</translation>
 <translation id="4338650699862464074">Ziyaret ettiğiniz sayfaların URL'lerini Google'a gönderir.</translation>

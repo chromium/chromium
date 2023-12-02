@@ -2544,6 +2544,7 @@
 <translation id="2927017729816812676">พื้นที่เก็บข้อมูลแคช</translation>
 <translation id="2928795416630981206">ได้รับอนุญาตให้ติดตามตำแหน่งของกล้อง</translation>
 <translation id="2931157624143513983">พอดีกับพื้นที่ที่พิมพ์ได้</translation>
+<translation id="2931342457001070961">ไม่มีไมโครโฟนเชื่อมต่ออยู่</translation>
 <translation id="2932085390869194046">แนะนำรหัสผ่าน...</translation>
 <translation id="2932483646085333864">ออกจากระบบแล้วลงชื่อเข้าใช้อีกครั้งเพื่อเริ่มการซิงค์</translation>
 <translation id="2932883381142163287">รายงานการละเมิด</translation>
@@ -4674,6 +4675,7 @@
 <translation id="4647836961514597010">ตัวเลือกสี</translation>
 <translation id="4648491805942548247">สิทธิ์ไม่เพียงพอ</translation>
 <translation id="4650037136970677721">ประหยัดหน่วยความจำแล้ว</translation>
+<translation id="4650364565596261010">ค่าเริ่มต้นของระบบ</translation>
 <translation id="4650591383426000695">ยกเลิกการเชื่อมต่อโทรศัพท์จาก <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">โหลดองค์ประกอบออนไลน์ที่มีทรัพยากรโหมดสาธิตไม่ได้</translation>
 <translation id="4651921906638302153">ลงชื่อเข้าใช้ด้วยบัญชีนี้ไม่ได้</translation>
@@ -8816,7 +8818,6 @@
 <translation id="7968982339740310781">ดูรายละเอียด</translation>
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">รายละเอียดอีเทอร์เน็ต</translation>
-<translation id="7970882136539140748">บันทึกบัตรไม่ได้ในตอนนี้</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 พร้อมการเข้ารหัส RSA</translation>
 <translation id="7973776233567882054">ข้อใดต่อไปนี้อธิบายเครือข่ายของคุณได้ดีที่สุด</translation>
 <translation id="797394244396603170">เลือกอุปกรณ์ที่คุณต้องการแชร์ไฟล์ด้วย</translation>

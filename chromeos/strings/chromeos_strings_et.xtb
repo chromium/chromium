@@ -260,6 +260,7 @@
 <translation id="2872961005593481000">Lülita välja</translation>
 <translation id="2873483161362553159">Brauseris navigeerimine</translation>
 <translation id="2874939134665556319">Eelmine lugu</translation>
+<translation id="2875812231449496375">Selle taustapildiga parima tulemuse jaoks lülitage see sisse. Saate selle seade igal ajal välja lülitada.</translation>
 <translation id="2878387241690264070">Tühjenes <ph name="RATE" /> <ph name="NUM_SECONDS" /> sekundiga.</translation>
 <translation id="2880569433548999039">Pilvevoolu ekraanisäästja</translation>
 <translation id="2926057806159140518">Sisestage kasutajanimi ja parool või skannige QR-kood</translation>
@@ -552,6 +553,7 @@
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5137451382116112100">Täisekraan</translation>
 <translation id="5142961317498132443">Autentimine</translation>
+<translation id="5145081769226915336">Kas lülitada tume režiim automaatselt sisse?</translation>
 <translation id="5154917547274118687">Mälu</translation>
 <translation id="5160857336552977725">Logige sisse seadmesse <ph name="DEVICE_TYPE" /></translation>
 <translation id="5166918508782100047">Kiirvastuste seaded</translation>

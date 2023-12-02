@@ -4700,15 +4700,6 @@ Diese Richtlinie wird nur angewendet, wenn das Gerät für <ph name="PRODUCT_NAM
 <translation id="5030415914668947893">Erfassen von URL-Messwerten zulassen</translation>
 <translation id="5033070732967197381">WebAuthn-API-Anfragen auf Websites mit fehlerhaften TLS-Zertifikaten zulassen.</translation>
 <translation id="5034504101537897433">Melden von Informationen zu Absturzberichten auf Geräten aktivieren</translation>
-<translation id="5034734406205213733">Wenn diese Richtlinie aktiviert ist, verifiziert <ph name="PRODUCT_NAME" /> Serverzertifikate mithilfe der integrierten Zertifikatsprüfung und des Chrome Root Store als vertrauenswürdige öffentliche Quelle.
-
-Ist die Richtlinie deaktiviert, verwendet <ph name="PRODUCT_NAME" /> die Systemzertifikatsprüfung und die Root-Zertifikate des Systems.
-
-Wenn diese Richtlinie nicht konfiguriert ist, können der Chrome Root Store oder die systemeigenen Root-Zertifikate verwendet werden.
-
-Diese Richtlinie wird voraussichtlich in <ph name="PRODUCT_NAME" /> für Version 121 von <ph name="ANDROID_NAME" /> entfernt, wenn auch die Verwendung der von der Plattform bereitgestellten Stämme nicht mehr unterstützt wird.
-
-Diese Richtlinie wurde in <ph name="PRODUCT_NAME" /> für Version 113 von <ph name="MS_WIN_NAME" /> und <ph name="MAC_OS_NAME" /> sowie für Version 120 von <ph name="PRODUCT_OS_NAME" /> und in <ph name="PRODUCT_NAME" /> für Version 120 von <ph name="LINUX_OS_NAME" /> entfernt, als auch die Unterstützung für die Verwendung der von der Plattform bereitgestellten Zertifikatsprüfung und Stämme entfernt wurde.</translation>
 <translation id="5036013147560568855">Version des Zertifikatbereitstellungsprotokolls. Der Standardwert ist 1. 1 entspricht dem statischen Protokoll. 2 entspricht dem dynamischen Protokoll.</translation>
 <translation id="5039110755072335605">Unterstützung für CORS-Anfrageheader ohne Platzhalter</translation>
 <translation id="504116558738617678">Warnungen bei wenig Speicherplatz nur anzeigen, wenn das Gerät nicht verwaltet wird oder es nur einen Nutzer gibt</translation>

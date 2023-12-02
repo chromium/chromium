@@ -208,6 +208,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />borra los datos de Chr
 <translation id="2050196510205866090">{count,plural, =1{Hay {count} forma de pago guardada disponible sobre el teclado.}other{Hay {count} formas de pago guardadas disponibles sobre el teclado.}}</translation>
 <translation id="2055515971416882518">Abre "Configuración".</translation>
 <translation id="2059166748188874810">Municipalidad</translation>
+<translation id="2062410130322589403">Una guía de tus opciones de privacidad</translation>
 <translation id="2073572773299281212">Activo hace <ph name="DAYS" /> días</translation>
 <translation id="2074131957428911366">En la <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" />, puedes elegir los datos para sincronizar en cualquier momento.</translation>
 <translation id="2079545284768500474">Deshacer</translation>
@@ -622,6 +623,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="430793432425771671">Sincronizar todo</translation>
 <translation id="4309403553630140242">Presiona dos veces para obtener más información</translation>
 <translation id="430967081421617822">Desde el inicio</translation>
+<translation id="4322394346347055525">Cerrar las demás pestañas</translation>
 <translation id="4331177082088332784">Puedes administrar esto en la BEGIN_LINK Configuración de contenido END_LINK</translation>
 <translation id="4334428914252001502">1 artículo sin leer.</translation>
 <translation id="4338650699862464074">Envía a Google las URLs de las páginas que visitas.</translation>

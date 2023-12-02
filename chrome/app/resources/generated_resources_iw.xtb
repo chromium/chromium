@@ -2559,6 +2559,7 @@
 <translation id="2927017729816812676">אחסון קובצי מטמון</translation>
 <translation id="2928795416630981206">מורשים לעקוב אחר מיקום המצלמה</translation>
 <translation id="2931157624143513983">התאמה לאזור שבו ניתן להדפיס</translation>
+<translation id="2931342457001070961">לא מחובר מיקרופון</translation>
 <translation id="2932085390869194046">הצעת סיסמה...</translation>
 <translation id="2932483646085333864">יש לצאת ולהיכנס שוב כדי להתחיל את הסנכרון</translation>
 <translation id="2932883381142163287">דיווח על שימוש לרעה</translation>
@@ -4690,6 +4691,7 @@
 <translation id="4647836961514597010">בוחר צבעים</translation>
 <translation id="4648491805942548247">הרשאות לא מספיקות</translation>
 <translation id="4650037136970677721">הזיכרון נשמר</translation>
+<translation id="4650364565596261010">ברירת מחדל של המערכת</translation>
 <translation id="4650591383426000695">יש לנתק את הטלפון מה-<ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">לא ניתן לטעון רכיב אונליין עם משאבי מצב ההדגמה.</translation>
 <translation id="4651921906638302153">לא ניתן להיכנס באמצעות החשבון הזה</translation>
@@ -8839,7 +8841,6 @@
 <translation id="7968982339740310781">הצגת פרטים</translation>
 <translation id="7969046989155602842">פקודה</translation>
 <translation id="7970673414865679092">פרטים על אתרנט</translation>
-<translation id="7970882136539140748">אי אפשר לשמור את הכרטיס עכשיו</translation>
 <translation id="7972714317346275248">‏PKCS #1 SHA-384 עם הצפנת RSA</translation>
 <translation id="7973776233567882054">איזה מהמשפטים הבאים מתאר את הרשת שלך בצורה הטובה ביותר?</translation>
 <translation id="797394244396603170">יש לבחור את המכשיר שאיתו ברצונך לשתף קבצים</translation>

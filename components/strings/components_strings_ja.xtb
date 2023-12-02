@@ -346,7 +346,6 @@
 <translation id="1633941398432788136">イベント企画</translation>
 <translation id="1634828734222219955">合計</translation>
 <translation id="163669211644121865">確定申告、税務</translation>
-<translation id="1638780421120290329">カードを保存できません</translation>
 <translation id="1639239467298939599">読み込んでいます</translation>
 <translation id="1640180200866533862">ユーザー ポリシー</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />サイトのホームページにアクセス<ph name="END_LINK" />してみてください。</translation>
@@ -690,7 +689,6 @@
 <translation id="2324604504973636700">生活家電用品</translation>
 <translation id="2328651992442742497">許可（デフォルト）</translation>
 <translation id="2328955282645810595">建設用工具、動力工具</translation>
-<translation id="2329473609445770916">このサイトでは、他のサイトが広告の表示に使用できる興味 / 関心を定義しています</translation>
 <translation id="2330137317877982892">「<ph name="CREDIT_CARD" />」の有効期限は <ph name="EXPIRATION_DATE_ABBR" /> です</translation>
 <translation id="2337852623177822836">管理者が指定する設定</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> がペア設定を要求しています</translation>
@@ -1119,7 +1117,6 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、ブラウザのデザインをカスタマイズできます</translation>
 <translation id="3240791268468473923">保護されたお支払い認証情報（認証情報の一致なし）シートが開いています</translation>
 <translation id="324180406144491771">「<ph name="HOST_NAME" />」リンクはブロックされています</translation>
-<translation id="3248611290851046188">このサイトでは、他のサイトが広告の表示に使用できる興味 / 関心を定義しています。また、このサイトでは Chrome からお客様の興味 / 関心に関する情報を取得して、関連性の高い広告を表示しています。</translation>
 <translation id="3249151924975132674">学生ローン、奨学金</translation>
 <translation id="3249845759089040423">グルービー</translation>
 <translation id="3250640885957938546">広告、マーケティング</translation>
@@ -1587,7 +1584,6 @@
 <translation id="4177501066905053472">広告のトピック</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">価格トラッキングを停止</translation>
-<translation id="4194250254487269611">現在、カードを保存できません</translation>
 <translation id="4195459680867822611">[Chrome のヒントを表示] ボタンです。実行すると、Chrome の機能を確認できます</translation>
 <translation id="4195643157523330669">新しいタブで開く</translation>
 <translation id="4196861286325780578">移動のやり直し（&amp;R）</translation>
@@ -1727,7 +1723,6 @@
 <translation id="4424024547088906515">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は Chrome によって信頼されているものではありません。原因としては、不適切な設定や、悪意のあるユーザーによる接続妨害が考えられます。</translation>
 <translation id="4425173294238317796">パスキー確認シート</translation>
 <translation id="4425750422187370446">スポーツ衣料</translation>
-<translation id="4428065317363009941">広告のカスタマイズ</translation>
 <translation id="443121186588148776">シリアルポート</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> でログイン証明書が承認されなかったか、ログイン証明書が提示されていない可能性があります。</translation>
 <translation id="4432792777822557199">今後、<ph name="SOURCE_LANGUAGE" />のページは<ph name="TARGET_LANGUAGE" />に翻訳されます</translation>
@@ -2209,7 +2204,6 @@
 <translation id="540969355065856584">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は現在有効ではありません。設定が不適切か、悪意のあるユーザーによって接続が妨害されている可能性があります。</translation>
 <translation id="5411462078004183575">低価格のオプション</translation>
 <translation id="5412040515238827314">無効な形式です。パターンのリストを指定する必要があります。</translation>
-<translation id="5412236728747081950">このサイトでは Chrome からお客様の興味や関心に関する情報を取得して、関連性の高い広告を表示しています</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">スタッカー 4</translation>
 <translation id="5414446060143308245">移行する前に確認が必要です</translation>
@@ -2797,7 +2791,6 @@
 <translation id="6613866251791999074">Chrome で使用する検索エンジンについての詳細</translation>
 <translation id="6615297766614333076">スタッカー 2</translation>
 <translation id="6624427990725312378">連絡先情報</translation>
-<translation id="6627727261837091711">広告のパーソナライズの詳細を表示します</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> 検索</translation>
 <translation id="6629652037942826935">ハイクラス旅行</translation>
 <translation id="6630043285902923878">USB デバイスを検出しています...</translation>
@@ -3310,7 +3303,6 @@
 <translation id="7574998639136359461">ウィンター スポーツ用品</translation>
 <translation id="7575207903026901870">候補を削除するボタンです。Enter キーを押すと、この候補を削除します</translation>
 <translation id="7575887283389198269">携帯電話</translation>
-<translation id="7577900504646297215">興味のあるトピックを管理</translation>
 <translation id="7578104083680115302">どのデバイスでも、Google に保存したカードを使ってサイトやアプリの支払いをすばやく行うことができます。</translation>
 <translation id="7579442726219254162">「<ph name="APPLICATION_ID" />」の管理対象の設定に不明な変数「<ph name="VARIABLE" />」があります。</translation>
 <translation id="7581199239021537589">2 面の画像の Y 軸移動</translation>

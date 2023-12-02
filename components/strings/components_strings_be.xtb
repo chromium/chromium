@@ -346,7 +346,6 @@
 <translation id="1633941398432788136">Арганізацыя мерапрыемстваў</translation>
 <translation id="1634828734222219955">Усяго</translation>
 <translation id="163669211644121865">Падрыхтоўка і планаванне падаткаў</translation>
-<translation id="1638780421120290329">Не ўдалося захаваць картку</translation>
 <translation id="1639239467298939599">Ідзе загрузка</translation>
 <translation id="1640180200866533862">Палітыкі карыстальніка</translation>
 <translation id="1640244768702815859">Паспрабуйце <ph name="BEGIN_LINK" />адкрыць галоўную старонку сайта<ph name="END_LINK" />.</translation>
@@ -690,7 +689,6 @@
 <translation id="2324604504973636700">Бытавая тэхніка</translation>
 <translation id="2328651992442742497">Дазволена (стандартна)</translation>
 <translation id="2328955282645810595">Будаўнічы і электраінструмент</translation>
-<translation id="2329473609445770916">Гэты сайт вызначае інтарэсы, якія могуць выкарыстоўвацца іншымі сайтамі для паказу рэкламы</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, дзейнічае да <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Наладай кіруе ваш адміністратар</translation>
 <translation id="2340263603246777781">Сайт <ph name="ORIGIN" /> запытвае спалучэнне</translation>
@@ -1119,7 +1117,6 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб наладзіць выгляд браўзера, націсніце Tab, затым Enter</translation>
 <translation id="3240791268468473923">Быў адкрыты аркуш, які паказваецца пры адсутнасці супадзення ўліковых даных для бяспечных плацяжоў</translation>
 <translation id="324180406144491771">Спасылкі "<ph name="HOST_NAME" />" заблакіраваны</translation>
-<translation id="3248611290851046188">Гэты сайт вызначае інтарэсы, якія могуць выкарыстоўвацца іншымі сайтамі для паказу рэкламы. Гэты сайт выкарыстоўвае даныя Chrome пра вашы інтарэсы, каб паказваць вам больш рэлевантную рэкламу.</translation>
 <translation id="3249151924975132674">Крэдыты на навучанне</translation>
 <translation id="3249845759089040423">Стыльны</translation>
 <translation id="3250640885957938546">Рэклама і маркетынг</translation>
@@ -1586,7 +1583,6 @@
 <translation id="4177501066905053472">Тэмы рэкламы</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Перастаць адсочваць цану</translation>
-<translation id="4194250254487269611">Не ўдаецца захаваць даныя вашай крэдытнай карткі</translation>
 <translation id="4195459680867822611">Кнопка "Паказаць парады адносна Chrome". Каб азнаёміцца з функцыямі браўзера Chrome, націсніце яе.</translation>
 <translation id="4195643157523330669">Адкрыць у новай укладцы</translation>
 <translation id="4196861286325780578">&amp;Узнавіць перамяшчэнне</translation>
@@ -1726,7 +1722,6 @@
 <translation id="4424024547088906515">Серверу не ўдалося даказаць, што гэта <ph name="DOMAIN" />; Chrome не давярае яго сертыфікату бяспекі. Прычынай могуць быць няправільныя налады або зламыснік, які спрабуе перахапіць падключэнне.</translation>
 <translation id="4425173294238317796">Аркуш з просьбай пацвердзіць стварэнне ключа доступу</translation>
 <translation id="4425750422187370446">Спартыўнае адзенне і абутак</translation>
-<translation id="4428065317363009941">Персаналізацыя рэкламы</translation>
 <translation id="443121186588148776">Паслядоўны порт</translation>
 <translation id="4432688616882109544">Хост <ph name="HOST_NAME" /> не прыняў або не атрымаў ваш сертыфікат уваходу.</translation>
 <translation id="4432792777822557199">Цяпер старонкі на мове <ph name="SOURCE_LANGUAGE" /> будуць перакладацца на мову <ph name="TARGET_LANGUAGE" /></translation>
@@ -2208,7 +2203,6 @@
 <translation id="540969355065856584">Серверу не ўдалося даказаць, што гэта <ph name="DOMAIN" />; сертыфікат бяспекі гэтага сайта не распазнаецца як сапраўдны. Прычынай могуць быць няправільныя налады або зламыснік, які спрабуе перахапіць падключэнне.</translation>
 <translation id="5411462078004183575">Недарагі варыянт</translation>
 <translation id="5412040515238827314">Няправільны фармат: неабходна ўказаць спіс шаблонаў.</translation>
-<translation id="5412236728747081950">Гэты сайт выкарыстоўвае інфармацыю пра вашы дзеянні ў Chrome, каб паказваць вам больш адпаведную вашым інтарэсам рэкламу</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Укладчык 4</translation>
 <translation id="5414446060143308245">Перш чым пераносіць файлы, іх неабходна праверыць</translation>
@@ -2796,7 +2790,6 @@
 <translation id="6613866251791999074">Даведацца больш пра пошукавую сістэму, якая выкарыстоўваецца ў Chrome</translation>
 <translation id="6615297766614333076">Укладчык 2</translation>
 <translation id="6624427990725312378">Кантактная інфармацыя</translation>
-<translation id="6627727261837091711">Паказаць падрабязныя звесткі пра персаналізацыю рэкламы</translation>
 <translation id="6628463337424475685">Пошук <ph name="ENGINE" /></translation>
 <translation id="6629652037942826935">Падарожжы класа люкс</translation>
 <translation id="6630043285902923878">Ідзе пошук прылад USB...</translation>
@@ -3309,7 +3302,6 @@
 <translation id="7574998639136359461">Рыштунак для зімовых відаў спорту</translation>
 <translation id="7575207903026901870">Кнопка "Выдаліць прапанову". Каб выдаліць прапанову, націсніце Enter.</translation>
 <translation id="7575887283389198269">Мабільныя тэлефоны</translation>
-<translation id="7577900504646297215">Кіраваць інтарэсамі</translation>
 <translation id="7578104083680115302">Хуткая аплата на сайтах і ў праграмах з розных прылад карткамі, захаванымі ў сэрвісах Google.</translation>
 <translation id="7579442726219254162">Невядомая пераменная "<ph name="VARIABLE" />" у кіруемай канфігурацыі праграмы "<ph name="APPLICATION_ID" />".</translation>
 <translation id="7581199239021537589">Зрух відарыса па восі Y, бок 2</translation>

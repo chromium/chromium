@@ -2543,6 +2543,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2927017729816812676">Almacenamento da caché</translation>
 <translation id="2928795416630981206">Sitios que poden facer un seguimento da posición da cámara</translation>
 <translation id="2931157624143513983">Axustar á área de impresión</translation>
+<translation id="2931342457001070961">Non hai ningún micrófono conectado</translation>
 <translation id="2932085390869194046">Suxerir contrasinal…</translation>
 <translation id="2932483646085333864">Pecha sesión e iníciaa de novo para comezar a sincronización</translation>
 <translation id="2932883381142163287">Informar de uso inadecuado</translation>
@@ -4676,6 +4677,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4647836961514597010">Seleccionador de cor</translation>
 <translation id="4648491805942548247">Permisos insuficientes</translation>
 <translation id="4650037136970677721">Memoria aforrada</translation>
+<translation id="4650364565596261010">Opción predeterminada do sistema</translation>
 <translation id="4650591383426000695">Desconecta o teléfono do <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Non se puido cargar o compoñente en liña cos recursos do modo de demostración.</translation>
 <translation id="4651921906638302153">Non se pode iniciar sesión con esta conta</translation>
@@ -8818,7 +8820,6 @@ Podes xestionar a configuración desta tarxeta desde o menú correspondente ou v
 <translation id="7968982339740310781">Ver detalles</translation>
 <translation id="7969046989155602842">Comando</translation>
 <translation id="7970673414865679092">Detalles da rede Ethernet</translation>
-<translation id="7970882136539140748">A tarxeta non se puido gardar neste momento</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 con cifrado RSA</translation>
 <translation id="7973776233567882054">Cal das seguintes opcións describe mellor a túa rede?</translation>
 <translation id="797394244396603170">Selecciona o dispositivo co que queiras compartir ficheiros</translation>

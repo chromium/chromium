@@ -4557,15 +4557,6 @@ None（なし）に設定するか未設定のままにした場合、ARC アプ
 <translation id="5030415914668947893">URL キーによる指標の収集を許可する</translation>
 <translation id="5033070732967197381">TLS 証明書が破損しているサイトで WebAuthn API リクエストを許可する。</translation>
 <translation id="5034504101537897433">デバイスの障害レポート情報の報告を有効にする</translation>
-<translation id="5034734406205213733">このポリシーを有効に設定した場合、<ph name="PRODUCT_NAME" /> は組み込みの証明書確認機能を使用してサーバー証明書の確認を行います。その際、Chrome Root Store がパブリック トラストのソースとして使用されます。
-
-このポリシーを無効に設定した場合、<ph name="PRODUCT_NAME" /> はシステムの証明書確認機能とシステムのルート証明書を使用します。
-
-このポリシーを未設定のままにした場合、Chrome Root Store またはシステムの提供するルートが使用される可能性があります。
-
-このポリシーは <ph name="ANDROID_NAME" /> 向け <ph name="PRODUCT_NAME" /> バージョン 121 で削除される予定です（プラットフォームから提供されるルートのサポートが終了するため）。
-
-このポリシーは <ph name="MS_WIN_NAME" /> および <ph name="MAC_OS_NAME" /> 向け <ph name="PRODUCT_NAME" /> バージョン 113、<ph name="PRODUCT_OS_NAME" /> バージョン 120、<ph name="LINUX_OS_NAME" /> 向け <ph name="PRODUCT_NAME" /> バージョン 120 で削除されました（プラットフォームから提供される証明書確認機能とルートのサポートが終了したため）。</translation>
 <translation id="5036013147560568855">証明書のプロビジョニング プロトコルのバージョン。デフォルトは 1 です。1 は「静的」プロトコルです。2 は「動的」プロトコルです。</translation>
 <translation id="5039110755072335605">CORS 非ワイルドカード リクエスト ヘッダーのサポート</translation>
 <translation id="504116558738617678">デバイスが管理対象外またはユーザーが 1 人のみの場合に限り、ディスクの空き容量不足を通知する</translation>

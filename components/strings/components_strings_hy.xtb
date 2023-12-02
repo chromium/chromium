@@ -350,7 +350,6 @@
 <translation id="1633941398432788136">Միջոցառումների պլանավորում</translation>
 <translation id="1634828734222219955">Ընդհանուր</translation>
 <translation id="163669211644121865">Հարկային փաստաթղթերի ձևակերպում և պլանավորում</translation>
-<translation id="1638780421120290329">Չհաջողվեց պահել քարտը</translation>
 <translation id="1639239467298939599">Բեռնում</translation>
 <translation id="1640180200866533862">Օգտագործման կանոններ</translation>
 <translation id="1640244768702815859">Փորձեք <ph name="BEGIN_LINK" />այցելել կայքի գլխավոր էջը<ph name="END_LINK" />:</translation>
@@ -667,6 +666,7 @@
 <translation id="2262243747453050782">HTTP-ի սխալ</translation>
 <translation id="226481340855943334">Նախահայրեր և ծագումնաբանություն</translation>
 <translation id="2265192657948645752">Աշխատանք մանրածախ առևտրի ոլորտում</translation>
+<translation id="2265356434276802347">Այս կանոնում առաջարկվող գրառումների թիվը չպետք է գերազանցի <ph name="MAX_ITEMS_LIMIT" />-ը։</translation>
 <translation id="2267047181501709434">Հաստատվում է ձեր ինքնությունը…</translation>
 <translation id="2268743667444073169">Հեռուստասերիալներ</translation>
 <translation id="2270484714375784793">Հեռախոսահամար</translation>
@@ -693,7 +693,6 @@
 <translation id="2324604504973636700">Կենցաղային տեխնիկա</translation>
 <translation id="2328651992442742497">Թույլատրված է (կանխադրված)</translation>
 <translation id="2328955282645810595">Շինարարական և էլեկտրական գործիքներ</translation>
-<translation id="2329473609445770916">Այս կայքը որոշում է հետաքրքրությունները, որոնք կարող են օգտագործվել այլ կայքերի կողմից՝ ձեզ գովազդ ցուցադրելու համար</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, վավեր է մինչև <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Կարգավորումը վերահսկվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> կայքն ուզում է զուգակցվել</translation>
@@ -1124,7 +1123,6 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Դիտարկիչի տեսքը կարգավորելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="3240791268468473923">Բացվել է պատուհան, որը ցուցադրում է անվտանգ վճարման տվյալների անհամապատասխանությունը տվյալների աղյուսակի հետ</translation>
 <translation id="324180406144491771">«<ph name="HOST_NAME" />» հղումներն արգելափակված են</translation>
-<translation id="3248611290851046188">Այս կայքը որոշում է հետաքրքրությունները, որոնք կարող են օգտագործվել այլ կայքերի կողմից՝ ձեզ գովազդ ցուցադրելու համար։ Այս կայքը Chrome-ից նաև ստանում է ձեզ հետաքրքրող թեմաների մասին տվյալներ՝ ձեզ ավելի համապատասխան գովազդ ցուցադրելու համար։</translation>
 <translation id="3249151924975132674">Ուսանողական վարկեր և կրթության ֆինանսավորում</translation>
 <translation id="3249845759089040423">Նորաձև</translation>
 <translation id="3250640885957938546">Գովազդ և մարքեթինգ</translation>
@@ -1594,7 +1592,6 @@
 <translation id="4177501066905053472">Գովազդի թեմաներ</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Այլևս չհետագծել գինը</translation>
-<translation id="4194250254487269611">Չհաջողվեց պահել քարտը</translation>
 <translation id="4195459680867822611">«Տեսնել Chrome-ին առնչվող խորհուրդներ» կոճակ․ ակտիվացրեք՝ Chrome-ի գործառույթների մասին տեղեկանալու համար</translation>
 <translation id="4195643157523330669">Բացել նոր ներդիրով</translation>
 <translation id="4196861286325780578">&amp;Վերարկել տեղափոխումը</translation>
@@ -1734,7 +1731,6 @@
 <translation id="4424024547088906515">Այս սերվերը չի կարող ապացուցել, որ <ph name="DOMAIN" /> է: Chrome-ը չի վստահում դրա անվտանգության վկայականին: Պատճառը կարող է լինել սխալ կազմաձևումը կամ կապակցման խափանումը հարձակվողի կողմից:</translation>
 <translation id="4425173294238317796">Անցաբառի հաստատման թերթ</translation>
 <translation id="4425750422187370446">Մարզահագուստ</translation>
-<translation id="4428065317363009941">Գովազդի անհատականացում</translation>
 <translation id="443121186588148776">Սերիական միացք</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> տիրույթը չի ընդունել ձեր մուտքի վկայագիրը, կամ դուք չեք տրամադրել այն:</translation>
 <translation id="4432792777822557199">Այսուհետ <ph name="SOURCE_LANGUAGE" /> էջերը կթարգմանվեն <ph name="TARGET_LANGUAGE" /></translation>
@@ -2219,7 +2215,6 @@
 <translation id="540969355065856584">Այս սերվերը չի կարող ապացուցել, որ <ph name="DOMAIN" /> է: Դրա անվտանգության վկայականն այս անգամ վավեր չէ: Պատճառը կարող է լինել սխալ կազմաձևումը կամ կապակցման խափանումը հարձակվողի կողմից:</translation>
 <translation id="5411462078004183575">Ցածր գնով տարբերակ</translation>
 <translation id="5412040515238827314">Ձևաչափն անվավեր է։ Անհրաժեշտ է նշել ձևանմուշների ցանկը։</translation>
-<translation id="5412236728747081950">Այս կայքը Chrome-ից ստանում է ձեզ հետաքրքրող թեմաների մասին տվյալներ՝ ավելի համապատասխան գովազդ ցուցադրելու համար</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Շեղջիչ 4</translation>
 <translation id="5414446060143308245">Նախքան փոխանցելը ստուգեք ֆայլերը</translation>
@@ -2807,7 +2802,6 @@
 <translation id="6613866251791999074">Իմանալ ավելին իմ որոնողական համակարգի մասին Chrome-ում</translation>
 <translation id="6615297766614333076">Շեղջիչ 2</translation>
 <translation id="6624427990725312378">Կոնտակտային տվյալներ</translation>
-<translation id="6627727261837091711">Ցույց տալ գովազդի անհատականացման մանրամասները</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> Որոնում</translation>
 <translation id="6629652037942826935">Շքեղ ճանապարհորդություն</translation>
 <translation id="6630043285902923878">USB սարքերի որոնում…</translation>
@@ -3319,7 +3313,6 @@
 <translation id="7574998639136359461">Ձմեռային սպորտաձևերի մարզագույք</translation>
 <translation id="7575207903026901870">Հուշումը հեռացնելու կոճակ։ Սեղմեք Enter՝ հեռացնելու համար։</translation>
 <translation id="7575887283389198269">Բջջային հեռախոսներ</translation>
-<translation id="7577900504646297215">Կառավարել հետաքրքրությունները</translation>
 <translation id="7578104083680115302">Պահեք քարտերը Google-ում, որպեսզի արագ կատարեք վճարումներ կայքերում և հավելվածներում ձեր բոլոր սարքերով:</translation>
 <translation id="7579442726219254162">Անհայտ փոփոխական («<ph name="VARIABLE" />») «<ph name="APPLICATION_ID" />» կառավարվող կազմաձևում։</translation>
 <translation id="7581199239021537589">Պատկերների տեղաշարժ հակառակ կողմից՝ Y առանցքով</translation>

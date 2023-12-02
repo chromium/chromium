@@ -346,7 +346,6 @@
 <translation id="1633941398432788136">ઇવેન્ટનું આયોજન</translation>
 <translation id="1634828734222219955">કુલ</translation>
 <translation id="163669211644121865">ટેક્સની ગણતરી અને તેનું પ્લાનિંગ</translation>
-<translation id="1638780421120290329">કાર્ડ સાચવી શકાતું નથી</translation>
 <translation id="1639239467298939599">લોડ થઇ રહી છે</translation>
 <translation id="1640180200866533862">વપરાશકર્તા પૉલિસીઓ</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />સાઇટના હોમપેજની મુલાકાત લેવાનો<ph name="END_LINK" /> પ્રયાસ કરો.</translation>
@@ -690,7 +689,6 @@
 <translation id="2324604504973636700">ઘરના ઉપકરણો</translation>
 <translation id="2328651992442742497">મંજૂર (ડિફૉલ્ટ)</translation>
 <translation id="2328955282645810595">બાંધકામ અને પાવર ટૂલ</translation>
-<translation id="2329473609445770916">આ સાઇટ એવી રુચિઓને નિર્ધારિત કરે છે કે જેનો ઉપયોગ અન્ય સાઇટ તમને જાહેરાતો બતાવવા માટે કરી શકે છે</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" />ના રોજ સમાપ્ત થાય છે</translation>
 <translation id="2337852623177822836">તમારા વ્યવસ્થાપકે નિયંત્રિત કરેલ સેટિંગ</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" />, જોડી કરવા માગે છે</translation>
@@ -1119,7 +1117,6 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, તમારા બ્રાઉઝરનો દેખાવ કસ્ટમાઇઝ કરવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
 <translation id="3240791268468473923">ચુકવણીની સુરક્ષિત લૉગ ઇન વિગત, મેળ ખાતી લૉગ ઇન વિગતની કોઈપણ શીટ ખોલવામાં આવી નથી</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />”ની લિંક બ્લૉક કરેલી છે</translation>
-<translation id="3248611290851046188">આ સાઇટ એવી રુચિઓને નિર્ધારિત કરે છે કે જેનો ઉપયોગ અન્ય સાઇટ તમને જાહેરાતો બતાવવા માટે કરી શકે છે. તમને વધુ સંબંધિત જાહેરાતો બતાવવા માટે, આ સાઇટ Chromeમાંથી તમારી રુચિઓ પણ મેળવે છે.</translation>
 <translation id="3249151924975132674">કૉલેજના વિદ્યાર્થીઓને લોન આપતી સેવાઓ</translation>
 <translation id="3249845759089040423">ગ્રૂવી</translation>
 <translation id="3250640885957938546">જાહેરાત અને માર્કેટિંગ</translation>
@@ -1587,7 +1584,6 @@
 <translation id="4177501066905053472">જાહેરાતના વિષયો</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">કિંમત ટ્રૅક કરવાનું બંધ કરો</translation>
-<translation id="4194250254487269611">હમણાં જ તમારું કાર્ડ સાચવી શકાતું નથી</translation>
 <translation id="4195459680867822611">'Chrome ટિપ જુઓ' બટન, Chromeની સુવિધાઓ વિશે જાણવા માટે સક્રિય કરો</translation>
 <translation id="4195643157523330669">નવા ટૅબમાં ખોલો</translation>
 <translation id="4196861286325780578">&amp;ખસેડવું ફરી કરો</translation>
@@ -1727,7 +1723,6 @@
 <translation id="4424024547088906515">આ સર્વર સાબિત કરી શક્યું નથી કે તે <ph name="DOMAIN" /> છે; તેનું સુરક્ષા પ્રમાણપત્ર Chrome દ્વારા વિશ્વસનીય નથી. આ કોઈ ખોટી ગોઠવણીને કારણે થયું હશે અથવા કોઈ હુમલાખોર તમારા કનેક્શનને અટકાવી રહ્યો છે.</translation>
 <translation id="4425173294238317796">પાસકી કન્ફર્મેશન શીટ</translation>
 <translation id="4425750422187370446">કસરત માટેનો પોશાક</translation>
-<translation id="4428065317363009941">રુચિ મુજબ જાહેરાત</translation>
 <translation id="443121186588148776">સિરીઅલ પોર્ટ</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> એ તમારું લોગિન પ્રમાણપત્ર સ્વીકાર્યું ન હતું અથવા કદાચ કોઈ એક પ્રદાન કરવામાં આવ્યું નથી.</translation>
 <translation id="4432792777822557199">હવેથી <ph name="SOURCE_LANGUAGE" />માં છે તે પેજનો અનુવાદ <ph name="TARGET_LANGUAGE" />માં થશે</translation>
@@ -2209,7 +2204,6 @@
 <translation id="540969355065856584">આ સર્વર સાબિત કરી શક્યું નથી કે તે <ph name="DOMAIN" /> છે; તેનું સુરક્ષા પ્રમાણપત્ર આ સમયે માન્ય નથી. આ કોઇ ખોટી ગોઠવણીને કારણે થયું હોય અથવા કોઈ હુમલાખોર તમારા કનેક્શનને અટકાવી રહ્યો હોઇ શકે છે.</translation>
 <translation id="5411462078004183575">ઓછી કિંમતનો વિકલ્પ</translation>
 <translation id="5412040515238827314">અમાન્ય ફૉર્મેટ: પૅટર્નની કોઈ સૂચિ અપેક્ષિત છે.</translation>
-<translation id="5412236728747081950">તમને વધુ સંબંધિત હોય તેવી જાહેરાતો બતાવી શકાય તે માટે આ સાઇટ Chromeમાંથી તમારી રુચિઓ મેળવે છે</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">સ્ટૅકર 4</translation>
 <translation id="5414446060143308245">ટ્રાન્સફર કરતા પહેલાં રિવ્યૂ કરવો આવશ્યક છે</translation>
@@ -2797,7 +2791,6 @@
 <translation id="6613866251791999074">Chromeમાં તમારા શોધ એન્જિન વિશે વધુ જાણો</translation>
 <translation id="6615297766614333076">સ્ટૅકર 2</translation>
 <translation id="6624427990725312378">સંપર્ક માહિતી</translation>
-<translation id="6627727261837091711">રુચિ મુજબ જાહેરાતની વિગતો બતાવો</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> શોધ</translation>
 <translation id="6629652037942826935">વૈભવી મુસાફરી</translation>
 <translation id="6630043285902923878">USB ડિવાઇસ શોધી રહ્યાં છીએ...</translation>
@@ -3309,7 +3302,6 @@
 <translation id="7574998639136359461">શિયાળુ રમતોનું સાધન</translation>
 <translation id="7575207903026901870">સૂચન કાઢી નાખો બટન, આ સૂચન કાઢી નાખવા માટે Enter દબાવો</translation>
 <translation id="7575887283389198269">મોબાઇલ ફોન</translation>
-<translation id="7577900504646297215">રુચિઓ મેનેજ કરો</translation>
 <translation id="7578104083680115302">તમે Google સાથે સાચવેલાં કાર્ડનો ઉપયોગ કરીને બધા ડિવાઇસમાં સાઇટ અને ઍપ પર ઝડપથી ચુકવણી કરો.</translation>
 <translation id="7579442726219254162">"<ph name="APPLICATION_ID" />"ના મેનેજ કરેલા કન્ફિગ્યુરેશનમાં અજાણ્યું ચલ "<ph name="VARIABLE" />".</translation>
 <translation id="7581199239021537589">બાજુ 2 છબીને Y અક્ષ પર ખસેડો</translation>

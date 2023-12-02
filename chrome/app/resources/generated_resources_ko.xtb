@@ -2561,6 +2561,7 @@
 <translation id="2927017729816812676">캐시 저장공간</translation>
 <translation id="2928795416630981206">카메라 위치 추적 허용</translation>
 <translation id="2931157624143513983">인쇄 가능 영역에 맞춤</translation>
+<translation id="2931342457001070961">연결된 마이크가 없음</translation>
 <translation id="2932085390869194046">비밀번호 추천...</translation>
 <translation id="2932483646085333864">동기화를 시작하려면 로그아웃한 후 다시 로그인하세요.</translation>
 <translation id="2932883381142163287">악용사례 신고</translation>
@@ -4690,6 +4691,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4647836961514597010">색상선택 도구</translation>
 <translation id="4648491805942548247">권한 부족</translation>
 <translation id="4650037136970677721">메모리 저장됨</translation>
+<translation id="4650364565596261010">시스템 기본값</translation>
 <translation id="4650591383426000695"><ph name="DEVICE_TYPE" />에서 휴대전화 연결 해제</translation>
 <translation id="4651484272688821107">데모 모드 리소스로 온라인 구성요소를 로드하지 못했습니다.</translation>
 <translation id="4651921906638302153">이 계정으로 로그인할 수 없음</translation>
@@ -8836,7 +8838,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7968982339740310781">세부정보 보기</translation>
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">이더넷 세부정보</translation>
-<translation id="7970882136539140748">지금은 카드를 저장할 수 없음</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384(RSA 암호화 사용)</translation>
 <translation id="7973776233567882054">다음 중 사용 중인 네트워크를 가장 잘 설명하는 항목은 무엇인가요?</translation>
 <translation id="797394244396603170">파일을 공유할 기기를 선택하세요.</translation>

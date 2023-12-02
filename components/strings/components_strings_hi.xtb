@@ -346,7 +346,6 @@
 <translation id="1633941398432788136">इवेंट प्लानिंग</translation>
 <translation id="1634828734222219955">कुल</translation>
 <translation id="163669211644121865">टैक्स भरने से जुड़ी जानकारी तैयार करने और सलाह देने वाली सेवाएं</translation>
-<translation id="1638780421120290329">कार्ड सेव नहीं किया जा सकता</translation>
 <translation id="1639239467298939599">लोड हो रही है</translation>
 <translation id="1640180200866533862">उपयोगकर्ता नीतियां</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />साइट के मुखपृष्ठ पर विज़िट करके<ph name="END_LINK" /> देखें.</translation>
@@ -664,6 +663,7 @@
 <translation id="2262243747453050782">HTTP गड़बड़ी</translation>
 <translation id="226481340855943334">पूर्वज और वंशावली</translation>
 <translation id="2265192657948645752">रीटेल क्षेत्र की नौकरियां</translation>
+<translation id="2265356434276802347">इस नीति में <ph name="MAX_ITEMS_LIMIT" /> से ज़्यादा, खोज से जुड़ी सेवा देने वाली कंपनी नहीं हो सकतीं.</translation>
 <translation id="2267047181501709434">आपकी पहचान की पुष्टि की जा रही है...</translation>
 <translation id="2268743667444073169">टीवी सीरियल</translation>
 <translation id="2270484714375784793">फ़ोन नंबर</translation>
@@ -690,7 +690,6 @@
 <translation id="2324604504973636700">घरेलू उपकरण</translation>
 <translation id="2328651992442742497">अनुमति है (डिफ़ॉल्ट रूप से)</translation>
 <translation id="2328955282645810595">निर्माण और पावर टूल</translation>
-<translation id="2329473609445770916">इस साइट से तय होता है कि दूसरी साइटें आपकी पसंद के किन विषयों से जुड़े विज्ञापन आपको दिखा सकती हैं</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" /> को खत्म होने वाला है</translation>
 <translation id="2337852623177822836">वह सेटिंग जिसे आपका व्यवस्थापक नियंत्रित करता है</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> युग्मित करना चाहता है</translation>
@@ -1118,7 +1117,6 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, अपने ब्राउज़र का लुक पसंद के मुताबिक बनाने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="3240791268468473923">मेल नहीं खाने वाले पेमेंट क्रेडेंशियल की शीट खुली है</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” के लिंक ब्लॉक किए गए हैं</translation>
-<translation id="3248611290851046188">इस साइट से तय होता है कि दूसरी साइटें आपकी पसंद के किन विषयों से जुड़े विज्ञापन आपको दिखा सकती हैं. यह साइट, आपकी पसंद के विषयों के बारे में Chrome से भी पता करती है, ताकि आपको ज़्यादा काम के विज्ञापन दिखा सके.</translation>
 <translation id="3249151924975132674">कॉलेज के छात्र-छात्राओं को लोन देने वाली सेवाएं</translation>
 <translation id="3249845759089040423">शानदार</translation>
 <translation id="3250640885957938546">विज्ञापन और मार्केटिंग</translation>
@@ -1586,7 +1584,6 @@
 <translation id="4177501066905053472">विज्ञापन के विषय</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">कीमत ट्रैक न करें</translation>
-<translation id="4194250254487269611">माफ़ करें, आपके कार्ड को अभी सेव नहीं किया जा सकता</translation>
 <translation id="4195459680867822611">'Chrome से जुड़ी सलाह देखें' बटन, Chrome की सुविधाओं के बारे में जानने के लिए इसे चालू करें</translation>
 <translation id="4195643157523330669">नए टैब में खोलें</translation>
 <translation id="4196861286325780578">&amp;ले जाना फिर से करें</translation>
@@ -1726,7 +1723,6 @@
 <translation id="4424024547088906515">यह सर्वर यह नहीं प्रमाणित कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा प्रमाणपत्र Chrome द्वारा विश्वसनीय नहीं है. ऐसा गलत कॉन्फ़िगरेशन या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
 <translation id="4425173294238317796">पासकी की पुष्टि करने वाली शीट</translation>
 <translation id="4425750422187370446">ऐथलेटिक कपड़े</translation>
-<translation id="4428065317363009941">दिलचस्पी के मुताबिक विज्ञापन</translation>
 <translation id="443121186588148776">सीरियल पोर्ट</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> ने आपका लॉगिन प्रमाणपत्र स्वीकार नहीं किया है या हो सकता है कि प्रमाणपत्र उपलब्ध नहीं कराया गया हो.</translation>
 <translation id="4432792777822557199">अब से <ph name="SOURCE_LANGUAGE" /> भाषा के पेज का अनुवाद <ph name="TARGET_LANGUAGE" /> भाषा में किया जाएगा</translation>
@@ -2208,7 +2204,6 @@
 <translation id="540969355065856584">यह सर्वर यह प्रमाणित नहीं कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा प्रमाण पत्र इस समय मान्य नहीं है. ऐसा गलत कॉन्फ़िगरेशन या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
 <translation id="5411462078004183575">कम कीमत वाला विकल्प</translation>
 <translation id="5412040515238827314">अमान्य फ़ॉर्मैट: पैटर्न की सूची होनी चाहिए.</translation>
-<translation id="5412236728747081950">यह साइट आपकी दिलचस्पी के बारे में Chrome से पता करती है, ताकि आपको ज़्यादा काम के विज्ञापन दिखा सके</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">स्टैकर 4</translation>
 <translation id="5414446060143308245">ट्रांसफ़र करने से पहले, समीक्षा करना ज़रूरी है</translation>
@@ -2796,7 +2791,6 @@
 <translation id="6613866251791999074">Chrome में अपने सर्च इंजन के बारे में ज़्यादा जानें</translation>
 <translation id="6615297766614333076">स्टैकर 2</translation>
 <translation id="6624427990725312378">संपर्क जानकारी</translation>
-<translation id="6627727261837091711">दिलचस्पी के मुताबिक विज्ञापन दिखाए जाने के बारे में पूरी जानकारी दिखाएं</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> सर्च</translation>
 <translation id="6629652037942826935">लग्ज़री ट्रैवल</translation>
 <translation id="6630043285902923878">यूएसबी डिवाइस ढूंढें जा रहे हैं...</translation>
@@ -3308,7 +3302,6 @@
 <translation id="7574998639136359461">विंटर स्पोर्ट्स के इक्विपमेंट</translation>
 <translation id="7575207903026901870">सुझाव बटन हटाएं, इस सुझाव को हटाने के लिए Enter दबाएं</translation>
 <translation id="7575887283389198269">मोबाइल फ़ोन</translation>
-<translation id="7577900504646297215">पसंद प्रबंधित करें</translation>
 <translation id="7578104083680115302">Google के साथ सहेजे गए कार्ड का उपयोग करके डिवाइसों में मौजूद साइटों और ऐप्‍स पर तुरंत भुगतान करें.</translation>
 <translation id="7579442726219254162">"<ph name="APPLICATION_ID" />" के मैनेज किए जा रहे कॉन्फ़िगरेशन में अज्ञात वैरिएबल "<ph name="VARIABLE" />".</translation>
 <translation id="7581199239021537589">साइड 2 इमेज Y शिफ़्ट</translation>

@@ -1790,6 +1790,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2344032937402519675">Couldn’t connect with the server. Check your network connection and try again. If you're still having trouble, try restarting your Chromebook.</translation>
 <translation id="234559068082989648">Old versions of Chrome Apps won't open after December 2022. Contact your administrator to update to a new version or remove this app.</translation>
 <translation id="2345723121311404059">1 page to <ph name="PRINTER_NAME" /></translation>
+<translation id="2347930112185157300">Mobile network provider is locked</translation>
 <translation id="2348176352564285430">App: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – Permission requested, press Ctrl + Forward to respond</translation>
 <translation id="234889437187286781">Error loading data</translation>
@@ -2558,6 +2559,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2927017729816812676">Cache Storage</translation>
 <translation id="2928795416630981206">Allowed to track your camera position</translation>
 <translation id="2931157624143513983">Fit to printable area</translation>
+<translation id="2931342457001070961">No microphone connected</translation>
 <translation id="2932085390869194046">Suggest password...</translation>
 <translation id="2932483646085333864">Sign out then sign in again to start sync</translation>
 <translation id="2932883381142163287">Report abuse</translation>
@@ -4689,6 +4691,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4647836961514597010">Colour picker</translation>
 <translation id="4648491805942548247">Insufficient permissions</translation>
 <translation id="4650037136970677721">Memory saved</translation>
+<translation id="4650364565596261010">System default</translation>
 <translation id="4650591383426000695">Disconnect your phone from your <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Could not load online component with demo mode resources.</translation>
 <translation id="4651921906638302153">Can't sign in with this account</translation>
@@ -4925,6 +4928,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4839303808932127586">Sa&amp;ve video as...</translation>
 <translation id="4839910546484524995">Check your device</translation>
 <translation id="4840096453115567876">Exit Incognito mode anyway?</translation>
+<translation id="4841475798258477260">This device can only connect to a specific mobile network. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4841741146571978176">A required virtual machine does not exist. Please try setting up <ph name="VM_TYPE" /> to continue</translation>
 <translation id="4842976633412754305">This page is trying to load scripts from unauthenticated sources.</translation>
 <translation id="4844333629810439236">Other keyboards</translation>
@@ -6477,6 +6481,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6104068876731806426">Google Accounts</translation>
 <translation id="6104311680260824317">Can't join the device to the domain. The server does not support specified Kerberos encryption types. Check 'More options' for encryption settings.</translation>
 <translation id="6104796831253957966">Printer queue is full</translation>
+<translation id="610487644502954950">Side panel unpinned</translation>
 <translation id="6104929924898022309">Use the search key to change the behaviour of function keys</translation>
 <translation id="6106167152849320869">If you also chose to send diagnostic and usage data in the previous step, this data will be collected for installed apps.</translation>
 <translation id="6111718295497931251">Remove Google Drive access</translation>
@@ -8833,7 +8838,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7968982339740310781">View details</translation>
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Ethernet details</translation>
-<translation id="7970882136539140748">Can't save card at the moment</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 With RSA Encryption</translation>
 <translation id="7973776233567882054">Which of the following best describes your network?</translation>
 <translation id="797394244396603170">Select the device to which you’d like to share files</translation>
@@ -9168,6 +9172,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8241040075392580210">Cloudy</translation>
 <translation id="8241806945692107836">Determining device configuration...</translation>
 <translation id="8241868517363889229">Read and change your bookmarks</translation>
+<translation id="8242273718576931540">Your device can't connect to this network. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8242370300221559051">Enable Play Store</translation>
 <translation id="8242426110754782860">Proceed</translation>
 <translation id="8243948765190375130">Media quality may be reduced</translation>
@@ -9654,6 +9659,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8636284842992792762">Initialising extensions…</translation>
 <translation id="8636323803535540285">To get here quicker, add a shortcut to <ph name="BRAND" /></translation>
 <translation id="8636500887554457830">Don't allow sites to send pop-ups or use redirects</translation>
+<translation id="8636514272606969031">Side panel pinned</translation>
 <translation id="8637688295594795546">System update available. Preparing to download…</translation>
 <translation id="8638719155236856752">ChromeOS Network Health</translation>
 <translation id="8639635302972078117">Send usage and diagnostic data. This device is currently automatically sending diagnostic, device and app usage data to Google. This won't be used to identify your child, and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. If additional Web &amp; App Activity setting is turned on for your child, this data may be saved to their Google Account.</translation>

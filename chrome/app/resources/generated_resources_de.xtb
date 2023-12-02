@@ -2541,6 +2541,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2927017729816812676">Cache-Speicher</translation>
 <translation id="2928795416630981206">Dürfen meine Kameraposition erfassen</translation>
 <translation id="2931157624143513983">An Druckbereich anpassen</translation>
+<translation id="2931342457001070961">Es ist kein Mikrofon angeschlossen</translation>
 <translation id="2932085390869194046">Passwort vorschlagen…</translation>
 <translation id="2932483646085333864">Melde dich ab und dann wieder an, um die Synchronisierung zu starten</translation>
 <translation id="2932883381142163287">Missbrauch melden</translation>
@@ -4671,6 +4672,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4647836961514597010">Farbauswahl</translation>
 <translation id="4648491805942548247">Unzureichende Berechtigungen</translation>
 <translation id="4650037136970677721">Arbeitsspeicher gespart</translation>
+<translation id="4650364565596261010">Systemstandard</translation>
 <translation id="4650591383426000695">Smartphone von <ph name="DEVICE_TYPE" /> trennen</translation>
 <translation id="4651484272688821107">Die Onlinekomponente konnte mit den Ressourcen des Demomodus nicht geladen werden.</translation>
 <translation id="4651921906638302153">Anmeldung mit diesem Konto nicht möglich</translation>
@@ -8814,7 +8816,6 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7968982339740310781">Details ansehen</translation>
 <translation id="7969046989155602842">Befehl</translation>
 <translation id="7970673414865679092">Ethernet-Details</translation>
-<translation id="7970882136539140748">Karte kann momentan nicht gespeichert werden</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 mit RSA-Verschlüsselung</translation>
 <translation id="7973776233567882054">Welche dieser Aussagen beschreibt dein Netzwerk am besten?</translation>
 <translation id="797394244396603170">Wähle das Gerät aus, mit dem du Dateien teilen möchtest</translation>

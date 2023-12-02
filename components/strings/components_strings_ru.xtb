@@ -346,7 +346,6 @@
 <translation id="1633941398432788136">Планирование мероприятий</translation>
 <translation id="1634828734222219955">Всего</translation>
 <translation id="163669211644121865">Расчет и планирование налогов</translation>
-<translation id="1638780421120290329">Не удалось сохранить карту</translation>
 <translation id="1639239467298939599">Загрузка…</translation>
 <translation id="1640180200866533862">Пользовательские правила</translation>
 <translation id="1640244768702815859">Попробуйте <ph name="BEGIN_LINK" />открыть главную страницу сайта<ph name="END_LINK" />.</translation>
@@ -690,7 +689,6 @@
 <translation id="2324604504973636700">Бытовая техника</translation>
 <translation id="2328651992442742497">Разрешено (по умолчанию)</translation>
 <translation id="2328955282645810595">Строительные и механические инструменты</translation>
-<translation id="2329473609445770916">Этот сайт определяет интересы аудитории, чтобы другие ресурсы могли на их основе показывать ей рекламу.</translation>
 <translation id="2330137317877982892">Карта <ph name="CREDIT_CARD" />, действует до <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Эта настройка управляется администратором</translation>
 <translation id="2340263603246777781">Сайт <ph name="ORIGIN" /> запрашивает подключение</translation>
@@ -1118,7 +1116,6 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы настроить внешний вид браузера.</translation>
 <translation id="3240791268468473923">Экран несоответствия учетных данных для защищенных платежей открыт</translation>
 <translation id="324180406144491771">Ссылки "<ph name="HOST_NAME" />" заблокированы</translation>
-<translation id="3248611290851046188">Этот сайт определяет интересы аудитории, чтобы другие ресурсы могли на их основе показывать ей рекламу. Кроме того, этот сайт использует информацию из Chrome о ваших интересах, чтобы показывать вам более подходящие объявления.</translation>
 <translation id="3249151924975132674">Займы для студентов и финансирование высшего образования</translation>
 <translation id="3249845759089040423">Яркий</translation>
 <translation id="3250640885957938546">Реклама и маркетинг</translation>
@@ -1586,7 +1583,6 @@
 <translation id="4177501066905053472">Темы рекламы</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" />: <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Перестать отслеживать цену</translation>
-<translation id="4194250254487269611">Сейчас сохранить эту карту нельзя.</translation>
 <translation id="4195459680867822611">Кнопка "Посмотреть советы по работе с Chrome". Нажмите ее, чтобы узнать больше о функциях Chrome.</translation>
 <translation id="4195643157523330669">Открыть в новой вкладке</translation>
 <translation id="4196861286325780578">&amp;Повторить перемещение</translation>
@@ -1726,7 +1722,6 @@
 <translation id="4424024547088906515">Не удалось подтвердить, что это сервер <ph name="DOMAIN" />. Chrome не доверяет его сертификату безопасности. Возможно, сервер настроен неправильно или кто-то пытается перехватить ваши данные.</translation>
 <translation id="4425173294238317796">Экран с просьбой подтвердить создание ключа доступа</translation>
 <translation id="4425750422187370446">Спортивная одежда и обувь</translation>
-<translation id="4428065317363009941">Персонализация рекламы</translation>
 <translation id="443121186588148776">Последовательный порт</translation>
 <translation id="4432688616882109544">Ваш сертификат отклонен сайтом <ph name="HOST_NAME" /> или не был выдан.</translation>
 <translation id="4432792777822557199">Страницы на этом языке (<ph name="SOURCE_LANGUAGE" />) будут автоматически переводиться на <ph name="TARGET_LANGUAGE" /></translation>
@@ -2208,7 +2203,6 @@
 <translation id="540969355065856584">Не удалось подтвердить, что это сервер <ph name="DOMAIN" />. Его сертификат безопасности может быть недействителен в настоящее время. Возможно, сервер настроен неправильно или кто-то пытается перехватить ваши данные.</translation>
 <translation id="5411462078004183575">Недорогой вариант</translation>
 <translation id="5412040515238827314">Недействительный формат. Необходимо указать список шаблонов.</translation>
-<translation id="5412236728747081950">Этот сайт использует информацию из Chrome о ваших интересах, чтобы показывать более подходящие рекламные объявления.</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Укладчик 4</translation>
 <translation id="5414446060143308245">Проверьте файлы, перед тем как переносить их</translation>
@@ -2796,7 +2790,6 @@
 <translation id="6613866251791999074">Узнать больше о выборе поисковой системы в Chrome</translation>
 <translation id="6615297766614333076">Укладчик 2</translation>
 <translation id="6624427990725312378">Контактная информация</translation>
-<translation id="6627727261837091711">Показать сведения о персонализации рекламы</translation>
 <translation id="6628463337424475685">Поиск <ph name="ENGINE" /></translation>
 <translation id="6629652037942826935">Путешествия класса люкс</translation>
 <translation id="6630043285902923878">Поиск USB-устройств…</translation>
@@ -3308,7 +3301,6 @@
 <translation id="7574998639136359461">Инвентарь для зимних видов спорта</translation>
 <translation id="7575207903026901870">Кнопка удаления подсказки. Нажмите Ввод, чтобы удалить подсказку.</translation>
 <translation id="7575887283389198269">Мобильные телефоны</translation>
-<translation id="7577900504646297215">Управление интересами</translation>
 <translation id="7578104083680115302">Быстро оплачивайте покупки на сайтах и в приложениях с помощью карт, сохраненных в Google Pay. Настройка будет действовать на всех ваших устройствах.</translation>
 <translation id="7579442726219254162">Неизвестная переменная "<ph name="VARIABLE" />" в управляемой конфигурации "<ph name="APPLICATION_ID" />".</translation>
 <translation id="7581199239021537589">Смещение изображений на оборотной стороне по оси Y</translation>

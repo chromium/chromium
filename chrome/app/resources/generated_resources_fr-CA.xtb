@@ -1776,6 +1776,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2344032937402519675">Impossible de se connecter au serveur. Vérifiez votre connexion réseau et réessayez. Si vous rencontrez toujours des problèmes, essayez de redémarrer votre Chromebook.</translation>
 <translation id="234559068082989648">Les anciennes versions des applications Chrome ne s'ouvriront plus après décembre 2022. Communiquez avec votre administrateur pour passer à une nouvelle version ou retirer cette application.</translation>
 <translation id="2345723121311404059">1 page vers <ph name="PRINTER_NAME" /></translation>
+<translation id="2347930112185157300">Le fournisseur de réseau cellulaire est verrouillé</translation>
 <translation id="2348176352564285430">Application : <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> : autorisation demandée, appuyez sur Ctrl+Suivant pour répondre</translation>
 <translation id="234889437187286781">Erreur lors du chargement des données</translation>
@@ -2546,6 +2547,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2927017729816812676">Stockage du cache</translation>
 <translation id="2928795416630981206">Autorisés à suivre la position de votre caméra</translation>
 <translation id="2931157624143513983">Ajuster à la zone imprimable</translation>
+<translation id="2931342457001070961">Aucun microphone connecté</translation>
 <translation id="2932085390869194046">Suggérer un mot de passe…</translation>
 <translation id="2932483646085333864">Déconnectez-vous puis reconnectez-vous pour commencer la synchronisation</translation>
 <translation id="2932883381142163287">Signaler un abus</translation>
@@ -4676,6 +4678,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4647836961514597010">Sélecteur de couleur</translation>
 <translation id="4648491805942548247">Autorisations insuffisantes.</translation>
 <translation id="4650037136970677721">Mémoire enregistrée</translation>
+<translation id="4650364565596261010">Paramètres par défaut</translation>
 <translation id="4650591383426000695">Déconnectez votre téléphone de votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Impossible de charger le composant en ligne avec les ressources du mode Démo.</translation>
 <translation id="4651921906638302153">Impossible de se connecter avec ce compte</translation>
@@ -4912,6 +4915,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4839303808932127586">Enregistrer la &amp;vidéo sous...</translation>
 <translation id="4839910546484524995">Vérifiez votre appareil</translation>
 <translation id="4840096453115567876">Quitter le mode de navigation privée quand même?</translation>
+<translation id="4841475798258477260">Cet appareil peut uniquement se connecter à un réseau cellulaire en particulier. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4841741146571978176">Une machine virtuelle requise n'existe pas. Veuillez essayer de configurer <ph name="VM_TYPE" /> pour continuer.</translation>
 <translation id="4842976633412754305">Cette page tente de charger des scripts provenant de sources non authentifiées.</translation>
 <translation id="4844333629810439236">Autres claviers</translation>
@@ -6464,6 +6468,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6104068876731806426">Comptes Google</translation>
 <translation id="6104311680260824317">Impossible d'associer l'appareil au domaine. Le serveur ne prend pas en charge les types de chiffrement Kerberos spécifiés. Consultez « Plus d'options » pour afficher les paramètres de chiffrement.</translation>
 <translation id="6104796831253957966">La file d'attente de l'imprimante est pleine</translation>
+<translation id="610487644502954950">Épinglage du panneau latéral annulé</translation>
 <translation id="6104929924898022309">Utilisez la touche de recherche pour modifier le comportement des touches de fonction</translation>
 <translation id="6106167152849320869">Si vous avez également choisi d'envoyer des données de diagnostic et d'utilisation à l'étape précédente, ces données seront collectées pour les applications installées.</translation>
 <translation id="6111718295497931251">Retirer l'accès à Google Disque</translation>
@@ -8821,7 +8826,6 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7968982339740310781">Afficher les détails</translation>
 <translation id="7969046989155602842">Commande</translation>
 <translation id="7970673414865679092">Renseignements sur la connexion Ethernet</translation>
-<translation id="7970882136539140748">Impossible d'enregistrer la carte pour le moment</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 avec chiffrement RSA</translation>
 <translation id="7973776233567882054">Parmi les descriptions suivantes, laquelle décrit le mieux votre réseau?</translation>
 <translation id="797394244396603170">Sélectionnez l'appareil avec lequel vous souhaitez partager des fichiers</translation>
@@ -9155,6 +9159,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8241040075392580210">Nuage</translation>
 <translation id="8241806945692107836">Détermination de la configuration de l'appareil en cours...</translation>
 <translation id="8241868517363889229">Lire et modifier vos favoris</translation>
+<translation id="8242273718576931540">Votre appareil ne parvient pas à se connecter à ce réseau. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8242370300221559051">Activer le Play Store</translation>
 <translation id="8242426110754782860">Continuer</translation>
 <translation id="8243948765190375130">La qualité des contenus multimédias peut être réduite</translation>
@@ -9641,6 +9646,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8636284842992792762">Initialisation des extensions en cours…</translation>
 <translation id="8636323803535540285">Pour arriver à cette page plus rapidement, ajoutez un raccourci vers <ph name="BRAND" /></translation>
 <translation id="8636500887554457830">Ne pas autoriser les sites à envoyer des fenêtres contextuelles ni à utiliser des redirections</translation>
+<translation id="8636514272606969031">Panneau latéral épinglé</translation>
 <translation id="8637688295594795546">Mise à jour du système possible. Préparation du téléchargement…</translation>
 <translation id="8638719155236856752">Santé du réseau ChromeOS</translation>
 <translation id="8639635302972078117">Envoyer les données d'utilisation et de diagnostic. Actuellement, cet appareil envoie automatiquement à Google des données de diagnostic, de l'appareil et d'utilisation des applications. L'envoi de ces données ne sera pas utilisé pour identifier votre enfant, mais pour assurer la stabilité du système et des applications, et pour apporter d'autres améliorations. Certaines données collectées contribueront également à améliorer les applications Google et aideront nos partenaires, comme les développeurs Android. Si le paramètre relatif aux autres activités sur le Web et dans les applications est activé pour votre enfant, ces données peuvent être enregistrées dans son compte Google.</translation>

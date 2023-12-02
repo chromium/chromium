@@ -208,6 +208,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="2050196510205866090">{count,plural, =1{{count} salvestatud makseviis on klaviatuuri kohal saadaval.}other{{count} salvestatud makseviisi on klaviatuuri kohal saadaval.}}</translation>
 <translation id="2055515971416882518">Avage valik Seaded.</translation>
 <translation id="2059166748188874810">Vald</translation>
+<translation id="2062410130322589403">Teie privaatsusvalikute juhend</translation>
 <translation id="2073572773299281212">Aktiivne <ph name="DAYS" /> päeva tagasi</translation>
 <translation id="2074131957428911366">Jaotises <ph name="BEGIN_LINK" />Seaded<ph name="END_LINK" /> saate igal ajal valida, mida sünkroonida.</translation>
 <translation id="2079545284768500474">Võta tagasi</translation>
@@ -622,6 +623,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="430793432425771671">Sünkrooni kõik</translation>
 <translation id="4309403553630140242">Topeltpuudutage lisateabe saamiseks</translation>
 <translation id="430967081421617822">Algusest</translation>
+<translation id="4322394346347055525">Sule muud vahelehed</translation>
 <translation id="4331177082088332784">Saate seda hallata menüüs BEGIN_LINK Sisu seaded END_LINK</translation>
 <translation id="4334428914252001502">1 lugemata artikkel.</translation>
 <translation id="4338650699862464074">Saadab Google'ile teie külastatud lehtede URL-id.</translation>

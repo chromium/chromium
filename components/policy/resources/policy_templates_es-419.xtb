@@ -4848,27 +4848,6 @@ Esta política solo será válida si la máquina está inscrita en <ph name="CLO
 <translation id="5030415914668947893">Permitir la recopilación de métricas con URL</translation>
 <translation id="5033070732967197381">Permitir solicitudes a la API de WebAuthn en sitios con certificados TLS rotos</translation>
 <translation id="5034504101537897433">Habilitar los informes de fallos del dispositivo</translation>
-<translation id="5034734406205213733">Si habilitas esta política, <ph name="PRODUCT_NAME" />
-verificará los certificados del servidor mediante el verificador de certificados
-integrado con Chrome Root Store como fuente de confianza pública.
-
-Si la inhabilitas, <ph name="PRODUCT_NAME" />
-usará el verificador de certificados del sistema y los certificados raíz del sistema.
-
-Si no la estableces, se podrán usar
-las raíces provistas por el sistema o Chrome Root Store.
-
-Se planea quitar esta política en
-la versión 121 de <ph name="PRODUCT_NAME" />
-para <ph name="ANDROID_NAME" />
-cuando se quite la compatibilidad para usar las raíces que proporciona la plataforma.
-
-Se quitó esta política en la versión 113 de <ph name="PRODUCT_NAME" />
-para <ph name="MS_WIN_NAME" /> y <ph name="MAC_OS_NAME" />,
-en la versión 120 de <ph name="PRODUCT_OS_NAME" />
-y en la versión 120 de <ph name="PRODUCT_NAME" />
-para <ph name="LINUX_OS_NAME" /> cuando se quitaron las raíces que
-proporcionaba la plataforma y la compatibilidad para usar el verificador de certificados.</translation>
 <translation id="5036013147560568855">Versión del protocolo de provisión de certificados. La configuración predeterminada es 1. 1 es el protocolo "estático". 2 es el protocolo "dinámico".</translation>
 <translation id="5039110755072335605">Admisión de encabezados de solicitudes sin comodín CORS</translation>
 <translation id="504116558738617678">Solo mostrar advertencias de poco espacio en el disco si el dispositivo no está administrado o si solo hay 1 solo usuario</translation>

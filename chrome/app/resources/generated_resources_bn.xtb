@@ -2560,6 +2560,7 @@
 <translation id="2927017729816812676">ক্যাশে সঞ্চয় স্থান</translation>
 <translation id="2928795416630981206">আপনার ক্যামেরার পজিশন ট্র্যাক করার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="2931157624143513983">পৃষ্ঠার প্রিন্টযোগ্য অংশে ফিট করুন</translation>
+<translation id="2931342457001070961">কোনও মাইক্রোফোন কানেক্ট করা নেই</translation>
 <translation id="2932085390869194046">পাসওয়ার্ড প্রস্তাব করুন…</translation>
 <translation id="2932483646085333864">সিঙ্ক করা শুরু করতে সাইন-আউট করে আবার সাইন-ইন করুন</translation>
 <translation id="2932883381142163287">আপত্তিজনক হিসাবে অভিযোগ করুন</translation>
@@ -4691,6 +4692,7 @@
 <translation id="4647836961514597010">রঙ চয়নকারী</translation>
 <translation id="4648491805942548247">অপর্যাপ্ত অনুমতিগুলি</translation>
 <translation id="4650037136970677721">মেমরি সেভ করা হয়েছে</translation>
+<translation id="4650364565596261010">সিস্টেম ডিফল্ট</translation>
 <translation id="4650591383426000695"><ph name="DEVICE_TYPE" /> থেকে আপনার ফোন ডিসকানেক্ট করুন</translation>
 <translation id="4651484272688821107">ডেমো মোড রিসোর্স সহ অনলাইন কম্পোনেন্ট লোড করা যায়নি।</translation>
 <translation id="4651921906638302153">এই অ্যাকাউন্টের মাধ্যমে সাইন-ইন করতে পারবেন না</translation>
@@ -8841,7 +8843,6 @@
 <translation id="7968982339740310781">বিশদ বিবরণ দেখুন</translation>
 <translation id="7969046989155602842">কমান্ড</translation>
 <translation id="7970673414865679092">ইথারনেট নেটওয়ার্কের বিবরণ</translation>
-<translation id="7970882136539140748">এই মুহূর্তে কার্ডটি সেভ করা যাবে না</translation>
 <translation id="7972714317346275248">RSA এনক্রিপশানের সাথে PKCS #1 SHA-384</translation>
 <translation id="7973776233567882054">নিচের কোনগুলি আপনার নেটওয়ার্ককে সবচেয়ে ভালভাবে বর্ণনা করে?</translation>
 <translation id="797394244396603170">কোন ডিভাইসে ফাইল শেয়ার করবেন তা বেছে নিন</translation>

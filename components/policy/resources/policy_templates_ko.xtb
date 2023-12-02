@@ -4725,15 +4725,6 @@ false로 설정되면 기기 식별을 위해 사용할 수 있는 정보가 수
 <translation id="5030415914668947893">URL로 입력된 측정항목 수집 허용</translation>
 <translation id="5033070732967197381">손상된 TLS 인증서가 있는 사이트의 WebAuthn API 요청을 허용합니다.</translation>
 <translation id="5034504101537897433">기기 비정상 종료 정보 보고 사용 설정</translation>
-<translation id="5034734406205213733">정책을 사용 설정하면 <ph name="PRODUCT_NAME" />에서 Chrome Root Store를 공개 신뢰의 소스로 사용하는 내장된 인증서 확인 기능으로 서버 인증서를 인증합니다.
-
-정책을 사용 중지하면 <ph name="PRODUCT_NAME" />에서 시스템 인증서 확인 기능과 시스템 루트 인증서를 사용합니다.
-
-정책을 설정하지 않으면 Chrome Root Store 또는 시스템에서 제공하는 루트 인증서가 사용될 수 있습니다.
-
-이 정책은 플랫폼에서 제공하는 루트 사용 지원이 중단되는 <ph name="ANDROID_NAME" /> 버전 121용 <ph name="PRODUCT_NAME" />부터 삭제될 예정입니다.
-
-이 정책은 플랫폼에서 제공하는 인증서 확인 기능과 루트 인증서에 대한 지원이 중단된 <ph name="MS_WIN_NAME" /> 및 <ph name="MAC_OS_NAME" /> 버전 113용 <ph name="PRODUCT_NAME" />, <ph name="LINUX_OS_NAME" />용 <ph name="PRODUCT_OS_NAME" /> 버전 120 및 <ph name="PRODUCT_NAME" />에서 삭제되었습니다.</translation>
 <translation id="5036013147560568855">인증서 프로비저닝 프로토콜의 버전입니다. 기본값은 1입니다. 1은 '정적' 프로토콜이고, 2는 '동적' 프로토콜입니다.</translation>
 <translation id="5039110755072335605">와일드카드가 아닌 CORS 요청 헤더 지원</translation>
 <translation id="504116558738617678">기기가 관리되지 않거나 사용자가 1명만 있는 경우에만 디스크 공간 부족 경고 표시</translation>

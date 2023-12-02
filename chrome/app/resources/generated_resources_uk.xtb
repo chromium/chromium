@@ -2562,6 +2562,7 @@
 <translation id="2927017729816812676">Кеш-пам’ять</translation>
 <translation id="2928795416630981206">Дозволено відстежувати положення камери</translation>
 <translation id="2931157624143513983">За розміром області друку</translation>
+<translation id="2931342457001070961">Мікрофон не підключено</translation>
 <translation id="2932085390869194046">Запропонувати пароль…</translation>
 <translation id="2932483646085333864">Щоб почати синхронізацію, вийдіть з облікового запису та ввійдіть у нього знову</translation>
 <translation id="2932883381142163287">Повідомити про порушення</translation>
@@ -4693,6 +4694,7 @@
 <translation id="4647836961514597010">Вибір кольору</translation>
 <translation id="4648491805942548247">Недостатні дозволи</translation>
 <translation id="4650037136970677721">Спогад збережено</translation>
+<translation id="4650364565596261010">За умовчанням у системі</translation>
 <translation id="4650591383426000695">Від'єднати телефон від <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Не вдалося завантажити онлайн-компонент із ресурсами демо-режиму.</translation>
 <translation id="4651921906638302153">Не вдалося ввійти за допомогою цього облікового запису</translation>
@@ -8841,7 +8843,6 @@
 <translation id="7968982339740310781">Переглянути деталі</translation>
 <translation id="7969046989155602842">Клавіша Command</translation>
 <translation id="7970673414865679092">Дані про мережу Ethernet</translation>
-<translation id="7970882136539140748">Не вдається зберегти картку</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 із шифруванням RSA</translation>
 <translation id="7973776233567882054">Що з переліченого нижче найточніше описує Вашу мережу?</translation>
 <translation id="797394244396603170">Виберіть пристрій, якому хочете надіслати файли</translation>

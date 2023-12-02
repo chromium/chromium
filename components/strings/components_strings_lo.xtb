@@ -346,7 +346,6 @@
 <translation id="1633941398432788136">ການວາງແຜນຈັດງານ</translation>
 <translation id="1634828734222219955">ທັງໝົດ</translation>
 <translation id="163669211644121865">ການກະກຽມ ແລະ ວາງແຜນພາສີ</translation>
-<translation id="1638780421120290329">ບໍ່ສາມາດບັນທຶກບັດໄດ້</translation>
 <translation id="1639239467298939599">ກໍາລັງໂຫຼດ</translation>
 <translation id="1640180200866533862">ນະ​ໂຍ​ບາຍ​ຂອງ​ຜູ້​ໃຊ້</translation>
 <translation id="1640244768702815859">ລອງ <ph name="BEGIN_LINK" />ເຂົ້າເບິ່ງໜ້າຫຼັກຂອງເວັບໄຊ<ph name="END_LINK" />.</translation>
@@ -690,7 +689,6 @@
 <translation id="2324604504973636700">ເຄື່ອງໃຊ້ໃນເຮືອນ</translation>
 <translation id="2328651992442742497">ອະນຸຍາດ (ຄ່າເລີ່ມຕົ້ນ)</translation>
 <translation id="2328955282645810595">ເຄື່ອງມືກໍ່ສ້າງ ແລະ ພະລັງງານ</translation>
-<translation id="2329473609445770916">ເວັບໄຊນີ້ກຳນົດຄວາມສົນໃຈຂອງເວັບໄຊອື່ນທີ່ສາມາດໃຊ້ເພື່ອສະແດງໂຄສະນາໃຫ້ທ່ານເຫັນ</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, ໝົດອາຍຸໃນວັນທີ <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">ການຕັ້ງຄ່າທີ່ຄວບຄຸມໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> ຕ້ອງການຈັບຄູ່</translation>
@@ -1119,7 +1117,6 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ tab ຈາກນັ້ນກົດ Enter ເພື່ອປັບແຕ່ງໜ້າຕາຂອງໂປຣແກຣມທ່ອງເວັບທ່ານ</translation>
 <translation id="3240791268468473923">ເປີດຊີດຂໍ້ມູນການເຂົ້າສູ່ລະບົບການຈ່າຍເງິນທີ່ປອດໄພທີ່ບໍ່ມີຂໍ້ມູນການເຂົ້າສູ່ລະບົບທີ່ກົງກັນແລ້ວ</translation>
 <translation id="324180406144491771">ລິ້ງ “<ph name="HOST_NAME" />” ຖືກບລັອກໄວ້ແລ້ວ</translation>
-<translation id="3248611290851046188">ເວັບໄຊນີ້ກຳນົດຄວາມສົນໃຈຂອງເວັບໄຊອື່ນທີ່ສາມາດໃຊ້ເພື່ອສະແດງໂຄສະນາໃຫ້ທ່ານເຫັນ. ນອກຈາກນັ້ນ, ເວັບໄຊນີ້ຍັງໄດ້ຮັບຄວາມສົນໃຈຂອງທ່ານຈາກ Chrome ເພື່ອສະແດງໂຄສະນາທີ່ກ່ຽວຂ້ອງຫຼາຍຂຶ້ນໃຫ້ທ່ານເຫັນນຳ.</translation>
 <translation id="3249151924975132674">ສິນເຊື່ອນັກສຶກສາ ແລະ ການເງິນວິທະຍາໄລ</translation>
 <translation id="3249845759089040423">ກຣູຟີ</translation>
 <translation id="3250640885957938546">ການໂຄສະນາ ແລະ ການຕະຫຼາດ</translation>
@@ -1587,7 +1584,6 @@
 <translation id="4177501066905053472">ຫົວຂໍ້ໂຄສະນາ</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">ເຊົາຕິດຕາມລາຄາ</translation>
-<translation id="4194250254487269611">ຂໍອະໄພ, ບໍ່ສາມາດບັນທຶກບັດຂອງທ່ານໄວ້ໄດ້ໃນຕອນນີ້</translation>
 <translation id="4195459680867822611">ປຸ່ມເບິ່ງເຄັດລັບໃນການໃຊ້ Chrome, ເປີດນຳໃຊ້ເພື່ອສຶກສາກ່ຽວກັບຄຸນສົມບັດຕ່າງໆຂອງ Chrome</translation>
 <translation id="4195643157523330669">ເປີດຢູ່ໃນແຖບໃໝ່</translation>
 <translation id="4196861286325780578">ເຮັດຄືນຄໍາສັ່ງຍ້າຍ</translation>
@@ -1727,7 +1723,6 @@
 <translation id="4424024547088906515">ເຊີບເວີນີ້ບໍ່ສາມາດພິສູດໄດ້ວ່າ ມັນແມ່ນ <ph name="DOMAIN" />; ໃບຢັ້ງຢືນຄວາມປອດໄພຂອງມັນບໍ່ໄດ້ຮັບການເຊື່ອໝັ້ນຈາກ Chrome. ອັນນີ້ອາດຈະເຮັດໃຫ້ເກີດມີການປັບຕັ້ງຄ່າຜິດ ຫຼືຜູ້ໂຈມຕີອາດຈະດັກເອົາການເຊື່ອມຕໍ່ຂອງທ່ານ.</translation>
 <translation id="4425173294238317796">ຊີດການຢືນຢັນກະແຈຜ່ານ</translation>
 <translation id="4425750422187370446">ຊຸດກິລາ</translation>
-<translation id="4428065317363009941">ການປັບແຕ່ງໂຄສະນາເປັນແບບສ່ວນຕົວ</translation>
 <translation id="443121186588148776">ຜອດອະນຸກຳ</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> ບໍ່ຍອມຮັບໃບຮັບຮອງການເຂົ້າສູ່ລະບົບຂອງທ່ານ ຫຼື ຍັງບໍ່ມີການໃຫ້ໃບຮັບຮອງເທື່ອ.</translation>
 <translation id="4432792777822557199">ໜ້າຕ່າງໆຢູ່ໃນ <ph name="SOURCE_LANGUAGE" /> ຈະຖືກແປເປັນ <ph name="TARGET_LANGUAGE" /> ຈາກນີ້ເປັນຕົ້ນໄປ</translation>
@@ -2209,7 +2204,6 @@
 <translation id="540969355065856584">ເຊີບເວີນີ້ບໍ່ສາມາດພິສູດໄດ້ວ່າ ມັນແມ່ນ <ph name="DOMAIN" />; ໃບຢັ້ງຢືນຄວາມປອດໄພຂອງມັນໃຊ້​ບໍ່​ໄດ້​ໃນ​ເວ​ລາ​ນີ້. ອັນນີ້ອາດຈະເຮັດໃຫ້ເກີດມີການປັບຕັ້ງຄ່າຜິດ ຫຼືຜູ້ໂຈມຕີອາດຈະດັກເອົາການເຊື່ອມຕໍ່ຂອງທ່ານ.</translation>
 <translation id="5411462078004183575">ຕົວເລືອກລາຄາຕ່ຳ</translation>
 <translation id="5412040515238827314">ຮູບແບບບໍ່ຖືກຕ້ອງ: ຕ້ອງການລາຍຊື່ຮູບແບບ.</translation>
-<translation id="5412236728747081950">ເວັບໄຊນີ້ໄດ້ຮັບຄວາມສົນໃຈຂອງທ່ານຈາກ Chrome ເພື່ອສະແດງໂຄສະນາທີ່ກ່ຽວຂ້ອງຫຼາຍຂຶ້ນໃຫ້ທ່ານເຫັນ</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">ສະແຕັກເກີ້ 4</translation>
 <translation id="5414446060143308245">ຕ້ອງກວດສອບກ່ອນທີ່ຈະໂອນຍ້າຍ</translation>
@@ -2797,7 +2791,6 @@
 <translation id="6613866251791999074">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບໂປຣແກຣມຊອກຫາຂອງທ່ານໃນ Chrome</translation>
 <translation id="6615297766614333076">ສະແຕັກເກີ້ 2</translation>
 <translation id="6624427990725312378">ຂໍ້ມູນຕິດຕໍ່</translation>
-<translation id="6627727261837091711">ສະແດງລາຍລະອຽດການປັບແຕ່ງໂຄສະນາເປັນແບບສ່ວນຕົວ</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> ຊອກຫາ</translation>
 <translation id="6629652037942826935">ການທ່ອງທ່ຽວທີ່ຫຼູຫຼາ</translation>
 <translation id="6630043285902923878">ກຳລັງຊອກຫາອຸປະກອນ USB...</translation>
@@ -3309,7 +3302,6 @@
 <translation id="7574998639136359461">ອຸປະກອນກິລາລະດູໜາວ</translation>
 <translation id="7575207903026901870">ລຶບປຸ່ມການແນະນຳອອກ, ກົດ Enter ເພື່ອລຶບການແນະນຳນີ້ອອກ</translation>
 <translation id="7575887283389198269">ໂທລະສັບມືຖື</translation>
-<translation id="7577900504646297215">ຈັດການຄວາມສົນໃຈ</translation>
 <translation id="7578104083680115302">ຈ່າຍຢ່າງວ່ອງໄວຢູ່ໃນເວັບໄຊ ແລະແອັບຯໃນທຸກອຸປະກອນທີ່ໃຊ້ບັດທີ່ທ່ານບັນທຶກນຳ Google.</translation>
 <translation id="7579442726219254162">ຕົວແປທີ່ບໍ່ຮູ້ຈັກ "<ph name="VARIABLE" />" ໃນການຕັ້ງຄ່າທີ່ມີການຈັດການຂອງ "<ph name="APPLICATION_ID" />".</translation>
 <translation id="7581199239021537589">ປ່ຽນຕຳແໜ່ງຮູບພາບດ້ານ 2 ຕາມແກນ Y</translation>

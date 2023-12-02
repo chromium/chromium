@@ -346,7 +346,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1633941398432788136">Gertaera-plangintza</translation>
 <translation id="1634828734222219955">Guztira</translation>
 <translation id="163669211644121865">Zergen prestaketa eta plangintza</translation>
-<translation id="1638780421120290329">Ezin da gorde txartela</translation>
 <translation id="1639239467298939599">Kargatzen</translation>
 <translation id="1640180200866533862">Erabiltzaile-gidalerroak</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />Joan webgunearen orri nagusira<ph name="END_LINK" />.</translation>
@@ -690,7 +689,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2324604504973636700">Etxetresna elektrikoak</translation>
 <translation id="2328651992442742497">Baimenduta (lehenetsia)</translation>
 <translation id="2328955282645810595">Eraikuntza-tresnak eta tresna elektrikoak</translation>
-<translation id="2329473609445770916">Beste webgune batzuek iragarkiak erakusteko erabil ditzaketen interesak definitzen ditu webgune honek</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" /> (iraungitze-data: <ph name="EXPIRATION_DATE_ABBR" />)</translation>
 <translation id="2337852623177822836">Administratzaileak kontrolatzen du ezarpena</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> webguneak parekatu egin nahi du</translation>
@@ -1116,7 +1114,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu "Sartu" tekla arakatzailearen itxura pertsonalizatzeko</translation>
 <translation id="3240791268468473923">Ordainketak egiteko kredentzial segurua bat ez datorrela dioen kredentzial-orria irekita dago</translation>
 <translation id="324180406144491771"><ph name="HOST_NAME" /> motako estekak blokeatuta daude</translation>
-<translation id="3248611290851046188">Beste webgune batzuek iragarkiak erakusteko erabil ditzaketen interesak definitzen ditu webgune honek. Halaber, Chrome-n oinarritzen da zure interesen berri izateko, iragarki egokiagoak erakuts diezazkizun.</translation>
 <translation id="3249151924975132674">Ikasleentzako maileguak eta unibertsitaterako finantzaketa</translation>
 <translation id="3249845759089040423">Modakoa</translation>
 <translation id="3250640885957938546">Publizitatea eta marketina</translation>
@@ -1583,7 +1580,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4177501066905053472">Iragarkien gaiak</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" />: <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Utzi prezioaren jarraipena egiteari</translation>
-<translation id="4194250254487269611">Ezin da gorde txartela une honetan</translation>
 <translation id="4195459680867822611">Chrome-ri buruzko aholkuak ikusteko botoia: aktiba ezazu Chrome-ren eginbideei buruzko informazioa lortzeko</translation>
 <translation id="4195643157523330669">Ireki fitxa berri batean</translation>
 <translation id="4196861286325780578">&amp;Berregin mugitzea</translation>
@@ -1723,7 +1719,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4424024547088906515">Zerbitzari honek ezin izan du egiaztatu <ph name="DOMAIN" /> domeinua denik. Chrome ez da bere segurtasun-ziurtagiriaz fidatzen. Baliteke gaizki konfiguratuta dagoelako izatea edo erasotzaile batek zure konexioa atzeman duelako izatea.</translation>
 <translation id="4425173294238317796">Sarbide-gakoa berresteko orria</translation>
 <translation id="4425750422187370446">Arropa atletikoa</translation>
-<translation id="4428065317363009941">Iragarkien pertsonalizazioa</translation>
 <translation id="443121186588148776">Serieko ataka</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> webguneak ez du onartu edo jaso saioa hasteko ziurtagiria.</translation>
 <translation id="4432792777822557199"><ph name="SOURCE_LANGUAGE" /> darabilten orriak <ph name="TARGET_LANGUAGE" /> hizkuntzara itzuliko dira</translation>
@@ -2205,7 +2200,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="540969355065856584">Zerbitzari honek ezin izan du egiaztatu <ph name="DOMAIN" /> denik. Une honetan, bere segurtasun-ziurtagiriak ez du balio. Oker konfiguratuta dagoelako izan liteke, edo erasotzaile batek zure konexioa atzeman duelako, bestela.</translation>
 <translation id="5411462078004183575">Aukera merkea</translation>
 <translation id="5412040515238827314">Formatuak ez du balio: ereduen zerrenda bat espero zen.</translation>
-<translation id="5412236728747081950">Webgune honek Chrome-n oinarritzen da zure interesen berri izateko, iragarki erabilgarriagoak erakuts diezazkizun</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="541416427766103491">4. pilatzailea</translation>
 <translation id="5414446060143308245">Transferitu aurretik, berrikusi egin behar da</translation>
@@ -2792,7 +2786,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6613866251791999074">Lortu Chrome-ko bilatzaileari buruzko informazio gehiago</translation>
 <translation id="6615297766614333076">2. pilatzailea</translation>
 <translation id="6624427990725312378">Harremanetarako informazioa</translation>
-<translation id="6627727261837091711">Erakutsi iragarkiak pertsonalizatzeari buruzko xehetasunak</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> Bilaketa</translation>
 <translation id="6629652037942826935">Luxuzko bidaiak</translation>
 <translation id="6630043285902923878">USB bidezko gailuak bilatzen…</translation>
@@ -3304,7 +3297,6 @@ Xehetasun gehiago:
 <translation id="7574998639136359461">Neguko kirolen ekipamendua</translation>
 <translation id="7575207903026901870">"Kendu iradokizuna" botoia, sakatu Sartu iradokizun hau kentzeko</translation>
 <translation id="7575887283389198269">Telefono mugikorrak</translation>
-<translation id="7577900504646297215">Kudeatu interesak</translation>
 <translation id="7578104083680115302">Ordaindu bizkor webguneetan eta aplikazioetan edozer gailuren bidez Google-n gordeta dituzun txartelak erabilita.</translation>
 <translation id="7579442726219254162">"<ph name="VARIABLE" />" aldagai ezezaguna "<ph name="APPLICATION_ID" />" aplikazioaren konfigurazio kudeatuan</translation>
 <translation id="7581199239021537589">2. aldeko irudia Y ardatzaren arabera aldatuta</translation>

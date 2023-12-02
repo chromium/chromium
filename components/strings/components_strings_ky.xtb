@@ -346,7 +346,6 @@
 <translation id="1633941398432788136">Иш-чараны пландоо</translation>
 <translation id="1634828734222219955">Жалпы</translation>
 <translation id="163669211644121865">Салыктарды даярдоо жана пландаштыруу</translation>
-<translation id="1638780421120290329">Картаны сактоо мүмкүн эмес</translation>
 <translation id="1639239467298939599">Жүктөлүүдө</translation>
 <translation id="1640180200866533862">Колдонуучунун эрежелери</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />Сайттын башкы бетине кирип<ph name="END_LINK" /> көрүңүз.</translation>
@@ -690,7 +689,6 @@
 <translation id="2324604504973636700">Турмуш-тиричилик техникасы</translation>
 <translation id="2328651992442742497">Уруксат берилген (демейки)</translation>
 <translation id="2328955282645810595">Курулуш жана электр куралдары</translation>
-<translation id="2329473609445770916">Бул сайт кызыккан нерселериңизди аныктап, ал аркылуу башка сайттар сизге ылайыктуу жарнамаларды көрсөтө алат</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, мөөнөтү <ph name="EXPIRATION_DATE_ABBR" /> бүтөт</translation>
 <translation id="2337852623177822836">Жөндөөнү администраторуңуз башкарат</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> жупташканы жатат</translation>
@@ -1119,7 +1117,6 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, серепчинин көрүнүшүн ыңгайлаштыруу үчүн Tab, андан кийин Enter баскычын басыңыз</translation>
 <translation id="3240791268468473923">Коопсуз төлөө үчүн дал келбеген эсептик дайындар барагы ачылды</translation>
 <translation id="324180406144491771">"<ph name="HOST_NAME" />" шилтемелери бөгөттөлдү</translation>
-<translation id="3248611290851046188">Бул сайт кызыккан нерселериңизди аныктап, ал аркылуу башка сайттар сизге ылайыктуу жарнамаларды көрсөтө алат. Ошондой эле, бул сайт Сhrome'дон кызыккан нерселериңиз тууралуу маалымат алып, сизге ылайыктуу жарнамаларды көрсөтүп турат.</translation>
 <translation id="3249151924975132674">Студенттик насыялар жана колледжди каржылоо</translation>
 <translation id="3249845759089040423">Көркөм</translation>
 <translation id="3250640885957938546">Жарнама жана маркетинг</translation>
@@ -1586,7 +1583,6 @@
 <translation id="4177501066905053472">Жарнамалардын темалары</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Баага көз салууну токтотуу</translation>
-<translation id="4194250254487269611">Картаңызды азыр сактоо мүмкүн эмес</translation>
 <translation id="4195459680867822611">"Chrome'догу кеңештерди көрүү" баскычы. Chrome'догу функциялар жөнүндө толук маалымат алуу үчүн иштетиңиз</translation>
 <translation id="4195643157523330669">Жаңы өтмөктө ачуу</translation>
 <translation id="4196861286325780578">Жылдырууну &amp;кайталоо</translation>
@@ -1726,7 +1722,6 @@
 <translation id="4424024547088906515">Бул сервер <ph name="DOMAIN" /> экендигин далилдей алган жок; себеби Chrome анын коопсуздук тастыктамасына ишенбейт. Мындай көйгөй туура эмес конфигурация менен шартталышы мүмкүн же туташууңузга чабуулчу кийлигишип жатат.</translation>
 <translation id="4425173294238317796">Киргизүүчү ачкычты ырастоо бети</translation>
 <translation id="4425750422187370446">Спорттук кийим</translation>
-<translation id="4428065317363009941">Жарнамаларды жекелештирүү</translation>
 <translation id="443121186588148776">Сериялык порт</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> сайты кирүү тастыктамаңызды кабыл алган жок же тастыктама көрсөтүлгөн эмес окшойт.</translation>
 <translation id="4432792777822557199">Мындан кийин <ph name="SOURCE_LANGUAGE" /> тилиндеги барактар <ph name="TARGET_LANGUAGE" /> тилине которулат</translation>
@@ -2208,7 +2203,6 @@
 <translation id="540969355065856584">Бул сервер <ph name="DOMAIN" /> экендигин далилдей алган жок; азыркы учурда анын коопсуздук тастыктамасы жарактуу эмес. Бул туура эмес конфигурациялоодон болушу мүмкүн же чабуулчу туташууңузга тоскоол болууда.</translation>
 <translation id="5411462078004183575">Арзан вариант</translation>
 <translation id="5412040515238827314">Туура эмес формат: Үлгүлөрдүн тизмеси күтүлүүдө.</translation>
-<translation id="5412236728747081950">Бул сайт Сhrome'дон кызыккан нерселериңиз тууралуу маалымат алып, сизге ылайыктуу жарнамаларды көрсөтүп турат</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" />, <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">4-төшөгүч</translation>
 <translation id="5414446060143308245">Өткөрүүдөн мурун текшерүү керек</translation>
@@ -2796,7 +2790,6 @@
 <translation id="6613866251791999074">Chrome'догу издөө куралы жөнүндө кеңири маалымат</translation>
 <translation id="6615297766614333076">2-төшөгүч</translation>
 <translation id="6624427990725312378">Байланыш маалыматы</translation>
-<translation id="6627727261837091711">Жарнамаларды жекелештирүү тууралуу толук маалыматты көрсөтүү</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> Издөө</translation>
 <translation id="6629652037942826935">Кымбат баалуу саякат</translation>
 <translation id="6630043285902923878">USB түзмөктөрү изделүүдө…</translation>
@@ -3308,7 +3301,6 @@
 <translation id="7574998639136359461">Кышкы спорттук жабдуулар</translation>
 <translation id="7575207903026901870">"Сунушту өчүрүү" баскычы. Сунушту өчүрүү үчүн "Enter" баскычын басыңыз</translation>
 <translation id="7575887283389198269">Мобилдик телефондор</translation>
-<translation id="7577900504646297215">Кызыккан нерселерди башкаруу</translation>
 <translation id="7578104083680115302">Сайттарда жана колдонмолордо сатып алган нерселердин акысын Google'га сакталган карточкаларыңыз аркылуу төлөңүз. Мындай мүмкүнчүлүк бардык түзмөктөрүңүздө иштейт.</translation>
 <translation id="7579442726219254162">Башкарылган "<ph name="APPLICATION_ID" />" конфигурациясындагы белгисиз өзгөрмө маани: "<ph name="VARIABLE" />".</translation>
 <translation id="7581199239021537589">2-тараптын Y сүрөтүн жылдыруу</translation>

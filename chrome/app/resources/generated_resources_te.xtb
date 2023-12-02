@@ -2557,6 +2557,7 @@
 <translation id="2927017729816812676">కాష్ స్టోరేజ్‌</translation>
 <translation id="2928795416630981206">మీ కెమెరా పొజిషన్‌ను ట్రాక్ చేయడానికి అనుమతించబడింది</translation>
 <translation id="2931157624143513983">ప్రింట్ చేయగల సైజ్‌కు అమర్చు</translation>
+<translation id="2931342457001070961">మైక్రోఫోన్ కనెక్ట్ చేసి లేదు</translation>
 <translation id="2932085390869194046">పాస్‌వర్డ్‌‌ను సూచించు...</translation>
 <translation id="2932483646085333864">సింక్‌ను ప్రారంభించడానికి సైన్ అవుట్ చేసి, సైన్ ఇన్ చేయండి</translation>
 <translation id="2932883381142163287">దుర్వినియోగాన్ని రిపోర్ట్ చేయి</translation>
@@ -4688,6 +4689,7 @@
 <translation id="4647836961514597010">రంగు ఎంపిక</translation>
 <translation id="4648491805942548247">చాలని అనుమతులు</translation>
 <translation id="4650037136970677721">మెమరీ ఆదా అయ్యింది</translation>
+<translation id="4650364565596261010">సిస్టమ్ డిఫాల్ట్</translation>
 <translation id="4650591383426000695">మీ <ph name="DEVICE_TYPE" /> నుండి మీ ఫోన్‌ను డిస్‌కనెక్ట్ చేయండి</translation>
 <translation id="4651484272688821107">డెమో మోడ్ వనరులతో ఆన్‌లైన్ అంతర్భాగాన్ని లోడ్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="4651921906638302153">ఈ ఖాతాతో సైన్ ఇన్ చేయడం సాధ్యం కాలేదు</translation>
@@ -8833,7 +8835,6 @@
 <translation id="7968982339740310781">వివరాలను చూడండి</translation>
 <translation id="7969046989155602842">ఆదేశం</translation>
 <translation id="7970673414865679092">ఈథర్‌నెట్ వివరాలు</translation>
-<translation id="7970882136539140748">కార్డ్‌ను ప్రస్తుతం సేవ్ చేయలేము</translation>
 <translation id="7972714317346275248">RSA ఎన్‌క్రిప్షన్‌తో PKCS #1 SHA-384</translation>
 <translation id="7973776233567882054">ఈ కింది వాటిలో ఏది మీ నెట్‌వర్క్‌ను ఉత్తమంగా వివరిస్తుంది?</translation>
 <translation id="797394244396603170">మీరు ఫైళ్లను షేర్ చేయాలనుకుంటున్న పరికరాన్ని ఎంచుకోండి</translation>

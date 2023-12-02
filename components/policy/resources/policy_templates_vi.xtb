@@ -4794,20 +4794,6 @@ Chính sách này chỉ có hiệu lực khi máy đã đăng ký bằng <ph nam
 <translation id="5030415914668947893">Cho phép thu thập chỉ số nhập dưới dạng URL</translation>
 <translation id="5033070732967197381">Cho phép yêu cầu API WebAuthn trên các trang web có chứng chỉ TLS bị hỏng.</translation>
 <translation id="5034504101537897433">Bật tính năng báo cáo thông tin trong báo cáo sự cố của thiết bị</translation>
-<translation id="5034734406205213733">Khi bạn đặt chính sách này thành bật, thì <ph name="PRODUCT_NAME" /> sẽ sử dụng trình xác minh chứng chỉ tích hợp sẵn cùng với Chrome Root Store là nguồn tin cậy công khai để xác minh chứng chỉ máy chủ.
-
-Khi bạn đặt chính sách này thành tắt, <ph name="PRODUCT_NAME" /> sẽ sử dụng trình xác minh chứng chỉ hệ thống và chứng chỉ gốc của hệ thống.
-
-Nếu bạn không đặt chính sách này, Chrome Root Store hoặc gốc do hệ thống cung cấp có thể được sử dụng.
-
-Chúng tôi dự định loại bỏ chính sách này khỏi
-<ph name="PRODUCT_NAME" /> cho
-<ph name="ANDROID_NAME" /> phiên bản 121
-khi có kế hoạch ngừng hỗ trợ việc sử dụng gốc do nền tảng cung cấp.
-
-Chính sách này đã bị loại bỏ trong<ph name="PRODUCT_NAME" />
-cho <ph name="MS_WIN_NAME" /> và <ph name="MAC_OS_NAME" /> phiên bản 113,
-<ph name="PRODUCT_OS_NAME" /> phiên bản 120 và<ph name="PRODUCT_NAME" /> cho <ph name="LINUX_OS_NAME" /> phiên bản 120 khi chúng tôi ngừng hỗ trợ việc sử dụng trình xác minh chứng chỉ và gốc do nền tảng cung cấp.</translation>
 <translation id="5036013147560568855">Phiên bản của giao thức cấp phép chứng chỉ. Giá trị mặc định là 1. 1 là giao thức "tĩnh". 2 là giao thức "động".</translation>
 <translation id="5039110755072335605">hỗ trợ các tiêu đề của yêu cầu không phải ký tự đại diện CORS</translation>
 <translation id="504116558738617678">Chỉ hiển thị các cảnh báo dung lượng ổ đĩa thấp nếu thiết bị không được quản lý hoặc chỉ có 1 người dùng</translation>

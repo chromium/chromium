@@ -2562,6 +2562,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2927017729816812676">Talpyklos saugykla</translation>
 <translation id="2928795416630981206">Leidžiama stebėti fotoaparato poziciją</translation>
 <translation id="2931157624143513983">Pritaikyti pagal spausdinti skirtą sritį</translation>
+<translation id="2931342457001070961">Neprijungta jokių mikrofonų</translation>
 <translation id="2932085390869194046">Siūlyti slaptažodį...</translation>
 <translation id="2932483646085333864">Atsijunkite, tada prisijunkite dar kartą, kad pradėtumėte sinchronizuoti</translation>
 <translation id="2932883381142163287">Pranešti apie piktnaudžiavimą</translation>
@@ -4693,6 +4694,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="4647836961514597010">Spalvos parinkiklis</translation>
 <translation id="4648491805942548247">Nepakankami leidimai</translation>
 <translation id="4650037136970677721">Atmintis išsaugota</translation>
+<translation id="4650364565596261010">Sistemos numatytasis nustatymas</translation>
 <translation id="4650591383426000695">Atjunkite telefoną nuo „<ph name="DEVICE_TYPE" />“</translation>
 <translation id="4651484272688821107">Nepavyko įkelti prisijungus pasiekiamo komponento naudojant demonstracinio režimo šaltinius.</translation>
 <translation id="4651921906638302153">Negalima prisijungti naudojant šią paskyrą</translation>
@@ -8846,7 +8848,6 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7968982339740310781">Žiūrėti išsamią informaciją</translation>
 <translation id="7969046989155602842">Komanda</translation>
 <translation id="7970673414865679092">Išsami eterneto informacija</translation>
-<translation id="7970882136539140748">Šiuo metu kortelės išsaugoti negalima</translation>
 <translation id="7972714317346275248">PKCS Nr. 1 SHA-384 su RSA šifruote</translation>
 <translation id="7973776233567882054">Kuris iš toliau pateiktų teiginių geriausiai apibūdina jūsų tinklą?</translation>
 <translation id="797394244396603170">Pasirinkite įrenginį, su kuriuo norite bendrinti failus</translation>

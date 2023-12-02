@@ -2546,6 +2546,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2927017729816812676">Kesh xotirasi</translation>
 <translation id="2928795416630981206">Kamerangiz joylashuvini kuzatishga ruxsat berilgan</translation>
 <translation id="2931157624143513983">Bosma oʻlchamga moslash</translation>
+<translation id="2931342457001070961">Mikrofon ulanmagan</translation>
 <translation id="2932085390869194046">Parol yaratish...</translation>
 <translation id="2932483646085333864">Sinxronizatsiyani boshlash uchun hisobingizdan chiqing va yana kiring</translation>
 <translation id="2932883381142163287">Shikoyat xabari yuborish</translation>
@@ -4677,6 +4678,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4647836961514597010">Rang tanlash</translation>
 <translation id="4648491805942548247">Ruxsatnomalar yetarli emas</translation>
 <translation id="4650037136970677721">Xotira saqlandi</translation>
+<translation id="4650364565596261010">Tizim standarti</translation>
 <translation id="4650591383426000695">Telefoningizni <ph name="DEVICE_TYPE" /> qurilmasidan uzing</translation>
 <translation id="4651484272688821107">Demo rejim manbalari bilan onlayn komponent yuklanmadi.</translation>
 <translation id="4651921906638302153">Bu hisob orqali kirilmadi</translation>
@@ -8821,7 +8823,6 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7968982339740310781">Tafsilotlarni ko‘rish</translation>
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Ethernet axboroti</translation>
-<translation id="7970882136539140748">Kartani hozir saqlash imkonsiz</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 RSA shifri bilan</translation>
 <translation id="7973776233567882054">Quyidagilardan qaysi biri tarmogʻingizga mos keladi?</translation>
 <translation id="797394244396603170">Fayllar yuboriladigan qurilmani tanlang</translation>

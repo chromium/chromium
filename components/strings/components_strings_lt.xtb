@@ -346,7 +346,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1633941398432788136">Renginių planavimas</translation>
 <translation id="1634828734222219955">Iš viso</translation>
 <translation id="163669211644121865">Mokesčių paruošimas ir planavimas</translation>
-<translation id="1638780421120290329">Nepavyko išsaugoti kortelės</translation>
 <translation id="1639239467298939599">Įkeliama</translation>
 <translation id="1640180200866533862">Naudotojo politika</translation>
 <translation id="1640244768702815859">Pabandykite <ph name="BEGIN_LINK" />apsilankyti pagrindiniame svetainės puslapyje<ph name="END_LINK" />.</translation>
@@ -690,7 +689,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2324604504973636700">Namų apyvokos prietaisai</translation>
 <translation id="2328651992442742497">Leidžiama (numatytasis nustatymas)</translation>
 <translation id="2328955282645810595">Statyba ir elektriniai įrankiai</translation>
-<translation id="2329473609445770916">Šioje svetainėje apibrėžiami pomėgiai, kuriais kitos svetainės gali pasinaudoti rodydamos jums skelbimus</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, baigia galioti <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Nustatymą valdo administratorius</translation>
 <translation id="2340263603246777781">Svetainė <ph name="ORIGIN" /> nori būti susieta su</translation>
@@ -1120,7 +1118,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />; paspauskite tabuliavimo klavišą, tada – „Enter“, jei norite tinkinti naršyklės išvaizdą</translation>
 <translation id="3240791268468473923">Saugaus mokėjimo prisijungimo duomenų lapas, informuojantis, kad atitinkančių prisijungimo duomenų nerasta, atidarytas</translation>
 <translation id="324180406144491771">„<ph name="HOST_NAME" />“ nuorodos užblokuotos</translation>
-<translation id="3248611290851046188">Šioje svetainėje apibrėžiami pomėgiai, kuriais kitos svetainės gali pasinaudoti rodydamos jums skelbimus. Ši svetainė taip pat gauna informaciją apie jūsų pomėgius iš „Chrome“, kad galėtų rodyti jums aktualesnius skelbimus</translation>
 <translation id="3249151924975132674">Studentų paskolos ir universitetų finansavimas</translation>
 <translation id="3249845759089040423">Klasiška</translation>
 <translation id="3250640885957938546">Reklamavimas ir rinkodara</translation>
@@ -1588,7 +1585,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4177501066905053472">Skelbimų temos</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Nebestebėti kainų</translation>
-<translation id="4194250254487269611">Šiuo metu jūsų kortelės išsaugoti negalima</translation>
 <translation id="4195459680867822611">Mygtukas „Žr. „Chrome“ patarimus“; suaktyvinkite, jei norite sužinoti apie „Chrome“ funkcijas</translation>
 <translation id="4195643157523330669">Atidaryti naujame skirtuke</translation>
 <translation id="4196861286325780578">&amp;Perkelti dar kartą</translation>
@@ -1728,7 +1724,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4424024547088906515">Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />; jo saugos sertifikatas nėra patikimas „Chrome“. Taip gali nutikti dėl netinkamos konfigūracijos ar dėl ryšį pertraukusio užgrobėjo.</translation>
 <translation id="4425173294238317796">Prieigos rakto patvirtinimo lapas</translation>
 <translation id="4425750422187370446">Sporto apranga</translation>
-<translation id="4428065317363009941">Skelbimų suasmeninimas</translation>
 <translation id="443121186588148776">Nuoseklusis prievadas</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> nepriėmė jūsų prisijungimo sertifikato arba prisijungimo sertifikatas nebuvo pateiktas.</translation>
 <translation id="4432792777822557199">Puslapiai, parašyti <ph name="SOURCE_LANGUAGE" />, nuo dabar bus verčiami į <ph name="TARGET_LANGUAGE" /></translation>
@@ -2210,7 +2205,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="540969355065856584">Šiam serveriui nepavyko patvirtinti, kad jis yra <ph name="DOMAIN" />; šiuo metu jo saugos sertifikatas negalioja. Tai gali būti dėl netinkamos konfigūracijos arba dėl ryšį pertraukusio užgrobėjo.</translation>
 <translation id="5411462078004183575">Mažos kainos parinktis</translation>
 <translation id="5412040515238827314">Netinkamas formatas: numatytas šablonų sąrašas.</translation>
-<translation id="5412236728747081950">Ši svetainė gauna informaciją apie jūsų pomėgius iš „Chrome“, kad galėtų rodyti jums aktualesnius skelbimus</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">4 dėtuvė</translation>
 <translation id="5414446060143308245">Prieš perkeliant reikia peržiūrėti</translation>
@@ -2798,7 +2792,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6613866251791999074">Sužinokite daugiau apie paieškos variklį naršyklėje „Chrome“</translation>
 <translation id="6615297766614333076">2 dėtuvė</translation>
 <translation id="6624427990725312378">Kontaktinė informacija</translation>
-<translation id="6627727261837091711">Rodyti išsamią informaciją apie skelbimų suasmeninimą</translation>
 <translation id="6628463337424475685">„<ph name="ENGINE" />“ paieška</translation>
 <translation id="6629652037942826935">Prabangios kelionės</translation>
 <translation id="6630043285902923878">Ieškoma USB įrenginių...</translation>
@@ -3310,7 +3303,6 @@ Papildoma išsami informacija:
 <translation id="7574998639136359461">Žiemos sporto įranga</translation>
 <translation id="7575207903026901870">Pašalinkite pasiūlymo mygtuką, paspauskite „Enter“, kad pašalintumėte šį pasiūlymą</translation>
 <translation id="7575887283389198269">Mobilieji telefonai</translation>
-<translation id="7577900504646297215">Tvarkyti pomėgius</translation>
 <translation id="7578104083680115302">Greitai mokėkite svetainėse ir programose įvairiuose įrenginiuose naudodami korteles, kurias išsaugojote „Google“.</translation>
 <translation id="7579442726219254162">Nežinomas kintamasis „<ph name="VARIABLE" />“ valdomoje „<ph name="APPLICATION_ID" />“ konfigūracijoje.</translation>
 <translation id="7581199239021537589">2 pusė: sukti vaizdą pagal Y ašį</translation>

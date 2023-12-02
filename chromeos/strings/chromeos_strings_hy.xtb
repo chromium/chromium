@@ -260,6 +260,7 @@
 <translation id="2872961005593481000">Անջատել</translation>
 <translation id="2873483161362553159">Նավիգացիա դիտարկիչում</translation>
 <translation id="2874939134665556319">Նախորդը</translation>
+<translation id="2875812231449496375">Պաստառի օպտիմալ աշխատանքի համար միացրեք այս կարգավորումը։ Այն ցանկացած ժամանակ կարող եք անջատել։</translation>
 <translation id="2878387241690264070">Լիցքաթափվել է <ph name="RATE" /> <ph name="NUM_SECONDS" /> վայրկյանում։</translation>
 <translation id="2880569433548999039">«Ամպերի հոսք» էկրանապահ</translation>
 <translation id="2926057806159140518">Մուտքագրեք ձեր անունը և գաղտնաբառը կամ սկանավորեք QR կոդը</translation>
@@ -552,6 +553,7 @@
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5137451382116112100">Լիաէկրան</translation>
 <translation id="5142961317498132443">Նույնականացում</translation>
+<translation id="5145081769226915336">Ավտոմատ միացնե՞լ մուգ ռեժիմը</translation>
 <translation id="5154917547274118687">Հիշողություն</translation>
 <translation id="5160857336552977725">Մուտք գործեք ձեր <ph name="DEVICE_TYPE" /></translation>
 <translation id="5166918508782100047">Արագ պատասխանների կարգավորումներ</translation>

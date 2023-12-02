@@ -346,7 +346,6 @@
 <translation id="1633941398432788136">ਇਵੈਂਟ ਯੋਜਨਾਬੰਦੀ</translation>
 <translation id="1634828734222219955">ਕੁੱਲ</translation>
 <translation id="163669211644121865">ਟੈਕਸ ਭਰਨਾ ਅਤੇ ਯੋਜਨਾਬੰਦੀ</translation>
-<translation id="1638780421120290329">ਕਾਰਡ ਨੂੰ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="1639239467298939599">ਲੋਡ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="1640180200866533862">ਵਰਤੋਂਕਾਰ ਨੀਤੀਆਂ</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />ਸਾਈਟ ਦੇ ਮੁੱਖ-ਪੰਨੇ 'ਤੇ ਜਾਣ<ph name="END_LINK" /> ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
@@ -690,7 +689,6 @@
 <translation id="2324604504973636700">ਘਰੇਲੂ ਉਪਕਰਨ</translation>
 <translation id="2328651992442742497">ਇਜਾਜ਼ਤ ਹੈ (ਪੂਰਵ-ਨਿਰਧਾਰਿਤ)</translation>
 <translation id="2328955282645810595">ਉਸਾਰੀ ਅਤੇ ਪਾਵਰ ਟੂਲ</translation>
-<translation id="2329473609445770916">ਇਹ ਸਾਈਟ ਉਨ੍ਹਾਂ ਦਿਲਚਸਪੀਆਂ ਨੂੰ ਪਰਿਭਾਸ਼ਿਤ ਕਰਦੀ ਹੈ ਜਿਨ੍ਹਾਂ ਨੂੰ ਹੋਰ ਸਾਈਟਾਂ ਤੁਹਾਨੂੰ ਵਿਗਿਆਪਨ ਦਿਖਾਉਣ ਲਈ ਵਰਤ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, ਮਿਆਦ <ph name="EXPIRATION_DATE_ABBR" /> ਨੂੰ ਸਮਾਪਤ ਹੋਵੇਗੀ</translation>
 <translation id="2337852623177822836">ਸੈਟਿੰਗ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਕੰਟਰੋਲ ਕੀਤੀ ਗਈ</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> ਜੋੜਾਬੱਧ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ</translation>
@@ -1117,7 +1115,6 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab ਦਬਾ ਕੇ, ਫਿਰ ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਰ ਦੀ ਦਿੱਖ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="3240791268468473923">ਭਗਤਾਨ ਕ੍ਰੀਡੈਂਸ਼ੀਅਲ ਨੂੰ ਸੁਰੱਖਿਅਤ ਬਣਾਓ ਕੋਈ ਮੇਲ ਖਾਂਦੇ ਕ੍ਰੀਡੈਂਸ਼ੀਅਲ ਸੰਬੰਧੀ ਸ਼ੀਟ ਖੁੱਲ੍ਹੀ ਨਹੀਂ ਹੈ</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” ਲਿੰਕਾਂ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
-<translation id="3248611290851046188">ਇਹ ਸਾਈਟ ਉਨ੍ਹਾਂ ਦਿਲਚਸਪੀਆਂ ਨੂੰ ਪਰਿਭਾਸ਼ਿਤ ਕਰਦੀ ਹੈ ਜਿਨ੍ਹਾਂ ਨੂੰ ਹੋਰ ਸਾਈਟਾਂ ਤੁਹਾਨੂੰ ਵਿਗਿਆਪਨ ਦਿਖਾਉਣ ਲਈ ਵਰਤ ਸਕਦੀਆਂ ਹਨ। ਤੁਹਾਨੂੰ ਜ਼ਿਆਦਾ ਢੁਕਵੇਂ ਵਿਗਿਆਪਨ ਦਿਖਾਉਣ ਲਈ, ਇਹ ਸਾਈਟ Chrome ਤੋਂ ਵੀ ਤੁਹਾਡੀਆਂ ਦਿਲਚਸਪੀਆਂ ਬਾਰੇ ਜਾਣਕਾਰੀ ਲੈਂਦੀ ਹੈ।</translation>
 <translation id="3249151924975132674">ਵਿਦਿਆਰਥੀ ਲੋਨ ਅਤੇ ਕਾਲਜ ਸੰਬੰਧੀ ਵਿੱਤ ਸੇਵਾਵਾਂ</translation>
 <translation id="3249845759089040423">ਗਰੂਵੀ</translation>
 <translation id="3250640885957938546">ਵਿਗਿਆਪਨ ਅਤੇ ਮਾਰਕੀਟਿੰਗ</translation>
@@ -1584,7 +1581,6 @@
 <translation id="4177501066905053472">ਵਿਗਿਆਪਨ ਵਿਸ਼ੇ</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">ਕੀਮਤ ਟਰੈਕਿੰਗ ਬੰਦ ਕਰੋ</translation>
-<translation id="4194250254487269611">ਤੁਹਾਡੇ ਕਾਰਡ ਨੂੰ ਫਿਲਹਾਲ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="4195459680867822611">'Chrome ਸੰਬੰਧੀ ਨੁਕਤੇ ਦੇਖੋ' ਬਟਨ, Chrome ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਬਾਰੇ ਜਾਣਨ ਲਈ ਇਸਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
 <translation id="4195643157523330669">ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="4196861286325780578">&amp;ਮੂਵ ਨੂੰ ਰੀਡੂ ਕਰੋ</translation>
@@ -1724,7 +1720,6 @@
 <translation id="4424024547088906515">ਇਹ ਸਰਵਰ ਇਹ ਸਾਬਤ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿ ਇਹ <ph name="DOMAIN" /> ਹੈ; ਇਸਦਾ ਸੁਰੱਖਿਆ ਪ੍ਰਮਾਣ-ਪੱਤਰ Chrome ਵੱਲੋਂ ਭਰੋਸੇਯੋਗ ਨਹੀਂ ਹੈ। ਇਹ ਇੱਕ ਗਲਤ ਸੰਰੂਪਣ ਕਾਰਨ ਹੋ ਸਕਦਾ ਹੈ ਜਾਂ ਕੋਈ ਹਮਲਾਵਰ ਤੁਹਾਡੇ ਕਨੈਕਸ਼ਨ ਨੂੰ ਰਾਹ ਵਿੱਚ ਰੋਕ ਰਿਹਾ ਹੈ।</translation>
 <translation id="4425173294238317796">ਪਾਸਕੀ ਦੀ ਤਸਦੀਕ ਕਰਨ ਵਾਲੀ ਸ਼ੀਟ</translation>
 <translation id="4425750422187370446">ਅਥਲੈਟਿਕ ਲਿਬਾਸ</translation>
-<translation id="4428065317363009941">ਵਿਗਿਆਪਨ ਵਿਅਕਤੀਗਤਕਰਨ</translation>
 <translation id="443121186588148776">ਸੀਰੀਅਲ ਪੋਰਟ</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> ਨੇ ਤੁਹਾਡਾ ਲੌਗ-ਇਨ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਸਵੀਕਾਰ ਨਹੀਂ ਕੀਤਾ, ਜਾਂ ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਕੋਈ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਮੁਹੱਈਆ ਨਾ ਕਰਵਾਇਆ ਗਿਆ ਹੋਵੇ।</translation>
 <translation id="4432792777822557199">ਹੁਣ ਤੋਂ <ph name="SOURCE_LANGUAGE" /> ਭਾਸ਼ਾ ਦੇ ਪੰਨੇ <ph name="TARGET_LANGUAGE" /> ਭਾਸ਼ਾ ਵਿੱਚ ਅਨੁਵਾਦ ਕੀਤੇ ਜਾਣਗੇ</translation>
@@ -2206,7 +2201,6 @@
 <translation id="540969355065856584">ਇਹ ਸਰਵਰ ਇਹ ਸਾਬਤ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿ ਇਹ <ph name="DOMAIN" /> ਹੈ; ਇਸਦਾ ਸੁਰੱਖਿਆ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਇਸ ਸਮੇਂ ਵੈਧ ਨਹੀਂ ਹੈ। ਇਹ ਇੱਕ ਗਲਤ ਸੰਰੂਪਣ ਕਾਰਨ ਹੋ ਸਕਦਾ ਹੈ ਜਾਂ ਕੋਈ ਹਮਲਾਵਰ ਤੁਹਾਡੇ ਕਨੈਕਸ਼ਨ ਨੂੰ ਰਾਹ ਵਿੱਚ ਰੋਕ ਰਿਹਾ ਹੈ।</translation>
 <translation id="5411462078004183575">ਘੱਟ ਕੀਮਤ ਵਾਲੇ ਵਿਕਲਪ</translation>
 <translation id="5412040515238827314">ਅਵੈਧ ਫਾਰਮੈਟ: ਪੈਟਰਨਾਂ ਦੀ ਸੂਚੀ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ।</translation>
-<translation id="5412236728747081950">ਤੁਹਾਨੂੰ ਜ਼ਿਆਦਾ ਢੁਕਵੇਂ ਵਿਗਿਆਪਨ ਦਿਖਾਉਣ ਲਈ, ਇਹ ਸਾਈਟ Chrome ਤੋਂ ਤੁਹਾਡੀਆਂ ਦਿਲਚਸਪੀਆਂ ਬਾਰੇ ਜਾਣਕਾਰੀ ਲੈਂਦੀ ਹੈ</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">ਸਟੈਕਰ 4</translation>
 <translation id="5414446060143308245">ਟ੍ਰਾਂਸਫ਼ਰ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਸਮੀਖਿਆ ਦੀ ਲੋੜ ਹੈ</translation>
@@ -2793,7 +2787,6 @@
 <translation id="6613866251791999074">Chrome ਵਿੱਚ ਆਪਣੇ ਖੋਜ ਇੰਜਣ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="6615297766614333076">ਸਟੈਕਰ 2</translation>
 <translation id="6624427990725312378">ਸੰਪਰਕ ਜਾਣਕਾਰੀ</translation>
-<translation id="6627727261837091711">ਵਿਗਿਆਪਨ ਵਿਅਕਤੀਗਤਕਰਨ ਦੇ ਵੇਰਵੇ ਦਿਖਾਓ</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> ਖੋਜ</translation>
 <translation id="6629652037942826935">ਸ਼ਾਹੀ ਯਾਤਰਾ</translation>
 <translation id="6630043285902923878">USB ਡੀਵਾਈਸ ਲੱਭੇ ਜਾ ਰਹੇ ਹਨ...</translation>
@@ -3305,7 +3298,6 @@
 <translation id="7574998639136359461">ਸਰਦੀ ਦੀਆਂ ਖੇਡਾਂ ਦੇ ਉਪਕਰਨ</translation>
 <translation id="7575207903026901870">ਸੁਝਾਅ ਬਟਨ ਹਟਾਓ, ਇਸ ਸੁਝਾਅ ਨੂੰ ਹਟਾਉਣ ਲਈ ਐਂਟਰ ਦਬਾਓ</translation>
 <translation id="7575887283389198269">ਮੋਬਾਈਲ ਫ਼ੋਨ</translation>
-<translation id="7577900504646297215">ਦਿਲਚਸਪੀਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="7578104083680115302">ਤੁਹਾਡੇ ਵੱਲੋਂ Google ਨਾਲ ਰੱਖਿਅਤ ਕੀਤੇ ਗਏ ਕਾਰਡਾਂ ਦੀ ਵਰਤੋਂ ਕਰਦੇ ਹੋਏ ਸਾਈਟਾਂ ਅਤੇ ਐਪਾਂ 'ਤੇ ਵਧੇਰੇ ਤੇਜ਼ ਭੁਗਤਾਨ ਕਰੋ।</translation>
 <translation id="7579442726219254162">"<ph name="APPLICATION_ID" />" ਦੇ ਪ੍ਰਤਿਬੰਧਿਤ ਸੰਰੂਪਣ ਵਿੱਚ ਅਗਿਆਤ ਵੇਰੀਏਬਲ "<ph name="VARIABLE" />".</translation>
 <translation id="7581199239021537589">ਸਾਈਡ 2 ਚਿੱਤਰ Y ਸ਼ਿਫਟ</translation>

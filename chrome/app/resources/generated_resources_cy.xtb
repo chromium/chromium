@@ -2562,6 +2562,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="2927017729816812676">Storfa Dros Dro</translation>
 <translation id="2928795416630981206">Caniateir i olrhain safle eich camera</translation>
 <translation id="2931157624143513983">Ffitio i'r ardal y gellir ei hargraffu</translation>
+<translation id="2931342457001070961">Dim meicroffon wedi'i gysylltu</translation>
 <translation id="2932085390869194046">Awgrymu Cyfrinair...</translation>
 <translation id="2932483646085333864">Allgofnodwch a mewngofnodwch eto i ddechrau cysoni eto</translation>
 <translation id="2932883381142163287">Rhoi gwybod am gamddefnydd</translation>
@@ -4693,6 +4694,7 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4647836961514597010">Dewisydd lliw</translation>
 <translation id="4648491805942548247">Caniatadau Annigonol</translation>
 <translation id="4650037136970677721">Cof a arbedwyd</translation>
+<translation id="4650364565596261010">System ddiofyn</translation>
 <translation id="4650591383426000695">Datgysylltu'ch ffôn o'ch <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Ni ellid llwytho elfen ar-lein gydag adnoddau modd demo.</translation>
 <translation id="4651921906638302153">Methu â mewngofnodi gyda'r cyfrif hwn</translation>
@@ -8846,7 +8848,6 @@ Pwyswch switsh neu fysell a aseiniwyd i dynnu aseiniad.</translation>
 <translation id="7968982339740310781">Gweld y manylion</translation>
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Manylion ether-rwyd</translation>
-<translation id="7970882136539140748">Methu â dilysu'r cerdyn ar hyn o bryd</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 Gydag Amgryptio RSA</translation>
 <translation id="7973776233567882054">Pa un o'r canlynol sy'n disgrifio'ch rhwydwaith orau?</translation>
 <translation id="797394244396603170">Dewiswch y ddyfais yr hoffech rannu ffeiliau â hi</translation>

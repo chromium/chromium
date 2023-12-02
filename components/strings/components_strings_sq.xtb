@@ -346,7 +346,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1633941398432788136">Planifikim ngjarjesh</translation>
 <translation id="1634828734222219955">Totali</translation>
 <translation id="163669211644121865">Përgatitja dhe planifikimi i taksave</translation>
-<translation id="1638780421120290329">Karta nuk mund të ruhet</translation>
 <translation id="1639239467298939599">Po ngarkohet...</translation>
 <translation id="1640180200866533862">Politikat e përdoruesit</translation>
 <translation id="1640244768702815859">Provo <ph name="BEGIN_LINK" />të vizitosh faqen kryesore të sajtit<ph name="END_LINK" />.</translation>
@@ -663,6 +662,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2262243747453050782">Gabim në HTTP</translation>
 <translation id="226481340855943334">Prejardhja dhe gjenealogjia</translation>
 <translation id="2265192657948645752">Punë në sektorin e shitjeve me pakicë</translation>
+<translation id="2265356434276802347">Kjo politikë nuk duhet të ketë më shumë se <ph name="MAX_ITEMS_LIMIT" /> hyrje të veçuara.</translation>
 <translation id="2267047181501709434">Po verifikon identitetin tënd...</translation>
 <translation id="2268743667444073169">Telenovelat televizive</translation>
 <translation id="2270484714375784793">Numër telefoni</translation>
@@ -689,7 +689,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2324604504973636700">Elektroshtëpiaket</translation>
 <translation id="2328651992442742497">Lejohet (e parazgjedhur)</translation>
 <translation id="2328955282645810595">Vegla elektrike dhe ndërtimi</translation>
-<translation id="2329473609445770916">Ky sajt përcakton interesat që sajtet e tjera mund të përdorin për të të shfaqur reklama</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, skadon më <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Cilësim i kontrolluar nga administratori yt</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> dëshiron të çiftohet</translation>
@@ -1118,7 +1117,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të personalizuar pamjen e shfletuesit tënd</translation>
 <translation id="3240791268468473923">Kredenciali i pagesës së sigurt pa fletë përkatëse kredenciali është i hapur</translation>
 <translation id="324180406144491771">Lidhjet e "<ph name="HOST_NAME" />" janë bllokuar</translation>
-<translation id="3248611290851046188">Ky sajt përcakton interesat që sajtet e tjera mund të përdorin për të të shfaqur reklama. Gjithashtu, ky sajt merr interesat e tua nga Chrome për të të shfaqur reklama më të përshtatshme</translation>
 <translation id="3249151924975132674">Kreditë studentore dhe financimi për kolegjin</translation>
 <translation id="3249845759089040423">Moderne</translation>
 <translation id="3250640885957938546">Reklamimi dhe marketingu</translation>
@@ -1586,7 +1584,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4177501066905053472">Temat e reklamave</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Anulo monitorimin e çmimeve</translation>
-<translation id="4194250254487269611">Karta jote nuk mund të ruhet për momentin</translation>
 <translation id="4195459680867822611">Butoni "Shiko këshilla për Chrome". Aktivizoje për të mësuar për veçoritë e Chrome</translation>
 <translation id="4195643157523330669">Hape në një skedë të re</translation>
 <translation id="4196861286325780578">&amp;Bëje përsëri zhvendosjen</translation>
@@ -1726,7 +1723,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4424024547088906515">Ky server nuk mundi të dëshmonte se ky është <ph name="DOMAIN" />; certifikata e tij e sigurisë nuk është e besueshme nga Chrome. Kjo mund të shkaktohet nga keqkonfigurimi ose ndonjë sulmues që po ndërhyn në lidhjen tënde.</translation>
 <translation id="4425173294238317796">Fleta e konfirmimit të çelësit të kalimit</translation>
 <translation id="4425750422187370446">Veshje atletike</translation>
-<translation id="4428065317363009941">Personalizimi i reklamave</translation>
 <translation id="443121186588148776">Porta seriale</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> nuk e pranoi certifikatën tënde të identifikimit ose ajo mund të mos jetë dhënë.</translation>
 <translation id="4432792777822557199">Faqet në <ph name="SOURCE_LANGUAGE" /> do të përkthehen në <ph name="TARGET_LANGUAGE" /> nga tani e në vazhdim</translation>
@@ -2208,7 +2204,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="540969355065856584">Ky server nuk mund të provojë se është <ph name="DOMAIN" />; certifikata e tij e sigurisë është e pavlefshme në këtë moment. Kjo mund të shkaktohet për shkak të konfigurimit të pasaktë ose në rast të ndërhyrjes së ndonjë sulmuesi në lidhjen tënde.</translation>
 <translation id="5411462078004183575">Opsion me çmim të ulët</translation>
 <translation id="5412040515238827314">Format i pavlefshëm: Pritet një listë motivesh.</translation>
-<translation id="5412236728747081950">Ky sajt merr interesat e tua nga Chrome për të të shfaqur reklama më të përshtatshme</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Stivuesi 4</translation>
 <translation id="5414446060143308245">Kërkohet rishikimi përpara transferimit</translation>
@@ -2795,7 +2790,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6613866251791999074">Mëso më shumë për motorin e kërkimit në Chrome</translation>
 <translation id="6615297766614333076">Stivuesi 2</translation>
 <translation id="6624427990725312378">Informacionet e kontaktit</translation>
-<translation id="6627727261837091711">Shfaq detajet e personalizimit të reklamave</translation>
 <translation id="6628463337424475685">Kërkimi me <ph name="ENGINE" /></translation>
 <translation id="6629652037942826935">Udhëtime luksoze</translation>
 <translation id="6630043285902923878">Po gjen pajisjet USB...</translation>
@@ -3307,7 +3301,6 @@ Detaje shtesë:
 <translation id="7574998639136359461">Pajisje për sporte dimërore</translation>
 <translation id="7575207903026901870">Butoni "Hiq sugjerimin", shtyp Enter për ta hequr këtë sugjerim</translation>
 <translation id="7575887283389198269">Celularë</translation>
-<translation id="7577900504646297215">Menaxho interesat</translation>
 <translation id="7578104083680115302">Paguaj me shpejtësi në sajte dhe aplikacione mes pajisjeve të ndryshme duke përdorur kartat që ke ruajtur me Google.</translation>
 <translation id="7579442726219254162">Ndryshorja e panjohur "<ph name="VARIABLE" />" në konfigurimin e menaxhuar të "<ph name="APPLICATION_ID" />".</translation>
 <translation id="7581199239021537589">Zhvendosja e imazhit në boshtin Y në anën 2</translation>

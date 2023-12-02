@@ -346,7 +346,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1633941398432788136">Planowanie imprez</translation>
 <translation id="1634828734222219955">Suma</translation>
 <translation id="163669211644121865">Pomoc i planowanie dotyczące rozliczeń podatkowych</translation>
-<translation id="1638780421120290329">Nie można zapisać karty</translation>
 <translation id="1639239467298939599">Wczytuję</translation>
 <translation id="1640180200866533862">Zasady dotyczące użytkowników</translation>
 <translation id="1640244768702815859">Otwórz <ph name="BEGIN_LINK" />stronę główną witryny<ph name="END_LINK" />.</translation>
@@ -663,6 +662,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2262243747453050782">Błąd HTTP</translation>
 <translation id="226481340855943334">Rodowody i genealogia</translation>
 <translation id="2265192657948645752">Praca w handlu detalicznym</translation>
+<translation id="2265356434276802347">Maksymalna liczba pozycji polecanych w tej zasadzie to <ph name="MAX_ITEMS_LIMIT" />.</translation>
 <translation id="2267047181501709434">Weryfikuję Twoją tożsamość...</translation>
 <translation id="2268743667444073169">Telewizyjne opery mydlane</translation>
 <translation id="2270484714375784793">Numer telefonu</translation>
@@ -689,7 +689,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2324604504973636700">Sprzęt AGD</translation>
 <translation id="2328651992442742497">Zezwolono (domyślnie)</translation>
 <translation id="2328955282645810595">Narzędzia budowlane i elektronarzędzia</translation>
-<translation id="2329473609445770916">Ta witryna określa zainteresowania, których inne witryny mogą używać, aby wyświetlać Ci reklamy</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, ważna do <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Ustawienie kontrolowane przez administratora</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> chce się sparować</translation>
@@ -1118,7 +1117,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby dostosować wygląd przeglądarki, naciśnij Tab, a potem Enter.</translation>
 <translation id="3240791268468473923">Arkusz dotyczący braku pasujących danych uwierzytelniających na potrzeby bezpiecznych płatności jest otwarty</translation>
 <translation id="324180406144491771">Linki „<ph name="HOST_NAME" />” są zablokowane</translation>
-<translation id="3248611290851046188">Ta witryna określa zainteresowania, których inne witryny mogą używać, aby wyświetlać Ci reklamy. Witryna wykorzystuje też gromadzone przez Chrome informacje o Twoich zainteresowaniach, aby wyświetlać trafniejsze reklamy.</translation>
 <translation id="3249151924975132674">Pożyczki studenckie i finansowanie studiów</translation>
 <translation id="3249845759089040423">Dynamiczny</translation>
 <translation id="3250640885957938546">Reklama i marketing</translation>
@@ -1586,7 +1584,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4177501066905053472">Tematy reklam</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Wyłącz śledzenie ceny</translation>
-<translation id="4194250254487269611">W tej chwili nie można zapisać karty</translation>
 <translation id="4195459680867822611">Przycisk Zobacz wskazówki na temat Chrome; aktywuj, aby dowiedzieć się więcej o funkcjach Chrome</translation>
 <translation id="4195643157523330669">Otwórz w nowej karcie</translation>
 <translation id="4196861286325780578">&amp;Ponów przeniesienie</translation>
@@ -1726,7 +1723,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4424024547088906515">Ten serwer nie mógł udowodnić, że należy do <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa nie jest zaufany w Chrome. Może to być spowodowane błędną konfiguracją lub przechwyceniem połączenia przez atakującego.</translation>
 <translation id="4425173294238317796">Arkusz potwierdzenia klucza dostępu</translation>
 <translation id="4425750422187370446">Odzież sportowa</translation>
-<translation id="4428065317363009941">Personalizacja reklam</translation>
 <translation id="443121186588148776">Port szeregowy</translation>
 <translation id="4432688616882109544">Serwer <ph name="HOST_NAME" /> nie zaakceptował lub nie otrzymał Twojego certyfikatu logowania.</translation>
 <translation id="4432792777822557199">Od teraz strony, których językiem jest <ph name="SOURCE_LANGUAGE" />, będą tłumaczone na <ph name="TARGET_LANGUAGE" /></translation>
@@ -2208,7 +2204,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="540969355065856584">Ten serwer nie może udowodnić, że należy do domeny <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa nie jest obecnie ważny. Może to być spowodowane nieprawidłową konfiguracją lub przechwyceniem połączenia przez atakującego.</translation>
 <translation id="5411462078004183575">Niska cena</translation>
 <translation id="5412040515238827314">Nieprawidłowy format: oczekiwana jest lista wzorców.</translation>
-<translation id="5412236728747081950">Witryna korzysta z gromadzonych przez Chrome informacji o Twoich zainteresowaniach, aby wyświetlać trafniejsze reklamy</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Układarka 4</translation>
 <translation id="5414446060143308245">Wymagane jest sprawdzenie plików przed przeniesieniem</translation>
@@ -2796,7 +2791,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6613866251791999074">Więcej informacji o wyszukiwarce w Chrome</translation>
 <translation id="6615297766614333076">Układarka 2</translation>
 <translation id="6624427990725312378">Dane kontaktowe</translation>
-<translation id="6627727261837091711">Pokaż szczegóły dotyczące personalizacji reklam</translation>
 <translation id="6628463337424475685">Wyszukiwarka <ph name="ENGINE" /></translation>
 <translation id="6629652037942826935">Luksusowe podróże</translation>
 <translation id="6630043285902923878">Szukam urządzeń USB...</translation>
@@ -3308,7 +3302,6 @@ Dodatkowe informacje:
 <translation id="7574998639136359461">Sprzęt do sportów zimowych</translation>
 <translation id="7575207903026901870">Usuń przycisk sugestii. Naciśnij Enter, by usunąć tę sugestię</translation>
 <translation id="7575887283389198269">Telefony komórkowe</translation>
-<translation id="7577900504646297215">Zarządzaj zainteresowaniami</translation>
 <translation id="7578104083680115302">Używaj swoich kart zapisanych w Google, by łatwiej dokonywać płatności na stronach i w aplikacjach na różnych urządzeniach.</translation>
 <translation id="7579442726219254162">Nieznana zmienna „<ph name="VARIABLE" />” w zarządzanej konfiguracji „<ph name="APPLICATION_ID" />”.</translation>
 <translation id="7581199239021537589">Strona 2 – przesunięcie obrazu wzdłuż osi Y</translation>

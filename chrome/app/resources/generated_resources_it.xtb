@@ -2544,6 +2544,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2927017729816812676">Spazio di archiviazione cache</translation>
 <translation id="2928795416630981206">Possono monitorare la posizione della videocamera</translation>
 <translation id="2931157624143513983">Adatta ad area stampabile</translation>
+<translation id="2931342457001070961">Nessun microfono collegato</translation>
 <translation id="2932085390869194046">Suggerisci password...</translation>
 <translation id="2932483646085333864">Esci e accedi di nuovo per avviare la sincronizzazione</translation>
 <translation id="2932883381142163287">Segnala abuso</translation>
@@ -4674,6 +4675,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4647836961514597010">Selettore colori</translation>
 <translation id="4648491805942548247">Autorizzazioni insufficienti</translation>
 <translation id="4650037136970677721">Ricordo salvato</translation>
+<translation id="4650364565596261010">Predefinito</translation>
 <translation id="4650591383426000695">Disconnetti il telefono da <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Impossibile caricare il componente online con le risorse della modalità demo.</translation>
 <translation id="4651921906638302153">Impossibile accedere con questo account</translation>
@@ -8817,7 +8819,6 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7968982339740310781">Mostra dettagli</translation>
 <translation id="7969046989155602842">Comando</translation>
 <translation id="7970673414865679092">Dettagli Ethernet</translation>
-<translation id="7970882136539140748">Impossibile salvare la carta al momento</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 con crittografia RSA</translation>
 <translation id="7973776233567882054">Quale delle seguenti definizioni descrive meglio la tua rete?</translation>
 <translation id="797394244396603170">Seleziona il dispositivo con cui vuoi condividere file</translation>

@@ -174,6 +174,7 @@
 <translation id="1883255238294161206">ዝርዝር ሰብስብ</translation>
 <translation id="1889872080060107187">በመለያ ወደ <ph name="URL" /> ይገባሉ</translation>
 <translation id="1890237935065108104">ይህ ቅንብር አይገኝም።</translation>
+<translation id="1891199774460536658">ሁሉንም ተለይተው የታወቁ ጥቅሎች በራስ-ሰር ተከታተል</translation>
 <translation id="1894023287452300670">ዋጋን እዚህ ይከታተሉ</translation>
 <translation id="189531189292803889">የእርስዎ iPad በቅርቡ ወደነበረበት ተመልሷል፣ ይህም ነባሪ አሳሽዎን ቀይሮ ሊሆን ይችላል።</translation>
 <translation id="1910975740091000991">Chrome ለiOS</translation>
@@ -623,6 +624,7 @@
 <translation id="430793432425771671">ሁሉንም ያመሳስሉ</translation>
 <translation id="4309403553630140242">ለተጨማሪ መረጃ ሁለቴ መታ ያድርጉ</translation>
 <translation id="430967081421617822">የምንጊዜም</translation>
+<translation id="4322394346347055525">ሌሎች ትሮችን ዝጋ</translation>
 <translation id="4331177082088332784">ይህን BEGIN_LINK የይዘት ቅንብሮች END_LINK ውስጥ ማስተዳደር ይችላሉ</translation>
 <translation id="4334428914252001502">1 ያልተነበበ ጽሁፍ።</translation>
 <translation id="4338650699862464074">የሚጎበኟቸው የገጾች ዩአርኤሎችን ወደ Google ይላኩ።</translation>
@@ -652,6 +654,7 @@
 <translation id="4493604894403585654">እንደ <ph name="USER_EMAIL" /> በመለያ ገብተዋል። ቅንብሮች ውስጥ በማንኛውም ጊዜ መስመር ማቆም ይችላሉ። Google በእርስዎ ታሪክ ላይ በመመሥረት ፍለጋን እና ሌሎች አገልግሎቶችን ግላዊነት ሊያላብስ ይችላል።</translation>
 <translation id="4502566650163919158">አሁን ይፈትሹ</translation>
 <translation id="4508750114462689118">የመግቢያ ማስተዋወቂያን ዝጋ</translation>
+<translation id="4509449376545878717">ጥቅሎችን በጭራሽ በራስ-ሰር አትወቅ</translation>
 <translation id="4514889972748124117">ጠንካራ የይለፍ ቃል ጠቁም...</translation>
 <translation id="4520798012560649652">ስለማንነት የማያሳውቅ ሁነታ የበለጠ ይወቁ</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} ዕልባት}one{{count} ዕልባት}other{{count} ዕልባቶች}}</translation>
@@ -1335,6 +1338,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8023878949384262191">ክፍሉን ይዘረጋዋል።</translation>
 <translation id="8027581147000338959">በአዲስ መስኮት ክፈት</translation>
 <translation id="8032569120109842252">የምከተላቸው</translation>
+<translation id="8040207962129315716">በእያንዳንዱ ጊዜ ጠይቀኝ</translation>
 <translation id="804225253087497565">በመለያ ሲገቡ <ph name="BEGIN_LINK" />የፍለጋ ታሪክ<ph name="END_LINK" /> እና <ph name="BEGIN_LINK" />ሌሎች የእንቅስቃሴ ዓይነቶች<ph name="END_LINK" /> በGoogle መለያዎ ውስጥ ሊቀመጡ ይችላሉ። በማንኛውም ጊዜ ሊሰርዟቸው ይችላሉ።</translation>
 <translation id="804427445359061970">የእርስዎን ትሮች ከሌሎች መሣሪያዎች እዚህ ያገኛሉ</translation>
 <translation id="8044568254381073661">ያለምሥጠራ ያስቀምጡ</translation>
@@ -1435,6 +1439,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8556590991644167667">{count,plural, =1{{count} ማስጠንቀቂያ አሰናብተዋል}one{{count} ማስጠንቀቂያ አሰናብተዋል}other{{count} ማስጠንቀቂያዎች አሰናብተዋል}}</translation>
 <translation id="8558480467877843976">አሁን በሚያስሱበት ወይም በመልዕክቶች ውስጥ አገናኞችን መታ በሚያደርጉበት በማንኛውም ጊዜ Chromeን እና ሌሎች መተግበሪያዎችን መጠቀም ይችላሉ።</translation>
 <translation id="8560253818350321773">መጀመሪያ ጥቅም ላይ የዋሉ ንጥሎችን ያሳያል።</translation>
+<translation id="8562944214838973419">ጥቅል መከታተልን ይፍቀዱ</translation>
 <translation id="8569721750632860947">ወደ የንባብ ዝርዝርዎ ምን ዩአርኤል ማከል ይፈልጋሉ?</translation>
 <translation id="8588404856427128947">ጠፍቷል</translation>
 <translation id="8591976964826315682">ማንነትን በማያሳውቅ ሁነታ ላይ የሦስተኛ ወገን ኩኪዎችን ያግዱ</translation>

@@ -346,7 +346,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1633941398432788136">Eseménytervezés</translation>
 <translation id="1634828734222219955">Végösszeg</translation>
 <translation id="163669211644121865">Adóelőkészítés és -tervezés</translation>
-<translation id="1638780421120290329">Nem lehet menteni a kártyát</translation>
 <translation id="1639239467298939599">Betöltés</translation>
 <translation id="1640180200866533862">Felhasználói házirendek</translation>
 <translation id="1640244768702815859">Próbálja meg <ph name="BEGIN_LINK" />megnyitni a webhely főoldalát<ph name="END_LINK" />.</translation>
@@ -690,7 +689,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2324604504973636700">Háztartási eszközök</translation>
 <translation id="2328651992442742497">Engedélyezett (alapértelmezett)</translation>
 <translation id="2328955282645810595">Építkezési és elektromos szerszámok</translation>
-<translation id="2329473609445770916">Ez a webhely olyan érdeklődési köröket határoz meg, amelyeket más webhelyek arra használhatnak fel, hogy hirdetéseket jelenítsenek meg Önnek</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, lejárat dátuma: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">A beállítást a rendszergazda szabályozza</translation>
 <translation id="2340263603246777781">A(z) <ph name="ORIGIN" /> párosítást szeretne végrehajtani</translation>
@@ -1117,7 +1115,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Nyomja le a Tab, majd az Enter billentyűt a böngésző megjelenésének személyre szabásához.</translation>
 <translation id="3240791268468473923">A biztonságos fizetés hitelesítési adataihoz tartozó nem egyező hitelesítési adatok űrlapja megnyitva</translation>
 <translation id="324180406144491771">A(z) „<ph name="HOST_NAME" />” linkjei le vannak tiltva</translation>
-<translation id="3248611290851046188">Ez a webhely olyan érdeklődési köröket határoz meg, amelyeket más webhelyek arra használhatnak fel, hogy hirdetéseket jelenítsenek meg Önnek. Ez a webhely ezenkívül a Chrome-tól is lekéri az érdeklődési köreit, hogy relevánsabb hirdetéseket jelenítsen meg Önnek.</translation>
 <translation id="3249151924975132674">Diákhitelek és felsőfokú képzés finanszírozása</translation>
 <translation id="3249845759089040423">Izgalmas</translation>
 <translation id="3250640885957938546">Reklám és marketing</translation>
@@ -1585,7 +1582,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4177501066905053472">Hirdetéstémák</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" />: <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Árkövetés kikapcsolása</translation>
-<translation id="4194250254487269611">A kártya jelenleg nem menthető</translation>
 <translation id="4195459680867822611">Chrome-tippek megjelenítése gomb, nyomja meg a Chrome funkcióival kapcsolatos további információkért.</translation>
 <translation id="4195643157523330669">Megnyitás új lapon</translation>
 <translation id="4196861286325780578">&amp;Áthelyezés újra</translation>
@@ -1725,7 +1721,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4424024547088906515">A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domainbe tartozik; biztonsági tanúsítványa a Chrome szerint nem megbízható. Ennek oka lehet konfigurációs hiba, vagy hogy egy támadó eltérítette az Ön kapcsolódását.</translation>
 <translation id="4425173294238317796">Azonosítókulcs megerősítő lapja</translation>
 <translation id="4425750422187370446">Atlétikai ruházat</translation>
-<translation id="4428065317363009941">Hirdetések személyre szabása</translation>
 <translation id="443121186588148776">Soros port</translation>
 <translation id="4432688616882109544">A(z) <ph name="HOST_NAME" /> nem fogadta el az Ön bejelentkezési tanúsítványát, vagy nem talált ilyet.</translation>
 <translation id="4432792777822557199">A(z) <ph name="SOURCE_LANGUAGE" /> nyelvű oldalak mostantól le lesznek fordítva <ph name="TARGET_LANGUAGE" /> nyelvre</translation>
@@ -2207,7 +2202,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="540969355065856584">A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domainbe tartozik; biztonsági tanúsítványa jelenleg nem érvényes. Ennek oka lehet konfigurációs hiba, vagy hogy egy támadó eltérítette az Ön kapcsolatát.</translation>
 <translation id="5411462078004183575">Alacsony árú lehetőség</translation>
 <translation id="5412040515238827314">Érvénytelen formátum: A rendszer mintalistát várt.</translation>
-<translation id="5412236728747081950">Ez a webhely lekéri az érdeklődési köreit a Chrome-tól, hogy relevánsabb hirdetéseket jelenítsen meg Önnek</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">4. kötegelő</translation>
 <translation id="5414446060143308245">Az átvitel előtt ellenőrzést kell elvégezni</translation>
@@ -2795,7 +2789,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6613866251791999074">További információ a Chrome-ban használt keresőmotorról</translation>
 <translation id="6615297766614333076">2. kötegelő</translation>
 <translation id="6624427990725312378">Kapcsolatfelvételi adatok</translation>
-<translation id="6627727261837091711">A hirdetések személyre szabásához tartozó adatok megjelenítése</translation>
 <translation id="6628463337424475685">Keresés: <ph name="ENGINE" /></translation>
 <translation id="6629652037942826935">Luxusutazás</translation>
 <translation id="6630043285902923878">USB-eszközök keresése…</translation>
@@ -3307,7 +3300,6 @@ További részletek:
 <translation id="7574998639136359461">Télisport-felszerelés</translation>
 <translation id="7575207903026901870">Javaslat eltávolítása gomb. Nyomja meg az Entert a javaslat eltávolításához</translation>
 <translation id="7575887283389198269">Mobiltelefonok</translation>
-<translation id="7577900504646297215">Érdeklődési körök kezelése</translation>
 <translation id="7578104083680115302">A Google rendszerében mentett kártyákkal gyorsan fizethet webhelyeken és alkalmazásokban bármelyik eszközén.</translation>
 <translation id="7579442726219254162">Ismeretlen változó („<ph name="VARIABLE" />”) található a(z) „<ph name="APPLICATION_ID" />” kezelt konfigurációjában.</translation>
 <translation id="7581199239021537589">2. oldali kép Y-eltolása</translation>

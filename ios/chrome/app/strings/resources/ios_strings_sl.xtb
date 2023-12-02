@@ -208,6 +208,7 @@
 <translation id="2050196510205866090">{count,plural, =1{Nad tipkovnico je na voljo {count} shranjeno plačilno sredstvo.}one{Nad tipkovnico je na voljo {count} shranjeno plačilno sredstvo.}two{Nad tipkovnico sta na voljo {count} shranjeni plačilni sredstvi.}few{Nad tipkovnico so na voljo {count} shranjena plačilna sredstva.}other{Nad tipkovnico je na voljo {count} shranjenih plačilnih sredstev.}}</translation>
 <translation id="2055515971416882518">Odprite nastavitve.</translation>
 <translation id="2059166748188874810">Občina</translation>
+<translation id="2062410130322589403">Vodnik po vaših izbirah zasebnosti</translation>
 <translation id="2073572773299281212">Aktivna pred toliko dnevi: <ph name="DAYS" /></translation>
 <translation id="2074131957428911366">V <ph name="BEGIN_LINK" />nastavitvah<ph name="END_LINK" /> lahko kadar koli izberete, kaj želite sinhronizirati.</translation>
 <translation id="2079545284768500474">Razveljavi</translation>
@@ -622,6 +623,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="430793432425771671">Sinhroniziraj vse</translation>
 <translation id="4309403553630140242">Dvakrat se dotaknite, če želite več informacij</translation>
 <translation id="430967081421617822">Od začetka</translation>
+<translation id="4322394346347055525">Zapri druge zavihke</translation>
 <translation id="4331177082088332784">To lahko upravljate v BEGIN_LINK nastavitvah vsebine END_LINK</translation>
 <translation id="4334428914252001502">1 neprebran članek.</translation>
 <translation id="4338650699862464074">Googlu pošlje URL-je strani, ki jih obiščete.</translation>

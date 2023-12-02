@@ -346,7 +346,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1633941398432788136">Planificació d'esdeveniments</translation>
 <translation id="1634828734222219955">Total</translation>
 <translation id="163669211644121865">Preparació i planificació d'impostos</translation>
-<translation id="1638780421120290329">No es pot desar la targeta</translation>
 <translation id="1639239467298939599">S'està carregant</translation>
 <translation id="1640180200866533862">Polítiques d'usuari</translation>
 <translation id="1640244768702815859">Prova d'<ph name="BEGIN_LINK" />anar a la pàgina d'inici del lloc<ph name="END_LINK" />.</translation>
@@ -690,7 +689,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2324604504973636700">Aparells domèstics</translation>
 <translation id="2328651992442742497">Permès (opció predeterminada)</translation>
 <translation id="2328955282645810595">Eines elèctriques i de construcció</translation>
-<translation id="2329473609445770916">Aquest lloc web defineix interessos que altres llocs web poden utilitzar per mostrar-te anuncis</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, data de caducitat: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">L'administrador controla l'opció de configuració</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> es vol vincular</translation>
@@ -1119,7 +1117,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per personalitzar l'aspecte del teu navegador</translation>
 <translation id="3240791268468473923">S'ha obert el full de credencials no coincidents de credencials de pagament segur</translation>
 <translation id="324180406144491771">Els enllaços de "<ph name="HOST_NAME" />" estan bloquejats</translation>
-<translation id="3248611290851046188">Aquest lloc web defineix interessos que altres llocs web poden utilitzar per mostrar-te anuncis. També obté els teus interessos de Chrome per mostrar-te anuncis més rellevants.</translation>
 <translation id="3249151924975132674">Crèdits d'estudi i finançament universitari</translation>
 <translation id="3249845759089040423">Atrevida</translation>
 <translation id="3250640885957938546">Publicitat i màrqueting</translation>
@@ -1587,7 +1584,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4177501066905053472">Temes d'anuncis</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Deixa de seguir el preu</translation>
-<translation id="4194250254487269611">Ara mateix no es pot desar la targeta</translation>
 <translation id="4195459680867822611">Botó Mostra consells per a Chrome: activa'l per obtenir informació sobre les funcions de Chrome</translation>
 <translation id="4195643157523330669">Obre en una pestanya nova</translation>
 <translation id="4196861286325780578">&amp;Refés el moviment</translation>
@@ -1727,7 +1723,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4424024547088906515">Aquest servidor no ha pogut comprovar que sigui <ph name="DOMAIN" /> perquè Chrome considera que el seu certificat de seguretat no és de confiança. Això pot ser a causa d'una configuració incorrecta o d'un atacant que intercepta la vostra connexió.</translation>
 <translation id="4425173294238317796">Full de confirmació de la clau d'accés</translation>
 <translation id="4425750422187370446">Moda esportiva</translation>
-<translation id="4428065317363009941">Personalització d'anuncis</translation>
 <translation id="443121186588148776">Port en sèrie</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> no ha acceptat el certificat d'inici de sessió o pot ser que no se n'hagi proporcionat cap.</translation>
 <translation id="4432792777822557199">A partir d'ara, les pàgines en <ph name="SOURCE_LANGUAGE" /> es traduiran a <ph name="TARGET_LANGUAGE" /></translation>
@@ -2209,7 +2204,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="540969355065856584">Aquest servidor no ha pogut demostrar que sigui <ph name="DOMAIN" /> perquè el seu certificat de seguretat no és vàlid en aquest moment. Això pot ser a causa d'una configuració incorrecta o d'un atacant que intercepta la connexió.</translation>
 <translation id="5411462078004183575">Opció de preu baix</translation>
 <translation id="5412040515238827314">Format no vàlid: s'espera una llista de patrons.</translation>
-<translation id="5412236728747081950">Aquest lloc web obté els teus interessos de Chrome per mostrar-te anuncis més rellevants</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Apiladora 4</translation>
 <translation id="5414446060143308245">Abans de transferir-los, cal dur a terme una revisió</translation>
@@ -2797,7 +2791,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6613866251791999074">Més informació sobre el teu motor de cerca a Chrome</translation>
 <translation id="6615297766614333076">Apiladora 2</translation>
 <translation id="6624427990725312378">Informació de contacte</translation>
-<translation id="6627727261837091711">Mostra els detalls de la personalització d'anuncis</translation>
 <translation id="6628463337424475685">Cerca de <ph name="ENGINE" /></translation>
 <translation id="6629652037942826935">Viatges de luxe</translation>
 <translation id="6630043285902923878">S'estan cercant dispositius USB...</translation>
@@ -3309,7 +3302,6 @@ Detalls addicionals:
 <translation id="7574998639136359461">Equipament d'esports d'hivern</translation>
 <translation id="7575207903026901870">Botó Suprimeix el suggeriment, prem Retorn per suprimir aquest suggeriment</translation>
 <translation id="7575887283389198269">Telèfons mòbils</translation>
-<translation id="7577900504646297215">Gestiona els interessos</translation>
 <translation id="7578104083680115302">Agilitzeu els pagaments en llocs i en aplicacions des de qualsevol dispositiu mitjançant les targetes que hàgiu desat a Google.</translation>
 <translation id="7579442726219254162">S'ha trobat una variable desconeguda anomenada "<ph name="VARIABLE" />" a la configuració gestionada de l'aplicació "<ph name="APPLICATION_ID" />".</translation>
 <translation id="7581199239021537589">Desplaçament a l'eix Y del costat 2 de la imatge</translation>

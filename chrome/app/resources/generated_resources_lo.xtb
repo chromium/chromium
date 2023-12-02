@@ -2558,6 +2558,7 @@
 <translation id="2927017729816812676">ແຄ​ຊ໌​ບ່ອນເກັບຂໍ້ມູນ</translation>
 <translation id="2928795416630981206">ໄດ້ຮັບອະນຸຍາດໃຫ້ຕິດຕາມຕຳແໜ່ງກ້ອງຂອງທ່ານ</translation>
 <translation id="2931157624143513983">ພໍດີກັບພື້ນທີ່ພິມອອກໄດ້</translation>
+<translation id="2931342457001070961">ບໍ່ໄດ້ເຊື່ອມຕໍ່ໄມໂຄຣໂຟນ</translation>
 <translation id="2932085390869194046">ແນະນຳລະຫັດຜ່ານ...</translation>
 <translation id="2932483646085333864">ອອກຈາກລະບົບ ຈາກນັ້ນເຂົ້າສູ່ລະບົບອີກຄັ້ງເພື່ອເລີ່ມການຊິ້ງຂໍ້ມູນ</translation>
 <translation id="2932883381142163287">ລາຍງານການນຳ​ໃຊ້​ຜິດ</translation>
@@ -4689,6 +4690,7 @@
 <translation id="4647836961514597010">ຕົວເລືອກສີ</translation>
 <translation id="4648491805942548247">ການ​ອະ​ນຸ​ຍາດ​ບໍ່​ພຽງ​ພໍ</translation>
 <translation id="4650037136970677721">ປະຢັດໜ່ວຍຄວາມຈຳແລ້ວ</translation>
+<translation id="4650364565596261010">ຄ່າເລີ່ມຕົ້ນຂອງລະບົບ</translation>
 <translation id="4650591383426000695">ຕັດເຊື່ອມຕໍ່ໂທລະສັບຈາກ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
 <translation id="4651484272688821107">ບໍ່ສາມາດໂຫຼດອົງປະກອບອອນລາຍທີ່ມີຊັບພະຍາກອນໂໝດສາທິດໄດ້.</translation>
 <translation id="4651921906638302153">ບໍ່ສາມາດເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີນີ້ໄດ້</translation>
@@ -8831,7 +8833,6 @@
 <translation id="7968982339740310781">ເບິ່ງລາຍ​ລະ​ອຽດ​</translation>
 <translation id="7969046989155602842">ຄຳສັ່ງ</translation>
 <translation id="7970673414865679092">ລາຍລະອຽດອີເທີເນັດ</translation>
-<translation id="7970882136539140748">ບໍ່ສາມາດບັນທຶກບັດໄວ້ໄດ້ໃນຕອນນີ້</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 ດ້ວຍການໃສ່ລະຫັດ RSA</translation>
 <translation id="7973776233567882054">ອັນໃດຕໍ່ໄປນີ້ອະທິບາຍເຄືອຂ່າຍຂອງທ່ານໄດ້ດີທີ່ສຸດ?</translation>
 <translation id="797394244396603170">ເລືອກອຸປະກອນທີ່ທ່ານຕ້ອງການແບ່ງປັນໄຟລ໌ກັບ</translation>

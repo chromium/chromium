@@ -1761,6 +1761,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2344032937402519675">Nie udało się połączyć z serwerem. Sprawdź połączenie internetowe i spróbuj jeszcze raz. Jeśli problem nadal występuje, uruchom ponownie Chromebooka.</translation>
 <translation id="234559068082989648">Z końcem grudnia 2022 r. stare wersje aplikacji Chrome przestaną działać. Skontaktuj się z administratorem, aby zaktualizować tę aplikację do nowej wersji lub ją usunąć.</translation>
 <translation id="2345723121311404059">Jedna strona do: <ph name="PRINTER_NAME" /></translation>
+<translation id="2347930112185157300">Operator sieci komórkowej jest zablokowany</translation>
 <translation id="2348176352564285430">Aplikacja: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – zgłoszono prośbę o uprawnienia. Aby odpowiedzieć, naciśnij Ctrl + Dalej.</translation>
 <translation id="234889437187286781">Błąd podczas ładowania danych</translation>
@@ -2527,6 +2528,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="2927017729816812676">Pamięć podręczna</translation>
 <translation id="2928795416630981206">Zezwolono na śledzenie pozycji kamery</translation>
 <translation id="2931157624143513983">Dopasuj do możliwego do zadrukowania obszaru</translation>
+<translation id="2931342457001070961">Nie podłączono mikrofonu</translation>
 <translation id="2932085390869194046">Zaproponuj hasło...</translation>
 <translation id="2932483646085333864">Wyloguj się i zaloguj się ponownie, by rozpocząć synchronizację</translation>
 <translation id="2932883381142163287">Zgłoś nadużycie</translation>
@@ -4657,6 +4659,7 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="4647836961514597010">Selektor kolorów</translation>
 <translation id="4648491805942548247">Niewystarczające uprawnienia</translation>
 <translation id="4650037136970677721">Zaoszczędzona pamięć</translation>
+<translation id="4650364565596261010">Ustawienie domyślne</translation>
 <translation id="4650591383426000695">Odłącz telefon od urządzenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Nie udało się załadować komponentu online z zasobami trybu demonstracyjnego.</translation>
 <translation id="4651921906638302153">Nie można się zalogować przy użyciu tego konta</translation>
@@ -4893,6 +4896,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4839303808932127586">Za&amp;pisz film wideo jako...</translation>
 <translation id="4839910546484524995">Sprawdź urządzenie</translation>
 <translation id="4840096453115567876">Zamknąć tryb incognito mimo to?</translation>
+<translation id="4841475798258477260">To urządzenie może połączyć się tylko z konkretną siecią komórkową. <ph name="BEGIN_LINK_LEARN_MORE" />Więcej informacji<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4841741146571978176">Wymagana maszyna wirtualna nie istnieje. Aby przejść dalej, spróbuj skonfigurować maszynę wirtualną typu <ph name="VM_TYPE" /></translation>
 <translation id="4842976633412754305">Ta strona próbuje wczytać skrypty z nieuwierzytelnionych źródeł.</translation>
 <translation id="4844333629810439236">Inne klawiatury</translation>
@@ -6444,6 +6448,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="6104068876731806426">Konta Google</translation>
 <translation id="6104311680260824317">Nie można dołączyć urządzenia do domeny. Serwer nie obsługuje wybranych typów szyfrowania Kerberos. Kliknij „Więcej opcji”, by otworzyć ustawienia szyfrowania.</translation>
 <translation id="6104796831253957966">Kolejka drukarki jest pełna</translation>
+<translation id="610487644502954950">Panel boczny został odpięty</translation>
 <translation id="6104929924898022309">Zmień działanie klawiszy funkcyjnych za pomocą klawisza wyszukiwania</translation>
 <translation id="6106167152849320869">Jeśli w poprzednim kroku zdecydujesz się też wysyłać dane diagnostyczne i dane o korzystaniu, będą one zbierane w przypadku zainstalowanych aplikacji.</translation>
 <translation id="6111718295497931251">Usuń dostęp do Dysku Google</translation>
@@ -8801,7 +8806,6 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7968982339740310781">Wyświetl szczegóły</translation>
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Szczegóły sieci Ethernet</translation>
-<translation id="7970882136539140748">W tej chwili nie udało się zapisać karty</translation>
 <translation id="7972714317346275248">PKCS #1, SHA-384 z szyfrowaniem RSA</translation>
 <translation id="7973776233567882054">Która z tych opcji najlepiej opisuje Twoją sieć?</translation>
 <translation id="797394244396603170">Wybierz urządzenie, któremu chcesz udostępnić pliki.</translation>
@@ -9136,6 +9140,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8241040075392580210">Zacieniony</translation>
 <translation id="8241806945692107836">Określam konfigurację urządzenia...</translation>
 <translation id="8241868517363889229">Odczytywanie i zmienianie zakładek</translation>
+<translation id="8242273718576931540">Urządzenie nie może połączyć się z tą siecią. <ph name="BEGIN_LINK_LEARN_MORE" />Więcej informacji<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8242370300221559051">Włącz Sklep Play</translation>
 <translation id="8242426110754782860">Dalej</translation>
 <translation id="8243948765190375130">Multimedia mogą mieć gorszą jakość</translation>
@@ -9622,6 +9627,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8636284842992792762">Inicjuję rozszerzenia…</translation>
 <translation id="8636323803535540285">Aby móc szybciej otwierać tę stronę, dodaj skrót do: <ph name="BRAND" /></translation>
 <translation id="8636500887554457830">Nie zezwalaj witrynom na otwieranie wyskakujących okienek ani używanie przekierowań</translation>
+<translation id="8636514272606969031">Panel boczny został przypięty</translation>
 <translation id="8637688295594795546">Jest dostępna aktualizacja systemu. Trwa przygotowanie do pobrania…</translation>
 <translation id="8638719155236856752">Stan sieci w ChromeOS</translation>
 <translation id="8639635302972078117">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. To urządzenie automatycznie wysyła do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Nie zostaną one użyte do zidentyfikowania Twojego dziecka. Wykorzystamy je, by poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. Jeśli na koncie Google dziecka włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na jego koncie.</translation>

@@ -2559,6 +2559,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2927017729816812676">Кеш сактагычы</translation>
 <translation id="2928795416630981206">Камераңыздын абалына көз сала алат</translation>
 <translation id="2931157624143513983">Басып чыгарылуучу аймакка тууралоо</translation>
+<translation id="2931342457001070961">Микрофон туташтырылган жок</translation>
 <translation id="2932085390869194046">Сырсөз сунушталсын…</translation>
 <translation id="2932483646085333864">Шайкештирип баштоо үчүн каттоо эсебинен чыгып, кайра кириңиз</translation>
 <translation id="2932883381142163287">Адепсиздик тууралуу кабарлоо</translation>
@@ -4690,6 +4691,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4647836961514597010">Түс тандагыч</translation>
 <translation id="4648491805942548247">Уруксаттар жетишсиз</translation>
 <translation id="4650037136970677721">Эстутум үнөмдөлдү</translation>
+<translation id="4650364565596261010">Демейки тутум</translation>
 <translation id="4650591383426000695">Телефонуңузду <ph name="DEVICE_TYPE" /> түзмөгүнөн ажыратыңыз</translation>
 <translation id="4651484272688821107">Онлайн компоненти демо режиминдеги ресурстар менен жүктөлбөй калды.</translation>
 <translation id="4651921906638302153">Бул аккаунт менен кирүүгө болбойт</translation>
@@ -8835,7 +8837,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7968982339740310781">Чоо-жайын карап көрүү</translation>
 <translation id="7969046989155602842">Буйрук</translation>
 <translation id="7970673414865679092">Ethernet'тин чоо-жайы</translation>
-<translation id="7970882136539140748">Картаны азыр сактоо мүмкүн эмес</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 RSA шифрлөөсү менен</translation>
 <translation id="7973776233567882054">Төмөнкүлөрдүн кайсынысы тармагыңызга туура келет?</translation>
 <translation id="797394244396603170">Файлдар бөлүшүлө турган түзмөктү тандаңыз</translation>

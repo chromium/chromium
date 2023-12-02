@@ -346,7 +346,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1633941398432788136">Veranstaltungsplanung</translation>
 <translation id="1634828734222219955">Gesamt</translation>
 <translation id="163669211644121865">Steuerberatung</translation>
-<translation id="1638780421120290329">Karte kann nicht gespeichert werden</translation>
 <translation id="1639239467298939599">Wird geladen</translation>
 <translation id="1640180200866533862">Nutzerrichtlinien</translation>
 <translation id="1640244768702815859">Versuche, <ph name="BEGIN_LINK" />die Startseite aufzurufen<ph name="END_LINK" />.</translation>
@@ -690,7 +689,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2324604504973636700">Haushaltsgeräte</translation>
 <translation id="2328651992442742497">Zugelassen (Standardeinstellung)</translation>
 <translation id="2328955282645810595">Bau- und Elektrowerkzeuge</translation>
-<translation id="2329473609445770916">Diese Website definiert Interessen, die von anderen Websites dazu verwendet werden können, dir Werbung zu zeigen</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, läuft am <ph name="EXPIRATION_DATE_ABBR" /> ab</translation>
 <translation id="2337852623177822836">Einstellung wird von deinem Administrator gesteuert</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> möchte eine Kopplung durchführen</translation>
@@ -1119,7 +1117,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um das Erscheinungsbild deines Browsers anzupassen</translation>
 <translation id="3240791268468473923">Sichere Anmeldedaten für Zahlungen – Tabellenblatt für nicht übereinstimmende sichere Anmeldedaten ist geöffnet</translation>
 <translation id="324180406144491771">Links von „<ph name="HOST_NAME" />“ werden blockiert</translation>
-<translation id="3248611290851046188">Diese Website definiert Interessen, die von anderen Websites dazu verwendet werden können, dir Werbung zu zeigen. Außerdem ruft diese Website deine Interessen von Chrome ab, damit sie dir relevantere Werbung anzeigen kann.</translation>
 <translation id="3249151924975132674">Studienfinanzierung und -kredite</translation>
 <translation id="3249845759089040423">Cool</translation>
 <translation id="3250640885957938546">Werbung und Marketing</translation>
@@ -1585,7 +1582,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4177501066905053472">Werbethemen</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" />: <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Preis nicht mehr beobachten</translation>
-<translation id="4194250254487269611">Deine Karte kann momentan nicht gespeichert werden</translation>
 <translation id="4195459680867822611">Schaltfläche „Chrome-Tipps aufrufen“ – aktivieren, um mehr über die Funktionen von Chrome zu erfahren</translation>
 <translation id="4195643157523330669">In neuem Tab öffnen</translation>
 <translation id="4196861286325780578">&amp;Verschieben wiederholen</translation>
@@ -1725,7 +1721,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4424024547088906515">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat wird von Chrome als nicht vertrauenswürdig eingestuft. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.</translation>
 <translation id="4425173294238317796">Passkey-Bestätigungsansicht</translation>
 <translation id="4425750422187370446">Sportbekleidung</translation>
-<translation id="4428065317363009941">Personalisierte Werbung</translation>
 <translation id="443121186588148776">Serieller Port</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> hat dein Anmeldezertifikat nicht akzeptiert oder es wurde keines bereitgestellt.</translation>
 <translation id="4432792777822557199">Seiten auf <ph name="SOURCE_LANGUAGE" /> werden ab jetzt auf <ph name="TARGET_LANGUAGE" /> übersetzt</translation>
@@ -2207,7 +2202,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="540969355065856584">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat ist zurzeit ungültig. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.</translation>
 <translation id="5411462078004183575">Preisgünstige Option</translation>
 <translation id="5412040515238827314">Ungültiges Format: Es wurde eine Liste mit Mustern erwartet.</translation>
-<translation id="5412236728747081950">Diese Website ruft deine Interessen von Chrome ab, damit sie dir relevantere Werbung anzeigen kann</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Stapelfach 4</translation>
 <translation id="5414446060143308245">Vor der Übertragung ist eine Überprüfung erforderlich</translation>
@@ -2795,7 +2789,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6613866251791999074">Weitere Informationen zu deiner Suchmaschine in Chrome</translation>
 <translation id="6615297766614333076">Stapelfach 2</translation>
 <translation id="6624427990725312378">Kontaktdaten</translation>
-<translation id="6627727261837091711">Details zu personalisierter Werbung anzeigen</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" />-Suche</translation>
 <translation id="6629652037942826935">Luxusreisen</translation>
 <translation id="6630043285902923878">USB-Geräte werden gesucht…</translation>
@@ -3307,7 +3300,6 @@ Weitere Details:
 <translation id="7574998639136359461">Wintersportausrüstung</translation>
 <translation id="7575207903026901870">Schaltfläche "Vorschlag entfernen", zum Entfernen dieses Vorschlags Eingabetaste drücken</translation>
 <translation id="7575887283389198269">Smartphones</translation>
-<translation id="7577900504646297215">Interessen verwalten</translation>
 <translation id="7578104083680115302">Mit Karten, die du bei Google gespeichert hast, kannst du schnell und geräteübergreifend auf Websites und in Apps bezahlen.</translation>
 <translation id="7579442726219254162">Die verwaltete Konfiguration von „<ph name="APPLICATION_ID" />“ enthält die unbekannte Variable „<ph name="VARIABLE" />“.</translation>
 <translation id="7581199239021537589">Seite 2 – Y-Verschiebung des Bilds</translation>

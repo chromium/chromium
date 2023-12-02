@@ -4785,23 +4785,6 @@ Bu politika yalnızca <ph name="PRODUCT_NAME" /> için makinenin <ph name="CLOUD
 <translation id="5030415914668947893">URL içeren veya URL'lerle ilişkili metrik toplamaya izin ver</translation>
 <translation id="5033070732967197381">Sorunlu TLS sertifikalarına sahip sitelerde WebAuthn API isteklerine izin ver.</translation>
 <translation id="5034504101537897433">Cihaz kilitlenme raporu bilgi raporlamasını etkinleştir</translation>
-<translation id="5034734406205213733">Bu politika, Etkin değerine ayarlanırsa <ph name="PRODUCT_NAME" />, sunucu sertifikalarının doğrulamasını, herkese açık güven kaynağı Chrome Root Store olacak şekilde yerleşik sertifika doğrulayıcıyı kullanarak gerçekleştirir.
-
-Bu politika, Devre Dışı değerine ayarlanırsa <ph name="PRODUCT_NAME" />, sistem sertifikası doğrulayıcıyı ve sistem kök sertifikalarını kullanır.
-
-Bu politika ayarlanmadan bırakılırsa Chrome Root Store veya sistem tarafından sağlanan kökler kullanılabilir.
-
-Platform tarafından sağlanan kökleri
-kullanma desteğinin
-kaldırılması planlandığından bu
-politikanın <ph name="ANDROID_NAME" /> sürüm 121 için <ph name="PRODUCT_NAME" /> ürününden kaldırılması planlanmıştır.
-
-Bu politika, platform tarafından sağlanan sertifika
-doğrulayıcıyı ve kökleri kullanma desteği kaldırıldığında
-<ph name="MS_WIN_NAME" /> ve <ph name="MAC_OS_NAME" />
-sürüm 113, <ph name="PRODUCT_OS_NAME" />
-sürüm 120 için <ph name="PRODUCT_NAME" /> ürününden ve
-<ph name="LINUX_OS_NAME" /> sürüm 120 için <ph name="PRODUCT_NAME" /> ürününden kaldırılmıştır.</translation>
 <translation id="5036013147560568855">Sertifika temel hazırlığı protokolünün sürümü. Varsayılan olarak 1 değerine ayarlanır. 1, "statik" protokoldür. 2, "dinamik" protokoldür.</translation>
 <translation id="5039110755072335605">CORS joker karakter olmayan istek başlıkları desteği</translation>
 <translation id="504116558738617678">Düşük disk alanı uyarılarını, yalnızca cihaz yönetilmiyorsa veya yalnızca 1 kullanıcı varsa göster</translation>

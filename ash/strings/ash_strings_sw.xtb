@@ -659,6 +659,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="36813544980941320">Mitandao ya Wi-Fi itashirikiwa kati ya simu yako na <ph name="DEVICE_NAME" /></translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> kisha <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Tovuti</translation>
+<translation id="3697991387880191195">Bonyeza njia ya mkato ya kupiga picha za skrini</translation>
 <translation id="3702809606464356667">Inaonyesha madirisha yaliyo kwenye eneokazi la sasa, bonyeza kishale cha Juu ili uonyeshe madirisha yaliyo kwenye maeneokazi yote</translation>
 <translation id="3702846122927433391">Idadi ya watu nchini Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -834,6 +835,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="4389184120735010762">Umebofya mikato ya kibodi ya kikuzaji kilichoambatishwa. Ungependa kukiwasha?</translation>
 <translation id="439598569299422042">Umesitishwa, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Imeshindwa kuhifadhi kionyesha skrini</translation>
+<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> imeunganishwa na iko tayari kutumika. Unaweza kuweka mapendeleo ya kipanya chako katika Mipangilio.</translation>
 <translation id="4405151984121254935">Aina ya kifaa ulichounganisha haiwezi kutumika</translation>
 <translation id="4406883609789734330">Manukuu Papo Hapo</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> kimezimwa.</translation>
@@ -1293,6 +1295,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="6199775032047436064">Pakia upya ukurasa wa sasa</translation>
 <translation id="6200515304866777730">Haitumiki kwenye programu</translation>
 <translation id="6210042900243040400">Unganisha <ph name="NAME" /> zilizohifadhiwa hapo awali kwenye <ph name="EMAIL" /></translation>
+<translation id="6212097153736801627">Weka mapendeleo ya <ph name="PERIPHERAL_NAME" /> yako</translation>
 <translation id="6213808132343683860">Piga picha ya skrini au rekodi sehemu ya skrini</translation>
 <translation id="6220928844947387476">Sasa unaweza kujirekodi wewe mwenyewe na skrini yako kwa wakati mmoja</translation>
 <translation id="622484624075952240">Chini</translation>
@@ -1534,6 +1537,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="726276584504105859">Buruta hapa ili utumie skrini iliyogawanywa</translation>
 <translation id="7262906531272962081">Weka kikumbusho</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
+<translation id="7285232777292757180">Tumia zana ya kurekodi skrini katika mipangilio ya haraka ili upige picha za skrini</translation>
 <translation id="7302889331339392448">Kipengele cha Manukuu Papo Hapo kimezimwa.</translation>
 <translation id="7303365578352795231">Hoja inajibiwa kwa kutumia kifaa kingine.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1918,6 +1922,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="888982883502837004">Masasisho ya programu dhibiti yanapatikana kwa kifaa chako. Bofya ili ukague na usasishe.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> itafutwa kabisa</translation>
 <translation id="889790758758811533">Zimesalia asilimia <ph name="PERCENTAGE" /> za chaji ya betri (takribani <ph name="TIME_LEFT" />). Chomeka kifaa chako kwenye umeme.</translation>
+<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> imeunganishwa na iko tayari kutumika. Unaweza kuweka mapendeleo ya kishikwambi chako cha kuchorea katika Mipangilio.</translation>
 <translation id="88986195241502842">Ukurasa mmoja chini</translation>
 <translation id="8905919797434099235">(Hakuna mada)</translation>
 <translation id="890616557918890486">Badilisha chanzo</translation>

@@ -2556,6 +2556,7 @@
 <translation id="2927017729816812676">فضای حافظه پنهان</translation>
 <translation id="2928795416630981206">اجازه دارد موقعیت دوربین را ردیابی کنند</translation>
 <translation id="2931157624143513983">متناسب با ناحیه قابل‌چاپ</translation>
+<translation id="2931342457001070961">میکروفون متصل نیست</translation>
 <translation id="2932085390869194046">پیشنهاد گذرواژه…</translation>
 <translation id="2932483646085333864">برای شروع همگام‌سازی از سیستم خارج شوید و دوباره به سیستم وارد شوید</translation>
 <translation id="2932883381142163287">گزارش سوءاستفاده</translation>
@@ -4687,6 +4688,7 @@
 <translation id="4647836961514597010">انتخابگر رنگ</translation>
 <translation id="4648491805942548247">اجازه‌ها کافی نیستند</translation>
 <translation id="4650037136970677721">حافظه ذخیره شد</translation>
+<translation id="4650364565596261010">پیش‌فرض سیستم</translation>
 <translation id="4650591383426000695">اتصال تلفنتان را از <ph name="DEVICE_TYPE" /> قطع کنید</translation>
 <translation id="4651484272688821107">بااستفاده از منابع حالت نمایشی، مؤلفه آنلاین بار نشد.</translation>
 <translation id="4651921906638302153">نمی‌توانید با این حساب به سیستم وارد شوید</translation>
@@ -8834,7 +8836,6 @@
 <translation id="7968982339740310781">مشاهدهٔ جزئیات</translation>
 <translation id="7969046989155602842">فرمان</translation>
 <translation id="7970673414865679092">جزئیات اترنت</translation>
-<translation id="7970882136539140748">درحال‌حاضر نمی‌توان کارت را ذخیره کرد</translation>
 <translation id="7972714317346275248">‏PKCS #1 SHA-384 با رمزگذاری RSA</translation>
 <translation id="7973776233567882054">کدام یک از موارد زیر شبکه شما را به بهترین نحو توصیف می‌کند؟</translation>
 <translation id="797394244396603170">انتخاب دستگاه موردنظر برای هم‌رسانی فایل‌ها</translation>

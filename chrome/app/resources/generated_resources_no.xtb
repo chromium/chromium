@@ -2554,6 +2554,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2927017729816812676">Bufferlagring</translation>
 <translation id="2928795416630981206">Nettsteder som har lov til å spore kameraposisjonen din</translation>
 <translation id="2931157624143513983">Tilpass til det utskrivbare området</translation>
+<translation id="2931342457001070961">Ingen mikrofon er tilkoblet</translation>
 <translation id="2932085390869194046">Foreslå passord</translation>
 <translation id="2932483646085333864">Logg av og på igjen for å starte synkroniseringen</translation>
 <translation id="2932883381142163287">Rapporter uriktig bruk</translation>
@@ -4682,6 +4683,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4647836961514597010">Fargevelger</translation>
 <translation id="4648491805942548247">Utilstrekkelige tillatelser</translation>
 <translation id="4650037136970677721">Spart minne</translation>
+<translation id="4650364565596261010">Systemstandard</translation>
 <translation id="4650591383426000695">Koble telefonen fra <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Kunne ikke laste inn nettbasert komponent med ressurser for demomodus.</translation>
 <translation id="4651921906638302153">Kan ikke logge på med denne kontoen</translation>
@@ -8827,7 +8829,6 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7968982339740310781">Se detaljer</translation>
 <translation id="7969046989155602842">Kommando</translation>
 <translation id="7970673414865679092">Ethernet-detaljer</translation>
-<translation id="7970882136539140748">Kan ikke lagre kortet akkurat nå</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 med RSA-kryptering</translation>
 <translation id="7973776233567882054">Hvilket av disse alternativene beskriver nettverket ditt best?</translation>
 <translation id="797394244396603170">Velg enheten du vil dele filer med</translation>

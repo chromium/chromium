@@ -346,7 +346,6 @@
 <translation id="1633941398432788136">Іс-шараларды жоспарлау</translation>
 <translation id="1634828734222219955">Барлығы</translation>
 <translation id="163669211644121865">Салықты дайындау және жоспарлау</translation>
-<translation id="1638780421120290329">Карта сақталмады</translation>
 <translation id="1639239467298939599">Жүктелуде</translation>
 <translation id="1640180200866533862">Пайдаланушы саясаттары</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />Сайттың негізгі бетіне кіріп<ph name="END_LINK" /> көріңіз.</translation>
@@ -690,7 +689,6 @@
 <translation id="2324604504973636700">Тұрмыстық техника</translation>
 <translation id="2328651992442742497">Рұқсат етілген (әдепкі)</translation>
 <translation id="2328955282645810595">Құрылыс және электр құралдары</translation>
-<translation id="2329473609445770916">Бұл сайт басқа сайттар сізге жарнама көрсету үшін сүйене алатын қызығушылықтарды анықтайды.</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, жарамдылық мерзімі: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Әкімші басқаратын параметр</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> сайты жұптасқысы келеді</translation>
@@ -1118,7 +1116,6 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Браузер көрінісін реттеу үшін Tab, сосын Enter пернесін басыңыз.</translation>
 <translation id="3240791268468473923">Қауіпсіз төлемге арналған деректердің сәйкес келмейтіндігі көрсетілген парақ ашылды.</translation>
 <translation id="324180406144491771">"<ph name="HOST_NAME" />" сілтемелері блокталған</translation>
-<translation id="3248611290851046188">Бұл сайт басқа сайттар сізге жарнама көрсету үшін сүйене алатын қызығушылықтарды анықтайды. Ол қызығушылықтарыңыз туралы ақпаратты Chrome браузерінен де алады.</translation>
 <translation id="3249151924975132674">Студенттік несиелер және қаржыландыру</translation>
 <translation id="3249845759089040423">Заманауи</translation>
 <translation id="3250640885957938546">Жарнама және маркетинг</translation>
@@ -1586,7 +1583,6 @@
 <translation id="4177501066905053472">Жарнама тақырыптары</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Баға бақылауды тоқтату</translation>
-<translation id="4194250254487269611">Картаңызды дәл қазір сақтау мүмкін емес.</translation>
 <translation id="4195459680867822611">"Chrome кеңестерін көру" түймесі, Chrome функциялары туралы білу үшін белсендіріңіз</translation>
 <translation id="4195643157523330669">Жаңа қойындыда ашу</translation>
 <translation id="4196861286325780578">Тасымалдауды &amp;қайта орындау</translation>
@@ -1726,7 +1722,6 @@
 <translation id="4424024547088906515">Бұл сервер өзінің <ph name="DOMAIN" /> екенін дәлелдей алмады; оның қауіпсіздік сертификатына Chrome сенім білдірмеген. Бұған қате конфигурация немесе қаскүнемнің байланысты үзуі себеп болуы мүмкін.</translation>
 <translation id="4425173294238317796">Кіру кілтін растау парағы</translation>
 <translation id="4425750422187370446">Спорттық киім</translation>
-<translation id="4428065317363009941">Жарнаманы жекелендіру</translation>
 <translation id="443121186588148776">Сериялық порт</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> кіру сертификатын қабылдамады немесе оны алмады.</translation>
 <translation id="4432792777822557199">Осыдан кейін <ph name="SOURCE_LANGUAGE" /> тіліндегі бет <ph name="TARGET_LANGUAGE" /> тіліне аударылады</translation>
@@ -2208,7 +2203,6 @@
 <translation id="540969355065856584">Бұл сервер өзінің <ph name="DOMAIN" /> екенін дәлелдей алмады; оның қауіпсіздік сертификаты әзірше жарамайды. Бұл дұрыс конфигурацияланбағаннан немесе зиянды бағдарламаның байланысқа кедергі келтіргенінен болуы мүмкін.</translation>
 <translation id="5411462078004183575">Бағасы төмен опция</translation>
 <translation id="5412040515238827314">Жарамсыз формат: өрнектер тізімі болуы керек.</translation>
-<translation id="5412236728747081950">Бұл сайт сәйкес жарнамаларды көрсету үшін қызығушылықтарыңыз туралы ақпаратты Chrome браузерінен алады.</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">4-жинастырушы</translation>
 <translation id="5414446060143308245">Тасымалдау алдында қарап шығу қажет</translation>
@@ -2796,7 +2790,6 @@
 <translation id="6613866251791999074">Chrome-дағы іздеу жүйесі туралы толық ақпарат</translation>
 <translation id="6615297766614333076">2-жинастырушы</translation>
 <translation id="6624427990725312378">Байланыс ақпараты</translation>
-<translation id="6627727261837091711">Жарнаманы жекелендіру туралы мәліметтерді көрсету</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> Search</translation>
 <translation id="6629652037942826935">Сәнді саяхат</translation>
 <translation id="6630043285902923878">USB құрылғылары ізделуде...</translation>
@@ -3308,7 +3301,6 @@
 <translation id="7574998639136359461">Қысқы спорт жабдығы</translation>
 <translation id="7575207903026901870">"Ұсынысты өшіру" түймесі: өшіру үшін Enter пернесін басыңыз.</translation>
 <translation id="7575887283389198269">Мобильдік телефондар</translation>
-<translation id="7577900504646297215">Қызығушылықтарды басқару</translation>
 <translation id="7578104083680115302">Google арқылы сақтаған карталармен құрылғылар бойынша сайттарда және қолданбаларда жылдам төлеңіз.</translation>
 <translation id="7579442726219254162">Басқарылатын "<ph name="APPLICATION_ID" />" конфигурациясындағы белгісіз "<ph name="VARIABLE" />" айнымалысы.</translation>
 <translation id="7581199239021537589">Кескіннің Y осі бойынша 2-жағында ығысуы</translation>

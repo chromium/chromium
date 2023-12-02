@@ -4714,15 +4714,6 @@ Cette règle n'est appliquée que si l'ordinateur est enregistré avec la règle
 <translation id="5030415914668947893">Autoriser la collecte de métriques incluant les URL</translation>
 <translation id="5033070732967197381">Autoriser les requêtes API WebAuthn sur les sites avec des certificats TLS non fonctionnels.</translation>
 <translation id="5034504101537897433">Activer les rapports d'erreur de l'appareil</translation>
-<translation id="5034734406205213733">Si cette règle est activée, <ph name="PRODUCT_NAME" /> vérifie les certificats des serveurs à l'aide de l'outil de vérification intégré et utilise le Chrome Root Store comme source de confiance publique.
-
-Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> utilise l'outil de vérification des certificats du système et les certificats racines du système.
-
-Si cette règle n'est pas configurée, le Chrome Root Store ou les certificats racines du système peuvent être utilisés indifféremment.
-
-Il est prévu que cette règle soit supprimée de la version 121 de <ph name="PRODUCT_NAME" /> pour <ph name="ANDROID_NAME" />, car les certificats racines fournis par la plate-forme ne seront plus pris en charge.
-
-Cette règle a été supprimée de la version 113 de <ph name="PRODUCT_NAME" /> pour <ph name="MS_WIN_NAME" /> et <ph name="MAC_OS_NAME" />, de la version 120 pour <ph name="PRODUCT_OS_NAME" /> et de la version 120 de <ph name="PRODUCT_NAME" /> pour <ph name="LINUX_OS_NAME" />, lorsque la prise en charge de l'outil de vérification et des certificats racines fournis par la plate-forme a été supprimée.</translation>
 <translation id="5036013147560568855">Version du protocole de provisionnement de certificat. La valeur par défaut est 1. 1 correspond au protocole "statique". 2 correspond au protocole "dynamique".</translation>
 <translation id="5039110755072335605">Prise en charge des en-têtes de requêtes CORS sans caractères génériques</translation>
 <translation id="504116558738617678">N'afficher des avertissements de type "espace disque insuffisant" que si l'appareil n'est pas géré ou s'il n'a qu'un seul utilisateur</translation>

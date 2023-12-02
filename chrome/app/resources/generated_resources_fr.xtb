@@ -2545,6 +2545,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2927017729816812676">Espace de stockage du cache</translation>
 <translation id="2928795416630981206">Autorisé à suivre la position de la caméra</translation>
 <translation id="2931157624143513983">Ajuster à la zone imprimable</translation>
+<translation id="2931342457001070961">Aucun micro connecté</translation>
 <translation id="2932085390869194046">Suggérer un mot de passe…</translation>
 <translation id="2932483646085333864">Déconnectez-vous, puis reconnectez-vous pour lancer la synchronisation</translation>
 <translation id="2932883381142163287">Signaler un abus</translation>
@@ -4675,6 +4676,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4647836961514597010">Palette couleurs</translation>
 <translation id="4648491805942548247">Autorisations insuffisantes.</translation>
 <translation id="4650037136970677721">Mémoire économisée</translation>
+<translation id="4650364565596261010">Paramètre par défaut du système</translation>
 <translation id="4650591383426000695">Déconnecter votre téléphone de votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Impossible de charger le composant en ligne avec les ressources du mode de démonstration.</translation>
 <translation id="4651921906638302153">Impossible de se connecter avec ce compte</translation>
@@ -8824,7 +8826,6 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7968982339740310781">Afficher les détails</translation>
 <translation id="7969046989155602842">Commande</translation>
 <translation id="7970673414865679092">Informations sur le réseau Ethernet</translation>
-<translation id="7970882136539140748">Impossible d'enregistrer la carte pour le moment</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 avec chiffrement RSA</translation>
 <translation id="7973776233567882054">Parmi les propositions suivantes, laquelle décrit le mieux votre réseau ?</translation>
 <translation id="797394244396603170">Sélectionnez l'appareil avec lequel vous souhaitez partager des fichiers</translation>

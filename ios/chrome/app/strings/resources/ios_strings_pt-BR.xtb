@@ -208,6 +208,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome
 <translation id="2050196510205866090">{count,plural, =1{{count} forma de pagamento salva disponível acima do teclado.}one{{count} forma de pagamento salva disponível acima do teclado.}other{{count} formas de pagamento salvas disponíveis acima do teclado.}}</translation>
 <translation id="2055515971416882518">Abra "Configurações".</translation>
 <translation id="2059166748188874810">Município</translation>
+<translation id="2062410130322589403">Um guia das suas escolhas de privacidade</translation>
 <translation id="2073572773299281212">Ativado há <ph name="DAYS" /> dias</translation>
 <translation id="2074131957428911366">Nas <ph name="BEGIN_LINK" />configurações<ph name="END_LINK" />, é possível escolher a qualquer momento o que é sincronizado.</translation>
 <translation id="2079545284768500474">Desfazer</translation>
@@ -622,6 +623,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="430793432425771671">Sincronizar tudo</translation>
 <translation id="4309403553630140242">Toque duas vezes para ver mais informações</translation>
 <translation id="430967081421617822">Todo o período</translation>
+<translation id="4322394346347055525">Fechar outras guias</translation>
 <translation id="4331177082088332784">Você pode gerenciar isso em BEGIN_LINK Configurações de conteúdo END_LINK</translation>
 <translation id="4334428914252001502">1 artigo não lido.</translation>
 <translation id="4338650699862464074">Envia URLs das páginas que você visita para o Google.</translation>

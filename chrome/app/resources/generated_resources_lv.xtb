@@ -2546,6 +2546,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="2927017729816812676">Kešatmiņas krātuve</translation>
 <translation id="2928795416630981206">Drīkst izsekot kameras pozīciju</translation>
 <translation id="2931157624143513983">Ietilpināt drukājamā apgabalā</translation>
+<translation id="2931342457001070961">Nav pievienots neviens mikrofons.</translation>
 <translation id="2932085390869194046">Ieteikt paroli...</translation>
 <translation id="2932483646085333864">Lai sāktu sinhronizēšanu, izrakstieties un pierakstieties vēlreiz.</translation>
 <translation id="2932883381142163287">Ziņot par ļaunprātīgu izmantošanu</translation>
@@ -4676,6 +4677,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4647836961514597010">Krāsu izvēle</translation>
 <translation id="4648491805942548247">Nav pietiekamu atļauju.</translation>
 <translation id="4650037136970677721">Ietaupītā atmiņa</translation>
+<translation id="4650364565596261010">Sistēmas noklusējums</translation>
 <translation id="4650591383426000695">Atvienot tālruni no <ph name="DEVICE_TYPE" /> ierīces</translation>
 <translation id="4651484272688821107">Neizdevās ielādēt bezsaistes komponentu ar demonstrācijas režīma resursiem.</translation>
 <translation id="4651921906638302153">Ar šo kontu nevar pierakstīties</translation>
@@ -8822,7 +8824,6 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7968982339740310781">Skatīt detalizētu informāciju</translation>
 <translation id="7969046989155602842">Komandtaustiņš</translation>
 <translation id="7970673414865679092">Ethernet dati</translation>
-<translation id="7970882136539140748">Karti šobrīd nevar saglabāt.</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 ar RSA šifrējumu</translation>
 <translation id="7973776233567882054">Kurš no tālāk minētajiem apgalvojumiem vislabāk raksturo jūsu tīklu?</translation>
 <translation id="797394244396603170">Atlasiet ierīci, ar kuru vēlaties kopīgot failus</translation>

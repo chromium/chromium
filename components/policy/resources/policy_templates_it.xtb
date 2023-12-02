@@ -4726,20 +4726,6 @@ Questo criterio viene applicato soltanto se la macchina viene registrata con <ph
 <translation id="5030415914668947893">Consenti la raccolta di metriche con chiave URL</translation>
 <translation id="5033070732967197381">Consenti le richieste API WebAuthn su siti con certificati TLS inaccessibili.</translation>
 <translation id="5034504101537897433">Attiva i report relativi alle informazioni sul report sugli arresti anomali del dispositivo</translation>
-<translation id="5034734406205213733">Se questo criterio viene attivato, <ph name="PRODUCT_NAME" /> eseguirà la verifica dei certificati dei server mediante lo strumento di verifica dei certificati integrato con Chrome Root Store usato come fonte di attendibilità pubblica.
-
-Se questo criterio viene disattivato, <ph name="PRODUCT_NAME" /> userà lo strumento di verifica dei certificati di sistema e i certificati radice di sistema.
-
-Se questo criterio non viene configurato, potrebbero essere utilizzati Chrome Root Store o i certificati radice forniti dal sistema.
-
-È prevista la rimozione di questo criterio in <ph name="PRODUCT_NAME" /> per la versione 121 di <ph name="ANDROID_NAME" />, in concomitanza con la rimozione del supporto per l'utilizzo dei certificati radice forniti dalla piattaforma.
-
-Questo criterio è stato rimosso in<ph name="PRODUCT_NAME" />
-per
-<ph name="MS_WIN_NAME" /> e <ph name="MAC_OS_NAME" /> versione 113,
-<ph name="PRODUCT_OS_NAME" /> versione 120<ph name="PRODUCT_NAME" /> per
-<ph name="LINUX_OS_NAME" /> versione 120 in concomitanza con la rimozione del supporto dell'utilizzo dello
-strumento di verifica dei certificati e dei certificati radice forniti dalla piattaforma.</translation>
 <translation id="5036013147560568855">Versione del protocollo di provisioning del certificato. Il valore predefinito è 1. 1 significa che il protocollo è "statico". 2 significa che il protocollo è "dinamico".</translation>
 <translation id="5039110755072335605">Supporto delle intestazioni delle richieste CORS senza caratteri jolly</translation>
 <translation id="504116558738617678">Mostra gli avvisi relativi allo spazio su disco in esaurimento soltanto se il dispositivo non è gestito o se esiste 1 solo utente</translation>

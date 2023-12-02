@@ -4856,26 +4856,6 @@ Kebijakan ini hanya berlaku saat perangkat didaftarkan dengan <ph name="CLOUD_MA
 <translation id="5030415914668947893">Mengizinkan pengumpulan metrik yang menyertakan URL</translation>
 <translation id="5033070732967197381">Izinkan permintaan WebAuthn API di situs dengan sertifikat TLS yang rusak.</translation>
 <translation id="5034504101537897433">Aktifkan pelaporan informasi laporan kerusakan perangkat</translation>
-<translation id="5034734406205213733">Jika kebijakan ini disetel ke aktif, <ph name="PRODUCT_NAME" />
-akan menjalankan verifikasi sertifikat server menggunakan pemverifikasi sertifikat bawaan
-dengan Chrome Root Store sebagai sumber tepercaya publik.
-
-Jika kebijakan ini disetel ke nonaktif, <ph name="PRODUCT_NAME" />
-akan menggunakan pemverifikasi sertifikat sistem dan root certificate sistem.
-
-Jika kebijakan ini tidak disetel, Chrome Root Store atau root yang disediakan sistem
-dapat digunakan.
-
-Kebijakan ini akan dihapus dari
-<ph name="PRODUCT_NAME" /> untuk
-<ph name="ANDROID_NAME" /> versi 121 dan
-saat ini terjadi, dukungan untuk penggunaan root yang disediakan platform akan dihapus.
-
-Kebijakan ini dihapus dari <ph name="PRODUCT_NAME" /> 
-untuk <ph name="MS_WIN_NAME" /> dan <ph name="MAC_OS_NAME" /> versi 113,
-<ph name="PRODUCT_OS_NAME" /> versi 120, serta <ph name="PRODUCT_NAME" /> untuk
-<ph name="LINUX_OS_NAME" /> versi 120 dan saat ini terjadi, dukungan untuk penggunaan
-pemverifikasi sertifikat dan root yang disediakan platform akan dihapus.</translation>
 <translation id="5036013147560568855">Versi protokol penyediaan sertifikat. Default-nya adalah 1. 1 adalah protokol 'statis'. 2 adalah protokol 'dinamis'.</translation>
 <translation id="5039110755072335605">Dukungan header permintaan non-karakter pengganti CORS</translation>
 <translation id="504116558738617678">Hanya tampilkan peringatan ruang penyimpanan hampir penuh jika perangkat tidak dikelola atau hanya terdapat 1 pengguna</translation>

@@ -345,7 +345,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1633941398432788136">Tadbirlarni rejalashtirish</translation>
 <translation id="1634828734222219955">Jami</translation>
 <translation id="163669211644121865">Soliqlarni rejalashtirish</translation>
-<translation id="1638780421120290329">Karta saqlanmadi.</translation>
 <translation id="1639239467298939599">Yuklanmoqda</translation>
 <translation id="1640180200866533862">Foydalanuvchi qoidalari</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />Saytning bosh sahifasiga kirishga<ph name="END_LINK" /> urinib ko‘ring.</translation>
@@ -689,7 +688,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2324604504973636700">Uy jihozlarini taʼmirlash</translation>
 <translation id="2328651992442742497">Ruxsat etilgan (standart)</translation>
 <translation id="2328955282645810595">Qurilish va quvvatlash vositalari</translation>
-<translation id="2329473609445770916">Bu sayt boshqa saytlar reklama chiqarishda ishlata oladigan qiziqishlarni ifodalaydi</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, muddati: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Sozlamani administrator boshqaradi</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> qurilmangizga ulanmoqchi</translation>
@@ -1116,7 +1114,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Brauzeringiz koʻrinishini moslash uchun avval Tab, keyin Enter tugmasini bosing</translation>
 <translation id="3240791268468473923">Xavfsiz toʻlov maʼlumotlari ochilgan jadvaldagi maʼlumotlarga mos kelmadi</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” havolalari bloklangan</translation>
-<translation id="3248611290851046188">Bu sayt boshqa saytlar reklama chiqarishda ishlata oladigan qiziqishlarni ifodalaydi. Bu sayt ham mos reklamalarni chiqarish uchun qiziqishlaringiz haqidagi Chrome maʼlumotlaridan foydalanadi.</translation>
 <translation id="3249151924975132674">Talabalar krediti va universitet moliyasi</translation>
 <translation id="3249845759089040423">Jozibali</translation>
 <translation id="3250640885957938546">Reklama va marketing</translation>
@@ -1582,7 +1579,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4177501066905053472">Reklamadagi mavzular</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Narxni kuzatmaslik</translation>
-<translation id="4194250254487269611">Hozir bu kartani saqlash imkonsiz</translation>
 <translation id="4195459680867822611">Chrome maslahatlari tugmasi, Chrome funksiyalari bilan tanishish uchun faollashtiring</translation>
 <translation id="4195643157523330669">Yangi varaqda ochish</translation>
 <translation id="4196861286325780578">&amp;Ko‘chirib o‘tkazishni qayta bajarish</translation>
@@ -1722,7 +1718,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4424024547088906515">Bu <ph name="DOMAIN" /> serveri ekanligini tasdiqlab bo‘lmadi. Uning havfsizlik sertifikati Chrome‘ga ishonchli tuyulmayapti. Balki, server noto‘g‘ri sozlangan yoki kimdir ma’lumotlaringizni o‘g‘rilashga urinayotgan bo‘lishi mumkin.</translation>
 <translation id="4425173294238317796">Parolni tasdiqlash varaqasi</translation>
 <translation id="4425750422187370446">Sport kiyimlari</translation>
-<translation id="4428065317363009941">Reklamalarni moslashtirish</translation>
 <translation id="443121186588148776">Ketma-ket port</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> tizimga kirish sertifikatingizni qabul qilmadi. Sertifikat taqdim etilmagan bo‘lishi ham mumkin.</translation>
 <translation id="4432792777822557199"><ph name="SOURCE_LANGUAGE" /> tilidagi sahifalar hozirdan <ph name="TARGET_LANGUAGE" /> tiliga tarjima qilinadi</translation>
@@ -2204,7 +2199,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="540969355065856584">Bu <ph name="DOMAIN" /> serveri ekanligini tasdiqlab bo‘lmadi. Uning sertifikati ayni paytda yaroqsiz bo‘lishi mumkin. Balki, server noto‘g‘ri sozlangan yoki kimdir ma’lumotlaringizni o‘g‘rilashga urinayotgan bo‘lishi mumkin.</translation>
 <translation id="5411462078004183575">Past narxdagi variant</translation>
 <translation id="5412040515238827314">Xato format: namunalar roʻyxati koʻrsatilishi kerak.</translation>
-<translation id="5412236728747081950">Bu sayt mos reklamalarni chiqarish uchun qiziqishlaringiz haqidagi Chrome maʼlumotlaridan foydalanadi.</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Taxlovchi 4</translation>
 <translation id="5414446060143308245">Koʻchirishdan oldin tekshirilishi lozim</translation>
@@ -2791,7 +2785,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6613866251791999074">Chromedagi qidiruv tizimi haqida batafsil</translation>
 <translation id="6615297766614333076">Taxlovchi 2</translation>
 <translation id="6624427990725312378">Aloqa ma’lumoti</translation>
-<translation id="6627727261837091711">Reklamani moslashtirish tafsilotlarini chiqarish</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> qidiruvi</translation>
 <translation id="6629652037942826935">Hashamatli sayohat</translation>
 <translation id="6630043285902923878">USB qurilmalar qidirilmoqda...</translation>
@@ -3303,7 +3296,6 @@ Batafsil axborot:
 <translation id="7574998639136359461">Qishki sport jihozlari</translation>
 <translation id="7575207903026901870">Taklifni olib tashlash tugmasi, bu taklifni olib tashlash uchun Enter tugmasini bosing</translation>
 <translation id="7575887283389198269">Mobil telefonlar</translation>
-<translation id="7577900504646297215">Qiziqishlarni sozlash</translation>
 <translation id="7578104083680115302">Google Payments xizmatiga saqlangan bank kartangiz yordamida turli sayt va ilovalardagi xaridlar uchun to‘lovni osongina amalga oshiring. Sozlamalar barcha qurilmalaringizda amal qiladi.</translation>
 <translation id="7579442726219254162">“<ph name="APPLICATION_ID" />” boshqariladigan konfiguratsiyasida “<ph name="VARIABLE" />” notanish qiymati bor.</translation>
 <translation id="7581199239021537589">Tasvirning orqa tomondagi Y oʻqidagi siljish</translation>

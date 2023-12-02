@@ -174,6 +174,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chrom
 <translation id="1883255238294161206">Zbaliť zoznam</translation>
 <translation id="1889872080060107187">Prihlásite sa na <ph name="URL" /></translation>
 <translation id="1890237935065108104">Toto nastavenie nie je k dispozícii.</translation>
+<translation id="1891199774460536658">Automaticky sledovať všetky zistené zásielky</translation>
 <translation id="1894023287452300670">Tu sledujte cenu</translation>
 <translation id="189531189292803889">Váš iPad bol nedávno obnovený, v dôsledku čoho sa možno zmenil váš predvolený prehliadač.</translation>
 <translation id="1910975740091000991">Chrome pre iOS</translation>
@@ -623,6 +624,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="430793432425771671">Synchronizovať všetko</translation>
 <translation id="4309403553630140242">Ďalšie informácie získate dvojitým klepnutím</translation>
 <translation id="430967081421617822">Za celé obdobie</translation>
+<translation id="4322394346347055525">Zatvoriť ostatné karty</translation>
 <translation id="4331177082088332784">Môžete to spravovať v BEGIN_LINK nastaveniach obsahu END_LINK</translation>
 <translation id="4334428914252001502">1 neprečítaný článok.</translation>
 <translation id="4338650699862464074">Odosiela Googlu webové adresy navštívených stránok.</translation>
@@ -652,6 +654,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4493604894403585654">Máte prihlásený účet <ph name="USER_EMAIL" />. Synchronizáciu môžete kedykoľvek zastaviť v nastaveniach. Google môže prispôsobovať Vyhľadávanie a ďalšie služby na základe vašej histórie.</translation>
 <translation id="4502566650163919158">Skontrolovať</translation>
 <translation id="4508750114462689118">Zavrieť propagáciu prihlásenia</translation>
+<translation id="4509449376545878717">Nikdy nezisťovať zásielky automaticky</translation>
 <translation id="4514889972748124117">Navrhnúť silné heslo…</translation>
 <translation id="4520798012560649652">Ďalšie informácie o režime inkognito</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} záložka}few{{count} záložky}many{{count} bookmarks}other{{count} záložiek}}</translation>
@@ -1335,6 +1338,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8023878949384262191">Rozbalí sekciu.</translation>
 <translation id="8027581147000338959">Otvoriť v novom okne</translation>
 <translation id="8032569120109842252">Sledované</translation>
+<translation id="8040207962129315716">Vždy sa opýtať</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />História vyhľadávania<ph name="END_LINK" /> a <ph name="BEGIN_LINK" />ďalšie formy aktivity<ph name="END_LINK" /> sa môžu ukladať do vášho účtu Google, keď sa doň prihlásite. Môžete ich kedykoľvek odstrániť.</translation>
 <translation id="804427445359061970">Tu nájdete svoje karty z iných zariadení</translation>
 <translation id="8044568254381073661">Uložte bez šifrovania</translation>
@@ -1435,6 +1439,7 @@ Vaše údaje boli zašifrované pomocou prístupovej frázy <ph name="TIME" />. 
 <translation id="8556590991644167667">{count,plural, =1{Zavreli ste {count} upozornenie}few{Zavreli ste {count} upozornenia}many{You dismissed {count} warnings}other{Zavreli ste {count} upozornení}}</translation>
 <translation id="8558480467877843976">Chrome môžete teraz kedykoľvek použiť pri prehliadaní alebo klepnutí na odkazy v správach, dokumentoch a ďalších aplikáciách.</translation>
 <translation id="8560253818350321773">Zobrazujte si často používané položky ako prvé.</translation>
+<translation id="8562944214838973419">Povoliť sledovanie zásielok</translation>
 <translation id="8569721750632860947">Ktorú webovú adresu chcete pridať do svojho čitateľského zoznamu?</translation>
 <translation id="8588404856427128947">Vypnúť</translation>
 <translation id="8591976964826315682">Blokovať súbory cookie tretích strán v režime inkognito</translation>

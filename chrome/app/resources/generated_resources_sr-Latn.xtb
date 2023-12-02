@@ -2542,6 +2542,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2927017729816812676">Memorijski prostor keša</translation>
 <translation id="2928795416630981206">Dozvoljeno im je da prate položaj kamere</translation>
 <translation id="2931157624143513983">Prilagodi području za štampanje</translation>
+<translation id="2931342457001070961">Nije povezan nijedan mikrofon</translation>
 <translation id="2932085390869194046">Predloži lozinku...</translation>
 <translation id="2932483646085333864">Odjavite se, pa se ponovo prijavite da biste započeli sinhronizaciju</translation>
 <translation id="2932883381142163287">Prijavi zloupotrebu</translation>
@@ -4672,6 +4673,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4647836961514597010">Birač boja</translation>
 <translation id="4648491805942548247">Nedovoljan broj dozvola</translation>
 <translation id="4650037136970677721">Memorija koju ste uštedeli</translation>
+<translation id="4650364565596261010">Podrazumevana sistemska</translation>
 <translation id="4650591383426000695">Prekinite vezu između telefona i uređaja <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Učitavanje onlajn komponente sa resursima za režim demonstracije nije uspelo.</translation>
 <translation id="4651921906638302153">Ne možete da se prijavite pomoću ovog naloga</translation>
@@ -8822,7 +8824,6 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="7968982339740310781">Prikaži detalje</translation>
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Detalji o eternetu</translation>
-<translation id="7970882136539140748">Trenutno ne možemo da sačuvamo karticu</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 sa RSA šifrovanjem</translation>
 <translation id="7973776233567882054">Šta od navedenog najbolje opisuje vašu mrežu?</translation>
 <translation id="797394244396603170">Izaberite uređaj sa kojim želite da delite fajlove</translation>

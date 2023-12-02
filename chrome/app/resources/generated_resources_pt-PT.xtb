@@ -2544,6 +2544,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2927017729816812676">Armazenamento de cache</translation>
 <translation id="2928795416630981206">Com autorização para monitorizar a posição da câmara</translation>
 <translation id="2931157624143513983">Ajustar à área de impressão</translation>
+<translation id="2931342457001070961">Nenhum microfone ligado</translation>
 <translation id="2932085390869194046">Sugerir palavra-passe…</translation>
 <translation id="2932483646085333864">Termine e inicie sessão novamente para iniciar a sincronização</translation>
 <translation id="2932883381142163287">Denunciar abuso</translation>
@@ -4675,6 +4676,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4647836961514597010">Seletor de cores</translation>
 <translation id="4648491805942548247">Permissões insuficientes</translation>
 <translation id="4650037136970677721">Memória guardada</translation>
+<translation id="4650364565596261010">Predefinição do sistema</translation>
 <translation id="4650591383426000695">Desligue o telemóvel do dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Não foi possível carregar o componente online com os recursos do modo de demonstração.</translation>
 <translation id="4651921906638302153">Não é possível iniciar sessão com esta conta</translation>
@@ -8822,7 +8824,6 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7968982339740310781">Ver detalhes</translation>
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Detalhes de Ethernet</translation>
-<translation id="7970882136539140748">Não é possível guardar o cartão neste momento.</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 Com encriptação RSA</translation>
 <translation id="7973776233567882054">Qual das seguintes alternativas melhor descreve a sua rede?</translation>
 <translation id="797394244396603170">Selecione o dispositivo com o qual quer partilhar ficheiros.</translation>

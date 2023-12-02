@@ -346,7 +346,6 @@
 <translation id="1633941398432788136">Планування подій</translation>
 <translation id="1634828734222219955">Усього</translation>
 <translation id="163669211644121865">Підготовка та планування податків</translation>
-<translation id="1638780421120290329">Не вдається зберегти картку</translation>
 <translation id="1639239467298939599">Завантаження</translation>
 <translation id="1640180200866533862">Правила користувача</translation>
 <translation id="1640244768702815859">Спробуйте <ph name="BEGIN_LINK" />відкрити головну сторінку цього сайту<ph name="END_LINK" />.</translation>
@@ -690,7 +689,6 @@
 <translation id="2324604504973636700">Побутові прилади</translation>
 <translation id="2328651992442742497">Дозволено (за умовчанням)</translation>
 <translation id="2328955282645810595">Будівельні електроінструменти</translation>
-<translation id="2329473609445770916">Цей сайт визначає інтереси, які можуть використовувати інші сайти для показу оголошень</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, діє до <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Налаштуванням керує ваш адміністратор</translation>
 <translation id="2340263603246777781">Сайт <ph name="ORIGIN" /> хоче підключитися до пристрою</translation>
@@ -1119,7 +1117,6 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб налаштувати вигляд веб-переглядача</translation>
 <translation id="3240791268468473923">Відкрито нижній екран невідповідності облікових даних для безпечних платежів</translation>
 <translation id="324180406144491771">Посилання <ph name="HOST_NAME" /> заблоковано</translation>
-<translation id="3248611290851046188">Цей сайт визначає інтереси, які можуть використовувати інші сайти для показу оголошень. Цей сайт також використовує дані про ваші інтереси з Chrome, щоб показувати вам доречнішу рекламу.</translation>
 <translation id="3249151924975132674">Студентські кредити й фінансування освіти</translation>
 <translation id="3249845759089040423">Чудовий</translation>
 <translation id="3250640885957938546">Реклама та маркетинг</translation>
@@ -1587,7 +1584,6 @@
 <translation id="4177501066905053472">Теми оголошень</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Не відстежувати ціну</translation>
-<translation id="4194250254487269611">Не вдається зберегти картку</translation>
 <translation id="4195459680867822611">Кнопка "Переглянути поради щодо Chrome"; активуйте, щоб дізнатися про функції Chrome</translation>
 <translation id="4195643157523330669">Відкрити в новій вкладці</translation>
 <translation id="4196861286325780578">&amp;Повторити переміщення</translation>
@@ -1727,7 +1723,6 @@
 <translation id="4424024547088906515">Цей сервер не зміг довести, що він – домен <ph name="DOMAIN" />. Chrome не вважає його сертифікат безпеки надійним. Імовірні причини: неправильна конфігурація або хтось намагається перехопити ваше з’єднання.</translation>
 <translation id="4425173294238317796">Екран підтвердження ключа доступу</translation>
 <translation id="4425750422187370446">Спортивний одяг</translation>
-<translation id="4428065317363009941">Персоналізація реклами</translation>
 <translation id="443121186588148776">Послідовний порт</translation>
 <translation id="4432688616882109544">Хост <ph name="HOST_NAME" /> не прийняв ваш сертифікат входу або ви не надали цей сертифікат.</translation>
 <translation id="4432792777822557199">Надалі сторінки цією мовою (<ph name="SOURCE_LANGUAGE" />) перекладатимуться такою мовою: <ph name="TARGET_LANGUAGE" /></translation>
@@ -2209,7 +2204,6 @@
 <translation id="540969355065856584">Серверу не вдалося підтвердити, що це <ph name="DOMAIN" />. Його сертифікат безпеки зараз недійсний. Можливі причини: неправильна конфігурація або хтось перехопив ваше з’єднання.</translation>
 <translation id="5411462078004183575">Варіант із низькою ціною</translation>
 <translation id="5412040515238827314">Недійсний формат: має бути список шаблонів.</translation>
-<translation id="5412236728747081950">Цей сайт використовує дані про ваші інтереси з Chrome, щоб показувати вам доречнішу рекламу</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Накопичувач 4</translation>
 <translation id="5414446060143308245">Перевірте файли, перш ніж переносити їх</translation>
@@ -2797,7 +2791,6 @@
 <translation id="6613866251791999074">Докладніше про пошукову систему в Chrome</translation>
 <translation id="6615297766614333076">Накопичувач 2</translation>
 <translation id="6624427990725312378">Контактна інформація</translation>
-<translation id="6627727261837091711">Показати відомості про персоналізацію реклами</translation>
 <translation id="6628463337424475685">Пошук <ph name="ENGINE" /></translation>
 <translation id="6629652037942826935">Подорожі класу люкс</translation>
 <translation id="6630043285902923878">Пошук пристроїв USB…</translation>
@@ -3309,7 +3302,6 @@
 <translation id="7574998639136359461">Обладнання для зимових видів спорту</translation>
 <translation id="7575207903026901870">Кнопка видалення підказки: натисніть Enter, щоб видалити цю підказку</translation>
 <translation id="7575887283389198269">Мобільні телефони</translation>
-<translation id="7577900504646297215">Керувати інтересами</translation>
 <translation id="7578104083680115302">Зберігайте картки в Google, щоб швидко платити на сайтах і в додатках на всіх своїх пристроях.</translation>
 <translation id="7579442726219254162">Невідома змінна "<ph name="VARIABLE" />" у керованій конфігурації "<ph name="APPLICATION_ID" />".</translation>
 <translation id="7581199239021537589">Вертикальний зсув сторони 2 зображення</translation>

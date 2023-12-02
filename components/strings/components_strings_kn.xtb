@@ -345,7 +345,6 @@
 <translation id="1633941398432788136">ಈವೆಂಟ್ ಯೋಜನೆ</translation>
 <translation id="1634828734222219955">ಒಟ್ಟು</translation>
 <translation id="163669211644121865">ತೆರಿಗೆ ಸಿದ್ಧತೆ ಮತ್ತು ಯೋಜನೆ</translation>
-<translation id="1638780421120290329">ಕಾರ್ಡ್ ಉಳಿಸಲಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="1639239467298939599">ಲೋಡ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="1640180200866533862">ಬಳಕೆದಾರನ ನೀತಿಗಳು</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />ಸೈಟ್‌ನ ಮುಖಪುಟಕ್ಕೆ ಭೇಟಿ ನೀಡಲು<ph name="END_LINK" /> ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -689,7 +688,6 @@
 <translation id="2324604504973636700">ಗೃಹೋಪಯೋಗಿ ವಸ್ತುಗಳು</translation>
 <translation id="2328651992442742497">ಅನುಮತಿಸಲಾಗಿದೆ (ಡೀಫಾಲ್ಟ್)</translation>
 <translation id="2328955282645810595">ನಿರ್ಮಾಣ ಮತ್ತು ವಿದ್ಯುತ್ ಟೂಲ್‌ಗಳು</translation>
-<translation id="2329473609445770916">ನಿಮಗೆ ಜಾಹೀರಾತುಗಳನ್ನು ತೋರಿಸಲು ಇತರ ಸೈಟ್‌ಗಳು ಬಳಸಬಹುದಾದ ಆಸಕ್ತಿಗಳನ್ನು ಈ ಸೈಟ್ ವ್ಯಾಖ್ಯಾನಿಸುತ್ತದೆ</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" /> ದಿನಾಂಕದಂದು ಅವಧಿ ಮೀರುತ್ತದೆ</translation>
 <translation id="2337852623177822836">ನಿಮ್ಮ ನಿರ್ವಾಹಕದಿಂದ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿಯಂತ್ರಿಸಲಾಗಿದೆ</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> ಜೋಡಿಸಲು ಬಯಸುತ್ತದೆ</translation>
@@ -1117,7 +1115,6 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, ನಿಮ್ಮ ಬ್ರೌಸರ್‌ನ ನೋಟವನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿರಿ</translation>
 <translation id="3240791268468473923">ಸುರಕ್ಷಿತ ಪಾವತಿ ರುಜುವಾತಿಗೆ ಹೊಂದಾಣಿಕೆಯಾಗುವ ಯಾವುದೇ ರುಜುವಾತು ಶೀಟ್ ಅನ್ನು ತೆರೆಯಲಾಗಿಲ್ಲ</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” ಲಿಂಕ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
-<translation id="3248611290851046188">ನಿಮಗೆ ಜಾಹೀರಾತುಗಳನ್ನು ತೋರಿಸಲು ಇತರ ಸೈಟ್‌ಗಳು ಬಳಸಬಹುದಾದ ಆಸಕ್ತಿಗಳನ್ನು ಈ ಸೈಟ್ ವ್ಯಾಖ್ಯಾನಿಸುತ್ತದೆ. ನಿಮಗೆ ಹೆಚ್ಚು ಸೂಕ್ತವಾದ ಜಾಹೀರಾತುಗಳನ್ನು ತೋರಿಸಲು, ಈ ಸೈಟ್ Chrome ನಿಂದ ನಿಮ್ಮ ಆಸಕ್ತಿಗಳ ಕುರಿತಾದ ಮಾಹಿತಿ ಕೂಡ ಪಡೆಯುತ್ತದೆ.</translation>
 <translation id="3249151924975132674">ವಿದ್ಯಾರ್ಥಿ ಸಾಲಗಳು ಮತ್ತು ಕಾಲೇಜ್ ಸಾಲ</translation>
 <translation id="3249845759089040423">ಗ್ರೂವಿ</translation>
 <translation id="3250640885957938546">ಜಾಹೀರಾತು ಮತ್ತು ಮಾರ್ಕೆಟಿಂಗ್</translation>
@@ -1584,7 +1581,6 @@
 <translation id="4177501066905053472">ಜಾಹೀರಾತು ವಿಷಯಗಳು</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">ಬೆಲೆ ಟ್ರ್ಯಾಕ್ ಮಾಡುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
-<translation id="4194250254487269611">ಸದ್ಯಕ್ಕೆ ನಿಮ್ಮ ಕಾರ್ಡ್ ಅನ್ನು ಉಳಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="4195459680867822611">Chrome ಸಲಹೆಗಳನ್ನು ನೋಡಿ ಬಟನ್, Chrome ಫೀಚರ್‌ಗಳ ಕುರಿತು ತಿಳಿಯಲು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="4195643157523330669">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="4196861286325780578">&amp;ಸರಿಸುವುದನ್ನು ಮತ್ತೆಮಾಡು</translation>
@@ -1724,7 +1720,6 @@
 <translation id="4424024547088906515">ಈ ಸರ್ವರ್ <ph name="DOMAIN" /> ಆಗಿದೆ ಎಂಬುದನ್ನು ಸಾಬೀತುಪಡಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ; ಅದರ ಸುರಕ್ಷತಾ ಪ್ರಮಾಣಪತ್ರವು Chrome ಪಾಲಿಗೆ ವಿಶ್ವಾಸಾರ್ಹವಾಗಿಲ್ಲ. ಇದು ತಪ್ಪು ಕಾನ್ಫಿಗರೇಶನ್‌ನಿಂದ ಅಥವಾ ಆಕ್ರಮಣಕಾರರು ನಿಮ್ಮ ಸಂಪರ್ಕದಲ್ಲಿ ಒಳನುಸುಳಿರುವುದರಿಂದ ಆಗಿರಬಹುದು.</translation>
 <translation id="4425173294238317796">ಪಾಸ್‌ಕೀ ದೃಢೀಕರಣದ ಶೀಟ್</translation>
 <translation id="4425750422187370446">ಅಥ್ಲೆಟಿಕ್ ಉಡುಪು</translation>
-<translation id="4428065317363009941">ಜಾಹೀರಾತು ವೈಯಕ್ತೀಕರಣ</translation>
 <translation id="443121186588148776">ಸೀರಿಯಲ್ ಪೋರ್ಟ್</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> ನಿಮ್ಮ ಲಾಗಿನ್ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಸ್ವೀಕರಿಸಲಿಲ್ಲ ಅಥವಾ ಅದನ್ನು ಒದಗಿಸದೆ ಇರಬಹುದು.</translation>
 <translation id="4432792777822557199">ಈಗಿನಿಂದಲೇ <ph name="SOURCE_LANGUAGE" /> ನಲ್ಲಿನ ಪುಟಗಳನ್ನು <ph name="TARGET_LANGUAGE" /> ಗೆ ಅನುವಾದ ಮಾಡಲಾಗುತ್ತದೆ</translation>
@@ -2206,7 +2201,6 @@
 <translation id="540969355065856584">ಈ ಸರ್ವರ್ <ph name="DOMAIN" /> ಆಗಿದೆ ಎಂಬುದನ್ನು ಸಾಬೀತುಪಡಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ; ಈ ಸಮಯದಲ್ಲಿ ಅದರ ಸುರಕ್ಷತಾ ಪ್ರಮಾಣಪತ್ರವು ಮಾನ್ಯವಾಗಿಲ್ಲ. ಇದು ತಪ್ಪು ಕಾನ್ಫಿಗರೇಶನ್‌ನಿಂದ ಅಥವಾ ಆಕ್ರಮಣಕಾರರು ನಿಮ್ಮ ಸಂಪರ್ಕದಲ್ಲಿ ಒಳನುಸುಳಿರುವುದರಿಂದ ಆಗಿರಬಹುದು.</translation>
 <translation id="5411462078004183575">ಕಡಿಮೆ ದರದ ಆಯ್ಕೆ</translation>
 <translation id="5412040515238827314">ಅಮಾನ್ಯ ಫಾರ್ಮ್ಯಾಟ್: ಪ್ಯಾಟರ್ನ್‌ಗಳ ಪಟ್ಟಿಯನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗಿದೆ.</translation>
-<translation id="5412236728747081950">ನಿಮಗೆ ಹೆಚ್ಚು ಸಂಬಂಧಿತ ಜಾಹೀರಾತುಗಳನ್ನು ತೋರಿಸಲು, ಈ ಸೈಟ್ ನಿಮ್ಮ ಆಸಕ್ತಿಗಳ ಕುರಿತ ಮಾಹಿತಿಯನ್ನು Chrome ನಿಂದ ಪಡೆಯುತ್ತದೆ</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">ಸ್ಟ್ಯಾಕರ್ 4</translation>
 <translation id="5414446060143308245">ವರ್ಗಾವಣೆ ಮಾಡುವ ಮೊದಲು ಪರಿಶೀಲನೆಯ ಅಗತ್ಯವಿದೆ</translation>
@@ -2793,7 +2787,6 @@
 <translation id="6613866251791999074">Chrome ನಲ್ಲಿನ ನಿಮ್ಮ ಸರ್ಚ್ ಎಂಜಿನ್ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿದುಕೊಳ್ಳಿ</translation>
 <translation id="6615297766614333076">ಸ್ಟ್ಯಾಕರ್ 2</translation>
 <translation id="6624427990725312378">ಸಂಪರ್ಕ ಮಾಹಿತಿ</translation>
-<translation id="6627727261837091711">ಜಾಹೀರಾತು ವೈಯಕ್ತಿಕಗೊಳಿಸುವಿಕೆಯ ವಿವರಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> ಹುಡುಕಾಟ</translation>
 <translation id="6629652037942826935">ಐಷಾರಾಮಿ ಪ್ರಯಾಣ</translation>
 <translation id="6630043285902923878">USB ಸಾಧನಗಳನ್ನು ಹುಡುಕಲಾಗುತ್ತಿದೆ...</translation>
@@ -3305,7 +3298,6 @@
 <translation id="7574998639136359461">ಚಳಿಗಾಲದ ಕ್ರೀಡಾ ಉಪಕರಣ</translation>
 <translation id="7575207903026901870">ಸಲಹೆ ಬಟನ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿ, ಸಲಹೆಯನ್ನು ತೆಗೆದುಹಾಕಲು Enter ಅನ್ನು ಒತ್ತಿರಿ</translation>
 <translation id="7575887283389198269">ಮೊಬೈಲ್ ಫೋನ್‍ಗಳು</translation>
-<translation id="7577900504646297215">ಆಸಕ್ತಿಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="7578104083680115302">Google ನೊಂದಿಗೆ ನೀವು ಉಳಿಸಲಾದ ಕಾರ್ಡ್‌ಗಳನ್ನು ಬಳಸಿಕೊಂಡು ಸಾಧನಗಳಾದ್ಯಂತ ಸೈಟ್‌ಗಳು ಮತ್ತು ಅಪ್ಲಿಕೇಶನ್‌ಗಳಲ್ಲಿ ತ್ವರಿತವಾಗಿ ಪಾವತಿಸಿ.</translation>
 <translation id="7579442726219254162">"<ph name="APPLICATION_ID" />" ನ ನಿರ್ವಹಿಸಲಾದ ಕಾನ್ಫಿಗರೇಶನ್‌ನಲ್ಲಿನ ತಿಳಿಯದ ವೇರಿಯೇಬಲ್ "<ph name="VARIABLE" />".</translation>
 <translation id="7581199239021537589">ಅಂಚು 2 ಚಿತ್ರ Y ಶಿಫ್ಟ್</translation>

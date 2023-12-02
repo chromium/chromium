@@ -347,7 +347,6 @@
 <translation id="1633941398432788136">ایونٹ کی منصوبہ بندی</translation>
 <translation id="1634828734222219955">کُل</translation>
 <translation id="163669211644121865">ٹیکس کی تیاری اور منصوبہ بندی</translation>
-<translation id="1638780421120290329">کارڈ محفوظ نہیں کر سکتے</translation>
 <translation id="1639239467298939599">لوڈ ہو رہی ہے</translation>
 <translation id="1640180200866533862">صارف کی پالیسیاں</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />سائٹ کا ہوم پیج ملاحظہ کرنے<ph name="END_LINK" /> کی کوشش کریں۔</translation>
@@ -691,7 +690,6 @@
 <translation id="2324604504973636700">گھریلو آلات</translation>
 <translation id="2328651992442742497">اجازت ہے (ڈیفالٹ)</translation>
 <translation id="2328955282645810595">تعمیر اور پاور ٹولز</translation>
-<translation id="2329473609445770916">یہ سائٹ ان دلچسپیوں کا تعین کرتی ہے جو دوسری سائٹس آپ کو اشتہارات دکھانے کے لیے استعمال کر سکتی ہیں</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" /> کی میعاد <ph name="EXPIRATION_DATE_ABBR" /> کو ختم ہو جائے گی</translation>
 <translation id="2337852623177822836">ترتیب آپ کے منتظم کی جانب سے کنٹرول کی جاتی ہے</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> جوڑا بنانا چاہتی ہے</translation>
@@ -1121,7 +1119,6 @@
 <translation id="3240683217920639535">‏<ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />، اپنے براؤزر کی شکل کو حسب ضرورت بنانے کیلئے ٹیب پھر Enter دبائیں</translation>
 <translation id="3240791268468473923">ادائیگی کی اسناد محفوظ کریں کوئی مماثل اسناد نہیں کی شیٹ کھلی ہوئی ہے</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” لنکس مسدود ہیں</translation>
-<translation id="3248611290851046188">‏یہ سائٹ ان دلچسپیوں کا تعین کرتی ہے جو دوسری سائٹس آپ کو اشتہارات دکھانے کے لیے استعمال کر سکتی ہیں۔ یہ سائٹ آپ کو مزید متعلقہ اشتہارات دکھانے کے لیے Chrome سے آپ کی دلچسپیاں بھی موصول کرتی ہے۔</translation>
 <translation id="3249151924975132674">طلبہ کے قرض اور کالج فائنانسنگ</translation>
 <translation id="3249845759089040423">دلکش</translation>
 <translation id="3250640885957938546">تشہیر اور مارکیٹنگ</translation>
@@ -1589,7 +1586,6 @@
 <translation id="4177501066905053472">اشتہار کے موضوعات</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">قیمت کے ٹریک کو کالعدم کریں</translation>
-<translation id="4194250254487269611">آپ کا کارڈ ابھی محفوظ نہیں کیا جا سکا</translation>
 <translation id="4195459680867822611">‏Chrome کی تجاویز دیکھیں بٹن، Chrome کی خصوصیات کے بارے میں فعال کریں</translation>
 <translation id="4195643157523330669">نئے ٹیب میں کھولیں</translation>
 <translation id="4196861286325780578">منتقلی &amp;واپس لائیں</translation>
@@ -1729,7 +1725,6 @@
 <translation id="4424024547088906515">‏یہ سرور یہ بات ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ اس کے سیکیورٹی سرٹیفکیٹ پر Chrome کو بھروسہ نہیں ہے۔ یہ غلط کنفیگرییشن یا آپ کے کنکشن کو قطع کرنے والے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔</translation>
 <translation id="4425173294238317796">پاسکی کی تصدیقی شیٹ</translation>
 <translation id="4425750422187370446">ایتھلیٹک پوشاک</translation>
-<translation id="4428065317363009941">اشتہارات کو ذاتی نوعیت کا بنانا</translation>
 <translation id="443121186588148776">سیریل پورٹ</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> نے آپ کا لاگ ان سرٹیفکیٹ قبول نہیں کیا یا ممکن ہے کوئی فراہم نہ کیا گیا ہو۔</translation>
 <translation id="4432792777822557199">آئندہ سے <ph name="SOURCE_LANGUAGE" /> کے صفحات کا <ph name="TARGET_LANGUAGE" /> میں ترجمہ کیا جائے گا</translation>
@@ -2211,7 +2206,6 @@
 <translation id="540969355065856584">یہ سرور یہ ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ اس کا سیکیورٹی سرٹیفکیٹ اس وقت درست نہیں ہے۔ یہ غلط کنفیگریشن یا آپ کے کنکشن میں مانع بن رہے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔</translation>
 <translation id="5411462078004183575">کم قیمت والا اختیار</translation>
 <translation id="5412040515238827314">غلط فارمیٹ: پیٹرنز کی فہرست متوقع ہے۔</translation>
-<translation id="5412236728747081950">‏یہ سائٹ آپ کو مزید متعلقہ اشتہارات دکھانے کے لیے Chrome سے آپ کی دلچسپیاں موصول کرتی ہے</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">اسٹیکر 4</translation>
 <translation id="5414446060143308245">منتقلی سے پہلے جائزہ لینا ضروری ہے</translation>
@@ -2800,7 +2794,6 @@
 <translation id="6613866251791999074">‏Chrome میں اپنے سرچ انجن کے بارے میں مزید جانیں</translation>
 <translation id="6615297766614333076">اسٹیکر 2</translation>
 <translation id="6624427990725312378">رابطے کی معلومات</translation>
-<translation id="6627727261837091711">اشتہار کی ذاتی نوعیت سازی کی تفصیلات دکھائیں</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> تلاش</translation>
 <translation id="6629652037942826935">لگژری سفر</translation>
 <translation id="6630043285902923878">‏USB آلات تلاش کئے جا رہے ہیں...</translation>
@@ -3312,7 +3305,6 @@
 <translation id="7574998639136359461">سرمائی کھیل کے ساز و سامان</translation>
 <translation id="7575207903026901870">‏تجویز کا بٹن ہٹائیں، اس تجویز کو ہٹانے کے لیے Enter دبائیں</translation>
 <translation id="7575887283389198269">موبائل فونز</translation>
-<translation id="7577900504646297215">دلچسپیوں کا نظم کریں</translation>
 <translation id="7578104083680115302">‏Google کے ساتھ اپنے محفوظ کردہ کارڈز کا استعمال کر کے سبھی آلات پر موجود سائٹس اور ایپس پر جلدی سے ادائیگی کریں۔</translation>
 <translation id="7579442726219254162">"<ph name="APPLICATION_ID" />" کی نظم کردہ کنفیگریشن میں نامعلوم متغیر "<ph name="VARIABLE" />"۔</translation>
 <translation id="7581199239021537589">‏سائیڈ 2 تصویر Y شفٹ</translation>

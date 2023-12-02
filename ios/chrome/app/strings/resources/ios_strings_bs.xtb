@@ -208,7 +208,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />obrišite podatke Chromea n
 <translation id="2050196510205866090">{count,plural, =1{{count} sačuvan način plaćanja je dostupan iznad tastature.}one{{count} sačuvan način plaćanja je dostupan iznad tastature.}few{{count} sačuvana načina plaćanja su dostupna iznad tastature.}other{{count} sačuvanih načina plaćanja su dostupni iznad tastature.}}</translation>
 <translation id="2055515971416882518">Otvorite "Postavke".</translation>
 <translation id="2059166748188874810">Općina</translation>
-<translation id="2062410130322589403">Vodič za vaše odabire u vezi s privatnošću</translation>
+<translation id="2062410130322589403">Vodič za odabire u vezi s privatnošću</translation>
 <translation id="2073572773299281212">Aktivan prije <ph name="DAYS" /> dana</translation>
 <translation id="2074131957428911366">U <ph name="BEGIN_LINK" />postavkama<ph name="END_LINK" /> uvijek možete odabrati šta želite sinhronizirati.</translation>
 <translation id="2079545284768500474">Vrati</translation>
@@ -623,6 +623,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="430793432425771671">Sinhroniziraj sve</translation>
 <translation id="4309403553630140242">Dodirnite dvaput za više informacija</translation>
 <translation id="430967081421617822">Sve vrijeme</translation>
+<translation id="4322394346347055525">Zatvori ostale kartice</translation>
 <translation id="4331177082088332784">Ovim možete upravljati u BEGIN_LINK Postavkama sadržaja END_LINK</translation>
 <translation id="4334428914252001502">Jedan nepročitani članak.</translation>
 <translation id="4338650699862464074">Googleu šalje URL-ove stranica koje ste posjetili.</translation>

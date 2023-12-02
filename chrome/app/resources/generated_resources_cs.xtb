@@ -1777,6 +1777,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2344032937402519675">K serveru se nelze připojit. Zkontrolujte připojení k síti a zkuste to znovu. Pokud potíže přetrvávají, zkuste Chromebook restartovat.</translation>
 <translation id="234559068082989648">Staré verze aplikací pro Chrome se po prosinci 2022 neotevřou. Požádejte administrátora o aktualizaci na novou verzi, nebo tuto aplikaci odstraňte.</translation>
 <translation id="2345723121311404059">1 stránka pro tiskárnu <ph name="PRINTER_NAME" /></translation>
+<translation id="2347930112185157300">Mobilní operátor je uzamčen</translation>
 <translation id="2348176352564285430">Aplikace: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – Odpovězte na žádost o oprávnění stisknutím kláves Ctrl + Vpřed</translation>
 <translation id="234889437187286781">Při načítání dat došlo k chybě</translation>
@@ -2545,6 +2546,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="2927017729816812676">Cache Storage</translation>
 <translation id="2928795416630981206">Povolení sledovat pozici kamery</translation>
 <translation id="2931157624143513983">Přizpůsobit tisknutelné oblasti</translation>
+<translation id="2931342457001070961">Není připojen žádný mikrofon</translation>
 <translation id="2932085390869194046">Navrhnout heslo...</translation>
 <translation id="2932483646085333864">Chcete-li zahájit synchronizaci, odhlaste se a poté se znovu přihlaste.</translation>
 <translation id="2932883381142163287">Nahlásit zneužití</translation>
@@ -4674,6 +4676,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4647836961514597010">Výběr barev</translation>
 <translation id="4648491805942548247">Nedostatečná oprávnění</translation>
 <translation id="4650037136970677721">Úspora paměti</translation>
+<translation id="4650364565596261010">Výchozí nastavení systému</translation>
 <translation id="4650591383426000695">Odpojit telefon od zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Online komponentu se zdroji pro ukázkový režim se nepodařilo načíst.</translation>
 <translation id="4651921906638302153">Pomocí tohoto účtu se nelze přihlásit</translation>
@@ -4910,6 +4913,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4839303808932127586">Uložit &amp;video jako...</translation>
 <translation id="4839910546484524995">Zkontrolujte své zařízení</translation>
 <translation id="4840096453115567876">Přesto anonymní režim ukončit?</translation>
+<translation id="4841475798258477260">Toto zařízení se může připojit pouze ke konkrétní mobilní síti. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4841741146571978176">Povinný virtuální počítač neexistuje. Pokud chcete pokračovat, zkuste nastavit virtuální počítač typu <ph name="VM_TYPE" /></translation>
 <translation id="4842976633412754305">Tato stránka se pokouší načíst skripty z neověřených zdrojů.</translation>
 <translation id="4844333629810439236">Jiné klávesnice</translation>
@@ -6459,6 +6463,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6104068876731806426">Účty Google</translation>
 <translation id="6104311680260824317">Zařízení do domény nelze přidat. Server nepodporuje zadané typy šifrování Kerberos. Zkontrolujte nastavení šifrování v části Další možnosti.</translation>
 <translation id="6104796831253957966">Fronta tiskárny je plná</translation>
+<translation id="610487644502954950">Boční panel odepnut</translation>
 <translation id="6104929924898022309">Vyhledávacím tlačítkem měnit chování funkčních kláves</translation>
 <translation id="6106167152849320869">Pokud jste v předchozím kroku zvolili, že také chcete odesílat diagnostická data a data o využití, budou se pro nainstalované aplikace shromažďovat tato data.</translation>
 <translation id="6111718295497931251">Odebrat přístup k Disku Google</translation>
@@ -8818,7 +8823,6 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7968982339740310781">Zobrazit podrobnosti</translation>
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Podrobnosti o ethernetu</translation>
-<translation id="7970882136539140748">Kartu v tuto chvíli nelze uložit</translation>
 <translation id="7972714317346275248">Šifrování PKCS #1 SHA-384 s RSA</translation>
 <translation id="7973776233567882054">Který popis nejlépe vystihuje vaši síť?</translation>
 <translation id="797394244396603170">Vyberte zařízení, se kterým chcete sdílet soubory</translation>
@@ -9153,6 +9157,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8241040075392580210">Mráček</translation>
 <translation id="8241806945692107836">Zjišťování konfigurace zařízení...</translation>
 <translation id="8241868517363889229">Číst a upravovat záložky</translation>
+<translation id="8242273718576931540">Vaše zařízení se nemůže připojit k této síti. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8242370300221559051">Aktivovat Obchod Play</translation>
 <translation id="8242426110754782860">Pokračovat</translation>
 <translation id="8243948765190375130">Kvalita médií může být zhoršená</translation>
@@ -9639,6 +9644,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8636284842992792762">Inicializace rozšíření…</translation>
 <translation id="8636323803535540285">Pokud se sem chcete dostat rychleji, přidejte si zkratku do aplikace <ph name="BRAND" /></translation>
 <translation id="8636500887554457830">Nepovolovat webům zobrazovat vyskakovací okna ani používat přesměrování</translation>
+<translation id="8636514272606969031">Boční panel připnut</translation>
 <translation id="8637688295594795546">K dispozici je aktualizace systému. Příprava stahování...</translation>
 <translation id="8638719155236856752">Stav sítě ChromeOS</translation>
 <translation id="8639635302972078117">Odesílat údaje o využití a diagnostice. Toto zařízení aktuálně automaticky odesílá do Googlu diagnostické údaje a údaje o zařízení a aplikacích a jejich využití. Tyto údaje nebudou používány ke zjištění totožnosti dítěte a pomohou nám se zvyšováním stability systému a aplikací a dalšími vylepšeními. Některá souhrnná data budou moci využít také naši partneři, např. vývojáři aplikací pro Android. Pokud má dítě zapnuté dodatečné nastavení Aktivita na webu a v aplikacích, mohou se tato data ukládat do jeho účtu Google.</translation>

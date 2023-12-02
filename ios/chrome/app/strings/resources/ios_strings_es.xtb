@@ -208,6 +208,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de t
 <translation id="2050196510205866090">{count,plural, =1{{count} método de pago guardado disponible encima del teclado.}other{{count} métodos de pago guardados disponibles encima del teclado.}}</translation>
 <translation id="2055515971416882518">Abre Configuración.</translation>
 <translation id="2059166748188874810">Municipio</translation>
+<translation id="2062410130322589403">Una guía de tus opciones de privacidad</translation>
 <translation id="2073572773299281212">Activo hace <ph name="DAYS" /> días</translation>
 <translation id="2074131957428911366">Siempre puedes seleccionar qué contenido quieres sincronizar en los <ph name="BEGIN_LINK" />ajustes<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Deshacer</translation>
@@ -622,6 +623,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="430793432425771671">Sincronizar todo</translation>
 <translation id="4309403553630140242">Toca dos veces para consultar más información</translation>
 <translation id="430967081421617822">Desde siempre</translation>
+<translation id="4322394346347055525">Cerrar las demás pestañas</translation>
 <translation id="4331177082088332784">Puedes gestionar esto en BEGIN_LINKConfiguración de contenidoEND_LINK</translation>
 <translation id="4334428914252001502">1 artículo no leído.</translation>
 <translation id="4338650699862464074">Envía las URL de las páginas que visitas a Google.</translation>

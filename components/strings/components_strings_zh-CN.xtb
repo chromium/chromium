@@ -346,7 +346,6 @@
 <translation id="1633941398432788136">活动策划</translation>
 <translation id="1634828734222219955">总计</translation>
 <translation id="163669211644121865">报税与纳税筹划</translation>
-<translation id="1638780421120290329">无法保存卡</translation>
 <translation id="1639239467298939599">正在加载</translation>
 <translation id="1640180200866533862">用户政策</translation>
 <translation id="1640244768702815859">请尝试<ph name="BEGIN_LINK" />访问该网站的首页<ph name="END_LINK" />。</translation>
@@ -690,7 +689,6 @@
 <translation id="2324604504973636700">家用电器</translation>
 <translation id="2328651992442742497">可以使用（默认）</translation>
 <translation id="2328955282645810595">施工与电动工具</translation>
-<translation id="2329473609445770916">此网站界定了多项可供其他网站用以向您展示广告的兴趣</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />，到期时间：<ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">设置由管理员控制</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> 希望与以下所选设备配对：</translation>
@@ -1117,7 +1115,6 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可自定义您的浏览器外观</translation>
 <translation id="3240791268468473923">“无匹配的安全付款凭据”表单已打开</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />”链接已被禁用</translation>
-<translation id="3248611290851046188">此网站界定了多项可供其他网站用以向您展示广告的兴趣。此网站还会从 Chrome 了解您的兴趣，从而向您展示与您的需求更相符的广告。</translation>
 <translation id="3249151924975132674">学生贷款与学院资助</translation>
 <translation id="3249845759089040423">时髦</translation>
 <translation id="3250640885957938546">广告与营销</translation>
@@ -1583,7 +1580,6 @@
 <translation id="4177501066905053472">广告主题</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> - <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">取消跟踪价格</translation>
-<translation id="4194250254487269611">此刻无法保存您的信用卡信息</translation>
 <translation id="4195459680867822611">“查看 Chrome 提示”按钮，激活它即可了解各项 Chrome 功能</translation>
 <translation id="4195643157523330669">在新标签页中打开</translation>
 <translation id="4196861286325780578">恢复移动(&amp;R)</translation>
@@ -1723,7 +1719,6 @@
 <translation id="4424024547088906515">此服务器无法证明它是<ph name="DOMAIN" />；Chrome不信任其安全证书。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="4425173294238317796">通行密钥确认工作表</translation>
 <translation id="4425750422187370446">运动服装</translation>
-<translation id="4428065317363009941">广告个性化</translation>
 <translation id="443121186588148776">串行端口</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> 不接受您的登录证书，或者您可能没有提供登录证书。</translation>
 <translation id="4432792777822557199">从现在开始，源语言为<ph name="SOURCE_LANGUAGE" />的网页一律会被翻译成<ph name="TARGET_LANGUAGE" /></translation>
@@ -2205,7 +2200,6 @@
 <translation id="540969355065856584">此服务器无法证明它是 <ph name="DOMAIN" />；其安全证书目前无效。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="5411462078004183575">低价选项</translation>
 <translation id="5412040515238827314">格式无效：本应为模式列表。</translation>
-<translation id="5412236728747081950">此网站会从 Chrome 中了解您的兴趣，从而向您展示与您的需求更相符的广告</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">堆叠出纸器 4</translation>
 <translation id="5414446060143308245">传输前需要检查</translation>
@@ -2792,7 +2786,6 @@
 <translation id="6613866251791999074">详细了解 Chrome 中的搜索引擎</translation>
 <translation id="6615297766614333076">堆叠出纸器 2</translation>
 <translation id="6624427990725312378">联系信息</translation>
-<translation id="6627727261837091711">显示广告个性化详情</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> 搜索</translation>
 <translation id="6629652037942826935">豪华旅游</translation>
 <translation id="6630043285902923878">正在查找 USB 设备…</translation>
@@ -3304,7 +3297,6 @@
 <translation id="7574998639136359461">冬季运动装备</translation>
 <translation id="7575207903026901870">“移除建议”按钮，按 Enter 键即可移除这项建议</translation>
 <translation id="7575887283389198269">手机</translation>
-<translation id="7577900504646297215">管理我的兴趣</translation>
 <translation id="7578104083680115302">通过各种设备在网站和应用中购物时，您都可以使用 Google 为您保存的银行卡信息快速付款。</translation>
 <translation id="7579442726219254162">“<ph name="APPLICATION_ID" />”的托管配置中包含未知变量“<ph name="VARIABLE" />”。</translation>
 <translation id="7581199239021537589">侧边 2，图片沿 Y 轴位移</translation>

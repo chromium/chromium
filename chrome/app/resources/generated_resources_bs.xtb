@@ -1789,7 +1789,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2344032937402519675">Povezivanje sa serverom nije uspjelo. Provjerite mrežnu vezu i pokušajte ponovo. Ako se problemi nastave, pokušajte ponovo pokrenuti Chromebook.</translation>
 <translation id="234559068082989648">Stare verzije Chromeovih aplikacija se neće moći otvarati nakon decembra 2022. Kontaktirajte administratora da ažurirate na novu verziju ili uklonite ovu aplikaciju.</translation>
 <translation id="2345723121311404059">1 stranica na štampaču <ph name="PRINTER_NAME" /></translation>
-<translation id="2347930112185157300">Davatelj mrežne usluge je zaključan</translation>
+<translation id="2347930112185157300">Kartica operatera mobilne mreže je zaključana</translation>
 <translation id="2348176352564285430">Aplikacija: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – Zatraženo je odobrenje. Pritisnite Ctrl + naprijed da odgovorite</translation>
 <translation id="234889437187286781">Greška prilikom učitavanja podataka</translation>
@@ -2558,6 +2558,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="2927017729816812676">Pohrana keš memorije</translation>
 <translation id="2928795416630981206">Dozvoljeno je praćenje položaja vaše kamere</translation>
 <translation id="2931157624143513983">Prilagodi površini za štampanje</translation>
+<translation id="2931342457001070961">Mikrofon nije priključen</translation>
 <translation id="2932085390869194046">Predloži lozinku…</translation>
 <translation id="2932483646085333864">Odjavite se, a zatim se ponovo prijavite da započnete sinhroniziranje</translation>
 <translation id="2932883381142163287">Prijavite zloupotrebu</translation>
@@ -4689,6 +4690,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="4647836961514597010">Odabir boja</translation>
 <translation id="4648491805942548247">Nedovoljno odobrenja</translation>
 <translation id="4650037136970677721">Memorija je ušteđena</translation>
+<translation id="4650364565596261010">Sistemski zadano</translation>
 <translation id="4650591383426000695">Prekinite povezanost telefona i uređaja <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Nije moguće učitati online komponentu pomoću resursa u načinu rada za demonstraciju.</translation>
 <translation id="4651921906638302153">Nije se moguće prijaviti s ovim računom</translation>
@@ -6478,7 +6480,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="6104068876731806426">Google računi</translation>
 <translation id="6104311680260824317">Nije moguće pridružiti uređaj domeni. Server ne podržava određene vrste Kerberos šifriranja. Provjerite "Više opcija" za postavke šifriranja.</translation>
 <translation id="6104796831253957966">Red čekanja štampača je pun</translation>
-<translation id="610487644502954950">Bočna ploča je otkvačena</translation>
+<translation id="610487644502954950">Bočna ploča je otkačena</translation>
 <translation id="6104929924898022309">Koristi tipku za pretraživanje radi promjene ponašanja funkcijskih tipki</translation>
 <translation id="6106167152849320869">Ako ste u prethodnom koraku odabrali slanje podataka o dijagnostici i korištenju, ti podaci će se prikupljati za instalirane aplikacije.</translation>
 <translation id="6111718295497931251">Uklonite pristup Google Disku</translation>
@@ -8839,7 +8841,6 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="7968982339740310781">Prikaži detalje</translation>
 <translation id="7969046989155602842">Komanda</translation>
 <translation id="7970673414865679092">Detalji o Ethernetu</translation>
-<translation id="7970882136539140748">Trenutno nije moguće sačuvati karticu</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 s RSA šifriranjem</translation>
 <translation id="7973776233567882054">Šta od navedenog najbolje opisuje vašu mrežu?</translation>
 <translation id="797394244396603170">Odaberite uređaj s kojim želite dijeliti fajlove</translation>
@@ -9174,7 +9175,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8241040075392580210">Oblačno</translation>
 <translation id="8241806945692107836">Određivanje konfiguracije uređaja…</translation>
 <translation id="8241868517363889229">Čitanje i promjena vaših oznaka</translation>
-<translation id="8242273718576931540">Uređaj se ne može povezati s ovom mrežom. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="8242273718576931540">Uređaj se ne može povezati s mrežom. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8242370300221559051">Omogućite Play trgovinu</translation>
 <translation id="8242426110754782860">Nastavi</translation>
 <translation id="8243948765190375130">Kvalitet medijskih fajlova se može smanjiti</translation>
@@ -9661,7 +9662,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8636284842992792762">Pokretanje ekstenzija...</translation>
 <translation id="8636323803535540285">Da brže dođete ovdje, dodajte prečicu na <ph name="BRAND" /></translation>
 <translation id="8636500887554457830">Nemoj dozvoliti web lokacijama slanje skočnog sadržaja ili korištenje preusmjeravanja</translation>
-<translation id="8636514272606969031">Bočna ploča je prikvačena</translation>
+<translation id="8636514272606969031">Bočna ploča je zakačena</translation>
 <translation id="8637688295594795546">Dostupno je ažuriranje sistema. Priprema za preuzimanje…</translation>
 <translation id="8638719155236856752">Stanje mreže ChromeOS-a</translation>
 <translation id="8639635302972078117">Šaljite podatke o korištenju i dijagnostici. Ovaj uređaj trenutno automatski šalje Googleu podatke o dijagnostici, uređaju i korištenju aplikacija. Ovo se neće koristiti za identifikaciju vašeg djeteta i pomoći će stabilnosti sistema i aplikacije, kao i drugim unapređenjima. Neki zbirni podaci će također pomoći Googleovim aplikacijama i partnerima, kao što su Androidovi programeri. Ako je za vaše dijete uključena postavka za dodatnu Aktivnost na webu i u aplikacijama, ovi podaci mogu biti sačuvani na Google računu djeteta.</translation>

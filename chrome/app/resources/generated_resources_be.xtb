@@ -2545,6 +2545,7 @@
 <translation id="2927017729816812676">Сховішча кэша</translation>
 <translation id="2928795416630981206">Дазволена адсочваць становішча камеры</translation>
 <translation id="2931157624143513983">Дапасаваць да меж вобласці друку</translation>
+<translation id="2931342457001070961">Мікрафон не падключаны</translation>
 <translation id="2932085390869194046">Прапанаваць пароль...</translation>
 <translation id="2932483646085333864">Каб пачаць сінхранізацыю, выйдзіце з уліковага запісу, а потым увайдзіце зноў</translation>
 <translation id="2932883381142163287">Паскардзіцца на парушэнне</translation>
@@ -4673,6 +4674,7 @@
 <translation id="4647836961514597010">Сродак выбару колеру</translation>
 <translation id="4648491805942548247">Недастаткова дазволаў</translation>
 <translation id="4650037136970677721">Захавана ў памяці</translation>
+<translation id="4650364565596261010">Стандартная сістэмная</translation>
 <translation id="4650591383426000695">Адключыць тэлефон ад прылады <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Не ўдалося загрузіць вэб-кампанент з рэсурсамі дэманстрацыйнага рэжыму.</translation>
 <translation id="4651921906638302153">Не ўдаецца ўвайсці праз гэты ўліковы запіс</translation>
@@ -8822,7 +8824,6 @@
 <translation id="7968982339740310781">Паказаць падрабязныя звесткі</translation>
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Звесткі пра Ethernet</translation>
-<translation id="7970882136539140748">Не ўдаецца захаваць даныя крэдытнай карткі</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 з шыфраваннем RSA</translation>
 <translation id="7973776233567882054">Якое з наступных сцверджанняў лепш за ўсё апісвае вашу сетку?</translation>
 <translation id="797394244396603170">Выберыце, з якой прыладай трэба абагуліць файлы</translation>

@@ -2536,6 +2536,7 @@
 <translation id="2927017729816812676">缓存空间</translation>
 <translation id="2928795416630981206">允许跟踪您的摄像头位置</translation>
 <translation id="2931157624143513983">适合可打印区域</translation>
+<translation id="2931342457001070961">未连接到麦克风</translation>
 <translation id="2932085390869194046">建议密码…</translation>
 <translation id="2932483646085333864">退出并重新登录以开始同步</translation>
 <translation id="2932883381142163287">举报滥用行为</translation>
@@ -4665,6 +4666,7 @@
 <translation id="4647836961514597010">颜色选择器</translation>
 <translation id="4648491805942548247">权限不足</translation>
 <translation id="4650037136970677721">节省的内存</translation>
+<translation id="4650364565596261010">系统默认设置</translation>
 <translation id="4650591383426000695">将手机与 <ph name="DEVICE_TYPE" /> 断开连接</translation>
 <translation id="4651484272688821107">无法加载包含演示模式资源的在线组件。</translation>
 <translation id="4651921906638302153">无法使用此账号登录</translation>
@@ -8808,7 +8810,6 @@
 <translation id="7968982339740310781">查看详情</translation>
 <translation id="7969046989155602842">Cmd 键</translation>
 <translation id="7970673414865679092">以太网详细信息</translation>
-<translation id="7970882136539140748">此刻无法保存信用卡信息</translation>
 <translation id="7972714317346275248">PKCS #1，带有 RSA 加密的 SHA-384</translation>
 <translation id="7973776233567882054">以下哪一项最能准确地描述您的网络？</translation>
 <translation id="797394244396603170">请选择您要与哪部设备分享文件</translation>

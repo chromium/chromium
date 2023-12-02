@@ -2558,6 +2558,7 @@
 <translation id="2927017729816812676">कॅशे स्टोरेज</translation>
 <translation id="2928795416630981206">तुमच्या कॅमेराचे स्थान ट्रॅक करण्याची अनुमती आहे</translation>
 <translation id="2931157624143513983">प्रिंट करण्यायोग्य भागात बसवा</translation>
+<translation id="2931342457001070961">कोणताही मायक्रोफोन कनेक्ट केलेला नाही</translation>
 <translation id="2932085390869194046">पासवर्ड सुचवा...</translation>
 <translation id="2932483646085333864">साइन आउट करा नंतर सिंक सुरू करण्यासाठी पुन्हा साइन इन करा</translation>
 <translation id="2932883381142163287">गैरवापराची तक्रार करा</translation>
@@ -4687,6 +4688,7 @@
 <translation id="4647836961514597010">रंग निवडक</translation>
 <translation id="4648491805942548247">अपुर्‍या परवानग्या</translation>
 <translation id="4650037136970677721">मेमरी सेव्ह केली आहे</translation>
+<translation id="4650364565596261010">सिस्टम डीफॉल्ट</translation>
 <translation id="4650591383426000695">तुमचा फोन <ph name="DEVICE_TYPE" /> वरून डिस्कनेक्ट करा</translation>
 <translation id="4651484272688821107">डेमो मोड स्रोतांनी ऑनलाइन घटक लोड करता आला नाही.</translation>
 <translation id="4651921906638302153">हे खाते वापरून साइन इन करू शकत नाही</translation>
@@ -8832,7 +8834,6 @@
 <translation id="7968982339740310781">तपशील पहा</translation>
 <translation id="7969046989155602842">कमांड</translation>
 <translation id="7970673414865679092">इथरनेटचे तपशील</translation>
-<translation id="7970882136539140748">आता कार्ड सेव्ह केले जाऊ शकत नाही</translation>
 <translation id="7972714317346275248">PKCS #1 RSA एंक्रिप्शनसह SHA-384</translation>
 <translation id="7973776233567882054">तुमच्या नेटवर्कचे पुढीलपैकी सर्वोत्तम वर्णन कोणते आहे?</translation>
 <translation id="797394244396603170">तुम्हाला ज्या डिव्हाइससह फाइल शेअर करायच्या आहेत ते डिव्हाइस निवडा</translation>

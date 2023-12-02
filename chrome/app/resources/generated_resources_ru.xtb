@@ -2546,6 +2546,7 @@
 <translation id="2927017729816812676">CacheStorage</translation>
 <translation id="2928795416630981206">Разрешить сайтам отслеживать положение камеры</translation>
 <translation id="2931157624143513983">По области печати</translation>
+<translation id="2931342457001070961">Нет подключенных микрофонов</translation>
 <translation id="2932085390869194046">Сгенерировать пароль…</translation>
 <translation id="2932483646085333864">Чтобы начать синхронизацию, выйдите из аккаунта и войдите снова</translation>
 <translation id="2932883381142163287">Сообщить о нарушении</translation>
@@ -4676,6 +4677,7 @@
 <translation id="4647836961514597010">Палитра цветов</translation>
 <translation id="4648491805942548247">Недостаточно прав</translation>
 <translation id="4650037136970677721">Освобождены ресурсы памяти</translation>
+<translation id="4650364565596261010">По умолчанию</translation>
 <translation id="4650591383426000695">Телефон будет отключен от устройства <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Не удалось загрузить онлайн-компонент с ресурсами демонстрационного режима.</translation>
 <translation id="4651921906638302153">Не удалось войти в аккаунт</translation>
@@ -8827,7 +8829,6 @@
 <translation id="7968982339740310781">Просмотреть сведения</translation>
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Сведения о сети Ethernet</translation>
-<translation id="7970882136539140748">Не удалось сохранить карту</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 с шифрованием RSA</translation>
 <translation id="7973776233567882054">Какой из вариантов наиболее точно описывает вашу сеть?</translation>
 <translation id="797394244396603170">Выберите устройство, с которым хотите обмениваться файлами</translation>

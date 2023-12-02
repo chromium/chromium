@@ -2542,6 +2542,7 @@
 <translation id="2927017729816812676">Меморијски простор кеша</translation>
 <translation id="2928795416630981206">Дозвољено им је да прате положај камере</translation>
 <translation id="2931157624143513983">Прилагоди подручју за штампање</translation>
+<translation id="2931342457001070961">Није повезан ниједан микрофон</translation>
 <translation id="2932085390869194046">Предложи лозинку...</translation>
 <translation id="2932483646085333864">Одјавите се, па се поново пријавите да бисте започели синхронизацију</translation>
 <translation id="2932883381142163287">Пријави злоупотребу</translation>
@@ -4672,6 +4673,7 @@
 <translation id="4647836961514597010">Бирач боја</translation>
 <translation id="4648491805942548247">Недовољан број дозвола</translation>
 <translation id="4650037136970677721">Меморија коју сте уштедели</translation>
+<translation id="4650364565596261010">Подразумевана системска</translation>
 <translation id="4650591383426000695">Прекините везу између телефона и уређаја <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Учитавање онлајн компоненте са ресурсима за режим демонстрације није успело.</translation>
 <translation id="4651921906638302153">Не можете да се пријавите помоћу овог налога</translation>
@@ -8822,7 +8824,6 @@
 <translation id="7968982339740310781">Прикажи детаље</translation>
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Детаљи о етернету</translation>
-<translation id="7970882136539140748">Тренутно не можемо да сачувамо картицу</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 са RSA шифровањем</translation>
 <translation id="7973776233567882054">Шта од наведеног најбоље описује вашу мрежу?</translation>
 <translation id="797394244396603170">Изаберите уређај са којим желите да делите фајлове</translation>

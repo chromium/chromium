@@ -346,7 +346,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1633941398432788136">Arrangementsplanlegging</translation>
 <translation id="1634828734222219955">Totalt</translation>
 <translation id="163669211644121865">Skatteforberedelse og -planlegging</translation>
-<translation id="1638780421120290329">Kan ikke lagre kortet</translation>
 <translation id="1639239467298939599">Laster inn</translation>
 <translation id="1640180200866533862">Brukerretningslinjer</translation>
 <translation id="1640244768702815859">Prøv <ph name="BEGIN_LINK" />å gå til startsiden for nettstedet<ph name="END_LINK" />.</translation>
@@ -690,7 +689,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2324604504973636700">Hvitevarer</translation>
 <translation id="2328651992442742497">Tillatt (standard)</translation>
 <translation id="2328955282645810595">Bygg- og elektroverktøy</translation>
-<translation id="2329473609445770916">Dette nettstedet definerer interesser som andre nettsteder kan bruke til å vise deg annonser</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" /> – utløper <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Innstillingen kontrolleres av administratoren din</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> vil koble til</translation>
@@ -1119,7 +1117,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å tilpasse nettleserens utseende</translation>
 <translation id="3240791268468473923">Ark for sikker betalingslegitimasjon uten samsvarende legitimasjon er åpnet</translation>
 <translation id="324180406144491771">«<ph name="HOST_NAME" />»-linker er blokkert</translation>
-<translation id="3248611290851046188">Dette nettstedet definerer interesser som andre nettsteder kan bruke til å vise deg annonser. Dette nettstedet mottar også interessene dine fra Chrome for å kunne vise deg mer relevante annonser.</translation>
 <translation id="3249151924975132674">Studielån og universitetsfinansiering</translation>
 <translation id="3249845759089040423">Groovy</translation>
 <translation id="3250640885957938546">Reklame og markedsføring</translation>
@@ -1587,7 +1584,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4177501066905053472">Annonseemner</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Slutt å spore prisen</translation>
-<translation id="4194250254487269611">Kan ikke lagre kortet ditt akkurat nå</translation>
 <translation id="4195459680867822611">Knappen «Se Chrome-tips» – aktiver for å lære om Chrome-funksjoner</translation>
 <translation id="4195643157523330669">Åpne i ny fane</translation>
 <translation id="4196861286325780578">&amp;Flytt likevel</translation>
@@ -1727,7 +1723,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4424024547088906515">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />. Sikkerhetssertifikatet til tjeneren er ikke klarert av Chrome. Dette kan være forårsaket av en feilkonfigurering eller en angriper som avskjærer tilkoblingen din.</translation>
 <translation id="4425173294238317796">Ark for passnøkkelbekreftelse</translation>
 <translation id="4425750422187370446">Sportsklær</translation>
-<translation id="4428065317363009941">Personlig tilpasning av annonser</translation>
 <translation id="443121186588148776">Seriell port</translation>
 <translation id="4432688616882109544">Enten godtok ikke <ph name="HOST_NAME" /> påloggingssertifikatet ditt, eller så ble det ikke oppgitt.</translation>
 <translation id="4432792777822557199">Fra nå av oversettes sider på <ph name="SOURCE_LANGUAGE" /> til <ph name="TARGET_LANGUAGE" /></translation>
@@ -2209,7 +2204,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="540969355065856584">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />. Sikkerhetssertifikatet til tjeneren er ikke gyldig for øyeblikket. Dette kan være forårsaket av en feilkonfigurasjon eller en angriper som lytter på tilkoblingen din.</translation>
 <translation id="5411462078004183575">Alternativ med lav pris</translation>
 <translation id="5412040515238827314">Ugyldig format: Forventet en liste over mønstre.</translation>
-<translation id="5412236728747081950">Dette nettstedet mottar interessene dine fra Chrome for å kunne vise deg mer relevante annonser</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Hylle 4</translation>
 <translation id="5414446060143308245">Filene må gjennomgås før de kan overføres</translation>
@@ -2797,7 +2791,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6613866251791999074">Finn ut mer om søkemotoren din i Chrome</translation>
 <translation id="6615297766614333076">Hylle 2</translation>
 <translation id="6624427990725312378">Kontaktinformasjon</translation>
-<translation id="6627727261837091711">Vis detaljer for personlig tilpasning av annonser</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> Søk</translation>
 <translation id="6629652037942826935">Luksusreiser</translation>
 <translation id="6630043285902923878">Finner USB-enheter …</translation>
@@ -3308,7 +3301,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7574998639136359461">Vintersportsutstyr</translation>
 <translation id="7575207903026901870">Knapp for å fjerne forslag – trykk på Enter for å fjerne dette forslaget</translation>
 <translation id="7575887283389198269">Mobiltelefoner</translation>
-<translation id="7577900504646297215">Administrer interesser</translation>
 <translation id="7578104083680115302">Når du lagrer kort med Google, kan du bruke dem til å betale raskt på nettsteder og i apper – uansett hvilken enhet du bruker.</translation>
 <translation id="7579442726219254162">Ukjent variabel «<ph name="VARIABLE" />» i den administrerte konfigurasjonen for «<ph name="APPLICATION_ID" />».</translation>
 <translation id="7581199239021537589">Y-forskyvning av bilde på side 2</translation>

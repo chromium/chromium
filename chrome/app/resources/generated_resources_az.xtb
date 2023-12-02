@@ -2543,6 +2543,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2927017729816812676">Keş Yaddaşı</translation>
 <translation id="2928795416630981206">Kameranızın mövqeyini izləmək icazəsi verilib</translation>
 <translation id="2931157624143513983">Çap olunan sahəyə sığdırın</translation>
+<translation id="2931342457001070961">Mikrofon qoşulmayıb</translation>
 <translation id="2932085390869194046">Parol təklif edin...</translation>
 <translation id="2932483646085333864">Sinxronizasiyanı başlamaq üçün çıxın və yenidən daxil olun</translation>
 <translation id="2932883381142163287">Sui-istifadəni xəbər verin</translation>
@@ -4671,6 +4672,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4647836961514597010">Rəng seçici</translation>
 <translation id="4648491805942548247">Yetərsiz icazələr</translation>
 <translation id="4650037136970677721">Yaddaş qənaəti</translation>
+<translation id="4650364565596261010">Sistem defoltu</translation>
 <translation id="4650591383426000695">Telefonunuzu <ph name="DEVICE_TYPE" /> cihazından ayırın</translation>
 <translation id="4651484272688821107">Demo rejim mənbələri ilə onlayn komponentin yüklənməsi mümkün olmadı.</translation>
 <translation id="4651921906638302153">Bu hesabla daxil olmaq mümkün deyil</translation>
@@ -8814,7 +8816,6 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7968982339740310781">Detallara baxın</translation>
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Ethernet detalları</translation>
-<translation id="7970882136539140748">Kartı hazırda yadda saxlamaq mümkün deyil</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 RSA Şifrələmə ilə</translation>
 <translation id="7973776233567882054">Aşağıdakılardan hansı şəbəkənizi daha yaxşı təsvir edir?</translation>
 <translation id="797394244396603170">Faylları paylaşmaq istədiyiniz cihaz seçin</translation>

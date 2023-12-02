@@ -2559,6 +2559,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2927017729816812676">Bộ nhớ đệm</translation>
 <translation id="2928795416630981206">Được phép theo dõi vị trí máy ảnh của bạn</translation>
 <translation id="2931157624143513983">Vừa với vùng in được</translation>
+<translation id="2931342457001070961">Chưa kết nối micrô nào</translation>
 <translation id="2932085390869194046">Đề xuất mật khẩu...</translation>
 <translation id="2932483646085333864">Đăng xuất sau đó đăng nhập lại để bắt đầu đồng bộ hóa</translation>
 <translation id="2932883381142163287">Báo cáo lạm dụng</translation>
@@ -4690,6 +4691,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="4647836961514597010">Công cụ chọn màu</translation>
 <translation id="4648491805942548247">Không đủ quyền</translation>
 <translation id="4650037136970677721">Bộ nhớ tiết kiệm được</translation>
+<translation id="4650364565596261010">Tùy chọn mặc định của hệ thống</translation>
 <translation id="4650591383426000695">Ngắt kết nối điện thoại khỏi <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Không thể tải thành phần trực tuyến có tài nguyên chế độ minh họa.</translation>
 <translation id="4651921906638302153">Không đăng nhập được bằng tài khoản này</translation>
@@ -8836,7 +8838,6 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7968982339740310781">Xem chi tiết</translation>
 <translation id="7969046989155602842">Phím Command</translation>
 <translation id="7970673414865679092">Thông tin chi tiết về Ethernet</translation>
-<translation id="7970882136539140748">Hệ thống không thể lưu thẻ vào lúc này</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 Với Mã hóa RSA</translation>
 <translation id="7973776233567882054">Trường hợp nào sau đây mô tả đúng nhất mạng của bạn?</translation>
 <translation id="797394244396603170">Chọn thiết bị mà bạn muốn chia sẻ tệp</translation>

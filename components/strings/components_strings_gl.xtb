@@ -346,7 +346,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1633941398432788136">Planificación de eventos</translation>
 <translation id="1634828734222219955">Total</translation>
 <translation id="163669211644121865">Planificación e preparación fiscal</translation>
-<translation id="1638780421120290329">Produciuse un erro ao gardar a tarxeta</translation>
 <translation id="1639239467298939599">Cargando</translation>
 <translation id="1640180200866533862">Políticas de usuario</translation>
 <translation id="1640244768702815859">Proba a <ph name="BEGIN_LINK" />visitar a páxina de inicio do sitio<ph name="END_LINK" />.</translation>
@@ -690,7 +689,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2324604504973636700">Dispositivos domésticos</translation>
 <translation id="2328651992442742497">Permiso concedido (opción predeterminada)</translation>
 <translation id="2328955282645810595">Ferramentas de construción e eléctricas</translation>
-<translation id="2329473609445770916">Este sitio define os intereses que poden usar outros sitios para mostrarche anuncios</translation>
 <translation id="2330137317877982892">A tarxeta <ph name="CREDIT_CARD" /> caduca o <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Opción de configuración controlada polo administrador</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> quere sincronizarse</translation>
@@ -1119,7 +1117,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para personalizar o aspecto do navegador, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="3240791268468473923">A folla da credencial de pagos seguros correspondente ás credenciais non coincidentes está aberta</translation>
 <translation id="324180406144491771">As ligazóns de “<ph name="HOST_NAME" />” están bloqueadas</translation>
-<translation id="3248611290851046188">Este sitio define os intereses que poden usar outros sitios para mostrarche anuncios. Este sitio tamén obtén os teus intereses de Chrome para mostrarche anuncios máis relevantes.</translation>
 <translation id="3249151924975132674">Préstamos para estudantes e financiamento de estudos universitarios</translation>
 <translation id="3249845759089040423">Moderno</translation>
 <translation id="3250640885957938546">Publicidade e márketing</translation>
@@ -1587,7 +1584,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4177501066905053472">Temas dos anuncios</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Deixar de facer seguimento de prezos</translation>
-<translation id="4194250254487269611">A túa tarxeta non se puido gardar neste momento</translation>
 <translation id="4195459680867822611">Botón para ver consellos de Chrome. Actívao para obter máis información sobre as funcións de Chrome</translation>
 <translation id="4195643157523330669">Abrir en pestana nova</translation>
 <translation id="4196861286325780578">&amp;Refacer movemento</translation>
@@ -1727,7 +1723,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4424024547088906515">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque Chrome non confía no seu certificado de seguranza. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.</translation>
 <translation id="4425173294238317796">Folla de confirmación da clave de acceso</translation>
 <translation id="4425750422187370446">Roupa deportiva</translation>
-<translation id="4428065317363009941">Personalización de anuncios</translation>
 <translation id="443121186588148776">Porto en serie</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> non aceptou o teu certificado de inicio de sesión ou ben este non se proporcionou.</translation>
 <translation id="4432792777822557199">As páxinas en <ph name="SOURCE_LANGUAGE" /> traduciranse ao <ph name="TARGET_LANGUAGE" /> a partir de agora</translation>
@@ -2209,7 +2204,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="540969355065856584">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque o seu certificado de seguranza non é válido neste momento. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.</translation>
 <translation id="5411462078004183575">Opción económica</translation>
 <translation id="5412040515238827314">O formato non é válido: debe ser unha lista de padróns.</translation>
-<translation id="5412236728747081950">Este sitio obtén os teus intereses de Chrome para mostrarche anuncios máis relevantes</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" />: <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Amontoador 4</translation>
 <translation id="5414446060143308245">Cómpre revisar os ficheiros antes de transferilos</translation>
@@ -2797,7 +2791,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6613866251791999074">Máis información sobre o buscador en Chrome</translation>
 <translation id="6615297766614333076">Amontoador 2</translation>
 <translation id="6624427990725312378">Información de contacto</translation>
-<translation id="6627727261837091711">Mostrar detalles da personalización de anuncios</translation>
 <translation id="6628463337424475685">Busca de <ph name="ENGINE" /></translation>
 <translation id="6629652037942826935">Viaxes de luxo</translation>
 <translation id="6630043285902923878">Buscando dispositivos USB…</translation>
@@ -3309,7 +3302,6 @@ Detalles adicionais:
 <translation id="7574998639136359461">Equipamento de deportes de inverno</translation>
 <translation id="7575207903026901870">Botón Quitar suxestión, preme Intro para quitala</translation>
 <translation id="7575887283389198269">Teléfonos móbiles</translation>
-<translation id="7577900504646297215">Xestionar intereses</translation>
 <translation id="7578104083680115302">Paga rapidamente en sitios e aplicacións en diferentes dispositivos usando as tarxetas que gardaches con Google.</translation>
 <translation id="7579442726219254162">Variable descoñecida ("<ph name="VARIABLE" />") na configuración xestionada de "<ph name="APPLICATION_ID" />".</translation>
 <translation id="7581199239021537589">Desprazamento do lado 2 da imaxe no eixe Y</translation>

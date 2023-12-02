@@ -2542,6 +2542,7 @@
 <translation id="2927017729816812676">કૅશ મેમરી સ્ટોરેજ</translation>
 <translation id="2928795416630981206">તમારા કૅમેરાનું સ્ટેટસ ટ્રૅક કરવાની મંજૂરી છે</translation>
 <translation id="2931157624143513983">પ્રિન્ટ કરી શકાય એટલી જગ્યામાં બંધબેસતું કરો</translation>
+<translation id="2931342457001070961">કોઈ માઇક્રોફોન કનેક્ટેડ નથી</translation>
 <translation id="2932085390869194046">પાસવર્ડ સૂચવો...</translation>
 <translation id="2932483646085333864">સિંક ચાલુ કરવા માટે સાઇન આઉટ કરો પછી ફરી સાઇન કરો</translation>
 <translation id="2932883381142163287">દુરુપયોગ જણાવો</translation>
@@ -4672,6 +4673,7 @@
 <translation id="4647836961514597010">રંગ ચૂંટનાર</translation>
 <translation id="4648491805942548247">અપર્યાપ્ત પરવાનગીઓ</translation>
 <translation id="4650037136970677721">મેમરી સાચવી</translation>
+<translation id="4650364565596261010">સિસ્ટમ ડિફૉલ્ટ</translation>
 <translation id="4650591383426000695">તમારા ફોનને તમારા <ph name="DEVICE_TYPE" />થી ડિસ્કનેક્ટ કરો</translation>
 <translation id="4651484272688821107">ડેમો મોડ સંસાધનો ધરાવતું ઑનલાઇન ઘટક લોડ કરી શકાયું નહીં.</translation>
 <translation id="4651921906638302153">આ એકાઉન્ટ વડે સાઇન ઇન કરી શકાતું નથી</translation>
@@ -8821,7 +8823,6 @@ USB ડિવાઇસ</translation>
 <translation id="7968982339740310781">વિગતો જુઓ</translation>
 <translation id="7969046989155602842">આદેશ</translation>
 <translation id="7970673414865679092">ઇથરનેટની વિગતો</translation>
-<translation id="7970882136539140748">હમણાં જ કાર્ડ સાચવી શકાતું નથી</translation>
 <translation id="7972714317346275248">RSA એન્ક્રિપ્શનવાળું PKCS #1 SHA-384</translation>
 <translation id="7973776233567882054">નીચેનામાંથી કયું તમારા નેટવર્કનું શ્રેષ્ઠ વર્ણન કરે છે?</translation>
 <translation id="797394244396603170">તમે જે ડિવાઇસ સાથે ફાઇલો શેર કરવા માગો છો, તે પસંદ કરો</translation>

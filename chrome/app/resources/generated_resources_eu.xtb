@@ -2544,6 +2544,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="2927017729816812676">Cache-memoria</translation>
 <translation id="2928795416630981206">Kameraren posizioaren jarraipena egin dezakete</translation>
 <translation id="2931157624143513983">Egokitu inprima daitekeen eremura</translation>
+<translation id="2931342457001070961">Ez dago mikrofonorik konektatuta</translation>
 <translation id="2932085390869194046">Iradoki pasahitza…</translation>
 <translation id="2932483646085333864">Sinkronizatzen hasteko, amaitu eta hasi berriro saioa</translation>
 <translation id="2932883381142163287">Eman erabilera okerren berri</translation>
@@ -4674,6 +4675,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4647836961514597010">Kolore-hautatzailea</translation>
 <translation id="4648491805942548247">Ez dago behar adina baimen</translation>
 <translation id="4650037136970677721">Aurreztutako memoria</translation>
+<translation id="4650364565596261010">Sistemaren balio lehenetsia</translation>
 <translation id="4650591383426000695">Deskonektatu telefonoa <ph name="DEVICE_TYPE" /> gailutik</translation>
 <translation id="4651484272688821107">Ezin izan da kargatu sareko osagaia demo moduko baliabideekin.</translation>
 <translation id="4651921906638302153">Ezin da hasi saioa kontu honekin</translation>
@@ -8815,7 +8817,6 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7968982339740310781">Ikusi xehetasunak</translation>
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Ethernet-sarearen xehetasunak</translation>
-<translation id="7970882136539140748">Ezin da gorde txartela une honetan</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 RSA enkriptatzearekin</translation>
 <translation id="7973776233567882054">Hauetako zeinek azaltzen du ongien zure sarea?</translation>
 <translation id="797394244396603170">Hautatu zein gailurekin partekatu nahi dituzun fitxategiak</translation>

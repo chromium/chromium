@@ -208,6 +208,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="2050196510205866090">{count,plural, =1{Nad klávesnicí je k dispozici {count} uložená platební metoda.}few{Nad klávesnicí jsou k dispozici {count} uložené platební metody.}many{Nad klávesnicí je k dispozici {count} uložené platební metody.}other{Nad klávesnicí je k dispozici {count} uložených platebních metod.}}</translation>
 <translation id="2055515971416882518">Otevřete Nastavení.</translation>
 <translation id="2059166748188874810">Samosprávná oblast</translation>
+<translation id="2062410130322589403">Průvodce možnostmi ochrany soukromí</translation>
 <translation id="2073572773299281212">Aktivní před tímto počtem dní: <ph name="DAYS" /></translation>
 <translation id="2074131957428911366">Synchronizované položky můžete kdykoliv vybrat v <ph name="BEGIN_LINK" />nastavení<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Vrátit zpět</translation>
@@ -622,6 +623,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="430793432425771671">Synchronizovat vše</translation>
 <translation id="4309403553630140242">Další informace zobrazíte dvojitým klepnutím</translation>
 <translation id="430967081421617822">Od počátku věků</translation>
+<translation id="4322394346347055525">Zavřít ostatní karty</translation>
 <translation id="4331177082088332784">Tuto funkci můžete spravovat v BEGIN_LINK Nastavení obsahu END_LINK</translation>
 <translation id="4334428914252001502">1 nepřečtený článek.</translation>
 <translation id="4338650699862464074">Odesílá do Googlu adresy URL navštívených stránek.</translation>

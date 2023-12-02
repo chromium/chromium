@@ -78,6 +78,7 @@
 <translation id="1060292118287751956">ማያ ገጹ የሚዘመንበት ተደጋጋሚነትን ይወስናል</translation>
 <translation id="1060570945511946595">ቲኬቶችን አስተዳድር</translation>
 <translation id="1061130374843955397">እንኳን ወደ የእርስዎ <ph name="DEVICE_TYPE" /> በደህና መጡ</translation>
+<translation id="1061309251982613260"><ph name="HOST" /> ሁልጊዜ የእርስዎን MIDI መሣሪያዎች እንዳይቆጣጠር እና ዳግም ፕሮግራም እንዳያደርግ ያግዱ</translation>
 <translation id="1061373870045429865">ለዚህ አገናኝ የQR ኮድ ይፍጠሩ</translation>
 <translation id="1061904396131502319">የእረፍት ጊዜ ሊደርስ ነው</translation>
 <translation id="10619348099955377">የማሳያ ስም ቅዳ</translation>
@@ -276,6 +277,7 @@
 <translation id="1203559206734265703">የተጠበቁ ታዳሚዎች ስህተትን በማረም ላይ ነቅቷል።</translation>
 <translation id="120368089816228251">የሙዚቃ ኖታ</translation>
 <translation id="1203942045716040624">የተጋራ ሰራተኛ፦ <ph name="SCRIPT_URL" /></translation>
+<translation id="1206832039833782423">የደህንነት ኮድዎ በካርድዎ ጀርባ ላይ ነው</translation>
 <translation id="1210678701920254279">አታሚዎችን ይመልከቱ ወይም ያክሉ እና ገቢር የህትመት ሥራዎችን ይመልከቱ</translation>
 <translation id="1211769675100312947">አቋራጮች ተመርጠው የሚሰበሰቡት በእርስዎ ነው</translation>
 <translation id="1213254615020057352">የአጠቃቀም እና የምርመራ ውሂብ ይላኩ። የምርመራ፣ የመሣሪያ እና የመተግበሪያ አጠቃቀም ውሂብ በራስ-ሰር ወደ Google በመላክ የልጅዎን የAndroid ተሞክሮ እንዲሻሻል ያግዙ። ይህ ልጅዎን ለመለየት ሥራ ላይ አይውልም፣ እና የስርዓት እና የመተግበሪያ እርጋታን እና ሌሎች ማሻሻያዎችን ያግዛል። አንዳንድ ውሑድ ውሂብ እንዲሁም የGoogle መተግበሪያዎችን እና እንደ የAndroid ገንቢዎች ያሉ አጋሮችን ያግዛሉ። ይህ ቅንብር በባለቤቱ ተፈጻሚ ይደረጋል። ባለቤቱ የዚህ መሣሪያ የምርመራ እና የአጠቃቀም ለGoogle ለመላክ ሊመርጥ ይችላሉ። የተጨማሪ የድር እና መተግበሪያ እንቅስቃሴ ቅንብር ለልጅዎ በርቶ ከሆነ ይህ ውሂብ ወደ የGoogle መለያቸው ሊቀመጥ ይችላል።</translation>
@@ -299,6 +301,7 @@
 <translation id="1223484782328004593"><ph name="APP_NAME" /> ፈቃድ ያስፈልገዋል</translation>
 <translation id="1223853788495130632">አስተዳዳሪዎ ለዚህ ቅንብር አንድ የተወሰነ እሴት ይመክራል።</translation>
 <translation id="1225177025209879837">ጥያቄን በማካሄድ ላይ...</translation>
+<translation id="1227107020813934021">የሰነድ መቃኛዎችን ያግኙ</translation>
 <translation id="1227660082540388410">የይለፍ ቁልፍን ያርትዑ</translation>
 <translation id="1227993798763400520">cast ማድረግ አልተሳካም። እባክዎ እንደገና ይሞክሩ።</translation>
 <translation id="1230417814058465809">መደበኛ ጥበቃ በርቷል። እንዲያውም ከዚህም ለሚበልጥ ደህንነት የላቀ ጥበቃን ይጠቀሙ።</translation>
@@ -448,6 +451,7 @@
 <translation id="1347625331607114917">ይህን ኮድ በAndroid ስልክዎ ያረጋግጡ</translation>
 <translation id="1347975661240122359">ባትሪው <ph name="BATTERY_LEVEL" />% ሲደርስ ዝማኔ ይጀምራል።</translation>
 <translation id="1348966090521113558">የመዳፊት የተደራሽነት ቅንብሮች</translation>
+<translation id="1350962700620017446">"<ph name="EXTENSION_NAME" />" የሰነድ መቃኛዎችን ማግኘት እና መድረስ ይፈልጋል።</translation>
 <translation id="1352834119074414157">ይህ ጥቅል የተጠለፈ ወይም የተጋለጠ ሊሆን ይችላል። እባክዎ ይህን መስኮት ይዝጉት እና እንደገና ለማውረድ ይምክሩ</translation>
 <translation id="1353275871123211385">እንደ የመተግበሪያ ማጽደቅ እና የማያ ገፅ ጊዜ ገደቦች ያሉ የወላጅ መቆጣጠሪያዎችን ለመጠቀም አንድ ልጅ በወላጅ የሚተዳደር የGoogle መለያ ሊኖረው ይገባል። የትምህርት ቤት መለያ በኋላ ላይ እንደ Google Classroom ላሉ መሣሪያዎች ሊታከል ይችላል።</translation>
 <translation id="135389172849514421">ከመስመር ውጭ ይሰራል</translation>
@@ -622,6 +626,7 @@
 <translation id="1485015260175968628">አሁን እነዚህን ማድረግ ይችላል፦</translation>
 <translation id="1485141095922496924">ስሪት <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1485197926103629489">Microsoft 365 ፋይሎች OneDrive ውስጥ እንዲከማቹ ይጠይቃል። አካባቢያዊ ፋይሎች ይንቀሳቀሳሉ እና ሌሎች አካባቢዎች ውስጥ ያሉ ፋይሎች ይቀዳሉ። የእርስዎ ፋይሎች በፋይሎች መተግበሪያ ውስጥ የMicrosoft OneDrive አቃፊ ውስጥ መገኘት ይችላሉ።</translation>
+<translation id="1486012259353794050">እርስዎ ጥያቄዎችን ሲጠይቁ፣ Google ረዳት በማያ ገጽዎ ላይ በመመስረት የተበጁ ምላሾችን ይሰጣል</translation>
 <translation id="1486096554574027028">የይለፍ ቃላትን ፈልግ</translation>
 <translation id="1486486872607808064">ይህን QR ኮድ ለ<ph name="APP_NAME" /> የይለፍ ቁልፍ መፍጠር በሚፈልጉበት መሣሪያ ላይ ባለ ካሜራ ይቃኙት።</translation>
 <translation id="1487335504823219454">በርቷል - ብጁ ቅንብሮች</translation>
@@ -688,6 +693,7 @@
 <translation id="1541346352678737112">ምንም አውታረ መረብ አልተገኘም</translation>
 <translation id="154198613844929213">{0,plural, =0{አሁን በመሰረዝ ላይ።}=1{በሚከተለው ጊዜ ውስጥ በመሰረዝ ላይ፦ 1 ሰከንድ}one{በሚከተለው ጊዜ ውስጥ በመሰረዝ ላይ፦ # ሰከንድ}other{በሚከተለው ጊዜ ውስጥ በመሰረዝ ላይ፦ # ሰከንዶች}}</translation>
 <translation id="1542137295869176367">የመለያ መግቢያ ውሂብዎ ሊዘመን አልቻለም</translation>
+<translation id="1542524755306892917">ይህ <ph name="SUPERVISED_USER_NAME" /> ጥያቄዎችን ሲጠይቁ Google ረዳት የተበጁ ምላሾችን እንዲሰጥ ያስችለዋል።</translation>
 <translation id="1543284117603151572">ከEdge ላይ የመጣ</translation>
 <translation id="1543538514740974167">እዚህ በበለጠ ፍጥነት ያግኙ</translation>
 <translation id="1544588554445317666">ያጠረ የፋይል ስም ለመጠቀም ወይም ወደ ሌላ አቃፊ ለማስቀመጥ ይሞክሩ</translation>
@@ -1907,6 +1913,7 @@
 <translation id="2439152382014731627">የ<ph name="DEVICE_TYPE" /> የይለፍ ቃል ዳግም ያስጀምሩ</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" />ን በመጫን ላይ</translation>
 <translation id="2440604414813129000">ም&amp;ንጭ አሳይ</translation>
+<translation id="2440632898584211188">ይህ ጣቢያ የእርስዎን MIDI መሣሪያዎች እንዲቆጣጠር እና ዳግም ፕሮግራም እንዲያደርግ መፍቀድ ይቀጥሉ።</translation>
 <translation id="2440823041667407902">የአካባቢ መዳረሻ</translation>
 <translation id="2441719842399509963">ወደ እንደወረዱ አስተካክል</translation>
 <translation id="244231003699905658">ልክ ያልሆነ አድራሻ። እባክዎ አድራሻውን ይፈትሹ እና እንደገና ይሞክሩ።</translation>
@@ -2148,6 +2155,7 @@
 <translation id="262154978979441594">የGoogle ረዳት የድምፅ ሞዴልን ያሠለጥኑ</translation>
 <translation id="26224892172169984">ማንኛውም ጣቢያ ፕሮቶኮሎችን እንዲቆጣጣር አትፍቀድ</translation>
 <translation id="262373406453641243">Colemak</translation>
+<translation id="2624045385113367716">የMIDI መሣሪያዎችን መቆጣጠር እና ዳግም ፕሮግራም ማድረግ ተፈቅዷል</translation>
 <translation id="2624142942574147739">ይህ ገፅ ካሜራዎን እና ማይክሮፎንዎን እየደረሰባቸው ነው።</translation>
 <translation id="2626799779920242286">እባክዎ ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="2627424346328942291">ማጋራት አይችሉም</translation>
@@ -2361,6 +2369,7 @@
 <translation id="2777251078198759550">ይህን መያዣ ይሰርዙ</translation>
 <translation id="2777525873368474674">የምስል አገናኛን ይለጥፉ</translation>
 <translation id="2778471504622896352">የርቀት መተግበሪያዎችን በChromeOS ማስጀመሪያ ላይ ያክሉ</translation>
+<translation id="2779728796406650689">ይህ እርስዎ ጥያቄዎችን ሲጠይቁ Google ረዳት የተበጁ ምላሾችን እንዲሰጥ ያስችለዋል።</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">በዚህ ጣቢያ ላይ ቅጥያዎች ተፈቅዶላቸዋል</translation>
 <translation id="2782104745158847185">የLinux መተግበሪያን መጫን ላይ ስህተት</translation>
@@ -2438,6 +2447,7 @@
 <translation id="2836269494620652131">ብልሽት</translation>
 <translation id="283669119850230892">የ<ph name="NETWORK_ID" /> አውታረ መረብን ለመጠቀም መጀመሪያ ከበይነመረቡ ጋር ያለዎትን ግንኙነት ከታች ያጠናቅቁ።</translation>
 <translation id="2838379631617906747">በመጫን ላይ</translation>
+<translation id="2838474726369447181">ይህ ጣቢያ የእርስዎን MIDI መሣሪያዎች (SysEx) መቆጣጠር እና ዳግም ፕሮግራም ማድረግ ይችላል።</translation>
 <translation id="2839032553903800133">ማሳወቂያዎች ታግደዋል</translation>
 <translation id="2841013758207633010">ሰዓት</translation>
 <translation id="2841837950101800123">አቅራቢ</translation>
@@ -2461,6 +2471,7 @@
 <translation id="2856776373509145513">አዲስ መያዣ ይፍጠሩ</translation>
 <translation id="2856907950922663165">የዩአርኤል ምስጠራ ይጥፋ?</translation>
 <translation id="2859741939921354763">የይለፍ ቃላትን ወደ <ph name="BRAND" /> ያስመጡ</translation>
+<translation id="2861030231482411439">ይህ ጣቢያ የMIDI መሣሪያዎችዎን እንዳይቆጣጠር እና ዳግም ፕሮግራም እንዳያደርግ ማገዱን ይቀጥሉ።</translation>
 <translation id="2861301611394761800">የስርዓት ዝማኔ ተጠናቅቋል። እባክዎ ስርዓቱን ዳግም ያስጀምሩት።</translation>
 <translation id="2861402191395139055">የመተላለፊያ የደንበኝነት ምዝገባዎች</translation>
 <translation id="2861941300086904918">ቤተኛ የደንበኛ ደህንነት አቀናባሪ</translation>
@@ -2553,6 +2564,7 @@
 <translation id="2927017729816812676">የመሸጎጫ ማከማቻ</translation>
 <translation id="2928795416630981206">የካሜራዎን አቀማመጥ ለመከታተል ተፈቅዷል</translation>
 <translation id="2931157624143513983">ሊታተም ከሚችል አካባቢ ጋር አመጣጥን</translation>
+<translation id="2931342457001070961">ምንም ማይክሮፎን አልተገናኘም</translation>
 <translation id="2932085390869194046">የይለፍ ቃል ጠቁም...</translation>
 <translation id="2932483646085333864">ስምረትን ለመጀመር ዘግተው ይውጡና እንደገና ይግቡ</translation>
 <translation id="2932883381142163287">የአላግባብ መጠቀምን ሪፖርት ያድርጉ</translation>
@@ -4681,6 +4693,7 @@
 <translation id="4647836961514597010">ቀለም መምረጫ</translation>
 <translation id="4648491805942548247">በቂ ያልሆኑ ፍቃዶች</translation>
 <translation id="4650037136970677721">ማህደረ ትውስታ ተቀምጧል</translation>
+<translation id="4650364565596261010">የሥርዓት ነባሪ</translation>
 <translation id="4650591383426000695">ስልክዎን ከ<ph name="DEVICE_TYPE" /> ጋር ያለው ግንኙነት ያቋርጡት</translation>
 <translation id="4651484272688821107">የመስመር ላይ ክፍለ አካላትን ከቅንጭብ ማሳያ ሁነታ ግብዓቶች ጋር መጫን አልተቻለም።</translation>
 <translation id="4651921906638302153">በዚህ መለያ መግባት አይችሉም</translation>
@@ -4877,6 +4890,7 @@
 <translation id="4811212958317149293">የመዳረሻ መቀየሪያ ቁልፍ ሰሌዳ ራስ-ሰር ቅኝት</translation>
 <translation id="4811503964269049987">የተመረጠ ቡድንን ሰብስብ</translation>
 <translation id="4813512666221746211">የአውታረ መረብ ስህተት</translation>
+<translation id="4813872509679988157">ይህ ጣቢያ የእርስዎን MIDI መሣሪያዎች እንዲጠቀም መፍቀድ ይቀጥሉ።</translation>
 <translation id="4814114628197290459">አይቢኤኤንን ሰርዝ</translation>
 <translation id="4814327014588285482">ዝለል እና በኋላ አስታውሰኝ</translation>
 <translation id="4814378367953456825">ለዚህ ጣት አሻራ ስም ያስገቡ</translation>
@@ -5190,6 +5204,7 @@
 <translation id="5063480226653192405">አጠቃቀም</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">በChromeOS ቅንብሮች ውስጥ ደህንነቱ የተጠበቀ ዲኤንኤስን ያቀናብሩ</translation>
+<translation id="5066891009360243320">ይህ ጣቢያ የእርስዎን MIDI መሣሪያዎች እንዳይጠቀም ታግዷል።</translation>
 <translation id="5067399438976153555">ሁሌም አብራ</translation>
 <translation id="5067867186035333991"><ph name="HOST" /> ማይክሮፎንዎን መድረስ የሚፈልግ ከሆነ ይጠይቅ</translation>
 <translation id="5068553687099139861">የይለፍ ቃላትን አሳይ</translation>
@@ -5907,6 +5922,7 @@
 <translation id="5641608986289282154"><ph name="DEVICE_OS" />ን መጠቀም ይጀምሩ</translation>
 <translation id="5641648607875312660">የቅጽበታዊ ገፅ ዕይታ ምስል አርታዒ</translation>
 <translation id="5642508497713047">CRL ፈራሚ</translation>
+<translation id="5643191124441701136">የደህንነት ኮድዎ በካርድዎ ፊት ለፊት ነው</translation>
 <translation id="5643321261065707929">የሚለካ አውታረ መረብ</translation>
 <translation id="5646376287012673985">አካባቢ</translation>
 <translation id="5646558797914161501">ነጋዴ</translation>
@@ -6183,6 +6199,7 @@
 <translation id="5869522115854928033">የተቀመጡ የይለፍ ቃሎች</translation>
 <translation id="5870086504539785141">የተደራሽነት ምናሌ ዝጋ</translation>
 <translation id="5870155679953074650">ከባድ ስህተቶች</translation>
+<translation id="5870901441418842049">ይህ ጣቢያ የእርስዎን MIDI መሣሪያዎች (SysEx) እንዳይቆጣጠር እና ዳግም ፕሮግራም እንዳያደርግ ታግዷል።</translation>
 <translation id="5872318519182427835">እዚህ የተዘረዘሩትን ጣቢያዎች እና ንዑስ ጎራቸውን ተጽዕኖ ያሳድራሉ። ለምሳሌ፣ «google.com» ማከል ማለት የሦስተኛ ወገን ኩኪዎች የgoogle.com አካል ስለሆነ ለmail.google.com እንዲሁም ገቢር ይሆናሉ ማለት ነው።</translation>
 <translation id="5875534259258494936">ማያ ገጽን ማጋራት አብቅቷል</translation>
 <translation id="5876576639916258720">በማሄድ ላይ...</translation>
@@ -6562,6 +6579,7 @@
 <translation id="6171779718418683144">በእያንዳንዱ ጉብኝት ላይ ይጠይቁ</translation>
 <translation id="617213288191670920">ምንም ቋንቋዎች አልታከሉም</translation>
 <translation id="6173623053897475761">የእርስዎን ፒን እንደገና ይተይቡት</translation>
+<translation id="6174116123142608180">ይህ ጣቢያ የእርስዎን MIDI መሣሪያዎች እንዳይጠቀም ማገድ ይቀጥሉ።</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
 <translation id="6175910054050815932">አገናኝ ያግኙ</translation>
 <translation id="6176701216248282552">አውዳዊ እገዛ በርቷል። እነዚህ ባህሪያት ክፍት ገፆችን ለGoogle መላክ ይችላሉ።</translation>
@@ -7080,6 +7098,7 @@
 <translation id="6597324406048772521">በዚህ ጣቢያ ላይ ያልተፈቀዱ ቅጥያዎች</translation>
 <translation id="6597331566371766302">የሚከተሉት ቅጥያዎች በአስተዳዳሪዎ ታግደዋል፦</translation>
 <translation id="659894938503552850">በጣም አዲስ</translation>
+<translation id="6599934330666882772">ይህ ጣቢያ የእርስዎን MIDI መሣሪያዎች እየተጠቀመ ነው።</translation>
 <translation id="6601262427770154296">የተጠቃሚ መዝገበ ቃላትን ያስተዳድሩ</translation>
 <translation id="6601612474695404578">አንዳንድ ጣቢያዎች ገጾቻቸውን ለመጫን የሶስተኛ ወገን ኩኪዎችን ይጠቀማሉ። አንድ ጣቢያ እየሰራ ካልሆነ ኩኪዎችን ለመፍቀድ መሞከር ይችላሉ።</translation>
 <translation id="6602173570135186741">ራስ-ሙላ እና የይለፍ ቃላት</translation>
@@ -7644,6 +7663,7 @@
 <translation id="7036706669646341689">ለLinux <ph name="DISK_SIZE" /> ቦታ ይመከራል። ባዶ ቦታን ለመጨመር ከመሣሪያዎ ፋይሎችን ይሰርዙ።</translation>
 <translation id="7037509989619051237">ቅድሚያ የሚታይ ጽሁፍ</translation>
 <translation id="7038632520572155338">የመዳረሻ መቀየሪያ</translation>
+<translation id="7038636380708661517"><ph name="HOST" /> ሁልጊዜ የእርስዎን MIDI መሣሪያዎች እንዳይጠቀም ያግዱ።</translation>
 <translation id="7038710352229712897">ለ<ph name="USER_NAME" /> ሌላ Google መለያ ያክሉ</translation>
 <translation id="7039326228527141150">ከ<ph name="VENDOR_NAME" /> የመጡ የዩኤስቢ መሣሪያዎችን ይደርሳል</translation>
 <translation id="7039912931802252762">Microsoft Smart Card Logon</translation>
@@ -7798,6 +7818,7 @@
 <translation id="7180865173735832675">አብጅ</translation>
 <translation id="7181117767881540376">&amp;የዕልባቶች አሞሌን ደብቅ</translation>
 <translation id="7182063559013288142">ቅጽበታዊ መገናኛ ነጥብ</translation>
+<translation id="718240920439497409">የMIDI መሣሪያዎች ታግደዋል</translation>
 <translation id="7182791023900310535">የይለፍ ቃልዎን ይውሰዱት</translation>
 <translation id="718427252411067142">ሌሎች የእርስዎን የይለፍ ቃል እንዳይጠቀሙ ለማስቆም የይለፍ ቃልዎን ለመለወጥ መተግበሪያውን ይክፈቱ</translation>
 <translation id="7186088072322679094">በመሣሪያ አሞሌ ውስጥ አቆይ</translation>
@@ -7887,6 +7908,7 @@
 <translation id="7255002516883565667">አሁን ላይ በዚህ መሣሪያ ላይ ጥቅም ላይ ሊውል የሚችል አንድ መሣሪያ ብቻ አልዎት</translation>
 <translation id="7255935316994522020">ተግብር</translation>
 <translation id="7256069762010468647">ጣቢያ የእርስዎን ካሜራ እየተጠቀመ ነው</translation>
+<translation id="7256265230922801769"><ph name="HOST" /> ሁልጊዜ የእርስዎን MIDI መሣሪያዎች እንዲቆጣጠር እና ዳግም ፕሮግራም እንዲያደርግ ይፍቀዱ።</translation>
 <translation id="7256634071279256947">የኋላ ማይክሮፎን</translation>
 <translation id="7256710573727326513">በትር ውስጥ ክፈት</translation>
 <translation id="7257173066616499747">የWi-Fi አውታረ መረቦች</translation>
@@ -8829,7 +8851,6 @@
 <translation id="7968982339740310781">ዝርዝሮችን ይመልከቱ</translation>
 <translation id="7969046989155602842">ትእዛዝ</translation>
 <translation id="7970673414865679092">የኢተርኔት ዝርዝሮች</translation>
-<translation id="7970882136539140748">ካርድ አሁን ላይ ማስቀመጥ አይቻልም</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 ከRSA ምስጠራ ጋር</translation>
 <translation id="7973776233567882054">ከሚከተሉት ውስጥ የትኛው የእርስዎን አውታረ መረብ በደንብ የሚገልጸው?</translation>
 <translation id="797394244396603170">ፋይሎችን ሊያጋሩት የሚፈልጉትን መሣሪያ ይምረጡ</translation>
@@ -8924,6 +8945,7 @@ nil</translation>
 <translation id="8041267120753677077">የስልክዎን መተግበሪያዎች በዥረት ይልቀቁ</translation>
 <translation id="8042142357103597104">የጽሑፍ በርሃን-ከልነት</translation>
 <translation id="8042331986490021244">የይለፍ ቃላትዎ ወደ Google የይለፍ ቃል አስተዳዳሪ ከመቀመጣቸው በፊት በመሣሪያዎ ላይ ይመሰጠራሉ</translation>
+<translation id="8044090981104134791">የMIDI መሣሪያዎች ተፈቅደዋል</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> ምላሽ እየሰጠ አይደለም</translation>
 <translation id="8044899503464538266">ቀስ</translation>
 <translation id="8045253504249021590">ስምረት በGoogle ዳሽቦርዱ በኩል ቆሟል።</translation>
@@ -9117,6 +9139,7 @@ nil</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />የእርስዎ መሣሪያዎች<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195265224453131880">ክብደት</translation>
 <translation id="8195854162863398249"><ph name="FEATURE_NAME" /> ያሰናክሉ</translation>
+<translation id="8197151971904389091"><ph name="HOST" /> ሁልጊዜ የእርስዎን MIDI መሣሪያዎች እንዲጠቀም ይፍቀዱ።</translation>
 <translation id="8197673340773315084">እንደ ሥራ ወይም የግል ያለ ስምን ወይም መሰየሚያን ያክሉ</translation>
 <translation id="8198456017687137612">የCast ማድረጊያ ትር</translation>
 <translation id="8198457270656084773">የአሳሸ መሣሪያ-ምዝግብ ማስታወሻ ገጹን እየፈለጉ ነው? <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" /> የሚለውን ይጎብኙ።</translation>
@@ -9400,6 +9423,7 @@ nil</translation>
 <translation id="8414396119627470038">ወደ <ph name="SITE_ETLD_PLUS_ONE" /> በ<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> በመለያ ይግቡ</translation>
 <translation id="8414685983518053656">ማስታወሻዎች</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (መያዣ)</translation>
+<translation id="8417065541337558100">የካሜራዎ ቅድመ ዕይታ</translation>
 <translation id="8417548266957501132">የወላጅ ይለፍ ቃል</translation>
 <translation id="8418445294933751433">&amp;በትር አሳይ</translation>
 <translation id="8418675848396538775"><ph name="LANGUAGE_NAME" />ን አክል</translation>
@@ -9895,6 +9919,7 @@ nil</translation>
 <translation id="8811862054141704416">የCrostini ማይክሮፎን መዳረሻ</translation>
 <translation id="8811923271770626905">ይህ ቅጥያ በዳራ ውስጥ ሊሄድ ይችላል</translation>
 <translation id="8812593354822910461">እርስዎን ከ<ph name="DOMAIN" /> ሊያስወጣዎት የሚችለውን የአሰሳ ውሂብ (<ph name="URL" />) በተጨማሪ ያጽዱ። <ph name="LEARN_MORE" /></translation>
+<translation id="8813199641941291474">የMIDI መሣሪያዎችን መቆጣጠር እና ዳግም ፕሮግራም ማድረግ ታግዷል</translation>
 <translation id="8813698869395535039">ወደ <ph name="USERNAME" /> መግባት አልተቻለም</translation>
 <translation id="8813872945700551674">አንድ ወላጅ «<ph name="EXTENSION_NAME" />»ን እንዲያጸድቅ ያድርጉ</translation>
 <translation id="8813937837706331325">መካከለኛ ቁጠባዎች</translation>

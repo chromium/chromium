@@ -346,7 +346,6 @@
 <translation id="1633941398432788136">การวางแผนงานอีเวนต์</translation>
 <translation id="1634828734222219955">รวม</translation>
 <translation id="163669211644121865">การจัดเตรียมเอกสารและวางแผนภาษี</translation>
-<translation id="1638780421120290329">บันทึกบัตรไม่ได้</translation>
 <translation id="1639239467298939599">กำลังโหลด</translation>
 <translation id="1640180200866533862">นโยบายผู้ใช้</translation>
 <translation id="1640244768702815859">ลอง<ph name="BEGIN_LINK" />ไปที่หน้าแรกของเว็บไซต์<ph name="END_LINK" /></translation>
@@ -690,7 +689,6 @@
 <translation id="2324604504973636700">เครื่องใช้ในบ้าน</translation>
 <translation id="2328651992442742497">อนุญาต (ค่าเริ่มต้น)</translation>
 <translation id="2328955282645810595">การก่อสร้างและเครื่องมือไฟฟ้า</translation>
-<translation id="2329473609445770916">เว็บไซต์นี้ระบุข้อมูลความสนใจที่เว็บไซต์อื่นสามารถใช้เพื่อแสดงโฆษณาแก่คุณ</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" /> หมดอายุ <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">ผู้ดูแลระบบเป็นผู้ควบคุมการตั้งค่า</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> ต้องการจับคู่</translation>
@@ -1119,7 +1117,6 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อปรับแต่งรูปลักษณ์ของเบราว์เซอร์</translation>
 <translation id="3240791268468473923">ระบบได้เปิด Bottom Sheet ซึ่งแจ้งว่าไม่พบข้อมูลเข้าสู่ระบบที่ตรงกันสำหรับข้อมูลเข้าสู่ระบบการชำระเงินที่ปลอดภัย</translation>
 <translation id="324180406144491771">ลิงก์ “<ph name="HOST_NAME" />” ถูกบล็อก</translation>
-<translation id="3248611290851046188">เว็บไซต์นี้ระบุข้อมูลความสนใจที่เว็บไซต์อื่นสามารถใช้เพื่อแสดงโฆษณาแก่คุณ เว็บไซต์นี้ยังรับข้อมูลความสนใจของคุณจาก Chrome เพื่อแสดงโฆษณาที่เกี่ยวข้องมากขึ้นด้วย</translation>
 <translation id="3249151924975132674">สินเชื่อเพื่อการศึกษา</translation>
 <translation id="3249845759089040423">ดึงดูด</translation>
 <translation id="3250640885957938546">การโฆษณาและการตลาด</translation>
@@ -1586,7 +1583,6 @@
 <translation id="4177501066905053472">หัวข้อโฆษณา</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">ยกเลิกการติดตามราคา</translation>
-<translation id="4194250254487269611">บันทึกบัตรไม่ได้ในตอนนี้</translation>
 <translation id="4195459680867822611">ปุ่มดูเคล็ดลับในการใช้ Chrome เปิดใช้งานเพื่อดูข้อมูลเกี่ยวกับฟีเจอร์ต่างๆ ของ Chrome</translation>
 <translation id="4195643157523330669">เปิดในแท็บใหม่</translation>
 <translation id="4196861286325780578">&amp;ทำซ้ำการย้าย</translation>
@@ -1726,7 +1722,6 @@
 <translation id="4424024547088906515">เซิร์ฟเวอร์นี้ไม่สามารถพิสูจน์ได้ว่าเป็น <ph name="DOMAIN" /> เพราะ Chrome ไม่เชื่อถือใบรับรองความปลอดภัย โดยอาจเกิดจากการกำหนดค่าผิดหรือผู้บุกรุกที่ขัดขวางการเชื่อมต่อของคุณ</translation>
 <translation id="4425173294238317796">ชีตการยืนยันพาสคีย์</translation>
 <translation id="4425750422187370446">ชุดกีฬา</translation>
-<translation id="4428065317363009941">การปรับโฆษณาตามโปรไฟล์ของผู้ใช้</translation>
 <translation id="443121186588148776">พอร์ตอนุกรม</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> ไม่ยอมรับใบรับรองการเข้าสู่ระบบหรือไม่ได้ให้ใบรับรองไว้</translation>
 <translation id="4432792777822557199">จากนี้ไประบบจะแปลหน้าภาษา<ph name="SOURCE_LANGUAGE" />เป็นภาษา<ph name="TARGET_LANGUAGE" /></translation>
@@ -2208,7 +2203,6 @@
 <translation id="540969355065856584">เซิร์ฟเวอร์นี้ไม่สามารถพิสูจน์ได้ว่าเป็น <ph name="DOMAIN" /> เนื่องจากใบรับรองความปลอดภัยไม่สามารถใช้ได้ในขณะนี้ ซึ่งอาจเป็นเพราะการกำหนดค่าที่ไม่ถูกต้องหรือมีผู้โจมตีที่ขัดขวางการเชื่อมต่อของคุณ</translation>
 <translation id="5411462078004183575">ตัวเลือกที่มีราคาต่ำ</translation>
 <translation id="5412040515238827314">รูปแบบไม่ถูกต้อง: ควรมีรายการรูปแบบ</translation>
-<translation id="5412236728747081950">เว็บไซต์นี้รับข้อมูลความสนใจของคุณจาก Chrome เพื่อแสดงโฆษณาที่เกี่ยวข้องมากขึ้น</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">สแต็กเกอร์ 4</translation>
 <translation id="5414446060143308245">ต้องตรวจสอบก่อนโอน</translation>
@@ -2796,7 +2790,6 @@
 <translation id="6613866251791999074">ดูข้อมูลเพิ่มเติมเกี่ยวกับเครื่องมือค้นหาใน Chrome</translation>
 <translation id="6615297766614333076">สแต็กเกอร์ 2</translation>
 <translation id="6624427990725312378">ข้อมูลติดต่อ</translation>
-<translation id="6627727261837091711">แสดงรายละเอียดการปรับโฆษณาตามโปรไฟล์ของผู้ใช้</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> ค้นหา</translation>
 <translation id="6629652037942826935">การท่องเที่ยวแบบมีระดับ</translation>
 <translation id="6630043285902923878">กำลังค้นหาอุปกรณ์ USB...</translation>
@@ -3308,7 +3301,6 @@
 <translation id="7574998639136359461">อุปกรณ์กีฬาฤดูหนาว</translation>
 <translation id="7575207903026901870">ปุ่ม "นำคำแนะนำออก" กด Enter เพื่อนำคำแนะนำนี้ออก</translation>
 <translation id="7575887283389198269">โทรศัพท์มือถือ</translation>
-<translation id="7577900504646297215">จัดการความสนใจ</translation>
 <translation id="7578104083680115302">ชำระเงินบนเว็บไซต์และแอปในอุปกรณ์ต่างๆ ได้อย่างรวดเร็วด้วยบัตรที่คุณได้บันทึกไว้กับ Google</translation>
 <translation id="7579442726219254162">มีตัวแปร "<ph name="VARIABLE" />" ซึ่งเป็นตัวแปรที่ไม่รู้จักในการกำหนดค่าที่มีการจัดการของ "<ph name="APPLICATION_ID" />"</translation>
 <translation id="7581199239021537589">เปลี่ยนตำแหน่งรูปภาพด้าน 2 ตามแกน Y</translation>

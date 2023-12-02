@@ -346,7 +346,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1633941398432788136">Pasākumu plānošana</translation>
 <translation id="1634828734222219955">Kopā</translation>
 <translation id="163669211644121865">Nodokļu deklarāciju sagatavošana un plānošana</translation>
-<translation id="1638780421120290329">Nevar saglabāt karti</translation>
 <translation id="1639239467298939599">Notiek ielāde</translation>
 <translation id="1640180200866533862">Lietotāja politikas</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />Apmeklējiet vietnes sākumlapu<ph name="END_LINK" />.</translation>
@@ -690,7 +689,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2324604504973636700">Sadzīves tehnika</translation>
 <translation id="2328651992442742497">Atļauja piešķirta (noklusējums)</translation>
 <translation id="2328955282645810595">Celtniecības un motorizēti rīki</translation>
-<translation id="2329473609445770916">Šī vietne definē intereses, ko citās vietnēs var izmantot, lai rādītu jums reklāmas</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, derīguma termiņš: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Iestatījumu kontrolē jūsu administrators</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> vēlas savienot pārī</translation>
@@ -1119,7 +1117,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai pielāgotu pārlūka izskatu, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="3240791268468473923">Ir atvērta lapa ar akreditācijas datiem, kas neatbilst drošu maksājumu akreditācijas datiem</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” saites ir bloķētas</translation>
-<translation id="3248611290851046188">Šī vietne definē intereses, ko citās vietnēs var izmantot, lai rādītu jums reklāmas. Turklāt šī vietne iegūst informāciju par jūsu interesēm no pārlūka Chrome, lai rādītu jums atbilstošākas reklāmas.</translation>
 <translation id="3249151924975132674">Studiju un studējošā kredīti</translation>
 <translation id="3249845759089040423">Moderna</translation>
 <translation id="3250640885957938546">Reklamēšana un mārketings</translation>
@@ -1586,7 +1583,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4177501066905053472">Reklāmu tēmas</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" />: <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Atcelt cenas izsekošanu</translation>
-<translation id="4194250254487269611">Jūsu karti šobrīd nevar saglabāt.</translation>
 <translation id="4195459680867822611">Poga “Skatīt Chrome padomus”. Aktivizējiet, lai uzzinātu par Chrome funkcijām.</translation>
 <translation id="4195643157523330669">Atvērt jaunā cilnē</translation>
 <translation id="4196861286325780578">&amp;Atcelt pārvietošanas atsaukšanu</translation>
@@ -1726,7 +1722,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4424024547088906515">Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />; tās drošības sertifikāts netiek uzskatīts par uzticamu pārlūkā Chrome. Iespējams, tas ir nepareizas konfigurācijas dēļ vai arī kāds ir ļaunprātīgi izmantojis jūsu savienojumu.</translation>
 <translation id="4425173294238317796">Piekļuves atslēgas apstiprinājuma lapa</translation>
 <translation id="4425750422187370446">Sporta apģērbs</translation>
-<translation id="4428065317363009941">Reklāmu personalizēšana</translation>
 <translation id="443121186588148776">Seriālais ports</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> nepieņēma jūsu pieteikšanās sertifikātu, vai arī pieteikšanās sertifikāts netika iesniegts.</translation>
 <translation id="4432792777822557199">Turpmāk lapas šādā valodā: <ph name="SOURCE_LANGUAGE" /> tiks tulkotas šādā valodā: <ph name="TARGET_LANGUAGE" />.</translation>
@@ -2208,7 +2203,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="540969355065856584">Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />; tā drošības sertifikāts šobrīd nav derīgs. Iespējams, tas ir nepareizas konfigurācijas dēļ vai arī kāds ļaunprātīgi izmanto jūsu savienojumu.</translation>
 <translation id="5411462078004183575">Zemas cenas opcija</translation>
 <translation id="5412040515238827314">Nederīgs formāts: ir jābūt rakstu sarakstam.</translation>
-<translation id="5412236728747081950">Šī vietne iegūst informāciju par jūsu interesēm no pārlūka Chrome, lai rādītu jums atbilstošākas reklāmas.</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> — <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">4. izvades vieta</translation>
 <translation id="5414446060143308245">Pirms pārsūtīšanas jāveic pārskatīšana</translation>
@@ -2796,7 +2790,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6613866251791999074">Uzzināt vairāk par savu meklētājprogrammu pārlūkā Chrome</translation>
 <translation id="6615297766614333076">2. izvades vieta</translation>
 <translation id="6624427990725312378">Kontaktinformācija</translation>
-<translation id="6627727261837091711">Rādīt detalizētu informāciju par reklāmu personalizēšanu</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> meklēšana</translation>
 <translation id="6629652037942826935">Luksusa ceļojumi</translation>
 <translation id="6630043285902923878">Notiek USB ierīču meklēšana...</translation>
@@ -3308,7 +3301,6 @@ Papildu informācija:
 <translation id="7574998639136359461">Ziemas sporta veidu aprīkojums</translation>
 <translation id="7575207903026901870">Ieteikuma noņemšanas poga, nospiediet ievadīšanas taustiņu, lai noņemtu šo ieteikumu</translation>
 <translation id="7575887283389198269">Mobilie tālruņi</translation>
-<translation id="7577900504646297215">Pārvaldīt intereses</translation>
 <translation id="7578104083680115302">Ātri apmaksājiet pirkumus vietnēs un lietotnēs no dažādām ierīcēm, izmantojot kartes, ko esat saglabājis Google sistēmā.</translation>
 <translation id="7579442726219254162">Nezināms mainīgais “<ph name="VARIABLE" />” lietojumprogrammas “<ph name="APPLICATION_ID" />” pārvaldītajā konfigurācijā.</translation>
 <translation id="7581199239021537589">2. puses attēla nobīde uz Y ass</translation>

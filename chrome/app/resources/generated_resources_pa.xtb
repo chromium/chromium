@@ -2561,6 +2561,7 @@
 <translation id="2927017729816812676">ਕੈਸ਼ੇ ਸਟੋਰੇਜ</translation>
 <translation id="2928795416630981206">ਤੁਹਾਡੇ ਕੈਮਰੇ ਦੀ ਸਥਿਤੀ ਨੂੰ ਟਰੈਕ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਹੈ</translation>
 <translation id="2931157624143513983">ਪ੍ਰਿੰਟ ਕਰਨ ਯੋਗ ਖੇਤਰ ਵਿੱਚ ਫਿੱਟ ਕਰੋ</translation>
+<translation id="2931342457001070961">ਕੋਈ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਕਨੈਕਟ ਨਹੀਂ ਹੈ</translation>
 <translation id="2932085390869194046">ਪਾਸਵਰਡ ਸੁਝਾਓ...</translation>
 <translation id="2932483646085333864">ਸਿੰਕ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਸਾਈਨ-ਆਊਟ ਕਰਕੇ ਦੁਬਾਰਾ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="2932883381142163287">ਦੁਰਵਿਵਹਾਰ ਦੀ ਰਿਪੋਰਟ ਕਰੋ</translation>
@@ -4692,6 +4693,7 @@
 <translation id="4647836961514597010">ਰੰਗ ਚੋਣਕਾਰ</translation>
 <translation id="4648491805942548247">ਨਾਕਾਫ਼ੀ ਅਨੁਮਤੀਆਂ</translation>
 <translation id="4650037136970677721">ਮੈਮੋਰੀ ਰੱਖਿਅਤ ਕੀਤੀ ਗਈ</translation>
+<translation id="4650364565596261010">ਸਿਸਟਮ ਪੂਰਵ-ਨਿਰਧਾਰਤ</translation>
 <translation id="4650591383426000695">ਆਪਣੇ ਫ਼ੋਨ ਨੂੰ ਆਪਣੀ <ph name="DEVICE_TYPE" /> ਤੋਂ ਡਿਸਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="4651484272688821107">ਡੈਮੋ ਮੋਡ ਸਰੋਤਾਂ ਨਾਲ ਆਨਲਾਈਨ ਕੰਪੋਨੈਂਟ ਨੂੰ ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।</translation>
 <translation id="4651921906638302153">ਇਸ ਖਾਤੇ ਨਾਲ ਸਾਈਨ-ਇਨ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
@@ -8839,7 +8841,6 @@
 <translation id="7968982339740310781">ਵੇਰਵੇ ਦੇਖੋ</translation>
 <translation id="7969046989155602842">ਆਦੇਸ਼</translation>
 <translation id="7970673414865679092">ਈਥਰਨੈੱਟ ਸੰਬੰਧੀ ਵੇਰਵੇ</translation>
-<translation id="7970882136539140748">ਕਾਰਡ ਨੂੰ ਫਿਲਹਾਲ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="7972714317346275248">RSA ਐਨਕ੍ਰਿਪਸ਼ਨ ਨਾਲ PKCS #1 SHA-384</translation>
 <translation id="7973776233567882054">ਹੇਠਾਂ ਦਿੱਤਿਆਂ ਵਿੱਚੋਂ ਕਿਹੜਾ ਵਿਕਲਪ ਤੁਹਾਡੇ ਨੈੱਟਵਰਕ ਦਾ ਸਭ ਤੋਂ ਵਧੀਆ ਵਰਣਨ ਕਰਦਾ ਹੈ?</translation>
 <translation id="797394244396603170">ਉਹ ਡੀਵਾਈਸ ਚੁਣੋ ਜਿਸ ਨਾਲ ਤੁਸੀਂ ਫ਼ਾਈਲਾਂ ਸਾਂਝੀਆਂ ਕਰਨਾ ਚਾਹੋਗੇ</translation>

@@ -346,7 +346,6 @@
 <translation id="1633941398432788136">Planificarea evenimentelor</translation>
 <translation id="1634828734222219955">Total</translation>
 <translation id="163669211644121865">Pregătirea și planificarea impozitelor</translation>
-<translation id="1638780421120290329">Nu se poate salva cardul</translation>
 <translation id="1639239467298939599">Se încarcă</translation>
 <translation id="1640180200866533862">Politici privind utilizatorii</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />Accesează pagina de pornire a site-ului<ph name="END_LINK" />.</translation>
@@ -690,7 +689,6 @@
 <translation id="2324604504973636700">Aparatură casnică</translation>
 <translation id="2328651992442742497">Permis (prestabilit)</translation>
 <translation id="2328955282645810595">Instrumente pentru construcții și instrumente electrice</translation>
-<translation id="2329473609445770916">Acest site definește categorii de interese pe care le pot folosi alte site-uri pentru a-ți afișa anunțuri</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, expiră pe <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Setare controlată de administrator</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> dorește să se asocieze</translation>
@@ -1119,7 +1117,6 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a personaliza aspectul browserului</translation>
 <translation id="3240791268468473923">Foaia „Datele de conectare pentru plăți securizate nu corespund datelor de conectare” este deschisă</translation>
 <translation id="324180406144491771">Linkurile <ph name="HOST_NAME" /> sunt blocate</translation>
-<translation id="3248611290851046188">Acest site definește categorii de interese pe care le pot folosi alte site-uri pentru a-ți afișa anunțuri. În plus, site-ul preia interesele tale din Chrome ca să-ți afișeze anunțuri mai relevante.</translation>
 <translation id="3249151924975132674">Credite pentru studenți și finanțare pentru studii universitare</translation>
 <translation id="3249845759089040423">Șic</translation>
 <translation id="3250640885957938546">Publicitate și marketing</translation>
@@ -1587,7 +1584,6 @@
 <translation id="4177501066905053472">Subiectele anunțurilor</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Anulează urmărirea prețului</translation>
-<translation id="4194250254487269611">Cardul nu poate fi salvat în acest moment</translation>
 <translation id="4195459680867822611">Butonul Vezi sfaturile privind Chrome, activează pentru a afla despre funcțiile Chrome</translation>
 <translation id="4195643157523330669">Deschide în filă nouă</translation>
 <translation id="4196861286325780578">&amp;Repetați mutarea</translation>
@@ -1727,7 +1723,6 @@
 <translation id="4424024547088906515">Acest server nu a putut dovedi că este <ph name="DOMAIN" />; Chrome nu consideră că certificatul său de securitate este de încredere. Cauza poate fi o configurare greșită sau interceptarea conexiunii de către un atacator.</translation>
 <translation id="4425173294238317796">Foaia de confirmare a cheilor de acces</translation>
 <translation id="4425750422187370446">Îmbrăcăminte sport</translation>
-<translation id="4428065317363009941">Personalizarea anunțurilor</translation>
 <translation id="443121186588148776">Port serial</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> nu a acceptat certificatul de conectare sau un astfel de certificat nu a fost oferit.</translation>
 <translation id="4432792777822557199">Paginile în <ph name="SOURCE_LANGUAGE" /> vor fi traduse în <ph name="TARGET_LANGUAGE" /> de acum înainte</translation>
@@ -2209,7 +2204,6 @@
 <translation id="540969355065856584">Acest server nu a putut dovedi că este <ph name="DOMAIN" />; momentan, certificatul de securitate nu este valid. Cauza poate fi o configurare greșită sau interceptarea conexiunii de un atacator.</translation>
 <translation id="5411462078004183575">Opțiune cu preț scăzut</translation>
 <translation id="5412040515238827314">Format nevalid: se aștepta o listă cu modele.</translation>
-<translation id="5412236728747081950">Acest site obține interesele tale din Chrome ca să-ți afișeze anunțuri mai relevante</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Receptorul de hârtie 4</translation>
 <translation id="5414446060143308245">Examinarea este obligatorie înainte de transfer</translation>
@@ -2797,7 +2791,6 @@
 <translation id="6613866251791999074">Află mai multe despre motorul tău de căutare din Chrome</translation>
 <translation id="6615297766614333076">Receptorul de hârtie 2</translation>
 <translation id="6624427990725312378">Informații de contact</translation>
-<translation id="6627727261837091711">Afișează detalii despre personalizarea anunțurilor</translation>
 <translation id="6628463337424475685">Căutare <ph name="ENGINE" /></translation>
 <translation id="6629652037942826935">Călătorii de lux</translation>
 <translation id="6630043285902923878">Se caută dispozitive USB...</translation>
@@ -3309,7 +3302,6 @@ Detalii suplimentare:
 <translation id="7574998639136359461">Echipament pentru sporturi de iarnă</translation>
 <translation id="7575207903026901870">Butonul Elimină sugestia, apasă pe Enter pentru a elimina această sugestie</translation>
 <translation id="7575887283389198269">Telefoane mobile</translation>
-<translation id="7577900504646297215">Gestionează interesele</translation>
 <translation id="7578104083680115302">Plătește rapid pe site-uri și în aplicații pe diferite dispozitive folosind cardurile pe care le-ai salvat pe Google.</translation>
 <translation id="7579442726219254162">Configurația gestionată pentru <ph name="APPLICATION_ID" /> conține o variabilă necunoscută, <ph name="VARIABLE" />.</translation>
 <translation id="7581199239021537589">Deplasarea poziției Y a imaginii de pe fața 2</translation>

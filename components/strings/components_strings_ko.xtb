@@ -346,7 +346,6 @@
 <translation id="1633941398432788136">이벤트 계획</translation>
 <translation id="1634828734222219955">합계</translation>
 <translation id="163669211644121865">세무</translation>
-<translation id="1638780421120290329">카드를 저장할 수 없음</translation>
 <translation id="1639239467298939599">로드 중</translation>
 <translation id="1640180200866533862">사용자 정책</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />사이트의 홈페이지를 방문<ph name="END_LINK" />해 보세요.</translation>
@@ -690,7 +689,6 @@
 <translation id="2324604504973636700">가전제품</translation>
 <translation id="2328651992442742497">허용(기본값)</translation>
 <translation id="2328955282645810595">건축 도구 및 공구</translation>
-<translation id="2329473609445770916">다른 사이트에서 이 사이트에서 정의하는 내 관심분야를 사용해 광고를 표시할 수 있습니다.</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, 만료일: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">관리자가 제어하는 설정</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" />에서 페어링하려고 함</translation>
@@ -1119,7 +1117,6 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, 브라우저 테마를 맞춤설정하려면 Tab과 Enter를 차례로 누르세요</translation>
 <translation id="3240791268468473923">일치하는 결제 사용자 인증 정보 시트가 없는 보안 결제 사용자 인증 정보 열림</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” 링크가 차단되었습니다</translation>
-<translation id="3248611290851046188">다른 사이트에서 이 사이트에서 정의하는 내 관심분야를 사용해 광고를 표시할 수 있습니다. 이 사이트는 Chrome에 저장된 내 관심분야 정보를 토대로 더욱 관련성 있는 광고를 표시할 수도 있습니다.</translation>
 <translation id="3249151924975132674">학생 대출 및 학자금 대출</translation>
 <translation id="3249845759089040423">그루브</translation>
 <translation id="3250640885957938546">광고 및 마케팅</translation>
@@ -1587,7 +1584,6 @@
 <translation id="4177501066905053472">광고 주제</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">가격 추적 취소</translation>
-<translation id="4194250254487269611">지금은 카드를 저장할 수 없습니다.</translation>
 <translation id="4195459680867822611">Chrome 도움말 보기 버튼, Chrome 기능에 관해 자세히 알아보려면 활성화하세요.</translation>
 <translation id="4195643157523330669">새 탭에서 열기</translation>
 <translation id="4196861286325780578">이동 다시 실행(&amp;R)</translation>
@@ -1727,7 +1723,6 @@
 <translation id="4424024547088906515">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없으며 Chrome에서 신뢰하는 보안 인증서가 아닙니다. 서버를 잘못 설정했거나 불법 사용자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
 <translation id="4425173294238317796">패스키 확인 시트</translation>
 <translation id="4425750422187370446">운동복</translation>
-<translation id="4428065317363009941">광고 개인 최적화</translation>
 <translation id="443121186588148776">직렬 포트</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" />에서 로그인 인증서를 승인하지 않았거나 로그인 인증서가 제공되지 않았을 수 있습니다.</translation>
 <translation id="4432792777822557199">지금부터 <ph name="SOURCE_LANGUAGE" />로 된 페이지가 <ph name="TARGET_LANGUAGE" />로 번역됩니다.</translation>
@@ -2209,7 +2204,6 @@
 <translation id="540969355065856584">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없습니다. 서버의 보안 인증서가 현재 유효하지 않습니다. 서버를 잘못 설정했거나 공격자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
 <translation id="5411462078004183575">저렴한 가격 옵션</translation>
 <translation id="5412040515238827314">잘못된 형식: 패턴 목록이 필요합니다.</translation>
-<translation id="5412236728747081950">이 사이트는 Chrome에 저장된 내 관심분야 정보를 토대로 더욱 관련성 있는 광고를 표시합니다.</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">스태커 4</translation>
 <translation id="5414446060143308245">전송하기 전에 검토 필요</translation>
@@ -2797,7 +2791,6 @@
 <translation id="6613866251791999074">Chrome의 검색엔진에 관해 자세히 알아보기</translation>
 <translation id="6615297766614333076">스태커 2</translation>
 <translation id="6624427990725312378">연락처 정보</translation>
-<translation id="6627727261837091711">광고 개인 최적화 세부정보 표시</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> 검색</translation>
 <translation id="6629652037942826935">고급 여행</translation>
 <translation id="6630043285902923878">USB 기기를 찾는 중...</translation>
@@ -3308,7 +3301,6 @@
 <translation id="7574998639136359461">겨울 스포츠용품</translation>
 <translation id="7575207903026901870">추천 삭제 버튼, Enter 키를 눌러 이 추천 삭제</translation>
 <translation id="7575887283389198269">휴대전화</translation>
-<translation id="7577900504646297215">관심분야 관리</translation>
 <translation id="7578104083680115302">Google에 저장한 카드를 사용하여 어떤 기기에서든지 사이트 및 앱에서 빠르게 지불할 수 있습니다.</translation>
 <translation id="7579442726219254162">"<ph name="APPLICATION_ID" />"의 관리 구성에 알 수 없는 변수("<ph name="VARIABLE" />")가 있습니다.</translation>
 <translation id="7581199239021537589">두 번째 면 이미지 Y 시프트</translation>

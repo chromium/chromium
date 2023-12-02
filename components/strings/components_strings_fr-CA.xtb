@@ -346,7 +346,6 @@
 <translation id="1633941398432788136">Planification d'événements</translation>
 <translation id="1634828734222219955">Total</translation>
 <translation id="163669211644121865">Planification et déclarations fiscales</translation>
-<translation id="1638780421120290329">Impossible d'enregistrer la carte</translation>
 <translation id="1639239467298939599">Chargement en cours</translation>
 <translation id="1640180200866533862">Règles relatives aux utilisateurs</translation>
 <translation id="1640244768702815859">Essayez de <ph name="BEGIN_LINK" />consulter la page d'accueil du site<ph name="END_LINK" />.</translation>
@@ -663,6 +662,7 @@
 <translation id="2262243747453050782">Erreur HTTP</translation>
 <translation id="226481340855943334">Ascendance et généalogie</translation>
 <translation id="2265192657948645752">Emplois dans le domaine de la vente au détail</translation>
+<translation id="2265356434276802347">Cette politique ne peut pas contenir plus de <ph name="MAX_ITEMS_LIMIT" /> entrées en vedette.</translation>
 <translation id="2267047181501709434">Vérification de votre identité en cours…</translation>
 <translation id="2268743667444073169">Feuilletons télévisés</translation>
 <translation id="2270484714375784793">Numéro de téléphone</translation>
@@ -689,7 +689,6 @@
 <translation id="2324604504973636700">Appareils ménagers</translation>
 <translation id="2328651992442742497">Autorisée (par défaut)</translation>
 <translation id="2328955282645810595">Outils électriques et de construction</translation>
-<translation id="2329473609445770916">Ce site définit des centres d'intérêt que d'autres sites peuvent utiliser pour vous montrer des annonces</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, expire le <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Paramètre géré par votre administrateur</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> veut s'associer</translation>
@@ -1118,7 +1117,6 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour personnaliser le style de votre navigateur</translation>
 <translation id="3240791268468473923">La zone de contenu dans le bas de l'écran indiquant qu'aucun authentifiant ne correspond au paiement sécurisé est ouverte</translation>
 <translation id="324180406144491771">Les liens de « <ph name="HOST_NAME" /> » sont bloqués</translation>
-<translation id="3248611290851046188">Ce site définit des centres d'intérêt que d'autres sites peuvent utiliser pour vous montrer des annonces. Ce site récupère également vos centres d'intérêt de Chrome pour vous montrer des annonces plus pertinentes.</translation>
 <translation id="3249151924975132674">Prêts aux étudiants et financement des études supérieures</translation>
 <translation id="3249845759089040423">Pimpant</translation>
 <translation id="3250640885957938546">Annonces et marketing</translation>
@@ -1586,7 +1584,6 @@
 <translation id="4177501066905053472">Sujets d'annonces</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Annuler le suivi de prix</translation>
-<translation id="4194250254487269611">Impossible d'enregistrer votre carte pour le moment</translation>
 <translation id="4195459680867822611">Bouton Afficher les astuces de Chrome, activez-le pour en savoir plus sur les fonctionnalités de Chrome</translation>
 <translation id="4195643157523330669">Ouvrir dans un nouvel onglet</translation>
 <translation id="4196861286325780578">&amp;Rétablir le déplacement</translation>
@@ -1726,7 +1723,6 @@
 <translation id="4424024547088906515">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />, car son certificat de sécurité n'est pas considéré comme fiable par Chrome. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
 <translation id="4425173294238317796">Feuille de confirmation de la clé d'accès</translation>
 <translation id="4425750422187370446">Vêtements de sport</translation>
-<translation id="4428065317363009941">Personnalisation des annonces</translation>
 <translation id="443121186588148776">Port série</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> n'a pas accepté votre certificat de connexion, ou il se peut qu'aucun certificat de connexion n'ait été fourni.</translation>
 <translation id="4432792777822557199">Les pages en <ph name="SOURCE_LANGUAGE" /> seront désormais traduites en <ph name="TARGET_LANGUAGE" /></translation>
@@ -2208,7 +2204,6 @@
 <translation id="540969355065856584">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />, car son certificat de sécurité n'est pas valide présentement. Cela peut être dû à une mauvaise configuration ou à l'interception de votre connexion par une personne malveillante.</translation>
 <translation id="5411462078004183575">Option à bas prix</translation>
 <translation id="5412040515238827314">Format incorrect : une liste de schémas était attendue.</translation>
-<translation id="5412236728747081950">Ce site récupère vos centres d'intérêt de Chrome pour vous montrer des annonces plus pertinentes</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> : <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Empileur 4</translation>
 <translation id="5414446060143308245">Examen requis avant le transfert</translation>
@@ -2796,7 +2791,6 @@
 <translation id="6613866251791999074">En savoir plus sur votre moteur de recherche dans Chrome</translation>
 <translation id="6615297766614333076">Empileur 2</translation>
 <translation id="6624427990725312378">Coordonnées</translation>
-<translation id="6627727261837091711">Afficher les détails de personnalisation des annonces</translation>
 <translation id="6628463337424475685">Recherche <ph name="ENGINE" /></translation>
 <translation id="6629652037942826935">Voyages de luxe</translation>
 <translation id="6630043285902923878">Recherche d'appareils USB en cours…</translation>
@@ -3308,7 +3302,6 @@ Détails supplémentaires :
 <translation id="7574998639136359461">Équipement de sports d'hiver</translation>
 <translation id="7575207903026901870">Bouton Supprimer la suggestion, appuyez sur Entrée pour supprimer cette suggestion</translation>
 <translation id="7575887283389198269">Téléphones cellulaires</translation>
-<translation id="7577900504646297215">Gérer les centres d'intérêt</translation>
 <translation id="7578104083680115302">Payez rapidement sur les sites et les applications, sur tous les appareils, à l'aide des cartes que vous avez enregistrées avec Google.</translation>
 <translation id="7579442726219254162">Variable inconnue « <ph name="VARIABLE" /> » dans la configuration gérée de « <ph name="APPLICATION_ID" /> ».</translation>
 <translation id="7581199239021537589">Décalage Y de l'image côté 2</translation>

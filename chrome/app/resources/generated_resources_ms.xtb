@@ -2559,6 +2559,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2927017729816812676">Storan Cache</translation>
 <translation id="2928795416630981206">Dibenarkan untuk menjejak kedudukan kamera anda</translation>
 <translation id="2931157624143513983">Muatkan mengikut kawasan boleh cetak</translation>
+<translation id="2931342457001070961">Tiada mikrofon yang disambungkan</translation>
 <translation id="2932085390869194046">Cadangkan Kata Laluan...</translation>
 <translation id="2932483646085333864">Log keluar kemudian log masuk semula untuk memulakan penyegerakan</translation>
 <translation id="2932883381142163287">Laporkan penyalahgunaan</translation>
@@ -4690,6 +4691,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4647836961514597010">Pemilih warna</translation>
 <translation id="4648491805942548247">Kebenaran tidak mencukupi</translation>
 <translation id="4650037136970677721">Kenangan disimpan</translation>
+<translation id="4650364565596261010">Lalai sistem</translation>
 <translation id="4650591383426000695">Putuskan sambungan telefon anda daripada <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Tidak dapat memuatkan komponen dalam talian dengan sumber mod tunjuk cara.</translation>
 <translation id="4651921906638302153">Tidak dapat log masuk dengan akaun ini</translation>
@@ -8836,7 +8838,6 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7968982339740310781">Lihat butiran</translation>
 <translation id="7969046989155602842">Perintah</translation>
 <translation id="7970673414865679092">Butiran Ethernet</translation>
-<translation id="7970882136539140748">Tidak dapat menyimpan kad sekarang</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 Dengan Penyulitan RSA</translation>
 <translation id="7973776233567882054">Antara yang berikut, manakah yang terbaik menggambarkan rangkaian anda?</translation>
 <translation id="797394244396603170">Pilih peranti yang ingin anda kongsikan fail</translation>

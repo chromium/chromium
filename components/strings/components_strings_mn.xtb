@@ -346,7 +346,6 @@
 <translation id="1633941398432788136">Арга хэмжээ төлөвлөх</translation>
 <translation id="1634828734222219955">Нийт</translation>
 <translation id="163669211644121865">Татварын тайлан гаргах болон төлөвлөх</translation>
-<translation id="1638780421120290329">Картыг хадгалах боломжгүй байна</translation>
 <translation id="1639239467298939599">Ачаалж байна</translation>
 <translation id="1640180200866533862">Хэрэглэгчийн журам</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />Сайтын нүүр хуудаст зочилно уу<ph name="END_LINK" />.</translation>
@@ -690,7 +689,6 @@
 <translation id="2324604504973636700">Гэр ахуйн цахилгаан хэрэгсэл</translation>
 <translation id="2328651992442742497">Зөвшөөрсөн (өгөгдмөл)</translation>
 <translation id="2328955282645810595">Барилга болон цахилгааны багажууд</translation>
-<translation id="2329473609445770916">Энэ сайт бусад сайтын танд зар харуулахын тулд ашиглаж болох сонирхлыг тодорхойлно</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" />-д дуусна</translation>
 <translation id="2337852623177822836">Тохируулгыг таны администратор хянадаг</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> холбогдох хүсэлтэй байна</translation>
@@ -1120,7 +1118,6 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Хөтчийнхөө харагдах байдлыг өөрчлөхийн тулд tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="3240791268468473923">Тохирох мандат үнэмлэхгүй аюулгүй төлбөрийн мандат үнэмлэхийн хүснэгтийг нээсэн</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” холбоосууд блоклосон байна</translation>
-<translation id="3248611290851046188">Энэ сайт бусад сайтын танд зар харуулахын тулд ашиглаж болох сонирхлыг тодорхойлно. Энэ сайт мөн танд илүү хамааралтай зар харуулахын тулд таны сонирхлуудыг Chrome-с авдаг.</translation>
 <translation id="3249151924975132674">Оюутны зээл, коллежийн санхүүжилт</translation>
 <translation id="3249845759089040423">Дэгжин</translation>
 <translation id="3250640885957938546">Сурталчилгаа, маркетинг</translation>
@@ -1588,7 +1585,6 @@
 <translation id="4177501066905053472">Зарын сэдвүүд</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Үнэ хянахаа болих</translation>
-<translation id="4194250254487269611">Таны картыг яг одоо хадгалах боломжгүй байна</translation>
 <translation id="4195459680867822611">Chrome-н зөвлөгөө харах товчлуур, Chrome-н онцлогуудын талаар мэдэж авахын тулд идэвхжүүлнэ үү</translation>
 <translation id="4195643157523330669">Шинэ таб дээр нээх</translation>
 <translation id="4196861286325780578">&amp; Зөөвөрлөх үйлдлийг дахин хийх</translation>
@@ -1728,7 +1724,6 @@
 <translation id="4424024547088906515">Энэ сервер нь <ph name="DOMAIN" />-аа баталж чадсангүй; учир нь энэхүү сертификатыг Chrome хүлээн зөвшөөрдөггүй. Энэ нь тохиргоо буруу хийгдсэнээс эсвэл халдагч таны холболтонд саад учруулж байгаагаас шалтгаалж болох юм.</translation>
 <translation id="4425173294238317796">Нэвтрэх түлхүүрийн баталгаажуулалт</translation>
 <translation id="4425750422187370446">Биеийн тамирын хувцас</translation>
-<translation id="4428065317363009941">Сонирхсон зарын тохируулга</translation>
 <translation id="443121186588148776">Цуваа порт</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> таны нэвтрэх сертификатыг зөвшөөрөөгүй, эсвэл та сертификат олгоогүй байна.</translation>
 <translation id="4432792777822557199">Одооноос <ph name="SOURCE_LANGUAGE" /> хэл дээрх хуудсыг <ph name="TARGET_LANGUAGE" /> хэл рүү орчуулна</translation>
@@ -2210,7 +2205,6 @@
 <translation id="540969355065856584">Энэ сервер нь <ph name="DOMAIN" /> гэдгээ баталж чадсангүй. Учир нь серверийн аюулгүй байдлын гэрчилгээ нь одоогоор хүчин төгөлдөр бус байна. Энэ алдаа нь тохиргоо буруу хийгдсэнээс, эсвэл халдагч таны холболтонд саад учруулж байгаагаас шалтгаалж болзошгүй.</translation>
 <translation id="5411462078004183575">Хямд үнэтэй сонголт</translation>
 <translation id="5412040515238827314">Формат буруу байна: Загварын жагсаалтыг тооцоолсон.</translation>
-<translation id="5412236728747081950">Энэ сайт танд илүү хамааралтай зар харуулахын тулд таны сонирхлуудыг Chrome-с авдаг</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Гарах цаасыг зэрэгцүүлэх тавцан 4</translation>
 <translation id="5414446060143308245">Шилжүүлэхээс өмнө шалгах шаардлагатай</translation>
@@ -2797,7 +2791,6 @@
 <translation id="6613866251791999074">Chrome-н хайлтын системийнхээ талаар нэмэлт мэдээлэл авах</translation>
 <translation id="6615297766614333076">Гарах цаасыг зэрэгцүүлэх тавцан 2</translation>
 <translation id="6624427990725312378">Харилцагчийн мэдээлэл</translation>
-<translation id="6627727261837091711">Сонирхсон зарын тохируулгын дэлгэрэнгүйг харуулна уу</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> Хайх</translation>
 <translation id="6629652037942826935">Тансаг аялал</translation>
 <translation id="6630043285902923878">USB төхөөрөмжүүдийг хайж байна...</translation>
@@ -3309,7 +3302,6 @@
 <translation id="7574998639136359461">Өвлийн спортын тоног төхөөрөмжүүд</translation>
 <translation id="7575207903026901870">Зөвлөмж устгах товчлуур, энэ зөвлөмжийг устгахын тулд Enter дээр дарна уу</translation>
 <translation id="7575887283389198269">Гар утаснууд</translation>
-<translation id="7577900504646297215">Сонирхлыг удирдах</translation>
 <translation id="7578104083680115302">Google-д хадгалсан карт ашиглан төхөөрөмжөөс апп, сайтад төлбөрөө цаг алдалгүйгээр төлөөрэй.</translation>
 <translation id="7579442726219254162">"<ph name="APPLICATION_ID" />"-н удирдаж буй тохиргоонд үл мэдэгдэх хувьсагч "<ph name="VARIABLE" />".</translation>
 <translation id="7581199239021537589">Хуудасны ар тал дээр Y тэнхлэгийн дагуу зураг шилжүүлэх</translation>

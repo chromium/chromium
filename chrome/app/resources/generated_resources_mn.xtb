@@ -2555,6 +2555,7 @@
 <translation id="2927017729816812676">Нөөшийн сан</translation>
 <translation id="2928795416630981206">Таны камерын байрлалыг хянахыг зөвшөөрсөн</translation>
 <translation id="2931157624143513983">Хэвлэх талбайн хэмжээнд тааруулах</translation>
+<translation id="2931342457001070961">Микрофон холбоогүй байна</translation>
 <translation id="2932085390869194046">Нууц үг санал болгох...</translation>
 <translation id="2932483646085333864">Синкийг эхлүүлэхийн тулд гараад, буцаж нэвтэрнэ үү</translation>
 <translation id="2932883381142163287">Зөрчлийг мэдэгдэх</translation>
@@ -4685,6 +4686,7 @@
 <translation id="4647836961514597010">Өнгө сонгогч</translation>
 <translation id="4648491805942548247">Хангалтгүй зөвшөөрөл</translation>
 <translation id="4650037136970677721">Хэмнэсэн санах ой</translation>
+<translation id="4650364565596261010">Системийн өгөгдмөл</translation>
 <translation id="4650591383426000695">Утсаа <ph name="DEVICE_TYPE" />-с салгах</translation>
 <translation id="4651484272688821107">Демо горимын эх сурвалжтай онлайн бүрэлдэхүүн хэсгийг ачаалж чадсангүй.</translation>
 <translation id="4651921906638302153">Энэ бүртгэлээр нэвтрэх боломжгүй</translation>
@@ -8829,7 +8831,6 @@
 <translation id="7968982339740310781">Дэлгэрэнгүй мэдээлэл харах</translation>
 <translation id="7969046989155602842">Тушаал</translation>
 <translation id="7970673414865679092">Ethernet-н дэлгэрэнгүй</translation>
-<translation id="7970882136539140748">Картыг яг одоо хадгалах боломжгүй байна</translation>
 <translation id="7972714317346275248">RSA шифрлэлттэй PKCS # 1 SHA-384</translation>
 <translation id="7973776233567882054">Дараахаас аль нь таны сүлжээг хамгийн сайн тодорхойлж байна вэ?</translation>
 <translation id="797394244396603170">Файл хуваалцахыг хүссэн төхөөрөмжөө сонгох</translation>

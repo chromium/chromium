@@ -346,7 +346,6 @@
 <translation id="1633941398432788136">कार्यक्रमको योजना</translation>
 <translation id="1634828734222219955">कुल</translation>
 <translation id="163669211644121865">करको तयारी तथा योजना</translation>
-<translation id="1638780421120290329">कार्ड सुरक्षित गर्न सकिएन</translation>
 <translation id="1639239467298939599">लोड गर्दै</translation>
 <translation id="1640180200866533862">प्रयोगकर्ता नीतिहरू</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />साइटको गृहपृष्ठमा गई हेर्नुहोस्<ph name="END_LINK" />।</translation>
@@ -690,7 +689,6 @@
 <translation id="2324604504973636700">घरायसी उपकरणहरू</translation>
 <translation id="2328651992442742497">अनुमति दिइयोस् (डिफल्ट)</translation>
 <translation id="2328955282645810595">कन्स्ट्रक्सन तथा पावर टुलहरू</translation>
-<translation id="2329473609445770916">यो साइटले अन्य साइटहरूले तपाईंलाई विज्ञापनहरू देखाउनका निम्ति प्रयोग गर्न सक्ने रुचिहरूका बारेमा व्याख्या गर्छ</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" /> मा म्याद समाप्त हुन्छ</translation>
 <translation id="2337852623177822836">तपाईंको प्रशासकले नियन्त्रण गरेको सेटिङ</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> जोडा बनाउन चाहन्छ</translation>
@@ -1116,7 +1114,6 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, तपाईं आफ्नो ब्राउजरको स्वरूप कस्टमाइज गर्न चाहनुहुन्छ भने Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="3240791268468473923">क्रिडेन्सियल सिटसँग नमिल्ने सुरक्षित भुक्तानी क्रिडेन्सियल खोलियो</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” का लिंकहरू ब्लक गरिएका छन्</translation>
-<translation id="3248611290851046188">यो साइटले अन्य साइटहरूले तपाईंलाई विज्ञापनहरू देखाउनका निम्ति प्रयोग गर्न सक्ने रुचिहरूका बारेमा व्याख्या गर्छ। यो साइटले Chrome बाट तपाईंलाई थप सान्दर्भिक विज्ञापनहरू देखाउने प्रयोजनका लागि तपाईंका रुचिहरू प्राप्त गर्छ।</translation>
 <translation id="3249151924975132674">विद्यार्थी तथा शैक्षिक कर्जा</translation>
 <translation id="3249845759089040423">सानदार</translation>
 <translation id="3250640885957938546">विज्ञापन तथा बजारीकरण</translation>
@@ -1585,7 +1582,6 @@
 <translation id="4177501066905053472">विज्ञापनका विषयहरू</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">मूल्य ट्र्याक गर्न छाड्नुहोस्</translation>
-<translation id="4194250254487269611">तपाईंको कार्ड अहिले नै सुरक्षित गर्न मिल्दैन</translation>
 <translation id="4195459680867822611">Chrome सम्बन्धी सुझावहरू हेर्ने बटन, Chrome का सुविधाहरूका बारेमा जान्न यो बटन थिच्नुहोस्</translation>
 <translation id="4195643157523330669">नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="4196861286325780578">सार्ने कार्य &amp;पुन: गर्नुहोस्</translation>
@@ -1725,7 +1721,6 @@
 <translation id="4424024547088906515">यो सर्भरले यो <ph name="DOMAIN" /> को भनि प्रमाणित गर्न सकेन; यसको सुरक्षा प्रमाणपत्रलाई Chrome ले विश्वास गर्दैन। यो कुनै एउटा मिसकन्फिगरेसन वा कुनै आक्रमणकारीले तपाईंको जडानमा गरेको हस्तक्षेपको कारणले गर्दा भएको हुन सक्छ।</translation>
 <translation id="4425173294238317796">पासकी पुष्टि गर्ने पाना</translation>
 <translation id="4425750422187370446">एथलेटिक वस्त्र</translation>
-<translation id="4428065317363009941">विज्ञापनको पर्सनलाइजेसन</translation>
 <translation id="443121186588148776">क्रमिक पोर्ट</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> ले तपाईँको लग इन सम्बन्धी प्रमाणपत्र स्वीकार गरेन वा कुनै प्रमाणपत्र प्रदान गरिएकै थिएन।</translation>
 <translation id="4432792777822557199"><ph name="SOURCE_LANGUAGE" /> मा रहेका पृष्ठहरूलाई अब उप्रान्त <ph name="TARGET_LANGUAGE" /> मा अनुवाद गरिने छ</translation>
@@ -2207,7 +2202,6 @@
 <translation id="540969355065856584">यो सर्भरले <ph name="DOMAIN" /> हो भने साबित गर्न सकेन; यस समयमा यसको सुरक्षा प्रमाणपत्र मान्य छैन। यो कन्फिगुरेसन गलत भएर वा एउटा आक्रमणकारीले तपाईँको जडान रोकेर भएको हुनु सक्छ।</translation>
 <translation id="5411462078004183575">सस्तो मूल्यको विकल्प</translation>
 <translation id="5412040515238827314">फर्म्याट अवैध छ: मान हाल्ने ठाउँमा प्याटर्नहरूको सूची हाल्नु पर्छ।</translation>
-<translation id="5412236728747081950">यो साइटले तपाईंलाई थप सान्दर्भिक विज्ञापनहरू देखाउने प्रयोजनका लागि तपाईंले Chrome मा तोकेका रुचिहरू प्राप्त गर्छ</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">स्ट्याकर ४</translation>
 <translation id="5414446060143308245">ट्रान्स्फर गर्नुअघि समीक्षा गर्नु पर्ने हुन्छ</translation>
@@ -2795,7 +2789,6 @@
 <translation id="6613866251791999074">Chrome मा प्रयोग गरिने सर्च इन्जिनका बारेमा थप जान्नुहोस्</translation>
 <translation id="6615297766614333076">स्ट्याकर २</translation>
 <translation id="6624427990725312378">सम्पर्कसम्बन्धी जानकारी</translation>
-<translation id="6627727261837091711">विज्ञापनको पर्सनलाइजेसनसम्बन्धी विवरण देखाइयोस्</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> खोज</translation>
 <translation id="6629652037942826935">विलासी यात्रा</translation>
 <translation id="6630043285902923878">USB यन्त्रहरू खोजिँदै छन्...</translation>
@@ -3307,7 +3300,6 @@
 <translation id="7574998639136359461">हिउँदे खेलकुदसम्बन्धी उपकरण</translation>
 <translation id="7575207903026901870">सुझावको बटन हटाउनुहोस्, यो सुझाव हटाउन Enter थिच्नुहोस्</translation>
 <translation id="7575887283389198269">मोबाइल फोन</translation>
-<translation id="7577900504646297215">रुचिहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="7578104083680115302">तपाईंले Google मार्फत सुरक्षित गर्नुभएका कार्डहरू प्रयोग गर्दै साइट र एपहरूमा द्रुत रूपमा भुक्तानी गर्नुहोस्।</translation>
 <translation id="7579442726219254162">"<ph name="APPLICATION_ID" />" को व्यवस्थित कन्फिगुरेसनमा भएको अज्ञात भेरिएबल "<ph name="VARIABLE" />"।</translation>
 <translation id="7581199239021537589">सतह २ मा रहेको छविको Y सिफ्ट</translation>
