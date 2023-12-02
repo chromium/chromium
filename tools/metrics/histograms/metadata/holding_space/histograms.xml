@@ -74,7 +74,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="HoldingSpace.Animation.BubbleResize.Smoothness" units="%"
-    expires_after="2024-03-03">
+    expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -86,7 +86,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HoldingSpace.Animation.PodResize.Smoothness" units="%"
-    expires_after="2024-01-01">
+    expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -98,7 +98,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HoldingSpace.Downloads.Action.All"
-    enum="HoldingSpaceDownloadsAction" expires_after="2024-05-05">
+    enum="HoldingSpaceDownloadsAction" expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -108,7 +108,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HoldingSpace.FilesAppChip.Action.All"
-    enum="HoldingSpaceFilesAppChipAction" expires_after="2024-01-01">
+    enum="HoldingSpaceFilesAppChipAction" expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -118,7 +118,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HoldingSpace.Item.Action.All" enum="HoldingSpaceItemAction"
-    expires_after="2024-05-05">
+    expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -128,7 +128,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HoldingSpace.Item.Action.{action}" enum="HoldingSpaceItemType"
-    expires_after="2024-05-05">
+    expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -139,7 +139,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HoldingSpace.Item.Action.{action}.Extension"
-    enum="HoldingSpaceExtension" expires_after="2024-05-05">
+    enum="HoldingSpaceExtension" expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -150,7 +150,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HoldingSpace.Item.Action.{action}.FileSystemType"
-    enum="HoldingSpaceFileSystemType" expires_after="2024-05-05">
+    enum="HoldingSpaceFileSystemType" expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -161,7 +161,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HoldingSpace.Item.Count.{type}" units="items"
-    expires_after="2024-05-05">
+    expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -172,7 +172,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HoldingSpace.Item.FailureToLaunch" enum="HoldingSpaceItemType"
-    expires_after="2024-01-01">
+    expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -182,7 +182,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HoldingSpace.Item.FailureToLaunch.Extension"
-    enum="HoldingSpaceExtension" expires_after="2024-01-01">
+    enum="HoldingSpaceExtension" expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -192,7 +192,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HoldingSpace.Item.FailureToLaunch.Reason"
-    enum="HoldingSpaceItemFailureToLaunchReason" expires_after="2024-01-01">
+    enum="HoldingSpaceItemFailureToLaunchReason" expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -202,7 +202,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HoldingSpace.Item.TotalCount.{type}" units="items"
-    expires_after="2024-05-05">
+    expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -214,7 +214,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HoldingSpace.Pod.Action.All" enum="HoldingSpacePodAction"
-    expires_after="2024-05-05">
+    expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -224,7 +224,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HoldingSpace.Suggestions.Action.All"
-    enum="HoldingSpaceSuggestionsAction" expires_after="2024-01-01">
+    enum="HoldingSpaceSuggestionsAction" expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -234,7 +234,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HoldingSpace.TimeFromFirstAvailabilityToFirstAdd" units="ms"
-    expires_after="2024-01-01">
+    expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -244,7 +244,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HoldingSpace.TimeFromFirstAvailabilityToFirstEntry" units="ms"
-    expires_after="2024-04-28">
+    expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -254,7 +254,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HoldingSpace.TimeFromFirstEntryToFirstPin" units="ms"
-    expires_after="2024-04-28">
+    expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -265,7 +265,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HoldingSpace.UserPreferences.PreviewsEnabled"
-    enum="BooleanEnabled" expires_after="2024-05-05">
+    enum="BooleanEnabled" expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -275,7 +275,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HoldingSpace.UserPreferences.SuggestionsExpanded"
-    enum="BooleanExpanded" expires_after="2024-05-05">
+    enum="BooleanExpanded" expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
   <owner>gzadina@google.com</owner>
   <summary>
