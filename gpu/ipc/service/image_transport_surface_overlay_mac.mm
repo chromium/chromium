@@ -57,6 +57,12 @@ BASE_FEATURE(kAVFoundationOverlays,
 BASE_FEATURE(kDelayOnFramePresent,
              "DelayOnFramePresent",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Whether the presentation for the first frame after VSync stops should be
+// delayed when kDelayOnFramePresent is enabled.
+BASE_FEATURE(kNoDelayOnFirstFramePresent,
+             "NoDelayOnFirstFramePresent",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
 }  // namespace
 
@@ -180,7 +186,12 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
   num_committed_ca_layer_trees_++;
 
 #if BUILDFLAG(IS_MAC)
-  bool has_previous_vsync_callback_mac = !!vsync_callback_mac_;
+  // With display_link_mac_, delay the presentation until next VSync if
+  // 1) It's not the first frame or
+  // 2) We allow delay on all frames including the first frame.
+  bool delay_presenetation_until_next_vsync =
+      !!vsync_callback_mac_ ||
+      !base::FeatureList::IsEnabled(kNoDelayOnFirstFramePresent);
   if (display_link_mac_ && !vsync_callback_mac_) {
     vsync_callback_mac_ = display_link_mac_->RegisterCallback(
         base::BindRepeating(
@@ -193,7 +204,7 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
   // this is not the first frame after vsync stops.
   if (vsync_callback_mac_) {
     vsync_callback_mac_keep_alive_counter_ = kMaxKeepAliveCounter;
-    if (has_previous_vsync_callback_mac) {
+    if (delay_presenetation_until_next_vsync) {
       // PopulateCALayerParameters will be called in OnVSyncPresentation.
       return;
     }
