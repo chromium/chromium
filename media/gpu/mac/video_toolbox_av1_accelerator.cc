@@ -53,6 +53,8 @@ VideoToolboxAV1Accelerator::Status VideoToolboxAV1Accelerator::SubmitDecode(
   // data, and build a temporal unit.
   if (have_temporal_unit_) {
     return Status::kOk;
+  } else {
+    have_temporal_unit_ = true;
   }
 
   size_t data_size = data.size();
