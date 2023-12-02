@@ -354,7 +354,7 @@ class WPTAdapterTest(unittest.TestCase):
         adapter = WPTAdapter.from_args(
             self.host, ['--product=content_shell', '--no-manifest-update'])
         with adapter.test_env() as options:
-            self.assertEqual(options.retry_unexpected, 1)
+            self.assertEqual(options.retry_unexpected, 3)
 
         # TODO We should not retry failures when running with '--use-upstream-wpt'
         # Consider add a unit test for that
@@ -363,7 +363,7 @@ class WPTAdapterTest(unittest.TestCase):
             self.host,
             ['--product=content_shell', '--no-manifest-update', '--smoke'])
         with adapter.test_env() as options:
-            self.assertEqual(options.retry_unexpected, 1)
+            self.assertEqual(options.retry_unexpected, 3)
 
         adapter = WPTAdapter.from_args(self.host, [
             '--product=content_shell', '--no-manifest-update',

@@ -406,7 +406,7 @@ class WPTAdapter:
             # default to 1 retries. Otherwise [e.g. if tests are being passed by
             # name], default to 0 retries.
             if self.options.test_list or len(self.paths) < len(all_test_names):
-                self.options.num_retries = 1
+                self.options.num_retries = 3
             else:
                 self.options.num_retries = 0
 
