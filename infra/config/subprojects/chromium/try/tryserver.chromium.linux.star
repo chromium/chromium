@@ -65,6 +65,13 @@ try_.builder(
 try_.builder(
     name = "linux-annotator-rel",
     mirrors = ["ci/linux-annotator-rel"],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-annotator-rel",
+            "try_builder",
+            "no_symbols",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -100,6 +107,12 @@ try_.builder(
 try_.builder(
     name = "linux-blink-heap-verification-try",
     mirrors = ["ci/linux-blink-heap-verification"],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-blink-heap-verification",
+            "try_builder",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -196,6 +209,12 @@ try_.builder(
 try_.builder(
     name = "linux-headless-shell-rel",
     mirrors = ["ci/linux-headless-shell-rel"],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-headless-shell-rel",
+            "use_dummy_lastchange",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     tryjob = try_.job(
         location_filters = [
@@ -208,6 +227,7 @@ try_.builder(
 try_.builder(
     name = "linux-fieldtrial-rel",
     mirrors = ["ci/linux-fieldtrial-rel"],
+    gn_args = "ci/linux-fieldtrial-rel",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -223,11 +243,19 @@ try_.builder(
         "ci/linux-lacros-builder-fyi-rel",
         "ci/linux-lacros-tester-fyi-rel",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-lacros-builder-fyi-rel",
+            "try_builder",
+            "no_symbols",
+        ],
+    ),
 )
 
 try_.builder(
     name = "linux-lacros-version-skew-fyi",
     mirrors = ["ci/linux-lacros-version-skew-fyi"],
+    gn_args = "ci/linux-lacros-version-skew-fyi",
 )
 
 try_.builder(
@@ -259,6 +287,13 @@ try_.builder(
 try_.builder(
     name = "linux-perfetto-rel",
     mirrors = ["ci/linux-perfetto-rel"],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-perfetto-rel",
+            "try_builder",
+            "no_symbols",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     tryjob = try_.job(
         location_filters = [
@@ -388,6 +423,12 @@ try_.compilator_builder(
 try_.builder(
     name = "linux-viz-rel",
     mirrors = ["ci/Linux Viz"],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Linux Viz",
+            "no_symbols",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -423,6 +464,7 @@ try_.builder(
     mirrors = [
         "ci/linux-wpt-content-shell-fyi-rel",
     ],
+    gn_args = "ci/linux-wpt-content-shell-fyi-rel",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -431,6 +473,7 @@ try_.builder(
     mirrors = [
         "ci/linux-wpt-content-shell-leak-detection",
     ],
+    gn_args = "ci/linux-wpt-content-shell-leak-detection",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 

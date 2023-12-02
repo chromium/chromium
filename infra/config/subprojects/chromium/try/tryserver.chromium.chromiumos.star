@@ -615,6 +615,18 @@ try_.builder(
     mirrors = [
         "ci/linux-chromeos-annotator-rel",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-chromeos-annotator-rel",
+            "try_builder",
+            "no_symbols",
+            "also_build_lacros_chrome",
+            "use_clang_coverage",
+            "partial_code_coverage_instrumentation",
+            "enable_dangling_raw_ptr_feature_flag",
+            "enable_backup_ref_ptr_feature_flag",
+        ],
+    ),
 )
 
 try_.builder(

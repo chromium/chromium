@@ -84,6 +84,7 @@ try_.builder(
     ],
     builderless = False,
     os = os.MAC_13,
+    gn_args = "ci/mac-osxbeta-rel",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -119,6 +120,7 @@ try_.builder(
     builderless = False,
     os = os.MAC_13,
     cpu = cpu.ARM64,
+    gn_args = "ci/Mac Builder Next",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
 
@@ -127,6 +129,13 @@ try_.builder(
     mirrors = [
         "ci/mac-perfetto-rel",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/mac-perfetto-rel",
+            "try_builder",
+            "no_symbols",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -215,6 +224,7 @@ try_.builder(
     mirrors = [
         "ci/mac10.15-wpt-content-shell-fyi-rel",
     ],
+    gn_args = "ci/mac10.15-wpt-content-shell-fyi-rel",
 )
 
 try_.builder(
@@ -241,6 +251,7 @@ try_.builder(
     mirrors = [
         "ci/mac11-arm64-wpt-content-shell-fyi-rel",
     ],
+    gn_args = "ci/mac11-arm64-wpt-content-shell-fyi-rel",
 )
 
 try_.builder(
@@ -248,6 +259,7 @@ try_.builder(
     mirrors = [
         "ci/mac11-wpt-content-shell-fyi-rel",
     ],
+    gn_args = "ci/mac11-wpt-content-shell-fyi-rel",
 )
 
 try_.builder(
@@ -307,6 +319,7 @@ try_.builder(
     mirrors = [
         "ci/mac12-arm64-wpt-content-shell-fyi-rel",
     ],
+    gn_args = "ci/mac12-arm64-wpt-content-shell-fyi-rel",
 )
 
 try_.builder(
@@ -314,6 +327,7 @@ try_.builder(
     mirrors = [
         "ci/mac12-wpt-content-shell-fyi-rel",
     ],
+    gn_args = "ci/mac12-wpt-content-shell-fyi-rel",
 )
 
 try_.builder(
@@ -321,6 +335,7 @@ try_.builder(
     mirrors = [
         "ci/mac13-arm64-wpt-content-shell-fyi-rel",
     ],
+    gn_args = "ci/mac13-arm64-wpt-content-shell-fyi-rel",
 )
 
 try_.builder(
@@ -328,6 +343,7 @@ try_.builder(
     mirrors = [
         "ci/mac13-wpt-content-shell-fyi-rel",
     ],
+    gn_args = "ci/mac13-wpt-content-shell-fyi-rel",
 )
 
 # NOTE: the following trybots aren't sensitive to Mac version on which
@@ -517,6 +533,7 @@ ios_builder(
     builderless = True,
     cpu = cpu.ARM64,
     execution_timeout = 4 * time.hour,
+    gn_args = "ci/ios-blink-dbg-fyi",
 )
 
 ios_builder(
@@ -542,12 +559,14 @@ ios_builder(
     name = "ios-fieldtrial-rel",
     mirrors = ["ci/ios-fieldtrial-rel"],
     builderless = True,
+    gn_args = "ci/ios-fieldtrial-rel",
 )
 
 ios_builder(
     name = "ios-m1-simulator",
     mirrors = ["ci/ios-m1-simulator"],
     cpu = cpu.ARM64,
+    gn_args = "ci/ios-m1-simulator",
 )
 
 try_.orchestrator_builder(
@@ -660,6 +679,7 @@ ios_builder(
     name = "ios-simulator-multi-window",
     mirrors = ["ci/ios-simulator-multi-window"],
     cpu = cpu.ARM64,
+    gn_args = "ci/ios-simulator-multi-window",
 )
 
 ios_builder(
@@ -687,6 +707,7 @@ ios_builder(
     mirrors = [
         "ci/ios-wpt-fyi-rel",
     ],
+    gn_args = "ci/ios-wpt-fyi-rel",
 )
 
 ios_builder(
@@ -696,6 +717,7 @@ ios_builder(
     ],
     os = os.MAC_13,
     cpu = cpu.ARM64,
+    gn_args = "ci/ios16-beta-simulator",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -706,6 +728,7 @@ ios_builder(
     ],
     os = os.MAC_14,
     cpu = cpu.ARM64,
+    gn_args = "ci/ios16-sdk-simulator",
     xcode = xcode.x15betabots,
 )
 
@@ -714,6 +737,7 @@ ios_builder(
     mirrors = ["ci/ios17-beta-simulator"],
     os = os.MAC_13,
     cpu = cpu.ARM64,
+    gn_args = "ci/ios17-beta-simulator",
 )
 
 ios_builder(
@@ -721,6 +745,7 @@ ios_builder(
     mirrors = ["ci/ios17-sdk-simulator"],
     os = os.MAC_13,
     cpu = cpu.ARM64,
+    gn_args = "ci/ios17-sdk-simulator",
     xcode = xcode.x15betabots,
 )
 

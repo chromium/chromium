@@ -649,6 +649,13 @@ try_.builder(
 try_.builder(
     name = "android-fieldtrial-rel",
     mirrors = ["ci/android-fieldtrial-rel"],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-fieldtrial-rel",
+            "try_builder",
+            "no_symbols",
+        ],
+    ),
 )
 
 try_.builder(
@@ -691,6 +698,13 @@ try_.builder(
     mirrors = [
         "ci/android-perfetto-rel",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-perfetto-rel",
+            "try_builder",
+            "no_symbols",
+        ],
+    ),
 )
 
 try_.builder(

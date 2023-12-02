@@ -28,6 +28,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    "also_build_lacros_chrome_for_architecture_arm64",
+    args = {
+        "also_build_lacros_chrome_for_architecture": "arm64",
+    },
+)
+
+gn_args.config(
     "amd64-generic",
     args_file = "//build/args/chromeos/amd64-generic.gni",
 )
@@ -499,6 +506,20 @@ gn_args.config(
     },
 )
 
+gn_args.config(
+    "enable_blink_animation_use_time_delta",
+    args = {
+        "blink_animation_use_time_delta": True,
+    },
+)
+
+gn_args.config(
+    "enable_blink_heap_verification",
+    args = {
+        "cppgc_enable_verify_heap": True,
+    },
+)
+
 # Enables dangling raw pointer detection.
 # This configuration will silently deactivate the ref count cookie in:
 # https://crsrc.org/c/base/allocator/partition_allocator/partition_alloc_config.h;l=208-216;drc=2d195004c75699bdd87c69cdb7e8d293249dcfdd
@@ -620,6 +641,19 @@ gn_args.config(
     "gpu_tests",
     configs = [
         "chrome_with_codecs",
+    ],
+)
+
+gn_args.config(
+    "headless",
+    args_file = "//build/args/headless.gn",
+)
+
+gn_args.config(
+    "headless_shell",
+    configs = [
+        "headless",
+        "no_codecs",
     ],
 )
 
@@ -780,6 +814,16 @@ gn_args.config(
 )
 
 gn_args.config(
+    "no_codecs",
+    args = {
+        "media_use_libvpx": False,
+        "media_use_ffmpeg": False,
+        "proprietary_codecs": False,
+        "enable_ffmpeg_video_decoders": False,
+    },
+)
+
+gn_args.config(
     "no_dsyms",
     args = {
         "enable_dsyms": False,
@@ -790,6 +834,13 @@ gn_args.config(
     "no_goma",
     args = {
         "use_goma": False,
+    },
+)
+
+gn_args.config(
+    "no_lld",
+    args = {
+        "use_lld": False,
     },
 )
 
@@ -899,6 +950,20 @@ gn_args.config(
     "pdf_xfa",
     args = {
         "pdf_enable_xfa": True,
+    },
+)
+
+gn_args.config(
+    "perfetto",
+    args = {
+        "use_perfetto_client_library": True,
+    },
+)
+
+gn_args.config(
+    "perfetto_zlib",
+    args = {
+        "enable_perfetto_zlib": True,
     },
 )
 
@@ -1095,6 +1160,13 @@ gn_args.config(
     "updater",
     args = {
         "enable_updater": True,
+    },
+)
+
+gn_args.config(
+    "use_blink",
+    args = {
+        "use_blink": True,
     },
 )
 

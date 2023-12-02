@@ -39,6 +39,13 @@ consoles.list_view(
 try_.builder(
     name = "win-annotator-rel",
     mirrors = ["ci/win-annotator-rel"],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/win-annotator-rel",
+            "try_builder",
+            "no_symbols",
+        ],
+    ),
 )
 
 try_.builder(
@@ -290,6 +297,7 @@ try_.builder(
     ],
     os = os.WINDOWS_10,
     contact_team_email = "web-windowing-team@google.com",
+    gn_args = "ci/win10-multiscreen-fyi-rel",
 )
 
 try_.builder(
@@ -298,6 +306,7 @@ try_.builder(
         "ci/win10-wpt-content-shell-fyi-rel",
     ],
     os = os.WINDOWS_10,
+    gn_args = "ci/win10-wpt-content-shell-fyi-rel",
 )
 
 try_.builder(
@@ -306,6 +315,7 @@ try_.builder(
         "ci/win11-wpt-content-shell-fyi-rel",
     ],
     os = os.WINDOWS_ANY,
+    gn_args = "ci/win11-wpt-content-shell-fyi-rel",
 )
 
 try_.builder(
@@ -342,6 +352,7 @@ try_.builder(
     name = "win-fieldtrial-rel",
     mirrors = ["ci/win-fieldtrial-rel"],
     os = os.WINDOWS_DEFAULT,
+    gn_args = "ci/win-fieldtrial-rel",
 )
 
 try_.builder(
@@ -349,6 +360,13 @@ try_.builder(
     mirrors = [
         "ci/win-perfetto-rel",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/win-perfetto-rel",
+            "try_builder",
+            "no_symbols",
+        ],
+    ),
 )
 
 try_.builder(

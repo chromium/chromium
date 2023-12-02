@@ -1,0 +1,13 @@
+{
+  "args_file": "//build/args/chromeos/arm64-generic-crostoolchain.gni",
+  "gn_args": {
+    "chromeos_is_browser_only": true,
+    "dcheck_always_on": false,
+    "is_chromeos_device": true,
+    "is_debug": false,
+    "is_skylab": true,
+    "ozone_platform_headless": true,
+    "target_os": "chromeos",
+    "use_remoteexec": true
+  }
+}

@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/ios17-sdk-simulator/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {

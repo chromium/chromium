@@ -1,14 +1,4 @@
 {
-  "win-annotator-rel": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
-      "use_dummy_lastchange": true,
-      "use_remoteexec": true
-    }
-  },
   "win-celab-try-rel": {
     "gn_args": {
       "dcheck_always_on": false,
@@ -25,15 +15,6 @@
       "is_debug": false,
       "symbol_level": 0,
       "use_dummy_lastchange": true,
-      "use_remoteexec": true
-    }
-  },
-  "win-fieldtrial-rel": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 1,
       "use_remoteexec": true
     }
   },
@@ -55,17 +36,6 @@
       "use_remoteexec": true
     }
   },
-  "win-perfetto-rel": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
-      "use_dummy_lastchange": true,
-      "use_perfetto_client_library": true,
-      "use_remoteexec": true
-    }
-  },
   "win-siso-rel": {
     "gn_args": {
       "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
@@ -83,28 +53,6 @@
       "use_remoteexec": true
     }
   },
-  "win10-multiscreen-fyi-rel": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "use_remoteexec": true
-    }
-  },
-  "win10-wpt-content-shell-fyi-rel": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "use_remoteexec": true
-    }
-  },
   "win10_chromium_x64_rel_ng_exp": {
     "gn_args": {
       "dcheck_always_on": true,
@@ -113,17 +61,6 @@
       "symbol_level": 0,
       "use_dummy_lastchange": true,
       "use_goma": true
-    }
-  },
-  "win11-wpt-content-shell-fyi-rel": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "use_remoteexec": true
     }
   },
   "win_chromium_compile_dbg_ng": {

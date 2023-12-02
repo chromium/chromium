@@ -10,17 +10,6 @@
       "use_remoteexec": true
     }
   },
-  "linux-wpt-chromium-rel": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "use_remoteexec": true
-    }
-  },
   "mac10.15-blink-rel": {
     "gn_args": {
       "dcheck_always_on": false,
