@@ -64,6 +64,8 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kDCompPresenter);
 GPU_EXPORT BASE_DECLARE_FEATURE(kAdjustGpuProcessPriority);
 #endif
 
+GPU_EXPORT BASE_DECLARE_FEATURE(kGenGpuDiskCacheKeyPrefixInGpuService);
+
 GPU_EXPORT BASE_DECLARE_FEATURE(kSharedImageManager);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kVaapiJpegImageDecodeAcceleration);

@@ -243,6 +243,7 @@ viz_component("service") {
     # Note that dependency on //gpu/ipc/client is for GpuMemoryBufferImpl. This
     # dependency should not be in public_deps.
     "//components/ml/webnn:features",
+    "//components/version_info:version_info",
     "//components/viz/common",
     "//gpu/command_buffer/client",
     "//gpu/config",

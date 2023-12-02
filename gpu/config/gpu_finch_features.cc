@@ -236,6 +236,12 @@ BASE_FEATURE(kAdjustGpuProcessPriority,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+// Fix to move cache key prefix generation from host to gpu service side in
+// order to avoid race in GpuInfo. crbug.com/1506660.
+BASE_FEATURE(kGenGpuDiskCacheKeyPrefixInGpuService,
+             "GenGpuDiskCacheKeyPrefixInGpuService",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Causes us to use the SharedImageManager, removing support for the old
 // mailbox system. Any consumers of the GPU process using the old mailbox
 // system will experience undefined results.

@@ -17,6 +17,7 @@
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -27,6 +28,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/startup_metric_utils/gpu/startup_metric_utils.h"
+#include "components/version_info/version_info.h"
 #include "components/viz/common/features.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/service/dawn_caching_interface.h"
@@ -85,6 +87,7 @@
 #endif  // BUILDFLAG(USE_VAAPI)
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
 #include "components/viz/service/gl/throw_uncaught_exception.h"
 #include "media/base/android/media_codec_util.h"
 #endif
@@ -1059,10 +1062,71 @@ void GpuServiceImpl::DidLoseContext(gpu::error::ContextLostReason reason,
   gpu_host_->DidLoseContext(reason, active_url);
 }
 
+std::string GpuServiceImpl::GetShaderPrefixKey() {
+  if (shader_prefix_key_.empty()) {
+    const gpu::GPUInfo::GPUDevice& active_gpu = gpu_info_.active_gpu();
+    std::string product =
+        std::string(version_info::GetProductNameAndVersionForUserAgent());
+
+    shader_prefix_key_ =
+        product + "-" + gpu_info_.gl_vendor + "-" + gpu_info_.gl_renderer +
+        "-" + active_gpu.driver_version + "-" + active_gpu.driver_vendor + "-" +
+        base::SysInfo::ProcessCPUArchitecture();
+
+#if BUILDFLAG(IS_ANDROID)
+    std::string build_fp =
+        base::android::BuildInfo::GetInstance()->android_build_fp();
+    shader_prefix_key_ += "-" + build_fp;
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+    // ChromeOS can update independently of Lacros and the GPU driver
+    // information is not enough to ensure blob compatibility. See
+    // crbug.com/1444684
+    std::string chromeos_version = base::SysInfo::OperatingSystemName() + " " +
+                                   base::SysInfo::OperatingSystemVersion();
+    shader_prefix_key_ += "-" + chromeos_version;
+#endif
+  }
+
+  return shader_prefix_key_;
+}
+
 void GpuServiceImpl::StoreBlobToDisk(const gpu::GpuDiskCacheHandle& handle,
                                      const std::string& key,
                                      const std::string& shader) {
-  gpu_host_->StoreBlobToDisk(handle, key, shader);
+  std::string prefix_key = key;
+  if (base::FeatureList::IsEnabled(
+          features::kGenGpuDiskCacheKeyPrefixInGpuService) &&
+      GetHandleType(handle) == gpu::GpuDiskCacheType::kGlShaders) {
+    std::string prefix = GetShaderPrefixKey();
+    prefix_key = prefix + ":" + key;
+  }
+  gpu_host_->StoreBlobToDisk(handle, prefix_key, shader);
+}
+
+void GpuServiceImpl::LoadedBlob(const gpu::GpuDiskCacheHandle& handle,
+                                const std::string& key,
+                                const std::string& data) {
+  if (!main_runner_->BelongsToCurrentThread()) {
+    main_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&GpuServiceImpl::LoadedBlob, weak_ptr_,
+                                  handle, key, data));
+    return;
+  }
+
+  std::string no_prefix_key = key;
+  if (base::FeatureList::IsEnabled(
+          features::kGenGpuDiskCacheKeyPrefixInGpuService) &&
+      GetHandleType(handle) == gpu::GpuDiskCacheType::kGlShaders) {
+    std::string prefix = GetShaderPrefixKey();
+    bool prefix_ok = !key.compare(0, prefix.length(), prefix);
+    if (prefix_ok) {
+      // Remove the prefix from the key before load.
+      no_prefix_key = key.substr(prefix.length() + 1);
+    } else {
+      return;
+    }
+  }
+  gpu_channel_manager_->PopulateCache(handle, no_prefix_key, data);
 }
 
 void GpuServiceImpl::GetIsolationKey(
@@ -1215,18 +1279,6 @@ void GpuServiceImpl::CloseChannel(int32_t client_id) {
     return;
   }
   gpu_channel_manager_->RemoveChannel(client_id);
-}
-
-void GpuServiceImpl::LoadedBlob(const gpu::GpuDiskCacheHandle& handle,
-                                const std::string& key,
-                                const std::string& data) {
-  if (!main_runner_->BelongsToCurrentThread()) {
-    main_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&GpuServiceImpl::LoadedBlob, weak_ptr_,
-                                  handle, key, data));
-    return;
-  }
-  gpu_channel_manager_->PopulateCache(handle, key, data);
 }
 
 void GpuServiceImpl::SetWakeUpGpuClosure(base::RepeatingClosure closure) {
