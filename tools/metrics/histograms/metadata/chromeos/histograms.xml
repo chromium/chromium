@@ -1270,6 +1270,17 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Gaia.Done.Oobe.NewAccount" enum="BooleanNewAccount"
+    expires_after="2024-05-30">
+  <owner>thv@google.com</owner>
+  <owner>cros-growth@google.com</owner>
+  <summary>
+    Records whether the user uses their existing account or create a new account
+    during Oobe sign-in. Recorded during user sign-in in Oobe when ChromeOS
+    receives all the signals from Gaia.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Gaia.Message.{GaiaAuthFlow}.{MessageName}"
     enum="BooleanReceived" expires_after="2024-05-05">
   <owner>rsorokin@google.com</owner>

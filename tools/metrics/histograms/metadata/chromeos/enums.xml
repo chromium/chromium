@@ -280,6 +280,11 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Auto Framing pipeline output error"/>
 </enum>
 
+<enum name="BooleanNewAccount">
+  <int value="0" label="Existing account"/>
+  <int value="1" label="New account"/>
+</enum>
+
 <enum name="CableSpeedMetric">
   <int value="0" label="Other"/>
   <int value="1" label="USB 2.0"/>

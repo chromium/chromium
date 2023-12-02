@@ -124,6 +124,8 @@ const BLANK_PAGE_URL = 'about:blank';
 const GAIA_DONE_ELAPSED_TIME = 'ChromeOS.Gaia.Done.ElapsedTime';
 const GAIA_CREATE_ACCOUNT_FIRST_USER =
       'ChromeOS.Gaia.CreateAccount.IsFirstUser';
+const GAIA_DONE_OOBE_NEW_ACCOUNT =
+      'ChromeOS.Gaia.Done.Oobe.NewAccount';
 
 // Metric names for messages we get from Gaia.
 const GAIA_MESSAGE_SAML_USER_INFO = 'ChromeOS.Gaia.Message.Saml.UserInfo';
@@ -413,6 +415,7 @@ export class Authenticator extends EventTarget {
     this.authMode = AuthMode.DEFAULT;
     this.dontResizeNonEmbeddedPages = false;
     this.isFirstUser_ = false;
+    this.isNewAccount = false;
 
     /**
      * @type {!SamlHandler|undefined}
@@ -762,6 +765,7 @@ export class Authenticator extends EventTarget {
 
     this.webview_.src = this.reloadUrl_;
     this.isLoaded_ = true;
+    this.isNewAccount = false;
   }
 
   /**
@@ -1136,6 +1140,7 @@ export class Authenticator extends EventTarget {
 
     if (gaiaDone) {
       this.maybeRecordGaiaElapsedTime_();
+      this.maybeRecordAccountFreshnessInOobe_();
       this.maybeClearGaiaTimeout_();
     } else if (this.gaiaDoneTimer_) {
       // Early out if `gaiaDoneTimer_` is running.
@@ -1346,6 +1351,7 @@ export class Authenticator extends EventTarget {
    * @private
    */
   onSamlApiAccountCreated_(e) {
+    this.isNewAccount = true;
     this.recordAccountCreated_();
   }
 
@@ -1518,6 +1524,26 @@ export class Authenticator extends EventTarget {
     ]);
     this.gaiaStartTime = null;
   }
+
+  /**
+   * Record if the sign-in account in Oobe is an existing account or new
+   * account.
+   * @private
+   */
+  maybeRecordAccountFreshnessInOobe_() {
+      // Record the metric if the record new account feature
+      // flag is enabled. This metric is recorded only for the sign-in
+      // event happens in Oobe.
+      if (!this.samlHandler_.shouldHandleAccountCreationMessage ||
+          !this.isFirstUser_) {
+        return;
+      }
+      chrome.send('metricsHandler:recordBooleanHistogram', [
+        GAIA_DONE_OOBE_NEW_ACCOUNT,
+        this.isNewAccount
+      ]);
+      this.isNewAccount = false;
+    }
 
   /**
    * Record new account creation.

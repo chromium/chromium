@@ -1051,7 +1051,10 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, MetaRefreshToHTTPDisallowed) {
   WaitForSigninScreen();
 }
 
-// Tests the sign-in flow when the credentials passing API is used.
+// Tests the sign-in flow in Oobe when the credentials passing
+// API is used in case of new account and existing account when
+// the handle account creation message feature flag is enabled
+// or disabled.
 IN_PROC_BROWSER_TEST_P(SamlWithCreateAccountAPITest,
                        CredentialPassingAPIWithNewAccount) {
   base::HistogramTester histogram_tester;
@@ -1076,12 +1079,22 @@ IN_PROC_BROWSER_TEST_P(SamlWithCreateAccountAPITest,
 
   // TODO (b/308176681): add test case for first user/non first user on the
   // device.
-  if (IsNewAccountSignedUp() && IsRecordCreateAccountFeatureEnabled()) {
-    histogram_tester.ExpectUniqueSample(
-        "ChromeOS.Gaia.CreateAccount.IsFirstUser", 1, 1);
+  if (IsRecordCreateAccountFeatureEnabled()) {
+    if (IsNewAccountSignedUp()) {
+      histogram_tester.ExpectUniqueSample(
+          "ChromeOS.Gaia.CreateAccount.IsFirstUser", 1, 1);
+      histogram_tester.ExpectUniqueSample("ChromeOS.Gaia.Done.Oobe.NewAccount",
+                                          1, 1);
+    } else {
+      histogram_tester.ExpectTotalCount(
+          "ChromeOS.Gaia.CreateAccount.IsFirstUser", 0);
+      histogram_tester.ExpectUniqueSample("ChromeOS.Gaia.Done.Oobe.NewAccount",
+                                          0, 1);
+    }
   } else {
     histogram_tester.ExpectTotalCount("ChromeOS.Gaia.CreateAccount.IsFirstUser",
                                       0);
+    histogram_tester.ExpectTotalCount("ChromeOS.Gaia.Done.Oobe.NewAccount", 0);
   }
 
   histogram_tester.ExpectUniqueSample("ChromeOS.SAML.APILogin", 1, 1);
