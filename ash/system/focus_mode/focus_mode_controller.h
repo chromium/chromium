@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/system/focus_mode/focus_mode_tasks_provider.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -63,6 +64,7 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
   void set_selected_task_title(const std::u16string& selected_task_title) {
     selected_task_title_ = selected_task_title;
   }
+  FocusModeTasksProvider& tasks_provider() { return tasks_provider_; }
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -114,6 +116,9 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
 
   // Sets the visibility of the focus tray on the shelf.
   void SetFocusTrayVisibility(bool visible);
+
+  // Gives Focus Mode access to the Google Tasks API.
+  FocusModeTasksProvider tasks_provider_;
 
   // This is the expected duration of a Focus Mode session once it starts.
   // Depends on previous session data (from user prefs) or user input.

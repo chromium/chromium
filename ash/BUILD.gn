@@ -1485,6 +1485,8 @@ component("ash") {
     "system/focus_mode/focus_mode_feature_pod_controller.h",
     "system/focus_mode/focus_mode_task_view.cc",
     "system/focus_mode/focus_mode_task_view.h",
+    "system/focus_mode/focus_mode_tasks_provider.cc",
+    "system/focus_mode/focus_mode_tasks_provider.h",
     "system/focus_mode/focus_mode_tray.cc",
     "system/focus_mode/focus_mode_tray.h",
     "system/focus_mode/focus_mode_util.cc",
