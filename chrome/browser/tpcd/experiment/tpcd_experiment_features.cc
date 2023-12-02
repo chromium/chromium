@@ -17,6 +17,9 @@ const char kVersionName[] = "version";
 const char kDisable3PCookiesName[] = "disable_3p_cookies";
 const char kForceEligibleForTestingName[] = "force_eligible";
 const char kDecisionDelayTimeName[] = "decision_delay_time";
+const char kNeedOnboardingForSyntheticTrialName[] =
+    "need_onboarding_for_synthetic_trial";
+const char kNeedOnboardingForLabelName[] = "need_onboarding_for_label";
 const char kExclude3PCBlockedName[] = "exclude_3pc_blocked";
 const char kExcludeNotSeenAdsAPIsNoticeName[] = "exclude_has_not_seen_notice";
 const char kExcludeDasherAccountName[] = "exclude_dasher_account";
@@ -47,6 +50,20 @@ const base::FeatureParam<base::TimeDelta> kDecisionDelayTime{
 const base::FeatureParam<bool> kForceEligibleForTesting{
     &features::kCookieDeprecationFacilitatedTesting,
     /*name=*/kForceEligibleForTestingName,
+    /*default_value=*/false};
+
+// Set whether to wait for onboarding to register the synthetic trial. Only
+// meaningful when "disable_3p_cookies" feature param is true.
+const base::FeatureParam<bool> kNeedOnboardingForSyntheticTrial{
+    &features::kCookieDeprecationFacilitatedTesting,
+    /*name=*/kNeedOnboardingForSyntheticTrialName,
+    /*default_value=*/false};
+
+// Set whether to wait for onboarding to send the label. Only meaningful when
+// "disable_3p_cookies" feature param is true.
+const base::FeatureParam<bool> kNeedOnboardingForLabel{
+    &features::kCookieDeprecationFacilitatedTesting,
+    /*name=*/kNeedOnboardingForLabelName,
     /*default_value=*/false};
 
 const base::FeatureParam<bool> kExclude3PCBlocked{

@@ -329,11 +329,12 @@ bool PrivacySandboxSettingsDelegate::IsCookieDeprecationLabelAllowed() const {
   switch (tracking_protection_onboarding->GetOnboardingStatus()) {
     case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
         kIneligible:
-    case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
-        kEligible:
+      return false;
     case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
         kOffboarded:
-      return false;
+    case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
+        kEligible:
+      return !tpcd::experiment::kNeedOnboardingForLabel.Get();
     case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
         kOnboarded:
       return true;
