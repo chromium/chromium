@@ -267,7 +267,7 @@ void TextPainterBase::PaintUnderOrOverLineDecorations(
   // Updating Graphics Context for text only (kTextProperOnly),
   // instead of the default text and shadows (kBothShadowsAndTextProper),
   // because shadows will be painted by
-  // NGTextPainterBase::PaintUnderOrOverLineDecorationShadows.
+  // TextPainterBase::PaintUnderOrOverLineDecorationShadows.
   UpdateGraphicsContext(context, text_style, state_saver,
                         ShadowMode::kTextProperOnly);
 

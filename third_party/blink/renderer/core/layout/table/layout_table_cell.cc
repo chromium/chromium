@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/core/layout/table/layout_table_row.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_section.h"
 #include "third_party/blink/renderer/core/mathml/mathml_table_cell_element.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_table_cell_paint_invalidator.h"
+#include "third_party/blink/renderer/core/paint/table_cell_paint_invalidator.h"
 
 namespace blink {
 

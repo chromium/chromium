@@ -17,8 +17,8 @@
 #include "third_party/blink/renderer/core/layout/table/layout_table_section.h"
 #include "third_party/blink/renderer/core/layout/table/table_borders.h"
 #include "third_party/blink/renderer/core/layout/table/table_layout_utils.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_box_fragment_painter.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_table_painters.h"
+#include "third_party/blink/renderer/core/paint/box_fragment_painter.h"
+#include "third_party/blink/renderer/core/paint/table_painters.h"
 #include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
 
 namespace blink {

@@ -28,7 +28,7 @@
 #include "third_party/blink/renderer/core/layout/outline_utils.h"
 #include "third_party/blink/renderer/core/layout/relative_utils.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
+#include "third_party/blink/renderer/core/paint/inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/outline_painter.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 

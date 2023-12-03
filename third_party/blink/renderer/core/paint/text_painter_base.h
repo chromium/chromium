@@ -42,8 +42,8 @@ constexpr float kDecorationClipMaxDilation = 13;
 
 }  // anonymous namespace
 
-// Base class for text painting. This is the base class of NGTextPainter and
-// NGTextCombinePainter.
+// Base class for text painting. This is the base class of TextPainter and
+// TextCombinePainter.
 class CORE_EXPORT TextPainterBase {
   STACK_ALLOCATED();
 

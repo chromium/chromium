@@ -404,7 +404,7 @@ also store a unique `PaintOffset, `PaginationOffset and
 
 Within a PaintLayer, paint walks the PhysicalFragment tree in paint-order and
 produces a list of display items. This is implemented using static painter
-classes (such as [`NGBoxFragmentPainter`](ng/ng_box_fragment_painter.cc)) and
+classes (such as [`BoxFragmentPainter`](box_fragment_painter.cc)) and
 appends display items to a
 [`PaintController`](../../platform/graphics/paint/paint_controller.h). There is
 only one `PaintController` for the entire `LocalFrameView`. During this
