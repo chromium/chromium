@@ -4397,7 +4397,8 @@
 <translation id="4412547955014928315">למחוק את הנתונים ואת ההרשאות לאתר <ph name="SITE_NAME" /> ולכל האתרים שתחתיו?</translation>
 <translation id="4412632005703201014">‏אפליקציות Chrome עוברות לאפליקציות מסוג Progressive Web App. אפליקציית Chrome הזו הותקנה בדפדפן על ידי הארגון שלך. כדי לפתוח Progressive Web App מרשימת האפליקציות, קודם צריך לפנות לאדמין ולבקש להסיר את אפליקציית Chrome. בינתיים אפשר להיכנס אל <ph name="EXTENSION_LAUNCH_URL" /> כדי לפתוח את <ph name="EXTENSION_NAME" /> באינטרנט.</translation>
 <translation id="4412698727486357573">מרכז העזרה</translation>
-<translation id="4412992751769744546">‏התר קובצי Cookie של צד שלישי</translation>
+<translation id="4412992751769744546">‏אישור לקובצי Cookie של צד שלישי
+</translation>
 <translation id="4413087696295876280">‏קריאת נתונים ומידע ממכשיר ChromeOS Flex</translation>
 <translation id="44141919652824029">‏רוצה להעניק לאפליקציה "<ph name="APP_NAME" />" גישה לרשימת ההתקנים המחוברים ב-USB?</translation>
 <translation id="4414232939543644979">חלון &amp;אנונימי חדש</translation>
