@@ -23,14 +23,6 @@ MultiColumnFragmentainerGroup::MultiColumnFragmentainerGroup(
     const LayoutMultiColumnSet& column_set)
     : column_set_(&column_set) {}
 
-bool MultiColumnFragmentainerGroup::IsFirstGroup() const {
-  return &column_set_->FirstFragmentainerGroup() == this;
-}
-
-bool MultiColumnFragmentainerGroup::IsLastGroup() const {
-  return &column_set_->LastFragmentainerGroup() == this;
-}
-
 LogicalOffset MultiColumnFragmentainerGroup::OffsetFromColumnSet() const {
   return LogicalOffset(LayoutUnit(), LogicalTop());
 }
@@ -91,13 +83,6 @@ PhysicalOffset MultiColumnFragmentainerGroup::FlowThreadTranslationAtOffset(
   return physical_column_rect.offset - portion_rect.offset;
 }
 
-LayoutUnit MultiColumnFragmentainerGroup::ColumnLogicalTopForOffset(
-    LayoutUnit offset_in_flow_thread) const {
-  unsigned column_index = ColumnIndexAtOffset(
-      offset_in_flow_thread, LayoutBox::kAssociateWithLatterPage);
-  return LogicalTopInFlowThreadAt(column_index);
-}
-
 LogicalOffset MultiColumnFragmentainerGroup::VisualPointToFlowThreadPoint(
     const LogicalOffset& visual_point) const {
   unsigned column_index = ColumnIndexAtVisualPoint(visual_point);
@@ -144,19 +129,6 @@ PhysicalRect MultiColumnFragmentainerGroup::FragmentsBoundingBox(
       FlowThreadTranslationAtOffset(LogicalTopInFlowThreadAt(end_column),
                                     LayoutBox::kAssociateWithLatterPage));
   return UnionRect(start_column_rect, end_column_rect);
-}
-
-LogicalRect MultiColumnFragmentainerGroup::CalculateOverflow() const {
-  // Note that we just return the bounding rectangle of the column boxes here.
-  // We currently don't examine overflow caused by the actual content that ends
-  // up in each column.
-  LogicalRect overflow_rect;
-  if (unsigned column_count = ActualColumnCount()) {
-    overflow_rect = ColumnRectAt(0);
-    if (column_count > 1)
-      overflow_rect.UniteEvenIfEmpty(ColumnRectAt(column_count - 1));
-  }
-  return overflow_rect;
 }
 
 unsigned MultiColumnFragmentainerGroup::ActualColumnCount() const {

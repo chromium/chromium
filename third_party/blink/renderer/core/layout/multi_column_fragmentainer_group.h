@@ -38,11 +38,6 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
  public:
   explicit MultiColumnFragmentainerGroup(const LayoutMultiColumnSet&);
 
-  const LayoutMultiColumnSet& ColumnSet() const { return *column_set_; }
-
-  bool IsFirstGroup() const;
-  bool IsLastGroup() const;
-
   // Position within the LayoutMultiColumnSet.
   LayoutUnit LogicalTop() const { return logical_top_; }
   void SetLogicalTop(LayoutUnit logical_top) { logical_top_ = logical_top; }
@@ -105,7 +100,6 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
   PhysicalOffset FlowThreadTranslationAtOffset(
       LayoutUnit,
       LayoutBox::PageBoundaryRule) const;
-  LayoutUnit ColumnLogicalTopForOffset(LayoutUnit offset_in_flow_thread) const;
 
   LogicalOffset VisualPointToFlowThreadPoint(
       const LogicalOffset& visual_point) const;
@@ -124,8 +118,6 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
       LayoutUnit logical_bottom_in_flow_thread,
       unsigned& first_column,
       unsigned& last_column) const;
-
-  LogicalRect CalculateOverflow() const;
 
   unsigned ColumnIndexAtOffset(LayoutUnit offset_in_flow_thread,
                                LayoutBox::PageBoundaryRule) const;

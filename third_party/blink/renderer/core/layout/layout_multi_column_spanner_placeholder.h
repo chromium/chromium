@@ -44,15 +44,6 @@ class LayoutMultiColumnSpannerPlaceholder final : public LayoutBox {
     NOT_DESTROYED();
     return layout_object_in_flow_thread_.Get();
   }
-  void MarkForLayoutIfObjectInFlowThreadNeedsLayout() {
-    NOT_DESTROYED();
-    if (!layout_object_in_flow_thread_->NeedsLayout())
-      return;
-    // The containing block of a spanner is the multicol container (our parent
-    // here), but the spanner is laid out via its spanner set (us), so we need
-    // to make sure that we enter it.
-    SetChildNeedsLayout(kMarkOnlyThis);
-  }
 
   bool AnonymousHasStylePropagationOverride() final {
     NOT_DESTROYED();
