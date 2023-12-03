@@ -2265,42 +2265,6 @@ bool HTMLElement::HandleInvokeInternal(HTMLElement& invoker,
   }
 
   auto& document = GetDocument();
-  LocalFrame* frame = document.GetFrame();
-
-  if (EqualIgnoringASCIICase(action, keywords::kToggleFullscreen)) {
-    if (Fullscreen::IsFullscreenElement(*this)) {
-      Fullscreen::ExitFullscreen(document);
-      return true;
-    } else if (LocalFrame::HasTransientUserActivation(frame)) {
-      Fullscreen::RequestFullscreen(*this);
-      return true;
-    } else {
-      String message = "Cannot request fullscreen without a user gesture.";
-      document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::ConsoleMessageSource::kJavaScript,
-          mojom::ConsoleMessageLevel::kWarning, message));
-      return false;
-    }
-  } else if (EqualIgnoringASCIICase(action, keywords::kRequestFullscreen)) {
-    if (Fullscreen::IsFullscreenElement(*this)) {
-      return true;
-    }
-    if (LocalFrame::HasTransientUserActivation(frame)) {
-      Fullscreen::RequestFullscreen(*this);
-      return true;
-    } else {
-      String message = "Cannot request fullscreen without a user gesture.";
-      document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::ConsoleMessageSource::kJavaScript,
-          mojom::ConsoleMessageLevel::kWarning, message));
-      return false;
-    }
-  } else if (EqualIgnoringASCIICase(action, keywords::kExitFullscreen)) {
-    if (Fullscreen::IsFullscreenElement(*this)) {
-      Fullscreen::ExitFullscreen(document);
-    }
-    return true;
-  }
 
   // Note that the order is: `mousedown` which runs popover light dismiss
   // code, then (for clicked elements) focus is set to the clicked
@@ -2360,6 +2324,47 @@ bool HTMLElement::HandleInvokeInternal(HTMLElement& invoker,
       InvokePopover(invoker);
       return true;
     }
+  }
+
+  if (!RuntimeEnabledFeatures::HTMLInvokeActionsV2Enabled()) {
+    return false;
+  }
+
+  LocalFrame* frame = document.GetFrame();
+
+  if (EqualIgnoringASCIICase(action, keywords::kToggleFullscreen)) {
+    if (Fullscreen::IsFullscreenElement(*this)) {
+      Fullscreen::ExitFullscreen(document);
+      return true;
+    } else if (LocalFrame::HasTransientUserActivation(frame)) {
+      Fullscreen::RequestFullscreen(*this);
+      return true;
+    } else {
+      String message = "Cannot request fullscreen without a user gesture.";
+      document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::ConsoleMessageSource::kJavaScript,
+          mojom::ConsoleMessageLevel::kWarning, message));
+      return false;
+    }
+  } else if (EqualIgnoringASCIICase(action, keywords::kRequestFullscreen)) {
+    if (Fullscreen::IsFullscreenElement(*this)) {
+      return true;
+    }
+    if (LocalFrame::HasTransientUserActivation(frame)) {
+      Fullscreen::RequestFullscreen(*this);
+      return true;
+    } else {
+      String message = "Cannot request fullscreen without a user gesture.";
+      document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::ConsoleMessageSource::kJavaScript,
+          mojom::ConsoleMessageLevel::kWarning, message));
+      return false;
+    }
+  } else if (EqualIgnoringASCIICase(action, keywords::kExitFullscreen)) {
+    if (Fullscreen::IsFullscreenElement(*this)) {
+      Fullscreen::ExitFullscreen(document);
+    }
+    return true;
   }
   return false;
 }

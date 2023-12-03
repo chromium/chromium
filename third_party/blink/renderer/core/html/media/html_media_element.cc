@@ -1455,6 +1455,10 @@ bool HTMLMediaElement::HandleInvokeInternal(HTMLElement& invoker,
     return true;
   }
 
+  if (!RuntimeEnabledFeatures::HTMLInvokeActionsV2Enabled()) {
+    return false;
+  }
+
   if (!(EqualIgnoringASCIICase(action, keywords::kPlaypause) ||
         EqualIgnoringASCIICase(action, keywords::kPause) ||
         EqualIgnoringASCIICase(action, keywords::kPlay) ||

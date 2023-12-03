@@ -368,6 +368,10 @@ bool HTMLDetailsElement::HandleInvokeInternal(HTMLElement& invoker,
     return true;
   }
 
+  if (!RuntimeEnabledFeatures::HTMLInvokeActionsV2Enabled()) {
+    return false;
+  }
+
   if (!(EqualIgnoringASCIICase(action, keywords::kAuto) ||
         EqualIgnoringASCIICase(action, keywords::kToggle) ||
         EqualIgnoringASCIICase(action, keywords::kClose) ||

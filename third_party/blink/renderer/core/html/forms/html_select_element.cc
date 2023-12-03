@@ -1504,6 +1504,10 @@ bool HTMLSelectElement::HandleInvokeInternal(HTMLElement& invoker,
     return true;
   }
 
+  if (!RuntimeEnabledFeatures::HTMLInvokeActionsV2Enabled()) {
+    return false;
+  }
+
   // Step 3. If action is an ASCII case-insensitive match for showPicker ...
   // Early return instead of doing this in step 3.
   if (!EqualIgnoringASCIICase(action, keywords::kShowPicker)) {
