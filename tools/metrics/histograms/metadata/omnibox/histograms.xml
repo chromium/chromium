@@ -629,6 +629,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.DocumentSuggest.ProviderAllowed"
+    enum="DocumentProviderAllowedReason" expires_after="2024-04-28">
+  <owner>manukh@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <summary>
+    Counts the number of times the document provider's `Start` method is called
+    by the AutocompleteController, bucketed by the reason applied for whether or
+    not the provider is allowed to run (in other words, whether the profile and
+    session meets all the requirements to request document suggestions from the
+    server).
+
+    Recorded exactly once per omnibox autocompletion cycle (in other words, per
+    each time the user changes the omnibox input). The reason recorded is the
+    first reason encountered which determines that we should not run the
+    provider. In other words, each bucket is an undercount of whether that
+    reason _could have been used_ to decide not to run the provider. Therefore,
+    interpreting these results requires an understanding the order of the checks
+    in `DocumentProvider::IsDocumentProviderAllowed`.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.DocumentSuggest.Requests"
     enum="OmniboxDocumentSuggestRequests" expires_after="2024-04-28">
   <owner>manukh@chromium.org</owner>
