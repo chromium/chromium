@@ -846,36 +846,23 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
     }
   }
 
-  if (auto* inline_token = DynamicTo<InlineBreakToken>(entry.token)) {
-    if (inline_token->IsInParallelBlockFlow()) {
-      // Failed to resume in a parallel block flow inside an inline formatting
-      // context (fragmented floats or blocks in an inline formatting context).
-      // This may happen if there's already a float that was defined in an
-      // earlier fragmentainer, that takes up too much space in the current
-      // fragmentainer as well. We now need to repropagate what we didn't get to
-      // handle.
-      do {
-        container_builder_.AddBreakToken(entry.token);
-        entry = child_iterator.NextChild(previous_inline_break_token);
-      } while (entry.node);
-    }
-  } else {
 #if DCHECK_IS_ON()
-    // Assert that we have made actual progress. Breaking before we're done with
-    // all parallel flows from incoming break tokens means that we'll never get
-    // the opportunity to handle them again.
-    if (auto* block_token = DynamicTo<BlockBreakToken>(entry.token)) {
-      // A column spanner forces all content preceding it to stay in the same
-      // flow, so we can (and must) skip the check. Even if IsAtBlockEnd() is
-      // true in such cases, it doesn't mean that a parallel flow is
-      // established.
-      if (!container_builder_.FoundColumnSpanner() &&
-          !container_builder_.ShouldForceSameFragmentationFlow()) {
-        DCHECK(!block_token->IsAtBlockEnd());
-      }
+  // Assert that we have made actual progress. Breaking before we're done with
+  // all parallel flows from incoming break tokens means that we'll never get
+  // the opportunity to handle them again. We don't repropagate unhandled
+  // incoming break tokens, and there should be no need to.
+  if (auto* inline_token = DynamicTo<InlineBreakToken>(entry.token)) {
+    DCHECK(!inline_token->IsInParallelBlockFlow());
+  } else if (auto* block_token = DynamicTo<BlockBreakToken>(entry.token)) {
+    // A column spanner forces all content preceding it to stay in the same
+    // flow, so we can (and must) skip the check. Even if IsAtBlockEnd() is true
+    // in such cases, it doesn't mean that a parallel flow is established.
+    if (!container_builder_.FoundColumnSpanner() &&
+        !container_builder_.ShouldForceSameFragmentationFlow()) {
+      DCHECK(!block_token->IsAtBlockEnd());
     }
-#endif
   }
+#endif
 
   if (ruby_text_child)
     HandleRubyText(ruby_text_child);
@@ -2201,7 +2188,20 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
       layout_result->LineBoxBfcBlockOffset();
 
   if (GetConstraintSpace().HasBlockFragmentation()) {
-    if (container_builder_.BfcBlockOffset() && child_bfc_block_offset) {
+    // If the BFC block-offset is known both for this container and for the
+    // child, breaking before may be possible, unless this is a resumed inline
+    // formatting context in a parallel block flow. There are situations where
+    // such parallel flows cannot be resumed, due to a float (that got pushed
+    // from a previous fragmentainer) taking up all the available space in the
+    // current fragmentainer, for instance. In such cases we'll just repropagate
+    // the break tokens, by obtaining them from inline_child_layout_context
+    // below.
+    bool consider_breaking_before =
+        container_builder_.BfcBlockOffset() && child_bfc_block_offset &&
+        (!child.IsInline() || !child_break_token ||
+         !To<InlineBreakToken>(child_break_token)->IsInParallelBlockFlow());
+
+    if (consider_breaking_before) {
       bool is_line_box_pushed_by_floats =
           line_box_bfc_block_offset &&
           *line_box_bfc_block_offset > *child_bfc_block_offset;
