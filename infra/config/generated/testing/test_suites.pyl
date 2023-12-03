@@ -3942,13 +3942,7 @@
           '--use-gpu-in-tests',
         ],
       },
-      'components_browsertests': {
-        'test': 'components_browsertests',
-        'args': [
-          '--test-launcher-bot-mode',
-          '--test-launcher-filter-file=testing/buildbot/filters/ios.use_blink.components_browsertests.filter',
-        ],
-      },
+      'components_browsertests': {},
       'components_unittests': {
         'test': 'components_unittests',
         'args': [

@@ -1019,7 +1019,6 @@ if (use_blink) {
         "test:dom_distiller_test_bundle_data",
         "test:url_rewrite_test_bundle_data",
         "//content/test:content_test_bundle_data",
-        "//testing/buildbot/filters:components_browsertests_filters_bundle_data",
       ]
     }
 

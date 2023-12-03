@@ -39,6 +39,7 @@ namespace {
 
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::Eq;
 using ::testing::Field;
 using ::testing::Gt;
 using ::testing::IsEmpty;
@@ -90,7 +91,10 @@ auto MemorySummaryResultIsPositive() {
             Field("measurement_time", &ResultMetadata::measurement_time,
                   AllOf(Gt(base::TimeTicks()), Lt(base::TimeTicks::Now())))),
 #if BUILDFLAG(IS_IOS)
-  // iOS doesn't support private_memory_footprint, so it's always 0.
+      // TODO(crbug.com/1506552): iOS doesn't support private_memory_footprint,
+      // so it's always 0.
+      Field("private_footprint_kb", &MemorySummaryResult::private_footprint_kb,
+            Eq(0u)),
 #else
       Field("private_footprint_kb", &MemorySummaryResult::private_footprint_kb,
             Gt(0u)),
