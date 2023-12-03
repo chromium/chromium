@@ -600,6 +600,8 @@ void CookieStoreManager::OnCookieChange(const net::CookieChangeInfo& change) {
         registration_id,
         base::BindOnce(
             [](base::WeakPtr<CookieStoreManager> manager,
+               BrowserContext* browser_context,
+               ContentBrowserClient* content_browser_client,
                const net::CookieChangeInfo& change,
                blink::ServiceWorkerStatusCode find_status,
                scoped_refptr<ServiceWorkerRegistration> registration) {
@@ -609,6 +611,13 @@ void CookieStoreManager::OnCookieChange(const net::CookieChangeInfo& change) {
               DCHECK(registration);
               if (!manager)
                 return;
+
+              if (content_browser_client && !change.cookie.IsPartitioned() &&
+                  !content_browser_client->IsFullCookieAccessAllowed(
+                      browser_context, registration->scope(),
+                      registration->key())) {
+                return;
+              }
 
               // If the change is for a partition cookie, we check that its
               // partition key matches the StorageKey's top-level site.
@@ -639,7 +648,9 @@ void CookieStoreManager::OnCookieChange(const net::CookieChangeInfo& change) {
 
               manager->DispatchChangeEvent(std::move(registration), change);
             },
-            weak_factory_.GetWeakPtr(), change));
+            weak_factory_.GetWeakPtr(),
+            service_worker_context_->browser_context(),
+            GetContentClient()->browser(), change));
   }
 }
 

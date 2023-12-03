@@ -370,6 +370,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* browser_context,
       const url::Origin& top_frame_origin,
       const url::Origin& context_origin) override;
+  bool IsFullCookieAccessAllowed(content::BrowserContext* browser_context,
+                                 const GURL& url,
+                                 const blink::StorageKey& storage_key) override;
 #if BUILDFLAG(IS_CHROMEOS)
   void OnTrustAnchorUsed(content::BrowserContext* browser_context) override;
 #endif

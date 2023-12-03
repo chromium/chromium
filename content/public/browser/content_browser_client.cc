@@ -617,6 +617,13 @@ bool ContentBrowserClient::IsCookieDeprecationLabelAllowedForContext(
   return false;
 }
 
+bool ContentBrowserClient::IsFullCookieAccessAllowed(
+    content::BrowserContext* browser_context,
+    const GURL& url,
+    const blink::StorageKey& storage_key) {
+  return true;
+}
+
 bool ContentBrowserClient::CanSendSCTAuditingReport(
     BrowserContext* browser_context) {
   return false;
@@ -1666,4 +1673,5 @@ network::mojom::IpProtectionProxyBypassPolicy
 ContentBrowserClient::GetIpProtectionProxyBypassPolicy() {
   return network::mojom::IpProtectionProxyBypassPolicy::kNone;
 }
+
 }  // namespace content

@@ -3524,6 +3524,22 @@ bool ChromeContentBrowserClient::IsCookieDeprecationLabelAllowedForContext(
       top_frame_origin, context_origin);
 }
 
+bool ChromeContentBrowserClient::IsFullCookieAccessAllowed(
+    content::BrowserContext* browser_context,
+    const GURL& url,
+    const blink::StorageKey& storage_key) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  scoped_refptr<content_settings::CookieSettings> cookie_settings =
+      CookieSettingsFactory::GetForProfile(profile);
+  if (!cookie_settings) {
+    return true;
+  }
+  return cookie_settings->IsFullCookieAccessAllowed(
+      url, storage_key.ToNetSiteForCookies(),
+      url::Origin::Create(storage_key.top_level_site().GetURL()),
+      cookie_settings->SettingOverridesForStorage());
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 void ChromeContentBrowserClient::OnTrustAnchorUsed(
     content::BrowserContext* browser_context) {

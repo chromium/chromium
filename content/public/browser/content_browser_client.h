@@ -1044,6 +1044,13 @@ class CONTENT_EXPORT ContentBrowserClient {
       const url::Origin& top_frame_origin,
       const url::Origin& context_origin);
 
+  // Returns whether cookies should be allowed for requests to `url`, fetched
+  // from contexts whose storage is keyed on `storage_key`.
+  virtual bool IsFullCookieAccessAllowed(
+      content::BrowserContext* browser_context,
+      const GURL& url,
+      const blink::StorageKey& storage_key);
+
 #if BUILDFLAG(IS_CHROMEOS)
   // Notification that a trust anchor was used by the given user.
   virtual void OnTrustAnchorUsed(BrowserContext* browser_context) {}
