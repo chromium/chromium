@@ -31854,6 +31854,7 @@ from previous Chrome versions.
   <int value="-2135013329" label="StylusRichGestures:disabled"/>
   <int value="-2134886830" label="ChromeWideEchoCancellation:disabled"/>
   <int value="-2134653602" label="WebAppSyncGeneratedIconUpdateFix:enabled"/>
+  <int value="-2134609104" label="SystemEmojiPickerVariantGrouping:enabled"/>
   <int value="-2134333982" label="ShowArcFilesApp:enabled"/>
   <int value="-2134244069" label="HttpFormWarning:enabled"/>
   <int value="-2133892372" label="ResamplingInputEvents:disabled"/>
@@ -32706,6 +32707,7 @@ from previous Chrome versions.
   <int value="-1759403147" label="MinorModeSupport:disabled"/>
   <int value="-1758468685" label="DownloadHomeV2:disabled"/>
   <int value="-1758074393" label="BorealisWebUIInstaller:disabled"/>
+  <int value="-1757014990" label="SystemEmojiPickerVariantGrouping:disabled"/>
   <int value="-1755714804" label="FeedCloseRefresh:enabled"/>
   <int value="-1755301960" label="ClearOldBrowsingData:enabled"/>
   <int value="-1754262889" label="RemoteCopyPersistentNotification:enabled"/>

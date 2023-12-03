@@ -1561,6 +1561,11 @@ BASE_FEATURE(kImeSystemEmojiPickerSearchExtension,
              "SystemEmojiPickerSearchExtension",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable or disable system emoji picker global emoji variant grouping
+BASE_FEATURE(kImeSystemEmojiPickerVariantGrouping,
+             "SystemEmojiPickerVariantGrouping",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable or disable a new UI for stylus writing on the virtual keyboard
 BASE_FEATURE(kImeStylusHandwriting,
              "StylusHandwriting",

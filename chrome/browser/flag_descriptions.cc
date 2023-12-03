@@ -6738,6 +6738,12 @@ const char kImeSystemEmojiPickerSearchExtensionDescription[] =
     "Emoji picker search extension enhances current emoji search by "
     "introducing multi-word prefix search.";
 
+const char kImeSystemEmojiPickerVariantGroupingName[] =
+    "System emoji picker global variant grouping";
+const char kImeSystemEmojiPickerVariantGroupingDescription[] =
+    "Emoji picker global variant grouping syncs skin tone and gender "
+    "preferences across emojis in each group.";
+
 const char kImeStylusHandwritingName[] = "Stylus Handwriting";
 const char kImeStylusHandwritingDescription[] =
     "Enable VK UI for stylus in text fields";
