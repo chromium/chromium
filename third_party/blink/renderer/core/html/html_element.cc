@@ -1942,12 +1942,17 @@ const HTMLElement* NearestTargetPopoverForInvoker(
     const PopoverAncestorOptionsSet ancestor_options =
         PopoverAncestorOptionsSet()) {
   return NearestMatchingAncestor(
-      node, ancestor_options, [](const Node* test_node) {
-        auto* form_element = DynamicTo<HTMLFormControlElement>(test_node);
-        return form_element ? const_cast<HTMLFormControlElement*>(form_element)
-                                  ->popoverTargetElement()
-                                  .popover.Get()
-                            : nullptr;
+      node, ancestor_options, [](const Node* test_node) -> const HTMLElement* {
+        auto* form_element =
+            DynamicTo<HTMLFormControlElement>(const_cast<Node*>(test_node));
+        if (!form_element) {
+          return nullptr;
+        }
+        auto* invoke_target_element = form_element->invokeTargetElement();
+
+        return invoke_target_element
+                   ? invoke_target_element
+                   : form_element->popoverTargetElement().popover.Get();
       });
 }
 

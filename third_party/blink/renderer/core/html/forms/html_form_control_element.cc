@@ -401,6 +401,16 @@ HTMLFormControlElement::popoverTargetElement() {
   return PopoverTargetElement{.popover = target_popover, .action = action};
 }
 
+HTMLElement* HTMLFormControlElement::invokeTargetElement() {
+  if (!IsInTreeScope() || IsDisabledFormControl() ||
+      (Form() && IsSuccessfulSubmitButton())) {
+    return nullptr;
+  }
+
+  return DynamicTo<HTMLElement>(
+      GetElementAttribute(html_names::kInvoketargetAttr));
+}
+
 AtomicString HTMLFormControlElement::popoverTargetAction() const {
   auto attribute_value =
       FastGetAttribute(html_names::kPopovertargetactionAttr).LowerASCII();
@@ -441,8 +451,7 @@ void HTMLFormControlElement::DefaultEventHandler(Event& event) {
   // buttons.
   if (event.type() == event_type_names::kDOMActivate && IsInTreeScope() &&
       !IsDisabledFormControl() && (!Form() || !IsSuccessfulSubmitButton())) {
-    HTMLElement* invokee = DynamicTo<HTMLElement>(
-        GetElementAttribute(html_names::kInvoketargetAttr));
+    auto* invokee = invokeTargetElement();
     auto popover = popoverTargetElement();
 
     // invoketarget & popovertarget shouldn't be combined, so warn.
