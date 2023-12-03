@@ -132,6 +132,32 @@ OnDeviceModelPerformanceClass ConvertToOnDeviceModelPerformanceClass(
   }
 }
 
+std::string OnDeviceModelPerformanceClassToString(
+    OnDeviceModelPerformanceClass performance_class) {
+  switch (performance_class) {
+    case OnDeviceModelPerformanceClass::kUnknown:
+      return "Unknown";
+    case OnDeviceModelPerformanceClass::kError:
+      return "Error";
+    case OnDeviceModelPerformanceClass::kVeryLow:
+      return "VeryLow";
+    case OnDeviceModelPerformanceClass::kLow:
+      return "Low";
+    case OnDeviceModelPerformanceClass::kMedium:
+      return "Medium";
+    case OnDeviceModelPerformanceClass::kHigh:
+      return "High";
+    case OnDeviceModelPerformanceClass::kVeryHigh:
+      return "VeryHigh";
+    case OnDeviceModelPerformanceClass::kGpuBlocked:
+      return "GpuBlocked";
+    case OnDeviceModelPerformanceClass::kFailedToLoadLibrary:
+      return "FailedToLoadLibrary";
+    case OnDeviceModelPerformanceClass::kServiceCrash:
+      return "ServiceCrash";
+  }
+}
+
 scoped_refptr<optimization_guide::OnDeviceModelServiceController>
 GetOnDeviceModelServiceController() {
   scoped_refptr<optimization_guide::OnDeviceModelServiceController>
@@ -143,21 +169,6 @@ GetOnDeviceModelServiceController() {
     service_controller->Init();
   }
   return service_controller;
-}
-
-void LogOnDeviceMetrics() {
-  auto controller = GetOnDeviceModelServiceController();
-  controller->GetEstimatedPerformanceClass(base::BindOnce(
-      [](scoped_refptr<optimization_guide::OnDeviceModelServiceController>
-             controller,
-         std::optional<on_device_model::mojom::PerformanceClass>
-             performance_class) {
-        base::UmaHistogramEnumeration(
-            "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass",
-            ConvertToOnDeviceModelPerformanceClass(performance_class));
-        controller->ShutdownServiceIfNoModelLoaded();
-      },
-      controller));
 }
 
 }  // namespace
@@ -186,6 +197,30 @@ void OptimizationGuideKeyedService::
   }
   model_execution_features_controller_
       ->SimulateBrowserRestartForTesting();  // IN-TEST
+}
+
+// static
+void OptimizationGuideKeyedService::LogOnDeviceMetrics() {
+  auto controller = GetOnDeviceModelServiceController();
+  controller->GetEstimatedPerformanceClass(base::BindOnce(
+      [](scoped_refptr<optimization_guide::OnDeviceModelServiceController>
+             controller,
+         std::optional<on_device_model::mojom::PerformanceClass>
+             performance_class) {
+        auto optimization_guide_performance_class =
+            ConvertToOnDeviceModelPerformanceClass(performance_class);
+        base::UmaHistogramEnumeration(
+            "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass",
+            optimization_guide_performance_class);
+
+        ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+            "SyntheticOnDeviceModelPerformanceClass",
+            OnDeviceModelPerformanceClassToString(
+                optimization_guide_performance_class),
+            variations::SyntheticTrialAnnotationMode::kCurrentLog);
+        controller->ShutdownServiceIfNoModelLoaded();
+      },
+      controller));
 }
 
 OptimizationGuideKeyedService::OptimizationGuideKeyedService(
@@ -330,7 +365,8 @@ void OptimizationGuideKeyedService::Initialize() {
       base::FeatureList::IsEnabled(
           optimization_guide::features::kLogOnDeviceMetricsOnStartup)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, base::BindOnce(&LogOnDeviceMetrics),
+        FROM_HERE,
+        base::BindOnce(&OptimizationGuideKeyedService::LogOnDeviceMetrics),
         optimization_guide::features::GetOnDeviceStartupMetricDelay());
   }
 

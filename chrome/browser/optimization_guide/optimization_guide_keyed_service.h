@@ -185,6 +185,9 @@ class OptimizationGuideKeyedService
   friend class PersonalizedHintsFetcherBrowserTest;
   friend class settings::SettingsUI;
 
+  // Logs metrics from the OnDeviceModelService.
+  static void LogOnDeviceMetrics();
+
   // Initializes |this|.
   void Initialize();
 
