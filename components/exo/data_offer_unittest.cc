@@ -25,6 +25,7 @@
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_data_exchange_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
@@ -108,7 +109,7 @@ class TestDataTransferPolicyController : ui::DataTransferPolicyController {
   void PasteIfAllowed(
       base::optional_ref<const ui::DataTransferEndpoint> data_src,
       base::optional_ref<const ui::DataTransferEndpoint> data_dst,
-      const absl::optional<size_t> size,
+      absl::variant<size_t, std::vector<base::FilePath>> pasted_content,
       content::RenderFrameHost* web_contents,
       base::OnceCallback<void(bool)> callback) override {}
 

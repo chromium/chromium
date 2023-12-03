@@ -5,6 +5,7 @@
 #include "components/exo/drag_drop_operation.h"
 
 #include <memory>
+#include <vector>
 
 #include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/shell.h"
@@ -27,6 +28,7 @@
 #include "components/exo/test/exo_test_data_exchange_delegate.h"
 #include "components/exo/test/shell_surface_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
@@ -367,12 +369,13 @@ class MockDataTransferPolicyController
                bool(base::optional_ref<const ui::DataTransferEndpoint> data_src,
                     base::optional_ref<const ui::DataTransferEndpoint> data_dst,
                     const absl::optional<size_t> size));
-  MOCK_METHOD5(PasteIfAllowed,
-               void(base::optional_ref<const ui::DataTransferEndpoint> data_src,
-                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
-                    const absl::optional<size_t> size,
-                    content::RenderFrameHost* rfh,
-                    base::OnceCallback<void(bool)> callback));
+  MOCK_METHOD5(
+      PasteIfAllowed,
+      void(base::optional_ref<const ui::DataTransferEndpoint> data_src,
+           base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+           absl::variant<size_t, std::vector<base::FilePath>> pasted_content,
+           content::RenderFrameHost* rfh,
+           base::OnceCallback<void(bool)> callback));
   MOCK_METHOD3(DropIfAllowed,
                void(const ui::OSExchangeData* drag_data,
                     base::optional_ref<const ui::DataTransferEndpoint> data_dst,

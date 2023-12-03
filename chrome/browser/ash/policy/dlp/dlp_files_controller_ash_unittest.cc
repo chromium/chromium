@@ -1372,14 +1372,13 @@ TEST_F(DlpFilesControllerAshTest, DoNotReportOnSystemApps) {
               base::BucketsAre(base::Bucket(dlp::FileAction::kTransfer, 0)));
 }
 
-TEST_F(DlpFilesControllerAshTest, CheckIfDropAllowed_ErrorResponse) {
+TEST_F(DlpFilesControllerAshTest, CheckIfPasteOrDropIsAllowed_ErrorResponse) {
   ASSERT_TRUE(mount_points_->RegisterFileSystem(
       "c", storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
       my_files_dir_));
 
   base::FilePath file_path1 = my_files_dir_.AppendASCII(kFilePath1);
   ASSERT_TRUE(CreateDummyFile(file_path1));
-  auto file_url1 = CreateFileSystemURL(kTestStorageKey, file_path1.value());
 
   // Set CheckFilesTransferResponse to return an error.
   ::dlp::CheckFilesTransferResponse check_files_transfer_response;
@@ -1389,13 +1388,12 @@ TEST_F(DlpFilesControllerAshTest, CheckIfDropAllowed_ErrorResponse) {
   chromeos::DlpClient::Get()->GetTestInterface()->SetCheckFilesTransferResponse(
       check_files_transfer_response);
 
-  std::vector<ui::FileInfo> dropped_files{ui::FileInfo(file_path1, file_path1)};
   const ui::DataTransferEndpoint data_dst((GURL(kExampleUrl1)));
 
   base::test::TestFuture<bool> future;
   ASSERT_TRUE(files_controller_);
-  files_controller_->CheckIfDropAllowed(std::move(dropped_files), &data_dst,
-                                        future.GetCallback());
+  files_controller_->CheckIfPasteOrDropIsAllowed({file_path1}, &data_dst,
+                                                 future.GetCallback());
 
   ASSERT_TRUE(future.Take());
 
@@ -1411,8 +1409,8 @@ TEST_F(DlpFilesControllerAshTest, CheckIfDropAllowed_ErrorResponse) {
   EXPECT_FALSE(request.has_io_task_id());
 }
 
-// Tests dropping a mix of an external file and a local directory.
-TEST_F(DlpFilesControllerAshTest, CheckIfDropAllowed) {
+// Tests pasting or dropping a mix of an external file and a local directory.
+TEST_F(DlpFilesControllerAshTest, CheckIfPasteOrDropIsAllowed) {
   ASSERT_TRUE(mount_points_->RegisterFileSystem(
       "c", storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
       my_files_dir_));
@@ -1429,7 +1427,7 @@ TEST_F(DlpFilesControllerAshTest, CheckIfDropAllowed) {
   ASSERT_TRUE(CreateDummyFile(file_path2));
   auto file_url2 = CreateFileSystemURL(kTestStorageKey, file_path2.value());
 
-  //  Set CheckFilesTransfer response to restrict the local file.
+  // Set CheckFilesTransfer response to restrict the local file.
   ::dlp::CheckFilesTransferResponse check_files_transfer_response;
   check_files_transfer_response.add_files_paths(file_path2.value());
   ASSERT_TRUE(chromeos::DlpClient::Get()->IsAlive());
@@ -1441,15 +1439,12 @@ TEST_F(DlpFilesControllerAshTest, CheckIfDropAllowed) {
                                   std::vector<base::FilePath>{file_path2},
                                   dlp::FileAction::kCopy));
 
-  std::vector<ui::FileInfo> dropped_files{
-      ui::FileInfo(file_path1, file_path1),
-      ui::FileInfo(sub_dir1.GetPath(), sub_dir1.GetPath())};
   const ui::DataTransferEndpoint data_dst((GURL(kExampleUrl1)));
 
   base::test::TestFuture<bool> future;
   ASSERT_TRUE(files_controller_);
-  files_controller_->CheckIfDropAllowed(dropped_files, &data_dst,
-                                        future.GetCallback());
+  files_controller_->CheckIfPasteOrDropIsAllowed(
+      {file_path1, sub_dir1.GetPath()}, &data_dst, future.GetCallback());
   EXPECT_FALSE(future.Take());
 
   // Validate that only the local file was sent to the daemon.
@@ -1464,7 +1459,8 @@ TEST_F(DlpFilesControllerAshTest, CheckIfDropAllowed) {
   EXPECT_FALSE(request.has_io_task_id());
 }
 
-TEST_F(DlpFilesControllerAshTest, CheckIfDropAllowed_NoFileSystemContext) {
+TEST_F(DlpFilesControllerAshTest,
+       CheckIfPasteOrDropIsAllowed_NoFileSystemContext) {
   ASSERT_TRUE(mount_points_->RegisterFileSystem(
       "c", storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
       my_files_dir_));
@@ -1473,14 +1469,13 @@ TEST_F(DlpFilesControllerAshTest, CheckIfDropAllowed_NoFileSystemContext) {
   ASSERT_TRUE(CreateDummyFile(file_path1));
   auto file_url1 = CreateFileSystemURL(kTestStorageKey, file_path1.value());
 
-  std::vector<ui::FileInfo> dropped_files{ui::FileInfo(file_path1, file_path1)};
   const ui::DataTransferEndpoint data_dst((GURL(kExampleUrl1)));
 
   base::test::TestFuture<bool> future;
   ASSERT_TRUE(files_controller_);
   files_controller_->SetFileSystemContextForTesting(nullptr);
-  files_controller_->CheckIfDropAllowed(std::move(dropped_files), &data_dst,
-                                        future.GetCallback());
+  files_controller_->CheckIfPasteOrDropIsAllowed({file_path1}, &data_dst,
+                                                 future.GetCallback());
   ASSERT_TRUE(future.Take());
 }
 
@@ -2639,13 +2634,12 @@ TEST_P(DlpFilesDnDTest, CheckIfDropAllowed) {
                           std::vector<base::FilePath>{file_path1},
                           dlp::FileAction::kCopy));
 
-  std::vector<ui::FileInfo> dropped_files{ui::FileInfo(file_path1, file_path1)};
   auto [data_dst, expected_component] = GetParam();
 
   base::test::TestFuture<bool> future;
   ASSERT_TRUE(files_controller_);
-  files_controller_->CheckIfDropAllowed(dropped_files, &data_dst,
-                                        future.GetCallback());
+  files_controller_->CheckIfPasteOrDropIsAllowed({file_path1}, &data_dst,
+                                                 future.GetCallback());
   EXPECT_TRUE(future.Wait());
   EXPECT_EQ(false, future.Take());
 

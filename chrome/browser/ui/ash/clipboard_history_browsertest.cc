@@ -50,6 +50,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
@@ -1423,7 +1424,7 @@ class FakeDataTransferPolicyController
   void PasteIfAllowed(
       base::optional_ref<const ui::DataTransferEndpoint> data_src,
       base::optional_ref<const ui::DataTransferEndpoint> data_dst,
-      const absl::optional<size_t> size,
+      absl::variant<size_t, std::vector<base::FilePath>> pasted_content,
       content::RenderFrameHost* rfh,
       base::OnceCallback<void(bool)> callback) override {}
 

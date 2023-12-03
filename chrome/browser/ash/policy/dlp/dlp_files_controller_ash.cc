@@ -874,20 +874,20 @@ bool DlpFilesControllerAsh::IsDlpPolicyMatched(const FileDaemonInfo& file) {
   return restricted;
 }
 
-void DlpFilesControllerAsh::CheckIfDropAllowed(
-    const std::vector<ui::FileInfo>& dropped_files,
+void DlpFilesControllerAsh::CheckIfPasteOrDropIsAllowed(
+    const std::vector<base::FilePath>& files,
     const ui::DataTransferEndpoint* data_dst,
     CheckIfDlpAllowedCallback result_callback) {
-  std::vector<base::FilePath> files_paths;
-  for (const auto& file : dropped_files) {
-    if (!IsInLocalFileSystem(profile_, file.path)) {
+  std::vector<base::FilePath> local_files;
+  for (const auto& path : files) {
+    if (!IsInLocalFileSystem(profile_, path)) {
       continue;
     }
-    files_paths.push_back(file.path);
+    local_files.push_back(path);
   }
 
   std::vector<storage::FileSystemURL> files_urls =
-      ConvertFilePathsToFileSystemUrls(profile_, files_paths);
+      ConvertFilePathsToFileSystemUrls(profile_, local_files);
   if (files_urls.empty()) {
     std::move(result_callback).Run(/*is_allowed=*/true);
     return;
@@ -903,9 +903,10 @@ void DlpFilesControllerAsh::CheckIfDropAllowed(
 
   auto* roots_recursion_delegate = new RootsRecursionDelegate(
       file_system_context, std::move(files_urls),
-      base::BindOnce(&DlpFilesControllerAsh::ContinueCheckIfDropAllowed,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(destination),
-                     std::move(result_callback)));
+      base::BindOnce(
+          &DlpFilesControllerAsh::ContinueCheckIfPasteOrDropIsAllowed,
+          weak_ptr_factory_.GetWeakPtr(), std::move(destination),
+          std::move(result_callback)));
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&RootsRecursionDelegate::Run,
@@ -1287,10 +1288,10 @@ void DlpFilesControllerAsh::ContinueFilterDisallowedUploads(
       request, std::move(return_uploads_callback));
 }
 
-void DlpFilesControllerAsh::ContinueCheckIfDropAllowed(
+void DlpFilesControllerAsh::ContinueCheckIfPasteOrDropIsAllowed(
     const DlpFileDestination& destination,
     CheckIfDlpAllowedCallback result_callback,
-    std::vector<storage::FileSystemURL> dropped_files) {
+    std::vector<storage::FileSystemURL> files) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!chromeos::DlpClient::Get() || !chromeos::DlpClient::Get()->IsAlive()) {
@@ -1299,7 +1300,7 @@ void DlpFilesControllerAsh::ContinueCheckIfDropAllowed(
   }
 
   ::dlp::CheckFilesTransferRequest request;
-  for (const auto& file : dropped_files) {
+  for (const auto& file : files) {
     request.add_files_paths(file.path().value());
   }
   if (destination.component().has_value()) {

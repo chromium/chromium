@@ -97,8 +97,8 @@ class MockDlpFilesControllerAsh : public DlpFilesControllerAsh {
               (override));
 
   MOCK_METHOD(void,
-              CheckIfDropAllowed,
-              (const std::vector<ui::FileInfo>& dropped_files,
+              CheckIfPasteOrDropIsAllowed,
+              (const std::vector<base::FilePath>& files,
                const ui::DataTransferEndpoint* data_dst,
                CheckIfDlpAllowedCallback result_callback),
               (override));

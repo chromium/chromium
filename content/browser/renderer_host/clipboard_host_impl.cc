@@ -37,6 +37,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "skia/ext/skia_utils_base.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
 #include "third_party/blink/public/mojom/drag/drag.mojom-forward.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -453,9 +454,9 @@ void ClipboardHostImpl::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
           process->GetID());
   std::move(files.begin(), files.end(), std::back_inserter(result->files));
 
-  PerformPasteIfContentAllowed(
-      clipboard->GetSequenceNumber(clipboard_buffer),
-      ui::ClipboardFormatType::FilenamesType(), std::move(clipboard_paste_data),
+  PasteIfPolicyAllowed(
+      clipboard_buffer, ui::ClipboardFormatType::FilenamesType(),
+      std::move(clipboard_paste_data),
       base::BindOnce(
           [](blink::mojom::ClipboardFilesPtr result, ReadFilesCallback callback,
              absl::optional<ClipboardPasteData> clipboard_paste_data) {
@@ -661,13 +662,16 @@ void ClipboardHostImpl::PasteIfPolicyAllowed(
     return;
   }
 
-  size_t data_size =
-      clipboard_paste_data.text.size() + clipboard_paste_data.image.size();
-  // When the paste data includes files, update data_size to be int_max to
-  // enforce data transfer scanning.
+  // If files are copied, `pasted_content` holds the associated file paths,
+  // otherwise the size of clipboard data.
+  absl::variant<size_t, std::vector<base::FilePath>> pasted_content;
   if (!clipboard_paste_data.file_paths.empty()) {
-    data_size = INT_MAX;
+    pasted_content = clipboard_paste_data.file_paths;
+  } else {
+    pasted_content =
+        clipboard_paste_data.text.size() + clipboard_paste_data.image.size();
   }
+
   auto policy_cb = base::BindOnce(
       &ClipboardHostImpl::PasteIfPolicyAllowedCallback,
       weak_ptr_factory_.GetWeakPtr(), clipboard_buffer, data_type,
@@ -677,8 +681,8 @@ void ClipboardHostImpl::PasteIfPolicyAllowed(
     auto source =
         ui::Clipboard::GetForCurrentThread()->GetSource(clipboard_buffer);
     ui::DataTransferPolicyController::Get()->PasteIfAllowed(
-        source, CreateDataEndpoint().get(), data_size, &render_frame_host(),
-        std::move(policy_cb));
+        source, CreateDataEndpoint().get(), std::move(pasted_content),
+        &render_frame_host(), std::move(policy_cb));
     return;
   }
   std::move(policy_cb).Run(/*is_allowed=*/true);

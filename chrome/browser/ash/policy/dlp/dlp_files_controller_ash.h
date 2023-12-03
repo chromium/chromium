@@ -184,9 +184,10 @@ class DlpFilesControllerAsh : public DlpFilesController,
   // Returns whether a dlp policy matches for the `file`.
   virtual bool IsDlpPolicyMatched(const FileDaemonInfo& file);
 
-  // Checks whether dropping `dropped_files` to `data_dst` is allowed.
-  virtual void CheckIfDropAllowed(
-      const std::vector<ui::FileInfo>& dropped_files,
+  // Checks whether pasting or dropping the given `paths` to `data_dst` is
+  // allowed.
+  virtual void CheckIfPasteOrDropIsAllowed(
+      const std::vector<base::FilePath>& files,
       const ui::DataTransferEndpoint* data_dst,
       CheckIfDlpAllowedCallback result_callback);
 
@@ -276,12 +277,12 @@ class DlpFilesControllerAsh : public DlpFilesController,
       FilterDisallowedUploadsCallback result_callback,
       std::vector<storage::FileSystemURL> uploaded_files);
 
-  // Called when `dropped_files` is ready. Constructs CheckFilesTransfer
-  // request and forwards it to the dlp daemon.
-  void ContinueCheckIfDropAllowed(
+  // Called when `files` is ready.
+  // Constructs CheckFilesTransfer request and forwards it to the DLP daemon.
+  void ContinueCheckIfPasteOrDropIsAllowed(
       const DlpFileDestination& destination,
       CheckIfDlpAllowedCallback result_callback,
-      std::vector<storage::FileSystemURL> dropped_files);
+      std::vector<storage::FileSystemURL> files);
 
   // The profile with which we are associated. Not owned. It's currently always
   // the main/primary profile.

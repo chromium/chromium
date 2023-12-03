@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DATA_TRANSFER_DLP_CONTROLLER_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DATA_TRANSFER_DLP_CONTROLLER_H_
 
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_drag_drop_notifier.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 
 namespace ui {
@@ -44,7 +46,7 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
   void PasteIfAllowed(
       base::optional_ref<const ui::DataTransferEndpoint> data_src,
       base::optional_ref<const ui::DataTransferEndpoint> data_dst,
-      const absl::optional<size_t> size,
+      absl::variant<size_t, std::vector<base::FilePath>> pasted_content,
       content::RenderFrameHost* rfh,
       base::OnceCallback<void(bool)> paste_cb) override;
   void DropIfAllowed(
@@ -129,6 +131,14 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
       base::optional_ref<const ui::DataTransferEndpoint> data_dst,
       base::OnceClosure drop_cb,
       bool is_allowed);
+
+  // Performs clipbpoard restriction related checks.
+  void ContinuePasteIfClipboardRestrictionsAllow(
+      base::optional_ref<const ui::DataTransferEndpoint> data_src,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+      size_t size,
+      content::RenderFrameHost* rfh,
+      base::OnceCallback<void(bool)> paste_cb);
 
   // The solution for the issue of sending multiple reporting events for a
   // single user action. When a user triggers a paste (for instance by pressing

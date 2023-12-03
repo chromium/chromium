@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/check_op.h"
+#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -114,7 +115,7 @@ DlpRulesManager::Level IsDataTransferAllowed(
     std::string* dst_pattern,
     DlpRulesManager::RuleMetadata* out_rule_metadata) {
   if (size.has_value() &&
-      *size < dlp_rules_manager.GetClipboardCheckSizeLimitInBytes()) {
+      size < dlp_rules_manager.GetClipboardCheckSizeLimitInBytes()) {
     return DlpRulesManager::Level::kAllow;
   }
 
@@ -207,6 +208,20 @@ void MaybeReportWarningProceededEventAndPaste(
   std::move(paste_cb).Run(should_proceed);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Returns file paths from the given file infos. Currently only used in ChromeOS
+// Ash.
+std::vector<base::FilePath> GetFilePathsFromFileInfos(
+    const std::vector<ui::FileInfo>& files) {
+  std::vector<base::FilePath> paths;
+  paths.reserve(files.size());
+  for (const auto& file : files) {
+    paths.emplace_back(file.path);
+  }
+  return paths;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace
 
 // static
@@ -293,70 +308,33 @@ bool DataTransferDlpController::IsClipboardReadAllowed(
 void DataTransferDlpController::PasteIfAllowed(
     base::optional_ref<const ui::DataTransferEndpoint> data_src,
     base::optional_ref<const ui::DataTransferEndpoint> data_dst,
-    const absl::optional<size_t> size,
+    absl::variant<size_t, std::vector<base::FilePath>> pasted_content,
     content::RenderFrameHost* rfh,
     base::OnceCallback<void(bool)> paste_cb) {
-  DCHECK(data_dst.has_value());
-  DCHECK(data_dst->IsUrlType());
-
-  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
-  if (!web_contents) {
-    std::move(paste_cb).Run(false);
+  if (absl::holds_alternative<std::vector<base::FilePath>>(pasted_content) &&
+      !IsFilesApp(data_dst)) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    auto pasted_files =
+        std::move(absl::get<std::vector<base::FilePath>>(pasted_content));
+    auto* files_controller = static_cast<policy::DlpFilesControllerAsh*>(
+        dlp_rules_manager_->GetDlpFilesController());
+    if (files_controller) {
+      files_controller->CheckIfPasteOrDropIsAllowed(
+          pasted_files, data_dst.as_ptr(), std::move(paste_cb));
+    }
+#endif
+    // TODO(b/269610458): Check dropped files in Lacros.
     return;
   }
 
-  std::string src_pattern;
-  std::string dst_pattern;
-  DlpRulesManager::RuleMetadata rule_metadata;
-
-  DlpRulesManager::Level level =
-      IsDataTransferAllowed(*dlp_rules_manager_, data_src, data_dst, size,
-                            &src_pattern, &dst_pattern, &rule_metadata);
-  // Reporting doesn't need to be added here because PasteIfAllowed is called
-  // after IsClipboardReadAllowed
-
-  // If it's blocked, the data should be empty & PasteIfAllowed should not be
-  // called.
-  DCHECK_NE(level, DlpRulesManager::Level::kBlock);
-
-  if (level == DlpRulesManager::Level::kAllow ||
-      level == DlpRulesManager::Level::kReport) {
-    std::move(paste_cb).Run(true);
+  if (absl::holds_alternative<size_t>(pasted_content)) {
+    size_t size = absl::get<size_t>(pasted_content);
+    ContinuePasteIfClipboardRestrictionsAllow(data_src, data_dst, size, rfh,
+                                              std::move(paste_cb));
     return;
   }
 
-  DCHECK_EQ(level, DlpRulesManager::Level::kWarn);
-
-  if (ShouldPasteOnWarn(data_dst)) {
-    if (ShouldNotifyOnPaste(data_dst)) {
-      ReportWarningProceededEvent(data_src, data_dst, src_pattern, dst_pattern,
-                                  /*is_clipboard_event=*/true, rule_metadata);
-    }
-    std::move(paste_cb).Run(true);
-  } else if (ShouldCancelOnWarn(data_dst)) {
-    std::move(paste_cb).Run(false);
-  } else {
-    if (ShouldNotifyOnPaste(data_dst)) {
-      ReportEvent(data_src, data_dst, src_pattern, dst_pattern,
-                  DlpRulesManager::Level::kWarn, /*is_clipboard_event=*/true,
-                  rule_metadata);
-
-      auto reporting_cb = base::BindOnce(
-          &DataTransferDlpController::ReportWarningProceededEvent,
-          weak_ptr_factory_.GetWeakPtr(), data_src.CopyAsOptional(),
-          data_dst.CopyAsOptional(), src_pattern, dst_pattern,
-          /*is_clipboard_event=*/true, rule_metadata);
-
-      auto report_and_paste_cb =
-          base::BindOnce(&MaybeReportWarningProceededEventAndPaste,
-                         std::move(reporting_cb), std::move(paste_cb));
-
-      WarnOnBlinkPaste(data_src, data_dst, web_contents,
-                       std::move(report_and_paste_cb));
-    } else {
-      std::move(paste_cb).Run(true);
-    }
-  }
+  std::move(paste_cb).Run(true);
 }
 
 void DataTransferDlpController::DropIfAllowed(
@@ -372,8 +350,8 @@ void DataTransferDlpController::DropIfAllowed(
     if (files_controller) {
       std::vector<ui::FileInfo> dropped_files;
       drag_data->GetFilenames(&dropped_files);
-      files_controller->CheckIfDropAllowed(
-          dropped_files, data_dst.as_ptr(),
+      files_controller->CheckIfPasteOrDropIsAllowed(
+          GetFilePathsFromFileInfos(dropped_files), data_dst.as_ptr(),
           base::BindOnce(&DataTransferDlpController::ContinueDropIfAllowed,
                          weak_ptr_factory_.GetWeakPtr(),
                          *drag_data->GetSource(), data_dst,
@@ -631,6 +609,75 @@ void DataTransferDlpController::ContinueDropIfAllowed(
                                (level == DlpRulesManager::Level::kReport);
   data_controls::DlpBooleanHistogram(data_controls::dlp::kDragDropBlockedUMA,
                                      !is_drop_allowed);
+}
+
+void DataTransferDlpController::ContinuePasteIfClipboardRestrictionsAllow(
+    base::optional_ref<const ui::DataTransferEndpoint> data_src,
+    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+    size_t size,
+    content::RenderFrameHost* rfh,
+    base::OnceCallback<void(bool)> paste_cb) {
+  DCHECK(data_dst.has_value());
+  DCHECK(data_dst->IsUrlType());
+
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents) {
+    std::move(paste_cb).Run(false);
+    return;
+  }
+
+  std::string src_pattern;
+  std::string dst_pattern;
+  DlpRulesManager::RuleMetadata rule_metadata;
+
+  DlpRulesManager::Level level =
+      IsDataTransferAllowed(*dlp_rules_manager_, data_src, data_dst, size,
+                            &src_pattern, &dst_pattern, &rule_metadata);
+  // Reporting doesn't need to be added here because PasteIfAllowed is called
+  // after IsClipboardReadAllowed
+
+  // If it's blocked, the data should be empty & PasteIfAllowed should not be
+  // called.
+  DCHECK_NE(level, DlpRulesManager::Level::kBlock);
+
+  if (level == DlpRulesManager::Level::kAllow ||
+      level == DlpRulesManager::Level::kReport) {
+    std::move(paste_cb).Run(true);
+    return;
+  }
+
+  DCHECK_EQ(level, DlpRulesManager::Level::kWarn);
+
+  if (ShouldPasteOnWarn(data_dst)) {
+    if (ShouldNotifyOnPaste(data_dst)) {
+      ReportWarningProceededEvent(data_src, data_dst, src_pattern, dst_pattern,
+                                  /*is_clipboard_event=*/true, rule_metadata);
+    }
+    std::move(paste_cb).Run(true);
+  } else if (ShouldCancelOnWarn(data_dst)) {
+    std::move(paste_cb).Run(false);
+  } else {
+    if (ShouldNotifyOnPaste(data_dst)) {
+      ReportEvent(data_src, data_dst, src_pattern, dst_pattern,
+                  DlpRulesManager::Level::kWarn, /*is_clipboard_event=*/true,
+                  rule_metadata);
+
+      auto reporting_cb = base::BindOnce(
+          &DataTransferDlpController::ReportWarningProceededEvent,
+          weak_ptr_factory_.GetWeakPtr(), data_src.CopyAsOptional(),
+          data_dst.CopyAsOptional(), src_pattern, dst_pattern,
+          /*is_clipboard_event=*/true, rule_metadata);
+
+      auto report_and_paste_cb =
+          base::BindOnce(&MaybeReportWarningProceededEventAndPaste,
+                         std::move(reporting_cb), std::move(paste_cb));
+
+      WarnOnBlinkPaste(data_src, data_dst, web_contents,
+                       std::move(report_and_paste_cb));
+    } else {
+      std::move(paste_cb).Run(true);
+    }
+  }
 }
 
 DataTransferDlpController::LastReportedEndpoints::LastReportedEndpoints() =
