@@ -78,6 +78,7 @@
 <translation id="1060292118287751956">Determines the frequency that the screen updates</translation>
 <translation id="1060570945511946595">Manage tickets</translation>
 <translation id="1061130374843955397">Welcome to your <ph name="DEVICE_TYPE" /></translation>
+<translation id="1061309251982613260">Always block <ph name="HOST" /> from controlling and reprogramming your MIDI devices.</translation>
 <translation id="1061373870045429865">Create QR code for this link</translation>
 <translation id="1061904396131502319">Almost time for a break</translation>
 <translation id="10619348099955377">Copy display name</translation>
@@ -277,6 +278,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1203559206734265703">Protected audiences debugging is enabled.</translation>
 <translation id="120368089816228251">Music note</translation>
 <translation id="1203942045716040624">Shared worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="1206832039833782423">Your security code is on the back of your card</translation>
 <translation id="1210678701920254279">View or add printers and see active print jobs</translation>
 <translation id="1211769675100312947">Shortcuts are curated by you</translation>
 <translation id="1213254615020057352">Send usage and diagnostic data. Help improve your child's Android experience by automatically sending diagnostic, device and app usage data to Google. This won't be used to identify your child, and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This setting is enforced by the owner. The owner may choose to send diagnostic and usage data for this device to Google. If additional Web &amp; App Activity setting is turned on for your child, this data may be saved to their Google Account.</translation>
@@ -300,6 +302,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1223484782328004593"><ph name="APP_NAME" /> requires a licence</translation>
 <translation id="1223853788495130632">Your administrator recommends a specific value for this setting.</translation>
 <translation id="1225177025209879837">Processing request...</translation>
+<translation id="1227107020813934021">Find document scanners</translation>
 <translation id="1227660082540388410">Edit passkey</translation>
 <translation id="1227993798763400520">Failed to cast. Please try again.</translation>
 <translation id="1230417814058465809">Standard protection is on. For even more security, use enhanced protection.</translation>
@@ -449,6 +452,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1347625331607114917">Verify the code on your Android phone</translation>
 <translation id="1347975661240122359">Update will begin when battery reaches <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1348966090521113558">Mouse accessibility settings</translation>
+<translation id="1350962700620017446">'<ph name="EXTENSION_NAME" />' wants to find and access document scanners.</translation>
 <translation id="1352834119074414157">This bundle might be broken or compromised. Please close this window and download it again</translation>
 <translation id="1353275871123211385">To use parental controls like app approval and screen time limits, a child must have a Google Account managed by a parent. A school account can be added later for tools like Google Classroom.</translation>
 <translation id="135389172849514421">Works offline</translation>
@@ -624,6 +628,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1485015260175968628">It can now:</translation>
 <translation id="1485141095922496924">Version <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1485197926103629489">Microsoft 365 requires files to be stored in OneDrive. Local files will move and files from other locations will copy. Your files can be found in the Microsoft OneDrive folder in the Files app.</translation>
+<translation id="1486012259353794050">When you ask questions, Google Assistant provides tailored responses based on your screen</translation>
 <translation id="1486096554574027028">Search passwords</translation>
 <translation id="1486486872607808064">Scan this QR code with a camera on the device where you want to create a passkey for <ph name="APP_NAME" /></translation>
 <translation id="1487335504823219454">On – customised settings</translation>
@@ -690,6 +695,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1541346352678737112">No network found</translation>
 <translation id="154198613844929213">{0,plural, =0{Deleting now.}=1{Deleting in: 1 second}other{Deleting in: # seconds}}</translation>
 <translation id="1542137295869176367">Your sign-in data couldn't be updated</translation>
+<translation id="1542524755306892917">This allows Google Assistant to provide tailored responses when <ph name="SUPERVISED_USER_NAME" /> asks questions.</translation>
 <translation id="1543284117603151572">Imported From Edge</translation>
 <translation id="1543538514740974167">Get here quicker</translation>
 <translation id="1544588554445317666">Try using a shorter file name or saving to a different folder</translation>
@@ -1913,6 +1919,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2439152382014731627">Reset <ph name="DEVICE_TYPE" /> password</translation>
 <translation id="2439626940657133600">Loading <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">View s&amp;ource</translation>
+<translation id="2440632898584211188">Continue allowing this site to control and reprogramme your MIDI devices.</translation>
 <translation id="2440823041667407902">Location access</translation>
 <translation id="2441719842399509963">Reset to defaults</translation>
 <translation id="244231003699905658">Invalid address. Please check the address and try again.</translation>
@@ -2154,6 +2161,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="262154978979441594">Train Google Assistant voice model</translation>
 <translation id="26224892172169984">Do not allow any site to handle protocols</translation>
 <translation id="262373406453641243">Colemak</translation>
+<translation id="2624045385113367716">Control and reprogramming of MIDI devices allowed</translation>
 <translation id="2624142942574147739">This page is accessing your camera and microphone.</translation>
 <translation id="2626799779920242286">Please try again later.</translation>
 <translation id="2627424346328942291">Can't share</translation>
@@ -2367,6 +2375,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2777251078198759550">Delete this container</translation>
 <translation id="2777525873368474674">Paste image link</translation>
 <translation id="2778471504622896352">Add remote apps to the ChromeOS launcher</translation>
+<translation id="2779728796406650689">This allows Google Assistant to provide tailored responses when you ask questions.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">Extensions are allowed on this site</translation>
 <translation id="2782104745158847185">Error installing Linux application</translation>
@@ -2444,6 +2453,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2836269494620652131">Crash</translation>
 <translation id="283669119850230892">To use the network <ph name="NETWORK_ID" />, first complete your connection to the Internet below.</translation>
 <translation id="2838379631617906747">Installing</translation>
+<translation id="2838474726369447181">This site can control and reprogramme your MIDI devices (SysEx).</translation>
 <translation id="2839032553903800133">Notifications blocked</translation>
 <translation id="2841013758207633010">Time</translation>
 <translation id="2841837950101800123">Provider</translation>
@@ -2467,6 +2477,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2856776373509145513">Create a new container</translation>
 <translation id="2856907950922663165">Turn off URL encryption?</translation>
 <translation id="2859741939921354763">Import passwords to <ph name="BRAND" /></translation>
+<translation id="2861030231482411439">Continue blocking this site from controlling and reprogramming your MIDI devices.</translation>
 <translation id="2861301611394761800">System update complete. Please restart the system.</translation>
 <translation id="2861402191395139055">Passpoint subscriptions</translation>
 <translation id="2861941300086904918">Native Client security manager</translation>
@@ -4888,6 +4899,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4811212958317149293">Switch Access keyboard auto-scan</translation>
 <translation id="4811503964269049987">Group Selected Tab</translation>
 <translation id="4813512666221746211">Network error</translation>
+<translation id="4813872509679988157">Continue allowing this site to use your MIDI devices.</translation>
 <translation id="4814114628197290459">Delete IBAN</translation>
 <translation id="4814327014588285482">Skip and remind me later</translation>
 <translation id="4814378367953456825">Enter a name for this fingerprint</translation>
@@ -5201,6 +5213,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5063480226653192405">Usage</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Manage Secure DNS in Chrome OS settings</translation>
+<translation id="5066891009360243320">This site has been blocked from using your MIDI devices.</translation>
 <translation id="5067399438976153555">Always on</translation>
 <translation id="5067867186035333991">Ask if <ph name="HOST" /> wants to access your microphone</translation>
 <translation id="5068553687099139861">show passwords</translation>
@@ -5918,6 +5931,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5641608986289282154">Start using <ph name="DEVICE_OS" /></translation>
 <translation id="5641648607875312660">Screenshot image editor</translation>
 <translation id="5642508497713047">CRL Signer</translation>
+<translation id="5643191124441701136">Your security code is on the front of your card</translation>
 <translation id="5643321261065707929">Metered network</translation>
 <translation id="5646376287012673985">Location</translation>
 <translation id="5646558797914161501">Businessman</translation>
@@ -6194,6 +6208,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5869522115854928033">Saved passwords</translation>
 <translation id="5870086504539785141">Close accessibility menu</translation>
 <translation id="5870155679953074650">Hard faults</translation>
+<translation id="5870901441418842049">This site has been blocked from controlling and reprogramming your MIDI devices (SysEx).</translation>
 <translation id="5872318519182427835">Affects the sites listed here and their subdomains. For example, adding 'google.com' means that third-party cookies can also be active for mail.google.com, because it’s part of google.com.</translation>
 <translation id="5875534259258494936">Screen sharing has ended</translation>
 <translation id="5876576639916258720">Running…</translation>
@@ -6573,6 +6588,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6171779718418683144">Ask on every visit</translation>
 <translation id="617213288191670920">No languages added</translation>
 <translation id="6173623053897475761">Type your PIN again</translation>
+<translation id="6174116123142608180">Continue blocking this site from using your MIDI devices.</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
 <translation id="6175910054050815932">Get a link</translation>
 <translation id="6176701216248282552">Contextual help is on. These features can send open pages to Google.</translation>
@@ -7089,6 +7105,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6597324406048772521">Extensions not allowed on this site</translation>
 <translation id="6597331566371766302">The following extensions were blocked by your administrator:</translation>
 <translation id="659894938503552850">newest</translation>
+<translation id="6599934330666882772">This site is using your MIDI devices.</translation>
 <translation id="6601262427770154296">Manage user dictionaries</translation>
 <translation id="6601612474695404578">Some sites use third-party cookies to load their pages. If a site isn't working, you can try allowing cookies.</translation>
 <translation id="6602173570135186741">Autofill and passwords</translation>
@@ -7653,6 +7670,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7036706669646341689"><ph name="DISK_SIZE" /> of space is recommended for Linux. To increase free space, delete files from your device.</translation>
 <translation id="7037509989619051237">Text to preview</translation>
 <translation id="7038632520572155338">Switch Access</translation>
+<translation id="7038636380708661517">Always block <ph name="HOST" /> from using your MIDI devices.</translation>
 <translation id="7038710352229712897">Add another Google Account for <ph name="USER_NAME" /></translation>
 <translation id="7039326228527141150">Access USB devices from <ph name="VENDOR_NAME" /></translation>
 <translation id="7039912931802252762">Microsoft Smart Card Logon</translation>
@@ -7807,6 +7825,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7180865173735832675">Customise</translation>
 <translation id="7181117767881540376">Hide bookmarks bar</translation>
 <translation id="7182063559013288142">Instant hotspot</translation>
+<translation id="718240920439497409">MIDI devices blocked</translation>
 <translation id="7182791023900310535">Move your password</translation>
 <translation id="718427252411067142">To stop others from using your password, open the app to change your password</translation>
 <translation id="7186088072322679094">Keep in Toolbar</translation>
@@ -7896,6 +7915,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7255002516883565667">At the moment, you have one card that can only be used on this device</translation>
 <translation id="7255935316994522020">Apply</translation>
 <translation id="7256069762010468647">Site is using your camera</translation>
+<translation id="7256265230922801769">Always allow <ph name="HOST" /> to control and reprogramme your MIDI devices.</translation>
 <translation id="7256634071279256947">Rear microphone</translation>
 <translation id="7256710573727326513">Open in a tab</translation>
 <translation id="7257173066616499747">Wi-Fi networks</translation>
@@ -8927,6 +8947,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8041267120753677077">Stream your phone's apps</translation>
 <translation id="8042142357103597104">Text opacity</translation>
 <translation id="8042331986490021244">Your passwords are encrypted on your device before they‘re saved to Google Password Manager</translation>
+<translation id="8044090981104134791">MIDI devices allowed</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> not responding.</translation>
 <translation id="8044899503464538266">Slow</translation>
 <translation id="8045253504249021590">Sync has been stopped via the Google Dashboard.</translation>
@@ -9120,6 +9141,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Your devices<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195265224453131880">Intensity</translation>
 <translation id="8195854162863398249">Disable <ph name="FEATURE_NAME" /></translation>
+<translation id="8197151971904389091">Always allow <ph name="HOST" /> to use your MIDI devices.</translation>
 <translation id="8197673340773315084">Add a name or label, like Work or Personal</translation>
 <translation id="8198456017687137612">Casting tab</translation>
 <translation id="8198457270656084773">Looking for the system device-log page? Visit<ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
@@ -9403,6 +9425,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8414396119627470038">Sign in to <ph name="SITE_ETLD_PLUS_ONE" /> with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Notes</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (case)</translation>
+<translation id="8417065541337558100">Preview of your camera</translation>
 <translation id="8417548266957501132">Parent password</translation>
 <translation id="8418445294933751433">&amp;Show as tab</translation>
 <translation id="8418675848396538775">Add <ph name="LANGUAGE_NAME" /></translation>
@@ -9897,6 +9920,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8811862054141704416">Crostini microphone access</translation>
 <translation id="8811923271770626905">This extension may run in the background</translation>
 <translation id="8812593354822910461">Also clear browsing data (<ph name="URL" />) which will sign you out of <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>
+<translation id="8813199641941291474">Control and reprogramming of MIDI devices blocked</translation>
 <translation id="8813698869395535039">Can't sign in to <ph name="USERNAME" /></translation>
 <translation id="8813872945700551674">Go and get a parent to approve '<ph name="EXTENSION_NAME" />'</translation>
 <translation id="8813937837706331325">Medium savings</translation>

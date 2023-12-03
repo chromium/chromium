@@ -633,6 +633,7 @@
 <translation id="574392208103952083">Medium</translation>
 <translation id="5757187557809630523">next track</translation>
 <translation id="5760715441271661976">Portal state</translation>
+<translation id="5763838252932650682">Restarting and updating <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Display brightness up</translation>
 <translation id="57838592816432529">Mute</translation>
 <translation id="5784136236926853061">High HTTP latency</translation>
@@ -842,6 +843,7 @@
 <translation id="7287310195820267359">Wallpaper collections</translation>
 <translation id="7297226631177386107">Can't connect through firewall to HTTPS websites</translation>
 <translation id="7297726121602187087">Dark green</translation>
+<translation id="7301262279595293068">Please wait while this application is being updated</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Ask the experts in the Chromebook Help forum</translation>

@@ -174,6 +174,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="1883255238294161206">Collapse list</translation>
 <translation id="1889872080060107187">You'll sign in to <ph name="URL" /></translation>
 <translation id="1890237935065108104">This setting is unavailable.</translation>
+<translation id="1891199774460536658">Auto-track all detected packages</translation>
 <translation id="1894023287452300670">Track price here</translation>
 <translation id="189531189292803889">Your iPad was recently restored, which might have changed your default browser.</translation>
 <translation id="1910975740091000991">Chrome for iOS</translation>
@@ -653,6 +654,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4493604894403585654">You are signed in as <ph name="USER_EMAIL" />. You can stop syncing at any time in settings. Google may personalise Search and other services based on your history.</translation>
 <translation id="4502566650163919158">Check now</translation>
 <translation id="4508750114462689118">Close sign-in promo</translation>
+<translation id="4509449376545878717">Never auto-detect packages</translation>
 <translation id="4514889972748124117">Suggest strong password…</translation>
 <translation id="4520798012560649652">Learn more about Incognito mode</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} bookmark}other{{count} bookmarks}}</translation>
@@ -1336,6 +1338,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8023878949384262191">Expands the section.</translation>
 <translation id="8027581147000338959">Open in new window</translation>
 <translation id="8032569120109842252">Following</translation>
+<translation id="8040207962129315716">Ask me every time</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Search history<ph name="END_LINK" /> and <ph name="BEGIN_LINK" />other forms of activity<ph name="END_LINK" /> may be saved in your Google Account when you’re signed in. You can delete them at any time.</translation>
 <translation id="804427445359061970">You'll find your tabs from other devices here</translation>
 <translation id="8044568254381073661">Save Without Encryption</translation>
@@ -1436,6 +1439,7 @@ Your data was encrypted with your passphrase on <ph name="TIME" />. Enter it to 
 <translation id="8556590991644167667">{count,plural, =1{You dismissed {count} warning}other{You dismissed {count} warnings}}</translation>
 <translation id="8558480467877843976">You can now use Chrome any time that you browse or tap links in messages, documents and other apps.</translation>
 <translation id="8560253818350321773">Show frequently used items first.</translation>
+<translation id="8562944214838973419">Allow package tracking</translation>
 <translation id="8569721750632860947">What URL would you like to add to your reading list?</translation>
 <translation id="8588404856427128947">Off</translation>
 <translation id="8591976964826315682">Block third-party cookies in Incognito</translation>
