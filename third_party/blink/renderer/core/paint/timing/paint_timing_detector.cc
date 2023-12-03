@@ -215,8 +215,13 @@ bool PaintTimingDetector::NotifyBackgroundImagePaint(
     return false;
   }
 
+  PaintTimingDetector& paint_timing_detector =
+      frame_view->GetPaintTimingDetector();
+  if (paint_timing_detector.IsUnrelatedSoftNavigationPaint(node)) {
+    return false;
+  }
   ImagePaintTimingDetector& image_paint_timing_detector =
-      frame_view->GetPaintTimingDetector().GetImagePaintTimingDetector();
+      paint_timing_detector.GetImagePaintTimingDetector();
   if (!image_paint_timing_detector.IsRecordingLargestImagePaint()) {
     return false;
   }
@@ -249,13 +254,19 @@ bool PaintTimingDetector::NotifyImagePaint(
   if (!frame_view) {
     return false;
   }
+  PaintTimingDetector& paint_timing_detector =
+      frame_view->GetPaintTimingDetector();
   ImagePaintTimingDetector& image_paint_timing_detector =
-      frame_view->GetPaintTimingDetector().GetImagePaintTimingDetector();
+      paint_timing_detector.GetImagePaintTimingDetector();
   if (!image_paint_timing_detector.IsRecordingLargestImagePaint()) {
     return false;
   }
 
   Node* image_node = object.GetNode();
+  if (image_node &&
+      paint_timing_detector.IsUnrelatedSoftNavigationPaint(*image_node)) {
+    return false;
+  }
   HTMLImageElement* element = DynamicTo<HTMLImageElement>(image_node);
   bool is_loaded_after_mouseover =
       element && element->IsChangedShortlyAfterMouseover();
@@ -682,6 +693,11 @@ void PaintTimingDetector::ReportIgnoredContent() {
   if (image_paint_timing_detector_->IsRecordingLargestImagePaint()) {
     image_paint_timing_detector_->ReportLargestIgnoredImage();
   }
+}
+
+bool PaintTimingDetector::IsUnrelatedSoftNavigationPaint(const Node& node) {
+  return (WasLCPRestarted() &&
+          !(IsSoftNavigationDetected() || node.IsModifiedBySoftNavigation()));
 }
 
 ScopedPaintTimingDetectorBlockPaintHook*

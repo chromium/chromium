@@ -132,6 +132,7 @@ void SoftNavigationHeuristics::ResetHeuristic() {
   did_commit_previous_paints_ = false;
   soft_navigation_conditions_met_ = false;
   pending_interaction_timestamp_ = base::TimeTicks();
+  paint_conditions_met_ = false;
 }
 
 void SoftNavigationHeuristics::InteractionCallbackCalled(
@@ -225,7 +226,7 @@ SoftNavigationHeuristics::SetFlagIfDescendantAndCheck(ScriptState* script_state,
     return absl::nullopt;
   }
   data->flag_set.Put(type);
-  CheckSoftNavigationConditions(*data);
+  CheckSoftNavigationConditions(*data, script_state);
   return result;
 }
 
@@ -251,7 +252,7 @@ void SoftNavigationHeuristics::SameDocumentNavigationCommitted(
   // This is overriding the URL, which is required to support history
   // modifications inside a popstate event.
   data->url = url;
-  CheckSoftNavigationConditions(*data);
+  CheckSoftNavigationConditions(*data, script_state);
   TRACE_EVENT1("scheduler",
                "SoftNavigationHeuristics::SameDocumentNavigationCommitted",
                "url", url);
@@ -267,7 +268,8 @@ bool SoftNavigationHeuristics::ModifiedDOM(ScriptState* script_state) {
 }
 
 void SoftNavigationHeuristics::CheckSoftNavigationConditions(
-    const SoftNavigationHeuristics::PerInteractionData& data) {
+    const SoftNavigationHeuristics::PerInteractionData& data,
+    ScriptState* script_state) {
   if (data.flag_set != FlagTypeSet::All()) {
     return;
   }
@@ -281,6 +283,12 @@ void SoftNavigationHeuristics::CheckSoftNavigationConditions(
   soft_navigation_conditions_met_ = true;
 
   soft_navigation_interaction_data_ = &data;
+  if (paint_conditions_met_) {
+    LocalFrame* frame = ToLocalFrameIfNotDetached(script_state->GetContext());
+    if (frame && frame->IsOutermostMainFrame()) {
+      EmitSoftNavigationEntry(frame);
+    }
+  }
 }
 
 void SoftNavigationHeuristics::EmitSoftNavigationEntry(LocalFrame* frame) {
@@ -339,9 +347,11 @@ void SoftNavigationHeuristics::RecordPaint(
     uint64_t considered_area = std::min(initial_painted_area_, viewport_area_);
     uint64_t paint_threshold =
         considered_area * SOFT_NAVIGATION_PAINT_AREA_PRECENTAGE;
-    if (soft_navigation_conditions_met_ &&
-        ((softnav_painted_area_ * HUNDRED_PERCENT) > paint_threshold)) {
-      EmitSoftNavigationEntry(frame);
+    if (((softnav_painted_area_ * HUNDRED_PERCENT) > paint_threshold)) {
+      paint_conditions_met_ = true;
+      if (soft_navigation_conditions_met_) {
+        EmitSoftNavigationEntry(frame);
+      }
     }
   } else if (!initial_interaction_encountered_) {
     initial_painted_area_ += painted_area;

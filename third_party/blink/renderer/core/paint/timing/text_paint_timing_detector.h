@@ -83,6 +83,10 @@ class CORE_EXPORT LargestTextPaintManager final
     largest_text_.Clear();
     largest_ignored_text_.Clear();
   }
+  bool IsUnrelatedSoftNavigationPaint(const Node& node) {
+    CHECK(paint_timing_detector_);
+    return paint_timing_detector_->IsUnrelatedSoftNavigationPaint(node);
+  }
 
   void Trace(Visitor*) const;
 
