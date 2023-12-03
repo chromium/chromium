@@ -2,128 +2,101 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js';
-import {$} from 'chrome://resources/ash/common/util.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 
 import {isFolderDialogType} from '../../common/js/dialog_type.js';
 import {recordEnum} from '../../common/js/metrics.js';
 import {str} from '../../common/js/translations.js';
 import {testSendMessage, UserCanceledError} from '../../common/js/util.js';
 import {AllowedPaths, RootTypesForUMA} from '../../common/js/volume_manager_types.js';
+import type {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {DialogType} from '../../externs/ts/state.js';
+import type {VolumeManager} from '../../externs/volume_manager.js';
 
-import {FileFilter} from './directory_contents.js';
-import {DirectoryModel} from './directory_model.js';
-import {EventType, FileSelectionHandler} from './file_selection.js';
-import {LaunchParam} from './launch_param.js';
-import {MetadataModel} from './metadata/metadata_model.js';
-import {NamingController} from './naming_controller.js';
-import {Command} from './ui/command.js';
-import {DialogFooter} from './ui/dialog_footer.js';
+import type {FileFilter} from './directory_contents.js';
+import type {DirectoryModel} from './directory_model.js';
+import {EventType, type FileSelectionHandler} from './file_selection.js';
+import type {LaunchParam} from './launch_param.js';
+import type {NamingController} from './naming_controller.js';
+import type {Command} from './ui/command.js';
+import type {DialogFooter} from './ui/dialog_footer.js';
+
+interface SelectFilesAndCloseParams {
+  urls: string[];
+  multiple: boolean;
+  filterIndex?: number;
+}
 
 /**
  * Controller for handling behaviors of the Files app opened as a file/folder
  * selection dialog.
  */
 export class DialogActionController {
+  private fileTypes_: LaunchParam['typeList'];
+  private allowedPaths_: AllowedPaths;
   /**
-   * @param {!DialogType} dialogType Dialog type.
-   * @param {!DialogFooter} dialogFooter Dialog footer.
-   * @param {!DirectoryModel} directoryModel Directory model.
-   * @param {!MetadataModel} metadataModel Metadata cache.
-   * @param {!import('../../externs/volume_manager.js').VolumeManager}
-   *     volumeManager Volume manager.
-   * @param {!FileFilter} fileFilter File filter model.
-   * @param {!NamingController} namingController Naming controller.
-   * @param {!FileSelectionHandler} fileSelectionHandler Initial file selection.
-   * @param {!LaunchParam} launchParam Whether the dialog should return local
+   * Bound function for onCancel_.
+   */
+  private onCancelBound_ = this.processCancelAction_.bind(this);
+  private newFolderCommand_: Command =
+      document.querySelector<Command>('#new-folder')!;
+
+  /**
+   * @param dialogType Dialog type.
+   * @param dialogFooter Dialog footer.
+   * @param directoryModel Directory model.
+   * @param volumeManager Volume manager.
+   * @param fileFilter File filter model.
+   * @param namingController Naming controller.
+   * @param fileSelectionHandler Initial file selection.
+   * @param launchParam Whether the dialog should return local
    *     path or not.
    */
   constructor(
-      dialogType, dialogFooter, directoryModel, metadataModel, volumeManager,
-      fileFilter, namingController, fileSelectionHandler, launchParam) {
-    /** @private @const @type {!DialogType} */
-    this.dialogType_ = dialogType;
-
-    /** @private @const @type {!DialogFooter} */
-    this.dialogFooter_ = dialogFooter;
-
-    /** @private @const @type {!DirectoryModel} */
-    this.directoryModel_ = directoryModel;
-
-    /** @private @const @type {!MetadataModel} */
-    this.metadataModel_ = metadataModel;
-
-    /**
-     * @private @const @type {!import('../../externs/volume_manager.js').VolumeManager}
-     */
-    this.volumeManager_ = volumeManager;
-
-    /** @private @const @type {!FileFilter} */
-    this.fileFilter_ = fileFilter;
-
-    /** @private @const @type {!NamingController} */
-    this.namingController_ = namingController;
-
-    /** @private @const @type {!FileSelectionHandler} */
-    this.fileSelectionHandler_ = fileSelectionHandler;
-
+      private dialogType_: DialogType, private dialogFooter_: DialogFooter,
+      private directoryModel_: DirectoryModel,
+      private volumeManager_: VolumeManager, private fileFilter_: FileFilter,
+      private namingController_: NamingController,
+      private fileSelectionHandler_: FileSelectionHandler,
+      launchParam: LaunchParam) {
     /**
      * List of acceptable file types for open dialog.
-     * @private @const @type {!Array<Object>}
      */
     this.fileTypes_ = launchParam.typeList || [];
+    this.allowedPaths_ = launchParam.allowedPaths;
 
-    /** @private @const @type {!AllowedPaths} */
-    this.allowedPaths_ =
-        /** @type {!AllowedPaths} */ (launchParam.allowedPaths);
-
-    /**
-     * Bound function for onCancel_.
-     * @private @const @type {!function(this:DialogActionController,
-     *     Event):void}
-     */
-    this.onCancelBound_ = this.processCancelAction_.bind(this);
-
-    dialogFooter.okButton.addEventListener(
-        'click', this.processOKAction_.bind(this));
-    dialogFooter.cancelButton.addEventListener('click', this.onCancelBound_);
-    dialogFooter.newFolderButton.addEventListener(
+    this.dialogFooter_.okButton.addEventListener(
+        'click', this.processOkAction_.bind(this));
+    this.dialogFooter_.cancelButton.addEventListener(
+        'click', this.onCancelBound_);
+    this.dialogFooter_.newFolderButton.addEventListener(
         'click', this.processNewFolderAction_.bind(this));
-    // @ts-ignore: error TS18047: 'dialogFooter.fileTypeSelector' is possibly
-    // 'null'.
-    dialogFooter.fileTypeSelector.addEventListener(
+    this.dialogFooter_.fileTypeSelector?.addEventListener(
         'change', this.onFileTypeFilterChanged_.bind(this));
-    dialogFooter.filenameInput.addEventListener(
+    this.dialogFooter_.filenameInput.addEventListener(
         'input', this.updateOkButton_.bind(this));
-    fileSelectionHandler.addEventListener(
+    this.fileSelectionHandler_.addEventListener(
         EventType.CHANGE_THROTTLED, this.onFileSelectionChanged_.bind(this));
-    volumeManager.addEventListener(
+    this.volumeManager_.addEventListener(
         'drive-connection-changed', this.updateOkButton_.bind(this));
 
-    dialogFooter.initFileTypeFilter(
-        // @ts-ignore: error TS2345: Argument of type 'Object[]' is not
-        // assignable to parameter of type '{ extensions: string[]; description:
-        // string; }[]'.
+    this.dialogFooter_.initFileTypeFilter(
         this.fileTypes_, launchParam.includeAllFiles);
     this.onFileTypeFilterChanged_();
 
-    this.newFolderCommand_ =
-        /** @type {Command} */ ($('new-folder'));
     this.newFolderCommand_.addEventListener(
         'disabledChange', this.updateNewFolderButton_.bind(this));
   }
 
   /**
-   * @private
    */
-  async processOKActionForSaveDialog_() {
+  private async processOkActionForSaveDialog_() {
     const selection = this.fileSelectionHandler_.selection;
 
     // If OK action is clicked when a directory is selected, open the directory.
     if (selection.directoryCount === 1 && selection.fileCount === 0) {
       this.directoryModel_.changeDirectoryEntry(
-          /** @type {!DirectoryEntry} */ (selection.entries[0]));
+          selection.entries[0] as DirectoryEntry | FilesAppDirEntry);
       return;
     }
 
@@ -157,14 +130,13 @@ export class DialogActionController {
    * The ok button has different UI labels depending on the type of dialog, but
    * in code it's always referred to as 'ok'.
    *
-   * @private
    */
-  processOKAction_() {
+  private processOkAction_() {
     if (this.dialogFooter_.okButton.disabled) {
       throw new Error('Disabled!');
     }
     if (this.dialogType_ === DialogType.SELECT_SAVEAS_FILE) {
-      this.processOKActionForSaveDialog_();
+      this.processOkActionForSaveDialog_();
       return;
     }
 
@@ -173,7 +145,7 @@ export class DialogActionController {
         this.directoryModel_.getFileListSelection().selectedIndexes;
 
     if (isFolderDialogType(this.dialogType_) && selectedIndexes.length === 0) {
-      const url = this.directoryModel_.getCurrentDirEntry()?.toURL();
+      const url = this.directoryModel_.getCurrentDirEntry()!.toURL();
       const singleSelection = {
         urls: [url],
         multiple: false,
@@ -239,18 +211,16 @@ export class DialogActionController {
 
   /**
    * Cancels file selection and closes the file selection dialog.
-   * @private
    */
-  processCancelAction_() {
+  private processCancelAction_() {
     chrome.fileManagerPrivate.cancelDialog();
     window.close();
   }
 
   /**
    * Creates a new folder using new-folder command.
-   * @private
    */
-  processNewFolderAction_() {
+  private processNewFolderAction_() {
     this.newFolderCommand_.canExecuteChange(this.dialogFooter_.newFolderButton);
     this.newFolderCommand_.execute(this.dialogFooter_.newFolderButton);
   }
@@ -258,9 +228,8 @@ export class DialogActionController {
   /**
    * Handles disabledChange event to update the new-folder button's
    * avaliability.
-   * @private
    */
-  updateNewFolderButton_() {
+  private updateNewFolderButton_() {
     this.dialogFooter_.newFolderButton.disabled =
         this.newFolderCommand_.disabled;
   }
@@ -268,10 +237,9 @@ export class DialogActionController {
   /**
    * Tries to close this modal dialog with some files selected.
    * Performs preprocessing if needed (e.g. for Drive).
-   * @param {Object} selection Contains urls, filterIndex and multiple fields.
-   * @private
+   * @param selection Contains urls, filterIndex and multiple fields.
    */
-  selectFilesAndClose_(selection) {
+  private selectFilesAndClose_(selection: SelectFilesAndCloseParams) {
     const currentRootType = this.directoryModel_.getCurrentRootType();
     const onFileSelected = () => {
       if (!chrome.runtime.lastError) {
@@ -285,19 +253,13 @@ export class DialogActionController {
         this.dialogType_ == DialogType.SELECT_OPEN_MULTI_FILE) {
       recordEnum('OpenFiles.RootType', currentRootType, RootTypesForUMA);
     }
-    // @ts-ignore: error TS2339: Property 'multiple' does not exist on type
-    // 'Object'.
     if (selection.multiple) {
       chrome.fileManagerPrivate.selectFiles(
-          // @ts-ignore: error TS2339: Property 'urls' does not exist on type
-          // 'Object'.
           selection.urls, this.allowedPaths_ === AllowedPaths.NATIVE_PATH,
           onFileSelected);
     } else {
       chrome.fileManagerPrivate.selectFile(
-          // @ts-ignore: error TS2339: Property 'filterIndex' does not exist on
-          // type 'Object'.
-          selection.urls[0], selection.filterIndex,
+          selection.urls[0]!, selection.filterIndex!,
           this.dialogType_ !== DialogType.SELECT_SAVEAS_FILE /* for opening */,
           this.allowedPaths_ === AllowedPaths.NATIVE_PATH, onFileSelected);
     }
@@ -305,27 +267,24 @@ export class DialogActionController {
 
   /**
    * Returns the regex to match against files for the current filter.
-   * @return {?RegExp}
    */
-  regexpForCurrentFilter_() {
+  private regexpForCurrentFilter_(): RegExp|null {
     // Note selectedFilterIndex indexing is 1-based. (0 is "all files").
     const selectedIndex = this.dialogFooter_.selectedFilterIndex;
     if (selectedIndex < 1) {
       return null;  // No specific filter selected.
     }
     return new RegExp(
-        // @ts-ignore: error TS2339: Property 'extensions' does not exist on
-        // type 'Object'.
-        '\\.(' + this.fileTypes_[selectedIndex - 1].extensions.join('|') + ')$',
+        '\\.(' + this.fileTypes_[selectedIndex - 1]!.extensions.join('|') +
+            ')$',
         'i');
   }
 
   /**
    * Updates the file input field to agree with the current filter.
-   * @param {boolean} forConfirm The update is for the final confirm step.
-   * @private
+   * @param forConfirm The update is for the final confirm step.
    */
-  updateExtensionForSelectedFileType_(forConfirm) {
+  private updateExtensionForSelectedFileType_(forConfirm: boolean) {
     const regexp = this.regexpForCurrentFilter_();
     if (!regexp) {
       return;  // No filter selected.
@@ -338,9 +297,7 @@ export class DialogActionController {
 
     const selectedIndex = this.dialogFooter_.selectedFilterIndex;
     assert(selectedIndex > 0);  // Otherwise there would be no regex.
-    // @ts-ignore: error TS2339: Property 'extensions' does not exist on type
-    // 'Object'.
-    const newExtension = this.fileTypes_[selectedIndex - 1].extensions[0];
+    const newExtension = this.fileTypes_[selectedIndex - 1]!.extensions[0];
     if (!newExtension) {
       return;  // No default extension.
     }
@@ -365,17 +322,16 @@ export class DialogActionController {
 
   /**
    * Filters file according to the selected file type.
-   * @private
    */
-  onFileTypeFilterChanged_() {
+  private onFileTypeFilterChanged_() {
     this.fileFilter_.removeFilter('fileType');
     const regexp = this.regexpForCurrentFilter_();
     if (!regexp) {
       return;
     }
 
-    // @ts-ignore: error TS7006: Parameter 'entry' implicitly has an 'any' type.
-    const filter = entry => entry.isDirectory || regexp.test(entry.name);
+    const filter = (entry: Entry|FilesAppEntry) =>
+        entry.isDirectory || regexp.test(entry.name);
     this.fileFilter_.addFilter('fileType', filter);
 
     // In save dialog, update the destination name extension.
@@ -386,19 +342,15 @@ export class DialogActionController {
 
   /**
    * Handles selection change.
-   * @private
    */
-  onFileSelectionChanged_() {
+  private onFileSelectionChanged_() {
     // If this is a save-as dialog, copy the selected file into the filename
     // input text box.
     const selection = this.fileSelectionHandler_.selection;
     if (this.dialogType_ === DialogType.SELECT_SAVEAS_FILE &&
-        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-        selection.totalCount === 1 && selection.entries[0].isFile &&
-        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-        this.dialogFooter_.filenameInput.value !== selection.entries[0].name) {
-      // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-      this.dialogFooter_.filenameInput.value = selection.entries[0].name;
+        selection.totalCount === 1 && selection.entries[0]!.isFile &&
+        this.dialogFooter_.filenameInput.value !== selection.entries[0]!.name) {
+      this.dialogFooter_.filenameInput.value = selection.entries[0]!.name;
     }
 
     this.updateOkButton_();
@@ -409,9 +361,8 @@ export class DialogActionController {
 
   /**
    * Updates the Ok button enabled state.
-   * @private
    */
-  updateOkButton_() {
+  private updateOkButton_() {
     const selection = this.fileSelectionHandler_.selection;
 
     if (this.dialogType_ === DialogType.FULL_PAGE) {

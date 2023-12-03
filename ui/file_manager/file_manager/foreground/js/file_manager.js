@@ -1363,10 +1363,10 @@ export class FileManager extends EventTarget {
     this.dialogActionController_ = new DialogActionController(
         // @ts-ignore: error TS2531: Object is possibly 'null'.
         this.dialogType, this.ui_.dialogFooter, this.directoryModel_,
-        // @ts-ignore: error TS2345: Argument of type 'MetadataModel | null' is
-        // not assignable to parameter of type 'MetadataModel'.
-        this.metadataModel_, this.volumeManager_, this.fileFilter_,
-        this.namingController_, this.selectionHandler_, this.launchParams_);
+        // @ts-ignore: error TS2345: Argument of type 'FileFilter | null' is not
+        // assignable to parameter of type 'FileFilter'.
+        this.volumeManager_, this.fileFilter_, this.namingController_,
+        this.selectionHandler_, this.launchParams_);
 
     // Create file-type filter controller.
     this.fileTypeFiltersController_ = new FileTypeFiltersController(

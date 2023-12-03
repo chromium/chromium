@@ -50,7 +50,6 @@ static_js_files = [
   "file_manager/foreground/js/constants.js",
   "file_manager/foreground/js/crostini_controller.js",
   "file_manager/foreground/js/deferred_elements.js",
-  "file_manager/foreground/js/dialog_action_controller.js",
   "file_manager/foreground/js/directory_contents.js",
   "file_manager/foreground/js/directory_tree_naming_controller.js",
   "file_manager/foreground/js/elements_importer.js",
@@ -281,6 +280,7 @@ ts_files = [
   "file_manager/foreground/js/actions_controller.ts",
   "file_manager/background/js/app_window_wrapper.ts",
   "file_manager/background/js/crostini.ts",
+  "file_manager/foreground/js/dialog_action_controller.ts",
   "file_manager/foreground/js/directory_model.ts",
   "file_manager/background/js/drive_sync_handler.ts",
   "file_manager/background/js/entry_location_impl.ts",
@@ -414,8 +414,6 @@ ts_templates = [
 ]
 
 ts_test_files = [
-  "file_manager/common/js/filtered_volume_manager_unittest.ts",
-
   # 3-line header to avoid conflict.
   # Don't remove this.
   # These lines will be removed at the end of the TS migration.
@@ -424,6 +422,7 @@ ts_test_files = [
   "file_manager/common/js/entry_utils_unittest.ts",
   "file_manager/common/js/file_type_unittest.ts",
   "file_manager/common/js/file_types_base_unittest.ts",
+  "file_manager/common/js/filtered_volume_manager_unittest.ts",
   "file_manager/common/js/lru_cache_unittest.ts",
   "file_manager/common/js/recent_date_bucket_unittest.ts",
   "file_manager/common/js/storage_unittest.ts",

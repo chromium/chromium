@@ -7,6 +7,15 @@ import {DialogType} from '../../externs/ts/state.js';
 import {AllowedPaths} from './volume_manager_types.js';
 
 /**
+ * A list of extensions with a corresponding description for them, e.g.
+ * { extensions: ['htm', 'html'], description: 'HTML' }
+ */
+export interface TypeList {
+  extensions: string[];
+  description: string;
+}
+
+/**
  * FilesAppState is used in 2 ways:
  *
  * 1. Persist in the localStorage the some state, like current directory,
@@ -54,9 +63,8 @@ export class FilesAppState {
    * AndroidAppListModel, when displaying Files app as FilePicker for ARC++.
    * Files app displays Android apps that can handle such extensions in the
    * DirectoryTree.
-   * TODO(lucmult): Add type for the Object below:
    */
-  typeList: Object[]|undefined;
+  typeList: TypeList[]|undefined;
 
   /**
    * For FilePicker indicates that the "All files" should be displayed in the

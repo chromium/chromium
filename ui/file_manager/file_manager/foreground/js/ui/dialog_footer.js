@@ -357,8 +357,8 @@ export class DialogFooter {
 
   /**
    * Fills the file type list or hides it.
-   * @param {!Array<{extensions: Array<string>, description: string}>} fileTypes
-   *     List of file type.
+   * @param {!Array<import('../../../common/js/files_app_state.js').TypeList>}
+   *     fileTypes List of file type.
    * @param {boolean} includeAllFiles Whether the filter includes the 'all
    *     files' item or not.
    */
