@@ -1343,8 +1343,12 @@ TEST_F(EventRewriterTest, TestRewriteCommandToControl) {
     EXPECT_EQ(LWinPressed(ui::EF_ALT_DOWN),
               RunRewriter(LWinPressed(ui::EF_ALT_DOWN)));
 
+    // TODO(b/312578988): This should be an identity transformation with
+    // RWinPressed as both the before and after event.
     // VKEY_RWIN (right Windows key), Alt modifier.
-    EXPECT_EQ(RWinPressed(ui::EF_ALT_DOWN),
+    EXPECT_EQ(TestKeyEvent(ui::ET_KEY_PRESSED, ui::DomCode::META_RIGHT,
+                           ui::DomKey::META, ui::VKEY_LWIN,
+                           ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN),
               RunRewriter(RWinPressed(ui::EF_ALT_DOWN)));
   }
 }
@@ -1396,8 +1400,12 @@ TEST_F(EventRewriterTest, TestRewriteExternalMetaKey) {
     EXPECT_EQ(LWinPressed(ui::EF_ALT_DOWN),
               RunRewriter(LWinPressed(ui::EF_ALT_DOWN)));
 
+    // TODO(b/312578988): This should be an identity transformation with
+    // RWinPressed as both the before and after event.
     // VKEY_RWIN (right Windows key), Alt modifier.
-    EXPECT_EQ(RWinPressed(ui::EF_ALT_DOWN),
+    EXPECT_EQ(TestKeyEvent(ui::ET_KEY_PRESSED, ui::DomCode::META_RIGHT,
+                           ui::DomKey::META, ui::VKEY_LWIN,
+                           ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN),
               RunRewriter(RWinPressed(ui::EF_ALT_DOWN)));
   }
 
