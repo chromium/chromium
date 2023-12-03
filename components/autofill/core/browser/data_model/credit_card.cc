@@ -705,6 +705,7 @@ void CreditCard::SetRawInfoWithVerificationStatus(ServerFieldType type,
     }
 
     case CREDIT_CARD_VERIFICATION_CODE:
+    case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
       cvc_ = value;
       break;
 
