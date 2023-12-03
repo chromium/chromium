@@ -245,10 +245,10 @@ void RunCreateCallback(
     return;
   }
 
-  constexpr auto metadata_fields =
-      storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
-      storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
-      storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED;
+  constexpr storage::FileSystemOperation::GetMetadataFieldSet metadata_fields =
+      {storage::FileSystemOperation::GetMetadataField::kIsDirectory,
+       storage::FileSystemOperation::GetMetadataField::kSize,
+       storage::FileSystemOperation::GetMetadataField::kLastModified};
 
   auto outer_callback = base::BindPostTaskToCurrentDefault(base::BindOnce(
       &RunCreateAndThenStatCallback, std::move(callback), fs_context, read_only,
@@ -300,10 +300,10 @@ void RunMkDirCallback(
     return;
   }
 
-  constexpr auto metadata_fields =
-      storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
-      storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
-      storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED;
+  constexpr storage::FileSystemOperation::GetMetadataFieldSet metadata_fields =
+      {storage::FileSystemOperation::GetMetadataField::kIsDirectory,
+       storage::FileSystemOperation::GetMetadataField::kSize,
+       storage::FileSystemOperation::GetMetadataField::kLastModified};
 
   auto outer_callback = base::BindPostTaskToCurrentDefault(
       base::BindOnce(&RunMkDirAndThenStatCallback, std::move(callback),
@@ -398,10 +398,10 @@ void RunTruncateCallback(
     return;
   }
 
-  constexpr auto metadata_fields =
-      storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
-      storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
-      storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED;
+  constexpr storage::FileSystemOperation::GetMetadataFieldSet metadata_fields =
+      {storage::FileSystemOperation::GetMetadataField::kIsDirectory,
+       storage::FileSystemOperation::GetMetadataField::kSize,
+       storage::FileSystemOperation::GetMetadataField::kLastModified};
 
   auto outer_callback = base::BindPostTaskToCurrentDefault(
       base::BindOnce(&RunTruncateAndThenStatCallback, std::move(callback),
@@ -1250,10 +1250,10 @@ void Server::Stat2(const Stat2RequestProto& request_proto,
     return;
   }
 
-  constexpr auto metadata_fields =
-      storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
-      storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
-      storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED;
+  constexpr storage::FileSystemOperation::GetMetadataFieldSet metadata_fields =
+      {storage::FileSystemOperation::GetMetadataField::kIsDirectory,
+       storage::FileSystemOperation::GetMetadataField::kSize,
+       storage::FileSystemOperation::GetMetadataField::kLastModified};
 
   auto outer_callback = base::BindPostTaskToCurrentDefault(
       base::BindOnce(&RunStat2Callback, std::move(callback), parsed->fs_context,

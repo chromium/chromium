@@ -141,7 +141,7 @@ class ArcFileSystemBridge
 
   // Used to implement GetFileSize() and GetLastModified().
   void GetMetadata(const GURL& url_decoded,
-                   int flags,
+                   storage::FileSystemOperation::GetMetadataFieldSet flags,
                    storage::FileSystemOperation::GetMetadataCallback callback);
 
   // Used to implement GetVirtualFileId().

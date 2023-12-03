@@ -886,7 +886,8 @@ ExtensionFunction::ResponseAction FileSystemRetainEntryFunction::Run() {
             base::IgnoreResult(
                 &storage::FileSystemOperationRunner::GetMetadata),
             base::Unretained(file_system_context->operation_runner()), url,
-            storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY,
+            storage::FileSystemOperation::GetMetadataFieldSet(
+                {storage::FileSystemOperation::GetMetadataField::kIsDirectory}),
             base::BindOnce(
                 &PassFileInfoToUIThread,
                 base::BindOnce(&FileSystemRetainEntryFunction::RetainFileEntry,

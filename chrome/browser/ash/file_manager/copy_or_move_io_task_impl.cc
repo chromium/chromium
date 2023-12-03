@@ -283,10 +283,10 @@ void CopyOrMoveIOTaskImpl::GetFileSize(size_t idx) {
   const base::FilePath& source = progress_->sources[idx].url.path();
   const base::FilePath& destination = progress_->GetDestinationFolder().path();
 
-  constexpr auto metadata_fields =
-      storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
-      storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
-      storage::FileSystemOperation::GET_METADATA_FIELD_TOTAL_SIZE;
+  constexpr storage::FileSystemOperation::GetMetadataFieldSet metadata_fields =
+      {storage::FileSystemOperation::GetMetadataField::kIsDirectory,
+       storage::FileSystemOperation::GetMetadataField::kSize,
+       storage::FileSystemOperation::GetMetadataField::kRecursiveSize};
 
   auto get_metadata_callback =
       base::BindOnce(&GetFileMetadataOnIOThread, file_system_context_,

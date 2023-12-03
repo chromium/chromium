@@ -351,8 +351,8 @@ void ThumbnailLoader::Load(const ThumbnailRequest& request,
       file_manager::util::GetFileSystemContextForSourceURL(profile_,
                                                            source_url),
       request.file_path,
-      storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
-          storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,
+      {storage::FileSystemOperation::GetMetadataField::kIsDirectory,
+       storage::FileSystemOperation::GetMetadataField::kLastModified},
       base::BindOnce(&ThumbnailLoader::LoadForFileWithMetadata,
                      weak_factory_.GetWeakPtr(), request, std::move(callback)));
 }

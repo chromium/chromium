@@ -86,7 +86,7 @@ void OnStatusCallbackOnUIThread(storage::AsyncFileUtil::StatusCallback callback,
 
 void GetFileInfoOnUIThread(
     const storage::FileSystemURL& url,
-    int fields,
+    storage::FileSystemOperation::GetMetadataFieldSet fields,
     ArcDocumentsProviderRoot::GetFileInfoCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -338,7 +338,7 @@ void ArcDocumentsProviderAsyncFileUtil::CreateDirectory(
 void ArcDocumentsProviderAsyncFileUtil::GetFileInfo(
     std::unique_ptr<storage::FileSystemOperationContext> context,
     const storage::FileSystemURL& url,
-    int fields,
+    GetMetadataFieldSet fields,
     GetFileInfoCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK_EQ(storage::kFileSystemTypeArcDocumentsProvider, url.type());

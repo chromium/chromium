@@ -180,10 +180,10 @@ constexpr DocumentSpec kRoDirSpec{"ro-dir-id", kRootSpec.document_id,
                                   -1,          56,
                                   false,       false,
                                   false,       false};
-constexpr int kAllMetadataFields =
-    storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
-    storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
-    storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED;
+constexpr storage::FileSystemOperation::GetMetadataFieldSet kAllMetadataFields =
+    {storage::FileSystemOperation::GetMetadataField::kIsDirectory,
+     storage::FileSystemOperation::GetMetadataField::kSize,
+     storage::FileSystemOperation::GetMetadataField::kLastModified};
 
 // RootSpecs
 constexpr RootSpec kRegularRootSpec{"root", kRootSpec.document_id, "root1", 100,

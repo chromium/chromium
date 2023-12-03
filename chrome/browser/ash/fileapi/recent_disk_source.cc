@@ -69,7 +69,7 @@ void OnGetMetadataOnIOThread(
 void GetMetadataOnIOThread(
     scoped_refptr<storage::FileSystemContext> file_system_context,
     const storage::FileSystemURL& url,
-    int fields,
+    storage::FileSystemOperation::GetMetadataFieldSet fields,
     storage::FileSystemOperation::GetMetadataCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
@@ -172,13 +172,15 @@ void RecentDiskSource::OnReadDirectory(
       ++inflight_stats_;
       content::GetIOThreadTaskRunner({})->PostTask(
           FROM_HERE,
-          base::BindOnce(
-              &GetMetadataOnIOThread,
-              base::WrapRefCounted(params.file_system_context()), url,
-              storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,
-              base::BindOnce(&RecentDiskSource::OnGetMetadata,
-                             weak_ptr_factory_.GetWeakPtr(),
-                             params.cutoff_time(), url)));
+          base::BindOnce(&GetMetadataOnIOThread,
+                         base::WrapRefCounted(params.file_system_context()),
+                         url,
+                         storage::FileSystemOperation::GetMetadataFieldSet(
+                             {storage::FileSystemOperation::GetMetadataField::
+                                  kLastModified}),
+                         base::BindOnce(&RecentDiskSource::OnGetMetadata,
+                                        weak_ptr_factory_.GetWeakPtr(),
+                                        params.cutoff_time(), url)));
     }
   }
 

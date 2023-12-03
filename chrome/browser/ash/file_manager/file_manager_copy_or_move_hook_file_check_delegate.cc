@@ -36,7 +36,8 @@ void FileManagerCopyOrMoveHookFileCheckDelegate::OnBeginProcessFile(
   // On BeginProcessFile is also called for the root directory, so we check
   // whether the passed source_url is a directory or not.
   file_system_context_->operation_runner()->GetMetadata(
-      source_url, storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY,
+      source_url,
+      {storage::FileSystemOperation::GetMetadataField::kIsDirectory},
       base::BindOnce(&FileManagerCopyOrMoveHookFileCheckDelegate::
                          OnBeginProcessFileGotMetadata,
                      weak_factory_.GetWeakPtr(), source_url, destination_url,

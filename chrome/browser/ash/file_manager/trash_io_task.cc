@@ -257,8 +257,9 @@ void TrashIOTask::GetFileSize(size_t source_idx) {
       base::BindOnce(
           &GetFileMetadataOnIOThread, file_system_context_,
           progress_.sources[source_idx].url,
-          storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
-              storage::FileSystemOperation::GET_METADATA_FIELD_TOTAL_SIZE,
+          storage::FileSystemOperation::GetMetadataFieldSet(
+              {storage::FileSystemOperation::GetMetadataField::kSize,
+               storage::FileSystemOperation::GetMetadataField::kRecursiveSize}),
           google_apis::CreateRelayCallback(
               base::BindOnce(&TrashIOTask::GotFileSize,
                              weak_ptr_factory_.GetWeakPtr(), source_idx))));

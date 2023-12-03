@@ -99,7 +99,7 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
   // file metadata reports unknown size, it will attempt to open the file and
   // read the size from the file descriptor.
   void GetFileInfo(const base::FilePath& path,
-                   int fields,
+                   storage::FileSystemOperation::GetMetadataFieldSet fields,
                    GetFileInfoCallback callback);
 
   // Queries a list of files under a directory just like
@@ -248,11 +248,12 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
   void OnGetRootSize(GetRootSizeCallback callback,
                      mojom::RootSizePtr maybe_root_size);
 
-  void GetFileInfoFromDocument(GetFileInfoCallback callback,
-                               const base::FilePath& path,
-                               int fields,
-                               base::File::Error error,
-                               const mojom::DocumentPtr& document);
+  void GetFileInfoFromDocument(
+      GetFileInfoCallback callback,
+      const base::FilePath& path,
+      storage::FileSystemOperation::GetMetadataFieldSet fields,
+      base::File::Error error,
+      const mojom::DocumentPtr& document);
 
   void ReadDirectoryWithDocumentId(ReadDirectoryCallback callback,
                                    const std::string& document_id);

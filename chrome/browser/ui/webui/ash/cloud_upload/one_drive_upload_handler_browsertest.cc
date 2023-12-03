@@ -191,7 +191,7 @@ class OneDriveUploadHandlerTest : public InProcessBrowserTest,
   void CheckPathExistsOnODFS(const base::FilePath& path) {
     ASSERT_TRUE(provided_file_system_);
     provided_file_system_->GetMetadata(
-        path, storage::FileSystemOperation::GET_METADATA_FIELD_NONE,
+        path, {},
         base::BindOnce(&OneDriveUploadHandlerTest::OnGetMetadataExpectSuccess,
                        base::Unretained(this)));
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -201,7 +201,7 @@ class OneDriveUploadHandlerTest : public InProcessBrowserTest,
   void CheckPathNotFoundOnODFS(const base::FilePath& path) {
     ASSERT_TRUE(provided_file_system_);
     provided_file_system_->GetMetadata(
-        path, storage::FileSystemOperation::GET_METADATA_FIELD_NONE,
+        path, {},
         base::BindOnce(&OneDriveUploadHandlerTest::OnGetMetadataExpectNotFound,
                        base::Unretained(this)));
     base::ScopedAllowBlockingForTesting allow_blocking;

@@ -75,7 +75,7 @@ class LoggingRecursiveOperation : public RecursiveOperationDelegate {
     }
 
     operation_runner()->GetMetadata(
-        url, FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY,
+        url, {FileSystemOperation::GetMetadataField::kIsDirectory},
         base::BindOnce(&LoggingRecursiveOperation::DidGetMetadata,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   }

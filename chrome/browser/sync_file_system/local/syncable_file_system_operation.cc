@@ -183,7 +183,7 @@ void SyncableFileSystemOperation::FileExists(const FileSystemURL& url,
 }
 
 void SyncableFileSystemOperation::GetMetadata(const FileSystemURL& url,
-                                              int fields,
+                                              GetMetadataFieldSet fields,
                                               GetMetadataCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   impl_->GetMetadata(url, fields, std::move(callback));

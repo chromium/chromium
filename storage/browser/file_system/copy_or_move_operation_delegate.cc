@@ -601,8 +601,8 @@ class StreamCopyOrMoveImpl
     // check metadata first.
     operation_runner_->GetMetadata(
         src_url_,
-        FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
-            FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,
+        {storage::FileSystemOperation::GetMetadataField::kIsDirectory,
+         storage::FileSystemOperation::GetMetadataField::kLastModified},
         base::BindOnce(&StreamCopyOrMoveImpl::RunAfterGetMetadataForSource,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   }
@@ -1136,7 +1136,7 @@ void CopyOrMoveOperationDelegate::PostProcessDirectory(
   }
 
   operation_runner()->GetMetadata(
-      src_url, FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,
+      src_url, {storage::FileSystemOperation::GetMetadataField::kLastModified},
       base::BindOnce(
           &CopyOrMoveOperationDelegate::PostProcessDirectoryAfterGetMetadata,
           weak_factory_.GetWeakPtr(), src_url, std::move(callback)));

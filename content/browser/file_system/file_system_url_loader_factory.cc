@@ -345,8 +345,8 @@ class FileSystemDirectoryURLLoader : public FileSystemEntryURLLoader {
     DCHECK(entry_url.is_valid());
     params_.file_system_context->operation_runner()->GetMetadata(
         entry_url,
-        FileSystemOperation::GET_METADATA_FIELD_SIZE |
-            FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,
+        {storage::FileSystemOperation::GetMetadataField::kSize,
+         storage::FileSystemOperation::GetMetadataField::kLastModified},
         base::BindOnce(&FileSystemDirectoryURLLoader::DidGetMetadata,
                        base::AsWeakPtr(this), index));
   }
@@ -463,8 +463,8 @@ class FileSystemFileURLLoader : public FileSystemEntryURLLoader {
     }
     params_.file_system_context->operation_runner()->GetMetadata(
         url_,
-        FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
-            FileSystemOperation::GET_METADATA_FIELD_SIZE,
+        {storage::FileSystemOperation::GetMetadataField::kIsDirectory,
+         storage::FileSystemOperation::GetMetadataField::kSize},
         base::BindOnce(&FileSystemFileURLLoader::DidGetMetadata,
                        base::AsWeakPtr(this)));
   }

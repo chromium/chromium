@@ -328,9 +328,9 @@ TEST_F(FileSystemProviderProviderAsyncFileUtilTest, GetFileInfo) {
 
   async_file_util_->GetFileInfo(
       CreateOperationContext(), root_url_,
-      storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
-          storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
-          storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,
+      {storage::FileSystemOperation::GetMetadataField::kIsDirectory,
+       storage::FileSystemOperation::GetMetadataField::kSize,
+       storage::FileSystemOperation::GetMetadataField::kLastModified},
       base::BindOnce(&EventLogger::OnGetFileInfo, base::Unretained(&logger)));
   base::RunLoop().RunUntilIdle();
 

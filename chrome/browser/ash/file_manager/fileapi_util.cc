@@ -380,9 +380,9 @@ class ConvertSelectedFileInfoListToFileChooserFileInfoListImpl {
 
     context_->operation_runner()->GetMetadata(
         context_->CrackURLInFirstPartyContext((*it)->get_file_system()->url),
-        storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
-            storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
-            storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,
+        {storage::FileSystemOperation::GetMetadataField::kIsDirectory,
+         storage::FileSystemOperation::GetMetadataField::kSize,
+         storage::FileSystemOperation::GetMetadataField::kLastModified},
         base::BindOnce(
             &ConvertSelectedFileInfoListToFileChooserFileInfoListImpl::
                 OnGotMetadataOnIOThread,
@@ -443,7 +443,7 @@ void CheckIfDirectoryExistsOnIoThread(
 void GetMetadataForPathOnIoThread(
     scoped_refptr<storage::FileSystemContext> file_system_context,
     const storage::FileSystemURL& internal_url,
-    int fields,
+    storage::FileSystemOperationRunner::GetMetadataFieldSet fields,
     storage::FileSystemOperationRunner::GetMetadataCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   file_system_context->operation_runner()->GetMetadata(internal_url, fields,
@@ -647,7 +647,7 @@ void CheckIfDirectoryExists(
 void GetMetadataForPath(
     scoped_refptr<storage::FileSystemContext> file_system_context,
     const base::FilePath& entry_path,
-    int fields,
+    storage::FileSystemOperationRunner::GetMetadataFieldSet fields,
     storage::FileSystemOperationRunner::GetMetadataCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

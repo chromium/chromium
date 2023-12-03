@@ -335,7 +335,7 @@ void Copier::OnFlush(int result) {
 
   async_file_util_->GetFileInfo(
       DuplicateFileSystemOperationContext(*context_), dest_url_,
-      storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY,
+      {storage::FileSystemOperation::GetMetadataField::kIsDirectory},
       base::BindOnce(&Copier::OnGetFileInfo,
                      // base::Unretained is safe as callback_ owns this.
                      base::Unretained(this)));

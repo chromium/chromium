@@ -368,7 +368,7 @@ void DeviceMediaAsyncFileUtil::CreateDirectory(
 void DeviceMediaAsyncFileUtil::GetFileInfo(
     std::unique_ptr<FileSystemOperationContext> context,
     const FileSystemURL& url,
-    int /* flags */,
+    GetMetadataFieldSet fields,
     GetFileInfoCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   MTPDeviceAsyncDelegate* delegate =

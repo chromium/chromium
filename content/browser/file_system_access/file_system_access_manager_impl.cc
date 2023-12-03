@@ -678,7 +678,9 @@ void FileSystemAccessManagerImpl::ResolveDataTransferToken(
                                weak_factory_.GetWeakPtr(), binding_context,
                                data_transfer_token_impl->second->file_path(),
                                fs_url, std::move(token_resolved_callback))),
-      fs_url, storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY);
+      fs_url,
+      storage::FileSystemOperation::GetMetadataFieldSet(
+          {storage::FileSystemOperation::GetMetadataField::kIsDirectory}));
 }
 
 void FileSystemAccessManagerImpl::ResolveDataTransferTokenWithFileType(
@@ -1694,7 +1696,9 @@ void FileSystemAccessManagerImpl::CleanupAccessHandleCapacityAllocation(
                          CleanupAccessHandleCapacityAllocationImpl,
                      weak_factory_.GetWeakPtr(), url, allocated_file_size,
                      std::move(callback)),
-      url, storage::FileSystemOperation::GET_METADATA_FIELD_SIZE);
+      url,
+      storage::FileSystemOperation::GetMetadataFieldSet(
+          {storage::FileSystemOperation::GetMetadataField::kSize}));
 }
 
 void FileSystemAccessManagerImpl::CleanupAccessHandleCapacityAllocationImpl(

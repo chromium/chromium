@@ -54,7 +54,7 @@ void GetFileInfo(Profile* profile,
       file_manager::util::GetFileManagerFileSystemContext(profile);
   file_manager::util::GetMetadataForPath(
       file_system_context, file_path,
-      storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY,
+      {storage::FileSystemOperation::GetMetadataField::kIsDirectory},
       base::BindOnce(
           [](GetFileInfoCallback callback, base::File::Error error,
              const base::File::Info& info) {

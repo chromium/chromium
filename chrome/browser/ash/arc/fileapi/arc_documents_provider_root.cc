@@ -125,9 +125,10 @@ ArcDocumentsProviderRoot::~ArcDocumentsProviderRoot() {
   runner_->RemoveObserver(this);
 }
 
-void ArcDocumentsProviderRoot::GetFileInfo(const base::FilePath& path,
-                                           int fields,
-                                           GetFileInfoCallback callback) {
+void ArcDocumentsProviderRoot::GetFileInfo(
+    const base::FilePath& path,
+    storage::FileSystemOperation::GetMetadataFieldSet fields,
+    GetFileInfoCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (path.IsAbsolute()) {
     std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND,
@@ -357,7 +358,7 @@ void ArcDocumentsProviderRoot::OnGetRootSize(GetRootSizeCallback callback,
 void ArcDocumentsProviderRoot::GetFileInfoFromDocument(
     GetFileInfoCallback callback,
     const base::FilePath& path,
-    int fields,
+    storage::FileSystemOperation::GetMetadataFieldSet fields,
     base::File::Error error,
     const mojom::DocumentPtr& document) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -368,22 +369,24 @@ void ArcDocumentsProviderRoot::GetFileInfoFromDocument(
   DCHECK(document);
 
   base::File::Info info;
-  if (fields & storage::FileSystemOperation::GET_METADATA_FIELD_SIZE) {
+  if (fields.Has(storage::FileSystemOperation::GetMetadataField::kSize)) {
     info.size = document->size;
   }
   bool is_directory = document->mime_type == kAndroidDirectoryMimeType;
-  if (fields & storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY) {
+  if (fields.Has(
+          storage::FileSystemOperation::GetMetadataField::kIsDirectory)) {
     info.is_directory = is_directory;
   }
   info.is_symbolic_link = false;
-  if (fields & storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED) {
+  if (fields.Has(
+          storage::FileSystemOperation::GetMetadataField::kLastModified)) {
     info.last_modified = info.last_accessed = info.creation_time =
         base::Time::FromMillisecondsSinceUnixEpoch(
             base::checked_cast<int64_t>(document->last_modified));
   }
 
   if (base::FeatureList::IsEnabled(kDocumentsProviderUnknownSizeFeature) &&
-      (fields & storage::FileSystemOperation::GET_METADATA_FIELD_SIZE) &&
+      (fields.Has(storage::FileSystemOperation::GetMetadataField::kSize)) &&
       info.size == kUnknownFileSize && !is_directory) {
     // We don't know the size from metadata and the size is requested, find it
     // out by opening the file

@@ -221,12 +221,12 @@ void AsyncFileUtilAdapter::CreateDirectory(
 void AsyncFileUtilAdapter::GetFileInfo(
     std::unique_ptr<FileSystemOperationContext> context,
     const FileSystemURL& url,
-    int fields,
+    GetMetadataFieldSet fields,
     GetFileInfoCallback callback) {
   FileSystemOperationContext* context_ptr = context.release();
   GetFileInfoHelper* helper = new GetFileInfoHelper;
   bool calculate_total_size =
-      (fields & FileSystemOperation::GET_METADATA_FIELD_TOTAL_SIZE);
+      fields.Has(FileSystemOperation::GetMetadataField::kRecursiveSize);
   const bool success = context_ptr->task_runner()->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&GetFileInfoHelper::GetFileInfo, Unretained(helper),

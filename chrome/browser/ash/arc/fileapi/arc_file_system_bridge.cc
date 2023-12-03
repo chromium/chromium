@@ -104,7 +104,7 @@ file_manager::util::FileSystemURLAndHandle GetFileSystemURL(
 void GetMetadataOnIOThread(
     scoped_refptr<storage::FileSystemContext> context,
     const storage::FileSystemURL& url,
-    int flags,
+    storage::FileSystemOperation::GetMetadataFieldSet flags,
     storage::FileSystemOperation::GetMetadataCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   context->operation_runner()->GetMetadata(
@@ -228,8 +228,8 @@ void ArcFileSystemBridge::GetFileSize(const std::string& url,
 void ArcFileSystemBridge::GetFileSizeInternal(const GURL& url_decoded,
                                               GetFileSizeCallback callback) {
   GetMetadata(url_decoded,
-              storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
-                  storage::FileSystemOperation::GET_METADATA_FIELD_SIZE,
+              {storage::FileSystemOperation::GetMetadataField::kIsDirectory,
+               storage::FileSystemOperation::GetMetadataField::kSize},
               base::BindOnce([](base::File::Error result,
                                 const base::File::Info& file_info) -> int64_t {
                 if (result == base::File::FILE_OK && !file_info.is_directory &&
@@ -251,7 +251,7 @@ void ArcFileSystemBridge::GetLastModified(const GURL& url,
   }
 
   GetMetadata(url_decoded,
-              storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,
+              {storage::FileSystemOperation::GetMetadataField::kLastModified},
               base::BindOnce([](base::File::Error result,
                                 const base::File::Info& file_info)
                                  -> absl::optional<base::Time> {
@@ -264,7 +264,7 @@ void ArcFileSystemBridge::GetLastModified(const GURL& url,
 
 void ArcFileSystemBridge::GetMetadata(
     const GURL& url_decoded,
-    int flags,
+    storage::FileSystemOperation::GetMetadataFieldSet flags,
     storage::FileSystemOperation::GetMetadataCallback callback) {
   scoped_refptr<storage::FileSystemContext> context =
       GetFileSystemContext(profile_);

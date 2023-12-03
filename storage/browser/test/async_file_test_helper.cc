@@ -264,9 +264,9 @@ base::File::Error AsyncFileTestHelper::GetMetadata(
   base::RunLoop run_loop;
   context->operation_runner()->GetMetadata(
       url,
-      FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
-          FileSystemOperation::GET_METADATA_FIELD_SIZE |
-          FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,
+      {storage::FileSystemOperation::GetMetadataField::kIsDirectory,
+       storage::FileSystemOperation::GetMetadataField::kSize,
+       storage::FileSystemOperation::GetMetadataField::kLastModified},
       base::BindOnce(&GetMetadataCallback, &run_loop, &result, file_info));
   run_loop.Run();
   return result;

@@ -828,7 +828,7 @@ void FileSystemContext::DidOpenFileSystemForResolveURL(
   }
 
   operation_runner()->GetMetadata(
-      url, FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY,
+      url, {storage::FileSystemOperation::GetMetadataField::kIsDirectory},
       base::BindOnce(&DidGetMetadataForResolveURL, path, std::move(callback),
                      info));
 }
