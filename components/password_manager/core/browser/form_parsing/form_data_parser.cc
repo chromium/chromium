@@ -514,6 +514,8 @@ void ParseUsingPredictions(std::vector<ProcessedField>* processed_fields,
 
   // For the use of basic heuristics, also mark CVC fields and NOT_PASSWORD
   // fields as such.
+  // TODO(crbug/1507825): Treat non-password related fields as not password and
+  // not username fields.
   for (const PasswordFieldPrediction& prediction : predictions.fields) {
     ProcessedField* current_field = FindField(processed_fields, prediction);
     if (!current_field)
@@ -521,8 +523,10 @@ void ParseUsingPredictions(std::vector<ProcessedField>* processed_fields,
     if (prediction.type == autofill::CREDIT_CARD_VERIFICATION_CODE ||
         prediction.type == autofill::CREDIT_CARD_NUMBER) {
       current_field->server_hints_credit_card_field = true;
-    } else if (prediction.type == autofill::NOT_PASSWORD ||
-               prediction.type == autofill::ONE_TIME_CODE) {
+    } else if (prediction.type == autofill::ONE_TIME_CODE) {
+      current_field->server_hints_not_password = true;
+      current_field->server_hints_not_username = true;
+    } else if (prediction.type == autofill::NOT_PASSWORD) {
       current_field->server_hints_not_password = true;
     } else if (prediction.type == autofill::NOT_USERNAME) {
       current_field->server_hints_not_username = true;

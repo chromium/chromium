@@ -2163,6 +2163,25 @@ TEST_F(FormParserTest, OneTimeCodeField) {
   });
 }
 
+// The parser should avoid identifying ONE_TIME_CODE fields as usernames.
+TEST_F(FormParserTest, OneTimeCodeFieldNotUsername) {
+  CheckTestData({
+      {
+          .description_for_logging = "Server hints: ONE_TIME_CODE.",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME,
+                   .form_control_type = FormControlType::kInputText},
+                  {.form_control_type = FormControlType::kInputText,
+                   .prediction = {.type = autofill::ONE_TIME_CODE}},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .form_control_type = FormControlType::kInputPassword},
+              },
+          .fallback_only = false,
+      },
+  });
+}
+
 // The parser should avoid identifying NOT_USERNAME fields as usernames.
 TEST_F(FormParserTest, NotUsernameField) {
   CheckTestData({
