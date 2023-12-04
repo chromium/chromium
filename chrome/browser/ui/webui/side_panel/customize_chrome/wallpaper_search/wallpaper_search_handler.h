@@ -103,10 +103,13 @@ class WallpaperSearchHandler
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
   void OnWallpaperSearchResultsDecoded(
       GetWallpaperSearchResultsCallback callback,
+      base::ElapsedTimer processing_timer,
       std::vector<
           std::pair<optimization_guide::proto::WallpaperSearchImageQuality*,
                     SkBitmap>> bitmaps);
-  void SelectHistoryImage(const base::Token& id, const gfx::Image& image);
+  void SelectHistoryImage(const base::Token& id,
+                          base::ElapsedTimer timer,
+                          const gfx::Image& image);
 
   raw_ptr<Profile> profile_;
   PrefChangeRegistrar pref_change_registrar_;

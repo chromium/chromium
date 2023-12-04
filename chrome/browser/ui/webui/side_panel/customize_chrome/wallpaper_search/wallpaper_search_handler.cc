@@ -8,12 +8,12 @@
 #include <utility>
 #include <variant>
 #include <vector>
-
 #include "base/barrier_callback.h"
 #include "base/base64.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -259,11 +259,11 @@ void WallpaperSearchHandler::SetBackgroundToHistoryImage(
           profile_->GetPath().AppendASCII(
               result_id.ToString() +
               chrome::kChromeUIUntrustedNewTabPageBackgroundFilename)),
-      base::BindOnce(
-          &WallpaperSearchHandler::DecodeHistoryImage,
-          weak_ptr_factory_.GetWeakPtr(),
-          base::BindOnce(&WallpaperSearchHandler::SelectHistoryImage,
-                         weak_ptr_factory_.GetWeakPtr(), result_id)));
+      base::BindOnce(&WallpaperSearchHandler::DecodeHistoryImage,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     base::BindOnce(&WallpaperSearchHandler::SelectHistoryImage,
+                                    weak_ptr_factory_.GetWeakPtr(), result_id,
+                                    base::ElapsedTimer())));
 }
 
 void WallpaperSearchHandler::SetBackgroundToWallpaperSearchResult(
@@ -280,8 +280,8 @@ void WallpaperSearchHandler::SetBackgroundToWallpaperSearchResult(
               .InMilliseconds());
     }
   }
-  wallpaper_search_background_manager_->SelectLocalBackgroundImage(result_id,
-                                                                   bitmap);
+  wallpaper_search_background_manager_->SelectLocalBackgroundImage(
+      result_id, bitmap, base::ElapsedTimer());
 }
 
 void WallpaperSearchHandler::UpdateHistory() {
@@ -497,8 +497,10 @@ void WallpaperSearchHandler::OnHistoryDecoded(
 }
 
 void WallpaperSearchHandler::SelectHistoryImage(const base::Token& id,
+                                                base::ElapsedTimer timer,
                                                 const gfx::Image& image) {
-  wallpaper_search_background_manager_->SelectHistoryImage(id, image);
+  wallpaper_search_background_manager_->SelectHistoryImage(id, image,
+                                                           std::move(timer));
 }
 
 void WallpaperSearchHandler::OnWallpaperSearchResultsRetrieved(
@@ -542,7 +544,8 @@ void WallpaperSearchHandler::OnWallpaperSearchResultsRetrieved(
       optimization_guide::proto::WallpaperSearchImageQuality*, SkBitmap>>(
       response->images_size(),
       base::BindOnce(&WallpaperSearchHandler::OnWallpaperSearchResultsDecoded,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     base::ElapsedTimer()));
 
   // Decode each image that is sent back for security purposes. Switched them
   // from gfx::Image to SkBitmap before passing to the barrier callback because
@@ -594,6 +597,7 @@ void WallpaperSearchHandler::SetResultRenderTime(
 // make it base64 for easy reading by the UI.
 void WallpaperSearchHandler::OnWallpaperSearchResultsDecoded(
     GetWallpaperSearchResultsCallback callback,
+    base::ElapsedTimer processing_timer,
     std::vector<
         std::pair<optimization_guide::proto::WallpaperSearchImageQuality*,
                   SkBitmap>> bitmaps) {
@@ -622,6 +626,9 @@ void WallpaperSearchHandler::OnWallpaperSearchResultsDecoded(
     }
   }
 
+  UmaHistogramMediumTimes(
+      "NewTabPage.WallpaperSearch.GetResultProcessingLatency",
+      processing_timer.Elapsed());
   std::move(callback).Run(
       side_panel::customize_chrome::mojom::WallpaperSearchStatus::kOk,
       std::move(thumbnails));

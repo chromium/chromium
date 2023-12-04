@@ -1869,6 +1869,45 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.WallpaperSearch.GetResultProcessingLatency"
+    units="ms" expires_after="2024-04-28">
+  <owner>tiborg@chromium.org</owner>
+  <owner>rtatum@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Histogram of the time, in milliseconds, it takes to process the Wallpaper
+    Search results after we get the images back from the server. This tracks the
+    time from server response until the images are sent to the UI.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.WallpaperSearch.SetRecentThemeProcessingLatency"
+    units="ms" expires_after="2024-04-28">
+  <owner>tiborg@chromium.org</owner>
+  <owner>rtatum@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Histogram of the time, in milliseconds, it took to set a recent Wallpaper
+    Search theme as the current theme. This tracks how long the image processing
+    takes from the time image processing starts for setting a recent Wallpaper
+    Search theme to when the profile preference is set to change the background
+    image.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.WallpaperSearch.SetResultThemeProcessingLatency"
+    units="ms" expires_after="2024-04-28">
+  <owner>tiborg@chromium.org</owner>
+  <owner>rtatum@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Histogram of the time, in milliseconds, it took to set a Wallpaper Search
+    result as the current theme. This tracks how long the image processing takes
+    from the time image processing starts for setting a Wallpaper Search result
+    theme to when the profile preference is set to change the background image.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.Width" units="pixels" expires_after="2024-04-28">
   <owner>danpeng@google.com</owner>
   <owner>tiborg@chromium.org</owner>

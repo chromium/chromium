@@ -13,9 +13,11 @@
 #include "base/functional/callback_forward.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/token.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
@@ -87,9 +89,14 @@ class MockWallpaperSearchBackgroundManager
   explicit MockWallpaperSearchBackgroundManager(Profile* profile)
       : WallpaperSearchBackgroundManager(profile) {}
   MOCK_METHOD0(GetHistory, std::vector<base::Token>());
-  MOCK_METHOD2(SelectHistoryImage, void(const base::Token&, const gfx::Image&));
-  MOCK_METHOD2(SelectLocalBackgroundImage,
-               void(const base::Token&, const SkBitmap&));
+  MOCK_METHOD3(SelectHistoryImage,
+               void(const base::Token&,
+                    const gfx::Image&,
+                    base::ElapsedTimer timer));
+  MOCK_METHOD3(SelectLocalBackgroundImage,
+               void(const base::Token&,
+                    const SkBitmap&,
+                    base::ElapsedTimer timer));
   MOCK_METHOD0(SaveCurrentBackgroundToHistory, absl::optional<base::Token>());
 };
 
@@ -196,6 +203,7 @@ class WallpaperSearchHandlerTest : public testing::Test {
     return handler;
   }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
   content::BrowserTaskEnvironment& task_environment() {
     return task_environment_;
   }
@@ -224,6 +232,7 @@ class WallpaperSearchHandlerTest : public testing::Test {
       mock_optimization_guide_keyed_service_;
   image_fetcher::MockImageDecoder mock_image_decoder_;
   testing::NiceMock<MockClient> mock_client_;
+  base::HistogramTester histogram_tester_;
   MockWallpaperSearchBackgroundManager
       mock_wallpaper_search_background_manager_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
@@ -561,6 +570,8 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_Success) {
 
   std::move(done_callback).Run(base::ok(result), SaveQuality(&quality));
 
+  // Advance clock to test processing latency.
+  task_environment().AdvanceClock(base::Milliseconds(345));
   std::move(decoder_callback1).Run(gfx::Image::CreateFrom1xBitmap(bitmap1));
   std::move(decoder_callback2).Run(gfx::Image::CreateFrom1xBitmap(bitmap2));
 
@@ -585,6 +596,8 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_Success) {
   gfx::PNGCodec::EncodeBGRASkBitmap(
       resized_bitmap2, /*discard_transparency=*/false, &resized_encoded2);
   EXPECT_EQ(images[1]->image, base::Base64Encode(resized_encoded2));
+  histogram_tester().ExpectBucketCount(
+      "NewTabPage.WallpaperSearch.GetResultProcessingLatency", 345, 1);
 
   // Quality logs on destruction.
   handler.reset();
@@ -968,9 +981,11 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToHistoryImage) {
   base::OnceCallback<void(const gfx::Image&)> decoder_callback;
   base::Token token_arg;
   gfx::Image image_arg;
+  base::ElapsedTimer timer;
   EXPECT_CALL(mock_wallpaper_search_background_manager(),
-              SelectHistoryImage(_, _))
-      .WillOnce(DoAll(MoveArg<0>(&token_arg), MoveArg<1>(&image_arg)));
+              SelectHistoryImage(_, _, _))
+      .WillOnce(DoAll(MoveArg<0>(&token_arg), MoveArg<1>(&image_arg),
+                      MoveArg<2>(&timer)));
   EXPECT_CALL(mock_image_decoder(), DecodeImage(_, _, _, _))
       .WillOnce(Invoke(
           [&decoder_callback](const std::string& image_data,
@@ -1000,6 +1015,7 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToHistoryImage) {
 
   handler->SetBackgroundToHistoryImage(token);
   task_environment().RunUntilIdle();
+  task_environment().AdvanceClock(base::Milliseconds(321));
 
   std::move(decoder_callback).Run(gfx::Image::CreateFrom1xBitmap(bitmap));
 
@@ -1011,6 +1027,9 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToHistoryImage) {
   EXPECT_EQ(bitmap_arg.getColor(0, 0), bitmap.getColor(0, 0));
   EXPECT_EQ(bitmap_arg.width(), bitmap.width());
   EXPECT_EQ(bitmap_arg.height(), bitmap.height());
+
+  // Check that the processing timer is being passed.
+  EXPECT_EQ(timer.Elapsed().InMilliseconds(), 321);
 }
 
 TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
@@ -1112,19 +1131,26 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
   // Set background to bitmap2.
   SkBitmap bitmap;
   base::Token token;
+  base::ElapsedTimer timer;
   EXPECT_CALL(mock_wallpaper_search_background_manager(),
               SelectLocalBackgroundImage(An<const base::Token&>(),
-                                         An<const SkBitmap&>()))
-      .WillOnce(DoAll(SaveArg<0>(&token), SaveArg<1>(&bitmap)));
+                                         An<const SkBitmap&>(),
+                                         An<base::ElapsedTimer>()))
+      .WillOnce(
+          DoAll(SaveArg<0>(&token), SaveArg<1>(&bitmap), MoveArg<2>(&timer)));
 
   handler->SetBackgroundToWallpaperSearchResult(
       images[1]->id, (base::Time::Now() + base::Milliseconds(123))
                          .InMillisecondsFSinceUnixEpoch());
+  task_environment().AdvanceClock(base::Milliseconds(123));
 
   // Check that the 2nd bitmap was selected by comparing color, since the
   // 2 bitmaps are different colors.
   EXPECT_EQ(bitmap.getColor(0, 0), bitmap2.getColor(0, 0));
   EXPECT_EQ(token, images[1]->id);
+
+  // Check that the processing timer is being passed.
+  EXPECT_EQ(timer.Elapsed().InMilliseconds(), 123);
 
   // Simulate current background is saved to history.
   ON_CALL(mock_wallpaper_search_background_manager(),

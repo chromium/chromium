@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/token.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -32,19 +33,22 @@ class WallpaperSearchBackgroundManager {
 
   // Sets a history image to the NTP background and sets matching theme color.
   virtual void SelectHistoryImage(const base::Token& id,
-                                  const gfx::Image& image);
+                                  const gfx::Image& image,
+                                  base::ElapsedTimer timer);
 
   // Invoked by Wallpaper Search to set background image with already decoded
   // data.
   virtual void SelectLocalBackgroundImage(const base::Token& id,
-                                          const SkBitmap& bitmap);
+                                          const SkBitmap& bitmap,
+                                          base::ElapsedTimer timer);
 
   // Saves the current background to history if it is a wallpaper search one.
   // Returns the backround's ID if successful.
   virtual absl::optional<base::Token> SaveCurrentBackgroundToHistory();
 
  private:
-  void SetBackgroundToLocalResourceWithId(const base::Token& id);
+  void SetBackgroundToLocalResourceWithId(const base::Token& id,
+                                          base::ElapsedTimer timer);
 
   raw_ptr<NtpCustomBackgroundService> ntp_custom_background_service_;
   raw_ptr<Profile> profile_;

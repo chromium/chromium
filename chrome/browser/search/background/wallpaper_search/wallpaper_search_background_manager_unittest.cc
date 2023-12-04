@@ -8,6 +8,7 @@
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/token.h"
 #include "build/build_config.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
@@ -81,6 +82,7 @@ class WallpaperSearchBackgroundManagerTest : public testing::Test {
         id.ToString() + chrome::kChromeUIUntrustedNewTabPageBackgroundFilename);
   }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
   MockNtpCustomBackgroundService& mock_ntp_custom_background_service() {
     return *mock_ntp_custom_background_service_;
   }
@@ -95,7 +97,9 @@ class WallpaperSearchBackgroundManagerTest : public testing::Test {
 
  private:
   // NOTE: The initialization order of these members matters.
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<MockNtpCustomBackgroundService> mock_ntp_custom_background_service_;
   raw_ptr<PrefService> pref_service_;
@@ -136,12 +140,18 @@ TEST_F(WallpaperSearchBackgroundManagerTest, SetHistoryImage) {
 
   const gfx::Image& image = gfx::Image::CreateFrom1xBitmap(bitmap);
   const base::Token& token = base::Token::CreateRandom();
-  wallpaper_search_background_manager().SelectHistoryImage(token, image);
-  task_environment().RunUntilIdle();
+  base::ElapsedTimer timer = base::ElapsedTimer();
+  task_environment().AdvanceClock(base::Milliseconds(321));
+  wallpaper_search_background_manager().SelectHistoryImage(token, image,
+                                                           std::move(timer));
 
   // Check that the args were passed to |NtpCustomBackgroundService|.
   EXPECT_EQ(token_arg, token);
   EXPECT_EQ(image, image_arg);
+
+  // Check that processing time was saved to metrics.
+  histogram_tester().ExpectBucketCount(
+      "NewTabPage.WallpaperSearch.SetRecentThemeProcessingLatency", 321, 1);
 }
 
 TEST_F(WallpaperSearchBackgroundManagerTest, SetLocalBackgroundImage) {
@@ -162,8 +172,10 @@ TEST_F(WallpaperSearchBackgroundManagerTest, SetLocalBackgroundImage) {
   bitmap.eraseColor(SK_ColorRED);
 
   base::Token token = base::Token::CreateRandom();
-  wallpaper_search_background_manager().SelectLocalBackgroundImage(token,
-                                                                   bitmap);
+  base::ElapsedTimer timer = base::ElapsedTimer();
+  wallpaper_search_background_manager().SelectLocalBackgroundImage(
+      token, bitmap, std::move(timer));
+  task_environment().AdvanceClock(base::Milliseconds(345));
   task_environment().RunUntilIdle();
 
   // Check that image file was created.
@@ -173,6 +185,10 @@ TEST_F(WallpaperSearchBackgroundManagerTest, SetLocalBackgroundImage) {
   EXPECT_EQ(token_arg.high(), token.high());
   EXPECT_EQ(token_arg.low(), token.low());
   EXPECT_EQ(SK_ColorRED, image_arg.ToSkBitmap()->getColor(0, 0));
+
+  // Check that processing time was saved to metrics.
+  histogram_tester().ExpectBucketCount(
+      "NewTabPage.WallpaperSearch.SetResultThemeProcessingLatency", 345, 1);
 }
 
 // If the currently set wallpaper search image is set again, do not pass it
@@ -200,8 +216,8 @@ TEST_F(WallpaperSearchBackgroundManagerTest,
   custom_background.local_background_id = token;
   ON_CALL(mock_ntp_custom_background_service(), GetCustomBackground())
       .WillByDefault(Return(absl::make_optional(custom_background)));
-  wallpaper_search_background_manager().SelectLocalBackgroundImage(token,
-                                                                   bitmap);
+  wallpaper_search_background_manager().SelectLocalBackgroundImage(
+      token, bitmap, base::ElapsedTimer());
 
   task_environment().RunUntilIdle();
 
