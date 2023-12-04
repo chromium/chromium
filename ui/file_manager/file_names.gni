@@ -130,6 +130,7 @@ ts_files = [
   "file_manager/common/js/dom_utils.ts",
   "file_manager/common/js/entry_utils.ts",
   "file_manager/common/js/error_counter.ts",
+  "file_manager/common/js/files_event_target.ts",
   "file_manager/common/js/file_tasks.ts",
   "file_manager/common/js/file_type.ts",
   "file_manager/common/js/file_types_base.ts",

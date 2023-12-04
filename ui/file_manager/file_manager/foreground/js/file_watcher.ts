@@ -2,38 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {AsyncQueue} from '../../common/js/async_util.js';
 import {isFakeEntry, unwrapEntry} from '../../common/js/entry_utils.js';
+import {CustomEventMap, FilesEventTarget} from '../../common/js/files_event_target.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 
 export type WatcherDirectoryChangedEvent =
     CustomEvent<{changedFiles: chrome.fileManagerPrivate.FileChange[]}|
                 undefined>;
 
-interface FileWatcherEventMap {
+interface FileWatcherEventMap extends CustomEventMap {
   'watcher-directory-changed': WatcherDirectoryChangedEvent;
 }
 
-export interface FileWatcher {
-  addEventListener<K extends keyof FileWatcherEventMap>(
-      type: K, listener: (e: FileWatcherEventMap[K]) => void,
-      options?: boolean|AddEventListenerOptions|undefined): void;
-  addEventListener(
-      type: string, callback: EventListenerOrEventListenerObject|null,
-      options?: AddEventListenerOptions|boolean): void;
-  removeEventListener<K extends keyof FileWatcherEventMap>(
-      type: K, listener: (ev: FileWatcherEventMap[K]) => any,
-      options?: boolean|EventListenerOptions): void;
-  removeEventListener(
-      type: string, listener: EventListenerOrEventListenerObject|null,
-      options?: boolean|EventListenerOptions): void;
-}
-
 /** Watches for changes in the tracked directory. */
-export class FileWatcher extends EventTarget {
+export class FileWatcher extends FilesEventTarget<FileWatcherEventMap> {
   private queue_ = new AsyncQueue();
   private watchedDirectoryEntry_: DirectoryEntry|null = null;
   private onDirectoryChangedBound_ = this.onDirectoryChanged_.bind(this);
