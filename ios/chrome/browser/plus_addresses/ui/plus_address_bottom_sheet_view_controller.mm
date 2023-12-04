@@ -19,6 +19,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/dynamic_type_util.h"
 #import "ios/chrome/common/ui/util/text_view_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
@@ -86,9 +87,7 @@ NSAttributedString* DescriptionMessage() {
 - (void)viewDidLoad {
   // Set the properties read by the super when constructing the
   // views in `-[ConfirmationAlertViewController viewDidLoad]`.
-  _activityIndicator = [[UIActivityIndicatorView alloc]
-      initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
-  self.aboveTitleView = _activityIndicator;
+  [self setupAboveTitleView];
   self.image = DefaultSymbolTemplateWithPointSize(kMailFillSymbol, kImageSize);
   self.imageHasFixedSize = true;
   self.titleString = l10n_util::GetNSString(IDS_PLUS_ADDRESS_MODAL_TITLE);
@@ -263,6 +262,20 @@ NSAttributedString* DescriptionMessage() {
   descriptionView.attributedText = description;
   descriptionView.textAlignment = NSTextAlignmentCenter;
   return descriptionView;
+}
+
+- (void)setupAboveTitleView {
+  _activityIndicator = [[UIActivityIndicatorView alloc]
+      initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+
+  // Create a container view such that the activity indicator showing doesn't
+  // cause the layout to jump.
+  UIView* container = [[UIView alloc] initWithFrame:CGRectZero];
+  [container addSubview:_activityIndicator];
+  _activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
+  container.translatesAutoresizingMaskIntoConstraints = NO;
+  AddSameConstraints(container, _activityIndicator);
+  self.aboveTitleView = container;
 }
 
 @end
