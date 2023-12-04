@@ -8,6 +8,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/origin_trials/browser/origin_trials.h"
@@ -49,13 +50,16 @@ void TpcdSupportService::Shutdown() {
 void TpcdSupportService::Update3pcdSupportSettingsForTesting(
     const url::Origin& request_origin,
     const std::string& partition_site,
+    bool match_subdomains,
     bool enabled) {
-  Update3pcdSupportSettings(request_origin, partition_site, enabled);
+  Update3pcdSupportSettings(request_origin, partition_site, match_subdomains,
+                            enabled);
 }
 
 void TpcdSupportService::Update3pcdSupportSettings(
     const url::Origin& request_origin,
     const std::string& partition_site,
+    bool includes_subdomains,
     bool enabled) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -63,16 +67,18 @@ void TpcdSupportService::Update3pcdSupportSettings(
       HostContentSettingsMapFactory::GetForProfile(browser_context_);
   CHECK(settings_map);
 
-  const GURL request_site_as_url = request_origin.GetURL();
+  const GURL request_origin_as_url = request_origin.GetURL();
   const GURL partition_site_as_url = GURL(partition_site);
 
   // Check for an existing `TPCD_SUPPORT` setting that allows the pair.
   content_settings::SettingInfo existing_setting_info;
   bool setting_exists =
       (settings_map->GetContentSetting(
-           request_site_as_url, partition_site_as_url,
+           request_origin_as_url, partition_site_as_url,
            ContentSettingsType::TPCD_SUPPORT,
            &existing_setting_info) == CONTENT_SETTING_ALLOW) &&
+      (existing_setting_info.primary_pattern.HasDomainWildcard() ==
+       includes_subdomains) &&
       !existing_setting_info.primary_pattern.MatchesAllHosts() &&
       !existing_setting_info.secondary_pattern.MatchesAllHosts();
 
@@ -82,9 +88,25 @@ void TpcdSupportService::Update3pcdSupportSettings(
     return;
   }
 
+  ContentSettingsPattern primary_setting_pattern;
+  ContentSettingsPattern secondary_setting_pattern =
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(
+          partition_site_as_url);
+  if (includes_subdomains) {
+    primary_setting_pattern =
+        ContentSettingsPattern::FromURL(request_origin_as_url);
+  } else {
+    // In this case, the combination of `primary_setting_pattern` and
+    // `secondary_setting_pattern` is equivalent to
+    // `ContentSettingsType::TPCD_SUPPORT`'s default scope
+    // (`REQUESTING_ORIGIN_AND_TOP_SCHEMEFUL_SITE_SCOPE`).
+    primary_setting_pattern =
+        ContentSettingsPattern::FromURLNoWildcard(request_origin_as_url);
+  }
+
   if (enabled) {
-    settings_map->SetContentSettingDefaultScope(
-        request_site_as_url, partition_site_as_url,
+    settings_map->SetContentSettingCustomScope(
+        primary_setting_pattern, secondary_setting_pattern,
         ContentSettingsType::TPCD_SUPPORT, CONTENT_SETTING_ALLOW);
   } else {
     CHECK(setting_exists);
@@ -123,8 +145,10 @@ void TpcdSupportService::ClearTpcdSupportSettings() {
 
 void TpcdSupportService::OnStatusChanged(const url::Origin& origin,
                                          const std::string& partition_site,
+                                         bool includes_subdomains,
                                          bool enabled) {
-  Update3pcdSupportSettings(origin, partition_site, enabled);
+  Update3pcdSupportSettings(origin, partition_site, includes_subdomains,
+                            enabled);
 }
 
 void TpcdSupportService::OnPersistedTokensCleared() {
