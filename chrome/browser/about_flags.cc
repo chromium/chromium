@@ -1572,6 +1572,13 @@ const FeatureEntry::FeatureVariation
          std::size(kActionsUISimplificationTrimExtraFalse), nullptr},
 };
 
+const FeatureEntry::FeatureParam
+    kOmniboxDriveSuggestionsIgnoreWhenDebouncing[] = {
+        {"DocumentProviderIgnoreWhenDebouncing", "true"}};
+const FeatureEntry::FeatureVariation kOmniboxDriveSuggestionsVariations[] = {
+    {"ignore when debouncing", kOmniboxDriveSuggestionsIgnoreWhenDebouncing,
+     std::size(kOmniboxDriveSuggestionsIgnoreWhenDebouncing), nullptr}};
+
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 
@@ -6178,10 +6185,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxDomainSuggestionsName,
      flag_descriptions::kOmniboxDomainSuggestionsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kDomainSuggestions)},
+
     {"omnibox-drive-suggestions",
      flag_descriptions::kOmniboxDriveSuggestionsName,
      flag_descriptions::kOmniboxDriveSuggestionsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox::kDocumentProvider)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kDocumentProvider,
+                                    kOmniboxDriveSuggestionsVariations,
+                                    "OmniboxDocumentProvider")},
     {"omnibox-drive-suggestions-no-setting",
      flag_descriptions::kOmniboxDriveSuggestionsNoSettingName,
      flag_descriptions::kOmniboxDriveSuggestionsNoSettingDescription,
