@@ -843,11 +843,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
       bool has_device_removed,
       bool active_device_removed);
 
-  // Handles the regular user hotplug case.
-  void HandleHotPlugDevice(
-      const AudioDevice& hotplug_device,
-      const AudioDevicePriorityQueue& device_priority_queue);
-
   // Handles the regular user hotplug case with user priority.
   void HandleHotPlugDeviceByUserPriority(const AudioDevice& hotplug_device);
 

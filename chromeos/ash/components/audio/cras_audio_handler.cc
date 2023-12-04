@@ -799,8 +799,8 @@ void CrasAudioHandler::SetSpeakOnMuteDetection(bool som_on) {
 void CrasAudioHandler::AddActiveNode(uint64_t node_id, bool notify) {
   const AudioDevice* device = GetDeviceFromId(node_id);
   if (!device) {
-    VLOG(1) << "AddActiveInputNode: Cannot find device id="
-            << "0x" << std::hex << node_id;
+    VLOG(1) << "AddActiveInputNode: Cannot find device id=" << "0x" << std::hex
+            << node_id;
     return;
   }
 
@@ -1291,8 +1291,8 @@ void CrasAudioHandler::SetMuteForDevice(uint64_t device_id, bool mute_on) {
     return;
   }
   if (device_id == active_input_node_id_) {
-    VLOG(1) << "SetMuteForDevice sets active input device id="
-            << "0x" << std::hex << device_id << " mute=" << mute_on;
+    VLOG(1) << "SetMuteForDevice sets active input device id=" << "0x"
+            << std::hex << device_id << " mute=" << mute_on;
     SetInputMute(mute_on, InputMuteChangeMethod::kOther);
     return;
   }
@@ -1581,11 +1581,7 @@ const AudioDevice* CrasAudioHandler::GetDeviceFromId(uint64_t device_id) const {
 AudioDevice CrasAudioHandler::ConvertAudioNodeWithModifiedPriority(
     const AudioNode& node) {
   AudioDevice device(node);
-
-  if (base::FeatureList::IsEnabled(features::kRobustAudioDeviceSelectLogic)) {
-    device.user_priority = audio_pref_handler_->GetUserPriority(device);
-  }
-
+  device.user_priority = audio_pref_handler_->GetUserPriority(device);
   return device;
 }
 
@@ -1629,8 +1625,8 @@ void CrasAudioHandler::SetupAudioInputState() {
     return;
   }
   input_gain_ = audio_pref_handler_->GetInputGainValue(device);
-  VLOG(1) << "SetupAudioInputState for active device id="
-          << "0x" << std::hex << device->id << " mute=" << input_mute_on_;
+  VLOG(1) << "SetupAudioInputState for active device id=" << "0x" << std::hex
+          << device->id << " mute=" << input_mute_on_;
   SetInputMuteInternal(input_mute_on_);
 
   SetInputNodeGain(active_input_node_id_, input_gain_);
@@ -1669,8 +1665,8 @@ void CrasAudioHandler::SetupAudioOutputState() {
 void CrasAudioHandler::SetupAdditionalActiveAudioNodeState(uint64_t node_id) {
   const AudioDevice* device = GetDeviceFromId(node_id);
   if (!device) {
-    VLOG(1) << "Can't set up audio state for unknown device id ="
-            << "0x" << std::hex << node_id;
+    VLOG(1) << "Can't set up audio state for unknown device id =" << "0x"
+            << std::hex << node_id;
     return;
   }
 
@@ -1892,12 +1888,10 @@ bool CrasAudioHandler::ChangeActiveDevice(
   }
 
   // Update user priority whenever the audio device is activated.
-  if (base::FeatureList::IsEnabled(features::kRobustAudioDeviceSelectLogic)) {
-    const AudioDevice* current_active_device =
-        GetDeviceFromId(current_active_node_id);
-    audio_pref_handler_->SetUserPriorityHigherThan(new_active_device,
-                                                   current_active_device);
-  }
+  const AudioDevice* current_active_device =
+      GetDeviceFromId(current_active_node_id);
+  audio_pref_handler_->SetUserPriorityHigherThan(new_active_device,
+                                                 current_active_device);
 
   // Set the current active input/output device to the new_active_device.
   current_active_node_id = new_active_device.id;
@@ -2187,94 +2181,6 @@ void CrasAudioHandler::HandleHotPlugDeviceByUserPriority(
           << hotplug_device.ToString();
 }
 
-void CrasAudioHandler::HandleHotPlugDevice(
-    const AudioDevice& hotplug_device,
-    const AudioDevicePriorityQueue& device_priority_queue) {
-  if (base::FeatureList::IsEnabled(features::kRobustAudioDeviceSelectLogic)) {
-    return HandleHotPlugDeviceByUserPriority(hotplug_device);
-  }
-
-  // This most likely may happen during the transition period of cras
-  // initialization phase, in which a non-simple-usage node may appear like
-  // a hotplug node.
-  if (!hotplug_device.is_for_simple_usage()) {
-    return;
-  }
-
-  // Whenever 35mm headphone or mic is hot plugged, always pick it as the active
-  // device.
-  if (hotplug_device.type == AudioDeviceType::kHeadphone ||
-      hotplug_device.type == AudioDeviceType::kMic) {
-    SwitchToDevice(hotplug_device, true, ACTIVATE_BY_PRIORITY);
-    return;
-  }
-
-  bool last_state_active = false;
-  bool last_activate_by_user = false;
-  if (!audio_pref_handler_->GetDeviceActive(hotplug_device, &last_state_active,
-                                            &last_activate_by_user)) {
-    // |hotplug_device| is plugged in for the first time, activate it if it
-    // is of the highest priority.
-    if (device_priority_queue.top().id == hotplug_device.id) {
-      VLOG(1) << "Hotplug a device for the first time: "
-              << hotplug_device.ToString();
-      SwitchToDevice(hotplug_device, true, ACTIVATE_BY_PRIORITY);
-    }
-  } else if (last_state_active) {
-    if (!last_activate_by_user &&
-        device_priority_queue.top().id != hotplug_device.id) {
-      // This handles crbug.com/698809. Before the device is powered off, unplug
-      // the external output device, leave the internal audio device(such as
-      // internal speaker) active. Then turn off the power, plug in the exteranl
-      // device, turn on power. On some device, cras sends NodesChanged first
-      // signal with only external device; then later it sends another
-      // NodesChanged signal with internal audio device also discovered.
-      // For such case, do not switch to the lower priority device which was
-      // made active not by user's choice.
-      return;
-    }
-
-    SwitchToDevice(hotplug_device, true, ACTIVATE_BY_RESTORE_PREVIOUS_STATE);
-  } else {
-    // The hot plugged device was not active last time it was plugged in.
-    // Let's check how the current active device is activated, if it is not
-    // activated by user choice, then select the hot plugged device it is of
-    // higher priority.
-    uint64_t& active_node_id = hotplug_device.is_input ? active_input_node_id_
-                                                       : active_output_node_id_;
-    const AudioDevice* active_device = GetDeviceFromId(active_node_id);
-    if (!active_device) {
-      // Can't find any current active device.
-      // This is an odd case, but if it happens, switch to hotplug device.
-      LOG(ERROR) << "Can not find current active device when the device is"
-                 << " hot plugged: " << hotplug_device.ToString();
-      SwitchToDevice(hotplug_device, true, ACTIVATE_BY_PRIORITY);
-      return;
-    }
-
-    bool activate_by_user = false;
-    bool state_active = false;
-    bool found_active_state = audio_pref_handler_->GetDeviceActive(
-        *active_device, &state_active, &activate_by_user);
-    DCHECK(found_active_state && state_active);
-    if (!found_active_state || !state_active) {
-      LOG(ERROR) << "Cannot retrieve current active device's state in prefs: "
-                 << active_device->ToString();
-      return;
-    }
-    if (!activate_by_user &&
-        device_priority_queue.top().id == hotplug_device.id) {
-      SwitchToDevice(hotplug_device, true, ACTIVATE_BY_PRIORITY);
-    } else {
-      // Do not active the hotplug device. Either the current device is
-      // expliciltly activated by user, or the hotplug device is of lower
-      // priority.
-      VLOG(1) << "Hotplug device remains inactive as its previous state:"
-              << hotplug_device.ToString();
-    }
-  }
-}
-
 void CrasAudioHandler::SwitchToTopPriorityDevice(bool is_input) {
   AudioDevice top_device =
       is_input ? input_devices_pq_.top() : output_devices_pq_.top();
@@ -2432,7 +2338,7 @@ void CrasAudioHandler::HandleAudioDeviceChange(
                                 has_device_removed, active_device_removed);
   } else {
     // Typical user hotplug case.
-    HandleHotPlugDevice(hotplug_devices.top(), devices_pq);
+    HandleHotPlugDeviceByUserPriority(hotplug_devices.top());
   }
 }
 
@@ -2504,8 +2410,8 @@ void CrasAudioHandler::HandleGetNumActiveOutputStreams(
 void CrasAudioHandler::AddAdditionalActiveNode(uint64_t node_id, bool notify) {
   const AudioDevice* device = GetDeviceFromId(node_id);
   if (!device) {
-    VLOG(1) << "AddActiveInputNode: Cannot find device id="
-            << "0x" << std::hex << node_id;
+    VLOG(1) << "AddActiveInputNode: Cannot find device id=" << "0x" << std::hex
+            << node_id;
     return;
   }
 
@@ -2530,8 +2436,8 @@ void CrasAudioHandler::AddAdditionalActiveNode(uint64_t node_id, bool notify) {
 void CrasAudioHandler::RemoveActiveNodeInternal(uint64_t node_id, bool notify) {
   const AudioDevice* device = GetDeviceFromId(node_id);
   if (!device) {
-    VLOG(1) << "RemoveActiveInputNode: Cannot find device id="
-            << "0x" << std::hex << node_id;
+    VLOG(1) << "RemoveActiveInputNode: Cannot find device id=" << "0x"
+            << std::hex << node_id;
     return;
   }
 
