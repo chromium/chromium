@@ -88,11 +88,19 @@ void FadeInWidgetToOverview(views::Widget* widget,
   }
 }
 
+void PrepareWidgetForOverviewShutdown(views::Widget* widget) {
+  // The widget should no longer process events at this point.
+  widget->SetVisibilityChangedAnimationsEnabled(false);
+  widget->widget_delegate()->SetCanActivate(false);
+  widget->GetNativeWindow()->SetEventTargetingPolicy(
+      aura::EventTargetingPolicy::kNone);
+  widget->GetContentsView()->SetCanProcessEventsWithinSubtree(false);
+  widget->GetFocusManager()->set_shortcut_handling_suspended(true);
+}
+
 void FadeOutWidgetFromOverview(std::unique_ptr<views::Widget> widget,
                                OverviewAnimationType animation_type) {
-  // Make it so the widget is no longer activatable, since it will be deleted
-  // when the animation is complete.
-  widget->widget_delegate()->SetCanActivate(false);
+  PrepareWidgetForOverviewShutdown(widget.get());
 
   // The overview controller may be nullptr on shutdown.
   OverviewController* controller = OverviewController::Get();
