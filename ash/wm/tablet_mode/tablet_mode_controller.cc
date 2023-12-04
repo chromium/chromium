@@ -467,9 +467,9 @@ void TabletModeController::AddWindow(aura::Window* window) {
 
 bool TabletModeController::ShouldAutoHideTitlebars(views::Widget* widget) {
   DCHECK(widget);
-  const bool tablet_mode = InTabletMode();
-  if (!tablet_mode)
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     return false;
+  }
   return widget->IsMaximized() ||
          (WindowState::Get(widget->GetNativeWindow()) &&
           WindowState::Get(widget->GetNativeWindow())->IsSnapped());
@@ -875,13 +875,14 @@ bool TabletModeController::CanEnterTabletMode() const {
 // TabletModeController, private:
 
 void TabletModeController::SetTabletModeEnabledInternal(bool should_enable) {
-  DCHECK_NE(InTabletMode(), should_enable);
+  DCHECK_NE(display::Screen::GetScreen()->InTabletMode(), should_enable);
 
   // Hide the context menu on entering tablet mode to prevent users from
   // accessing forbidden options. Hide the context menu on exiting tablet mode
   // to match behaviors.
-  for (auto* root_window : Shell::Get()->GetAllRootWindows())
+  for (auto* root_window : Shell::Get()->GetAllRootWindows()) {
     RootWindowController::ForWindow(root_window)->HideContextMenu();
+  }
 
   // Suspend occlusion tracker when entering or exiting tablet mode.
   SuspendOcclusionTracker();
@@ -1082,9 +1083,9 @@ void TabletModeController::RecordLidAngle() {
 
 TabletModeController::TabletModeIntervalType
 TabletModeController::CurrentTabletModeIntervalType() {
-  if (InTabletMode())
-    return TABLET_MODE_INTERVAL_ACTIVE;
-  return TABLET_MODE_INTERVAL_INACTIVE;
+  return display::Screen::GetScreen()->InTabletMode()
+             ? TABLET_MODE_INTERVAL_ACTIVE
+             : TABLET_MODE_INTERVAL_INACTIVE;
 }
 
 void TabletModeController::HandlePointingDeviceAddedOrRemoved() {
@@ -1156,7 +1157,8 @@ void TabletModeController::UpdateInternalInputDevicesEventBlocker() {
   // setting the brightness to 0.
   const bool should_block_internal_events =
       tablet_mode_behavior_.block_internal_input_device &&
-      (InTabletMode() || is_in_tablet_physical_state_);
+      (display::Screen::GetScreen()->InTabletMode() ||
+       is_in_tablet_physical_state_);
 
   if (should_block_internal_events == AreInternalInputDeviceEventsBlocked()) {
     if (force_notify_events_blocking_changed_) {
@@ -1390,8 +1392,10 @@ bool TabletModeController::SetIsInTabletPhysicalState(bool new_state) {
 
 bool TabletModeController::UpdateUiTabletState() {
   const bool should_be_in_tablet_mode = ShouldUiBeInTabletMode();
-  if (should_be_in_tablet_mode == InTabletMode())
+  if (should_be_in_tablet_mode ==
+      display::Screen::GetScreen()->InTabletMode()) {
     return false;
+  }
 
   SetTabletModeEnabledInternal(should_be_in_tablet_mode);
   Shell::Get()

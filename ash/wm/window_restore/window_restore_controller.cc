@@ -38,6 +38,7 @@
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -159,7 +160,6 @@ WindowRestoreController::WindowRestoreController() {
   DCHECK_EQ(nullptr, g_instance);
   g_instance = this;
 
-  tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
   app_restore_info_observation_.Observe(
       app_restore::AppRestoreInfo::GetInstance());
 }
@@ -210,9 +210,9 @@ bool WindowRestoreController::CanActivateRestoredWindow(
 
 // static
 bool WindowRestoreController::CanActivateAppList(const aura::Window* window) {
-  auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
-  if (!tablet_mode_controller || !tablet_mode_controller->InTabletMode())
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     return true;
+  }
 
   auto* app_list_controller = Shell::Get()->app_list_controller();
   if (!app_list_controller || app_list_controller->GetWindow() != window)
@@ -298,16 +298,14 @@ void WindowRestoreController::OnWindowActivated(aura::Window* gained_active) {
   SaveAllWindows();
 }
 
-void WindowRestoreController::OnTabletModeStarted() {
-  SaveAllWindows();
-}
+void WindowRestoreController::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  if (display::IsTabletStateChanging(state)) {
+    // Do nothing if the tablet state is still in the process of transition.
+    return;
+  }
 
-void WindowRestoreController::OnTabletModeEnded() {
   SaveAllWindows();
-}
-
-void WindowRestoreController::OnTabletControllerDestroyed() {
-  tablet_mode_observation_.Reset();
 }
 
 void WindowRestoreController::OnRestorePrefChanged(const AccountId& account_id,

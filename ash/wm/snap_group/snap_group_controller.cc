@@ -12,13 +12,14 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/splitview/split_view_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 
 namespace ash {
 
@@ -30,13 +31,11 @@ SnapGroupController* g_instance = nullptr;
 
 SnapGroupController::SnapGroupController() {
   Shell::Get()->overview_controller()->AddObserver(this);
-  TabletModeController::Get()->AddObserver(this);
   CHECK_EQ(g_instance, nullptr);
   g_instance = this;
 }
 
 SnapGroupController::~SnapGroupController() {
-  TabletModeController::Get()->RemoveObserver(this);
   Shell::Get()->overview_controller()->RemoveObserver(this);
   CHECK_EQ(g_instance, this);
   g_instance = nullptr;
@@ -140,7 +139,7 @@ bool SnapGroupController::CanEnterOverview() const {
   // mode check will not be handled here.
   // TODO(michelefan): Get the `SplitViewController` for the actual root window
   // instead of hard code it to be primary root window.
-  if (Shell::Get()->tablet_mode_controller()->InTabletMode() ||
+  if (display::Screen::GetScreen()->InTabletMode() ||
       !SplitViewController::Get(Shell::GetPrimaryRootWindow())
            ->InSplitViewMode()) {
     return true;
@@ -193,7 +192,12 @@ void SnapGroupController::OnOverviewModeEnded() {
   RestoreSnapGroups();
 }
 
-void SnapGroupController::OnTabletModeEnding() {
+void SnapGroupController::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  if (state != display::TabletState::kExitingTabletMode) {
+    return;
+  }
+
   RestoreSnapGroups();
 }
 

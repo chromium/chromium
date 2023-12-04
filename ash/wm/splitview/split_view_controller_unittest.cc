@@ -68,6 +68,7 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/compositor_extra/shadow.h"
+#include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -3242,7 +3243,7 @@ TEST_F(SplitViewControllerTest, SplitViewDividerObserveSnappedWindow) {
   auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
   // Exit tablet mode.
   tablet_mode_controller->SetEnabledForTest(false);
-  EXPECT_FALSE(tablet_mode_controller->InTabletMode());
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
 
   const gfx::Rect bounds(0, 0, 400, 400);
   std::unique_ptr<aura::Window> left_window(CreateWindow(bounds));
@@ -3257,7 +3258,7 @@ TEST_F(SplitViewControllerTest, SplitViewDividerObserveSnappedWindow) {
   // Entering tablet mode will start tablet mode split view and the split view
   // divider will be created.
   tablet_mode_controller->SetEnabledForTest(true);
-  EXPECT_TRUE(tablet_mode_controller->InTabletMode());
+  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
   EXPECT_TRUE(split_view_controller()->InTabletSplitViewMode());
   EXPECT_TRUE(split_view_divider());
 

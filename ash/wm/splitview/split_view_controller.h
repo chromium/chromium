@@ -13,7 +13,6 @@
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/shell_observer.h"
 #include "ash/wm/overview/overview_metrics.h"
 #include "ash/wm/overview/overview_observer.h"
@@ -32,6 +31,10 @@
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
+
+namespace display {
+enum class TabletState;
+}  // namespace display
 
 namespace gfx {
 class Point;
@@ -94,7 +97,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
                                        public ShellObserver,
                                        public OverviewObserver,
                                        public display::DisplayObserver,
-                                       public TabletModeObserver,
                                        public AccessibilityObserver,
                                        public ash::KeyboardControllerObserver,
                                        public wm::ActivationChangeObserver,
@@ -433,12 +435,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   void OnDisplayRemoved(const display::Display& old_display) override;
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t metrics) override;
-
-  // TabletModeObserver:
-  void OnTabletModeStarting() override;
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnding() override;
-  void OnTabletModeEnded() override;
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // AccessibilityObserver:
   void OnAccessibilityStatusChanged() override;
@@ -656,6 +653,12 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // speed at which the divider is dragged.
   void UpdateTabletResizeMode(base::TimeTicks event_time_ticks,
                               const gfx::Point& event_location);
+
+  // Called when the display tablet state is changed.
+  void OnTabletModeStarting();
+  void OnTabletModeStarted();
+  void OnTabletModeEnding();
+  void OnTabletModeEnded();
 
   // Called by `OnWindowDragEnded()` to do the actual work of finishing the
   // window dragging. If `is_being_destroyed` equals true, the dragged window is

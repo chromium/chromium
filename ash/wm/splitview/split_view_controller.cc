@@ -555,7 +555,6 @@ SplitViewController::SplitViewController(aura::Window* root_window)
       split_view_metrics_controller_(
           std::make_unique<SplitViewMetricsController>(this)) {
   Shell::Get()->accessibility_controller()->AddObserver(this);
-  Shell::Get()->tablet_mode_controller()->AddObserver(this);
   if (SnapGroupController* snap_group_controller = SnapGroupController::Get()) {
     snap_group_controller->AddObserver(this);
   }
@@ -564,9 +563,6 @@ SplitViewController::SplitViewController(aura::Window* root_window)
 }
 
 SplitViewController::~SplitViewController() {
-  if (Shell::Get()->tablet_mode_controller()) {
-    Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
-  }
   if (Shell::Get()->accessibility_controller()) {
     Shell::Get()->accessibility_controller()->RemoveObserver(this);
   }
@@ -1726,52 +1722,22 @@ void SplitViewController::OnDisplayMetricsChanged(
   UpdateSnappedWindowsAndDividerBounds();
 }
 
-void SplitViewController::OnTabletModeStarting() {
-  split_view_type_ = SplitViewType::kTabletType;
-}
-
-void SplitViewController::OnTabletModeStarted() {
-  is_previous_layout_right_side_up_ = IsCurrentScreenOrientationPrimary();
-  // If splitview is active when tablet mode is starting, create the split view
-  // divider if not exists and adjust the `divider_position_` to be one
-  // of the fixed positions.
-  if (InSplitViewMode()) {
-    divider_position_ = GetClosestFixedDividerPosition();
-    if (!split_view_divider_) {
-      split_view_divider_ =
-          std::make_unique<SplitViewDivider>(this, divider_position_);
-    }
-
-    UpdateSnappedWindowsAndDividerBounds();
-    NotifyDividerPositionChanged();
+void SplitViewController::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  switch (state) {
+    case display::TabletState::kInClamshellMode:
+      OnTabletModeEnded();
+      break;
+    case display::TabletState::kEnteringTabletMode:
+      OnTabletModeStarting();
+      break;
+    case display::TabletState::kInTabletMode:
+      OnTabletModeStarted();
+      break;
+    case display::TabletState::kExitingTabletMode:
+      OnTabletModeEnding();
+      break;
   }
-}
-
-void SplitViewController::OnTabletModeEnding() {
-  split_view_type_ = SplitViewType::kClamshellType;
-
-  const bool is_divider_animating = IsDividerAnimating();
-  if (IsResizingWithDivider() || is_divider_animating) {
-    split_view_divider_->set_is_resizing_with_divider(false);
-    if (is_divider_animating) {
-      StopAndShoveAnimatedDivider();
-    }
-
-    EndResizeWithDividerImpl();
-  }
-
-  // There is no divider in clamshell split view unless the two snapped windows
-  // belong to a snap group.
-  auto* snap_group_controller = SnapGroupController::Get();
-  if (state_ != State::kBothSnapped || !snap_group_controller ||
-      !snap_group_controller->AreWindowsInSnapGroup(primary_window_,
-                                                    secondary_window_)) {
-    split_view_divider_.reset();
-  }
-}
-
-void SplitViewController::OnTabletModeEnded() {
-  is_previous_layout_right_side_up_ = true;
 }
 
 void SplitViewController::OnAccessibilityStatusChanged() {
@@ -2848,6 +2814,54 @@ void SplitViewController::UpdateTabletResizeMode(
     resize_timer_.Start(FROM_HERE, kSplitViewChunkTime, this,
                         &SplitViewController::OnResizeTimer);
   }
+}
+
+void SplitViewController::OnTabletModeStarting() {
+  split_view_type_ = SplitViewType::kTabletType;
+}
+
+void SplitViewController::OnTabletModeStarted() {
+  is_previous_layout_right_side_up_ = IsCurrentScreenOrientationPrimary();
+  // If splitview is active when tablet mode is starting, create the split view
+  // divider if not exists and adjust the `divider_position_` to be one
+  // of the fixed positions.
+  if (InSplitViewMode()) {
+    divider_position_ = GetClosestFixedDividerPosition();
+    if (!split_view_divider_) {
+      split_view_divider_ =
+          std::make_unique<SplitViewDivider>(this, divider_position_);
+    }
+
+    UpdateSnappedWindowsAndDividerBounds();
+    NotifyDividerPositionChanged();
+  }
+}
+
+void SplitViewController::OnTabletModeEnding() {
+  split_view_type_ = SplitViewType::kClamshellType;
+
+  const bool is_divider_animating = IsDividerAnimating();
+  if (IsResizingWithDivider() || is_divider_animating) {
+    split_view_divider_->set_is_resizing_with_divider(false);
+    if (is_divider_animating) {
+      StopAndShoveAnimatedDivider();
+    }
+
+    EndResizeWithDividerImpl();
+  }
+
+  // There is no divider in clamshell split view unless the two snapped windows
+  // belong to a snap group.
+  auto* snap_group_controller = SnapGroupController::Get();
+  if (state_ != State::kBothSnapped || !snap_group_controller ||
+      !snap_group_controller->AreWindowsInSnapGroup(primary_window_,
+                                                    secondary_window_)) {
+    split_view_divider_.reset();
+  }
+}
+
+void SplitViewController::OnTabletModeEnded() {
+  is_previous_layout_right_side_up_ = true;
 }
 
 void SplitViewController::EndWindowDragImpl(

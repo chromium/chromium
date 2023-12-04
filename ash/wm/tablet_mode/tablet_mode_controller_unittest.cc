@@ -789,7 +789,7 @@ TEST_F(TabletModeControllerInitedFromPowerManagerClientTest,
        InitializedWhileTabletModeSwitchOn) {
   // PowerManagerClient callback is a posted task.
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(tablet_mode_controller()->InTabletMode());
+  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
 }
 
 TEST_F(TabletModeControllerTest, RestoreAfterExit) {

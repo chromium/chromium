@@ -35,6 +35,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -414,6 +415,16 @@ void WorkspaceLayoutManager::OnDisplayMetricsChanged(
   }
 
   backdrop_controller_->OnDisplayMetricsChanged();
+}
+
+void WorkspaceLayoutManager::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  if (display::IsTabletStateChanging(state)) {
+    // Do nothing if the tablet state is still in the process of transition.
+    return;
+  }
+
+  backdrop_controller_->OnTabletModeChanged();
 }
 
 //////////////////////////////////////////////////////////////////////////////

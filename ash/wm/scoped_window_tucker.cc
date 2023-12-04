@@ -12,6 +12,7 @@
 #include "base/metrics/user_metrics.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/compositor/layer_animator.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/wm/core/window_util.h"
@@ -267,7 +268,7 @@ void ScopedWindowTucker::InitializeTuckHandleWidget() {
       });
   aura::Window* window_to_activate = nullptr;
   if (app_window_it == mru_windows.end()) {
-    if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+    if (display::Screen::GetScreen()->InTabletMode()) {
       window_to_activate = Shell::Get()->app_list_controller()->GetWindow();
     }
   } else {

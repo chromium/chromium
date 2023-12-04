@@ -17,7 +17,6 @@
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "base/time/time.h"
 #include "ui/base/hit_test.h"
@@ -25,6 +24,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/display/screen.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/transient_window_manager.h"
@@ -194,8 +194,9 @@ const char* GetSnapActionSourceMetricComponent(
 }
 
 void AppendUIModeToHistogram(std::string& histogram_name) {
-  histogram_name.append(Shell::Get()->IsInTabletMode() ? ".TabletMode"
-                                                       : ".ClamshellMode");
+  histogram_name.append(display::Screen::GetScreen()->InTabletMode()
+                            ? ".TabletMode"
+                            : ".ClamshellMode");
 }
 
 }  // namespace
@@ -366,9 +367,8 @@ void DoSplitviewClipRectAnimation(
 // make everything works with `kSnapGroup` enabled.
 void MaybeRestoreSplitView(bool refresh_snapped_windows) {
   const bool should_restore =
-      ShouldAllowSplitView() &&
-      (Shell::Get()->tablet_mode_controller()->InTabletMode() ||
-       SnapGroupController::Get());
+      ShouldAllowSplitView() && (display::Screen::GetScreen()->InTabletMode() ||
+                                 SnapGroupController::Get());
   if (!should_restore) {
     return;
   }
@@ -569,11 +569,7 @@ SplitViewController::SnapPosition GetSnapPosition(
 
 bool IsSnapGroupEnabledInClamshellMode() {
   auto* snap_group_controller = SnapGroupController::Get();
-  TabletModeController* tablet_mode_controller =
-      Shell::Get()->tablet_mode_controller();
-  const bool in_tablet_mode =
-      tablet_mode_controller && tablet_mode_controller->InTabletMode();
-  return snap_group_controller && !in_tablet_mode;
+  return snap_group_controller && !display::Screen::GetScreen()->InTabletMode();
 }
 
 int GetWindowComponentForResize(aura::Window* window) {

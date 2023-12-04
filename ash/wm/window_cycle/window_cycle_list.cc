@@ -16,7 +16,6 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_cycle/window_cycle_view.h"
 #include "ash/wm/window_state.h"
@@ -34,6 +33,7 @@
 #include "ui/compositor/layer_type.h"
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -435,8 +435,9 @@ void WindowCycleList::InitWindowCycleView() {
         std::make_unique<CustomWindowTargeter>(widget->GetNativeWindow()));
   }
   // Close the app list, if it's open in clamshell mode.
-  if (!Shell::Get()->tablet_mode_controller()->InTabletMode())
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     Shell::Get()->app_list_controller()->DismissAppList();
+  }
 
   Shell::Get()->frame_throttling_controller()->StartThrottling(windows_);
 }

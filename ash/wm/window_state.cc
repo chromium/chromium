@@ -27,7 +27,6 @@
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_animations.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_properties.h"
@@ -129,7 +128,7 @@ bool CanRestoreState(WindowStateType current_state,
 }
 
 bool IsTabletModeEnabled() {
-  return Shell::Get()->tablet_mode_controller()->InTabletMode();
+  return display::Screen::GetScreen()->InTabletMode();
 }
 
 bool IsToplevelContainer(aura::Window* window) {
@@ -885,17 +884,15 @@ void WindowState::SetBoundsInScreen(const gfx::Rect& bounds_in_screen) {
 
 void WindowState::AdjustSnappedBoundsForDisplayWorkspaceChange(
     gfx::Rect* bounds) {
-  auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
-  const bool in_tablet =
-      tablet_mode_controller && tablet_mode_controller->InTabletMode();
-
   // Tablet mode should use bounds calculation in SplitViewController.
   // However, transient state from transitioning clamshell to tablet mode
   // might end up calling this function during work area changes, so we avoid
   // unnecessary task in that case when it will be overwritten by tablet mode
   // work.
-  if (is_dragged() || !IsSnapped() || in_tablet)
+  if (is_dragged() || !IsSnapped() ||
+      display::Screen::GetScreen()->InTabletMode()) {
     return;
+  }
   gfx::Rect maximized_bounds =
       screen_util::GetMaximizedWindowBoundsInParent(window_);
 

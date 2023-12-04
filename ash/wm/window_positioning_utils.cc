@@ -13,7 +13,6 @@
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/wm/system_modal_container_layout_manager.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -210,8 +209,7 @@ chromeos::OrientationType GetSnapDisplayOrientation(
   // This function is used by `GetSnappedWindowBounds()` for clamshell mode
   // only. Tablet mode uses a different function
   // `SplitViewController::GetSnappedWindowBoundsInScreen()`.
-  auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
-  DCHECK(!tablet_mode_controller || !tablet_mode_controller->InTabletMode());
+  DCHECK(!display::Screen::GetScreen()->InTabletMode());
 
   const display::Display::Rotation& rotation =
       Shell::Get()

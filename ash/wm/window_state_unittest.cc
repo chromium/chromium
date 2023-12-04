@@ -2096,7 +2096,7 @@ TEST_F(WindowStateTest, WindowSnapActionSourceUmaMetrics) {
   window_state->Maximize();
 
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  EXPECT_TRUE(Shell::Get()->tablet_mode_controller()->InTabletMode());
+  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
 
   // Use keyboard to snap the window in tablet mode.
   AcceleratorController::Get()->PerformActionIfEnabled(

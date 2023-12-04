@@ -28,8 +28,8 @@
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
 #include "ui/aura/env.h"
-#include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/wm/public/activation_client.h"
 
 namespace ash {
@@ -102,7 +102,7 @@ int NumRootWindowsInSplitViewRecording() {
 }
 
 bool InTabletMode() {
-  return Shell::Get()->tablet_mode_controller()->InTabletMode();
+  return display::Screen::GetScreen()->InTabletMode();
 }
 
 bool TopTwoVisibleWindowsBothSnapped(
@@ -179,9 +179,6 @@ SplitViewMetricsController::SplitViewMetricsController(
     SplitViewController* split_view_controller)
     : split_view_controller_(split_view_controller) {
   split_view_controller_->AddObserver(this);
-  tablet_mode_controller_observation_.Observe(
-      Shell::Get()->tablet_mode_controller());
-  Shell::Get()->display_manager()->AddObserver(this);
   Shell::Get()->activation_client()->AddObserver(this);
 
   auto* desks_controller = Shell::Get()->desks_controller();
@@ -199,44 +196,10 @@ SplitViewMetricsController::SplitViewMetricsController(
 
 SplitViewMetricsController::~SplitViewMetricsController() {
   ClearObservedWindows();
-  tablet_mode_controller_observation_.Reset();
   split_view_controller_->RemoveObserver(this);
-  Shell::Get()->display_manager()->RemoveObserver(this);
   Shell::Get()->activation_client()->RemoveObserver(this);
   Shell::Get()->desks_controller()->RemoveObserver(this);
   aura::Env::GetInstance()->RemoveObserver(this);
-}
-
-void SplitViewMetricsController::OnTabletModeStarted() {
-  // If it has been in split view and recording clamshell mode metrics, stop
-  // recording clamshell mode metrics and start to record tablet mode metrics.
-  if (in_split_view_recording_ && IsRecordingClamshellMetrics()) {
-    StopRecordClamshellSplitView();
-    StartRecordTabletSplitView();
-    if (NumRootWindowsInSplitViewRecording() > 1 &&
-        IsRecordingClamshellMultiDisplaySplitView()) {
-      StopRecordClamshellMultiDisplaySplitView();
-      StartRecordTabletMultiDisplaySplitView();
-    }
-  }
-}
-
-void SplitViewMetricsController::OnTabletModeEnded() {
-  // If it has been in split view and recording tablet mode metrics, stop
-  // recording tablet mode metrics and start to record clamshell mode metrics.
-  if (in_split_view_recording_ && IsRecordingTabletMetrics()) {
-    StopRecordTabletSplitView();
-    StartRecordClamshellSplitView();
-    if (NumRootWindowsInSplitViewRecording() > 1 &&
-        IsRecordingTabletMultiDisplaySplitView()) {
-      StopRecordTabletMultiDisplaySplitView();
-      StartRecordClamshellMultiDisplaySplitView();
-    }
-  }
-}
-
-void SplitViewMetricsController::OnTabletControllerDestroyed() {
-  tablet_mode_controller_observation_.Reset();
 }
 
 void SplitViewMetricsController::OnSplitViewStateChanged(
@@ -297,6 +260,21 @@ void SplitViewMetricsController::OnDisplayMetricsChanged(
     base::UmaHistogramEnumeration(kOrientationInSplitViewHistogram,
                                   orientation_);
     ReportDeviceUIModeAndOrientationHistogram();
+  }
+}
+
+void SplitViewMetricsController::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  switch (state) {
+    case display::TabletState::kEnteringTabletMode:
+    case display::TabletState::kExitingTabletMode:
+      break;
+    case display::TabletState::kInTabletMode:
+      OnTabletModeStarted();
+      break;
+    case display::TabletState::kInClamshellMode:
+      OnTabletModeEnded();
+      break;
   }
 }
 
@@ -764,6 +742,34 @@ void SplitViewMetricsController::ResetTimeAndCounter() {
   clamshell_resize_count_ = 0;
   tablet_resize_count_ = 0;
   swap_count_ = 0;
+}
+
+void SplitViewMetricsController::OnTabletModeStarted() {
+  // If it has been in split view and recording clamshell mode metrics, stop
+  // recording clamshell mode metrics and start to record tablet mode metrics.
+  if (in_split_view_recording_ && IsRecordingClamshellMetrics()) {
+    StopRecordClamshellSplitView();
+    StartRecordTabletSplitView();
+    if (NumRootWindowsInSplitViewRecording() > 1 &&
+        IsRecordingClamshellMultiDisplaySplitView()) {
+      StopRecordClamshellMultiDisplaySplitView();
+      StartRecordTabletMultiDisplaySplitView();
+    }
+  }
+}
+
+void SplitViewMetricsController::OnTabletModeEnded() {
+  // If it has been in split view and recording tablet mode metrics, stop
+  // recording tablet mode metrics and start to record clamshell mode metrics.
+  if (in_split_view_recording_ && IsRecordingTabletMetrics()) {
+    StopRecordTabletSplitView();
+    StartRecordClamshellSplitView();
+    if (NumRootWindowsInSplitViewRecording() > 1 &&
+        IsRecordingTabletMultiDisplaySplitView()) {
+      StopRecordTabletMultiDisplaySplitView();
+      StartRecordClamshellMultiDisplaySplitView();
+    }
+  }
 }
 
 bool SplitViewMetricsController::IsRecordingClamshellMetrics() const {

@@ -11,7 +11,6 @@
 #include "ash/wm/multi_display/multi_display_metrics_controller.h"
 #include "ash/wm/resize_shadow.h"
 #include "ash/wm/resize_shadow_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_resizer.h"
 #include "ash/wm/window_state_observer.h"
 #include "ash/wm/window_util.h"
@@ -26,6 +25,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/hit_test.h"
+#include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -73,7 +73,7 @@ void ShowResizeShadow(aura::Window* window, int component) {
   // 1) the window is not toplevel.
   // 2) the device is in tablet mode.
   // 3) the window is not resizable.
-  if (Shell::Get()->tablet_mode_controller()->InTabletMode() ||
+  if (display::Screen::GetScreen()->InTabletMode() ||
       window != window->GetToplevelWindow() ||
       ((window->GetProperty(aura::client::kResizeBehaviorKey) &
         aura::client::kResizeBehaviorCanResize) == 0)) {
@@ -842,7 +842,7 @@ aura::Window* ToplevelWindowEventHandler::GetTargetForClientAreaGesture(
 
   aura::Window* toplevel = widget->GetNativeWindow();
 
-  if (!Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     return nullptr;
   }
   WindowState* window_state = WindowState::Get(toplevel);

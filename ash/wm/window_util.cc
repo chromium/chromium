@@ -32,7 +32,6 @@
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_overview_session.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
@@ -379,7 +378,7 @@ bool ShouldExcludeForOverview(const aura::Window* window) {
     return true;
   }
 
-  return Shell::Get()->tablet_mode_controller()->InTabletMode()
+  return display::Screen::GetScreen()->InTabletMode()
              ? (window == split_view_controller->GetDefaultSnappedWindow())
              : should_exclude_in_clamshell();
 }
@@ -511,15 +510,18 @@ aura::Window* GetFloatedWindowForActiveDesk() {
 bool ShouldMinimizeTopWindowOnBack() {
   Shell* shell = Shell::Get();
   // We never want to minimize the main app window in the Kiosk session.
-  if (shell->session_controller()->IsRunningInAppMode())
+  if (shell->session_controller()->IsRunningInAppMode()) {
     return false;
+  }
 
-  if (!shell->tablet_mode_controller()->InTabletMode())
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     return false;
+  }
 
   aura::Window* window = GetTopWindow();
-  if (!window)
+  if (!window) {
     return false;
+  }
 
   // Do not minimize the window if it is in overview. This can avoid unnecessary
   // window minimize animation.

@@ -9,7 +9,6 @@
 
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/ash_export.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/public/cpp/window_backdrop.h"
 #include "ash/public/cpp/window_properties.h"
@@ -24,15 +23,15 @@
 
 namespace aura {
 class Window;
-}
+}  // namespace aura
 
 namespace views {
 class Widget;
-}
+}  // namespace views
 
 namespace ui {
 class EventHandler;
-}
+}  // namespace ui
 
 namespace ash {
 
@@ -49,7 +48,6 @@ class ASH_EXPORT BackdropController : public AccessibilityObserver,
                                       public OverviewObserver,
                                       public SplitViewObserver,
                                       public WallpaperControllerObserver,
-                                      public TabletModeObserver,
                                       public WindowBackdrop::Observer {
  public:
   explicit BackdropController(aura::Window* container);
@@ -65,6 +63,7 @@ class ASH_EXPORT BackdropController : public AccessibilityObserver,
   void OnWindowStackingChanged(aura::Window* window);
   void OnPostWindowStateTypeChange(aura::Window* window);
   void OnDisplayMetricsChanged();
+  void OnTabletModeChanged();
 
   // Called when the desk content is changed in order to update the state of the
   // backdrop even if overview mode is active.
@@ -99,10 +98,6 @@ class ASH_EXPORT BackdropController : public AccessibilityObserver,
 
   // WallpaperControllerObserver:
   void OnWallpaperPreviewStarted() override;
-
-  // TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
 
   // WindowBackdrop::Observer:
   void OnWindowBackdropPropertyChanged(aura::Window* window) override;
