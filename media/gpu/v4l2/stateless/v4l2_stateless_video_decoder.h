@@ -9,6 +9,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/cdm_context.h"
 #include "media/base/decoder.h"
@@ -91,6 +92,13 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
   // pipeline.
   bool SetupOutputFormatForPipeline();
 
+  // Restart the thread that will wait on a dequeue event from the driver.
+  void ArmOutputBufferMonitor();
+
+  // Take the uncompressed buffers out of the v4l2 queue so that they can be
+  // passed along to the display.
+  void DequeueDecodedBuffers();
+
   // Process the data in the |compressed_buffer| using the |decoder_|.
   void ProcessCompressedBuffer(scoped_refptr<DecoderBuffer> compressed_buffer,
                                VideoDecoder::DecodeCB decode_cb,
@@ -128,6 +136,16 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
   struct FrameID {};
   base::IdTypeU32<FrameID>::Generator frame_id_generator_
       GUARDED_BY_CONTEXT(decoder_sequence_checker_);
+
+  base::CancelableTaskTracker cancelable_task_tracker_;
+
+  // A sequenced TaskRunner to wait for events coming from |CAPTURE_queue_| or
+  // |wake_event_|.
+  scoped_refptr<base::SequencedTaskRunner> event_task_runner_;
+
+  // Weak factories associated with the main thread
+  // (|decoder_sequence_checker_|).
+  base::WeakPtrFactory<V4L2StatelessVideoDecoder> weak_ptr_factory_for_events_;
 };
 
 }  // namespace media

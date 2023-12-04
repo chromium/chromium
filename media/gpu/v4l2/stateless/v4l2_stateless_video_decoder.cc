@@ -6,6 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/task/thread_pool.h"
 #include "media/gpu/chromeos/image_processor.h"
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
 #include "media/gpu/macros.h"
@@ -33,7 +34,8 @@ V4L2StatelessVideoDecoder::V4L2StatelessVideoDecoder(
     : VideoDecoderMixin(std::move(media_log),
                         std::move(decoder_task_runner),
                         std::move(client)),
-      device_(std::move(device)) {
+      device_(std::move(device)),
+      weak_ptr_factory_for_events_(this) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
 }
 
@@ -114,6 +116,12 @@ void V4L2StatelessVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 
   const int32_t bitstream_id =
       bitstream_id_generator_.GenerateNextId().GetUnsafeValue();
+
+  if (!event_task_runner_) {
+    event_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+    CHECK(event_task_runner_);
+  }
 
   ProcessCompressedBuffer(std::move(buffer), std::move(decode_cb),
                           bitstream_id);
@@ -216,6 +224,8 @@ bool V4L2StatelessVideoDecoder::SubmitFrame(void* ctrls,
     }
 
     output_queue_->StartStreaming();
+
+    ArmOutputBufferMonitor();
   }
 
   // Reclaim input buffers that are done being processed.
@@ -300,6 +310,38 @@ bool V4L2StatelessVideoDecoder::SetupOutputFormatForPipeline() {
   }
 
   return true;
+}
+
+void V4L2StatelessVideoDecoder::ArmOutputBufferMonitor() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
+  DVLOGF(4);
+
+  // This callback is run once a buffers is ready to be dequeued. It is posted
+  // as a task instead of being run directly from |WaitOnceForEvents|. Doing
+  // this avoids servicing the buffers while other tasks are running.
+  auto dequeue_callback = base::BindPostTaskToCurrentDefault(
+      base::BindOnce(&V4L2StatelessVideoDecoder::DequeueDecodedBuffers,
+                     weak_ptr_factory_for_events_.GetWeakPtr()));
+
+  // V4L2 |v4l2_m2m_poll_for_data| the default handler for polling, requires
+  // that there be a buffer queued in both input and output queues, otherwise
+  // it will error out immediately. This condition can occur when running with a
+  // small number of buffers. The solution is to rearm the monitor.
+  auto error_callback = base::BindPostTaskToCurrentDefault(
+      base::BindOnce(&V4L2StatelessVideoDecoder::ArmOutputBufferMonitor,
+                     weak_ptr_factory_for_events_.GetWeakPtr()));
+
+  cancelable_task_tracker_.PostTask(
+      event_task_runner_.get(), FROM_HERE,
+      base::BindOnce(&WaitOnceForEvents, device_->GetPollEvent(),
+                     std::move(dequeue_callback), std::move(error_callback)));
+}
+
+void V4L2StatelessVideoDecoder::DequeueDecodedBuffers() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
+  DVLOGF(4);
+
+  NOTIMPLEMENTED();
 }
 
 void V4L2StatelessVideoDecoder::ProcessCompressedBuffer(

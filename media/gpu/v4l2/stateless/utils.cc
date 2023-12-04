@@ -6,6 +6,7 @@
 
 #include <linux/videodev2.h>
 
+#include "base/posix/eintr_wrapper.h"
 #include "media/gpu/macros.h"
 
 namespace media {
@@ -35,6 +36,34 @@ VideoDecodeAccelerator::SupportedProfiles GetSupportedDecodeProfiles(
   }
 
   return supported_profiles;
+}
+
+void WaitOnceForEvents(struct pollfd event,
+                       base::OnceClosure dequeue_callback,
+                       base::OnceClosure error_callback) {
+  DVLOGF(4);
+  constexpr int kInfiniteTimeout = -1;
+  constexpr int kIoctlOk = 0;
+  // TODO(frkoenig) : Currently only waiting on the fd of the driver. Probably
+  // want to add another fd to wait on so |poll| can exit cleanly when frames
+  // are no longer coming through.
+  if (HANDLE_EINTR(poll(&event, 1, kInfiniteTimeout)) < kIoctlOk) {
+    DVLOGF(1) << "Poll()ing for events failed";
+    return;
+  }
+
+  // https://www.kernel.org/doc/html/v5.15/userspace-api/media/v4l/func-poll.html
+  // Capture devices set the POLLIN and POLLRDNORM flags.
+  // In our scenario the CAPTURE queue is where decompressed frames end up.
+  if ((POLLIN | POLLRDNORM) & event.revents) {
+    std::move(dequeue_callback).Run();
+  } else if (POLLERR & event.revents) {
+    std::move(error_callback).Run();
+  } else if ((POLLPRI | POLLWRNORM) & event.revents) {
+    NOTREACHED() << "Not prepared to handle these events.";
+  } else {
+    NOTREACHED() << "Unhandled event: 0x" << std::hex << event.revents;
+  }
 }
 
 std::string IoctlToString(uint64_t request) {
