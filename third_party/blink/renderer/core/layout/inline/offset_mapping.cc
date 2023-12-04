@@ -365,7 +365,6 @@ base::span<const OffsetMappingUnit> OffsetMapping::GetMappingUnitsForNode(
     const Node& node) const {
   const auto it = ranges_.find(&node);
   if (it == ranges_.end()) {
-    DUMP_WILL_BE_NOTREACHED_NORETURN() << node;
     return {};
   }
   return base::make_span(units_.begin() + it->value.first,
