@@ -567,6 +567,12 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterInteractiveUiTest,
             performance_row->footer_label_->GetText());
   EXPECT_FALSE(performance_row->icon_->GetImageModel().IsEmpty());
 
+  // Clear the memory usage data from tab 0 if it was set, otherwise the
+  // performance row won't be empty.
+  TabRendererData tab_0_data = tab_strip->tab_at(0)->data();
+  tab_0_data.tab_resource_usage = nullptr;
+  tab_strip->SetTabData(0, tab_0_data);
+
   // Hover card footer should update when we hover over another tab that is
   // not discarded
   SimulateHoverTab(browser(), 0);
