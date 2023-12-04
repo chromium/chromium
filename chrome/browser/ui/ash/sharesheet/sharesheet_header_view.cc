@@ -168,10 +168,7 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
   SharesheetImagePreview(const SharesheetImagePreview&) = delete;
   SharesheetImagePreview& operator=(const SharesheetImagePreview&) = delete;
 
-  ~SharesheetImagePreview() override {
-    ::sharesheet::SharesheetMetrics::RecordSharesheetImagePreviewPressed(
-        was_pressed_);
-  }
+  ~SharesheetImagePreview() override = default;
 
   RoundedImageView* GetImageViewAt(size_t index) {
     if (index >= image_views_.size()) {
@@ -191,16 +188,6 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
 
  private:
   // views::View:
-  bool OnMousePressed(const ui::MouseEvent& event) override {
-    was_pressed_ = true;
-    return false;
-  }
-
-  void OnGestureEvent(ui::GestureEvent* event) override {
-    if (event->type() == ui::ET_GESTURE_TAP)
-      was_pressed_ = true;
-  }
-
   void OnThemeChanged() override {
     View::OnThemeChanged();
     SetBorder(views::CreateRoundedRectBorder(
@@ -250,10 +237,6 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
   }
 
   std::vector<RoundedImageView*> image_views_;
-
-  // Used for recording UMA to indicate whether or not a user tried to interact
-  // with the image preview.
-  bool was_pressed_ = false;
 };
 
 BEGIN_METADATA(SharesheetHeaderView, SharesheetImagePreview, views::View)

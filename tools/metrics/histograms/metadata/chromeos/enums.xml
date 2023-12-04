@@ -653,12 +653,6 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Launch Copy share action"/>
 </enum>
 
-<enum name="ChromeOSSharesheetFormFactor">
-  <summary>Different form factors.</summary>
-  <int value="0" label="Tablet form factor"/>
-  <int value="1" label="Clamshell form factor"/>
-</enum>
-
 <enum name="ChromeOSSharesheetLaunchSource">
   <summary>The source from which sharesheet is invoked.</summary>
   <int value="0" label="Invoked from an unknown source"/>

@@ -108,11 +108,6 @@ bool IsKeyboardCodeArrow(ui::KeyboardCode key_code) {
          key_code == ui::VKEY_RIGHT || key_code == ui::VKEY_LEFT;
 }
 
-void RecordFormFactorMetric() {
-  auto form_factor = ::sharesheet::SharesheetMetrics::GetFormFactorForMetrics();
-  ::sharesheet::SharesheetMetrics::RecordSharesheetFormFactor(form_factor);
-}
-
 void RecordMimeTypeMetric(const apps::IntentPtr& intent) {
   auto mime_types_to_record =
       ::sharesheet::SharesheetMetrics::GetMimeTypesFromIntentForMetrics(intent);
@@ -636,7 +631,6 @@ void SharesheetBubbleView::SetUpAndShowBubble() {
   main_view_->SetFocusBehavior(View::FocusBehavior::NEVER);
   views::BubbleDialogDelegateView::CreateBubble(base::WrapUnique(this));
   GetWidget()->GetRootView()->Layout();
-  RecordFormFactorMetric();
   RecordMimeTypeMetric(intent_);
   ShowWidgetWithAnimateFadeIn();
 

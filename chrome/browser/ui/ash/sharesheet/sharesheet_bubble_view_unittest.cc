@@ -190,31 +190,6 @@ TEST_F(SharesheetBubbleViewTest, RecordLaunchSource) {
       ::sharesheet::kSharesheetLaunchSourceResultHistogram, source, 1);
 }
 
-TEST_F(SharesheetBubbleViewTest, RecordShareActionCount) {
-  // Text intent should only show copy action.
-  base::HistogramTester histograms;
-  ShowAndVerifyBubble(::sharesheet::CreateValidTextIntent(),
-                      ::sharesheet::LaunchSource::kUnknown);
-  CloseBubble();
-  histograms.ExpectBucketCount(
-      ::sharesheet::kSharesheetShareActionResultHistogram,
-      ::sharesheet::SharesheetMetrics::UserAction::kDriveAction, 0);
-  histograms.ExpectBucketCount(
-      ::sharesheet::kSharesheetShareActionResultHistogram,
-      ::sharesheet::SharesheetMetrics::UserAction::kCopyAction, 1);
-
-  // Drive intent should show drive and copy actions.
-  ShowAndVerifyBubble(::sharesheet::CreateDriveIntent(),
-                      ::sharesheet::LaunchSource::kUnknown);
-  CloseBubble();
-  histograms.ExpectBucketCount(
-      ::sharesheet::kSharesheetShareActionResultHistogram,
-      ::sharesheet::SharesheetMetrics::UserAction::kDriveAction, 1);
-  histograms.ExpectBucketCount(
-      ::sharesheet::kSharesheetShareActionResultHistogram,
-      ::sharesheet::SharesheetMetrics::UserAction::kCopyAction, 2);
-}
-
 TEST_F(SharesheetBubbleViewTest, ClickCopyToClipboard) {
   base::HistogramTester histograms;
   // Text intent should only show copy action.

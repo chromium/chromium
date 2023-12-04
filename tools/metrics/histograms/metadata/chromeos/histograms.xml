@@ -3127,16 +3127,6 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </token>
 </histogram>
 
-<histogram name="ChromeOS.Sharesheet.CopyToClipboard.FormFactor"
-    enum="ChromeOSSharesheetFormFactor" expires_after="2024-01-11">
-  <owner>vpao@google.com</owner>
-  <owner>chromeos-apps-foundation-team@google.com</owner>
-  <summary>
-    Records the form factor when the Copy To Clipboard option is selected from
-    the sharesheet.
-  </summary>
-</histogram>
-
 <histogram name="ChromeOS.Sharesheet.FileCount" units="files"
     expires_after="2024-11-30">
   <owner>tsergeant@chromium.org</owner>
@@ -3147,50 +3137,12 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
-<histogram name="ChromeOS.Sharesheet.FormFactor"
-    enum="ChromeOSSharesheetFormFactor" expires_after="2024-01-11">
-  <owner>tsergeant@chromium.org</owner>
-  <owner>chromeos-apps-foundation-team@google.com</owner>
-  <summary>Records the form factor when the Sharesheet is invoked.</summary>
-</histogram>
-
-<histogram name="ChromeOS.Sharesheet.IsDriveFolder" enum="Boolean"
-    expires_after="2024-01-11">
-  <owner>tsergeant@chromium.org</owner>
-  <owner>chromeos-apps-foundation-team@google.com</owner>
-  <summary>
-    If the value is true, the data being shared from the Sharesheet is a folder
-    from Drive. Recorded when the sharesheet is invoked.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.Sharesheet.IsImagePreviewPressed"
-    enum="BooleanSelected" expires_after="2024-01-11">
-  <owner>tsergeant@chromium.org</owner>
-  <owner>chromeos-apps-foundation-team@google.com</owner>
-  <summary>
-    If the value is true, the image preview was pressed during the current
-    invocation. Recorded when the sharesheet closes.
-  </summary>
-</histogram>
-
 <histogram name="ChromeOS.Sharesheet.LaunchSource"
     enum="ChromeOSSharesheetLaunchSource" expires_after="2024-05-19">
   <owner>tsergeant@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
     Records the source from which the Sharesheet is invoked.
-
-    Warning: this histogram was expired from M95 to M96; data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.Sharesheet.ShareActionCount"
-    enum="ChromeOSSharesheetAction" expires_after="2024-01-11">
-  <owner>tsergeant@chromium.org</owner>
-  <owner>chromeos-apps-foundation-team@google.com</owner>
-  <summary>
-    Records each action found for a given intent when the Sharesheet is invoked.
 
     Warning: this histogram was expired from M95 to M96; data may be missing.
   </summary>
