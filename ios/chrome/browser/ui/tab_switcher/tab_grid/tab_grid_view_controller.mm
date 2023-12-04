@@ -63,6 +63,10 @@
 
 namespace {
 
+BASE_FEATURE(kTabGridAccessibilityScrollKillSwitch,
+             "TabGridAccessibilityScrollKillSwitch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Types of configurations of this view controller.
 typedef NS_ENUM(NSUInteger, TabGridConfiguration) {
   TabGridConfigurationBottomToolbar = 1,
@@ -303,6 +307,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     self.currentPage = page;
     [self broadcastIncognitoContentVisibility];
     [self configureButtonsForActiveAndCurrentPage];
+    if (base::FeatureList::IsEnabled(kTabGridAccessibilityScrollKillSwitch)) {
+      [self.mutator
+          pageChanged:page
+          interaction:TabSwitcherPageChangeInteraction::kAccessibilitySwipe];
+      [self.topToolbar.pageControl setSelectedPage:page animated:YES];
+    }
   }
 }
 

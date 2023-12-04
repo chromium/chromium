@@ -183,4 +183,43 @@ NSString* kChromeActionsErrorDomain = @"ChromeActionsError";
         }];
 }
 
++ (id<GREYAction>)accessibilitySwipeRight {
+  return [GREYActionBlock
+      actionWithName:@"Swipe right with 3-finger"
+         constraints:nil
+        performBlock:^(UIScrollView* element, NSError* __strong* errorOrNil) {
+          if (![element isKindOfClass:UIScrollView.class]) {
+            NSString* errorDescription =
+                [NSString stringWithFormat:@"Cannot swipe on this view as it "
+                                           @"is not a scroll view:\n%@",
+                                           [element grey_description]];
+            *errorOrNil = [NSError
+                errorWithDomain:@"Not a scroll view"
+                           code:0
+                       userInfo:@{@"Failure Reason" : (errorDescription)}];
+            // Indicates that the action failed.
+            return NO;
+          }
+          if ([element window] == nil) {
+            NSString* errorDescription = [NSString
+                stringWithFormat:
+                    @"Cannot swipe on this view as it has no window and "
+                    @"isn't a window itself:\n%@",
+                    [element grey_description]];
+            *errorOrNil = [NSError
+                errorWithDomain:@"No window available"
+                           code:0
+                       userInfo:@{@"Failure Reason" : (errorDescription)}];
+            // Indicates that the action failed.
+            return NO;
+          }
+          CGPoint currentOffset = element.contentOffset;
+          currentOffset.x = currentOffset.x - element.bounds.size.width;
+          [element setContentOffset:currentOffset animated:NO];
+          [element.delegate scrollViewDidEndDecelerating:element];
+          // Indicates that the action was executed successfully.
+          return YES;
+        }];
+}
+
 @end

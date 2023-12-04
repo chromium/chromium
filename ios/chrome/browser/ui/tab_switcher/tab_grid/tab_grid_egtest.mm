@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/test/tabs_egtest_util.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -590,6 +591,26 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       assertWithMatcher:grey_nil()];
   [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests simulating a swipe with Voice Over from the Recent Tabs, making sure
+// that the new tab button is working as expected.
+- (void)testSwipeUsingVoiceOver {
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Switch over to Recent Tabs.
+  [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridNewTabButton()]
+      assertWithMatcher:grey_nil()];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kTabGridScrollViewIdentifier)]
+      performAction:chrome_test_util::AccessibilitySwipeRight()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridNewTabButton()]
+      performAction:grey_tap()];
 }
 
 // Tests that Clear Browsing Data can be successfully done from tab grid.
