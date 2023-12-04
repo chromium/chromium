@@ -1821,6 +1821,31 @@ TEST_F(PasswordsPrivateDelegateImplMockTaskEnvironmentTest,
   std::move(auth_result_callback).Run(true);
 }
 
+TEST_F(PasswordsPrivateDelegateImplMockTaskEnvironmentTest,
+       DestroyingDelegateWhileExportOngoing) {
+  content::WebContents* web_contents_ptr =
+      web_contents_factory().CreateWebContents(profile());
+  auto delegate = CreateDelegate();
+
+  auto biometric_authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+  auto* biometric_authenticator_ptr = biometric_authenticator.get();
+
+  device_reauth::DeviceAuthenticator::AuthenticateCallback auth_result_callback;
+
+  delegate->SetDeviceAuthenticatorForTesting(
+      std::move(biometric_authenticator));
+
+  EXPECT_CALL(*biometric_authenticator_ptr, AuthenticateWithMessage);
+  base::MockCallback<base::OnceCallback<void(const std::string&)>> callback;
+  delegate->ExportPasswords(callback.Get(), web_contents_ptr);
+
+  // Simulate destroying delegate while authentication is still ongoing. It
+  // should trigger cancelation of ongoing authentication.
+  EXPECT_CALL(*biometric_authenticator_ptr, Cancel);
+  delegate.reset();
+}
+
 #endif
 
 class PasswordsPrivateDelegateImplFetchFamilyMembersTest

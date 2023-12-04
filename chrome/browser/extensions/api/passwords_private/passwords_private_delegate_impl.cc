@@ -324,6 +324,10 @@ PasswordsPrivateDelegateImpl::PasswordsPrivateDelegateImpl(Profile* profile)
 PasswordsPrivateDelegateImpl::~PasswordsPrivateDelegateImpl() {
   saved_passwords_presenter_.RemoveObserver(this);
   install_manager_observation_.Reset();
+  if (device_authenticator_) {
+    device_authenticator_->Cancel();
+  }
+  device_authenticator_.reset();
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
@@ -1063,11 +1067,10 @@ void PasswordsPrivateDelegateImpl::OnSyncShutdown(syncer::SyncService* sync) {
   sync_service_observation_.Reset();
 }
 
-bool PasswordsPrivateDelegateImpl::OnReauthCompleted(bool authenticated) {
+void PasswordsPrivateDelegateImpl::OnReauthCompleted(bool authenticated) {
   device_authenticator_.reset();
 
   auth_timeout_handler_.OnUserReauthenticationResult(authenticated);
-  return authenticated;
 }
 
 void PasswordsPrivateDelegateImpl::ExecuteFunction(base::OnceClosure callback) {
@@ -1148,11 +1151,19 @@ void PasswordsPrivateDelegateImpl::AuthenticateUser(
   device_authenticator_ =
       GetDeviceAuthenticator(web_contents, auth_validity_period);
 
-  AuthResultIntermediateCallback on_reauth_completed =
-      base::BindOnce(&PasswordsPrivateDelegateImpl::OnReauthCompleted, this);
+  AuthResultCallback on_reauth_completed =
+      base::BindOnce(&PasswordsPrivateDelegateImpl::OnReauthCompleted,
+                     weak_ptr_factory_.GetWeakPtr());
+
+  auto pass_through = base::BindOnce(
+      [](AuthResultCallback callback, bool auth_result) {
+        std::move(callback).Run(auth_result);
+        return auth_result;
+      },
+      std::move(callback));
 
   device_authenticator_->AuthenticateWithMessage(
-      message, std::move(on_reauth_completed).Then(std::move(callback)));
+      message, std::move(pass_through).Then(std::move(on_reauth_completed)));
 #endif
 }
 

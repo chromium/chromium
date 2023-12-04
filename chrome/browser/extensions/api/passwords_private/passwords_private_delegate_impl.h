@@ -60,7 +60,6 @@ class PasswordsPrivateDelegateImpl
       public web_app::WebAppInstallManagerObserver {
  public:
   using AuthResultCallback = base::OnceCallback<void(bool)>;
-  using AuthResultIntermediateCallback = base::OnceCallback<bool(bool)>;
 
   explicit PasswordsPrivateDelegateImpl(Profile* profile);
 
@@ -245,7 +244,7 @@ class PasswordsPrivateDelegateImpl
       api::passwords_private::PlaintextReason reason);
 
   // Callback for biometric authentication after authentication check.
-  bool OnReauthCompleted(bool authenticated);
+  void OnReauthCompleted(bool authenticated);
 
   // Invokes PasswordsPrivateEventRouter::OnPasswordManagerAuthTimeout().
   void OsReauthTimeoutCall();
