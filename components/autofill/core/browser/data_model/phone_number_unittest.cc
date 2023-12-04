@@ -286,7 +286,9 @@ TEST(PhoneNumberTest, PhoneCombineHelper) {
   EXPECT_TRUE(number7.SetInfo(AutofillType(PHONE_HOME_CITY_CODE), u"650"));
   EXPECT_TRUE(number7.SetInfo(AutofillType(PHONE_HOME_NUMBER_PREFIX), u"234"));
   EXPECT_TRUE(number7.SetInfo(AutofillType(PHONE_HOME_NUMBER_SUFFIX), u"5682"));
-  EXPECT_TRUE(number7.ParseNumber(AutofillProfile(), kLocale, &parsed_phone));
+  EXPECT_TRUE(number7.ParseNumber(
+      AutofillProfile(i18n_model_definition::kLegacyHierarchyCountryCode),
+      kLocale, &parsed_phone));
   EXPECT_EQ(u"(650) 234-5682", parsed_phone);
 }
 

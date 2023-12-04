@@ -537,7 +537,8 @@ TEST_P(ContactInfoSyncUtilTest,
 // Test that only profiles with valid GUID are converted.
 TEST_F(ContactInfoSyncUtilTest,
        CreateContactInfoEntityDataFromAutofillProfile_InvalidGUID) {
-  AutofillProfile profile(kInvalidGuid, AutofillProfile::Source::kAccount);
+  AutofillProfile profile(kInvalidGuid, AutofillProfile::Source::kAccount,
+                          i18n_model_definition::kLegacyHierarchyCountryCode);
   EXPECT_EQ(CreateContactInfoEntityDataFromAutofillProfile(
                 profile, /*base_contact_info_specifics=*/{}),
             nullptr);
@@ -546,7 +547,8 @@ TEST_F(ContactInfoSyncUtilTest,
 // Test that AutofillProfiles with invalid source are not converted.
 TEST_F(ContactInfoSyncUtilTest,
        CreateContactInfoEntityDataFromAutofillProfile_InvalidSource) {
-  AutofillProfile profile(kGuid, AutofillProfile::Source::kLocalOrSyncable);
+  AutofillProfile profile(kGuid, AutofillProfile::Source::kLocalOrSyncable,
+                          i18n_model_definition::kLegacyHierarchyCountryCode);
   EXPECT_EQ(CreateContactInfoEntityDataFromAutofillProfile(
                 profile, /*base_contact_info_specifics=*/{}),
             nullptr);

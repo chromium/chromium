@@ -252,7 +252,7 @@ class AutofillProfileComparatorTest : public testing::Test {
   void MergePhoneNumbersAndExpect(const AutofillProfile& a,
                                   const AutofillProfile& b,
                                   const std::u16string& expected_str) {
-    AutofillProfile dummy;
+    AutofillProfile dummy(kLegacyHierarchyCountryCode);
 
     // Merge the phone numbers.
     PhoneNumber actual(&dummy);
@@ -711,7 +711,7 @@ TEST_F(AutofillProfileComparatorTest, HaveMergeableBirthdates) {
 }
 
 TEST_F(AutofillProfileComparatorTest, AreMergeable) {
-  AutofillProfile p;
+  AutofillProfile p(AddressCountryCode("US"));
   autofill::test::SetProfileInfo(&p, "Marion", "Mitchell", "Morrison",
                                  "marion@me.xyz", "Fox", "123 Zoo St.",
                                  "Unit 5", "Hollywood", "CA", "91601", "US",
@@ -1210,8 +1210,8 @@ TEST_F(AutofillProfileComparatorTest, MergeBirthdates) {
 }
 
 TEST_F(AutofillProfileComparatorTest, MergeLandmarkAndBetweenStreetsAndAdmin2) {
-  AutofillProfile empty;
-  AutofillProfile profile2;
+  AutofillProfile empty(kLegacyHierarchyCountryCode);
+  AutofillProfile profile2(kLegacyHierarchyCountryCode);
   profile2.SetRawInfo(ADDRESS_HOME_LANDMARK, u"Landmark example");
   profile2.SetRawInfo(ADDRESS_HOME_BETWEEN_STREETS, u"Between streets example");
   profile2.SetRawInfo(ADDRESS_HOME_ADMIN_LEVEL2, u"Admin level 2 example");
@@ -1257,7 +1257,7 @@ TEST_F(AutofillProfileComparatorTest, CheckStatesMergability) {
 // visible value works.
 TEST_F(AutofillProfileComparatorTest,
        ProfilesHaveDifferentSettingsVisibleValues) {
-  AutofillProfile existing_profile;
+  AutofillProfile existing_profile(AddressCountryCode("US"));
   autofill::test::SetProfileInfo(
       &existing_profile, "firstName", "middleName", "lastName", "mail@mail.com",
       "company", "line1", "line2", "city", "state", "zip", "US", "phone");
@@ -1307,7 +1307,7 @@ TEST_F(AutofillProfileComparatorTest,
 }
 
 TEST_F(AutofillProfileComparatorTest, GetProfileDifference) {
-  AutofillProfile existing_profile;
+  AutofillProfile existing_profile(AddressCountryCode("US"));
   autofill::test::SetProfileInfo(
       &existing_profile, "firstName", "middleName", "lastName", "mail@mail.com",
       "company", "line1", "line2", "city", "state", "zip", "US", "phone");
@@ -1333,7 +1333,7 @@ TEST_F(AutofillProfileComparatorTest, GetProfileDifference) {
 }
 
 TEST_F(AutofillProfileComparatorTest, GetProfileDifferenceMap) {
-  AutofillProfile existing_profile;
+  AutofillProfile existing_profile(AddressCountryCode("US"));
   autofill::test::SetProfileInfo(
       &existing_profile, "firstName", "middleName", "lastName", "mail@mail.com",
       "company", "line1", "line2", "city", "state", "zip", "US", "phone");
@@ -1360,7 +1360,7 @@ TEST_F(AutofillProfileComparatorTest, GetProfileDifferenceMap) {
 }
 
 TEST_F(AutofillProfileComparatorTest, GetSettingsVisibleProfileDifference) {
-  AutofillProfile existing_profile;
+  AutofillProfile existing_profile(AddressCountryCode("US"));
   autofill::test::SetProfileInfo(
       &existing_profile, "firstName", "middleName", "lastName", "mail@mail.com",
       "company", "line1", "line2", "city", "state", "zip", "US", "phone");
@@ -1393,7 +1393,7 @@ TEST_F(AutofillProfileComparatorTest, GetSettingsVisibleProfileDifference) {
 }
 
 TEST_F(AutofillProfileComparatorTest, GetSettingsVisibleProfileDifferenceMap) {
-  AutofillProfile existing_profile;
+  AutofillProfile existing_profile(AddressCountryCode("US"));
   autofill::test::SetProfileInfo(
       &existing_profile, "firstName", "middleName", "lastName", "mail@mail.com",
       "company", "line1", "line2", "city", "state", "zip", "US", "phone");
@@ -1425,7 +1425,7 @@ TEST_F(AutofillProfileComparatorTest, GetSettingsVisibleProfileDifferenceMap) {
 }
 
 TEST_F(AutofillProfileComparatorTest, IsMergeCandidate) {
-  AutofillProfile existing_profile;
+  AutofillProfile existing_profile(AddressCountryCode("US"));
   autofill::test::SetProfileInfo(
       &existing_profile, "firstName", "middleName", "lastName", "mail@mail.com",
       "company", "line1", "line2", "the city", "state", "zip", "US", "phone");

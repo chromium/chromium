@@ -263,7 +263,7 @@ TEST(ContactFormLabelFormatterTest, GetLabelsForNameAndEmailWithFocusedEmail) {
 }
 
 TEST(ContactFormLabelFormatterTest, GetLabelsForFormWithoutName) {
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile, "Sarah", "", "Revere", "sarah.revere@aol.com",
                        "", "19 North Sq", "", "Boston", "MA", "02113", "US",
                        "16175232338");

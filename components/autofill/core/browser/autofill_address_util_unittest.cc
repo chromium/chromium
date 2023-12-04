@@ -123,7 +123,7 @@ TEST_F(AddressFormattingTest, GetEnvelopeStyleAddressSanity) {
 }
 
 TEST_F(AddressFormattingTest, GetEnvelopeStyleAddressWhenEmptyFullname) {
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile, /*first_name=*/"", /*middle_name=*/"",
                        /*last_name=*/"", "johndoe@hades.com", "Underworld",
                        "666 Erebus St.", "Apt 8", "Elysium", "CA", "91111",
@@ -140,7 +140,7 @@ TEST_F(AddressFormattingTest, GetEnvelopeStyleAddressWhenEmptyFullname) {
 // contain empty lines.
 TEST_F(AddressFormattingTest,
        GetEnvelopeStyleAddressWhenEmptyCompanyShouldHaveNoEmptyLines) {
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile, "FirstName", "MiddleName", "LastName",
                        "johndoe@hades.com", /*company=*/"", "666 Erebus St.",
                        "Apt 8", "Elysium", "CA", "91111", "US", "16502111111");
@@ -157,7 +157,7 @@ TEST_F(AddressFormattingTest,
 TEST_F(
     AddressFormattingTest,
     GetEnvelopeStyleAddressWhenEmptyStateShouldHaveNoConsecutiveWhitespaces) {
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile, "FirstName", "MiddleName", "LastName",
                        "johndoe@hades.com", "Underworld", "666 Erebus St.",
                        "Apt 8", "Elysium", /*state=*/"", "91111", "US",
@@ -174,7 +174,7 @@ TEST_F(
 // `GetEnvelopeStyleAddress()`, by checking that Great Britain's address format
 // is extended by a state field.
 TEST_F(AddressFormattingTest, GetEnvelopeStyleAddressWithExtensions) {
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile, "FirstName", "MiddleName", "LastName",
                        "johndoe@hades.com", /*company=*/"", "666 Erebus St.",
                        "Apt 8", "Elysium", /*state=*/"Greater London",

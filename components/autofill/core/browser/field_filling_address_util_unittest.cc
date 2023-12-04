@@ -63,7 +63,7 @@ TEST_F(FieldFillingAddressUtilTest,
   field.should_autocomplete = false;
   field.set_heuristic_type(GetActiveHeuristicSource(), NAME_FIRST);
 
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile.SetRawInfo(NAME_FIRST, u"Test");
   std::optional<std::u16string> value_to_fill =
       GetValueForProfile(profile, kAppLocale, AutofillType(NAME_FIRST), field,
@@ -312,7 +312,7 @@ TEST_F(FieldFillingAddressUtilTest, FillSelectWithCountries) {
 
 TEST_F(FieldFillingAddressUtilTest, FillStreetAddressTextArea) {
   AutofillField field;
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   field.form_control_type = FormControlType::kTextArea;
   field.set_heuristic_type(GetActiveHeuristicSource(),
                            ADDRESS_HOME_STREET_ADDRESS);
@@ -336,7 +336,7 @@ TEST_F(FieldFillingAddressUtilTest, FillStreetAddressTextArea) {
 
 TEST_F(FieldFillingAddressUtilTest, FillStreetAddressTextField) {
   AutofillField field;
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   field.form_control_type = FormControlType::kInputText;
   field.set_server_predictions(
       {::autofill::test::CreateFieldPrediction(ADDRESS_HOME_STREET_ADDRESS)});
