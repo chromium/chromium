@@ -12,12 +12,29 @@
   <main id=main>
     <div>
       <a id=link><img src="/images/lcp-256x256.png" id="img"></a>
+      <a id=not_nav><img src="/images/lcp-16x16.png"></a>
     </div>
   </main>
   <script>
     const link = document.getElementById("link");
     let first_lcp_painted;
     let second_lcp_painted;
+    // Trigger a user interaction that doesn't result in a soft navigation, but
+    // does paint.
+    (async () => {
+      const not_nav = document.getElementById("not_nav");
+      let non_soft_nav_click;
+      const non_soft_nav_click_promise =
+        new Promise(r => { non_soft_nav_click = r; });
+      not_nav.addEventListener("click", () => {
+        addImageToMain("lcp-1x1.png", "not_soft_nav_image");
+        (new PerformanceObserver(non_soft_nav_click)).observe({type: "element"});
+      });
+      if (test_driver) {
+        test_driver.click(not_nav);
+      }
+      await non_soft_nav_click_promise;
+    })();
     (async () => {
       await new Promise(r => { first_lcp_painted = r; });
       addImageToMain("lcp-133x106.png", "no_lcp");

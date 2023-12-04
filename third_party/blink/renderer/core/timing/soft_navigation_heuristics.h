@@ -86,7 +86,7 @@ class SoftNavigationHeuristics
   // If there are nested EventParameters, pop one, restore it to the
   // current_event_parameters_ and return true. Otherwise, return false.
   bool PopNestedEventParametersIfNeeded();
-  void SetCurrentTimeAsStartTime();
+  void SetCurrentTimeAsStartTime(ScriptState* script_state);
 
  private:
   enum FlagType : uint8_t {

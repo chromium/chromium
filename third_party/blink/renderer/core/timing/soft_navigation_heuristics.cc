@@ -283,6 +283,11 @@ void SoftNavigationHeuristics::CheckSoftNavigationConditions(
   soft_navigation_conditions_met_ = true;
 
   soft_navigation_interaction_data_ = &data;
+
+  if (data.user_interaction_timestamp.is_null()) {
+    return;
+  }
+
   if (paint_conditions_met_) {
     LocalFrame* frame = ToLocalFrameIfNotDetached(script_state->GetContext());
     if (frame && frame->IsOutermostMainFrame()) {
@@ -387,7 +392,8 @@ bool SoftNavigationHeuristics::PopNestedEventParametersIfNeeded() {
   return true;
 }
 
-void SoftNavigationHeuristics::SetCurrentTimeAsStartTime() {
+void SoftNavigationHeuristics::SetCurrentTimeAsStartTime(
+    ScriptState* script_state) {
   CHECK(current_event_parameters_);
   if (!last_interaction_task_id_.value() ||
       !current_event_parameters_->is_new_interaction) {
@@ -401,6 +407,12 @@ void SoftNavigationHeuristics::SetCurrentTimeAsStartTime() {
     // Don't set the timestamp if it was already set (e.g. in the case of a
     // nested event scope).
     data->user_interaction_timestamp = base::TimeTicks::Now();
+  }
+  if (soft_navigation_conditions_met_ && paint_conditions_met_) {
+    LocalFrame* frame = ToLocalFrameIfNotDetached(script_state->GetContext());
+    if (frame && frame->IsOutermostMainFrame()) {
+      EmitSoftNavigationEntry(frame);
+    }
   }
 }
 
@@ -586,7 +598,7 @@ SoftNavigationEventScope::~SoftNavigationEventScope() {
   // Set the start time to the end of event processing. In case of nested event
   // scopes, we want this to be the end of the nested `navigate()` event
   // handler.
-  heuristics_->SetCurrentTimeAsStartTime();
+  heuristics_->SetCurrentTimeAsStartTime(script_state_);
 
   // Only the top level EventScope should unregister the observer.
   if (!nested) {
