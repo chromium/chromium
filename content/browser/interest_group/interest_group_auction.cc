@@ -4435,7 +4435,8 @@ AuctionWorkletManager::WorkletKey InterestGroupAuction::BidderWorkletKey(
       interest_group.bidding_url.value_or(GURL()),
       interest_group.bidding_wasm_helper_url,
       interest_group.trusted_bidding_signals_url,
-      /*needs_cors_for_additional_bid=*/false, experiment_group_id);
+      /*needs_cors_for_additional_bid=*/false, experiment_group_id,
+      /*trusted_bidding_signals_slot_size_param=*/"");
 }
 
 void InterestGroupAuction::OnDecompressedServerResponse(
