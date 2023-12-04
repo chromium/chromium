@@ -38,7 +38,7 @@
     reset.
   </description>
 
-  <interface name="zcr_remote_shell_v2" version="5">
+  <interface name="zcr_remote_shell_v2" version="6">
     <description summary="remote_shell">
       The global interface that allows clients to turn a wl_surface into a
       "real window" which is remotely managed but can be stacked, activated
@@ -869,6 +869,21 @@
         subsurfaces. Once this protocol is called, surfaces cannot set
         their own rounded corner bounds because rounded window bounds will be
         applied to the whole surface tree.
+      </description>
+      <arg name="upper_left_radius" type="uint"/>
+      <arg name="upper_right_radius" type="uint"/>
+      <arg name="lower_right_radius" type="uint"/>
+      <arg name="lower_left_radius" type="uint"/>
+    </request>
+
+    <!-- Version 6 additions -->
+    <request name="set_shadow_corner_radii" since="6">
+      <description summary="Request to apply rounded corners to the shadow of the surface.">
+        The client specifies the radius of each corner to be applied to the shadow
+        associated with the aura toplevel surface in device independent pixels (DPs).
+
+        The shadow radius is double buffered, and will be applied at the
+        time wl_surface.commit of the corresponding wl_surface is called.
       </description>
       <arg name="upper_left_radius" type="uint"/>
       <arg name="upper_right_radius" type="uint"/>
