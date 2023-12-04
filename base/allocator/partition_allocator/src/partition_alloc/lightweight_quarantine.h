@@ -42,7 +42,6 @@
 #include "partition_alloc/partition_alloc_base/export_template.h"
 #include "partition_alloc/partition_alloc_base/rand_util.h"
 #include "partition_alloc/partition_alloc_base/thread_annotations.h"
-#include "partition_alloc/partition_alloc_forward.h"
 #include "partition_alloc/partition_lock.h"
 #include "partition_alloc/partition_stats.h"
 
@@ -129,9 +128,7 @@ class LightweightQuarantineBranch {
   // as much as possible.  If the object is too large, this may return
   // `false`, meaning that quarantine request has failed (and freed
   // immediately). Otherwise, returns `true`.
-  bool Quarantine(void* object,
-                  SlotSpanMetadata* slot_span,
-                  uintptr_t slot_start);
+  bool Quarantine(void* object);
 
   // Dequarantine all entries **held by this branch**.
   // It is possible that another branch with entries and it remains untouched.
@@ -144,7 +141,7 @@ class LightweightQuarantineBranch {
   bool IsQuarantinedForTesting(void* object) {
     ConditionalScopedGuard guard(lock_required_, lock_);
     for (size_t i = 0; i < branch_count_; i++) {
-      if (slots_[i].object == object) {
+      if (slots_[i] == object) {
         return true;
       }
     }
@@ -199,12 +196,7 @@ class LightweightQuarantineBranch {
   // `slots_` hold an array of quarantined entries.
   // The contents of empty slots are undefined and reads should not occur.
   // First `branch_count_` slots are used and entries should be shuffled.
-  struct QuarantineSlot {
-    void* object;
-    size_t usable_size;
-  };
-  std::array<QuarantineSlot, kQuarantineCapacityCount> slots_
-      PA_GUARDED_BY(lock_);
+  std::array<void*, kQuarantineCapacityCount> slots_ PA_GUARDED_BY(lock_);
 
   // # of quarantined entries in this branch.
   size_t branch_count_ PA_GUARDED_BY(lock_) = 0;

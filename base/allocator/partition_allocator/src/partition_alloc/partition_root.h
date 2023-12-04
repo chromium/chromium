@@ -1415,6 +1415,24 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
     return;
   }
 
+  if constexpr (ContainsFlags(flags, FreeFlags::kZap)) {
+    if (settings.zapping_by_free_flags) {
+      SlotSpan* slot_span = SlotSpan::FromObject(object);
+      uintptr_t slot_start = ObjectToSlotStart(object);
+      internal::SecureMemset(internal::SlotStartAddr2Ptr(slot_start),
+                             internal::kFreedByte,
+                             GetSlotUsableSize(slot_span));
+    }
+  }
+  // TODO(https://crbug.com/1497380): Collecting objects for
+  // `kSchedulerLoopQuarantineBranch` here means it "delays" other checks (BRP
+  // refcount, cookie, etc.)
+  // For better debuggability, we should do these checks before quarantining.
+  if constexpr (ContainsFlags(flags, FreeFlags::kSchedulerLoopQuarantine)) {
+    GetSchedulerLoopQuarantineBranch().Quarantine(object);
+    return;
+  }
+
   // Almost all calls to FreeNoNooks() will end up writing to |*object|, the
   // only cases where we don't would be delayed free() in PCScan, but |*object|
   // can be cold in cache.
@@ -1473,23 +1491,6 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
 
   uintptr_t slot_start = ObjectToSlotStart(object);
   PA_DCHECK(slot_span == SlotSpan::FromSlotStart(slot_start));
-
-  if constexpr (ContainsFlags(flags, FreeFlags::kZap)) {
-    if (settings.zapping_by_free_flags) {
-      internal::SecureMemset(internal::SlotStartAddr2Ptr(slot_start),
-                             internal::kFreedByte,
-                             GetSlotUsableSize(slot_span));
-    }
-  }
-  // TODO(https://crbug.com/1497380): Collecting objects for
-  // `kSchedulerLoopQuarantineBranch` here means it "delays" other checks (BRP
-  // refcount, cookie, etc.)
-  // For better debuggability, we should do these checks before quarantining.
-  if constexpr (ContainsFlags(flags, FreeFlags::kSchedulerLoopQuarantine)) {
-    GetSchedulerLoopQuarantineBranch().Quarantine(object, slot_span,
-                                                  slot_start);
-    return;
-  }
 
 #if BUILDFLAG(USE_STARSCAN)
   // TODO(bikineev): Change the condition to PA_LIKELY once PCScan is enabled by

@@ -16,8 +16,10 @@ namespace partition_alloc {
 
 namespace {
 
-using QuarantineRoot = internal::LightweightQuarantineRoot;
-using QuarantineBranch = internal::LightweightQuarantineBranchForTesting;
+size_t GetObjectSize(void* object) {
+  const auto* entry_slot_span = internal::SlotSpanMetadata::FromObject(object);
+  return entry_slot_span->GetUtilizedSlotSize();
+}
 
 using QuarantineRoot = internal::LightweightQuarantineRoot;
 using QuarantineBranch = internal::LightweightQuarantineBranchForTesting;
@@ -62,17 +64,6 @@ class PartitionAllocLightweightQuarantineTest
   QuarantineRoot* GetQuarantineRoot() { return &root_.value(); }
   QuarantineBranch* GetQuarantineBranch() { return &branch_.value(); }
 
-  bool Quarantine(void* object) {
-    auto* slot_span = internal::SlotSpanMetadata::FromObject(object);
-    uintptr_t slot_start = GetPartitionRoot()->ObjectToSlotStart(object);
-    return GetQuarantineBranch()->Quarantine(object, slot_span, slot_start);
-  }
-
-  size_t GetObjectSize(void* object) {
-    auto* entry_slot_span = internal::SlotSpanMetadata::FromObject(object);
-    return GetPartitionRoot()->GetSlotUsableSize(entry_slot_span);
-  }
-
   LightweightQuarantineStats GetStats() const {
     LightweightQuarantineStats stats{};
     root_->AccumulateStats(stats);
@@ -102,7 +93,7 @@ TEST_P(PartitionAllocLightweightQuarantineTest, Basic) {
     const size_t size = GetObjectSize(object);
     const size_t max_count = capacity_in_bytes / size;
 
-    const bool success = Quarantine(object);
+    const bool success = GetQuarantineBranch()->Quarantine(object);
 
     ASSERT_TRUE(success);
     ASSERT_TRUE(GetQuarantineBranch()->IsQuarantinedForTesting(object));
@@ -125,7 +116,7 @@ TEST_P(PartitionAllocLightweightQuarantineTest, TooLargeAllocation) {
   const size_t size = GetObjectSize(object);
   ASSERT_GT(size, capacity_in_bytes);
 
-  const bool success = Quarantine(object);
+  const bool success = GetQuarantineBranch()->Quarantine(object);
 
   ASSERT_FALSE(success);
   ASSERT_FALSE(GetQuarantineBranch()->IsQuarantinedForTesting(object));
