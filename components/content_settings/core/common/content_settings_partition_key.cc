@@ -11,13 +11,28 @@ namespace content_settings {
 #if BUILDFLAG(IS_IOS)
 // static
 const PartitionKey& PartitionKey::GetDefault() {
-  static const base::NoDestructor<PartitionKey> key;
-  return *key;
+  return GetDefaultImpl();
+}
+#else
+// static
+const PartitionKey& PartitionKey::WipGetDefault() {
+  return GetDefaultImpl();
+}
+
+// static
+const PartitionKey& PartitionKey::GetDefaultForTesting() {
+  return GetDefaultImpl();
 }
 #endif  // BUILDFLAG(IS_IOS)
 
 PartitionKey::PartitionKey(const PartitionKey& key) = default;
 PartitionKey::PartitionKey(PartitionKey&& key) = default;
+
+// static
+const PartitionKey& PartitionKey::GetDefaultImpl() {
+  static const base::NoDestructor<PartitionKey> key;
+  return *key;
+}
 
 PartitionKey::PartitionKey() : PartitionKey("", "", false) {}
 
