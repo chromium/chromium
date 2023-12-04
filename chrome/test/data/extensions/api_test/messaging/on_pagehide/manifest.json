@@ -1,5 +1,5 @@
 {
-  "name": "send message on unload",
+  "name": "send message on pagehide",
   "version": "1.0",
   "manifest_version": 2,
   "description": "Sends a message on tab unload",

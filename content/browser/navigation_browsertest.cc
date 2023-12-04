@@ -3670,7 +3670,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 // the first. This is a situation where the navigation has an initiator frame
 // token, but no corresponding RenderFrameHost.
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
-                       RendererInitiatedCrossWindowNavigationInUnload) {
+                       RendererInitiatedCrossWindowNavigationInPagehide) {
   GURL url(embedded_test_server()->GetURL("/empty.html"));
   GURL always_referrer_url(embedded_test_server()->GetURL(
       "/set-header?Referrer-Policy: unsafe-url"));
@@ -3687,7 +3687,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 
   // When deleted, the openee will initiate a navigation in its opener.
   EXPECT_TRUE(ExecJs(openee_shell, R"(
-    window.addEventListener("unload", () => {
+    window.addEventListener("pagehide", () => {
       opener.location.href = "about:blank";
     })
   )"));
