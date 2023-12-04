@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <wayland-cursor.h>
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -976,8 +977,13 @@ bool WaylandWindow::CommitOverlays(
     return true;
   }
 
-  // |overlays| is sorted from bottom to top.
-  std::sort(overlays.begin(), overlays.end(), OverlayStackOrderCompare);
+  // Lacros submits from front to back. A simple reverse can avoid a full sort.
+  std::reverse(overlays.begin(), overlays.end());
+  if (!std::is_sorted(overlays.begin(), overlays.end(),
+                      OverlayStackOrderCompare)) {
+    // |overlays| is sorted from bottom to top.
+    std::sort(overlays.begin(), overlays.end(), OverlayStackOrderCompare);
+  }
 
   // Find the location where z_oder becomes non-negative.
   wl::WaylandOverlayConfig value;
