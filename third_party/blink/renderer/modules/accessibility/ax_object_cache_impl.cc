@@ -2871,8 +2871,21 @@ void AXObjectCacheImpl::CheckTreeIsUpdated() {
   CHECK(tree_update_callback_queue_popup_.empty());
 
 #if DCHECK_IS_ON()
+  // The following checks can make tests flaky if the tree being checked
+  // is quite large. Therefore cap the number of objects we check.
+  constexpr int kMaxObjectsToCheckAfterTreeUpdate = 10000;
+  if (objects_.size() > kMaxObjectsToCheckAfterTreeUpdate) {
+    DLOG(INFO) << "AXObjectCacheImpl::CheckTreeIsUpdated: Only checking first "
+               << kMaxObjectsToCheckAfterTreeUpdate
+               << " items in objects_ (size: " << objects_.size() << ")";
+  }
+
   // First loop checks that tree structure is consistent.
+  int count = 0;
   for (const auto& entry : objects_) {
+    if (count > kMaxObjectsToCheckAfterTreeUpdate) {
+      break;
+    }
     const AXObject* object = entry.value;
     DCHECK(!object->IsDetached());
     DCHECK(object->GetDocument());
@@ -2905,11 +2918,16 @@ void AXObjectCacheImpl::CheckTreeIsUpdated() {
             << "\n* Included parent: " << included_parent->ToString(true);
       }
     }
+    count++;
   }
 
   // Second loop checks that all dirty bits to update properties or children
   // have been cleared.
+  count = 0;
   for (const auto& entry : objects_) {
+    if (count > kMaxObjectsToCheckAfterTreeUpdate) {
+      break;
+    }
     const AXObject* object = entry.value;
     if (object->HasDirtyDescendants()) {
       // This an error: log the top ancestor that still has dirty descendants.
@@ -2939,6 +2957,7 @@ void AXObjectCacheImpl::CheckTreeIsUpdated() {
         << "No cached values should require an update at this point: "
         << "\n* Object: " << object->ToString(true)
         << "\n* Included parent: " << included_parent->ToString(true);
+    count++;
   }
 #endif
 }
