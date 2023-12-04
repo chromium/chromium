@@ -190,6 +190,11 @@ void SystemTextfield::SetPlaceholderTextColorId(ui::ColorId color_id) {
                 /*is_background_color=*/false);
 }
 
+void SystemTextfield::SetActiveStateChangedCallback(
+    base::RepeatingCallback<void()> callback) {
+  active_state_changed_callback_ = std::move(callback);
+}
+
 void SystemTextfield::SetActive(bool active) {
   if (IsActive() == active) {
     return;
@@ -207,6 +212,9 @@ void SystemTextfield::SetActive(bool active) {
 
   SetShowFocusRing(active);
   UpdateBackground();
+  if (active_state_changed_callback_) {
+    active_state_changed_callback_.Run();
+  }
 }
 
 bool SystemTextfield::IsActive() const {
@@ -275,15 +283,11 @@ void SystemTextfield::OnThemeChanged() {
 }
 
 void SystemTextfield::OnFocus() {
-  views::Textfield::OnFocus();
-  SetShowFocusRing(true);
-  UpdateBackground();
+  SetActive(true);
 }
 
 void SystemTextfield::OnBlur() {
-  views::Textfield::OnBlur();
-  SetShowFocusRing(false);
-  UpdateBackground();
+  SetActive(false);
 }
 
 void SystemTextfield::OnEnabledStateChanged() {

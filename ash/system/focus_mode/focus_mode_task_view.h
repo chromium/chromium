@@ -8,12 +8,13 @@
 #include "ash/ash_export.h"
 #include "ui/views/layout/box_layout_view.h"
 
+namespace views {
+class ImageButton;
+}  // namespace views
+
 namespace ash {
 
-class IconButton;
-class CloseButton;
 class FocusModeChipCarousel;
-class SystemTextfield;
 
 // The class will be used in the `FocusModeDetailedView` under the task view
 // container to let the user create, edit, select, or deselect a task for a
@@ -34,11 +35,17 @@ class ASH_EXPORT FocusModeTaskView : public views::BoxLayoutView {
  private:
   friend class FocusModeTaskViewTest;
 
+  class TaskTextfield;
   class TaskTextfieldController;
 
-  // TODO(b/306272008): Check off or deselect a task
-  void OnRadioButtonPressed() {}
-  void OnDeselectButtonPressed() {}
+  // Called when `radio_button_` is pressed to mark a task as completed.
+  void OnCompleteTask();
+
+  // Called when `deselect_button_` is pressed to remove a selected task.
+  void OnDeselectButtonPressed();
+
+  // Called when `add_task_button_` is pressed to focus on `textfield_`.
+  void OnAddTaskButtonPressed();
 
   // If `show_selected_state` is true, it means that there is a task selected
   // by the user for a focus session, then we will show `radio_button_` and
@@ -50,14 +57,22 @@ class ASH_EXPORT FocusModeTaskView : public views::BoxLayoutView {
 
   // TODO(b/306272008): Update the image of `radio_button_` to a check icon if
   // it was clicked by the user.
-  raw_ptr<IconButton> radio_button_;
-  raw_ptr<CloseButton> deselect_button_;
+  raw_ptr<views::ImageButton> radio_button_ = nullptr;
+  raw_ptr<views::ImageButton> deselect_button_ = nullptr;
+  // Shows up on the left side of `textfield_` when there is no selected task.
+  raw_ptr<views::ImageButton> add_task_button_ = nullptr;
+
+  // Contains a `radio_button_`, a `deselect_button_`, an `add_task_button_` and
+  // a `textfield_`.
+  raw_ptr<views::BoxLayoutView> textfield_container_ = nullptr;
 
   // Title of the selected task.
   std::u16string task_title_;
-  raw_ptr<SystemTextfield> textfield_ = nullptr;
+  raw_ptr<TaskTextfield> textfield_ = nullptr;
   std::unique_ptr<TaskTextfieldController> textfield_controller_;
   raw_ptr<FocusModeChipCarousel> chip_carousel_ = nullptr;
+
+  base::WeakPtrFactory<FocusModeTaskView> weak_factory_{this};
 };
 
 }  // namespace ash
