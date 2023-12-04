@@ -388,6 +388,10 @@
       'win64-chrome': 'official_reclient_x64',
     },
 
+    'tryserver.chrome.gpu': {
+      'gpu-fyi-try-chromeos-skylab-jacuzzi': 'gpu_tests_chromeos_jacuzzi_release_trybot_dcheck_off_no_symbols_reclient_skylab',
+    },
+
     'tryserver.chrome.pgo': {
       'android-arm32-pgo': 'official_android_arm32_pgo',
       'android-arm64-pgo': 'official_android_arm64_pgo',
