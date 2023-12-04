@@ -1,0 +1,162 @@
+[criteria.crypto-safe]
+description = """
+All crypto algorithms in this crate have been reviewed by a relevant expert.
+
+**Note**: If a crate does not implement crypto, use `does-not-implement-crypto`,
+which implies `crypto-safe`, but does not require expert review in order to
+audit for."""
+copied-from = "https://chromium.googlesource.com/chromiumos/third_party/rust_crates/+/refs/heads/main/cargo-vet/audits.toml"
+
+[criteria.does-not-implement-crypto]
+description = """
+Inspection reveals that the crate in question does not attempt to implement any
+cryptographic algorithms on its own.
+
+Note that certification of this does not require an expert on all forms of
+cryptography: it's expected for crates we import to be \"good enough\" citizens,
+so they'll at least be forthcoming if they try to implement something
+cryptographic. When in doubt, please ask an expert."""
+implies = "crypto-safe"
+copied-from = "https://chromium.googlesource.com/chromiumos/third_party/rust_crates/+/refs/heads/main/cargo-vet/audits.toml"
+
+[criteria.rule-of-two-safe-to-deploy]
+description = """
+This is a stronger requirement than the built-in safe-to-deploy criteria,
+motivated by Chromium's rule-of-two related requirements:
+https://chromium.googlesource.com/chromium/src/+/master/docs/security/rule-of-2.md#unsafe-code-in-safe-languages
+
+This crate will not introduce a serious security vulnerability to production
+software exposed to untrusted input.
+
+Auditors are not required to perform a full logic review of the entire crate.
+Rather, they must review enough to fully reason about the behavior of all unsafe
+blocks and usage of powerful imports. For any reasonable usage of the crate in
+real-world software, an attacker must not be able to manipulate the runtime
+behavior of these sections in an exploitable or surprising way.
+
+Ideally, ambient capabilities (e.g. filesystem access) are hardened against
+manipulation and consistent with the advertised behavior of the crate. However,
+some discretion is permitted. In such cases, the nature of the discretion should
+be recorded in the `notes` field of the audit record.
+
+Any unsafe code in this crate must, in general, be kept well-contained, and
+documentation must exist to describe how Rust's invariants are being upheld
+despite the unsafe block(s). Nontrivial uses of unsafe must be reviewed by an
+expert in Rust's unsafety guarantees/non-guarantees.
+
+For crates which generate deployed code (e.g. build dependencies or procedural
+macros), reasonable usage of the crate should output code which meets the above
+criteria."""
+implies = "safe-to-deploy"
+copied-from = "https://chromium.googlesource.com/chromiumos/third_party/rust_crates/+/refs/heads/main/cargo-vet/audits.toml"
+
+[criteria.ub-risk-0]
+description = """
+This crate cannot cause undefined behavior because it contains no unsafe code.
+"""
+implies = "ub-risk-1"
+copied-from = "https://fuchsia.googlesource.com/fuchsia/+/refs/heads/main/third_party/rust_crates/supply-chain/audits.toml"
+
+[criteria.ub-risk-1]
+description = """
+A designated unsafe code reviewer has audited the unsafe code in this crate. No
+risk of causing undefined behavior was found.
+
+UB-RISK-1 crates are suitable for applications with the strictest memory safety
+requirements:
+- Safety documentation is comprehensive and precise. Unsafe APIs can be used
+  soundly.
+- Unsafe blocks rely on clear invariants and preconditions, and are
+  well-justified by them.
+- No way to cause undefined behavior was found during review.
+
+UB-RISK-1 crates are exceptionally well-documented and justified, leaving little
+to no room for error.
+"""
+implies = "ub-risk-2"
+copied-from = "https://fuchsia.googlesource.com/fuchsia/+/refs/heads/main/third_party/rust_crates/supply-chain/audits.toml"
+
+[criteria.ub-risk-2]
+description = """
+A designated unsafe code reviewer has audited the unsafe code in this crate. It
+has been found to pose a trivial risk of causing undefined behavior.
+
+UB-RISK-2 crates are suitable for most applications:
+- Safety documentation is relatively comprehensive, though it may not be
+  adequately precise. Unsafe APIs can be used soundly with very minor caution.
+- Unsafe blocks may rely on informal invariants and preconditions. The reasoning
+  required to justify them may be especially difficult or under-documented.
+- Undefined behavior may be possible under extraordinary circumstances.
+
+UB-RISK-2 crates are effectively \"the average good crate\". While they may have
+very slight (but real) soundness issues, they are safe to use in general without
+much worry. These crates may exhibit undefined behavior under \"extraordinary
+circumstances\", which is ultimately up to reviewer discretion. Users may expect
+that reasonable use of the crate will not cause undefined behavior.
+"""
+implies = "ub-risk-3"
+copied-from = "https://fuchsia.googlesource.com/fuchsia/+/refs/heads/main/third_party/rust_crates/supply-chain/audits.toml"
+
+[criteria.ub-risk-3]
+description = """
+A designated unsafe code reviewer has audited the unsafe code in this crate. It
+has been found to pose a significant risk of causing undefined behavior.
+
+UB-RISK-3 crates are suitable for select applications:
+- Safety documentation may not be adequately comprehensive or precise. Unsafe
+  APIs can be used soundly with a decent amount of caution.
+- Unsafe blocks may rely on under-documented or inferred invariants and
+  preconditions. The reasoning required to justify them may rely on specific
+  interpretations of undefined behavior that are under-specified. Those
+  interpretations must not actively cause UB, and should be unlikely to begin
+  causing UB in the future.
+- Undefined behavior may be possible under uncommon circumstances.
+
+UB-RISK-3 crates may not uphold the typical standards required for unsafe code,
+but are still used because they have been widely adopted and will inevitably be
+leveraged by indirect dependencies. These crates may exhibit undefined behavior
+under \"uncommon circumstances\", which is ultimately up to reviewer discretion.
+A decent amount of experience with unsafe code will be required to avoid
+undefined behavior.
+"""
+implies = "ub-risk-4"
+copied-from = "https://fuchsia.googlesource.com/fuchsia/+/refs/heads/main/third_party/rust_crates/supply-chain/audits.toml"
+
+[criteria.ub-risk-4]
+description = """
+A designated unsafe code reviewer has audited the unsafe code in this crate. It
+has been found to pose a high risk of causing undefined behavior.
+
+UB-RISK-4 crates are unsuitable except in specific situations:
+- Safety documentation may be nonexistent. Unsafe APIs may be difficult to use
+  safely even with experience writing unsafe code and specific domain expertise.
+- Unsafe blocks may rely on undocumented invarianats or platform-specific
+  behavior. It may be difficult or impossible to reason about all possible
+  situations that may cause undefined behavior. Even a best-effort review is
+  expected to miss at least some possible unsoundness.
+- Undefined behavior may be possible under common circumstances.
+
+UB-RISK-4 crates may have APIs that are difficult to use without causing
+undefined behavior. They may require a large amount of domain expertise to use
+correctly, have large unsafe APIs with insufficient documentation, or perform
+many operations from safe code that could cause undefined behavior.
+"""
+copied-from = "https://fuchsia.googlesource.com/fuchsia/+/refs/heads/main/third_party/rust_crates/supply-chain/audits.toml"
+
+[[audits.nom]]
+who = "danakj@chromium.org"
+criteria = ["safe-to-run", "rule-of-two-safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
+version = "nom 7.1.3"
+notes = """
+Reviewed in https://chromium-review.googlesource.com/c/chromium/src/+/5046153
+"""
+
+[[audits.minimal-lexical]]
+who = "danakj@chromium.org"
+criteria = ["ub-risk-3"]
+version = "0.2.1"
+notes = """
+Reviewed in https://chromium-review.googlesource.com/c/chromium/src/+/4977110
+- Unsound unsafe blocks present.
+- Safe traits that can cause soundness bugs.
+"""
