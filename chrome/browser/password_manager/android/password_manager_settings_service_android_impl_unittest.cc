@@ -923,6 +923,9 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
 
   EXPECT_FALSE(settings_service()->IsSettingEnabled(
       PasswordManagerSetting::kOfferToSavePasswords));
+
+  histogram_tester()->ExpectUniqueSample(
+      "PasswordManager.PasswordSavingDisabledDueToGMSCoreError", true, 1);
 }
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
@@ -938,6 +941,8 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       password_manager::prefs::kSavePasswordsSuspendedByError, true);
   EXPECT_TRUE(settings_service()->IsSettingEnabled(
       PasswordManagerSetting::kOfferToSavePasswords));
+  histogram_tester()->ExpectUniqueSample(
+      "PasswordManager.PasswordSavingDisabledDueToGMSCoreError", false, 1);
 }
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
@@ -955,6 +960,8 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       password_manager::prefs::kCredentialsEnableService, base::Value(true));
   EXPECT_TRUE(settings_service()->IsSettingEnabled(
       PasswordManagerSetting::kOfferToSavePasswords));
+  histogram_tester()->ExpectUniqueSample(
+      "PasswordManager.PasswordSavingDisabledDueToGMSCoreError", false, 1);
 }
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
@@ -973,6 +980,8 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       password_manager::prefs::kSavePasswordsSuspendedByError, true);
   EXPECT_TRUE(settings_service()->IsSettingEnabled(
       PasswordManagerSetting::kOfferToSavePasswords));
+  histogram_tester()->ExpectUniqueSample(
+      "PasswordManager.PasswordSavingDisabledDueToGMSCoreError", false, 1);
 }
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTest,

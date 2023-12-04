@@ -2418,6 +2418,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.PasswordSavingDisabledDueToGMSCoreError"
+    enum="BooleanEnabled" expires_after="2024-05-26">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    This histogram records whenever password saving is disabled for a user
+    because of GMSCore error. Recorded each time password saving availibility is
+    checked.
+  </summary>
+</histogram>
+
 <histogram
     name="PasswordManager.PasswordSettings.{Function}.{Setting}.APIError1"
     enum="PasswordStoreAndroidBackendAPIError" expires_after="2024-04-28">

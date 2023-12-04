@@ -134,9 +134,15 @@ PasswordManagerSettingsServiceAndroidImpl::
 
 bool PasswordManagerSettingsServiceAndroidImpl::IsSettingEnabled(
     PasswordManagerSetting setting) const {
-  if (setting == PasswordManagerSetting::kOfferToSavePasswords &&
-      ShouldSuspendPasswordSavingDueToError(pref_service_, sync_service_)) {
-    return false;
+  if (setting == PasswordManagerSetting::kOfferToSavePasswords) {
+    bool should_disable_saving =
+        ShouldSuspendPasswordSavingDueToError(pref_service_, sync_service_);
+    base::UmaHistogramBoolean(
+        "PasswordManager.PasswordSavingDisabledDueToGMSCoreError",
+        should_disable_saving);
+    if (should_disable_saving) {
+      return false;
+    }
   }
   const PrefService::Preference* regular_pref =
       GetRegularPrefFromSetting(pref_service_, setting);
