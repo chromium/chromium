@@ -19,6 +19,11 @@ BASE_DECLARE_FEATURE(kAutoApproveSharedPasswordUpdatesFromSameSender);
 BASE_DECLARE_FEATURE(kBiometricTouchToFill);
 BASE_DECLARE_FEATURE(kClearUndecryptablePasswordsOnSync);
 BASE_DECLARE_FEATURE(kDisablePasswordsDropdownForCvcFields);
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kRemoveUPMUnenrollment);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 BASE_DECLARE_FEATURE(kEnablePasswordsAccountStorage);
 
 #if BUILDFLAG(IS_ANDROID)

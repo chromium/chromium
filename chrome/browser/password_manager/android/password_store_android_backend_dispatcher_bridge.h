@@ -120,10 +120,20 @@ class PasswordStoreAndroidBackendDispatcherBridge {
   static bool CanCreateBackend();
 
   // Returns true if GMS Core supports new GetAffiliatedPasswords API.
+  // TODO(crbug.com/1507820): Remove from the bridge as this method doesn't call
+  // java.
   static bool CanUseGetAffiliatedPasswordsAPI();
 
   // Returns true if GMS Core supports new GetAllLoginsWithBrandingInfo API.
+  // TODO(crbug.com/1507820): Remove from the bridge as this method doesn't call
+  // java.
   static bool CanUseGetAllLoginsWithBrandingInfoAPI();
+
+  // Returns true if user shouldn't be evicted from the experiment due to
+  // GMSCore errors.
+  // TODO(crbug.com/1507820): Remove from the bridge as this method doesn't call
+  // java.
+  static bool CanRemoveUnenrollment();
 };
 
 }  // namespace password_manager

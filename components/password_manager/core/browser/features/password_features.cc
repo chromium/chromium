@@ -35,6 +35,14 @@ BASE_FEATURE(kDisablePasswordsDropdownForCvcFields,
              "DisablePasswordsDropdownForCvcFields",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Disables eviction from UPM when error occurs and instead disables password
+// manager until the error is gone.
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kRemoveUPMUnenrollment,
+             "RemoveUPMUnenrollment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Enables a second, Gaia-account-scoped password store for users who are signed
 // in but not syncing.
 BASE_FEATURE(kEnablePasswordsAccountStorage,

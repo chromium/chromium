@@ -389,9 +389,10 @@ void RecordRetryHistograms(PasswordStoreOperation operation,
                                 attempt, kMaxReportedRetryAttempts);
 }
 
-bool IsUnrecoverableBackendError(AndroidBackendAPIErrorCode api_error_code,
-                                 PasswordStoreOperation operation,
-                                 PrefService* pref_service) {
+bool IsUnrecoverableBackendError(
+    AndroidBackendAPIErrorCode api_error_code,
+    PasswordStoreOperation operation,
+    PasswordStoreAndroidBackendBridgeHelper* bridge_helper) {
   if (password_manager_upm_eviction::ShouldRetryOnApiError(
           static_cast<int>(api_error_code)) &&
       IsRetriableOperation(operation)) {
@@ -399,6 +400,13 @@ bool IsUnrecoverableBackendError(AndroidBackendAPIErrorCode api_error_code,
     // any error-specific support and could be recovered.
     // Retriable operations as they are defined at the moment should not result
     // in eviction, not even if the retrying has timed out.
+    return false;
+  }
+
+  if (api_error_code != AndroidBackendAPIErrorCode::kPassphraseRequired &&
+      bridge_helper->CanRemoveUnenrollment()) {
+    // If unenrollment can be removed, users can be evicted only if they
+    // encounter passphrase error.
     return false;
   }
 
@@ -459,7 +467,7 @@ bool ShouldRetryOperation(PasswordStoreOperation operation,
 PasswordStoreBackendError BackendErrorFromAndroidBackendError(
     const AndroidBackendError& error,
     PasswordStoreOperation operation,
-    PrefService* pref_service) {
+    PasswordStoreAndroidBackendBridgeHelper* bridge_helper) {
   if (error.type != AndroidBackendErrorType::kExternalError) {
     return PasswordStoreBackendError(
         PasswordStoreBackendErrorType::kUncategorized,
@@ -488,7 +496,7 @@ PasswordStoreBackendError BackendErrorFromAndroidBackendError(
             : PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
   }
   PasswordStoreBackendErrorRecoveryType recovery_type =
-      IsUnrecoverableBackendError(api_error_code, operation, pref_service)
+      IsUnrecoverableBackendError(api_error_code, operation, bridge_helper)
           ? PasswordStoreBackendErrorRecoveryType::kUnrecoverable
           : PasswordStoreBackendErrorRecoveryType::kRecoverable;
   return PasswordStoreBackendError(error_type, recovery_type);
@@ -970,7 +978,8 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
   // eviction resets state which might be used to infer the recovery type of
   // the error.
   PasswordStoreBackendError reported_error =
-      BackendErrorFromAndroidBackendError(error, operation, prefs_);
+      BackendErrorFromAndroidBackendError(error, operation,
+                                          bridge_helper_.get());
 
   if (error.api_error_code.has_value() && sync_service_) {
     // TODO(crbug.com/1324588): DCHECK_EQ(api_error_code,
@@ -1025,14 +1034,18 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
     // If the user is experiencing an error unresolvable by Chrome or by the
     // user, unenroll the user from the UPM experience.
     if (password_manager::IsUnrecoverableBackendError(api_error_code, operation,
-                                                      prefs_)) {
+                                                      bridge_helper_.get())) {
       if (!password_manager_upm_eviction::IsCurrentUserEvicted(prefs_)) {
         password_manager_upm_eviction::EvictCurrentUser(api_error, prefs_);
       }
-    } else if (IsAuthenticationError(api_error_code)) {
-      // Auth error specific handling is only triggered if the error is
-      // considered recoverable.
+    } else if (IsAuthenticationError(api_error_code) ||
+               bridge_helper_->CanRemoveUnenrollment()) {
+      // Disable password manager if auth error is encountered or unenrollment
+      // can be removed.
       prefs_->SetBoolean(prefs::kSavePasswordsSuspendedByError, true);
+      // Mark the error as recoverable to avoid fallbacks to the LoginDatabase.
+      reported_error.recovery_type =
+          PasswordStoreBackendErrorRecoveryType::kRecoverable;
     }
   }
 
