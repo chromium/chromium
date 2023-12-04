@@ -331,6 +331,20 @@ TEST_F(TabOrganizationTest, TabDataHttpHttpsOnlyURLs) {
   }
 }
 
+TEST_F(TabOrganizationTest, TabDataPinnedTabsNotValid) {
+  content::WebContents* web_contents = AddTab();
+  {
+    TabData tab_data(tab_strip_model(), web_contents);
+    EXPECT_TRUE(tab_data.IsValidForOrganizing());
+  }
+  tab_strip_model()->SetTabPinned(
+      tab_strip_model()->GetIndexOfWebContents(web_contents), true);
+  {
+    TabData tab_data(tab_strip_model(), web_contents);
+    EXPECT_FALSE(tab_data.IsValidForOrganizing());
+  }
+}
+
 // TabOrganization tests.
 
 TEST_F(TabOrganizationTest, TabOrganizationIDs) {

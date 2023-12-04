@@ -63,10 +63,15 @@ bool TabData::IsValidForOrganizing() const {
     return false;
   }
 
-  if (original_tab_strip_model_
-          ->GetTabGroupForTab(
-              original_tab_strip_model_->GetIndexOfWebContents(web_contents_))
-          .has_value()) {
+  int tab_index =
+      original_tab_strip_model_->GetIndexOfWebContents(web_contents_);
+
+  // All grouped tabs arent valid for grouping
+  if (original_tab_strip_model_->GetTabGroupForTab(tab_index).has_value()) {
+    return false;
+  }
+
+  if (original_tab_strip_model_->IsTabPinned(tab_index)) {
     return false;
   }
 
