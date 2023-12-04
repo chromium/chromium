@@ -198,7 +198,11 @@ class CommerceUiTabHelper
 
   bool IsShowingDiscountsIcon();
 
-  // Record the interaction state with the pricce tracking icon for a page.
+  void RecordIconMetrics(PageActionIconType page_action, bool from_icon_use);
+
+  void RecordPriceInsightsIconMetrics(bool from_icon_use);
+
+  // Record the interaction state with the price tracking icon for a page.
   // |from_icon_use| indicates an interaction to track the product since
   // clicking the icon a second time does not immediately untrack the product.
   void RecordPriceTrackingIconMetrics(bool from_icon_use);
@@ -236,9 +240,9 @@ class CommerceUiTabHelper
   bool got_initial_subscription_status_for_page_{false};
   bool page_has_discounts_{false};
 
-  // Whether the price tracking icon was recorded for the current page. This
-  // will only record "track" events.
-  bool icon_use_recorded_for_page_{false};
+  // Page action icon uses that have already been recorded for the current page.
+  // For Price Tracking, this will only record "track" events.
+  std::set<PageActionIconType> icon_use_recorded_for_page_;
 
   // A flag indicating whether the initial navigation has committed for the web
   // contents. This is used to ensure product info is fetched when a tab is

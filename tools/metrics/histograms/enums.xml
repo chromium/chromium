@@ -8700,6 +8700,13 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Missing"/>
 </enum>
 
+<enum name="CommerceIconInteractionState">
+  <int value="0" label="Clicked (not expanded)"/>
+  <int value="1" label="Clicked (after expansion)"/>
+  <int value="2" label="Not clicked (not expanded)"/>
+  <int value="3" label="Not clicked (after expansion)"/>
+</enum>
+
 <enum name="Companion.PhFeedback">
   <int value="1" label="Thumbs up"/>
   <int value="2" label="Thumbs down"/>
@@ -46787,13 +46794,6 @@ Called by update_net_error_codes.py.-->
 <enum name="PriceNotificationProductStatus">
   <int value="0" label="Product is Tracked"/>
   <int value="1" label="Product is Untracked"/>
-</enum>
-
-<enum name="PriceTrackingIconInteractionState">
-  <int value="0" label="Clicked (not expanded)"/>
-  <int value="1" label="Clicked (after expansion)"/>
-  <int value="2" label="Not clicked (not expanded)"/>
-  <int value="3" label="Not clicked (after expansion)"/>
 </enum>
 
 <enum name="PrintPreviewFailureType">
