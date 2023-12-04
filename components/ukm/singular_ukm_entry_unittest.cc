@@ -128,7 +128,7 @@ TEST_F(SingularUkmEntryTest, InterfaceReceivesEntryFromBuilder) {
 TEST_F(SingularUkmEntryTest, MultithreadedInterface) {
   // Allow EXPECT_DCHECK_DEATH for multiple threads.
   // https://github.com/google/googletest/blob/main/docs/advanced.md#death-tests-and-threads
-  testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 
   TestAutoSetUkmRecorder ukm_recorder;
 
