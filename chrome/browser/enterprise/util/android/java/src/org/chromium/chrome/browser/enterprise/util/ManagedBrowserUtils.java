@@ -22,10 +22,17 @@ public class ManagedBrowserUtils {
         return (profile != null) ? ManagedBrowserUtilsJni.get().getBrowserManagerName(profile) : "";
     }
 
+    /** Wrapper around native call to get if cloud reporting is enabled. */
+    public static boolean isReportingEnabled() {
+        return ManagedBrowserUtilsJni.get().isReportingEnabled();
+    }
+
     @NativeMethods
     public interface Natives {
         boolean isBrowserManaged(Profile profile);
 
         String getBrowserManagerName(Profile profile);
+
+        boolean isReportingEnabled();
     }
 }

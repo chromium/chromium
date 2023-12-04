@@ -8,12 +8,18 @@ import android.content.Context;
 import android.text.SpannableString;
 
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /** A mediator for the {@link ManagementCoordinator} responsible for handling business logic. */
 public class ManagementMediator {
@@ -34,6 +40,15 @@ public class ManagementMediator {
                                 ManagementProperties.BROWSER_MANAGER_NAME,
                                 ManagedBrowserUtils.getBrowserManagerName(profile))
                         .with(ManagementProperties.LEARN_MORE_TEXT, getLearnMoreClickableText())
+                        .with(
+                                ManagementProperties.REPORTING_IS_ENABLED,
+                                ManagedBrowserUtils.isReportingEnabled())
+                        .with(
+                                ManagementProperties.LEGACY_TECH_REPORTING_IS_ENABLED,
+                                isLegacyTechReportingEnabled(UserPrefs.get(profile)))
+                        .with(
+                                ManagementProperties.LEGACY_TECH_REPORTING_TEXT,
+                                getLegacyTechReportingClickableText())
                         .build();
     }
 
@@ -52,6 +67,38 @@ public class ManagementMediator {
         return SpanApplier.applySpans(
                 context.getString(R.string.management_learn_more),
                 new SpanApplier.SpanInfo("<LINK>", "</LINK>", clickableLearnMoreSpan));
+    }
+
+    private boolean isLegacyTechReportingEnabled(PrefService prefs) {
+        return prefs.isManagedPreference(Pref.CLOUD_LEGACY_TECH_REPORT_ALLOWLIST);
+    }
+
+    private SpannableString getLegacyTechReportingClickableText() {
+        Context context = mHost.getContext();
+
+        // The `text` here is a string with HTML style hyberlink that is used by webui with
+        // following format:
+        //   ...text <a href="https://url">text</a> text...
+        // Convert it to Android View with exact same function.
+        String text = context.getString(R.string.management_legacy_tech_report);
+
+        Matcher matcher = Pattern.compile("href=\"(.*?)\"").matcher(text);
+        if (!matcher.find()) {
+            assert false;
+            return new SpannableString(text);
+        }
+
+        NoUnderlineClickableSpan linkSpan =
+                new NoUnderlineClickableSpan(
+                        context,
+                        v -> {
+                            mHost.loadUrl(
+                                    new LoadUrlParams(matcher.group(1)), /* incognito= */ false);
+                        });
+
+        return SpanApplier.applySpans(
+                text.replaceFirst("(.*)<a.*>(.*)</a>(.*)", "$1<link>$2</link>$3"),
+                new SpanApplier.SpanInfo("<link>", "</link>", linkSpan));
     }
 
     private void showHelpCenterArticle() {

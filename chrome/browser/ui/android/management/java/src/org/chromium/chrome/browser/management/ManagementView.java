@@ -25,6 +25,9 @@ import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
  */
 public class ManagementView extends ScrollView {
     private boolean mIsManaged;
+    private boolean mIsReportingEnabled;
+    private boolean mIsLegacyTechReportingEnabled;
+
     private @Nullable String mManagerName;
 
     private LinearLayout mManagementContainer;
@@ -33,8 +36,9 @@ public class ManagementView extends ScrollView {
     private TextView mLearnMore;
     private TextView mBrowserReporting;
     private TextView mBrowserReportingExplanation;
-    private TextView mExtensionReportUsername;
-    private TextView mExtensionReportVersion;
+    private TextView mReportUsername;
+    private TextView mReportVersion;
+    private TextView mReportLegacyTech;
 
     @Nullable private UiConfig mUiConfig;
 
@@ -53,11 +57,15 @@ public class ManagementView extends ScrollView {
         mLearnMore = (TextView) findViewById(R.id.learn_more);
         mBrowserReporting = (TextView) findViewById(R.id.browser_reporting);
         mBrowserReportingExplanation = (TextView) findViewById(R.id.browser_reporting_explanation);
-        mExtensionReportUsername = (TextView) findViewById(R.id.extension_report_username);
-        mExtensionReportVersion = (TextView) findViewById(R.id.extension_report_version);
+        mReportUsername = (TextView) findViewById(R.id.report_username);
+        mReportVersion = (TextView) findViewById(R.id.report_version);
+        mReportLegacyTech = (TextView) findViewById(R.id.report_legacy_tech);
 
         // Set default management status
         mIsManaged = false;
+        mIsReportingEnabled = false;
+        mIsLegacyTechReportingEnabled = false;
+
         mManagerName = null;
         adjustView();
 
@@ -91,6 +99,32 @@ public class ManagementView extends ScrollView {
         return mIsManaged;
     }
 
+    /** Sets whether status reporting is enabled. Then updates view accordingly. */
+    public void setReportingEnabled(boolean isEnabled) {
+        if (mIsReportingEnabled != isEnabled) {
+            mIsReportingEnabled = isEnabled;
+            adjustView();
+        }
+    }
+
+    /** Gets whether status reporting is enabled. */
+    public boolean isReportingEnabled() {
+        return mIsReportingEnabled;
+    }
+
+    /** Sets whether legacy tech reporting is enabled. Then updates view accordingly. */
+    public void setLegacyTechReportingEnabled(boolean isEnabled) {
+        if (mIsLegacyTechReportingEnabled != isEnabled) {
+            mIsLegacyTechReportingEnabled = isEnabled;
+            adjustView();
+        }
+    }
+
+    /** Gets whether legacy tech reporting is enabled. */
+    public boolean isLegacyTechReportingEnabled() {
+        return mIsLegacyTechReportingEnabled;
+    }
+
     /** Sets account manager name. Then updates view accordingly.  */
     public void setManagerName(@Nullable String managerName) {
         if (!TextUtils.equals(mManagerName, managerName)) {
@@ -109,6 +143,11 @@ public class ManagementView extends ScrollView {
         mLearnMore.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
+    public void setLegacyTechReportingText(SpannableString text) {
+        mReportLegacyTech.setText(text);
+        mReportLegacyTech.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
     /** Adjusts Title, Description, and Learn More link based on management status. */
     private void adjustView() {
         if (mIsManaged) {
@@ -123,12 +162,17 @@ public class ManagementView extends ScrollView {
             mTitle.setText(getResources().getString(R.string.management_not_managed_subtitle));
         }
 
-        mDescription.setVisibility(mIsManaged ? VISIBLE : INVISIBLE);
-        mLearnMore.setVisibility(mIsManaged ? VISIBLE : INVISIBLE);
-        mBrowserReporting.setVisibility(mIsManaged ? VISIBLE : INVISIBLE);
-        mBrowserReportingExplanation.setVisibility(mIsManaged ? VISIBLE : INVISIBLE);
-        mExtensionReportUsername.setVisibility(mIsManaged ? VISIBLE : INVISIBLE);
-        mExtensionReportVersion.setVisibility(mIsManaged ? VISIBLE : INVISIBLE);
+        mDescription.setVisibility(mIsManaged ? VISIBLE : GONE);
+        mLearnMore.setVisibility(mIsManaged ? VISIBLE : GONE);
+
+        mBrowserReporting.setVisibility(
+                mIsReportingEnabled || mIsLegacyTechReportingEnabled ? VISIBLE : GONE);
+        mBrowserReportingExplanation.setVisibility(
+                mIsReportingEnabled || mIsLegacyTechReportingEnabled ? VISIBLE : GONE);
+
+        mReportUsername.setVisibility(mIsReportingEnabled ? VISIBLE : GONE);
+        mReportVersion.setVisibility(mIsReportingEnabled ? VISIBLE : GONE);
+        mReportLegacyTech.setVisibility(mIsLegacyTechReportingEnabled ? VISIBLE : GONE);
     }
 
     /**

@@ -42,6 +42,7 @@
 #include "chrome/browser/enterprise/util/jni_headers/ManagedBrowserUtils_jni.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/ui/managed_ui.h"
+#include "components/enterprise/browser/reporting/common_pref_names.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace chrome {
@@ -645,6 +646,12 @@ JNI_ManagedBrowserUtils_GetBrowserManagerName(
     const base::android::JavaParamRef<jobject>& profile) {
   return base::android::ConvertUTF8ToJavaString(
       env, GetBrowserManagerName(ProfileAndroid::FromProfileAndroid(profile)));
+}
+
+// static
+jboolean JNI_ManagedBrowserUtils_IsReportingEnabled(JNIEnv* env) {
+  return g_browser_process->local_state()->GetBoolean(
+      enterprise_reporting::kCloudReportingEnabled);
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

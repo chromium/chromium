@@ -20,7 +20,21 @@ class ManagementProperties {
     public static final PropertyModel.WritableObjectPropertyKey<SpannableString> LEARN_MORE_TEXT =
             new PropertyModel.WritableObjectPropertyKey<>();
 
+    public static final PropertyModel.WritableBooleanPropertyKey REPORTING_IS_ENABLED =
+            new PropertyModel.WritableBooleanPropertyKey();
+
+    public static final PropertyModel.WritableBooleanPropertyKey LEGACY_TECH_REPORTING_IS_ENABLED =
+            new PropertyModel.WritableBooleanPropertyKey();
+
+    public static final PropertyModel.WritableObjectPropertyKey<SpannableString>
+            LEGACY_TECH_REPORTING_TEXT = new PropertyModel.WritableObjectPropertyKey<>();
+
     public static final PropertyKey[] ALL_KEYS = {
-        BROWSER_MANAGER_NAME, BROWSER_IS_MANAGED, LEARN_MORE_TEXT
+        BROWSER_MANAGER_NAME,
+        BROWSER_IS_MANAGED,
+        LEARN_MORE_TEXT,
+        REPORTING_IS_ENABLED,
+        LEGACY_TECH_REPORTING_IS_ENABLED,
+        LEGACY_TECH_REPORTING_TEXT
     };
 }
