@@ -71,6 +71,7 @@ constexpr char kUrlA[] = "https://a.test/random.path";
 constexpr char kHostASubdomain[] = "subdomain.a.test";
 constexpr char kHostB[] = "b.test";
 constexpr char kHostBSubdomain[] = "subdomain.b.test";
+constexpr char kHostBSubdomain2[] = "subdomain2.b.test";
 constexpr char kHostC[] = "c.test";
 constexpr char kHostD[] = "d.test";
 
@@ -811,6 +812,27 @@ IN_PROC_BROWSER_TEST_P(
 
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
   EXPECT_EQ(ReadCookies(GetFrame(), kHostB), NoCookies());
+}
+
+// Validate that in a A(B) frame tree, the iframe can make credentialed
+// same-site requests, even if the requests are cross-origin.
+IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
+                       ThirdPartyCookiesIFrameRequestsAccess_CrossOriginFetch) {
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostBSubdomain));
+
+  ASSERT_EQ(ReadCookies(GetFrame(), kHostBSubdomain), NoCookies());
+  ASSERT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+
+  EXPECT_EQ(CookiesFromFetch(GetFrame(), kHostBSubdomain2),
+            "cross-site=b.test");
 }
 
 // Validate that in a A(B(B)) frame tree, the middle B iframe can obtain access,
