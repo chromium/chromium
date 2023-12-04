@@ -69,6 +69,8 @@ class MockBoundSessionCookieRefreshService
               GetWeakPtr,
               (),
               (override));
+  MOCK_METHOD(void, AddObserver, (Observer* observer), (override));
+  MOCK_METHOD(void, RemoveObserver, (Observer* observer), (override));
 };
 
 class TestResponseAdapter : public signin::ResponseAdapter {

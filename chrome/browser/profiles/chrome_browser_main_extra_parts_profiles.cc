@@ -493,6 +493,15 @@
 #include "chrome/browser/smart_card/fake_smart_card_device_service_factory.h"
 #endif
 
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_factory.h"
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/signin/bound_session_credentials/dice_bound_session_cookie_service_factory.h"
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
 namespace chrome {
 
 void AddProfilesExtraParts(ChromeBrowserMainParts* main_parts) {
@@ -629,6 +638,12 @@ void ChromeBrowserMainExtraPartsProfiles::
           g_browser_process ? g_browser_process->local_state() : nullptr)) {
     BreadcrumbManagerKeyedServiceFactory::GetInstance();
   }
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  BoundSessionCookieRefreshServiceFactory::GetInstance();
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  DiceBoundSessionCookieServiceFactory::GetInstance();
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   browser_switcher::BrowserSwitcherServiceFactory::GetInstance();
 #endif

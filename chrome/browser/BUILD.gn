@@ -7150,6 +7150,15 @@ static_library("browser") {
       "signin/bound_session_credentials/unexportable_key_service_factory.h",
     ]
 
+    if (enable_dice_support) {
+      sources += [
+        "signin/bound_session_credentials/dice_bound_session_cookie_service.cc",
+        "signin/bound_session_credentials/dice_bound_session_cookie_service.h",
+        "signin/bound_session_credentials/dice_bound_session_cookie_service_factory.cc",
+        "signin/bound_session_credentials/dice_bound_session_cookie_service_factory.h",
+      ]
+    }
+
     public_deps += [ ":bound_session_credentials_proto" ]
 
     deps += [

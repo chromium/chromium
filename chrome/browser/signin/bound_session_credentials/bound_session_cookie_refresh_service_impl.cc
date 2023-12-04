@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/base64.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -16,7 +15,6 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_storage.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_impl.h"
 #include "chrome/common/renderer_configuration.mojom.h"
-#include "components/signin/public/base/signin_client.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -25,7 +23,7 @@
 
 namespace {
 const char kGoogleSessionTerminationHeader[] = "Sec-Session-Google-Termination";
-}
+}  // namespace
 
 BoundSessionCookieRefreshServiceImpl::BoundSessionCookieRefreshServiceImpl(
     unexportable_keys::UnexportableKeyService& key_service,
@@ -67,6 +65,8 @@ void BoundSessionCookieRefreshServiceImpl::RegisterNewBoundSession(
     cookie_controller_.reset();
     RecordSessionTerminationTrigger(
         SessionTerminationTrigger::kSessionOverride);
+    // Note: `NotifyBoundSessionTerminated()` is not called as new session is
+    // starting with the same scope.
   }
   InitializeBoundSession(params);
 }
@@ -154,6 +154,16 @@ BoundSessionCookieRefreshServiceImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+void BoundSessionCookieRefreshServiceImpl::AddObserver(
+    BoundSessionCookieRefreshService::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void BoundSessionCookieRefreshServiceImpl::RemoveObserver(
+    BoundSessionCookieRefreshService::Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void BoundSessionCookieRefreshServiceImpl::OnRegistrationRequestComplete(
     absl::optional<bound_session_credentials::BoundSessionParams>
         bound_session_params) {
@@ -236,16 +246,25 @@ void BoundSessionCookieRefreshServiceImpl::UpdateAllRenderers() {
 
 void BoundSessionCookieRefreshServiceImpl::TerminateSession(
     SessionTerminationTrigger trigger) {
+  CHECK(cookie_controller_);
   cookie_controller_.reset();
   // TODO(b/300627729): stop clearing all params once multiple sessions are
   // supported.
   session_params_storage_->ClearAllParams();
   UpdateAllRenderers();
   RecordSessionTerminationTrigger(trigger);
+
+  NotifyBoundSessionTerminated();
 }
 
 void BoundSessionCookieRefreshServiceImpl::RecordSessionTerminationTrigger(
     SessionTerminationTrigger trigger) {
   base::UmaHistogramEnumeration(
       "Signin.BoundSessionCredentials.SessionTerminationTrigger", trigger);
+}
+
+void BoundSessionCookieRefreshServiceImpl::NotifyBoundSessionTerminated() {
+  for (BoundSessionCookieRefreshService::Observer& observer : observers_) {
+    observer.OnBoundSessionTerminated();
+  }
 }

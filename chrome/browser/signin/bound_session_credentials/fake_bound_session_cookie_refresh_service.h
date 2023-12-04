@@ -7,6 +7,7 @@
 
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
 
+#include "base/observer_list.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_param.h"
 #include "chrome/common/bound_session_request_throttled_handler.h"
 
@@ -19,6 +20,7 @@ class FakeBoundSessionCookieRefreshService
 
   void SimulateUnblockRequest();
   bool IsRequestBlocked();
+  void SimulateOnBoundSessionTerminated();
 
   // BoundSessionCookieRefreshService:
   void Initialize() override {}
@@ -38,9 +40,12 @@ class FakeBoundSessionCookieRefreshService
   void CreateRegistrationRequest(
       BoundSessionRegistrationFetcherParam registration_params) override {}
   base::WeakPtr<BoundSessionCookieRefreshService> GetWeakPtr() override;
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
 
  private:
   base::OnceClosure resume_blocked_request_;
+  base::ObserverList<BoundSessionCookieRefreshService::Observer> observers_;
   base::WeakPtrFactory<BoundSessionCookieRefreshService> weak_ptr_factory_{
       this};
 };

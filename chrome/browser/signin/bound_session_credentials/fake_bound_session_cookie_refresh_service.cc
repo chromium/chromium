@@ -31,6 +31,20 @@ void FakeBoundSessionCookieRefreshService::SimulateUnblockRequest() {
   std::move(resume_blocked_request_).Run();
 }
 
+void FakeBoundSessionCookieRefreshService::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void FakeBoundSessionCookieRefreshService::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 bool FakeBoundSessionCookieRefreshService::IsRequestBlocked() {
   return !resume_blocked_request_.is_null();
+}
+
+void FakeBoundSessionCookieRefreshService::SimulateOnBoundSessionTerminated() {
+  for (BoundSessionCookieRefreshService::Observer& observer : observers_) {
+    observer.OnBoundSessionTerminated();
+  }
 }

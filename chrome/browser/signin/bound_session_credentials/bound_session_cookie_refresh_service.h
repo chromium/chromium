@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list_types.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_param.h"
 #include "chrome/common/renderer_configuration.mojom.h"
@@ -25,6 +26,11 @@ class BoundSessionCookieRefreshService
  public:
   using RendererBoundSessionThrottlerParamsUpdaterDelegate =
       base::RepeatingClosure;
+
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnBoundSessionTerminated() = 0;
+  };
 
   BoundSessionCookieRefreshService() = default;
 
@@ -54,6 +60,9 @@ class BoundSessionCookieRefreshService
       BoundSessionRegistrationFetcherParam registration_params) = 0;
 
   virtual base::WeakPtr<BoundSessionCookieRefreshService> GetWeakPtr() = 0;
+
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 
  private:
   friend class RendererUpdater;

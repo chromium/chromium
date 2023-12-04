@@ -7376,6 +7376,10 @@ test("unit_tests") {
       "../renderer/bound_session_credentials/bound_session_request_throttled_handler_renderer_impl_unittest.cc",
       "../renderer/bound_session_credentials/bound_session_request_throttled_in_renderer_manager_unittest.cc",
     ]
+
+    if (enable_dice_support) {
+      sources += [ "../browser/signin/bound_session_credentials/dice_bound_session_cookie_service_unittest.cc" ]
+    }
   }
 
   if (enable_offline_pages) {

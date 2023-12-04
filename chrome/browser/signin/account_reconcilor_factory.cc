@@ -21,7 +21,6 @@
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_client.h"
-#include "components/signin/public/base/signin_switches.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
@@ -216,14 +215,6 @@ AccountReconcilorFactory::CreateAccountReconcilorDelegate(Profile* profile) {
 
     case signin::AccountConsistencyMethod::kDice:
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-      if (switches::kEnableBoundSessionCredentialsDiceSupport.Get() ==
-          switches::EnableBoundSessionCredentialsDiceSupport::kEnabled) {
-        // Disable the reconcilor for bound session credentials dogfood.
-        // Bound session credentials isn't fully supported in the DICE mode yet.
-        return std::make_unique<signin::AccountReconcilorDelegate>();
-      }
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
       return std::make_unique<signin::DiceAccountReconcilorDelegate>(
           IdentityManagerFactory::GetForProfile(profile),
           ChromeSigninClientFactory::GetForProfile(profile));
