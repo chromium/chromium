@@ -19,6 +19,7 @@ enum class ModelExecutionEnterprisePolicyValue {
 };
 
 extern const char kTabOrganizationEnterprisePolicyAllowed[];
+extern const char kComposeEnterprisePolicyAllowed[];
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 

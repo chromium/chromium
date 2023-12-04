@@ -541,6 +541,53 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
 }
 
+IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
+                       DisableThenEnableCompose) {
+  auto* prefs = browser()->profile()->GetPrefs();
+  prefs->SetInteger(
+      prefs::GetSettingEnabledPrefName(
+          optimization_guide::proto::ModelExecutionFeature::
+              MODEL_EXECUTION_FEATURE_COMPOSE),
+      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
+  GetOptGuideKeyedService()->SimulateBrowserRestartForControllerTesting();
+
+  EnableSignin();
+
+  // Default policy value allows the feature.
+  EXPECT_TRUE(IsSettingVisible(
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
+  EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
+
+  // Disable via the enterprise policy.
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kComposeAllowed, policy::POLICY_LEVEL_MANDATORY,
+               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+               base::Value(static_cast<int>(
+                   model_execution::prefs::ModelExecutionEnterprisePolicyValue::
+                       kDisable)),
+               nullptr);
+  policy_provider_.UpdateChromePolicy(policies);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(IsSettingVisible(
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
+  EXPECT_FALSE(ShouldFeatureBeCurrentlyEnabledForUser(
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
+
+  // Enable via the enterprise policy.
+  policies.Set(
+      policy::key::kComposeAllowed, policy::POLICY_LEVEL_MANDATORY,
+      policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+      base::Value(static_cast<int>(
+          model_execution::prefs::ModelExecutionEnterprisePolicyValue::kAllow)),
+      nullptr);
+  policy_provider_.UpdateChromePolicy(policies);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(IsSettingVisible(
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
+  EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
+}
 #endif  //  !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace optimization_guide

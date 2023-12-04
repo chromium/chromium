@@ -1,0 +1,33 @@
+caption: Allow compose
+
+desc: |-
+  Allow compose
+default: 0
+example_value: 1
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Allow Compose
+  name: Allowed
+  value: 0
+- caption: Allow Compose, without logging
+  name: AllowedWithoutLogging
+  value: 1
+- caption: Disable Compose
+  name: Disabled
+  value: 2
+owners:
+- file://components/compose/OWNERS
+- file://components/optimization_guide/OWNERS
+schema:
+  enum:
+  - 0
+  - 1
+  - 2
+  type: integer
+supported_on:
+- chrome.*:121-
+- chrome_os:121-
+tags: []
+type: int-enum
