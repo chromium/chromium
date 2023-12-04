@@ -43,6 +43,10 @@ TEST(AttributesConditionTest, InvalidSourceInputs) {
   ASSERT_FALSE(SourceAttributesCondition::Create(CreateDict(R"({"urls": 1})")));
   ASSERT_FALSE(
       SourceAttributesCondition::Create(CreateDict(R"({"urls": 99.999})")));
+  ASSERT_FALSE(
+      SourceAttributesCondition::Create(CreateDict(R"({"incognito": "str"})")));
+  ASSERT_FALSE(
+      SourceAttributesCondition::Create(CreateDict(R"({"incognito": 1234})")));
 #if BUILDFLAG(IS_CHROMEOS)
   ASSERT_FALSE(SourceAttributesCondition::Create(
       CreateDict(R"({"urls": "https://foo.com", "components": "ARC"})")));
@@ -101,6 +105,10 @@ TEST(AttributesConditionTest, InvalidDestinationInputs) {
       DestinationAttributesCondition::Create(CreateDict(R"({"urls": 1})")));
   ASSERT_FALSE(DestinationAttributesCondition::Create(
       CreateDict(R"({"urls": 99.999})")));
+  ASSERT_FALSE(DestinationAttributesCondition::Create(
+      CreateDict(R"({"incognito": "str"})")));
+  ASSERT_FALSE(DestinationAttributesCondition::Create(
+      CreateDict(R"({"incognito": 1234})")));
 #if BUILDFLAG(IS_CHROMEOS)
   ASSERT_FALSE(DestinationAttributesCondition::Create(
       CreateDict(R"({"urls": "https://foo.com", "components": "ARC"})")));
@@ -271,5 +279,189 @@ TEST(AttributesConditionTest, URLAndOneComponent) {
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+TEST(AttributesConditionTest, IncognitoDestination) {
+  auto incognito_dst = DestinationAttributesCondition::Create(CreateDict(R"(
+      {
+        "incognito": true,
+      })"));
+  ASSERT_TRUE(incognito_dst);
+  ASSERT_TRUE(incognito_dst->IsTriggered({.destination = {.incognito = true}}));
+  ASSERT_FALSE(
+      incognito_dst->IsTriggered({.destination = {.incognito = false}}));
+  ASSERT_FALSE(incognito_dst->IsTriggered({.source = {.incognito = true}}));
+  ASSERT_FALSE(incognito_dst->IsTriggered({.source = {.incognito = false}}));
+
+  auto non_incognito_dst = DestinationAttributesCondition::Create(CreateDict(R"(
+      {
+        "incognito": false,
+      })"));
+  ASSERT_TRUE(non_incognito_dst);
+  ASSERT_FALSE(
+      non_incognito_dst->IsTriggered({.destination = {.incognito = true}}));
+  ASSERT_TRUE(
+      non_incognito_dst->IsTriggered({.destination = {.incognito = false}}));
+  ASSERT_FALSE(non_incognito_dst->IsTriggered({.source = {.incognito = true}}));
+  ASSERT_FALSE(
+      non_incognito_dst->IsTriggered({.source = {.incognito = false}}));
+}
+
+TEST(AttributesConditionTest, IncognitoSource) {
+  auto incognito_src = SourceAttributesCondition::Create(CreateDict(R"(
+      {
+        "incognito": true,
+      })"));
+  ASSERT_TRUE(incognito_src);
+  ASSERT_FALSE(
+      incognito_src->IsTriggered({.destination = {.incognito = true}}));
+  ASSERT_FALSE(
+      incognito_src->IsTriggered({.destination = {.incognito = false}}));
+  ASSERT_TRUE(incognito_src->IsTriggered({.source = {.incognito = true}}));
+  ASSERT_FALSE(incognito_src->IsTriggered({.source = {.incognito = false}}));
+
+  auto non_incognito_src = SourceAttributesCondition::Create(CreateDict(R"(
+      {
+        "incognito": false,
+      })"));
+  ASSERT_TRUE(non_incognito_src);
+  ASSERT_FALSE(
+      non_incognito_src->IsTriggered({.destination = {.incognito = true}}));
+  ASSERT_FALSE(
+      non_incognito_src->IsTriggered({.destination = {.incognito = false}}));
+  ASSERT_FALSE(non_incognito_src->IsTriggered({.source = {.incognito = true}}));
+  ASSERT_TRUE(non_incognito_src->IsTriggered({.source = {.incognito = false}}));
+}
+
+TEST(AttributesConditionTest, URLAndIncognitoDestination) {
+  auto url_and_incognito = DestinationAttributesCondition::Create(CreateDict(R"(
+      {
+        "urls": ["google.com"],
+        "incognito": true,
+      })"));
+  ASSERT_TRUE(url_and_incognito);
+  ASSERT_TRUE(url_and_incognito->IsTriggered(
+      {.destination = {.url = GURL(kGoogleUrl), .incognito = true}}));
+  ASSERT_FALSE(url_and_incognito->IsTriggered(
+      {.destination = {.url = GURL(kGoogleUrl), .incognito = false}}));
+  ASSERT_FALSE(url_and_incognito->IsTriggered(
+      {.destination = {.url = GURL(kGoogleUrl)}}));
+  ASSERT_FALSE(url_and_incognito->IsTriggered(
+      {.destination = {.url = GURL(kChromiumUrl), .incognito = true}}));
+  ASSERT_FALSE(url_and_incognito->IsTriggered(
+      {.destination = {.url = GURL(kChromiumUrl), .incognito = false}}));
+  ASSERT_FALSE(url_and_incognito->IsTriggered(
+      {.destination = {.url = GURL(kChromiumUrl)}}));
+  ASSERT_FALSE(
+      url_and_incognito->IsTriggered({.destination = {.incognito = true}}));
+  ASSERT_FALSE(
+      url_and_incognito->IsTriggered({.destination = {.incognito = false}}));
+
+  auto url_and_not_incognito =
+      DestinationAttributesCondition::Create(CreateDict(R"(
+      {
+        "urls": ["google.com"],
+        "incognito": false,
+      })"));
+  ASSERT_TRUE(url_and_not_incognito);
+  ASSERT_FALSE(url_and_not_incognito->IsTriggered(
+      {.destination = {.url = GURL(kGoogleUrl), .incognito = true}}));
+  ASSERT_TRUE(url_and_not_incognito->IsTriggered(
+      {.destination = {.url = GURL(kGoogleUrl), .incognito = false}}));
+  ASSERT_FALSE(url_and_not_incognito->IsTriggered(
+      {.destination = {.url = GURL(kGoogleUrl)}}));
+  ASSERT_FALSE(url_and_not_incognito->IsTriggered(
+      {.destination = {.url = GURL(kChromiumUrl), .incognito = true}}));
+  ASSERT_FALSE(url_and_not_incognito->IsTriggered(
+      {.destination = {.url = GURL(kChromiumUrl), .incognito = false}}));
+  ASSERT_FALSE(url_and_not_incognito->IsTriggered(
+      {.destination = {.url = GURL(kChromiumUrl)}}));
+  ASSERT_FALSE(
+      url_and_not_incognito->IsTriggered({.destination = {.incognito = true}}));
+  ASSERT_FALSE(url_and_not_incognito->IsTriggered(
+      {.destination = {.incognito = false}}));
+}
+
+TEST(AttributesConditionTest, URLAndIncognitoSource) {
+  auto url_and_incognito = SourceAttributesCondition::Create(CreateDict(R"(
+      {
+        "urls": ["google.com"],
+        "incognito": true,
+      })"));
+  ASSERT_TRUE(url_and_incognito);
+  ASSERT_TRUE(url_and_incognito->IsTriggered(
+      {.source = {.url = GURL(kGoogleUrl), .incognito = true}}));
+  ASSERT_FALSE(url_and_incognito->IsTriggered(
+      {.source = {.url = GURL(kGoogleUrl), .incognito = false}}));
+  ASSERT_FALSE(
+      url_and_incognito->IsTriggered({.source = {.url = GURL(kGoogleUrl)}}));
+  ASSERT_FALSE(url_and_incognito->IsTriggered(
+      {.source = {.url = GURL(kChromiumUrl), .incognito = true}}));
+  ASSERT_FALSE(url_and_incognito->IsTriggered(
+      {.source = {.url = GURL(kChromiumUrl), .incognito = false}}));
+  ASSERT_FALSE(
+      url_and_incognito->IsTriggered({.source = {.url = GURL(kChromiumUrl)}}));
+  ASSERT_FALSE(url_and_incognito->IsTriggered({.source = {.incognito = true}}));
+  ASSERT_FALSE(
+      url_and_incognito->IsTriggered({.source = {.incognito = false}}));
+
+  auto url_and_not_incognito = SourceAttributesCondition::Create(CreateDict(R"(
+      {
+        "urls": ["google.com"],
+        "incognito": false,
+      })"));
+  ASSERT_TRUE(url_and_not_incognito);
+  ASSERT_FALSE(url_and_not_incognito->IsTriggered(
+      {.source = {.url = GURL(kGoogleUrl), .incognito = true}}));
+  ASSERT_TRUE(url_and_not_incognito->IsTriggered(
+      {.source = {.url = GURL(kGoogleUrl), .incognito = false}}));
+  ASSERT_FALSE(url_and_not_incognito->IsTriggered(
+      {.source = {.url = GURL(kGoogleUrl)}}));
+  ASSERT_FALSE(url_and_not_incognito->IsTriggered(
+      {.source = {.url = GURL(kChromiumUrl), .incognito = true}}));
+  ASSERT_FALSE(url_and_not_incognito->IsTriggered(
+      {.source = {.url = GURL(kChromiumUrl), .incognito = false}}));
+  ASSERT_FALSE(url_and_not_incognito->IsTriggered(
+      {.source = {.url = GURL(kChromiumUrl)}}));
+  ASSERT_FALSE(
+      url_and_not_incognito->IsTriggered({.source = {.incognito = true}}));
+  ASSERT_FALSE(
+      url_and_not_incognito->IsTriggered({.source = {.incognito = false}}));
+}
+
+TEST(AttributesConditionTest, URLAndNoIncognitoDestination) {
+  // When "incognito" is not in the condition, its value in the context
+  // shouldn't affect whether the condition is triggered or not.
+  auto any_url = DestinationAttributesCondition::Create(CreateDict(R"(
+      {
+        "urls": ["*"],
+      })"));
+  ASSERT_TRUE(any_url);
+  ASSERT_TRUE(any_url->IsTriggered(
+      {.destination = {.url = GURL(kGoogleUrl), .incognito = true}}));
+  ASSERT_TRUE(any_url->IsTriggered(
+      {.destination = {.url = GURL(kGoogleUrl), .incognito = false}}));
+  ASSERT_TRUE(any_url->IsTriggered({.destination = {.url = GURL(kGoogleUrl)}}));
+  ASSERT_FALSE(any_url->IsTriggered({.destination = {.incognito = true}}));
+  ASSERT_FALSE(any_url->IsTriggered({.destination = {.incognito = false}}));
+  ASSERT_FALSE(any_url->IsTriggered({.destination = {}}));
+}
+
+TEST(AttributesConditionTest, URLAndNoIncognitoSource) {
+  // When "incognito" is not in the condition, its value in the context
+  // shouldn't affect whether the condition is triggered or not.
+  auto any_url = SourceAttributesCondition::Create(CreateDict(R"(
+      {
+        "urls": ["*"],
+      })"));
+  ASSERT_TRUE(any_url);
+  ASSERT_TRUE(any_url->IsTriggered(
+      {.source = {.url = GURL(kGoogleUrl), .incognito = true}}));
+  ASSERT_TRUE(any_url->IsTriggered(
+      {.source = {.url = GURL(kGoogleUrl), .incognito = false}}));
+  ASSERT_TRUE(any_url->IsTriggered({.source = {.url = GURL(kGoogleUrl)}}));
+  ASSERT_FALSE(any_url->IsTriggered({.source = {.incognito = true}}));
+  ASSERT_FALSE(any_url->IsTriggered({.source = {.incognito = false}}));
+  ASSERT_FALSE(any_url->IsTriggered({.source = {}}));
+}
 
 }  // namespace data_controls

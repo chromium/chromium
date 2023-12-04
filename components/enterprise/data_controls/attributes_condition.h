@@ -24,6 +24,7 @@ namespace data_controls {
 // representation of the following JSON:
 // {
 //   urls: [string],
+//   incognito: bool,
 //   components: [ARC|CROSTINI|PLUGIN_VM|DRIVE|USB], <= CrOS only
 // }
 // This can represent either the `sources` or `destinations` fields of the
@@ -49,8 +50,13 @@ class AttributesCondition {
   bool ComponentMatches(Component component) const;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+  // Returns true if `incognito_` matches the passed argument.
+  // If `incognito_` is null, the condition will always return true.
+  bool IncognitoMatches(const absl::optional<bool>& incognito) const;
+
  private:
   std::unique_ptr<url_matcher::URLMatcher> url_matcher_;
+  absl::optional<bool> incognito_;
 #if BUILDFLAG(IS_CHROMEOS)
   std::set<Component> components_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
