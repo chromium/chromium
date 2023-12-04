@@ -113,12 +113,10 @@ namespace {
 
 #if BUILDFLAG(IS_WIN)
 // ScopedKeepAlive not only keeps the process from terminating early
-// during uninstall, it also ensures the process will terminate when it
-// is destroyed if there is no active browser window.
+// during uninstall, it also ensures the process will terminate in the next
+// message loop if there are no active browser windows.
 void UninstallWebAppWithDialogFromStartupSwitch(const webapps::AppId& app_id,
                                                 WebAppProvider* provider) {
-  // ScopedKeepAlive does not only keeps the process from early termination,
-  // but ensure the process termination when there is no active browser window.
   std::unique_ptr<ScopedKeepAlive> scoped_keep_alive =
       std::make_unique<ScopedKeepAlive>(KeepAliveOrigin::WEB_APP_UNINSTALL,
                                         KeepAliveRestartOption::DISABLED);
@@ -126,9 +124,17 @@ void UninstallWebAppWithDialogFromStartupSwitch(const webapps::AppId& app_id,
     provider->ui_manager().PresentUserUninstallDialog(
         app_id, webapps::WebappUninstallSource::kOsSettings,
         gfx::NativeWindow(),
-        base::BindOnce([](std::unique_ptr<ScopedKeepAlive> scoped_keep_alive,
-                          webapps::UninstallResultCode code) {},
-                       std::move(scoped_keep_alive)));
+        base::BindOnce(
+            [](std::unique_ptr<ScopedKeepAlive> scoped_keep_alive,
+               webapps::UninstallResultCode code) {
+              // This ensures that the scoped_keep_alive will be deleted in the
+              // next message loop, giving objects like DialogDelegate enough
+              // time to shut itself down. See crbug.com/1506302 for more
+              // information.
+              base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+                  FROM_HERE, std::move(scoped_keep_alive));
+            },
+            std::move(scoped_keep_alive)));
   } else {
     // There is a chance that a previous invalid uninstall operation (due
     // to a crash or otherwise) could end up orphaning an OsSettings entry.
