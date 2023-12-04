@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/time/time.h"
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 
 namespace tests_hook {
@@ -74,5 +75,10 @@ GetOverriddenRecipientsFetcher() {
 }
 void SetUpTestsIfPresent() {}
 void RunTestsIfPresent() {}
+
+base::TimeDelta PasswordCheckMinimumDuration() {
+  // No artificial delays for perf tests.
+  return base::Seconds(0);
+}
 
 }  // namespace tests_hook

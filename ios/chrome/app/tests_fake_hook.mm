@@ -4,6 +4,7 @@
 
 #import "ios/chrome/app/tests_hook.h"
 
+#import "base/time/time.h"
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 
 namespace tests_hook {
@@ -62,5 +63,9 @@ GetOverriddenRecipientsFetcher() {
 }
 void SetUpTestsIfPresent() {}
 void RunTestsIfPresent() {}
+
+base::TimeDelta PasswordCheckMinimumDuration() {
+  return base::Seconds(3);
+}
 
 }  // namespace tests_hook

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/app/tests_hook.h"
 
+#import "base/time/time.h"
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 
 namespace tests_hook {
@@ -82,6 +83,11 @@ void SetUpTestsIfPresent() {
 
 void RunTestsIfPresent() {
   // No-op for XCUITest.
+}
+
+base::TimeDelta PasswordCheckMinimumDuration() {
+  // No artificial delays for tests.
+  return base::Seconds(0);
 }
 
 }  // namespace tests_hook

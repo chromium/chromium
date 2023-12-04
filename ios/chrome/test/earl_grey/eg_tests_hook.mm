@@ -6,6 +6,7 @@
 
 #import "base/command_line.h"
 #import "base/logging.h"
+#import "base/time/time.h"
 #import "components/password_manager/core/browser/sharing/fake_recipients_fetcher.h"
 #import "components/password_manager/ios/fake_bulk_leak_check_service.h"
 #import "components/signin/internal/identity_manager/fake_profile_oauth2_token_service.h"
@@ -158,6 +159,11 @@ void SetUpTestsIfPresent() {
 
 void RunTestsIfPresent() {
   // No-op for Earl Grey.
+}
+
+base::TimeDelta PasswordCheckMinimumDuration() {
+  // No delays for eg tests.
+  return base::Seconds(0);
 }
 
 }  // namespace tests_hook

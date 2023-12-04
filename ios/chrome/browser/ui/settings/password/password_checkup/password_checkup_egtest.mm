@@ -688,7 +688,6 @@ NSString* LeakedPasswordDescription() {
 
 // Tests resolving the last reused passwords issue by editing a password through
 // Password Checkup.
-// TODO(crbug.com/1462095): Fix and re enable the test.
 - (void)testResolveLastIssueByEditingPassword {
   SaveReusedPasswordForms();
 
