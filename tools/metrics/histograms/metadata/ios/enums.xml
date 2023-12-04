@@ -257,6 +257,15 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Other WKErrorDomain Error"/>
 </enum>
 
+<enum name="IOSExternalAction">
+  <summary>
+    The action passed to Chrome for iOS using an external action URL.
+  </summary>
+  <int value="0" label="Invalid Action"/>
+  <int value="1" label="Open NTP"/>
+  <int value="2" label="Default Browser Settings"/>
+</enum>
+
 <enum name="IOSHomeActionType">
   <int value="0" label="Most Visited Tiles"/>
   <int value="1" label="Shortcuts"/>
@@ -295,6 +304,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="X-Callback (incl. link shared to Chrome)"/>
   <int value="8" label="Handoff"/>
   <int value="9" label="Notification"/>
+  <int value="10" label="External action opened in Chrome"/>
 </enum>
 
 <enum name="IOSMagicStackModuleType">

@@ -845,6 +845,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.ExternalAction" enum="IOSExternalAction"
+    expires_after="2024-11-15">
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Records the action passed to Chrome for iOS using an external action URL.
+  </summary>
+</histogram>
+
 <histogram name="IOS.FeedbackKit.UserFlowStartedSuccess" enum="Boolean"
     expires_after="2023-10-31">
   <owner>rkgibson@google.com</owner>
