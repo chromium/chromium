@@ -238,7 +238,7 @@ BASE_FEATURE(kDocumentProvider,
 // suggestions are available to all clients who meet the other requirements.
 BASE_FEATURE(kDocumentProviderNoSetting,
              "OmniboxDocumentProviderNoSetting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the requirement to be in an active Sync state is removed and
 // Drive suggestions are available to all clients who meet the other
