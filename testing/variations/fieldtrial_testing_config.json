@@ -8444,6 +8444,27 @@
             ]
         }
     ],
+    "HighestRequestPriorityForClassifyUrl": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20231129",
+                    "enable_features": [
+                        "HighestRequestPriorityForClassifyUrl"
+                    ]
+                }
+            ]
+        }
+    ],
     "HitTestOpaqueness": [
         {
             "platforms": [
