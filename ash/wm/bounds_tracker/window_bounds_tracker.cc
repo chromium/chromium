@@ -4,6 +4,7 @@
 
 #include "ash/wm/bounds_tracker/window_bounds_tracker.h"
 
+#include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -11,6 +12,7 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
+#include "ui/wm/public/activation_client.h"
 
 namespace ash {
 
@@ -140,64 +142,78 @@ void AdjustBoundsForWorkArea(const gfx::Rect& source_work_area,
 
 }  // namespace
 
-WindowBoundsTracker::WindowBoundsTracker() = default;
+WindowBoundsTracker::WindowBoundsTracker() {
+  Shell::Get()->activation_client()->AddObserver(this);
+}
 
 WindowBoundsTracker::~WindowBoundsTracker() {
-  ResetBoundsDatabase();
+  bounds_database_.clear();
+  window_observations_.RemoveAllObservations();
+  Shell::Get()->activation_client()->RemoveObserver(this);
 }
 
 void WindowBoundsTracker::OnWindowDestroying(aura::Window* window) {
   RemoveWindowFromBoundsDatabase(window);
 }
 
-gfx::Rect WindowBoundsTracker::RemapOrRestore(aura::Window* window,
-                                              int64_t target_display_id) {
-  WindowState* window_state = WindowState::Get(window);
-  const gfx::Rect bounds_in_parent = window->bounds();
-  // TODO: Taking care of the windows in other window states.
-  if (!window_state->IsNormalStateType()) {
-    return bounds_in_parent;
+void WindowBoundsTracker::OnWindowAddedToRootWindow(aura::Window* window) {
+  // Set `window` to the remapping bounds calculated and stored to
+  // `bounds_database_` inside `OnWindowRemovingFromRootWindow`. If there is no
+  // remapping or restoring bounds can be found for `window`, which means it has
+  // never been moved to another display without user-assigned bounds.
+  const auto iter = bounds_database_.find(window);
+  if (iter == bounds_database_.end()) {
+    return;
   }
-
-  auto* screen = display::Screen::GetScreen();
-  const display::Display source_display =
-      screen->GetDisplayNearestWindow(window);
-  const int64_t source_display_id = source_display.id();
-  gfx::Rect source_work_area = source_display.GetLocalWorkArea();
-
-  const auto& window_bounds_map = UpdateBoundsDatabaseOfWindow(
-      window, source_display_id, source_display.rotation(), source_work_area);
+  const auto& window_bounds_map = iter->second;
   CHECK(!window_bounds_map.empty());
-
-  display::Display target_display;
-  screen->GetDisplayWithDisplayId(target_display_id, &target_display);
-  CHECK(target_display.is_valid());
-  const gfx::Rect target_work_area = target_display.GetLocalWorkArea();
+  display::Display target_display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
   const WindowDisplayInfo target_window_display_info(
-      target_display_id, target_display.rotation(), target_work_area);
-  const auto iter = window_bounds_map.find(target_window_display_info);
+      target_display.id(), target_display.rotation(),
+      target_display.GetLocalWorkArea());
+  const auto bounds_iter = window_bounds_map.find(target_window_display_info);
+  CHECK(bounds_iter != window_bounds_map.end());
 
-  if (iter != window_bounds_map.end()) {
-    // Restores window to its bounds stored with `target_window_display_info`.
-    return iter->second;
+  window->SetBounds(bounds_iter->second);
+}
+
+void WindowBoundsTracker::OnWindowRemovingFromRootWindow(
+    aura::Window* window,
+    aura::Window* new_root) {
+  // Check whether we should remap or restore `window` on its root window
+  // changes. Only needed if 1) the window was moved between displays through
+  // the shortcut `kMoveActiveWindowBetweenDisplays` 2) removing the window's
+  // host display and the window will be moved to the current primary display.
+  // As in these two scenarios, the window is moving to another display without
+  // user assigned bounds.
+  const bool is_moving_window_between_displays =
+      window == moving_window_between_displays_;
+  const bool should_remap_or_restore =
+      is_moving_window_between_displays ||
+      RootWindowController::ForWindow(window->GetRootWindow())
+          ->is_shutting_down();
+  if (!should_remap_or_restore) {
+    return;
   }
 
-  // Otherwise, calculating the remapping bounds.
+  RemapOrRestore(
+      window,
+      display::Screen::GetScreen()->GetDisplayNearestWindow(new_root).id());
+  // Reset `moving_window_between_displays_` after finishing the remap or
+  // restore on it.
+  if (is_moving_window_between_displays) {
+    moving_window_between_displays_ = nullptr;
+  }
+}
 
-  // Step 1: Anchor point redesign, aka, keep the window's physical position on
-  // different screen orientations.
-  gfx::Rect remapped_bounds = AdjustBoundsForRotation(
-      bounds_in_parent, source_display, target_display, source_work_area);
-
-  // Step 2: Adjust on work area size changes. The relative position from the
-  // center of the window to the center of the work area should be the same.
-  AdjustBoundsForWorkArea(source_work_area, target_work_area, remapped_bounds);
-
-  // Step 3: Offscreen protection. The window should be fully visible inside the
-  // target display configuration.
-  remapped_bounds.AdjustToFit(target_work_area);
-
-  return remapped_bounds;
+void WindowBoundsTracker::OnWindowActivated(ActivationReason reason,
+                                            aura::Window* gained_active,
+                                            aura::Window* lost_active) {
+  if (WindowState::Get(gained_active) &&
+      !window_observations_.IsObservingSource(gained_active)) {
+    window_observations_.AddObservation(gained_active);
+  }
 }
 
 void WindowBoundsTracker::AddWindowDisplayIdOnDisplayRemoval(
@@ -212,9 +228,20 @@ void WindowBoundsTracker::MaybeRestoreWindowsOnDisplayAdded() {
   auto* display_manager = Shell::Get()->display_manager();
   auto iter = window_to_display_map_.begin();
   while (iter != window_to_display_map_.end()) {
-    const auto display_id = iter->second;
-    if (display_manager->IsDisplayIdValid(display_id)) {
-      window_util::MoveWindowToDisplay(iter->first, display_id);
+    const auto candidate_old_display_id = iter->second;
+    if (display_manager->IsDisplayIdValid(candidate_old_display_id)) {
+      auto* window = iter->first;
+      // TODO(b/314160218): Do not store the bounds if it is not user-assigned.
+      // Store the window's bounds in the source display before moving it to the
+      // target display.
+      const display::Display source_display =
+          display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+      UpdateBoundsDatabaseOfWindow(
+          window,
+          WindowDisplayInfo(source_display.id(), source_display.rotation(),
+                            source_display.GetLocalWorkArea()),
+          window->bounds());
+      window_util::MoveWindowToDisplay(window, candidate_old_display_id);
       iter = window_to_display_map_.erase(iter);
     } else {
       ++iter;
@@ -242,32 +269,76 @@ bool WindowBoundsTracker::WindowDisplayInfo::operator<(
 // -----------------------------------------------------------------------------
 // WindowBoundsTracker:
 
-void WindowBoundsTracker::ResetBoundsDatabase() {
-  for (const auto& [window, _] : bounds_database_) {
-    window->RemoveObserver(this);
+void WindowBoundsTracker::RemapOrRestore(aura::Window* window,
+                                         int64_t target_display_id) {
+  WindowState* window_state = WindowState::Get(window);
+  const gfx::Rect bounds_in_parent = window->bounds();
+  // TODO: Taking care of the windows in other window states.
+  if (!window_state->IsNormalStateType()) {
+    return;
   }
-  bounds_database_.clear();
+
+  auto* screen = display::Screen::GetScreen();
+  const display::Display source_display =
+      screen->GetDisplayNearestWindow(window);
+  const int64_t source_display_id = source_display.id();
+  gfx::Rect source_work_area = source_display.GetLocalWorkArea();
+
+  const auto& window_bounds_map = UpdateBoundsDatabaseOfWindow(
+      window,
+      WindowDisplayInfo(source_display_id, source_display.rotation(),
+                        source_work_area),
+      window->bounds());
+  CHECK(!window_bounds_map.empty());
+
+  display::Display target_display;
+  screen->GetDisplayWithDisplayId(target_display_id, &target_display);
+  CHECK(target_display.is_valid());
+  const gfx::Rect target_work_area = target_display.GetLocalWorkArea();
+  const WindowDisplayInfo target_window_display_info(
+      target_display_id, target_display.rotation(), target_work_area);
+  const auto iter = window_bounds_map.find(target_window_display_info);
+
+  if (iter != window_bounds_map.end()) {
+    return;
+  }
+
+  // Otherwise, calculating the remapping bounds.
+
+  // Step 1: Anchor point redesign, aka, keep the window's physical position on
+  // different screen orientations.
+  gfx::Rect remapped_bounds = AdjustBoundsForRotation(
+      bounds_in_parent, source_display, target_display, source_work_area);
+
+  // Step 2: Adjust on work area size changes. The relative position from the
+  // center of the window to the center of the work area should be the same.
+  AdjustBoundsForWorkArea(source_work_area, target_work_area, remapped_bounds);
+
+  // Step 3: Offscreen protection. The window should be fully visible inside the
+  // target display configuration.
+  remapped_bounds.AdjustToFit(target_work_area);
+
+  UpdateBoundsDatabaseOfWindow(window, target_window_display_info,
+                               remapped_bounds);
+  return;
 }
 
 void WindowBoundsTracker::RemoveWindowFromBoundsDatabase(aura::Window* window) {
   const auto count = bounds_database_.erase(window);
   CHECK(count);
-  window->RemoveObserver(this);
+  if (window_observations_.IsObservingSource(window)) {
+    window_observations_.RemoveObservation(window);
+  }
 }
 
 base::flat_map<WindowBoundsTracker::WindowDisplayInfo, gfx::Rect>&
 WindowBoundsTracker::UpdateBoundsDatabaseOfWindow(
     aura::Window* window,
-    int64_t display_id,
-    display::Display::Rotation rotation,
-    const gfx::Rect& work_area) {
+    const WindowDisplayInfo& window_display_info,
+    const gfx::Rect& bounds) {
   auto& window_bounds_map = bounds_database_[window];
-  if (window_bounds_map.empty()) {
-    window->AddObserver(this);
-  }
-  window_bounds_map.insert_or_assign(
-      WindowBoundsTracker::WindowDisplayInfo(display_id, rotation, work_area),
-      window->bounds());
+  CHECK(window_observations_.IsObservingSource(window));
+  window_bounds_map.insert_or_assign(window_display_info, bounds);
   return window_bounds_map;
 }
 

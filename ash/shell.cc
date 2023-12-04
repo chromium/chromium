@@ -1287,10 +1287,6 @@ void Shell::Init(
 
   InitializeDisplayManager();
 
-  if (features::IsWindowBoundsTrackerEnabled()) {
-    window_bounds_tracker_ = std::make_unique<WindowBoundsTracker>();
-  }
-
   // RefreshFontParams depends on display prefs.
   display_manager_->RefreshFontParams();
 
@@ -1372,6 +1368,12 @@ void Shell::Init(
   focus_rules_ = new AshFocusRules();
   focus_controller_ = std::make_unique<::wm::FocusController>(focus_rules_);
   focus_controller_->AddObserver(this);
+
+  // `WindowBoundsTracker` depends on `FocusController`, as it needs to track
+  // the window's activation changes.
+  if (features::IsWindowBoundsTrackerEnabled()) {
+    window_bounds_tracker_ = std::make_unique<WindowBoundsTracker>();
+  }
 
   overview_controller_ = std::make_unique<OverviewController>();
 

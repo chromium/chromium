@@ -144,24 +144,26 @@ TEST_F(WindowBoundsTrackerTest, WorkAreaSizeChanges) {
   EXPECT_TRUE(second_display_work_area.Contains(window->GetBoundsInScreen()));
   EXPECT_EQ(second_center_point, window->GetBoundsInScreen().CenterPoint());
 
-  // Moves the window to the top left center of the primary display.
+  // Creates another window at the top left center of the primary display.
   const gfx::Point top_left_center(first_center_point.x() / 2,
                                    first_center_point.y() / 2);
   const gfx::Point origin(
       top_left_center -
       gfx::Vector2d(window_size.width() / 2, window_size.height() / 2));
-  window->SetBoundsInScreen(gfx::Rect(origin, window_size), first_display);
+  aura::Window* window2 =
+      CreateTestWindowInShellWithBounds(gfx::Rect(origin, window_size));
+  wm::ActivateWindow(window2);
 
-  // Using the shortcut to move the window to the secondary display, it should
+  // Using the shortcut to move `window2` to the secondary display, it should
   // stay at the top left center of the secondary display.
   PressAndReleaseKey(ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN);
-  EXPECT_TRUE(second_display_work_area.Contains(window->GetBoundsInScreen()));
+  EXPECT_TRUE(second_display_work_area.Contains(window2->GetBoundsInScreen()));
   const gfx::Point second_local_work_area_center =
       secondary_display.GetLocalWorkArea().CenterPoint();
   const gfx::Point second_top_left_center(
       second_local_work_area_center.x() / 2,
       second_local_work_area_center.y() / 2);
-  EXPECT_EQ(second_top_left_center, window->bounds().CenterPoint());
+  EXPECT_EQ(second_top_left_center, window2->bounds().CenterPoint());
 }
 
 // Tests that window's bounds stored in the same display configuration can be
@@ -267,6 +269,7 @@ TEST_F(WindowBoundsTrackerTest, RemoveNonPrimaryDisplay) {
   const gfx::Size window_size(200, 100);
   const gfx::Rect initial_bounds(gfx::Point(900, 0), window_size);
   aura::Window* window = CreateTestWindowInShellWithBounds(initial_bounds);
+  wm::ActivateWindow(window);
 
   const int64_t primary_id = GetPrimaryDisplay().id();
   const int64_t secondary_id = GetSecondaryDisplay().id();
@@ -313,6 +316,46 @@ TEST_F(WindowBoundsTrackerTest, RemoveNonPrimaryDisplay) {
   display_info_list.push_back(primary_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
   EXPECT_EQ(updated_bounds_in_1st, window->GetBoundsInScreen());
+}
+
+TEST_F(WindowBoundsTrackerTest, RootWindowChanges) {
+  UpdateDisplay("400x300,600x500");
+
+  display::Display first_display = GetPrimaryDisplay();
+  display::Display secondary_display = GetSecondaryDisplay();
+  const gfx::Rect first_display_work_area = first_display.work_area();
+  const gfx::Rect second_display_work_area = secondary_display.work_area();
+
+  // Initially, the window is half-offscreen inside the 2nd display.
+  const gfx::Size window_size(200, 100);
+  const gfx::Rect initial_bounds(gfx::Point(900, 0), window_size);
+  aura::Window* window = CreateTestWindowInShellWithBounds(initial_bounds);
+  wm::ActivateWindow(window);
+  EXPECT_EQ(window->GetRootWindow(), Shell::GetAllRootWindows()[1]);
+
+  // Drag it to the center of the 1st display.
+  const gfx::Point first_center_point = first_display_work_area.CenterPoint();
+  const gfx::Rect first_center_bounds(
+      gfx::Point(first_center_point.x() - window_size.width() / 2,
+                 first_center_point.y() - window_size.height() / 2),
+      window_size);
+  window->SetBoundsInScreen(first_center_bounds, first_display);
+  EXPECT_EQ(window->GetRootWindow(), Shell::GetAllRootWindows()[0]);
+
+  // Using the shortcut to move the window back to the 2nd display. It should be
+  // remapped to the center of the display instead of initial half-offscreen
+  // bounds. As it was dragged from the 2nd to 1st display, its previous
+  // half-offscreen should not be stored in the bounds database.
+  PressAndReleaseKey(ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN);
+  EXPECT_NE(initial_bounds, window->GetBoundsInScreen());
+  EXPECT_EQ(second_display_work_area.CenterPoint(),
+            window->GetBoundsInScreen().CenterPoint());
+
+  // Using the shortcut to move the window to the 1st display. It should be
+  // restored to the center of the 1st display. As it was moved from the 1st to
+  // the 2nd through the shortcut before.
+  PressAndReleaseKey(ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN);
+  EXPECT_EQ(first_center_bounds, window->GetBoundsInScreen());
 }
 
 }  // namespace ash

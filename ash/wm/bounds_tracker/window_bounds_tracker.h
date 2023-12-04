@@ -8,8 +8,10 @@
 #include <unordered_map>
 
 #include "base/containers/flat_map.h"
+#include "base/scoped_multi_source_observation.h"
 #include "chromeos/ui/base/display_util.h"
 #include "ui/aura/window_observer.h"
+#include "ui/wm/public/activation_change_observer.h"
 
 namespace aura {
 class Window;
@@ -24,25 +26,28 @@ namespace ash {
 // configuration. E.g., remapping the window if its host display being removed
 // and restoring it if reconnecting the display.
 // Note: `PersistentWindowController` will be disabled with this one enabled.
-class WindowBoundsTracker : public aura::WindowObserver {
+class WindowBoundsTracker : public aura::WindowObserver,
+                            public wm::ActivationChangeObserver {
  public:
   WindowBoundsTracker();
   WindowBoundsTracker(const WindowBoundsTracker&) = delete;
   WindowBoundsTracker& operator=(const WindowBoundsTracker&) = delete;
   ~WindowBoundsTracker() override;
 
+  void set_moving_window_between_displays(aura::Window* window) {
+    moving_window_between_displays_ = window;
+  }
+
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
+  void OnWindowAddedToRootWindow(aura::Window* window) override;
+  void OnWindowRemovingFromRootWindow(aura::Window* window,
+                                      aura::Window* new_root) override;
 
-  // Gets the window's restoring or remapping bounds in parent coordinates.
-  // Restoring bounds is from `bounds_database_` with the key
-  // `DisplayWindowInfo(target_display_id, target_rotation,
-  // target_work_area)` if it exists. Otherwise, calculating the window's
-  // remapping bounds in this target display configuration. There are three
-  // mechanisms of the calculation: 1) keep the window's physical position on
-  // screen rotation 2) keep the same relative position to the center point of
-  // the work area 3) offscreen protection.
-  gfx::Rect RemapOrRestore(aura::Window* window, int64_t target_display_id);
+  // wm::ActivationChangeObserver:
+  void OnWindowActivated(ActivationReason reason,
+                         aura::Window* gained_active,
+                         aura::Window* lost_active) override;
 
   // Adds `window` and its host display id to `window_to_display_map_` before
   // removing its host display.
@@ -84,25 +89,42 @@ class WindowBoundsTracker : public aura::WindowObserver {
 
   using WindowBoundsMap = base::flat_map<WindowDisplayInfo, gfx::Rect>;
 
-  // Resets `bounds_database_`.
-  void ResetBoundsDatabase();
+  // Stores the window's bounds in its current display for restoring the window
+  // back to this display later. Calculates and stores the window's remapping
+  // bounds inside the target display configuration. There are three mechanisms
+  // of calculating the remapping bounds 1) keep the window's physical position
+  // on screen rotation 2) keep the same relative position to the center point
+  // of the work area 3) offscreen protection.
+  //
+  // Remapping will be applied to a window if it is moved to a display that it
+  // has never been there before, and no user-assigned bounds is assigned. And
+  // restoring will be applied if the window has been moved back to a display
+  // configuration that it has been there before.
+  //
+  // Note: This function should be called before `window` being moved to the
+  // target display.
+  void RemapOrRestore(aura::Window* window, int64_t target_display_id);
 
   // Stops observing `window` and removes it from the `bounds_database_`.
   void RemoveWindowFromBoundsDatabase(aura::Window* window);
 
-  // Updates the window's bounds stored in `bounds_database_` to the key
-  // `DisplayWindowInfo(display_id, rotation, work_area)`. Returns the bounds
-  // database of `window` stored in `bounds_database_`.
+  // Updates the window's bounds stored in `bounds_database_` on the key
+  // `window_display_info` to the given `bounds`. Returns the bounds database of
+  // `window` stored in `bounds_database_`.
   WindowBoundsMap& UpdateBoundsDatabaseOfWindow(
       aura::Window* window,
-      int64_t display_id,
-      display::Display::Rotation rotation,
-      const gfx::Rect& work_area);
+      const WindowDisplayInfo& window_display_info,
+      const gfx::Rect& bounds);
 
   // Stores the window's host display id when removing its host display, which
   // will be used to restore the window when its host display being reconnected
   // later.
   base::flat_map<aura::Window*, int64_t> window_to_display_map_;
+
+  // The window that is being moved between displays through the shortcut
+  // `kMoveActiveWindowBetweenDisplays`.
+  raw_ptr<aura::Window, ExperimentalAsh> moving_window_between_displays_ =
+      nullptr;
 
   // TODO: Figure out how we can redesign this data structure, then extra data
   // structures like `window_to_display_map_` above can be removed.
@@ -110,6 +132,9 @@ class WindowBoundsTracker : public aura::WindowObserver {
   // `WindowDisplayInfo` defines the display configuration changes that we are
   // tracking. Note: stored window bounds are in parent coordinates.
   std::unordered_map<aura::Window*, WindowBoundsMap> bounds_database_;
+
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      window_observations_{this};
 };
 
 }  // namespace ash
