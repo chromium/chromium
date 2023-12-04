@@ -70,7 +70,7 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 
 - (void)stop {
   [super stop];
-  [_viewController.presentingViewController dismissViewControllerAnimated:NO
+  [_viewController.presentingViewController dismissViewControllerAnimated:YES
                                                                completion:nil];
   _viewController = nil;
   _mediator = nil;
