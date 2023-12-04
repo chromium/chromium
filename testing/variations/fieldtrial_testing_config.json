@@ -10350,6 +10350,21 @@
             ]
         }
     ],
+    "MediaFoundationCameraUsageMonitoring": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MediaFoundationCameraUsageMonitoring"
+                    ]
+                }
+            ]
+        }
+    ],
     "MediaFoundationD3D11VideoCapture": [
         {
             "platforms": [
