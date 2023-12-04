@@ -602,6 +602,10 @@ public final class ProductionSupportedFlagList {
                 "AddWarningShownTSToClientSafeBrowsingReport",
                 "When enabled, client reports will include a timestamp of when the warning was "
                         + "shown to the user"),
+        Flag.baseFeature(
+                "CreateWarningShownClientSafeBrowsingReports",
+                "When enabled, WARNING_SHOWN client reports will be sent when a warning is "
+                        + "shown to the user"),
         Flag.baseFeature("SafeBrowsingOnUIThread"),
         Flag.baseFeature(
                 BlinkFeatures.ANDROID_EXTENDED_KEYBOARD_SHORTCUTS,
