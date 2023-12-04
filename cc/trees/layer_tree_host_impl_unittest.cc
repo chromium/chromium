@@ -18175,7 +18175,7 @@ using UnifiedScrollingDeathTest = UnifiedScrollingTest;
 
 // A main thread hit test that with an empty target id should be dropped.
 TEST_F(UnifiedScrollingDeathTest, EmptyMainThreadHitTest) {
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
   CreateUncompositedScrollerAndNonFastScrollableRegion();
   {
     ElementId kInvalidId;
