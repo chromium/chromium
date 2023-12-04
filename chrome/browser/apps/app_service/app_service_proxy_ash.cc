@@ -756,6 +756,14 @@ void AppServiceProxyAsh::LoadDefaultIcon(AppType app_type,
       /*is_placeholder_icon=*/false, icon_effects, std::move(callback));
 }
 
+void AppServiceProxyAsh::SetAppLocale(const std::string& app_id,
+                                      const std::string& locale_tag) {
+  auto* publisher = GetPublisher(app_registry_cache_.GetAppType(app_id));
+  if (publisher) {
+    publisher->SetAppLocale(app_id, locale_tag);
+  }
+}
+
 AppServiceProxyAsh::ShortcutInnerIconLoader::ShortcutInnerIconLoader(
     AppServiceProxyAsh* host)
     : host_(host), overriding_icon_loader_for_testing_(nullptr) {}

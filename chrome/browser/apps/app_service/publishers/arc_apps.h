@@ -121,6 +121,8 @@ class ArcApps : public KeyedService,
                     int64_t display_id,
                     base::OnceCallback<void(MenuItems)> callback) override;
   void SetResizeLocked(const std::string& app_id, bool locked) override;
+  void SetAppLocale(const std::string& app_id,
+                    const std::string& locale_tag) override;
 
   void PauseApp(const std::string& app_id) override;
   void UnpauseApp(const std::string& app_id) override;

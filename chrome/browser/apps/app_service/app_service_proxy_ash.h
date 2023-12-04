@@ -268,6 +268,10 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                        IconType icon_type,
                        LoadIconCallback callback);
 
+  // Sets app locale for an app with the given `app_id`. Empty |locale_tag|
+  // indicates system language being chosen.
+  void SetAppLocale(const std::string& app_id, const std::string& locale_tag);
+
  private:
   // ShortcutInnerIconLoader is used to load icons for shortcuts, it follows the
   // same logic as the AppInnerIconLoader defined in AppServiceProxyBase, which

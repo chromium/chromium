@@ -7,6 +7,7 @@
 #include <functional>
 #include <memory>
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
@@ -21,6 +22,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
@@ -635,6 +637,42 @@ TEST_F(ArcAppsPublisherTest, LaunchAppWithIntent_ShareFilesIntent_SendsExtras) {
             kTestIntentText);
   ASSERT_EQ(url_request->extras.value()["android.intent.extra.SUBJECT"],
             kTestIntentTitle);
+}
+
+TEST_F(ArcAppsPublisherTest, SetAppLocale_SendsLocaleToArc) {
+  // Setup.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(arc::kPerAppLanguage);
+  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile());
+  ASSERT_NE(nullptr, prefs);
+  // fake_packages[4] is the test package with localeInfo.
+  const std::string& test_package_name =
+      arc_test()->fake_apps()[4]->package_name;
+  const std::string& app_id =
+      prefs->GetAppId(test_package_name, arc_test()->fake_apps()[4]->activity);
+
+  // Setup app.
+  std::vector<arc::mojom::AppInfoPtr> test_app_info_list;
+  test_app_info_list.push_back(arc_test()->fake_apps()[4]->Clone());
+  arc_test()->app_instance()->SendRefreshAppList(test_app_info_list);
+  std::vector<apps::AppPtr> test_apps;
+  apps::AppPtr app = std::make_unique<apps::App>(apps::AppType::kArc, app_id);
+  test_apps.push_back(std::move(app));
+  app_service_proxy()->OnApps(std::move(test_apps), apps::AppType::kArc,
+                              /*should_notify_initialized=*/true);
+  // Setup package.
+  // Initially pref will be set with "en" as selectedLocale.
+  std::vector<arc::mojom::ArcPackageInfoPtr> test_packages;
+  test_packages.push_back(arc_test()->fake_packages()[4]->Clone());
+  arc_test()->app_instance()->SendRefreshPackageList(
+      ArcAppTest::ClonePackages(test_packages));
+
+  // Run.
+  app_service_proxy()->SetAppLocale(app_id, "ja");
+
+  // Assert.
+  ASSERT_EQ("ja",
+            arc_test()->app_instance()->selected_locale(test_package_name));
 }
 
 class ArcAppsPublisherPromiseAppTest : public ArcAppsPublisherTest {

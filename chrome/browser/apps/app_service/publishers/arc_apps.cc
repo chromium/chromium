@@ -876,6 +876,41 @@ void ArcApps::SetResizeLocked(const std::string& app_id, bool locked) {
                                         : arc::mojom::ArcResizeLockState::OFF);
 }
 
+void ArcApps::SetAppLocale(const std::string& app_id,
+                           const std::string& locale_tag) {
+  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
+  if (!profile_->GetPrefs() || !prefs) {
+    return;
+  }
+  const std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
+      prefs->GetApp(app_id);
+  if (!app_info) {
+    LOG(ERROR) << "SetAppLocale failed, could not find app with id " << app_id;
+    return;
+  }
+  if (app_info->package_name.empty()) {
+    LOG(ERROR) << "SetAppLocale failed, package name is empty with app_id "
+               << app_id;
+    return;
+  }
+  arc::mojom::AppInstance* app_instance =
+      (arc::ArcServiceManager::Get()
+           ? ARC_GET_INSTANCE_FOR_METHOD(
+                 arc::ArcServiceManager::Get()->arc_bridge_service()->app(),
+                 SetAppLocale)
+           : nullptr);
+  if (app_instance) {
+    app_instance->SetAppLocale(app_info->package_name, locale_tag);
+  } else {
+    // If AppInstance is not ready, we still want to update the prefs to ensure
+    // good UX. To ensure eventual-correctness between ARC settings and Chrome
+    // settings, on ARC boot, ARC will always sends its latest-set locale to
+    // Chrome. If there's a mismatch, Chrome will then send back its latest-set
+    // locale to ARC, both settings are still synchronized.
+    prefs->SetAppLocale(app_info->package_name, locale_tag);
+  }
+}
+
 void ArcApps::PauseApp(const std::string& app_id) {
   if (paused_apps_.MaybeAddApp(app_id)) {
     SetIconEffect(app_id);

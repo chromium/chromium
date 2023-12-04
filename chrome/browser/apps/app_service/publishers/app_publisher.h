@@ -230,6 +230,12 @@ class AppPublisher
   virtual void SetWindowMode(const std::string& app_id, WindowMode window_mode);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Set the locale for the app identified by `app_id`. Implemented if the
+  // publisher supports changing app-specific locale, and otherwise should do
+  // nothing.
+  virtual void SetAppLocale(const std::string& app_id,
+                            const std::string& locale_tag);
+
   // Creates and returns a promise app object.
   static PromiseAppPtr MakePromiseApp(const PackageId& package_id);
 

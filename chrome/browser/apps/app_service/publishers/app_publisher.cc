@@ -147,6 +147,11 @@ void AppPublisher::SetWindowMode(const std::string& app_id,
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+void AppPublisher::SetAppLocale(const std::string& app_id,
+                                const std::string& locale_tag) {
+  NOTIMPLEMENTED();
+}
+
 // static
 PromiseAppPtr AppPublisher::MakePromiseApp(const PackageId& package_id) {
   return std::make_unique<PromiseApp>(package_id);
