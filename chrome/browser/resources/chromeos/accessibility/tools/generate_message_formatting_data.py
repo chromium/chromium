@@ -15,7 +15,6 @@ import xml.etree.ElementTree as ElementTree
 from pathlib import Path
 
 def TranslateFile(path, new_path, constname):
-  print("Translating ", path, " to ", new_path)
   xml_tree = ElementTree.parse(path)
   root = xml_tree.getroot().find('plurals')
 
