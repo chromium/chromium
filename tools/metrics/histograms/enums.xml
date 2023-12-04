@@ -2003,16 +2003,6 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="Unspecified"/>
 </enum>
 
-<enum name="AutoDSEPermissionRevertTransition">
-  <int value="0" label="NO_DECISION_ASK"/>
-  <int value="1" label="PRESERVE_ALLOW"/>
-  <int value="2" label="CONFLICT_ASK"/>
-  <int value="3" label="PRESERVE_BLOCK_ASK"/>
-  <int value="4" label="PRESERVE_BLOCK_ALLOW"/>
-  <int value="5" label="PRESERVE_BLOCK_BLOCK"/>
-  <int value="6" label="INVALID_END_STATE"/>
-</enum>
-
 <enum name="AutofillAddressProfileImportCountrySpecificFieldRequirement">
   <int value="0" label="All required fields present"/>
   <int value="1" label="Missing: ZIP"/>
@@ -6037,16 +6027,6 @@ Called by update_autofill_enums.py.-->
   <int value="3" label="Blacklist thunk setup failed."/>
   <int value="4" label="Blacklist interception failed."/>
   <int value="5" label="Blacklist disabled."/>
-</enum>
-
-<enum name="BlockStateMetric">
-  <int value="0" label="Denied by Default"/>
-  <int value="1" label="mailto: Allowed by Default"/>
-  <int value="2" label="news:/snews: Allowed by Default"/>
-  <int value="3" label="news:/snews: Not a Default"/>
-  <int value="4" label="Allowed by Enterprise Policy"/>
-  <int value="5" label="Allowed by User Preference"/>
-  <int value="6" label="Prompt"/>
 </enum>
 
 <enum name="BlueZReasonOfDisconnection">
@@ -10974,20 +10954,6 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="8" label="Restore Started"/>
   <int value="9" label="Restore Succeeded"/>
   <int value="10" label="Restore Failed"/>
-</enum>
-
-<enum name="CrowdDenyNotificationUxQuality">
-  <int value="0" label="Uknown"/>
-  <int value="1" label="Accceptable"/>
-  <int value="2" label="Unsolicited prompts"/>
-  <int value="3" label="Abusive prompts"/>
-  <int value="4" label="Abusive content"/>
-  <int value="5" label="Disruptive behavior"/>
-</enum>
-
-<enum name="CrowdDenySafeBrowsingVerdict">
-  <int value="0" label="Acceptable"/>
-  <int value="1" label="Unsolicited notification prompts"/>
 </enum>
 
 <enum name="CryptAuthApiCallResult">
@@ -24433,13 +24399,6 @@ Called by update_permissions_policy_enum.py.-->
       label="The crashing process' architecture does not match the crash
              handler"/>
   <int value="17" label="Found conflicting lightweight metadata IDs"/>
-</enum>
-
-<enum name="HandleStateType">
-  <int value="0" label="Launch"/>
-  <int value="1" label="Checked launch"/>
-  <int value="2" label="Dont launch"/>
-  <int value="3" label="Checked dont launch"/>
 </enum>
 
 <enum name="HandleSubmittedFormStatus">
@@ -42817,16 +42776,6 @@ Called by update_net_error_codes.py.-->
       label="Form passed is different from the one that initiated the session"/>
 </enum>
 
-<enum name="OneTimePermissionEvent">
-  <summary>One-time permission events.</summary>
-  <int value="0" label="Granted one time"/>
-  <int value="1" label="Revoked one time grant manually"/>
-  <int value="2" label="Expired due to tab closure or discards"/>
-  <int value="3" label="Expired in the background due to non-usage"/>
-  <int value="4" label="Expired after maximum lifetime"/>
-  <int value="5" label="Expired because the device was suspended"/>
-</enum>
-
 <enum name="OobeConsumerUpdateScreenSkippedReason">
   <int value="0" label="Critical update was already completed"/>
   <int value="1" label="Update is not required"/>
@@ -43654,14 +43603,6 @@ Called by update_net_error_codes.py.-->
   </int>
 </enum>
 
-<enum name="PageInfoDialogAccessType">
-  <int value="0" label="Click on lock without confirmation chip context"/>
-  <int value="1" label="Click on lock while confirmation chip is displayed"/>
-  <int value="2" label="Click on confirmation chip"/>
-  <int value="3"
-      label="Click on lock within 20 seconds after confirmation chip collapse"/>
-</enum>
-
 <enum name="PageMeasurementBackgroundState">
   <summary>
     Whether a page is in the foreground or background during a measurement
@@ -44288,15 +44229,6 @@ Called by update_net_error_codes.py.-->
   <int value="14" label="Zero Window (Recent)"/>
 </enum>
 
-<enum name="PermissionAction">
-  <int value="0" label="GRANTED"/>
-  <int value="1" label="DENIED"/>
-  <int value="2" label="DISMISSED"/>
-  <int value="3" label="IGNORED"/>
-  <int value="4" label="REVOKED"/>
-  <int value="5" label="GRANTED_ONCE"/>
-</enum>
-
 <enum name="PermissionAutoRevocationHistory">
   <summary>
     Track whether the permission has been automatically revoked in the past at
@@ -44306,114 +44238,12 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="PREVIOUSLY_AUTO_REVOKED"/>
 </enum>
 
-<enum name="PermissionChangeAction">
-  <int value="0" label="Revoked"/>
-  <int value="1" label="Reallowed"/>
-  <int value="2" label="Reset from denied state"/>
-  <int value="3" label="Reset from allowed state"/>
-  <int value="4" label="Remember decision checkbox toggled"/>
-</enum>
-
-<enum name="PermissionChangeInfo">
-  <int value="0" label="Infobar shown, page reloaded, permission used"/>
-  <int value="1" label="Infobar shown, page reloaded, permission not used"/>
-  <int value="2" label="Infobar shown, no page reloaded, permission used"/>
-  <int value="3" label="Infobar shown, no page reloaded, permission not used"/>
-  <int value="4" label="Infobar not shown, page reloaded, permission used"/>
-  <int value="5" label="Infobar not shown, page reloaded, permission not used"/>
-  <int value="6" label="Infobar not shown, no page reloaded, permission used"/>
-  <int value="7"
-      label="Infobar not shown, no page reloaded, permission not used"/>
-</enum>
-
-<enum name="PermissionEmbargoStatus">
-  <int value="0" label="NOT_EMBARGOED"/>
-  <int value="1" label="BLACKLISTED"/>
-  <int value="2" label="REPEATED_DISMISSALS"/>
-  <int value="3" label="REPEATED_IGNORES"/>
-  <int value="4" label="RECENT_DISPLAY"/>
-</enum>
-
-<enum name="PermissionPredictionSource">
-  <int value="0" label="ON_DEVICE"/>
-  <int value="1" label="SERVER_SIDE"/>
-</enum>
-
-<enum name="PermissionPredictionThresholdSource">
-  <int value="0" label="MODEL_METADATA"/>
-  <int value="1" label="HARDCODED_FALLBACK"/>
-</enum>
-
 <enum name="PermissionPromptDispositionReason">
   <int value="0" label="User preference in settings"/>
   <int value="1" label="Safe Browsing verdict"/>
   <int value="2" label="Prediction service"/>
   <int value="3" label="Default fallback"/>
   <int value="4" label="On-Device prediction model"/>
-</enum>
-
-<enum name="PermissionRequestIgnoredReason">
-  <summary>
-    Breaks down reasons for permission requests being categorized as ignored.
-    Reasons captured are 0. window containing the tab with the pending
-    permission request being closed 1. Tab containing the pending permission
-    request being closed 2. Navigation 3. Other: catches all other cases.
-  </summary>
-  <int value="0" label="Window closed"/>
-  <int value="1" label="Tab closed"/>
-  <int value="2" label="Navigation"/>
-  <int value="3" label="Other"/>
-</enum>
-
-<enum name="PermissionRequestType">
-  <int value="0" label="PERMISSION_BUBBLE_UNKNOWN"/>
-  <int value="1" label="PERMISSION_BUBBLE_MULTIPLE"/>
-  <int value="2" label="PERMISSION_BUBBLE_UNUSED_PERMISSION"/>
-  <int value="3" label="PERMISSION_BUBBLE_QUOTA"/>
-  <int value="4" label="PERMISSION_BUBBLE_DOWNLOAD"/>
-  <int value="5" label="PERMISSION_BUBBLE_MEDIA_STREAM"/>
-  <int value="6" label="PERMISSION_BUBBLE_REGISTER_PROTOCOL_HANDLER"/>
-  <int value="7" label="PERMISSION_BUBBLE_PERMISSION_GEOLOCATION"/>
-  <int value="8" label="PERMISSION_BUBBLE_PERMISSION_MIDI_SYSEX"/>
-  <int value="9" label="PERMISSION_BUBBLE_PERMISSION_NOTIFICATIONS"/>
-  <int value="10"
-      label="PERMISSION_BUBBLE_PERMISSION_PROTECTED_MEDIA_IDENTIFIER"/>
-  <int value="11" label="PERMISSION_BUBBLE_PERMISSION_PUSH_MESSAGING"/>
-  <int value="12" label="PERMISSION_BUBBLE_PERMISSION_FLASH"/>
-  <int value="13" label="PERMISSION_MEDIASTREAM_MIC"/>
-  <int value="14" label="PERMISSION_MEDIASTREAM_CAMERA"/>
-  <int value="15" label="PERMISSION_ACCESSIBILITY_EVENTS"/>
-  <int value="16" label="PERMISSION_CLIPBOARD_READ__REMOVED_IN_M81"/>
-  <int value="17" label="PERMISSION_SECURITY_KEY_ATTESTATION__REMOVED_IN_M117"/>
-  <int value="18" label="PERMISSION_PAYMENT_HANDLER"/>
-  <int value="19" label="PERMISSION_NFC"/>
-  <int value="20" label="PERMISSION_CLIPBOARD_READ_WRITE"/>
-  <int value="21" label="PERMISSION_VR"/>
-  <int value="22" label="PERMISSION_AR"/>
-  <int value="23" label="PERMISSION_STORAGE_ACCESS"/>
-  <int value="29" label="PERMISSION_U2F_API_REQUEST__REMOVED_IN_M117"/>
-  <int value="30" label="PERMISSION_TOP_LEVEL_STORAGE_ACCESS"/>
-  <int value="31" label="PERMISSION_MIDI"/>
-</enum>
-
-<enum name="PermissionSourceUI">
-  <int value="0" label="Prompt"/>
-  <int value="1" label="Origin info bubble"/>
-  <int value="2" label="Site settings"/>
-  <int value="3" label="Page action bubble"/>
-  <int value="4" label="Permission settings from Android OS"/>
-  <int value="5" label="Inline settings as part of the event's UI"/>
-  <int value="6" label="Automatic revocation"/>
-  <int value="7" label="Unidentified source"/>
-</enum>
-
-<enum name="PermissionsPolicyConfiguration">
-  <int value="0" label="HEADER_NOT_PRESENT_OR_INVALID"/>
-  <int value="1" label="FEATURE_NOT_PRESENT"/>
-  <int value="2" label="FEATURE_ALLOWLIST_EXPLICITLY_MATCHES_ORIGIN"/>
-  <int value="3" label="FEATURE_ALLOWLIST_IS_WILDCARD"/>
-  <int value="4" label="FEATURE_ALLOWLIST_IS_NONE"/>
-  <int value="5" label="FEATURE_ALLOWLIST_DOES_NOT_MATCH_ORIGIN"/>
 </enum>
 
 <enum name="PermissionType">
@@ -49561,21 +49391,6 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="kTreatmentDelayed"/>
 </enum>
 
-<enum name="SerialChooserOutcome">
-  <int value="0" label="Chooser cancelled"/>
-  <int value="1" label="Chooser cancelled, no options available"/>
-  <int value="2" label="Permission granted"/>
-  <int value="3" label="Ephemeral permission granted"/>
-</enum>
-
-<enum name="SerialPermissionRevoked">
-  <int value="0" label="Persistent permission revoked by user"/>
-  <int value="1" label="Ephemeral permission revoked by user"/>
-  <int value="2" label="Ephemeral permission revoked on disconnect"/>
-  <int value="3" label="Persistent permission revoked by website"/>
-  <int value="4" label="Ephemeral permission revoked by website"/>
-</enum>
-
 <enum name="ServiceRequestResultType">
   <int value="0" label="Failure or response error"/>
   <int value="1" label="Success with empty suggestions"/>
@@ -53804,14 +53619,6 @@ This is true even if the type has been removed from the mojom file.
   <int value="29" label="WebGL2, Default"/>
 </enum>
 
-<enum name="WebHidChooserClosed">
-  <int value="0" label="User cancelled"/>
-  <int value="1" label="User cancelled, no devices available"/>
-  <int value="2" label="Permission granted"/>
-  <int value="3" label="Ephemeral permission granted"/>
-  <int value="4" label="Dismissed due to loss of focus"/>
-</enum>
-
 <enum name="WebOTPBackendAvailability">
   <int value="0" label="Available"/>
   <int value="1" label="API not connected"/>
@@ -54125,28 +53932,6 @@ Called by update_scheduler_enums.py.-->
   <int value="33" label="Cookies subpage opened"/>
   <int value="34" label="Cookies settings opened"/>
   <int value="35" label="'All sites' settings opened with a filter for FPS"/>
-</enum>
-
-<enum name="WebSiteSettingsAllSitesAction">
-  <int value="0" label="All Sites Loaded"/>
-  <int value="1" label="Reset Permissions"/>
-  <int value="2" label="Clear Data"/>
-  <int value="3" label="Enter Site Details"/>
-</enum>
-
-<enum name="WebSiteSettingsAllSitesAction2">
-  <int value="0" label="All Sites Loaded"/>
-  <int value="1" label="Reset Site Group Permissions"/>
-  <int value="2" label="Reset Origin Permission"/>
-  <int value="3" label="Clear All Data"/>
-  <int value="4" label="Clear Site Group Data"/>
-  <int value="5" label="Clear Origin Data"/>
-  <int value="6" label="Enter Site Details"/>
-  <int value="7" label="Remove Site Group"/>
-  <int value="8" label="Remove Origin"/>
-  <int value="9" label="Remove Origin Partitioned"/>
-  <int value="10" label="Filter sites by FPS owner"/>
-  <int value="11" label="Delete all site entries for a FPS owner"/>
 </enum>
 
 <enum name="WebSocketSendType">
