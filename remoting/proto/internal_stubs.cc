@@ -40,6 +40,7 @@ std::unique_ptr<ProvisionCorpMachineRequest> GetMachineProvisioningRequest(
     const std::string& owner_email,
     const std::string& fqdn,
     const std::string& public_key,
+    const std::string& version,
     std::optional<std::string> existing_host_id) {
   return std::make_unique<ProvisionCorpMachineRequest>();
 }
@@ -50,7 +51,8 @@ std::string GetReportProvisioningErrorRequestPath() {
 
 std::unique_ptr<ReportProvisioningErrorRequest>
 GetReportProvisioningErrorRequest(const std::string& host_id,
-                                  const std::string& error_message) {
+                                  const std::string& error_message,
+                                  const std::string& version) {
   return std::make_unique<ReportProvisioningErrorRequest>();
 }
 

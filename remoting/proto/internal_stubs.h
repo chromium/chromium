@@ -53,12 +53,14 @@ extern std::unique_ptr<ProvisionCorpMachineRequest>
 GetMachineProvisioningRequest(const std::string& owner_email,
                               const std::string& fqdn,
                               const std::string& public_key,
+                              const std::string& version,
                               std::optional<std::string> existing_host_id);
 
 extern std::string GetReportProvisioningErrorRequestPath();
 extern std::unique_ptr<ReportProvisioningErrorRequest>
 GetReportProvisioningErrorRequest(const std::string& host_id,
-                                  const std::string& error_message);
+                                  const std::string& error_message,
+                                  const std::string& version);
 
 extern std::string GetSendHeartbeatRequestPath();
 extern std::unique_ptr<SendHeartbeatRequest> GetSendHeartbeatRequest(

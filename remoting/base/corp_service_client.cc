@@ -5,9 +5,11 @@
 #include "remoting/base/corp_service_client.h"
 
 #include "base/functional/bind.h"
+#include "base/strings/stringize_macros.h"
 #include "remoting/base/protobuf_http_request.h"
 #include "remoting/base/protobuf_http_request_config.h"
 #include "remoting/base/service_urls.h"
+#include "remoting/base/version.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(REMOTING_INTERNAL)
@@ -76,11 +78,11 @@ void CorpServiceClient::ProvisionCorpMachine(
           policy_exception_justification:
             "Not implemented."
         })");
-  ExecuteRequest(traffic_annotation,
-                 internal::GetMachineProvisioningRequestPath(),
-                 internal::GetMachineProvisioningRequest(
-                     owner_email, fqdn, public_key, existing_host_id),
-                 std::move(callback));
+  ExecuteRequest(
+      traffic_annotation, internal::GetMachineProvisioningRequestPath(),
+      internal::GetMachineProvisioningRequest(
+          owner_email, fqdn, public_key, STRINGIZE(VERSION), existing_host_id),
+          std::move(callback));
 }
 
 void CorpServiceClient::ReportProvisioningError(
@@ -121,8 +123,8 @@ void CorpServiceClient::ReportProvisioningError(
         })");
   ExecuteRequest(
       traffic_annotation, internal::GetReportProvisioningErrorRequestPath(),
-      internal::GetReportProvisioningErrorRequest(host_id, error_message),
-      std::move(callback));
+      internal::GetReportProvisioningErrorRequest(
+          host_id, error_message, STRINGIZE(VERSION)), std::move(callback));
 }
 
 void CorpServiceClient::CancelPendingRequests() {
