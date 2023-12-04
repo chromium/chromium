@@ -193,6 +193,8 @@
              "--disable-features=CanvasOopRasterization"],
     "expires": "Jul 1, 2023"
   },
+
+  "This never expires because it tests a shipping configuration",
   {
     "prefix": "prefer_compositing_to_lcd_text",
     "platforms": ["Linux", "Mac", "Win", "Fuchsia"],
@@ -201,7 +203,8 @@
               "scrollbars"],
     "args": ["--enable-prefer-compositing-to-lcd-text",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "owners": ["paint-dev@chromium.org"],
+    "expires": "never"
   },
   {
     "prefix": "threaded-no-composited-antialiasing",
@@ -214,6 +217,7 @@
 
   "The skipped base test requires a compositor to pass as root scrollbar scrolling",
   "is always done on the compositor thread",
+  "This never expires because it tests a shipping configuration",
   {
     "prefix": "threaded-prefer-compositing",
     "platforms": ["Linux", "Mac", "Win"],
@@ -225,7 +229,8 @@
     "exclusive_tests": ["fast/scrolling/scrollbars/mouse-scrolling-on-div-scrollbar-thumb-scaled.html"],
     "args": ["--enable-threaded-compositing",
              "--enable-prefer-compositing-to-lcd-text"],
-    "expires": "Jul 1, 2023"
+    "owners": ["paint-dev@chromium.org"],
+    "expires": "never"
   },
   {
     "prefix": "gpu-rasterization",
