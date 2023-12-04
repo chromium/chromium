@@ -224,48 +224,27 @@ enum class PolicyDeviceIdValidity {
 // keep the names without format specifiers (e.g. %s) or add a comment how the
 // name could be expanded.
 inline constexpr char kMetricUserPolicyRefresh[] = "Enterprise.PolicyRefresh2";
-inline constexpr char kMetricUserPolicyRefreshFcm[] =
-    "Enterprise.FCMInvalidationService.PolicyRefresh2";
 
 inline constexpr char kMetricUserPolicyInvalidations[] =
     "Enterprise.PolicyInvalidations";
-inline constexpr char kMetricUserPolicyInvalidationsFcm[] =
-    "Enterprise.FCMInvalidationService.PolicyInvalidations";
 
 inline constexpr char kMetricDevicePolicyRefresh[] =
     "Enterprise.DevicePolicyRefresh3";
-inline constexpr char kMetricDevicePolicyRefreshFcm[] =
-    "Enterprise.FCMInvalidationService.DevicePolicyRefresh3";
 
 inline constexpr char kMetricDevicePolicyInvalidations[] =
     "Enterprise.DevicePolicyInvalidations2";
-inline constexpr char kMetricDevicePolicyInvalidationsFcm[] =
-    "Enterprise.FCMInvalidationService.DevicePolicyInvalidations2";
 
 inline constexpr char kMetricDeviceLocalAccountPolicyRefresh[] =
     "Enterprise.DeviceLocalAccountPolicyRefresh3";
-inline constexpr char kMetricDeviceLocalAccountPolicyRefreshFcm[] =
-    "Enterprise.FCMInvalidationService.DeviceLocalAccountPolicyRefresh3";
 
 inline constexpr char kMetricDeviceLocalAccountPolicyInvalidations[] =
     "Enterprise.DeviceLocalAccountPolicyInvalidations2";
-inline constexpr char kMetricDeviceLocalAccountPolicyInvalidationsFcm[] =
-    "Enterprise.FCMInvalidationService.DeviceLocalAccountPolicyInvalidations2";
 
 inline constexpr char kMetricCBCMPolicyRefresh[] =
     "Enterprise.CBCMPolicyRefresh";
-inline constexpr char kMetricCBCMPolicyRefreshFcm[] =
-    "Enterprise.FCMInvalidationService.CBCMPolicyRefresh";
 
 inline constexpr char kMetricCBCMPolicyInvalidations[] =
     "Enterprise.CBCMPolicyInvalidations";
-inline constexpr char kMetricCBCMPolicyInvalidationsFcm[] =
-    "Enterprise.FCMInvalidationService.CBCMPolicyInvalidations";
-
-inline constexpr char kMetricPolicyInvalidationRegistration[] =
-    "Enterprise.PolicyInvalidationsRegistrationResult";
-inline constexpr char kMetricPolicyInvalidationRegistrationFcm[] =
-    "Enterprise.FCMInvalidationService.PolicyInvalidationsRegistrationResult";
 
 inline constexpr char kMetricUserRemoteCommandInvalidations[] =
     "Enterprise.UserRemoteCommandInvalidations";
@@ -273,9 +252,6 @@ inline constexpr char kMetricDeviceRemoteCommandInvalidations[] =
     "Enterprise.DeviceRemoteCommandInvalidations";
 inline constexpr char kMetricCBCMRemoteCommandInvalidations[] =
     "Enterprise.CBCMRemoteCommandInvalidations";
-
-inline constexpr char kMetricRemoteCommandInvalidationsRegistrationResult[] =
-    "Enterprise.RemoteCommandInvalidationsRegistrationResult";
 
 inline constexpr char kMetricUserRemoteCommandReceived[] =
     "Enterprise.UserRemoteCommand.Received";

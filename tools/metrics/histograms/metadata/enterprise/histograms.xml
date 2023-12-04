@@ -2033,148 +2033,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.FCMInvalidationService.CBCMPolicyInvalidations"
-    enum="EnterprisePolicyInvalidations" expires_after="2023-01-15">
-  <owner>anthonyvd@chromium.org</owner>
-  <owner>chrome-enterprise-team-core@google.com</owner>
-  <summary>
-    Events for counting CBCM policy invalidations received with and without
-    payloads. Invalidations indicate that a policy has been updated and should
-    be refreshed. Payloads provide context about the policy update, but may be
-    absent if dropped by the invalidation service. Subset of
-    &quot;Enterprise.CBCMPolicyInvalidations&quot;. Gets recorded only when
-    FCMInvalidationService is used as InvalidationService.
-  </summary>
-</histogram>
-
-<histogram name="Enterprise.FCMInvalidationService.CBCMPolicyRefresh"
-    enum="EnterprisePolicyRefresh" expires_after="2023-01-15">
-  <owner>anthonyvd@chromium.org</owner>
-  <owner>chrome-enterprise-team-core@google.com</owner>
-  <summary>
-    Events measuring effectiveness of refreshing CBCM policy when invalidations
-    are received from a service. For each refresh, indicates whether the policy
-    changed, and whether the policy was invalidated at the time of the refresh.
-    Subset of &quot;Enterprise.CBCMPolicyRefresh&quot;. Gets recorded only when
-    FCMInvalidationService is used as InvalidationService.
-  </summary>
-</histogram>
-
-<histogram
-    name="Enterprise.FCMInvalidationService.DeviceLocalAccountPolicyInvalidations2"
-    enum="EnterprisePolicyInvalidations" expires_after="2024-06-01">
-  <owner>asumaneev@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Events for counting device local account policy invalidations received with
-    and without payloads. Invalidations indicate that a policy has been updated
-    and should be refreshed. Payloads provide context about the policy update,
-    but may be absent if dropped by the invalidation service. Subset of
-    &quot;Enterprise.DeviceLocalAccountPolicyInvalidations2&quot;. Gets recorded
-    only when FCMInvalidationService is used as InvalidationService.
-
-    As opposed to current histogram,
-    Enterprise.FCMInvalidationService.DevicePolicyInvalidations2 counts only
-    events of device policy invalidations.
-  </summary>
-</histogram>
-
-<histogram
-    name="Enterprise.FCMInvalidationService.DeviceLocalAccountPolicyRefresh3"
-    enum="EnterprisePolicyRefresh" expires_after="2024-06-01">
-  <owner>asumaneev@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Events measuring effectiveness of refreshing device local account policy
-    when invalidations are received from a service. For each refresh, indicates
-    whether the policy changed, and whether the policy was invalidated at the
-    time of the refresh. Subset of
-    &quot;Enterprise.DeviceLocalAccountPolicyRefresh3&quot;. Gets recorded only
-    when FCMInvalidationService is used as InvalidationService.
-
-    As opposed to current histogram,
-    Enterprise.FCMInvalidationService.DevicePolicyRefresh3 counts only events of
-    refreshing device policies.
-  </summary>
-</histogram>
-
-<histogram name="Enterprise.FCMInvalidationService.DevicePolicyInvalidations2"
-    enum="EnterprisePolicyInvalidations" expires_after="2024-06-01">
-  <owner>asumaneev@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Events for counting device policy invalidations received with and without
-    payloads. Invalidations indicate that a policy has been updated and should
-    be refreshed. Payloads provide context about the policy update, but may be
-    absent if dropped by the invalidation service. Subset of
-    &quot;Enterprise.DevicePolicyInvalidations2&quot;. Gets recorded only when
-    FCMInvalidationService is used as InvalidationService.
-
-    As opposed to current histogram,
-    Enterprise.FCMInvalidationService.DeviceLocalAccountPolicyInvalidations2
-    counts only events of device local account policy invalidations.
-  </summary>
-</histogram>
-
-<histogram name="Enterprise.FCMInvalidationService.DevicePolicyRefresh3"
-    enum="EnterprisePolicyRefresh" expires_after="2024-06-01">
-  <owner>asumaneev@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Events measuring effectiveness of refreshing device policy when
-    invalidations are received from a service. For each refresh, indicates
-    whether the policy changed, and whether the policy was invalidated at the
-    time of the refresh. Subset of &quot;Enterprise.DevicePolicyRefresh3&quot;.
-    Gets recorded only when FCMInvalidationService is used as
-    InvalidationService.
-
-    As opposed to current histogram,
-    Enterprise.FCMInvalidationService.DeviceLocalAccountPolicyRefresh3 counts
-    only events of refreshing device local account policies.
-  </summary>
-</histogram>
-
-<histogram name="Enterprise.FCMInvalidationService.PolicyInvalidations"
-    enum="EnterprisePolicyInvalidations" expires_after="2024-06-01">
-  <owner>asumaneev@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Events for counting user policy invalidations received with and without
-    payloads. Invalidations indicate that a policy has been updated and should
-    be refreshed. Payloads provide context about the policy update, but may be
-    absent if dropped by the invalidation service. Subset of
-    &quot;Enterprise.PolicyInvalidations&quot;. Gets recorded only when
-    FCMInvalidationService is used as InvalidationService.
-  </summary>
-</histogram>
-
-<histogram
-    name="Enterprise.FCMInvalidationService.PolicyInvalidationsRegistrationResult"
-    enum="BooleanSuccess" expires_after="2024-06-01">
-  <owner>asumaneev@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Tracks the result of registration for policy invalidations. It will fail
-    when duplicate invalidation names are used for different policies due to
-    http://b/119860379. Subset of
-    &quot;Enterprise.PolicyInvalidationsRegistrationResult&quot;. Gets recorded
-    only when FCMInvalidationService is used as InvalidationService.
-  </summary>
-</histogram>
-
-<histogram name="Enterprise.FCMInvalidationService.PolicyRefresh2"
-    enum="EnterprisePolicyRefresh" expires_after="2024-06-01">
-  <owner>asumaneev@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Events measuring effectiveness of refreshing user policy when invalidations
-    are received from a service. For each refresh, indicates whether the policy
-    changed, and whether the policy was invalidated at the time of the refresh.
-    Subset of &quot;Enterprise.PolicyRefresh2&quot;. Gets recorded only when
-    FCMInvalidationService is used as InvalidationService.
-  </summary>
-</histogram>
-
 <histogram name="Enterprise.InvalidDevicePolicyFilesStatus"
     enum="InvalidDevicePolicyFilesStatus" expires_after="2024-04-28">
   <owner>emaxx@chromium.org</owner>
@@ -2446,17 +2304,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.PolicyInvalidationsRegistrationResult"
-    enum="BooleanSuccess" expires_after="2024-06-01">
-  <owner>asumaneev@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Tracks the result of registration for policy invalidations. It will fail
-    when duplicate invalidation names are used for different policies due to
-    http://b/119860379.
-  </summary>
-</histogram>
-
 <histogram name="Enterprise.PolicyLoadStatus" enum="EnterprisePolicyLoadStatus"
     expires_after="M82">
   <owner>mnissler@chromium.org</owner>
@@ -2603,19 +2450,6 @@ chromium-metrics-reviews@google.com.
     next chrome run. This metric tracks the recorded session length on an
     enrolled device rounded down to the nearest 10-minute bucket and capped at
     24 hours.
-  </summary>
-</histogram>
-
-<histogram name="Enterprise.RemoteCommandInvalidationsRegistrationResult"
-    enum="BooleanSuccess" expires_after="2024-06-01">
-  <owner>asumaneev@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Tracks whether remote commands invalidator registered for corresponding
-    invalidations. In case of success the invalidator is able to receive
-    incoming invalidations.
-
-    Metric is similar to Enterprise.PolicyInvalidationsRegistrationResult.
   </summary>
 </histogram>
 

@@ -65,9 +65,6 @@ void RecordPolicyRefreshMetric(PolicyInvalidationScope scope,
   base::UmaHistogramEnumeration(
       CloudPolicyInvalidator::GetPolicyRefreshMetricName(scope),
       metric_policy_refresh, METRIC_POLICY_REFRESH_SIZE);
-  base::UmaHistogramEnumeration(
-      CloudPolicyInvalidator::GetPolicyRefreshFcmMetricName(scope),
-      metric_policy_refresh, METRIC_POLICY_REFRESH_SIZE);
 }
 
 void RecordPolicyInvalidationMetric(PolicyInvalidationScope scope,
@@ -77,9 +74,6 @@ void RecordPolicyInvalidationMetric(PolicyInvalidationScope scope,
       GetInvalidationMetric(is_missing_payload, is_expired);
   base::UmaHistogramEnumeration(
       CloudPolicyInvalidator::GetPolicyInvalidationMetricName(scope),
-      policy_invalidation_type, POLICY_INVALIDATION_TYPE_SIZE);
-  base::UmaHistogramEnumeration(
-      CloudPolicyInvalidator::GetPolicyInvalidationFcmMetricName(scope),
       policy_invalidation_type, POLICY_INVALIDATION_TYPE_SIZE);
 }
 
@@ -123,21 +117,6 @@ const char* CloudPolicyInvalidator::GetPolicyRefreshMetricName(
 }
 
 // static
-const char* CloudPolicyInvalidator::GetPolicyRefreshFcmMetricName(
-    PolicyInvalidationScope scope) {
-  switch (scope) {
-    case PolicyInvalidationScope::kUser:
-      return kMetricUserPolicyRefreshFcm;
-    case PolicyInvalidationScope::kDevice:
-      return kMetricDevicePolicyRefreshFcm;
-    case PolicyInvalidationScope::kDeviceLocalAccount:
-      return kMetricDeviceLocalAccountPolicyRefreshFcm;
-    case PolicyInvalidationScope::kCBCM:
-      return kMetricCBCMPolicyRefreshFcm;
-  }
-}
-
-// static
 const char* CloudPolicyInvalidator::GetPolicyInvalidationMetricName(
     PolicyInvalidationScope scope) {
   switch (scope) {
@@ -149,21 +128,6 @@ const char* CloudPolicyInvalidator::GetPolicyInvalidationMetricName(
       return kMetricDeviceLocalAccountPolicyInvalidations;
     case PolicyInvalidationScope::kCBCM:
       return kMetricCBCMPolicyInvalidations;
-  }
-}
-
-// static
-const char* CloudPolicyInvalidator::GetPolicyInvalidationFcmMetricName(
-    PolicyInvalidationScope scope) {
-  switch (scope) {
-    case PolicyInvalidationScope::kUser:
-      return kMetricUserPolicyInvalidationsFcm;
-    case PolicyInvalidationScope::kDevice:
-      return kMetricDevicePolicyInvalidationsFcm;
-    case PolicyInvalidationScope::kDeviceLocalAccount:
-      return kMetricDeviceLocalAccountPolicyInvalidationsFcm;
-    case PolicyInvalidationScope::kCBCM:
-      return kMetricCBCMPolicyInvalidationsFcm;
   }
 }
 
@@ -430,10 +394,6 @@ void CloudPolicyInvalidator::Register(const invalidation::Topic& topic) {
   // Update subscription with the invalidation service.
   const bool success =
       invalidation_service_->UpdateInterestedTopics(this, /*topics=*/{topic});
-
-  base::UmaHistogramBoolean(kMetricPolicyInvalidationRegistration, success);
-  base::UmaHistogramBoolean(kMetricPolicyInvalidationRegistrationFcm, success);
-
   CHECK(success) << "Could not subscribe to topic: " << topic;
 }
 

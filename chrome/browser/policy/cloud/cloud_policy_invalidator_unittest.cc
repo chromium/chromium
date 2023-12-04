@@ -831,10 +831,7 @@ class CloudPolicyInvalidatorUserTypedTest
   CloudPolicyInvalidatorUserTypedTest() = default;
 
   base::HistogramBase::Count GetCount(MetricPolicyRefresh metric);
-  base::HistogramBase::Count GetCountFcm(MetricPolicyRefresh metric);
   base::HistogramBase::Count GetInvalidationCount(PolicyInvalidationType type);
-  base::HistogramBase::Count GetInvalidationCountFcm(
-      PolicyInvalidationType type);
 
  private:
   // CloudPolicyInvalidatorTest:
@@ -850,28 +847,12 @@ base::HistogramBase::Count CloudPolicyInvalidatorUserTypedTest::GetCount(
   return histogram_tester_.GetHistogramSamplesSinceCreation(metric_name)
       ->GetCount(metric);
 }
-base::HistogramBase::Count CloudPolicyInvalidatorUserTypedTest::GetCountFcm(
-    MetricPolicyRefresh metric) {
-  const char* metric_name =
-      CloudPolicyInvalidator::GetPolicyRefreshFcmMetricName(
-          GetPolicyInvalidationScope());
-  return histogram_tester_.GetHistogramSamplesSinceCreation(metric_name)
-      ->GetCount(metric);
-}
+
 base::HistogramBase::Count
 CloudPolicyInvalidatorUserTypedTest::GetInvalidationCount(
     PolicyInvalidationType type) {
   const char* metric_name =
       CloudPolicyInvalidator::GetPolicyInvalidationMetricName(
-          GetPolicyInvalidationScope());
-  return histogram_tester_.GetHistogramSamplesSinceCreation(metric_name)
-      ->GetCount(type);
-}
-base::HistogramBase::Count
-CloudPolicyInvalidatorUserTypedTest::GetInvalidationCountFcm(
-    PolicyInvalidationType type) {
-  const char* metric_name =
-      CloudPolicyInvalidator::GetPolicyInvalidationFcmMetricName(
           GetPolicyInvalidationScope());
   return histogram_tester_.GetHistogramSamplesSinceCreation(metric_name)
       ->GetCount(type);
@@ -893,12 +874,6 @@ TEST_P(CloudPolicyInvalidatorUserTypedTest, RefreshMetricsUnregistered) {
   EXPECT_EQ(0, GetCount(METRIC_POLICY_REFRESH_INVALIDATED_CHANGED));
   EXPECT_EQ(0, GetCount(METRIC_POLICY_REFRESH_INVALIDATED_UNCHANGED));
 
-  EXPECT_EQ(0, GetCountFcm(METRIC_POLICY_REFRESH_CHANGED));
-  EXPECT_EQ(0, GetCountFcm(METRIC_POLICY_REFRESH_CHANGED_NO_INVALIDATIONS));
-  EXPECT_EQ(0, GetCountFcm(METRIC_POLICY_REFRESH_UNCHANGED));
-  EXPECT_EQ(0, GetCountFcm(METRIC_POLICY_REFRESH_INVALIDATED_CHANGED));
-  EXPECT_EQ(0, GetCountFcm(METRIC_POLICY_REFRESH_INVALIDATED_UNCHANGED));
-
   EXPECT_EQ(0, GetHighestHandledInvalidationVersion());
 }
 
@@ -913,32 +888,24 @@ TEST_P(CloudPolicyInvalidatorUserTypedTest, RefreshMetricsNoInvalidations) {
   StorePolicy(POLICY_OBJECT_A, 0, false /* policy_changed */);
   StorePolicy(POLICY_OBJECT_A, 0, true /* policy_changed */);
   EXPECT_EQ(1, GetCount(METRIC_POLICY_REFRESH_CHANGED_NO_INVALIDATIONS));
-  EXPECT_EQ(GetCount(METRIC_POLICY_REFRESH_CHANGED_NO_INVALIDATIONS),
-            GetCountFcm(METRIC_POLICY_REFRESH_CHANGED_NO_INVALIDATIONS));
 
   // If the clock advances less than the grace period, invalidations are OFF.
   AdvanceClock(base::Seconds(1));
   StorePolicy(POLICY_OBJECT_A, 0, false /* policy_changed */);
   StorePolicy(POLICY_OBJECT_A, 0, true /* policy_changed */);
   EXPECT_EQ(2, GetCount(METRIC_POLICY_REFRESH_CHANGED_NO_INVALIDATIONS));
-  EXPECT_EQ(GetCount(METRIC_POLICY_REFRESH_CHANGED_NO_INVALIDATIONS),
-            GetCountFcm(METRIC_POLICY_REFRESH_CHANGED_NO_INVALIDATIONS));
 
   // After the grace period elapses, invalidations are ON.
   AdvanceClock(base::Seconds(CloudPolicyInvalidator::kInvalidationGracePeriod));
   StorePolicy(POLICY_OBJECT_A, 0, false /* policy_changed */);
   StorePolicy(POLICY_OBJECT_A, 0, true /* policy_changed */);
   EXPECT_EQ(1, GetCount(METRIC_POLICY_REFRESH_CHANGED));
-  EXPECT_EQ(GetCount(METRIC_POLICY_REFRESH_CHANGED),
-            GetCountFcm(METRIC_POLICY_REFRESH_CHANGED));
 
   // After the invalidation service is disabled, invalidations are OFF.
   DisableInvalidationService();
   StorePolicy(POLICY_OBJECT_A, 0, false /* policy_changed */);
   StorePolicy(POLICY_OBJECT_A, 0, true /* policy_changed */);
   EXPECT_EQ(3, GetCount(METRIC_POLICY_REFRESH_CHANGED_NO_INVALIDATIONS));
-  EXPECT_EQ(GetCount(METRIC_POLICY_REFRESH_CHANGED_NO_INVALIDATIONS),
-            GetCountFcm(METRIC_POLICY_REFRESH_CHANGED_NO_INVALIDATIONS));
 
   // Enabling the invalidation service results in a new grace period, so
   // invalidations are OFF.
@@ -946,8 +913,6 @@ TEST_P(CloudPolicyInvalidatorUserTypedTest, RefreshMetricsNoInvalidations) {
   StorePolicy(POLICY_OBJECT_A, 0, false /* policy_changed */);
   StorePolicy(POLICY_OBJECT_A, 0, true /* policy_changed */);
   EXPECT_EQ(4, GetCount(METRIC_POLICY_REFRESH_CHANGED_NO_INVALIDATIONS));
-  EXPECT_EQ(GetCount(METRIC_POLICY_REFRESH_CHANGED_NO_INVALIDATIONS),
-            GetCountFcm(METRIC_POLICY_REFRESH_CHANGED_NO_INVALIDATIONS));
 
   // After the grace period elapses, invalidations are ON.
   AdvanceClock(base::Seconds(CloudPolicyInvalidator::kInvalidationGracePeriod));
@@ -959,17 +924,6 @@ TEST_P(CloudPolicyInvalidatorUserTypedTest, RefreshMetricsNoInvalidations) {
   EXPECT_EQ(6, GetCount(METRIC_POLICY_REFRESH_UNCHANGED));
   EXPECT_EQ(0, GetCount(METRIC_POLICY_REFRESH_INVALIDATED_CHANGED));
   EXPECT_EQ(0, GetCount(METRIC_POLICY_REFRESH_INVALIDATED_UNCHANGED));
-
-  EXPECT_EQ(GetCount(METRIC_POLICY_REFRESH_CHANGED),
-            GetCountFcm(METRIC_POLICY_REFRESH_CHANGED));
-  EXPECT_EQ(GetCount(METRIC_POLICY_REFRESH_CHANGED_NO_INVALIDATIONS),
-            GetCountFcm(METRIC_POLICY_REFRESH_CHANGED_NO_INVALIDATIONS));
-  EXPECT_EQ(GetCount(METRIC_POLICY_REFRESH_UNCHANGED),
-            GetCountFcm(METRIC_POLICY_REFRESH_UNCHANGED));
-  EXPECT_EQ(GetCount(METRIC_POLICY_REFRESH_INVALIDATED_CHANGED),
-            GetCountFcm(METRIC_POLICY_REFRESH_INVALIDATED_CHANGED));
-  EXPECT_EQ(GetCount(METRIC_POLICY_REFRESH_INVALIDATED_UNCHANGED),
-            GetCountFcm(METRIC_POLICY_REFRESH_INVALIDATED_UNCHANGED));
 
   EXPECT_EQ(0, GetHighestHandledInvalidationVersion());
 }
@@ -1001,17 +955,6 @@ TEST_P(CloudPolicyInvalidatorUserTypedTest, RefreshMetricsInvalidation) {
   EXPECT_EQ(5, GetCount(METRIC_POLICY_REFRESH_UNCHANGED));
   EXPECT_EQ(1, GetCount(METRIC_POLICY_REFRESH_INVALIDATED_CHANGED));
   EXPECT_EQ(0, GetCount(METRIC_POLICY_REFRESH_INVALIDATED_UNCHANGED));
-
-  EXPECT_EQ(GetCount(METRIC_POLICY_REFRESH_CHANGED),
-            GetCountFcm(METRIC_POLICY_REFRESH_CHANGED));
-  EXPECT_EQ(GetCount(METRIC_POLICY_REFRESH_CHANGED_NO_INVALIDATIONS),
-            GetCountFcm(METRIC_POLICY_REFRESH_CHANGED_NO_INVALIDATIONS));
-  EXPECT_EQ(GetCount(METRIC_POLICY_REFRESH_UNCHANGED),
-            GetCountFcm(METRIC_POLICY_REFRESH_UNCHANGED));
-  EXPECT_EQ(GetCount(METRIC_POLICY_REFRESH_INVALIDATED_CHANGED),
-            GetCountFcm(METRIC_POLICY_REFRESH_INVALIDATED_CHANGED));
-  EXPECT_EQ(GetCount(METRIC_POLICY_REFRESH_INVALIDATED_UNCHANGED),
-            GetCountFcm(METRIC_POLICY_REFRESH_INVALIDATED_UNCHANGED));
 
   EXPECT_EQ(V(5), GetHighestHandledInvalidationVersion());
 }
@@ -1066,16 +1009,6 @@ TEST_P(CloudPolicyInvalidatorUserTypedTest, ExpiredInvalidations) {
   EXPECT_EQ(1,
             GetInvalidationCount(POLICY_INVALIDATION_TYPE_NO_PAYLOAD_EXPIRED));
   EXPECT_EQ(2, GetInvalidationCount(POLICY_INVALIDATION_TYPE_EXPIRED));
-
-  EXPECT_EQ(GetInvalidationCount(POLICY_INVALIDATION_TYPE_NO_PAYLOAD),
-            GetInvalidationCountFcm(POLICY_INVALIDATION_TYPE_NO_PAYLOAD));
-  EXPECT_EQ(GetInvalidationCount(POLICY_INVALIDATION_TYPE_NORMAL),
-            GetInvalidationCountFcm(POLICY_INVALIDATION_TYPE_NORMAL));
-  EXPECT_EQ(
-      GetInvalidationCount(POLICY_INVALIDATION_TYPE_NO_PAYLOAD_EXPIRED),
-      GetInvalidationCountFcm(POLICY_INVALIDATION_TYPE_NO_PAYLOAD_EXPIRED));
-  EXPECT_EQ(GetInvalidationCount(POLICY_INVALIDATION_TYPE_EXPIRED),
-            GetInvalidationCountFcm(POLICY_INVALIDATION_TYPE_EXPIRED));
 
   EXPECT_EQ(0, GetHighestHandledInvalidationVersion());
 }
