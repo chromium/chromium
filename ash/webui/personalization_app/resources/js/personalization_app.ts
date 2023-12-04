@@ -120,6 +120,7 @@ export * from './wallpaper/sea_pen/sea_pen_actions.js';
 export {SeaPenImagesElement} from './wallpaper/sea_pen/sea_pen_images_element.js';
 export {SeaPenInputQueryElement} from './wallpaper/sea_pen/sea_pen_input_query_element.js';
 export {SeaPenRecentWallpapersElement} from './wallpaper/sea_pen/sea_pen_recent_wallpapers_element.js';
+export {SeaPenState} from './wallpaper/sea_pen/sea_pen_state.js';
 export {SeaPenTemplateQueryElement} from './wallpaper/sea_pen/sea_pen_template_query_element.js';
 export {setSeaPenProviderForTesting} from './wallpaper/sea_pen/sea_pen_interface_provider.js';
 export {SparklePlaceholderElement} from './wallpaper/sea_pen/sparkle_placeholder_element.js';
@@ -135,7 +136,6 @@ export {setWallpaperProviderForTesting} from './wallpaper/wallpaper_interface_pr
 export {WallpaperObserver} from './wallpaper/wallpaper_observer.js';
 export {WallpaperPreviewElement} from './wallpaper/wallpaper_preview_element.js';
 export {WallpaperSelectedElement} from './wallpaper/wallpaper_selected_element.js';
-export {SeaPenState} from './wallpaper/wallpaper_state.js';
 export {WallpaperSubpageElement} from './wallpaper/wallpaper_subpage_element.js';
 export {WallpaperSubpageTopElement} from './wallpaper/wallpaper_subpage_top_element.js';
 export {DailyRefreshType} from './wallpaper/wallpaper_state.js';

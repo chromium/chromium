@@ -12,7 +12,9 @@ import {PersonalizationState} from '../personalization_state.js';
 import {isImageDataUrl, isNonEmptyArray} from '../utils.js';
 
 import {DefaultImageSymbol, kDefaultImageSymbol} from './constants.js';
-import {SeaPenActionName} from './sea_pen/sea_pen_actions.js';
+import {SeaPenActionName, SeaPenActions} from './sea_pen/sea_pen_actions.js';
+import {seaPenReducer} from './sea_pen/sea_pen_reducer.js';
+import {SeaPenState} from './sea_pen/sea_pen_state';
 import {findAlbumById, isDefaultImage, isFilePath, isImageEqualToSelected} from './utils.js';
 import {WallpaperActionName} from './wallpaper_actions.js';
 import {DailyRefreshType, WallpaperState} from './wallpaper_state.js';
@@ -684,50 +686,19 @@ function googlePhotosReducer(
   }
 }
 
-function seaPenReducer(
-    state: WallpaperState['seaPen'], action: Actions,
-    _: PersonalizationState): WallpaperState['seaPen'] {
-  switch (action.name) {
-    case SeaPenActionName.BEGIN_SEARCH_SEA_PEN_THUMBNAILS:
-      return {
-        ...state,
-        thumbnailsLoading: true,
-      };
-    case SeaPenActionName.SET_SEA_PEN_THUMBNAILS:
-      assert(!!action.query, 'input text is empty.');
-      return {
-        ...state,
-        thumbnailsLoading: false,
-        thumbnails: action.images,
-      };
-    case SeaPenActionName.SET_RECENT_SEA_PEN_IMAGES:
-      const newRecentImages: FilePath[] =
-          Array.isArray(action.recentImages) ? action.recentImages : [];
-      return {
-        ...state,
-        recentImages: newRecentImages,
-        // Only keep the image data if the image is still in |newRecentImages|.
-        recentImageData: newRecentImages.reduce(
-            (result, next) => {
-              const key = next.path;
-              if (key && state.recentImageData.hasOwnProperty(key)) {
-                result[key] = state.recentImageData[key];
-              }
-              return result;
-            },
-            {} as typeof state.recentImageData),
-      };
-    case SeaPenActionName.SET_RECENT_SEA_PEN_IMAGE_DATA:
-      return {
-        ...state,
-        recentImageData: {
-          ...state.recentImageData,
-          [action.id]: action.data,
-        },
-      };
-    default:
-      return state;
+const allSeaPenActionNames =
+    new Set<Actions['name']>(Object.values(SeaPenActionName));
+
+function actionIsSeaPenAction(action: Actions): action is SeaPenActions {
+  return allSeaPenActionNames.has(action.name);
+}
+
+function seaPenReducerAdapter(
+    state: SeaPenState, action: Actions, _: PersonalizationState): SeaPenState {
+  if (actionIsSeaPenAction(action)) {
+    return seaPenReducer(state, action);
   }
+  return state;
 }
 
 export const wallpaperReducers:
@@ -743,5 +714,5 @@ export const wallpaperReducers:
       shouldShowTimeOfDayWallpaperDialog:
           shouldShowTimeOfDayWallpaperDialogReducer,
       googlePhotos: googlePhotosReducer,
-      seaPen: seaPenReducer,
+      seaPen: seaPenReducerAdapter,
     };
