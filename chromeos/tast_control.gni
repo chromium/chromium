@@ -125,6 +125,10 @@ tast_disabled_tests_from_chrome_all = [
   # b/296913657
   "secagentd.ProcessEvents@amd64-generic",
 
+  # b/314682414, until test sync complete crrev.com/c/5078707
+  "apps.LaunchHelpAppFromShortcut.stable",
+  "apps.LaunchHelpAppFromShortcut.stable_guest",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
