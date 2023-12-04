@@ -706,4 +706,32 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithAutofillInfo) {
   EXPECT_TRUE(feedback_data->assistant_debug_info_allowed());
   EXPECT_TRUE(feedback_data->sys_info());
 }
+
+TEST_F(FeedbackPrivateApiUnittest, SendFeedbackAiFlow) {
+  const std::string args = R"([
+  {
+    "aiMetadata": "test-ai-metadata",
+    "categoryTag": "test-category",
+    "description": "test-desc",
+    "descriptionPlaceholder": "",
+    "email": "",
+    "flow": "ai",
+  }
+])";
+
+  const FeedbackParams expected_params{/*is_internal_email=*/false,
+                                       /*load_system_info=*/false,
+                                       /*send_tab_titles=*/false,
+                                       /*send_histograms=*/false,
+                                       /*send_bluetooth_logs=*/false,
+                                       /*send_wifi_debug_logs=*/false,
+                                       /*send_autofill_metadata=*/false};
+  auto feedback_data = RunSendFeedbackFunction(args, expected_params);
+
+  EXPECT_EQ(-1, feedback_data->product_id());
+  EXPECT_EQ("test-desc", feedback_data->description());
+  EXPECT_EQ("test-category", feedback_data->category_tag());
+  EXPECT_EQ("test-ai-metadata", feedback_data->ai_metadata());
+}
+
 }  // namespace extensions
