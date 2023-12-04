@@ -4,6 +4,8 @@
 
 #include "ash/system/input_device_settings/input_device_notifier.h"
 
+#include <functional>
+
 #include "ash/bluetooth_devices_observer.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
@@ -233,7 +235,7 @@ void GetAddedAndRemovedDevices(
   base::ranges::set_difference(connected_devices_ids, updated_device_list,
                                std::back_inserter(*devices_to_remove),
                                /*Comp=*/base::ranges::less(),
-                               /*Proj1=*/base::identity(),
+                               /*Proj1=*/std::identity(),
                                /*Proj2=*/ExtractDeviceIdFromInputDevice);
 }
 

@@ -5,12 +5,12 @@
 #ifndef BASE_TEST_TO_VECTOR_H_
 #define BASE_TEST_TO_VECTOR_H_
 
+#include <functional>
 #include <iterator>
 #include <type_traits>
 #include <utility>
 #include <vector>
 
-#include "base/functional/identity.h"
 #include "base/ranges/algorithm.h"
 #include "base/template_util.h"
 
@@ -24,7 +24,7 @@ namespace base::test {
 // auto vec = range | views:transform(proj) | ranges::to<std::vector>;
 //
 // Complexity: Exactly `size(range)` applications of `proj`.
-template <typename Range, typename Proj = identity>
+template <typename Range, typename Proj = std::identity>
 auto ToVector(Range&& range, Proj proj = {}) {
   using ProjectedType =
       std::invoke_result_t<Proj, decltype(*std::begin(range))>;

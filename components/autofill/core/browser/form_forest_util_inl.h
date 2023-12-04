@@ -8,8 +8,6 @@
 #include <functional>
 #include <iterator>
 
-#include "base/functional/identity.h"
-
 namespace autofill {
 namespace internal {
 
@@ -34,7 +32,7 @@ namespace internal {
 template <typename Range1,
           typename Range2,
           typename Fun,
-          typename Proj = base::identity>
+          typename Proj = std::identity>
 void for_each_in_set_difference(Range1&& r1,
                                 Range2&& r2,
                                 Fun fun,

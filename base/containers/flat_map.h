@@ -370,7 +370,7 @@ template <class Key,
           class KeyCompare = std::less<>,
           class Container = std::vector<std::pair<Key, Mapped>>,
           class InputContainer,
-          class Projection = base::identity>
+          class Projection = std::identity>
 constexpr flat_map<Key, Mapped, KeyCompare, Container> MakeFlatMap(
     const InputContainer& unprojected_elements,
     const KeyCompare& comp = KeyCompare(),

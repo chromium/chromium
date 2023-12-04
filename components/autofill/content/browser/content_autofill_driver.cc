@@ -4,6 +4,7 @@
 
 #include "components/autofill/content/browser/content_autofill_driver.h"
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <tuple>
@@ -110,7 +111,7 @@ void ContentAutofillDriver::TriggerFormExtractionInAllFrames(
                  form_extraction_finished_callback,
              const std::vector<bool>& successes) {
             std::move(form_extraction_finished_callback)
-                .Run(base::ranges::all_of(successes, base::identity()));
+                .Run(base::ranges::all_of(successes, std::identity()));
           },
           std::move(form_extraction_finished_callback)));
   for (ContentAutofillDriver* driver : drivers) {

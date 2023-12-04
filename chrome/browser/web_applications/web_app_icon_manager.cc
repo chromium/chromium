@@ -22,7 +22,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
-#include "base/functional/identity.h"
 #include "base/hash/hash.h"
 #include "base/location.h"
 #include "base/logging.h"

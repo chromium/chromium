@@ -10,7 +10,6 @@
 #include "ash/constants/ash_features.h"
 #include "base/barrier_callback.h"
 #include "base/functional/callback.h"
-#include "base/functional/identity.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/ash/download_status/display_manager.h"
@@ -87,7 +86,7 @@ void DownloadStatusUpdaterAsh::Invoke(DownloadStatusUpdaterClientFunction func,
       base::BarrierCallback<bool>(
           clients_.size(),
           base::BindOnce([](std::vector<bool> handled_by_client) {
-            return base::ranges::any_of(handled_by_client, base::identity());
+            return base::ranges::any_of(handled_by_client, std::identity());
           }).Then(std::move(callback)));
 
   for (auto& client : clients_) {

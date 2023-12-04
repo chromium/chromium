@@ -7,7 +7,9 @@
 #include <fcntl.h>
 #include <linux/input-event-codes.h>
 #include <linux/input.h>
+
 #include <cstring>
+#include <functional>
 #include <memory>
 
 #include "ash/constants/ash_features.h"
@@ -967,7 +969,7 @@ void KeyboardCapability::TrimKeyboardInfoMap() {
       cached_keyboard_info_ids, sorted_keyboards,
       std::back_inserter(keyboard_ids_to_remove),
       /*Comp=*/base::ranges::less(),
-      /*Proj1=*/base::identity(),
+      /*Proj1=*/std::identity(),
       /*Proj2=*/[](const KeyboardDevice& device) { return device.id; });
 
   for (const auto& id : keyboard_ids_to_remove) {

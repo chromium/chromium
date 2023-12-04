@@ -5,11 +5,10 @@
 #ifndef UI_DISPLAY_MANAGER_UTIL_DISPLAY_MANAGER_UTIL_H_
 #define UI_DISPLAY_MANAGER_UTIL_DISPLAY_MANAGER_UTIL_H_
 
+#include <functional>
 #include <string>
 #include <vector>
 
-#include "base/functional/identity.h"
-#include "base/ranges/algorithm.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
@@ -135,7 +134,7 @@ DISPLAY_MANAGER_EXPORT void SortDisplayIdList(DisplayIdList* list);
 DISPLAY_MANAGER_EXPORT bool IsDisplayIdListSorted(const DisplayIdList& list);
 
 // Generate sorted DisplayIdList from iterators.
-template <typename Range, typename UnaryOperation = base::identity>
+template <typename Range, typename UnaryOperation = std::identity>
 DisplayIdList GenerateDisplayIdList(Range&& range, UnaryOperation op = {}) {
   DisplayIdList list;
   base::ranges::transform(range, std::back_inserter(list), op);

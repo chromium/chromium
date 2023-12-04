@@ -252,9 +252,9 @@ TEST(RangesTest, FindEnd) {
   Int ints2[] = {{4}, {5}, {6}};
 
   EXPECT_EQ(array3 + 15, ranges::find_end(array3, ints1, ranges::equal_to{},
-                                          identity{}, &Int::value));
+                                          std::identity{}, &Int::value));
   EXPECT_EQ(ranges::end(array3),
-            ranges::find_end(array3, ints2, ranges::equal_to{}, identity{},
+            ranges::find_end(array3, ints2, ranges::equal_to{}, std::identity{},
                              &Int::value));
 }
 
@@ -272,10 +272,10 @@ TEST(RangesTest, FindFirstOf) {
   Int ints2[] = {{7}, {8}, {9}};
 
   EXPECT_EQ(array3 + 1, ranges::find_first_of(array3, ints1, ranges::equal_to{},
-                                              identity{}, &Int::value));
+                                              std::identity{}, &Int::value));
   EXPECT_EQ(ranges::end(array3),
-            ranges::find_first_of(array3, ints2, ranges::equal_to{}, identity{},
-                                  &Int::value));
+            ranges::find_first_of(array3, ints2, ranges::equal_to{},
+                                  std::identity{}, &Int::value));
 }
 
 TEST(RangesTest, AdjacentFind) {
@@ -353,11 +353,11 @@ TEST(RangesTest, Equal) {
   static_assert(ranges::equal(ints, array2, lambda), "");
   EXPECT_TRUE(ranges::equal(ints, array2, lambda));
 
-  static_assert(
-      ranges::equal(array2, ints, ranges::equal_to{}, identity{}, &Int::value),
-      "");
-  EXPECT_TRUE(
-      ranges::equal(array2, ints, ranges::equal_to{}, identity{}, &Int::value));
+  static_assert(ranges::equal(array2, ints, ranges::equal_to{}, std::identity{},
+                              &Int::value),
+                "");
+  EXPECT_TRUE(ranges::equal(array2, ints, ranges::equal_to{}, std::identity{},
+                            &Int::value));
 }
 
 TEST(RangesTest, IsPermutation) {

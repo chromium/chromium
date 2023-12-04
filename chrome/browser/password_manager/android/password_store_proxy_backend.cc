@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/password_manager/android/password_store_proxy_backend.h"
+
+#include <functional>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -12,7 +14,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
-#include "base/functional/identity.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -50,7 +51,7 @@ using MethodName = base::StrongAlias<struct MethodNameTag, std::string>;
 
 void InvokeCallbackWithCombinedStatus(base::OnceCallback<void(bool)> completion,
                                       std::vector<bool> statuses) {
-  std::move(completion).Run(base::ranges::all_of(statuses, base::identity()));
+  std::move(completion).Run(base::ranges::all_of(statuses, std::identity()));
 }
 
 std::string GetFallbackMetricNameForMethod(const MethodName& method_name) {

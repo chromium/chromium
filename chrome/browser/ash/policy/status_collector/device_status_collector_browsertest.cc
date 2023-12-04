@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <functional>
 #include <iterator>
 #include <memory>
 #include <string>
@@ -4134,7 +4135,7 @@ class DeviceStatusCollectorNetworkInterfacesTest
              base::ranges::equal(iface->eids().begin(), iface->eids().end(),
                                  kFakeSimSlots,
                                  kFakeSimSlots + std::size(kFakeSimSlots),
-                                 base::ranges::equal_to(), base::identity(),
+                                 base::ranges::equal_to(), std::identity(),
                                  &FakeSimSlotInfo::eid))) {
           found_match = true;
           break;

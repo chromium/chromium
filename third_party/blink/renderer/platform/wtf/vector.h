@@ -34,7 +34,6 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
-#include "base/functional/identity.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/template_util.h"
 #include "build/build_config.h"
@@ -326,7 +325,7 @@ struct VectorTypeOperations {
     }
   }
 
-  template <typename U, typename Proj = base::identity>
+  template <typename U, typename Proj = std::identity>
   static void UninitializedCopy(const U* src,
                                 const U* src_end,
                                 T* dst,
@@ -335,8 +334,7 @@ struct VectorTypeOperations {
     if (!LIKELY(dst && src)) {
       return;
     }
-    if constexpr (std::is_same_v<T, U> &&
-                  std::is_same_v<Proj, base::identity> &&
+    if constexpr (std::is_same_v<T, U> && std::is_same_v<Proj, std::identity> &&
                   VectorTraits<T>::kCanCopyWithMemcpy) {
       Copy(src, src_end, dst, origin);
     } else if (origin == VectorOperationOrigin::kConstruction) {
