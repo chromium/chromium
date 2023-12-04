@@ -435,7 +435,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(
         breadcrumbContainer,
-        [breadcrumbElement.i18n('wallpaperLabel'), 'Sea Pen', 'Flower']);
+        [breadcrumbElement.i18n('wallpaperLabel'), 'Sea Pen', 'Airbrushed']);
 
     const original = PersonalizationRouterElement.instance;
     const goToRoutePromise = new Promise<[Paths, Object]>(resolve => {

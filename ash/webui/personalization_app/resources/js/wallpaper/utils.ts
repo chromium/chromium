@@ -240,9 +240,9 @@ export function getSampleSeaPenTemplates(): SeaPenTemplate[] {
   const templates = [
     {
       id: SeaPenTemplateId.kFlower.toString(),
-      title: 'Flower',
-      text: `Flower type <${SeaPenTemplateChip.kFlowerType}> flower color <${
-          SeaPenTemplateChip.kFlowerColor}>`,
+      title: 'Airbrushed',
+      text: `A radiant <${SeaPenTemplateChip.kFlowerColor}> <${
+          SeaPenTemplateChip.kFlowerType}> in bloom`,
       preview: [{
         url: 'chrome://personalization/images/sea_pen_tile.svg',
       }],
@@ -334,8 +334,8 @@ export function getSampleSeaPenTemplates(): SeaPenTemplate[] {
     {
       id: SeaPenTemplateId.kMineral.toString(),
       title: 'Mineral',
-      text: `Mineral name <${SeaPenTemplateChip.kMineralName}> mineral color <${
-          SeaPenTemplateChip.kMineralColor}>`,
+      text: `A close-up image of <${SeaPenTemplateChip.kMineralName}> with <${
+          SeaPenTemplateChip.kMineralColor}> hues`,
       preview: [{
         url: 'chrome://personalization/images/sea_pen_tile.svg',
       }],
