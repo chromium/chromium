@@ -23,7 +23,7 @@ function clearCookies()
 {
     var xhr = new XMLHttpRequest;
     xhr.open("GET", resourceURL("cross-origin-set-cookies.php?clear=1"), false);
-    xhr.withCredentials = true;
+    xhr.withCredentials = false;
     xhr.send("");
 }
 

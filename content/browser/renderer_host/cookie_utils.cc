@@ -214,7 +214,7 @@ bool ShouldReportLegacyTechIssueForStatus(
 // LINT.ThenChange(//content/browser/renderer_host/cookie_utils.cc:should_report_dev_tools)
 
 // Logs cookie issues to DevTools Issues Panel and logs events to UseCounters
-// and UKM for a single cookie-accessed event. Does not log to the JS console.
+// and UKM for a single cookie-accessed event.
 // TODO(crbug.com/977040): Remove when no longer needed.
 void EmitCookieWarningsAndMetricsOnce(
     RenderFrameHostImpl* rfh,
@@ -250,6 +250,19 @@ void EmitCookieWarningsAndMetricsOnce(
               ? blink::mojom::CookieOperation::kReadCookie
               : blink::mojom::CookieOperation::kSetCookie,
           cookie_details->devtools_request_id);
+    }
+
+    // Log to the JS console if there is cookie affected by 3PCD.
+    if (status.HasExclusionReason(
+            net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT)) {
+      root_frame_host->AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kWarning,
+          "Blocked third-party cookie. Learn more in the Issues tab.");
+    } else if (status.HasWarningReason(
+                   net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT)) {
+      root_frame_host->AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kWarning,
+          "Third-party cookie will be blocked. Learn more in the Issues tab.");
     }
 
     if (cookie->access_result.status.ShouldWarn()) {
