@@ -14,6 +14,10 @@
 #import "components/search_engines/template_url_service.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "ios/chrome/browser/favicon/favicon_service_factory.h"
+#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
@@ -28,11 +32,15 @@
 @interface SearchEngineChoiceTableTestConsumer
     : NSObject <SearchEngineChoiceTableConsumer>
 @end
+
 @implementation SearchEngineChoiceTableTestConsumer
 
 @synthesize searchEngines = _searchEngines;
 
 - (void)reloadData {
+}
+
+- (void)faviconAttributesUpdatedForItem:(SnippetSearchEngineItem*)item {
 }
 
 @end
@@ -45,6 +53,18 @@ class SearchEngineChoiceTableMediatorTest : public PlatformTest {
     test_cbs_builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
+    test_cbs_builder.AddTestingFactory(
+        IOSChromeFaviconLoaderFactory::GetInstance(),
+        IOSChromeFaviconLoaderFactory::GetDefaultFactory());
+    test_cbs_builder.AddTestingFactory(
+        ios::FaviconServiceFactory::GetInstance(),
+        ios::FaviconServiceFactory::GetDefaultFactory());
+    test_cbs_builder.AddTestingFactory(
+        IOSChromeLargeIconServiceFactory::GetInstance(),
+        IOSChromeLargeIconServiceFactory::GetDefaultFactory());
+    test_cbs_builder.AddTestingFactory(
+        ios::HistoryServiceFactory::GetInstance(),
+        ios::HistoryServiceFactory::GetDefaultFactory());
     browser_state_ = test_cbs_builder.Build();
     DefaultSearchManager::SetFallbackSearchEnginesDisabledForTesting(true);
     template_url_service_ = ios::TemplateURLServiceFactory::GetForBrowserState(
@@ -57,9 +77,12 @@ class SearchEngineChoiceTableMediatorTest : public PlatformTest {
     // command-line flags.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kSearchEngineChoiceCountry, "BE");
+    FaviconLoader* faviconLoader =
+        IOSChromeFaviconLoaderFactory::GetForBrowserState(browser_state_.get());
     mediator_ = [[SearchEngineChoiceTableMediator alloc]
         initWithTemplateURLService:template_url_service_
-                       prefService:&pref_service_];
+                       prefService:&pref_service_
+                     faviconLoader:faviconLoader];
     // This is when the list of search engines is set
     mediator_.consumer = consumer_;
   }

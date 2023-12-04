@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/search_engine_choice_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
-#import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
@@ -15,7 +14,6 @@
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/cells/snippet_search_engine_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
-#import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "url/gurl.h"
 
 namespace {
@@ -41,26 +39,18 @@ UIImageView* CreateCheckedCircle() {
 }  // namespace
 
 @implementation SearchEngineChoiceTableViewController {
-  // FaviconLoader is a keyed service that uses LargeIconService to retrieve
-  // favicon images.
-  FaviconLoader* _faviconLoader;
   // Index of the selected row, if there is one.
   NSInteger _selectedRow;
 }
 
 @synthesize searchEngines = _searchEngines;
 
-- (instancetype)initWithFaviconLoader:(FaviconLoader*)faviconLoader {
-  self = [super initWithStyle:ChromeTableViewStyle()];
+- (instancetype)initWithStyle:(UITableViewStyle)style {
+  self = [super initWithStyle:style];
   if (self) {
-    _faviconLoader = faviconLoader;
     _selectedRow = -1;
   }
   return self;
-}
-
-- (void)choiceScreenWillDisappear {
-  _faviconLoader = nullptr;
 }
 
 - (void)scrollToBottom {
@@ -102,11 +92,6 @@ UIImageView* CreateCheckedCircle() {
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
   [self updateDidReachBottomFlag];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-  _faviconLoader = nullptr;
-  [super viewWillDisappear:animated];
 }
 
 #pragma mark - LegacyChromeTableViewController
@@ -182,27 +167,8 @@ UIImageView* CreateCheckedCircle() {
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
-  // If the view controller has already been dismissed, do not load anything.
-  if (!_faviconLoader) {
-    return cell;
-  }
-
-  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  SnippetSearchEngineItem* engineItem =
-      base::apple::ObjCCastStrict<SnippetSearchEngineItem>(item);
   SnippetSearchEngineCell* urlCell =
       base::apple::ObjCCastStrict<SnippetSearchEngineCell>(cell);
-
-  NSString* itemIdentifier = engineItem.uniqueIdentifier;
-  _faviconLoader->FaviconForPageUrl(
-      engineItem.URL, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
-      /*fallback_to_google_server=*/YES, ^(FaviconAttributes* attributes) {
-        // Only set favicon if the cell hasn't been reused.
-        if ([urlCell.cellUniqueIdentifier isEqualToString:itemIdentifier]) {
-          [urlCell.faviconView configureWithAttributes:attributes];
-        }
-      });
-
   UIImageView* circleView;
   if (_selectedRow >= 0 && indexPath.row == _selectedRow) {
     circleView = CreateCheckedCircle();
@@ -218,6 +184,10 @@ UIImageView* CreateCheckedCircle() {
 - (void)reloadData {
   [self loadModel];
   [self.tableView reloadData];
+}
+
+- (void)faviconAttributesUpdatedForItem:(SnippetSearchEngineItem*)item {
+  [self reconfigureCellsForItems:@[ item ]];
 }
 
 #pragma mark - Private

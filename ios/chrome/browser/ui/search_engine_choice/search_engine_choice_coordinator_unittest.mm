@@ -81,6 +81,8 @@
 class SearchEngineChoiceCoordinatorTest : public PlatformTest {
  protected:
   SearchEngineChoiceCoordinatorTest() {
+    feature_list_.InitWithFeatures(
+        {switches::kSearchEngineChoiceFre, switches::kSearchEngineChoice}, {});
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
@@ -99,9 +101,6 @@ class SearchEngineChoiceCoordinatorTest : public PlatformTest {
         ios::HistoryServiceFactory::GetDefaultFactory());
     browser_state_ = test_cbs_builder.Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
-
-    browser_state_->GetTestingPrefService()->registry()->RegisterInt64Pref(
-        prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp, 0);
   }
 
   ~SearchEngineChoiceCoordinatorTest() override {
@@ -111,7 +110,6 @@ class SearchEngineChoiceCoordinatorTest : public PlatformTest {
   }
 
   void CreateAndStartCoordinator() {
-    feature_list_.InitAndEnableFeature(switches::kSearchEngineChoice);
     base_view_controller_ = [[UIViewController alloc] init];
     [scoped_key_window_.Get() setRootViewController:base_view_controller_];
     coordinator_delegate_ =
@@ -130,7 +128,6 @@ class SearchEngineChoiceCoordinatorTest : public PlatformTest {
   }
 
   void CreateAndStartCoordinatorForFre() {
-    feature_list_.InitAndEnableFeature(switches::kSearchEngineChoiceFre);
     root_view_controller_ = [[UIViewController alloc] init];
     scoped_key_window_.Get().rootViewController = root_view_controller_;
     base_navigation_controller_ = [[UINavigationController alloc] init];

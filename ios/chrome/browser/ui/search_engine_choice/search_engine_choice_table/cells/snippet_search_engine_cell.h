@@ -16,15 +16,10 @@
 // The imageview that is displayed on the leading edge of the cell.  This
 // contains a favicon composited on top of an off-white background.
 @property(nonatomic, readonly, strong) FaviconView* faviconView;
-
 // The search engine name.
 @property(nonatomic, readonly, strong) UILabel* nameLabel;
-
 // The search engine snippet for the description.
 @property(nonatomic, readonly, strong) UILabel* snippetLabel;
-
-// Unique identifier that matches with one URLItem.
-@property(nonatomic, strong) NSString* cellUniqueIdentifier;
 
 @end
 

@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+class FaviconLoader;
 class PrefService;
 class TemplateURLService;
 @protocol SearchEngineChoiceTableConsumer;
@@ -16,6 +17,7 @@ class TemplateURLService;
 - (instancetype)initWithTemplateURLService:
                     (TemplateURLService*)templateURLService
                                prefService:(PrefService*)prefService
+                             faviconLoader:(FaviconLoader*)faviconLoader
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

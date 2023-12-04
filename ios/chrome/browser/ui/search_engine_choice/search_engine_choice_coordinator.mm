@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_mediator.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/search_engine_choice_table_mediator.h"
@@ -75,15 +76,16 @@
   [super start];
 
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  FaviconLoader* faviconLoader =
-      IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
   _searchEnginesTableViewController =
       [[SearchEngineChoiceTableViewController alloc]
-          initWithFaviconLoader:faviconLoader];
+          initWithStyle:ChromeTableViewStyle()];
+  FaviconLoader* faviconLoader =
+      IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
   _searchEnginesTableMediator = [[SearchEngineChoiceTableMediator alloc]
       initWithTemplateURLService:ios::TemplateURLServiceFactory::
                                      GetForBrowserState(browserState)
-                     prefService:browserState->GetPrefs()];
+                     prefService:browserState->GetPrefs()
+                   faviconLoader:faviconLoader];
   _searchEnginesTableMediator.consumer = _searchEnginesTableViewController;
   _searchEnginesTableViewController.delegate = self;
 
@@ -123,9 +125,10 @@
 
   [_whyAmISeeingThisCoordinator stop];
   _whyAmISeeingThisCoordinator = nil;
-  [_searchEnginesTableViewController choiceScreenWillDisappear];
+  _searchEnginesTableViewController.delegate = nil;
   _searchEnginesTableViewController = nil;
   [_searchEnginesTableMediator disconnect];
+  _searchEnginesTableMediator.consumer = nil;
   _searchEnginesTableMediator = nil;
   [_mediator disconnect];
   _mediator = nil;

@@ -30,13 +30,6 @@ class FaviconLoader;
 // YES if the table view reached the bottom at least once.
 @property(nonatomic, assign) BOOL didReachBottom;
 
-- (instancetype)initWithFaviconLoader:(FaviconLoader*)faviconLoader
-    NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
-
-- (void)choiceScreenWillDisappear;
-
 // Scrolls the table view to the bottom.
 - (void)scrollToBottom;
 

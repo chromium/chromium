@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
+@class FaviconAttributes;
 class GURL;
 
 // SearchEngineItem contains the model data for a SnippetSearchEngineCell.
@@ -22,8 +23,8 @@ class GURL;
 // page URL created by filling empty query word into the search engine's
 // searchable URL template(e.g. "http://www.google.com/?q=").
 @property(nonatomic, assign) GURL URL;
-// Identifier to match a URLItem with its URLCell.
-@property(nonatomic, readonly, copy) NSString* uniqueIdentifier;
+// Favicon attributes for the search engine.
+@property(nonatomic, readwrite, strong) FaviconAttributes* faviconAttributes;
 
 @end
 
