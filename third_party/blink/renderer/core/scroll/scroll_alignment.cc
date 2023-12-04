@@ -381,9 +381,13 @@ mojom::blink::ScrollIntoViewParamsPtr
 ScrollAlignment::CreateScrollIntoViewParams(
     const ScrollIntoViewOptions& options,
     const ComputedStyle& computed_style) {
-  mojom::blink::ScrollBehavior behavior =
-      (options.behavior() == "smooth") ? mojom::blink::ScrollBehavior::kSmooth
-                                       : mojom::blink::ScrollBehavior::kAuto;
+  mojom::blink::ScrollBehavior behavior = mojom::blink::ScrollBehavior::kAuto;
+  if (options.behavior() == "smooth") {
+    behavior = mojom::blink::ScrollBehavior::kSmooth;
+  }
+  if (options.behavior() == "instant") {
+    behavior = mojom::blink::ScrollBehavior::kInstant;
+  }
 
   auto align_x =
       AlignmentFromOptions(options, kHorizontalScroll, computed_style);
