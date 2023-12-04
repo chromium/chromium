@@ -35,7 +35,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/follow/model/follow_service_factory.h"
 #import "ios/chrome/browser/gcm/model/ios_chrome_gcm_profile_service_factory.h"
-#import "ios/chrome/browser/google/google_logo_service_factory.h"
+#import "ios/chrome/browser/google/model/google_logo_service_factory.h"
 #import "ios/chrome/browser/history/model/domain_diversity_reporter_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/history/model/top_sites_factory.h"

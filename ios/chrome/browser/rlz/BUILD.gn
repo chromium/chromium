@@ -13,7 +13,7 @@ source_set("rlz") {
     "//components/rlz",
     "//components/search_engines",
     "//ios/chrome/browser/application_context/model",
-    "//ios/chrome/browser/google",
+    "//ios/chrome/browser/google/model",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",

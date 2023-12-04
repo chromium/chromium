@@ -12,7 +12,7 @@
 #import "components/google/core/common/google_util.h"
 #import "components/omnibox/browser/omnibox_field_trial.h"
 #import "components/version_info/version_info.h"
-#import "ios/chrome/browser/google/google_brand.h"
+#import "ios/chrome/browser/google/model/google_brand.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/common/channel_info.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/google/google_brand.h"
+#import "ios/chrome/browser/google/model/google_brand.h"
 
 namespace ios {
 namespace google_brand {

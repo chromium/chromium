@@ -92,7 +92,7 @@ source_set("model") {
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/follow/model:service_factory",
     "//ios/chrome/browser/gcm/model",
-    "//ios/chrome/browser/google:google_logo",
+    "//ios/chrome/browser/google/model:google_logo",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/invalidation/model",
     "//ios/chrome/browser/language/model",
