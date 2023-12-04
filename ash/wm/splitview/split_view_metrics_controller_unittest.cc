@@ -215,4 +215,25 @@ TEST_F(SplitViewMetricsControllerTest, CloseSnapTwoWindowsDuration) {
                                           kSequentialSnapActionMaxTime, 1);
 }
 
+// Tests that snapping then toggling float between 2 windows doesn't crash
+// (b/314823042).
+TEST_F(SplitViewMetricsControllerTest, FloatToSnap) {
+  // Float `window1`.
+  WindowState* window_state1 = WindowState::Get(window1_.get());
+  const WindowFloatWMEvent float_event(
+      chromeos::FloatStartLocation::kBottomRight);
+  window_state1->OnWMEvent(&float_event);
+
+  // Snap then float `window2`.
+  WindowState* window_state2 = WindowState::Get(window2_.get());
+  const WindowSnapWMEvent snap_right(WM_EVENT_SNAP_SECONDARY,
+                                     chromeos::kOneThirdSnapRatio);
+  window_state2->OnWMEvent(&snap_right);
+  window_state2->OnWMEvent(&float_event);
+
+  // Snap then float `window1`.
+  window_state1->OnWMEvent(&snap_right);
+  window_state1->OnWMEvent(&float_event);
+}
+
 }  // namespace ash
