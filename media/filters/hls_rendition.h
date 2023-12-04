@@ -43,6 +43,9 @@ class MEDIA_EXPORT HlsRenditionHost {
   virtual void UpdateRenditionManifestUri(std::string role,
                                           GURL uri,
                                           base::OnceClosure cb) = 0;
+
+  // Used to set network speed (bits per second) for the adaptation selector.
+  virtual void UpdateNetworkSpeed(uint64_t bps) = 0;
 };
 
 class MEDIA_EXPORT HlsRendition {
@@ -71,7 +74,8 @@ class MEDIA_EXPORT HlsRendition {
   virtual void Stop() = 0;
 
   // Update playlist because we've adapted to a network or resolution change.
-  virtual void UpdatePlaylist(scoped_refptr<hls::MediaPlaylist> playlist) = 0;
+  virtual void UpdatePlaylist(scoped_refptr<hls::MediaPlaylist> playlist,
+                              std::optional<GURL> new_playlist_uri) = 0;
 
   static std::unique_ptr<HlsRendition> CreateRendition(
       ManifestDemuxerEngineHost* engine_host,

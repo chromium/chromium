@@ -9,14 +9,7 @@
 
 namespace media {
 
-// Chosen mostly arbitrarily.
-constexpr size_t kChunkSize = 1024 * 32;
-
 constexpr base::TimeDelta kBufferDuration = base::Seconds(10);
-
-// A nice round number, chosen to make sure that we get a good average network
-// speed calculation.
-constexpr size_t kMovingAverageSampleSize = 128;
 
 HlsRenditionImpl::~HlsRenditionImpl() {
   engine_host_->RemoveRole(role_);
@@ -35,7 +28,6 @@ HlsRenditionImpl::HlsRenditionImpl(ManifestDemuxerEngineHost* engine_host,
           /*seekable=*/duration.has_value())),
       role_(std::move(role)),
       duration_(duration),
-      fetch_time_(kMovingAverageSampleSize),
       media_playlist_uri_(std::move(media_playlist_uri)),
       last_download_time_(base::TimeTicks::Now()) {}
 
@@ -298,8 +290,12 @@ void HlsRenditionImpl::Stop() {
 }
 
 void HlsRenditionImpl::UpdatePlaylist(
-    scoped_refptr<hls::MediaPlaylist> playlist) {
+    scoped_refptr<hls::MediaPlaylist> playlist,
+    std::optional<GURL> new_playlist_uri) {
   segments_->SetNewPlaylist(std::move(playlist));
+  if (new_playlist_uri.has_value()) {
+    media_playlist_uri_ = new_playlist_uri.value();
+  }
 }
 
 base::TimeDelta HlsRenditionImpl::ClearOldSegments(base::TimeDelta media_time) {
@@ -374,10 +370,8 @@ void HlsRenditionImpl::OnSegmentData(base::OnceClosure cb,
   }
 
   auto fetch_duration = base::TimeTicks::Now() - net_req_start;
-  // Store the time it took to download this chunk. The time should be scaled
-  // for situations where we only have a few bytes left to download.
-  auto scaled = (fetch_duration * kChunkSize) / stream->buffer_size();
-  fetch_time_.AddSample(scaled);
+  auto bps = stream->buffer_size() * 8 / fetch_duration.InSecondsF();
+  rendition_host_->UpdateNetworkSpeed(bps);
 
   // After a seek especially, we will start loading content that comes
   // potentially much earlier than the seek time, and it's possible that the

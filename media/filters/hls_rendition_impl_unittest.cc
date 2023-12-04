@@ -464,7 +464,7 @@ TEST_F(HlsRenditionImplUnittest, TestPauseAndUnpause) {
   auto parsed = hls::MediaPlaylist::Parse(
       kSecondFetchLivePlaylist, GURL("http://example.com"), 3, nullptr);
   CHECK(parsed.has_value());
-  rendition->UpdatePlaylist(std::move(parsed).value());
+  rendition->UpdatePlaylist(std::move(parsed).value(), std::nullopt);
 
   // Once again, the pipeline finishes it's seeking, and a new media CheckState
   // event happens, this time for 200 seconds. Now the media_time is way past

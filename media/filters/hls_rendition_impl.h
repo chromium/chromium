@@ -34,7 +34,8 @@ class MEDIA_EXPORT HlsRenditionImpl : public HlsRendition {
   ManifestDemuxer::SeekResponse Seek(base::TimeDelta seek_time) override;
   void StartWaitingForSeek() override;
   void Stop() override;
-  void UpdatePlaylist(scoped_refptr<hls::MediaPlaylist> playlist) override;
+  void UpdatePlaylist(scoped_refptr<hls::MediaPlaylist> playlist,
+                      std::optional<GURL> new_playlist_uri) override;
 
  private:
   // A pending segment consists of the stream from which network data is fetched
@@ -99,9 +100,6 @@ class MEDIA_EXPORT HlsRenditionImpl : public HlsRendition {
 
   // Total duration of the playback.
   std::optional<base::TimeDelta> duration_;
-
-  // Record the time it takes to download content.
-  base::MovingAverage<base::TimeDelta, base::TimeDelta> fetch_time_;
 
   // The URI of the active rendition's playlist.
   GURL media_playlist_uri_;

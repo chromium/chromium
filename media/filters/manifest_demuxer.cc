@@ -224,6 +224,7 @@ void ManifestDemuxer::Stop() {
   cancelable_next_event_.Cancel();
   impl_->Stop();
   chunk_demuxer_->Stop();
+  host_ = nullptr;
 }
 
 base::TimeDelta ManifestDemuxer::GetStartTime() const {

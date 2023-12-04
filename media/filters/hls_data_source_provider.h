@@ -31,6 +31,7 @@ class MEDIA_EXPORT HlsDataSourceProvider {
   struct ReadStatusTraits {
     enum class Codes : StatusCodeType {
       kError,
+      kStopped,
       kAborted,
     };
     static constexpr StatusGroupType Group() {
