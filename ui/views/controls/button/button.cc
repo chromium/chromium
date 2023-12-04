@@ -9,8 +9,10 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/overloaded.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/actions/actions.h"
@@ -103,31 +105,41 @@ bool Button::DefaultButtonControllerDelegate::InDrag() {
   return button()->InDrag();
 }
 
+Button::PressedCallback::PressedCallback(base::OnceClosure closure)
+    : callback_(std::move(closure)) {}
+
 Button::PressedCallback::PressedCallback(
     Button::PressedCallback::Callback callback)
     : callback_(std::move(callback)) {}
 
 Button::PressedCallback::PressedCallback(base::RepeatingClosure closure)
-    : callback_(
-          base::BindRepeating([](base::RepeatingClosure closure,
-                                 const ui::Event& event) { closure.Run(); },
-                              std::move(closure))) {}
-
-Button::PressedCallback::PressedCallback(const PressedCallback&) = default;
+    : callback_(std::move(closure)) {}
 
 Button::PressedCallback::PressedCallback(PressedCallback&&) = default;
-
-Button::PressedCallback& Button::PressedCallback::operator=(
-    const PressedCallback&) = default;
 
 Button::PressedCallback& Button::PressedCallback::operator=(PressedCallback&&) =
     default;
 
 Button::PressedCallback::~PressedCallback() = default;
 
+Button::PressedCallback::operator bool() const {
+  return absl::visit([](const auto& callback) { return !callback.is_null(); },
+                     callback_);
+}
+
+void Button::PressedCallback::Run(const ui::Event& event) {
+  return absl::visit(
+      base::Overloaded{
+          [](base::OnceClosure& closure) { std::move(closure).Run(); },
+          [](const base::RepeatingClosure& closure) { closure.Run(); },
+          [&](const Callback& callback) { callback.Run(event); },
+      },
+      callback_);
+}
+
 Button::ScopedAnchorHighlight::ScopedAnchorHighlight(
     base::WeakPtr<Button> button)
-    : button_(button) {}
+    : button_(std::move(button)) {}
 Button::ScopedAnchorHighlight::~ScopedAnchorHighlight() {
   if (button_) {
     button_->ReleaseAnchorHighlight();
