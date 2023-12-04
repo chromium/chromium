@@ -132,7 +132,7 @@ def main() -> int:
                     else:
                         bug_result_string += result_string
         # Attach the analysis result for this bug.
-        if bug_id and args.attach_analysis_result:
+        if bug_id and args.attach_analysis_result and bug_result_string:
             bug_result_string = RESULT_TITLE + bug_result_string
             if RESULT_TITLE not in str(
                     monorail_api.get_comment_list('chromium', bug_id)):
