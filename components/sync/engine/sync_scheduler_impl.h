@@ -106,6 +106,8 @@ class SyncSchedulerImpl : public SyncScheduler {
     base::OnceClosure ready_task;
   };
 
+  // TODO(crbug.com/1448012): Rename this to something clearer, e.g.
+  // GlobalBackoffPolicy (with members kRespectBackoff / kIgnoreBackoff).
   enum JobPriority {
     // Non-canary jobs respect exponential backoff.
     NORMAL_PRIORITY,
@@ -137,7 +139,7 @@ class SyncSchedulerImpl : public SyncScheduler {
   static const char* GetModeString(Mode mode);
 
   // Invoke the syncer to perform a nudge job.
-  void DoNudgeSyncCycleJob(JobPriority priority);
+  void DoNudgeSyncCycleJob();
 
   // Invoke the syncer to perform a configuration job.
   void DoConfigurationSyncCycleJob(JobPriority priority);
@@ -186,17 +188,14 @@ class SyncSchedulerImpl : public SyncScheduler {
   // Helper to signal listeners about changed throttled or backed off types.
   void NotifyBlockedTypesChanged();
 
-  // Looks for pending work and, if it finds any, run this work at "canary"
-  // priority.
-  void TryCanaryJob();
+  // Looks for pending work and, if it finds any, runs this work at the given
+  // priority. TrySyncCycleJob just posts a call to TrySyncCycleJobImpl on the
+  // current thread.
+  void TrySyncCycleJob(JobPriority priority);
+  void TrySyncCycleJobImpl(JobPriority priority);
 
-  // At the moment TrySyncCycleJob just posts call to TrySyncCycleJobImpl on
-  // current thread. In the future it will request access token here.
-  void TrySyncCycleJob();
-  void TrySyncCycleJobImpl();
-
-  // Transitions out of the THROTTLED WaitInterval then calls TryCanaryJob().
-  // This function is for global throttling.
+  // Transitions out of the THROTTLED WaitInterval then triggers a
+  // CANARY_PRIORITY job. This is used for global throttling.
   void Unthrottle();
 
   // Called when a per-type throttling or backing off interval expires.
@@ -205,8 +204,8 @@ class SyncSchedulerImpl : public SyncScheduler {
   // Runs a normal nudge job when the scheduled timer expires.
   void PerformDelayedNudge();
 
-  // Attempts to exit EXPONENTIAL_BACKOFF by calling TryCanaryJob().
-  // This function is for global backoff.
+  // Attempts to exit EXPONENTIAL_BACKOFF by triggering a CANARY_PRIORITY job.
+  // This is used for global backoff.
   void ExponentialBackoffRetry();
 
   // Called when the root cause of the current connection error is fixed.
@@ -284,14 +283,6 @@ class SyncSchedulerImpl : public SyncScheduler {
   // TODO(crbug.com/1497926): Once `poll_timer_` is a WallClockTimer, this
   // should become a Time instead of TimeTicks.
   base::TimeTicks last_poll_reset_;
-
-  // next_sync_cycle_job_priority_ defines which priority will be used next
-  // time TrySyncCycleJobImpl is called. CANARY_PRIORITY allows syncer to run
-  // even if scheduler is in exponential backoff. This is needed for events that
-  // have chance of resolving previous error (e.g. network connection change
-  // after NETWORK_UNAVAILABLE error).
-  // It is reset back to NORMAL_PRIORITY on every call to TrySyncCycleJobImpl.
-  JobPriority next_sync_cycle_job_priority_ = NORMAL_PRIORITY;
 
   // One-shot timer for scheduling GU retry according to delay set by server.
   base::OneShotTimer retry_timer_;

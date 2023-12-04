@@ -144,11 +144,11 @@ void SyncSchedulerImpl::OnServerConnectionErrorFixed() {
   // 3. A nudge was saved previously due to not having a valid access token.
   // 4. A nudge was scheduled + saved while in configuration mode.
   //
-  // In all cases except (2), we want to retry contacting the server. We
-  // call TryCanaryJob to achieve this, and note that nothing -- not even a
+  // In all cases except (2), we want to retry contacting the server. We use
+  // CANARY_PRIORITY to achieve this, and note that nothing -- not even a
   // canary job -- can bypass a THROTTLED WaitInterval. The only thing that
   // has the authority to do that is the Unthrottle timer.
-  TryCanaryJob();
+  TrySyncCycleJob(CANARY_PRIORITY);
 }
 
 void SyncSchedulerImpl::Start(Mode mode, base::Time last_poll_time) {
@@ -190,7 +190,7 @@ void SyncSchedulerImpl::Start(Mode mode, base::Time last_poll_time) {
     nudge_tracker_.SetSyncCycleStartTime(TimeTicks::Now());
     if (nudge_tracker_.IsSyncRequired(GetEnabledAndUnblockedTypes()) &&
         CanRunNudgeJobNow(NORMAL_PRIORITY)) {
-      TrySyncCycleJob();
+      TrySyncCycleJob(NORMAL_PRIORITY);
     }
   }
 }
@@ -251,7 +251,7 @@ void SyncSchedulerImpl::ScheduleConfiguration(
     // Cache configuration parameters since TrySyncCycleJob() posts a task.
     pending_configure_params_ = std::make_unique<ConfigurationParams>(
         origin, types_to_download, std::move(ready_task));
-    TrySyncCycleJob();
+    TrySyncCycleJob(NORMAL_PRIORITY);
   } else {
     SDVLOG(2) << "No change in routing info, calling ready task directly.";
     std::move(ready_task).Run();
@@ -409,9 +409,8 @@ SyncSchedulerImpl::ConfigurationParams::ConfigurationParams(
 
 SyncSchedulerImpl::ConfigurationParams::~ConfigurationParams() = default;
 
-void SyncSchedulerImpl::DoNudgeSyncCycleJob(JobPriority priority) {
+void SyncSchedulerImpl::DoNudgeSyncCycleJob() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(CanRunNudgeJobNow(priority));
 
   ModelTypeSet types = GetEnabledAndUnblockedTypes();
   DVLOG(2) << "Will run normal mode sync cycle with types "
@@ -619,28 +618,14 @@ void SyncSchedulerImpl::Stop() {
     started_ = false;
 }
 
-// This is the only place where we invoke DoSyncCycleJob with canary
-// privileges.  Everyone else should use NORMAL_PRIORITY.
-void SyncSchedulerImpl::TryCanaryJob() {
-  next_sync_cycle_job_priority_ = CANARY_PRIORITY;
-  SDVLOG(2) << "Attempting canary job";
-  TrySyncCycleJob();
-}
-
-void SyncSchedulerImpl::TrySyncCycleJob() {
-  // Post call to TrySyncCycleJobImpl on current sequence. Later request for
-  // access token will be here.
+void SyncSchedulerImpl::TrySyncCycleJob(JobPriority priority) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&SyncSchedulerImpl::TrySyncCycleJobImpl,
-                                weak_ptr_factory_.GetWeakPtr()));
+                                weak_ptr_factory_.GetWeakPtr(), priority));
 }
 
-void SyncSchedulerImpl::TrySyncCycleJobImpl() {
+void SyncSchedulerImpl::TrySyncCycleJobImpl(JobPriority priority) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // TODO(treib): Pass this as a parameter instead.
-  JobPriority priority = next_sync_cycle_job_priority_;
-  next_sync_cycle_job_priority_ = NORMAL_PRIORITY;
 
   nudge_tracker_.SetSyncCycleStartTime(TimeTicks::Now());
 
@@ -652,7 +637,7 @@ void SyncSchedulerImpl::TrySyncCycleJobImpl() {
   } else if (CanRunNudgeJobNow(priority)) {
     if (nudge_tracker_.IsSyncRequired(GetEnabledAndUnblockedTypes())) {
       SDVLOG(2) << "Found pending nudge job";
-      DoNudgeSyncCycleJob(priority);
+      DoNudgeSyncCycleJob();
     } else if (((TimeTicks::Now() - last_poll_reset_) >= GetPollInterval())) {
       // TODO(crbug.com/1497926): When using a WallClockTimer to schedule
       // polling, use Time instead of TimeTicks for the above computation for
@@ -674,11 +659,11 @@ void SyncSchedulerImpl::PollTimerCallback() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!syncer_->IsSyncing());
 
-  TrySyncCycleJob();
+  TrySyncCycleJob(NORMAL_PRIORITY);
 }
 
 void SyncSchedulerImpl::RetryTimerCallback() {
-  TrySyncCycleJob();
+  TrySyncCycleJob(NORMAL_PRIORITY);
 }
 
 void SyncSchedulerImpl::Unthrottle() {
@@ -693,7 +678,7 @@ void SyncSchedulerImpl::Unthrottle() {
   // was just created (e.g via ScheduleNudgeImpl). The main implication is
   // that we're careful to update routing info (etc) with such potentially
   // stale canary jobs.
-  TryCanaryJob();
+  TrySyncCycleJob(CANARY_PRIORITY);
 }
 
 void SyncSchedulerImpl::OnTypesUnblocked() {
@@ -705,7 +690,7 @@ void SyncSchedulerImpl::OnTypesUnblocked() {
   // If not a good time, reschedule a new run.
   if (nudge_tracker_.IsSyncRequired(GetEnabledAndUnblockedTypes()) &&
       CanRunNudgeJobNow(NORMAL_PRIORITY)) {
-    TrySyncCycleJob();
+    TrySyncCycleJob(NORMAL_PRIORITY);
   } else {
     RestartWaiting();
   }
@@ -715,7 +700,7 @@ void SyncSchedulerImpl::PerformDelayedNudge() {
   // Circumstances may have changed since we scheduled this delayed nudge.
   // We must check to see if it's OK to run the job before we do so.
   if (CanRunNudgeJobNow(NORMAL_PRIORITY)) {
-    TrySyncCycleJob();
+    TrySyncCycleJob(NORMAL_PRIORITY);
   } else {
     // If we set |wait_interval_| while this PerformDelayedNudge was pending
     // callback scheduled to |retry_timer_|, it's possible we didn't re-schedule
@@ -726,7 +711,7 @@ void SyncSchedulerImpl::PerformDelayedNudge() {
 }
 
 void SyncSchedulerImpl::ExponentialBackoffRetry() {
-  TryCanaryJob();
+  TrySyncCycleJob(CANARY_PRIORITY);
 }
 
 void SyncSchedulerImpl::NotifyRetryTime(base::Time retry_time) {
