@@ -103,6 +103,11 @@ void PlusAddressCreationControllerDesktop::OnDialogDestroyed() {
   plus_profile_.reset();
 }
 
+PlusAddressCreationView*
+PlusAddressCreationControllerDesktop::get_view_for_testing() {
+  return dialog_delegate_.get();
+}
+
 void PlusAddressCreationControllerDesktop::set_suppress_ui_for_testing(
     bool should_suppress) {
   suppress_ui_for_testing_ = should_suppress;

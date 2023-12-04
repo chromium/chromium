@@ -165,6 +165,7 @@ static_library("ui") {
     "passwords/well_known_change_password_navigation_throttle.cc",
     "passwords/well_known_change_password_navigation_throttle.h",
     "plus_addresses/plus_address_creation_controller.h",
+    "plus_addresses/plus_address_creation_view.h",
     "prefs/pref_watcher.cc",
     "prefs/pref_watcher.h",
     "prefs/prefs_tab_helper.cc",

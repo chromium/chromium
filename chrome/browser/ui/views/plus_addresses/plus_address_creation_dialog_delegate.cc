@@ -7,9 +7,11 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller_desktop.h"
+#include "chrome/browser/ui/plus_addresses/plus_address_creation_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/plus_addresses/features.h"
@@ -18,10 +20,12 @@
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/color/color_id.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
@@ -176,27 +180,27 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
               views::DistanceMetric::DISTANCE_RELATED_BUTTON_HORIZONTAL))
           .Build());
 
-  views::MdTextButton* cancel =
+  cancel_button_ =
       buttons_view->AddChildView(std::make_unique<views::MdTextButton>(
           base::BindRepeating(
               &PlusAddressCreationDialogDelegate::HandleButtonPress,
               // Safe because this delegate outlives the Widget (and this view).
-              base::Unretained(this), ButtonType::kCancel),
+              base::Unretained(this), PlusAddressViewButtonType::kCancel),
           l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT)
 
               ));
-  cancel->SetTooltipText(
+  cancel_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT));
-  cancel->SetAccessibleName(
+  cancel_button_->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT));
-  cancel->SizeToPreferredSize();
+  cancel_button_->SizeToPreferredSize();
 
   confirm_button_ =
       buttons_view->AddChildView(std::make_unique<views::MdTextButton>(
           base::BindRepeating(
               &PlusAddressCreationDialogDelegate::HandleButtonPress,
               // Safe because this delegate outlives the Widget (and this view).
-              base::Unretained(this), ButtonType::kConfirm),
+              base::Unretained(this), PlusAddressViewButtonType::kConfirm),
           l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_OK_TEXT)));
   confirm_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_OK_TEXT));
@@ -223,7 +227,7 @@ void PlusAddressCreationDialogDelegate::OnWidgetInitialized() {
         views::Button::PressedCallback(base::BindRepeating(
             &PlusAddressCreationDialogDelegate::HandleButtonPress,
             // Safe because this outlives the BubbleFrameView.
-            base::Unretained(this), ButtonType::kClose)));
+            base::Unretained(this), PlusAddressViewButtonType::kClose)));
   }
 }
 
@@ -250,6 +254,7 @@ void PlusAddressCreationDialogDelegate::ShowReserveResult(
     plus_address_label_->SetText(
         l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_ERROR_MESSAGE));
   }
+  MaybeBlockUntilResultShows();
 }
 
 void PlusAddressCreationDialogDelegate::ShowConfirmResult(
@@ -269,30 +274,89 @@ void PlusAddressCreationDialogDelegate::ShowConfirmResult(
         l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_ERROR_MESSAGE));
     confirm_button_->SetEnabled(false);
   }
+  MaybeBlockUntilResultShows();
 }
 
-void PlusAddressCreationDialogDelegate::HandleButtonPress(ButtonType type) {
+void PlusAddressCreationDialogDelegate::HandleButtonPress(
+    PlusAddressViewButtonType type) {
   CHECK(GetBubbleFrameView());
 
   switch (type) {
-    case ButtonType::kConfirm: {
+    case PlusAddressViewButtonType::kConfirm: {
       controller_->OnConfirmed();
       // Show a progress bar that loops until the Confirm request is resolved.
       GetBubbleFrameView()->SetProgress(-1);
       return;
     }
-    case ButtonType::kCancel: {
+    case PlusAddressViewButtonType::kCancel: {
       controller_->OnCanceled();
       GetWidget()->CloseWithReason(
           views::Widget::ClosedReason::kCancelButtonClicked);
       return;
     }
-    case ButtonType::kClose: {
+    case PlusAddressViewButtonType::kClose: {
       controller_->OnCanceled();
       GetWidget()->CloseWithReason(
           views::Widget::ClosedReason::kCloseButtonClicked);
       return;
     }
+  }
+}
+
+bool PlusAddressCreationDialogDelegate::GetConfirmButtonEnabledForTesting()
+    const {
+  CHECK(confirm_button_);
+  return confirm_button_->GetEnabled();
+}
+
+void PlusAddressCreationDialogDelegate::ClickButtonForTesting(
+    PlusAddressViewButtonType type) {
+  views::Button* button;
+  switch (type) {
+    case PlusAddressViewButtonType::kConfirm: {
+      button = confirm_button_;
+      break;
+    }
+    case PlusAddressViewButtonType::kCancel: {
+      button = cancel_button_;
+      break;
+    }
+    case PlusAddressViewButtonType::kClose: {
+      button = GetBubbleFrameView()->close_button();
+      break;
+    }
+  }
+  CHECK(button);
+  button->OnMousePressed(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+                                        gfx::Point(), ui::EventTimeForNow(),
+                                        ui::EF_LEFT_MOUSE_BUTTON, 0));
+  button->OnMouseReleased(ui::MouseEvent(ui::ET_MOUSE_RELEASED, gfx::Point(),
+                                         gfx::Point(), ui::EventTimeForNow(),
+                                         ui::EF_LEFT_MOUSE_BUTTON, 0));
+}
+
+std::u16string
+PlusAddressCreationDialogDelegate::GetPlusAddressLabelTextForTesting() const {
+  CHECK(plus_address_label_);
+  return plus_address_label_->GetText();
+}
+
+bool PlusAddressCreationDialogDelegate::ShowsLoadingIndicatorForTesting()
+    const {
+  CHECK(GetBubbleFrameView());
+  return GetBubbleFrameView()->GetProgress().has_value();
+}
+
+void PlusAddressCreationDialogDelegate::WaitUntilResultShownForTesting() {
+  base::RunLoop loop;
+  blocking_until_result_shown_.emplace(loop.QuitClosure());
+  loop.Run();
+}
+
+void PlusAddressCreationDialogDelegate::MaybeBlockUntilResultShows() {
+  if (blocking_until_result_shown_.has_value()) {
+    std::move(blocking_until_result_shown_.value()).Run();
+    blocking_until_result_shown_.reset();
   }
 }
 

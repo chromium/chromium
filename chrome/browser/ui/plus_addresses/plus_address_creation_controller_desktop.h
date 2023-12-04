@@ -14,6 +14,7 @@
 namespace plus_addresses {
 
 class PlusAddressCreationDialogDelegate;
+class PlusAddressCreationView;
 
 class PlusAddressCreationControllerDesktop
     : public PlusAddressCreationController,
@@ -29,13 +30,14 @@ class PlusAddressCreationControllerDesktop
   void OnCanceled() override;
   void OnDialogDestroyed() override;
 
+  // Used to validate the view behavior in browsertests.
+  PlusAddressCreationView* get_view_for_testing();
   // A mechanism to avoid view entanglements, reducing the need for view
   // mocking, etc., while still allowing tests of specific business logic.
   // TODO(crbug.com/1467623): Add more end-to-end coverage as the modal behavior
   // comes fully online.
   void set_suppress_ui_for_testing(bool should_suppress);
-
-  // Validate storage and clearing of `maybe_plus_profile_`.
+  // Used to validate storage and clearing of `maybe_plus_profile_`.
   absl::optional<PlusProfile> get_plus_profile_for_testing();
 
  private:
