@@ -3013,8 +3013,10 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
     if (IsDirty()) {
       if (GetPopupDocumentIfShowing()) {
         ProcessDeferredAccessibilityEventsImpl(*GetPopupDocumentIfShowing());
+        CHECK(tree_update_callback_queue_popup_.empty());
       }
       ProcessDeferredAccessibilityEventsImpl(document);
+      CHECK(tree_update_callback_queue_main_.empty());
     }
 
 #if BUILDFLAG(IS_ANDROID)
