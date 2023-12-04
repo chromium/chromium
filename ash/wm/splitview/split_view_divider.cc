@@ -311,6 +311,11 @@ void SplitViewDivider::OnWindowAddedToRootWindow(aura::Window* window) {
   RemoveObservedWindow(window);
 }
 
+void SplitViewDivider::OnWindowVisibilityChanged(aura::Window* window,
+                                                 bool visible) {
+  RefreshStackingOrder();
+}
+
 void SplitViewDivider::OnTransientChildAdded(aura::Window* window,
                                              aura::Window* transient) {
   StartObservingTransientChild(transient);
@@ -376,9 +381,23 @@ void SplitViewDivider::RefreshStackingOrder() {
     return;
   }
 
-  aura::Window* top_window = window_util::GetTopMostWindow(observed_windows_);
-  CHECK(top_window);
+  aura::Window::Windows visible_observed_windows;
+  for (auto* window : observed_windows_) {
+    if (window->IsVisible()) {
+      visible_observed_windows.push_back(window);
+    }
+  }
+
   aura::Window* divider_window = divider_widget_->GetNativeWindow();
+  if (visible_observed_windows.empty()) {
+    divider_window->Hide();
+    return;
+  }
+
+  aura::Window* top_window =
+      window_util::GetTopMostWindow(visible_observed_windows);
+  CHECK(top_window);
+  CHECK(top_window->IsVisible());
 
   auto* divider_sibling_window =
       dragged_window_ ? dragged_window_.get() : top_window;
@@ -414,12 +433,9 @@ void SplitViewDivider::RefreshStackingOrder() {
   // Iterate through the siblings of the top window in an increasing z-order
   // which reflects the relative order of siblings.
   for (auto* window : children) {
-    if (!base::Contains(observed_windows_, window)) {
+    if (!base::Contains(visible_observed_windows, window) ||
+        window == top_window) {
       continue;
-    }
-
-    if (window == top_window) {
-      break;
     }
 
     top_window_parent->StackChildAbove(window, top_window);
@@ -433,6 +449,7 @@ void SplitViewDivider::RefreshStackingOrder() {
   wm::AddTransientChild(top_window, divider_window);
 
   top_window_parent->StackChildAbove(divider_window, top_window);
+  divider_window->Show();
 }
 
 void SplitViewDivider::StartObservingTransientChild(aura::Window* transient) {
