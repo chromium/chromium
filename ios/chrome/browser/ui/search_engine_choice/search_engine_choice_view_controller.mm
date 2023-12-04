@@ -344,6 +344,10 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
     [self.actionDelegate didTapPrimaryButton];
   } else {
     [_searchEngineTableViewController scrollToBottom];
+    CGPoint bottomOffset = CGPointMake(0, _scrollView.contentSize.height -
+                                              _scrollView.bounds.size.height +
+                                              _scrollView.contentInset.bottom);
+    [_scrollView setContentOffset:bottomOffset animated:YES];
   }
 }
 
