@@ -38,6 +38,7 @@ tools/metrics/histograms/metadata/commerce/histograms.xml
 tools/metrics/histograms/metadata/companion/histograms.xml
 tools/metrics/histograms/metadata/compose/enums.xml
 tools/metrics/histograms/metadata/compose/histograms.xml
+tools/metrics/histograms/metadata/compositing/enums.xml
 tools/metrics/histograms/metadata/compositing/histograms.xml
 tools/metrics/histograms/metadata/content/enums.xml
 tools/metrics/histograms/metadata/content/histograms.xml
@@ -63,6 +64,7 @@ tools/metrics/histograms/metadata/disk/histograms.xml
 tools/metrics/histograms/metadata/download/histograms.xml
 tools/metrics/histograms/metadata/enterprise/enums.xml
 tools/metrics/histograms/metadata/enterprise/histograms.xml
+tools/metrics/histograms/metadata/event/enums.xml
 tools/metrics/histograms/metadata/event/histograms.xml
 tools/metrics/histograms/metadata/extensions/histograms.xml
 tools/metrics/histograms/metadata/families/enums.xml
@@ -78,6 +80,7 @@ tools/metrics/histograms/metadata/geolocation/enums.xml
 tools/metrics/histograms/metadata/geolocation/histograms.xml
 tools/metrics/histograms/metadata/google/enums.xml
 tools/metrics/histograms/metadata/google/histograms.xml
+tools/metrics/histograms/metadata/gpu/enums.xml
 tools/metrics/histograms/metadata/gpu/histograms.xml
 tools/metrics/histograms/metadata/hang_watcher/histograms.xml
 tools/metrics/histograms/metadata/help_app/histograms.xml

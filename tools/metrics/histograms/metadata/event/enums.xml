@@ -1,0 +1,362 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="DownEventInputFormFactorDestinationCombination2">
+  <int value="0"
+      label="Unknown input in clamshell mode, destination is non-application
+             windows"/>
+  <int value="1"
+      label="Unknown input in touchview mode landscape orientation,
+             destination is non-application windows"/>
+  <int value="2"
+      label="Unknown input in touchview mode portrait orientation,
+             destination is non-application windows"/>
+  <int value="3"
+      label="Mouse input in clamshell mode, destination is non-application
+             windows"/>
+  <int value="4"
+      label="Mouse input in touchview mode landscape orientation, destination
+             is non-application windows"/>
+  <int value="5"
+      label="Mouse input in touchview mode portrait orientation, destination
+             is non-application windows"/>
+  <int value="6"
+      label="Stylus input in clamshell mode, destination is non-application
+             windows"/>
+  <int value="7"
+      label="Stylus input in touchview mode landscape orientation,
+             destination is non-application windows"/>
+  <int value="8"
+      label="Stylus input in touchview mode portrait orientation, destination
+             is non-application windows"/>
+  <int value="9"
+      label="Touch input in clamshell mode, destination is non-application
+             windows"/>
+  <int value="10"
+      label="Touch input in touchview mode landscape orientation, destination
+             is non-application windows"/>
+  <int value="11"
+      label="Touch input in touchview mode portrait orientation, destination
+             is non-application windows"/>
+  <int value="12"
+      label="Unknown input in clamshell mode, destination is inside the
+             browser frame"/>
+  <int value="13"
+      label="Unknown input in touchview mode landscape orientation,
+             destination is inside the browser frame"/>
+  <int value="14"
+      label="Unknown input in touchview mode portrait orientation,
+             destination is inside the browser frame"/>
+  <int value="15"
+      label="Mouse input in clamshell mode, destination is inside the browser
+             frame"/>
+  <int value="16"
+      label="Mouse input in touchview mode landscape orientation, destination
+             is inside the browser frame"/>
+  <int value="17"
+      label="Mouse input in touchview mode portrait orientation, destination
+             is inside the browser frame"/>
+  <int value="18"
+      label="Stylus input in clamshell mode, destination is inside the
+             browser frame"/>
+  <int value="19"
+      label="Stylus input in touchview mode landscape orientation,
+             destination is inside the browser frame"/>
+  <int value="20"
+      label="Stylus input in touchview mode portrait orientation, destination
+             is inside the browser frame"/>
+  <int value="21"
+      label="Touch input in clamshell mode, destination is inside the browser
+             frame"/>
+  <int value="22"
+      label="Touch input in touchview mode landscape orientation, destination
+             is inside the browser frame"/>
+  <int value="23"
+      label="Touch input in touchview mode portrait orientation, destination
+             is inside the browser frame"/>
+  <int value="24"
+      label="Unknown input in clamshell mode, destination is regular chrome
+             app"/>
+  <int value="25"
+      label="Unknown input in touchview mode landscape orientation,
+             destination is regular chrome app"/>
+  <int value="26"
+      label="Unknown input in touchview mode portrait orientation,
+             destination is regular chrome app"/>
+  <int value="27"
+      label="Mouse input in clamshell mode, destination is regular chrome app"/>
+  <int value="28"
+      label="Mouse input in touchview mode landscape orientation, destination
+             is regular chrome app"/>
+  <int value="29"
+      label="Mouse input in touchview mode portrait orientation, destination
+             is regular chrome app"/>
+  <int value="30"
+      label="Stylus input in clamshell mode, destination is regular chrome
+             app"/>
+  <int value="31"
+      label="Stylus input in touchview mode landscape orientation,
+             destination is regular chrome app"/>
+  <int value="32"
+      label="Stylus input in touchview mode portrait orientation, destination
+             is regular chrome app"/>
+  <int value="33"
+      label="Touch input in clamshell mode, destination is regular chrome app"/>
+  <int value="34"
+      label="Touch input in touchview mode landscape orientation, destination
+             is regular chrome app"/>
+  <int value="35"
+      label="Touch input in touchview mode portrait orientation, destination
+             is regular chrome app"/>
+  <int value="36"
+      label="Unknown input in clamshell mode, destination is ARC app(Android
+             app in ChromeOS)"/>
+  <int value="37"
+      label="Unknown input in touchview mode landscape orientation,
+             destination is ARC app(Android app in ChromeOS)"/>
+  <int value="38"
+      label="Unknown input in touchview mode portrait orientation,
+             destination is ARC app(Android app in ChromeOS)"/>
+  <int value="39"
+      label="Mouse input in clamshell mode, destination is ARC app(Android
+             app in ChromeOS)"/>
+  <int value="40"
+      label="Mouse input in touchview mode landscape orientation, destination
+             is ARC app(Android app in ChromeOS)"/>
+  <int value="41"
+      label="Mouse input in touchview mode portrait orientation, destination
+             is ARC app(Android app in ChromeOS)"/>
+  <int value="42"
+      label="Stylus input in clamshell mode, destination is ARC app(Android
+             app in ChromeOS)"/>
+  <int value="43"
+      label="Stylus input in touchview mode landscape orientation,
+             destination is ARC app(Android app in ChromeOS)"/>
+  <int value="44"
+      label="Stylus input in touchview mode portrait orientation, destination
+             is ARC app(Android app in ChromeOS)"/>
+  <int value="45"
+      label="Touch input in clamshell mode, destination is ARC app(Android
+             app in ChromeOS)"/>
+  <int value="46"
+      label="Touch input in touchview mode landscape orientation, destination
+             is ARC app(Android app in ChromeOS)"/>
+  <int value="47"
+      label="Touch input in touchview mode portrait orientation, destination
+             is ARC app(Android app in ChromeOS)"/>
+  <int value="48"
+      label="Unknown input in clamshell mode, destination is Crostini
+             app(Linux app in ChromeOS)"/>
+  <int value="49"
+      label="Unknown input in touchview mode landscape orientation,
+             destination is Crostini app(Linux app in ChromeOS)"/>
+  <int value="50"
+      label="Unknown input in touchview mode portrait orientation,
+             destination is Crostini app(Linux app in ChromeOS)"/>
+  <int value="51"
+      label="Mouse input in clamshell mode, destination is Crostini app(Linux
+             app in ChromeOS)"/>
+  <int value="52"
+      label="Mouse input in touchview mode landscape orientation, destination
+             is Crostini app(Linux app in ChromeOS)"/>
+  <int value="53"
+      label="Mouse input in touchview mode portrait orientation, destination
+             is Crostini app(Linux app in ChromeOS)"/>
+  <int value="54"
+      label="Stylus input in clamshell mode, destination is Crostini
+             app(Linux app in ChromeOS)"/>
+  <int value="55"
+      label="Stylus input in touchview mode landscape orientation,
+             destination is Crostini app(Linux app in ChromeOS)"/>
+  <int value="56"
+      label="Stylus input in touchview mode portrait orientation, destination
+             is Crostini app(Linux app in ChromeOS)"/>
+  <int value="57"
+      label="Touch input in clamshell mode, destination is Crostini app(Linux
+             app in ChromeOS)"/>
+  <int value="58"
+      label="Touch input in touchview mode landscape orientation, destination
+             is Crostini app(Linux app in ChromeOS)"/>
+  <int value="59"
+      label="Touch input in touchview mode portrait orientation, destination
+             is Crostini app(Linux app in ChromeOS)"/>
+  <int value="60"
+      label="Unknown input in clamshell mode, destination is system apps and
+             dialogs"/>
+  <int value="61"
+      label="Unknown input in touchview mode landscape orientation,
+             destination is system apps and dialogs"/>
+  <int value="62"
+      label="Unknown input in touchview mode portrait orientation,
+             destination is system apps and dialogs"/>
+  <int value="63"
+      label="Mouse input in clamshell mode, destination is system apps and
+             dialogs"/>
+  <int value="64"
+      label="Mouse input in touchview mode landscape orientation, destination
+             is system apps and dialogs"/>
+  <int value="65"
+      label="Mouse input in touchview mode portrait orientation, destination
+             is system apps and dialogs"/>
+  <int value="66"
+      label="Stylus input in clamshell mode, destination is system apps and
+             dialogs"/>
+  <int value="67"
+      label="Stylus input in touchview mode landscape orientation,
+             destination is system apps and dialogs"/>
+  <int value="68"
+      label="Stylus input in touchview mode portrait orientation, destination
+             is system apps and dialogs"/>
+  <int value="69"
+      label="Touch input in clamshell mode, destination is system apps and
+             dialogs"/>
+  <int value="70"
+      label="Touch input in touchview mode landscape orientation, destination
+             is system apps and dialogs"/>
+  <int value="71"
+      label="Touch input in touchview mode portrait orientation, destination
+             is system apps and dialogs"/>
+</enum>
+
+<enum name="EventPageShowPersisted">
+  <int value="0" label="No in renderer"/>
+  <int value="1" label="Yes in renderer"/>
+  <int value="2" label="Yes in browser"/>
+  <int value="3"
+      label="Yes in browser
+             BackForwardCacheImpl::WillCommitNavigationToCachedEntry"/>
+  <int value="4"
+      label="Yes in browser BackForwardCacheImpl::RestoreEntry attempt"/>
+  <int value="5"
+      label="Yes in browser BackForwardCacheImpl::RestoreEntry succeed"/>
+  <int value="6" label="Yes in browser RenderFrameHostManager::CommitPending"/>
+  <int value="7" label="Yes in browser seen in renderer"/>
+  <int value="8" label="Yes in browser seen in renderer with Page"/>
+  <int value="9" label="Yes in browser seen in ACK to browser"/>
+  <int value="10" label="Yes in browser while disconnected"/>
+  <int value="11" label="Yes in browser while RenderView was not live"/>
+</enum>
+
+<enum name="EventResultType">
+  <int value="0" label="Passive"/>
+  <int value="1" label="Uncancelable"/>
+  <int value="2" label="Suppressed"/>
+  <int value="3" label="Cancelable and not canceled"/>
+  <int value="4" label="Cancelable and canceled"/>
+  <int value="5" label="Forced Non-Blocking Due to Fling"/>
+  <int value="6"
+      label="Forced Non-Blocking Due to Unresponsive Main Thread (deprecated)"/>
+</enum>
+
+<enum name="JankyBoolean">
+  <int value="0" label="Non Janky"/>
+  <int value="1" label="Janky"/>
+</enum>
+
+<enum name="MotionEventToolType">
+  <summary>The type of tool that triggers a pointer-type MotionEvent.</summary>
+  <int value="0" label="Unknown">Unknown tool type.</int>
+  <int value="1" label="Finger">The tool is a finger (touch).</int>
+  <int value="2" label="Stylus">The tool is a stylus.</int>
+  <int value="3" label="Mouse">The tool is a mouse or trackpad.</int>
+  <int value="4" label="Eraser">
+    The tool is an eraser or a stylus being used in an inverted posture.
+  </int>
+</enum>
+
+<enum name="TapDelayType">
+  <int value="0" label="Delayed Tap"/>
+  <int value="1" label="Undelayed Tap"/>
+</enum>
+
+<enum name="UIEventType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Touch released"/>
+  <int value="2" label="Touch pressed"/>
+  <int value="3" label="Touch moved"/>
+  <int value="4" label="Touch stationary"/>
+  <int value="5" label="Touch cancelled"/>
+  <int value="6" label="Gesture scroll begin"/>
+  <int value="7" label="Gesture scroll end"/>
+  <int value="8" label="Gesture scroll update"/>
+  <int value="9" label="Gesture tap"/>
+  <int value="10" label="Gesture tap down"/>
+  <int value="11" label="Gesture finger down"/>
+  <int value="12" label="Gesture finger up"/>
+  <int value="13" label="Gesture double tap"/>
+  <int value="14" label="Gesture triple tap"/>
+  <int value="15" label="Gesture two-finger tap"/>
+  <int value="16" label="Gesture pinch begin"/>
+  <int value="17" label="Gesture pinch end"/>
+  <int value="18" label="Gesture pinch update (2 fingers)"/>
+  <int value="19" label="Long press"/>
+  <int value="20" label="Multi-finger swipe (2 fingers)"/>
+  <int value="21" label="Scroll"/>
+  <int value="22" label="Scroll fling start"/>
+  <int value="23" label="Scroll fling cancel"/>
+  <int value="24" label="Multi-finger swipe (3 fingers)"/>
+  <int value="25" label="Multi-finger swipe (4+ fingers)"/>
+  <int value="26" label="Gesture scroll update (2 fingers)"/>
+  <int value="27" label="Gesture scroll update (3 fingers)"/>
+  <int value="28" label="Gesture scroll update (4+ fingers)"/>
+  <int value="29" label="Gesture pinch update (3 fingers)"/>
+  <int value="30" label="Gesture pinch update (4+ fingers)"/>
+  <int value="31" label="Long tap"/>
+  <int value="32" label="Show Press"/>
+  <int value="33" label="Tap Cancel"/>
+  <int value="34" label="Edge swipe"/>
+  <int value="35" label="One-finger swipe"/>
+  <int value="36" label="Tap unconfirmed"/>
+</enum>
+
+<enum name="UserActivationTriggerEnum">
+  <summary>
+    The user activation trigger types as defined in
+    blink.mojom.UserActivationNotificationType.
+  </summary>
+  <int value="0" label="kNone"/>
+  <int value="1" label="kInteraction"/>
+  <int value="2" label="kDevTools"/>
+  <int value="3" label="kExtensionEvent"/>
+  <int value="4" label="kExtensionGuestView"/>
+  <int value="5" label="kExtensionMessaging"/>
+  <int value="6" label="kMedia"/>
+  <int value="7" label="kNativeFileSystem"/>
+  <int value="8" label="kPlugin"/>
+  <int value="9" label="kTest"/>
+  <int value="10" label="kWebScriptExec"/>
+  <int value="11" label="kVoiceSearch"/>
+  <int value="12" label="kExtensionMessagingBothPrivileged"/>
+  <int value="13" label="kExtensionMessagingSenderPrivileged"/>
+  <int value="14" label="kExtensionMessagingReceiverPrivileged"/>
+  <int value="15" label="kExtensionMessagingNeitherPrivileged"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

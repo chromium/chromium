@@ -1,0 +1,1370 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="AMDDeviceId">
+  <int value="5592" label="0x15D8, Picasso"/>
+  <int value="5597"
+      label="0x15DD, Raven Ridge [Radeon Vega Series / Radeon Vega Mobile
+             Series]"/>
+  <int value="5686" label="0x1636, Renoir"/>
+  <int value="26112" label="0x6600, Mars [Radeon HD 8670A/8670M/8750M]"/>
+  <int value="26113" label="0x6601, Mars [Radeon HD 8730M]"/>
+  <int value="26129"
+      label="0x6611, Oland [Radeon HD 8570 / R5 430 OEM / R7 240/340 / Radeon
+             520 OEM]"/>
+  <int value="26208"
+      label="0x6660, Sun XT [Radeon HD 8670A/8670M/8690M / R5 M330 / M430 /
+             Radeon 520 Mobile]"/>
+  <int value="26213"
+      label="0x6665, Jet PRO [Radeon R5 M230 / R7 M260DX / Radeon 520 Mobile]"/>
+  <int value="26223" label="0x666F, Sun LE [Radeon HD 8550M / R5 M230]"/>
+  <int value="26464" label="0x6760, Seymour [Radeon HD 6400M/7400M Series]"/>
+  <int value="26591"
+      label="0x67DF, Ellesmere [Radeon RX 470/480/570/570X/580/580X/590]"/>
+  <int value="26607"
+      label="0x67EF, Baffin [Radeon RX 460/560D / Pro
+             450/455/460/555/555X/560/560X]"/>
+  <int value="26657"
+      label="0x6821, Venus XT [Radeon HD 8870M / R9 M270X/M370X]"/>
+  <int value="26688" label="0x6840, Thames [Radeon HD 7500M/7600M Series]"/>
+  <int value="26873"
+      label="0x68F9, Cedar [Radeon HD 5000/6000/7350/8350 Series]"/>
+  <int value="26880"
+      label="0x6900, Topaz XT [Radeon R7 M260/M265 / M340/M360 / M440/M445 /
+             530/535 / 620/625 Mobile]"/>
+  <int value="27015"
+      label="0x6987, Lexa [Radeon 540X/550X/630 / RX 640 / E9171 MCM]"/>
+  <int value="27039"
+      label="0x699F, Lexa PRO [Radeon 540/540X/550/550X / RX 540X/550/550X]"/>
+  <int value="27055" label="0x69AF, Vega 12 [Radeon Pro Vega 20]"/>
+  <int value="29471"
+      label="0x731F, Navi 10 [Radeon RX 5600 OEM/5600 XT / 5700/5700 XT]"/>
+  <int value="29504"
+      label="0x7340, Navi 14 [Radeon RX 5500/5500M / Pro 5500M]"/>
+</enum>
+
+<enum name="BlockZeroSerialNumberType">
+  <int value="0" label="Normal serial number"/>
+  <int value="1" label="Repeating pattern in serial number"/>
+  <int value="2" label="Missing serial number"/>
+</enum>
+
+<enum name="BooleanDisplayIdCollision">
+  <int value="0" label="No display ID collision"/>
+  <int value="1" label="Display ID collision detected"/>
+</enum>
+
+<enum name="BooleanOverlayDamageRect">
+  <int value="0" label="Zero damage rect"/>
+  <int value="1" label="Non-Zero damage rect"/>
+</enum>
+
+<enum name="BooleanOverlaySupported">
+  <int value="0" label="No overlays supported"/>
+  <int value="1" label="Supports overlays"/>
+</enum>
+
+<enum name="BooleanSoftwareRendering">
+  <int value="0" label="Hardware GPU"/>
+  <int value="1" label="Software Rendering"/>
+</enum>
+
+<enum name="BooleanUnderlay">
+  <int value="0" label="Overlay Mode"/>
+  <int value="1" label="Underlay Mode"/>
+</enum>
+
+<enum name="CanvasOopRasterAndGpuAcceleration">
+  <int value="0" label="Canvas2D accelerated and OOPR enabled"/>
+  <int value="1" label="Canvas2D accelerated and OOPR disabled"/>
+  <int value="2" label="Canvas2D not accelerated and OOPR enabled"/>
+  <int value="3" label="Canvas2D not accelerated and OOPR disabled"/>
+</enum>
+
+<enum name="CompositingMode">
+  <int value="0" label="Software"/>
+  <int value="1" label="GL"/>
+  <int value="2" label="Vulkan"/>
+  <int value="3" label="Metal (deprecated)"/>
+</enum>
+
+<enum name="ConfigureDisplaysTaskStatus">
+  <int value="0" label="Failure"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Partial success (resolution downgraded)"/>
+</enum>
+
+<enum name="ContextLostReason">
+  <summary>The reason for losing a GPU context.</summary>
+  <int value="0" label="CONTEXT_INIT_FAILED"/>
+  <int value="1" label="CONTEXT_LOST_GPU_CHANNEL_ERROR"/>
+  <int value="2" label="CONTEXT_PARSE_ERROR_INVALID_SIZE"/>
+  <int value="3" label="CONTEXT_PARSE_ERROR_OUT_OF_BOUNDS"/>
+  <int value="4" label="CONTEXT_PARSE_ERROR_UNKNOWN_COMMAND"/>
+  <int value="5" label="CONTEXT_PARSE_ERROR_INVALID_ARGS"/>
+  <int value="6" label="CONTEXT_PARSE_ERROR_GENERIC_ERROR"/>
+  <int value="7" label="CONTEXT_LOST_GUILTY"/>
+  <int value="8" label="CONTEXT_LOST_INNOCENT"/>
+  <int value="9" label="CONTEXT_LOST_UNKNOWN"/>
+  <int value="10" label="CONTEXT_LOST_OUT_OF_MEMORY"/>
+  <int value="11" label="CONTEXT_LOST_MAKECURRENT_FAILED"/>
+  <int value="12" label="CONTEXT_LOST_INVALID_GPU_MESSAGE"/>
+  <int value="13" label="CONTEXT_LOST_RESHAPE_FAILED"/>
+  <int value="14" label="CONTEXT_LOST_SET_DRAW_RECTANGLE_FAILED"/>
+  <int value="15" label="CONTEXT_LOST_DIRECT_COMPOSITION_OVERLAY_FAILED"/>
+  <int value="16" label="CONTEXT_LOST_SWAP_FAILED"/>
+  <int value="17" label="CONTEXT_LOST_BEGIN_PAINT_FAILED"/>
+  <int value="18" label="CONTEXT_LOST_ALLOCATE_FRAME_BUFFERS_FAILED"/>
+</enum>
+
+<enum name="D3D11FeatureLevel">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="No D3D11 DLL"/>
+  <int value="2" label="No D3D11CreateDevice entry point"/>
+  <int value="3" label="D3D11CreateDevice failed"/>
+  <int value="4" label="9.1"/>
+  <int value="5" label="9.2"/>
+  <int value="6" label="9.3"/>
+  <int value="7" label="10.0"/>
+  <int value="8" label="10.1"/>
+  <int value="9" label="11.0"/>
+  <int value="10" label="11.1"/>
+  <int value="11" label="12.0"/>
+  <int value="12" label="12.1"/>
+  <int value="13" label="12.2"/>
+</enum>
+
+<enum name="D3D11InitializeResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Error initializing compiler"/>
+  <int value="2" label="Missing DLL dependency"/>
+  <int value="3" label="D3D11CreateDevice returned E_INVALIDARG"/>
+  <int value="4" label="D3D11CreateDevice returned other error"/>
+  <int value="5" label="DXGI version not supported"/>
+  <int value="6" label="Other initialization error"/>
+  <int value="7" label="D3D11CreateDevice returned E_FAIL"/>
+  <int value="8" label="D3D11CreateDevice returned E_NOTIMPL"/>
+  <int value="9" label="D3D11CreateDevice returned E_OUTOFMEMORY"/>
+  <int value="10" label="D3D11CreateDevice returned DXGI_ERROR_INVALID_CALL"/>
+  <int value="11"
+      label="D3D11CreateDevice returned DXGI_ERROR_SDK_COMPONENT_MISSING"/>
+  <int value="12"
+      label="D3D11CreateDevice returned DXGI_ERROR_WAS_STILL_DRAWING"/>
+  <int value="13"
+      label="D3D11CreateDevice returned DXGI_ERROR_NOT_CURRENTLY_AVAILABLE"/>
+  <int value="14" label="D3D11CreateDevice returned DXGI_ERROR_DEVICE_HUNG"/>
+</enum>
+
+<enum name="D3D12FeatureLevel">
+  <int value="0" label="D3D_FEATURE_LEVEL_UNKNOWN"/>
+  <int value="1" label="D3D_FEATURE_LEVEL_12_0"/>
+  <int value="2" label="D3D_FEATURE_LEVEL_12_1"/>
+  <int value="3" label="D3D_FEATURE_LEVEL_11_0"/>
+  <int value="4" label="D3D_FEATURE_LEVEL_11_1"/>
+  <int value="5" label="D3D_FEATURE_LEVEL_12_2"/>
+</enum>
+
+<enum name="D3D9InitializeResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Error initializing compiler"/>
+  <int value="2" label="Missing DLL dependency"/>
+  <int value="3" label="Error creating device"/>
+  <int value="4" label="Shader version not supported"/>
+  <int value="5" label="StretchRect from textures not supported"/>
+  <int value="6" label="Device lost of out-of-memory error"/>
+  <int value="7" label="Other initialization error"/>
+</enum>
+
+<enum name="D3DFeatureLevel">
+  <int value="0" label="D3D_FEATURE_LEVEL_INVALID"/>
+  <int value="1" label="D3D_FEATURE_LEVEL_9_3"/>
+  <int value="2" label="D3D_FEATURE_LEVEL_10_0"/>
+  <int value="3" label="D3D_FEATURE_LEVEL_10_1"/>
+  <int value="4" label="D3D_FEATURE_LEVEL_11_0"/>
+  <int value="5" label="D3D_FEATURE_LEVEL_11_1"/>
+</enum>
+
+<enum name="D3DShaderModel">
+  <int value="0" label="UNKNOWN_OR_NO_SUPPORTED_DEVICES"/>
+  <int value="1" label="D3D_SHADER_MODEL_5_1"/>
+  <int value="2" label="D3D_SHADER_MODEL_6_0"/>
+  <int value="3" label="D3D_SHADER_MODEL_6_1"/>
+  <int value="4" label="D3D_SHADER_MODEL_6_2"/>
+  <int value="5" label="D3D_SHADER_MODEL_6_3"/>
+  <int value="6" label="D3D_SHADER_MODEL_6_4"/>
+  <int value="7" label="D3D_SHADER_MODEL_6_5"/>
+  <int value="8" label="D3D_SHADER_MODEL_6_6"/>
+  <int value="9" label="D3D_SHADER_MODEL_6_7"/>
+</enum>
+
+<enum name="DCLayerResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed unsupported quad (not recorded)"/>
+  <int value="2" label="Failed quad blend mode"/>
+  <int value="3" label="Failed texture not candidate"/>
+  <int value="4" label="Failed occluded (deprecated)"/>
+  <int value="5" label="Failed complex transform"/>
+  <int value="6" label="Failed transparent"/>
+  <int value="7" label="Failed non-root renderpass (not recorded)"/>
+  <int value="8" label="Failed too many overlays"/>
+  <int value="9" label="Failed no hw overlay support (deprecated)"/>
+  <int value="10" label="Failed quad has rounded corners"/>
+  <int value="11" label="Failed read by backdrop filters"/>
+  <int value="12" label="Failed has copy requests"/>
+  <int value="13" label="Failed video capture enabled"/>
+  <int value="14" label="Failed output colorspace HDR"/>
+  <int value="15" label="Failed quad not damaged"/>
+  <int value="16" label="Failed YUV video quad moved"/>
+  <int value="17" label="Failed HDR tone mapping"/>
+  <int value="18" label="Failed YUV video quad no hdr metadata"/>
+  <int value="19" label="Failed YUV video quad HLG"/>
+  <int value="20"
+      label="Failed YUV video quad no p010 video processor support"/>
+  <int value="21" label="Failed YUV video quad hdr non fullscreen"/>
+  <int value="22" label="Failed YUV video quad hdr non p010"/>
+</enum>
+
+<enum name="DelegatedStatus">
+  <int value="0" label="Full Delegation"/>
+  <int value="1" label="Composited Other"/>
+  <int value="2" label="Composited Not Axis Aligned"/>
+  <int value="3" label="Composited Check Overlay Fail"/>
+  <int value="4" label="Composited Not Overlay"/>
+  <int value="5" label="Composited Too Many Quads"/>
+  <int value="6" label="Composited Backdrop Filter"/>
+  <int value="7" label="Composited Copy Request"/>
+  <int value="8" label="Composited Not Axis Aligned - 3d Transform"/>
+  <int value="9" label="Composited Not Axis Aligned - Shear Transform"/>
+  <int value="10" label="Composited Not Axis Aligned - Rotated Transform"/>
+  <int value="11" label="Composited Feature Disabled"/>
+  <int value="12" label="Composited Candidate Failed (Other)"/>
+  <int value="13" label="Composited Candidate Bad Blend Mode"/>
+  <int value="14" label="Composited Candidate Bad Quad Material"/>
+  <int value="15" label="Composited Candidate Bad Buffer Format"/>
+  <int value="16" label="Composited Candidate Has Near Filter"/>
+  <int value="17" label="Composited Candidate Not Shared Image"/>
+  <int value="18" label="Composited Candidate Bad Mask Filter"/>
+  <int value="19" label="Composited Candidate Has Transform Can't Clip"/>
+  <int value="20" label="Composited Candidate Is Renderpass With Transform"/>
+</enum>
+
+<enum name="DirectCompositionVideoPresentationMode">
+  <int value="0" label="Zero copy decode swap chain"/>
+  <int value="1" label="Upload and video processor blit"/>
+  <int value="2" label="Bind and video processor blit"/>
+</enum>
+
+<enum name="DisplayLinkCreateResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed Invalid Display Id"/>
+  <int value="2" label="Failed Create Displaylink"/>
+  <int value="3" label="Failed Register Callback"/>
+</enum>
+
+<enum name="DisplayResolution">
+  <int value="0" label="Display is power off"/>
+  <int value="1" label="1024 x 1024"/>
+  <int value="2" label="1024 x 1280"/>
+  <int value="3" label="1024 x 1440"/>
+  <int value="4" label="1024 x 1920"/>
+  <int value="5" label="1024 x 2560"/>
+  <int value="6" label="1024 x 3840"/>
+  <int value="7" label="1024 x 5120"/>
+  <int value="8" label="1024 x 7680"/>
+  <int value="9" label="1280 x 1024"/>
+  <int value="10" label="1280 x 1280"/>
+  <int value="11" label="1280 x 1440"/>
+  <int value="12" label="1280 x 1920"/>
+  <int value="13" label="1280 x 2560"/>
+  <int value="14" label="1280 x 3840"/>
+  <int value="15" label="1280 x 5120"/>
+  <int value="16" label="1280 x 7680"/>
+  <int value="17" label="1440 x 1024"/>
+  <int value="18" label="1440 x 1280"/>
+  <int value="19" label="1440 x 1440"/>
+  <int value="20" label="1440 x 1920"/>
+  <int value="21" label="1440 x 2560"/>
+  <int value="22" label="1440 x 3840"/>
+  <int value="23" label="1440 x 5120"/>
+  <int value="24" label="1440 x 7680"/>
+  <int value="25" label="1920 x 1024"/>
+  <int value="26" label="1920 x 1280"/>
+  <int value="27" label="1920 x 1440"/>
+  <int value="28" label="1920 x 1920"/>
+  <int value="29" label="1920 x 2560"/>
+  <int value="30" label="1920 x 3840"/>
+  <int value="31" label="1920 x 5120"/>
+  <int value="32" label="1920 x 7680"/>
+  <int value="33" label="2560 x 1024"/>
+  <int value="34" label="2560 x 1280"/>
+  <int value="35" label="2560 x 1440"/>
+  <int value="36" label="2560 x 1920"/>
+  <int value="37" label="2560 x 2560"/>
+  <int value="38" label="2560 x 3840"/>
+  <int value="39" label="2560 x 5120"/>
+  <int value="40" label="2560 x 7680"/>
+  <int value="41" label="3840 x 1024"/>
+  <int value="42" label="3840 x 1280"/>
+  <int value="43" label="3840 x 1440"/>
+  <int value="44" label="3840 x 1920"/>
+  <int value="45" label="3840 x 2560"/>
+  <int value="46" label="3840 x 3840"/>
+  <int value="47" label="3840 x 5120"/>
+  <int value="48" label="3840 x 7680"/>
+  <int value="49" label="5120 x 1024"/>
+  <int value="50" label="5120 x 1280"/>
+  <int value="51" label="5120 x 1440"/>
+  <int value="52" label="5120 x 1920"/>
+  <int value="53" label="5120 x 2560"/>
+  <int value="54" label="5120 x 3840"/>
+  <int value="55" label="5120 x 5120"/>
+  <int value="56" label="5120 x 7680"/>
+  <int value="57" label="7680 x 1024"/>
+  <int value="58" label="7680 x 1280"/>
+  <int value="59" label="7680 x 1440"/>
+  <int value="60" label="7680 x 1920"/>
+  <int value="61" label="7680 x 2560"/>
+  <int value="62" label="7680 x 3840"/>
+  <int value="63" label="7680 x 5120"/>
+  <int value="64" label="7680 x 7680"/>
+  <int value="65" label="Dimension overflow"/>
+</enum>
+
+<enum name="DXGI_FORMAT">
+  <summary>
+    Resource data formats. Defined here:
+    https://github.com/apitrace/dxsdk/blob/master/Include/dxgiformat.h
+  </summary>
+  <int value="24" label="DXGI_FORMAT_R10G10B10A2_UNORM"/>
+  <int value="87" label="DXGI_FORMAT_B8G8R8A8_UNORM"/>
+  <int value="103" label="DXGI_FORMAT_NV12"/>
+  <int value="107" label="DXGI_FORMAT_YUY2"/>
+</enum>
+
+<enum name="DxgiFramePresentationMode">
+  <int value="0" label="Composed"/>
+  <int value="1" label="Overlay"/>
+  <int value="2" label="None (Unknown)"/>
+  <int value="3" label="Composition Failure"/>
+</enum>
+
+<enum name="EGLDisplayType">
+  <int value="0" label="Default"/>
+  <int value="1" label="SwiftShader"/>
+  <int value="2" label="ANGLE WARP"/>
+  <int value="3" label="ANGLE D3D9"/>
+  <int value="4" label="ANGLE D3D11"/>
+  <int value="5" label="ANGLE OpenGL"/>
+  <int value="6" label="ANGLE OpenGL ES"/>
+  <int value="7" label="ANGLE NULL"/>
+  <int value="8" label="ANGLE D3D11 NULL"/>
+  <int value="9" label="ANGLE OpenGL NULL"/>
+  <int value="10" label="ANGLE OpenGLES NULL"/>
+  <int value="11" label="ANGLE Vulkan"/>
+  <int value="12" label="ANGLE Vulkan NULL"/>
+  <int value="13" label="ANGLE D3D11on12"/>
+  <int value="14" label="ANGLE SwiftShader"/>
+  <int value="15" label="ANGLE OpenGL EGL"/>
+  <int value="16" label="ANGLE OpenGL ES EGL"/>
+  <int value="17" label="ANGLE Metal"/>
+  <int value="18" label="ANGLE Metal NULL"/>
+</enum>
+
+<enum name="FormatPixmapSupport">
+  <int value="0" label="No format with Native Pixmaps"/>
+  <int value="1" label="NV12 format with Native Pixmaps"/>
+  <int value="2" label="YV12 format with Native Pixmaps"/>
+</enum>
+
+<enum name="GLImplementation">
+  <int value="0" label="kGLImplementationNone"/>
+  <int value="1" label="kGLImplementationDesktopGL"/>
+  <int value="2" label="kGLImplementationDesktopGLCoreProfile"/>
+  <int value="3" label="kGLImplementationSwiftShaderGL"/>
+  <int value="4" label="kGLImplementationAppleGL"/>
+  <int value="5" label="kGLImplementationEGLGLES2"/>
+  <int value="6" label="kGLImplementationMockGL)"/>
+  <int value="7" label="kGLImplementationStubGL"/>
+  <int value="8" label="kGLImplementationDisabled"/>
+  <int value="9" label="kGLImplementationEGLANGLE"/>
+</enum>
+
+<enum name="GPUBlocklistFeatureTestResults">
+  <summary>
+    Results of testing against a GPU feature being allowed/blocklisted/disabled.
+  </summary>
+  <int value="0" label="Allowed"/>
+  <int value="1" label="Blocklisted"/>
+  <int value="2" label="User-disabled"/>
+</enum>
+
+<enum name="GPUBlocklistTestResultPerEntry">
+  <summary>Results of testing against the GPU blocklist entries.</summary>
+  <int value="0" label="TotalCount"/>
+  <int value="1" label="Mac/ATI/Radeon X1900"/>
+  <int value="2" label="Linux/Intel/Before Mesa 7.9"/>
+  <int value="3" label="Linux/Intel/Software Renderer"/>
+  <int value="4" label="All/Intel/GMA 945"/>
+  <int value="5" label="Linux/ATI/Before 8.98"/>
+  <int value="6" label="Mac/ATI/Radeon HD2600"/>
+  <int value="7" label="Mac/ATI/Radeon HD2400"/>
+  <int value="8" label="All/NVIDIA/GeForce FX Go5200"/>
+  <int value="9" label="WinXP"/>
+  <int value="10" label="Mac/NVIDIA/GeForce 7300 GT"/>
+  <int value="11" label="Mac/ATI/Radeon HD2600 XT"/>
+  <int value="12" label="Win/All/Drivers older than 01/2009"/>
+  <int value="13" label="WinXP/ATI/Drivers older than 10.6"/>
+  <int value="14" label="WinXP/NVIDIA/Drivers older than 257.21"/>
+  <int value="15" label="WinXP/Intel/Drivers older than 14.42.7.5294"/>
+  <int value="16" label="Mac/ATI/multisampling"/>
+  <int value="17" label="Linux/Intel/older mesa drivers"/>
+  <int value="18" label="Linux/NVIDIA/Quadro FX 1500"/>
+  <int value="19" label="Mac 10.5/accelerated 2d-canvas and compositing"/>
+  <int value="20" label="Linux/NVIDIA/Driver 260.19.06"/>
+  <int value="21"
+      label="Linux/NVIDIA/Quadro FX 3450/4000, FX 1400/Driver 195.36.24"/>
+  <int value="22" label="Linux/NVIDIA/Drivers older than 195.36.24"/>
+  <int value="23" label="Linux/Mesa/Drivers older than 7.11"/>
+  <int value="24" label="Linux/accelrated 2d-canvas"/>
+  <int value="25"
+      label="Win7/GMA X4500/HD (2a42, 2a43)/Driver older than 15.17.11.2202"/>
+  <int value="26"
+      label="Win7/GMA X4500/HD (0042, 0046)/Driver 15.17.11.2202 or older"/>
+  <int value="27" label="Linux/ATI/Older drivers with 'ATI' in vendor"/>
+  <int value="28" label="Linux/ATI/Third party drivers with 'AMD' in renderer"/>
+  <int value="29" label="Linux/ATI/Third party drivers with 'ATI' in renderer"/>
+  <int value="30" label="Linux/NVIDIA/Nouveau drivers"/>
+  <int value="31" label="31"/>
+  <int value="32" label="Win/perf_overall less than 3.5/2d-canvas"/>
+  <int value="33" label="Linux/Intel/IvyBridge/multisampling"/>
+  <int value="34" label="Win/S3 Trio/all"/>
+  <int value="35" label="Linux/Stage3D"/>
+  <int value="36" label="36"/>
+  <int value="37" label="Linux/Optimus/all"/>
+  <int value="38" label="MacLion/NVIDIA GeForce 9400M/2d-canvas"/>
+  <int value="39" label="39"/>
+  <int value="40" label="40"/>
+  <int value="41" label="WinXP/Flash3D"/>
+  <int value="42" label="Mac10.6/AMD/Radeon HD 6490M/WebGL"/>
+  <int value="43" label="Win/Intel/8.15.10.1749/Texture_sharing"/>
+  <int value="44" label="Mac10.7.0-10.7.4/Intel/HD 4000/all"/>
+  <int value="45" label="Win/Parallells drivers older than 7/all"/>
+  <int value="46" label="Win/ATI/FireMV 2400/all"/>
+  <int value="47" label="Linux/NVIDIA/drivers older than 295/all"/>
+  <int value="48" label="Mac+Linux/video_decode"/>
+  <int value="49" label="Mac10.8.0-10.8.1/NVIDIA/GeForce GT 650M/Flash3D"/>
+  <int value="50" label="Linux/VMware software renderer/all"/>
+  <int value="51" label="WinXP/NVIDIA/6.14.11.9621/all"/>
+  <int value="52" label="WinXP/NVIDIA/6.14.11.8267/all"/>
+  <int value="53" label="Intel/GMA500/Stage3D"/>
+  <int value="54"
+      label="Mac10.7 or above/older MacBookPro models/discrete GPU only"/>
+  <int value="55" label="Win/Drivers older than 2007-01/all"/>
+  <int value="56" label="Linux/NVIDIA/video,video_decode,Flash3D"/>
+  <int value="57" label="ChromeOS/panel_fitting"/>
+  <int value="58" label="Win/Optimus Intel 8.15.10.*/texture_sharing"/>
+  <int value="59" label="Win/NVIDIA/8.15.11.8593/video_decode"/>
+  <int value="60" label="Mac/NVIDIA/multisampling"/>
+  <int value="61" label="Mac/Intel/multisampling"/>
+  <int value="62" label="Android/Qualcomm Adreno older drivers/2d-canvas"/>
+  <int value="63" label="Mac/AMD/multisampling"/>
+  <int value="64" label="WinVista+XP/video_decode"/>
+  <int value="65" label="WinVista/force_compositing_mode"/>
+  <int value="66" label="Mac10.7-/force_compositing_mode"/>
+  <int value="67" label="WinXP/2d-canvas"/>
+  <int value="68" label="WinVista+/VMWare/all"/>
+  <int value="69" label="Win/NVIDIA/8.17.11.9621/Flash3D_baseline"/>
+  <int value="70" label="Win/NVIDIA/8.17.11.8267/Flash3D_baseline"/>
+  <int value="71" label="Win/Intel/8.15.10.2021-/Flash3D_baseline"/>
+  <int value="72" label="Win/NVIDIA/GeForce6200LE/WebGL"/>
+  <int value="73" label="Mac10.7-/NVIDIA-GT330M-9400-9400M/WebGL"/>
+  <int value="74" label="Win/Microsoft/all"/>
+  <int value="75" label="Win/AMD_switchable/Texture_sharing"/>
+</enum>
+
+<enum name="GpuDriverBugWorkaroundEntry">
+<!-- Generated from gpu/config/gpu_driver_bug_list.json.
+Called by update_gpu_driver_bug_workaround_entries.py.-->
+
+  <int value="0"
+      label="0: Recorded once every time this histogram is updated."/>
+  <int value="1"
+      label="1: Imagination driver doesn't like uploading lots of buffer data
+             constantly"/>
+  <int value="2"
+      label="2: ARM driver doesn't like uploading lots of buffer data
+             constantly"/>
+  <int value="6"
+      label="6: Restore scissor on FBO change with Qualcomm GPUs on older
+             versions of Android"/>
+  <int value="7"
+      label="7: Work around a bug in offscreen buffers on NVIDIA GPUs on Macs"/>
+  <int value="17"
+      label="17: Some drivers are unable to reset the D3D device in the GPU
+             process sandbox"/>
+  <int value="19"
+      label="19: Disable depth textures on older Qualcomm GPUs (legacy
+             blocklist entry, original problem unclear)"/>
+  <int value="20"
+      label="20: Disable EXT_draw_buffers on GeForce GT 650M on Mac OS X due
+             to driver bugs"/>
+  <int value="21" label="21: Vivante GPUs are buggy with context switching"/>
+  <int value="22"
+      label="22: Imagination drivers are buggy with context switching"/>
+  <int value="23"
+      label="23: Disable OES_standard_derivative on Intel Pineview M Gallium
+             drivers"/>
+  <int value="24"
+      label="24: Mali-4xx drivers throw an error when a buffer object's size
+             is set to 0"/>
+  <int value="26"
+      label="26: Disable use of Direct3D 11 on Windows Vista and lower"/>
+  <int value="27"
+      label="27: Async Readpixels with GL_BGRA format is broken on Haswell
+             chipset on Macs"/>
+  <int value="30"
+      label="30: Multisampling is buggy on OSX when multiple monitors are
+             connected"/>
+  <int value="31"
+      label="31: The Mali-Txxx driver does not guarantee flush ordering"/>
+  <int value="32"
+      label="32: Share groups are not working on (older?) Broadcom drivers"/>
+  <int value="33"
+      label="33: Share group-related crashes and poor context switching perf
+             on Imagination drivers"/>
+  <int value="34"
+      label="34: Share groups are not working on (older?) Vivante drivers"/>
+  <int value="35"
+      label="35: Share-group related crashes on older NVIDIA drivers"/>
+  <int value="36" label="36: Share-group related crashes on Qualcomm drivers"/>
+  <int value="37"
+      label="37: Program link fails in NVIDIA Linux if gl_Position is not set"/>
+  <int value="38"
+      label="38: Non-virtual contexts on Qualcomm sometimes cause
+             out-of-order frames"/>
+  <int value="39"
+      label="39: Multisampled renderbuffer allocation must be validated on
+             some Macs"/>
+  <int value="40"
+      label="40: Framebuffer discarding causes flickering on old ARM drivers"/>
+  <int value="42"
+      label="42: Framebuffer discarding causes flickering on older IMG
+             drivers"/>
+  <int value="43"
+      label="43: Framebuffer discarding doesn't accept trivial attachments on
+             Vivante"/>
+  <int value="44"
+      label="44: Framebuffer discarding causes jumpy scrolling on Mali
+             drivers"/>
+  <int value="45" label="45: Unfold short circuit on Mac OS X"/>
+  <int value="48"
+      label="48: Force to use discrete GPU on older MacBookPro models"/>
+  <int value="49"
+      label="49: The first draw operation from an idle state is slow"/>
+  <int value="51" label="51: TexSubImage is faster for full uploads on ANGLE"/>
+  <int value="54"
+      label="54: Clear uniforms before first program use on all platforms"/>
+  <int value="55"
+      label="55: Mesa drivers in Linux handle varyings without static use
+             incorrectly"/>
+  <int value="56"
+      label="56: Mesa drivers in ChromeOS handle varyings without static use
+             incorrectly"/>
+  <int value="59" label="59: Multisampling is buggy in Intel IvyBridge"/>
+  <int value="64"
+      label="64: Linux AMD drivers incorrectly return initial value of 1 for
+             TEXTURE_MAX_ANISOTROPY"/>
+  <int value="65"
+      label="65: Linux NVIDIA drivers don't have the correct defaults for
+             vertex attributes"/>
+  <int value="68"
+      label="68: Disable partial swaps on Mesa drivers (detected with
+             GL_RENDERER)"/>
+  <int value="69"
+      label="69: Some shaders in Skia need more than the min available vertex
+             and fragment shader uniform vectors in case of OSMesa"/>
+  <int value="70" label="70: Disable D3D11 on older nVidia drivers"/>
+  <int value="71"
+      label="71: Vivante's support of OES_standard_derivatives is buggy"/>
+  <int value="72" label="72: Use virtual contexts on NVIDIA with GLES 3.1"/>
+  <int value="74"
+      label="74: Testing EGL sync fences was broken on most Qualcomm drivers"/>
+  <int value="75"
+      label="75: Mali-4xx support of EXT_multisampled_render_to_texture is
+             buggy on Android &lt; 4.3"/>
+  <int value="76" label="76: Testing EGL sync fences was broken on IMG"/>
+  <int value="77" label="77: Testing fences was broken on Mali ES2 drivers"/>
+  <int value="78" label="78: Testing fences was broken on Broadcom drivers"/>
+  <int value="82"
+      label="82: PBO mappings segfault on certain older Qualcomm drivers"/>
+  <int value="86" label="86: Disable use of Direct3D 11 on Matrox video cards"/>
+  <int value="87" label="87: Disable use of Direct3D 11 on older AMD drivers"/>
+  <int value="88"
+      label="88: Always rewrite vec/mat constructors to be consistent"/>
+  <int value="89" label="89: Mac drivers handle struct scopes incorrectly"/>
+  <int value="90"
+      label="90: Linux AMD drivers handle struct scopes incorrectly"/>
+  <int value="91"
+      label="91: ETC1 non-power-of-two sized textures crash older IMG drivers"/>
+  <int value="92" label="92: Old Intel drivers cannot reliably support D3D11"/>
+  <int value="93"
+      label="93: The GL implementation on the Android emulator has problems
+             with PBOs."/>
+  <int value="94"
+      label="94: Disable EGL_KHR_wait_sync on NVIDIA with GLES 3.1"/>
+  <int value="95" label="95: glClear does not always work on these drivers"/>
+  <int value="97"
+      label="97: Multisampling has poor performance in Intel BayTrail"/>
+  <int value="98"
+      label="98: PowerVR SGX 540 drivers throw GL_OUT_OF_MEMORY error when a
+             buffer object's size is set to 0"/>
+  <int value="99"
+      label="99: Qualcomm driver before Lollipop deletes egl sync objects
+             after context destruction"/>
+  <int value="100"
+      label="100: Disable Direct3D11 on systems with AMD switchable graphics"/>
+  <int value="101"
+      label="101: The Mali-Txxx driver hangs when reading from currently
+             displayed buffer"/>
+  <int value="102"
+      label="102: Adreno 420 driver loses FBO attachment contents on bound
+             FBO deletion"/>
+  <int value="103"
+      label="103: Adreno 420 driver drops draw calls after FBO invalidation"/>
+  <int value="104"
+      label="104: EXT_occlusion_query_boolean hangs on MediaTek MT8135
+             pre-Lollipop"/>
+  <int value="105"
+      label="105: Framebuffer discarding causes corruption on Mali-4xx"/>
+  <int value="106"
+      label="106: EXT_occlusion_query_boolean hangs on PowerVR SGX 544 (IMG)
+             drivers"/>
+  <int value="107" label="107: Workaround IMG PowerVR G6xxx drivers bugs"/>
+  <int value="108" label="108: Mali-4xx does not support GL_RGB format"/>
+  <int value="109"
+      label="109: MakeCurrent is slow on Linux with NVIDIA drivers"/>
+  <int value="110"
+      label="110: EGL Sync server causes crashes on Adreno 2xx and 3xx
+             drivers"/>
+  <int value="111"
+      label="111: Discard Framebuffer breaks WebGL on Mali-4xx Linux"/>
+  <int value="112"
+      label="112: EXT_disjoint_timer_query fails after 2 queries on adreno
+             3xx in lollypop"/>
+  <int value="113"
+      label="113: EXT_disjoint_timer_query fails after 256 queries on adreno
+             4xx"/>
+  <int value="115"
+      label="115: glGetIntegerv with GL_GPU_DISJOINT_EXT causes
+             GL_INVALID_ENUM error"/>
+  <int value="116"
+      label="116: Adreno 420 support for EXT_multisampled_render_to_texture
+             is buggy on Android &lt; 5.1"/>
+  <int value="117"
+      label="117: GL_KHR_blend_equation_advanced breaks blending on Adreno
+             4xx"/>
+  <int value="118"
+      label="118: NVIDIA 331 series drivers shader compiler may crash when
+             attempting to optimize pow()"/>
+  <int value="119"
+      label="119: Context lost recovery often fails on Mali-400/450 on
+             Android."/>
+  <int value="120"
+      label="120: CHROMIUM_copy_texture is slow on Mali pre-Lollipop"/>
+  <int value="123"
+      label="123: NVIDIA drivers before 346 lack features in
+             NV_path_rendering and related extensions to implement driver
+             level path rendering."/>
+  <int value="125" label="125: glFinish doesn't clear caches on Android"/>
+  <int value="126"
+      label="126: Program binaries contain incorrect bound attribute
+             locations on Adreno 3xx GPUs"/>
+  <int value="127"
+      label="127: Android Adreno crashes on binding incomplete cube map
+             texture to FBO"/>
+  <int value="128"
+      label="128: Linux ATI drivers crash on binding incomplete cube map
+             texture to FBO"/>
+  <int value="129"
+      label="129: ANGLE crash on glReadPixels from incomplete cube map
+             texture"/>
+  <int value="130"
+      label="130: NVIDIA fails glReadPixels from incomplete cube map texture"/>
+  <int value="131"
+      label="131: Linux Mesa drivers crash on glTexSubImage2D() to texture
+             storage bound to FBO"/>
+  <int value="132"
+      label="132: On Intel GPUs MSAA performance is not acceptable for GPU
+             rasterization"/>
+  <int value="133"
+      label="133: CHROMIUM_copy_texture with 1MB copy per flush to avoid
+             unwanted cache growth on Adreno"/>
+  <int value="134"
+      label="134: glReadPixels fails on FBOs with SRGB_ALPHA textures"/>
+  <int value="135" label="135: Screen flickers on 2009 iMacs"/>
+  <int value="136"
+      label="136: glGenerateMipmap fails if the zero texture level is not set
+             on some Mac drivers"/>
+  <int value="137"
+      label="137: NVIDIA fails glReadPixels from incomplete cube map texture"/>
+  <int value="138"
+      label="138: NVIDIA drivers before 346 lack features in
+             NV_path_rendering and related extensions to implement driver
+             level path rendering."/>
+  <int value="139"
+      label="139: Mesa drivers wrongly report supporting GL_EXT_texture_rg
+             with GLES 2.0 prior version 11.1"/>
+  <int value="140"
+      label="140: glReadPixels fails on FBOs with SRGB_ALPHA textures, Nexus
+             5X"/>
+  <int value="141"
+      label="141: Framebuffer discarding can hurt performance on non-tilers"/>
+  <int value="142"
+      label="142: Pack parameters work incorrectly with pack buffer bound"/>
+  <int value="143" label="143: Timer queries crash on Intel GPUs on Linux"/>
+  <int value="144"
+      label="144: Pack parameters work incorrectly with pack buffer bound"/>
+  <int value="145"
+      label="145: EGLImage ref counting across EGLContext/threads is broken"/>
+  <int value="147"
+      label="147: Limit max texure size to 4096 on all of Android"/>
+  <int value="148"
+      label="148: Mali-4xx GPU on JB doesn't support DetachGLContext"/>
+  <int value="149"
+      label="149: Direct composition flashes black initially on Win &lt;10"/>
+  <int value="150"
+      label="150: Alignment works incorrectly with unpack buffer bound"/>
+  <int value="151"
+      label="151: Alignment works incorrectly with unpack buffer bound"/>
+  <int value="152"
+      label="152: copyTexImage2D fails when reading from IOSurface on
+             multiple GPU types."/>
+  <int value="153"
+      label="153: Vivante GC1000 with EXT_multisampled_render_to_texture
+             fails glReadPixels"/>
+  <int value="156" label="156: glEGLImageTargetTexture2DOES crashes"/>
+  <int value="157"
+      label="157: Testing fences was broken on Mali ES2 drivers for specific
+             phone models"/>
+  <int value="158"
+      label="158: IOSurface use becomes pathologically slow over time on
+             10.10."/>
+  <int value="159"
+      label="159: Framebuffer discarding can hurt performance on non-tilers"/>
+  <int value="160"
+      label="160: Framebuffer discarding not useful on NVIDIA Kepler
+             architecture and later"/>
+  <int value="161"
+      label="161: Framebuffer discarding not useful on NVIDIA Kepler
+             architecture and later"/>
+  <int value="162"
+      label="162: Framebuffer discarding not useful on NVIDIA Kepler
+             architecture and later"/>
+  <int value="163"
+      label="163: Multisample renderbuffers with format GL_RGB8 have
+             performance issues on Intel GPUs."/>
+  <int value="164"
+      label="164: glColorMask does not work for multisample renderbuffers on
+             old AMD GPUs."/>
+  <int value="165"
+      label="165: Unpacking overlapping rows from unpack buffers is unstable
+             on NVIDIA GL driver"/>
+  <int value="167"
+      label="167: glEGLImageTargetTexture2DOES crashes on Mali-400"/>
+  <int value="168"
+      label="168: VirtualBox driver doesn't correctly support partial swaps."/>
+  <int value="169"
+      label="169: Mac Drivers store texture level parameters on int16_t that
+             overflow"/>
+  <int value="170"
+      label="170: Zero copy DXGI video hangs on shutdown on Win &lt; 8.1"/>
+  <int value="172" label="172: Use GL_INTEL_framebuffer_CMAA on ChromeOS"/>
+  <int value="174"
+      label="174: Adreno 4xx support for EXT_multisampled_render_to_texture
+             is buggy on Android 7.0"/>
+  <int value="175"
+      label="175: Adreno 5xx support for EXT_multisampled_render_to_texture
+             is buggy on Android &lt; 7.0"/>
+  <int value="176" label="176: glClear does not work on Acer Predator GT-810"/>
+  <int value="177"
+      label="177: glGetFragData{Location|Index} works incorrectly on Max"/>
+  <int value="178"
+      label="178: GL_KHR_blend_equation_advanced is incorrectly implemented
+             on Intel BayTrail on KitKat"/>
+  <int value="179"
+      label="179: glResumeTransformFeedback works incorrectly on Intel GPUs"/>
+  <int value="180"
+      label="180: eglCreateImageKHR fails for one component textures on
+             PowerVR"/>
+  <int value="181"
+      label="181: glTexStorage* are buggy when base mipmap level is not 0"/>
+  <int value="182"
+      label="182: Frequent hang in glClear on old android versions on
+             Mali-T7xx"/>
+  <int value="183"
+      label="183: Result of abs(i) where i is an integer in vertex shader is
+             wrong"/>
+  <int value="184"
+      label="184: Rewrite texelFetchOffset to texelFetch for Intel Mac"/>
+  <int value="185"
+      label="185: Zero-copy NV12 video displays incorrect colors on NVIDIA
+             drivers."/>
+  <int value="186"
+      label="186: Rewrite condition in for and while loops for Intel Mac"/>
+  <int value="187"
+      label="187: Rewrite do-while loops to simpler constructs on Mac"/>
+  <int value="188"
+      label="188: AVSampleBufferDisplayLayer leaks IOSurfaces on 10.9."/>
+  <int value="189"
+      label="189: Do TexImage2D first before CopyTexImage2D for cube map
+             texture on Intel Mac 10.11"/>
+  <int value="190"
+      label="190: Disable partial swaps on Mesa drivers (detected with
+             GL_VERSION)"/>
+  <int value="191" label="191: Emulate GLSL function isnan() on Intel Mac"/>
+  <int value="192"
+      label="192: Decode and encode before generateMipmap for srgb format
+             textures on os except macosx"/>
+  <int value="193"
+      label="193: Decode and encode before generateMipmap for srgb format
+             textures on macosx"/>
+  <int value="194"
+      label="194: Init first two levels before CopyTexImage2D for cube map
+             texture on Intel Mac 10.12"/>
+  <int value="195"
+      label="195: Insert statements to reference all members in unused
+             std140/shared blocks on Mac"/>
+  <int value="196"
+      label="196: Tex(Sub)Image3D performs incorrectly when uploading from
+             unpack buffer with GL_UNPACK_IMAGE_HEIGHT greater than zero on
+             Intel Macs"/>
+  <int value="197"
+      label="197: adjust src/dst region if blitting pixels outside read
+             framebuffer on Mac"/>
+  <int value="198"
+      label="198: adjust src/dst region if blitting pixels outside read
+             framebuffer on Linux Intel"/>
+  <int value="199"
+      label="199: adjust src/dst region if blitting pixels outside read
+             framebuffer on Linux AMD"/>
+  <int value="200"
+      label="200: ES3 support is unreliable on some older drivers"/>
+  <int value="201"
+      label="201: AMD drivers in Linux require invariant qualifier to match
+             between vertex and fragment shaders"/>
+  <int value="202"
+      label="202: Mac driver GL 4.1 requires invariant and centroid to match
+             between shaders"/>
+  <int value="203"
+      label="203: Mesa driver GL 3.3 requires invariant and centroid to match
+             between shaders"/>
+  <int value="205"
+      label="205: Adreno 5xx support for EXT_multisampled_render_to_texture
+             is buggy on Android 7.1"/>
+  <int value="206"
+      label="206: Disable KHR_blend_equation_advanced until cc shaders are
+             updated"/>
+  <int value="207"
+      label="207: Decode and Encode before generateMipmap for srgb format
+             textures on Windows"/>
+  <int value="208"
+      label="208: Decode and Encode before generateMipmap for srgb format
+             textures on Linux Mesa ANGLE path"/>
+  <int value="209"
+      label="209: Decode and Encode before generateMipmap for srgb format
+             textures on Chromeos Intel"/>
+  <int value="210"
+      label="210: Decode and Encode before generateMipmap for srgb format
+             textures on Linux AMD"/>
+  <int value="211" label="211: Rewrite -float to 0.0 - float for Intel Mac"/>
+  <int value="212"
+      label="212: Program binaries don't contain transform feedback varyings
+             on Qualcomm GPUs"/>
+  <int value="213"
+      label="213: The Mali-Gxx driver does not guarantee flush ordering"/>
+  <int value="214"
+      label="214: Some Adreno 3xx don't setup scissor state correctly when
+             FBO0 is bound, nor support MSAA properly."/>
+  <int value="215"
+      label="215: Fake no-op GPU driver bug workaround for testing"/>
+  <int value="216"
+      label="216: Pack parameters work incorrectly with pack buffer bound"/>
+  <int value="217"
+      label="217: Alignment works incorrectly with unpack buffer bound"/>
+  <int value="218"
+      label="218: Certain Adreno 4xx and 5xx drivers often crash in
+             glProgramBinary."/>
+  <int value="219"
+      label="219: Zero-copy DXGI video hangs or displays incorrect colors on
+             AMD drivers"/>
+  <int value="220"
+      label="220: NV12 DXGI video displays incorrect colors on older AMD
+             drivers"/>
+  <int value="221"
+      label="221: Very large instanced draw calls crash on some Adreno 3xx
+             drivers"/>
+  <int value="222"
+      label="222: Software to Accelerated canvas update breaks Linux AMD"/>
+  <int value="223"
+      label="223: Force integer or srgb cube map texture complete on Linux
+             AMD"/>
+  <int value="224"
+      label="224: VPx decoding isn't supported well before Windows 10
+             creators update."/>
+  <int value="225"
+      label="225: VPx decoding is too slow on Intel Broadwell, Skylake, and
+             CherryView"/>
+  <int value="226"
+      label="226: Accelerated VPx decoding is hanging on some videos."/>
+  <int value="227" label="227: Certain Apple devices leak stencil buffers"/>
+  <int value="228" label="228: Intel HD 3000 driver crashes frequently on Mac"/>
+  <int value="229"
+      label="229: Overlay sizes bigger than screen aren't accelerated on some
+             Intel drivers"/>
+  <int value="231"
+      label="231: Multisampled color renderbuffers can't be resized on
+             Qualcomm 4xx/5xx"/>
+  <int value="232"
+      label="232: Delayed copy NV12 crashes on Intel on Windows &lt;= 8.1."/>
+  <int value="233"
+      label="233: Delayed copy NV12 displays incorrect colors on NVIDIA
+             drivers."/>
+  <int value="234"
+      label="234: Avoid using EGL_IMAGE_EXTERNAL_FLUSH_EXT with
+             eglCreateImageKHR on NVIDIA"/>
+  <int value="235"
+      label="235: Avoid waiting on a egl fence before pageflipping and rely
+             on implicit sync."/>
+  <int value="236"
+      label="236: glClearColor does not always work on Intel 6xxx Mac drivers"/>
+  <int value="237"
+      label="237: eglSwapBuffers intermittently fails on Android when app
+             goes to background"/>
+  <int value="239"
+      label="239: Reset TexImage2D base level to 0 on Intel Mac 10.12.4"/>
+  <int value="240"
+      label="240: glGetQueryObject(GL_QUERY_RESULT_AVAILABLE) blocks
+             unexpectedly on Adreno"/>
+  <int value="241"
+      label="241: On Intel GPUs MSAA performance is not acceptable for GPU
+             rasterization. Duplicate of 132 for Android"/>
+  <int value="242"
+      label="242: Code produced by local variable initialization often
+             triggers crashes in Marshmallow Adreno driver"/>
+  <int value="243"
+      label="243: Program binaries don't contain transform feedback varyings
+             on Mali GPUs"/>
+  <int value="244"
+      label="244: Rendering to IOSurfaces via OpenGL is broken on NVIDIA GPUs
+             on High Sierra"/>
+</enum>
+
+<enum name="GPUProcessExitCode">
+  <summary>
+    The exit code returned by the GPU process when it terminated. These match
+    the enumeration in result_codes.h.
+  </summary>
+  <int value="0" label="Normal"/>
+  <int value="1" label="Killed"/>
+  <int value="2" label="Hung"/>
+  <int value="3" label="KilledBadMessage"/>
+  <int value="4" label="DeadOnArrival"/>
+</enum>
+
+<enum name="GPUProcessLifetimeEvent">
+  <summary>
+    Lifetime events of the GPU Process, as defined in
+    content/browser/gpu/gpu_process_host.cc.
+  </summary>
+  <int value="0" label="Launched"/>
+  <int value="1" label="Died first time"/>
+  <int value="2" label="Died second time"/>
+  <int value="3" label="Died third time"/>
+  <int value="4" label="Died fourth time"/>
+  <int value="5" label="Died fifth time"/>
+  <int value="6" label="Died sixth time"/>
+</enum>
+
+<enum name="GPUsetIsAcceleratedCompositingActive">
+  <summary>
+    Combinations of input parameter active and previous active state set in
+    third_party/WebKit/WebKit/chromium/src/ChromiumBridge.cpp
+  </summary>
+  <int value="0" label="inactive, was inactive"/>
+  <int value="1" label="inactive, was active"/>
+  <int value="2" label="active, was inactive"/>
+  <int value="3" label="active, was active"/>
+</enum>
+
+<enum name="GpuTerminationOrigin">
+  <summary>
+    Return status re-encoded values from GpuTerminationOrigin as defined in
+    content/browser/gpu/gpu_process_host.h enum GpuTerminationOrigin.
+  </summary>
+  <int value="0" label="Unknown Origin">UNKNOWN_ORIGIN</int>
+  <int value="1" label="Ozone Wayland Proxy">OZONE_WAYLAND_PROXY</int>
+</enum>
+
+<enum name="GpuTerminationStatus">
+  <summary>
+    Return status re-encoded values from GetTerminationStatus as defined in
+    base/process/kill.h enum TerminationStatus.
+  </summary>
+  <int value="0" label="Normal">NORMAL_TERMINATION</int>
+  <int value="1" label="Abnormal">ABNORMAL_TERMINATION</int>
+  <int value="2" label="Killed">PROCESS_WAS_KILLED</int>
+  <int value="3" label="Crashed">PROCESS_CRASHED</int>
+  <int value="4" label="Still Running">STILL_RUNNING</int>
+  <int value="5" label="Killed by OOM">PROCESS_WAS_KILLED_BY_OOM</int>
+  <int value="6" label="OOM protected">OOM_PROTECTED</int>
+  <int value="7" label="Launch Failed">LAUNCH_FAILED</int>
+  <int value="8" label="OOM">OOM</int>
+</enum>
+
+<enum name="GpuWatchdogThreadEvent">
+  <int value="0" label="Watchdog Start"/>
+  <int value="1" label="Watchdog Kill"/>
+  <int value="2" label="Watchdog End"/>
+</enum>
+
+<enum name="GpuWatchdogTimeoutEvent">
+  <int value="0" label="Timeout"/>
+  <int value="1" label="Kill"/>
+  <int value="2" label="MoreThreadTime"/>
+  <int value="3" label="ProgressAfterMoreThreadTime"/>
+  <int value="4" label="TimeoutWait (deprecated)"/>
+  <int value="5" label="ProgressAfterWait (deprecated)"/>
+  <int value="6" label="ContinueOnNonHostServerTty"/>
+  <int value="7" label="LessThanFullThreadTimeAfterCapped"/>
+  <int value="8" label="KillOnLessThreadTime"/>
+  <int value="9" label="SlowWatchdogThread"/>
+  <int value="10" label="NoKillForGpuProgressInCrashDump"/>
+</enum>
+
+<enum name="GPUWebGraphicsContext3D_Init_CanLoseContext">
+  <summary>
+    Combinations of context loss variables from
+    chrome/renderer/webgraphicscontext3d_command_buffer_impl.cc
+  </summary>
+  <int value="0"
+      label="InitOK attributes.canRecoverFromContextLoss=False
+             gpu_info.can_lose_context=False"/>
+  <int value="1"
+      label="InitFAILS attributes.canRecoverFromContextLoss=False
+             gpu_info.can_lose_context=True"/>
+  <int value="2"
+      label="InitOK attributes.canRecoverFromContextLoss=True
+             gpu_info.can_lose_context=False"/>
+  <int value="3"
+      label="InitOK attributes.canRecoverFromContextLoss=True
+             gpu_info.can_lose_context=True"/>
+</enum>
+
+<enum name="HasDiscreteGpu">
+  <int value="0" label="No"/>
+  <int value="1" label="Yes"/>
+  <int value="2" label="Unknown"/>
+</enum>
+
+<enum name="IntelGpuGeneration">
+  <int value="0" label="Not Intel"/>
+  <int value="1" label="Unknown Intel"/>
+  <int value="4" label="4th Gen"/>
+  <int value="5" label="5th Gen"/>
+  <int value="6" label="6th Gen"/>
+  <int value="7" label="7th Gen"/>
+  <int value="8" label="8th Gen"/>
+  <int value="9" label="9th Gen"/>
+  <int value="10" label="10th Gen"/>
+  <int value="11" label="11th Gen"/>
+  <int value="12" label="12th Gen"/>
+</enum>
+
+<enum name="IntelGpuSeriesType">
+  <summary>
+    User device GPU series type. Only meaningful with Intel GPUs.
+  </summary>
+  <int value="0" label="Unknown (mostly Non-Intel)"/>
+  <int value="1" label="Intel SandyBridge"/>
+  <int value="2" label="Intel BayTrail"/>
+  <int value="3" label="Intel IvyBridge"/>
+  <int value="4" label="Intel Haswell"/>
+  <int value="5" label="Intel CherryTrail"/>
+  <int value="6" label="Intel Broadwell"/>
+  <int value="7" label="Intel ApolloLake"/>
+  <int value="8" label="Intel SkyLake"/>
+  <int value="9" label="Intel GeminiLake"/>
+  <int value="10" label="Intel KabyLake"/>
+  <int value="11" label="Intel CoffeeLake"/>
+  <int value="12" label="Intel WhiskeyLake"/>
+  <int value="13" label="Intel CometLake"/>
+  <int value="14" label="Intel CannonLake"/>
+  <int value="15" label="Intel IceLake"/>
+  <int value="16" label="Intel Broadwater"/>
+  <int value="17" label="Intel EagleLake"/>
+  <int value="18" label="Intel IronLake"/>
+  <int value="19" label="Intel ElkhartLake"/>
+  <int value="20" label="Intel JaspterLake"/>
+  <int value="21" label="Intel TigerLake"/>
+  <int value="22" label="Intel AlderLake"/>
+  <int value="23" label="Intel AmberLake"/>
+  <int value="24" label="Intel RocketLake"/>
+  <int value="25" label="Intel DG1"/>
+</enum>
+
+<enum name="MetalReadWriteTextureSupportTier">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Tier0_NoSupport"/>
+  <int value="2" label="Tier1_R32Formats"/>
+  <int value="3" label="Tier2_AdditionalFormats"/>
+</enum>
+
+<enum name="NvidiaDeviceId">
+  <int value="1600" label="0x0640, GeForce 9500 GT"/>
+  <int value="2601" label="0x0A29, GeForce GT 330M"/>
+  <int value="4053" label="0x0FD5, GeForce GT 650M Mac Edition"/>
+  <int value="4056" label="0x0FD8, GeForce GT 640M Mac Edition"/>
+  <int value="4073" label="0x0FE9, GeForce GT 750M Mac Edition"/>
+  <int value="4074" label="0x0FEA, GeForce GT 755M Mac Edition"/>
+  <int value="4416"
+      label="0x1140, GeForce 610M/710M/810M/820M / GT 620M/625M/630M/720M"/>
+  <int value="4509" label="0x119D, GeForce GTX 775M Mac Edition"/>
+  <int value="4510" label="0x119E, GeForce GTX 780M Mac Edition"/>
+  <int value="4514" label="0x11A2, GeForce GTX 675MX Mac Edition"/>
+  <int value="4515" label="0x11A3, GeForce GTX 680MX"/>
+  <int value="4761" label="0x1299, GeForce 920M"/>
+  <int value="4929" label="0x1341, GeForce 840M"/>
+  <int value="4935" label="0x1347, GeForce 940M"/>
+  <int value="4941" label="0x134D, GeForce 940MX"/>
+  <int value="4943" label="0x134F, GeForce 920MX"/>
+  <int value="5018" label="0x139A, GeForce GTX 950M"/>
+  <int value="5019" label="0x139B, GeForce GTX 960M"/>
+  <int value="5965" label="0x174D, GeForce MX130"/>
+  <int value="5966" label="0x174E, GeForce MX110"/>
+  <int value="7171" label="0x1C03, GeForce GTX 1060 6GB"/>
+  <int value="7200" label="0x1C20, GeForce GTX 1060 Mobile"/>
+  <int value="7298" label="0x1C82, GeForce GTX 1050 Ti"/>
+  <int value="7308" label="0x1C8C, GeForce GTX 1050 Ti Mobile"/>
+  <int value="7309" label="0x1C8D, GeForce GTX 1050 Mobile"/>
+  <int value="7440" label="0x1D10, GeForce MX150"/>
+  <int value="7441" label="0x1D11, GeForce MX230"/>
+  <int value="7443" label="0x1D13, GeForce MX250"/>
+  <int value="7825" label="0x1E91, GeForce RTX 2070 SUPER Mobile / Max-Q"/>
+  <int value="7957" label="0x1F15, GeForce RTX 2060 Mobile"/>
+  <int value="8081" label="0x1F91, GeForce GTX 1650 Mobile / Max-Q"/>
+  <int value="8085" label="0x1F95, GeForce GTX 1650 Ti Mobile"/>
+  <int value="8089" label="0x1F99, GeForce ?"/>
+  <int value="8593" label="0x2191, GeForce GTX 1660 Ti Mobile"/>
+</enum>
+
+<enum name="OopRasterGlyphCacheMissType">
+  <int value="0"
+      label="Missing font metrics, indicating an incorrect SkDescriptor"/>
+  <int value="1" label="Missing glyph metrics"/>
+  <int value="2" label="Missing glyph image"/>
+  <int value="3" label="Missing glyph path"/>
+  <int value="4"
+      label="Missing glyph image, but a fallback was found (deprecated)"/>
+  <int value="5"
+      label="Missing glyph path, but a fallback was found (deprecated)"/>
+</enum>
+
+<enum name="OverlayQuadMaterial">
+  <int value="0" label="Invalid"/>
+  <int value="1" label="DebugBorder"/>
+  <int value="2" label="PictureContent"/>
+  <int value="3" label="CompositorRenderPass"/>
+  <int value="4" label="AggregatedRenderPass"/>
+  <int value="5" label="SolidColor"/>
+  <int value="6" label="StreamVideoContent"/>
+  <int value="7" label="SurfaceContent"/>
+  <int value="8" label="TextureContent"/>
+  <int value="9" label="TiledContent"/>
+  <int value="10" label="YuvVideoContent"/>
+  <int value="11" label="VideoHole"/>
+</enum>
+
+<enum name="OverlayStrategies">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="No overlay"/>
+  <int value="2" label="Fullscreen"/>
+  <int value="3" label="SingleOnTop"/>
+  <int value="4" label="Underlay"/>
+  <int value="5" label="Underlay Cast"/>
+  <int value="6" label="All overlays failed"/>
+  <int value="7" label="Overlays failed min"/>
+</enum>
+
+<enum name="PaintOpDeserializationError">
+  <int value="0" label="DrawLooper forbidden"/>
+  <int value="1" label="Enum value out of range"/>
+  <int value="2" label="Forbidden SerializedImageType"/>
+  <int value="3" label="Insufficient remaining bytes in AlignMemory"/>
+  <int value="4" label="Insufficient remaining bytes in ExtractReadableMemory"/>
+  <int value="5" label="Insufficient remaining bytes in Read(PaintRecord)"/>
+  <int value="6"
+      label="Insufficient remaining bytes in Read(PaintShader) for
+             color_bytes"/>
+  <int value="7"
+      label="Insufficient remaining bytes in Read(PaintShader) for color_size"/>
+  <int value="8"
+      label="Insufficient remaining bytes in Read(PaintShader) for positions"/>
+  <int value="9" label="Insufficient remaining bytes in Read(SkData)"/>
+  <int value="10" label="Insufficient remaining bytes in Read(SkPath)"/>
+  <int value="11" label="Insufficient remaining bytes in Read(SkRegion)"/>
+  <int value="12" label="Insufficient remaining bytes in Read(SkTextBlob)"/>
+  <int value="13" label="Insufficient remaining bytes in ReadData"/>
+  <int value="14" label="Insufficient remaining bytes in ReadFlattenable"/>
+  <int value="15"
+      label="Insufficient remaining bytes in ReadMatrixConvolutionPaintFilter"/>
+  <int value="16" label="Insufficient remaining bytes in ReadSimple"/>
+  <int value="17" label="Invalid PaintShader"/>
+  <int value="18" label="Invalid PaintShader PositionsSize"/>
+  <int value="19" label="Invalid PaintShader ScalingBehavior"/>
+  <int value="20" label="Invalid PaintShader type"/>
+  <int value="21" label="Invalid PlaneConfig"/>
+  <int value="22" label="Invalid RasterScale"/>
+  <int value="23" label="Invalid RecordShaderId"/>
+  <int value="24" label="Invalid SerializedImageType"/>
+  <int value="25" label="Invalid SkYUVColorSpace"/>
+  <int value="26" label="Invalid Subsampling"/>
+  <int value="27" label="Invalid Typeface"/>
+  <int value="28" label="Missing PaintCache path entry"/>
+  <int value="29" label="Missing PaintCache text blob entry"/>
+  <int value="30" label="Missing SharedImageProvider"/>
+  <int value="31" label="PaintFilter has too many inputs"/>
+  <int value="32" label="PaintOpBuffer MakeFromMemory failure"/>
+  <int value="33" label="PaintRecord forbidden"/>
+  <int value="34" label="ReadImage failure"/>
+  <int value="35" label="SharedImage open failure (obsolete)"/>
+  <int value="36" label="SkColorFilter unflatten failure"/>
+  <int value="37" label="SkColorSpace deserialize failure"/>
+  <int value="38" label="SkDrawLooper unflatten failure"/>
+  <int value="39" label="SkMaskFilter unflatten failure"/>
+  <int value="40" label="SkPathEffect unflatten failure"/>
+  <int value="41" label="SkPath ReadFromMemory failure"/>
+  <int value="42" label="SkRegion ReadFromMemory failure"/>
+  <int value="43" label="SkTextBlob deserialize failure"/>
+  <int value="44" label="Unexpected PaintShaderType"/>
+  <int value="45" label="Unexpected SerializedImageType"/>
+  <int value="46" label="Zero mailbox"/>
+  <int value="47" label="Zero region bytes"/>
+  <int value="48" label="Zero SkPath bytes"/>
+  <int value="49" label="SharedImageProvider unknown mailbox"/>
+  <int value="50" label="SharedImageProvider no access"/>
+  <int value="51" label="SharedImageProvider SkImage creation failed"/>
+  <int value="52" label="Zero SkColorFilter bytes"/>
+  <int value="53" label="Insufficient Pixel Data"/>
+  <int value="54" label="SkGainmapInfo deserialize failure"/>
+  <int value="55" label="HdrMetadata deserialize failure"/>
+  <int value="56" label="SkColor4f has non-finite values"/>
+</enum>
+
+<enum name="ParseEdidFailure">
+  <int value="0" label="No failure"/>
+  <int value="1" label="Too short EDID data: manufacturer id"/>
+  <int value="2" label="Too short EDID data: product id"/>
+  <int value="3" label="Too short EDID data: year of manufacture"/>
+  <int value="4" label="Too short EDID data: bits per channel"/>
+  <int value="5" label="Too short EDID data: gamma"/>
+  <int value="6" label="Too short EDID data: chromaticity coordinates"/>
+  <int value="7" label="Invalid EDID: human unreadable char in name"/>
+  <int value="8" label="Too short EDID data: extensions"/>
+  <int value="9" label="Too short EDID data: block zero serial number"/>
+  <int value="10" label="Too short EDID data: week of manufacture"/>
+  <int value="11" label="Too short EDID data: physical display size"/>
+</enum>
+
+<enum name="ParseEdidOptionals">
+  <int value="0" label="All optional fields are available"/>
+  <int value="1" label="Missing: block zero serial number"/>
+  <int value="2" label="Missing: descriptor block serial number"/>
+  <int value="3" label="Missing: week of manufacture"/>
+  <int value="4" label="Missing: physical display size"/>
+</enum>
+
+<enum name="ShaderModel">
+  <summary>The GPU's Direct3D shader model version.</summary>
+  <int value="0" label="SHADER_MODEL_UNKNOWN"/>
+  <int value="1" label="SHADER_MODEL_2_0"/>
+  <int value="2" label="SHADER_MODEL_3_0"/>
+  <int value="3" label="SHADER_MODEL_4_0"/>
+  <int value="4" label="SHADER_MODEL_4_1"/>
+  <int value="5" label="SHADER_MODEL_5_0"/>
+</enum>
+
+<enum name="SharedImageBackingType">
+  <summary>Corresponds to SharedImageBacking implementations.</summary>
+  <int value="0" label="TestImageBacking"/>
+  <int value="1" label="ExternalVkImageBacking"/>
+  <int value="2" label="D3DImageBacking"/>
+  <int value="3" label="EGLImageBacking"/>
+  <int value="4" label="AHardwareBufferImageBacking"/>
+  <int value="5" label="AngleVulkanImageBacking"/>
+  <int value="6" label="GLImageBacking"/>
+  <int value="7" label="GLTextureImageBacking"/>
+  <int value="8" label="OzoneImageBacking"/>
+  <int value="9" label="RawDrawImageBacking"/>
+  <int value="10" label="SharedMemoryImageBacking"/>
+  <int value="11" label="VideoImageBacking"/>
+  <int value="12" label="WrappedSkImageBacking"/>
+  <int value="13" label="CompoundImageBacking"/>
+  <int value="14" label="DCOMPTextureBacking"/>
+  <int value="15" label="IOSurfaceImageBacking"/>
+  <int value="16" label="DCompSurfaceImageBacking"/>
+  <int value="17" label="DXGISwapChainImageBacking"/>
+  <int value="18" label="WrappedGraphiteTextureBacking"/>
+</enum>
+
+<enum name="UnderlayDamageRect">
+  <int value="0" label="Zero Damage Rect"/>
+  <int value="1" label="Non-Occluding Damage Only"/>
+  <int value="2" label="Occluding Damage Only (Deprecated)"/>
+  <int value="3" label="Occluding and Non-Occluding Damages"/>
+</enum>
+
+<enum name="WaitForVBlankErrorCode">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed to get monitor info"/>
+  <int value="2" label="Failed to open adapter"/>
+  <int value="3" label="Failed to wait for VBlank event"/>
+</enum>
+
+<enum name="WebGPUSupport">
+  <int value="0" label="None"/>
+  <int value="1" label="Core None, Compat Blocklisted"/>
+  <int value="2" label="Core None, Compat Supported"/>
+  <int value="3" label="Core Blocklisted, Compat None"/>
+  <int value="4" label="Core Blocklisted, Compat Blocklisted"/>
+  <int value="5" label="Core Blocklisted, Compat Supported"/>
+  <int value="6" label="Core Supported"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>
