@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_constants.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
@@ -89,6 +90,8 @@ NSAttributedString* DescriptionMessage() {
   _activityIndicator = [[UIActivityIndicatorView alloc]
       initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
   self.aboveTitleView = _activityIndicator;
+  self.image = DefaultSymbolTemplateWithPointSize(kMailFillSymbol, kImageSize);
+  self.imageHasFixedSize = true;
   self.titleString = l10n_util::GetNSString(IDS_PLUS_ADDRESS_MODAL_TITLE);
   self.primaryActionString =
       l10n_util::GetNSString(IDS_PLUS_ADDRESS_MODAL_OK_TEXT);

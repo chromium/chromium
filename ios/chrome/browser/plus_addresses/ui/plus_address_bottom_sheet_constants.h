@@ -19,4 +19,7 @@ extern const CGFloat kPrimaryAddressBottomMargin;
 // sheet content being too close to the top of the sheet.
 extern const CGFloat kBeforeImageTopMargin;
 
+// The desired size of the image at the top of the bottom sheet content.
+extern const CGFloat kImageSize;
+
 #endif  // IOS_CHROME_BROWSER_PLUS_ADDRESSES_UI_PLUS_ADDRESS_BOTTOM_SHEET_CONSTANTS_H_

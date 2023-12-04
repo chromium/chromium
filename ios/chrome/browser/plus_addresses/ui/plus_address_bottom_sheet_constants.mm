@@ -10,3 +10,5 @@ NSString* const kPlusAddressModalDescriptionAccessibilityIdentifier =
 const CGFloat kPrimaryAddressBottomMargin = 20;
 
 const CGFloat kBeforeImageTopMargin = 10;
+
+const CGFloat kImageSize = 26;
