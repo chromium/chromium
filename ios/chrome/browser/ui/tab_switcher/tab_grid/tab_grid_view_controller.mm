@@ -1470,27 +1470,23 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // Updates the appearance of the toolbars based on the scroll position of the
 // currently active Grid.
 - (void)updateToolbarsAppearance {
-  UIScrollView* scrollView;
+  BOOL gridScrolledToTop;
+  BOOL gridScrolledToBottom;
   switch (self.currentPage) {
     case TabGridPageIncognitoTabs:
-      scrollView = self.incognitoTabsViewController.gridView;
+      gridScrolledToTop = self.incognitoTabsViewController.scrolledToTop;
+      gridScrolledToBottom = self.incognitoTabsViewController.scrolledToBottom;
       break;
     case TabGridPageRegularTabs:
-      scrollView = self.regularTabsViewController.gridView;
+      gridScrolledToTop = self.regularTabsViewController.scrolledToTop;
+      gridScrolledToBottom = self.regularTabsViewController.scrolledToBottom;
       break;
     case TabGridPageRemoteTabs:
-      scrollView = self.remoteTabsViewController.tableView;
+      gridScrolledToTop = self.remoteTabsViewController.scrolledToTop;
+      gridScrolledToBottom = self.remoteTabsViewController.scrolledToBottom;
       break;
   }
-
-  BOOL gridScrolledToTop =
-      scrollView.contentOffset.y <= -scrollView.adjustedContentInset.top;
   [self.topToolbar setScrollViewScrolledToEdge:gridScrolledToTop];
-
-  CGFloat scrollableHeight = scrollView.contentSize.height +
-                             scrollView.adjustedContentInset.bottom -
-                             scrollView.bounds.size.height;
-  BOOL gridScrolledToBottom = scrollView.contentOffset.y >= scrollableHeight;
   [self.bottomToolbar setScrollViewScrolledToEdge:gridScrolledToBottom];
 }
 

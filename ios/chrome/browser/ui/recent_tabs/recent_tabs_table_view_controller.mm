@@ -297,6 +297,14 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
          AuthenticationService::ServiceStatus::SigninDisabledByPolicy;
 }
 
+- (BOOL)isScrolledToTop {
+  return IsScrollViewScrolledToTop(self.tableView);
+}
+
+- (BOOL)isScrolledToBottom {
+  return IsScrollViewScrolledToBottom(self.tableView);
+}
+
 #pragma mark - SyncObserverModelBridge
 
 - (void)onSyncStateChanged {

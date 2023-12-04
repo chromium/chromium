@@ -94,8 +94,10 @@ class WebStateID;
 
 // A view controller that contains a grid of items.
 @interface BaseGridViewController : UIViewController <TabCollectionConsumer>
-// The gridView is accessible to manage the content inset behavior.
-@property(nonatomic, readonly) UIScrollView* gridView;
+// Whether the grid is scrolled to the top.
+@property(nonatomic, readonly, getter=isScrolledToTop) BOOL scrolledToTop;
+// Whether the grid is scrolled to the bottom.
+@property(nonatomic, readonly, getter=isScrolledToBottom) BOOL scrolledToBottom;
 // The view that is shown when there are no items.
 @property(nonatomic, strong) UIView<GridEmptyView>* emptyStateView;
 // Returns YES if the grid has no items.

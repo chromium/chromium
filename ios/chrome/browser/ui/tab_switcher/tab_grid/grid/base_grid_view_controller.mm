@@ -286,8 +286,12 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 
 #pragma mark - Public
 
-- (UIScrollView*)gridView {
-  return self.collectionView;
+- (BOOL)isScrolledToTop {
+  return IsScrollViewScrolledToTop(self.collectionView);
+}
+
+- (BOOL)isScrolledToBottom {
+  return IsScrollViewScrolledToBottom(self.collectionView);
 }
 
 - (void)setEmptyStateView:(UIView<GridEmptyView>*)emptyStateView {
@@ -423,7 +427,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
         NSDirectionalEdgeInsetsMake(0, contentInsets.left, 0,
                                     contentInsets.right);
   } else {
-    self.gridView.contentInset = contentInsets;
+    self.collectionView.contentInset = contentInsets;
   }
   _contentInsets = contentInsets;
 }
