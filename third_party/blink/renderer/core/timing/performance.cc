@@ -1080,6 +1080,7 @@ base::TimeDelta Performance::MonotonicTimeToTimeDelta(
 }
 
 DOMHighResTimeStamp Performance::now() const {
+  recordreplay::Assert("[RUN-2860-2933] Performance::now");
   return MonotonicTimeToDOMHighResTimeStamp(tick_clock_->NowTicks());
 }
 
