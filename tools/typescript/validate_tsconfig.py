@@ -56,6 +56,12 @@ def validateTsconfigJson(tsconfig, tsconfig_file, is_base_tsconfig):
   if 'third_party/material_web_components/tsconfig_base.json' in tsconfig_file:
     return True, None
 
+  # TODO(b/267329383): Migrate A11y to TypeScript. Accessibility code has
+  # different requirements for the migration because of this we need both
+  # allowjs and a custom tsconfig.
+  if 'accessibility/tsconfig.base.json' in tsconfig_file:
+    return True, None
+
   if not is_base_tsconfig:
     for param in tsconfig.keys():
       if param not in _allowed_config_options:
@@ -116,6 +122,8 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
       'ash/webui/os_feedback_ui/',
       'ash/webui/shortcut_customization_ui/',
       'ash/webui/sample_system_web_app_ui/',
+      # TODO(b/267329383): Migrate A11y to TypeScript.
+      'chrome/browser/resources/chromeos/accessibility',
       'ui/file_manager/',
   ]
   for directory in ash_directories:
