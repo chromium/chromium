@@ -138,6 +138,10 @@ crbug.com/1474916 [ android-nexus-5x ] WebCodecs_EncodeColorSpace_avc1.42001E_pr
 
 crbug.com/1486660 [ chromeos chromeos-board-jacuzzi ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-hardware [ Failure ]
 
+crbug.com/1507162 [ chromeos chromeos-board-volteer ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_constant_3000000 [ Failure ]
+crbug.com/1507162 [ chromeos chromeos-board-volteer ] WebCodecs_SVC_av01.0.04M.08_prefer-software_layers_2 [ Failure ]
+crbug.com/1507162 [ chromeos chromeos-board-volteer ] WebCodecs_SVC_av01.0.04M.08_prefer-software_layers_3 [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
