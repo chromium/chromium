@@ -967,39 +967,39 @@ bool OpenXrTestHelper::IsSessionRunning() const {
 }
 
 void OpenXrTestHelper::UpdateInteractionProfile(
-    device_test::mojom::InteractionProfileType type) {
+    device::mojom::OpenXrInteractionProfileType type) {
   switch (type) {
-    case device_test::mojom::InteractionProfileType::kWMRMotion:
+    case device::mojom::OpenXrInteractionProfileType::kMicrosoftMotion:
       interaction_profile_ = device::kMicrosoftMotionInteractionProfilePath;
       break;
-    case device_test::mojom::InteractionProfileType::kKHRSimple:
+    case device::mojom::OpenXrInteractionProfileType::kKHRSimple:
       interaction_profile_ = device::kKHRSimpleInteractionProfilePath;
       break;
-    case device_test::mojom::InteractionProfileType::kOculusTouch:
+    case device::mojom::OpenXrInteractionProfileType::kOculusTouch:
       interaction_profile_ = device::kOculusTouchInteractionProfilePath;
       break;
-    case device_test::mojom::InteractionProfileType::kValveIndex:
+    case device::mojom::OpenXrInteractionProfileType::kValveIndex:
       interaction_profile_ = device::kValveIndexInteractionProfilePath;
       break;
-    case device_test::mojom::InteractionProfileType::kHTCVive:
+    case device::mojom::OpenXrInteractionProfileType::kHTCVive:
       interaction_profile_ = device::kHTCViveInteractionProfilePath;
       break;
-    case device_test::mojom::InteractionProfileType::kSamsungOdyssey:
+    case device::mojom::OpenXrInteractionProfileType::kSamsungOdyssey:
       interaction_profile_ = device::kSamsungOdysseyInteractionProfilePath;
       break;
-    case device_test::mojom::InteractionProfileType::kHPReverbG2:
+    case device::mojom::OpenXrInteractionProfileType::kHPReverbG2:
       interaction_profile_ = device::kHPReverbG2InteractionProfilePath;
       break;
-    case device_test::mojom::InteractionProfileType::kHandSelectGrasp:
+    case device::mojom::OpenXrInteractionProfileType::kHandSelectGrasp:
       interaction_profile_ = device::kHandSelectGraspInteractionProfilePath;
       break;
-    case device_test::mojom::InteractionProfileType::kViveCosmos:
+    case device::mojom::OpenXrInteractionProfileType::kViveCosmos:
       interaction_profile_ = device::kHTCViveCosmosInteractionProfilePath;
       break;
-    case device_test::mojom::InteractionProfileType::kExtHand:
+    case device::mojom::OpenXrInteractionProfileType::kExtHand:
       interaction_profile_ = device::kExtHandInteractionProfilePath;
       break;
-    case device_test::mojom::InteractionProfileType::kInvalid:
+    case device::mojom::OpenXrInteractionProfileType::kInvalid:
       NOTREACHED() << "Invalid EventData interaction_profile type";
       break;
   }

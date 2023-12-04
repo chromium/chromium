@@ -6,8 +6,12 @@
 
 #include "base/no_destructor.h"
 #include "device/vr/openxr/openxr_interaction_profile_paths.h"
+#include "device/vr/public/mojom/openxr_interaction_profile_type.mojom.h"
 
 namespace device {
+
+using device::mojom::OpenXrInteractionProfileType;
+
 OpenXrSystemInputProfiles::OpenXrSystemInputProfiles(
     std::string system_name,
     std::vector<std::string> input_profiles)

@@ -15,6 +15,7 @@
 #include "device/vr/openxr/openxr_hand_tracker.h"
 #include "device/vr/openxr/openxr_interaction_profiles.h"
 #include "device/vr/openxr/openxr_path_helper.h"
+#include "device/vr/public/mojom/openxr_interaction_profile_type.mojom.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
@@ -46,8 +47,8 @@ class OpenXrController {
 
   XrActionSet action_set() const { return action_set_; }
   uint32_t GetId() const;
-  device::mojom::XRHandedness GetHandness() const;
-  OpenXrInteractionProfileType interaction_profile() const {
+  mojom::XRHandedness GetHandness() const;
+  mojom::OpenXrInteractionProfileType interaction_profile() const {
     return interaction_profile_;
   }
 
@@ -152,7 +153,7 @@ class OpenXrController {
     return xrGetActionStatePose(session_, &get_info, action_state);
   }
 
-  device::mojom::XRInputSourceDescriptionPtr description_;
+  mojom::XRInputSourceDescriptionPtr description_;
 
   OpenXrHandednessType type_;
   XrInstance instance_;
@@ -165,7 +166,7 @@ class OpenXrController {
 
   std::unique_ptr<OpenXrHandTracker> hand_tracker_;
 
-  OpenXrInteractionProfileType interaction_profile_;
+  mojom::OpenXrInteractionProfileType interaction_profile_;
 
   std::unordered_map<OpenXrButtonType,
                      std::unordered_map<OpenXrButtonActionType, XrAction>>

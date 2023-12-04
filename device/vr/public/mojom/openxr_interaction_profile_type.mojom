@@ -1,0 +1,27 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module device.mojom;
+
+// OpenXrInteractionProfileType is used to indicate a type of controller to/from
+// the OpenXR Runtime, so that we can map the controller buttons to the buttons
+// that are ultimately either processed internally or exposed to the page, as
+// well as defining the descriptions that the page receives. These maps are
+// defined in openxr_interaction_profiles.cc.
+// Usage of this type *should* be kept internal to //device, but it is
+// unfortunately also needed by the xr browser tests to simulate sending
+// commands for each type of controller, and thus has to be a mojo enum.
+enum OpenXrInteractionProfileType {
+  kMicrosoftMotion = 0,
+  kKHRSimple = 1,
+  kOculusTouch = 2,
+  kValveIndex = 3,
+  kHTCVive = 4,
+  kSamsungOdyssey = 5,
+  kHPReverbG2 = 6,
+  kHandSelectGrasp = 7,
+  kViveCosmos = 8,
+  kExtHand = 9,
+  kInvalid,
+};

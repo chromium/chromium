@@ -195,7 +195,7 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   device::ControllerFrameData GetControllerDataFromPath(
       std::string path_string) const;
   void UpdateInteractionProfile(
-      device_test::mojom::InteractionProfileType type);
+      device::mojom::OpenXrInteractionProfileType type);
   bool IsSessionRunning() const;
   XrResult ValidateXrCompositionLayerProjectionView(
       const XrCompositionLayerProjectionView& projection_view,

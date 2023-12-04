@@ -12,6 +12,7 @@
 #include "device/gamepad/public/cpp/gamepads.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_util.h"
+#include "device/vr/public/mojom/openxr_interaction_profile_type.mojom.h"
 #include "device/vr/util/xr_standard_gamepad_builder.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 #include "ui/gfx/geometry/decomposed_transform.h"
@@ -50,7 +51,7 @@ OpenXrController::OpenXrController()
       grip_pose_space_(XR_NULL_HANDLE),
       pointer_pose_action_(XR_NULL_HANDLE),
       pointer_pose_space_(XR_NULL_HANDLE),
-      interaction_profile_(OpenXrInteractionProfileType::kCount) {}
+      interaction_profile_(mojom::OpenXrInteractionProfileType::kInvalid) {}
 
 OpenXrController::~OpenXrController() {
   // We don't need to destroy all of the actions because destroying an

@@ -6,8 +6,11 @@
 
 #include "base/check.h"
 #include "device/vr/openxr/openxr_util.h"
+#include "device/vr/public/mojom/openxr_interaction_profile_type.mojom.h"
 
 namespace device {
+
+using device::mojom::OpenXrInteractionProfileType;
 
 OpenXRPathHelper::OpenXRPathHelper() {}
 
@@ -42,7 +45,7 @@ OpenXrInteractionProfileType OpenXRPathHelper::GetInputProfileType(
       return it.first;
     }
   }
-  return OpenXrInteractionProfileType::kCount;
+  return OpenXrInteractionProfileType::kInvalid;
 }
 
 std::vector<std::string> OpenXRPathHelper::GetInputProfiles(
@@ -72,7 +75,7 @@ std::vector<std::string> OpenXRPathHelper::GetInputProfiles(
 
 XrPath OpenXRPathHelper::GetInteractionProfileXrPath(
     OpenXrInteractionProfileType type) const {
-  if (type == OpenXrInteractionProfileType::kCount) {
+  if (type == OpenXrInteractionProfileType::kInvalid) {
     return XR_NULL_PATH;
   }
   return declared_interaction_profile_paths_.at(type);

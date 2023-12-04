@@ -111,8 +111,6 @@ if (enable_vr) {
 
   if (enable_openxr) {
     source_set("openxr_data") {
-      sources = [ "openxr/openxr_interaction_profile_type.h" ]
-
       deps = [
         "//base",
         "//device/gamepad/public/cpp:shared_with_blink",
