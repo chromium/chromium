@@ -26,12 +26,6 @@ class ViewAXPlatformNodeDelegateWin : public ViewAXPlatformNodeDelegate {
       const ui::AXCoordinateSystem coordinate_system,
       const ui::AXClippingBehavior clipping_behavior,
       ui::AXOffscreenResult* offscreen_result) const override;
-  gfx::Rect GetInnerTextRangeBoundsRect(
-      const int start_offset,
-      const int end_offset,
-      const ui::AXCoordinateSystem coordinate_system,
-      const ui::AXClippingBehavior clipping_behavior,
-      ui::AXOffscreenResult* offscreen_result) const override;
 
   // ViewAccessibility overrides.
   void EnsureAtomicViewAXTreeManager() override;
