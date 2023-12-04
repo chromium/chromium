@@ -119,6 +119,29 @@ void SelectSearchEngineCellWithName(NSString* search_engine_name,
       assertWithMatcher:grey_notNil()] performAction:grey_tap()];
 }
 
+// Confirms the search engine choice screen. A search engine must have been
+// selected before.
+void ConfirmSearchEngineChoiceScreen() {
+  id<GREYMatcher> moreButtonMatcher =
+      grey_allOf(grey_accessibilityID(kSearchEngineMoreButtonIdentifier),
+                 grey_sufficientlyVisible(), nil);
+  NSError* error = nil;
+  [[EarlGrey selectElementWithMatcher:moreButtonMatcher]
+      assertWithMatcher:grey_notNil()
+                  error:&error];
+  if (!error) {
+    // Tap on the "More" button if it exists.
+    [[[EarlGrey selectElementWithMatcher:moreButtonMatcher]
+        assertWithMatcher:grey_notNil()] performAction:grey_tap()];
+  }
+  // Tap on the "Set as Default" button.
+  id<GREYMatcher> primaryButtonMatcher =
+      grey_allOf(grey_accessibilityID(kSetAsDefaultSearchEngineIdentifier),
+                 grey_sufficientlyVisible(), nil);
+  [[[EarlGrey selectElementWithMatcher:primaryButtonMatcher]
+      assertWithMatcher:grey_notNil()] performAction:grey_tap()];
+}
+
 // Dismisses the choice screen if it appears
 void DismissChoiceScreenIfNecessary() {
   if (![ChromeEarlGreyAppInterface IsSearchEngineChoiceScreenEnabledFre]) {
@@ -129,11 +152,7 @@ void DismissChoiceScreenIfNecessary() {
   // the countries selected by test settings.
   SelectSearchEngineCellWithName(
       @"Google", /*scroll_direction=*/kGREYDirectionDown, /*scroll_amount*/ 50);
-  // Taps the "Set as Default" button.
-  id<GREYMatcher> primaryButtonMatcher =
-      grey_accessibilityID(kSetAsDefaultSearchEngineIdentifier);
-  [[[EarlGrey selectElementWithMatcher:primaryButtonMatcher]
-      assertWithMatcher:grey_notNil()] performAction:grey_tap()];
+  ConfirmSearchEngineChoiceScreen();
 }
 
 // Dismisses the remaining screens in FRE after the search engine choice screen.
@@ -1300,18 +1319,10 @@ void DismissScreensAfterSigninAndSync() {
   // Taps the primary button. This scrolls the table down to the bottom.
   [[[EarlGrey selectElementWithMatcher:moreButtonMatcher]
       assertWithMatcher:grey_notNil()] performAction:grey_tap()];
-
-  // Verifies that the primary button is now the "Set as Default" button.
-  id<GREYMatcher> primaryActionButtonMatcher =
-      grey_accessibilityID(kSetAsDefaultSearchEngineIdentifier);
-  [[EarlGrey selectElementWithMatcher:primaryActionButtonMatcher]
-      assertWithMatcher:grey_allOf(grey_enabled(), grey_notNil(), nil)];
-
-  // Taps the primary button again. This saves the selection and dismisses the
-  // screen.
-  [[[EarlGrey selectElementWithMatcher:primaryActionButtonMatcher]
-      assertWithMatcher:grey_notNil()] performAction:grey_tap()];
-
+  // Verify that the "More" button has been removed.
+  [[EarlGrey selectElementWithMatcher:moreButtonMatcher]
+      assertWithMatcher:grey_nil()];
+  ConfirmSearchEngineChoiceScreen();
   DismissScreensAfterChoiceScreen();
 
   [self verifyDefaultSearchEngineSetting:searchEngineToSelect];
@@ -1356,20 +1367,8 @@ void DismissScreensAfterSigninAndSync() {
   SelectSearchEngineCellWithName(searchEngineToSelect,
                                  /*scroll_direction=*/kGREYDirectionUp,
                                  /*scroll_amount*/ 300);
-
-  // Verifies that the primary button is now enabled.
-  primaryActionButtonMatcher =
-      grey_accessibilityID(kSetAsDefaultSearchEngineIdentifier);
-  [[EarlGrey selectElementWithMatcher:primaryActionButtonMatcher]
-      assertWithMatcher:grey_allOf(grey_enabled(), grey_notNil(), nil)];
-
-  // Taps the primary button again. This saves the selection and dismisses the
-  // screen.
-  [[[EarlGrey selectElementWithMatcher:primaryActionButtonMatcher]
-      assertWithMatcher:grey_notNil()] performAction:grey_tap()];
-
+  ConfirmSearchEngineChoiceScreen();
   DismissScreensAfterChoiceScreen();
-
   [self verifyDefaultSearchEngineSetting:searchEngineToSelect];
 }
 
