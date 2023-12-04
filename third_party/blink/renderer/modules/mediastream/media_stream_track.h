@@ -147,6 +147,17 @@ class MODULES_EXPORT MediaStreamTrack
   virtual void SendWheel(
       CapturedWheelAction* action,
       base::OnceCallback<void(bool, const String&)> callback) = 0;
+
+  // When called on a "live" video track associated with tab-capture,
+  // returns the zoom level of the capture tab's viewport.
+  // This is subject to a permission policy on the capturing origin.
+  //
+  // If successful, |callback| is invoked with the zoom level in percentage
+  // points and an empty string.
+  // If unsuccessful, it is invoked with `absl::nullopt` and an error message.
+  virtual void GetZoomLevel(
+      base::OnceCallback<void(absl::optional<int>, const String&)>
+          callback) = 0;
 #endif
 
   virtual std::unique_ptr<AudioSourceProvider> CreateWebAudioSource(

@@ -99,6 +99,20 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
   void SetSendWheelResult(const SendWheelResult& result) {
     send_wheel_result_ = result;
   }
+
+  void GetZoomLevel(base::OnceCallback<void(absl::optional<int>, const String&)>
+                        callback) override;
+
+  struct GetZoomLevelResult {
+    GetZoomLevelResult(absl::optional<int> zoom_level, String error)
+        : zoom_level(zoom_level), error(std::move(error)) {}
+    absl::optional<int> zoom_level;
+    String error;
+  };
+
+  void SetGetZoomLevelResult(const GetZoomLevelResult& result) {
+    get_zoom_level_result_ = result;
+  }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   void EnableStopForRestart() { can_stop_for_restart_ = true; }
@@ -146,6 +160,7 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
   VideoCaptureNotifyFrameDroppedCB frame_dropped_callback_;
 #if !BUILDFLAG(IS_ANDROID)
   absl::optional<SendWheelResult> send_wheel_result_;
+  absl::optional<GetZoomLevelResult> get_zoom_level_result_;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   base::WeakPtrFactory<MediaStreamVideoSource> weak_factory_{this};

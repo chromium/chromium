@@ -40,6 +40,8 @@ class MODULES_EXPORT BrowserCaptureMediaStreamTrack
   void SendWheel(
       CapturedWheelAction* action,
       base::OnceCallback<void(bool, const String&)> callback) override;
+  void GetZoomLevel(base::OnceCallback<void(absl::optional<int>, const String&)>
+                        callback) override;
 
   // Allows tests to invoke OnSubCaptureTargetVersionObserved() directly, since
   // triggering it via mocks would be prohibitively difficult.

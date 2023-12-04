@@ -185,10 +185,63 @@ int CaptureController::getMaxZoomLevel() {
   return static_cast<int>(std::floor(100 * kMaximumPageZoomFactor));
 }
 
-ScriptPromise CaptureController::getZoomLevel() {
-  // TODO(crbug.com/1466247): Implement.
-  NOTIMPLEMENTED();
-  return ScriptPromise();
+ScriptPromise CaptureController::getZoomLevel(ScriptState* script_state) {
+  DCHECK(IsMainThread());
+
+  ScriptPromiseResolver* const resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+
+  const ScriptPromise promise = resolver->Promise();
+
+#if BUILDFLAG(IS_ANDROID)
+  resolver->Reject(MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kNotSupportedError, "Unsupported."));
+  return promise;
+#else
+
+  if (!is_bound_) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "getDisplayMedia() not called yet."));
+    return promise;
+  }
+
+  if (!video_track_) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError, "Capture-session not started."));
+    return promise;
+  }
+
+  if (video_track_->readyState() == "ended") {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError, "Video track ended."));
+    return promise;
+  }
+
+  if (!IsCaptureType(video_track_, {SurfaceType::BROWSER})) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError,
+        "Action only supported for tab-capture."));
+    return promise;
+  }
+
+  base::OnceCallback<void(absl::optional<int>, const String&)> callback =
+      WTF::BindOnce(
+          [](ScriptPromiseResolver* resolver, absl::optional<int> zoom_level,
+             const String& error) {
+            if (zoom_level) {
+              resolver->Resolve(*zoom_level);
+            } else {
+              resolver->Reject(MakeGarbageCollected<DOMException>(
+                  DOMExceptionCode::kUnknownError, error));
+            }
+          },
+          WrapPersistent(resolver));
+
+  video_track_->GetZoomLevel(std::move(callback));
+
+  return promise;
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 ScriptPromise CaptureController::setZoomLevel(int zoom_level) {

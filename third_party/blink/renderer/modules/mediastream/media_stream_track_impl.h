@@ -132,6 +132,8 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   void SendWheel(
       CapturedWheelAction* action,
       base::OnceCallback<void(bool, const String&)> callback) override;
+  void GetZoomLevel(base::OnceCallback<void(absl::optional<int>, const String&)>
+                        callback) override;
 #endif
 
   // ScriptWrappable

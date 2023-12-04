@@ -179,6 +179,15 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
       CapturedWheelAction* action,
       base::OnceCallback<void(bool success, const String& error)> callback);
 
+  // Retrieves the zoom level from the captured tab.
+  //
+  // `callback` is used to report the result.
+  // `callback.zoom_level` has the zoom level or nullopt in case of failure.
+  // `callback.error` has the error message upon failure. (Empty otherwise.)
+  virtual void GetZoomLevel(
+      base::OnceCallback<void(absl::optional<int> zoom_level,
+                              const String& error)> callback);
+
   // Start/stop cropping or restricting the video track.
   //
   // Non-empty |sub_capture_target_id| sets (or changes) the target.

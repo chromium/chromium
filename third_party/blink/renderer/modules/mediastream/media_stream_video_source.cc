@@ -575,6 +575,11 @@ void MediaStreamVideoSource::SendWheel(
   std::move(callback).Run(false, "Unsupported.");
 }
 
+void MediaStreamVideoSource::GetZoomLevel(
+    base::OnceCallback<void(absl::optional<int>, const String&)> callback) {
+  std::move(callback).Run(false, "Unsupported.");
+}
+
 void MediaStreamVideoSource::ApplySubCaptureTarget(
     media::mojom::blink::SubCaptureTargetType type,
     const base::Token& sub_capture_target,

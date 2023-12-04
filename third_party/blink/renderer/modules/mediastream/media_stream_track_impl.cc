@@ -913,6 +913,11 @@ void MediaStreamTrackImpl::SendWheel(
     base::OnceCallback<void(bool, const String&)> callback) {
   std::move(callback).Run(false, "Unsupported.");
 }
+
+void MediaStreamTrackImpl::GetZoomLevel(
+    base::OnceCallback<void(absl::optional<int>, const String&)> callback) {
+  std::move(callback).Run(absl::nullopt, "Unsupported.");
+}
 #endif
 
 bool MediaStreamTrackImpl::HasPendingActivity() const {

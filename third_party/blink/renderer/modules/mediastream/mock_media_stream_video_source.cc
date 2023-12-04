@@ -43,6 +43,13 @@ void MockMediaStreamVideoSource::SendWheel(
   std::move(callback).Run(send_wheel_result_->success,
                           send_wheel_result_->error);
 }
+
+void MockMediaStreamVideoSource::GetZoomLevel(
+    base::OnceCallback<void(absl::optional<int>, const String&)> callback) {
+  CHECK(get_zoom_level_result_);
+  std::move(callback).Run(get_zoom_level_result_->zoom_level,
+                          get_zoom_level_result_->error);
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 void MockMediaStreamVideoSource::StartMockedSource() {

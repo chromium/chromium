@@ -97,6 +97,8 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
   void SendWheel(
       CapturedWheelAction* action,
       base::OnceCallback<void(bool, const String&)> callback) override;
+  void GetZoomLevel(base::OnceCallback<void(absl::optional<int>, const String&)>
+                        callback) override;
   void ApplySubCaptureTarget(
       media::mojom::blink::SubCaptureTargetType type,
       const base::Token& sub_capture_target,

@@ -321,6 +321,11 @@ void TransferredMediaStreamTrack::SendWheel(
     base::OnceCallback<void(bool, const String&)> callback) {
   NOTREACHED_NORETURN();
 }
+
+void TransferredMediaStreamTrack::GetZoomLevel(
+    base::OnceCallback<void(absl::optional<int>, const String&)> callback) {
+  NOTREACHED_NORETURN();
+}
 #endif
 
 // EventTarget

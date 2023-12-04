@@ -249,6 +249,12 @@ void MediaStreamVideoCapturerSource::SendWheel(
       WTF::BindOnce(&OnSendWheelResult, std::move(callback)));
 }
 
+void MediaStreamVideoCapturerSource::GetZoomLevel(
+    base::OnceCallback<void(absl::optional<int>, const String&)> callback) {
+  // TODO(crbug.com/1466247): Forward to GetMediaStreamDispatcherHost.
+  std::move(callback).Run(false, "Not implemented.");
+}
+
 void MediaStreamVideoCapturerSource::ApplySubCaptureTarget(
     media::mojom::blink::SubCaptureTargetType type,
     const base::Token& sub_capture_target,

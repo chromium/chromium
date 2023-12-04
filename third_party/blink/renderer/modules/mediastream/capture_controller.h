@@ -37,7 +37,7 @@ class MODULES_EXPORT CaptureController final : public EventTarget,
                           CapturedWheelAction* action);
   int getMinZoomLevel();
   int getMaxZoomLevel();
-  ScriptPromise getZoomLevel();
+  ScriptPromise getZoomLevel(ScriptState* script_state);
   ScriptPromise setZoomLevel(int zoom_level);
 
   void SetIsBound(bool value) { is_bound_ = value; }

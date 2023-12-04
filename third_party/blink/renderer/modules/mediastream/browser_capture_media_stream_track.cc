@@ -163,6 +163,34 @@ void BrowserCaptureMediaStreamTrack::SendWheel(
 
   native_source->SendWheel(action, std::move(callback));
 }
+
+void BrowserCaptureMediaStreamTrack::GetZoomLevel(
+    base::OnceCallback<void(absl::optional<int>, const String&)> callback) {
+  MediaStreamComponent* const component = Component();
+  if (!component) {
+    std::move(callback).Run(false, "Missing component.");
+    return;
+  }
+
+  MediaStreamSource* const source = component->Source();
+  if (!source) {
+    std::move(callback).Run(false, "Missing source.");
+    return;
+  }
+
+  // GetZoomLevel() may only be called for video tracks.
+  CHECK_EQ(source->GetType(), MediaStreamSource::kTypeVideo);
+
+  MediaStreamVideoSource* const native_source =
+      MediaStreamVideoSource::GetVideoSource(source);
+  if (!native_source) {
+    std::move(callback).Run(false, "Missing native source.");
+    return;
+  }
+
+  native_source->GetZoomLevel(std::move(callback));
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 ScriptPromise BrowserCaptureMediaStreamTrack::cropTo(
