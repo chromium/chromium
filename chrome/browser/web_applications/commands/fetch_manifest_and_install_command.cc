@@ -49,6 +49,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "net/base/url_util.h"
 #endif
 
@@ -353,8 +354,12 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
   }
 
   if (install_surface_ == webapps::WebappInstallSource::MENU_CREATE_SHORTCUT &&
-      base::FeatureList::IsEnabled(
-          webapps::features::kCreateShortcutIgnoresManifest)) {
+      (base::FeatureList::IsEnabled(
+           webapps::features::kCreateShortcutIgnoresManifest)
+#if BUILDFLAG(IS_CHROMEOS)
+       || chromeos::features::IsCrosShortstandEnabled()
+#endif
+           )) {
     // When creating a shortcut, the |manifest_id| is not part of the App's
     // primary key. The only thing that identifies a shortcut is the start URL,
     // which is always set to the current page.

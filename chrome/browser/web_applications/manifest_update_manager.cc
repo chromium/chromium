@@ -42,6 +42,10 @@
 #include "chrome/browser/web_applications/web_app_system_web_app_delegate_map_utils.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif
+
 class Profile;
 
 namespace web_app {
@@ -240,9 +244,13 @@ void ManifestUpdateManager::MaybeUpdate(
   }
 
   if (provider_->registrar_unsafe().IsShortcutApp(*app_id) &&
-      base::FeatureList::IsEnabled(
-          webapps::features::kCreateShortcutIgnoresManifest)) {
-    // When we create shortcut ignores manifest, we should update manifest for
+      (base::FeatureList::IsEnabled(
+           webapps::features::kCreateShortcutIgnoresManifest)
+#if BUILDFLAG(IS_CHROMEOS)
+       || chromeos::features::IsCrosShortstandEnabled()
+#endif
+           )) {
+    // When create shortcut ignores manifest, we should not update manifest for
     // shortcuts.
     NotifyResult(url, *app_id, ManifestUpdateResult::kShortcutIgnoresManifest);
     return;
