@@ -257,6 +257,7 @@ source_set("browser") {
     "//ui/base",
     "//ui/base:buildflags",
     "//ui/base:data_exchange",
+    "//ui/base:ozone_buildflags",
     "//ui/base/clipboard",
     "//ui/base/cursor/mojom:cursor_type",
     "//ui/base/dragdrop:types",
@@ -3405,10 +3406,7 @@ source_set("browser") {
   }
 
   if (use_ozone) {
-    deps += [
-      "//ui/ozone",
-      "//ui/ozone:buildflags",
-    ]
+    deps += [ "//ui/ozone" ]
   }
 
   if (use_cras) {
