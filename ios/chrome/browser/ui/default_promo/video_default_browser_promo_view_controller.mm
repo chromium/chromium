@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/default_promo/video_default_browser_promo_view_controller.h"
 
+#import "base/i18n/rtl.h"
 #import "base/values.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
@@ -17,8 +18,12 @@
 namespace {
 constexpr CGFloat kSpacingBeforeImageIfNoNavigationBar = 24;
 constexpr CGFloat kpacingAfterImageWithAnimation = 24;
-NSString* const kDarkModeAnimationSuffix = @"_darkmode";
 NSString* const kDefaultBrowserAnimation = @"default_browser_animation";
+NSString* const kDefaultBrowserAnimationRtl = @"default_browser_animation_rtl";
+NSString* const kDefaultBrowserAnimationDarkmode =
+    @"default_browser_animation_darkmode";
+NSString* const kDefaultBrowserAnimationRtlDarkmode =
+    @"default_browser_animation_rtl_darkmode";
 NSString* const kDefaultBrowserAppKeypath = @"IDS_DEFAULT_BROWSER_APP";
 NSString* const kDefaultBrowserApp2Keypath = @"IDS_DEFAULT_BROWSER_APP_2";
 NSString* const kChromeKeypath = @"IDS_CHROME";
@@ -49,10 +54,21 @@ NSString* const kChromeSettingsKeypath = @"IDS_CHROME_SETTINGS";
 - (instancetype)init {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
-    _animationViewWrapper = [self createAnimation:kDefaultBrowserAnimation];
-    _animationViewWrapperDarkMode = [self
-        createAnimation:[kDefaultBrowserAnimation
-                            stringByAppendingString:kDarkModeAnimationSuffix]];
+    // TODO(crbug.com/1508131): Handle the case when the promo is displayed and
+    // the user switches between LTR and RLT.
+    if (base::i18n::IsRTL()) {
+      _animationViewWrapper =
+          [self createAnimation:kDefaultBrowserAnimationRtl];
+      ;
+      _animationViewWrapperDarkMode =
+          [self createAnimation:kDefaultBrowserAnimationRtlDarkmode];
+      ;
+    } else {
+      _animationViewWrapper = [self createAnimation:kDefaultBrowserAnimation];
+      _animationViewWrapperDarkMode =
+          [self createAnimation:kDefaultBrowserAnimationDarkmode];
+      ;
+    }
 
     // Set the text localization.
     NSDictionary* textProvider = @{
