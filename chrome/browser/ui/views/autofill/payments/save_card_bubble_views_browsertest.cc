@@ -63,6 +63,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/features.h"
@@ -966,6 +967,7 @@ class SaveCardBubbleViewsSyncTransportFullFormBrowserTest
     enabled_features.push_back(syncer::kSyncDecoupleAddressPaymentSettings);
     enabled_features.push_back(
         syncer::kSyncEnableContactInfoDataTypeInTransportMode);
+    disabled_features.push_back(switches::kUnoDesktop);
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
