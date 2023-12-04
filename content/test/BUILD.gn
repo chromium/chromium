@@ -1698,6 +1698,7 @@ test("content_browsertests") {
     "//components/discardable_memory/service",
     "//components/favicon/content",
     "//components/network_session_configurator/common",
+    "//components/os_crypt/async/browser:test_support",
     "//components/payments/mojom",
     "//components/performance_manager",
     "//components/permissions:permissions_common",

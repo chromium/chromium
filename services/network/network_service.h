@@ -66,6 +66,7 @@
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
 namespace net {
+class CookieCryptoDelegate;
 class FileNetLogObserver;
 class HostResolverManager;
 class HttpAuthHandlerFactory;
@@ -228,6 +229,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
       mojo::PendingRemote<mojom::GssapiLibraryLoadObserver>
           gssapi_library_load_observer) override;
 #endif  // BUILDFLAG(IS_LINUX)
+  void SetCookieEncryptionProvider(
+      mojo::PendingRemote<mojom::CookieEncryptionProvider> provider) override;
 
   void StartNetLogBounded(base::File file,
                           uint64_t max_total_size,
@@ -273,6 +276,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   }
   HttpAuthCacheCopier* http_auth_cache_copier() {
     return http_auth_cache_copier_.get();
+  }
+
+  net::CookieCryptoDelegate* cookie_crypto_delegate() {
+    return cookie_crypto_delegate_.get();
   }
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
@@ -419,6 +426,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   std::unique_ptr<net::HostResolverManager> host_resolver_manager_;
   std::unique_ptr<net::HostResolver::Factory> host_resolver_factory_;
   std::unique_ptr<HttpAuthCacheCopier> http_auth_cache_copier_;
+
+  // Contains the instance of crypto delegate for this network service, if
+  // cookie encryption is enabled, and the 'default' delegate from
+  // components/cookie_config is not being used.
+  std::unique_ptr<net::CookieCryptoDelegate> cookie_crypto_delegate_;
 
   // Members that would store the http auth network_service related params.
   // These Params are later used by NetworkContext to create

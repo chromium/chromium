@@ -34,6 +34,7 @@ import "services/network/public/mojom/parsed_headers.mojom";
 import "services/network/public/mojom/url_loader_network_service_observer.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "services/network/public/mojom/client_security_state.mojom";
+import "services/network/public/mojom/cookie_encryption_provider.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
@@ -413,4 +414,13 @@ interface NetworkService {
   [EnableIf=is_linux]
   SetGssapiLibraryLoadObserver(
     pending_remote<GssapiLibraryLoadObserver> gssapi_library_load_observer);
+
+  // Sets the cookie encryption provider to be used by future network contexts
+  // that have cookie encryption enabled. The `GetEncryptor` method on the
+  // supplied `provider` is called to obtain a valid set of keys for cookie
+  // encryption.
+  // This only affects any network contexts created after the provider has been
+  // set and existing ones are not affected.
+  SetCookieEncryptionProvider(
+    pending_remote<CookieEncryptionProvider> provider);
 };

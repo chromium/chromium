@@ -68,6 +68,7 @@
 #include "net/dns/host_cache.h"
 #include "net/dns/mapped_host_resolver.h"
 #include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
+#include "net/extras/sqlite/cookie_crypto_delegate.h"
 #include "net/extras/sqlite/sqlite_persistent_cookie_store.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/http/http_auth.h"
@@ -2902,9 +2903,17 @@ NetworkContext::MakeSessionCleanupCookieStore() const {
           {base::MayBlock(), net::GetCookieStoreBackgroundSequencePriority(),
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
 
+  // Network Context does not own this pointer.
   net::CookieCryptoDelegate* crypto_delegate = nullptr;
+
   if (params_->enable_encrypted_cookies) {
-    crypto_delegate = cookie_config::GetCookieCryptoDelegate();
+    // Crypto delegate is used if `cookie_encryption_provider` was specified to
+    // the network service.
+    if (network_service_->cookie_crypto_delegate()) {
+      crypto_delegate = network_service_->cookie_crypto_delegate();
+    } else {
+      crypto_delegate = cookie_config::GetCookieCryptoDelegate();
+    }
   }
 
 #if BUILDFLAG(IS_WIN)
