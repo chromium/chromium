@@ -104,6 +104,10 @@ class BLINK_EXPORT WebNode {
 
   WebVector<WebElement> QuerySelectorAll(const WebString& selector) const;
 
+  // Returns the contents of the first descendant element, if any, that contains
+  // only text, a part of which is the given substring.
+  WebString FindTextInElementWith(const WebString& substring) const;
+
   bool Focused() const;
 
   WebPluginContainer* PluginContainer() const;

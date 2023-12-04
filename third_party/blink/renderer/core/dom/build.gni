@@ -296,6 +296,7 @@ blink_core_sources_dom = [
 blink_core_tests_dom = [
   "abort_signal_test.cc",
   "attr_test.cc",
+  "container_node_test.cc",
   "document_statistics_collector_test.cc",
   "document_test.cc",
   "dom_node_ids_test.cc",

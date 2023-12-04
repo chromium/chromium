@@ -87,4 +87,25 @@ TEST_F(WebNodeSimTest, IsFocused) {
   EXPECT_TRUE(input_node.IsFocusable());
 }
 
+TEST_F(WebNodeTest, CannotFindTextInElementThatIsNotAContainer) {
+  SetInnerHTML(R"HTML(
+    <div><br class="not-a-container"/> Hello world! </div>
+  )HTML");
+  WebElement element = Root().QuerySelector(AtomicString(".not-a-container"));
+
+  EXPECT_FALSE(element.IsNull());
+  EXPECT_TRUE(element.FindTextInElementWith("Hello world").IsEmpty());
+}
+
+TEST_F(WebNodeTest, CanFindTextInElementThatIsAContainer) {
+  SetInnerHTML(R"HTML(
+    <body class="container"><div> Hello world! </div></body>
+  )HTML");
+  WebElement element = Root().QuerySelector(AtomicString(".container"));
+
+  EXPECT_FALSE(element.IsNull());
+  EXPECT_EQ(WebString(" Hello world! "),
+            element.FindTextInElementWith("Hello world"));
+}
+
 }  // namespace blink
