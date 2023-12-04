@@ -13,6 +13,7 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/service/glue/sync_transport_data_prefs.h"
 #include "components/sync/service/sync_service_impl.h"
@@ -30,7 +31,9 @@ base::FilePath GetTestFilePathForCacheGuid() {
 
 class SingleClientSecondaryAccountSyncTest : public SyncTest {
  public:
-  SingleClientSecondaryAccountSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  SingleClientSecondaryAccountSyncTest() : SyncTest(SINGLE_CLIENT) {
+    feature_list_.InitAndDisableFeature(switches::kUnoDesktop);
+  }
 
   SingleClientSecondaryAccountSyncTest(
       const SingleClientSecondaryAccountSyncTest&) = delete;
@@ -57,6 +60,7 @@ class SingleClientSecondaryAccountSyncTest : public SyncTest {
 
  private:
   base::CallbackListSubscription test_signin_client_subscription_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // The unconsented primary account isn't supported on ChromeOS.
