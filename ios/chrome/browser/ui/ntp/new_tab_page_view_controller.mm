@@ -927,10 +927,10 @@ const CGFloat kFeedContainerMinimumHeight = 1000;
             [weakSelf resetFakeOmniboxConstraints];
           }];
     }
-    [self.NTPContentDelegate focusOmnibox];
     [self.headerViewController
         completeHeaderFakeOmniboxFocusAnimationWithFinalPosition:
             UIViewAnimatingPositionEnd];
+    [self.NTPContentDelegate focusOmnibox];
     return;
   }
 
@@ -959,6 +959,9 @@ const CGFloat kFeedContainerMinimumHeight = 1000;
                 self.disableScrollAnimation = YES;
                 [strongSelf.headerViewController expandHeaderForFocus];
                 shiftOmniboxToTop();
+                [strongSelf.headerViewController
+                    completeHeaderFakeOmniboxFocusAnimationWithFinalPosition:
+                        UIViewAnimatingPositionEnd];
                 [strongSelf.NTPContentDelegate focusOmnibox];
               }
             }];
