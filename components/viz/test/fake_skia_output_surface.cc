@@ -291,9 +291,10 @@ void FakeSkiaOutputSurface::CopyOutput(
     gpu::Mailbox local_mailbox = client_shared_image->mailbox();
 
     CopyOutputResult::ReleaseCallbacks release_callbacks;
-    release_callbacks.push_back(base::BindPostTaskToCurrentDefault(
-        base::BindOnce(&FakeSkiaOutputSurface::DestroyCopyOutputTexture,
-                       weak_ptr_factory_.GetWeakPtr(), local_mailbox)));
+    release_callbacks.push_back(
+        base::BindPostTaskToCurrentDefault(base::BindOnce(
+            &FakeSkiaOutputSurface::DestroyCopyOutputTexture,
+            weak_ptr_factory_.GetWeakPtr(), std::move(client_shared_image))));
 
     request->SendResult(std::make_unique<CopyOutputTextureResult>(
         CopyOutputResult::Format::RGBA, geometry.result_bounds,
@@ -386,10 +387,11 @@ void FakeSkiaOutputSurface::SwapBuffersAck() {
 }
 
 void FakeSkiaOutputSurface::DestroyCopyOutputTexture(
-    const gpu::Mailbox& mailbox,
+    scoped_refptr<gpu::ClientSharedImage> shared_image,
     const gpu::SyncToken& sync_token,
     bool is_lost) {
-  GetSharedImageInterface()->DestroySharedImage(sync_token, mailbox);
+  GetSharedImageInterface()->DestroySharedImage(sync_token,
+                                                std::move(shared_image));
 }
 
 void FakeSkiaOutputSurface::ScheduleGpuTaskForTesting(

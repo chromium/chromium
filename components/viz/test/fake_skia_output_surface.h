@@ -173,9 +173,10 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
   void SwapBuffersAck();
 
   // Provided as a release callback for CopyOutputRequest.
-  void DestroyCopyOutputTexture(const gpu::Mailbox& mailbox,
-                                const gpu::SyncToken& sync_token,
-                                bool is_lost);
+  void DestroyCopyOutputTexture(
+      scoped_refptr<gpu::ClientSharedImage> shared_image,
+      const gpu::SyncToken& sync_token,
+      bool is_lost);
 
   scoped_refptr<ContextProvider> context_provider_;
   raw_ptr<OutputSurfaceClient> client_ = nullptr;
