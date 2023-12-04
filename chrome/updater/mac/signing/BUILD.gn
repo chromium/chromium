@@ -51,6 +51,7 @@ process_version("postinstall") {
     "-e",
     "PRODUCT_FULLNAME=\"$updater_product_full_name\"",
   ]
+  executable = true
   process_only = true
   template_file = "postinstall.in"
   output = "$_packaging_dir/signing/pkg/postinstall"
