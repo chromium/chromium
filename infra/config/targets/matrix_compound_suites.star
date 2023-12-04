@@ -147,6 +147,11 @@ targets.legacy_matrix_compound_suite(
                 "CROS_BRYA_RELEASE_ASH_LKGM",
             ],
         ),
+        "chromeos_device_only_gtests": targets.legacy_matrix_config(
+            variants = [
+                "CROS_BRYA_RELEASE_ASH_LKGM",
+            ],
+        ),
         "chromeos_integration_tests": targets.legacy_matrix_config(
             variants = [
                 "CROS_BRYA_RELEASE_ASH_LKGM",
