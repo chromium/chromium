@@ -1568,7 +1568,7 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityWasEdited) {
 // Tests that the Compose client crashes the browser if a webcontents
 // tries to bind mojo without opening the dialog at a non Compose URL.
 TEST_F(ChromeComposeClientTest, NoStateCrashesAtOtherUrls) {
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
   // We skip the dialog showing here, to validate that non special URLs check.
   EXPECT_DEATH(BindMojo(), "");
 }
@@ -1576,14 +1576,14 @@ TEST_F(ChromeComposeClientTest, NoStateCrashesAtOtherUrls) {
 // Tests that the Compose client crashes the browser if a webcontents
 // sends any message when the dialog has not been shown.
 TEST_F(ChromeComposeClientTest, TestCannotSendMessagesToNotShownDialog) {
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
   EXPECT_DEATH(page_handler()->SaveWebUIState(""), "");
 }
 
 // Tests that the Compose client crashes the browser if a webcontents
 // tries to close the dialog when the dialog has not been shown.
 TEST_F(ChromeComposeClientTest, TestCannotCloseNotShownDialog) {
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
   EXPECT_DEATH(
       client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton),
       "");
@@ -1592,7 +1592,7 @@ TEST_F(ChromeComposeClientTest, TestCannotCloseNotShownDialog) {
 // Tests that the Compose client crashes the browser if a webcontents
 // tries to close the dialog when the dialog has not been shown.
 TEST_F(ChromeComposeClientTest, TestCannotSendMessagesAfterClosingDialog) {
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
   ShowDialogAndBindMojo();
   client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
   // Any message after closing the session will crash.
@@ -1603,7 +1603,7 @@ TEST_F(ChromeComposeClientTest, TestCannotSendMessagesAfterClosingDialog) {
 // sends any more messages after closing the dialog at chrome://contents.
 TEST_F(ChromeComposeClientTest,
        TestCannotSendMessagesAfterClosingDialogAtChromeCompose) {
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
   NavigateAndCommitActiveTab(GURL("chrome://compose"));
   // We skip the dialog showing here, as there is no dialog required at this
   // URL.

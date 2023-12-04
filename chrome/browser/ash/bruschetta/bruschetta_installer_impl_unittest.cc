@@ -714,7 +714,7 @@ TEST_F(BruschettaInstallerTest, AllStepsTested) {
   // We generate a lot of gmock expectations just to ignore them, and taking
   // stack traces for all of them is really slow, so disable stack traces for
   // this test.
-  ::testing::FLAGS_gtest_stack_trace_depth = 0;
+  GTEST_FLAG_SET(stack_trace_depth, 0);
 
   absl::optional<int> new_max_steps;
 

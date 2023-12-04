@@ -383,7 +383,8 @@ std::vector<CapturedSiteParams> GetCapturedSites(
     return sites;
   }
 
-  bool also_run_disabled = testing::FLAGS_gtest_also_run_disabled_tests == 1;
+  bool also_run_disabled = GTEST_FLAG_GET(also_run_disabled_tests);
+
   for (auto& item_val : *list_node) {
     if (!item_val.is_dict()) {
       continue;

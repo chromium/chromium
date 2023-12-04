@@ -220,7 +220,7 @@ bool WriteJSON(const base::FilePath& file_path,
 TEST(AutofillCacheReplayerDeathTest,
      DISABLED_ServerCacheReplayerConstructor_CrashesWhenNoDomainNode) {
   // Make death test threadsafe.
-  testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 
   // Make writable file path.
   base::ScopedTempDir temp_dir;
@@ -245,7 +245,7 @@ TEST(AutofillCacheReplayerDeathTest,
 TEST(AutofillCacheReplayerDeathTest,
      ServerCacheReplayerConstructor_CrashesWhenNoQueryNodesAndFailOnEmpty) {
   // Make death test threadsafe.
-  testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 
   // Make writable file path.
   base::ScopedTempDir temp_dir;
@@ -278,7 +278,7 @@ TEST_P(
   // from the URL's query parameter are invalid.
 
   // Make death test threadsafe.
-  testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 
   // Make writable file path.
   base::ScopedTempDir temp_dir;
@@ -337,7 +337,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST(AutofillCacheReplayerTest,
      CanUseReplayerWhenNoCacheContentWithNotFailOnEmpty) {
   // Make death test threadsafe.
-  testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 
   // Make writable file path.
   base::ScopedTempDir temp_dir;

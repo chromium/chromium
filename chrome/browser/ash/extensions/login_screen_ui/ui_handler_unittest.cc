@@ -201,7 +201,7 @@ class LoginScreenExtensionUiHandlerUnittest : public testing::Test {
   }
 
   void CheckCannotUseAPI(const extensions::Extension* extension) {
-    ::testing::FLAGS_gtest_death_test_style = "fast";
+    GTEST_FLAG_SET(death_test_style, "fast");
     std::string error;
     EXPECT_CHECK_DEATH(
         ui_handler_->Show(extension, kUrl, kCanBeClosedByUser, &error));

@@ -77,9 +77,7 @@ void ExpectInvalidCastInternalMessage(const std::string& message_str,
 
 class CastInternalMessageUtilDeathTest : public testing::Test {
  public:
-  void SetUp() override {
-    testing::FLAGS_gtest_death_test_style = "threadsafe";
-  }
+  void SetUp() override { GTEST_FLAG_SET(death_test_style, "threadsafe"); }
 };
 
 }  // namespace
