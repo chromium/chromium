@@ -1638,25 +1638,20 @@ void URLRequestHttpJob::RecordTimer() {
 
   UMA_HISTOGRAM_MEDIUM_TIMES("Net.HttpTimeToFirstByte", to_start);
 
-  // Record additional metrics for TLS 1.3 servers. This is to help measure the
-  // impact of enabling 0-RTT. The effects of 0-RTT will be muted because not
-  // all TLS 1.3 servers enable 0-RTT, and only the first round-trip on a
+  // Record additional metrics for TLS 1.3 servers for Google hosts. Most
+  // Google hosts are known to implement 0-RTT, so this gives more targeted
+  // metrics as we initially roll out client support. This is to help measure
+  // the impact of enabling 0-RTT. The effects of 0-RTT will be muted because
+  // not all TLS 1.3 servers enable 0-RTT, and only the first round-trip on a
   // connection makes use of 0-RTT. However, 0-RTT can affect how requests are
-  // bound to connections and which connections offer resumption. We look at all
-  // TLS 1.3 responses for an apples-to-apples comparison.
-  //
-  // Additionally record metrics for Google hosts. Most Google hosts are known
-  // to implement 0-RTT, so this gives more targeted metrics as we initially
-  // roll out client support.
-  //
-  // TODO(https://crbug.com/641225): Remove these metrics after launching 0-RTT.
+  // bound to connections and which connections offer resumption. We look at
+  // all TLS 1.3 responses for an apples-to-apples comparison.
+  // TODO(crbug.com/641225): Remove these metrics after launching 0-RTT.
   if (transaction_ && transaction_->GetResponseInfo() &&
-      IsTLS13OverTCP(*transaction_->GetResponseInfo())) {
-    base::UmaHistogramMediumTimes("Net.HttpTimeToFirstByte.TLS13", to_start);
-    if (HasGoogleHost(request()->url())) {
-      base::UmaHistogramMediumTimes("Net.HttpTimeToFirstByte.TLS13.Google",
-                                    to_start);
-    }
+      IsTLS13OverTCP(*transaction_->GetResponseInfo()) &&
+      HasGoogleHost(request()->url())) {
+    base::UmaHistogramMediumTimes("Net.HttpTimeToFirstByte.TLS13.Google",
+                                  to_start);
   }
 }
 
@@ -1732,12 +1727,8 @@ void URLRequestHttpJob::RecordCompletionHistograms(CompletionCause reason) {
     //
     // TODO(https://crbug.com/641225): Remove these metrics after launching
     // 0-RTT.
-    if (IsTLS13OverTCP(*response_info_)) {
-      base::UmaHistogramTimes("Net.HttpJob.TotalTime.TLS13", total_time);
-      if (is_https_google) {
-        base::UmaHistogramTimes("Net.HttpJob.TotalTime.TLS13.Google",
-                                total_time);
-      }
+    if (IsTLS13OverTCP(*response_info_) && is_https_google) {
+      base::UmaHistogramTimes("Net.HttpJob.TotalTime.TLS13.Google", total_time);
     }
 
     UMA_HISTOGRAM_CUSTOM_COUNTS("Net.HttpJob.PrefilterBytesRead",
