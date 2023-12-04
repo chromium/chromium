@@ -80,9 +80,9 @@ class CORE_EXPORT NodeCloningData final {
     }
   }
 
-  absl::optional<AtomicString> NextAttributeValue() {
+  AtomicString NextAttributeValue() {
     if (current_attribute_index_ >= attribute_values_.size()) {
-      return absl::nullopt;
+      return AtomicString();
     }
     return attribute_values_[current_attribute_index_++];
   }

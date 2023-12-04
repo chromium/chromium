@@ -43,9 +43,9 @@ Part* AttributePart::ClonePart(NodeCloningData& data, Node& node_clone) const {
   Part* new_part =
       MakeGarbageCollected<AttributePart>(data.CurrentPartRoot(), element_clone,
                                           local_name_, automatic_, metadata());
-  absl::optional<AtomicString> attribute_value = data.NextAttributeValue();
+  AtomicString attribute_value = data.NextAttributeValue();
   if (attribute_value) {
-    element_clone.setAttribute(local_name_, *attribute_value);
+    element_clone.setAttribute(local_name_, attribute_value);
   }
   return new_part;
 }
