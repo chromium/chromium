@@ -103,6 +103,10 @@ class ASH_EXPORT OverviewWindowDragController {
 
   ~OverviewWindowDragController();
 
+  OverviewItemBase* item() { return item_; }
+
+  bool is_touch_dragging() const { return is_touch_dragging_; }
+
   void InitiateDrag(const gfx::PointF& location_in_screen);
   void Drag(const gfx::PointF& location_in_screen);
   DragResult CompleteDrag(const gfx::PointF& location_in_screen);
@@ -125,10 +129,6 @@ class ASH_EXPORT OverviewWindowDragController {
   // Called by `float_drag_helper_` to destroy itself as it may need to live
   // after a gesture is completed if there is an animation.
   void DestroyFloatDragHelper();
-
-  OverviewItemBase* item() { return item_; }
-
-  bool is_touch_dragging() const { return is_touch_dragging_; }
 
   DragBehavior current_drag_behavior_for_testing() const {
     return current_drag_behavior_;

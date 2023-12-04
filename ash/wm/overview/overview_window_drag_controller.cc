@@ -358,12 +358,16 @@ void OverviewWindowDragController::StartNormalDragMode(
   auto* overview_grid = item_->overview_grid();
   overview_grid->AddDropTargetForDraggingFromThisGrid(item_);
 
-  // Expand desks bar when normal drag starts and desks bar is in zero state.
-  // The bar may be null if we have no desks in tablet mode.
-  if (auto* desks_bar_view = overview_grid->desks_bar_view();
-      desks_bar_view && desks_bar_view->IsZeroState()) {
-    desks_bar_view->UpdateNewMiniViews(/*initializing_bar_view=*/false,
-                                       /*expanding_bar_view=*/true);
+  // Expand all desks bars on all displays when normal drag starts if it is in
+  // zero state.
+  for (const std::unique_ptr<OverviewGrid>& grid :
+       overview_session_->grid_list()) {
+    // The bar may be null if we have no desks in tablet mode.
+    if (auto* desks_bar_view = grid->desks_bar_view();
+        desks_bar_view && desks_bar_view->IsZeroState()) {
+      desks_bar_view->UpdateNewMiniViews(/*initializing_bar_view=*/false,
+                                         /*expanding_bar_view=*/true);
+    }
   }
 
   item_->UpdateShadowTypeForDrag(/*is_dragging=*/true);

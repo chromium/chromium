@@ -65,41 +65,6 @@ gfx::Point GetScreenInPixelsPoint(int x, int y) {
   return point;
 }
 
-// Waits for a window to be destroyed.
-class WindowCloseWaiter : public aura::WindowObserver {
- public:
-  explicit WindowCloseWaiter(aura::Window* window) : window_(window) {
-    DCHECK(window_);
-    window_->AddObserver(this);
-  }
-
-  WindowCloseWaiter(const WindowCloseWaiter&) = delete;
-  WindowCloseWaiter& operator=(const WindowCloseWaiter&) = delete;
-
-  ~WindowCloseWaiter() override {
-    if (window_)
-      window_->RemoveObserver(this);
-  }
-
-  void Wait() {
-    // Did window close already?
-    if (!window_)
-      return;
-
-    run_loop_.Run();
-  }
-
-  // aura::WindowObserver:
-  void OnWindowDestroyed(aura::Window* window) override {
-    window_ = nullptr;
-    run_loop_.Quit();
-  }
-
- private:
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
-  base::RunLoop run_loop_;
-};
-
 }  // namespace
 
 class OverviewWindowDragControllerTest : public AshTestBase {
@@ -411,6 +376,40 @@ TEST_F(OverviewWindowDragControllerTest, DragWindowInPortraitMode) {
   EXPECT_FALSE(
       desks_bar_view->GetBoundsInScreen().Intersects(gfx::ToEnclosedRect(
           overview_grid()->window_list()[1].get()->target_bounds())));
+}
+
+// Tests that if a user starts dragging an overview item and the desks bar(s)
+// are in zero state, they will become expanded state.
+TEST_F(OverviewWindowDragControllerTest, DesksBarState) {
+  UpdateDisplay("800x600, 800x600");
+
+  std::unique_ptr<aura::Window> window = CreateAppWindow();
+
+  EnterOverview();
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
+
+  // Since we only have one desk, the desk bars should be zero state currently.
+  aura::Window::Windows roots = Shell::GetAllRootWindows();
+  ASSERT_EQ(2u, roots.size());
+
+  for (aura::Window* root : roots) {
+    const auto* desks_bar_view = GetOverviewGridForRoot(root)->desks_bar_view();
+    ASSERT_TRUE(desks_bar_view);
+    ASSERT_EQ(DeskBarViewBase::State::kZero, desks_bar_view->state());
+  }
+
+  // Start dragging the item, but not enough to snap or move to another desk.
+  auto* overview_item = GetOverviewItemForWindow(window.get());
+  ASSERT_TRUE(overview_item);
+  StartDraggingItemBy(overview_item, /*x=*/5, /*y=*/5,
+                      /*by_touch_gestures=*/false, GetEventGenerator());
+
+  // All the desks bar should be expanded.
+  for (aura::Window* root : roots) {
+    const auto* desks_bar_view = GetOverviewGridForRoot(root)->desks_bar_view();
+    ASSERT_TRUE(desks_bar_view);
+    EXPECT_EQ(DeskBarViewBase::State::kExpanded, desks_bar_view->state());
+  }
 }
 
 // Tests the behavior of dragging a window in portrait tablet mode with virtual
