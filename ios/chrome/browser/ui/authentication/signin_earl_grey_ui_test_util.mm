@@ -74,12 +74,35 @@ void CloseSyncManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
 }
 
 // Closes the managed account dialog for the Sign-in consent level when
-// necessary, if `fakeIdentity` is a managed account and the User Policy feature
-// is enabled.
+// necessary, if `fakeIdentity` is a managed account. That dialog may be shown
+// when User Policy is enabled.
 void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
   CloseManagedAccountDialogIfAny(
       fakeIdentity,
       IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_CONTINUE_BUTTON_LABEL);
+}
+
+// Taps the sign-in sheet confirmation if the user is not signed-in yet, and
+// the history opt-in confirmation if the user is not opted-in yet.
+void MaybeTapSigninBottomSheetAndHistoryConfirmationDialog(
+    FakeSystemIdentity* fakeIdentity) {
+  if ([SigninEarlGreyAppInterface isSignedOut]) {
+    // First tap the "Continue as ..." button in the signin bottom sheet.
+    [ChromeEarlGreyUI waitForAppToIdle];
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                            WebSigninPrimaryButtonMatcher()]
+        performAction:grey_tap()];
+  }
+
+  [ChromeEarlGreyUI waitForAppToIdle];
+  CloseSigninManagedAccountDialogIfAny(fakeIdentity);
+  // If the history type isn't enabled yet, the history opt-in dialog should
+  // show up now. Tap the "Yes, I'm In" button.
+  if (![ChromeEarlGrey isSyncHistoryDataTypeSelected]) {
+    [[EarlGrey selectElementWithMatcher:
+                   chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
+        performAction:grey_tap()];
+  }
 }
 
 }  // namespace
@@ -125,7 +148,7 @@ void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
   }
 
   if ([ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
-    [SigninEarlGreyUI maybeTapSigninBottomSheetAndHistoryConfirmationDialog];
+    MaybeTapSigninBottomSheetAndHistoryConfirmationDialog(fakeIdentity);
   } else {
     [SigninEarlGreyUI tapSigninConfirmationDialog];
     CloseSyncManagedAccountDialogIfAny(fakeIdentity);
@@ -237,27 +260,6 @@ void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
   id<GREYMatcher> buttonMatcher = [ChromeMatchersAppInterface
       buttonWithAccessibilityLabelID:IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON];
   [[EarlGrey selectElementWithMatcher:buttonMatcher] performAction:grey_tap()];
-}
-
-// Taps the sign-in sheet confirmation if the user is not signed-in yet, and
-// the history opt-in confirmation if the user is not opted-in yet.
-+ (void)maybeTapSigninBottomSheetAndHistoryConfirmationDialog {
-  if ([SigninEarlGreyAppInterface isSignedOut]) {
-    // First tap the "Continue as ..." button in the signin bottom sheet.
-    [ChromeEarlGreyUI waitForAppToIdle];
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                            WebSigninPrimaryButtonMatcher()]
-        performAction:grey_tap()];
-  }
-
-  [ChromeEarlGreyUI waitForAppToIdle];
-  // If the history type isn't enabled yet, the history opt-in dialog should
-  // show up now. Tap the "Yes, I'm In" button.
-  if (![ChromeEarlGrey isSyncHistoryDataTypeSelected]) {
-    [[EarlGrey selectElementWithMatcher:
-                   chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
-        performAction:grey_tap()];
-  }
 }
 
 + (void)tapAddAccountButton {

@@ -162,7 +162,10 @@ NSString* const kDomain2 = @"domain2.com";
   if ([self isRunningTest:@selector(testPopupMenuItemWithUserPolicy)] ||
       [self isRunningTest:@selector(testManagementPageManagedWithUserPolicy)]) {
     config.features_enabled.push_back(
-        policy::kUserPolicyForSigninOrSyncConsentLevel);
+        policy::kUserPolicyForSigninAndNoSyncConsentLevel);
+  } else {
+    config.features_disabled.push_back(
+        policy::kUserPolicyForSigninAndNoSyncConsentLevel);
   }
 
   if ([self isRunningTest:@selector

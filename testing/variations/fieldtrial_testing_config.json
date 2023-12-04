@@ -9135,6 +9135,22 @@
             ]
         }
     ],
+    "IOSUserPolicy": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ShowUserPolicyNotificationAtStartupIfNeeded",
+                        "UserPolicyForSigninAndNoSyncConsentLevel"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSWebChannels": [
         {
             "platforms": [
