@@ -18,11 +18,11 @@ constexpr uint64_t kBytesPerMb = 1024 * 1024;
 // The threshold for GPU RAM below which the device is considered VeryLow.
 const base::FeatureParam<int> kLowRAMThreshold{
     &optimization_guide::features::kOptimizationGuideOnDeviceModel,
-    "on_device_low_ram_threshold_mb", 4000};
+    "on_device_low_ram_threshold_mb", 3600};
 // RAM threshold necessary to be considered High or better.
 const base::FeatureParam<int> kHighRAMThreshold{
     &optimization_guide::features::kOptimizationGuideOnDeviceModel,
-    "on_device_high_ram_threshold_mb", 8000};
+    "on_device_high_ram_threshold_mb", 7600};
 
 // Output threshold to be considered Low or better.
 const base::FeatureParam<int> kLowOutputThreshold{
