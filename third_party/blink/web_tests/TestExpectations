@@ -2703,10 +2703,7 @@ crbug.com/626703 external/wpt/png/apng/fcTL-dispose-before-region-background.htm
 crbug.com/626703 external/wpt/png/apng/fcTL-dispose-in-region-background.html [ Timeout ]
 crbug.com/626703 external/wpt/png/apng/fcTL-dispose-previous-first.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/can-load-api.https.html [ Timeout ]
-crbug.com/626703 [ Mac11 ] virtual/pna-navigations-enabled/external/wpt/fetch/private-network-access/window-open.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/css/css-backgrounds/background-image-007.html [ Failure ]
-crbug.com/626703 [ Linux ] external/wpt/fetch/private-network-access/window-open.tentative.https.window.html [ Timeout ]
-crbug.com/626703 [ Linux ] virtual/pna-workers-enabled/external/wpt/fetch/private-network-access/window-open.tentative.https.window.html [ Timeout ]
 crbug.com/626703 external/wpt/screen-orientation/lock-unlock-check.html [ Timeout ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/fledge/tentative/direct-from-seller-signals.https.window.html?6-10 [ Skip Timeout ]
 crbug.com/626703 external/wpt/css/css-contain/content-visibility/content-visibility-095.html [ Failure ]
@@ -5479,6 +5476,15 @@ crbug.com/1481245 [ Mac ] external/wpt/html/semantics/forms/the-selectlist-eleme
 crbug.com/1318318 external/wpt/fetch/private-network-access/service-worker-background-fetch.tentative.https.window.html [ Failure Pass Timeout ]
 crbug.com/1318561 [ Linux ] external/wpt/x-frame-options/get-decode-split.html [ Failure Pass ]
 
+crbug.com/1507761 external/wpt/fetch/private-network-access/anchor.tentative.https.window.html?include=from-private [ Failure Pass Timeout ]
+crbug.com/1507761 external/wpt/fetch/private-network-access/anchor.tentative.https.window.html?include=from-public [ Failure Pass Timeout ]
+crbug.com/1507761 external/wpt/fetch/private-network-access/anchor.tentative.https.window.html?include=from-treat-as-public [ Failure Pass Timeout ]
+crbug.com/1507761 external/wpt/fetch/private-network-access/anchor.tentative.window.html [ Failure Pass Timeout ]
+crbug.com/1507761 external/wpt/fetch/private-network-access/window-open.tentative.https.window.html?include=from-private [ Failure Pass Timeout ]
+crbug.com/1507761 external/wpt/fetch/private-network-access/window-open.tentative.https.window.html?include=from-public [ Failure Pass Timeout ]
+crbug.com/1507761 external/wpt/fetch/private-network-access/window-open.tentative.https.window.html?include=from-treat-as-public [ Failure Pass Timeout ]
+crbug.com/1507761 external/wpt/fetch/private-network-access/window-open.tentative.window.html [ Failure Pass Timeout ]
+
 # Temp disable MST transfer tests until Browser feature can be enabled in tests
 crbug.com/1288839 virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStreamTrack-iframe-transfer.https.html [ Failure Skip ]
 crbug.com/1288839 virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStreamTrack-iframe-audio-transfer.https.html [ Failure Skip ]
@@ -7058,7 +7064,6 @@ crbug.com/1474670 http/tests/devtools/application-panel/resources-panel-resource
 crbug.com/1474670 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Failure Pass ]
 
 # Gardener 2023-11-13
-crbug.com/1501462 [ Linux ] virtual/pna-permission/external/wpt/fetch/private-network-access/window-open.tentative.https.window.html [ Failure Pass ]
 crbug.com/1455263 [ Linux ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-attribute-change.https.html [ Failure Pass ]
 crbug.com/1502336 [ Linux ] external/wpt/idle-detection/idle-detection-allowed-by-permissions-policy.https.sub.html [ Failure Pass ]
 
@@ -7068,8 +7073,6 @@ crbug.com/1502794 external/wpt/html/semantics/invokers/invoketarget-on-video-beh
 # Gardener 2023-11-17
 crbug.com/1503108 [ Mac ] external/wpt/credential-management/fedcm-disconnect.sub.https.html [ Timeout ]
 crbug.com/1503051 [ Mac ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Failure Pass ]
-crbug.com/1503067 [ Linux ] virtual/plz-dedicated-worker-disabled/external/wpt/fetch/private-network-access/window-open.tentative.https.window.html [ Failure Pass ]
-crbug.com/1503067 [ Linux ] virtual/pna-navigations-warning/external/wpt/fetch/private-network-access/window-open.tentative.https.window.html [ Failure Pass ]
 crbug.com/1503067 [ Linux ] virtual/pna-navigations-enabled/external/wpt/fetch/private-network-access/iframe.tentative.https.window.html [ Failure Pass ]
 crbug.com/1503119 [ Mac11 ] external/wpt/webtransport/echo-large-bidirectional-streams.https.any.html [ Timeout ]
 
