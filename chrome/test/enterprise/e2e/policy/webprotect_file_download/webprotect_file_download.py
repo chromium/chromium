@@ -28,8 +28,13 @@ class WebProtectFileDownloadTest(ChromeEnterpriseTestCase):
 
   @test
   def test_malware_scan_download(self):
-    self.SetPolicy('win2016-dc', r'CloudManagementEnrollmentToken',
-                   '856f301d-cfda-414d-97a6-1bfb46d94293', 'String')
+    """Get token from GCS bucket"""
+    path = 'gs://%s/%s' % (self.gsbucket, 'secrets/CELabOrg-enrollToken')
+    cmd = r'gsutil cat ' + path
+    token = self.RunCommand(self.win_config['dc'], cmd).rstrip().decode()
+
+    self.SetPolicy('win2016-dc', r'CloudManagementEnrollmentToken', token,
+                   'String')
     instance_name = 'webprotect-1'
     self.RunCommand(instance_name, 'gpupdate /force')
 
