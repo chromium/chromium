@@ -1490,11 +1490,11 @@ TEST_F(FFmpegDemuxerTest, Read_Mp4_Multiple_Tracks) {
   EXPECT_EQ(audio_track2.language().value(), "und");
 }
 
+// Note: This test has multiple mp4 files concatenated. It should succeed or
+// there may be a regression in mp4 file handling. https://crbug.com/1506906
 TEST_F(FFmpegDemuxerTest, Read_Mp4_Crbug657437) {
   CreateDemuxer("crbug657437.mp4");
-  WaitableMessageLoopEvent event;
-  demuxer_->Initialize(&host_, event.GetPipelineStatusCB());
-  event.RunAndWaitForStatus(DEMUXER_ERROR_COULD_NOT_OPEN);
+  InitializeDemuxer();
 }
 
 TEST_F(FFmpegDemuxerTest, XHE_AAC) {
