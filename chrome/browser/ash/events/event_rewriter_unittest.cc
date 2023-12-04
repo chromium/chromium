@@ -21,6 +21,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -98,6 +99,11 @@ constexpr int kMouseDeviceId = 456;
 // in the top row, which maps to F-Keys.
 constexpr char kKbdDefaultCustomTopRowLayout[] =
     "01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f";
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+constexpr char kCros1pInputMethodIdPrefix[] =
+    "_comp_ime_jkghodnilhceideoidjikpgommlajknk";
+#endif
 
 class TestEventSink : public ui::EventSink {
  public:
@@ -687,10 +693,12 @@ constexpr TestKeyEvent NumpadPageUpPressed(ui::EventFlags flags = ui::EF_NONE) {
           ui::VKEY_PRIOR, flags};
 }
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr TestKeyEvent HangulModePressed(ui::EventFlags flags = ui::EF_NONE) {
   return {ui::ET_KEY_PRESSED, ui::DomCode::ALT_RIGHT, ui::DomKey::HANGUL_MODE,
           ui::VKEY_HANGUL, flags};
 }
+#endif
 
 std::string EventTypeToString(ui::EventType type) {
   switch (type) {
@@ -4154,7 +4162,8 @@ TEST_F(EventRewriterTest, ScrollEventDispatchImpl) {
   }
 }
 
-TEST_F(EventRewriterTest, HangulDoesNotGetRemapped) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+TEST_F(EventRewriterTest, RemapHangulOnCros1p) {
   scoped_refptr<input_method::MockInputMethodManagerImpl::State> state =
       base::MakeRefCounted<input_method::MockInputMethodManagerImpl::State>(
           input_method_manager_mock_);
@@ -4163,18 +4172,20 @@ TEST_F(EventRewriterTest, HangulDoesNotGetRemapped) {
   for (const auto& keyboard : kAllKeyboardVariants) {
     SCOPED_TRACE(keyboard.name);
     SetUpKeyboard(keyboard);
-
-    state->current_input_method_id = "ko-t-i0-und";
+    state->current_input_method_id =
+        base::StrCat({kCros1pInputMethodIdPrefix, "ko-t-i0-und"});
     EXPECT_EQ(HangulModePressed(), RunRewriter(HangulModePressed()));
     EXPECT_EQ(LAltPressed(), RunRewriter(LAltPressed()));
     EXPECT_EQ(RAltPressed(), RunRewriter(RAltPressed()));
 
-    state->current_input_method_id = "xkb:us::eng";
+    state->current_input_method_id =
+        base::StrCat({kCros1pInputMethodIdPrefix, "xkb:us::eng"});
     EXPECT_EQ(RAltPressed(), RunRewriter(HangulModePressed()));
     EXPECT_EQ(LAltPressed(), RunRewriter(LAltPressed()));
     EXPECT_EQ(RAltPressed(), RunRewriter(RAltPressed()));
   }
 }
+#endif
 
 class StickyKeysOverlayTest : public EventRewriterTest {
  public:

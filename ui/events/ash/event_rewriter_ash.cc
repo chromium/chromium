@@ -21,6 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "device/udev_linux/scoped_udev.h"
+#include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ui_base_features.h"
@@ -53,8 +54,6 @@ namespace {
 // Flag masks for remapping alt+click or search+click to right click.
 constexpr int kAltLeftButton = (EF_ALT_DOWN | EF_LEFT_MOUSE_BUTTON);
 constexpr int kSearchLeftButton = (EF_COMMAND_DOWN | EF_LEFT_MOUSE_BUTTON);
-
-constexpr char kKoreanImeId[] = "ko-t-i0-und";
 
 // Index of the remapped flags in the auto repeat usage metric.
 enum class AutoRepeatUsageModifierFlag : uint32_t {
@@ -311,9 +310,13 @@ bool IsISOLevel5ShiftUsedByCurrentInputMethod() {
 
 bool IsFirstPartyKoreanIME() {
   auto* manager = ash::input_method::InputMethodManager::Get();
+  if (!manager) {
+    return false;
+  }
+
   auto current_input_method =
       manager->GetActiveIMEState()->GetCurrentInputMethod();
-  return base::EndsWith(current_input_method.id(), kKoreanImeId);
+  return ash::extension_ime_util::IsCros1pKorean(current_input_method.id());
 }
 
 struct KeyboardRemapping {
