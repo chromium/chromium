@@ -18,6 +18,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/base/devtools_instrumentation.h"
+#include "cc/base/features.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/metrics/compositor_frame_reporting_controller.h"
 #include "cc/metrics/compositor_timing_history.h"
@@ -718,7 +719,9 @@ void Scheduler::ScheduleBeginImplFrameDeadline() {
       // Send early DidNotProduceFrame if we don't expect to produce a frame
       // soon so that display scheduler doesn't wait unnecessarily.
       // Note: This will only send one DidNotProduceFrame ack per begin frame.
-      if (!state_machine_.NewActiveTreeLikely()) {
+      if (!base::FeatureList::IsEnabled(
+              features::kResetTimerWhenNoActiveTreeLikely) &&
+          !state_machine_.NewActiveTreeLikely()) {
         SendDidNotProduceFrame(begin_impl_frame_tracker_.Current(),
                                FrameSkippedReason::kNoDamage);
       }

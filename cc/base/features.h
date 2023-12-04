@@ -150,6 +150,10 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUseMapRectForPixelMovement);
 // viz::Surface.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kEvictionThrottlesDraw);
 
+// Kill switch for trigger late deadline timer immediately in scheduler when
+// there's no active tree likely.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kResetTimerWhenNoActiveTreeLikely);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_
