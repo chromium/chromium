@@ -308,11 +308,6 @@ void PrintingAPIHandler::OnPrinterStatusRetrieved(
           /*error=*/absl::nullopt));
 }
 
-void PrintingAPIHandler::SetPrintJobControllerForTesting(
-    std::unique_ptr<printing::PrintJobController> print_job_controller) {
-  print_job_controller_ = std::move(print_job_controller);
-}
-
 void PrintingAPIHandler::OnPrintJobUpdate(
     const std::string& printer_id,
     unsigned int job_id,
