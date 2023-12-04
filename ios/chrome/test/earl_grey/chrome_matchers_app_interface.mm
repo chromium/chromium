@@ -631,6 +631,16 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
                     grey_sufficientlyVisible(), nil);
 }
 
++ (id<GREYMatcher>)identityChooserScrim {
+  return [ChromeMatchersAppInterface
+      buttonWithAccessibilityLabelID:(IDS_IOS_TOOLBAR_CLOSE_MENU)];
+}
+
++ (id<GREYMatcher>)fakeFakeAddAccountScreenCancelButton {
+  return grey_allOf(grey_buttonTitle(@"Cancel"), grey_sufficientlyVisible(),
+                    nil);
+}
+
 + (id<GREYMatcher>)settingsAccountButton {
   return grey_accessibilityID(kSettingsAccountCellId);
 }

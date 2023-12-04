@@ -278,6 +278,13 @@ id<GREYMatcher> PrimarySignInButton();
 // "Not johndoe@example.com" button.
 id<GREYMatcher> SecondarySignInButton();
 
+// Returns matcher for the identity chooser scrim that is shown behind the
+// identity chooser dialog. Tapping on the scrim dismisses the dialog.
+id<GREYMatcher> IdentityChooserScrim();
+
+// Returns matcher for the cancel button in the fake add account flow.
+id<GREYMatcher> FakeAddAccountScreenCancelButton();
+
 // Returns a matcher for the button for the currently signed in account in the
 // settings menu.
 id<GREYMatcher> SettingsAccountButton();

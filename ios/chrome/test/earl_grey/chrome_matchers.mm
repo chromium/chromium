@@ -349,6 +349,14 @@ id<GREYMatcher> SecondarySignInButton() {
   return [ChromeMatchersAppInterface secondarySignInButton];
 }
 
+id<GREYMatcher> IdentityChooserScrim() {
+  return [ChromeMatchersAppInterface identityChooserScrim];
+}
+
+id<GREYMatcher> FakeAddAccountScreenCancelButton() {
+  return [ChromeMatchersAppInterface fakeFakeAddAccountScreenCancelButton];
+}
+
 id<GREYMatcher> SettingsAccountButton() {
   return [ChromeMatchersAppInterface settingsAccountButton];
 }
