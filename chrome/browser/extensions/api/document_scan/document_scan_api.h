@@ -28,8 +28,7 @@ class DocumentScanScanFunction : public ExtensionFunction {
   void OnScanCompleted(
       absl::optional<api::document_scan::ScanResults> scan_result,
       absl::optional<std::string> error);
-  DECLARE_EXTENSION_FUNCTION("documentScan.scan", DOCUMENT_SCAN_SCAN)
-  // TODO(b/314393017): Rename to DOCUMENTSCAN_SCAN for consistency.
+  DECLARE_EXTENSION_FUNCTION("documentScan.scan", DOCUMENTSCAN_SCAN)
 };
 
 class DocumentScanGetScannerListFunction : public ExtensionFunction {
@@ -50,8 +49,7 @@ class DocumentScanGetScannerListFunction : public ExtensionFunction {
   void OnScannerListReceived(
       api::document_scan::GetScannerListResponse response);
   DECLARE_EXTENSION_FUNCTION("documentScan.getScannerList",
-                             DOCUMENT_SCAN_GETSCANNERLIST)
-  // TODO(b/314393017): Rename to DOCUMENTSCAN_GETSCANNERLIST for consistency.
+                             DOCUMENTSCAN_GETSCANNERLIST)
 };
 
 class DocumentScanOpenScannerFunction : public ExtensionFunction {
@@ -71,8 +69,7 @@ class DocumentScanOpenScannerFunction : public ExtensionFunction {
  private:
   void OnResponseReceived(api::document_scan::OpenScannerResponse response);
   DECLARE_EXTENSION_FUNCTION("documentScan.openScanner",
-                             DOCUMENT_SCAN_OPENSCANNER)
-  // TODO(b/314393017): Rename to DOCUMENTSCAN_OPENSCANNER for consistency.
+                             DOCUMENTSCAN_OPENSCANNER)
 };
 
 class DocumentScanCloseScannerFunction : public ExtensionFunction {
@@ -92,8 +89,7 @@ class DocumentScanCloseScannerFunction : public ExtensionFunction {
  private:
   void OnResponseReceived(api::document_scan::CloseScannerResponse response);
   DECLARE_EXTENSION_FUNCTION("documentScan.closeScanner",
-                             DOCUMENT_SCAN_CLOSESCANNER)
-  // TODO(b/314393017): Rename to DOCUMENTSCAN_CLOSESCANNER for consistency.
+                             DOCUMENTSCAN_CLOSESCANNER)
 };
 
 }  // namespace extensions

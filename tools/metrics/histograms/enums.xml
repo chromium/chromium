@@ -15984,7 +15984,7 @@ Called by update_extension_histograms.py.-->
   <int value="918" label="VPNPROVIDER_SETPARAMETERS"/>
   <int value="919" label="VPNPROVIDER_SENDPACKET"/>
   <int value="920" label="VPNPROVIDER_NOTIFYCONNECTIONSTATECHANGED"/>
-  <int value="921" label="DOCUMENT_SCAN_SCAN"/>
+  <int value="921" label="DOCUMENTSCAN_SCAN"/>
   <int value="922" label="DELETED_EASYUNLOCKPRIVATE_GETUSERIMAGE"/>
   <int value="923" label="HOTWORDPRIVATE_NOTIFYSPEAKERMODELSAVED"/>
   <int value="924" label="HOTWORDPRIVATE_GETLOCALIZEDSTRINGS"/>
@@ -16965,10 +16965,10 @@ Called by update_extension_histograms.py.-->
   <int value="1847" label="AUTOTESTPRIVATE_OVERRIDEORCARESPONSE"/>
   <int value="1848" label="ODFSCONFIGPRIVATE_GETMOUNT"/>
   <int value="1849" label="ODFSCONFIGPRIVATE_GETACCOUNTRESTRICTIONS"/>
-  <int value="1850" label="DOCUMENT_SCAN_GETSCANNERLIST"/>
+  <int value="1850" label="DOCUMENTSCAN_GETSCANNERLIST"/>
   <int value="1851" label="OS_MANAGEMENT_SETAUDIOGAIN"/>
-  <int value="1852" label="DOCUMENT_SCAN_OPENSCANNER"/>
-  <int value="1853" label="DOCUMENT_SCAN_CLOSESCANNER"/>
+  <int value="1852" label="DOCUMENTSCAN_OPENSCANNER"/>
+  <int value="1853" label="DOCUMENTSCAN_CLOSESCANNER"/>
 </enum>
 
 <enum name="ExtensionInProgressRequestState">
