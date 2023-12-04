@@ -13,19 +13,21 @@ namespace blink {
 using ContainerNodeTest = EditingTestBase;
 
 TEST_F(ContainerNodeTest, HasOnlyTextReturnsFalseForEmptySpan) {
-  SetBodyContent(R"HTML(<body><span id="id"><span><body>)HTML");
+  SetBodyContent(R"HTML(<body><span id="id"></span></body>)HTML");
 
   EXPECT_FALSE(GetDocument().getElementById(AtomicString("id"))->HasOnlyText());
 }
 
 TEST_F(ContainerNodeTest, HasOnlyTextReturnsFalseForNonTextChild) {
-  SetBodyContent(R"HTML(<body><div id="id"><div>Nested</div><div><body>)HTML");
+  SetBodyContent(R"HTML(
+    <body><div id="id"><div>Nested</div></div></body>
+  )HTML");
 
   EXPECT_FALSE(GetDocument().getElementById(AtomicString("id"))->HasOnlyText());
 }
 
 TEST_F(ContainerNodeTest, HasOnlyTextReturnsTrueForSomeText) {
-  SetBodyContent(R"HTML(<body><p id="id"> Here is some text <p><body>)HTML");
+  SetBodyContent(R"HTML(<body><p id="id"> Here is some text </p></body>)HTML");
 
   EXPECT_TRUE(GetDocument().getElementById(AtomicString("id"))->HasOnlyText());
 }
@@ -35,8 +37,8 @@ TEST_F(ContainerNodeTest, HasOnlyTextIgnoresComments) {
     <body>
       <p id="id"> Here is some text
         <!-- This is a comment that should be ignored. -->
-      <p>
-    <body>
+      </p>
+    </body>
   )HTML");
 
   EXPECT_TRUE(GetDocument().getElementById(AtomicString("id"))->HasOnlyText());
@@ -54,7 +56,7 @@ TEST_F(ContainerNodeTest, CannotFindTextInElementWithNonTextDescendants) {
   SetBodyContent(R"HTML(<body><span id="id"> Hello
       <span></span> world! </span></body>)HTML");
 
-  String text = GetDocument().FindTextInElementWith(AtomicString("anything"));
+  String text = GetDocument().FindTextInElementWith(AtomicString("Hello"));
 
   EXPECT_TRUE(text.empty());
 }
@@ -119,8 +121,8 @@ TEST_F(ContainerNodeTest, FindTextInElementWithFirstMatch) {
 TEST_F(ContainerNodeTest, FindTextInElementWithSubstringIgnoresComments) {
   SetBodyContent(R"HTML(
     <body>
-      <p id="id"> Before comment, <!-- The comment. --> after comment. <p>
-    <body>
+      <p id="id"> Before comment, <!-- The comment. --> after comment. </p>
+    </body>
   )HTML");
 
   String text = GetDocument().FindTextInElementWith(AtomicString("comment"));
