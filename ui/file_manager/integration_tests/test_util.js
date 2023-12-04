@@ -292,6 +292,7 @@ Object.freeze(SharedOption);
 /**
  * @typedef {{
  *   downloads: string,
+ *   my_files: string,
  *   drive: string,
  *   android_files: string,
  * }}
@@ -302,12 +303,14 @@ export let getRootPathsResult;
 /**
  * @typedef {{
  *   DOWNLOADS: string,
+ *   MY_FILES: string,
  *   DRIVE: string,
  *   ANDROID_FILES: string,
  * }}
  */
 export const RootPath = {
   DOWNLOADS: '/must-be-filled-in-test-setup',
+  MY_FILES: '/must-be-filled-in-test-setup',
   DRIVE: '/must-be-filled-in-test-setup',
   ANDROID_FILES: '/must-be-filled-in-test-setup',
 };

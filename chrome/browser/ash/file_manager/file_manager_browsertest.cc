@@ -1944,6 +1944,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("recentsEmptyFolderMessageAfterDeletion"),
         TestCase("recentsDownloads"),
         TestCase("recentsDrive"),
+        TestCase("recentsMyFiles"),
         TestCase("recentsCrostiniNotMounted"),
         TestCase("recentsCrostiniMounted"),
         TestCase("recentsDownloadsAndDrive"),

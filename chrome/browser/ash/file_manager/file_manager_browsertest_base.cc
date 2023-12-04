@@ -257,6 +257,7 @@ struct AddEntriesMessage {
   // Represents the various volumes available for adding entries.
   enum TargetVolume {
     LOCAL_VOLUME,
+    MY_FILES,  // Same as Local Volume above.
     DRIVE_VOLUME,
     CROSTINI_VOLUME,
     GUEST_OS_VOLUME_0,  // GuestOS volume with provider id 0 (i.e. the first).
@@ -322,6 +323,8 @@ struct AddEntriesMessage {
                                       TargetVolume* volume) {
     if (value == "local") {
       *volume = LOCAL_VOLUME;
+    } else if (value == "my_files") {
+      *volume = MY_FILES;
     } else if (value == "drive") {
       *volume = DRIVE_VOLUME;
     } else if (value == "crostini") {
@@ -1128,6 +1131,11 @@ class DownloadsTestVolume : public LocalTestVolume {
 
   void CreateEntry(const AddEntriesMessage::TestEntryInfo& entry) override {
     base::FilePath target_path = GetFilePath(entry.target_path);
+    CreateEntryImpl(entry, target_path);
+  }
+
+  void CreateEntryAtRoot(const AddEntriesMessage::TestEntryInfo& entry) {
+    base::FilePath target_path = root_path().Append(entry.target_path);
     CreateEntryImpl(entry, target_path);
   }
 
@@ -2988,6 +2996,10 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     base::Value::Dict dictionary;
     dictionary.Set("downloads", "/" + downloads_root);
 
+    base::FilePath my_files =
+        file_manager::util::GetMyFilesFolderForProfile(profile());
+    dictionary.Set("my_files", my_files.MaybeAsASCII());
+
     if (!profile()->IsGuestSession()) {
       auto* drive_integration_service =
           drive::DriveIntegrationServiceFactory::GetForProfile(profile());
@@ -3039,6 +3051,9 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
       switch (message.volume) {
         case AddEntriesMessage::LOCAL_VOLUME:
           local_volume_->CreateEntry(*message.entries[i]);
+          break;
+        case AddEntriesMessage::MY_FILES:
+          local_volume_->CreateEntryAtRoot(*message.entries[i]);
           break;
         case AddEntriesMessage::CROSTINI_VOLUME:
           CHECK(crostini_volume_);

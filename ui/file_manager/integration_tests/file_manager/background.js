@@ -326,6 +326,7 @@ window.addEventListener('load', () => {
     paths => {
       const roots = /** @type {getRootPathsResult} */ (JSON.parse(paths));
       RootPath.DOWNLOADS = roots.downloads;
+      RootPath.MY_FILES = roots.my_files;
       RootPath.DRIVE = roots.drive;
       RootPath.ANDROID_FILES = roots.android_files;
       sendBrowserTestCommand({name: 'getTestName'}, steps.shift());
