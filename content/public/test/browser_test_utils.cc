@@ -1806,6 +1806,13 @@ bool HasOriginKeyedProcess(RenderFrameHost* frame) {
       .requires_origin_keyed_process();
 }
 
+bool HasSandboxedSiteInstance(RenderFrameHost* frame) {
+  return static_cast<RenderFrameHostImpl*>(frame)
+      ->GetSiteInstance()
+      ->GetSiteInfo()
+      .is_sandboxed();
+}
+
 std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(
     RenderFrameHost* starting_rfh) {
   std::vector<RenderFrameHost*> visited_frames;

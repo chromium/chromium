@@ -380,6 +380,26 @@ bool ChromeContentBrowserClientExtensionsPart::DoesSiteRequireDedicatedProcess(
 }
 
 // static
+bool ChromeContentBrowserClientExtensionsPart::
+    ShouldAllowCrossProcessSandboxedFrameForPrecursor(
+        content::BrowserContext* browser_context,
+        const GURL& precursor) {
+  if (precursor.is_empty()) {
+    return true;
+  }
+
+  // Disallow cross-process sandboxed iframes for for cases with an extension
+  // precursor origin (including data: URLs, about:srcdoc, and same-origin
+  // extensions).
+  // TODO(https://crbug.com/1501910): remove this once we have an implementation
+  // that correctly allows sandboxed frames in extensions access to resources.
+  const ExtensionId extension_id = ExtensionRegistry::Get(browser_context)
+                                       ->enabled_extensions()
+                                       .GetExtensionIdByURL(precursor);
+  return extension_id.empty();
+}
+
+// static
 bool ChromeContentBrowserClientExtensionsPart::CanCommitURL(
     content::RenderProcessHost* process_host,
     const GURL& url) {
