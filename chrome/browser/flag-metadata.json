@@ -7130,7 +7130,7 @@
   },
   {
     "name": "screen-time-integration-ios",
-    "owners": [ "edchin@chromium.org", "bling-flags@google.com" ],
+    "owners": [ "huitingyu@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 92
   },
   {
