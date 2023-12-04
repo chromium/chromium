@@ -1486,7 +1486,6 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1434777")
     public void testShowInFolder_Scroll() throws Exception {
         addFolder(TEST_FOLDER_TITLE); // Index 8
         addBookmark(TEST_TITLE_A, mTestUrlA);
@@ -1525,7 +1524,6 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1434777")
     public void testShowInFolder_OpenOtherFolder() throws Exception {
         BookmarkId testId = addFolder(TEST_FOLDER_TITLE);
         runOnUiThreadBlocking(() -> mBookmarkModel.addBookmark(testId, 0, TEST_TITLE_A, mTestUrlA));
@@ -1553,7 +1551,12 @@ public class BookmarkTest {
                 checkHighlightPulse(itemA));
 
         // Open mobile bookmarks folder, then go back to the subfolder.
-        openFolder(mBookmarkModel.getMobileFolderId());
+        BookmarkId mobileFolderId =
+                runOnUiThreadBlocking(
+                        () -> {
+                            return mBookmarkModel.getMobileFolderId();
+                        });
+        openFolder(mobileFolderId);
         openFolder(testId);
 
         BookmarkItemRow itemASecondView = getBookmarkItemRow(1);
