@@ -130,10 +130,15 @@ void FocusModeFeaturePodController::UpdateUI() {
   const bool should_show_seconds =
       base::ClampRound<int64_t>(session_duration_remaining.InSecondsF()) <
       base::Time::kSecondsPerMinute;
-  tile_->SetSubLabel(focus_mode_util::GetDurationString(
+  const std::u16string duration_string = focus_mode_util::GetDurationString(
       session_duration_remaining,
       should_show_seconds ? focus_mode_util::TimeFormatType::kFull
-                          : focus_mode_util::TimeFormatType::kMinutesOnly));
+                          : focus_mode_util::TimeFormatType::kMinutesOnly);
+  tile_->SetSubLabel(
+      in_focus_session
+          ? l10n_util::GetStringFUTF16(
+                IDS_ASH_STATUS_TRAY_FOCUS_MODE_TIME_SUBLABEL, duration_string)
+          : duration_string);
 }
 
 }  // namespace ash
