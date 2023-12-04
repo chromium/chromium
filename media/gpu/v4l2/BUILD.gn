@@ -31,6 +31,8 @@ source_set("v4l2") {
     "stateless/utils.h",
     "stateless/v4l2_stateless_video_decoder.cc",
     "stateless/v4l2_stateless_video_decoder.h",
+    "stateless/vp8_delegate.cc",
+    "stateless/vp8_delegate.h",
     "stateless/vp9_delegate.cc",
     "stateless/vp9_delegate.h",
     "v4l2_decode_surface.cc",

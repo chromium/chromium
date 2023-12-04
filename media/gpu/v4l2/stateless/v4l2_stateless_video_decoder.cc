@@ -11,6 +11,7 @@
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/stateless/utils.h"
+#include "media/gpu/v4l2/stateless/vp8_delegate.h"
 #include "media/gpu/v4l2/stateless/vp9_delegate.h"
 #include "media/gpu/v4l2/v4l2_status.h"
 
@@ -249,6 +250,10 @@ bool V4L2StatelessVideoDecoder::CreateDecoder(VideoCodecProfile profile,
   DVLOGF(3);
 
   switch (VideoCodecProfileToVideoCodec(profile)) {
+    case VideoCodec::kVP8:
+      decoder_ = std::make_unique<VP8Decoder>(
+          std::make_unique<VP8Delegate>(this), color_space);
+      break;
     case VideoCodec::kVP9:
       decoder_ = std::make_unique<VP9Decoder>(
           std::make_unique<VP9Delegate>(
