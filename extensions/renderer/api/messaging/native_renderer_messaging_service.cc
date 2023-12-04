@@ -838,9 +838,16 @@ gin::Handle<GinPort> NativeRendererMessagingService::CreatePort(
   else
     DCHECK_NE(port_id.context_id, script_context->context_id());
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   content::RenderFrame* render_frame = script_context->GetRenderFrame();
   int routing_id =
       render_frame ? render_frame->GetRoutingID() : MSG_ROUTING_NONE;
+#else
+  // We do not use routing_id for anything in the mojo based IPC mechanism.
+  // TODO(dtapuska): Remove this and clean up the API when build flag is
+  // removed.
+  int routing_id = MSG_ROUTING_NONE;
+#endif
 
   MessagingPerContextData* data =
       GetPerContextData<MessagingPerContextData>(context, kCreateIfMissing);
