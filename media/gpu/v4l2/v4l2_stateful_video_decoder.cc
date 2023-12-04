@@ -5,6 +5,7 @@
 #include "media/gpu/v4l2/v4l2_stateful_video_decoder.h"
 
 #include <fcntl.h>
+#include <libdrm/drm_fourcc.h>
 #include <poll.h>
 #include <sys/eventfd.h>
 #include <sys/ioctl.h>
@@ -733,7 +734,7 @@ bool V4L2StatefulVideoDecoder::InitializeCAPTUREQueue() {
 
   const ImageProcessor::PixelLayoutCandidate output_format =
       std::move(status_or_output_format).value();
-  const auto chosen_fourcc = output_format.fourcc;
+  auto chosen_fourcc = output_format.fourcc;
   const auto chosen_size = output_format.size;
   const auto chosen_modifier = output_format.modifier;
 
@@ -751,6 +752,20 @@ bool V4L2StatefulVideoDecoder::InitializeCAPTUREQueue() {
                                       ? num_codec_reference_frames + 2
                                       : VIDEO_MAX_FRAME;
 
+  if (use_v4l2_allocated_buffers) {
+    absl::optional<GpuBufferLayout> layout =
+        client_->GetVideoFramePool()->GetGpuBufferLayout();
+    if (layout.has_value() && layout->modifier() &&
+        layout->modifier() == DRM_FORMAT_MOD_QCOM_COMPRESSED &&
+        // V4L2 has no API to set DRM modifiers; instead we translate here to
+        // the corresponding V4L2 pixel format.
+        !CAPTURE_queue_
+             ->SetFormat(V4L2_PIX_FMT_QC08C, chosen_size, /*buffer_size=*/0)
+             .has_value()) {
+      return false;
+    }
+    chosen_fourcc = Fourcc::FromV4L2PixFmt(V4L2_PIX_FMT_QC08C).value();
+  }
   VLOG(2) << "Chosen |CAPTURE_queue_| format: " << chosen_fourcc.ToString()
           << " " << chosen_size.ToString() << " (modifier: 0x" << std::hex
           << chosen_modifier << std::dec << "). Using " << v4l2_num_buffers
