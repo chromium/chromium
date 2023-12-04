@@ -42,6 +42,8 @@
 #include "ui/compositor/closure_animation_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
@@ -184,8 +186,11 @@ SharesheetBubbleView::~SharesheetBubbleView() {
   // TODO(https://crbug.com/1249491): While this is harmless, it should not be
   // necessary unless something fishy is happening with the behavior of layer
   // animations around widget teardown.
-  if (close_callback_)
+  if (close_callback_) {
     std::move(close_callback_).Run(views::Widget::ClosedReason::kUnspecified);
+  }
+
+  display::Screen::GetScreen()->RemoveObserver(this);
 }
 
 void SharesheetBubbleView::ShowBubble(
@@ -591,16 +596,14 @@ void SharesheetBubbleView::OnWidgetActivationChanged(views::Widget* widget,
   }
 }
 
-void SharesheetBubbleView::OnTabletModeStarted() {
-  UpdateAnchorPosition();
-}
+void SharesheetBubbleView::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  if (display::IsTabletStateChanging(state)) {
+    // Do nothing if the tablet state still in the process of transition.
+    return;
+  }
 
-void SharesheetBubbleView::OnTabletModeEnded() {
   UpdateAnchorPosition();
-}
-
-void SharesheetBubbleView::OnTabletControllerDestroyed() {
-  tablet_mode_observation_.Reset();
 }
 
 void SharesheetBubbleView::InitBubble() {
@@ -635,7 +638,7 @@ void SharesheetBubbleView::SetUpAndShowBubble() {
   ShowWidgetWithAnimateFadeIn();
 
   UpdateAnchorPosition();
-  tablet_mode_observation_.Observe(TabletMode::Get());
+  display::Screen::GetScreen()->AddObserver(this);
 }
 
 void SharesheetBubbleView::ExpandButtonPressed() {
@@ -757,7 +760,7 @@ void SharesheetBubbleView::CloseWidgetWithAnimateFadeOut(
 
   // Don't attempt to react to tablet mode changes while the sharesheet is
   // closing.
-  tablet_mode_observation_.Reset();
+  display::Screen::GetScreen()->RemoveObserver(this);
   is_bubble_closing_ = true;
   ui::Layer* layer = View::GetWidget()->GetLayer();
 

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
 
-#include "ash/public/cpp/tablet_mode.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "components/services/app_service/public/cpp/intent_util.h"

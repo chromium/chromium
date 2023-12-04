@@ -7,7 +7,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/keyboard_shortcut_viewer.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -15,6 +14,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "content/public/browser/web_ui.h"
+#include "ui/display/screen.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/ash/keyboard_layout_util.h"
 #include "ui/events/devices/keyboard_device.h"
@@ -128,7 +128,7 @@ void KeyboardHandler::HandleKeyboardChange(const base::Value::List& args) {
 void KeyboardHandler::UpdateKeyboards() {
   bool physical_keyboard = false;
   // In tablet mode, physical keybards are disabled / ignored.
-  if (!TabletMode::Get() || !TabletMode::Get()->InTabletMode()) {
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     physical_keyboard = true;
   }
   if (!physical_keyboard) {

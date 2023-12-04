@@ -7,7 +7,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/ash_interfaces.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -31,6 +30,7 @@
 #include "components/account_id/account_id.h"
 #include "components/login/localized_values_builder.h"
 #include "services/device/public/mojom/input_service.mojom.h"
+#include "ui/display/screen.h"
 
 namespace ash {
 
@@ -89,7 +89,7 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   );
 
   dict->Set("testapi_isOobeInTabletMode",
-            TabletMode::Get()->InTabletMode() ||
+            display::Screen::GetScreen()->InTabletMode() ||
                 switches::ShouldOobeUseTabletModeFirstRun());
   dict->Set("testapi_shouldSkipConsolidatedConsent",
             !BUILDFLAG(GOOGLE_CHROME_BRANDING));

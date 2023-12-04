@@ -7,7 +7,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -25,6 +24,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "google_apis/google_api_keys.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/display/screen.h"
 #include "ui/events/event_sink.h"
 
 // Enable VLOG level 1.
@@ -80,7 +80,7 @@ void CoreOobeHandler::DeclareJSCallbacks() {
 }
 
 void CoreOobeHandler::GetAdditionalParameters(base::Value::Dict* dict) {
-  dict->Set("isInTabletMode", TabletMode::Get()->InTabletMode());
+  dict->Set("isInTabletMode", display::Screen::GetScreen()->InTabletMode());
   dict->Set("isDemoModeEnabled", DemoSetupController::IsDemoModeAllowed());
   if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
     // The value is used to show a different UI for this type of the devices.

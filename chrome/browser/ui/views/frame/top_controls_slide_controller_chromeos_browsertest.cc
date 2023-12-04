@@ -11,7 +11,6 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/public/ash_interfaces.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -389,7 +388,7 @@ class TopControlsSlideControllerTest : public InProcessBrowserTest {
   }
 
   bool GetTabletModeEnabled() const {
-    return ash::TabletMode::Get()->InTabletMode();
+    return display::Screen::GetScreen()->InTabletMode();
   }
 
   void CheckBrowserLayout(BrowserView* browser_view,

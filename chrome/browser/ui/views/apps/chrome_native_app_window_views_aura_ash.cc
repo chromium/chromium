@@ -22,7 +22,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_context_menu.h"
-#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
@@ -42,6 +41,7 @@
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -132,17 +132,11 @@ class AppWindowFrameViewAsh : public apps::AppWindowFrameView {
 
 }  // namespace
 
-ChromeNativeAppWindowViewsAuraAsh::ChromeNativeAppWindowViewsAuraAsh()
-    : exclusive_access_manager_(
-          std::make_unique<ExclusiveAccessManager>(this)) {
-  if (ash::TabletMode::Get())
-    ash::TabletMode::Get()->AddObserver(this);
-}
+ChromeNativeAppWindowViewsAuraAsh::ChromeNativeAppWindowViewsAuraAsh() =
+    default;
 
-ChromeNativeAppWindowViewsAuraAsh::~ChromeNativeAppWindowViewsAuraAsh() {
-  if (ash::TabletMode::Get())
-    ash::TabletMode::Get()->RemoveObserver(this);
-}
+ChromeNativeAppWindowViewsAuraAsh::~ChromeNativeAppWindowViewsAuraAsh() =
+    default;
 
 ///////////////////////////////////////////////////////////////////////////////
 // NativeAppWindowViews implementation:
@@ -394,13 +388,20 @@ void ChromeNativeAppWindowViewsAuraAsh::SetActivateOnPointer(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// TabletModeObserver implementation:
-void ChromeNativeAppWindowViewsAuraAsh::OnTabletModeStarted() {
-  OnTabletModeToggled(true);
-}
-
-void ChromeNativeAppWindowViewsAuraAsh::OnTabletModeEnded() {
-  OnTabletModeToggled(false);
+// display::DisplayObserver implementation:
+void ChromeNativeAppWindowViewsAuraAsh::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  switch (state) {
+    case display::TabletState::kEnteringTabletMode:
+    case display::TabletState::kExitingTabletMode:
+      break;
+    case display::TabletState::kInTabletMode:
+      OnTabletModeToggled(true);
+      break;
+    case display::TabletState::kInClamshellMode:
+      OnTabletModeToggled(false);
+      break;
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -628,7 +629,8 @@ bool ChromeNativeAppWindowViewsAuraAsh::ShouldEnableImmersiveMode() const {
   // is no need for immersive mode.
   // TODO(crbug.com/801619): This adds a little extra animation
   // when minimizing or unminimizing window.
-  return ash::TabletMode::IsInTabletMode() && CanResize() && !IsMinimized() &&
+  return display::Screen::GetScreen()->InTabletMode() && CanResize() &&
+         !IsMinimized() &&
          GetNativeWindow()->GetProperty(chromeos::kWindowStateTypeKey) !=
              chromeos::WindowStateType::kFloated;
 }
