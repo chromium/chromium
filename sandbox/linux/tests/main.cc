@@ -80,7 +80,7 @@ int main(int argc, char* argv[]) {
   // This makes gtest only marginally slower for us and has the
   // additional side effect of getting rid of gtest warnings about fork()
   // safety.
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 #if !defined(SANDBOX_USES_BASE_TEST_SUITE)
   int tests_result = RUN_ALL_TESTS();
 #else
