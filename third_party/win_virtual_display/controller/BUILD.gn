@@ -2,13 +2,17 @@
 # Use of this source code is governed by a BSD - style license that can be
 # found in the LICENSE file.
 
-executable("display_driver_controller_executable") {
+static_library("controller") {
+  testonly = true
   deps = [
     "//base",
     "//base/win:base_win_buildflags",
     "//third_party/win_virtual_display/driver/public",
   ]
-  sources = [ "display_driver_controller.cc" ]
+  sources = [
+    "display_driver_controller.cc",
+    "display_driver_controller.h",
+  ]
   libs = [
     "ntdll.lib",
     "onecore.lib",

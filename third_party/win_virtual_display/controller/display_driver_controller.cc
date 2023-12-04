@@ -1,131 +1,143 @@
 // Copyright (c) Microsoft Corporation
 
-#include "base/win/windows_full.h"
-#include "base/win/windows_types.h"
-#include "third_party/win_virtual_display/driver/public/properties.h"
+#include "third_party/win_virtual_display/controller/display_driver_controller.h"
+
+#include <windows.h>
 
 #include <conio.h>
+#include <devguid.h>
+#include <setupapi.h>
 #include <swdevice.h>
 #include <wrl.h>
 #include <cstdio>
-#include <limits>
-#include <vector>
+#include "base/logging.h"
+
+namespace display::test {
+namespace {
+
+// These values should match the corresponding values in the driver .inf file.
+constexpr wchar_t kDriverName[] = L"ChromiumVirtualDisplayDriver";
+// Dual null terminated for win32 API list.
+constexpr wchar_t kDriverNameList[] = L"ChromiumVirtualDisplayDriver\0\0";
+constexpr wchar_t kDriverDeviceName[] = L"ChromiumVirtualDisplayDriver Device";
+constexpr wchar_t kDriverManufacturer[] = L"Chromium";
+constexpr wchar_t kDriverDescription[] = L"Chromium Virtual Display Driver";
 
 VOID WINAPI CreationCallback(_In_ HSWDEVICE hSwDevice,
                              _In_ HRESULT hrCreateResult,
                              _In_opt_ PVOID pContext,
                              _In_opt_ PCWSTR pszDeviceInstanceId) {
   HANDLE hEvent = *(HANDLE*)pContext;
-
-  SetEvent(hEvent);
-  UNREFERENCED_PARAMETER(hSwDevice);
-  UNREFERENCED_PARAMETER(hrCreateResult);
-  UNREFERENCED_PARAMETER(pszDeviceInstanceId);
+  if (!SetEvent(hEvent)) {
+    LOG(ERROR) << "SetEvent failed: " << GetLastError();
+  }
 }
 
-int __cdecl main(int argc, char** argv) {
-  UNREFERENCED_PARAMETER(argc);
-  UNREFERENCED_PARAMETER(argv);
+// Builds an array of DEVPROPERTY based off the specified config.
+std::array<DEVPROPERTY, 1> BuildDevProperties(DriverProperties& config) {
+  std::array<DEVPROPERTY, 1> properties;
+  DEVPROPERTY& property = properties[0];
+  property.Type = DEVPROP_TYPE_BINARY;
+  property.CompKey.Store = DEVPROP_STORE_SYSTEM;
+  property.CompKey.Key = DisplayConfigurationProperty;
+  property.CompKey.LocaleName = NULL;
+  property.BufferSize = sizeof(DriverProperties);
+  property.Buffer = &config;
+  return properties;
+}
 
+}  // namespace
+
+DisplayDriverController::~DisplayDriverController() {
+  Reset();
+}
+
+// static
+bool DisplayDriverController::IsDriverInstalled() {
+  HDEVINFO hdevinfo =
+      SetupDiGetClassDevsW(&GUID_DEVCLASS_DISPLAY, NULL, NULL, 0);
+  if (hdevinfo == INVALID_HANDLE_VALUE) {
+    return false;
+  }
+  DWORD error = 0;
+  DWORD index = 0;
+  do {
+    SP_DEVINFO_DATA devinfo;
+    devinfo.cbSize = sizeof(devinfo);
+    if (!SetupDiEnumDeviceInfo(hdevinfo, index++, &devinfo)) {
+      break;
+    }
+    if (!SetupDiBuildDriverInfoList(hdevinfo, &devinfo, SPDIT_COMPATDRIVER)) {
+      break;
+    }
+    SP_DRVINFO_DATA_W drvdata;
+    drvdata.cbSize = sizeof(SP_DRVINFO_DATA_W);
+    if (!SetupDiEnumDriverInfoW(hdevinfo, &devinfo, SPDIT_COMPATDRIVER, 0,
+                                &drvdata)) {
+      error = GetLastError();
+      if (error != ERROR_NO_MORE_ITEMS) {
+        break;
+      }
+    }
+    if (std::wstring(drvdata.Description) == kDriverDeviceName &&
+        std::wstring(drvdata.MfgName) == kDriverManufacturer) {
+      SetupDiDestroyDeviceInfoList(hdevinfo);
+      return true;
+    }
+  } while (error != ERROR_NO_MORE_ITEMS);
+  SetupDiDestroyDeviceInfoList(hdevinfo);
+  return false;
+}
+
+bool DisplayDriverController::SetDisplayConfig(DriverProperties config) {
+  if (device_handle_ == nullptr) {
+    return Initialize(config);
+  }
+  std::array<DEVPROPERTY, 1> properties = BuildDevProperties(config);
+  HRESULT hr =
+      SwDevicePropertySet(device_handle_, properties.size(), properties.data());
+  return !FAILED(hr);
+}
+
+void DisplayDriverController::Reset() {
+  if (device_handle_ != nullptr) {
+    SwDeviceClose(device_handle_);
+    device_handle_ = nullptr;
+  }
+}
+
+bool DisplayDriverController::Initialize(DriverProperties config) {
   HANDLE hEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
   HSWDEVICE hSwDevice;
   SW_DEVICE_CREATE_INFO createInfo = {0};
-  PCWSTR description = L"Chromium Virtual Display Driver";
-
-  // These match the Pnp id's in the inf file so OS will load the driver when
-  // the device is created
-  PCWSTR instanceId = L"ChromiumVirtualDisplayDriver";
-  PCWSTR hardwareIds = L"ChromiumVirtualDisplayDriver\0\0";
-  PCWSTR compatibleIds = L"ChromiumVirtualDisplayDriver\0\0";
 
   createInfo.cbSize = sizeof(createInfo);
-  createInfo.pszzCompatibleIds = compatibleIds;
-  createInfo.pszInstanceId = instanceId;
-  createInfo.pszzHardwareIds = hardwareIds;
-  createInfo.pszDeviceDescription = description;
+  createInfo.pszzCompatibleIds = kDriverNameList;
+  createInfo.pszInstanceId = kDriverName;
+  createInfo.pszzHardwareIds = kDriverNameList;
+  createInfo.pszDeviceDescription = kDriverDescription;
 
   createInfo.CapabilityFlags = SWDeviceCapabilitiesRemovable |
                                SWDeviceCapabilitiesSilentInstall |
                                SWDeviceCapabilitiesDriverRequired;
 
-  // Set configuration properties to send to the driver.
-  display::test::DriverProperties p;
-
-  DEVPROPERTY properties[1];
-  DEVPROPERTY& property = properties[0];
-  property.Type = DEVPROP_TYPE_BINARY;
-  property.CompKey.Store = DEVPROP_STORE_SYSTEM;
-  property.CompKey.Key = display::test::DisplayConfigurationProperty;
-  property.CompKey.LocaleName = NULL;
-  property.BufferSize = sizeof(display::test::DriverProperties);
-  property.Buffer = &p;
-
+  std::array<DEVPROPERTY, 1> properties = BuildDevProperties(config);
   // Create the device
-  HRESULT hr = SwDeviceCreate(L"ChromiumVirtualDisplayDriver",
-                              L"HTREE\\ROOT\\0", &createInfo, 1, properties,
+  HRESULT hr = SwDeviceCreate(kDriverName, L"HTREE\\ROOT\\0", &createInfo,
+                              properties.size(), properties.data(),
                               CreationCallback, &hEvent, &hSwDevice);
   if (FAILED(hr)) {
-    printf("SwDeviceCreate failed with 0x%lx\n", hr);
-    return 1;
+    LOG(ERROR) << "SwDeviceCreate failed: " << hr;
+    return false;
   }
-
   // Wait for callback to signal that the device has been created
-  printf("Waiting for device to be created....\n");
   DWORD waitResult = WaitForSingleObject(hEvent, 10 * 1000);
   if (waitResult != WAIT_OBJECT_0) {
-    printf("Wait for device creation failed\n");
-    return 1;
+    LOG(ERROR) << "WaitForSingleObject failed: " << waitResult;
+    return false;
   }
-  printf("Device created\n\n");
-
-  bool bExit = false;
-  int monitor_id = 0;
-  do {
-    printf(
-        "Press 'x' to exit and destroy the software device, or 'a' to add a "
-        "1024x768 monitor, 'A' to add a 1920x1080 monitor, or enter a monitor "
-        "ID from the following list to destroy it:\n");
-    std::vector<display::test::MonitorConfig> current_configs =
-        p.requested_configs();
-    for (const auto& requested : current_configs) {
-      printf("%i\n", requested.product_code());
-    }
-    // Wait for key press
-    int key = _getch();
-
-    if (key == 'x' || key == 'X') {
-      bExit = true;
-    }
-    if (key == 'a' || key == 'A') {
-      if (current_configs.size() >=
-          display::test::DriverProperties::kMaxMonitors) {
-        printf("Error: Max number of monitors reached.");
-        break;
-      }
-      auto mode = display::test::MonitorConfig::k1024x768;
-      if (key == 'A') {
-        mode = display::test::MonitorConfig::k1920x1080;
-      }
-      mode.set_product_code((monitor_id++) %
-                            std::numeric_limits<unsigned short>::max());
-      current_configs.push_back(mode);
-      p = display::test::DriverProperties(current_configs);
-      property.Buffer = &p;
-      SwDevicePropertySet(hSwDevice, 1, properties);
-      printf("Properties updated.\n");
-    }
-    if (key >= '0' && key <= '9') {
-      std::erase_if(current_configs,
-                    [&](auto& c) { return c.product_code() == key - '0'; });
-      p = display::test::DriverProperties(current_configs);
-      property.Buffer = &p;
-      SwDevicePropertySet(hSwDevice, 1, properties);
-      printf("Properties updated.\n");
-    }
-  } while (!bExit);
-
-  // Stop the device, this will cause the sample to be unloaded
-  SwDeviceClose(hSwDevice);
-
-  return 0;
+  device_handle_ = hSwDevice;
+  return true;
 }
+
+}  // namespace display::test

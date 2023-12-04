@@ -656,9 +656,6 @@ group("gn_all") {
         "//tools/accessibility/inspect:ax_dump_events",
         "//tools/accessibility/inspect:ax_dump_tree",
         "//tools/win/chromeexts:chromeexts",
-
-        # Windows virtual display driver testing executable.
-        "//third_party/win_virtual_display/controller:display_driver_controller_executable",
       ]
 
       # TODO(thakis): Enable this in cross builds, https://crbug.com/799827

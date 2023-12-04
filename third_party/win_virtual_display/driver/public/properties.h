@@ -37,6 +37,9 @@ DEFINE_DEVPROPKEY(DisplayConfigurationProperty,
                   0xf7,
                   2);
 
+// Manufacturer code for monitors created by the driver ("CVD").
+inline constexpr UINT16 kDriverMonitorManufacturer = 0xEC4;
+
 // Holds configuration for a virtual display.
 class MonitorConfig {
  public:

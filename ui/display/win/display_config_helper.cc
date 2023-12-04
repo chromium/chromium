@@ -31,6 +31,16 @@ std::vector<DISPLAYCONFIG_PATH_INFO> GetDisplayConfigPathInfos() {
   return {};
 }
 
+bool GetTargetDeviceName(const DISPLAYCONFIG_PATH_INFO& path,
+                         DISPLAYCONFIG_TARGET_DEVICE_NAME* device_name) {
+  device_name->header.type = DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME;
+  device_name->header.size = sizeof(DISPLAYCONFIG_TARGET_DEVICE_NAME);
+  device_name->header.adapterId = path.targetInfo.adapterId;
+  device_name->header.id = path.targetInfo.id;
+  LONG result = DisplayConfigGetDeviceInfo(&device_name->header);
+  return result == ERROR_SUCCESS;
+}
+
 }  // namespace
 
 absl::optional<DISPLAYCONFIG_PATH_INFO> GetDisplayConfigPathInfo(
@@ -55,6 +65,24 @@ absl::optional<DISPLAYCONFIG_PATH_INFO> GetDisplayConfigPathInfo(
     }
   }
   return absl::nullopt;
+}
+
+UINT16 GetDisplayManufacturerId(
+    const absl::optional<DISPLAYCONFIG_PATH_INFO>& path) {
+  DISPLAYCONFIG_TARGET_DEVICE_NAME targetName = {};
+  if (path && GetTargetDeviceName(*path, &targetName)) {
+    return targetName.edidManufactureId;
+  }
+  return 0;
+}
+
+UINT16 GetDisplayProductCode(
+    const absl::optional<DISPLAYCONFIG_PATH_INFO>& path) {
+  DISPLAYCONFIG_TARGET_DEVICE_NAME targetName = {};
+  if (path && GetTargetDeviceName(*path, &targetName)) {
+    return targetName.edidProductCodeId;
+  }
+  return 0;
 }
 
 }  // namespace display::win
