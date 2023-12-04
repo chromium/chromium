@@ -57,6 +57,29 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
   bool HasObserver(Observer* observer) const;
 
  private:
+  // Stores the count of the active client and enables the system wake lock when
+  // the count is not 0.
+  class ActiveClientCount {
+   public:
+    ActiveClientCount();
+    ~ActiveClientCount();
+
+    // Setter/getter method for the active client count.
+    void Set(size_t value);
+    size_t Get() const;
+
+   private:
+    // Enables/Disables the system wake lock.
+    void EnableWakeLock();
+    void DisableWakeLock();
+
+    // The value of the active client count.
+    size_t value_ = 0;
+
+    // The wake lock id. It has values if and only if the wake lock is enabled.
+    absl::optional<int> wake_lock_id_ = std::nullopt;
+  };
+
   // ShillPropertyChangedObserver overrides
   void OnPropertyChanged(const std::string& key,
                          const base::Value& value) override;
@@ -80,7 +103,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
   absl::optional<hotspot_config::mojom::DisableReason> disable_reason_ =
       absl::nullopt;
 
-  size_t active_client_count_ = 0;
+  ActiveClientCount active_client_count_;
 
   base::ObserverList<Observer> observer_list_;
   base::WeakPtrFactory<HotspotStateHandler> weak_ptr_factory_{this};

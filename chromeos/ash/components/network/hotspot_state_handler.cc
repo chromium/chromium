@@ -9,6 +9,7 @@
 #include "chromeos/ash/components/network/hotspot_util.h"
 #include "chromeos/ash/components/network/metrics/hotspot_metrics_helper.h"
 #include "chromeos/ash/components/network/network_event_log.h"
+#include "chromeos/dbus/power/power_policy_controller.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace ash {
@@ -27,6 +28,42 @@ size_t GetActiveClientCount(const base::Value::Dict& status) {
 }
 
 }  // namespace
+
+HotspotStateHandler::ActiveClientCount::ActiveClientCount() = default;
+
+HotspotStateHandler::ActiveClientCount::~ActiveClientCount() {
+  DisableWakeLock();
+}
+
+void HotspotStateHandler::ActiveClientCount::Set(size_t value) {
+  value_ = value;
+  if (value_ > 0) {
+    EnableWakeLock();
+  } else {
+    DisableWakeLock();
+  }
+}
+
+size_t HotspotStateHandler::ActiveClientCount::Get() const {
+  return value_;
+}
+
+void HotspotStateHandler::ActiveClientCount::EnableWakeLock() {
+  if (!wake_lock_id_.has_value()) {
+    NET_LOG(EVENT) << "Enable wake lock";
+    wake_lock_id_ = chromeos::PowerPolicyController::Get()->AddSystemWakeLock(
+        chromeos::PowerPolicyController::WakeLockReason::REASON_OTHER,
+        "Clients connected to hotspot");
+  }
+}
+
+void HotspotStateHandler::ActiveClientCount::DisableWakeLock() {
+  if (wake_lock_id_.has_value()) {
+    NET_LOG(EVENT) << "Disable wake lock";
+    chromeos::PowerPolicyController::Get()->RemoveWakeLock(*wake_lock_id_);
+    wake_lock_id_.reset();
+  }
+}
 
 HotspotStateHandler::HotspotStateHandler() = default;
 
@@ -68,7 +105,7 @@ HotspotStateHandler::GetDisableReason() const {
 }
 
 size_t HotspotStateHandler::GetHotspotActiveClientCount() const {
-  return active_client_count_;
+  return active_client_count_.Get();
 }
 
 void HotspotStateHandler::OnPropertyChanged(const std::string& key,
@@ -114,14 +151,16 @@ void HotspotStateHandler::UpdateHotspotStatus(const base::Value::Dict& status) {
   }
 
   if (mojom_state != hotspot_config::mojom::HotspotState::kEnabled) {
-    active_client_count_ = 0;
+    active_client_count_.Set(0);
     return;
   }
   size_t active_client_count = GetActiveClientCount(status);
-  if (active_client_count == active_client_count_)
+  if (active_client_count == active_client_count_.Get()) {
     return;
+  }
 
-  active_client_count_ = active_client_count;
+  active_client_count_.Set(active_client_count);
+
   NotifyHotspotStatusChanged();
 }
 
@@ -144,8 +183,9 @@ void HotspotStateHandler::UpdateDisableReason(const base::Value::Dict& status) {
 }
 
 void HotspotStateHandler::NotifyHotspotStatusChanged() {
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.OnHotspotStatusChanged();
+  }
 }
 
 }  // namespace ash
