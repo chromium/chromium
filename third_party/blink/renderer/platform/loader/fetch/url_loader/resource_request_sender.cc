@@ -798,6 +798,10 @@ void ResourceRequestSender::OnFollowRedirectCallback(
   if (!request_info_) {
     return;
   }
+  if (request_info_->net_error != net::ERR_IO_PENDING) {
+    // The request has been completed.
+    return;
+  }
 
   // TODO(yoav): If request_info doesn't change above, we could avoid this
   // copy.
