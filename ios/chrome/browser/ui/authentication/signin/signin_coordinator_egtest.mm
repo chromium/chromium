@@ -72,7 +72,8 @@ using testing::ButtonWithAccessibilityLabel;
 
 typedef NS_ENUM(NSInteger, OpenSigninMethod) {
   OpenSigninMethodFromSettings,
-  OpenSigninMethodFromBookmarks,
+  OpenPrimarySigninMethodFromBookmarks,
+  OpenSecondarySigninMethodFromBookmarks,
   OpenSigninMethodFromRecentTabs,
   OpenSigninMethodFromTabSwitcher,
 };
@@ -204,7 +205,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   AppLaunchConfiguration config;
   if ([self isRunningTest:@selector
             (testDismissAdvancedSigninBookmarksFromAdvancedSigninSettings)] ||
-      [self isRunningTest:@selector(testDismissSigninFromBookmarks)] ||
       [self isRunningTest:@selector(testSignInCancelFromBookmarks)] ||
       [self isRunningTest:@selector(testSigninPromoClosedWhenSyncOff)] ||
       [self isRunningTest:@selector(testSigninPromoWhenSyncOff)]) {
@@ -221,11 +221,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
             (testDismissAdvancedSigninSettingsFromAdvancedSigninSettings)] ||
       [self isRunningTest:@selector
             (testDismissSigninFromRecentTabsFromAdvancedSigninSettings)] ||
-      [self isRunningTest:@selector(testDismissSigninFromTabSwitcher)] ||
       [self isRunningTest:@selector
             (testDismissSigninFromTabSwitcherFromAdvancedSigninSettings)] ||
-      [self isRunningTest:@selector
-            (testDismissSigninFromTabSwitcherFromIdentityPicker)] ||
       [self isRunningTest:@selector(testSignInCancelAddAccount)] ||
       [self isRunningTest:@selector(testSignInFromSyncOffLink)] ||
       [self isRunningTest:@selector(testSigninPromoWhenSyncOff)] ||
@@ -253,8 +250,12 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       [self isRunningTest:@selector
             (testSignOutForSupervisedUserClearAccountData)] ||
       [self isRunningTest:@selector
+            (testDismissSigninFromTabSwitcherFromIdentityPicker)] ||
+      [self isRunningTest:@selector(testDismissSigninFromTabSwitcher)] ||
+      [self isRunningTest:@selector
             (testOpenSigninSheetFromNTPIfHasDeviceAccount)] ||
       [self isRunningTest:@selector(testSignInCancelFromBookmarks)] ||
+      [self isRunningTest:@selector(testDismissSigninFromBookmarks)] ||
       [self isRunningTest:@selector
             (testOpenManageAddAccountFromNTPWhenSyncDisabledByPolicy)] ||
       [self isRunningTest:@selector
@@ -651,9 +652,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // Tests to dismiss sign-in by opening an URL from another app.
 // Sign-in opened from: bookmark view.
 // Interrupted at: user consent.
-// kEnableBookmarksAccountStorage is disabled.
 - (void)testDismissSigninFromBookmarks {
-  [self assertOpenURLWhenSigninFromView:OpenSigninMethodFromBookmarks
+  [self assertOpenURLWhenSigninFromView:OpenSecondarySigninMethodFromBookmarks
                         tapSettingsLink:NO];
 }
 
@@ -662,7 +662,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // Interrupted at: advanced sign-in.
 // kEnableBookmarksAccountStorage is disabled.
 - (void)testDismissAdvancedSigninBookmarksFromAdvancedSigninSettings {
-  [self assertOpenURLWhenSigninFromView:OpenSigninMethodFromBookmarks
+  [self assertOpenURLWhenSigninFromView:OpenPrimarySigninMethodFromBookmarks
                         tapSettingsLink:YES];
 }
 
@@ -686,9 +686,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // Tests to dismiss sign-in by opening an URL from another app.
 // Sign-in opened from: tab switcher.
 // Interrupted at: user consent.
-// kReplaceSyncPromosWithSignInPromos is disabled.
-// TODO(crbug.com/1477295): Evaluate if the test is relevant with
-// kReplaceSyncPromosWithSignInPromos enabled.
 - (void)testDismissSigninFromTabSwitcher {
   [self assertOpenURLWhenSigninFromView:OpenSigninMethodFromTabSwitcher
                         tapSettingsLink:NO];
@@ -706,9 +703,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // Tests to dismiss sign-in by opening an URL from another app.
 // Sign-in opened from: tab switcher.
 // Interrupted at: identity picker.
-// kReplaceSyncPromosWithSignInPromos is disabled.
-// TODO(crbug.com/1477295): Evaluate if the test is relevant with
-// kReplaceSyncPromosWithSignInPromos enabled.
 - (void)testDismissSigninFromTabSwitcherFromIdentityPicker {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -768,11 +762,18 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       [ChromeEarlGreyUI openSettingsMenu];
       [ChromeEarlGreyUI tapSettingsMenuButton:SettingsSignInRowMatcher()];
       break;
-    case OpenSigninMethodFromBookmarks:
+    case OpenPrimarySigninMethodFromBookmarks:
       [ChromeEarlGreyUI openToolsMenu];
       [ChromeEarlGreyUI
           tapToolsMenuButton:chrome_test_util::BookmarksDestinationButton()];
       [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
+          performAction:grey_tap()];
+      break;
+    case OpenSecondarySigninMethodFromBookmarks:
+      [ChromeEarlGreyUI openToolsMenu];
+      [ChromeEarlGreyUI
+          tapToolsMenuButton:chrome_test_util::BookmarksDestinationButton()];
+      [[EarlGrey selectElementWithMatcher:SecondarySignInButton()]
           performAction:grey_tap()];
       break;
     case OpenSigninMethodFromRecentTabs:
@@ -795,8 +796,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // `tapSettingsLink` if YES, the setting link is tapped before opening the URL.
 - (void)assertOpenURLWhenSigninFromView:(OpenSigninMethod)openSigninMethod
                         tapSettingsLink:(BOOL)tapSettingsLink {
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
   [self openSigninFromView:openSigninMethod tapSettingsLink:tapSettingsLink];
   // Open the URL as if it was opened from another app.
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
