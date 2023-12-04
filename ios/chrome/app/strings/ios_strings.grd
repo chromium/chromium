@@ -4329,6 +4329,12 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_WHATS_NEW_MINI_MAPS_SCREENSHOT_TEXT_OPEN_IN_APP" desc="Text in image displaying Open in App. [iOS only]">
         Open in App…
       </message>
+      <message name="IDS_IOS_SEARCH_ENGINE_ACCESSIBILITY_EXPAND_SNIPPET" desc="Accessibility action to expand the search engine description.">
+        Tap to expand
+      </message>
+      <message name="IDS_IOS_SEARCH_ENGINE_ACCESSIBILITY_COLLAPSE_SNIPPET" desc="Accessibility action to collapse the search engine description.">
+        Tap to collapse
+      </message>
       <message name="IDS_IOS_SIGN_IN_INVALID_ACCOUNT_MESSAGE" desc="Message of the alert displayed when the user sign in with a restricted account.">
         Your organization allows you to sign in only with certain accounts.
       </message>
