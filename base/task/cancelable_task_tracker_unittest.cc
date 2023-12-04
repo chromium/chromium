@@ -303,7 +303,7 @@ class CancelableTaskTrackerDeathTest : public CancelableTaskTrackerTest {
  protected:
   CancelableTaskTrackerDeathTest() {
     // The default style "fast" does not support multi-threaded tests.
-    ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+    GTEST_FLAG_SET(death_test_style, "threadsafe");
   }
 };
 

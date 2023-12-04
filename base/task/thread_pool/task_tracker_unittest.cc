@@ -1245,7 +1245,7 @@ TEST(ThreadPoolTaskTrackerWaitAllowedTest, WaitAllowed) {
   // Run the test on the separate thread since it is not possible to reset the
   // "wait allowed" bit of a thread without being a friend of
   // ThreadRestrictions.
-  testing::GTEST_FLAG(death_test_style) = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
   WaitAllowedTestThread wait_allowed_test_thread;
   wait_allowed_test_thread.Start();
   wait_allowed_test_thread.Join();

@@ -179,7 +179,7 @@ TEST_F(PooledSingleThreadTaskRunnerManagerTest, RunsTasksInCurrentSequence) {
 
 TEST_F(PooledSingleThreadTaskRunnerManagerTest,
        SharedWithBaseSyncPrimitivesDCHECKs) {
-  testing::GTEST_FLAG(death_test_style) = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
   EXPECT_DCHECK_DEATH({
     single_thread_task_runner_manager_->CreateSingleThreadTaskRunner(
         {WithBaseSyncPrimitives()}, SingleThreadTaskRunnerThreadMode::SHARED);
