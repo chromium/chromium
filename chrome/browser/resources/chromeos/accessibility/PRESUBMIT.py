@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import sys
+import os
 
 
 def _CheckNoJsChanges(input_api, output_api):
@@ -15,11 +15,12 @@ def _CheckNoJsChanges(input_api, output_api):
   results = []
   for f in input_api.AffectedFiles(False):  # ignores deleted files.
     path = f.LocalPath()
+    filename = os.path.basename(path)
     if (
         path.endswith("js")
         and not path.endswith("test.js")
         and path.find("braille_ime") == -1
-        and not path[0] == "."
+        and not filename[0] == "."
     ):
       results.append(
           output_api.PresubmitError(

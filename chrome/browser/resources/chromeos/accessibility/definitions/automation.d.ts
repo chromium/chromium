@@ -2,18 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @fileoverview Definitions for chrome.automation API. */
-// TODO(crbug.com/1203307): Auto-generate this file.
+/**
+ * @fileoverview Definitions for chrome.automation API
+ * Generated from: extensions/common/api/automation.idl
+ * run `tools/json_schema_compiler/compiler.py
+ * extensions/common/api/automation.idl -g ts_definitions` to regenerate.
+ */
+
+
 
 declare namespace chrome {
   export namespace automation {
+
     export enum EventType {
       ACCESS_KEY_CHANGED = 'accessKeyChanged',
       ACTIVE_DESCENDANT_CHANGED = 'activeDescendantChanged',
       ALERT = 'alert',
-      // TODO(crbug.com/1464633) Fully remove ARIA_ATTRIBUTE_CHANGED_DEPRECATED
-      // starting in 122, because although it was removed in 118, it is still
-      // present in earlier versions of LaCros.
       ARIA_ATTRIBUTE_CHANGED_DEPRECATED = 'ariaAttributeChangedDeprecated',
       ARIA_CURRENT_CHANGED = 'ariaCurrentChanged',
       ATOMIC_CHANGED = 'atomicChanged',
@@ -87,11 +91,12 @@ declare namespace chrome {
       MULTISELECTABLE_STATE_CHANGED = 'multiselectableStateChanged',
       NAME_CHANGED = 'nameChanged',
       OBJECT_ATTRIBUTE_CHANGED = 'objectAttributeChanged',
+      ORIENTATION_CHANGED = 'orientationChanged',
       OTHER_ATTRIBUTE_CHANGED = 'otherAttributeChanged',
       PARENT_CHANGED = 'parentChanged',
       PLACEHOLDER_CHANGED = 'placeholderChanged',
       PORTAL_ACTIVATED = 'portalActivated',
-      POSITION_IN_SET = 'positionInSet',
+      POSITION_IN_SET_CHANGED = 'positionInSetChanged',
       RANGE_VALUE_CHANGED = 'rangeValueChanged',
       RANGE_VALUE_MAX_CHANGED = 'rangeValueMaxChanged',
       RANGE_VALUE_MIN_CHANGED = 'rangeValueMinChanged',
@@ -106,18 +111,18 @@ declare namespace chrome {
       SCROLL_HORIZONTAL_POSITION_CHANGED = 'scrollHorizontalPositionChanged',
       SCROLL_POSITION_CHANGED = 'scrollPositionChanged',
       SCROLL_VERTICAL_POSITION_CHANGED = 'scrollVerticalPositionChanged',
-      SCOLLED_TO_ANCHOR = 'scrollToAnchor',
+      SCROLLED_TO_ANCHOR = 'scrolledToAnchor',
       SELECTED_CHANGED = 'selectedChanged',
       SELECTED_CHILDREN_CHANGED = 'selectedChildrenChanged',
       SELECTED_VALUE_CHANGED = 'selectedValueChanged',
       SELECTION = 'selection',
       SELECTION_ADD = 'selectionAdd',
       SELECTION_REMOVE = 'selectionRemove',
-      SET_SIZE_CHANGED = 'setSizeChange',
+      SET_SIZE_CHANGED = 'setSizeChanged',
       SHOW = 'show',
       SORT_CHANGED = 'sortChanged',
       STATE_CHANGED = 'stateChanged',
-      SUBTREE_CHANGED = 'subtreeChanged',
+      SUBTREE_CREATED = 'subtreeCreated',
       TEXT_ATTRIBUTE_CHANGED = 'textAttributeChanged',
       TEXT_SELECTION_CHANGED = 'textSelectionChanged',
       TEXT_CHANGED = 'textChanged',
@@ -128,7 +133,7 @@ declare namespace chrome {
       VALUE_CHANGED = 'valueChanged',
       WINDOW_ACTIVATED = 'windowActivated',
       WINDOW_DEACTIVATED = 'windowDeactivated',
-      WINDOW_VISIBILITY_CHANGED = 'windowVisibilityChanged'
+      WINDOW_VISIBILITY_CHANGED = 'windowVisibilityChanged',
     }
 
     export enum RoleType {
@@ -169,10 +174,10 @@ declare namespace chrome {
       DETAILS = 'details',
       DIALOG = 'dialog',
       DIRECTORY = 'directory',
-      DISCLOSURE_TRIANGLE = 'disclosure_triangle',
+      DISCLOSURE_TRIANGLE = 'disclosureTriangle',
       DOC_ABSTRACT = 'docAbstract',
-      DOC_ACKNOWLEDGEMENTS = 'docAcknowledgements',
-      DOC_AFTERWARD = 'docAfterward',
+      DOC_ACKNOWLEDGMENTS = 'docAcknowledgments',
+      DOC_AFTERWORD = 'docAfterword',
       DOC_APPENDIX = 'docAppendix',
       DOC_BACK_LINK = 'docBackLink',
       DOC_BIBLIO_ENTRY = 'docBiblioEntry',
@@ -207,18 +212,18 @@ declare namespace chrome {
       DOC_PREFACE = 'docPreface',
       DOC_PROLOGUE = 'docPrologue',
       DOC_PULLQUOTE = 'docPullquote',
-      DOC_QNA = 'docQuna',
+      DOC_QNA = 'docQna',
       DOC_SUBTITLE = 'docSubtitle',
       DOC_TIP = 'docTip',
       DOC_TOC = 'docToc',
       DOCUMENT = 'document',
-      EMBEDDED_DOCUMENT = 'embeddedDocument',
+      EMBEDDED_OBJECT = 'embeddedObject',
       EMPHASIS = 'emphasis',
       FEED = 'feed',
       FIGCAPTION = 'figcaption',
       FIGURE = 'figure',
       FOOTER = 'footer',
-      FOTTER_AS_NON_LANDMARK = 'footerAsNonLandmark',
+      FOOTER_AS_NON_LANDMARK = 'footerAsNonLandmark',
       FORM = 'form',
       GENERIC_CONTAINER = 'genericContainer',
       GRAPHICS_DOCUMENT = 'graphicsDocument',
@@ -254,28 +259,28 @@ declare namespace chrome {
       MARK = 'mark',
       MARQUEE = 'marquee',
       MATH = 'math',
-      MATH_ML_FRACTION = 'mathMLFraction',
-      MATH_ML_IDENTIFIER = 'mathMLIdentifier',
-      MATH_ML_MATH = 'mathMLMath',
-      MATH_ML_MULTISCRIPTS = 'mathMLMultiscripts',
-      MATH_ML_NONE_SCRIPT = 'mathMLNoneScript',
-      MATH_ML_NUMBER = 'mathMLNumber',
-      MATH_ML_OPERATOR = 'mathMLOperator',
-      MATH_ML_OVER = 'mathMLOver',
-      MATH_ML_PRESCRIPT_DELIMITER = 'mathMLPrescriptDelimiter',
-      MATH_ML_ROOT = 'mathMLRoot',
-      MATH_ML_ROW = 'mathMLRow',
-      MATH_ML_SQUARE_ROOT = 'mathMLSquareRoot',
-      MATH_ML_STRING_LITERAL = 'mathMLStringLiteral',
-      MATH_ML_SUB = 'mathMLSub',
-      MATH_ML_SUB_SUP = 'mathMLSubSup',
-      MATH_ML_SUP = 'mathMLSup',
-      MATH_ML_TABLE = 'mathMLTable',
-      MATH_ML_TABLE_CELL = 'mathMLTableCell',
-      MATH_ML_TABLE_ROW = 'mathMLTableRow',
-      MATH_ML_TEXT = 'mathMLText',
-      MATH_ML_UNDER = 'mathMLUnder',
-      MATH_ML_UNDER_OVER = 'mathMLUnderOver',
+      MATH_MLFRACTION = 'mathMLFraction',
+      MATH_MLIDENTIFIER = 'mathMLIdentifier',
+      MATH_MLMATH = 'mathMLMath',
+      MATH_MLMULTISCRIPTS = 'mathMLMultiscripts',
+      MATH_MLNONE_SCRIPT = 'mathMLNoneScript',
+      MATH_MLNUMBER = 'mathMLNumber',
+      MATH_MLOPERATOR = 'mathMLOperator',
+      MATH_MLOVER = 'mathMLOver',
+      MATH_MLPRESCRIPT_DELIMITER = 'mathMLPrescriptDelimiter',
+      MATH_MLROOT = 'mathMLRoot',
+      MATH_MLROW = 'mathMLRow',
+      MATH_MLSQUARE_ROOT = 'mathMLSquareRoot',
+      MATH_MLSTRING_LITERAL = 'mathMLStringLiteral',
+      MATH_MLSUB = 'mathMLSub',
+      MATH_MLSUB_SUP = 'mathMLSubSup',
+      MATH_MLSUP = 'mathMLSup',
+      MATH_MLTABLE = 'mathMLTable',
+      MATH_MLTABLE_CELL = 'mathMLTableCell',
+      MATH_MLTABLE_ROW = 'mathMLTableRow',
+      MATH_MLTEXT = 'mathMLText',
+      MATH_MLUNDER = 'mathMLUnder',
+      MATH_MLUNDER_OVER = 'mathMLUnderOver',
       MENU = 'menu',
       MENU_BAR = 'menuBar',
       MENU_ITEM = 'menuItem',
@@ -396,7 +401,7 @@ declare namespace chrome {
       SCROLL_TO_POINT = 'scrollToPoint',
       SCROLL_TO_POSITION_AT_ROW_COLUMN = 'scrollToPositionAtRowColumn',
       SET_ACCESSIBILITY_FOCUS = 'setAccessibilityFocus',
-      SET_SCROLL_OFFSET = 'setSCrollOffset',
+      SET_SCROLL_OFFSET = 'setScrollOffset',
       SET_SELECTION = 'setSelection',
       SET_SEQUENTIAL_FOCUS_NAVIGATION_STARTING_POINT =
           'setSequentialFocusNavigationStartingPoint',
@@ -404,18 +409,19 @@ declare namespace chrome {
       SHOW_CONTEXT_MENU = 'showContextMenu',
       SIGNAL_END_OF_TEST = 'signalEndOfTest',
       SHOW_TOOLTIP = 'showTooltip',
+      STITCH_CHILD_TREE = 'stitchChildTree',
       START_DUCKING_MEDIA = 'startDuckingMedia',
       STOP_DUCKING_MEDIA = 'stopDuckingMedia',
       SUSPEND_MEDIA = 'suspendMedia',
     }
 
     export enum TreeChangeType {
-      NODE_CHANGED = 'nodeChanged',
       NODE_CREATED = 'nodeCreated',
-      NODE_REMOVED = 'nodeRemoved',
       SUBTREE_CREATED = 'subtreeCreated',
-      SUBTREE_UPDATE_END = 'subtreeUpdateEnd',
+      NODE_CHANGED = 'nodeChanged',
       TEXT_CHANGED = 'textChanged',
+      NODE_REMOVED = 'nodeRemoved',
+      SUBTREE_UPDATE_END = 'subtreeUpdateEnd',
     }
 
     export enum NameFromType {
@@ -424,6 +430,7 @@ declare namespace chrome {
       CAPTION = 'caption',
       CONTENTS = 'contents',
       PLACEHOLDER = 'placeholder',
+      POPOVER_ATTRIBUTE = 'popoverAttribute',
       RELATED_ELEMENT = 'relatedElement',
       TITLE = 'title',
       VALUE = 'value',
@@ -448,23 +455,23 @@ declare namespace chrome {
     }
 
     export enum HasPopup {
-      DIALOG = 'dialog',
       FALSE = 'false',
-      GRID = 'grid',
-      LISTBOX = 'listbox',
-      MENU = 'menu',
-      TREE = 'tree',
       TRUE = 'true',
+      MENU = 'menu',
+      LISTBOX = 'listbox',
+      TREE = 'tree',
+      GRID = 'grid',
+      DIALOG = 'dialog',
     }
 
     export enum AriaCurrentState {
-      DATE = 'date',
       FALSE = 'false',
-      LOCATION = 'location',
+      TRUE = 'true',
       PAGE = 'page',
       STEP = 'step',
+      LOCATION = 'location',
+      DATE = 'date',
       TIME = 'time',
-      TRUE = 'true',
     }
 
     export enum InvalidState {
@@ -485,12 +492,12 @@ declare namespace chrome {
     }
 
     export enum MarkerType {
-      ACTIVE_SUGGESTION = 'activeSuggestion',
-      GRAMMAR = 'grammar',
-      HIGHLIGHT = 'highlight',
       SPELLING = 'spelling',
-      SUGGESTION = 'suggestion',
+      GRAMMAR = 'grammar',
       TEXT_MATCH = 'textMatch',
+      ACTIVE_SUGGESTION = 'activeSuggestion',
+      SUGGESTION = 'suggestion',
+      HIGHLIGHT = 'highlight',
     }
 
     export enum IntentCommandType {
@@ -507,47 +514,47 @@ declare namespace chrome {
     }
 
     export enum IntentInputEventType {
-      DELETE_BY_CUT = 'deleteByCut',
-      DELETE_BY_DRAG = 'deleteByDrag',
-      DELETE_CONTENT_BACKWARD = 'deleteContentBackward',
-      DELETE_CONTENT_FORWARD = 'deleteContentForward',
-      DELETE_HARD_LINE_BACKWARD = 'deleteHardLineBackward',
-      DELETE_HARD_LINE_FORWARD = 'deleteHardLineForward',
-      DELETE_SOFT_LINE_BACKWARD = 'deleteSoftLineBackward',
-      DELETE_SOFT_LINE_FORWARD = 'deleteSoftLineForward',
+      INSERT_TEXT = 'insertText',
+      INSERT_LINE_BREAK = 'insertLineBreak',
+      INSERT_PARAGRAPH = 'insertParagraph',
+      INSERT_ORDERED_LIST = 'insertOrderedList',
+      INSERT_UNORDERED_LIST = 'insertUnorderedList',
+      INSERT_HORIZONTAL_RULE = 'insertHorizontalRule',
+      INSERT_FROM_PASTE = 'insertFromPaste',
+      INSERT_FROM_DROP = 'insertFromDrop',
+      INSERT_FROM_YANK = 'insertFromYank',
+      INSERT_TRANSPOSE = 'insertTranspose',
+      INSERT_REPLACEMENT_TEXT = 'insertReplacementText',
+      INSERT_COMPOSITION_TEXT = 'insertCompositionText',
       DELETE_WORD_BACKWARD = 'deleteWordBackward',
       DELETE_WORD_FORWARD = 'deleteWordForward',
+      DELETE_SOFT_LINE_BACKWARD = 'deleteSoftLineBackward',
+      DELETE_SOFT_LINE_FORWARD = 'deleteSoftLineForward',
+      DELETE_HARD_LINE_BACKWARD = 'deleteHardLineBackward',
+      DELETE_HARD_LINE_FORWARD = 'deleteHardLineForward',
+      DELETE_CONTENT_BACKWARD = 'deleteContentBackward',
+      DELETE_CONTENT_FORWARD = 'deleteContentForward',
+      DELETE_BY_CUT = 'deleteByCut',
+      DELETE_BY_DRAG = 'deleteByDrag',
+      HISTORY_UNDO = 'historyUndo',
+      HISTORY_REDO = 'historyRedo',
       FORMAT_BOLD = 'formatBold',
-      FORMAT_INDENT = 'formatIndent',
       FORMAT_ITALIC = 'formatItalic',
+      FORMAT_UNDERLINE = 'formatUnderline',
+      FORMAT_STRIKE_THROUGH = 'formatStrikeThrough',
+      FORMAT_SUPERSCRIPT = 'formatSuperscript',
+      FORMAT_SUBSCRIPT = 'formatSubscript',
       FORMAT_JUSTIFY_CENTER = 'formatJustifyCenter',
       FORMAT_JUSTIFY_FULL = 'formatJustifyFull',
-      FORMAT_JUSTIFY_LEFT = 'formatJustifyLeft',
       FORMAT_JUSTIFY_RIGHT = 'formatJustifyRight',
+      FORMAT_JUSTIFY_LEFT = 'formatJustifyLeft',
+      FORMAT_INDENT = 'formatIndent',
       FORMAT_OUTDENT = 'formatOutdent',
       FORMAT_REMOVE = 'formatRemove',
       FORMAT_SET_BLOCK_TEXT_DIRECTION = 'formatSetBlockTextDirection',
-      FORMAT_STRIKE_THROUGH = 'formatStrikeThrough',
-      FORMAT_SUBSCRIPT = 'formatSubscript',
-      FORMAT_SUPERSCRIPT = 'formatSuperscript',
-      FORMAT_UNDERLINE = 'formatUnderline',
-      HISTORY_REDO = 'historyRedo',
-      HISTORY_UNDO = 'historyUndo',
-      INSERT_COMPOSITION_TEXT = 'insertCompositionText',
-      INSERT_FROM_DROP = 'insertFromDrop',
-      INSERT_FROM_PASTE = 'insertFromPaste',
-      INSERT_FROM_YANK = 'insertFromYank',
-      INSERT_HORIZONTAL_RULE = 'insertHorizontalRule',
-      INSERT_LINE_BREAK = 'insertLineBreak',
-      INSERT_ORDERED_LIST = 'insertOrderedList',
-      INSERT_PARAGRAPH = 'insertParagraph',
-      INSERT_REPLACEMENT_TEXT = 'insertReplacementText',
-      INSERT_TEXT = 'insertText',
-      INSERT_TRANSPOSE = 'insertTranspose',
-      INSERT_UNORDERED_LIST = 'insertUnorderedList',
     }
 
-    enum IntentTextBoundaryType {
+    export enum IntentTextBoundaryType {
       CHARACTER = 'character',
       FORMAT_END = 'formatEnd',
       FORMAT_START = 'formatStart',
@@ -561,9 +568,9 @@ declare namespace chrome {
       PAGE_START_OR_END = 'pageStartOrEnd',
       PARAGRAPH_END = 'paragraphEnd',
       PARAGRAPH_START = 'paragraphStart',
-      PARAGRAPH_START_OR_END = 'paragraphStartOrEnd',
       PARAGRAPH_START_SKIPPING_EMPTY_PARAGRAPHS =
           'paragraphStartSkippingEmptyParagraphs',
+      PARAGRAPH_START_OR_END = 'paragraphStartOrEnd',
       SENTENCE_END = 'sentenceEnd',
       SENTENCE_START = 'sentenceStart',
       SENTENCE_START_OR_END = 'sentenceStartOrEnd',
@@ -579,10 +586,10 @@ declare namespace chrome {
     }
 
     export enum SortDirectionType {
+      UNSORTED = 'unsorted',
       ASCENDING = 'ascending',
       DESCENDING = 'descending',
       OTHER = 'other',
-      UNSORTED = 'unsorted',
     }
 
     export enum PositionType {
@@ -591,48 +598,40 @@ declare namespace chrome {
       TREE = 'tree',
     }
 
-    export enum TreeChangeObserverFilter {
-      ALL_TREE_CHANGES = 'allTreeChanges',
-      LIVE_REGION_TREE_CHANGES = 'liveRegionTreeChanges',
-      NO_TREE_CHANGES = 'noTreeChanges',
-      TEXT_MARKER_CHANGES = 'textMarkerChanges',
-    }
-
     export interface Rect {
       left: number;
-      height: number;
       top: number;
       width: number;
+      height: number;
     }
 
     export interface FindParams {
-      attributes?: object;
       role?: RoleType;
-      state?: object;
+      state?: {[key: string]: any};
+      attributes?: {[key: string]: any};
     }
 
     export interface SetDocumentSelectionParams {
-      anchorObject: AutomationNode;
+      anchorObject: {[key: string]: any};
       anchorOffset: number;
-      focusObject: AutomationNode;
+      focusObject: {[key: string]: any};
       focusOffset: number;
     }
 
     export interface AutomationIntent {
       command: IntentCommandType;
-      moveDirection: IntentMoveDirectionType;
       textBoundary: IntentTextBoundaryType;
+      moveDirection: IntentMoveDirectionType;
     }
 
     export interface AutomationEvent {
-      eventFrom: string;
-      intents: AutomationIntent[];
-      mouseX?: number;
-      mouseY?: number;
       target: AutomationNode;
       type: EventType;
-
-      stopPropagation(): void;
+      eventFrom: string;
+      mouseX: number;
+      mouseY: number;
+      intents: AutomationIntent[];
+      stopPropagation: () => void;
     }
 
     export interface TreeChange {
@@ -640,299 +639,312 @@ declare namespace chrome {
       type: TreeChangeType;
     }
 
+    export enum TreeChangeObserverFilter {
+      NO_TREE_CHANGES = 'noTreeChanges',
+      LIVE_REGION_TREE_CHANGES = 'liveRegionTreeChanges',
+      TEXT_MARKER_CHANGES = 'textMarkerChanges',
+      ALL_TREE_CHANGES = 'allTreeChanges',
+    }
+
     export interface CustomAction {
-      description: string;
       id: number;
+      description: string;
     }
 
     export interface Marker {
-      endOffset: number;
-      flags: {[key in MarkerType]: boolean;};
       startOffset: number;
+      endOffset: number;
+      flags: {[key: string]: any};
     }
 
     export interface AutomationPosition {
-      affinity: string;
-      childIndex?: number;
       node?: AutomationNode;
-      textOffset?: number;
-
-      asLeafTextPosition(): void;
-      asTextPosition(): void;
-      asTreePosition(): void;
-      atEndOfAnchor(): boolean;
-      atEndOfDocument(): boolean;
-      atEndOfFormat(): boolean;
-      atEndOfLine(): boolean;
-      atEndOfPage(): boolean;
-      atEndOfParagraph(): boolean;
-      atEndOfWord(): boolean;
-      atStartOfAnchor(): boolean;
-      atStartOfDocument(): boolean;
-      atStartOfFormat(): boolean;
-      atStartOfLine(): boolean;
-      atStartOfPage(): boolean;
-      atStartOfParagraph(): boolean;
-      atStartOfWord(): boolean;
-      getText(): string;
-      isInLineBreak(): boolean;
-      isInTextObject(): boolean;
-      isInWhiteSpace(): boolean;
-      isLeafTextPosition(): boolean;
-      isNullPosition(): boolean;
-      isTextPosition(): boolean;
-      isTreePosition(): boolean;
-      isValid(): boolean;
-      moveToNextAnchorPosition(): void;
-      moveToNextCharacterPosition(): void;
-      moveToNextFormatEndPosition(): void;
-      moveToNextFormatStartPosition(): void;
-      moveToNextLeafTextPosition(): void;
-      moveToNextLeafTreePosition(): void;
-      moveToNextLineEndPosition(): void;
-      moveToNextLineStartPosition(): void;
-      moveToNextPageEndPosition(): void;
-      moveToNextPageStartPosition(): void;
-      moveToNextParagraphEndPosition(): void;
-      moveToNextParagraphStartPosition(): void;
-      moveToNextWordEndPosition(): void;
-      moveToNextWordStartPosition(): void;
-      moveToParentPosition(): void;
-      moveToPositionAtEndOfAnchor(): void;
-      moveToPositionAtEndOfDocument(): void;
-      moveToPositionAtStartOfAnchor(): void;
-      moveToPositionAtStartOfDocument(): void;
-      moveToPreviousAnchorPosition(): void;
-      moveToPreviousCharacterPosition(): void;
-      moveToPreviousFormatEndPosition(): void;
-      moveToPreviousFormatStartPosition(): void;
-      moveToPreviousLeafTextPosition(): void;
-      moveToPreviousLeafTreePosition(): void;
-      moveToPreviousLineEndPosition(): void;
-      moveToPreviousLineStartPosition(): void;
-      moveToPreviousPageEndPosition(): void;
-      moveToPreviousPageStartPosition(): void;
-      moveToPreviousParagraphEndPosition(): void;
-      moveToPreviousParagraphStartPosition(): void;
-      moveToPreviousWordStartPosition(): void;
-      moveToPreviousWordEndPosition(): void;
+      childIndex: number;
+      textOffset: number;
+      affinity: string;
+      isNullPosition: () => boolean;
+      isTreePosition: () => boolean;
+      isTextPosition: () => boolean;
+      isLeafTextPosition: () => boolean;
+      atStartOfAnchor: () => boolean;
+      atEndOfAnchor: () => boolean;
+      atStartOfWord: () => boolean;
+      atEndOfWord: () => boolean;
+      atStartOfLine: () => boolean;
+      atEndOfLine: () => boolean;
+      atStartOfParagraph: () => boolean;
+      atEndOfParagraph: () => boolean;
+      atStartOfPage: () => boolean;
+      atEndOfPage: () => boolean;
+      atStartOfFormat: () => boolean;
+      atEndOfFormat: () => boolean;
+      atStartOfDocument: () => boolean;
+      atEndOfDocument: () => boolean;
+      asTreePosition: () => void;
+      asTextPosition: () => void;
+      asLeafTextPosition: () => void;
+      moveToPositionAtStartOfAnchor: () => void;
+      moveToPositionAtEndOfAnchor: () => void;
+      moveToPositionAtStartOfDocument: () => void;
+      moveToPositionAtEndOfDocument: () => void;
+      moveToParentPosition: () => void;
+      moveToNextLeafTreePosition: () => void;
+      moveToPreviousLeafTreePosition: () => void;
+      moveToNextLeafTextPosition: () => void;
+      moveToPreviousLeafTextPosition: () => void;
+      moveToNextCharacterPosition: () => void;
+      moveToPreviousCharacterPosition: () => void;
+      moveToNextWordStartPosition: () => void;
+      moveToPreviousWordStartPosition: () => void;
+      moveToNextWordEndPosition: () => void;
+      moveToPreviousWordEndPosition: () => void;
+      moveToNextLineStartPosition: () => void;
+      moveToPreviousLineStartPosition: () => void;
+      moveToNextLineEndPosition: () => void;
+      moveToPreviousLineEndPosition: () => void;
+      moveToNextFormatStartPosition: () => void;
+      moveToPreviousFormatStartPosition: () => void;
+      moveToNextFormatEndPosition: () => void;
+      moveToPreviousFormatEndPosition: () => void;
+      moveToNextParagraphStartPosition: () => void;
+      moveToPreviousParagraphStartPosition: () => void;
+      moveToNextParagraphEndPosition: () => void;
+      moveToPreviousParagraphEndPosition: () => void;
+      moveToNextPageStartPosition: () => void;
+      moveToPreviousPageStartPosition: () => void;
+      moveToNextPageEndPosition: () => void;
+      moveToPreviousPageEndPosition: () => void;
+      moveToNextAnchorPosition: () => void;
+      moveToPreviousAnchorPosition: () => void;
+      maxTextOffset: () => number;
+      isInLineBreak: () => boolean;
+      isInTextObject: () => boolean;
+      isInWhiteSpace: () => boolean;
+      isValid: () => boolean;
+      getText: () => string;
     }
 
     export interface AutomationNode {
-      accessKey?: string;
-      activeDescendant?: AutomationNode;
-      activeDescendantFor?: AutomationNode[];
-      anchorAffinity?: string;
-      anchorObject?: AutomationNode;
-      anchorOffset?: number;
-      appId?: string;
-      ariaColumnCount?: number;
-      ariaCurrentState?: AriaCurrentState;
-      ariaInvalidValue?: string;
-      ariaRowCount?: number;
-      autoComplete?: string;
-      backgroundColor?: number;
-      bold: boolean;
-      busy?: boolean;
-      checked?: string;
-      checkedStateDescription?: string;
-      children: AutomationNode[];
-      className?: string;
-      clickable: boolean;
-      color?: number;
-      colorValue?: number;
-      containerLiveAtomic?: boolean;
-      containerLiveBusy?: boolean;
-      containerLiveRelevant?: string;
-      containerLiveStatus?: string;
-      controlledBy?: AutomationNode[];
-      controls?: AutomationNode[];
-      customActions?: CustomAction[];
-      defaultActionVerb?: DefaultActionVerb;
-      describedBy?: AutomationNode[];
-      descriptionFor?: AutomationNode[];
-      details?: AutomationNode[];
-      detailsFor?: AutomationNode[];
-      detectedLanguage?: string;
-      display?: string;
-      docLoaded?: boolean;
-      docLoadingProgress?: number;
-      docUrl?: string;
-      docTitle?: string;
-      doDefaultLabel?: string;
-      errorMessage?: AutomationNode;
-      errorMessageFor?: AutomationNode[];
-      firstChild?: AutomationNode;
-      flowFrom?: AutomationNode[];
-      flowTo?: AutomationNode[];
-      focusAffinity?: string;
-      focusObject?: AutomationNode;
-      focusOffset?: number;
-      fontFamily?: string;
-      fontSize?: number;
-      hasPopup?: HasPopup;
-      hierarchicalLevel?: number;
-      htmlAttributes?: {
-        [key: string]: string,
-      };
-      htmlTag?: string;
-      imageAnnotation?: string;
-      imageDataUrl?: string;
-      indexInParent?: number;
-      innerHtml?: string;
-      inPageLinkTarget?: AutomationNode;
-      inputType?: string;
-      invalidState?: InvalidState;
-      isButton: boolean;
-      isCheckBox: boolean;
-      isComboBox: boolean;
-      isImage: boolean;
+      root?: AutomationNode;
       isRootNode: boolean;
-      isSelectionBackward?: boolean;
-      italic: boolean;
-      labelFor?: AutomationNode[];
-      labelledBy?: AutomationNode[];
-      language?: string;
-      lastChild?: AutomationNode;
-      lineThrough: boolean;
-      liveAtomic?: boolean;
-      liveRelevant?: string;
-      liveStatus?: string;
-      location?: Rect;
-      longClickLabel?: string;
-      markers?: Marker[];
-      maxValueForRange?: number;
-      minValueForRange?: number;
-      modal?: boolean;
+      role?: RoleType;
+      state?: {[key: string]: any};
+      location: Rect;
+      boundsForRange:
+          (startIndex: number, endIndex: number,
+           callback: (rect: Rect) => void) => void;
+      unclippedBoundsForRange:
+          (startIndex: number, endIndex: number,
+           callback: (rect: Rect) => void) => void;
+      unclippedLocation?: Rect;
+      description?: string;
+      checkedStateDescription?: string;
+      placeholder?: string;
+      roleDescription?: string;
       name?: string;
+      doDefaultLabel?: string;
+      longClickLabel?: string;
+      tooltip?: string;
       nameFrom?: NameFromType;
-      nextFocus?: AutomationNode;
-      nextOnLine?: AutomationNode;
-      nextSibling?: AutomationNode;
-      nonAtomicTextFieldRoot: boolean;
+      imageAnnotation?: string;
+      value?: string;
+      htmlTag?: string;
+      hierarchicalLevel?: number;
+      caretBounds?: Rect;
+      wordStarts?: number[];
+      wordEnds?: number[];
+      sentenceStarts?: number[];
+      sentenceEnds?: number[];
       nonInlineTextWordStarts?: number[];
       nonInlineTextWordEnds?: number[];
-      notUserSelectableStyle?: boolean;
-      parent?: AutomationNode;
-      placeholder?: string;
-      posInSet?: number;
-      previousFocus?: AutomationNode;
-      previousOnLine?: AutomationNode;
-      previousSibling?: AutomationNode;
-      restriction?: Restriction;
-      role?: RoleType;
-      roleDescription?: string;
-      root?: AutomationNode;
-      scrollable?: boolean;
+      controls?: AutomationNode[];
+      describedBy?: AutomationNode[];
+      flowTo?: AutomationNode[];
+      labelledBy?: AutomationNode[];
+      activeDescendant?: AutomationNode;
+      activeDescendantFor?: AutomationNode[];
+      inPageLinkTarget?: AutomationNode;
+      details?: AutomationNode[];
+      errorMessages?: AutomationNode[];
+      detailsFor?: AutomationNode[];
+      errorMessageFor?: AutomationNode[];
+      controlledBy?: AutomationNode[];
+      descriptionFor?: AutomationNode[];
+      flowFrom?: AutomationNode[];
+      labelFor?: AutomationNode[];
+      tableCellColumnHeaders?: AutomationNode[];
+      tableCellRowHeaders?: AutomationNode[];
+      standardActions?: ActionType[];
+      customActions?: CustomAction[];
+      defaultActionVerb?: DefaultActionVerb;
+      url?: string;
+      docUrl?: string;
+      docTitle?: string;
+      docLoaded?: boolean;
+      docLoadingProgress?: number;
       scrollX?: number;
       scrollXMin?: number;
       scrollXMax?: number;
       scrollY?: number;
       scrollYMin?: number;
       scrollYMax?: number;
-      selected?: boolean;
-      selectionEndAffinity?: string;
-      selectionEndObject?: AutomationNode;
-      selectionEndOffset?: number;
-      selectionStartAffinity?: string;
+      scrollable?: boolean;
+      textSelStart?: number;
+      textSelEnd?: number;
+      markers?: Marker[];
+      isSelectionBackward?: boolean;
+      anchorObject?: AutomationNode;
+      anchorOffset?: number;
+      anchorAffinity?: string;
+      focusObject?: AutomationNode;
+      focusOffset?: number;
+      focusAffinity?: string;
       selectionStartObject?: AutomationNode;
       selectionStartOffset?: number;
-      sentenceEnds?: number[];
-      sentenceStarts?: number[];
+      selectionStartAffinity?: string;
+      selectionEndObject?: AutomationNode;
+      selectionEndOffset?: number;
+      selectionEndAffinity?: string;
+      notUserSelectableStyle?: boolean;
+      valueForRange?: number;
+      minValueForRange?: number;
+      maxValueForRange?: number;
+      posInSet?: number;
       setSize?: number;
-      sortDirection: SortDirectionType;
-      standardActions?: ActionType[];
-      state?: {[key in StateType]: boolean;};
+      tableRowCount?: number;
+      ariaRowCount?: number;
+      tableColumnCount?: number;
+      ariaColumnCount?: number;
+      tableCellColumnIndex?: number;
+      tableCellAriaColumnIndex?: number;
+      tableCellColumnSpan?: number;
+      tableCellRowIndex?: number;
+      tableCellAriaRowIndex?: number;
+      tableCellRowSpan?: number;
+      tableColumnHeader?: AutomationNode;
+      tableRowHeader?: AutomationNode;
+      tableColumnIndex?: number;
+      tableRowIndex?: number;
+      liveStatus?: string;
+      liveRelevant?: string;
+      liveAtomic?: boolean;
+      busy?: boolean;
+      containerLiveStatus?: string;
+      containerLiveRelevant?: string;
+      containerLiveAtomic?: boolean;
+      containerLiveBusy?: boolean;
+      isButton: boolean;
+      isCheckBox: boolean;
+      isComboBox: boolean;
+      isImage: boolean;
+      hasHiddenOffscreenNodes: boolean;
+      autoComplete?: string;
+      className?: string;
+      modal?: boolean;
+      htmlAttributes?: {[key: string]: any};
+      inputType?: string;
+      accessKey?: string;
+      ariaInvalidValue?: string;
+      display?: string;
+      imageDataUrl?: string;
+      language?: string;
+      detectedLanguage?: string;
+      hasPopup?: HasPopup;
+      restriction?: string;
+      checked?: string;
+      innerHtml?: string;
+      color?: number;
+      backgroundColor?: number;
+      colorValue?: number;
       subscript: boolean;
       superscript: boolean;
-      tableCellAriaColumnIndex?: number;
-      tableCellAriaRowIndex?: number;
-      tableCellColumnHeaders?: AutomationNode[];
-      tableCellColumnIndex?: number;
-      tableCellRowHeaders?: AutomationNode[];
-      tableCellRowIndex?: number;
-      tableCellRowSpan?: number;
-      tableColumnCount?: number;
-      tableColumnHeader?: AutomationNode;
-      tableColumnIndex?: number;
-      tableRowCount?: number;
-      tableRowHeader?: AutomationNode;
-      tableRowIndex?: number;
-      textSelEnd?: number;
-      textSelStart?: number;
-      tooltip?: string;
-      unclippedLocation?: Rect;
+      bold: boolean;
+      italic: boolean;
       underline: boolean;
-      url?: string;
-      value?: string;
-      valueForRange?: number;
-      wordStarts?: number[];
-      wordEnds?: number[];
-
-
-      addEventListener(
-          type: EventType, listener: AutomationListener,
-          capture: boolean): void;
-      boundsForRange(
-          startIndex: number, endIndex: number,
-          callback: BoundsForRangeCallback): void;
-      createPosition(type: PositionType, offset: number, isUpstream?: boolean):
-          AutomationPosition;
-      doDefault(): void;
-      find(params: FindParams): AutomationNode|undefined;
-      findAll(params: FindParams): AutomationNode[];
-      focus(): void;
-      getImageData(maxWidth: number, maxHeight: number): void;
-      getNextTextMatch(searchStr: string, backward: boolean): AutomationNode;
-      hitTest(x: number, y: number, eventToFire: EventType): void;
-      hitTestWithReply(
-          x: number, y: number, callback: PerformActionCallbackWithNode): void;
-      longClick(): void;
-      makeVisible(): void;
-      matches(params: FindParams): boolean;
-      performCustomAction(id: number): void;
-      performStandardAction(type: ActionType): void;
-      removeEventListener(
-          type: EventType, listener: AutomationListener,
-          capture: boolean): void;
-      replaceSelectedText(value: string): void;
-      resumeMedia(): void;
-      scrollBackward(callback?: PerformActionCallback): void;
-      scrollDown(callback?: PerformActionCallback): void;
-      scrollForward(callback?: PerformActionCallback): void;
-      scrollLeft(callback?: PerformActionCallback): void;
-      scrollRight(callback?: PerformActionCallback): void;
-      scrollToPoint(x: number, y: number): void;
-      scrollUp(callback?: PerformActionCallback): void;
-      setAccessibilityFocus(): void;
-      setScrollOffset(x: number, y: number): void;
-      setSelection(startIndex: number, endIndex: number): void;
-      setSequentialFocusNavigationStartingPoint(): void;
-      setValue(value: string): void;
-      showContextMenu(): void;
-      startDuckingMedia(): void;
-      stopDuckingMedia(): void;
-      suspendMedia(): void;
-      unclippedBoundsForRange(
-          startIndex: number, endIndex: number,
-          callback: BoundsForRangeCallback): void;
+      lineThrough: boolean;
+      selected?: boolean;
+      fontSize?: number;
+      fontFamily: string;
+      nonAtomicTextFieldRoot: boolean;
+      ariaCurrentState?: AriaCurrentState;
+      invalidState?: InvalidState;
+      appId?: string;
+      children: AutomationNode[];
+      parent?: AutomationNode;
+      firstChild?: AutomationNode;
+      lastChild?: AutomationNode;
+      previousSibling?: AutomationNode;
+      nextSibling?: AutomationNode;
+      previousOnLine?: AutomationNode;
+      nextOnLine?: AutomationNode;
+      previousFocus?: AutomationNode;
+      nextFocus?: AutomationNode;
+      previousWindowFocus?: AutomationNode;
+      nextWindowFocus?: AutomationNode;
+      indexInParent?: number;
+      sortDirection: SortDirectionType;
+      clickable: boolean;
+      doDefault: () => void;
+      focus: () => void;
+      getImageData: (maxWidth: number, maxHeight: number) => void;
+      hitTest: (x: number, y: number, eventToFire: EventType) => void;
+      hitTestWithReply:
+          (x: number, y: number,
+           callback: (node: AutomationNode) => void) => void;
+      makeVisible: () => void;
+      performCustomAction: (customActionId: number) => void;
+      performStandardAction: (actionType: ActionType) => void;
+      replaceSelectedText: (value: string) => void;
+      setAccessibilityFocus: () => void;
+      setSelection: (startIndex: number, endIndex: number) => void;
+      setSequentialFocusNavigationStartingPoint: () => void;
+      setValue: (value: string) => void;
+      showContextMenu: () => void;
+      resumeMedia: () => void;
+      startDuckingMedia: () => void;
+      stopDuckingMedia: () => void;
+      suspendMedia: () => void;
+      longClick: () => void;
+      scrollBackward: (callback: (result: boolean) => void) => void;
+      scrollForward: (callback: (result: boolean) => void) => void;
+      scrollUp: (callback: (result: boolean) => void) => void;
+      scrollDown: (callback: (result: boolean) => void) => void;
+      scrollLeft: (callback: (result: boolean) => void) => void;
+      scrollRight: (callback: (result: boolean) => void) => void;
+      scrollToPoint: (x: number, y: number) => void;
+      setScrollOffset: (x: number, y: number) => void;
+      addEventListener:
+          (eventType: EventType, listener: (event: AutomationEvent) => void,
+           capture: boolean) => void;
+      removeEventListener:
+          (eventType: EventType, listener: (event: AutomationEvent) => void,
+           capture: boolean) => void;
+      find: (params: FindParams) => AutomationNode;
+      findAll: (params: FindParams) => AutomationNode[];
+      matches: (params: FindParams) => boolean;
+      getNextTextMatch:
+          (searchStr: string, backward: boolean) => AutomationNode;
+      createPosition:
+          (type: PositionType, offset: number,
+           isUpstream?: boolean) => AutomationPosition;
     }
 
-    type AutomationListener = (event: AutomationEvent) => void;
-    type BoundsForRangeCallback = (bounds: Rect) => void;
-    type FocusCallback = (focusedNode: AutomationNode) => void;
-    type PerformActionCallback = (result: boolean) => void;
-    type PerformActionCallbackWithNode = (node: AutomationNode) => void;
-    type RootCallback = (rootNode: AutomationNode) => void;
-    type TreeChangeObserver = (change: TreeChange) => void;
+    export function getDesktop(callback: (rootNode: AutomationNode) => void):
+        void;
+
+    export function getFocus(callback: (focusedNode: AutomationNode) => void):
+        void;
+
+    export function getAccessibilityFocus(
+        callback: (focusedNode: AutomationNode) => void): void;
 
     export function addTreeChangeObserver(
-        filter: TreeChangeObserverFilter, observer: TreeChangeObserver): void;
-    export function getAccessibilityFocus(callback: FocusCallback): void;
-    export function getDesktop(callback: RootCallback): void;
-    export function getFocus(callback: FocusCallback): void;
-    export function removeTreeChangeObserver(observer: TreeChangeObserver):
-        void;
+        filter: TreeChangeObserverFilter,
+        observer: (change: TreeChange) => void): void;
+
+    export function removeTreeChangeObserver(
+        observer: (rootNode: AutomationNode) => void): void;
+
     export function setDocumentSelection(params: SetDocumentSelectionParams):
         void;
   }

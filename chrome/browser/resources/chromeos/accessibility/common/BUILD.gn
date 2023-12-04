@@ -9,7 +9,7 @@ import(
 import("//chrome/common/features.gni")
 import("//chrome/test/base/ash/js2gtest.gni")
 import("//testing/test.gni")
-import("//third_party/closure_compiler/js_unit_tests.gni")
+import("//tools/typescript/ts_library.gni")
 
 assert(is_chromeos_ash)
 
@@ -23,10 +23,33 @@ group("build") {
   ]
 }
 
+tsc_out_dir = "$target_gen_dir/tsc"
+
+# Add typescript files to compile here.
+ts_modules = [ "paragraph_utils.ts" ]
+
+# JS files required for ts build.
+js_files = [ "instance_checker.js" ]
+
+# Root dir must be the parent directory so it can reach common.
+ts_library("ts_build") {
+  in_files = js_files + ts_modules
+  out_dir = tsc_out_dir
+  definitions = [
+    "../definitions/tts.d.ts",
+    "../definitions/automation.d.ts",
+    "../definitions/i18n.d.ts",
+  ]
+
+  tsconfig_base = "../tsconfig.base.json"
+}
+
 run_jsbundler("accessibility_common_copied_files") {
   mode = "copy"
   dest_dir = accessibility_common_out_dir
+  deps = [ ":ts_build" ]
   sources = [
+    "$tsc_out_dir/paragraph_utils.js",
     "array_util.js",
     "async_util.js",
     "automation_predicate.js",
@@ -46,7 +69,6 @@ run_jsbundler("accessibility_common_copied_files") {
     "local_storage.js",
     "node_navigation_utils.js",
     "node_utils.js",
-    "paragraph_utils.js",
     "rect_util.js",
     "repeated_event_handler.js",
     "repeated_tree_change_handler.js",
@@ -58,7 +80,10 @@ run_jsbundler("accessibility_common_copied_files") {
     "tree_walker.js",
     "word_utils.js",
   ]
-  rewrite_rules = [ rebase_path(".", root_build_dir) + ":" ]
+  rewrite_rules = [
+    rebase_path(tsc_out_dir, root_build_dir) + ":",
+    rebase_path(".", root_build_dir) + ":",
+  ]
 }
 
 source_set("browser_tests") {

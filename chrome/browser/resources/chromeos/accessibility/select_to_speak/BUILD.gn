@@ -27,7 +27,10 @@ tsc_out_dir = "$target_gen_dir/tsc"
 select_to_speak_tsc_out_dir = "$tsc_out_dir/select_to_speak"
 
 # Add typescript files to compile here.
-ts_modules = [ "select_to_speak/select_to_speak_main.ts" ]
+ts_modules = [
+  "select_to_speak/select_to_speak_main.ts",
+  "select_to_speak/metrics_utils.ts",
+]
 
 # JS files required for ts build.
 js_files = [
@@ -41,7 +44,14 @@ ts_library("ts_build") {
   in_files = js_files + ts_modules
   out_dir = tsc_out_dir
 
-  definitions = []
+  definitions = [
+    "../definitions/tts.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "../definitions/automation.d.ts",
+    "../definitions/i18n.d.ts",
+  ]
+
+  tsconfig_base = "../tsconfig.base.json"
 }
 
 # Instead of setting up one copy target for each subdirectory, use a script
@@ -51,12 +61,12 @@ run_jsbundler("select_to_speak_copied_files") {
   dest_dir = select_to_speak_out_dir
   deps = [ ":ts_build" ]
   sources = [
+    "$select_to_speak_tsc_out_dir/metrics_utils.js",
     "$select_to_speak_tsc_out_dir/select_to_speak_main.js",
     "background.html",
     "checked.png",
     "earcons/null_selection.ogg",
     "input_handler.js",
-    "metrics_utils.js",
     "prefs_manager.js",
     "select_to_speak-2x.svg",
     "select_to_speak.js",

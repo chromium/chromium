@@ -1,0 +1,16 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "allowJs": true
+  },
+  "include": [
+    ".",
+    "../common",
+    "../definitions",
+    "../../../../../../tools/typescript/definitions"
+  ],
+  "exclude": [
+    "../../../../../../tools/typescript/definitions/i18n.d.ts"
+  ]
+}

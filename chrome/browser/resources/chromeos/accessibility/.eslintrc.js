@@ -14,5 +14,24 @@ module.exports = {
     'no-var' : 'off',
     'object-shorthand' : ['error', 'always'],
     'prefer-const' : ['error', {'destructuring' : 'all'}],
+    '@typescript-eslint/explicit-function-return-type' : 'off',
   },
+  // clang-format off
+  'overrides':
+    [
+      {
+        // enable the rule specifically for TypeScript files
+        'files': ['*.ts'],
+        'rules': {
+          '@typescript-eslint/explicit-function-return-type':
+            [
+              'error',
+              {
+                'allowExpressions': true,
+              },
+            ],
+        },
+      },
+    ],
+  // clang-format on
 };

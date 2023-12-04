@@ -4,17 +4,33 @@
 
 import {WordUtils} from './word_utils.js';
 
-var AutomationNode = chrome.automation.AutomationNode;
-var RoleType = chrome.automation.RoleType;
+type AutomationNode = chrome.automation.AutomationNode;
+const RoleType = chrome.automation.RoleType;
+
+interface NodeGroupBuildOptions {
+  splitOnLanguage?: boolean;
+  splitOnParagraph?: boolean;
+  clipOverflowWords?: boolean;
+}
+
+interface NodeGroupWithOffset {
+  nodeGroup: ParagraphUtils.NodeGroup;
+  startIndexInGroup?: number;
+  endIndexInGroup?: number;
+}
+
+type NodeGroupByCharIndex = {
+  node: AutomationNode,
+  offset: number,
+}|{node: null, offset: 0};
 
 export class ParagraphUtils {
   /**
-   * @param {!AutomationNode} node
-   * @return {boolean} Whether the given node is a paragraph.
+   * @return Whether the given node is a paragraph.
    * TODO(joelriley@google.com): Consider expanding what is considered a block,
    * for instance, any non-inline node.
    */
-  static isBlock(node) {
+  static isBlock(node: AutomationNode): boolean {
     if (node.role === RoleType.PARAGRAPH || node.role === RoleType.SVG_ROOT) {
       return true;
     }
@@ -38,15 +54,16 @@ export class ParagraphUtils {
   }
 
   /**
+   * TODO(b/314204374): Should Return undefined instead of null.
    * Gets the first ancestor of a node which is a paragraph or is not inline,
    * or get the root node if none is found.
-   * @param {AutomationNode} node The node to get the parent for.
-   * @return {?AutomationNode} the parent paragraph or null if there is none.
+   * @param node The node to get the parent for.
+   * @return the parent paragraph or null if there is none.
    */
-  static getFirstBlockAncestor(node) {
+  static getFirstBlockAncestor(node: AutomationNode): AutomationNode|null {
     let parent = node.parent;
     const root = node.root;
-    while (parent != null) {
+    while (parent) {
       if (parent === root || ParagraphUtils.isBlock(parent)) {
         return parent;
       }
@@ -58,11 +75,12 @@ export class ParagraphUtils {
   /**
    * Determines whether two nodes are in the same block-like ancestor, i.e.
    * whether they are in the same paragraph.
-   * @param {AutomationNode|undefined} first The first node to compare.
-   * @param {AutomationNode|undefined} second The second node to compare.
-   * @return {boolean} whether two nodes are in the same paragraph.
+   * @param first The first node to compare.
+   * @param second The second node to compare.
+   * @return whether two nodes are in the same paragraph.
    */
-  static inSameParagraph(first, second) {
+  static inSameParagraph(first?: AutomationNode, second?: AutomationNode):
+      boolean {
     if (first === undefined || second === undefined) {
       return false;
     }
@@ -85,10 +103,10 @@ export class ParagraphUtils {
 
   /**
    * Determines whether a string is only whitespace.
-   * @param {string|undefined} name A string to test
-   * @return {boolean} whether the string is only whitespace
+   * @param name A string to test
+   * @return whether the string is only whitespace
    */
-  static isWhitespace(name) {
+  static isWhitespace(name?: string): boolean {
     if (name === undefined || name.length === 0) {
       return true;
     }
@@ -99,10 +117,9 @@ export class ParagraphUtils {
 
   /**
    * Gets the text to be read aloud for a particular node.
-   * @param {!AutomationNode} node
-   * @return {string} The text to read for this node.
+   * @return The text to read for this node.
    */
-  static getNodeName(node) {
+  static getNodeName(node: AutomationNode): string {
     if (node.role === RoleType.TEXT_FIELD &&
         (node.children === undefined || node.children.length === 0) &&
         node.value) {
@@ -113,7 +130,7 @@ export class ParagraphUtils {
     } else if (
         node.role === RoleType.CHECK_BOX ||
         node.role === RoleType.MENU_ITEM_CHECK_BOX) {
-      let stateString;
+      let stateString: string;
       if (node.checked === 'true') {
         stateString =
             chrome.i18n.getMessage('select_to_speak_checkbox_checked');
@@ -123,6 +140,7 @@ export class ParagraphUtils {
         stateString =
             chrome.i18n.getMessage('select_to_speak_checkbox_unchecked');
       }
+
       return !ParagraphUtils.isWhitespace(node.name) ?
           node.name + ' ' + stateString :
           stateString;
@@ -145,13 +163,13 @@ export class ParagraphUtils {
    * Gets the text to be read aloud for a particular node.
    * Compared with the bounds of the blockParent, the overflow
    * words of the text will be replaced with empty space.
-   * @param {!ParagraphUtils.NodeGroupItem} nodeGroupItem
-   * @param {?AutomationNode} blockParent
-   * @return {string} The text to read for this node.
+   * @return The text to read for this node.
    */
-  static getNodeNameWithoutOverflowWords(nodeGroupItem, blockParent) {
+  static getNodeNameWithoutOverflowWords(
+      nodeGroupItem: ParagraphUtils.NodeGroupItem,
+      blockParent?: AutomationNode): string {
     const unclippedText = ParagraphUtils.getNodeName(nodeGroupItem.node);
-    if (blockParent == null || blockParent.location == null) {
+    if (!blockParent || blockParent.location == null) {
       return unclippedText;
     }
 
@@ -163,10 +181,12 @@ export class ParagraphUtils {
     const bottomBound = bounds.top + bounds.height;
 
     const nodeBounds = nodeGroupItem.node.unclippedLocation;
-    const nodeLeftBound = nodeBounds.left;
-    const nodeRightBound = nodeBounds.left + nodeBounds.width;
-    const nodeTopBound = nodeBounds.top;
-    const nodeBottomBound = nodeBounds.top + nodeBounds.height;
+    // TODO(b/314203187): `!` operator used here since node bounds was
+    // previously infered to be not undefined.
+    const nodeLeftBound = nodeBounds!.left;
+    const nodeRightBound = nodeBounds!.left + nodeBounds!.width;
+    const nodeTopBound = nodeBounds!.top;
+    const nodeBottomBound = nodeBounds!.top + nodeBounds!.height;
 
     // If the node bounds are entirely within the blockparent bounds, return
     // the unclipped text.
@@ -218,12 +238,14 @@ export class ParagraphUtils {
       // nodeGroupItem.hasInlineText is false, the node of the NodeGroupItem
       // should not be an inlineTextBox node, and we assigns the node and
       // indexes directly from the nodeGroupItem.
-      let node;
+      let node: AutomationNode;
       let boundQueryStartIndex;
       let boundQueryEndIndex;
       if (nodeGroupItem.hasInlineText) {
+        // TODO(b/314203187): Not null asserted, an investigation to ensure the
+        // function doesn't return undefined is needed.
         node = ParagraphUtils.findInlineTextNodeByCharacterIndex(
-            nodeGroupItem.node, startIndex);
+            nodeGroupItem.node, startIndex)!;
         const charIndexInParent =
             ParagraphUtils.getStartCharIndexInParent(node);
         boundQueryStartIndex = startIndex - charIndexInParent;
@@ -237,7 +259,7 @@ export class ParagraphUtils {
         boundQueryEndIndex = endIndex;
       }
 
-      node.unclippedBoundsForRange(
+      node!.unclippedBoundsForRange(
           boundQueryStartIndex, boundQueryEndIndex, b => {
             // If the word is entirely out of the blockparent bounds,
             // replace the word with space characters.
@@ -257,14 +279,16 @@ export class ParagraphUtils {
    * node name begins.
    * TODO(leileilei@google.com): Corrects the annotation of |inlineTextNode|
    * to non-nullable.
-   * @param {AutomationNode} inlineTextNode An inlineTextBox type node.
-   * @return {number} The character index into the parent node at which
+   * @param inlineTextNode An inlineTextBox type node.
+   * @return The character index into the parent node at which
    *     this node begins.
    */
-  static getStartCharIndexInParent(inlineTextNode) {
+  static getStartCharIndexInParent(inlineTextNode: AutomationNode): number {
     let result = 0;
-    for (let i = 0; i < inlineTextNode.indexInParent; i++) {
-      result += inlineTextNode.parent.children[i].name.length;
+    // TODO(b/314203187): Not null asserted, check these to make sure this is
+    // correct.
+    for (let i = 0; i < inlineTextNode.indexInParent!; i++) {
+      result += inlineTextNode.parent!.children[i]!.name!.length;
     }
     return result;
   }
@@ -273,18 +297,20 @@ export class ParagraphUtils {
    * Determines the inlineTextBox child of a staticText node that appears
    * at the given character index into the name of the staticText node. See the
    * |findInlineTextNodeIndexByCharacterIndex| function below.
-   * @param {AutomationNode} staticTextNode The staticText node to search.
-   * @param {number} index The index into the staticTextNode's name.
-   * @return {?AutomationNode} The inlineTextBox node within the staticText
+   * @param staticTextNode The staticText node to search.
+   * @param index The index into the staticTextNode's name.
+   * @return The inlineTextBox node within the staticText
    *    node that appears at this index into the staticText node's name, or
    *    the last inlineTextBox in the staticText node if the index is too
    *    large.
    */
-  static findInlineTextNodeByCharacterIndex(staticTextNode, index) {
+  static findInlineTextNodeByCharacterIndex(
+      staticTextNode: AutomationNode, index: number): AutomationNode|null {
     const inlineTextNodeIndex =
         ParagraphUtils.findInlineTextNodeIndexByCharacterIndex(
             staticTextNode, index);
     if (inlineTextNodeIndex < 0) {
+      // TODO(b/314204374): Return undefined instead.
       return null;
     }
     return staticTextNode.children[inlineTextNodeIndex];
@@ -297,25 +323,30 @@ export class ParagraphUtils {
    * a staticText has name "abc 123" and two children with names "abc " and
    * "123", indexes 0-3 would return the index of the first child (i.e., 0)
    * and indexes 4+ would return the index of the second child (i.e., 1).
-   * @param {AutomationNode} staticTextNode The staticText node to search.
-   * @param {number} index The index into the staticTextNode's name.
-   * @return {number} The index of the inlineTextBox node within the
+   * @param staticTextNode The staticText node to search.
+   * @param index The index into the staticTextNode's name.
+   * @return The index of the inlineTextBox node within the
    *    staticText node that appears at the staticTextNode's name index into
    *    the staticText node's name, or the last inlineTextBox index in the
    *    staticText node if the staticTextNode's name index is too large. Return
    *    a negative number (-1) if the staticTextNode has no children.
    */
-  static findInlineTextNodeIndexByCharacterIndex(staticTextNode, index) {
+  static findInlineTextNodeIndexByCharacterIndex(
+      staticTextNode: AutomationNode, index: number): number {
     if (staticTextNode.children.length === 0) {
       return -1;
     }
     let textLength = 0;
-    for (var i = 0; i < staticTextNode.children.length; i++) {
+    for (let i = 0; i < staticTextNode.children.length; i++) {
       const node = staticTextNode.children[i];
-      if (node.name.length + textLength > index) {
+      // TODO(b/314203187): Not null asserted, check these to make sure this is
+      // correct.
+      if (node!.name!.length + textLength > index) {
         return i;
       }
-      textLength += node.name.length;
+      // TODO(b/314203187): Not null asserted, check these to make sure this is
+      // correct.
+      textLength += node!.name!.length;
     }
     return staticTextNode.children.length - 1;
   }
@@ -324,19 +355,19 @@ export class ParagraphUtils {
    * Builds information about nodes in a group until it reaches the end of the
    * group. It may return a NodeGroup with a single node, or a large group
    * representing a paragraph of inline nodes.
-   * @param {Array<!AutomationNode>} nodes List of automation nodes to use.
-   * @param {number} index The index into nodes at which to start.
-   * @param {{splitOnLanguage: (boolean|undefined),
-   *          splitOnParagraph: (boolean|undefined),
-   *          clipOverflowWords: (boolean|undefined)}=} options
+   * @param nodes List of automation nodes to use.
+   * @param index The index into nodes at which to start.
+   * @param options
    *     splitOnLanguage: flag to determine if we should split nodes up based on
    * language. If this is not passed, default to false.
    *     splitOnParagraph: flag to determine if we should split nodes up based
    * on paragraph. If this is not passed, default to true.
    *     clipOverflowWords: Whether to clip generated text.
-   * @return {ParagraphUtils.NodeGroup} info about the node group
+   * @return info about the node group
    */
-  static buildNodeGroup(nodes, index, options) {
+  static buildNodeGroup(
+      nodes: AutomationNode[], index: number,
+      options?: NodeGroupBuildOptions): ParagraphUtils.NodeGroup {
     options = options || {};
     const splitOnLanguage = options.splitOnLanguage || false;
     const splitOnParagraph = options.splitOnParagraph === undefined ?
@@ -345,11 +376,14 @@ export class ParagraphUtils {
     const clipOverflowWords = options.clipOverflowWords || false;
     let node = nodes[index];
     let next = nodes[index + 1];
-    const blockParent = node.clickable ?
+
+    const blockParent = node!.clickable ?
         node :
-        ParagraphUtils.getFirstBlockAncestor(nodes[index]);
+        // TODO(b/314204374): The function returns null, but we aren't using
+        // that here. It will need to be cleaned up later.
+        (ParagraphUtils.getFirstBlockAncestor(nodes[index]!) ?? undefined);
     const result = new ParagraphUtils.NodeGroup(blockParent);
-    let staticTextParent = null;
+    let staticTextParent: ParagraphUtils.NodeGroupItem|undefined;
     let currentLanguage = undefined;
     // TODO: Don't skip nodes. Instead, go through every node in
     // this paragraph from the first to the last in the nodes list.
@@ -370,9 +404,9 @@ export class ParagraphUtils {
             // each parent only exactly once.
             if (staticTextParent && staticTextParent.node !== node.parent) {
               // We are on a new staticText. Make a new parent to add to.
-              staticTextParent = null;
+              staticTextParent = undefined;
             }
-            if (staticTextParent === null) {
+            if (!staticTextParent) {
               staticTextParent = new ParagraphUtils.NodeGroupItem(
                   node.parent, result.text.length, true);
               newNode = staticTextParent;
@@ -448,14 +482,12 @@ export class ParagraphUtils {
    * addition, this function will transform the provided node offsets to values
    * that are relative to the text of the resulting node group. This function
    * can be used to check the sentence boundaries across all the input nodes.
-   * @param {!Array<!AutomationNode>} nodes The nodes for the selected content.
-   * @param {number=} opt_startIndex The index into the first node's text at
-   *     which the selected content starts.
-   * @param {number=} opt_endIndex The index into the last node's text at which
-   *     the selected content ends.
-   * @return {!{nodeGroup: ParagraphUtils.NodeGroup,
-   *          startIndexInGroup: (number|undefined),
-   *          endIndexInGroup: (number|undefined)}}
+   * @param nodes The nodes for the selected content.
+   * @param startIndex The index into the first node's text at which the
+   *     selected content starts.
+   * @param endIndex The index into the last node's text at which the selected
+   *     content ends.
+   * @return
    *     nodeGroup: The node group that contains all the input |nodes|. The node
    * group will not consider any language difference or paragraph split.
    *     startOffsetInGroup: The index into the node group's text at which the
@@ -463,11 +495,13 @@ export class ParagraphUtils {
    *     endOffsetInGroup: The index into the node group's text at which the
    * selected content ends.
    */
-  static buildSingleNodeGroupWithOffset(nodes, opt_startIndex, opt_endIndex) {
+  static buildSingleNodeGroupWithOffset(
+      nodes: AutomationNode[], startIndex?: number,
+      endIndex?: number): NodeGroupWithOffset {
     const nodeGroup = ParagraphUtils.buildNodeGroup(
         nodes, 0 /* index */,
         {splitOnLanguage: false, splitOnParagraph: false});
-    if (opt_startIndex !== undefined) {
+    if (startIndex !== undefined) {
       // The first node of the NodeGroup may not be at the beginning of the
       // parent of the NodeGroup. (e.g., an inlineText in its staticText
       // parent). Thus, we need to adjust the |opt_startIndex|.
@@ -476,42 +510,42 @@ export class ParagraphUtils {
       const startIndexInNodeParent = firstNodeHasInlineText ?
           ParagraphUtils.getStartCharIndexInParent(nodes[0]) :
           0;
-      opt_startIndex += startIndexInNodeParent + nodeGroup.nodes[0].startChar;
+      startIndex += startIndexInNodeParent + nodeGroup.nodes[0].startChar;
     }
-    if (opt_endIndex !== undefined) {
+    if (endIndex !== undefined) {
       // Similarly, |opt_endIndex| needs to be adjusted.
       const lastNodeHasInlineText = nodeGroup.nodes.length > 0 &&
           nodeGroup.nodes[nodeGroup.nodes.length - 1].hasInlineText;
       const startIndexInNodeParent = lastNodeHasInlineText ?
           ParagraphUtils.getStartCharIndexInParent(nodes[0]) :
           0;
-      opt_endIndex += startIndexInNodeParent +
+      endIndex += startIndexInNodeParent +
           nodeGroup.nodes[nodeGroup.nodes.length - 1].startChar;
     }
 
     return {
       nodeGroup,
-      startIndexInGroup: opt_startIndex,
-      endIndexInGroup: opt_endIndex,
+      startIndexInGroup: startIndex,
+      endIndexInGroup: endIndex,
     };
   }
 
   /**
    * Finds the AutomationNode that appears at the given character index within
    * the |nodeGroup|.
-   * @param {!ParagraphUtils.NodeGroup} nodeGroup The nodeGroup that has the
-   *     nodeGroupItem.
-   * @param {number} charIndex The char index into the nodeGroup's text. The
-   *     index is relative to the start of the |nodeGroup|.
-   * @return {!{node: ?AutomationNode,
-   *          offset: number}}
+   * @param nodeGroup The nodeGroup that has the nodeGroupItem.
+   * @param charIndex The char index into the nodeGroup's text. The index is
+   *     relative to the start of the |nodeGroup|.
+   * @return
    *     node: the AutomationNode within the |nodeGroup| that appears at
    * |charIndex|. For a static text node that has inline text nodes, we will
    * return the inline text node corresponding to the |charIndex|.
    *     offset: the offset indicating the position of the |charIndex| within
    * the found nodeGroupItem. The offset is relative to the start of the |node|.
    */
-  static findNodeFromNodeGroupByCharIndex(nodeGroup, charIndex) {
+  static findNodeFromNodeGroupByCharIndex(
+      nodeGroup: ParagraphUtils.NodeGroup,
+      charIndex: number): NodeGroupByCharIndex {
     for (const currentNodeGroupItem of nodeGroup.nodes) {
       const currentNode = currentNodeGroupItem.node;
       const currentNodeNameLength =
@@ -553,34 +587,26 @@ export class ParagraphUtils {
   }
 }
 
+export namespace ParagraphUtils {
 
-/**
- * Class representing a node group, which may be a single node or a
- * full paragraph of nodes.
- */
-ParagraphUtils.NodeGroup = class {
   /**
-   * @param {?AutomationNode} blockParent The first block ancestor of
-   *     this group. This may be the paragraph parent, for example.
+   * Class representing a node group, which may be a single node or a
+   * full paragraph of nodes.
    */
-  constructor(blockParent) {
+  export class NodeGroup {
     /**
      * Full text of this paragraph.
-     * @type {string}
      */
-    this.text = '';
-
+    text = '';
     /**
      * List of nodes in this paragraph in order.
-     * @type {!Array<ParagraphUtils.NodeGroupItem>}
      */
-    this.nodes = [];
+    nodes: ParagraphUtils.NodeGroupItem[] = [];
 
     /**
      * The block parent of this NodeGroup, if there is one.
-     * @type {?AutomationNode}
      */
-    this.blockParent = blockParent;
+    blockParent?: AutomationNode;
 
     /**
      * The index of the last node in this paragraph from the list of
@@ -588,60 +614,65 @@ ParagraphUtils.NodeGroup = class {
      * Note that this may not be stable over time, because nodes may
      * come and go from the automation tree. This should not be used
      * in any callbacks / asynchronously.
-     * @type {number}
      */
-    this.endIndex = -1;
+    endIndex = -1;
 
     /**
      * Language and country code for all nodes within this NodeGroup.
-     * @type {string|undefined}
      */
-    this.detectedLanguage = undefined;
+    detectedLanguage?: string;
 
     /**
      * The offset marks the end index of selected content in this nodeGroup. For
      * example, if a user selects a part of a paragraph, we will remove all text
      * after the |endOffset| so it is not spoken.
-     * @type {number|undefined}
      */
-    this.endOffset;
-  }
-};
+    endOffset?: number;
 
-/**
- * Class representing an automation node within a block of text, like
- * a paragraph. Each Item in a NodeGroup has a start index within the
- * total text, as well as the original AutomationNode it was associated
- * with.
- */
-ParagraphUtils.NodeGroupItem = class {
-  /**
-   * @param {!AutomationNode} node The AutomationNode associated with this item
-   * @param {number} startChar The index into the NodeGroup's text string where
-   *     this item begins.
-   * @param {boolean=} opt_hasInlineText If this NodeGroupItem has inlineText
-   *     children.
-   */
-  constructor(node, startChar, opt_hasInlineText) {
     /**
-     * @type {!AutomationNode}
+     * @param blockParent The first block ancestor of this group. This may be
+     *     the paragraph parent, for example.
      */
-    this.node = node;
+    constructor(blockParent?: AutomationNode) {
+      this.blockParent = blockParent;
+    }
+  }
 
+  /**
+   * Class representing an automation node within a block of text, like
+   * a paragraph. Each Item in a NodeGroup has a start index within the
+   * total text, as well as the original AutomationNode it was associated
+   * with.
+   */
+  export class NodeGroupItem {
+    node: AutomationNode;
     /**
      * The index into the NodeGroup's text string that is the first character
      * of the text of this automation node.
-     * @type {number}
      */
-    this.startChar = startChar;
-
+    startChar: number;
     /**
      * If this is a staticText node which has inlineTextBox children which
      * should be selected. We cannot select the inlineTextBox children directly
      * because they are not guaranteed to be stable.
-     * @type {boolean}
      */
-    this.hasInlineText =
-        opt_hasInlineText !== undefined ? opt_hasInlineText : false;
+    hasInlineText: boolean;
+
+    /**
+     * @param node The AutomationNode associated with this item
+     * @param startChar The index into the NodeGroup's text string where
+     *     this item begins.
+     * @param hasInlineText If this NodeGroupItem has inlineText
+     *     children.
+     */
+    constructor(
+        node: AutomationNode, startChar: number, hasInlineText?: boolean) {
+      this.node = node;
+      this.startChar = startChar;
+
+
+      this.hasInlineText = hasInlineText !== undefined ? hasInlineText : false;
+    }
   }
-};
+
+}
