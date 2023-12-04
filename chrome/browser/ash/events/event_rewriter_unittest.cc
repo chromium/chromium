@@ -1005,19 +1005,10 @@ class EventRewriterTest : public ChromeAshTestBase {
     keyboard_settings->modifier_remappings[remap_from] = remap_to;
   }
 
-  void SetUpKeyboard(const TestKeyboard& keyboard) {
-    SetupKeyboard(keyboard.name, keyboard.layout, keyboard.type,
-                  keyboard.has_custom_top_row);
-  }
-
-  // TODO(crbug.com/1440147): Refactor to merge this into SetUpKeyboard above.
-  ui::KeyboardDevice SetupKeyboard(
-      const std::string& name,
-      const std::string& layout = "",
-      ui::InputDeviceType type = ui::INPUT_DEVICE_INTERNAL,
-      bool has_custom_top_row = false) {
+  void SetUpKeyboard(const TestKeyboard& test_keyboard) {
     // Add a fake device to udev.
-    const ui::KeyboardDevice keyboard(kKeyboardDeviceId, type, name,
+    const ui::KeyboardDevice keyboard(kKeyboardDeviceId, test_keyboard.type,
+                                      test_keyboard.name,
                                       /*phys=*/"", base::FilePath(kKbdSysPath),
                                       /*vendor=*/-1,
                                       /*product=*/-1, /*version=*/-1);
@@ -1027,12 +1018,10 @@ class EventRewriterTest : public ChromeAshTestBase {
     // F-Key position via an attribute.
     std::map<std::string, std::string> sysfs_properties;
     std::map<std::string, std::string> sysfs_attributes;
-    if (has_custom_top_row) {
-      if (!layout.empty())
-        sysfs_attributes[kKbdTopRowLayoutAttributeName] = layout;
-    } else {
-      if (!layout.empty())
-        sysfs_properties[kKbdTopRowPropertyName] = layout;
+    if (!std::string_view(test_keyboard.layout).empty()) {
+      (test_keyboard.has_custom_top_row
+           ? sysfs_attributes[kKbdTopRowLayoutAttributeName]
+           : sysfs_properties[kKbdTopRowPropertyName]) = test_keyboard.layout;
     }
 
     fake_udev_.Reset();
@@ -1050,8 +1039,6 @@ class EventRewriterTest : public ChromeAshTestBase {
     event_rewriter_ash_->ResetStateForTesting();
     event_rewriter_ash_->set_last_keyboard_device_id_for_testing(
         kKeyboardDeviceId);
-
-    return keyboard;
   }
 
   void SetExtensionCommands(
@@ -3405,7 +3392,7 @@ TEST_F(EventRewriterTest, TestRewriteKeyEventSentByXSendEvent) {
                       ui::mojom::ModifierKey::kControl,
                       ui::mojom::ModifierKey::kAlt);
 
-  SetupKeyboard("Internal Keyboard");
+  SetUpKeyboard(kInternalChromeKeyboard);
 
   // Send left control press.
   {
@@ -3429,7 +3416,7 @@ TEST_F(EventRewriterTest, TestRewriteNonNativeEvent) {
                       ui::mojom::ModifierKey::kControl,
                       ui::mojom::ModifierKey::kAlt);
 
-  SetupKeyboard("Internal Keyboard");
+  SetUpKeyboard(kInternalChromeKeyboard);
 
   const int kTouchId = 2;
   gfx::Point location(0, 0);
