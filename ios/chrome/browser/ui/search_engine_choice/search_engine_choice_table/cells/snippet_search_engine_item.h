@@ -11,20 +11,25 @@
 
 @class FaviconAttributes;
 class GURL;
+enum class SnippetState;
 
 // SearchEngineItem contains the model data for a SnippetSearchEngineCell.
 @interface SnippetSearchEngineItem : TableViewItem
 
 // The name of the search engine.
-@property(nonatomic, readwrite, copy) NSString* name;
+@property(nonatomic, copy) NSString* name;
 // The text for the search engine snippet.
-@property(nonatomic, readwrite, copy) NSString* snippetDescription;
+@property(nonatomic, copy) NSString* snippetDescription;
 // The URL to fetch the favicon. This can be the favicon's URL, or a "fake" web
 // page URL created by filling empty query word into the search engine's
 // searchable URL template(e.g. "http://www.google.com/?q=").
 @property(nonatomic, assign) GURL URL;
 // Favicon attributes for the search engine.
-@property(nonatomic, readwrite, strong) FaviconAttributes* faviconAttributes;
+@property(nonatomic, strong) FaviconAttributes* faviconAttributes;
+// Set the snippet state (hidden or closed).
+@property(nonatomic, assign) SnippetState snippetState;
+// YES if the search engine has been chosen by the user.
+@property(nonatomic, assign) BOOL checked;
 
 @end
 

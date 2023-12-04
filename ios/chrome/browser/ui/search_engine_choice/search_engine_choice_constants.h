@@ -7,6 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
+// State of the snippet in SnippetSearchEngineItem/Cell.
+enum class SnippetState {
+  // The chevron is pointing down, the snippet is hidden.
+  kHidden,
+  // The chevron is pointing up, the snippet is shown.
+  kShown,
+};
+
 // Prefix for the SearchEngineCell accessibility identifier.
 extern NSString* const kSnippetSearchEngineIdentifierPrefix;
 // `Set as Default` button accessibility identifier.

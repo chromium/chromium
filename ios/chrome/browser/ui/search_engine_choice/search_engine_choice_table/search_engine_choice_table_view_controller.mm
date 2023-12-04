@@ -6,7 +6,6 @@
 
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_constants.h"
@@ -18,40 +17,16 @@
 
 namespace {
 
-const CGFloat kTableViewSeparatorLeadingInset = 56;
-// The size of the radio button at the side of each cell.
-const CGFloat kRadioButtonSize = 22.;
-
-UIImageView* CreateEmptyCircle() {
-  UIImageView* circleView =
-      [[UIImageView alloc] initWithImage:DefaultSymbolWithPointSize(
-                                             kCircleSymbol, kRadioButtonSize)];
-  [circleView setTintColor:[UIColor colorNamed:kGrey700Color]];
-  return circleView;
-}
-
-UIImageView* CreateCheckedCircle() {
-  return [[UIImageView alloc]
-      initWithImage:DefaultSymbolWithPointSize(kCheckmarkCircleFillSymbol,
-                                               kRadioButtonSize)];
-}
+constexpr CGFloat kTableViewSeparatorLeadingInset = 56;
 
 }  // namespace
 
 @implementation SearchEngineChoiceTableViewController {
-  // Index of the selected row, if there is one.
-  NSInteger _selectedRow;
+  // Search engine item chosen by the user.
+  SnippetSearchEngineItem* _chosenSearchEngineItem;
 }
 
 @synthesize searchEngines = _searchEngines;
-
-- (instancetype)initWithStyle:(UITableViewStyle)style {
-  self = [super initWithStyle:style];
-  if (self) {
-    _selectedRow = -1;
-  }
-  return self;
-}
 
 - (void)scrollToBottom {
   TableViewModel* model = self.tableViewModel;
@@ -115,44 +90,31 @@ UIImageView* CreateCheckedCircle() {
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  _selectedRow = indexPath.row;
+  // Deselects the cell, to clear the background color.
+  [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+  NSInteger selectedRow = indexPath.row;
   TableViewModel* model = self.tableViewModel;
-
-  // Iterate through the engines and remove the checkmark from any that have it.
-  for (TableViewItem* item in
-       [model itemsInSectionWithIdentifier:kSectionIdentifierEnumZero]) {
-    SnippetSearchEngineItem* textItem =
-        base::apple::ObjCCastStrict<SnippetSearchEngineItem>(item);
-    if (textItem.accessoryType == UITableViewCellAccessoryCheckmark) {
-      textItem.accessoryType = UITableViewCellAccessoryNone;
-      UITableViewCell* cell =
-          [tableView cellForRowAtIndexPath:[model indexPathForItem:item]];
-      SnippetSearchEngineCell* urlCell =
-          base::apple::ObjCCastStrict<SnippetSearchEngineCell>(cell);
-      UIImageView* circleView = CreateEmptyCircle();
-      [urlCell setAccessoryView:circleView];
-      urlCell.snippetLabel.numberOfLines = 1;
-    }
-  }
-
   // Show the checkmark on the new default engine.
   SnippetSearchEngineItem* newDefaultEngine =
       base::apple::ObjCCastStrict<SnippetSearchEngineItem>(
           [model itemAtIndexPath:indexPath]);
-  newDefaultEngine.accessoryType = UITableViewCellAccessoryCheckmark;
-  UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
-  SnippetSearchEngineCell* urlCell =
-      base::apple::ObjCCastStrict<SnippetSearchEngineCell>(cell);
-
-  cell.accessoryType = UITableViewCellAccessoryCheckmark;
-  UIImageView* checkedCircleView = CreateCheckedCircle();
-  [urlCell setAccessoryView:checkedCircleView];
-  urlCell.snippetLabel.numberOfLines = 0;
-
+  if (newDefaultEngine == _chosenSearchEngineItem) {
+    return;
+  }
+  SnippetSearchEngineItem* previousDefaultSearchEngine =
+      _chosenSearchEngineItem;
+  previousDefaultSearchEngine.checked = NO;
+  _chosenSearchEngineItem = newDefaultEngine;
+  _chosenSearchEngineItem.checked = YES;
+  NSArray<SnippetSearchEngineItem*>* items = nil;
+  if (previousDefaultSearchEngine) {
+    items = @[ previousDefaultSearchEngine, newDefaultEngine ];
+  } else {
+    items = @[ newDefaultEngine ];
+  }
+  [self reconfigureCellsForItems:items];
   CHECK(self.delegate);
-  [self.delegate selectSearchEngineAtRow:_selectedRow];
-  [self.tableView beginUpdates];
-  [self.tableView endUpdates];
+  [self.delegate selectSearchEngineAtRow:selectedRow];
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -165,17 +127,18 @@ UIImageView* CreateCheckedCircle() {
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+  SnippetSearchEngineItem* engineItem =
+      base::apple::ObjCCastStrict<SnippetSearchEngineItem>(item);
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
-  SnippetSearchEngineCell* urlCell =
+  SnippetSearchEngineCell* URLCell =
       base::apple::ObjCCastStrict<SnippetSearchEngineCell>(cell);
-  UIImageView* circleView;
-  if (_selectedRow >= 0 && indexPath.row == _selectedRow) {
-    circleView = CreateCheckedCircle();
-  } else {
-    circleView = CreateEmptyCircle();
-  }
-  [urlCell setAccessoryView:circleView];
+  __weak __typeof(self) weakSelf = self;
+  URLCell.chevronToggledBlock = ^(SnippetState snippet_state) {
+    engineItem.snippetState = snippet_state;
+    [weakSelf.tableView reconfigureRowsAtIndexPaths:@[ indexPath ]];
+  };
   return cell;
 }
 

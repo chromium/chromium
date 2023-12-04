@@ -35,8 +35,9 @@
       base::apple::ObjCCastStrict<SnippetSearchEngineCell>(tableCell);
   cell.nameLabel.text = self.name;
   cell.snippetLabel.text = self.snippetDescription;
+  cell.snippetState = self.snippetState;
+  cell.checked = self.checked;
   cell.accessibilityTraits |= UIAccessibilityTraitButton;
-  cell.contentView.alpha = 1.0;
   cell.userInteractionEnabled = YES;
   cell.accessibilityTraits &= ~UIAccessibilityTraitNotEnabled;
   [cell.faviconView configureWithAttributes:self.faviconAttributes];
