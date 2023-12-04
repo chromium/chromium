@@ -270,8 +270,11 @@ void Address::SetAddressCountryCode(const std::u16string& country_code,
   const AddressCountryCode new_address_country_code =
       AddressCountryCode(base::UTF16ToUTF8(country_code));
 
-  // No updates are necessary if the new country is the same as the current one.
+  // No restructuring is necessary if the new country is the same as the current
+  // one. Only updating the verification status is required.
   if (GetAddressCountryCode() == new_address_country_code) {
+    structured_address_->SetValueForType(ADDRESS_HOME_COUNTRY, country_code,
+                                         verification_status);
     return;
   }
 
@@ -306,6 +309,9 @@ void Address::SetAddressCountryCode(const std::u16string& country_code,
   }
 
   structured_address_ = std::move(updated_structured_address);
+  // Update verification status.
+  structured_address_->SetValueForType(ADDRESS_HOME_COUNTRY, country_code,
+                                       verification_status);
 }
 
 }  // namespace autofill

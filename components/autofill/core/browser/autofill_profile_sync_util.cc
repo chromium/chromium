@@ -524,6 +524,15 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
   }
 
   if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForAddressOverflowAndLandmark)) {
+    profile->SetRawInfoWithVerificationStatus(
+        ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
+        UTF8ToUTF16(specifics.address_home_overflow_and_landmark()),
+        ConvertSpecificsToProfileVerificationStatus(
+            specifics.address_home_overflow_and_landmark_status()));
+  }
+
+  if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForLandmark)) {
     profile->SetRawInfoWithVerificationStatus(
         ADDRESS_HOME_LANDMARK, UTF8ToUTF16(specifics.address_home_landmark()),
@@ -615,10 +624,20 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
             specifics.address_home_apt_type_status()));
   }
 
+  profile->SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_FLOOR, UTF8ToUTF16(specifics.address_home_floor()),
+      ConvertSpecificsToProfileVerificationStatus(
+          specifics.address_home_floor_status()));
+
   // Set birthdate-related fields.
   profile->SetRawInfoAsInt(BIRTHDATE_DAY, specifics.birthdate_day());
   profile->SetRawInfoAsInt(BIRTHDATE_MONTH, specifics.birthdate_month());
   profile->SetRawInfoAsInt(BIRTHDATE_4_DIGIT_YEAR, specifics.birthdate_year());
+
+  // When adding field types, ensure that they don't need to be added here and
+  // update the last checked value.
+  static_assert(ServerFieldType::MAX_VALID_FIELD_TYPE == 161,
+                "New field type needs to be reviewed for inclusion in sync");
 
   // The profile may be in a legacy state. By calling |FinalizeAfterImport()|
   // * The profile is migrated if the name structure is in legacy state.

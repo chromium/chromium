@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/browser/profile_token_quality.h"
 #include "components/autofill/core/browser/profile_token_quality_test_api.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
@@ -1280,7 +1281,15 @@ TEST(AutofillProfileTest, Compare) {
 TEST(AutofillProfileTest, Compare_StructuredTypes) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {autofill::features::kAutofillEnableSupportForAdminLevel2}, {});
+      {features::kAutofillUseI18nAddressModel,
+       features::kAutofillEnableSupportForLandmark,
+       features::kAutofillEnableSupportForBetweenStreets,
+       features::kAutofillEnableSupportForAdminLevel2,
+       features::kAutofillEnableSupportForApartmentNumbers,
+       features::kAutofillEnableSupportForAddressOverflow,
+       features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
+       features::kAutofillEnableSupportForAddressOverflowAndLandmark},
+      {});
   // Those types do store a verification status.
   ServerFieldTypeSet structured_types{
       NAME_FULL,
@@ -1297,10 +1306,25 @@ TEST(AutofillProfileTest, Compare_StructuredTypes) {
       ADDRESS_HOME_ZIP,
       ADDRESS_HOME_SORTING_CODE,
       ADDRESS_HOME_COUNTRY,
+      ADDRESS_HOME_LANDMARK,
+      ADDRESS_HOME_OVERFLOW,
+      ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
+      ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
+      ADDRESS_HOME_BETWEEN_STREETS,
+      ADDRESS_HOME_BETWEEN_STREETS_1,
+      ADDRESS_HOME_BETWEEN_STREETS_2,
+      ADDRESS_HOME_ADMIN_LEVEL2,
       ADDRESS_HOME_HOUSE_NUMBER,
       ADDRESS_HOME_STREET_NAME,
       ADDRESS_HOME_SUBPREMISE,
+      ADDRESS_HOME_STREET_LOCATION,
+      ADDRESS_HOME_FLOOR,
+      ADDRESS_HOME_APT,
+      ADDRESS_HOME_APT_TYPE,
+      ADDRESS_HOME_APT_NUM,
   };
+
+  CountryDataMap* country_data_map = CountryDataMap::GetInstance();
 
   // Those values are legal for all tokens.
   const std::u16string value1 = u"DE";
@@ -1311,31 +1335,46 @@ TEST(AutofillProfileTest, Compare_StructuredTypes) {
 
   ASSERT_NE(value1, value2);
   ASSERT_NE(status1, status2);
+  std::vector<AddressCountryCode> country_codes;
+  base::ranges::transform(country_data_map->country_codes(),
+                          back_inserter(country_codes),
+                          [](const std::string& country_code) {
+                            return AddressCountryCode(country_code);
+                          });
+  // Include the legacy country code as well.
+  country_codes.push_back(i18n_model_definition::kLegacyHierarchyCountryCode);
 
-  for (auto type : structured_types) {
-    // Create two empty profiles to test the tokens individually.
-    AutofillProfile profile1(
-        i18n_model_definition::kLegacyHierarchyCountryCode);
-    AutofillProfile profile2(
-        i18n_model_definition::kLegacyHierarchyCountryCode);
-
+  for (const AddressCountryCode& country_code : country_codes) {
     SCOPED_TRACE(testing::Message()
-                 << "Testing the Compare method for the type: "
-                 << AutofillType(type).ToString());
+                 << "Testing the Compare method for the country: "
+                 << country_code);
+    for (ServerFieldType type : structured_types) {
+      if (!i18n_model_definition::IsTypeEnabledForCountry(type, country_code)) {
+        continue;
+      }
+      // Create two empty profiles to test the tokens individually.
+      AutofillProfile profile1(country_code);
+      AutofillProfile profile2(country_code);
 
-    SCOPED_TRACE(testing::Message()
-                 << "Verify the correct result for identical values");
-    profile1.SetRawInfoWithVerificationStatus(type, value1, status1);
-    profile2.SetRawInfoWithVerificationStatus(type, value1, status1);
-    EXPECT_EQ(profile1.Compare(profile2), 0);
+      SCOPED_TRACE(testing::Message()
+                   << "Testing the Compare method for the type: "
+                   << AutofillType(type).ToString());
 
-    SCOPED_TRACE(testing::Message() << "Verify the sensitivity to the value");
-    profile2.SetRawInfoWithVerificationStatus(type, value2, status1);
-    EXPECT_NE(profile1.Compare(profile2), 0);
+      SCOPED_TRACE(testing::Message()
+                   << "Verify the correct result for identical values");
+      profile1.SetRawInfoWithVerificationStatus(type, value1, status1);
+      profile2.SetRawInfoWithVerificationStatus(type, value1, status1);
+      EXPECT_EQ(profile1.Compare(profile2), 0);
 
-    SCOPED_TRACE(testing::Message() << "Verify the sensitivity to the status");
-    profile2.SetRawInfoWithVerificationStatus(type, value1, status2);
-    EXPECT_NE(profile1.Compare(profile2), 0);
+      SCOPED_TRACE(testing::Message() << "Verify the sensitivity to the value");
+      profile2.SetRawInfoWithVerificationStatus(type, value2, status1);
+      EXPECT_NE(profile1.Compare(profile2), 0);
+
+      SCOPED_TRACE(testing::Message()
+                   << "Verify the sensitivity to the status");
+      profile2.SetRawInfoWithVerificationStatus(type, value1, status2);
+      EXPECT_NE(profile1.Compare(profile2), 0);
+    }
   }
 }
 

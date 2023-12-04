@@ -526,17 +526,30 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
       ADDRESS_HOME_SORTING_CODE,
       ADDRESS_HOME_COUNTRY,
       ADDRESS_HOME_LANDMARK,
+      ADDRESS_HOME_OVERFLOW,
+      ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
+      ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
       ADDRESS_HOME_BETWEEN_STREETS,
+      ADDRESS_HOME_BETWEEN_STREETS_1,
+      ADDRESS_HOME_BETWEEN_STREETS_2,
       ADDRESS_HOME_ADMIN_LEVEL2,
       ADDRESS_HOME_HOUSE_NUMBER,
       ADDRESS_HOME_STREET_NAME,
       ADDRESS_HOME_SUBPREMISE,
+      ADDRESS_HOME_STREET_LOCATION,
       ADDRESS_HOME_APT,
       ADDRESS_HOME_APT_NUM,
       ADDRESS_HOME_APT_TYPE,
+      ADDRESS_HOME_FLOOR,
       EMAIL_ADDRESS,
       PHONE_HOME_WHOLE_NUMBER,
   };
+
+  // When adding field types, ensure that they don't need to be added here and
+  // update the last checked value.
+  static_assert(ServerFieldType::MAX_VALID_FIELD_TYPE == 161,
+                "New field type needs to be reviewed for inclusion in the "
+                "profile comparison logic.");
 
   for (ServerFieldType type : types) {
     int comparison = GetRawInfo(type).compare(profile.GetRawInfo(type));
