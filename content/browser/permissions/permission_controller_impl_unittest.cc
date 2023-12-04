@@ -257,7 +257,7 @@ TEST_F(PermissionControllerImplTest,
     }
 
     if (test_case.expect_death) {
-      ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+      GTEST_FLAG_SET(death_test_style, "threadsafe");
       base::MockCallback<RequestsCallback> callback;
       EXPECT_DEATH_IF_SUPPORTED(
           PermissionControllerRequestPermissionsFromCurrentDocument(
@@ -344,7 +344,7 @@ TEST_F(PermissionControllerImplTest,
     }
 
     if (test_case.expect_death) {
-      ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+      GTEST_FLAG_SET(death_test_style, "threadsafe");
       base::MockCallback<RequestsCallback> callback;
       EXPECT_DEATH_IF_SUPPORTED(
           PermissionControllerRequestPermissions(
