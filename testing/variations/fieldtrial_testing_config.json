@@ -1547,6 +1547,25 @@
             ]
         }
     ],
+    "AutofillGranularFillingAvailable": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillGranularFillingAvailable"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillKeyboardAccessory": [
         {
             "platforms": [
