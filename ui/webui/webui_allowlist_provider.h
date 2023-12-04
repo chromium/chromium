@@ -15,6 +15,9 @@ class ContentSettingsPattern;
 
 // A provider that supplies HostContentSettingsMap with a list of auto-granted
 // permissions from the underlying WebUIAllowlist.
+//
+// PartitionKey is ignored by this provider because the content settings should
+// apply across partitions.
 class WebUIAllowlistProvider : public content_settings::ObservableProvider {
  public:
   explicit WebUIAllowlistProvider(scoped_refptr<WebUIAllowlist> allowlist);
@@ -31,15 +34,22 @@ class WebUIAllowlistProvider : public content_settings::ObservableProvider {
   // The following methods are thread-safe.
   std::unique_ptr<content_settings::RuleIterator> GetRuleIterator(
       ContentSettingsType content_type,
-      bool incognito) const override;
+      bool incognito,
+      const content_settings::PartitionKey& partition_key =
+          content_settings::PartitionKey::WipGetDefault()) const override;
   void ShutdownOnUIThread() override;
   bool SetWebsiteSetting(
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsType content_type,
       base::Value&& value,
-      const content_settings::ContentSettingConstraints& constraints) override;
-  void ClearAllContentSettingsRules(ContentSettingsType content_type) override;
+      const content_settings::ContentSettingConstraints& constraints,
+      const content_settings::PartitionKey& partition_key =
+          content_settings::PartitionKey::WipGetDefault()) override;
+  void ClearAllContentSettingsRules(
+      ContentSettingsType content_type,
+      const content_settings::PartitionKey& partition_key =
+          content_settings::PartitionKey::WipGetDefault()) override;
 
  private:
   const scoped_refptr<WebUIAllowlist> allowlist_;

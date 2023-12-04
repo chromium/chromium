@@ -39,6 +39,12 @@ class PartitionKey {
   friend PartitionKey GetPartitionKey(
       const content::StoragePartitionConfig& config);
 
+  // Get the default PartitionKey for tests. If your test uses non-default
+  // StoragePartitions, it should not call this. Instead, call
+  // `content_settings::GetPartitionKey()` with appropriate arguments.
+  static const PartitionKey& GetDefaultForTesting();
+#endif  // BUILDFLAG(IS_IOS)
+
   // Content settings partitioning is a work-in-progress. When it is done, for
   // non-ios platforms, the partition key is supposed to be computed from
   // StoragePartitionConfig. But for now we need to have this function to help
@@ -47,11 +53,6 @@ class PartitionKey {
   // TODO(b/307193732): Fix all callers and remove this function.
   static const PartitionKey& WipGetDefault();
 
-  // Get the default PartitionKey for tests. If your test uses non-default
-  // StoragePartitions, it should not call this. Instead, call
-  // `content_settings::GetPartitionKey()` with appropriate arguments.
-  static const PartitionKey& GetDefaultForTesting();
-#endif  // BUILDFLAG(IS_IOS)
 
   PartitionKey(const PartitionKey& key);
   PartitionKey(PartitionKey&& key);

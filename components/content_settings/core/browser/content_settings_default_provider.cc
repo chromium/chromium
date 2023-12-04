@@ -166,12 +166,14 @@ DefaultProvider::DefaultProvider(PrefService* prefs,
 
 DefaultProvider::~DefaultProvider() = default;
 
+// TODO(b/307193732): handle the PartitionKey in all relevant methods.
 bool DefaultProvider::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
     base::Value&& in_value,
-    const ContentSettingConstraints& constraints) {
+    const ContentSettingConstraints& constraints,
+    const PartitionKey& partition_key) {
   DCHECK(CalledOnValidThread());
   DCHECK(prefs_);
 
@@ -211,7 +213,8 @@ bool DefaultProvider::SetWebsiteSetting(
 
 std::unique_ptr<RuleIterator> DefaultProvider::GetRuleIterator(
     ContentSettingsType content_type,
-    bool off_the_record) const {
+    bool off_the_record,
+    const PartitionKey& partition_key) const {
   // The default provider never has off-the-record-specific settings.
   if (off_the_record)
     return nullptr;
@@ -226,7 +229,8 @@ std::unique_ptr<RuleIterator> DefaultProvider::GetRuleIterator(
 }
 
 void DefaultProvider::ClearAllContentSettingsRules(
-    ContentSettingsType content_type) {
+    ContentSettingsType content_type,
+    const PartitionKey& partition_key) {
   // TODO(markusheintz): This method is only called when the
   // |DesktopNotificationService| calls |ClearAllSettingsForType| method on the
   // |HostContentSettingsMap|. Don't implement this method yet, otherwise the

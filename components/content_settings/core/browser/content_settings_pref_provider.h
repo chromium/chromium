@@ -48,13 +48,19 @@ class PrefProvider : public UserModifiableProvider {
   // UserModifiableProvider implementations.
   std::unique_ptr<RuleIterator> GetRuleIterator(
       ContentSettingsType content_type,
-      bool off_the_record) const override;
+      bool off_the_record,
+      const PartitionKey& partition_key =
+          PartitionKey::WipGetDefault()) const override;
   bool SetWebsiteSetting(const ContentSettingsPattern& primary_pattern,
                          const ContentSettingsPattern& secondary_pattern,
                          ContentSettingsType content_type,
                          base::Value&& value,
-                         const ContentSettingConstraints& constraints) override;
-  void ClearAllContentSettingsRules(ContentSettingsType content_type) override;
+                         const ContentSettingConstraints& constraints,
+                         const PartitionKey& partition_key =
+                             PartitionKey::WipGetDefault()) override;
+  void ClearAllContentSettingsRules(ContentSettingsType content_type,
+                                    const PartitionKey& partition_key =
+                                        PartitionKey::WipGetDefault()) override;
   void ShutdownOnUIThread() override;
   bool UpdateLastUsedTime(const GURL& primary_url,
                           const GURL& secondary_url,

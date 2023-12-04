@@ -13,6 +13,7 @@
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
+#include "components/content_settings/core/common/content_settings_partition_key.h"
 
 class ContentSettingsPattern;
 
@@ -37,7 +38,9 @@ class ProviderInterface {
   // |ShutdownOnUIThread| has been called.
   virtual std::unique_ptr<RuleIterator> GetRuleIterator(
       ContentSettingsType content_type,
-      bool incognito) const = 0;
+      bool incognito,
+      const PartitionKey& partition_key =
+          PartitionKey::WipGetDefault()) const = 0;
 
   // Asks the provider to set the website setting for a particular
   // |primary_pattern|, |secondary_pattern|, |content_type| tuple. If the
@@ -52,7 +55,8 @@ class ProviderInterface {
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsType content_type,
       base::Value&& value,
-      const ContentSettingConstraints& constraints) = 0;
+      const ContentSettingConstraints& constraints,
+      const PartitionKey& partition_key = PartitionKey::WipGetDefault()) = 0;
 
   // Resets all content settings for the given |content_type| and empty resource
   // identifier to CONTENT_SETTING_DEFAULT.
@@ -60,7 +64,8 @@ class ProviderInterface {
   // This should only be called on the UI thread, and not after
   // ShutdownOnUIThread has been called.
   virtual void ClearAllContentSettingsRules(
-      ContentSettingsType content_type) = 0;
+      ContentSettingsType content_type,
+      const PartitionKey& partition_key = PartitionKey::WipGetDefault()) = 0;
 
   // Detaches the Provider from all Profile-related objects like PrefService.
   // This methods needs to be called before destroying the Profile.

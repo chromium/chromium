@@ -149,7 +149,8 @@ PrefProvider::~PrefProvider() {
 
 std::unique_ptr<RuleIterator> PrefProvider::GetRuleIterator(
     ContentSettingsType content_type,
-    bool off_the_record) const {
+    bool off_the_record,
+    const PartitionKey& partition_key) const {
   if (!supports_type(content_type)) {
     return nullptr;
   }
@@ -157,12 +158,14 @@ std::unique_ptr<RuleIterator> PrefProvider::GetRuleIterator(
   return GetPref(content_type)->GetRuleIterator(off_the_record);
 }
 
+// TODO(b/307193732): handle the PartitionKey in all relevant methods.
 bool PrefProvider::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
     base::Value&& in_value,
-    const ContentSettingConstraints& constraints) {
+    const ContentSettingConstraints& constraints,
+    const PartitionKey& partition_key) {
   DCHECK(CalledOnValidThread());
   DCHECK(prefs_);
 
@@ -348,7 +351,8 @@ absl::optional<base::TimeDelta> PrefProvider::RenewContentSetting(
 }
 
 void PrefProvider::ClearAllContentSettingsRules(
-    ContentSettingsType content_type) {
+    ContentSettingsType content_type,
+    const PartitionKey& partition_key) {
   DCHECK(CalledOnValidThread());
   DCHECK(prefs_);
 

@@ -16,7 +16,8 @@ MockProvider::~MockProvider() = default;
 
 std::unique_ptr<RuleIterator> MockProvider::GetRuleIterator(
     ContentSettingsType content_type,
-    bool incognito) const {
+    bool incognito,
+    const PartitionKey& partition_key) const {
   return value_map_.GetRuleIterator(content_type);
 }
 
@@ -25,7 +26,8 @@ bool MockProvider::SetWebsiteSetting(
     const ContentSettingsPattern& embedding_url_pattern,
     ContentSettingsType content_type,
     base::Value&& in_value,
-    const ContentSettingConstraints& constraints) {
+    const ContentSettingConstraints& constraints,
+    const PartitionKey& partition_key) {
   if (read_only_)
     return false;
   base::AutoLock lock(value_map_.GetLock());

@@ -26,17 +26,22 @@ class MockProvider : public ObservableProvider {
 
   std::unique_ptr<RuleIterator> GetRuleIterator(
       ContentSettingsType content_type,
-      bool incognito) const override;
+      bool incognito,
+      const PartitionKey& partition_key =
+          PartitionKey::WipGetDefault()) const override;
 
-  bool SetWebsiteSetting(
-      const ContentSettingsPattern& requesting_url_pattern,
-      const ContentSettingsPattern& embedding_url_pattern,
+  bool SetWebsiteSetting(const ContentSettingsPattern& requesting_url_pattern,
+                         const ContentSettingsPattern& embedding_url_pattern,
+                         ContentSettingsType content_type,
+                         base::Value&& value,
+                         const ContentSettingConstraints& constraint = {},
+                         const PartitionKey& partition_key =
+                             PartitionKey::WipGetDefault()) override;
+
+  void ClearAllContentSettingsRules(
       ContentSettingsType content_type,
-      base::Value&& value,
-      const ContentSettingConstraints& constraint = {}) override;
-
-  void ClearAllContentSettingsRules(ContentSettingsType content_type) override {
-  }
+      const PartitionKey& partition_key =
+          PartitionKey::WipGetDefault()) override {}
 
   void ShutdownOnUIThread() override;
 

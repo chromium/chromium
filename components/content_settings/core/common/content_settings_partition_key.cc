@@ -15,15 +15,15 @@ const PartitionKey& PartitionKey::GetDefault() {
 }
 #else
 // static
-const PartitionKey& PartitionKey::WipGetDefault() {
-  return GetDefaultImpl();
-}
-
-// static
 const PartitionKey& PartitionKey::GetDefaultForTesting() {
   return GetDefaultImpl();
 }
 #endif  // BUILDFLAG(IS_IOS)
+
+// static
+const PartitionKey& PartitionKey::WipGetDefault() {
+  return GetDefaultImpl();
+}
 
 PartitionKey::PartitionKey(const PartitionKey& key) = default;
 PartitionKey::PartitionKey(PartitionKey&& key) = default;
