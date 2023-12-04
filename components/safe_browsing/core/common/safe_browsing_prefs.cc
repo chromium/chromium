@@ -141,8 +141,6 @@ const char kExtensionTelemetryConfig[] =
     "safebrowsing.extension_telemetry_configuration";
 const char kExtensionTelemetryFileData[] =
     "safebrowsing.extension_telemetry_file_data";
-const char kRealTimeDownloadProtectionRequestAllowedByPolicy[] =
-    "safebrowsing.real_time_download_protection_request_allowed_by_policy";
 const char kSafeBrowsingExtensionProtectionAllowedByPolicy[] =
     "safebrowsing.extension_protection_allowed_by_policy";
 const char kHashPrefixRealTimeChecksAllowedByPolicy[] =
@@ -221,11 +219,6 @@ bool IsSafeBrowsingExtensionControlled(const PrefService& prefs) {
   // that can control the kSafeBrowsingEnhanced protection pref.
   return prefs.FindPreference(prefs::kSafeBrowsingEnabled)
              ->IsExtensionControlled();
-}
-
-bool IsRealTimeDownloadProtectionRequestAllowed(const PrefService& prefs) {
-  return prefs.GetBoolean(
-      prefs::kRealTimeDownloadProtectionRequestAllowedByPolicy);
 }
 
 bool IsCsdPhishingProtectionAllowed(const PrefService& prefs) {
@@ -330,8 +323,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                              base::Time::Now());
   registry->RegisterDictionaryPref(prefs::kExtensionTelemetryConfig);
   registry->RegisterDictionaryPref(prefs::kExtensionTelemetryFileData);
-  registry->RegisterBooleanPref(
-      prefs::kRealTimeDownloadProtectionRequestAllowedByPolicy, true);
   registry->RegisterBooleanPref(
       prefs::kSafeBrowsingExtensionProtectionAllowedByPolicy, true);
   registry->RegisterBooleanPref(prefs::kHashPrefixRealTimeChecksAllowedByPolicy,
@@ -445,10 +436,6 @@ base::Value::List GetSafeBrowsingPoliciesList(PrefService* prefs) {
   preferences_list.Append(login_urls);
   preferences_list.Append(prefs::kPasswordProtectionLoginURLs);
 
-  preferences_list.Append(prefs->GetBoolean(
-      prefs::kRealTimeDownloadProtectionRequestAllowedByPolicy));
-  preferences_list.Append(
-      prefs::kRealTimeDownloadProtectionRequestAllowedByPolicy);
   preferences_list.Append(prefs->GetBoolean(
       prefs::kSafeBrowsingCsdPhishingProtectionAllowedByPolicy));
   preferences_list.Append(

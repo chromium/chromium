@@ -1082,7 +1082,7 @@ policies:
   1081: DeviceSystemAecEnabled
   1082: HttpAllowlist
   1083: HttpsUpgradesEnabled
-  1084: RealTimeDownloadProtectionRequestAllowed
+  1084: ''
   1085: MandatoryExtensionsForIncognitoNavigation
   1086: CredentialProviderPromoEnabled
   1087: RemoteAccessHostAllowEnterpriseRemoteSupportConnections

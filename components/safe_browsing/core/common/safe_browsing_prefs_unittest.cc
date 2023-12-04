@@ -35,8 +35,6 @@ class SafeBrowsingPrefsTest : public ::testing::Test {
         prefs::kSafeBrowsingExtendedReportingOptInAllowed, true);
     prefs_.registry()->RegisterListPref(prefs::kSafeBrowsingAllowlistDomains);
     prefs_.registry()->RegisterBooleanPref(
-        prefs::kRealTimeDownloadProtectionRequestAllowedByPolicy, true);
-    prefs_.registry()->RegisterBooleanPref(
         prefs::kSafeBrowsingCsdPhishingProtectionAllowedByPolicy, true);
     prefs_.registry()->RegisterBooleanPref(
         prefs::kSafeBrowsingExtensionProtectionAllowedByPolicy, true);
@@ -228,15 +226,6 @@ TEST_F(SafeBrowsingPrefsTest, VerifyIsURLAllowlistedByPolicy) {
 
   GURL not_allowlisted_url("https://www.bar.com");
   EXPECT_FALSE(IsURLAllowlistedByPolicy(not_allowlisted_url, prefs_));
-}
-
-TEST_F(SafeBrowsingPrefsTest,
-       VerifyIsRealTimeDownloadProtectionRequestAllowed) {
-  // Confirm default state.
-  EXPECT_TRUE(IsRealTimeDownloadProtectionRequestAllowed(prefs_));
-  prefs_.SetBoolean(prefs::kRealTimeDownloadProtectionRequestAllowedByPolicy,
-                    false);
-  EXPECT_FALSE(IsRealTimeDownloadProtectionRequestAllowed(prefs_));
 }
 
 TEST_F(SafeBrowsingPrefsTest, VerifyIsCsdPhishingProtectionAllowed) {

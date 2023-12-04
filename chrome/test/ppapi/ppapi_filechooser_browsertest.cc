@@ -133,27 +133,6 @@ class PPAPIFileChooserTestWithSBService : public PPAPIFileChooserTest {
     SafeBrowsingService::RegisterFactory(nullptr);
   }
 
-  void TestSaveAsRealTimeDownloadProtectionRequestPolicy(bool policy_value) {
-    PrefService* pref_service = browser()->profile()->GetPrefs();
-    pref_service->SetBoolean(
-        prefs::kRealTimeDownloadProtectionRequestAllowedByPolicy, policy_value);
-    safe_browsing_test_configuration_.default_result =
-        safe_browsing::DownloadCheckResult::SAFE;
-    safe_browsing_test_configuration_.result_map.insert(
-        std::make_pair(base::FilePath::StringType(FILE_PATH_LITERAL(".exe")),
-                       safe_browsing::DownloadCheckResult::DANGEROUS));
-    PPAPITestSelectFileDialogFactory::Mode mode;
-    if (policy_value) {
-      mode = PPAPITestSelectFileDialogFactory::NOT_REACHED;
-    } else {
-      mode = PPAPITestSelectFileDialogFactory::RESPOND_WITH_FILE_LIST;
-    }
-
-    PPAPITestSelectFileDialogFactory test_dialog_factory(
-        mode, PPAPITestSelectFileDialogFactory::SelectedFileInfoList());
-    RunTestViaHTTP("FileChooser_SaveAsDangerousExecutableDisallowed");
-  }
-
  protected:
   SafeBrowsingTestConfiguration safe_browsing_test_configuration_;
 
@@ -366,18 +345,6 @@ IN_PROC_BROWSER_TEST_F(PPAPIFileChooserTestWithSBService,
   PPAPITestSelectFileDialogFactory test_dialog_factory(
       PPAPITestSelectFileDialogFactory::RESPOND_WITH_FILE_LIST, file_info_list);
   RunTestViaHTTP("FileChooser_OpenSimple");
-}
-
-IN_PROC_BROWSER_TEST_F(
-    PPAPIFileChooserTestWithSBService,
-    FileChooser_SaveAs_RealTimeDownloadProtectionRequestPolicyEnabled_Allowed) {
-  TestSaveAsRealTimeDownloadProtectionRequestPolicy(true);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    PPAPIFileChooserTestWithSBService,
-    FileChooser_SaveAs_RealTimeDownloadProtectionRequestPolicyDisabled_SkippedCheck) {
-  TestSaveAsRealTimeDownloadProtectionRequestPolicy(false);
 }
 
 #endif  // FULL_SAFE_BROWSING

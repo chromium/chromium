@@ -758,10 +758,6 @@ class DownloadProtectionServiceTestBase
   // Verify that corrupted ZIP/DMGs do send a ping.
   void CheckClientDownloadReportCorruptArchive(ArchiveType type);
 
-  // Verify that real time download protection follows policy value.
-  void CheckClientDownloadRealTimeDownloadProtectionRequestPolicy(
-      bool policy_value);
-
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -851,46 +847,6 @@ void DownloadProtectionServiceTestBase::CheckClientDownloadReportCorruptArchive(
 
   Mock::VerifyAndClearExpectations(sb_service_.get());
   Mock::VerifyAndClearExpectations(binary_feature_extractor_.get());
-}
-
-void DownloadProtectionServiceTestBase::
-    CheckClientDownloadRealTimeDownloadProtectionRequestPolicy(
-        bool policy_value) {
-  profile()->GetPrefs()->SetBoolean(
-      prefs::kRealTimeDownloadProtectionRequestAllowedByPolicy, policy_value);
-  PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
-  NiceMockDownloadItem item;
-  PrepareBasicDownloadItem(&item, {"http://www.evil.com/a.exe"},  // url_chain
-                           "http://www.google.com/",              // referrer
-                           FILE_PATH_LITERAL("a.tmp"),            // tmp_path
-                           FILE_PATH_LITERAL("a.exe"));           // final_path
-  content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
-
-  if (policy_value) {
-    EXPECT_CALL(*sb_service_->mock_database_manager(),
-                MatchDownloadAllowlistUrl(_, _))
-        .WillRepeatedly(
-            [](const GURL& url, base::OnceCallback<void(bool)> callback) {
-              std::move(callback).Run(false);
-            });
-    EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _));
-    EXPECT_CALL(*binary_feature_extractor_.get(),
-                ExtractImageFeatures(
-                    tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
-    RunLoop run_loop;
-    download_service_->MaybeCheckClientDownload(
-        &item,
-        base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
-                            base::Unretained(this), run_loop.QuitClosure()));
-    run_loop.Run();
-    EXPECT_TRUE(IsResult(DownloadCheckResult::SAFE));
-    EXPECT_TRUE(HasClientDownloadRequest());
-  } else {
-    base::MockCallback<CheckDownloadRepeatingCallback> done_callback;
-    download_service_->MaybeCheckClientDownload(&item, done_callback.Get());
-    EXPECT_CALL(done_callback, Run(_)).Times(0);
-  }
-  ClearClientDownloadRequest();
 }
 
 // TODO(crbug.com/721964): Create specific unit tests for
@@ -2353,16 +2309,6 @@ TEST_F(DownloadProtectionServiceTest,
   }
 }
 
-TEST_F(DownloadProtectionServiceTest,
-       CheckClientDownloadRealTimeDownloadProtectionRequestPolicyEnabled) {
-  CheckClientDownloadRealTimeDownloadProtectionRequestPolicy(true);
-}
-
-TEST_F(DownloadProtectionServiceTest,
-       CheckClientDownloadRealTimeDownloadProtectionRequestPolicyDisabled) {
-  CheckClientDownloadRealTimeDownloadProtectionRequestPolicy(false);
-}
-
 TEST_F(DownloadProtectionServiceTest, TestCheckDownloadUrl) {
   std::vector<GURL> url_chain;
   url_chain.emplace_back("http://www.google.com/");
@@ -3379,7 +3325,6 @@ TEST_F(DownloadProtectionServiceFlagTest, CheckClientDownloadOverridenByFlag) {
                            "http://www.google.com/",              // referrer
                            FILE_PATH_LITERAL("a.tmp"),            // tmp_path
                            FILE_PATH_LITERAL("a.exe"));           // final_path
-  content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
 
   EXPECT_CALL(item, GetHash()).WillRepeatedly(ReturnRef(blocklisted_hash_));
   EXPECT_CALL(*sb_service_->mock_database_manager(),
@@ -3417,7 +3362,6 @@ TEST_F(DownloadProtectionServiceFlagTest,
       testdata_path_.AppendASCII(
           "zipfile_one_unsigned_binary.zip"),                   // tmp_path
       temp_dir_.GetPath().Append(FILE_PATH_LITERAL("a.zip")));  // final_path
-  content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
 
   EXPECT_CALL(*sb_service_->mock_database_manager(),
               MatchDownloadAllowlistUrl(_, _))

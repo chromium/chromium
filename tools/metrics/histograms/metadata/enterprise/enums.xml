@@ -1887,7 +1887,6 @@ chromium-metrics-reviews@google.com.
   <int value="1081" label="DeviceSystemAecEnabled"/>
   <int value="1082" label="HttpAllowlist"/>
   <int value="1083" label="HttpsUpgradesEnabled"/>
-  <int value="1084" label="RealTimeDownloadProtectionRequestAllowed"/>
   <int value="1085" label="MandatoryExtensionsForIncognitoNavigation"/>
   <int value="1086" label="CredentialProviderPromoEnabled"/>
   <int value="1087"
