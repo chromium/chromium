@@ -151,7 +151,7 @@ enum class PrintBackendFeatureVariation {
   kOopUnsandboxedService,
 };
 
-static const char* GetPrintBackendTestSuffix(
+const char* GetPrintBackendTestSuffix(
     const testing::TestParamInfo<PrintBackendFeatureVariation>& info) {
   switch (info.param) {
     case PrintBackendFeatureVariation::kInBrowserProcess:
@@ -1182,23 +1182,6 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(PrintBackendFeatureVariation::kOopSandboxedService,
                     PrintBackendFeatureVariation::kOopUnsandboxedService),
     GetPrintBackendTestSuffix);
-
-#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
-
-class SystemAccessProcessInBrowserPrintBrowserTest
-    : public SystemAccessProcessPrintBrowserTestBase {
- public:
-  SystemAccessProcessInBrowserPrintBrowserTest() = default;
-  ~SystemAccessProcessInBrowserPrintBrowserTest() override = default;
-
-  bool UseService() override { return false; }
-  bool SandboxService() override { return false; }
-#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-  bool EnableContentAnalysisAfterDialog() override { return false; }
-#endif
-};
-
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
 
 class SystemAccessProcessPrintBrowserTest
     : public SystemAccessProcessPrintBrowserTestBase,
