@@ -48,10 +48,6 @@
 #import "ui/base/window_open_disposition.h"
 #import "url/gurl.h"
 
-// To get access to web::features::kEnableSessionSerializationOptimizations.
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
-
 namespace {
 
 // Set of FilePath.
@@ -250,10 +246,6 @@ base::RepeatingClosure ExpectNCall(base::RepeatingClosure closure, size_t n) {
 class LegacySessionRestorationServiceTest : public PlatformTest {
  public:
   LegacySessionRestorationServiceTest() {
-    // Disable the feature. Needs to happen before the threads are created.
-    scoped_feature_list_.InitAndDisableFeature(
-        web::features::kEnableSessionSerializationOptimizations);
-
     // Use the ChromeWebClient as the test tries to load chrome:// URLs.
     scoped_web_client_ = std::make_unique<web::ScopedTestingWebClient>(
         std::make_unique<ChromeWebClient>());

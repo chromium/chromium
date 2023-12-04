@@ -23,12 +23,6 @@ class WebState;
 }  // namespace web
 
 // Service responsible for session saving and restoration.
-//
-// This service is only used when the optimized session restoration
-// feature (web::features::kEnableSessionSerializationOptimizations)
-// is enabled.
-//
-// TODO(crbug.com/1383087): Update this comment once launched.
 class SessionRestorationService : public KeyedService {
  public:
   SessionRestorationService() = default;

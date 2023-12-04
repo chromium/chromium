@@ -31,10 +31,6 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
-// To get access to web::features::kEnableSessionSerializationOptimizations.
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
-
 namespace {
 
 // The delay before saving.
@@ -45,8 +41,6 @@ class SessionServiceTest : public PlatformTest {
  public:
   SessionServiceTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitAndDisableFeature(
-        web::features::kEnableSessionSerializationOptimizations);
   }
 
   SessionServiceTest(const SessionServiceTest&) = delete;
@@ -126,7 +120,6 @@ class SessionServiceTest : public PlatformTest {
  private:
   base::ScopedTempDir scoped_temp_directory_;
   base::test::TaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   SessionServiceIOS* session_service_ = nil;
   FakeWebStateListDelegate web_state_list_delegate_;
   base::FilePath directory_;

@@ -16,7 +16,6 @@
 #import "base/run_loop.h"
 #import "base/scoped_multi_source_observation.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/sessions/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/session_constants.h"
@@ -40,10 +39,6 @@
 #import "ui/base/page_transition_types.h"
 #import "ui/base/window_open_disposition.h"
 #import "url/gurl.h"
-
-// To get access to web::features::kEnableSessionSerializationOptimizations.
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
 
 namespace {
 
@@ -239,10 +234,6 @@ base::RepeatingClosure ExpectNCall(base::RepeatingClosure closure, size_t n) {
 class SessionRestorationServiceImplTest : public PlatformTest {
  public:
   SessionRestorationServiceImplTest() {
-    // Enable the feature. Needs to happen before the threads are created.
-    scoped_feature_list_.InitAndEnableFeature(
-        web::features::kEnableSessionSerializationOptimizations);
-
     // Use the ChromeWebClient as the test tries to load chrome:// URLs.
     scoped_web_client_ = std::make_unique<web::ScopedTestingWebClient>(
         std::make_unique<ChromeWebClient>());
@@ -344,7 +335,6 @@ class SessionRestorationServiceImplTest : public PlatformTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   FileModificationTracker file_tracker_;
 
   std::unique_ptr<web::ScopedTestingWebClient> scoped_web_client_;

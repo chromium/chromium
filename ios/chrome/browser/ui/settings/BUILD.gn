@@ -226,7 +226,6 @@ source_set("settings") {
     "//ios/chrome/common/ui/util:image_util",
     "//ios/public/provider/chrome/browser/signin:signin_resources_api",
     "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
-    "//ios/web/common:features",
     "//net",
     "//ui/base",
     "//url",

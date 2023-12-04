@@ -95,7 +95,6 @@ source_set("google_services") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/public/provider/chrome/browser/signin:signin_resources_api",
-    "//ios/web/common:features",
     "//ui/base",
   ]
 }
