@@ -51,6 +51,9 @@ class AppShimController
     std::string app_id;
     std::u16string app_name;
     GURL app_url;
+    // Task runner for the IO thread, only used to guarantee no race conditions
+    // when swapping out FeatureList instances in FinalizeFeatureState();
+    scoped_refptr<base::SequencedTaskRunner> io_thread_runner;
   };
 
   explicit AppShimController(const Params& params);
@@ -59,6 +62,20 @@ class AppShimController
   AppShimController& operator=(const AppShimController&) = delete;
 
   ~AppShimController() override;
+
+  // Called early in process startup to temporarily initialize base::FeatureList
+  // and field trial state with a best guess of what the state should be. This
+  // gets state from the command line and/or a file in user_data_dir.
+  // FeatureList and field trials are later re-initialized in
+  // OnShimConnectedResponse, once communication with the correct chrome
+  // instance has been established.
+  static void PreInitFeatureState(const base::CommandLine& command_line);
+
+  // Called by OnShimConnectedResponse to finish setting up FeatureList and
+  // field trials for this process.
+  static void FinalizeFeatureState(
+      const variations::VariationsCommandLine& feature_state,
+      const scoped_refptr<base::SequencedTaskRunner>& io_thread_runner);
 
   chrome::mojom::AppShimHost* host() const { return host_.get(); }
 
@@ -129,6 +146,7 @@ class AppShimController
   // be controlled by the browser. On failure, the app will quit.
   void OnShimConnectedResponse(
       chrome::mojom::AppShimLaunchResult result,
+      variations::VariationsCommandLine feature_state,
       mojo::PendingReceiver<chrome::mojom::AppShim> app_shim_receiver);
 
   // Builds main menu bar items.

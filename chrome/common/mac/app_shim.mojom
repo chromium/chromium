@@ -173,6 +173,20 @@ struct AppShimInfo {
   array<url.mojom.Url> urls;
 };
 
+// Struct used to pass the state of features and field trials from the browser
+// process to app shims when a connection is established between the two.
+// This corresponds to the C++ `variations::VariationsCommandLine` struct.
+// These fields are passed as strings, in the same format as when these would
+// be passed over the command line, as that is the format that is supported
+// by `base::FieldTrialList` and `base::FeatureList` for serialization and
+// deserialization.
+struct FeatureState {
+  string field_trial_states;
+  string field_trial_params;
+  string enable_features;
+  string disable_features;
+};
+
 // The initial interface provided by the browser process. Used to bootstrap to
 // the AppShim and AppShimHost interfaces.
 interface AppShimHostBootstrap {
@@ -183,6 +197,7 @@ interface AppShimHostBootstrap {
   OnShimConnected(pending_receiver<AppShimHost> host_receiver,
                   AppShimInfo app_shim_info) =>
                       (AppShimLaunchResult launch_result,
+                       FeatureState feature_state,
                        pending_receiver<AppShim> app_shim_receiver);
 };
 
