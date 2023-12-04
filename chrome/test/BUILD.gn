@@ -3372,7 +3372,6 @@ if (!is_android) {
         "//ash/webui/color_internals:browser_tests_js",
         "//ash/webui/eche_app_ui:browser_tests_js",
         "//ash/webui/help_app_ui:browser_tests_js",
-        "//ash/webui/media_app_ui:browser_tests_js",
         "//ash/webui/system_apps:browser_tests",
         "//ash/webui/system_extensions_internals_ui:browser_tests_js",
         "//chrome/test/data/webui/chromeos:browser_tests_js_mojo_lite_webui",

@@ -1155,6 +1155,40 @@ function runAllActionsAsync(whenTestDone, var_args) {
 }
 
 /**
+ * Runs a test isolated from the other test-runner machinery in this file which
+ * is mostly for the deprecated js2gtest suites. Designed for running with the
+ * newer, better `EvalJs` machinery (rather than chrome.send).
+ *
+ * @param {string} suite Name of the test suite object on `window`.
+ * @param {string} name Test method on the `suite`.
+ * @param {string} helper A method on `suite` that takes `name` as a string.
+ * @return {string}
+ */
+async function isolatedTestRunner(suite, name, helper) {
+  console.log(`Running ${suite}.${name} with isolatedTestRunner(${helper}).`);
+  const testSuite = window[suite];
+  try {
+    if (helper) {
+      await testSuite[helper](name);
+    } else {
+      await testSuite[name]();
+    }
+    console.log(`${suite}.${name} ran to completion.`);
+    return 'test_completed';
+  } catch (/* @type {Error} */ error) {
+    let message = 'exception';
+    if (typeof error === 'object' && error !== null && error['message']) {
+      message = error['message'];
+      console.log(error['stack']);
+    } else {
+      console.log(error);
+    }
+    console.log(`${suite}.${name} threw: ${message}`, error);
+    throw error;
+  }
+}
+
+/**
  * Exports assertion methods. All assertion methods delegate to the chai.js
  * assertion library.
  */
@@ -1199,4 +1233,5 @@ exports.RUNTIME_TEST_F = TEST_F;
 exports.GEN = GEN;
 exports.GEN_INCLUDE = GEN_INCLUDE;
 exports.WhenTestDone = WhenTestDone;
+exports.isolatedTestRunner = isolatedTestRunner;
 })(this);

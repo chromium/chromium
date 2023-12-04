@@ -136,6 +136,9 @@ class BaseWebUIBrowserTest : public JavaScriptBrowserTest {
     test_handler_ = std::move(test_handler);
   }
 
+  // Clears captured console error messages. Returns false if there were any.
+  bool EnsureNoCapturedConsoleErrorMessages();
+
   // Handles collection of code coverage.
   std::unique_ptr<DevToolsAgentCoverageObserver> coverage_handler_;
 
