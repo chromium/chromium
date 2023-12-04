@@ -180,7 +180,7 @@ double FuzzyTokenizedStringMatch::WeightedRatio(const TokenizedString& query,
   std::vector<double> weighted_ratios;
   weighted_ratios.emplace_back(
       SequenceMatcher(query_normalized, text_normalized)
-          .Ratio(/*use_text_length_agnosticism=*/true));
+          .Ratio(/*text_length_agnostic=*/true));
 
   const double length_ratio =
       static_cast<double>(
@@ -314,11 +314,11 @@ double FuzzyTokenizedStringMatch::Relevance(const TokenizedString& query_input,
   }
   hits_vector.emplace_back(sequence_hits);
 
-  relevances.emplace_back(
-      use_weighted_ratio ? WeightedRatio(query, text)
-                         : SequenceMatcher(base::i18n::ToLower(query_text),
-                                           base::i18n::ToLower(text_text))
-                               .Ratio(/*use_text_length_agnosticism=*/true));
+  relevances.emplace_back(use_weighted_ratio
+                              ? WeightedRatio(query, text)
+                              : SequenceMatcher(base::i18n::ToLower(query_text),
+                                                base::i18n::ToLower(text_text))
+                                    .Ratio(/*text_length_agnostic=*/true));
   if (use_acronym_matcher) {
     relevances.emplace_back(AcronymMatcher(query, text, hits_vector));
   }
