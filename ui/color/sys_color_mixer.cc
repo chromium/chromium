@@ -332,6 +332,16 @@ void AddSysColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
   // Effects.
   mixer[kColorSysShadow] = {kColorRefNeutral0};
 
+  // AI.
+  mixer[kColorSysAiIllustrationShapeSurface1] = {
+      dark_mode ? ui::kColorRefPrimary50 : ui::kColorRefPrimary70};
+  mixer[kColorSysAiIllustrationShapeSurface2] = {
+      dark_mode ? ui::kColorRefPrimary25 : ui::kColorRefPrimary95};
+  mixer[kColorSysAiIllustrationShapeSurfaceGradientStart] = {
+      dark_mode ? ui::kColorRefSecondary30 : ui::kColorRefSecondary90};
+  mixer[kColorSysAiIllustrationShapeSurfaceGradientEnd] = {
+      dark_mode ? ui::kColorRefPrimary40 : ui::kColorRefPrimary80};
+
   // Experimentation.
   mixer[kColorSysOmniboxContainer] = {dark_mode ? kColorRefNeutral15
                                                 : kColorSysSurface4};

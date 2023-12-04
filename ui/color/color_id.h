@@ -196,6 +196,11 @@
   E_CPONLY(kColorSysStateHeaderSelect) \
   /* Effects. */ \
   E_CPONLY(kColorSysShadow) \
+  /* AI. */ \
+  E_CPONLY(kColorSysAiIllustrationShapeSurface1) \
+  E_CPONLY(kColorSysAiIllustrationShapeSurface2) \
+  E_CPONLY(kColorSysAiIllustrationShapeSurfaceGradientStart) \
+  E_CPONLY(kColorSysAiIllustrationShapeSurfaceGradientEnd) \
   /* Experimentation. */ \
   E_CPONLY(kColorSysOmniboxContainer) \
   /* Deprecated */ \
