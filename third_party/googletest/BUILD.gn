@@ -126,7 +126,7 @@ source_set("gtest") {
 
   defines = []
   deps = []
-  public_deps = []
+  public_deps = [ "//third_party/re2" ]
   if (is_nacl || !build_with_chromium) {
     defines += [ "GTEST_DISABLE_PRINT_STACK_TRACE" ]
     sources -= [
