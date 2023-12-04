@@ -34,6 +34,10 @@ TabOrganizationSession::~TabOrganizationSession() {
   for (auto& observer : observers_) {
     observer.OnTabOrganizationSessionDestroyed(session_id());
   }
+
+  if (request_) {
+    request_->LogResults(this);
+  }
 }
 
 // static

@@ -11,9 +11,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/token.h"
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+
+class TabOrganizationSession;
 
 struct TabOrganizationResponse {
+  using LogResultsCallback =
+      base::OnceCallback<void(const TabOrganizationSession* session)>;
+
   struct Organization {
     explicit Organization(std::u16string label_,
                           std::vector<TabData::TabID> tab_ids_);
@@ -25,12 +29,15 @@ struct TabOrganizationResponse {
     const std::vector<TabData::TabID> tab_ids;
   };
 
-  TabOrganizationResponse(std::vector<Organization> organizations_,
-                          std::u16string feedback_id_ = u"");
+  explicit TabOrganizationResponse(
+      std::vector<Organization> organizations_,
+      std::u16string feedback_id_ = u"",
+      LogResultsCallback log_results_callback_ = base::DoNothing());
   ~TabOrganizationResponse();
 
   const std::vector<Organization> organizations;
   const std::u16string feedback_id;
+  LogResultsCallback log_results_callback;
 };
 
 class TabOrganizationRequest {
@@ -76,6 +83,7 @@ class TabOrganizationRequest {
       std::unique_ptr<TabOrganizationResponse> response) {
     CompleteRequest(std::move(response));
   }
+  void LogResults(const TabOrganizationSession* session);
 
  private:
   void CompleteRequest(std::unique_ptr<TabOrganizationResponse> response);

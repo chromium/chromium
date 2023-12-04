@@ -24,6 +24,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+
+int kMinimumValidTabs = 2;
+
+}  // anonymous namespace
+
 class TabOrganizationTest : public testing::Test {
  public:
   struct StoredOnResponseCallback {
@@ -1042,4 +1048,48 @@ TEST_F(TabOrganizationTest, TabOrganizationSessionObserverOrganizationUpdate) {
 
   request_ptr->CompleteRequestForTesting(std::move(response));
   EXPECT_EQ(observer->update_call_count, 2);
+}
+
+TEST_F(TabOrganizationTest, TabOrganizationSessionRequestOnLogResultsCalled) {
+  // Create a request
+  std::unique_ptr<TabOrganizationRequest> request =
+      std::make_unique<TabOrganizationRequest>();
+  TabOrganizationRequest* request_ptr = request.get();
+
+  // Add 2 tabs for organization
+  std::vector<TabData::TabID> ids_to_group;
+  for (int i = 0; i < kMinimumValidTabs; i++) {
+    content::WebContents* tab_to_group = AddTab();
+    TabData* tab_to_group_data = request->AddTabData(
+        std::make_unique<TabData>(tab_strip_model(), tab_to_group));
+    ids_to_group.emplace_back(tab_to_group_data->tab_id());
+  }
+
+  // Create a response
+  std::vector<TabOrganizationResponse::Organization> response_organizations;
+  TabOrganizationResponse::Organization organization(u"title",
+                                                     std::move(ids_to_group));
+  response_organizations.emplace_back(std::move(organization));
+
+  // Create a log response callback
+  int log_callback_called_times = 0;
+
+  std::unique_ptr<TabOrganizationResponse> response =
+      std::make_unique<TabOrganizationResponse>(
+          response_organizations, u"",
+          base::BindLambdaForTesting(
+              [&](const TabOrganizationSession* _session) {
+                log_callback_called_times++;
+              }));
+
+  std::unique_ptr<TabOrganizationSession> session =
+      std::make_unique<TabOrganizationSession>(std::move(request));
+
+  // Start and complete the request so that the organizations are populated
+  session->StartRequest();
+  request_ptr->CompleteRequestForTesting(std::move(response));
+
+  // Log Results and expect the log_results_callback to be called.
+  session.reset();
+  EXPECT_EQ(log_callback_called_times, 1);
 }
