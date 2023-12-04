@@ -115,6 +115,30 @@ class GPU_EXPORT SharedImageInterface {
       gfx::BufferUsage buffer_usage);
 
   // Creates a shared image out an existing buffer. The buffer described by
+  // `buffer_handle` must hold all planes based on `format` and `size`. This
+  // version is specifically used by clients that need access to the buffer on
+  // the client side. It ensures that
+  // ClientSharedImage::CloneGpuMemoryBufferHandle() can be invoked on the
+  // returned ClientSharedImage.
+  // NOTE: We are currently passing BufferUsage to this method for simplicity
+  // since as of now we dont have a clear way to map BufferUsage to
+  // SharedImageUsage.
+  // TODO(crbug.com/1467584): Merge this method to above existing methods once
+  // we figure out mapping between BufferUsage and SharedImageUsage and
+  // eliminate all usages of BufferUsage.
+  virtual scoped_refptr<ClientSharedImage> CreateSharedImage(
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      base::StringPiece debug_label,
+      gpu::SurfaceHandle surface_handle,
+      gfx::BufferUsage buffer_usage,
+      gfx::GpuMemoryBufferHandle buffer_handle) = 0;
+
+  // Creates a shared image out an existing buffer. The buffer described by
   // `buffer_handle` must hold all planes based `format` and `size. `usage` is a
   // combination of |SharedImageUsage| bits that describes which API(s) the
   // image will be used with.

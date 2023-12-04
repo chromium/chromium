@@ -103,6 +103,17 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
       SkAlphaType alpha_type,
       uint32_t usage,
       base::StringPiece debug_label,
+      gpu::SurfaceHandle surface_handle,
+      gfx::BufferUsage buffer_usage,
+      gfx::GpuMemoryBufferHandle buffer_handle) override;
+  scoped_refptr<ClientSharedImage> CreateSharedImage(
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      base::StringPiece debug_label,
       gfx::GpuMemoryBufferHandle buffer_handle) override;
   scoped_refptr<ClientSharedImage> CreateSharedImage(
       gfx::GpuMemoryBuffer* gpu_memory_buffer,

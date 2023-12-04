@@ -454,6 +454,29 @@ SharedImageInterfaceInProcess::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     base::StringPiece debug_label,
+    gpu::SurfaceHandle surface_handle,
+    gfx::BufferUsage buffer_usage,
+    gfx::GpuMemoryBufferHandle buffer_handle) {
+  auto client_buffer_handle = buffer_handle.Clone();
+  auto mailbox =
+      CreateSharedImage(format, size, color_space, surface_origin, alpha_type,
+                        usage, debug_label, std::move(buffer_handle))
+          ->mailbox();
+
+  return base::MakeRefCounted<ClientSharedImage>(
+      mailbox, GpuMemoryBufferHandleInfo(std::move(client_buffer_handle),
+                                         format, size, buffer_usage));
+}
+
+scoped_refptr<ClientSharedImage>
+SharedImageInterfaceInProcess::CreateSharedImage(
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    uint32_t usage,
+    base::StringPiece debug_label,
     gfx::GpuMemoryBufferHandle buffer_handle) {
   DCHECK(gpu::IsValidClientUsage(usage));
 
