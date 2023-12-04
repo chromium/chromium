@@ -5750,7 +5750,6 @@ TEST_P(SSLHandshakeDetailsTest, Metrics) {
     ASSERT_TRUE(sock_->GetSSLInfo(&info));
     EXPECT_EQ(version, SSLConnectionStatusToVersion(info.connection_status));
     EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, info.handshake_type);
-    EXPECT_EQ(GetParam().alpn, sock_->WasAlpnNegotiated());
 
     histograms.ExpectUniqueSample("Net.SSLHandshakeDetails",
                                   GetParam().expected_initial, 1);
@@ -5772,7 +5771,6 @@ TEST_P(SSLHandshakeDetailsTest, Metrics) {
     ASSERT_TRUE(sock_->GetSSLInfo(&info));
     EXPECT_EQ(version, SSLConnectionStatusToVersion(info.connection_status));
     EXPECT_EQ(SSLInfo::HANDSHAKE_RESUME, info.handshake_type);
-    EXPECT_EQ(GetParam().alpn, sock_->WasAlpnNegotiated());
 
     histograms.ExpectUniqueSample("Net.SSLHandshakeDetails",
                                   GetParam().expected_resume, 1);
@@ -6107,7 +6105,6 @@ TEST_P(SSLClientSocketAlpsTest, Alps) {
             SSLConnectionStatusToVersion(info.connection_status));
   EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, info.handshake_type);
 
-  EXPECT_EQ(true, sock_->WasAlpnNegotiated());
   EXPECT_EQ(kProtoHTTP2, sock_->GetNegotiatedProtocol());
 
   // ALPS is negotiated only if ALPS is enabled both on client and server.

@@ -1023,11 +1023,11 @@ int HttpStreamFactory::Job::DoInitConnectionComplete(int result) {
       if (using_ssl_) {
         negotiated_protocol_ = kProtoQUIC;
       }
-    } else if (connection_->socket()->WasAlpnNegotiated()) {
+    } else if (connection_->socket()->GetNegotiatedProtocol() !=
+               kProtoUnknown) {
       // Only connections that use TLS can negotiate ALPN.
       DCHECK(using_ssl_ || proxy_info_.is_secure_http_like());
       negotiated_protocol_ = connection_->socket()->GetNegotiatedProtocol();
-      CHECK_NE(kProtoUnknown, negotiated_protocol_);
       net_log_.AddEvent(NetLogEventType::HTTP_STREAM_REQUEST_PROTO, [&] {
         return NetLogHttpStreamProtoParams(negotiated_protocol_);
       });

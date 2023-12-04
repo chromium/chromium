@@ -91,7 +91,6 @@ class SSLServerContextImpl::SocketImpl : public SSLServerSocket,
   int GetLocalAddress(IPEndPoint* address) const override;
   const NetLogWithSource& NetLog() const override;
   bool WasEverUsed() const override;
-  bool WasAlpnNegotiated() const override;
   NextProto GetNegotiatedProtocol() const override;
   absl::optional<base::StringPiece> GetPeerApplicationSettings() const override;
   bool GetSSLInfo(SSLInfo* ssl_info) override;
@@ -540,10 +539,6 @@ const NetLogWithSource& SSLServerContextImpl::SocketImpl::NetLog() const {
 
 bool SSLServerContextImpl::SocketImpl::WasEverUsed() const {
   return transport_socket_->WasEverUsed();
-}
-
-bool SSLServerContextImpl::SocketImpl::WasAlpnNegotiated() const {
-  return negotiated_protocol_ != kProtoUnknown;
 }
 
 NextProto SSLServerContextImpl::SocketImpl::GetNegotiatedProtocol() const {

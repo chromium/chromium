@@ -225,10 +225,6 @@ bool BrokeredTcpClientSocket::WasEverUsed() const {
   return brokered_socket_->WasEverUsed();
 }
 
-bool BrokeredTcpClientSocket::WasAlpnNegotiated() const {
-  return false;
-}
-
 net::NextProto BrokeredTcpClientSocket::GetNegotiatedProtocol() const {
   return net::kProtoUnknown;
 }

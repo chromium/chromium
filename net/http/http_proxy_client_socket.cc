@@ -133,12 +133,6 @@ bool HttpProxyClientSocket::WasEverUsed() const {
   return false;
 }
 
-bool HttpProxyClientSocket::WasAlpnNegotiated() const {
-  // Do not delegate to `socket_`. While `socket_` may negotiate ALPN with the
-  // proxy, this object represents the tunneled TCP connection to the origin.
-  return false;
-}
-
 NextProto HttpProxyClientSocket::GetNegotiatedProtocol() const {
   // Do not delegate to `socket_`. While `socket_` may negotiate ALPN with the
   // proxy, this object represents the tunneled TCP connection to the origin.

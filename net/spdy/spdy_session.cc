@@ -1299,10 +1299,6 @@ base::StringPiece SpdySession::GetAcceptChViaAlps(
   return it->second;
 }
 
-bool SpdySession::WasAlpnNegotiated() const {
-  return socket_->WasAlpnNegotiated();
-}
-
 NextProto SpdySession::GetNegotiatedProtocol() const {
   return socket_->GetNegotiatedProtocol();
 }

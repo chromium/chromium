@@ -96,13 +96,6 @@ bool SOCKS5ClientSocket::WasEverUsed() const {
   return was_ever_used_;
 }
 
-bool SOCKS5ClientSocket::WasAlpnNegotiated() const {
-  if (transport_socket_)
-    return transport_socket_->WasAlpnNegotiated();
-  NOTREACHED();
-  return false;
-}
-
 NextProto SOCKS5ClientSocket::GetNegotiatedProtocol() const {
   if (transport_socket_)
     return transport_socket_->GetNegotiatedProtocol();

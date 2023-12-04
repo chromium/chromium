@@ -597,7 +597,6 @@ TEST_P(HttpProxyConnectJobTest, HasEstablishedConnectionTunnel) {
   // values.
   SSLInfo ssl_info;
   EXPECT_FALSE(test_delegate.socket()->GetSSLInfo(&ssl_info));
-  EXPECT_FALSE(test_delegate.socket()->WasAlpnNegotiated());
   EXPECT_EQ(test_delegate.socket()->GetNegotiatedProtocol(),
             NextProto::kProtoUnknown);
 }

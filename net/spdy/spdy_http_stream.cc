@@ -23,6 +23,7 @@
 #include "net/http/http_response_info.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
+#include "net/socket/next_proto.h"
 #include "net/spdy/spdy_http_utils.h"
 #include "net/spdy/spdy_session.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
@@ -450,7 +451,7 @@ void SpdyHttpStream::SendEmptyBody() {
 
 void SpdyHttpStream::InitializeStreamHelper() {
   stream_->SetDelegate(this);
-  was_alpn_negotiated_ = stream_->WasAlpnNegotiated();
+  was_alpn_negotiated_ = stream_->GetNegotiatedProtocol() != kProtoUnknown;
 }
 
 void SpdyHttpStream::ResetStream(int error) {

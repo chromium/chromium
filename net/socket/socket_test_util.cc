@@ -903,10 +903,6 @@ const NetLogWithSource& MockClientSocket::NetLog() const {
   return net_log_;
 }
 
-bool MockClientSocket::WasAlpnNegotiated() const {
-  return false;
-}
-
 NextProto MockClientSocket::GetNegotiatedProtocol() const {
   return kProtoUnknown;
 }
@@ -1391,10 +1387,6 @@ int MockSSLClientSocket::GetLocalAddress(IPEndPoint* address) const {
 
 int MockSSLClientSocket::GetPeerAddress(IPEndPoint* address) const {
   return stream_socket_->GetPeerAddress(address);
-}
-
-bool MockSSLClientSocket::WasAlpnNegotiated() const {
-  return data_->next_proto != kProtoUnknown;
 }
 
 NextProto MockSSLClientSocket::GetNegotiatedProtocol() const {
@@ -2033,10 +2025,6 @@ const NetLogWithSource& WrappedStreamSocket::NetLog() const {
 
 bool WrappedStreamSocket::WasEverUsed() const {
   return transport_->WasEverUsed();
-}
-
-bool WrappedStreamSocket::WasAlpnNegotiated() const {
-  return transport_->WasAlpnNegotiated();
 }
 
 NextProto WrappedStreamSocket::GetNegotiatedProtocol() const {

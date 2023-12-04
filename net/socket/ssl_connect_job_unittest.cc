@@ -722,7 +722,6 @@ TEST_F(SSLConnectJobTest, DirectWithNPN) {
 
   test_delegate.StartJobExpectingResult(ssl_connect_job.get(), OK,
                                         false /* expect_sync_result */);
-  EXPECT_TRUE(test_delegate.socket()->WasAlpnNegotiated());
   CheckConnectTimesSet(ssl_connect_job->connect_timing());
 }
 
@@ -739,7 +738,6 @@ TEST_F(SSLConnectJobTest, DirectGotHTTP2) {
 
   test_delegate.StartJobExpectingResult(ssl_connect_job.get(), OK,
                                         false /* expect_sync_result */);
-  EXPECT_TRUE(test_delegate.socket()->WasAlpnNegotiated());
   EXPECT_EQ(kProtoHTTP2, test_delegate.socket()->GetNegotiatedProtocol());
   CheckConnectTimesSet(ssl_connect_job->connect_timing());
 }

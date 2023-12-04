@@ -645,7 +645,6 @@ TEST_P(QuicProxyClientSocketTest, ConnectSendsCorrectRequest) {
   // values.
   net::SSLInfo ssl_info;
   EXPECT_FALSE(sock_->GetSSLInfo(&ssl_info));
-  EXPECT_FALSE(sock_->WasAlpnNegotiated());
   EXPECT_EQ(sock_->GetNegotiatedProtocol(), NextProto::kProtoUnknown);
 }
 

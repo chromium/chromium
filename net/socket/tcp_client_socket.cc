@@ -392,10 +392,6 @@ bool TCPClientSocket::WasEverUsed() const {
   return was_ever_used_;
 }
 
-bool TCPClientSocket::WasAlpnNegotiated() const {
-  return false;
-}
-
 NextProto TCPClientSocket::GetNegotiatedProtocol() const {
   return kProtoUnknown;
 }

@@ -153,13 +153,6 @@ bool SpdyProxyClientSocket::WasEverUsed() const {
   return was_ever_used_ || (spdy_stream_.get() && spdy_stream_->WasEverUsed());
 }
 
-bool SpdyProxyClientSocket::WasAlpnNegotiated() const {
-  // Do not delegate to `spdy_stream_`. While `spdy_stream_` negotiated ALPN
-  // with the proxy, this object represents the tunneled TCP connection to the
-  // origin.
-  return false;
-}
-
 NextProto SpdyProxyClientSocket::GetNegotiatedProtocol() const {
   // Do not delegate to `spdy_stream_`. While `spdy_stream_` negotiated ALPN
   // with the proxy, this object represents the tunneled TCP connection to the

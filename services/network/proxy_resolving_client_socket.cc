@@ -176,12 +176,6 @@ bool ProxyResolvingClientSocket::WasEverUsed() const {
   return false;
 }
 
-bool ProxyResolvingClientSocket::WasAlpnNegotiated() const {
-  if (socket_)
-    return socket_->WasAlpnNegotiated();
-  return false;
-}
-
 net::NextProto ProxyResolvingClientSocket::GetNegotiatedProtocol() const {
   if (socket_)
     return socket_->GetNegotiatedProtocol();

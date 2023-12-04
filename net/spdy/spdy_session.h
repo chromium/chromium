@@ -492,9 +492,6 @@ class NET_EXPORT SpdySession
   base::StringPiece GetAcceptChViaAlps(
       const url::SchemeHostPort& scheme_host_port) const override;
 
-  // Returns true if ALPN was negotiated for the underlying socket.
-  bool WasAlpnNegotiated() const;
-
   // Returns the protocol negotiated via ALPN for the underlying socket.
   NextProto GetNegotiatedProtocol() const;
 

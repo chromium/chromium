@@ -130,13 +130,6 @@ bool SOCKSClientSocket::WasEverUsed() const {
   return was_ever_used_;
 }
 
-bool SOCKSClientSocket::WasAlpnNegotiated() const {
-  if (transport_socket_)
-    return transport_socket_->WasAlpnNegotiated();
-  NOTREACHED();
-  return false;
-}
-
 NextProto SOCKSClientSocket::GetNegotiatedProtocol() const {
   if (transport_socket_)
     return transport_socket_->GetNegotiatedProtocol();

@@ -142,10 +142,6 @@ class NetStreamSocketAdapter : public net::StreamSocket {
     NOTREACHED();
     return true;
   }
-  bool WasAlpnNegotiated() const override {
-    NOTREACHED();
-    return false;
-  }
   net::NextProto GetNegotiatedProtocol() const override {
     NOTREACHED();
     return net::kProtoUnknown;
