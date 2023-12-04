@@ -2443,7 +2443,7 @@
     // event is cancelled.
     {
       name: "MouseDragOnCancelledMouseMove",
-      status: "test",
+      status: "experimental",
     },
     // crbug.com/1446498: This feature is being used for the deprecation of
     // Mutation Events.
