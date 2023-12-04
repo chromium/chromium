@@ -95,12 +95,10 @@ String DOMURL::CreatePublicURL(ExecutionContext* execution_context,
 
 URLSearchParams* DOMURL::searchParams() {
   if (!search_params_) {
-    if (recordreplay::IsRecordingOrReplaying() && !recordreplay::AreAssertsDisabled()) {
-      std::string stack;
-      recordreplay::GetCurrentJSStack(&stack);
-      recordreplay::Assert("[RUN-2324-2325] DOMURL::searchParams %s stack=%s",
-                           Url().GetString().Utf8().c_str(), stack.c_str());
-    }
+    // disable events for url creation, since jit optimizations can land us
+    // here from different paths.
+    // https://linear.app/replay/issue/RUN-2324/mismatch-in-domurlsearchparams#comment-9287b64a
+    recordreplay::AutoDisallowEvents disallowed("DOMURL::searchParams");
     search_params_ = URLSearchParams::Create(Url().Query(), this);
   }
 
