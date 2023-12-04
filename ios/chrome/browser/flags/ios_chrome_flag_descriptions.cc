@@ -264,12 +264,6 @@ const char kDefaultBrowserVideoInSettingsDescription[] =
     "When enabled, default browser video will be displayed to user in "
     "settings.";
 
-const char kDefaultBrowserFullscreenPromoExperimentName[] =
-    "Default Browser Fullscreen modal experiment";
-const char kDefaultBrowserFullscreenPromoExperimentDescription[] =
-    "When enabled, will show a modified default browser fullscreen modal promo "
-    "UI.";
-
 const char kDefaultBrowserIntentsShowSettingsName[] =
     "Default Browser Intents show settings";
 const char kDefaultBrowserIntentsShowSettingsDescription[] =

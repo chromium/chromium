@@ -224,12 +224,6 @@ extern const char kCredentialProviderExtensionPromoDescription[];
 extern const char kDefaultBrowserVideoInSettingsName[];
 extern const char kDefaultBrowserVideoInSettingsDescription[];
 
-// Title and description for the flag to show a modified fullscreen modal promo
-// with a button that would send the users in the Settings.app to update the
-// default browser.
-extern const char kDefaultBrowserFullscreenPromoExperimentName[];
-extern const char kDefaultBrowserFullscreenPromoExperimentDescription[];
-
 // Title and description for the flag to show the default browser tutorial from
 // an external app.
 extern const char kDefaultBrowserIntentsShowSettingsName[];

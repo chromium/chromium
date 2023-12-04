@@ -58,9 +58,6 @@ enum class IOSDefaultBrowserVideoPromoAction {
   kMaxValue = kTertiaryActionTapped,
 };
 
-// The feature parameter to activate the remind me later button.
-extern const char kDefaultBrowserFullscreenPromoExperimentRemindMeGroupParam[];
-
 // Visible for testing
 
 // Key in storage containing an NSDate indicating the last time a user
