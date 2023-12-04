@@ -247,6 +247,12 @@ class FasterSplitScreenTest : public AshTestBase {
   FasterSplitScreenTest& operator=(const FasterSplitScreenTest&) = delete;
   ~FasterSplitScreenTest() override = default;
 
+  // AshTestBase:
+  void SetUp() override {
+    AshTestBase::SetUp();
+    WindowCycleList::SetDisableInitialDelayForTesting(true);
+  }
+
  protected:
   base::HistogramTester histogram_tester_;
 
@@ -448,6 +454,56 @@ TEST_F(FasterSplitScreenTest, DragToPartialOverview) {
   EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
             WindowState::Get(w1.get())->GetStateType());
   EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
+}
+
+TEST_F(FasterSplitScreenTest, SkipPairingInOverviewWhenClickingEmptyArea) {
+  std::unique_ptr<aura::Window> w1(CreateTestWindow());
+  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+
+  SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped);
+  VerifySplitViewOverviewSession(w1.get());
+  ASSERT_EQ(1u, GetOverviewSession()->grid_list().size());
+
+  auto* w2_overview_item = GetOverviewItemForWindow(w2.get());
+  EXPECT_TRUE(w2_overview_item);
+  const gfx::Point outside_point =
+      gfx::ToRoundedPoint(
+          w2_overview_item->GetTransformedBounds().bottom_right()) +
+      gfx::Vector2d(20, 20);
+
+  // Verify that clicking on an empty area in overview will exit the paring.
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(outside_point);
+  event_generator->ClickLeftButton();
+  OverviewController* overview_controller = OverviewController::Get();
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+  EXPECT_EQ(WindowState::Get(w1.get())->GetStateType(),
+            chromeos::WindowStateType::kPrimarySnapped);
+}
+
+TEST_F(FasterSplitScreenTest, SkipPairingInOverviewOnKeyEvent) {
+  std::unique_ptr<aura::Window> w1(CreateTestWindow());
+  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+
+  SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped);
+  VerifySplitViewOverviewSession(w1.get());
+  ASSERT_EQ(1u, GetOverviewSession()->grid_list().size());
+
+  // Test that Esc key exits overview.
+  PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
+  OverviewController* overview_controller = OverviewController::Get();
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+  EXPECT_EQ(WindowState::Get(w1.get())->GetStateType(),
+            chromeos::WindowStateType::kPrimarySnapped);
+
+  // Test that Alt + Tab exits overview.
+  SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped);
+  VerifySplitViewOverviewSession(w1.get());
+  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+  EXPECT_EQ(WindowState::Get(w1.get())->GetStateType(),
+            chromeos::WindowStateType::kPrimarySnapped);
+  EXPECT_TRUE(Shell::Get()->window_cycle_controller()->IsCycling());
 }
 
 TEST_F(FasterSplitScreenTest, MultiDisplay) {

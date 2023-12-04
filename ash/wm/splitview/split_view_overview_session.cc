@@ -119,6 +119,11 @@ chromeos::WindowStateType SplitViewOverviewSession::GetWindowStateType() const {
   return window_state->GetStateType();
 }
 
+void SplitViewOverviewSession::OnKeyEvent() {
+  MaybeEndOverview(SplitViewOverviewSessionExitPoint::kSkip,
+                   OverviewEnterExitType::kImmediateExit);
+}
+
 void SplitViewOverviewSession::OnResizeLoopStarted(aura::Window* window) {
   auto* split_view_controller =
       SplitViewController::Get(window->GetRootWindow());
@@ -265,13 +270,14 @@ void SplitViewOverviewSession::OnPreWindowStateTypeChange(
 }
 
 void SplitViewOverviewSession::MaybeEndOverview(
-    SplitViewOverviewSessionExitPoint exit_point) {
+    SplitViewOverviewSessionExitPoint exit_point,
+    OverviewEnterExitType exit_type) {
   if (window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
     // If `FasterSplitScreenOrSnapGroup` is enabled, end full overview.
     RecordSplitViewOverviewSessionExitPointMetrics(exit_point);
     // `EndOverview()` will also destroy `this`.
     Shell::Get()->overview_controller()->EndOverview(
-        OverviewEndAction::kSplitView);
+        OverviewEndAction::kSplitView, exit_type);
     return;
   }
   // Otherwise simply end `SplitViewOverviewSession` and remain in overview.

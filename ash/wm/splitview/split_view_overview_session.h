@@ -81,6 +81,10 @@ class ASH_EXPORT SplitViewOverviewSession : public aura::WindowObserver,
     return auto_snap_controller_.get();
   }
 
+  // Called by `OverviewSession` on a key event that isn't processed by overview
+  // session.
+  void OnKeyEvent();
+
   // aura::WindowObserver:
   void OnResizeLoopStarted(aura::Window* window) override;
   void OnResizeLoopEnded(aura::Window* window) override;
@@ -100,7 +104,9 @@ class ASH_EXPORT SplitViewOverviewSession : public aura::WindowObserver,
 
  private:
   // Either ends full overview, or only `SplitViewOverviewSession`.
-  void MaybeEndOverview(SplitViewOverviewSessionExitPoint exit_point);
+  void MaybeEndOverview(
+      SplitViewOverviewSessionExitPoint exit_point,
+      OverviewEnterExitType exit_type = OverviewEnterExitType::kNormal);
 
   // True while we are processing a window resize event.
   bool is_resizing_ = false;
