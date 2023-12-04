@@ -84,6 +84,10 @@ class OnDeviceModelServiceController
   // Shuts down the service if there is no active model.
   void ShutdownServiceIfNoModelLoaded();
 
+  bool IsConnectedForTesting() {
+    return model_remote_.is_bound() || service_remote_.is_bound();
+  }
+
  private:
   friend class base::RefCounted<OnDeviceModelServiceController>;
   friend class ChromeOnDeviceModelServiceController;
@@ -107,6 +111,10 @@ class OnDeviceModelServiceController
 
   // Called when disconnected from the model.
   void OnDisconnected();
+
+  // Called when the remote (either `service_remote_` or `_model_remote_` is
+  // idle.
+  void OnRemoteIdle();
 
   // This may be null in the destructor, otherwise non-null.
   std::unique_ptr<OnDeviceModelAccessController> access_controller_;

@@ -149,6 +149,10 @@ void OnDeviceModelServiceController::StartMojoSession(
     model_remote_.set_disconnect_handler(
         base::BindOnce(&OnDeviceModelServiceController::OnDisconnected,
                        base::Unretained(this)));
+    model_remote_.set_idle_handler(
+        features::GetOnDeviceModelIdleTimeout(),
+        base::BindRepeating(&OnDeviceModelServiceController::OnRemoteIdle,
+                            base::Unretained(this)));
   }
   model_remote_->StartSession(std::move(session));
 }
@@ -206,6 +210,11 @@ void OnDeviceModelServiceController::ShutdownServiceIfNoModelLoaded() {
   if (!model_remote_) {
     service_remote_.reset();
   }
+}
+
+void OnDeviceModelServiceController::OnRemoteIdle() {
+  service_remote_.reset();
+  model_remote_.reset();
 }
 
 }  // namespace optimization_guide

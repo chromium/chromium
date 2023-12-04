@@ -944,6 +944,21 @@ TEST_F(OnDeviceModelServiceControllerTest,
       total_time, 1);
 }
 
+TEST_F(OnDeviceModelServiceControllerTest, DisconnectsWhenIdle) {
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
+  ASSERT_TRUE(session);
+  ExecuteModel(*session, "foo");
+  session.reset();
+  EXPECT_TRUE(test_controller_->IsConnectedForTesting());
+  // Fast forward by the amount of time that triggers a disconnect.
+  task_environment_.FastForwardBy(features::GetOnDeviceModelIdleTimeout() +
+                                  base::Seconds(1));
+  // As there are no sessions and no traffice for GetOnDeviceModelIdleTimeout()
+  // the connection should be dropped.
+  EXPECT_FALSE(test_controller_->IsConnectedForTesting());
+}
+
 TEST_F(OnDeviceModelServiceControllerTest, UseServerWithRepeatedDelays) {
   g_execute_delay = features::GetOnDeviceModelTimeForInitialResponse() * 2;
 
