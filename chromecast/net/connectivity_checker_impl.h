@@ -46,8 +46,6 @@ constexpr net::HttpStatusCode kConnectivitySuccessStatusCode =
     net::HTTP_NO_CONTENT;
 
 // Delay notification of network change events to smooth out rapid flipping.
-// Histogram "Cast.Network.Down.Duration.In.Seconds" shows 40% of network
-// downtime is less than 3 seconds.
 constexpr base::TimeDelta kNetworkChangedDelay = base::Seconds(3);
 
 // Simple class to check network connectivity by sending a HEAD http request
