@@ -12,20 +12,20 @@
 <translation id="2159915644201199628">ಚಿತ್ರವನ್ನು ಡಿಕೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">ಲೋಕಲೈಜೇಷನ್ ಬಳಸಲಾಗಿದೆ, ಆದರೆ ಡಿಫಾಲ್ಟ್ _ಲೋಕಲ್ ಅನ್ನು ಮ್ಯಾನಿಫಾಸ್ಟ್‌ನಲ್ಲಿ ನಿರ್ದಿಷ್ಟಪಡಿಸಲಾಗಿಲ್ಲ.</translation>
 <translation id="2576842806987913196">ಪ್ರಸ್ತುತ ಈ ಹೆಸರಿನೊಂದಿಗೆ ಈಗಾಗಲೇ CRX ಫೈಲ್ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ.</translation>
-<translation id="2785530881066938471">'<ph name="RELATIVE_PATH" />' ಫೈಲ್ ಅನ್ನು ವಿಷಯ ಸ್ಕ್ರಿಪ್ಟ್‌ಗಾಗಿ ಲೋಡ್ ಮಾಡಲು ಆಗುವುದಿಲ್ಲ. ಇದು UTF-8 ಎನ್‌ಕೋಡ್ ಆಗಿಲ್ಲ.</translation>
+<translation id="2785530881066938471">'<ph name="RELATIVE_PATH" />' ಫೈಲ್ ಅನ್ನು ಕಂಟೆಂಟ್‍ ಸ್ಕ್ರಿಪ್ಟ್‌ಗಾಗಿ ಲೋಡ್ ಮಾಡಲು ಆಗುವುದಿಲ್ಲ. ಇದು UTF-8 ಎನ್‌ಕೋಡ್ ಆಗಿಲ್ಲ.</translation>
 <translation id="2903070246402204397">ನಿರ್ವಾಹಕರಿಂದ <ph name="EXTENSION_NAME" /> (ವಿಸ್ತರಣೆ ಐಡಿ "<ph name="EXTENSION_ID" />") ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">ಪ್ಯಾಕೇಜ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ: '<ph name="ERROR_CODE" />'</translation>
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> ಮಾರಾಟಗಾರರಿಂದ <ph name="PRODUCT_ID" /> ಅಪರಿಚಿತ ಉತ್ಪನ್ನ (ಕ್ರಮ ಸಂಖ್ಯೆ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx ಫೈಲ್ ಅನ್ನು ಸ್ಥಾನಾಂತರಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ. ಫೈಲ್ ಬಳಕೆಯಲ್ಲಿದೆಯೆ ಎಂದು ಪರಿಶೀಲಿಸಿ.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> ಮಾರಾಟಗಾರರಿಂದ <ph name="PRODUCT_ID" /> ಅಪರಿಚಿತ ಉತ್ಪನ್ನ</translation>
-<translation id="3302709122321372472">css '<ph name="RELATIVE_PATH" />' ವಿಷಯ ಸ್ಕ್ರಿಪ್ಟ್‌‌ಗಾಗಿ ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
+<translation id="3302709122321372472">css '<ph name="RELATIVE_PATH" />' ಕಂಟೆಂಟ್‍ ಸ್ಕ್ರಿಪ್ಟ್‌‌ಗಾಗಿ ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="3369521687965833290">ವಿಸ್ತರಣೆಯನ್ನು ಅನ್‌ಪ್ಯಾಕ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ. ವಿಸ್ತರಣೆಯನ್ನು ಸುರಕ್ಷಿತವಾಗಿ ಅನ್‌ಪ್ಯಾಕ್ ಮಾಡಲು, ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಡೈರೆಕ್ಟರಿಯಲ್ಲಿ ಪಾಥ್ ಇದ್ದು ಅದು ಡ್ರೈವ್ ಅಕ್ಷರದೊಂದಿಗೆ ಪ್ರಾರಂಭವಾಗುತ್ತದೆ ಮತ್ತು ಜಂಕ್ಷನ್, ಮೌಂಟ್ ಪಾಯಿಂಟ್ ಅಥವಾ ಸಿಮ್‌ಲಿಂಕ್ ಅನ್ನು ಹೊಂದಿರುವುದಿಲ್ಲ. ನಿಮ್ಮ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಯಾವುದೇ ಪಾಥ್ ಅಸ್ತಿತ್ವದಲ್ಲಿರುವುದಿಲ್ಲ.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (ಕ್ರಮ ಸಂಖ್ಯೆ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> ಮಾರಾಟಗಾರರಿಂದ <ph name="PRODUCT_NAME" /> (ಕ್ರಮ ಸಂಖ್ಯೆ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ಖಾಸಗಿ ಕೀಲಿಗಾಗಿ ಇನ್‌ಪುಟ್ ಮೌಲ್ಯವು ಮಾನ್ಯವಾದ ಹಾದಿಯಾಗಿರಬೇಕು.</translation>
 <translation id="388442998277590542">ಆಯ್ಕೆಗಳ ಪುಟ '<ph name="OPTIONS_PAGE" />' ವನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="3984413272403535372">ವಿಸ್ತರಣೆಗೆ ಸೈನ್ ಇನ್ ಮಾಡುವಾಗ ದೋಷ.</translation>
-<translation id="39964277676607559">javascript '<ph name="RELATIVE_PATH" />' ಅನ್ನು ವಿಷಯ ಸ್ಕ್ರಿಪ್ಟ್‌ಗಾಗಿ ಲೋಡ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ.</translation>
+<translation id="39964277676607559">javascript '<ph name="RELATIVE_PATH" />' ಅನ್ನು ಕಂಟೆಂಟ್‍ ಸ್ಕ್ರಿಪ್ಟ್‌ಗಾಗಿ ಲೋಡ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="4115165561519362854">ಈ ಮೆಷಿನ್‌ನ ನಿರ್ವಾಹಕರಿಗೆ <ph name="EXTENSION_VERSION" /> ನ ಕನಿಷ್ಠ ಆವೃತಿಯನ್ನು <ph name="EXTENSION_NAME" /> ಹೊಂದಬೇಕಾದ ಅಗತ್ಯವಿದೆ. ಅದು ಹೊಸ ಆವೃತ್ತಿಗೆ (ಅಥವಾ ಹೆಚ್ಚಿನ) ನವೀಕರಣಗೊಳ್ಳುವವರೆಗೂ ಇದನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="4233778200880751280">'<ph name="ABOUT_PAGE" />' ಪುಟದ ಕುರಿತು ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ.</translation>
 <translation id="471800408830181311">ಖಾಸಗಿ ಕೀಲಿಯನ್ನು ಔಟ್‌ಪುಟ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ.</translation>
