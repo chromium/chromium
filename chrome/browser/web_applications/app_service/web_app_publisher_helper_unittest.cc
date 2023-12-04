@@ -317,10 +317,10 @@ TEST_F(WebAppPublisherHelperTest, CreateIntentFiltersForWebApp_FileHandlers) {
   EXPECT_EQ(file_cond.condition_values[1]->value, ".txt");
 }
 
-// Verify that the default-installed partner app has its OEM install source
-// overwritten as InstallReason::kDefault.
+// Verify that Adobe Express has its OEM install source overwritten as
+// InstallReason::kDefault.
 // TODO(b/300857328): Remove this workaround.
-TEST_F(WebAppPublisherHelperTest, PublishPartnerOemAppAsDefault) {
+TEST_F(WebAppPublisherHelperTest, PublishOemAdobeExpressAsDefault) {
   const std::string name = "some app name";
   const GURL start_url("https://example.com/start_url");
 
@@ -329,7 +329,7 @@ TEST_F(WebAppPublisherHelperTest, PublishPartnerOemAppAsDefault) {
   {
     ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
 
-    auto new_app = std::make_unique<WebApp>(kDefaultInstalledPartnerAppId);
+    auto new_app = std::make_unique<WebApp>(kAdobeExpressAppId);
     new_app->SetStartUrl(start_url);
     new_app->AddSource(WebAppManagement::Type::kOem);
     new_app->SetName(name);
@@ -338,7 +338,7 @@ TEST_F(WebAppPublisherHelperTest, PublishPartnerOemAppAsDefault) {
   }
 
   const WebApp* web_app =
-      provider_->registrar_unsafe().GetAppById(kDefaultInstalledPartnerAppId);
+      provider_->registrar_unsafe().GetAppById(kAdobeExpressAppId);
 
   apps::AppPtr app = publisher_->CreateWebApp(web_app);
   EXPECT_EQ(app->install_reason, apps::InstallReason::kDefault);
@@ -346,7 +346,7 @@ TEST_F(WebAppPublisherHelperTest, PublishPartnerOemAppAsDefault) {
 
 // Verify that the above behavior only applies when the app is OEM-installed.
 // TODO(b/300857328): Remove this workaround.
-TEST_F(WebAppPublisherHelperTest, PublishPartnerSyncAppAsSync) {
+TEST_F(WebAppPublisherHelperTest, PublishSyncAdobeExpressAsSync) {
   const std::string name = "some app name";
   const GURL start_url("https://example.com/start_url");
 
@@ -355,7 +355,7 @@ TEST_F(WebAppPublisherHelperTest, PublishPartnerSyncAppAsSync) {
   {
     ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
 
-    auto new_app = std::make_unique<WebApp>(kDefaultInstalledPartnerAppId);
+    auto new_app = std::make_unique<WebApp>(kAdobeExpressAppId);
     new_app->SetStartUrl(start_url);
     new_app->AddSource(WebAppManagement::Type::kSync);
     new_app->SetName(name);
@@ -364,7 +364,7 @@ TEST_F(WebAppPublisherHelperTest, PublishPartnerSyncAppAsSync) {
   }
 
   const WebApp* web_app =
-      provider_->registrar_unsafe().GetAppById(kDefaultInstalledPartnerAppId);
+      provider_->registrar_unsafe().GetAppById(kAdobeExpressAppId);
 
   apps::AppPtr app = publisher_->CreateWebApp(web_app);
   EXPECT_EQ(app->install_reason, apps::InstallReason::kSync);

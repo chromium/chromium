@@ -214,11 +214,11 @@ apps::InstallReason GetHighestPriorityInstallReason(const WebApp* web_app) {
     }
   }
 
-  // On some devices, this partner app is installed through App Preload Service
+  // On some devices, Adobe Express is installed through App Preload Service
   // as an OEM app, but should not appear in the OEM folder.
   // TODO(b/300857328): Remove this workaround.
   if (web_app->GetHighestPrioritySource() == WebAppManagement::kOem &&
-      web_app->app_id() == web_app::kDefaultInstalledPartnerAppId) {
+      web_app->app_id() == web_app::kAdobeExpressAppId) {
     return apps::InstallReason::kDefault;
   }
 

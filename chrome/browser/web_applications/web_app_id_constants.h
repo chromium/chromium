@@ -11,6 +11,10 @@ namespace web_app {
 // manifest served by the PWA.
 // Please maintain the alphabetical order when adding new app IDs.
 
+// Generated as: web_app::GenerateAppId(/*manifest_id=*/"/", GURL(
+//     "https://new.express.adobe.com/"))
+inline constexpr char kAdobeExpressAppId[] = "jbgdhngddinepfilfcmbcioimbgcolma";
+
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
 //     "https://calculator.apps.chrome/"))
 inline constexpr char kCalculatorAppId[] = "oabkinaljpjeilageghcdlnekhphhphl";
@@ -24,21 +28,12 @@ inline constexpr char kCameraAppId[] = "njfbnohfdkmbmnjapinfcopialeghnmh";
 inline constexpr char kCanvasAppId[] = "ieailfmhaghpphfffooibmlghaeopach";
 
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
-//     "https://play.geforcenow.com/mall/"))
-inline constexpr char kNvidiaGeForceNowAppId[] =
-    "egmafekfmcnknbdlbfbhafbllplmjlhn";
-
-// Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
 //     "chrome-untrusted://crosh/"))
 inline constexpr char kCroshAppId[] = "cgfnfgkafmcdkdgilmojlnaadileaach";
 
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
 //     "https://cursive.apps.chrome/"))
 inline constexpr char kCursiveAppId[] = "apignacaigpffemhdbhmnajajaccbckh";
-
-// TODO(b/300855385): Rename and document partner app.
-inline constexpr char kDefaultInstalledPartnerAppId[] =
-    "jbgdhngddinepfilfcmbcioimbgcolma";
 
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt,
 // GURL("chrome://diagnostics/"))
@@ -122,6 +117,11 @@ inline constexpr char kMicrosoft365AppId[] = "onhfoihkhodaeblmangmjjgfpfehnlkm";
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
 //     "chrome://test-system-app/pwa.html"))
 inline constexpr char kMockSystemAppId[] = "maphiehpiinjgiaepbljmopkodkadcbh";
+
+// Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
+//     "https://play.geforcenow.com/mall/"))
+inline constexpr char kNvidiaGeForceNowAppId[] =
+    "egmafekfmcnknbdlbfbhafbllplmjlhn";
 
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
 //     "chrome://os-feedback/"))
