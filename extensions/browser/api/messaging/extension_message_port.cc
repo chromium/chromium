@@ -467,6 +467,10 @@ void ExtensionMessagePort::DispatchOnConnect(
   for (const auto& worker : pending_service_workers_) {
     auto* host = ServiceWorkerHost::GetWorkerFor(worker);
     if (host) {
+      auto* service_worker_remote = host->GetServiceWorker();
+      if (!service_worker_remote) {
+        continue;
+      }
       mojo::PendingAssociatedReceiver<mojom::MessagePort> message_port;
       mojo::PendingAssociatedRemote<mojom::MessagePortHost> message_port_host;
 
@@ -478,10 +482,6 @@ void ExtensionMessagePort::DispatchOnConnect(
                   worker.render_process_id,
                   PortContext::ForWorker(worker.thread_id, worker.version_id,
                                          worker.extension_id));
-      auto* service_worker_remote = host->GetServiceWorker();
-      if (!service_worker_remote) {
-        continue;
-      }
       service_worker_remote->DispatchOnConnect(
           port_id_, channel_type, channel_name, source.Clone(), info.Clone(),
           std::move(message_port), std::move(message_port_host),
