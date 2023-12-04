@@ -32,20 +32,13 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 using base::ASCIIToUTF16;
 using content::NavigationSimulator;
 using content::WebContentsTester;
 
 namespace {
-
-// Creates a bitmap of the specified color.
-SkBitmap CreateBitmap(SkColor color) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(16, 16);
-  bitmap.eraseColor(color);
-  return bitmap;
-}
 
 class FaviconDelegate : public ui::MenuModelDelegate {
  public:
@@ -542,7 +535,7 @@ TEST_F(BackFwdMenuModelTest, FaviconLoadTest) {
   back_model.set_test_web_contents(web_contents());
   back_model.SetMenuModelDelegate(&favicon_delegate);
 
-  SkBitmap new_icon_bitmap(CreateBitmap(SK_ColorRED));
+  SkBitmap new_icon_bitmap(gfx::test::CreateBitmap(/*size=*/16, SK_ColorRED));
 
   GURL url1 = GURL("http://www.a.com/1");
   GURL url2 = GURL("http://www.a.com/2");

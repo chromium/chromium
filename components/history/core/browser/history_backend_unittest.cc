@@ -55,6 +55,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/sqlite/sqlite3.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "url/gurl.h"
 
 // This file only tests functionality where it is most convenient to call the
@@ -572,14 +573,6 @@ class HistoryBackendTest : public HistoryBackendTestBase {
       return false;
     *favicon_bitmap = favicon_bitmaps[0];
     return true;
-  }
-
-  // Creates an `edge_size`x`edge_size` bitmap of `color`.
-  SkBitmap CreateBitmap(SkColor color, int edge_size) {
-    SkBitmap bitmap;
-    bitmap.allocN32Pixels(edge_size, edge_size);
-    bitmap.eraseColor(color);
-    return bitmap;
   }
 
   // Returns true if `bitmap_data` is equal to `expected_data`.
@@ -2520,8 +2513,8 @@ TEST_F(HistoryBackendTest, FaviconChangedNotificationNewFavicon) {
 
   // SetFavicons()
   {
-    std::vector<SkBitmap> bitmaps;
-    bitmaps.push_back(CreateBitmap(SK_ColorBLUE, kSmallEdgeSize));
+    std::vector<SkBitmap> bitmaps = {
+        gfx::test::CreateBitmap(kSmallEdgeSize, SK_ColorBLUE)};
     backend_->SetFavicons({page_url1}, IconType::kFavicon, icon_url1, bitmaps);
     ASSERT_EQ(1u, favicon_changed_notifications_page_urls().size());
     EXPECT_EQ(page_url1, favicon_changed_notifications_page_urls()[0]);
@@ -2553,16 +2546,16 @@ TEST_F(HistoryBackendTest, FaviconChangedNotificationBitmapDataChanged) {
 
   // Setup
   {
-    std::vector<SkBitmap> bitmaps;
-    bitmaps.push_back(CreateBitmap(SK_ColorBLUE, kSmallEdgeSize));
+    std::vector<SkBitmap> bitmaps = {
+        gfx::test::CreateBitmap(kSmallEdgeSize, SK_ColorBLUE)};
     backend_->SetFavicons({page_url}, IconType::kFavicon, icon_url, bitmaps);
     ClearBroadcastedNotifications();
   }
 
   // SetFavicons()
   {
-    std::vector<SkBitmap> bitmaps;
-    bitmaps.push_back(CreateBitmap(SK_ColorWHITE, kSmallEdgeSize));
+    std::vector<SkBitmap> bitmaps = {
+        gfx::test::CreateBitmap(kSmallEdgeSize, SK_ColorWHITE)};
     backend_->SetFavicons({page_url}, IconType::kFavicon, icon_url, bitmaps);
     EXPECT_EQ(0u, favicon_changed_notifications_page_urls().size());
     ASSERT_EQ(1u, favicon_changed_notifications_icon_urls().size());
@@ -2595,9 +2588,8 @@ TEST_F(HistoryBackendTest, FaviconChangedNotificationIconMappingChanged) {
   GURL icon_url1("http://www.google.com/favicon1.ico");
   GURL icon_url2("http://www.google.com/favicon2.ico");
 
-  SkBitmap bitmap(CreateBitmap(SK_ColorBLUE, kSmallEdgeSize));
-  std::vector<SkBitmap> bitmaps;
-  bitmaps.push_back(bitmap);
+  SkBitmap bitmap = gfx::test::CreateBitmap(kSmallEdgeSize, SK_ColorBLUE);
+  std::vector<SkBitmap> bitmaps = {bitmap};
   std::vector<unsigned char> png_bytes;
   ASSERT_TRUE(gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &png_bytes));
 
@@ -2652,14 +2644,13 @@ TEST_F(HistoryBackendTest,
   GURL page_url4("http://www.google.com/d");
   GURL icon_url("http://www.google.com/favicon.ico");
 
-  SkBitmap bitmap(CreateBitmap(SK_ColorBLUE, kSmallEdgeSize));
+  SkBitmap bitmap = gfx::test::CreateBitmap(kSmallEdgeSize, SK_ColorBLUE);
   std::vector<unsigned char> png_bytes;
   ASSERT_TRUE(gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &png_bytes));
 
   // Setup
   {
-    std::vector<SkBitmap> bitmaps;
-    bitmaps.push_back(bitmap);
+    std::vector<SkBitmap> bitmaps = {bitmap};
     backend_->SetFavicons({page_url4}, IconType::kFavicon, icon_url, bitmaps);
     ClearBroadcastedNotifications();
   }
@@ -2702,8 +2693,8 @@ TEST_F(HistoryBackendTest,
 
   // Setup
   {
-    std::vector<SkBitmap> bitmaps;
-    bitmaps.push_back(CreateBitmap(SK_ColorBLUE, kSmallEdgeSize));
+    std::vector<SkBitmap> bitmaps = {
+        gfx::test::CreateBitmap(kSmallEdgeSize, SK_ColorBLUE)};
     backend_->SetFavicons({page_url1}, IconType::kFavicon, icon_url1, bitmaps);
     backend_->SetFavicons({page_url2}, IconType::kFavicon, icon_url2, bitmaps);
 
@@ -2718,8 +2709,8 @@ TEST_F(HistoryBackendTest,
 
   // SetFavicons()
   {
-    std::vector<SkBitmap> bitmaps;
-    bitmaps.push_back(CreateBitmap(SK_ColorWHITE, kSmallEdgeSize));
+    std::vector<SkBitmap> bitmaps = {
+        gfx::test::CreateBitmap(kSmallEdgeSize, SK_ColorWHITE)};
     backend_->SetFavicons({page_url1}, IconType::kFavicon, icon_url2, bitmaps);
     ASSERT_EQ(1u, favicon_changed_notifications_page_urls().size());
     EXPECT_EQ(page_url1, favicon_changed_notifications_page_urls()[0]);
@@ -2787,9 +2778,8 @@ TEST_F(HistoryBackendTest, NoFaviconChangedNotifications) {
   GURL page_url("http://www.google.com");
   GURL icon_url("http://www.google.com/favicon.ico");
 
-  SkBitmap bitmap(CreateBitmap(SK_ColorBLUE, kSmallEdgeSize));
-  std::vector<SkBitmap> bitmaps;
-  bitmaps.push_back(bitmap);
+  SkBitmap bitmap = gfx::test::CreateBitmap(kSmallEdgeSize, SK_ColorBLUE);
+  std::vector<SkBitmap> bitmaps = {bitmap};
   std::vector<unsigned char> png_bytes;
   ASSERT_TRUE(gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &png_bytes));
 
@@ -2830,8 +2820,9 @@ TEST_F(HistoryBackendTest, CloneFaviconMappingsForPages) {
   {
     // A mapping exists for `landing_page_url1`.
     std::vector<favicon_base::FaviconRawBitmapData> favicon_bitmap_data;
-    backend_->SetFavicons({landing_page_url1}, IconType::kFavicon, icon_url,
-                          {CreateBitmap(SK_ColorBLUE, kSmallEdgeSize)});
+    backend_->SetFavicons(
+        {landing_page_url1}, IconType::kFavicon, icon_url,
+        {gfx::test::CreateBitmap(kSmallEdgeSize, SK_ColorBLUE)});
 
     // Init recent_redirects_.
     backend_->recent_redirects_.Put(

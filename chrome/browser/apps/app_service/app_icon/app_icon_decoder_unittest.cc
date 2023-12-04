@@ -20,6 +20,7 @@
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace apps {
 
@@ -50,7 +51,7 @@ class AppIconDecoderTest : public testing::Test {
       int icon_size_in_px =
           gfx::ScaleToFlooredSize(gfx::Size(size_dp, size_dp), scale_factor)
               .width();
-      SkBitmap bitmap = CreateSquareIconBitmap(icon_size_in_px, color);
+      SkBitmap bitmap = gfx::test::CreateBitmap(icon_size_in_px, color);
 
       std::vector<unsigned char> output;
       gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false,

@@ -17,6 +17,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "url/gurl.h"
 
 using ::testing::_;
@@ -29,10 +30,8 @@ CreateTestBitmapResult(GURL url, int size, SkColor color = SK_ColorRED) {
 
   // Create bitmap and fill with |color|.
   scoped_refptr<base::RefCountedBytes> data(new base::RefCountedBytes());
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(size, size);
-  bitmap.eraseColor(color);
-  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &data->data());
+  gfx::PNGCodec::EncodeBGRASkBitmap(gfx::test::CreateBitmap(size, color), false,
+                                    &data->data());
 
   result.bitmap_data = data;
   result.pixel_size = gfx::Size(size, size);

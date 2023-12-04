@@ -482,6 +482,7 @@ source_set("common_unittests_sources") {
     "//third_party/blink/public/common:headers",
     "//third_party/blink/public/mojom/tokens:tokens_traits_headers",
     "//third_party/boringssl",
+    "//ui/gfx:test_support",
     "//url/mojom:url_mojom_gurl",
     "//v8",
     "//v8:v8_libplatform",

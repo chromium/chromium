@@ -82,9 +82,7 @@ class AppStreamLauncherViewTest : public views::ViewsTestBase {
   }
 
   const gfx::Image CreateTestImage() {
-    SkBitmap bitmap;
-    bitmap.allocN32Pixels(60, 60);
-    gfx::ImageSkia image_skia = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+    gfx::ImageSkia image_skia = gfx::test::CreateImageSkia(/*size=*/60);
     image_skia.MakeThreadSafe();
     return gfx::Image(image_skia);
   }

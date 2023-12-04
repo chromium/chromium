@@ -33,6 +33,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "url/gurl.h"
 
 namespace sync_bookmarks {
@@ -69,10 +70,7 @@ sync_pb::UniquePosition RandomUniquePosition() {
 
 // Returns a single-color 16x16 image using |color|.
 gfx::Image CreateTestImage(SkColor color) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(16, 16);
-  bitmap.eraseColor(color);
-  return gfx::Image::CreateFrom1xBitmap(bitmap);
+  return gfx::test::CreateImage(/*size=*/16, color);
 }
 
 TEST(BookmarkSpecificsConversionsTest, ShouldCreateSpecificsFromBookmarkNode) {

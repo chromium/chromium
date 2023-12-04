@@ -58,8 +58,7 @@ class FakeParentAccessDialogProvider : public ash::ParentAccessDialogProvider {
 namespace {
 constexpr char test_url[] = "http://example.com";
 const std::u16string test_child_display_name = u"child display name";
-const gfx::ImageSkia test_favicon =
-    gfx::ImageSkia::CreateFrom1xBitmap(gfx::test::CreateBitmap(1, 2));
+const gfx::ImageSkia test_favicon = gfx::test::CreateImageSkia(1, 2);
 const std::u16string test_extension_name = u"extension";
 }  // namespace
 

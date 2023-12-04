@@ -35,18 +35,9 @@ class PromiseAppIconCacheTest : public testing::Test {
 
   PromiseAppIconPtr CreatePromiseAppIcon(int width, SkColor color = kRed) {
     PromiseAppIconPtr icon = std::make_unique<PromiseAppIcon>();
-    icon->icon = CreateBitmapWithColor(width, color);
+    icon->icon = gfx::test::CreateBitmap(width, color);
     icon->width_in_pixels = width;
     return icon;
-  }
-
-  // Create a colored bitmap for testing so that we can verify whether
-  // operations have been applied to the correct icon.
-  SkBitmap CreateBitmapWithColor(int width, SkColor color) {
-    SkBitmap bitmap;
-    bitmap.allocN32Pixels(width, width);
-    bitmap.eraseColor(color);
-    return bitmap;
   }
 
   const SkBitmap GetPlaceholderIconBitmap(int size_in_dip,
@@ -89,7 +80,7 @@ TEST_F(PromiseAppIconCacheTest, SaveIcon) {
   EXPECT_EQ(icons_saved.size(), 1u);
   EXPECT_EQ(icons_saved[0]->width_in_pixels, 50);
   EXPECT_TRUE(gfx::BitmapsAreEqual(icons_saved[0]->icon,
-                                   CreateBitmapWithColor(50, kRed)));
+                                   gfx::test::CreateBitmap(/*size=*/50, kRed)));
 }
 
 TEST_F(PromiseAppIconCacheTest, SaveMultipleIcons) {
@@ -112,16 +103,16 @@ TEST_F(PromiseAppIconCacheTest, SaveMultipleIcons) {
       icon_cache()->GetIconsForTesting(kTestPackageId);
   EXPECT_EQ(icons_saved.size(), 3u);
   EXPECT_EQ(icons_saved[0]->width_in_pixels, 128);
-  EXPECT_TRUE(gfx::BitmapsAreEqual(icons_saved[0]->icon,
-                                   CreateBitmapWithColor(128, kBlue)));
+  EXPECT_TRUE(gfx::BitmapsAreEqual(
+      icons_saved[0]->icon, gfx::test::CreateBitmap(/*size=*/128, kBlue)));
 
   EXPECT_EQ(icons_saved[1]->width_in_pixels, 512);
-  EXPECT_TRUE(gfx::BitmapsAreEqual(icons_saved[1]->icon,
-                                   CreateBitmapWithColor(512, kRed)));
+  EXPECT_TRUE(gfx::BitmapsAreEqual(
+      icons_saved[1]->icon, gfx::test::CreateBitmap(/*size=*/512, kRed)));
 
   EXPECT_EQ(icons_saved[2]->width_in_pixels, 1024);
-  EXPECT_TRUE(gfx::BitmapsAreEqual(icons_saved[2]->icon,
-                                   CreateBitmapWithColor(1024, kGreen)));
+  EXPECT_TRUE(gfx::BitmapsAreEqual(
+      icons_saved[2]->icon, gfx::test::CreateBitmap(/*size=*/1024, kGreen)));
 }
 
 TEST_F(PromiseAppIconCacheTest, GetIconWithEffects) {
@@ -148,8 +139,8 @@ TEST_F(PromiseAppIconCacheTest, GetIconWithEffects) {
   EXPECT_EQ(result_icon->uncompressed.bitmap()->width(), 128);
 
   // Confirm that the icon has the correct effects applied to it.
-  SkBitmap expected_bitmap =
-      ApplyEffectsToBitmap(CreateBitmapWithColor(128, kRed), kCrOsStandardMask);
+  SkBitmap expected_bitmap = ApplyEffectsToBitmap(
+      gfx::test::CreateBitmap(/*size=*/128, kRed), kCrOsStandardMask);
   EXPECT_TRUE(gfx::BitmapsAreEqual(*result_icon->uncompressed.bitmap(),
                                    expected_bitmap));
 }
@@ -203,13 +194,13 @@ TEST_F(PromiseAppIconCacheTest, GetLargestIconIfAllIconsTooSmall) {
 
   gfx::ImageSkiaRep image_rep = icon.GetRepresentation(1.0f);
   EXPECT_EQ(image_rep.pixel_width(), 128);
-  EXPECT_TRUE(gfx::BitmapsAreEqual(image_rep.GetBitmap(),
-                                   CreateBitmapWithColor(128, kBlue)));
+  EXPECT_TRUE(gfx::BitmapsAreEqual(
+      image_rep.GetBitmap(), gfx::test::CreateBitmap(/*size=*/128, kBlue)));
 
   image_rep = icon.GetRepresentation(2.0f);
   EXPECT_EQ(image_rep.pixel_width(), 256);
-  EXPECT_TRUE(gfx::BitmapsAreEqual(image_rep.GetBitmap(),
-                                   CreateBitmapWithColor(256, kBlue)));
+  EXPECT_TRUE(gfx::BitmapsAreEqual(
+      image_rep.GetBitmap(), gfx::test::CreateBitmap(/*size=*/256, kBlue)));
 }
 
 TEST_F(PromiseAppIconCacheTest, GetCorrectIconRepresentationsForScaleFactors) {
@@ -230,16 +221,18 @@ TEST_F(PromiseAppIconCacheTest, GetCorrectIconRepresentationsForScaleFactors) {
   gfx::ImageSkiaRep image_rep_default = icon.GetRepresentation(1.0f);
   EXPECT_FALSE(image_rep_default.is_null());
   EXPECT_EQ(image_rep_default.pixel_width(), 128);
-  EXPECT_TRUE(gfx::BitmapsAreEqual(image_rep_default.GetBitmap(),
-                                   CreateBitmapWithColor(128, kRed)));
+  EXPECT_TRUE(
+      gfx::BitmapsAreEqual(image_rep_default.GetBitmap(),
+                           gfx::test::CreateBitmap(/*size=*/128, kRed)));
 
   // Verify that the large icon gets resized to become smaller for the 2.0 scale
   // factor (instead of the small icon being resized up).
   gfx::ImageSkiaRep image_rep_larger = icon.GetRepresentation(2.0f);
   EXPECT_FALSE(image_rep_larger.is_null());
   EXPECT_EQ(image_rep_larger.pixel_width(), 256);
-  EXPECT_TRUE(gfx::BitmapsAreEqual(image_rep_larger.GetBitmap(),
-                                   CreateBitmapWithColor(256, kGreen)));
+  EXPECT_TRUE(
+      gfx::BitmapsAreEqual(image_rep_larger.GetBitmap(),
+                           gfx::test::CreateBitmap(/*size=*/256, kGreen)));
 }
 
 TEST_F(PromiseAppIconCacheTest, RemoveIconsForPackageId) {

@@ -10,6 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace {
 
@@ -25,10 +26,8 @@ favicon_base::FaviconRawBitmapResult CreateTestBitmap(int w,
 
   // Create bitmap and fill with `color`.
   scoped_refptr<base::RefCountedBytes> data(new base::RefCountedBytes());
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(w, h);
-  bitmap.eraseColor(color);
-  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &data->data());
+  gfx::PNGCodec::EncodeBGRASkBitmap(gfx::test::CreateBitmap(w, h, color), false,
+                                    &data->data());
   result.bitmap_data = data;
 
   result.pixel_size = gfx::Size(w, h);

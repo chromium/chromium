@@ -54,6 +54,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -699,13 +700,6 @@ class InstallIsolatedWebAppCommandHelperManifestIconsTest
     return CreateDefaultManifest(kSomeTestApplicationUrl);
   }
 
-  SkBitmap CreateTestBitmap(SkColor color) {
-    SkBitmap bitmap;
-    bitmap.allocN32Pixels(kImageSize, kImageSize);
-    bitmap.eraseColor(color);
-    return bitmap;
-  }
-
   blink::Manifest::ImageResource CreateImageResourceForAnyPurpose(
       const GURL& image_src) {
     blink::Manifest::ImageResource image;
@@ -733,7 +727,7 @@ TEST_F(InstallIsolatedWebAppCommandHelperManifestIconsTest,
 
   std::map<GURL, std::vector<SkBitmap>> icons = {{
       img_url,
-      {CreateTestBitmap(SK_ColorRED)},
+      {gfx::test::CreateBitmap(kImageSize, SK_ColorRED)},
   }};
 
   using HttpStatusCode = int;

@@ -26,6 +26,7 @@
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -42,19 +43,9 @@
 #include "ui/views/view_test_api.h"
 #include "ui/views/widget/widget_utils.h"
 
-using base::ASCIIToUTF16;
-
-namespace {
-
-gfx::ImageSkia CreateTestImage(int width, int height) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(width, height);
-  return gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
-}
-
-}  // namespace
-
 namespace views {
+
+using ::base::ASCIIToUTF16;
 
 // Testing button that exposes protected methods.
 class TestLabelButton : public LabelButton {
@@ -237,9 +228,9 @@ TEST_F(LabelButtonTest, LabelPreferredSizeWithMaxWidth) {
     button()->SetMultiLine(is_multiline);
     for (bool set_image : {false, true}) {
       if (set_image)
-        button()->SetImageModel(
-            Button::STATE_NORMAL,
-            ui::ImageModel::FromImageSkia(CreateTestImage(16, 16)));
+        button()->SetImageModel(Button::STATE_NORMAL,
+                                ui::ImageModel::FromImageSkia(
+                                    gfx::test::CreateImageSkia(/*size=*/16)));
 
       bool preferred_size_is_sometimes_narrower_than_max = false;
       bool preferred_height_shrinks_as_max_width_grows = false;
@@ -410,8 +401,8 @@ TEST_F(LabelButtonTest, AccessibleDefaultState) {
 
 TEST_F(LabelButtonTest, Image) {
   const int small_size = 50, large_size = 100;
-  const gfx::ImageSkia small_image = CreateTestImage(small_size, small_size);
-  const gfx::ImageSkia large_image = CreateTestImage(large_size, large_size);
+  const gfx::ImageSkia small_image = gfx::test::CreateImageSkia(small_size);
+  const gfx::ImageSkia large_image = gfx::test::CreateImageSkia(large_size);
 
   EXPECT_LT(button()->GetPreferredSize().width(), small_size);
   EXPECT_LT(button()->GetPreferredSize().height(), small_size);
@@ -456,7 +447,7 @@ TEST_F(LabelButtonTest, ImageAlignmentWithMultilineLabel) {
   button()->label()->SetMaximumWidth(max_label_width);
 
   const int image_size = 16;
-  const gfx::ImageSkia image = CreateTestImage(image_size, image_size);
+  const gfx::ImageSkia image = gfx::test::CreateImageSkia(image_size);
   button()->SetImageModel(Button::STATE_NORMAL,
                           ui::ImageModel::FromImageSkia(image));
 
@@ -478,7 +469,7 @@ TEST_F(LabelButtonTest, LabelAndImage) {
   const int text_width = gfx::GetStringWidth(text, font_list);
 
   const int image_size = 50;
-  const gfx::ImageSkia image = CreateTestImage(image_size, image_size);
+  const gfx::ImageSkia image = gfx::test::CreateImageSkia(image_size);
   ASSERT_LT(font_list.GetHeight(), image_size);
 
   EXPECT_LT(button()->GetPreferredSize().width(), text_width);
@@ -552,7 +543,7 @@ TEST_F(LabelButtonTest, LabelWrapAndImageAlignment) {
   button()->label()->SetMultiLine(true);
 
   const int image_size = font_list.GetHeight();
-  const gfx::ImageSkia image = CreateTestImage(image_size, image_size);
+  const gfx::ImageSkia image = gfx::test::CreateImageSkia(image_size);
   ASSERT_EQ(font_list.GetHeight(), image.width());
 
   button()->SetImageModel(Button::STATE_NORMAL,
@@ -599,7 +590,7 @@ TEST_F(LabelButtonTest, GetHeightForWidthConsistentWithGetPreferredSize) {
   for (int image_size : {kTinyImageSize, kLargeImageSize}) {
     SCOPED_TRACE(testing::Message() << "Image Size: " << image_size);
     // Set image and reset monotonic min size for every test iteration.
-    const gfx::ImageSkia image = CreateTestImage(image_size, image_size);
+    const gfx::ImageSkia image = gfx::test::CreateImageSkia(image_size);
     button()->SetImageModel(Button::STATE_NORMAL,
                             ui::ImageModel::FromImageSkia(image));
 
@@ -693,8 +684,9 @@ TEST_F(LabelButtonTest, ChangeTextSize) {
 
 TEST_F(LabelButtonTest, ChangeLabelImageSpacing) {
   button()->SetText(u"abc");
-  button()->SetImageModel(Button::STATE_NORMAL, ui::ImageModel::FromImageSkia(
-                                                    CreateTestImage(50, 50)));
+  button()->SetImageModel(
+      Button::STATE_NORMAL,
+      ui::ImageModel::FromImageSkia(gfx::test::CreateImageSkia(/*size=*/50)));
 
   const int kOriginalSpacing = 5;
   button()->SetImageLabelSpacing(kOriginalSpacing);
@@ -784,7 +776,7 @@ TEST_F(LabelButtonTest, ImageOrLabelGetClipped) {
   const int image_size = font_list.GetHeight();
   button()->SetImageModel(
       Button::STATE_NORMAL,
-      ui::ImageModel::FromImageSkia(CreateTestImage(image_size, image_size)));
+      ui::ImageModel::FromImageSkia(gfx::test::CreateImageSkia(image_size)));
 
   button()->SetBoundsRect(gfx::Rect(button()->GetPreferredSize()));
   // The border size + the content height is more than button's preferred size.
@@ -802,21 +794,21 @@ TEST_F(LabelButtonTest, UpdateImageAfterSettingImageModel) {
     return button()->image()->GetImage().BackedBySameObjectAs(image);
   };
 
-  auto normal_image = CreateTestImage(16, 16);
+  auto normal_image = gfx::test::CreateImageSkia(/*size=*/16);
   button()->SetImageModel(Button::STATE_NORMAL,
                           ui::ImageModel::FromImageSkia(normal_image));
   EXPECT_TRUE(is_showing_image(normal_image));
 
   // When the button has no specific disabled image, changing the normal image
   // while the button is disabled should update the currently-visible image.
-  normal_image = CreateTestImage(16, 16);
+  normal_image = gfx::test::CreateImageSkia(/*size=*/16);
   button()->SetState(Button::STATE_DISABLED);
   button()->SetImageModel(Button::STATE_NORMAL,
                           ui::ImageModel::FromImageSkia(normal_image));
   EXPECT_TRUE(is_showing_image(normal_image));
 
   // Any specific disabled image should take precedence over the normal image.
-  auto disabled_image = CreateTestImage(16, 16);
+  auto disabled_image = gfx::test::CreateImageSkia(/*size=*/16);
   button()->SetImageModel(Button::STATE_DISABLED,
                           ui::ImageModel::FromImageSkia(disabled_image));
   EXPECT_TRUE(is_showing_image(disabled_image));

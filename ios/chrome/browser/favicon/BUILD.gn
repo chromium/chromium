@@ -66,6 +66,7 @@ source_set("unit_tests") {
     "//ios/chrome/common/ui/favicon",
     "//skia",
     "//testing/gtest",
+    "//ui/gfx:test_support",
     "//ui/gfx/codec",
     "//url",
   ]

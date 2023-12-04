@@ -10,6 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/widget_test.h"
@@ -35,11 +36,8 @@ views::ImageView* FindImage(views::View* root) {
 }
 
 ui::ImageModel BuildTestImage(SkColor color) {
-  SkBitmap new_bitmap;
-  new_bitmap.allocN32Pixels(32, 32);
-  new_bitmap.eraseColor(color);
-  return ui::ImageModel::FromImageSkia(
-      gfx::ImageSkia::CreateFromBitmap(new_bitmap, 1.0));
+  return ui::ImageModel::FromImageSkia(gfx::ImageSkia::CreateFromBitmap(
+      gfx::test::CreateBitmap(/*size=*/32, color), 1.0));
 }
 
 SkColor ImageTopLeftColor(ui::ImageModel model) {

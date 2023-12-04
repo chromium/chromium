@@ -136,6 +136,7 @@ component("views_examples_lib") {
     "//ui/color",
     "//ui/events",
     "//ui/gfx",
+    "//ui/gfx:test_support",
     "//ui/gfx/geometry",
     "//ui/lottie",
     "//ui/message_center",

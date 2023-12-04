@@ -39,8 +39,6 @@ void VerifyIcon(const gfx::ImageSkia& src, const gfx::ImageSkia& dst);
 void VerifyCompressedIcon(const std::vector<uint8_t>& src_data,
                           const apps::IconValue& icon);
 
-SkBitmap CreateSquareIconBitmap(int size_px, SkColor solid_color);
-
 gfx::ImageSkia CreateSquareIconImageSkia(int size_dp, SkColor solid_color);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

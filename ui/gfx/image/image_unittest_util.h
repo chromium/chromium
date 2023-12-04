@@ -26,19 +26,31 @@ typedef NSImage* PlatformImage;
 typedef gfx::ImageSkia PlatformImage;
 #endif
 
-// Create a bitmap of |width|x|height|.
-const SkBitmap CreateBitmap(int width, int height);
+// Create a bitmap of `size`x`size` and color `color`.
+const SkBitmap CreateBitmap(int size, SkColor color = SK_ColorGREEN);
 
-// Creates an ImageSkia of |width|x|height| DIP with bitmap data for an
-// arbitrary scale factor.
-gfx::ImageSkia CreateImageSkia(int width, int height);
+// Create a bitmap of `width`x`height` and color `color`.
+const SkBitmap CreateBitmap(int width,
+                            int height,
+                            SkColor color = SK_ColorGREEN);
+
+// Creates an ImageSkia of `size`x`size` DIP and color `color` with bitmap
+// data for an arbitrary scale factor.
+gfx::ImageSkia CreateImageSkia(int size, SkColor color = SK_ColorGREEN);
+
+// Creates an ImageSkia of `width`x`height` DIP and color `color` with bitmap
+// data for an arbitrary scale factor.
+gfx::ImageSkia CreateImageSkia(int width,
+                               int height,
+                               SkColor color = SK_ColorGREEN);
 
 // Returns PNG encoded bytes for a bitmap of |edge_size|x|edge_size|.
 scoped_refptr<base::RefCountedMemory> CreatePNGBytes(int edge_size);
 
 // TODO(rohitrao): Remove the no-argument version of CreateImage().
 gfx::Image CreateImage();
-gfx::Image CreateImage(int width, int height);
+gfx::Image CreateImage(int size, SkColor color = SK_ColorGREEN);
+gfx::Image CreateImage(int width, int height, SkColor color = SK_ColorGREEN);
 
 // Returns true if the images are equal. Converts the images to ImageSkia to
 // compare them.

@@ -79,6 +79,7 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//ui/accessibility",
+    "//ui/gfx:test_support",
     "//ui/message_center",
     "//ui/native_theme:test_support",
     "//ui/views",

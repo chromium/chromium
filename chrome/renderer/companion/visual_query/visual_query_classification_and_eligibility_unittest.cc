@@ -8,8 +8,18 @@
 #include "base/path_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace companion::visual_query {
+
+namespace {
+
+constexpr SkColor kRed = SkColorSetRGB(225, 0, 0);
+constexpr SkColor kGreen = SkColorSetRGB(0, 225, 0);
+constexpr SkColor kBlue = SkColorSetRGB(0, 0, 225);
+
+}  // namespace
 
 class VisualClassificationAndEligibilityTest : public testing::Test {
  public:
@@ -25,13 +35,6 @@ class VisualClassificationAndEligibilityTest : public testing::Test {
             .AppendASCII("companion_visual_query")
             .AppendASCII("test-model-quantized.tflite");
     ASSERT_TRUE(base::ReadFileToString(model_file_path, &model_bytes_));
-  }
-
-  const SkBitmap CreateBitmap(int width, int height, int r, int g, int b) {
-    SkBitmap bitmap;
-    bitmap.allocN32Pixels(width, height);
-    bitmap.eraseARGB(255, r, g, b);
-    return bitmap;
   }
 
  protected:
@@ -60,7 +63,8 @@ TEST_F(VisualClassificationAndEligibilityTest, TestCreateAndRun) {
   // Test classifier shoppy score = 0.375; sens score = 0.434.
   SingleImageFeaturesAndBytes features_and_bytes1;
   features_and_bytes1.features.image_identifier = "blue_image";
-  features_and_bytes1.image_contents = CreateBitmap(1000, 1000, 0, 0, 225);
+  features_and_bytes1.image_contents =
+      gfx::test::CreateBitmap(/*size=*/1000, kBlue);
   features_and_bytes1.features.onpage_rect = Rect(0, 0, 50, 10);
   base::flat_map<ImageId, SingleImageFeaturesAndBytes> image_map;
   image_map[features_and_bytes1.features.image_identifier] =
@@ -69,7 +73,8 @@ TEST_F(VisualClassificationAndEligibilityTest, TestCreateAndRun) {
   // Test classifier shoppy score = 0.375; sens score = 0.434.
   SingleImageFeaturesAndBytes features_and_bytes2;
   features_and_bytes2.features.image_identifier = "small_blue_image";
-  features_and_bytes2.image_contents = CreateBitmap(1000, 1000, 0, 0, 225);
+  features_and_bytes2.image_contents =
+      gfx::test::CreateBitmap(/*size=*/1000, kBlue);
   features_and_bytes2.features.onpage_rect = Rect(0, 0, 5, 1);
   image_map[features_and_bytes2.features.image_identifier] =
       features_and_bytes2;
@@ -77,7 +82,8 @@ TEST_F(VisualClassificationAndEligibilityTest, TestCreateAndRun) {
   // Test classifier shoppy score = 0.38; sens score = 0.346.
   SingleImageFeaturesAndBytes features_and_bytes3;
   features_and_bytes3.features.image_identifier = "red_image";
-  features_and_bytes3.image_contents = CreateBitmap(1000, 1000, 225, 0, 0);
+  features_and_bytes3.image_contents =
+      gfx::test::CreateBitmap(/*size=*/1000, kRed);
   features_and_bytes3.features.onpage_rect = Rect(0, 0, 50, 10);
   image_map[features_and_bytes3.features.image_identifier] =
       features_and_bytes3;
@@ -85,7 +91,8 @@ TEST_F(VisualClassificationAndEligibilityTest, TestCreateAndRun) {
   // Test classifier shoppy score = 0.319; sens score = 0.539.
   SingleImageFeaturesAndBytes features_and_bytes4;
   features_and_bytes4.features.image_identifier = "green_image";
-  features_and_bytes4.image_contents = CreateBitmap(1000, 1000, 0, 225, 0);
+  features_and_bytes4.image_contents =
+      gfx::test::CreateBitmap(/*size=*/1000, kGreen);
   features_and_bytes4.features.onpage_rect = Rect(0, 0, 50, 10);
   image_map[features_and_bytes4.features.image_identifier] =
       features_and_bytes4;
@@ -117,7 +124,8 @@ TEST_F(VisualClassificationAndEligibilityTest, TestShoppyScoreIsCorrect) {
   // Test classifier shoppy score = 0.375; sens score = 0.434.
   SingleImageFeaturesAndBytes features_and_bytes1;
   features_and_bytes1.features.image_identifier = "blue_image";
-  features_and_bytes1.image_contents = CreateBitmap(1000, 1000, 0, 0, 225);
+  features_and_bytes1.image_contents =
+      gfx::test::CreateBitmap(/*size=*/1000, kBlue);
   features_and_bytes1.features.onpage_rect = Rect(0, 0, 50, 10);
   base::flat_map<ImageId, SingleImageFeaturesAndBytes> image_map;
   image_map[features_and_bytes1.features.image_identifier] =
@@ -150,7 +158,8 @@ TEST_F(VisualClassificationAndEligibilityTest, TestSensScoreIsCorrect) {
   // Test classifier shoppy score = 0.375; sens score = 0.434.
   SingleImageFeaturesAndBytes features_and_bytes1;
   features_and_bytes1.features.image_identifier = "blue_image";
-  features_and_bytes1.image_contents = CreateBitmap(1000, 1000, 0, 0, 225);
+  features_and_bytes1.image_contents =
+      gfx::test::CreateBitmap(/*size=*/1000, kBlue);
   features_and_bytes1.features.onpage_rect = Rect(0, 0, 50, 10);
   base::flat_map<ImageId, SingleImageFeaturesAndBytes> image_map;
   image_map[features_and_bytes1.features.image_identifier] =

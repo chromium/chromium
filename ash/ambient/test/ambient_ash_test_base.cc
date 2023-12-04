@@ -60,6 +60,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
 
@@ -725,11 +726,9 @@ void AmbientAshTestBase::CreateTestImageJpegFile(base::FilePath path,
                                                  size_t width,
                                                  size_t height,
                                                  SkColor color) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(width, height);
-  bitmap.eraseColor(color);
+  SkBitmap bitmap = gfx::test::CreateBitmap(width, height, color);
   std::vector<unsigned char> data;
-  ASSERT_TRUE(gfx::JPEGCodec::Encode(bitmap, /*quality=*/50, &data));
+  ASSERT_TRUE(gfx::JPEGCodec::Encode(std::move(bitmap), /*quality=*/50, &data));
   size_t bytes_written = base::WriteFile(
       path, reinterpret_cast<const char*>(data.data()), data.size());
   ASSERT_EQ(data.size(), bytes_written);

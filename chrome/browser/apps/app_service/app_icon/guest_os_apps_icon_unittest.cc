@@ -30,6 +30,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia_rep_default.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace apps {
 
@@ -135,7 +136,7 @@ TEST_F(AppServiceGuestOSIconTest, GetStandardCrostiniIconFromVM) {
 
   // The VM can return an image of any size, it will be resized by App Service.
   constexpr int kVmIconSizePx = 150;
-  SkBitmap red_bitmap = CreateSquareIconBitmap(kVmIconSizePx, SK_ColorRED);
+  SkBitmap red_bitmap = gfx::test::CreateBitmap(kVmIconSizePx, SK_ColorRED);
   std::vector<uint8_t> png_bytes;
   gfx::PNGCodec::EncodeBGRASkBitmap(red_bitmap, false, &png_bytes);
 
@@ -162,7 +163,7 @@ TEST_F(AppServiceGuestOSIconTest, GetStandardCrostiniMultiContainerIconFromVM) {
   std::string app_id = AddApp(kDesktopFileId);
 
   constexpr int kVmIconSizePx = 150;
-  SkBitmap red_bitmap = CreateSquareIconBitmap(kVmIconSizePx, SK_ColorRED);
+  SkBitmap red_bitmap = gfx::test::CreateBitmap(kVmIconSizePx, SK_ColorRED);
   std::vector<uint8_t> png_bytes;
   gfx::PNGCodec::EncodeBGRASkBitmap(red_bitmap, false, &png_bytes);
 
@@ -190,7 +191,7 @@ TEST_F(AppServiceGuestOSIconTest, GetStandardCrostiniIconFromDisk) {
   std::string app_id = AddApp(kDesktopFileId);
 
   constexpr int kVmIconSizePx = 256;
-  SkBitmap red_bitmap = CreateSquareIconBitmap(kVmIconSizePx, SK_ColorGREEN);
+  SkBitmap red_bitmap = gfx::test::CreateBitmap(kVmIconSizePx, SK_ColorGREEN);
   std::vector<uint8_t> png_bytes;
   gfx::PNGCodec::EncodeBGRASkBitmap(red_bitmap, false, &png_bytes);
 

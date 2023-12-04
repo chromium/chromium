@@ -25,7 +25,7 @@ namespace {
 // use a RepeatingClosure to generate a new image for each download. Returns a
 // high resolution image to ensure image resizing flow triggers.
 gfx::ImageSkia CreateTestImage(const GURL&) {
-  return gfx::test::CreateImageSkia(/*width=*/3000, /*height=*/3000);
+  return gfx::test::CreateImageSkia(/*size=*/3000);
 }
 
 }  // namespace

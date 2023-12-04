@@ -9,6 +9,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace content {
 
@@ -38,13 +39,6 @@ class ManifestIconDownloaderTest : public testing::TestWithParam<bool> {
         bitmaps);
   }
 
-  SkBitmap CreateDummyBitmap(int width, int height) {
-    SkBitmap bitmap;
-    bitmap.allocN32Pixels(width, height);
-    bitmap.setImmutable();
-    return bitmap;
-  }
-
  private:
   bool selects_square_only_;
 };
@@ -54,79 +48,79 @@ TEST_P(ManifestIconDownloaderTest, NoIcons) {
 }
 
 TEST_P(ManifestIconDownloaderTest, ExactIsChosen) {
-  std::vector<SkBitmap> bitmaps;
-  bitmaps.push_back(CreateDummyBitmap(width_to_height_ratio() * 10, 10));
+  std::vector<SkBitmap> bitmaps = {
+      gfx::test::CreateBitmap(width_to_height_ratio() * 10, 10)};
 
   ASSERT_EQ(0, FindBitmap(10, 0, bitmaps));
 }
 
 TEST_P(ManifestIconDownloaderTest, BiggerIsChosen) {
-  std::vector<SkBitmap> bitmaps;
-  bitmaps.push_back(CreateDummyBitmap(width_to_height_ratio() * 20, 20));
+  std::vector<SkBitmap> bitmaps = {
+      gfx::test::CreateBitmap(width_to_height_ratio() * 20, 20)};
 
   ASSERT_EQ(0, FindBitmap(10, 0, bitmaps));
 }
 
 TEST_P(ManifestIconDownloaderTest, SmallerBelowMinimumIsIgnored) {
-  std::vector<SkBitmap> bitmaps;
-  bitmaps.push_back(CreateDummyBitmap(width_to_height_ratio() * 10, 10));
+  std::vector<SkBitmap> bitmaps = {
+      gfx::test::CreateBitmap(width_to_height_ratio() * 10, 10)};
 
   ASSERT_EQ(-1, FindBitmap(20, 15, bitmaps));
 }
 
 TEST_P(ManifestIconDownloaderTest, SmallerAboveMinimumIsChosen) {
-  std::vector<SkBitmap> bitmaps;
-  bitmaps.push_back(CreateDummyBitmap(width_to_height_ratio() * 15, 15));
+  std::vector<SkBitmap> bitmaps = {
+      gfx::test::CreateBitmap(width_to_height_ratio() * 15, 15)};
 
   ASSERT_EQ(0, FindBitmap(20, 15, bitmaps));
 }
 
 TEST_P(ManifestIconDownloaderTest, ExactIsPreferredOverBigger) {
-  std::vector<SkBitmap> bitmaps;
-  bitmaps.push_back(CreateDummyBitmap(width_to_height_ratio() * 20, 20));
-  bitmaps.push_back(CreateDummyBitmap(width_to_height_ratio() * 10, 10));
+  std::vector<SkBitmap> bitmaps = {
+      gfx::test::CreateBitmap(width_to_height_ratio() * 20, 20),
+      gfx::test::CreateBitmap(width_to_height_ratio() * 10, 10)};
 
   ASSERT_EQ(1, FindBitmap(10, 0, bitmaps));
 }
 
 TEST_P(ManifestIconDownloaderTest, ExactIsPreferredOverSmaller) {
-  std::vector<SkBitmap> bitmaps;
-  bitmaps.push_back(CreateDummyBitmap(width_to_height_ratio() * 20, 20));
-  bitmaps.push_back(CreateDummyBitmap(width_to_height_ratio() * 10, 10));
+  std::vector<SkBitmap> bitmaps = {
+      gfx::test::CreateBitmap(width_to_height_ratio() * 20, 20),
+      gfx::test::CreateBitmap(width_to_height_ratio() * 10, 10)};
 
   ASSERT_EQ(0, FindBitmap(20, 0, bitmaps));
 }
 
 TEST_P(ManifestIconDownloaderTest, BiggerIsPreferredOverCloserSmaller) {
-  std::vector<SkBitmap> bitmaps;
-  bitmaps.push_back(CreateDummyBitmap(width_to_height_ratio() * 20, 20));
-  bitmaps.push_back(CreateDummyBitmap(width_to_height_ratio() * 10, 10));
+  std::vector<SkBitmap> bitmaps = {
+      gfx::test::CreateBitmap(width_to_height_ratio() * 20, 20),
+      gfx::test::CreateBitmap(width_to_height_ratio() * 10, 10)};
 
   ASSERT_EQ(0, FindBitmap(11, 0, bitmaps));
 }
 
 TEST_P(ManifestIconDownloaderTest, ClosestToExactIsChosen) {
-  std::vector<SkBitmap> bitmaps;
-  bitmaps.push_back(CreateDummyBitmap(width_to_height_ratio() * 25, 25));
-  bitmaps.push_back(CreateDummyBitmap(width_to_height_ratio() * 20, 20));
+  std::vector<SkBitmap> bitmaps = {
+      gfx::test::CreateBitmap(width_to_height_ratio() * 25, 25),
+      gfx::test::CreateBitmap(width_to_height_ratio() * 20, 20)};
 
   ASSERT_EQ(1, FindBitmap(10, 0, bitmaps));
 }
 
 TEST_P(ManifestIconDownloaderTest, MixedReturnsBiggestClosest) {
-  std::vector<SkBitmap> bitmaps;
-  bitmaps.push_back(CreateDummyBitmap(width_to_height_ratio() * 10, 10));
-  bitmaps.push_back(CreateDummyBitmap(width_to_height_ratio() * 8, 8));
-  bitmaps.push_back(CreateDummyBitmap(width_to_height_ratio() * 6, 6));
+  std::vector<SkBitmap> bitmaps = {
+      gfx::test::CreateBitmap(width_to_height_ratio() * 10, 10),
+      gfx::test::CreateBitmap(width_to_height_ratio() * 8, 8),
+      gfx::test::CreateBitmap(width_to_height_ratio() * 6, 6)};
 
   ASSERT_EQ(0, FindBitmap(9, 0, bitmaps));
 }
 
 TEST_P(ManifestIconDownloaderTest, MixedCanReturnMiddle) {
-  std::vector<SkBitmap> bitmaps;
-  bitmaps.push_back(CreateDummyBitmap(width_to_height_ratio() * 10, 10));
-  bitmaps.push_back(CreateDummyBitmap(width_to_height_ratio() * 8, 8));
-  bitmaps.push_back(CreateDummyBitmap(width_to_height_ratio() * 6, 6));
+  std::vector<SkBitmap> bitmaps = {
+      gfx::test::CreateBitmap(width_to_height_ratio() * 10, 10),
+      gfx::test::CreateBitmap(width_to_height_ratio() * 8, 8),
+      gfx::test::CreateBitmap(width_to_height_ratio() * 6, 6)};
 
   ASSERT_EQ(1, FindBitmap(7, 0, bitmaps));
 }
@@ -136,9 +130,9 @@ TEST_P(ManifestIconDownloaderTest, SquareIsPickedOverNonSquare) {
   if (!selects_square_only())
     return;
 
-  std::vector<SkBitmap> bitmaps;
-  bitmaps.push_back(CreateDummyBitmap(width_to_height_ratio() * 5, 5));
-  bitmaps.push_back(CreateDummyBitmap(width_to_height_ratio() * 10, 15));
+  std::vector<SkBitmap> bitmaps = {
+      gfx::test::CreateBitmap(width_to_height_ratio() * 5, 5),
+      gfx::test::CreateBitmap(width_to_height_ratio() * 10, 15)};
 
   ASSERT_EQ(0, FindBitmap(15, 5, bitmaps));
   ASSERT_EQ(0, FindBitmap(10, 5, bitmaps));
@@ -149,18 +143,17 @@ TEST_P(ManifestIconDownloaderTest, MostSquareNonSquareIsPicked) {
   if (!selects_square_only())
     return;
 
-  std::vector<SkBitmap> bitmaps;
-  bitmaps.push_back(CreateDummyBitmap(width_to_height_ratio() * 25, 35));
-  bitmaps.push_back(CreateDummyBitmap(width_to_height_ratio() * 10, 11));
+  std::vector<SkBitmap> bitmaps = {
+      gfx::test::CreateBitmap(width_to_height_ratio() * 25, 35),
+      gfx::test::CreateBitmap(width_to_height_ratio() * 10, 11)};
 
   ASSERT_EQ(1, FindBitmap(25, 0, bitmaps));
   ASSERT_EQ(1, FindBitmap(35, 0, bitmaps));
 }
 
 TEST_P(ManifestIconDownloaderTest, NonSquareBelowMinimumIsNotPicked) {
-  std::vector<SkBitmap> bitmaps;
-  bitmaps.push_back(CreateDummyBitmap(10, 15));
-  bitmaps.push_back(CreateDummyBitmap(15, 10));
+  std::vector<SkBitmap> bitmaps = {gfx::test::CreateBitmap(10, 15),
+                                   gfx::test::CreateBitmap(15, 10)};
 
   ASSERT_EQ(-1, FindBitmap(15, 11, bitmaps));
 }
@@ -170,8 +163,8 @@ TEST_P(ManifestIconDownloaderTest, ImproperWidthtoHeightRatioIsNotPicked) {
   if (selects_square_only())
     return;
 
-  std::vector<SkBitmap> bitmaps;
-  bitmaps.push_back(CreateDummyBitmap((width_to_height_ratio() + 1) * 15, 15));
+  std::vector<SkBitmap> bitmaps = {
+      gfx::test::CreateBitmap((width_to_height_ratio() + 1) * 15, 15)};
 
   ASSERT_EQ(-1, FindBitmap(15, 11, bitmaps));
 }

@@ -42,6 +42,7 @@
 #include "ui/compositor/test/test_utils.h"
 #include "ui/events/test/test_event.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/message_center_types.h"
@@ -69,15 +70,6 @@ namespace {
 using ::testing::_;
 
 constexpr char kScreenCaptureNotificationId[] = "capture_mode_notification";
-
-const gfx::Image CreateTestImage(int width,
-                                 int height,
-                                 SkColor color = SK_ColorGREEN) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(width, height);
-  bitmap.eraseColor(color);
-  return gfx::Image::CreateFrom1xBitmap(bitmap);
-}
 
 class NotificationTestDelegate : public message_center::NotificationDelegate {
  public:
@@ -225,15 +217,15 @@ class AshNotificationViewTestBase : public AshTestBase,
 
     std::unique_ptr<Notification> notification = std::make_unique<Notification>(
         notification_type, base::NumberToString(current_id_++), u"title",
-        message, ui::ImageModel::FromImage(CreateTestImage(80, 80)),
+        message, ui::ImageModel::FromImage(gfx::test::CreateImage(/*size=*/80)),
         u"display source", GURL(),
         message_center::NotifierId(message_center::NotifierType::APPLICATION,
                                    "extension_id"),
         data, delegate_);
-    notification->set_small_image(CreateTestImage(16, 16));
+    notification->set_small_image(gfx::test::CreateImage(/*size=*/16));
 
     if (has_image) {
-      notification->set_image(CreateTestImage(320, 240));
+      notification->set_image(gfx::test::CreateImage(320, 240));
     }
 
     message_center::MessageCenter::Get()->AddNotification(
@@ -259,13 +251,13 @@ class AshNotificationViewTestBase : public AshTestBase,
     std::unique_ptr<Notification> notification = std::make_unique<Notification>(
         message_center::NOTIFICATION_TYPE_SIMPLE,
         base::NumberToString(current_id_++), u"title", u"message",
-        ui::ImageModel::FromImage(CreateTestImage(80, 80)), u"display source",
-        GURL(u"http://test-url.com"), notifier_id, rich_notification_data,
-        delegate_);
-    notification->set_small_image(CreateTestImage(16, 16));
+        ui::ImageModel::FromImage(gfx::test::CreateImage(/*size=*/80)),
+        u"display source", GURL(u"http://test-url.com"), notifier_id,
+        rich_notification_data, delegate_);
+    notification->set_small_image(gfx::test::CreateImage(/*size=*/16));
 
     if (has_image) {
-      notification->set_image(CreateTestImage(320, 240));
+      notification->set_image(gfx::test::CreateImage(320, 240));
     }
 
     message_center::MessageCenter::Get()->AddNotification(
@@ -653,7 +645,7 @@ TEST_F(AshNotificationViewTest, GroupedNotificationExpandState) {
 TEST_F(AshNotificationViewTest, GroupedNotificationChildIcon) {
   auto notification = CreateTestNotification();
   notification->set_icon(
-      ui::ImageModel::FromImage(CreateTestImage(16, 16, SK_ColorBLUE)));
+      ui::ImageModel::FromImage(gfx::test::CreateImage(16, 16, SK_ColorBLUE)));
   notification->SetGroupChild();
   notification_view()->UpdateWithNotification(*notification.get());
 

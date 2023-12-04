@@ -42,6 +42,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_skia_source.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/wm/core/cursor_manager.h"
 
 namespace ash {
@@ -217,16 +218,12 @@ class TestCursorImageSource : public gfx::ImageSkiaSource {
   }
 
  private:
-  static SkBitmap CreateSolidColorBitmap(SkColor color, int size) {
-    SkBitmap bitmap;
-    bitmap.allocN32Pixels(size, size);
-    bitmap.eraseColor(color);
-    return bitmap;
-  }
   gfx::ImageSkiaRep rep_1x_ =
-      gfx::ImageSkiaRep(CreateSolidColorBitmap(SK_ColorBLACK, 25), 1.f);
+      gfx::ImageSkiaRep(gfx::test::CreateBitmap(/*size=*/25, SK_ColorBLACK),
+                        1.f);
   gfx::ImageSkiaRep rep_2x_ =
-      gfx::ImageSkiaRep(CreateSolidColorBitmap(SK_ColorWHITE, 50), 2.f);
+      gfx::ImageSkiaRep(gfx::test::CreateBitmap(/*size=*/50, SK_ColorWHITE),
+                        2.f);
 };
 
 }  // namespace
@@ -338,12 +335,10 @@ TEST_F(CursorWindowControllerTest, DSF) {
                     ui::GetScaleForResourceScaleFactor(
                         ui::GetSupportedResourceScaleFactor(dsf)));
 
-        // Custom cursor.
-        SkBitmap bitmap;
-        bitmap.allocN32Pixels(20, 20);
-        // Custom cursors are always scaled at the device scale factor. See
-        // `WebCursor::GetNativeCursor`.
-        cursor_test(ui::Cursor::NewCustom(bitmap, gfx::Point(10, 10), dsf),
+        // Custom cursor. Custom cursors are always scaled at the device scale
+        // factor. See `WebCursor::GetNativeCursor`.
+        cursor_test(ui::Cursor::NewCustom(gfx::test::CreateBitmap(/*size=*/20),
+                                          gfx::Point(10, 10), dsf),
                     size, dsf);
       }
     }

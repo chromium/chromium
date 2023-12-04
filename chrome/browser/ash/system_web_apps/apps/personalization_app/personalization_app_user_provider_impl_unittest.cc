@@ -47,6 +47,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "url/gurl.h"
 
 namespace ash::personalization_app {
@@ -70,19 +71,6 @@ void AddAndLoginUser(const AccountId& account_id,
                                     base::UTF8ToUTF16(display_name));
   user_manager->LoginUser(account_id);
   user_manager->SwitchActiveUser(account_id);
-}
-
-SkBitmap CreateBitmap(int width, int height) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(width, height);
-  bitmap.eraseColor(SK_ColorGREEN);
-  return bitmap;
-}
-
-gfx::ImageSkia CreateImage(int width, int height) {
-  gfx::ImageSkia image =
-      gfx::ImageSkia::CreateFrom1xBitmap(CreateBitmap(width, height));
-  return image;
 }
 
 mojo_base::BigBuffer FakeEncodedPngBuffer() {
@@ -153,7 +141,7 @@ class TestCameraImageDecoder
 
   void DecodeCameraImage(base::span<const uint8_t> encoded_bytes,
                          data_decoder::DecodeImageCallback callback) override {
-    std::move(callback).Run(CreateBitmap(10, 10));
+    std::move(callback).Run(gfx::test::CreateBitmap(/*size=*/10));
   }
 };
 
@@ -285,7 +273,7 @@ TEST_F(PersonalizationAppUserProviderImplTest, ObservesUserAvatarImage) {
   EXPECT_EQ(nullptr, current_user_image());
 
   // Mock out profile image so the test does not try to download a real one.
-  const gfx::ImageSkia& profile_image = CreateImage(50, 50);
+  const gfx::ImageSkia& profile_image = gfx::test::CreateImageSkia(/*size=*/50);
   user_image_manager()->SetDownloadedProfileImageForTesting(profile_image);
 
   user_image_manager()->SaveUserImageFromProfileImage();
@@ -325,7 +313,7 @@ TEST_F(PersonalizationAppUserProviderImplTest, ObservesUserProfileImage) {
   SetUserImageObserver();
 
   // Select a profile image.
-  gfx::ImageSkia profile_image = CreateImage(50, 50);
+  gfx::ImageSkia profile_image = gfx::test::CreateImageSkia(/*size=*/50);
   user_image_manager()->SetDownloadedProfileImageForTesting(profile_image);
   user_image_manager()->SaveUserImageFromProfileImage();
 
@@ -337,7 +325,7 @@ TEST_F(PersonalizationAppUserProviderImplTest, ObservesUserProfileImage) {
 TEST_F(PersonalizationAppUserProviderImplTest, SelectProfileImage) {
   SetUserImageObserver();
 
-  gfx::ImageSkia profile_image = CreateImage(50, 50);
+  gfx::ImageSkia profile_image = gfx::test::CreateImageSkia(/*size=*/50);
   user_image_manager()->SetDownloadedProfileImageForTesting(profile_image);
   user_provider_remote()->get()->SelectProfileImage();
   user_provider_remote()->FlushForTesting();
@@ -349,7 +337,7 @@ TEST_F(PersonalizationAppUserProviderImplTest, SelectProfileImage) {
 TEST_F(PersonalizationAppUserProviderImplTest, EncodesUserImageToPngBuffer) {
   SetUserImageObserver();
 
-  gfx::ImageSkia test_image = CreateImage(4, 4);
+  gfx::ImageSkia test_image = gfx::test::CreateImageSkia(/*size=*/4);
   test_image.MakeThreadSafe();
 
   // Save a jpg user image. This will trigger the image encoding to png path.
@@ -426,7 +414,7 @@ TEST_F(PersonalizationAppUserProviderImplTest,
 TEST_F(PersonalizationAppUserProviderImplTest,
        RecordsProfileImageChangeHistogram) {
   // Set a fake profile image to skip trying to downloading one.
-  const gfx::ImageSkia& profile_image = CreateImage(50, 50);
+  const gfx::ImageSkia& profile_image = gfx::test::CreateImageSkia(/*size=*/50);
   user_image_manager()->SetDownloadedProfileImageForTesting(profile_image);
 
   // No profile image recorded yet.

@@ -854,6 +854,7 @@ source_set("web_applications_unit_tests") {
     "//ui/base/idle:idle",
     "//ui/base/idle:test_support",
     "//ui/events/devices:test_support",
+    "//ui/gfx:test_support",
   ]
 
   if (is_chromeos_ash) {

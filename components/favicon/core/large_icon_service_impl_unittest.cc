@@ -34,6 +34,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "url/gurl.h"
 
 namespace favicon {
@@ -66,13 +67,6 @@ ACTION_P2(PostFetchReplyWithMetadata, p0, p1) {
       FROM_HERE, base::BindOnce(std::move(*arg2), p0, p1));
 }
 
-SkBitmap CreateTestSkBitmap(int w, int h, SkColor color) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(w, h);
-  bitmap.eraseColor(color);
-  return bitmap;
-}
-
 favicon_base::FaviconRawBitmapResult CreateTestBitmapResult(int w,
                                                             int h,
                                                             SkColor color) {
@@ -81,10 +75,8 @@ favicon_base::FaviconRawBitmapResult CreateTestBitmapResult(int w,
 
   // Create bitmap and fill with |color|.
   scoped_refptr<base::RefCountedBytes> data(new base::RefCountedBytes());
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(w, h);
-  bitmap.eraseColor(color);
-  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &data->data());
+  gfx::PNGCodec::EncodeBGRASkBitmap(gfx::test::CreateBitmap(w, h, color), false,
+                                    &data->data());
   result.bitmap_data = data;
 
   result.pixel_size = gfx::Size(w, h);
@@ -146,8 +138,8 @@ TEST_F(LargeIconServiceTest, ShouldGetFromGoogleServer) {
   base::MockCallback<favicon_base::GoogleFaviconServerCallback> callback;
   EXPECT_CALL(*mock_image_fetcher_,
               FetchImageAndData_(kExpectedServerUrl, _, _, _))
-      .WillOnce(PostFetchReply(gfx::Image::CreateFrom1xBitmap(
-          CreateTestSkBitmap(64, 64, kTestColor))));
+      .WillOnce(
+          PostFetchReply(gfx::test::CreateImage(/*size=*/64, kTestColor)));
   EXPECT_CALL(mock_favicon_service_,
               SetOnDemandFavicons(GURL(kDummyUrl), kExpectedServerUrl,
                                   favicon_base::IconType::kTouchIcon, _, _))
@@ -190,9 +182,7 @@ TEST_F(LargeIconServiceTest, ShouldGetFromGoogleServerWithOriginalUrl) {
   EXPECT_CALL(*mock_image_fetcher_,
               FetchImageAndData_(kExpectedServerUrl, _, _, _))
       .WillOnce(PostFetchReplyWithMetadata(
-          gfx::Image::CreateFrom1xBitmap(
-              CreateTestSkBitmap(64, 64, kTestColor)),
-          expected_metadata));
+          gfx::test::CreateImage(/*size=*/64, kTestColor), expected_metadata));
   EXPECT_CALL(mock_favicon_service_,
               SetOnDemandFavicons(GURL(kDummyUrl), kExpectedOriginalUrl,
                                   favicon_base::IconType::kTouchIcon, _, _))
@@ -231,8 +221,8 @@ TEST_F(LargeIconServiceTest, ShouldTrimQueryParametersForGoogleServer) {
 
   EXPECT_CALL(*mock_image_fetcher_,
               FetchImageAndData_(kExpectedServerUrl, _, _, _))
-      .WillOnce(PostFetchReply(gfx::Image::CreateFrom1xBitmap(
-          CreateTestSkBitmap(64, 64, kTestColor))));
+      .WillOnce(
+          PostFetchReply(gfx::test::CreateImage(/*size=*/64, kTestColor)));
   // Verify that the non-trimmed page URL is used when writing to the database.
   EXPECT_CALL(mock_favicon_service_,
               SetOnDemandFavicons(_, kExpectedServerUrl, _, _, _));

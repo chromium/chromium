@@ -8,6 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace media_message_center {
 
@@ -22,12 +23,6 @@ class MediaNotificationBackgroundAshImplTest : public testing::Test {
 
   void TearDown() override { background_.reset(); }
 
-  gfx::ImageSkia CreateTestImage(int width, int height) {
-    SkBitmap bitmap;
-    bitmap.allocN32Pixels(width, height);
-    return gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
-  }
-
   gfx::Rect GetArtworkBounds(gfx::Rect view_rect) {
     return background_->GetArtworkBounds(view_rect);
   }
@@ -40,17 +35,17 @@ class MediaNotificationBackgroundAshImplTest : public testing::Test {
 
 TEST_F(MediaNotificationBackgroundAshImplTest, ArtworkBoundsTest) {
   gfx::Rect parent_bounds(0, 0, 100, 100);
-  background()->UpdateArtwork(CreateTestImage(120, 60));
+  background()->UpdateArtwork(gfx::test::CreateImageSkia(120, 60));
   EXPECT_EQ(GetArtworkBounds(parent_bounds), gfx::Rect(-36, 4, 160, 80));
 
-  background()->UpdateArtwork(CreateTestImage(40, 50));
+  background()->UpdateArtwork(gfx::test::CreateImageSkia(40, 50));
   EXPECT_EQ(GetArtworkBounds(parent_bounds), gfx::Rect(4, -6, 80, 100));
 
-  background()->UpdateArtwork(CreateTestImage(80, 120));
+  background()->UpdateArtwork(gfx::test::CreateImageSkia(80, 120));
   EXPECT_EQ(GetArtworkBounds(parent_bounds), gfx::Rect(4, -16, 80, 120));
 
   base::i18n::SetRTLForTesting(true);
-  background()->UpdateArtwork(CreateTestImage(80, 40));
+  background()->UpdateArtwork(gfx::test::CreateImageSkia(80, 40));
   EXPECT_EQ(GetArtworkBounds(parent_bounds), gfx::Rect(-24, 4, 160, 80));
 }
 

@@ -24,13 +24,6 @@ namespace {
 
 constexpr int kImageSize = 16;
 
-gfx::ImageSkia CreateTestImage(SkColor color) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(kImageSize, kImageSize);
-  bitmap.eraseColor(color);
-  return gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
-}
-
 }  // namespace
 
 class ThemeTrackingImageViewTest : public ViewsTestBase {
@@ -75,8 +68,10 @@ class ThemeTrackingImageViewTest : public ViewsTestBase {
 };
 
 TEST_F(ThemeTrackingImageViewTest, CreateWithImageSkia) {
-  gfx::ImageSkia light_image{CreateTestImage(SK_ColorRED)};
-  gfx::ImageSkia dark_image{CreateTestImage(SK_ColorBLUE)};
+  gfx::ImageSkia light_image =
+      gfx::test::CreateImageSkia(kImageSize, SK_ColorRED);
+  gfx::ImageSkia dark_image =
+      gfx::test::CreateImageSkia(kImageSize, SK_ColorBLUE);
 
   SetView(std::make_unique<ThemeTrackingImageView>(
       light_image, dark_image,

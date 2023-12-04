@@ -65,6 +65,7 @@
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/strings/grit/ui_strings.h"
 
@@ -145,10 +146,7 @@ SkBitmap GetClipboardImage() {
 }
 
 SkBitmap CreateTestSkBitmap() {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(/*w=*/10, /*h=*/15);
-  bitmap.eraseColor(SK_ColorRED);
-  return bitmap;
+  return gfx::test::CreateBitmap(10, 15, SK_ColorRED);
 }
 
 std::unique_ptr<TestingProfileManager> CreateTestingProfileManager() {

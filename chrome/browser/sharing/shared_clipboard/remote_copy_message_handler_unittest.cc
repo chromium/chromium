@@ -29,6 +29,7 @@
 #include "ui/base/clipboard/clipboard_observer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -90,7 +91,7 @@ class RemoteCopyMessageHandlerTest : public SharedClipboardTestBase {
   chrome_browser_sharing::SharingMessage CreateMessageWithImage(
       const std::string& image_url) {
     image_url_ = image_url;
-    image_ = CreateTestSkBitmap(/*w=*/10, /*h=*/20, SK_ColorRED);
+    image_ = gfx::test::CreateBitmap(10, 20, SK_ColorRED);
 
     chrome_browser_sharing::SharingMessage message =
         SharedClipboardTestBase::CreateMessage(
@@ -112,13 +113,6 @@ class RemoteCopyMessageHandlerTest : public SharedClipboardTestBase {
     content::URLLoaderInterceptor::WriteResponse(
         std::string(), SkBitmapToPNGString(*image_), params->client.get());
     return true;
-  }
-
-  static SkBitmap CreateTestSkBitmap(int w, int h, SkColor color) {
-    SkBitmap bitmap;
-    bitmap.allocN32Pixels(w, h);
-    bitmap.eraseColor(color);
-    return bitmap;
   }
 
   static std::string SkBitmapToPNGString(const SkBitmap& bitmap) {
