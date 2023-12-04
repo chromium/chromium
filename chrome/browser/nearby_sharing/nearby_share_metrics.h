@@ -47,8 +47,6 @@ enum class PayloadFileOperation {
   kRead,
 };
 
-std::string GetMediumName(nearby::connections::mojom::Medium medium);
-
 void RecordNearbyShareEnabledMetric(NearbyShareEnabledState state);
 
 void RecordNearbyShareEstablishConnectionMetrics(
