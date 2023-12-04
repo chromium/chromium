@@ -157,7 +157,7 @@ class TestMultiprocessClosePipe final : public Multiprocess {
         who_closes_(who_closes),
         what_closes_(what_closes) {
     // Fails under "threadsafe" mode on macOS 10.11.
-    testing::GTEST_FLAG(death_test_style) = "fast";
+    GTEST_FLAG_SET(death_test_style, "fast");
   }
 
   TestMultiprocessClosePipe(const TestMultiprocessClosePipe&) = delete;

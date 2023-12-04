@@ -23,7 +23,7 @@ namespace test {
 namespace {
 
 TEST(ScopedGuardedPage, BasicFunctionality) {
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 
   ScopedGuardedPage page;
   char* address = (char*)page.Pointer();
