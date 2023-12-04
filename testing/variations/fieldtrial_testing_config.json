@@ -11961,6 +11961,10 @@
             "experiments": [
                 {
                     "name": "Enabled_Both",
+                    "params": {
+                        "DocumentProviderBackoffOn401": "true",
+                        "DocumentProviderIgnoreWhenDebouncing": "true"
+                    },
                     "enable_features": [
                         "OmniboxDocumentProviderNoSetting",
                         "OmniboxDocumentProviderNoSyncRequirement"
@@ -11968,12 +11972,20 @@
                 },
                 {
                     "name": "Enabled_NoSetting",
+                    "params": {
+                        "DocumentProviderBackoffOn401": "true",
+                        "DocumentProviderIgnoreWhenDebouncing": "true"
+                    },
                     "enable_features": [
                         "OmniboxDocumentProviderNoSetting"
                     ]
                 },
                 {
                     "name": "Enabled_NoSyncRequirement",
+                    "params": {
+                        "DocumentProviderBackoffOn401": "true",
+                        "DocumentProviderIgnoreWhenDebouncing": "true"
+                    },
                     "enable_features": [
                         "OmniboxDocumentProviderNoSyncRequirement"
                     ]
