@@ -33,12 +33,7 @@ scoped_refptr<ThermalResource> ThermalResource::Create(
 
 ThermalResource::ThermalResource(
     scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : task_runner_(std::move(task_runner)) {
-  recordreplay::Assert(
-    "[RUN-2911-2912] ThermalResource %d", 
-    task_runner ? recordreplay::PointerId(task_runner.get()) : -1
-  );
-}
+    : task_runner_(std::move(task_runner)) {}
 
 void ThermalResource::OnThermalMeasurement(
     mojom::blink::DeviceThermalState measurement) {

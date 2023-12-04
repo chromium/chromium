@@ -164,6 +164,8 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
 
   virtual ~RTCPeerConnectionHandler();
 
+  HAS_RECORD_REPLAY_ID();
+
   // Initialize method only used for unit test.
   bool InitializeForTest(
       const webrtc::PeerConnectionInterface::RTCConfiguration&
