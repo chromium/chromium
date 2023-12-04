@@ -64,6 +64,7 @@ PRUNE_PATHS = set([
     os.path.join('build', 'secondary'),
     os.path.join('third_party', 'bison'),
     os.path.join('third_party', 'chromite'),
+    os.path.join('third_party', 'clang-format'),
     os.path.join('third_party', 'cygwin'),
     os.path.join('third_party', 'gles2_conform'),
     os.path.join('third_party', 'gnu_binutils'),
