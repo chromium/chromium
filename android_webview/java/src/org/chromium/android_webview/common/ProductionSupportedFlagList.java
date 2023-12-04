@@ -797,6 +797,12 @@ public final class ProductionSupportedFlagList {
                 VizFeatures.INVALIDATE_LOCAL_SURFACE_ID_PRE_COMMIT,
                 "When enabled, invalidates the LocalSurfaceId of the DelegatedFrameHostAndroid when"
                         + " the old page is about to be unloaded."),
+        Flag.baseFeature(
+                BaseFeatures.PARTITION_ALLOC_SCHEDULER_LOOP_QUARANTINE,
+                "Enables Partition Allocator's FreeFlags::kSchedulerLoopQuarantine"),
+        Flag.baseFeature(
+                BaseFeatures.PARTITION_ALLOC_ZAPPING_BY_FREE_FLAGS,
+                "Enables Partition Allocator's FreeFlags::kZap"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
