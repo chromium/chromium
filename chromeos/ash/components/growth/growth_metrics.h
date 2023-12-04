@@ -7,6 +7,10 @@
 
 #include "base/component_export.h"
 
+namespace base {
+class TimeDelta;
+}  // namespace base
+
 namespace growth {
 
 // These enum values represent user-facing errors in the campaigns loading and
@@ -31,6 +35,12 @@ enum class CampaignsManagerError {
 // Records errors encountered during the campaigns loading and matching flow.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH)
 void RecordCampaignsManagerError(CampaignsManagerError error_code);
+
+void RecordCampaignsComponentDownloadDuration(const base::TimeDelta duration);
+
+void RecordCampaignsComponentReadDuration(const base::TimeDelta duration);
+
+void RecordCampaignMatchDuration(const base::TimeDelta duration);
 
 }  // namespace growth
 

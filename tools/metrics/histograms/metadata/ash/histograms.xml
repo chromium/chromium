@@ -3645,6 +3645,38 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.Growth.CampaignsComponent.DownloadDuration" units="ms"
+    expires_after="2024-10-17">
+  <owner>llin@google.com</owner>
+  <owner>cros-growth@google.com</owner>
+  <summary>
+    The amount of time in ms that the Campaigns Manager takes to download the
+    campaigns component from Omaha. Recorded when a component loading complete.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Growth.CampaignsComponent.MatchDuration" units="ms"
+    expires_after="2024-10-17">
+  <owner>llin@google.com</owner>
+  <owner>cros-growth@google.com</owner>
+  <summary>
+    The amount of time in ms that the Campaigns Manager takes to match a
+    campaign based on the targeting criteria. Recorded when fetching a campaign
+    for a particular slot completed.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Growth.CampaignsComponent.ParseDuration" units="ms"
+    expires_after="2024-10-17">
+  <owner>llin@google.com</owner>
+  <owner>cros-growth@google.com</owner>
+  <summary>
+    The amount of time in ms that the Campaigns Manager takes to read and parsed
+    (as JSON) from disk. Recorded when a component is loaded into Campaign
+    Matcher.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Growth.CampaignsManager.Error"
     enum="CampaignsManagerError" expires_after="2024-10-17">
   <owner>llin@google.com</owner>

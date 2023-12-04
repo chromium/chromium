@@ -88,6 +88,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   // Maps action type to the action.
   ActionMap actions_map_;
 
+  // Keeps track of when downloading campaigns begins.
+  base::TimeTicks campaigns_download_start_time_;
+
   base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<CampaignsManager> weak_factory_{this};

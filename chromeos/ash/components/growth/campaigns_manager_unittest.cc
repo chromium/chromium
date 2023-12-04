@@ -81,6 +81,15 @@ constexpr char kCampaignsFileName[] = "campaigns.json";
 inline constexpr char kCampaignsManagerErrorHistogramName[] =
     "Ash.Growth.CampaignsManager.Error";
 
+inline constexpr char kCampaignsComponentDownloadDurationHistogram[] =
+    "Ash.Growth.CampaignsComponent.DownloadDuration";
+
+inline constexpr char kCampaignsComponentReadDurationHistogram[] =
+    "Ash.Growth.CampaignsComponent.ParseDuration";
+
+inline constexpr char kCampaignMatchDurationHistogram[] =
+    "Ash.Growth.CampaignsManager.MatchDuration";
+
 // testing::InvokeArgument<N> does not work with base::OnceCallback. Use this
 // gmock action template to invoke base::OnceCallback. `k` is the k-th argument
 // and `T` is the callback's type.
@@ -238,6 +247,12 @@ TEST_F(CampaignsManagerTest, LoadAndGetDemoModeCampaign) {
   LoadComponentAndVerifyLoadComplete(
       base::StringPrintf(kValidCampaignsFileTemplate, kValidDemoModeTargeting));
 
+  histogram_tester.ExpectTotalCount(
+      kCampaignsComponentDownloadDurationHistogram, 1);
+  histogram_tester.ExpectTotalCount(kCampaignsComponentReadDurationHistogram,
+                                    1);
+  histogram_tester.ExpectTotalCount(kCampaignMatchDurationHistogram, 0);
+
   MockDemoMode(
       /*in_demo_mode=*/true,
       /*cloud_gaming_device=*/true,
@@ -256,6 +271,11 @@ TEST_F(CampaignsManagerTest, LoadAndGetDemoModeCampaign) {
   histogram_tester.ExpectBucketCount(kCampaignsManagerErrorHistogramName,
                                      CampaignsManagerError::kInvalidCampaign,
                                      /*count=*/1);
+  histogram_tester.ExpectTotalCount(
+      kCampaignsComponentDownloadDurationHistogram, 1);
+  histogram_tester.ExpectTotalCount(kCampaignsComponentReadDurationHistogram,
+                                    1);
+  histogram_tester.ExpectTotalCount(kCampaignMatchDurationHistogram, 1);
 }
 
 TEST_F(CampaignsManagerTest, GetCampaignNoTargeting) {
@@ -618,6 +638,10 @@ TEST_F(CampaignsManagerTest, LoadCampaignsFailed) {
 
   campaigns_manager_->LoadCampaigns(base::DoNothing());
   observer.Wait();
+  histogram_tester.ExpectTotalCount(
+      kCampaignsComponentDownloadDurationHistogram, 1);
+  histogram_tester.ExpectTotalCount(kCampaignsComponentReadDurationHistogram,
+                                    0);
 
   ASSERT_TRUE(observer.load_completed());
 
@@ -627,6 +651,7 @@ TEST_F(CampaignsManagerTest, LoadCampaignsFailed) {
       kCampaignsManagerErrorHistogramName,
       CampaignsManagerError::kCampaignsComponentLoadFail,
       /*count=*/1);
+  histogram_tester.ExpectTotalCount(kCampaignMatchDurationHistogram, 1);
 }
 
 TEST_F(CampaignsManagerTest, LoadCampaignsNoFile) {
@@ -642,6 +667,10 @@ TEST_F(CampaignsManagerTest, LoadCampaignsNoFile) {
 
   campaigns_manager_->LoadCampaigns(base::DoNothing());
   observer.Wait();
+  histogram_tester.ExpectTotalCount(
+      kCampaignsComponentDownloadDurationHistogram, 1);
+  histogram_tester.ExpectTotalCount(kCampaignsComponentReadDurationHistogram,
+                                    1);
 
   ASSERT_TRUE(observer.load_completed());
 
@@ -651,12 +680,17 @@ TEST_F(CampaignsManagerTest, LoadCampaignsNoFile) {
       kCampaignsManagerErrorHistogramName,
       CampaignsManagerError::kCampaignsFileLoadFail,
       /*count=*/1);
+  histogram_tester.ExpectTotalCount(kCampaignMatchDurationHistogram, 1);
 }
 
 TEST_F(CampaignsManagerTest, LoadCampaignsInvalidFile) {
   base::HistogramTester histogram_tester;
 
   LoadComponentAndVerifyLoadComplete("abc");
+  histogram_tester.ExpectTotalCount(
+      kCampaignsComponentDownloadDurationHistogram, 1);
+  histogram_tester.ExpectTotalCount(kCampaignsComponentReadDurationHistogram,
+                                    1);
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 
@@ -664,6 +698,7 @@ TEST_F(CampaignsManagerTest, LoadCampaignsInvalidFile) {
       kCampaignsManagerErrorHistogramName,
       CampaignsManagerError::kCampaignsParsingFail,
       /*count=*/1);
+  histogram_tester.ExpectTotalCount(kCampaignMatchDurationHistogram, 1);
 }
 
 TEST_F(CampaignsManagerTest, LoadCampaignsEmptyFile) {
