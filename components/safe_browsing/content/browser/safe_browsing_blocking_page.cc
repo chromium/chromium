@@ -145,8 +145,9 @@ void SafeBrowsingBlockingPage::OnInterstitialClosing() {
 
     // If kAntiPhishingTelemetry is enabled, add
     // CMD_CLOSE_INTERSTITIAL_WITHOUT_UI interaction to interactions.
-    if (base::FeatureList::IsEnabled(safe_browsing::kAntiPhishingTelemetry) ||
-        base::FeatureList::IsEnabled(safe_browsing::kRedWarningSurvey)) {
+    if (interstitial_interactions_ &&
+        (base::FeatureList::IsEnabled(safe_browsing::kAntiPhishingTelemetry) ||
+         base::FeatureList::IsEnabled(safe_browsing::kRedWarningSurvey))) {
       interstitial_interactions_->insert_or_assign(
           security_interstitials::SecurityInterstitialCommand::
               CMD_CLOSE_INTERSTITIAL_WITHOUT_UI,
