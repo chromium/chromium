@@ -98,17 +98,21 @@ class StructuredMetricsServiceTest : public testing::Test {
   void DisableReporting() { service_->DisableReporting(); }
 
   base::FilePath ProfileKeyFilePath() {
-    return temp_dir_.GetPath().Append("structured_metrics").Append("keys");
+    return temp_dir_.GetPath()
+        .Append(FILE_PATH_LITERAL("structured_metrics"))
+        .Append(FILE_PATH_LITERAL("keys"));
   }
 
   base::FilePath DeviceKeyFilePath() {
     return temp_dir_.GetPath()
-        .Append("structured_metrics")
-        .Append("device_keys");
+        .Append(FILE_PATH_LITERAL("structured_metrics"))
+        .Append(FILE_PATH_LITERAL("device_keys"));
   }
 
   base::FilePath DeviceEventsFilePath() {
-    return temp_dir_.GetPath().Append("structured_metrics").Append("events");
+    return temp_dir_.GetPath()
+        .Append(FILE_PATH_LITERAL("structured_metrics"))
+        .Append(FILE_PATH_LITERAL("events"));
   }
 
   void WriteTestingProfileKeys() {

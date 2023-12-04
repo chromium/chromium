@@ -162,6 +162,7 @@ action("gen_structured_events") {
   ]
 }
 
+# TODO(b/309122738): Generate the events by platform.
 static_library("structured_events") {
   sources = get_target_outputs(":gen_structured_events")
 
@@ -244,10 +245,6 @@ source_set("unit_tests") {
     "structured_metrics_service_unittest.cc",
   ]
 
-  if (is_chromeos_ash) {
-    sources += [ "external_metrics_unittest.cc" ]
-  }
-
   deps = [
     ":events",
     ":storage",
@@ -265,6 +262,8 @@ source_set("unit_tests") {
   ]
 
   if (is_chromeos_ash) {
+    sources += [ "external_metrics_unittest.cc" ]
+
     deps += [ ":external_metrics" ]
   }
 }

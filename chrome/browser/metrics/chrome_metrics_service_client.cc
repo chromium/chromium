@@ -98,6 +98,8 @@
 #include "components/metrics/persistent_synthetic_trial_observer.h"
 #include "components/metrics/sampling_metrics_provider.h"
 #include "components/metrics/stability_metrics_helper.h"
+#include "components/metrics/structured/structured_metrics_features.h"  // nogncheck
+#include "components/metrics/structured/structured_metrics_service.h"  // nogncheck
 #include "components/metrics/ui/form_factor_metrics_provider.h"
 #include "components/metrics/ui/screen_info_metrics_provider.h"
 #include "components/metrics/url_constants.h"
@@ -171,9 +173,7 @@
 #include "chrome/browser/metrics/structured/ash_structured_metrics_recorder.h"  // nogncheck
 #include "chrome/browser/metrics/update_engine_metrics_provider.h"
 #include "chrome/browser/ui/webui/ash/settings/services/metrics/os_settings_metrics_provider.h"
-#include "components/metrics/structured/structured_metrics_features.h"  // nogncheck
 #include "components/metrics/structured/structured_metrics_provider.h"  // nogncheck
-#include "components/metrics/structured/structured_metrics_service.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_WIN)
@@ -599,11 +599,7 @@ ukm::UkmService* ChromeMetricsServiceClient::GetUkmService() {
 
 metrics::structured::StructuredMetricsService*
 ChromeMetricsServiceClient::GetStructuredMetricsService() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   return structured_metrics_service_.get();
-#else
-  return nullptr;
-#endif
 }
 
 void ChromeMetricsServiceClient::SetMetricsClientId(
@@ -727,6 +723,8 @@ void ChromeMetricsServiceClient::Initialize() {
 
   observers_active_ = RegisterObservers();
 
+// TODO(b/309122738): Implement Structured Metrics Service for Windows, Linux,
+// and Mac.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   cros_system_profile_provider_ =
       std::make_unique<ChromeOSSystemProfileProvider>();

@@ -53,7 +53,9 @@ class PersistentProtoTest : public testing::Test {
  public:
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
-  base::FilePath GetPath() { return temp_dir_.GetPath().Append("proto"); }
+  base::FilePath GetPath() {
+    return temp_dir_.GetPath().Append(FILE_PATH_LITERAL("proto"));
+  }
 
   void ClearDisk() {
     base::DeleteFile(GetPath());

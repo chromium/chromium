@@ -17,7 +17,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_mock_clock_override.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/metrics/structured/histogram_util.h"
@@ -26,8 +25,7 @@
 #include "components/prefs/persistent_pref_store.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace metrics {
-namespace structured {
+namespace metrics::structured {
 
 namespace {
 
@@ -71,7 +69,12 @@ std::string HashToHex(const uint64_t hash) {
 
 class KeyDataTest : public testing::Test {
  protected:
-  void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    // Move the mock date forward from day 0, because KeyData assumes that day 0
+    // is a bug.
+    task_environment_.AdvanceClock(base::Days(1000));
+  }
 
   void ResetState() {
     key_data_.reset();
@@ -79,7 +82,9 @@ class KeyDataTest : public testing::Test {
     ASSERT_FALSE(base::PathExists(GetPath()));
   }
 
-  base::FilePath GetPath() { return temp_dir_.GetPath().Append("keys"); }
+  base::FilePath GetPath() {
+    return temp_dir_.GetPath().Append(FILE_PATH_LITERAL("keys"));
+  }
 
   void MakeKeyData() {
     key_data_ = std::make_unique<KeyData>(GetPath(), base::Seconds(0),
@@ -148,9 +153,9 @@ class KeyDataTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,
-      base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
+      base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED,
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
-  base::ScopedMockClockOverride time_;
   base::HistogramTester histogram_tester_;
 
   std::unique_ptr<KeyData> key_data_;
@@ -295,7 +300,7 @@ TEST_F(KeyDataTest, KeysRotated) {
 
   {
     // Advancing by |kKeyRotationPeriod|-1 days, the key should not be rotated.
-    time_.Advance(base::Days(kKeyRotationPeriod - 1));
+    task_environment_.AdvanceClock(base::Days(kKeyRotationPeriod - 1));
     EXPECT_EQ(key_data_->Id(kProjectOneHash, kKeyRotationPeriod), first_id);
     EXPECT_EQ(key_data_->LastKeyRotation(kProjectOneHash), start_day);
     SaveKeyData();
@@ -308,7 +313,7 @@ TEST_F(KeyDataTest, KeysRotated) {
     // Advancing by another |key_rotation_period|+1 days, the key should be
     // rotated and the last rotation day should be incremented by
     // |key_rotation_period|.
-    time_.Advance(base::Days(kKeyRotationPeriod + 1));
+    task_environment_.AdvanceClock(base::Days(kKeyRotationPeriod + 1));
     EXPECT_NE(key_data_->Id(kProjectOneHash, kKeyRotationPeriod), first_id);
     SaveKeyData();
 
@@ -325,7 +330,7 @@ TEST_F(KeyDataTest, KeysRotated) {
   {
     // Advancing by |2* kKeyRotationPeriod| days, the last rotation day should
     // now 4 periods of |kKeyRotationPeriod| days ahead.
-    time_.Advance(base::Days(kKeyRotationPeriod * 2));
+    task_environment_.AdvanceClock(base::Days(kKeyRotationPeriod * 2));
     key_data_->Id(kProjectOneHash, kKeyRotationPeriod);
     SaveKeyData();
 
@@ -355,7 +360,7 @@ TEST_F(KeyDataTest, KeysWithUpdatedRotations) {
   // rotation of the |new_key_rotation_period| but outside
   // |first_key_rotation_period|.
   int new_key_rotation_period = 50;
-  time_.Advance(base::Days(new_key_rotation_period + 1));
+  task_environment_.AdvanceClock(base::Days(new_key_rotation_period + 1));
   const uint64_t second_id =
       key_data_->Id(kProjectOneHash, new_key_rotation_period);
   EXPECT_NE(first_id, second_id);
@@ -370,5 +375,4 @@ TEST_F(KeyDataTest, KeysWithUpdatedRotations) {
   ExpectKeyValidation(/*valid=*/1, /*created=*/0, /*rotated=*/1);
 }
 
-}  // namespace structured
-}  // namespace metrics
+}  // namespace metrics::structured

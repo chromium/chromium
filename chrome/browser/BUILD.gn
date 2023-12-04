@@ -2263,6 +2263,8 @@ static_library("browser") {
     "//components/metrics:net",
     "//components/metrics:ui",
     "//components/metrics/demographics",
+    "//components/metrics/structured",
+    "//components/metrics/structured:structured_events",
     "//components/metrics_services_manager",
     "//components/mirroring/service:mirroring_service",
     "//components/navigation_interception",
@@ -5808,8 +5810,6 @@ static_library("browser") {
       "media/platform_verification_chromeos.h",
       "memory/oom_kills_monitor.cc",
       "memory/oom_kills_monitor.h",
-      "metrics/structured/chrome_structured_metrics_recorder.cc",
-      "metrics/structured/chrome_structured_metrics_recorder.h",
       "metrics/structured/oobe_structured_metrics_watcher.cc",
       "metrics/structured/oobe_structured_metrics_watcher.h",
       "notifications/passphrase_textfield.cc",
@@ -5872,8 +5872,6 @@ static_library("browser") {
       "//components/app_constants",
       "//components/arc/common",
       "//components/arc/common:arc_intent_helper_constants",
-      "//components/metrics/structured",
-      "//components/metrics/structured:structured_events",
       "//components/pref_registry:pref_registry",
       "//components/prefs:prefs",
       "//components/reporting/metrics:metrics_data_collection",
@@ -6706,6 +6704,14 @@ static_library("browser") {
     if (is_mac || is_linux) {
       sources += [ "browser_switcher/alternative_browser_driver_posix.cc" ]
     }
+  }
+
+  # General Structured Metrics Dependencies needed by these platforms.
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    sources += [
+      "metrics/structured/chrome_structured_metrics_recorder.cc",
+      "metrics/structured/chrome_structured_metrics_recorder.h",
+    ]
   }
 
   if (use_cras) {

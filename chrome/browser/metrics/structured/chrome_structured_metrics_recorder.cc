@@ -31,6 +31,7 @@
 namespace metrics::structured {
 namespace {
 
+#if BUILDFLAG(IS_CHROMEOS)
 // Platforms for which the StructuredMetricsClient will be initialized for.
 enum class StructuredMetricsPlatform {
   kUninitialized = 0,
@@ -44,6 +45,7 @@ void LogInitializationInStructuredMetrics(StructuredMetricsPlatform platform) {
       .SetPlatform(static_cast<int64_t>(platform))
       .Record();
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 

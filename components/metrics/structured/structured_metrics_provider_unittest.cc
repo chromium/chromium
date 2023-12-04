@@ -88,13 +88,15 @@ class StructuredMetricsProviderTest : public testing::Test {
   base::FilePath TempDirPath() { return temp_dir_.GetPath(); }
 
   base::FilePath ProfileKeyFilePath() {
-    return temp_dir_.GetPath().Append("structured_metrics").Append("keys");
+    return temp_dir_.GetPath()
+        .Append(FILE_PATH_LITERAL("structured_metrics"))
+        .Append(FILE_PATH_LITERAL("keys"));
   }
 
   base::FilePath DeviceKeyFilePath() {
     return temp_dir_.GetPath()
-        .Append("structured_metrics")
-        .Append("device_keys");
+        .Append(FILE_PATH_LITERAL("structured_metrics"))
+        .Append(FILE_PATH_LITERAL("device_keys"));
   }
 
   void Wait() { task_environment_.RunUntilIdle(); }

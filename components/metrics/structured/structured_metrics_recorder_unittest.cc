@@ -105,6 +105,8 @@ class TestRecorder : public StructuredMetricsClient::RecordingDelegate {
   bool IsReadyToRecord() const override { return true; }
 };
 
+}  // namespace
+
 class TestStructuredMetricsRecorder : public StructuredMetricsRecorder {
  public:
   TestStructuredMetricsRecorder(const base::FilePath& device_key_path,
@@ -117,8 +119,6 @@ class TestStructuredMetricsRecorder : public StructuredMetricsRecorder {
   using StructuredMetricsRecorder::StructuredMetricsRecorder;
 };
 
-}  // namespace
-
 class StructuredMetricsRecorderTest : public testing::Test {
  protected:
   void SetUp() override {
@@ -128,9 +128,6 @@ class StructuredMetricsRecorderTest : public testing::Test {
     device_key_path_ = temp_dir_.GetPath()
                            .Append(FILE_PATH_LITERAL("structured_metrics"))
                            .Append(FILE_PATH_LITERAL("device_keys"));
-    device_events_path_ = temp_dir_.GetPath()
-                              .Append(FILE_PATH_LITERAL("structured_metrics"))
-                              .Append(FILE_PATH_LITERAL("device_events"));
     profile_key_path_ = temp_dir_.GetPath()
                             .Append(FILE_PATH_LITERAL("structured_metrics"))
                             .Append(FILE_PATH_LITERAL("profile_keys"));
@@ -148,8 +145,6 @@ class StructuredMetricsRecorderTest : public testing::Test {
   base::FilePath ProfileKeyFilePath() { return profile_key_path_; }
 
   base::FilePath DeviceKeyFilePath() { return device_key_path_; }
-
-  base::FilePath DeviceStoreFilePath() { return device_events_path_; }
 
   void TearDown() override { StructuredMetricsClient::Get()->UnsetDelegate(); }
 
@@ -302,7 +297,6 @@ class StructuredMetricsRecorderTest : public testing::Test {
   TestRecorder test_recorder_;
 
   base::FilePath device_key_path_;
-  base::FilePath device_events_path_;
   base::FilePath profile_key_path_;
 };
 

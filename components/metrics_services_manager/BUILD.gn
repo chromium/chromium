@@ -15,6 +15,7 @@ static_library("metrics_services_manager") {
     "//base",
     "//build:chromeos_buildflags",
     "//components/metrics",
+    "//components/metrics/structured",
     "//components/ukm",
     "//components/variations",
     "//components/variations/service",

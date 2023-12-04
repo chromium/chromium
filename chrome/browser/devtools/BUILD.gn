@@ -141,6 +141,7 @@ static_library("devtools") {
       "//components/keep_alive_registry",
       "//components/keyed_service/content",
       "//components/language/core/browser",
+      "//components/metrics/structured:structured_events",
       "//components/pref_registry",
       "//components/prefs",
       "//components/sessions",
@@ -161,9 +162,6 @@ static_library("devtools") {
     ]
     if (is_chromeos_ash) {
       deps += [ "//ash/constants" ]
-    }
-    if (is_chromeos_ash || is_chromeos_lacros) {
-      deps += [ "//components/metrics/structured:structured_events" ]
     }
     sources += [
       "aida_client.cc",

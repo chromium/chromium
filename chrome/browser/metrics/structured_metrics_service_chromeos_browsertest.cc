@@ -65,12 +65,10 @@ class StructuredMetricsServiceTestBase : public MixinBasedInProcessBrowserTest {
   }
 
   bool HasUnsentLogs() {
-    return GetSMService()->reporting_service_->log_store()->has_unsent_logs();
+    return GetSMService()->log_store()->has_unsent_logs();
   }
 
-  bool HasStagedLog() {
-    return GetSMService()->reporting_service_->log_store()->has_staged_log();
-  }
+  bool HasStagedLog() { return GetSMService()->log_store()->has_staged_log(); }
 
   void WaitForConsentChanges() { base::RunLoop().RunUntilIdle(); }
   void WaitUntilKeysReady() { structured_metrics_mixin_.WaitUntilKeysReady(); }
@@ -80,7 +78,7 @@ class StructuredMetricsServiceTestBase : public MixinBasedInProcessBrowserTest {
       return nullptr;
     }
 
-    auto* log_store = GetSMService()->reporting_service_->log_store();
+    auto* log_store = GetSMService()->log_store();
     if (log_store->has_staged_log()) {
       // For testing purposes, we examine the content of a staged log without
       // ever sending the log, so discard any previously staged log.

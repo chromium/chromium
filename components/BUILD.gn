@@ -701,8 +701,6 @@ test("components_unittests") {
       "//components/arc:unit_tests",
       "//components/desks_storage:unit_tests",
       "//components/guest_os:unit_tests",
-      "//components/metrics/structured:unit_tests",
-      "//components/metrics/structured/mojom:unit_tests",
       "//components/ownership:unit_tests",
       "//components/user_manager:unit_tests",
       "//components/variations/cros_evaluate_seed:unit_tests",
@@ -805,6 +803,8 @@ test("components_unittests") {
 
   if (is_win || is_mac || is_linux || is_chromeos) {
     deps += [
+      "//components/metrics/structured:unit_tests",
+      "//components/metrics/structured/mojom:unit_tests",
       "//components/user_notes/browser:unit_tests",
       "//components/user_notes/storage:unit_tests",
     ]
