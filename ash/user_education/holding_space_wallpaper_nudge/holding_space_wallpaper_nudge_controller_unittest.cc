@@ -158,6 +158,11 @@ bool HasPing(HoldingSpaceTray* tray) {
   return ping_id.has_value();
 }
 
+bool HasPinnedFilesPlaceholder(TrayBubbleView* bubble_view) {
+  return bubble_view->GetViewByID(
+      kHoldingSpacePinnedFilesSectionPlaceholderLabelId);
+}
+
 bool HasWallpaperHighlight(int64_t display_id) {
   auto* const wallpaper_view = GetWallpaperViewForDisplayId(display_id);
 
@@ -1114,6 +1119,73 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerCounterfactualTest,
     EXPECT_TRUE(tray->GetBubbleWidget()->IsVisible());
     tray->GetBubbleWidget()->CloseNow();
   }
+
+  // Clean up holding space controller.
+  HoldingSpaceController::Get()->RegisterClientAndModelForUser(
+      account_id, /*client=*/nullptr, /*model=*/nullptr);
+}
+
+// HoldingSpaceWallpaperNudgePlaceholderTest -----------------------------------
+
+// Base class for tests of the `HoldingSpaceWallpaperNudgeController` which are
+// concerned with the placeholder shown in cases where the Holding Space is
+// opened when empty.
+class HoldingSpaceWallpaperNudgePlaceholderTest
+    : public AshTestBase,
+      public testing::WithParamInterface</*nudge_enabled=*/bool> {
+ public:
+  HoldingSpaceWallpaperNudgePlaceholderTest() {
+    // The Holding Space Wallpaper Nudge feature is parameterized, while the
+    // Predictability and Suggestions experiments are explicitly disabled to
+    // make sure we've isolated the placeholder's behavior as it pertains to the
+    // nudge.
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features{
+        features::kHoldingSpacePredictability,
+        features::kHoldingSpaceSuggestions};
+    (nudge_enabled() ? enabled_features : disabled_features)
+        .push_back(features::kHoldingSpaceWallpaperNudge);
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  bool nudge_enabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HoldingSpaceWallpaperNudgePlaceholderTest,
+                         /*nudge_enabled=*/testing::Bool());
+
+// Tests -----------------------------------------------------------------------
+
+TEST_P(HoldingSpaceWallpaperNudgePlaceholderTest, HasPinnedFilesPlaceholder) {
+  // Log in a regular user.
+  const AccountId& account_id = AccountId::FromUserEmail("user@test");
+  SimulateUserLogin(account_id);
+
+  // Register a model and client for holding space.
+  HoldingSpaceModel holding_space_model;
+  testing::StrictMock<MockHoldingSpaceClient> holding_space_client;
+  HoldingSpaceController::Get()->RegisterClientAndModelForUser(
+      account_id, &holding_space_client, &holding_space_model);
+
+  // Needed by the client to create the placeholder.
+  EXPECT_CALL(holding_space_client, IsDriveDisabled)
+      .WillRepeatedly(testing::Return(false));
+
+  // Mark the holding space feature as available since there is no holding
+  // space keyed service which would otherwise be responsible for doing so.
+  holding_space_prefs::MarkTimeOfFirstAvailability(
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService());
+
+  auto* const tray = GetHoldingSpaceTrayForShelf(
+      GetShelfForDisplayId(GetPrimaryDisplay().id()));
+
+  tray->ShowBubble();
+  EXPECT_EQ(HasPinnedFilesPlaceholder(tray->GetBubbleView()), nudge_enabled());
+  tray->CloseBubble();
 
   // Clean up holding space controller.
   HoldingSpaceController::Get()->RegisterClientAndModelForUser(
