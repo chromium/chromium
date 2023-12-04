@@ -156,46 +156,6 @@ class TestEventRewriterContinuation
   base::WeakPtrFactory<TestEventRewriterContinuation> weak_ptr_factory_{this};
 };
 
-std::string GetExpectedResultAsString(ui::EventType ui_type,
-                                      ui::KeyboardCode ui_keycode,
-                                      ui::DomCode code,
-                                      int ui_flags,  // ui::EventFlags
-                                      ui::DomKey key,
-                                      uint32_t scan_code) {
-  return base::StringPrintf(
-      "type=%d code=0x%06X flags=0x%X vk=0x%02X key=0x%08X scan=0x%08X",
-      ui_type, static_cast<unsigned int>(code), ui_flags & ~ui::EF_IS_REPEAT,
-      ui_keycode, static_cast<unsigned int>(key), scan_code);
-}
-
-std::string GetKeyEventAsString(const ui::KeyEvent& keyevent) {
-  return GetExpectedResultAsString(keyevent.type(), keyevent.key_code(),
-                                   keyevent.code(), keyevent.flags(),
-                                   keyevent.GetDomKey(), keyevent.scan_code());
-}
-
-std::string GetRewrittenEventAsString(ui::test::TestEventSource& source,
-                                      ui::EventType ui_type,
-                                      ui::KeyboardCode ui_keycode,
-                                      ui::DomCode code,
-                                      int ui_flags,  // ui::EventFlags
-                                      ui::DomKey key,
-                                      uint32_t scan_code,
-                                      int device_id = kKeyboardDeviceId) {
-  ui::KeyEvent event(ui_type, ui_keycode, code, ui_flags, key,
-                     ui::EventTimeForNow());
-  event.set_scan_code(scan_code);
-  event.set_source_device_id(device_id);
-  source.Send(&event);
-
-  auto events =
-      static_cast<TestEventSink*>(source.GetEventSink())->TakeEvents();
-  if (events.empty()) {
-    return GetKeyEventAsString(event);
-  }
-  return GetKeyEventAsString(*events[0]->AsKeyEvent());
-}
-
 // Key representation in test cases.
 struct TestKeyEvent {
   ui::EventType type;
@@ -236,6 +196,16 @@ constexpr TestKeyEvent BPressed(ui::EventFlags flags = ui::EF_NONE) {
                ? ui::DomKey(ui::DomKey::Constant<'B'>::Character)
                : ui::DomKey(ui::DomKey::Constant<'b'>::Character)),
           ui::VKEY_B, flags};
+}
+
+constexpr TestKeyEvent LShiftPressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::SHIFT_LEFT, ui::DomKey::SHIFT,
+          ui::VKEY_SHIFT, flags | ui::EF_SHIFT_DOWN};
+}
+
+constexpr TestKeyEvent RShiftPressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::SHIFT_RIGHT, ui::DomKey::SHIFT,
+          ui::VKEY_SHIFT};
 }
 
 constexpr TestKeyEvent LWinPressed(ui::EventFlags flags = ui::EF_NONE) {
@@ -575,6 +545,12 @@ constexpr TestKeyEvent PrivacyScreenTogglePressed(
           ui::VKEY_PRIVACY_SCREEN_TOGGLE, flags};
 }
 
+constexpr TestKeyEvent LaunchAssistantPressed(
+    ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::LAUNCH_ASSISTANT,
+          ui::DomKey::LAUNCH_ASSISTANT, ui::VKEY_ASSISTANT, flags};
+}
+
 // Hereafter, numpad key events.
 
 constexpr TestKeyEvent Numpad0Pressed(ui::EventFlags flags = ui::EF_NONE) {
@@ -900,37 +876,6 @@ constexpr TestKeyboard kWilcoKeyboardVariants[] = {
     kWilco1_5Keyboard,
 };
 
-// Table entry for simple single key event rewriting tests.
-struct KeyTestCase {
-  ui::EventType type;
-  struct Event {
-    ui::KeyboardCode key_code;
-    ui::DomCode code;
-    int flags;  // ui::EventFlags
-    ui::DomKey::Base key;
-    uint32_t scan_code = kNoScanCode;
-  } input, expected;
-  int device_id = kKeyboardDeviceId;
-  bool triggers_notification = false;
-};
-
-std::string GetTestCaseAsString(ui::EventType ui_type,
-                                const KeyTestCase::Event& test) {
-  return GetExpectedResultAsString(ui_type, test.key_code, test.code,
-                                   test.flags, test.key, test.scan_code);
-}
-
-// Tests a single stateless key rewrite operation.
-void CheckKeyTestCase(ui::test::TestEventSource& source,
-                      const KeyTestCase& test) {
-  SCOPED_TRACE("\nSource:    " + GetTestCaseAsString(test.type, test.input));
-  EXPECT_EQ(GetTestCaseAsString(test.type, test.expected),
-            GetRewrittenEventAsString(source, test.type, test.input.key_code,
-                                      test.input.code, test.input.flags,
-                                      test.input.key, test.input.scan_code,
-                                      test.device_id));
-}
-
 }  // namespace
 
 namespace ash {
@@ -1134,85 +1079,6 @@ class EventRewriterTest : public ChromeAshTestBase {
                                     ui::DomKey key) {
     SendKeyEvent(ui::ET_KEY_PRESSED, key_code, code, key, ui::EF_NONE);
     SendKeyEvent(ui::ET_KEY_RELEASED, key_code, code, key, ui::EF_NONE);
-  }
-
-  void TestKeyboard(const std::string& name,
-                    const std::string& layout,
-                    ui::InputDeviceType type,
-                    bool has_custom_top_row,
-                    const std::vector<KeyTestCase>& tests) {
-    SetupKeyboard(name, layout, type, has_custom_top_row);
-    for (const auto& test : tests) {
-      CheckKeyTestCase(source(), test);
-      const size_t expected_notification_count =
-          test.triggers_notification ? 1 : 0;
-      EXPECT_EQ(message_center_.NotificationCount(),
-                expected_notification_count);
-      ClearNotifications();
-    }
-  }
-
-  void TestInternalChromeKeyboard(const std::vector<KeyTestCase>& tests) {
-    TestKeyboard("Internal Keyboard", kKbdTopRowLayoutUnspecified,
-                 ui::INPUT_DEVICE_INTERNAL, /*has_custom_top_row=*/false,
-                 tests);
-  }
-
-  void TestInternalChromeCustomLayoutKeyboard(
-      const std::vector<KeyTestCase>& tests) {
-    TestKeyboard("Internal Custom Layout Keyboard",
-                 kKbdDefaultCustomTopRowLayout, ui::INPUT_DEVICE_INTERNAL,
-                 /*has_custom_top_row=*/true, tests);
-  }
-
-  void TestExternalChromeKeyboard(const std::vector<KeyTestCase>& tests) {
-    TestKeyboard("External Chrome Keyboard", kKbdTopRowLayout1Tag,
-                 ui::INPUT_DEVICE_UNKNOWN, /*has_custom_top_row=*/false, tests);
-  }
-
-  void TestExternalChromeCustomLayoutKeyboard(
-      const std::vector<KeyTestCase>& tests) {
-    TestKeyboard("External Chrome Custom Layout Keyboard",
-                 kKbdDefaultCustomTopRowLayout, ui::INPUT_DEVICE_UNKNOWN,
-                 /*has_custom_top_row=*/true, tests);
-  }
-
-  void TestExternalGenericKeyboard(const std::vector<KeyTestCase>& tests) {
-    TestKeyboard("PC Keyboard", kKbdTopRowLayoutUnspecified,
-                 ui::INPUT_DEVICE_UNKNOWN, /*has_custom_top_row=*/false, tests);
-  }
-
-  void TestExternalAppleKeyboard(const std::vector<KeyTestCase>& tests) {
-    TestKeyboard("Apple Keyboard", kKbdTopRowLayoutUnspecified,
-                 ui::INPUT_DEVICE_UNKNOWN, /*has_custom_top_row=*/false, tests);
-  }
-
-  void TestChromeKeyboardVariants(const std::vector<KeyTestCase>& tests) {
-    TestInternalChromeKeyboard(tests);
-    TestExternalChromeKeyboard(tests);
-  }
-
-  void TestChromeCustomLayoutKeyboardVariants(
-      const std::vector<KeyTestCase>& tests) {
-    TestInternalChromeCustomLayoutKeyboard(tests);
-    TestExternalChromeCustomLayoutKeyboard(tests);
-  }
-
-  void TestNonAppleKeyboardVariants(const std::vector<KeyTestCase>& tests) {
-    TestChromeKeyboardVariants(tests);
-    TestChromeCustomLayoutKeyboardVariants(tests);
-    TestExternalGenericKeyboard(tests);
-  }
-
-  void TestNonAppleNonCustomLayoutKeyboardVariants(
-      const std::vector<KeyTestCase>& tests) {
-    TestChromeKeyboardVariants(tests);
-    TestExternalGenericKeyboard(tests);
-  }
-
-  void TestAllKeyboardVariants(const std::vector<KeyTestCase>& tests) {
-    TestNonAppleKeyboardVariants(tests);
-    TestExternalAppleKeyboard(tests);
   }
 
   void ClearNotifications() {
@@ -4457,19 +4323,19 @@ TEST_F(EventRewriterTest, RewriteNumpadExtensionCommand) {
 
 class ModifierPressedMetricsTest
     : public EventRewriterTest,
-      public testing::WithParamInterface<std::tuple<KeyTestCase::Event,
+      public testing::WithParamInterface<std::tuple<TestKeyEvent,
                                                     ui::ModifierKeyUsageMetric,
                                                     std::vector<std::string>>> {
  public:
   void SetUp() override {
+    std::tie(event_, modifier_key_usage_mapping_, key_pref_names_) = GetParam();
     scoped_feature_list_.InitAndDisableFeature(
         features::kInputDeviceSettingsSplit);
     EventRewriterTest::SetUp();
-    std::tie(event_, modifier_key_usage_mapping_, key_pref_names_) = GetParam();
   }
 
  protected:
-  KeyTestCase::Event event_;
+  TestKeyEvent event_;
   ui::ModifierKeyUsageMetric modifier_key_usage_mapping_;
   std::vector<std::string> key_pref_names_;
 };
@@ -4477,69 +4343,63 @@ class ModifierPressedMetricsTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     ModifierPressedMetricsTest,
-    testing::ValuesIn(std::vector<std::tuple<KeyTestCase::Event,
+    testing::ValuesIn(std::vector<std::tuple<TestKeyEvent,
                                              ui::ModifierKeyUsageMetric,
                                              std::vector<std::string>>>{
-        {{ui::VKEY_LWIN, ui::DomCode::META_LEFT, ui::EF_COMMAND_DOWN,
-          ui::DomKey::META},
+        {LWinPressed(),
          ui::ModifierKeyUsageMetric::kMetaLeft,
          {::prefs::kLanguageRemapSearchKeyTo,
           ::prefs::kLanguageRemapExternalCommandKeyTo,
           ::prefs::kLanguageRemapExternalMetaKeyTo}},
-        {{ui::VKEY_RWIN, ui::DomCode::META_RIGHT, ui::EF_COMMAND_DOWN,
-          ui::DomKey::META},
+        {RWinPressed(),
          ui::ModifierKeyUsageMetric::kMetaRight,
          {::prefs::kLanguageRemapSearchKeyTo,
           ::prefs::kLanguageRemapExternalCommandKeyTo,
           ::prefs::kLanguageRemapExternalMetaKeyTo}},
-        {{ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT, ui::EF_CONTROL_DOWN,
-          ui::DomKey::CONTROL},
+        {LControlPressed(),
          ui::ModifierKeyUsageMetric::kControlLeft,
          {::prefs::kLanguageRemapControlKeyTo}},
-        {{ui::VKEY_CONTROL, ui::DomCode::CONTROL_RIGHT, ui::EF_CONTROL_DOWN,
-          ui::DomKey::CONTROL},
+        {RControlPressed(),
          ui::ModifierKeyUsageMetric::kControlRight,
          {::prefs::kLanguageRemapControlKeyTo}},
-        {{ui::VKEY_MENU, ui::DomCode::ALT_LEFT, ui::EF_ALT_DOWN,
-          ui::DomKey::ALT},
+        {LAltPressed(),
          ui::ModifierKeyUsageMetric::kAltLeft,
          {::prefs::kLanguageRemapAltKeyTo}},
-        {{ui::VKEY_MENU, ui::DomCode::ALT_RIGHT, ui::EF_ALT_DOWN,
-          ui::DomKey::ALT},
+        {RAltPressed(),
          ui::ModifierKeyUsageMetric::kAltRight,
          {::prefs::kLanguageRemapAltKeyTo}},
-        {{ui::VKEY_SHIFT, ui::DomCode::SHIFT_LEFT, ui::EF_SHIFT_DOWN,
-          ui::DomKey::SHIFT},
+        {LShiftPressed(),
          ui::ModifierKeyUsageMetric::kShiftLeft,
          // Shift keys cannot be remapped and therefore do not have a real
          // "pref" path.
          {"fakePrefPath"}},
-        {{ui::VKEY_SHIFT, ui::DomCode::SHIFT_RIGHT, ui::EF_SHIFT_DOWN,
-          ui::DomKey::SHIFT},
+        {RShiftPressed(),
          ui::ModifierKeyUsageMetric::kShiftRight,
          // Shift keys cannot be remapped and therefore do not have a real
          // "pref" path.
          {"fakePrefPath"}},
-        {{ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
-          ui::EF_CAPS_LOCK_ON | ui::EF_MOD3_DOWN, ui::DomKey::CAPS_LOCK},
+        {CapsLockPressed(),
          ui::ModifierKeyUsageMetric::kCapsLock,
          {::prefs::kLanguageRemapCapsLockKeyTo}},
-        {{ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_NONE,
-          ui::DomKey::BACKSPACE},
+        {BackspacePressed(),
          ui::ModifierKeyUsageMetric::kBackspace,
          {::prefs::kLanguageRemapBackspaceKeyTo}},
-        {{ui::VKEY_ESCAPE, ui::DomCode::ESCAPE, ui::EF_NONE,
-          ui::DomKey::ESCAPE},
+        {EscapePressed(),
          ui::ModifierKeyUsageMetric::kEscape,
          {::prefs::kLanguageRemapEscapeKeyTo}},
-        {{ui::VKEY_ASSISTANT, ui::DomCode::LAUNCH_ASSISTANT, ui::EF_NONE,
-          ui::DomKey::LAUNCH_ASSISTANT},
+        {LaunchAssistantPressed(),
          ui::ModifierKeyUsageMetric::kAssistant,
          {::prefs::kLanguageRemapAssistantKeyTo}}}));
 
 TEST_P(ModifierPressedMetricsTest, KeyPressedTest) {
+  auto expected = event_;
+  if (expected.code == ui::DomCode::CAPS_LOCK) {
+    expected.flags |= ui::EF_CAPS_LOCK_ON;
+  }
+
   base::HistogramTester histogram_tester;
-  TestInternalChromeKeyboard({{ui::ET_KEY_PRESSED, event_, event_}});
+  SetUpKeyboard(kInternalChromeKeyboard);
+  EXPECT_EQ(expected, RunRewriter(event_));
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.ModifierPressed.Internal",
       modifier_key_usage_mapping_, 1);
@@ -4547,7 +4407,8 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedTest) {
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.Internal",
       modifier_key_usage_mapping_, 1);
 
-  TestExternalChromeKeyboard({{ui::ET_KEY_PRESSED, event_, event_}});
+  SetUpKeyboard(kExternalChromeKeyboard);
+  EXPECT_EQ(expected, RunRewriter(event_));
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.ModifierPressed.CrOSExternal",
       modifier_key_usage_mapping_, 1);
@@ -4555,7 +4416,8 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedTest) {
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.CrOSExternal",
       modifier_key_usage_mapping_, 1);
 
-  TestExternalAppleKeyboard({{ui::ET_KEY_PRESSED, event_, event_}});
+  SetUpKeyboard(kExternalAppleKeyboard);
+  EXPECT_EQ(expected, RunRewriter(event_));
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.ModifierPressed.AppleExternal",
       modifier_key_usage_mapping_, 1);
@@ -4563,7 +4425,8 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedTest) {
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.AppleExternal",
       modifier_key_usage_mapping_, 1);
 
-  TestExternalGenericKeyboard({{ui::ET_KEY_PRESSED, event_, event_}});
+  SetUpKeyboard(kExternalGenericKeyboard);
+  EXPECT_EQ(expected, RunRewriter(event_));
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.ModifierPressed.External",
       modifier_key_usage_mapping_, 1);
@@ -4573,16 +4436,12 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedTest) {
 }
 
 TEST_P(ModifierPressedMetricsTest, KeyPressedWithRemappingToBackspaceTest) {
-  // Shift cant be remapped so skip this test.
-  if (event_.key_code == ui::VKEY_SHIFT) {
-    return;
+  if (event_.keycode == ui::VKEY_SHIFT) {
+    GTEST_SKIP() << "Shift cannot be remapped";
   }
 
   Preferences::RegisterProfilePrefs(prefs()->registry());
   base::HistogramTester histogram_tester;
-  const KeyTestCase::Event backspace_event{ui::VKEY_BACK,
-                                           ui::DomCode::BACKSPACE, ui::EF_NONE,
-                                           ui::DomKey::BACKSPACE};
   for (const auto& pref_name : key_pref_names_) {
     IntegerPrefMember pref_member;
     InitModifierKeyPref(&pref_member, pref_name,
@@ -4590,7 +4449,8 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedWithRemappingToBackspaceTest) {
                         ui::mojom::ModifierKey::kBackspace);
   }
 
-  TestInternalChromeKeyboard({{ui::ET_KEY_PRESSED, event_, backspace_event}});
+  SetUpKeyboard(kInternalChromeKeyboard);
+  EXPECT_EQ(BackspacePressed(), RunRewriter(event_));
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.ModifierPressed.Internal",
       modifier_key_usage_mapping_, 1);
@@ -4598,7 +4458,8 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedWithRemappingToBackspaceTest) {
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.Internal",
       ui::ModifierKeyUsageMetric::kBackspace, 1);
 
-  TestExternalChromeKeyboard({{ui::ET_KEY_PRESSED, event_, backspace_event}});
+  SetUpKeyboard(kExternalChromeKeyboard);
+  EXPECT_EQ(BackspacePressed(), RunRewriter(event_));
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.ModifierPressed.CrOSExternal",
       modifier_key_usage_mapping_, 1);
@@ -4606,7 +4467,8 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedWithRemappingToBackspaceTest) {
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.CrOSExternal",
       ui::ModifierKeyUsageMetric::kBackspace, 1);
 
-  TestExternalAppleKeyboard({{ui::ET_KEY_PRESSED, event_, backspace_event}});
+  SetUpKeyboard(kExternalAppleKeyboard);
+  EXPECT_EQ(BackspacePressed(), RunRewriter(event_));
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.ModifierPressed.AppleExternal",
       modifier_key_usage_mapping_, 1);
@@ -4614,7 +4476,8 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedWithRemappingToBackspaceTest) {
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.AppleExternal",
       ui::ModifierKeyUsageMetric::kBackspace, 1);
 
-  TestExternalGenericKeyboard({{ui::ET_KEY_PRESSED, event_, backspace_event}});
+  SetUpKeyboard(kExternalGenericKeyboard);
+  EXPECT_EQ(BackspacePressed(), RunRewriter(event_));
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.ModifierPressed.External",
       modifier_key_usage_mapping_, 1);
@@ -4624,9 +4487,8 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedWithRemappingToBackspaceTest) {
 }
 
 TEST_P(ModifierPressedMetricsTest, KeyPressedWithRemappingToControlTest) {
-  // Shift cant be remapped so skip this test.
-  if (event_.key_code == ui::VKEY_SHIFT) {
-    return;
+  if (event_.keycode == ui::VKEY_SHIFT) {
+    GTEST_SKIP() << "Shift cannot be remapped";
   }
 
   Preferences::RegisterProfilePrefs(prefs()->registry());
@@ -4637,11 +4499,8 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedWithRemappingToControlTest) {
   const ui::ModifierKeyUsageMetric remapped_modifier_key_usage_mapping =
       right ? ui::ModifierKeyUsageMetric::kControlRight
             : ui::ModifierKeyUsageMetric::kControlLeft;
+  const auto control_event = right ? RControlPressed() : LControlPressed();
 
-  const KeyTestCase::Event control_event{
-      ui::VKEY_CONTROL,
-      right ? ui::DomCode::CONTROL_RIGHT : ui::DomCode::CONTROL_LEFT,
-      ui::EF_CONTROL_DOWN, ui::DomKey::CONTROL};
   for (const auto& pref_name : key_pref_names_) {
     IntegerPrefMember pref_member;
     InitModifierKeyPref(&pref_member, pref_name,
@@ -4649,7 +4508,8 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedWithRemappingToControlTest) {
                         ui::mojom::ModifierKey::kControl);
   }
 
-  TestInternalChromeKeyboard({{ui::ET_KEY_PRESSED, event_, control_event}});
+  SetUpKeyboard(kInternalChromeKeyboard);
+  EXPECT_EQ(control_event, RunRewriter(event_));
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.ModifierPressed.Internal",
       modifier_key_usage_mapping_, 1);
@@ -4657,7 +4517,8 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedWithRemappingToControlTest) {
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.Internal",
       remapped_modifier_key_usage_mapping, 1);
 
-  TestExternalChromeKeyboard({{ui::ET_KEY_PRESSED, event_, control_event}});
+  SetUpKeyboard(kExternalChromeKeyboard);
+  EXPECT_EQ(control_event, RunRewriter(event_));
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.ModifierPressed.CrOSExternal",
       modifier_key_usage_mapping_, 1);
@@ -4665,7 +4526,8 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedWithRemappingToControlTest) {
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.CrOSExternal",
       remapped_modifier_key_usage_mapping, 1);
 
-  TestExternalAppleKeyboard({{ui::ET_KEY_PRESSED, event_, control_event}});
+  SetUpKeyboard(kExternalAppleKeyboard);
+  EXPECT_EQ(control_event, RunRewriter(event_));
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.ModifierPressed.AppleExternal",
       modifier_key_usage_mapping_, 1);
@@ -4673,7 +4535,8 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedWithRemappingToControlTest) {
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.AppleExternal",
       remapped_modifier_key_usage_mapping, 1);
 
-  TestExternalGenericKeyboard({{ui::ET_KEY_PRESSED, event_, control_event}});
+  SetUpKeyboard(kExternalGenericKeyboard);
+  EXPECT_EQ(control_event, RunRewriter(event_));
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.ModifierPressed.External",
       modifier_key_usage_mapping_, 1);
@@ -4686,7 +4549,14 @@ TEST_P(ModifierPressedMetricsTest, KeyRepeatTest) {
   base::HistogramTester histogram_tester;
   // No metrics should be published if it is a repeated key.
   event_.flags |= ui::EF_IS_REPEAT;
-  TestInternalChromeKeyboard({{ui::ET_KEY_PRESSED, event_, event_}});
+
+  auto expected = event_;
+  if (expected.code == ui::DomCode::CAPS_LOCK) {
+    expected.flags |= ui::EF_CAPS_LOCK_ON;
+  }
+
+  SetUpKeyboard(kInternalChromeKeyboard);
+  EXPECT_EQ(expected, RunRewriter(event_));
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.ModifierPressed.Internal",
       modifier_key_usage_mapping_, 0);
@@ -4694,7 +4564,8 @@ TEST_P(ModifierPressedMetricsTest, KeyRepeatTest) {
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.Internal",
       modifier_key_usage_mapping_, 0);
 
-  TestExternalChromeKeyboard({{ui::ET_KEY_PRESSED, event_, event_}});
+  SetUpKeyboard(kExternalChromeKeyboard);
+  EXPECT_EQ(expected, RunRewriter(event_));
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.ModifierPressed.CrOSExternal",
       modifier_key_usage_mapping_, 0);
@@ -4702,7 +4573,8 @@ TEST_P(ModifierPressedMetricsTest, KeyRepeatTest) {
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.CrOSExternal",
       modifier_key_usage_mapping_, 0);
 
-  TestExternalAppleKeyboard({{ui::ET_KEY_PRESSED, event_, event_}});
+  SetUpKeyboard(kExternalAppleKeyboard);
+  EXPECT_EQ(expected, RunRewriter(event_));
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.ModifierPressed.AppleExternal",
       modifier_key_usage_mapping_, 0);
@@ -4710,7 +4582,8 @@ TEST_P(ModifierPressedMetricsTest, KeyRepeatTest) {
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.AppleExternal",
       modifier_key_usage_mapping_, 0);
 
-  TestExternalGenericKeyboard({{ui::ET_KEY_PRESSED, event_, event_}});
+  SetUpKeyboard(kExternalGenericKeyboard);
+  EXPECT_EQ(expected, RunRewriter(event_));
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.ModifierPressed.External",
       modifier_key_usage_mapping_, 0);
@@ -4723,7 +4596,14 @@ TEST_P(ModifierPressedMetricsTest, KeyReleasedTest) {
   base::HistogramTester histogram_tester;
   // No metrics should be published if it is a repeated key.
   event_.flags |= ui::EF_IS_REPEAT;
-  TestInternalChromeKeyboard({{ui::ET_KEY_PRESSED, event_, event_}});
+
+  auto expected = event_;
+  if (expected.code == ui::DomCode::CAPS_LOCK) {
+    expected.flags |= ui::EF_CAPS_LOCK_ON;
+  }
+
+  SetUpKeyboard(kInternalChromeKeyboard);
+  EXPECT_EQ(expected, RunRewriter(event_));
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.ModifierPressed.Internal",
       modifier_key_usage_mapping_, 0);
@@ -4731,7 +4611,8 @@ TEST_P(ModifierPressedMetricsTest, KeyReleasedTest) {
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.Internal",
       modifier_key_usage_mapping_, 0);
 
-  TestExternalChromeKeyboard({{ui::ET_KEY_PRESSED, event_, event_}});
+  SetUpKeyboard(kExternalChromeKeyboard);
+  EXPECT_EQ(expected, RunRewriter(event_));
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.ModifierPressed.CrOSExternal",
       modifier_key_usage_mapping_, 0);
@@ -4739,7 +4620,8 @@ TEST_P(ModifierPressedMetricsTest, KeyReleasedTest) {
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.CrOSExternal",
       modifier_key_usage_mapping_, 0);
 
-  TestExternalAppleKeyboard({{ui::ET_KEY_PRESSED, event_, event_}});
+  SetUpKeyboard(kExternalAppleKeyboard);
+  EXPECT_EQ(expected, RunRewriter(event_));
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.ModifierPressed.AppleExternal",
       modifier_key_usage_mapping_, 0);
@@ -4747,7 +4629,8 @@ TEST_P(ModifierPressedMetricsTest, KeyReleasedTest) {
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.AppleExternal",
       modifier_key_usage_mapping_, 0);
 
-  TestExternalGenericKeyboard({{ui::ET_KEY_PRESSED, event_, event_}});
+  SetUpKeyboard(kExternalGenericKeyboard);
+  EXPECT_EQ(expected, RunRewriter(event_));
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.ModifierPressed.External",
       modifier_key_usage_mapping_, 0);
