@@ -224,8 +224,20 @@ void CorpHostStarter::OnProvisionCorpMachineResponse(
 
   service_account_email_ =
       base::ToLowerASCII(internal::GetServiceAccount(*response));
-  // TODO(joedow): Check owner_email against what was provided by the user.
   start_host_params_.id = internal::GetHostId(*response);
+
+  // Update the owner_email to reflect the account returned by the Directory.
+  // The corp-user arg (copied to the owner_email start host param struct) can
+  // contain two types of values:
+  //   1. The email address of the user to provision the machine for
+  //   2. A user permission, defined by the service, which is used to select the
+  //      account (e.g. the account which the machine is associated with)
+  //
+  // The value returned by the Directory should match for scenario #1 and needs
+  // to be stored for scenario #2. We don't need to compare since the server
+  // will return an error for scenario #1 if the user doesn't have permission.
+  start_host_params_.owner_email =
+      base::ToLowerASCII(internal::GetOwnerEmail(*response));
 
   authorization_code_ = internal::GetAuthorizationCode(*response);
   if (authorization_code_.empty()) {
