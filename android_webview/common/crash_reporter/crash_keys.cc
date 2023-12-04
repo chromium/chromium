@@ -151,10 +151,6 @@ const char* const kWebViewCrashKeyAllowList[] = {
 
     kWeblayerWebViewCompatMode,
 
-    // Temporary keys for crbug.com/1430313:
-    "db_init_error-diagnostics",
-    "db_init_error-path",
-
     // Used to report switches/feature flags overridden in the DevUI
     "commandline-enabled-feature-*",
     "commandline-disabled-feature-*",
