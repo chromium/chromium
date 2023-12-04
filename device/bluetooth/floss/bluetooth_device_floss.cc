@@ -805,6 +805,8 @@ void BluetoothDeviceFloss::TriggerConnectCallback(
     pending_callback_on_connect_profiles_ = absl::nullopt;
     std::move(callback).Run(error_code);
   }
+
+  pairing_ = nullptr;
 }
 
 void BluetoothDeviceFloss::OnDisconnectAllEnabledProfiles(
