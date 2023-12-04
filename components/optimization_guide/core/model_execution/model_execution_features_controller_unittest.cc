@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -28,6 +29,7 @@ class ModelExecutionFeaturesControllerTest : public testing::Test {
   void SetUp() override {
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     prefs::RegisterProfilePrefs(pref_service_->registry());
+    model_execution::prefs::RegisterProfilePrefs(pref_service_->registry());
   }
 
   void CreateModelExecutionFeaturesController() {
