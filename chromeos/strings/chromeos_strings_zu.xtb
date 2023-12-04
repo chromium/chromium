@@ -151,7 +151,6 @@
 <translation id="1923388006036088459">Imibala ye-accent</translation>
 <translation id="1947737735496445907">Kuphrintiwe</translation>
 <translation id="1951012854035635156">Umsizi</translation>
-<translation id="1954687945444914660">ukuthathwa kwezithombe</translation>
 <translation id="1962550982027027473">I-APN ezenzakalelayo iyadingeka</translation>
 <translation id="1973886230221301399">I-ChromeVox</translation>
 <translation id="1977994649430373166">Isithombe sephrofayela ye-Google</translation>
@@ -595,7 +594,6 @@
 <translation id="5389224261615877010">Uthingo lwenkosazane</translation>
 <translation id="5400907029458559844">Idivayisi iyaxhuma.</translation>
 <translation id="5401938042319910061">Qalisa Yonke Imijikelezo</translation>
-<translation id="540604120278030498">E-New York</translation>
 <translation id="5423849171846380976">Yenziwe yasebenza</translation>
 <translation id="5430931332414098647">I-Tethering esheshayo</translation>
 <translation id="5431318178759467895">Umbala</translation>
@@ -633,6 +631,7 @@
 <translation id="574392208103952083">Okulingene</translation>
 <translation id="5757187557809630523">ithrekhi elandelayo</translation>
 <translation id="5760715441271661976">Isimo sephothali</translation>
+<translation id="5763838252932650682">Ukuqala kabusha nokubuyekeza i-<ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Ukugqama kwesibonisi kuphezulu</translation>
 <translation id="57838592816432529">Thulisa</translation>
 <translation id="5784136236926853061">Ukubambezeleka kwe-HTTP okuphakeme</translation>
@@ -805,7 +804,6 @@
 <translation id="7046522406494308071">Setha kabusha zonke izinqamuleli zibe okuzenzakalelayo?</translation>
 <translation id="7058278511608979688">Qeda futhi ulondoloze</translation>
 <translation id="7059230779847288458">Iyashaja, <ph name="TIME_VALUE" /> ize igcwale</translation>
-<translation id="7065364575846974659">E-Paris</translation>
 <translation id="7066538517128343186">ukhiye we-<ph name="KEY" /></translation>
 <translation id="7068619307603204412">Lungiselela idivayisi yakho</translation>
 <translation id="708426984172631313">KUMISIWE</translation>
@@ -842,6 +840,7 @@
 <translation id="7287310195820267359">Amaqoqo Wesithombe Sangemuva</translation>
 <translation id="7297226631177386107">Ayikwazi ukuxhuma ngohlelo lokuvikela kumawebhusayithi we-HTTPS</translation>
 <translation id="7297726121602187087">Okuluhlaza kakhulu</translation>
+<translation id="7301262279595293068">Sicela ulinde ngesikhathi i-application isabuyekeza</translation>
 <translation id="7302860742311162920">I-ICCID</translation>
 <translation id="7305884605064981971">I-EDGE</translation>
 <translation id="7308203371573257315">Buza ochwepheshe kuforamu yosizo ye-Chromebook</translation>
@@ -946,7 +945,6 @@
 <translation id="8094062939584182041">Vumela i-Google ikuthumelele i-imeyili mayelana nale nkinga</translation>
 <translation id="8104083085214006426">Usebenzisa inethiwekhi evulekile nengaphephile</translation>
 <translation id="8111706652656628199">Isinqamuleli asitholakali. Chofoza isinqamuleli esisha usebenzisa u-shift kanye nomunye ukhiye o-1 wokushintsha (ctrl, alt, sesha, noma isiqalisi).</translation>
-<translation id="8112538018114444149">Ipaki <ph name="CHIP_CITY" />ngesitayela <ph name="CHIP_STYLE" />.</translation>
 <translation id="811820734797650957">(Android) Isango Lingaqhwetshwa</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Cela Izibalo Zethrafikhi</translation>
@@ -1081,7 +1079,6 @@
 <translation id="9058932992221914855">I-IPV6</translation>
 <translation id="9062831201344759865">Ukulungiswa kwe-DNS kunokubambezeleka okuphezulu</translation>
 <translation id="9065203028668620118">Hlela</translation>
-<translation id="9068296451330120661">Umbala wopende onamanzi</translation>
 <translation id="9073281213608662541">I-PAP</translation>
 <translation id="9074739597929991885">I-Bluetooth</translation>
 <translation id="9082718469794970195">Sebenzisa le vidiyo</translation>

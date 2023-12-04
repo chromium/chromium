@@ -151,7 +151,6 @@
 <translation id="1923388006036088459">বৈশিষ্ট্যপূৰ্ণ ৰং</translation>
 <translation id="1947737735496445907">প্ৰিণ্ট কৰা হ’ল</translation>
 <translation id="1951012854035635156">Assistant</translation>
-<translation id="1954687945444914660">ফট’গ্ৰাফী</translation>
 <translation id="1962550982027027473">এটা ডিফ’ল্ট এপিএনৰ আৱশ্যক</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google প্ৰ’ফাইল ফট’</translation>
@@ -595,7 +594,6 @@
 <translation id="5389224261615877010">ৰামধেনু</translation>
 <translation id="5400907029458559844">ডিভাইচটো সংযোগ হৈ আছে।</translation>
 <translation id="5401938042319910061">সকলো ৰুটিন চলাওক</translation>
-<translation id="540604120278030498">নিউ য়ৰ্ক</translation>
 <translation id="5423849171846380976">সক্ৰিয় কৰা হৈছে</translation>
 <translation id="5430931332414098647">তাৎক্ষণিক টেথাৰিং কৰাৰ সুবিধা</translation>
 <translation id="5431318178759467895">ৰং</translation>
@@ -805,7 +803,6 @@
 <translation id="7046522406494308071">আটাইবোৰ শ্বৰ্টকাট ডিফ'ল্টলৈ ৰিছেট কৰিবনে?</translation>
 <translation id="7058278511608979688">সমাপ্ত কৰি ছেভ কৰক</translation>
 <translation id="7059230779847288458">চাৰ্জ কৰি থকা হৈছে, সম্পূৰ্ণ হ’বলৈ <ph name="TIME_VALUE" /> বাকী</translation>
-<translation id="7065364575846974659">পেৰিছ</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> কী</translation>
 <translation id="7068619307603204412">আপোনাৰ ডিভাইচটো সাজু কৰক</translation>
 <translation id="708426984172631313">বন্ধ হৈছে</translation>
@@ -946,7 +943,6 @@
 <translation id="8094062939584182041">Googleক এই সমস্যাটোৰ বিষয়ে আপোনালৈ ইমেইল কৰিবলৈ দিয়ক</translation>
 <translation id="8104083085214006426">আপুনি এটা মুক্ত আৰু অসুৰক্ষিত নেটৱৰ্ক ব্যৱহাৰ কৰি আছে</translation>
 <translation id="8111706652656628199">শ্বৰ্টকাট উপলব্ধ নহয়। shift আৰু আন এটা সংশোধক চাবি ব্যৱহাৰ কৰি ১ টা নতুন শ্বৰ্টকাট টিপক (ctrl, alt, সন্ধান বা লঞ্চাৰ)।</translation>
-<translation id="8112538018114444149"><ph name="CHIP_STYLE" />ৰ শৈলীত থকা <ph name="CHIP_CITY" />ৰ এখন উদ্যান।</translation>
 <translation id="811820734797650957">(Android) গে’টৱে’ পিং কৰিব পাৰি</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">ট্ৰেফিক কাউণ্টাৰৰ অনুৰোধ কৰক</translation>
@@ -1081,7 +1077,6 @@
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS ৰিজ’লিউশ্বনটোত অধিক বিলম্বতা আছে</translation>
 <translation id="9065203028668620118">সম্পাদনা কৰক</translation>
-<translation id="9068296451330120661">ৱাটাৰকালাৰ</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ব্লুটুথ</translation>
 <translation id="9082718469794970195">এই ভিডিঅ'টো ব্যৱহাৰ কৰক</translation>

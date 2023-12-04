@@ -242,7 +242,6 @@
 <translation id="2364539095045928896">စာမျက်နှာသိကောင်းစရာ ထိန်းချုပ်စင်တာ၏ ကိုယ်ရေးအချက်အလက် လုံခြုံမှုဆိုင်ရာ သတိပေးချက်ကို ပိတ်ရန် ခလုတ်။</translation>
 <translation id="2386938421315164605">အကြောင်းအရာများ ဖျောက်ပြီး ပြန်ပြနိုင်သည်</translation>
 <translation id="2390510615457643724"><ph name="FILE_NAME" /><ph name="FILE_SIZE" /> ကို ထပ်မံဒေါင်းလုဒ်လုပ်လိုပါသလား။</translation>
-<translation id="2394602618534698961">သင်ဒေါင်းလုဒ်လုပ်ထားသော ဖိုင်များကို ဤနေရာတွင် တွေ့ရပါမည်</translation>
 <translation id="2410754283952462441">အကောင့်တစ်ခု ရွေးပါ</translation>
 <translation id="2414886740292270097">အမှောင်</translation>
 <translation id="2421705177906985956">ယခုပြရန် ဝဘ်ဆိုက် မရှိပါ</translation>
@@ -1293,7 +1292,6 @@
 <translation id="7702388902581909985">ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာကို ရှင်းခြင်းဖြင့် Google Account မှ ထွက်မည်မဟုတ်ပါ။ <ph name="BEGIN_LINK1" />Chrome မှထွက်ရန်<ph name="END_LINK1" />။</translation>
 <translation id="7707922173985738739">မိုဘိုင်းဒေတာကို သုံးရန်</translation>
 <translation id="7709918231054955894">သင့်တဘ်အားလုံး ရယူခြင်း</translation>
-<translation id="7725024127233776428">သင်သိမ်းဆည်းထားသည့် လိပ်စာ၏ စာမျက်နှာများကို ဤနေရာတွင် တွေ့ရပါမည်</translation>
 <translation id="7733878270780732638">စက်တွင် နေရာမလောက်ပါ။</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> မှ မျှဝေထားသော စာသား</translation>
 <translation id="7759809451544302770">လိုချင်မှ လုပ်ရန်</translation>

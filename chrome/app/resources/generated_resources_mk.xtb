@@ -2105,7 +2105,6 @@
 <translation id="2580889980133367162">Секогаш дозволи <ph name="HOST" /> да презема повеќе датотеки</translation>
 <translation id="258095186877893873">Долго</translation>
 <translation id="2581455244799175627">Повеќе за дозволување колачиња од трети страни</translation>
-<translation id="2581992808349413349">Користете безбедна врска за пребарување на IP-адресата на сајт во DNS (Систем за имиња на домени). Ова користи управуван давател на услуги на <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Платформа <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Не може да се преземе билетот на Kerberos. Обидете се повторно или контактирајте со администраторот на уредот во вашата организација. (Код за грешка <ph name="ERROR_CODE" />).</translation>
 <translation id="2586561813241011046">Не може да се инсталира <ph name="APP_NAME" />. Обидете се повторно или контактирајте со администраторот. Код за грешка: <ph name="ERROR_CODE" />.</translation>
@@ -5025,7 +5024,6 @@
 <translation id="4907161631261076876">Датотекава обично не се презема и може да биде опасна.</translation>
 <translation id="4908811072292128752">Отворете нова картичка за да прелистувате два сајта одеднаш</translation>
 <translation id="4909038193460299775">Бидејќи <ph name="DOMAIN" /> управува со сметкава, обележувачите, историјата, лозинките и другите поставки ќе се избришат од уредов. Сепак, вашите податоци ќе останат складирани во сметката на Google и со нив може да управувате во <ph name="BEGIN_LINK" />„Контролната табла на Google“<ph name="END_LINK" />.</translation>
-<translation id="4911572142453926213">Користете безбедна врска за пребарување на IP-адресата на сајт во DNS (Систем за имиња на домени)</translation>
 <translation id="4912643508233590958">Неактивни будења</translation>
 <translation id="4913209098186576320">Датотекава можеби е опасна<ph name="LINE_BREAK" />Проверкава трае подолго од вообичаено…</translation>
 <translation id="4915961947098019832">Дозволено им е да прикажуваат слики</translation>
@@ -7070,7 +7068,6 @@
 <translation id="6586099239452884121">Прелистување како гостин</translation>
 <translation id="6586213706115310390">Пристапувајте до вашиот „Помошник“ кога ќе изговорите „Ok Google“.</translation>
 <translation id="6586451623538375658">Замени го примарното копче на глушецот</translation>
-<translation id="6588043302623806746">Користете безбеден DNS</translation>
 <translation id="659005207229852190">Безбедносната проверка заврши.</translation>
 <translation id="6590458744723262880">Преименувај папка</translation>
 <translation id="6592267180249644460">Дневникот WebRTC е зачуван во <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>

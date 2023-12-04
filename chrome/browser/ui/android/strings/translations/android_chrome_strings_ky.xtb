@@ -242,7 +242,6 @@
 <translation id="2364539095045928896">Барактын статистика борборунда купуялык билдирмесин жабуу үчүн Жабуу баскычын колдонуңуз.</translation>
 <translation id="2386938421315164605">Темаларды жашыруу жана көрсөтүү</translation>
 <translation id="2390510615457643724"><ph name="FILE_NAME" /> файлы (<ph name="FILE_SIZE" />) кайрадан жүктөлүп алынсынбы?</translation>
-<translation id="2394602618534698961">Жүктөп алган файлдар ушул жерде көрүнөт</translation>
 <translation id="2410754283952462441">Аккаунт тандоо</translation>
 <translation id="2414886740292270097">Кочкул</translation>
 <translation id="2421705177906985956">Учурда көрсөтүлө турган сайттар жок</translation>
@@ -1294,7 +1293,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7702388902581909985">Серептөө дайындарыңыз тазаланса, Google аккаунтуңуздан чыгарылбайсыз. Аккаунтуңуздан чыгуу үчүн <ph name="BEGIN_LINK1" />Chrome'дон чыгыңыз<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">Мобилдик Интернетти колдонуу</translation>
 <translation id="7709918231054955894">Бардык өтмөктөрүңүздү көрүңүз</translation>
-<translation id="7725024127233776428">Сиз кыстарма катары сактаган барактар ушул жерде көрүнөт</translation>
 <translation id="7733878270780732638">Түзмөктө орун жетишсиз.</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> түзмөгүнөн көчүрүлгөн текст</translation>
 <translation id="7759809451544302770">Кошумча</translation>

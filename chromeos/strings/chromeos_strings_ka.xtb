@@ -151,7 +151,6 @@
 <translation id="1923388006036088459">აქცენტირებული ფერები</translation>
 <translation id="1947737735496445907">დაბეჭდილი</translation>
 <translation id="1951012854035635156">ასისტენტი</translation>
-<translation id="1954687945444914660">ფოტოგრაფია</translation>
 <translation id="1962550982027027473">საჭიროა ნაგულისხმევი APN</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google პროფილის ფოტო</translation>
@@ -595,7 +594,6 @@
 <translation id="5389224261615877010">ცისარტყელისფერი</translation>
 <translation id="5400907029458559844">მოწყობილობა უკავშირდება.</translation>
 <translation id="5401938042319910061">ყველა რუტინის გაშვება</translation>
-<translation id="540604120278030498">ნიუ-იორკი</translation>
 <translation id="5423849171846380976">გააქტიურებულია</translation>
 <translation id="5430931332414098647">მყისიერი ტეტერინგი</translation>
 <translation id="5431318178759467895">ფერი</translation>
@@ -805,7 +803,6 @@
 <translation id="7046522406494308071">გსურთ, ნაგულისხმევზე დააბრუნოთ ყველა მალსახმობი?</translation>
 <translation id="7058278511608979688">დასრულება და შენახვა</translation>
 <translation id="7059230779847288458">იტენება, სრულ დატენამდე დარჩენილია <ph name="TIME_VALUE" /></translation>
-<translation id="7065364575846974659">პარიზი</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> კლავიში</translation>
 <translation id="7068619307603204412">მოამზადეთ თქვენი მოწყობილობა</translation>
 <translation id="708426984172631313">შეწყვეტილია</translation>
@@ -946,7 +943,6 @@
 <translation id="8094062939584182041">ამ პრობლემის თაობაზე ელფოსტით დაკავშირების დაშვება Google-ისთვის</translation>
 <translation id="8104083085214006426">თქვენ ღია და არასტაბილური ქსელით სარგებლობთ</translation>
 <translation id="8111706652656628199">მალსახმობი მიუწვდომელია დააჭირეთ ახალ მალსახმობს shift-ისა და კიდევ ერთი მოდიფიკატორი კლავიშის (ctrl, alt, search ან launcher) მეშვეობით.</translation>
-<translation id="8112538018114444149">პარკი (მდებარეობა: <ph name="CHIP_CITY" />, სტილი: <ph name="CHIP_STYLE" />).</translation>
 <translation id="811820734797650957">(Android) გეითვეის ping-მეთოდით ტესტირება</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">ტრაფიკის მთვლელების მოთხოვნა</translation>
@@ -1081,7 +1077,6 @@
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS-ის დარეგულირების რეაგირების დრო დიდია</translation>
 <translation id="9065203028668620118">რედაქტირება</translation>
-<translation id="9068296451330120661">აკვარელი</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">ამ ვიდეოს გამოყენება</translation>

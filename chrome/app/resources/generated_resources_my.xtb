@@ -2102,7 +2102,6 @@
 <translation id="2580889980133367162"><ph name="HOST" />အား ဖိုင် အများအပြား ဒေါင်းလုဒ် လုပ်မှုကို အမြဲတမ်း ခွင့်ပြုရန်</translation>
 <translation id="258095186877893873">ရှည်</translation>
 <translation id="2581455244799175627">ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများ ခွင့်ပြုခြင်းအကြောင်း ပိုမိုသိရှိရန်</translation>
-<translation id="2581992808349413349">DNS (ဒိုမိန်းအမည်ပေးစနစ်) ရှိ ဝဘ်ဆိုက်၏ IP လိပ်စာကို ရှာရန် လုံခြုံသောချိတ်ဆက်မှုသုံးပါ။ ၎င်းက <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> ရှိ စီမံထားသော ဝန်ဆောင်မှုပေးသူကို သုံးသည်</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Platform <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Kerberos လက်မှတ်ကို ရှာမတွေ့ပါ။ ထပ်စမ်းကြည့်ပါ သို့မဟုတ် သင့်အဖွဲ့အစည်း၏ စီမံခန့်ခွဲသူထံ ဆက်သွယ်ပါ။ (အမှားကုဒ် <ph name="ERROR_CODE" />)။</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" /> ကို ထည့်သွင်း၍ မရပါ။ ထပ်စမ်းကြည့်ပါ သို့မဟုတ် သင့်စီမံခန့်ခွဲသူထံ ဆက်သွယ်ပါ။ အမှားကုဒ်- <ph name="ERROR_CODE" />။</translation>
@@ -5022,7 +5021,6 @@
 <translation id="4907161631261076876">ဤဖိုင်ကို အများအားဖြင့် ဒေါင်းလုဒ်လုပ်လေ့ မရှိပါ။ အန္တရာယ်ရှိနိုင်ပါသည်။</translation>
 <translation id="4908811072292128752">ဝဘ်ဆိုက်နှစ်ခုကို တစ်ပြိုင်တည်းဖွင့်ကြည့်ရန်အတွက် တဘ်အသစ်တစ်ခု ဖွင့်ပါ</translation>
 <translation id="4909038193460299775">ဤအကောင့်ကို <ph name="DOMAIN" /> က စီမံခန့်ခွဲထားသည့်အတွက် သင့်စာညှပ်များ၊ မှတ်တမ်း၊ စကားဝှက်များနှင့် အခြားဆက်တင်များကို ဤစက်ပစ္စည်းမှ ရှင်းလင်းသွားမည် ဖြစ်သည်။ သို့သော် သင့်ဒေတာများကို သင့် Google အကောင့်တွင် ဆက်လက်သိမ်းဆည်းထားမည်ဖြစ်ပြီး <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" /> ပေါ်တွင် စီမံနိုင်ပါသည်။</translation>
-<translation id="4911572142453926213">DNS (ဒိုမိန်းအမည်ပေးစနစ်) ရှိ ဝဘ်ဆိုက်၏ IP လိပ်စာကို ရှာရန် လုံခြုံသောချိတ်ဆက်မှုသုံးပါ</translation>
 <translation id="4912643508233590958">နားနေရာမှ နိုးလာ</translation>
 <translation id="4913209098186576320">ဤဖိုင်သည် အန္တရာယ်ရှိနိုင်သည်<ph name="LINE_BREAK" />စစ်ဆေးမှုသည် ပုံမှန်ထက် ပိုကြာနေသည်...</translation>
 <translation id="4915961947098019832">ပုံများပြရန် ခွင့်ပြုထားသည်</translation>
@@ -7065,7 +7063,6 @@
 <translation id="6586099239452884121">ဧည့်သည်အဖြစ် ဝင်ရောက်ကြည့်ရှုရန်</translation>
 <translation id="6586213706115310390">"Ok Google" ဟုပြောသည့်အခါ သင်၏ Assistant ကို အသုံးပြုနိုင်သည်။</translation>
 <translation id="6586451623538375658">အခြေခံ မောက်စ် ခလုတ် ဖလှယ်ရန်</translation>
-<translation id="6588043302623806746">လုံခြုံသော DNS ကို အသုံးပြုပါ</translation>
 <translation id="659005207229852190">လုံခြုံရေးစစ်ဆေးပြီးပါပြီ။</translation>
 <translation id="6590458744723262880">ဖိုင်တွဲအမည်ကို ပြောင်းခြင်း</translation>
 <translation id="6592267180249644460">WebRTC ရိုက်ထားသည့် လော့<ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>

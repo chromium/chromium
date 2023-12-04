@@ -151,7 +151,6 @@
 <translation id="1923388006036088459">強調色</translation>
 <translation id="1947737735496445907">已列印</translation>
 <translation id="1951012854035635156">小幫手</translation>
-<translation id="1954687945444914660">攝影</translation>
 <translation id="1962550982027027473">請輸入預設 APN</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google 個人資料相片</translation>
@@ -595,7 +594,6 @@
 <translation id="5389224261615877010">彩虹</translation>
 <translation id="5400907029458559844">正在連接裝置。</translation>
 <translation id="5401938042319910061">執行所有的日常網路診斷</translation>
-<translation id="540604120278030498">紐約</translation>
 <translation id="5423849171846380976">已啟用</translation>
 <translation id="5430931332414098647">即時網路共用</translation>
 <translation id="5431318178759467895">彩色</translation>
@@ -805,7 +803,6 @@
 <translation id="7046522406494308071">要將所有快速鍵重設為預設值嗎？</translation>
 <translation id="7058278511608979688">結束並儲存</translation>
 <translation id="7059230779847288458">充電中，<ph name="TIME_VALUE" />後充飽</translation>
-<translation id="7065364575846974659">巴黎</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> 鍵</translation>
 <translation id="7068619307603204412">準備好你的裝置</translation>
 <translation id="708426984172631313">已停止</translation>
@@ -946,7 +943,6 @@
 <translation id="8094062939584182041">允許 Google 透過電子郵件通知你這個問題的相關資訊</translation>
 <translation id="8104083085214006426">你目前使用的是未受保護的開放式網路</translation>
 <translation id="8111706652656628199">無法使用快速鍵。請使用 Shift 鍵和另外 1 個輔助鍵 (Ctrl、Alt、搜尋鍵或啟動器按鈕) 按下新的快速鍵。</translation>
-<translation id="8112538018114444149">採用<ph name="CHIP_STYLE" />風格的<ph name="CHIP_CITY" />公園。</translation>
 <translation id="811820734797650957">(Android) 可連線偵測到閘道</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">要求流量計數器</translation>
@@ -1081,7 +1077,6 @@
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS 解析延遲時間過長</translation>
 <translation id="9065203028668620118">編輯</translation>
-<translation id="9068296451330120661">水彩</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">藍牙</translation>
 <translation id="9082718469794970195">使用這部影片</translation>

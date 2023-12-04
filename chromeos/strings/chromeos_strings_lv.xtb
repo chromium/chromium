@@ -151,7 +151,6 @@
 <translation id="1923388006036088459">Izcēluma krāsas</translation>
 <translation id="1947737735496445907">Izdrukāts</translation>
 <translation id="1951012854035635156">Asistents</translation>
-<translation id="1954687945444914660">fotografēšana</translation>
 <translation id="1962550982027027473">Jānorāda noklusējuma APN.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google profila fotoattēls</translation>
@@ -595,7 +594,6 @@
 <translation id="5389224261615877010">Varavīksne</translation>
 <translation id="5400907029458559844">Notiek ierīces pievienošana.</translation>
 <translation id="5401938042319910061">Izpildīt visas pārbaudes</translation>
-<translation id="540604120278030498">Ņujorka</translation>
 <translation id="5423849171846380976">Aktivizēts</translation>
 <translation id="5430931332414098647">Tūlītēja piesaiste</translation>
 <translation id="5431318178759467895">Krāsās</translation>
@@ -805,7 +803,6 @@
 <translation id="7046522406494308071">Vai visiem īsinājumtaustiņiem atiestatīt noklusējuma vērtības?</translation>
 <translation id="7058278511608979688">Beigt un saglabāt</translation>
 <translation id="7059230779847288458">Notiek uzlāde. Atlikušais laiks līdz pilnai uzlādei: <ph name="TIME_VALUE" /></translation>
-<translation id="7065364575846974659">Parīze</translation>
 <translation id="7066538517128343186">taustiņš <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Ierīces sagatavošana</translation>
 <translation id="708426984172631313">APTURĒTA</translation>
@@ -946,7 +943,6 @@
 <translation id="8094062939584182041">Atļaut Google nosūtīt jums e-pasta ziņojumu par šo problēmu</translation>
 <translation id="8104083085214006426">Jūs izmantojat atvērtu un nedrošu tīklu</translation>
 <translation id="8111706652656628199">Īsinājumtaustiņš nav pieejams. Nospiediet jauno īsinājumtaustiņu, izmantojot taustiņu Shift un vēl vienu modificētājtaustiņu (Ctrl, Alt, meklēšanas vai palaidēja taustiņu).</translation>
-<translation id="8112538018114444149">Parks šeit: <ph name="CHIP_CITY" /> (šādā stilā: <ph name="CHIP_STYLE" />).</translation>
 <translation id="811820734797650957">(Android) Vārteju var ehotestēt</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Pieprasīt datplūsmas skaitītājus</translation>
@@ -1081,7 +1077,6 @@
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS atrisei ir augsts latentums</translation>
 <translation id="9065203028668620118">Labot</translation>
-<translation id="9068296451330120661">akvarelis</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Izmantot šo videoklipu</translation>

@@ -151,7 +151,6 @@
 <translation id="1923388006036088459">Culori de evidențiere</translation>
 <translation id="1947737735496445907">Printată</translation>
 <translation id="1951012854035635156">Asistent</translation>
-<translation id="1954687945444914660">fotografie</translation>
 <translation id="1962550982027027473">Este necesar un APN prestabilit</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Fotografie de profil Google</translation>
@@ -595,7 +594,6 @@
 <translation id="5389224261615877010">Curcubeu</translation>
 <translation id="5400907029458559844">Dispozitivul se conectează.</translation>
 <translation id="5401938042319910061">Rulează toate rutinele</translation>
-<translation id="540604120278030498">New York</translation>
 <translation id="5423849171846380976">Activat</translation>
 <translation id="5430931332414098647">Tethering instantaneu</translation>
 <translation id="5431318178759467895">Color</translation>
@@ -805,7 +803,6 @@
 <translation id="7046522406494308071">Resetezi toate comenzile rapide la valorile prestabilite?</translation>
 <translation id="7058278511608979688">Finalizează și salvează</translation>
 <translation id="7059230779847288458">Se încarcă, <ph name="TIME_VALUE" /> până la încărcarea completă</translation>
-<translation id="7065364575846974659">Paris</translation>
 <translation id="7066538517128343186">cheia <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Pregătește dispozitivul</translation>
 <translation id="708426984172631313">OPRIT</translation>
@@ -946,7 +943,6 @@
 <translation id="8094062939584182041">Permite ca Google să-ți trimită e-mail despre această problemă</translation>
 <translation id="8104083085214006426">Folosești o rețea deschisă și nesigură</translation>
 <translation id="8111706652656628199">Comanda rapidă nu este disponibilă. Introdu o nouă comandă rapidă folosind Shift și o altă tastă de modificare (Ctrl, Alt, tasta de căutare sau Lansator).</translation>
-<translation id="8112538018114444149">Parc în <ph name="CHIP_CITY" /> în stilul <ph name="CHIP_STYLE" />.</translation>
 <translation id="811820734797650957">(Android) Gateway-ul acceptă testul de ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Solicită contoare de trafic</translation>
@@ -1081,7 +1077,6 @@
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">Rezolvarea DNS are latență mare</translation>
 <translation id="9065203028668620118">Editează</translation>
-<translation id="9068296451330120661">acuarelă</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Folosește videoclipul</translation>

@@ -2107,7 +2107,6 @@
 <translation id="2580889980133367162">Завжди дозволяти <ph name="HOST" /> завантажувати декілька файлів</translation>
 <translation id="258095186877893873">Довго</translation>
 <translation id="2581455244799175627">Докладніше про дозвіл використовувати сторонні файли cookie</translation>
-<translation id="2581992808349413349">Використовуйте захищене з’єднання для пошуку IP-адреси сайту в системі доменних імен (DNS). Для цього використовується керований постачальник послуг (<ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />).</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (платформа <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Не вдалось отримати квиток Kerberos. Повторіть спробу або зв'яжіться з адміністратором пристрою у своїй організації. (Код помилки: <ph name="ERROR_CODE" />)</translation>
 <translation id="2586561813241011046">Не вдалося встановити додаток <ph name="APP_NAME" />. Повторіть спробу або зв'яжіться з адміністратором. Код помилки: <ph name="ERROR_CODE" />.</translation>
@@ -5027,7 +5026,6 @@
 <translation id="4907161631261076876">Цей файл рідко завантажують. Він може бути небезпечним.</translation>
 <translation id="4908811072292128752">Щоб одночасно переглядати два сайти, відкрийте нову вкладку</translation>
 <translation id="4909038193460299775">Оскільки цей обліковий запис зареєстровано в домені <ph name="DOMAIN" />, з цього пристрою буде видалено ваші закладки, історію, паролі й інші налаштування. Однак вони й надалі зберігатимуться в обліковому записі Google. Ними можна керувати на <ph name="BEGIN_LINK" />Інформаційній панелі Google<ph name="END_LINK" />.</translation>
-<translation id="4911572142453926213">Використовуйте захищене з’єднання для пошуку IP-адреси сайту в системі доменних імен (DNS)</translation>
 <translation id="4912643508233590958">Вихід зі стану неактивності</translation>
 <translation id="4913209098186576320">Цей файл може бути небезпечним.<ph name="LINE_BREAK" />Перевірка триває довше, ніж зазвичай…</translation>
 <translation id="4915961947098019832">Дозволено показувати зображення</translation>
@@ -7069,7 +7067,6 @@
 <translation id="6586099239452884121">Гостьовий режим</translation>
 <translation id="6586213706115310390">Активуйте Асистента командою "Ok Google".</translation>
 <translation id="6586451623538375658">Змінити основну кнопку миші</translation>
-<translation id="6588043302623806746">Використовувати безпечну систему DNS</translation>
 <translation id="659005207229852190">Перевірку безпеки завершено.</translation>
 <translation id="6590458744723262880">Перейменувати папку</translation>
 <translation id="6592267180249644460">Журнал WebRTC створено: <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>

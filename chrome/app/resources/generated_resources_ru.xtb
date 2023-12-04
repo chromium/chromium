@@ -2091,7 +2091,6 @@
 <translation id="2580889980133367162">Всегда разрешать <ph name="HOST" /> скачивать несколько файлов</translation>
 <translation id="258095186877893873">долгая</translation>
 <translation id="2581455244799175627">Подробнее о разрешении сторонних файлов cookie</translation>
-<translation id="2581992808349413349">Использовать защищенное соединение для проверки IP-адресов сайтов в DNS (системе доменных имен). Используется управляемый поставщик услуг: <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />.</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (платформа <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Не удалось загрузить билет Kerberos. Повторите попытку или обратитесь к администратору устройства. Код ошибки: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586561813241011046">Не удалось установить <ph name="APP_NAME" />. Повторите попытку или обратитесь к администратору. Код ошибки: <ph name="ERROR_CODE" />.</translation>
@@ -5010,7 +5009,6 @@
 <translation id="4907161631261076876">Этот файл скачивают редко. Возможно, он вредоносный.</translation>
 <translation id="4908811072292128752">Откройте новую вкладку, чтобы перейти на другой сайт, не закрывая предыдущий</translation>
 <translation id="4909038193460299775">Ваш аккаунт управляется доменом <ph name="DOMAIN" />. Все закладки, история, пароли и настройки будут удалены с устройства, однако данные в аккаунте Google сохранятся. Вы можете просмотреть и изменить их в <ph name="BEGIN_LINK" />Личном кабинете Google<ph name="END_LINK" />.</translation>
-<translation id="4911572142453926213">Использовать защищенное соединение для проверки IP-адресов сайтов в DNS (системе доменных имен)</translation>
 <translation id="4912643508233590958">Переходы в активный режим</translation>
 <translation id="4913209098186576320">Этот файл может быть опасен.<ph name="LINE_BREAK" />Проверка занимает больше времени, чем обычно…</translation>
 <translation id="4915961947098019832">Разрешить сайтам показывать изображения</translation>
@@ -7055,7 +7053,6 @@
 <translation id="6586099239452884121">Гостевой режим</translation>
 <translation id="6586213706115310390">Включите, чтобы вызывать Ассистента голосовой командой "Окей, Google".</translation>
 <translation id="6586451623538375658">Поменять местами кнопки мыши</translation>
-<translation id="6588043302623806746">Использовать безопасный DNS-сервер</translation>
 <translation id="659005207229852190">Проверка безопасности завершена.</translation>
 <translation id="6590458744723262880">Переименование папки</translation>
 <translation id="6592267180249644460">Время сохранения журнала WebRTC: <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>

@@ -242,7 +242,6 @@
 <translation id="2364539095045928896">페이지 인사이트 허브의 개인정보처리방침을 닫는 닫기 버튼입니다.</translation>
 <translation id="2386938421315164605">주제 숨기기 및 숨기기 해제</translation>
 <translation id="2390510615457643724"><ph name="FILE_NAME" />(<ph name="FILE_SIZE" />) 파일을 다시 다운로드하시겠습니까?</translation>
-<translation id="2394602618534698961">다운로드한 파일이 여기 표시됩니다.</translation>
 <translation id="2410754283952462441">계정 선택</translation>
 <translation id="2414886740292270097">어둡게</translation>
 <translation id="2421705177906985956">지금 표시할 사이트가 없습니다.</translation>
@@ -1294,7 +1293,6 @@
 <translation id="7702388902581909985">인터넷 사용 기록을 삭제해도 Google 계정에서는 로그아웃되지 않습니다. 다시 시작하려면 <ph name="BEGIN_LINK1" />Chrome에서 로그아웃<ph name="END_LINK1" />하세요.</translation>
 <translation id="7707922173985738739">모바일 데이터 사용</translation>
 <translation id="7709918231054955894">탭 모두 가져오기</translation>
-<translation id="7725024127233776428">북마크한 페이지가 여기에 표시됩니다.</translation>
 <translation id="7733878270780732638">기기에 공간이 부족합니다.</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" />에서 공유된 텍스트</translation>
 <translation id="7759809451544302770">선택사항</translation>

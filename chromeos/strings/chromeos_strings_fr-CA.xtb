@@ -151,7 +151,6 @@
 <translation id="1923388006036088459">Couleurs de mise en évidence</translation>
 <translation id="1947737735496445907">Imprimée</translation>
 <translation id="1951012854035635156">Assistant</translation>
-<translation id="1954687945444914660">photographie</translation>
 <translation id="1962550982027027473">Un APN par défaut est requis</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Photo de profil Google</translation>
@@ -595,7 +594,6 @@
 <translation id="5389224261615877010">Arc-en-ciel</translation>
 <translation id="5400907029458559844">L'appareil se connecte.</translation>
 <translation id="5401938042319910061">Exécuter toutes les routines</translation>
-<translation id="540604120278030498">New York</translation>
 <translation id="5423849171846380976">Activé</translation>
 <translation id="5430931332414098647">Partage de connexion instantané</translation>
 <translation id="5431318178759467895">Couleur</translation>
@@ -805,7 +803,6 @@
 <translation id="7046522406494308071">Réinitialiser tous les raccourcis par défaut?</translation>
 <translation id="7058278511608979688">Terminer et enregistrer</translation>
 <translation id="7059230779847288458">En recharge : <ph name="TIME_VALUE" /> avant que la pile soit rechargée</translation>
-<translation id="7065364575846974659">Paris</translation>
 <translation id="7066538517128343186">la touche <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Préparer votre appareil</translation>
 <translation id="708426984172631313">ARRÊTÉ</translation>
@@ -946,7 +943,6 @@
 <translation id="8094062939584182041">Autoriser Google à vous envoyer un courriel à propos de ce problème</translation>
 <translation id="8104083085214006426">Vous utilisez un réseau ouvert et non sécurisé</translation>
 <translation id="8111706652656628199">Raccourci non accessible. Appuyez sur un nouveau raccourci à l'aide de la touche Majuscule et d'une autre touche de modification (Ctrl, Alt, recherche ou lanceur).</translation>
-<translation id="8112538018114444149">Un parc à <ph name="CHIP_CITY" /> dans le style suivant : <ph name="CHIP_STYLE" />.</translation>
 <translation id="811820734797650957">La passerelle peut faire l'objet d'un ping (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Demander des compteurs de trafic</translation>
@@ -1081,7 +1077,6 @@
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">La résolution DNS présente une latence élevée</translation>
 <translation id="9065203028668620118">Modifier</translation>
-<translation id="9068296451330120661">aquarelle</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Utiliser cette vidéo</translation>

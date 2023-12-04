@@ -2090,7 +2090,6 @@
 <translation id="2580889980133367162">Заўсёды дазваляць хосту <ph name="HOST" /> спампоўваць некалькі файлаў</translation>
 <translation id="258095186877893873">Доўгая</translation>
 <translation id="2581455244799175627">Дадатковая інфармацыя пра дазвол выкарыстоўваць староннія файлы cookie</translation>
-<translation id="2581992808349413349">Выкарыстоўвайце бяспечнае падключэнне, каб знайсці IP-адрас сайта ў сістэме даменных імёнаў (DNS). Для гэтага ўжываецца прызначаны адміністратарам пастаўшчык паслуг: <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />.</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (платформа <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Не ўдалося атрымаць білет Kerberos. Паўтарыце спробу або звярніцеся да адміністратара прылад сваёй арганізацыі. (Код памылкі: <ph name="ERROR_CODE" />.)</translation>
 <translation id="2586561813241011046">Не ўдалося ўсталяваць праграму <ph name="APP_NAME" />. Паўтарыце спробу або звярніцеся да адміністратара. Код памылкі: <ph name="ERROR_CODE" />.</translation>
@@ -5007,7 +5006,6 @@
 <translation id="4907161631261076876">Гэты файл звычайна не спампоўваецца і можа быць небяспечным.</translation>
 <translation id="4908811072292128752">Адкрыйце новую ўкладку, каб праглядаць разам два сайты</translation>
 <translation id="4909038193460299775">Гэты ўліковы запіс знаходзіцца пад кіраваннем дамена <ph name="DOMAIN" />, таму з прылады будуць выдалены вашы закладкі, гісторыя, паролі і іншыя налады. Але вашы даныя застануцца ва Уліковым запісе Google, і імі можна будзе кіраваць на старонцы <ph name="BEGIN_LINK" />Панэль кіравання Google<ph name="END_LINK" />.</translation>
-<translation id="4911572142453926213">Выкарыстоўвайце бяспечнае падключэнне, каб знайсці IP-адрас сайта ў сістэме даменных імёнаў (DNS)</translation>
 <translation id="4912643508233590958">Абуджэнні ад бяздзейнасці</translation>
 <translation id="4913209098186576320">Гэты файл можа быць небяспечным<ph name="LINE_BREAK" />Праверка займае больш часу, чым звычайна...</translation>
 <translation id="4915961947098019832">Дазволена паказваць відарысы</translation>
@@ -7050,7 +7048,6 @@
 <translation id="6586099239452884121">Гасцявы прагляд</translation>
 <translation id="6586213706115310390">Звяртацца да Памочніка, вымавіўшы "Ok Google".</translation>
 <translation id="6586451623538375658">Змяніць асноўную кнопку мышы</translation>
-<translation id="6588043302623806746">Выкарыстоўваць абароненую DNS</translation>
 <translation id="659005207229852190">Праверка бяспекі завершана.</translation>
 <translation id="6590458744723262880">Перайменаванне папкі</translation>
 <translation id="6592267180249644460">Журнал WebRTC запісаны <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>

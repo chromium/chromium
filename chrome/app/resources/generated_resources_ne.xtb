@@ -2086,7 +2086,6 @@
 <translation id="2580889980133367162"><ph name="HOST" /> लाई धेरै फाइलहरू डाउनलोड गर्ने अनुमति सँधै दिनुहोस्</translation>
 <translation id="258095186877893873">लामो</translation>
 <translation id="2581455244799175627">तेस्रो पक्षीय कुकीहरू प्रयोग गर्न अनुमति दिने सम्बन्धमा थप जानकारी</translation>
-<translation id="2581992808349413349">DNS (डोमेन नेम सिस्टम) मा कुनै साइटको IP एड्रेस खोज्न सुरक्षित कनेक्सन प्रयोग गर्नुहोस्। यसले <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> मा भएको व्यवस्थापन गरिएको सेवा प्रदायक प्रयोग गर्छ</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (मञ्च <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Kerberos को टिकट प्राप्त गर्न सकिएन। फेरि प्रयास गर्नुहोस् वा आफ्नो सङ्गठनका यन्त्र व्यवस्थापकलाई सम्पर्क गर्नुहोस्। (त्रुटि कोड <ph name="ERROR_CODE" />)।</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" /> इन्स्टल गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस् वा आफ्ना एड्मिनसँग सम्पर्क गर्नुहोस्। त्रुटिको कोड: <ph name="ERROR_CODE" />।</translation>
@@ -5005,7 +5004,6 @@
 <translation id="4907161631261076876">यो फाइल सामान्यत: डाउनलोड गरिँदैन र यो खतरनाक हुन सक्छ।</translation>
 <translation id="4908811072292128752">दुई साइटहरूलाई एकैपटक ब्राउज गर्न एउटा नयाँ ट्याब खोल्नुहोस्</translation>
 <translation id="4909038193460299775">यो खाता <ph name="DOMAIN" /> द्वारा व्यवस्थापन गरिने हुनाले तपाईंका पुस्तक चिन्ह, इतिहास, पासवर्ड र अन्य सेटिङहरूलाई यस डिभाइसबाट खाली गरिने छ। तैपनि तपाईंको विद्यमान डेटा तपाईंको Google खातामा संग्रहीत रहनेछ र <ph name="BEGIN_LINK" />Google ड्यासबोर्ड<ph name="END_LINK" /> मा गई व्यवस्थापन गर्न सकिन्छ।</translation>
-<translation id="4911572142453926213">DNS (डोमेन नेम सिस्टम) मा कुनै साइटको IP एड्रेस खोज्न सुरक्षित कनेक्सन प्रयोग गर्नुहोस्</translation>
 <translation id="4912643508233590958">आइडल उठ्नेहरू</translation>
 <translation id="4913209098186576320">यो फाइल खतरनाक हुन सक्छ<ph name="LINE_BREAK" />यो फाइलको जाँच गर्न सामान्यभन्दा बढी समय लागिरहेको छ...</translation>
 <translation id="4915961947098019832">फोटोहरू देखाउन अनुमति दिइएका साइटहरू</translation>
@@ -7049,7 +7047,6 @@
 <translation id="6586099239452884121">अतिथि ब्राउजिङ</translation>
 <translation id="6586213706115310390">"Ok Google" भनेर आफ्नो सहायक प्रयोग गर्नुहोस्।</translation>
 <translation id="6586451623538375658">प्राथमिक माउस बटन बदल्नुहोस्</translation>
-<translation id="6588043302623806746">सुरक्षित DNS प्रयोग गर्नुहोस्</translation>
 <translation id="659005207229852190">सुरक्षा जाँच पूरा भएको छ।</translation>
 <translation id="6590458744723262880">फोल्डरको पुनः नामकरण गर्नुहोस्</translation>
 <translation id="6592267180249644460">WebRTC लगले <ph name="WEBRTC_LOG_CAPTURE_TIME" /> क्याप्चर गर्‍यो</translation>

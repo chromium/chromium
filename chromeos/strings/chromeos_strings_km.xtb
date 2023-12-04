@@ -151,7 +151,6 @@
 <translation id="1923388006036088459">ពណ៌​រំលេច</translation>
 <translation id="1947737735496445907">បានបោះពុម្ព</translation>
 <translation id="1951012854035635156">ជំនួយ​ការ</translation>
-<translation id="1954687945444914660">ការថតរូប</translation>
 <translation id="1962550982027027473">តម្រូវ​ឱ្យ​មាន​ APN លំនាំដើម</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">រូបថត​កម្រង​ព័ត៌មាន Google</translation>
@@ -595,7 +594,6 @@
 <translation id="5389224261615877010">ឥន្ទធនូ</translation>
 <translation id="5400907029458559844">ឧបករណ៍កំពុងភ្ជាប់។</translation>
 <translation id="5401938042319910061">ដំណើរការរាល់ការធ្វើតេស្តតាមការកំណត់</translation>
-<translation id="540604120278030498">ញូវយ៉ក</translation>
 <translation id="5423849171846380976">បានធ្វើសកម្មភាព</translation>
 <translation id="5430931332414098647">ការ​ភ្ជាប់​ភ្លាមៗ</translation>
 <translation id="5431318178759467895">ពណ៌</translation>
@@ -805,7 +803,6 @@
 <translation id="7046522406494308071">កំណត់​ផ្លូវកាត់​ទាំងអស់​ឡើងវិញ​ទៅលំនាំដើមឬ?</translation>
 <translation id="7058278511608979688">បញ្ចប់ និងរក្សាទុក</translation>
 <translation id="7059230779847288458">កំពុងសាកថ្ម <ph name="TIME_VALUE" /> ទៀត​ទើបពេញ</translation>
-<translation id="7065364575846974659">ប៉ារីស</translation>
 <translation id="7066538517128343186">គ្រាប់ចុច <ph name="KEY" /></translation>
 <translation id="7068619307603204412">រៀបចំ​ឧបករណ៍​របស់អ្នក</translation>
 <translation id="708426984172631313">បានឈប់</translation>
@@ -946,7 +943,6 @@
 <translation id="8094062939584182041">អនុញ្ញាត​ឱ្យ Google ផ្ញើអ៊ីមែល​ទៅអ្នក​អំពី​បញ្ហានេះ</translation>
 <translation id="8104083085214006426">អ្នកកំពុងប្រើបណ្ដាញចំហ និងគ្មានសុវត្ថិភាព</translation>
 <translation id="8111706652656628199">មិនអាចប្រើ​ផ្លូវកាត់​បានទេ។ សូមចុច​ផ្លូវកាត់ថ្មី​ដោយប្រើ shift និង​ប៊ូតុងឧបករណ៍​កែសម្រួល 1 ទៀត (ctrl, alt, ស្វែងរក ឬ​គ្រាប់ចុច​ចាប់ផ្ដើម)។</translation>
-<translation id="8112538018114444149">ឧទ្យាន​នៅទីក្រុង<ph name="CHIP_CITY" />ក្នុង​រចនាប័ទ្មនៃ<ph name="CHIP_STYLE" />។</translation>
 <translation id="811820734797650957">(Android) អាចធ្វើតេស្ដ​ភីងលើច្រកបាន</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">ស្នើសុំមុខងាររាប់ចំនួនចរាចរណ៍</translation>
@@ -1081,7 +1077,6 @@
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">ដំណោះស្រាយ DNS មានការ​ពន្យារខ្ពស់</translation>
 <translation id="9065203028668620118">កែប្រែ</translation>
-<translation id="9068296451330120661">ពណ៌​ទឹក</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ប៊្លូធូស</translation>
 <translation id="9082718469794970195">ប្រើវីដេអូនេះ</translation>

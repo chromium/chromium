@@ -151,7 +151,6 @@
 <translation id="1923388006036088459">Rangi za msisitizo</translation>
 <translation id="1947737735496445907">Imechapishwa</translation>
 <translation id="1951012854035635156">Mratibu</translation>
-<translation id="1954687945444914660">upigaji picha</translation>
 <translation id="1962550982027027473">APN chaguomsingi inahitajika</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Picha ya wasifu kwenye Google</translation>
@@ -595,7 +594,6 @@
 <translation id="5389224261615877010">Upinde wa mvua</translation>
 <translation id="5400907029458559844">Kifaa kinaunganishwa.</translation>
 <translation id="5401938042319910061">Tekeleza Ratiba Zote</translation>
-<translation id="540604120278030498">New York</translation>
 <translation id="5423849171846380976">Imeamilishwa</translation>
 <translation id="5430931332414098647">Mtandao wa Kusambazwa Papo Hapo</translation>
 <translation id="5431318178759467895">Rangi</translation>
@@ -806,7 +804,6 @@
 <translation id="7046522406494308071">Je, ungependa kuweka upya njia zote za mkato kuwa mipangilio chaguomsingi?</translation>
 <translation id="7058278511608979688">Maliza na uhifadhi</translation>
 <translation id="7059230779847288458">Inachaji, imebakisha <ph name="TIME_VALUE" /> ijae</translation>
-<translation id="7065364575846974659">Paris</translation>
 <translation id="7066538517128343186">kitufe cha <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Tayarisha kifaa chako</translation>
 <translation id="708426984172631313">LIMESIMAMISHWA</translation>
@@ -948,7 +945,6 @@
 <translation id="8094062939584182041">Ruhusu Google ikutumie barua pepe kuhusu hitilafu hii</translation>
 <translation id="8104083085214006426">Unatumia mtandao usio salama unaoweza kutumiwa na mtu yeyote</translation>
 <translation id="8111706652656628199">Njia ya mkato haipatikani. Bonyeza njia mpya ya mkato ukitumia shift na kitufe kingine 1 cha kurekebisha (ctrl, alt, tafuta au kifungua programu).</translation>
-<translation id="8112538018114444149">Bustani jijini <ph name="CHIP_CITY" /> katika mtindo wa <ph name="CHIP_STYLE" />.</translation>
 <translation id="811820734797650957">Lango linaweza Kuitwa (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Omba Hesabu za Trafiki</translation>
@@ -1083,7 +1079,6 @@
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">Usuluhishaji wa DNS una muda mrefu wa kusubiri</translation>
 <translation id="9065203028668620118">Badilisha</translation>
-<translation id="9068296451330120661">rangi ya maji</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Tumia video hii</translation>

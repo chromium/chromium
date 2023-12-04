@@ -2089,7 +2089,6 @@
 <translation id="2580889980133367162">ყოველთვის დართეთ ნება <ph name="HOST" />-ს ჩამოტვირთოს რამოდენიმე ფაილი</translation>
 <translation id="258095186877893873">ხანგრძლივი</translation>
 <translation id="2581455244799175627">ვრცლად მესამე მხარის ქუქი-ჩანაწერების დაშვების შესახებ</translation>
-<translation id="2581992808349413349">დაცული კავშირის გამოყენება საიტის IP-მისამართის მოსაძებნად DNS-ში (დომენური სახელის სისტემაში). აღნიშნული იყენებს სერვისის მართულ პროვაიდერს <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />-ზე</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (პლატფორმა <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Kerberos ბილეთის მიღება ვერ მოხერხდა. ცადეთ ხელახლა, ან დაუკავშირდით თქვენი ორგანიზაციის მოწყობილობის ადმინისტრატორს. (შეცდომის კოდი: <ph name="ERROR_CODE" />).</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" />-ის ინსტალაცია ვერ მოხერხდა. ცადეთ ხელახლა ან დაუკავშირდით ადმინისტრატორს. შეცდომის კოდი: <ph name="ERROR_CODE" />.</translation>
@@ -5008,7 +5007,6 @@
 <translation id="4907161631261076876">ამ ფაილის ჩამოტვირთვა ხშირად არ ხორციელდება ხოლმე და ის შეიძლება სახიფათო იყოს.</translation>
 <translation id="4908811072292128752">ორი საიტის ერთდროულად დასათვალიერებლად გახსენით ახალი ჩანართი</translation>
 <translation id="4909038193460299775">რადგან ამ ანგარიშს მართავს <ph name="DOMAIN" />, თქვენი სანიშნეები, ისტორია, პაროლები და სხვა პარამეტრები ამ მოწყობილობიდან გასუფთავდება, თუმცა თქვენს Google ანგარიშში შენახული მონაცემები კვლავ შენარჩუნდება და მათ მართვას <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />-იდან შეძლებთ.</translation>
-<translation id="4911572142453926213">დაცული კავშირის გამოყენება საიტის IP-მისამართის მოსაძებნად DNS-ში (დომენური სახელის სისტემაში)</translation>
 <translation id="4912643508233590958">უმოქმედობისას გააქტიურება</translation>
 <translation id="4913209098186576320">ეს ფაილი, შესაძლოა, სახიფათო იყოს<ph name="LINE_BREAK" />შემოწმებას მოსალოდნელზე მეტი დრო სჭირდება...</translation>
 <translation id="4915961947098019832">სურათების ჩვენება დაშვებულია</translation>
@@ -7053,7 +7051,6 @@
 <translation id="6586099239452884121">დათვალიერება სტუმრის სტატუსით</translation>
 <translation id="6586213706115310390">იქონიეთ წვდომა ასისტენტზე „Ok Google“-ის წარმოთქმით.</translation>
 <translation id="6586451623538375658">ძირითადი მაუსის ღილაკის შეცვლა</translation>
-<translation id="6588043302623806746">დაცული DNS-ის გამოყენება</translation>
 <translation id="659005207229852190">უსაფრთხოების შემოწმება შესრულდა.</translation>
 <translation id="6590458744723262880">საქაღალდის გადარქმევა</translation>
 <translation id="6592267180249644460">WebRTC ჟურნალი გადაღებულია <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>

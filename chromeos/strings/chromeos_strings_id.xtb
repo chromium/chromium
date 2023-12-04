@@ -151,7 +151,6 @@
 <translation id="1923388006036088459">Warna aksen</translation>
 <translation id="1947737735496445907">Tercetak</translation>
 <translation id="1951012854035635156">Asisten</translation>
-<translation id="1954687945444914660">fotografi</translation>
 <translation id="1962550982027027473">APN default diperlukan</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Foto profil Google</translation>
@@ -595,7 +594,6 @@
 <translation id="5389224261615877010">Pelangi</translation>
 <translation id="5400907029458559844">Perangkat sedang menghubungkan.</translation>
 <translation id="5401938042319910061">Jalankan Semua Rutinitas</translation>
-<translation id="540604120278030498">New York</translation>
 <translation id="5423849171846380976">Diaktifkan</translation>
 <translation id="5430931332414098647">Tethering Instan</translation>
 <translation id="5431318178759467895">Warna</translation>
@@ -805,7 +803,6 @@
 <translation id="7046522406494308071">Reset semua pintasan ke default?</translation>
 <translation id="7058278511608979688">Akhiri &amp; simpan</translation>
 <translation id="7059230779847288458">Mengisi daya, <ph name="TIME_VALUE" /> sampai penuh</translation>
-<translation id="7065364575846974659">Paris</translation>
 <translation id="7066538517128343186">tombol <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Siapkan perangkat Anda</translation>
 <translation id="708426984172631313">DIHENTIKAN</translation>
@@ -946,7 +943,6 @@
 <translation id="8094062939584182041">Izinkan Google mengirim email kepada Anda tentang masalah ini</translation>
 <translation id="8104083085214006426">Anda menggunakan jaringan terbuka dan tidak aman</translation>
 <translation id="8111706652656628199">Pintasan tidak tersedia. Tekan pintasan baru menggunakan shift dan 1 tombol pengubah lainnya (ctrl, alt, penelusuran, atau peluncur).</translation>
-<translation id="8112538018114444149">Taman di <ph name="CHIP_CITY" /> dengan gaya <ph name="CHIP_STYLE" />.</translation>
 <translation id="811820734797650957">(Android) Gateway Dapat Di-ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Minta Penghitung Traffic</translation>
@@ -1081,7 +1077,6 @@
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">Resolusi DNS memiliki latensi tinggi</translation>
 <translation id="9065203028668620118">Edit</translation>
-<translation id="9068296451330120661">cat air</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Gunakan video ini</translation>

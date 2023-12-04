@@ -242,7 +242,6 @@
 <translation id="2364539095045928896">“关闭”按钮，用于关闭网页数据洞见中心的隐私权声明。</translation>
 <translation id="2386938421315164605">隐藏和取消隐藏主题</translation>
 <translation id="2390510615457643724">您想再次下载 <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) 吗？</translation>
-<translation id="2394602618534698961">您下载的文件会显示在此处</translation>
 <translation id="2410754283952462441">选择账号</translation>
 <translation id="2414886740292270097">深色调</translation>
 <translation id="2421705177906985956">目前没有可显示的网站</translation>
@@ -1294,7 +1293,6 @@
 <translation id="7702388902581909985">清除浏览数据不会致使您退出自己的 Google 账号。若要退出账号，请<ph name="BEGIN_LINK1" />从 Chrome 中退出登录<ph name="END_LINK1" />。</translation>
 <translation id="7707922173985738739">使用移动数据</translation>
 <translation id="7709918231054955894">同步显示您的所有标签页</translation>
-<translation id="7725024127233776428">您添加了书签的网页会显示在此处</translation>
 <translation id="7733878270780732638">设备上的存储空间不足。</translation>
 <translation id="7757787379047923882">分享自“<ph name="DEVICE_NAME" />”的文字</translation>
 <translation id="7759809451544302770">可选</translation>

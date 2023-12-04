@@ -151,7 +151,6 @@
 <translation id="1923388006036088459">Warna aksen</translation>
 <translation id="1947737735496445907">Dicetak</translation>
 <translation id="1951012854035635156">Pembantu</translation>
-<translation id="1954687945444914660">fotografi</translation>
 <translation id="1962550982027027473">APN lalai diperlukan</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Foto profil Google</translation>
@@ -595,7 +594,6 @@
 <translation id="5389224261615877010">Pelangi</translation>
 <translation id="5400907029458559844">Peranti sedang menyambung.</translation>
 <translation id="5401938042319910061">Jalankan Semua Rutin</translation>
-<translation id="540604120278030498">New York</translation>
 <translation id="5423849171846380976">Diaktifkan</translation>
 <translation id="5430931332414098647">Penambatan Segera</translation>
 <translation id="5431318178759467895">Warna</translation>
@@ -633,6 +631,7 @@
 <translation id="574392208103952083">Sederhana</translation>
 <translation id="5757187557809630523">lagu seterusnya</translation>
 <translation id="5760715441271661976">Keadaan Portal</translation>
+<translation id="5763838252932650682">Memulakan semula dan mengemaskinikan <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Tingkatkan kecerahan paparan</translation>
 <translation id="57838592816432529">Redam</translation>
 <translation id="5784136236926853061">Kependaman HTTP tinggi</translation>
@@ -805,7 +804,6 @@
 <translation id="7046522406494308071">Tetapkan semula semua pintasan kepada lalai?</translation>
 <translation id="7058278511608979688">Tamatkan &amp; simpan</translation>
 <translation id="7059230779847288458">Mengecas, <ph name="TIME_VALUE" /> sehingga penuh</translation>
-<translation id="7065364575846974659">Paris</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> kunci</translation>
 <translation id="7068619307603204412">Sediakan peranti anda</translation>
 <translation id="708426984172631313">DIHENTIKAN</translation>
@@ -842,6 +840,7 @@
 <translation id="7287310195820267359">Koleksi Kertas Dinding</translation>
 <translation id="7297226631177386107">Tidak dapat menyambung melalui tembok api ke laman web HTTPS</translation>
 <translation id="7297726121602187087">Hijau gelap</translation>
+<translation id="7301262279595293068">Sila tunggu sementara aplikasi ini dikemaskinikan</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Tanya pakar dalam forum bantuan Chromebook</translation>
@@ -946,7 +945,6 @@
 <translation id="8094062939584182041">Benarkan Google menghantar e-mel tentang isu ini kepada anda</translation>
 <translation id="8104083085214006426">Anda sedang menggunakan rangkaian terbuka dan tidak selamat</translation>
 <translation id="8111706652656628199">Pintasan tidak tersedia. Tekan pintasan baharu menggunakan Shift dan 1 kunci pengubah suai lain (Ctrl, Alt, carian atau pelancar).</translation>
-<translation id="8112538018114444149">Taman di <ph name="CHIP_CITY" /> dengan gaya <ph name="CHIP_STYLE" />.</translation>
 <translation id="811820734797650957">Get laluan boleh Diping (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">Minta Pembilang Trafik</translation>
@@ -1081,7 +1079,6 @@
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">Peleraian DNS mempunyai kependaman tinggi</translation>
 <translation id="9065203028668620118">Edit</translation>
-<translation id="9068296451330120661">cat air</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Gunakan video ini</translation>
