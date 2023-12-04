@@ -101,12 +101,16 @@ struct CalcProvider : Config<CalcProvider> {
   size_t num_non_calc_inputs;
 };
 
-// If enabled, set the minimum input length before requesting document
-// suggestions.
+// If enabled, allow document provider requests when all other conditions are
+// met.
 struct DocumentProvider : Config<DocumentProvider> {
   DocumentProvider();
   bool enabled;
+  // The minimum input length required before requesting document suggestions.
   size_t min_query_length;
+  // Whether to ignore the state of the document provider when deciding to
+  // finish debouncing.
+  bool ignore_when_debouncing;
 };
 
 // If enabled, pretends all matches are allowed to be default. This is very

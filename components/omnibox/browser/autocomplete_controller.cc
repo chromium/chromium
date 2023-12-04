@@ -515,7 +515,7 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
 
   // This will usually set |done_| to false, unless all providers are finished
   // after the synchronous pass we just completed.
-  CheckIfDone();
+  done_ = CheckIfDone();
 
   // The second true forces saying the default match has changed.
   // This triggers the edit model to update things such as the inline
@@ -643,7 +643,7 @@ void AutocompleteController::OnProviderUpdate(
     return;
   }
 
-  CheckIfDone();
+  done_ = CheckIfDone();
 
   if (updated_matches || done_)
     UpdateResult(false, false, true);
@@ -1530,7 +1530,10 @@ void AutocompleteController::NotifyChanged() {
 void AutocompleteController::DelayedNotifyChanged(bool notify_default_match) {
   if (notify_default_match)
     notify_changed_default_match_ = true;
-  if (done_ || !sync_pass_done_) {
+
+  const bool ignore_document_provider =
+      omnibox_feature_configs::DocumentProvider::Get().ignore_when_debouncing;
+  if (!sync_pass_done_ || CheckIfDone(ignore_document_provider)) {
     notify_changed_debouncer_.ResetTimeLastRun();
     NotifyChanged();
   } else {
@@ -1544,20 +1547,27 @@ void AutocompleteController::CancelDelayedNotifyChanged() {
   notify_changed_default_match_ = false;
 }
 
-void AutocompleteController::CheckIfDone() {
+bool AutocompleteController::CheckIfDone(bool ignore_document_provider) {
   bool all_providers_done = true;
   for (const auto& provider : providers_) {
     if (!ShouldRunProvider(provider.get()))
       continue;
+
+    if (ignore_document_provider &&
+        provider->type() == AutocompleteProvider::TYPE_DOCUMENT) {
+      continue;
+    }
 
     if (!provider->done()) {
       all_providers_done = false;
       break;
     }
   }
+
   // If asynchronous matches have been disallowed, all providers should be done.
   DCHECK(!input_.omit_asynchronous_matches() || all_providers_done);
-  done_ = all_providers_done;
+
+  return all_providers_done;
 }
 
 void AutocompleteController::StartExpireTimer() {
