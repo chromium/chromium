@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/tabs/model/features.h"
+#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/commerce/price_card/price_card_data_source.h"
 #import "ios/chrome/browser/ui/commerce/price_card/price_card_item.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
@@ -33,6 +34,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_empty_view.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_header.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/legacy_grid_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_delegate.h"
@@ -124,7 +126,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 // Animator to show or hide the empty state.
 @property(nonatomic, strong) UIViewPropertyAnimator* emptyStateAnimator;
 // The layout for the tab grid.
-@property(nonatomic, strong) LegacyGridLayout* gridLayout;
+@property(nonatomic, strong) UICollectionViewLayout* gridLayout;
 // The view controller that holds the view of the suggested search actions.
 @property(nonatomic, strong)
     SuggestedActionsViewController* suggestedActionsViewController;
@@ -181,7 +183,11 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 #pragma mark - UIViewController
 
 - (void)loadView {
-  self.gridLayout = [[LegacyGridLayout alloc] init];
+  if (IsTabGridCompositionalLayoutEnabled()) {
+    self.gridLayout = [[GridLayout alloc] init];
+  } else {
+    self.gridLayout = [[LegacyGridLayout alloc] init];
+  }
 
   UICollectionView* collectionView =
       [[UICollectionView alloc] initWithFrame:CGRectZero
@@ -249,6 +255,8 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
       [self shouldEnableDrapAndDropInteraction];
 
   self.pointerInteractionCells = [NSHashTable<GridCell*> weakObjectsHashTable];
+
+  [self updateTabsSectionHeaderType];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -340,12 +348,14 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
           [[SuggestedActionsViewController alloc] initWithDelegate:self];
     }
   }
+  [self updateTabsSectionHeaderType];
   [self updateSuggestedActionsSection];
 
   // Reconfigure all tabs.
   GridSnapshot* snapshot = self.diffableDataSource.snapshot;
   [snapshot reconfigureItemsWithIdentifiers:snapshot.itemIdentifiers];
   [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
+  [self.gridLayout invalidateLayout];
 
   NSUInteger selectedIndex = self.selectedIndex;
   if (previousMode != TabGridModeSelection && mode == TabGridModeNormal &&
@@ -384,6 +394,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 - (void)setSearchText:(NSString*)searchText {
   _searchText = searchText;
   _suggestedActionsViewController.searchText = searchText;
+  [self updateTabsSectionHeaderType];
   [self updateSuggestedActionsSection];
 }
 
@@ -397,6 +408,24 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   NSIndexPath* selectedIndexPath = CreateIndexPath(selectedIndex);
   return [self.collectionView.indexPathsForVisibleItems
       containsObject:selectedIndexPath];
+}
+
+- (void)setContentInsets:(UIEdgeInsets)contentInsets {
+  if (IsTabGridCompositionalLayoutEnabled()) {
+    // Set the vertical insets on the collection view…
+    self.collectionView.contentInset =
+        UIEdgeInsetsMake(contentInsets.top, 0, contentInsets.bottom, 0);
+    // … and the horizontal insets on the layout sections.
+    // This is a workaround, as setting the horizontal insets on the collection
+    // view isn't honored by the layout when computing the item sizes (items are
+    // too big in landscape iPhones with a notch or Dynamic Island).
+    ObjCCastStrict<GridLayout>(self.gridLayout).sectionInsets =
+        NSDirectionalEdgeInsetsMake(0, contentInsets.left, 0,
+                                    contentInsets.right);
+  } else {
+    self.gridView.contentInset = contentInsets;
+  }
+  _contentInsets = contentInsets;
 }
 
 - (LegacyGridTransitionLayout*)transitionLayout {
@@ -480,7 +509,11 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 }
 
 - (void)contentWillAppearAnimated:(BOOL)animated {
-  self.gridLayout.animatesItemUpdates = YES;
+  if (IsTabGridCompositionalLayoutEnabled()) {
+    ObjCCastStrict<GridLayout>(self.gridLayout).animatesItemUpdates = YES;
+  } else {
+    ObjCCastStrict<LegacyGridLayout>(self.gridLayout).animatesItemUpdates = YES;
+  }
   [self reloadDataSource];
   // Selection is invalid if there are no items.
   if ([self shouldShowEmptyState]) {
@@ -508,7 +541,11 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 - (void)prepareForDismissal {
   // Stop animating the collection view to prevent the insertion animation from
   // interfering with the tab presentation animation.
-  self.gridLayout.animatesItemUpdates = NO;
+  if (IsTabGridCompositionalLayoutEnabled()) {
+    ObjCCastStrict<GridLayout>(self.gridLayout).animatesItemUpdates = NO;
+  } else {
+    ObjCCastStrict<LegacyGridLayout>(self.gridLayout).animatesItemUpdates = NO;
+  }
 }
 
 #pragma mark - UICollectionView Diffable Data Source Helpers
@@ -672,11 +709,16 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   }
 }
 
+// TODO(crbug.com/1504112): Remove the entire code section when the
+// compositional layout is fully landed.
 #pragma mark - UICollectionViewDelegateFlowLayout
 
 - (CGSize)collectionView:(UICollectionView*)collectionView
                     layout:(UICollectionViewLayout*)collectionViewLayout
     sizeForItemAtIndexPath:(NSIndexPath*)indexPath {
+  // TODO(crbug.com/1504112): Remove the entire method when the compositional
+  // layout is fully landed.
+  CHECK(!IsTabGridCompositionalLayoutEnabled());
   if (self.isClosingAllOrUndoRunning) {
     return CGSizeZero;
   }
@@ -703,6 +745,9 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
                              layout:
                                  (UICollectionViewLayout*)collectionViewLayout
     referenceSizeForHeaderInSection:(NSInteger)section {
+  // TODO(crbug.com/1504112): Remove the entire method when the compositional
+  // layout is fully landed.
+  CHECK(!IsTabGridCompositionalLayoutEnabled());
   switch (_mode) {
     case TabGridModeNormal:
       return CGSizeZero;
@@ -1481,6 +1526,36 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   [self.collectionView selectItemAtIndexPath:selectedIndexPath
                                     animated:NO
                               scrollPosition:scrollPosition];
+}
+
+- (void)updateTabsSectionHeaderType {
+  if (IsTabGridCompositionalLayoutEnabled()) {
+    ObjCCastStrict<GridLayout>(self.gridLayout).tabsSectionHeaderType =
+        [self tabsSectionHeaderTypeForMode:_mode];
+  }
+}
+
+- (TabsSectionHeaderType)tabsSectionHeaderTypeForMode:(TabGridMode)mode {
+  CHECK(IsTabGridCompositionalLayoutEnabled());
+  switch (mode) {
+    case TabGridModeNormal:
+    case TabGridModeSelection:
+      return TabsSectionHeaderType::kNone;
+    case TabGridModeSearch:
+      if (_searchText.length == 0) {
+        // The Normal mode grid shows behind the search overlay, so use the same
+        // header as normal mode. Subclasses can have changed it from
+        // TabsSectionHeaderType::kNone, so call this method again with
+        // TabGridModeNormal.
+        return [self tabsSectionHeaderTypeForMode:TabGridModeNormal];
+      }
+      return TabsSectionHeaderType::kSearch;
+    case TabGridModeInactive:
+      if (!IsInactiveTabsEnabled()) {
+        return TabsSectionHeaderType::kNone;
+      }
+      return TabsSectionHeaderType::kInactiveTabs;
+  }
 }
 
 #pragma mark - Private

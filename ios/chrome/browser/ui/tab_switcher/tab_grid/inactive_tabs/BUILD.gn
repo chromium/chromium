@@ -99,6 +99,7 @@ source_set("inactive_tabs_button_ui") {
     ":inactive_tabs_button_ui_swift",
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",

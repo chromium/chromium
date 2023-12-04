@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_preamble_header.h"
 
 #import "base/check_op.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
@@ -19,6 +20,8 @@ namespace {
 
 // Layout constants.
 const CGFloat kTopPadding = 14;
+// TODO(crbug.com/1504112): Remove these when the compositional layout is fully
+// landed.
 const CGFloat kBottomPadding = 10;
 const CGFloat kHorizontalPadding = 16;
 
@@ -45,8 +48,12 @@ const CGFloat kHorizontalPadding = 16;
     _textView.adjustsFontForContentSizeCategory = YES;
     _textView.backgroundColor = [UIColor colorNamed:kGridBackgroundColor];
     _textView.textContainer.lineFragmentPadding = 0;
-    _textView.textContainerInset = UIEdgeInsets(
-        kTopPadding, kHorizontalPadding, kBottomPadding, kHorizontalPadding);
+    if (IsTabGridCompositionalLayoutEnabled()) {
+      _textView.textContainerInset = UIEdgeInsets(kTopPadding, 0, 0, 0);
+    } else {
+      _textView.textContainerInset = UIEdgeInsets(
+          kTopPadding, kHorizontalPadding, kBottomPadding, kHorizontalPadding);
+    }
     _textView.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:_textView];
     AddSameConstraints(_textView, self);

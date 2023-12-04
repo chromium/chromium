@@ -13,8 +13,15 @@ public class InactiveTabsButtonHeader: UICollectionReusableView {
     /// The margin at the top of the header.
     static let topMargin: CGFloat = 12
     /// The margin on the other edges of the header.
+    /// TODO(crbug.com/1504112): Remove when the compositional layout is fully
+    /// landed.
     static let margin: CGFloat = 16
   }
+
+  /// Whether the new compositional layout is enabled.
+  /// TODO(crbug.com/1504112): Remove when the compositional layout is fully
+  /// landed.
+  @objc public var tabGridCompositionalLayoutEnabled = false
 
   /// The state driving the SwiftUI button.
   private let buttonState = InactiveTabsButton.State()
@@ -34,15 +41,16 @@ public class InactiveTabsButtonHeader: UICollectionReusableView {
         hostingController.view.translatesAutoresizingMaskIntoConstraints = false
         addSubview(hostingController.view)
         hostingController.didMove(toParent: parent)
+        let margin = tabGridCompositionalLayoutEnabled ? 0 : Dimensions.margin
         NSLayoutConstraint.activate([
           hostingController.view.topAnchor.constraint(
             equalTo: topAnchor, constant: Dimensions.topMargin),
           hostingController.view.leadingAnchor.constraint(
-            equalTo: leadingAnchor, constant: Dimensions.margin),
+            equalTo: leadingAnchor, constant: margin),
           hostingController.view.bottomAnchor.constraint(
-            equalTo: bottomAnchor, constant: -Dimensions.margin),
+            equalTo: bottomAnchor, constant: -margin),
           hostingController.view.trailingAnchor.constraint(
-            equalTo: trailingAnchor, constant: -Dimensions.margin),
+            equalTo: trailingAnchor, constant: -margin),
         ])
       } else {
         hostingController.willMove(toParent: nil)

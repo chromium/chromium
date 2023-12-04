@@ -130,9 +130,14 @@ class WebStateID;
     BOOL selectedCellVisible;
 // Provider of context menu configurations for the tabs in the grid.
 @property(nonatomic, weak) id<TabContextMenuProvider> menuProvider;
-
 // Opacity of grid cells that are not the selected tab.
 @property(nonatomic, assign) CGFloat notSelectedTabCellOpacity;
+// The insets to set on the collection view.
+// Setting content insets on the collection view is a workaround. Indeed,
+// ideally, grids would just honor the safe area. But since the 3 panes are part
+// of a scrollview, they don't all get the correct information when being laid
+// out. To that end, contentInsets are manually added.
+@property(nonatomic, assign) UIEdgeInsets contentInsets;
 
 // Returns the layout of the grid for use in an animated transition.
 - (LegacyGridTransitionLayout*)transitionLayout;

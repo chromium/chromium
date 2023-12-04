@@ -327,6 +327,10 @@ BASE_FEATURE(kTabGridCompositionalLayout,
              "TabGridCompositionalLayout",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+bool IsTabGridCompositionalLayoutEnabled() {
+  return base::FeatureList::IsEnabled(kTabGridCompositionalLayout);
+}
+
 BASE_FEATURE(kTabGridRefactoring,
              "TabGridRefactoring",
              base::FEATURE_DISABLED_BY_DEFAULT);

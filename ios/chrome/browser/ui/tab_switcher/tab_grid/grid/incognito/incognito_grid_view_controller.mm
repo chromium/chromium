@@ -18,6 +18,15 @@
 
 #pragma mark - Parent's functions
 
+// Returns a configured header for the given index path.
+- (UICollectionReusableView*)headerForSectionAtIndexPath:
+    (NSIndexPath*)indexPath {
+  if (self.mode == TabGridModeNormal) {
+    return nil;
+  }
+  return [super headerForSectionAtIndexPath:indexPath];
+}
+
 - (UIContextMenuConfiguration*)collectionView:(UICollectionView*)collectionView
     contextMenuConfigurationForItemAtIndexPath:(NSIndexPath*)indexPath
                                          point:(CGPoint)point {

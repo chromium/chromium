@@ -832,10 +832,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     [self scrollToPage:self.currentPage animated:NO];
   }
 
-  self.incognitoTabsViewController.gridView.contentInset =
-      [self calculateInsetForIncognitoGridView];
-  self.regularTabsViewController.gridView.contentInset =
-      [self calculateInsetForRegularGridView];
+  self.incognitoTabsViewController.contentInsets =
+      [self calculateInsetsForIncognitoGridView];
+  self.regularTabsViewController.contentInsets =
+      [self calculateInsetsForRegularGridView];
 }
 
 // Returns the corresponding BaseGridViewController for `page`. Returns `nil` if
@@ -1632,7 +1632,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 // Calculates the proper insets for the Incognito Grid ViewController to
 // accommodate for the safe area and toolbar.
-- (UIEdgeInsets)calculateInsetForIncognitoGridView {
+- (UIEdgeInsets)calculateInsetsForIncognitoGridView {
   // The content inset of the tab grids must be modified so that the toolbars
   // do not obscure the tabs. This may change depending on orientation.
   CGFloat bottomInset = self.configuration == TabGridConfigurationBottomToolbar
@@ -1651,8 +1651,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 // Calculates the proper insets for the Regular Grid ViewController to
 // accommodate for the safe area and toolbars.
-- (UIEdgeInsets)calculateInsetForRegularGridView {
-  UIEdgeInsets inset = [self calculateInsetForIncognitoGridView];
+- (UIEdgeInsets)calculateInsetsForRegularGridView {
+  UIEdgeInsets inset = [self calculateInsetsForIncognitoGridView];
 
   if (IsPinnedTabsEnabled() && self.pinnedTabsViewController.visible) {
     CGFloat pinnedViewHeight =
@@ -1728,11 +1728,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)pinnedTabsViewControllerVisibilityDidChange:
     (PinnedTabsViewController*)pinnedTabsViewController {
-  UIEdgeInsets inset = [self calculateInsetForRegularGridView];
+  UIEdgeInsets insets = [self calculateInsetsForRegularGridView];
   [UIView animateWithDuration:kPinnedViewInsetAnimationTime
                    animations:^{
-                     self.regularTabsViewController.gridView.contentInset =
-                         inset;
+                     self.regularTabsViewController.contentInsets = insets;
                    }];
 }
 
