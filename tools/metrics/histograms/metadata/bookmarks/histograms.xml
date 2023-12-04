@@ -41,14 +41,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="BookmarkManager.NumDragged" units="bookmarks"
-    expires_after="M85">
-  <owner>johntlee@chromium.org</owner>
-  <summary>
-    Logs the number of bookmarks that were dragged simultaneously by a user.
-  </summary>
-</histogram>
-
 <histogram name="BookmarkManager.ResultsRenderedTime" units="ms"
     expires_after="2024-04-28">
   <owner>johntlee@chromium.org</owner>
