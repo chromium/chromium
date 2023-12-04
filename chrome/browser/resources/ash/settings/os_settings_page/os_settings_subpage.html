@@ -1,5 +1,7 @@
 <style include="cr-shared-style settings-shared">
   :host {
+    background-color: var(--cros-sys-app_base);
+    box-shadow: var(--cr-card-shadow);
     box-sizing: border-box;
     display: block;
     left: 0;
@@ -10,9 +12,10 @@
     top: 0;
   }
 
-  :host(:not(.multi-card)) {
-    background-color: var(--cros-sys-app_base);
-    box-shadow: var(--cr-card-shadow);
+  :host-context(body.revamp-wayfinding-enabled):host {
+    border-start-start-radius: 16px;
+    border-start-end-radius: 16px;
+    box-shadow: none;
   }
 
   #headerLine {

@@ -169,6 +169,8 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
   private scrollEndDebouncer_: Debouncer|null;
   private osSettingsHatsBrowserProxy_: OsSettingsHatsBrowserProxy;
   private boundTriggerSettingsHats_: () => void;
+  private readonly isRevampWayfindingEnabled_: boolean =
+      isRevampWayfindingEnabled();
 
   constructor() {
     super();
@@ -237,6 +239,9 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
         /*AddEventListenerOptions=*/ {once: true});
 
     this.listenForDrawerOpening_();
+
+    // By default, the shadow should show when the container is scrolled down.
+    this.enableShadowBehavior(true);
   }
 
   override connectedCallback(): void {
@@ -295,7 +300,7 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     // window, a click's propagation can be stopped by child elements.
     window.addEventListener('click', recordClick, /*capture=*/ true);
 
-    if (isRevampWayfindingEnabled()) {
+    if (this.isRevampWayfindingEnabled_) {
       // Add class which activates styles for the wayfinding update
       document.body.classList.add('revamp-wayfinding-enabled');
     }
@@ -318,14 +323,19 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
       recordNavigation();
     }
 
-    if (newRoute.isSubpage()) {
-      // Sub-pages always show the top-container shadow.
-      this.enableShadowBehavior(false);
-      this.showDropShadows();
-    } else {
-      // All other pages including the root page should show shadow depending
-      // on scroll position.
-      this.enableShadowBehavior(true);
+    // TODO(b/302374851) Under the revamp, the shadow behavior is consistent
+    // across all types of pages and subpages. When the revamp is cleaned up,
+    // remove this obsolete logic.
+    if (!this.isRevampWayfindingEnabled_) {
+      if (newRoute.isSubpage()) {
+        // Sub-pages always show the top-container shadow.
+        this.enableShadowBehavior(false);
+        this.showDropShadows();
+      } else {
+        // All other pages including the root page should show shadow depending
+        // on scroll position.
+        this.enableShadowBehavior(true);
+      }
     }
   }
 
