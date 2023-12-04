@@ -283,7 +283,7 @@ bool WindowCycleController::IsEventInCycleView(
 }
 
 aura::Window* WindowCycleController::GetWindowAtPoint(
-    const ui::LocatedEvent* event) const {
+    const ui::LocatedEvent* event) {
   return window_cycle_list_ ? window_cycle_list_->GetWindowAtPoint(event)
                             : nullptr;
 }
@@ -534,7 +534,7 @@ void WindowCycleController::OnAltTabModePrefChanged() {
 }
 
 bool WindowCycleController::IsValidKeyboardNavigation(
-    KeyboardNavDirection direction) {
+    KeyboardNavDirection direction) const {
   // Only allow Left and Right arrow keys if interactive alt-tab mode is not
   // in use.
   if (!IsInteractiveAltTabModeAllowed()) {

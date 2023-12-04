@@ -84,21 +84,21 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
 
   // Returns true if during keyboard navigation, alt-tab focuses the tab slider
   // instead of cycle window.
-  bool IsTabSliderFocused();
+  bool IsTabSliderFocused() const;
 
   // Checks whether |event| occurs within the cycle view. Returns false if
   // |cycle_view_| does not exist.
-  bool IsEventInCycleView(const ui::LocatedEvent* event);
+  bool IsEventInCycleView(const ui::LocatedEvent* event) const;
 
   // Returns the window for the preview item located at |event|. Returns nullptr
   // if |event| not in cycle view or if |cycle_view_| does not exist.
   aura::Window* GetWindowAtPoint(const ui::LocatedEvent* event);
 
   // Returns whether or not the event is located in tab slider container.
-  bool IsEventInTabSliderContainer(const ui::LocatedEvent* event);
+  bool IsEventInTabSliderContainer(const ui::LocatedEvent* event) const;
 
   // Returns true if the window list overlay should be shown.
-  bool ShouldShowUi();
+  bool ShouldShowUi() const;
 
   // Updates the tab slider mode UI when alt-tab mode in user prefs changes.
   void OnModePrefsChanged();

@@ -261,12 +261,12 @@ void WindowCycleList::SetFocusTabSlider(bool focus) {
   cycle_view_->SetFocusTabSlider(focus);
 }
 
-bool WindowCycleList::IsTabSliderFocused() {
+bool WindowCycleList::IsTabSliderFocused() const {
   DCHECK(cycle_view_);
   return cycle_view_->IsTabSliderFocused();
 }
 
-bool WindowCycleList::IsEventInCycleView(const ui::LocatedEvent* event) {
+bool WindowCycleList::IsEventInCycleView(const ui::LocatedEvent* event) const {
   return cycle_view_ &&
          cycle_view_->GetBoundsInScreen().Contains(ConvertEventToScreen(event));
 }
@@ -278,12 +278,12 @@ aura::Window* WindowCycleList::GetWindowAtPoint(const ui::LocatedEvent* event) {
 }
 
 bool WindowCycleList::IsEventInTabSliderContainer(
-    const ui::LocatedEvent* event) {
+    const ui::LocatedEvent* event) const {
   return cycle_view_ &&
          cycle_view_->IsEventInTabSliderContainer(ConvertEventToScreen(event));
 }
 
-bool WindowCycleList::ShouldShowUi() {
+bool WindowCycleList::ShouldShowUi() const {
   // Show alt-tab when there are at least two windows to pick from alt-tab, or
   // when there is at least a window to switch to by switching to the different
   // mode.

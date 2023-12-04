@@ -1177,9 +1177,7 @@ void OverviewGrid::CalculateWindowListAnimationStates(
     OverviewItemBase* selected_item,
     OverviewTransition transition,
     const std::vector<gfx::RectF>& target_bounds) {
-  using OverviewTransition = OverviewTransition;
-
-  // Sanity checks to enforce assumptions used in later codes.
+  // Checks to enforce assumptions used in later codes.
   switch (transition) {
     case OverviewTransition::kEnter:
       CHECK_EQ(target_bounds.size(), item_list_.size());
