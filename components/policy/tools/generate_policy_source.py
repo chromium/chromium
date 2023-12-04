@@ -216,18 +216,6 @@ class PolicyAtomicGroup:
                            self.name + '.\n')
 
 
-def ParseVersionFile(version_path):
-  chrome_major_version = None
-  for line in open(version_path, 'r').readlines():
-    key, val = line.rstrip('\r\n').split('=', 1)
-    if key == 'MAJOR':
-      chrome_major_version = val
-      break
-  if chrome_major_version is None:
-    raise RuntimeError('VERSION file does not contain major version.')
-  return int(chrome_major_version)
-
-
 def main():
   parser = ArgumentParser(usage=__doc__)
   parser.add_argument(
@@ -281,11 +269,10 @@ def main():
       help='generate source file of policy constants for use in '
       'Chrome OS',
       metavar='FILE')
-  parser.add_argument(
-      '--chrome-version-file',
-      dest='chrome_version_file',
-      help='path to src/chrome/VERSION',
-      metavar='FILE')
+  parser.add_argument('--chrome-version-major',
+                      dest='chrome_version_major',
+                      help='Chrome major version',
+                      type=int)
   parser.add_argument(
       '--all-chrome-versions',
       action='store_true',
@@ -329,9 +316,9 @@ def main():
           ' --policy-templates-file=<path to policy_templates.json>')
     has_arg_error = True
 
-  if not args.chrome_version_file and not args.all_chrome_versions:
+  if not args.chrome_version_major and not args.all_chrome_versions:
     print('Error: Missing'
-          ' --chrome-version-file=<path to src/chrome/VERSION>\n'
+          ' --chrome-version-major=<major version>\n'
           ' or --all-chrome-versions')
     has_arg_error = True
 
@@ -340,7 +327,6 @@ def main():
     parser.print_help()
     return 2
 
-  version_path = args.chrome_version_file
   target_platform = args.target_platform
   template_file_name = args.policy_templates_file
   deprecation_milestone_buffer = int(args.deprecation_milestone_buffer)
@@ -353,7 +339,7 @@ def main():
   if args.all_chrome_versions:
     chrome_major_version = None
   else:
-    chrome_major_version = ParseVersionFile(version_path)
+    chrome_major_version = args.chrome_version_major
 
   template_file_contents = _LoadJSONFile(template_file_name)
   risk_tags = RiskTags(template_file_contents)
