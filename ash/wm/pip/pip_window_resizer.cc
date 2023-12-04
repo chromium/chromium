@@ -343,6 +343,8 @@ void PipWindowResizer::CompleteDrag() {
         intended_bounds = last_event_was_pinch_
                               ? CalculateBoundsForPinch(location_in_parent)
                               : CalculateBoundsForDrag(location_in_parent);
+        wm::ConvertRectToScreen(window_state()->window()->GetRootWindow(),
+                                &intended_bounds);
       } else {
         intended_bounds = GetTarget()->GetBoundsInScreen();
       }
@@ -383,6 +385,8 @@ void PipWindowResizer::CompleteDrag() {
     // TODO(edcourtney): This may not be the best place for this. Consider
     // doing this a different way or saving these bounds at a later point when
     // the work area changes.
+    wm::ConvertRectToScreen(window_state()->window()->GetRootWindow(),
+                                &resting_bounds);
     PipPositioner::SaveSnapFraction(window_state(), resting_bounds);
   }
 }
