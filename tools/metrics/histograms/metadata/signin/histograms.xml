@@ -904,6 +904,19 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.Intercept.ChromeSignin.BubbleShownCount"
+    units="shown_count" expires_after="2024-04-01">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the number of times the Chrome Signin Bubble for a specific account
+    was shown to the user. The value is recorded every time the bubble is shown.
+    The number of impressions is incremented independently for each Google
+    Account the user signs in with, up to the maximum allowed number. Each
+    Chrome profile tracks these numbers separately.
+  </summary>
+</histogram>
+
 <histogram name="Signin.Intercept.ChromeSignin.ResponseTime{Result}" units="ms"
     expires_after="2024-04-01">
   <owner>rsult@google.com</owner>

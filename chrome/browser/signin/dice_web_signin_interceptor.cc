@@ -858,6 +858,10 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
     // It is guaranteed that the Chrome Signin bubble will be shown.
     IncrementEmailToCountDictionaryPref(kChromeSigninInterceptionShownCountPref,
                                         info.email);
+    // Record the number of times the bubble was shown.
+    base::UmaHistogramCounts100(
+        "Signin.Intercept.ChromeSignin.BubbleShownCount",
+        GetChromeSigninBubbleShownCount(info.email));
   } else if (ShouldShowEnterpriseBubble(info)) {
     interception_type =
         WebSigninInterceptor::SigninInterceptionType::kEnterprise;

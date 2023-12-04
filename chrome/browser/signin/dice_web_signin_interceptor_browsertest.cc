@@ -582,6 +582,21 @@ class DiceWebSigninInterceptorWithUnoEnabledBrowserTest
     EXPECT_TRUE(interceptor_delegate->intercept_bubble_destroyed());
   }
 
+  void ExpectChromeSigninBubbleShownCount(
+      const base::HistogramTester& histogram_tester,
+      size_t times,
+      size_t count) {
+    histogram_tester.ExpectBucketCount(
+        "Signin.Intercept.ChromeSignin.BubbleShownCount", times, count);
+  }
+
+  void ExpectTotalChromeSigninBubbleShownCount(
+      const base::HistogramTester& histogram_tester,
+      size_t count) {
+    histogram_tester.ExpectTotalCount(
+        "Signin.Intercept.ChromeSignin.BubbleShownCount", count);
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_{switches::kUnoDesktop};
 };
@@ -627,6 +642,8 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
                                       1);
   histogram_tester.ExpectUniqueSample(
       "Signin.Intercept.ChromeSignin.AttemptsBeforeAccept", 0, 1);
+
+  ExpectTotalChromeSigninBubbleShownCount(histogram_tester, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
@@ -661,6 +678,8 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
   histogram_tester.ExpectUniqueSample("Signin.SignIn.Started", access_point, 0);
   histogram_tester.ExpectUniqueSample("Signin.SignIn.Completed", access_point,
                                       0);
+
+  ExpectTotalChromeSigninBubbleShownCount(histogram_tester, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
@@ -717,6 +736,8 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Signin.Intercept.ChromeSignin.AttemptsBeforeAccept",
       /*sample=*/1, /*expected_bucket_count=*/1);
+
+  ExpectTotalChromeSigninBubbleShownCount(histogram_tester, 4);
 }
 
 // In the following test, we show the bubble multiple times with different
@@ -728,8 +749,12 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
 // shown with account2 showing the bubble even though account1 reached the max.
 // Only 1 account is allowed to be signed in at a time in order to show the
 // bubble.
+// Also checks the `Signin.Intercept.ChromeSignin.NumBubbleShown` histogram
+// values after each time the bubble is shown.
 IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
                        ChromeSigninInterceptShownCount) {
+  base::HistogramTester histogram_tester;
+
   // Setup a first account for interception.
   AccountInfo info1 = MakeAccountInfoAvailableAndUpdate("alice1@example.com");
 
@@ -744,10 +769,13 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
   // Intercept declined on account1 twice.
   ShowAndCompleteSigninBubbleWithResult(info1,
                                         SigninInterceptionResult::kDeclined);
+  ExpectChromeSigninBubbleShownCount(histogram_tester, 1, 1);
   ShowAndCompleteSigninBubbleWithResult(info1,
                                         SigninInterceptionResult::kDeclined);
+  ExpectChromeSigninBubbleShownCount(histogram_tester, 2, 1);
   ShowAndCompleteSigninBubbleWithResult(info1,
                                         SigninInterceptionResult::kAccepted);
+  ExpectChromeSigninBubbleShownCount(histogram_tester, 3, 1);
 
   // Expect the pref to record all the times the bubble was shown for `info1`,
   // even when accepting.
@@ -766,6 +794,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
   // Intercept declined on account2.
   ShowAndCompleteSigninBubbleWithResult(info2,
                                         SigninInterceptionResult::kDeclined);
+  ExpectChromeSigninBubbleShownCount(histogram_tester, 1, 2);
 
   // Account2 pref should be affected and account1 should not.
   EXPECT_EQ(GetChromeSigninInterceptShownCountPref(info1),
@@ -781,14 +810,22 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
   // Proceed with showing the bubble 2 more times (5 times overall).
   ShowAndCompleteSigninBubbleWithResult(info1,
                                         SigninInterceptionResult::kAccepted);
+  ExpectChromeSigninBubbleShownCount(histogram_tester, 4, 1);
+
   // Sign out account 1 after accepting the bubble and resign in.
   identity_test_env()->RemoveRefreshTokenForAccount(info1.account_id);
   info1 = MakeAccountInfoAvailableAndUpdate(info1.email);
   ShowAndCompleteSigninBubbleWithResult(info1,
                                         SigninInterceptionResult::kDeclined);
+  ExpectChromeSigninBubbleShownCount(histogram_tester, 5, 1);
+
   expected_bubble_shown_count_info1 += 2;
   EXPECT_EQ(GetChromeSigninInterceptShownCountPref(info1),
             expected_bubble_shown_count_info1);
+
+  ExpectTotalChromeSigninBubbleShownCount(
+      histogram_tester,
+      expected_bubble_shown_count_info1 + expected_bubble_shown_count_info2);
 
   // Attempts to show a 6th time. It should not show the bubble.
   // No expected result since the bubble should be not be shown.
@@ -802,13 +839,24 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
   // Signout account 1 and make account 2 available again.
   identity_test_env()->RemoveRefreshTokenForAccount(info1.account_id);
   info2 = MakeAccountInfoAvailableAndUpdate(info2.email);
+  // Make sure that this value did not change after attempting to show the
+  // bubble for the 6th time for info1.
+  ExpectTotalChromeSigninBubbleShownCount(
+      histogram_tester,
+      expected_bubble_shown_count_info1 + expected_bubble_shown_count_info2);
 
   // Account 2 can still show the bubble since it didn't reach the max count
   // yet.
   ShowAndCompleteSigninBubbleWithResult(info2,
                                         SigninInterceptionResult::kDeclined);
+  ExpectChromeSigninBubbleShownCount(histogram_tester, 2, 2);
+  expected_bubble_shown_count_info2 += 1;
   EXPECT_EQ(GetChromeSigninInterceptShownCountPref(info2),
-            expected_bubble_shown_count_info2 + 1);
+            expected_bubble_shown_count_info2);
+
+  ExpectTotalChromeSigninBubbleShownCount(
+      histogram_tester,
+      expected_bubble_shown_count_info1 + expected_bubble_shown_count_info2);
 }
 
 // WebApps do not trigger interception. Regression test for
