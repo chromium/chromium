@@ -73,6 +73,30 @@ LayoutUnit ResolveHeightForRatio(LayoutUnit width,
   return resolved_height;
 }
 
+LayoutUnit ResolveXPosition(const FillLayer& fill_layer,
+                            LayoutUnit available_width,
+                            LayoutUnit offset) {
+  const LayoutUnit edge_relative_position =
+      MinimumValueForLength(fill_layer.PositionX(), available_width) - offset;
+  // Convert from edge-relative form to absolute.
+  if (fill_layer.BackgroundXOrigin() == BackgroundEdgeOrigin::kRight) {
+    return available_width - edge_relative_position;
+  }
+  return edge_relative_position;
+}
+
+LayoutUnit ResolveYPosition(const FillLayer& fill_layer,
+                            LayoutUnit available_height,
+                            LayoutUnit offset) {
+  const LayoutUnit edge_relative_position =
+      MinimumValueForLength(fill_layer.PositionY(), available_height) - offset;
+  // Convert from edge-relative form to absolute.
+  if (fill_layer.BackgroundYOrigin() == BackgroundEdgeOrigin::kBottom) {
+    return available_height - edge_relative_position;
+  }
+  return edge_relative_position;
+}
+
 }  // anonymous namespace
 
 bool NeedsFullSizeDestination(const FillLayer& fill_layer) {
@@ -170,17 +194,11 @@ void BackgroundImageGeometry::SetRepeatX(const FillLayer& fill_layer,
   // zoom and large values. That is, accurately render the
   // background-position value.
   if (tile_size_.width) {
-    // Recompute computed_position because here we need to resolve against
+    // Recompute computed position because here we need to resolve against
     // unsnapped widths to correctly set the phase.
-    LayoutUnit computed_position =
-        MinimumValueForLength(fill_layer.PositionX(), available_width) -
-        OffsetInBackground(fill_layer).left;
-    // Convert from edge-relative form to absolute.
-    if (fill_layer.BackgroundXOrigin() == BackgroundEdgeOrigin::kRight)
-      computed_position = available_width - computed_position;
-
-    SetPhaseX(
-        ComputeTilePhase(computed_position + extra_offset, tile_size_.width));
+    const LayoutUnit x_offset = ResolveXPosition(
+        fill_layer, available_width, OffsetInBackground(fill_layer).left);
+    SetPhaseX(ComputeTilePhase(x_offset + extra_offset, tile_size_.width));
   } else {
     SetPhaseX(LayoutUnit());
   }
@@ -194,17 +212,11 @@ void BackgroundImageGeometry::SetRepeatY(const FillLayer& fill_layer,
   // zoom and large values. That is, accurately render the
   // background-position value.
   if (tile_size_.height) {
-    // Recompute computed_position because here we need to resolve against
+    // Recompute computed position because here we need to resolve against
     // unsnapped widths to correctly set the phase.
-    LayoutUnit computed_position =
-        MinimumValueForLength(fill_layer.PositionY(), available_height) -
-        OffsetInBackground(fill_layer).top;
-    // Convert from edge-relative form to absolute.
-    if (fill_layer.BackgroundYOrigin() == BackgroundEdgeOrigin::kBottom)
-      computed_position = available_height - computed_position;
-
-    SetPhaseY(
-        ComputeTilePhase(computed_position + extra_offset, tile_size_.height));
+    const LayoutUnit y_offset = ResolveYPosition(
+        fill_layer, available_height, OffsetInBackground(fill_layer).top);
+    SetPhaseY(ComputeTilePhase(y_offset + extra_offset, tile_size_.height));
   } else {
     SetPhaseY(LayoutUnit());
   }
@@ -820,14 +832,7 @@ void BackgroundImageGeometry::CalculateRepeatAndPosition(
   const LayoutUnit snapped_available_height =
       snapped_positioning_area_size.height - tile_size_.height;
 
-  // Computed position is for placing things within the destination, so use
-  // snapped values.
-  LayoutUnit computed_x_position =
-      MinimumValueForLength(fill_layer.PositionX(), snapped_available_width) -
-      OffsetInBackground(fill_layer).left;
-  LayoutUnit computed_y_position =
-      MinimumValueForLength(fill_layer.PositionY(), snapped_available_height) -
-      OffsetInBackground(fill_layer).top;
+  const PhysicalOffset offset_in_background = OffsetInBackground(fill_layer);
 
   if (background_repeat_x == EFillRepeat::kRoundFill &&
       snapped_positioning_area_size.width > LayoutUnit() &&
@@ -842,10 +847,8 @@ void BackgroundImageGeometry::CalculateRepeatAndPosition(
     tile_size_.width = rounded_width;
 
     // Force the first tile to line up with the edge of the positioning area.
-    const LayoutUnit x_offset =
-        fill_layer.BackgroundXOrigin() == BackgroundEdgeOrigin::kRight
-            ? snapped_available_width - computed_x_position
-            : computed_x_position;
+    const LayoutUnit x_offset = ResolveXPosition(
+        fill_layer, snapped_available_width, offset_in_background.left);
     SetPhaseX(ComputeTilePhase(x_offset + unsnapped_box_offset.left,
                                tile_size_.width));
     SetSpaceSize(PhysicalSize());
@@ -864,10 +867,8 @@ void BackgroundImageGeometry::CalculateRepeatAndPosition(
     tile_size_.height = rounded_height;
 
     // Force the first tile to line up with the edge of the positioning area.
-    const LayoutUnit y_offset =
-        fill_layer.BackgroundYOrigin() == BackgroundEdgeOrigin::kBottom
-            ? snapped_available_height - computed_y_position
-            : computed_y_position;
+    const LayoutUnit y_offset = ResolveYPosition(
+        fill_layer, snapped_available_height, offset_in_background.top);
     SetPhaseY(ComputeTilePhase(y_offset + unsnapped_box_offset.top,
                                tile_size_.height));
     SetSpaceSize(PhysicalSize());
@@ -890,14 +891,10 @@ void BackgroundImageGeometry::CalculateRepeatAndPosition(
   if (background_repeat_x == EFillRepeat::kNoRepeatFill) {
     // NoRepeat moves the dest rects, so needs both snapped and
     // unsnapped parameters.
-    LayoutUnit x_offset =
-        fill_layer.BackgroundXOrigin() == BackgroundEdgeOrigin::kRight
-            ? unsnapped_available_width - computed_x_position
-            : computed_x_position;
-    LayoutUnit snapped_x_offset =
-        fill_layer.BackgroundXOrigin() == BackgroundEdgeOrigin::kRight
-            ? snapped_available_width - computed_x_position
-            : computed_x_position;
+    const LayoutUnit x_offset = ResolveXPosition(
+        fill_layer, unsnapped_available_width, offset_in_background.left);
+    const LayoutUnit snapped_x_offset = ResolveXPosition(
+        fill_layer, snapped_available_width, offset_in_background.left);
     SetNoRepeatX(fill_layer, unsnapped_box_offset.left + x_offset,
                  snapped_box_offset.left + snapped_x_offset);
   }
@@ -919,14 +916,10 @@ void BackgroundImageGeometry::CalculateRepeatAndPosition(
   if (background_repeat_y == EFillRepeat::kNoRepeatFill) {
     // NoRepeat moves the dest rects, so needs both snapped and
     // unsnapped parameters.
-    LayoutUnit y_offset =
-        fill_layer.BackgroundYOrigin() == BackgroundEdgeOrigin::kBottom
-            ? unsnapped_available_height - computed_y_position
-            : computed_y_position;
-    LayoutUnit snapped_y_offset =
-        fill_layer.BackgroundYOrigin() == BackgroundEdgeOrigin::kBottom
-            ? snapped_available_height - computed_y_position
-            : computed_y_position;
+    const LayoutUnit y_offset = ResolveYPosition(
+        fill_layer, unsnapped_available_height, offset_in_background.top);
+    const LayoutUnit snapped_y_offset = ResolveYPosition(
+        fill_layer, snapped_available_height, offset_in_background.top);
     SetNoRepeatY(fill_layer, unsnapped_box_offset.top + y_offset,
                  snapped_box_offset.top + snapped_y_offset);
   }
