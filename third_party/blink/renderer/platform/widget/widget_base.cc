@@ -303,16 +303,16 @@ void WidgetBase::Shutdown() {
         base::SingleThreadTaskRunner::GetCurrentDefault();
     cleanup_runner->PostNonNestableTask(
         FROM_HERE, base::BindOnce(
-                       [](std::unique_ptr<LayerTreeView> view,
+                       [](scoped_refptr<scheduler::WidgetScheduler> scheduler,
                           scoped_refptr<WidgetInputHandlerManager> manager,
-                          scoped_refptr<scheduler::WidgetScheduler> scheduler) {
+                          std::unique_ptr<LayerTreeView> view) {
                          view.reset();
                          manager.reset();
                          scheduler->Shutdown();
                        },
-                       std::move(layer_tree_view_),
+                       std::move(widget_scheduler_),
                        std::move(widget_input_handler_manager_),
-                       std::move(widget_scheduler_)));
+                       std::move(layer_tree_view_)));
   }
 
   if (widget_compositor_) {

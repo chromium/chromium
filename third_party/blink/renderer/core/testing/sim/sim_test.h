@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_compositor.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_network.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_page.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -77,6 +78,8 @@ class SimTest : public testing::Test {
   void SetPreferCompositingToLCDText(bool enabled);
 
  private:
+  test::TaskEnvironment task_environment_{
+      test::TaskEnvironment::RealMainThreadScheduler()};
   // These are unique_ptrs in order to destroy them in TearDown. Subclasses
   // may override Platform::Current() and these must shutdown before the
   // subclass destructor.

@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -110,6 +111,8 @@ class ModuleRecordTest : public ::testing::Test, public ModuleTestBase {
  public:
   void SetUp() override { ModuleTestBase::SetUp(); }
   void TearDown() override { ModuleTestBase::TearDown(); }
+
+  test::TaskEnvironment task_environment_;
 };
 
 TEST_F(ModuleRecordTest, compileSuccess) {

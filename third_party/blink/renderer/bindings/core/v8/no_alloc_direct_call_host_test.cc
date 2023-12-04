@@ -7,6 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/platform/bindings/no_alloc_direct_call_exception_state.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -19,6 +20,7 @@ class NoAllocDirectCallHostTest : public ::testing::Test {
   v8::FastApiCallbackOptions* callback_options() { return &callback_options_; }
 
  private:
+  test::TaskEnvironment task_environment_;
   v8::FastApiCallbackOptions callback_options_ = {false, {0}};
 };
 

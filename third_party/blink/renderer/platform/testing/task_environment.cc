@@ -16,6 +16,7 @@ bool g_task_environment_supported = false;
 }
 
 TaskEnvironmentImpl::~TaskEnvironmentImpl() {
+  RunUntilIdle();
   if (!scheduler_) {
     Platform::UnsetMainThreadTaskRunnerForTesting();
   }

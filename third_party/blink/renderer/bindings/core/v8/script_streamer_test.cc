@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
@@ -223,6 +224,7 @@ class ScriptStreamingTest : public testing::Test {
 
   void RunUntilResourceLoaded() { run_loop_.Run(); }
 
+  test::TaskEnvironment task_environment_;
   KURL url_;
 
   base::RunLoop run_loop_;

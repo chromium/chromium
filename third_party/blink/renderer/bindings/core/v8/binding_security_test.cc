@@ -204,4 +204,4 @@ TEST_P(BindingSecurityCounterTest, SameOriginDomainFrame) {
       WebFeature::kDocumentDomainEnabledCrossOriginAccess));
 }
 
-}  // namespace
+}  // namespace blink

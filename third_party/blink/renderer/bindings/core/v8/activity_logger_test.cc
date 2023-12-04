@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_dom_activity_logger.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "v8/include/v8.h"
@@ -118,6 +119,8 @@ class ActivityLoggerTest : public testing::Test {
  private:
   static const int kIsolatedWorldId = 1;
 
+  test::TaskEnvironment task_environment_{
+      test::TaskEnvironment::RealMainThreadScheduler()};
   WebViewHelper web_view_helper_;
   Persistent<LocalFrame> local_frame_;
   // TestActivityLogger is owned by a static table within V8DOMActivityLogger

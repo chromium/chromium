@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "v8/include/v8.h"
 
@@ -97,6 +98,7 @@ class ScriptPromiseResolverWithTrackerTest : public testing::Test {
   }
 
  protected:
+  test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
   std::string metric_name_prefix_;
   std::unique_ptr<DummyPageHolder> page_holder_;

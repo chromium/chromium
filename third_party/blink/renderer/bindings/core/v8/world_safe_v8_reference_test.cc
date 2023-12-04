@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "v8/include/v8.h"
@@ -42,6 +43,7 @@ class IsolateOnlyV8TestingScope {
 
 // http://crbug.com/1007504, http://crbug.com/1008425
 TEST(WorldSafeV8ReferenceTest, CreatedWhenNotInContext) {
+  test::TaskEnvironment task_environment;
   WorldSafeV8Reference<v8::Value> v8_reference;
   v8::Local<v8::Value> value;
   {

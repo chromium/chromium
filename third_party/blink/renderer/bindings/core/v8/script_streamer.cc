@@ -761,7 +761,7 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
   v8_compile_hints::V8CrowdsourcedCompileHintsConsumer* compile_hints_consumer =
       script_resource_->GetV8CrowdsourcedCompileHintsConsumer();
 
-  static bool local_compile_hints_enabled =
+  bool local_compile_hints_enabled =
       base::FeatureList::IsEnabled(features::kLocalCompileHints);
 
   if (compile_hints_producer && compile_hints_producer->MightGenerateData()) {
