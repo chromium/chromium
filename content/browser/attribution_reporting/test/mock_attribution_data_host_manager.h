@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 #include <string>
+#include <vector>
 
 #include "components/attribution_reporting/registration_eligibility.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
@@ -16,6 +17,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/cpp/attribution_reporting_runtime_features.h"
+#include "services/network/public/cpp/trigger_verification.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -93,7 +95,8 @@ class MockAttributionDataHostManager : public AttributionDataHostManager {
               (BackgroundRegistrationsId id,
                const net::HttpResponseHeaders* headers,
                GURL reporting_url,
-               network::AttributionReportingRuntimeFeatures),
+               network::AttributionReportingRuntimeFeatures,
+               std::vector<network::TriggerVerification>),
               (override));
 
   MOCK_METHOD(void,

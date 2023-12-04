@@ -25,6 +25,7 @@
 #include "content/browser/attribution_reporting/attribution_background_registrations_id.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
+#include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -42,6 +43,10 @@ class SuitableOrigin;
 struct SourceRegistration;
 struct TriggerRegistration;
 }  // namespace attribution_reporting
+
+namespace network {
+class TriggerVerification;
+}  // namespace network
 
 namespace content {
 
@@ -110,7 +115,8 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       BackgroundRegistrationsId id,
       const net::HttpResponseHeaders* headers,
       GURL reporting_url,
-      network::AttributionReportingRuntimeFeatures) override;
+      network::AttributionReportingRuntimeFeatures,
+      std::vector<network::TriggerVerification>) override;
   void NotifyBackgroundRegistrationCompleted(
       BackgroundRegistrationsId id) override;
 
@@ -166,11 +172,12 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
 
   struct DeferredReceiver;
 
-  // Represents a set of attribution sources which registered in a top-level
-  // navigation redirect or a beacon chain, and associated info to process them.
-  class SourceRegistrations;
+  // Represents a set of attribution sources or triggers which registered in a
+  // top-level navigation, a beacon chain or background requests and associated
+  // info to process them.
+  class Registrations;
 
-  using SourceRegistrationsId = absl::
+  using RegistrationsId = absl::
       variant<blink::AttributionSrcToken, BeaconId, BackgroundRegistrationsId>;
 
   // blink::mojom::AttributionDataHost:
@@ -195,21 +202,33 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   struct RegistrarAndHeader;
   struct HeaderPendingDecode;
 
-  void ParseSource(base::flat_set<SourceRegistrations>::iterator,
+  void ParseHeader(base::flat_set<Registrations>::iterator,
                    HeaderPendingDecode,
                    Registrar);
-  void HandleNextWebDecode(const SourceRegistrations&);
-  void OnWebSourceParsed(SourceRegistrationsId,
-                         data_decoder::DataDecoder::ValueOrError result);
+  void HandleNextWebDecode(const Registrations&);
+  void OnWebHeaderParsed(
+      RegistrationsId,
+      attribution_reporting::mojom::RegistrationType,
+      absl::optional<std::vector<network::TriggerVerification>>,
+      data_decoder::DataDecoder::ValueOrError result);
+  void HandleParsedWebSource(const Registrations&,
+                             const HeaderPendingDecode&,
+                             data_decoder::DataDecoder::ValueOrError result);
+  void HandleParsedWebTrigger(const Registrations&,
+                              const HeaderPendingDecode&,
+                              std::vector<network::TriggerVerification>,
+                              data_decoder::DataDecoder::ValueOrError result);
 
-  void HandleNextOsDecode(const SourceRegistrations&);
+  void HandleNextOsDecode(const Registrations&);
 
   using OsParseResult =
       base::expected<net::structured_headers::List, std::string>;
-  void OnOsSourceParsed(SourceRegistrationsId, OsParseResult);
+  void OnOsHeaderParsed(RegistrationsId,
+                        attribution_reporting::mojom::RegistrationType,
+                        OsParseResult);
 
   void MaybeOnRegistrationsFinished(
-      base::flat_set<SourceRegistrations>::const_iterator);
+      base::flat_set<Registrations>::const_iterator);
 
   void MaybeSetupDeferredReceivers(int64_t navigation_id);
   void MaybeBindDeferredReceivers(int64_t navigation_id, bool due_to_timeout);
@@ -312,9 +331,9 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   SequentialTimeoutsTimer
       navigations_waiting_on_background_registrations_timer_;
 
-  // Stores registrations received on foreground redirects or via a Fenced
-  // Frame Beacon.
-  base::flat_set<SourceRegistrations> registrations_;
+  // Stores registrations received on foreground navigations, background
+  // registrations or via a Fenced Frame Beacon.
+  base::flat_set<Registrations> registrations_;
 
   // Guardrail to ensure a receiver in `deferred_receivers_` always eventually
   // gets bound.
