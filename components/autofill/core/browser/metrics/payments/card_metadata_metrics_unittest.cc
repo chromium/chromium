@@ -184,6 +184,17 @@ TEST_P(CardMetadataFormEventMetricsTest, LogShownMetrics) {
 
 // Test metadata selected metrics are correctly logged.
 TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
+  // Add a second card which won't be selected but will be logged in
+  // Autofill.CreditCard.Amex.SelectedWithIssuerMetadataPresentOnce.
+  CreditCard card2 = test::GetMaskedServerCard2();
+  card2.set_guid(kTestMaskedCardId);
+  card2.set_issuer_id("amex");
+  if (card_metadata_available()) {
+    card2.set_product_description(u"product description");
+    card2.set_card_art_url(GURL("https://www.example.com/cardarturl.png"));
+  }
+  personal_data().AddServerCreditCard(card2);
+
   base::HistogramTester histogram_tester;
 
   // Simulate selecting the card.
@@ -256,6 +267,18 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
   histogram_tester.ExpectUniqueSample(
       GetHistogramName(".SelectedWithMetadataOnce"), card_metadata_available(),
       registered_card_issuer_available() ? 1 : 0);
+  histogram_tester.ExpectUniqueSample(
+      GetHistogramName(".SelectedWithIssuerMetadataPresentOnce"), true,
+      card_metadata_available() && registered_card_issuer_available() ? 1 : 0);
+
+  // Only test non-Amex because for Amex case it will log true in
+  // SelectedWithIssuerMetadataPresentOnce histogram.
+  if (issuer_id() != "amex") {
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.CreditCard.Amex.SelectedWithIssuerMetadataPresentOnce", false,
+        card_metadata_available() && registered_card_issuer_available() ? 1
+                                                                        : 0);
+  }
 }
 
 // Test metadata filled metrics are correctly logged.

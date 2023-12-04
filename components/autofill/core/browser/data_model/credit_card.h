@@ -441,6 +441,10 @@ class CreditCard : public AutofillDataModel {
     card_art_url_ = card_art_url;
   }
 
+  // Returns true when the card has rich card art, excluding any static card art
+  // image.
+  bool HasRichCardArtImageFromMetadata() const;
+
   const std::u16string& product_description() const {
     return product_description_;
   }

@@ -27,14 +27,6 @@ std::string_view GetMetadataAvailabilitySuffix(
   return kProductNameAndArtImageNotShownSuffix;
 }
 
-// Returns true when the card has rich card art, excluding any static card art
-// image.
-bool HasRichCardArtImageFromMetadata(const CreditCard& card) {
-  return card.card_art_url().is_valid() &&
-         card.card_art_url().spec() != kCapitalOneLargeCardArtUrl &&
-         card.card_art_url().spec() != kCapitalOneCardArtUrl;
-}
-
 }  // namespace
 
 CardMetadataLoggingContext::CardMetadataLoggingContext() = default;
@@ -74,7 +66,6 @@ std::string_view GetCardIssuerIdSuffix(const std::string& card_issuer_id) {
 CardMetadataLoggingContext GetMetadataLoggingContext(
     const std::vector<CreditCard>& cards) {
   CardMetadataLoggingContext metadata_logging_context;
-
   for (const CreditCard& card : cards) {
     // If there is a product description, denote in the
     // `metadata_logging_context` that we have shown at least one product
@@ -88,13 +79,13 @@ CardMetadataLoggingContext GetMetadataLoggingContext(
     // If there is rich card art we received from the metadata for this card,
     // denote in the `metadata_logging_context` that we have shown an enriched
     // card art so we can log it later.
-    if (HasRichCardArtImageFromMetadata(card)) {
+    if (card.HasRichCardArtImageFromMetadata()) {
       metadata_logging_context.card_art_image_shown =
           base::FeatureList::IsEnabled(features::kAutofillEnableCardArtImage);
     }
 
     bool card_has_metadata = !card.product_description().empty() ||
-                             HasRichCardArtImageFromMetadata(card);
+                             card.HasRichCardArtImageFromMetadata();
 
     if (!card.issuer_id().empty()) {
       metadata_logging_context
@@ -145,6 +136,22 @@ void LogCardWithMetadataFormEventMetric(
                                                   GetCardIssuerIdSuffix(issuer),
                                                   ".SelectedWithMetadataOnce"}),
                                     has_metadata);
+          if (has_metadata) {
+            base::UmaHistogramBoolean(
+                base::StrCat({"Autofill.CreditCard.",
+                              GetCardIssuerIdSuffix(issuer),
+                              ".SelectedWithIssuerMetadataPresentOnce"}),
+                true);
+          }
+          // Log which issuers were not selected.
+          for (const std::string& not_selected_issuer_id :
+               context.not_selected_issuer_ids) {
+            base::UmaHistogramBoolean(
+                base::StrCat({"Autofill.CreditCard.",
+                              GetCardIssuerIdSuffix(not_selected_issuer_id),
+                              ".SelectedWithIssuerMetadataPresentOnce"}),
+                false);
+          }
         }
         break;
       case CardMetadataLoggingEvent::kFilled:

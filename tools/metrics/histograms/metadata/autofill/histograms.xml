@@ -1312,6 +1312,20 @@ chromium-metrics-reviews@google.com.
   <token key="CardMetadataVisible" variants="Autofill.CardMetadataVisible"/>
 </histogram>
 
+<histogram
+    name="Autofill.CreditCard.{CardIssuer}.SelectedWithIssuerMetadataPresentOnce"
+    enum="Boolean" expires_after="2024-07-01">
+  <owner>alexandertekle@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Emits true if a {CardIssuer} card was selected in the suggestions. Emits
+    false if a {CardIssuer} card with metadata existed in the suggestions list
+    but was not selected from the suggestions. Logged at the time a card
+    selection was made. Logged only once per page load.
+  </summary>
+  <token key="CardIssuer" variants="Autofill.CreditCardIssuerId"/>
+</histogram>
+
 <histogram name="Autofill.CreditCard.{CardIssuer}.{FormEventWithMetadata}"
     enum="Boolean" expires_after="2024-07-01">
   <owner>vishwasuppoor@chromium.org</owner>

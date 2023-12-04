@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -175,6 +176,25 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
             ? FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SELECTED_ONCE
             : FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SELECTED_ONCE,
         form);
+
+    if (suggestions_.size() > 1) {
+      CHECK(personal_data_manager_);
+      // Keeps track of which issuers with metadata were not selected. Can be
+      // zero issuers if there was only one card suggestion and that card was
+      // selected.
+      for (const Suggestion& suggestion : suggestions_) {
+        // TODO(crbug.com/1121806): Use instrument ID for server credit cards.
+        CreditCard* suggested_credit_card =
+            personal_data_manager_->GetCreditCardByGUID(
+                suggestion.GetBackendId<Suggestion::Guid>().value());
+        if (credit_card.issuer_id() != suggested_credit_card->issuer_id() &&
+            (suggested_credit_card->HasRichCardArtImageFromMetadata() ||
+             !suggested_credit_card->product_description().empty())) {
+          metadata_logging_context_.not_selected_issuer_ids.insert(
+              suggested_credit_card->issuer_id());
+        }
+      }
+    }
   }
   LogCardWithMetadataFormEventMetric(
       autofill_metrics::CardMetadataLoggingEvent::kSelected,

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_CARD_METADATA_METRICS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_CARD_METADATA_METRICS_H_
 
+#include "base/containers/flat_set.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 
 namespace autofill::autofill_metrics {
@@ -59,6 +60,9 @@ struct CardMetadataLoggingContext {
   bool card_metadata_available = false;
   bool card_product_description_shown = false;
   bool card_art_image_shown = false;
+  // Keeps record of which issuers with metadata were not selected. Only
+  // available when logging the selected form event.
+  base::flat_set<std::string> not_selected_issuer_ids;
   // Keeps record of whether suggestions from issuers had metadata. If the value
   // is true for a particular issuer, at least 1 card suggestion from the issuer
   // had metadata. If it is false, none of the card suggestions from the issuer
