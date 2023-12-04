@@ -2003,6 +2003,40 @@
             ]
         }
     ],
+    "AutofillUseI18nAddressModel": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableDependentLocalityParsing",
+                        "AutofillEnableParsingOfStreetLocation",
+                        "AutofillEnableRationalizationEngineForMX",
+                        "AutofillEnableSupportForAddressOverflow",
+                        "AutofillEnableSupportForAddressOverflowAndLandmark",
+                        "AutofillEnableSupportForAdminLevel2",
+                        "AutofillEnableSupportForApartmentNumbers",
+                        "AutofillEnableSupportForBetweenStreets",
+                        "AutofillEnableSupportForBetweenStreetsOrLandmark",
+                        "AutofillEnableSupportForLandmark",
+                        "AutofillLocalHeuristicsOverrides",
+                        "AutofillPreferLabelsInSomeCountries",
+                        "AutofillUseI18nAddressModel"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillUseUpdatedRequiredFieldsForAddressImport": [
         {
             "platforms": [
