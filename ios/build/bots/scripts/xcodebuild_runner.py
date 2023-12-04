@@ -16,7 +16,7 @@ import iossim_util
 import test_apps
 from test_result_util import ResultCollection, TestResult, TestStatus
 import test_runner
-import xcode_log_parser
+from xcode_log_parser import XcodeLogParser
 
 # if the current directory is in scripts, then we need to add plugin
 # path in order to import from that directory
@@ -142,7 +142,6 @@ class LaunchCommand(object):
     self.out_dir = out_dir
     self.use_clang_coverage = use_clang_coverage
     self.env = env
-    self._log_parser = xcode_log_parser.get_parser()
     self.test_plugin_service = test_plugin_service
     self.cert_path = cert_path
 
@@ -196,7 +195,7 @@ class LaunchCommand(object):
           attempt, ' '.join(cmd_list)))
       output = self.launch_attempt(cmd_list)
 
-      result = self._log_parser.collect_test_results(outdir_attempt, output)
+      result = XcodeLogParser.collect_test_results(outdir_attempt, output)
 
       tests_selected_at_runtime = _tests_decided_at_runtime(
           self.egtests_app.test_app_path)

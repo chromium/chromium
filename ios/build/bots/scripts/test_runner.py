@@ -25,7 +25,7 @@ import iossim_util
 import test_apps
 from test_result_util import ResultCollection, TestResult, TestStatus
 import test_runner_errors
-import xcode_log_parser
+from xcode_log_parser import XcodeLogParser
 import xcode_util
 import xctest_utils
 
@@ -504,12 +504,11 @@ class TestRunner(object):
       if full_path.endswith('.xcresult') and os.path.isdir(full_path):
         xcresult_paths.append(full_path)
 
-    log_parser = xcode_log_parser.get_parser()
     for xcresult in xcresult_paths:
       # This is what was passed in -resultBundlePath to xcodebuild command.
       result_bundle_path = os.path.splitext(xcresult)[0]
-      log_parser.copy_artifacts(result_bundle_path)
-      log_parser.export_diagnostic_data(result_bundle_path)
+      XcodeLogParser.copy_artifacts(result_bundle_path)
+      XcodeLogParser.export_diagnostic_data(result_bundle_path)
       # result_bundle_path is a symlink to xcresult directory.
       if os.path.islink(result_bundle_path):
         os.unlink(result_bundle_path)
