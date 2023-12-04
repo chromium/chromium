@@ -969,6 +969,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
+    @Features.DisableFeatures({ChromeFeatureList.PRICE_CHANGE_MODULE})
     public void testPriceDropEndToEnd() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {

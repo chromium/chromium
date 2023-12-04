@@ -266,6 +266,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         if (!navigationHandle.isInPrimaryMainFrame()) {
             return;
         }
+        ShoppingPersistedTabDataService service =
+                ShoppingPersistedTabDataService.getForProfile(tab.getProfile());
         OptimizationGuideBridge.OptimizationGuideCallback optimizationCallback =
                 (decision, metadata) -> {
                     if (!tab.isInitialized()) {
@@ -281,6 +283,9 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                         }
                         mPriceDropMetricsLogger.logPriceDropMetrics(
                                 METRICS_IDENTIFIER_PREFIX, getTimeSinceTabLastOpenedMs(tab));
+                        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRICE_CHANGE_MODULE)) {
+                            service.notifyPriceDropStatus(tab, false);
+                        }
                         return;
                     }
                     try {
@@ -290,6 +295,12 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                         setLastUpdatedMs(System.currentTimeMillis());
                         mPriceDropMetricsLogger.logPriceDropMetrics(
                                 METRICS_IDENTIFIER_PREFIX, getTimeSinceTabLastOpenedMs(tab));
+                        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRICE_CHANGE_MODULE)) {
+                            service.notifyPriceDropStatus(
+                                    tab,
+                                    ShoppingPersistedTabDataService.isDataEligibleForPriceDrop(
+                                            this));
+                        }
                     } catch (InvalidProtocolBufferException e) {
                         Log.i(TAG, "Problem parsing PriceTrackingDataProto", e);
                     }
@@ -407,12 +418,21 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                 (res) -> {
                     if (res == null) {
                         // If there is no ShoppingPersistedTabData found from storage, we create
-                        // an empty ShoppingPersistedTabDataa so the pricing data can be prefetched
+                        // an empty ShoppingPersistedTabData so the pricing data can be prefetched
                         // on each new navigation. We gate this with an isDestroyed() check to
                         // protect against the Tab being destroyed in the meantime.
                         if (!tab.isDestroyed()) {
                             ShoppingPersistedTabData.from(tab);
                         }
+                    }
+                    if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRICE_CHANGE_MODULE)) {
+                        ShoppingPersistedTabDataService service =
+                                ShoppingPersistedTabDataService.getForProfile(tab.getProfile());
+                        service.notifyPriceDropStatus(
+                                tab,
+                                !tab.isDestroyed()
+                                        && ShoppingPersistedTabDataService
+                                                .isDataEligibleForPriceDrop(res));
                     }
                 };
         if (sDelayedInitFinished) {
@@ -735,7 +755,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     }
 
     @VisibleForTesting
-    protected String getProductTitle() {
+    public String getProductTitle() {
         return mPriceDropData.productTitle;
     }
 
@@ -746,7 +766,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     }
 
     @VisibleForTesting
-    protected GURL getProductImageUrl() {
+    public GURL getProductImageUrl() {
         return mPriceDropData.productImageUrl;
     }
 

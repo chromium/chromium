@@ -4,8 +4,12 @@
 
 package org.chromium.chrome.browser.tab.state;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import androidx.annotation.Nullable;
 import androidx.test.filters.SmallTest;
@@ -39,6 +43,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.PriceDropMetricsLogger.MetricsResult;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.HintsProto;
@@ -77,6 +82,8 @@ public class ShoppingPersistedTabDataTest {
     // For R8 optimizer - see b/303266326.
     @Mock private Tab mDoNotUseTab;
 
+    @Mock private ShoppingPersistedTabDataService mShoppingPersistedTabDataService;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -100,6 +107,7 @@ public class ShoppingPersistedTabDataTest {
         Profile.setLastUsedProfileForTesting(mProfileMock);
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
         doReturn(true).when(mNavigationHandle).isInPrimaryMainFrame();
+        ShoppingPersistedTabDataService.setServiceForTesting(mShoppingPersistedTabDataService);
     }
 
     @UiThreadTest
@@ -656,6 +664,7 @@ public class ShoppingPersistedTabDataTest {
     @CommandLineFlags.Add({
         "force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true"
     })
+    @EnableFeatures({ChromeFeatureList.PRICE_CHANGE_MODULE})
     public void testOptGuidePrefetching() {
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponseAsync(
                 mOptimizationGuideBridgeJniMock,
@@ -683,6 +692,7 @@ public class ShoppingPersistedTabDataTest {
         Assert.assertEquals(
                 ShoppingPersistedTabDataTestUtils.FAKE_PRODUCT_IMAGE_URL,
                 shoppingPersistedTabData.getProductImageUrl().getSpec());
+        verify(mShoppingPersistedTabDataService, times(1)).notifyPriceDropStatus(tab, true);
     }
 
     @UiThreadTest
@@ -691,6 +701,7 @@ public class ShoppingPersistedTabDataTest {
     @CommandLineFlags.Add({
         "force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true"
     })
+    @EnableFeatures({ChromeFeatureList.PRICE_CHANGE_MODULE})
     public void testOptGuidePrefetchingNoResponse() {
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponseAsync(
                 mOptimizationGuideBridgeJniMock,
@@ -713,6 +724,7 @@ public class ShoppingPersistedTabDataTest {
         Assert.assertEquals(
                 ShoppingPersistedTabData.NO_PRICE_KNOWN,
                 shoppingPersistedTabData.getPreviousPriceMicros());
+        verify(mShoppingPersistedTabDataService, times(1)).notifyPriceDropStatus(tab, false);
     }
 
     @UiThreadTest
@@ -721,6 +733,7 @@ public class ShoppingPersistedTabDataTest {
     @CommandLineFlags.Add({
         "force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true"
     })
+    @EnableFeatures({ChromeFeatureList.PRICE_CHANGE_MODULE})
     public void testOptGuidePrefetchingUnparseable() {
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponseAsync(
                 mOptimizationGuideBridgeJniMock,
@@ -743,6 +756,46 @@ public class ShoppingPersistedTabDataTest {
         Assert.assertEquals(
                 ShoppingPersistedTabData.NO_PRICE_KNOWN,
                 shoppingPersistedTabData.getPreviousPriceMicros());
+        verify(mShoppingPersistedTabDataService, times(0))
+                .notifyPriceDropStatus(any(), anyBoolean());
+    }
+
+    @UiThreadTest
+    @SmallTest
+    @Test
+    @CommandLineFlags.Add({
+        "force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true"
+    })
+    @DisableFeatures({ChromeFeatureList.PRICE_CHANGE_MODULE})
+    public void testOptGuidePrefetchingNotNotifyServiceWithoutFeature() {
+        ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponseAsync(
+                mOptimizationGuideBridgeJniMock,
+                HintsProto.OptimizationType.PRICE_TRACKING.getNumber(),
+                ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
+                        .BUYABLE_PRODUCT_AND_PRODUCT_UPDATE);
+        MockTab tab =
+                ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
+                        ShoppingPersistedTabDataTestUtils.TAB_ID, mProfileMock);
+        tab.setIsInitialized(true);
+        GURL gurl = new GURL("https://www.google.com");
+        tab.setGurlOverrideForTesting(gurl);
+        ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(tab);
+        doReturn(gurl).when(mNavigationHandle).getUrl();
+        Semaphore semaphore = new Semaphore(0);
+        shoppingPersistedTabData.prefetchOnNewNavigation(
+                tab, mNavigationHandle, semaphore::release);
+        ShoppingPersistedTabDataTestUtils.acquireSemaphore(semaphore);
+        Assert.assertEquals(287_000_000L, shoppingPersistedTabData.getPriceMicros());
+        Assert.assertEquals(
+                123_456_789_012_345L, shoppingPersistedTabData.getPreviousPriceMicros());
+        Assert.assertEquals(
+                ShoppingPersistedTabDataTestUtils.FAKE_PRODUCT_TITLE,
+                shoppingPersistedTabData.getProductTitle());
+        Assert.assertEquals(
+                ShoppingPersistedTabDataTestUtils.FAKE_PRODUCT_IMAGE_URL,
+                shoppingPersistedTabData.getProductImageUrl().getSpec());
+        verify(mShoppingPersistedTabDataService, times(0))
+                .notifyPriceDropStatus(any(), anyBoolean());
     }
 
     @UiThreadTest
