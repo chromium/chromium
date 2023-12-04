@@ -75,6 +75,9 @@ bool ShouldCacheForm(const FormStructure& form_structure) {
   return pw_form && pw_form->IsLikelyLoginForm();
 }
 
+constexpr base::TimeDelta kWasBottomSheetShownFlipTimeout =
+    base::Milliseconds(50);
+
 }  // namespace
 
 // static
@@ -543,7 +546,16 @@ bool AutofillProviderAndroid::IntendsToShowBottomSheet(
 
 bool AutofillProviderAndroid::WasBottomSheetJustShown(
     AutofillManager& manager) {
-  return std::exchange(was_bottom_sheet_just_shown_, false);
+  // TODO(crbug.com/1490581) Remove the timer once a fix is landed on the
+  // renderer side.
+  was_shown_bottom_sheet_timer_.Start(
+      FROM_HERE, kWasBottomSheetShownFlipTimeout, this,
+      &AutofillProviderAndroid::SetBottomSheetShownOff);
+  return was_bottom_sheet_just_shown_;
+}
+
+void AutofillProviderAndroid::SetBottomSheetShownOff() {
+  was_bottom_sheet_just_shown_ = false;
 }
 
 void AutofillProviderAndroid::MaybeInitKeyboardSuppressor() {
@@ -586,6 +598,8 @@ void AutofillProviderAndroid::Reset() {
   field_type_group_ = FieldTypeGroup::kNoGroup;
   triggered_origin_ = {};
   check_submission_ = false;
+  was_shown_bottom_sheet_timer_.Stop();
+  was_bottom_sheet_just_shown_ = false;
 
   // Resets the Java instance and hides the datalist popup if there is one.
   bridge_->Reset();

@@ -6,6 +6,7 @@
 #define COMPONENTS_ANDROID_AUTOFILL_BROWSER_AUTOFILL_PROVIDER_ANDROID_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "components/android_autofill/browser/autofill_provider.h"
 #include "components/android_autofill/browser/autofill_provider_android_bridge.h"
 #include "components/android_autofill/browser/form_data_android.h"
@@ -204,6 +205,23 @@ class AutofillProviderAndroid : public AutofillProvider,
   void MaybeSendPrefillRequest(const AndroidAutofillManager& manager,
                                FormGlobalId form_id);
 
+  // This is used by the keyboard suppressor. We update it with the result of
+  // the platform method call `showAutofillDialog`. Since we are not notified
+  // when the bottom sheet is dismissed, we set a timer to set it to `false`
+  // shortly after `WasBottomSheetJustShown()` is called. The timer's function
+  // is to handle multiple calls related to the same user event correctly, which
+  // can currently happen (crbug.com/1490581).
+  bool was_bottom_sheet_just_shown_ = false;
+
+  // In some cases we get two AskForValuesToFill events within short time frame
+  // so we set timer to set the `was_bottom_sheet_just_shown_` to false after it
+  // gets accessed.
+  // TODO(crbug.com/1490581): Remove once a fix is landed on the renderer side.
+  void SetBottomSheetShownOff();
+
+  // Sets `was_bottom_sheet_just_shown` to false after a timeout.
+  base::OneShotTimer was_shown_bottom_sheet_timer_;
+
   // The form for which a prefill request has been sent.
   std::unique_ptr<FormDataAndroid> cached_form_;
 
@@ -212,13 +230,6 @@ class AutofillProviderAndroid : public AutofillProvider,
   // form to allow the user to access the keyboard after focusing on the
   // (cached) form a second time.
   bool has_used_cached_form_ = false;
-
-  // This is used by the keyboard suppressor. We update it with the result of
-  // the platform method call `showAutofillDialog`. Since we don't know for sure
-  // when the bottom sheet is dismissed we set it to `false` in
-  // `WasBottomSheetJustShown()` once it gets accessed as it should be called
-  // only once after asking for values to fill.
-  bool was_bottom_sheet_just_shown_ = false;
 
   // The form of the current session (queried input or changed select box).
   std::unique_ptr<FormDataAndroid> form_;
