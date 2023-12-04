@@ -1,6 +1,6 @@
 include_rules = [
-  "+components/metrics/call_stack_profile_builder.h",
-  "+components/metrics/call_stack_profile_params.h",
+  "+components/metrics/call_stacks/call_stack_profile_builder.h",
+  "+components/metrics/call_stacks/call_stack_profile_params.h",
   "+components/services/heap_profiling/public",
   "+components/variations/variations_switches.h",
   "+components/version_info",

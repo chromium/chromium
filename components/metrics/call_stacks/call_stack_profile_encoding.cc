@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/metrics/call_stack_profile_encoding.h"
+#include "components/metrics/call_stacks/call_stack_profile_encoding.h"
 #include "base/notreached.h"
 
 namespace metrics {

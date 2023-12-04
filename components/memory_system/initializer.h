@@ -7,7 +7,7 @@
 
 #include "base/strings/string_piece.h"
 #include "components/memory_system/parameters.h"
-#include "components/metrics/call_stack_profile_params.h"
+#include "components/metrics/call_stacks/call_stack_profile_params.h"
 #include "components/version_info/channel.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

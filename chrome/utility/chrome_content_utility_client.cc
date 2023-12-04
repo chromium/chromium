@@ -19,7 +19,7 @@
 #include "chrome/utility/browser_exposed_utility_interfaces.h"
 #include "chrome/utility/services.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
-#include "components/metrics/call_stack_profile_builder.h"
+#include "components/metrics/call_stacks/call_stack_profile_builder.h"
 #include "content/public/child/child_thread.h"
 #include "content/public/common/content_switches.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"

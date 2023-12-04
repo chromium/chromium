@@ -32,7 +32,7 @@
 #import "components/crash/core/common/crash_keys.h"
 #import "components/history/core/browser/history_service.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/metrics/call_stack_profile_metrics_provider.h"
+#import "components/metrics/call_stacks/call_stack_profile_metrics_provider.h"
 #import "components/metrics/cpu_metrics_provider.h"
 #import "components/metrics/demographics/demographic_metrics_provider.h"
 #import "components/metrics/drive_metrics_provider.h"

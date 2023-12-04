@@ -10,7 +10,7 @@
 
 #include "base/no_destructor.h"
 #include "base/profiler/stack_sampling_profiler.h"
-#include "components/metrics/call_stack_profile_params.h"
+#include "components/metrics/call_stacks/call_stack_profile_params.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 

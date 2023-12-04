@@ -30,7 +30,7 @@ include_rules = [
   "+components/heap_profiling/in_process/heap_profiler_controller.h",
   "+components/language/core/common",
   "+components/lens/lens_metadata.mojom.h",
-  "+components/metrics/call_stack_profile_builder.h",
+  "+components/metrics/call_stacks/call_stack_profile_builder.h",
   "+components/nacl/common",
   "+components/nacl/renderer",
   "+components/network_hints/renderer",

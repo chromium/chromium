@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_METRICS_CALL_STACK_PROFILE_ENCODING_H_
-#define COMPONENTS_METRICS_CALL_STACK_PROFILE_ENCODING_H_
+#ifndef COMPONENTS_METRICS_CALL_STACKS_CALL_STACK_PROFILE_ENCODING_H_
+#define COMPONENTS_METRICS_CALL_STACKS_CALL_STACK_PROFILE_ENCODING_H_
 
-#include "components/metrics/call_stack_profile_params.h"
+#include "components/metrics/call_stacks/call_stack_profile_params.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
 
 namespace metrics {
@@ -25,4 +25,4 @@ SampledProfile::TriggerEvent ToSampledProfileTriggerEvent(
 
 }  // namespace metrics
 
-#endif  // COMPONENTS_METRICS_CALL_STACK_PROFILE_ENCODING_H_
+#endif  // COMPONENTS_METRICS_CALL_STACKS_CALL_STACK_PROFILE_ENCODING_H_

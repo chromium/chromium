@@ -23,8 +23,8 @@
 #include "base/threading/sequence_local_storage_slot.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
-#include "components/metrics/call_stack_profile_builder.h"
-#include "components/metrics/call_stack_profile_metrics_provider.h"
+#include "components/metrics/call_stacks/call_stack_profile_builder.h"
+#include "components/metrics/call_stacks/call_stack_profile_metrics_provider.h"
 
 #if BUILDFLAG(USE_BLINK)
 #include "base/process/port_provider_mac.h"

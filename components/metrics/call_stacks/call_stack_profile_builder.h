@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_METRICS_CALL_STACK_PROFILE_BUILDER_H_
-#define COMPONENTS_METRICS_CALL_STACK_PROFILE_BUILDER_H_
+#ifndef COMPONENTS_METRICS_CALL_STACKS_CALL_STACK_PROFILE_BUILDER_H_
+#define COMPONENTS_METRICS_CALL_STACKS_CALL_STACK_PROFILE_BUILDER_H_
 
 #include <limits>
 #include <map>
@@ -17,9 +17,9 @@
 #include "base/profiler/module_cache.h"
 #include "base/profiler/profile_builder.h"
 #include "base/time/time.h"
-#include "components/metrics/call_stack_profile_metadata.h"
-#include "components/metrics/call_stack_profile_params.h"
-#include "components/metrics/child_call_stack_profile_collector.h"
+#include "components/metrics/call_stacks/call_stack_profile_metadata.h"
+#include "components/metrics/call_stacks/call_stack_profile_params.h"
+#include "components/metrics/call_stacks/child_call_stack_profile_collector.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
 
@@ -155,4 +155,4 @@ class CallStackProfileBuilder : public base::ProfileBuilder {
 
 }  // namespace metrics
 
-#endif  // COMPONENTS_METRICS_CALL_STACK_PROFILE_BUILDER_H_
+#endif  // COMPONENTS_METRICS_CALL_STACKS_CALL_STACK_PROFILE_BUILDER_H_

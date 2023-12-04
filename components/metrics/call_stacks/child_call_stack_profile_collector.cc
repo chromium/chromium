@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/metrics/child_call_stack_profile_collector.h"
+#include "components/metrics/call_stacks/child_call_stack_profile_collector.h"
 
 #include <utility>
 

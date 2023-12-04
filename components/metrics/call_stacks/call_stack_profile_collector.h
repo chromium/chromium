@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_METRICS_CALL_STACK_PROFILE_COLLECTOR_H_
-#define COMPONENTS_METRICS_CALL_STACK_PROFILE_COLLECTOR_H_
+#ifndef COMPONENTS_METRICS_CALL_STACKS_CALL_STACK_PROFILE_COLLECTOR_H_
+#define COMPONENTS_METRICS_CALL_STACKS_CALL_STACK_PROFILE_COLLECTOR_H_
 
 #include "components/metrics/public/mojom/call_stack_profile_collector.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -32,4 +32,4 @@ class CallStackProfileCollector : public mojom::CallStackProfileCollector {
 
 }  // namespace metrics
 
-#endif  // COMPONENTS_METRICS_CALL_STACK_PROFILE_COLLECTOR_H_
+#endif  // COMPONENTS_METRICS_CALL_STACKS_CALL_STACK_PROFILE_COLLECTOR_H_
