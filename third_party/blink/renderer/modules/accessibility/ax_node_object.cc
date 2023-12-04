@@ -644,7 +644,7 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   // Descendants are pruned: IsRelevantPseudoElementDescendant() returns false.
   // Note: this is duplicated from AXLayoutObject because CSS alt text may apply
   // to both Elements and pseudo-elements.
-  absl::optional<String> alt_text = GetCSSAltText(GetNode());
+  absl::optional<String> alt_text = GetCSSAltText(GetElement());
   if (alt_text && !alt_text->empty())
     return kIncludeObject;
 
@@ -833,20 +833,22 @@ bool AXNodeObject::ComputeAccessibilityIsIgnored(
 }
 
 // static
-absl::optional<String> AXNodeObject::GetCSSAltText(const Node* node) {
+std::optional<String> AXNodeObject::GetCSSAltText(const Element* element) {
   // CSS alt text rules allow text to be assigned to ::before/::after content.
   // For example, the following CSS assigns "bullet" text to bullet.png:
   // .something::before {
   //   content: url(bullet.png) / "bullet";
   // }
 
-  if (!node || !node->GetComputedStyle() ||
-      node->GetComputedStyle()->ContentBehavesAsNormal()) {
-    return absl::nullopt;
+  if (!element) {
+    return std::nullopt;
+  }
+  const ComputedStyle* style = element->GetComputedStyle();
+  if (!style || style->ContentBehavesAsNormal()) {
+    return std::nullopt;
   }
 
-  const ComputedStyle* style = node->GetComputedStyle();
-  if (node->IsPseudoElement()) {
+  if (element->IsPseudoElement()) {
     for (const ContentData* content_data = style->GetContentData();
          content_data; content_data = content_data->Next()) {
       if (content_data->IsAltText())
@@ -1286,8 +1288,8 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
     return RoleFromLayoutObjectOrNode();
   }
 
-  if (GetNode()->IsPseudoElement() && GetCSSAltText(GetNode())) {
-    const ComputedStyle* style = GetNode()->GetComputedStyle();
+  if (GetNode()->IsPseudoElement() && GetCSSAltText(GetElement())) {
+    const ComputedStyle* style = GetElement()->GetComputedStyle();
     ContentData* content_data = style->GetContentData();
     // We just check the first item of the content list to determine the
     // appropriate role, should only ever be image or text.

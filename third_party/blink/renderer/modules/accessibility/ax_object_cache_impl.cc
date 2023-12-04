@@ -1298,8 +1298,9 @@ bool AXObjectCacheImpl::IsRelevantPseudoElementDescendant(
       return false;
     if (ancestor->IsPseudoElement()) {
       // When an ancestor is exposed using CSS alt text, descendants are pruned.
-      if (AXNodeObject::GetCSSAltText(ancestor->GetNode()))
+      if (AXNodeObject::GetCSSAltText(To<Element>(ancestor->GetNode()))) {
         return false;
+      }
       return IsRelevantPseudoElement(*ancestor->GetNode());
     }
     if (!ancestor->IsAnonymous())
@@ -2814,14 +2815,21 @@ void AXObjectCacheImpl::UpdateTreeIfNeeded() {
 
 void AXObjectCacheImpl::CheckStyleIsComplete(Document& document) const {
 #if EXPENSIVE_DCHECKS_ARE_ON()
+  Element* root_element = document.documentElement();
+  if (!root_element) {
+    return;
+  }
+
   {
     // Check that all style is up-to-date when layout is clean, when a11y is on.
     // This allows content-visibility: auto subtrees to have proper a11y
     // semantics, e.g. for the hidden and focusable states.
-    Node* node = &document;
+    Node* node = root_element;
     do {
       CHECK(!node->NeedsStyleRecalc()) << "Need style on: " << node;
-      const ComputedStyle* style = node->GetComputedStyle();
+      auto* element = DynamicTo<Element>(node);
+      const ComputedStyle* style =
+          element ? element->GetComputedStyle() : nullptr;
       if (!style || style->ContentVisibility() == EContentVisibility::kHidden ||
           style->IsEnsuredInDisplayNone()) {
         // content-visibility:hidden nodes are an exception and do not
@@ -2837,9 +2845,11 @@ void AXObjectCacheImpl::CheckStyleIsComplete(Document& document) const {
   {
     // Check results of ChildNeedsStyleRecalc() as well, just to be sure there
     // isn't a discrepancy there.
-    Node* node = &document;
+    Node* node = root_element;
     do {
-      const ComputedStyle* style = node->GetComputedStyle();
+      auto* element = DynamicTo<Element>(node);
+      const ComputedStyle* style =
+          element ? element->GetComputedStyle() : nullptr;
       if (!style || style->ContentVisibility() == EContentVisibility::kHidden ||
           style->IsEnsuredInDisplayNone()) {
         // content-visibility:hidden nodes are an exception and do not

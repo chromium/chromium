@@ -1779,8 +1779,8 @@ void AXObject::SerializeScreenReaderAttributes(ui::AXNodeData* node_data) {
     return;
   }
   String display_style;
-  if (Node* node = GetNode(); node && !node->IsDocumentNode()) {
-    if (const ComputedStyle* computed_style = node->GetComputedStyle()) {
+  if (Element* element = GetElement()) {
+    if (const ComputedStyle* computed_style = element->GetComputedStyle()) {
       display_style = CSSProperty::Get(CSSPropertyID::kDisplay)
                           .CSSValueFromComputedStyle(
                               *computed_style, /* layout_object */ nullptr,
@@ -4308,8 +4308,9 @@ String AXObject::RecursiveTextAlternative(
 
 const ComputedStyle* AXObject::GetComputedStyle() const {
   Node* node = GetNode();
-  if (!node)
+  if (!node) {
     return nullptr;
+  }
 
 #if DCHECK_IS_ON()
   DCHECK(GetDocument());
@@ -4320,14 +4321,18 @@ const ComputedStyle* AXObject::GetComputedStyle() const {
 #endif
 
   // content-visibility:hidden or content-visibility: auto.
-  if (DisplayLockUtilities::IsDisplayLockedPreventingPaint(node))
+  if (DisplayLockUtilities::IsDisplayLockedPreventingPaint(node)) {
     return nullptr;
+  }
 
   // For elements with layout objects we can get their style directly.
-  if (GetLayoutObject())
+  if (GetLayoutObject()) {
     return GetLayoutObject()->Style();
-
-  return node->GetComputedStyle();
+  }
+  if (const Element* element = GetElement()) {
+    return element->GetComputedStyle();
+  }
+  return nullptr;
 }
 
 // There are 4 ways to use CSS to hide something:
