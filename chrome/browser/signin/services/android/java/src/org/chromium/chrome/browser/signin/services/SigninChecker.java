@@ -9,6 +9,7 @@ import android.accounts.Account;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
+import org.chromium.base.Promise;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordUserAction;
@@ -19,6 +20,9 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountRenameChecker;
 import org.chromium.components.signin.AccountUtils;
+import org.chromium.components.signin.AccountsChangeObserver;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountTrackerService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -29,12 +33,14 @@ import org.chromium.components.sync.SyncService;
 import java.util.List;
 
 /** This class regroups sign-in checks when chrome starts up and when accounts change on device */
-public class SigninChecker implements AccountTrackerService.Observer, Destroyable {
+public class SigninChecker
+        implements AccountTrackerService.Observer, AccountsChangeObserver, Destroyable {
     private static final String TAG = "SigninChecker";
-    private final SigninManager mSigninManager;
     private final AccountTrackerService mAccountTrackerService;
     private final SyncService mSyncService;
     private final AccountManagerFacade mAccountManagerFacade;
+    // TODO(crbug/1491005): Delete this once SeedAccountsRevamp is fully enabled.
+    @Nullable private SigninManager mSigninManager;
     // Counter to record the number of child account checks done for tests.
     private int mNumOfChildAccountChecksDone;
 
@@ -46,12 +52,13 @@ public class SigninChecker implements AccountTrackerService.Observer, Destroyabl
             SigninManager signinManager,
             AccountTrackerService accountTrackerService,
             SyncService syncService) {
-        mSigninManager = signinManager;
+        if (!SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
+            mSigninManager = signinManager;
+        }
         mAccountTrackerService = accountTrackerService;
         mSyncService = syncService;
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
         mNumOfChildAccountChecksDone = 0;
-
         mAccountTrackerService.addObserver(this);
     }
 
@@ -61,6 +68,10 @@ public class SigninChecker implements AccountTrackerService.Observer, Destroyabl
     }
 
     private void validateAccountSettings() {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
+            throw new IllegalStateException(
+                    "This method should never be called when SEED_ACCOUNTS_REVAMP is enabled");
+        }
         mAccountManagerFacade
                 .getCoreAccountInfos()
                 .then(
@@ -78,10 +89,23 @@ public class SigninChecker implements AccountTrackerService.Observer, Destroyabl
                         });
     }
 
+    @Override
+    public void onCoreAccountInfosChanged() {
+        Promise<List<CoreAccountInfo>> coreAccountInfosPromise =
+                mAccountManagerFacade.getCoreAccountInfos();
+        assert coreAccountInfosPromise.isFulfilled();
+        List<CoreAccountInfo> coreAccountInfos = coreAccountInfosPromise.getResult();
+        checkChildAccount(coreAccountInfos);
+    }
+
     /** This method is invoked every time the accounts on device are seeded. */
     @Override
     public void legacyOnAccountsSeeded(
             List<CoreAccountInfo> coreAccountInfos, boolean accountsChanged) {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
+            throw new IllegalStateException(
+                    "This method should never be called when SEED_ACCOUNTS_REVAMP is enabled");
+        }
         mSigninManager.runAfterOperationInProgress(
                 () -> {
                     validatePrimaryAccountExists(coreAccountInfos, accountsChanged);
@@ -96,6 +120,10 @@ public class SigninChecker implements AccountTrackerService.Observer, Destroyabl
     /** Validates that the primary account exists on device. */
     private void validatePrimaryAccountExists(
             List<CoreAccountInfo> coreAccountInfos, boolean accountsChanged) {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
+            throw new IllegalStateException(
+                    "This method should never be called when SEED_ACCOUNTS_REVAMP is enabled");
+        }
         final CoreAccountInfo oldAccount =
                 mSigninManager.getIdentityManager().getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         boolean oldSyncConsent =
@@ -134,6 +162,10 @@ public class SigninChecker implements AccountTrackerService.Observer, Destroyabl
     }
 
     private void resigninAfterAccountRename(String newAccountName, boolean shouldEnableSync) {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
+            throw new IllegalStateException(
+                    "This method should never be called when SEED_ACCOUNTS_REVAMP is enabled");
+        }
         mSigninManager.signOut(
                 SignoutReason.ACCOUNT_EMAIL_UPDATED,
                 () -> {
@@ -207,6 +239,9 @@ public class SigninChecker implements AccountTrackerService.Observer, Destroyabl
      * and updates state accordingly.
      */
     public void onMainActivityStart() {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
+            return;
+        }
         try (TraceEvent ignored = TraceEvent.scoped("SigninChecker.onMainActivityStart")) {
             validateAccountSettings();
         }

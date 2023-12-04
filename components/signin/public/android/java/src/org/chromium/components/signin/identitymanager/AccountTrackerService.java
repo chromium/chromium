@@ -77,13 +77,17 @@ public class AccountTrackerService implements AccountsChangeObserver {
         mAccountsSeedingStatus = AccountsSeedingStatus.NOT_STARTED;
         mRunnablesWaitingForAccountsSeeding = new ConcurrentLinkedDeque<>();
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
-        mAccountManagerFacade.addObserver(this);
+        if (!SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
+            mAccountManagerFacade.addObserver(this);
+        }
     }
 
     @VisibleForTesting
     @CalledByNative
     void destroy() {
-        mAccountManagerFacade.removeObserver(this);
+        if (!SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
+            mAccountManagerFacade.removeObserver(this);
+        }
     }
 
     /** Adds an observer to observe the accounts seeding changes. */
@@ -123,9 +127,12 @@ public class AccountTrackerService implements AccountsChangeObserver {
     }
 
     /** Implements {@link AccountsChangeObserver}. */
-    // TODO(crbug/1491005): Move the AccountInfoChanged logic to the SigninManager.
     @Override
     public void onCoreAccountInfosChanged() {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
+            throw new IllegalStateException(
+                    "This method should never be called when SeedAccountsRevamp is enabled");
+        }
         // If mAccountsSeedingStatus is IN_PROGRESS do nothing. The promise in seedAccounts() will
         // be fulfilled with updated list of CoreAccountInfo's.
         if (mAccountsSeedingStatus != AccountsSeedingStatus.IN_PROGRESS) {

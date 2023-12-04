@@ -41,6 +41,7 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -53,8 +54,10 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.externalauth.ExternalAuthUtils;
+import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
@@ -169,7 +172,59 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
+    public void testAccountManagerFacadeObserverAddedOnCreate_seedAccountsRevampEnabled() {
+        CoreAccountInfo coreAccountInfo =
+                CoreAccountInfo.createFromEmailAndGaiaId("email@domain.com", "gaia-id");
+        AccountManagerFacade accountManagerFacadeMock = Mockito.mock(AccountManagerFacade.class);
+        when(accountManagerFacadeMock.getCoreAccountInfos())
+                .thenReturn(Promise.fulfilled(List.of(coreAccountInfo)));
+        AccountManagerFacadeProvider.setInstanceForTests(accountManagerFacadeMock);
+
+        mSigninManager =
+                (SigninManagerImpl)
+                        SigninManagerImpl.create(
+                                NATIVE_SIGNIN_MANAGER,
+                                mAccountTrackerService,
+                                mIdentityManager,
+                                mIdentityMutator,
+                                mSyncService);
+
+        verify(accountManagerFacadeMock).addObserver(mSigninManager);
+        verify(mIdentityMutator)
+                .seedAccountsThenReloadAllAccountsWithPrimaryAccount(
+                        List.of(coreAccountInfo), null);
+    }
+
+    @Test
+    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
+    public void testOnCoreAccountInfosChanged_seedAccountsRevampEnabled() {
+        mFakeAccountManagerFacade.addAccount(ACCOUNT_FROM_INFO);
+
+        List<CoreAccountInfo> coreAccountInfos =
+                mFakeAccountManagerFacade.getCoreAccountInfos().getResult();
+        verify(mIdentityMutator)
+                .seedAccountsThenReloadAllAccountsWithPrimaryAccount(coreAccountInfos, null);
+    }
+
+    @Test
+    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
+    public void
+            testOnCoreAccountInfosChanged_signoutWhenPrimaryAccountIsRemoved_seedAccountsRevampEnabled() {
+        when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
+                        NATIVE_IDENTITY_MANAGER, ConsentLevel.SIGNIN))
+                .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId("test@email.com", "test-id"));
+
+        mSigninManager.onCoreAccountInfosChanged();
+
+        verify(mIdentityMutator)
+                .clearPrimaryAccount(
+                        SignoutReason.ACCOUNT_REMOVED_FROM_DEVICE,
+                        org.chromium.components.signin.metrics.SignoutDelete.IGNORE_METRIC);
+    }
+
+    @Test
+    @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signinAndTurnSyncOn() {
         when(mIdentityMutator.setPrimaryAccount(any(), anyInt(), anyInt()))
                 .thenReturn(PrimaryAccountError.NO_ERROR);
@@ -215,7 +270,7 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signinAndTurnSyncOn_seedAccountsRevampEnabled() {
         mFakeAccountManagerFacade.addAccount(ACCOUNT_FROM_INFO);
         when(mIdentityMutator.setPrimaryAccount(any(), anyInt(), anyInt()))
@@ -269,7 +324,7 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signinNoTurnSyncOn() {
         when(mIdentityMutator.setPrimaryAccount(any(), anyInt(), anyInt()))
                 .thenReturn(PrimaryAccountError.NO_ERROR);
@@ -303,7 +358,7 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signinNoTurnSyncOn_seedAccountsRevampEnabled() {
         mFakeAccountManagerFacade.addAccount(ACCOUNT_FROM_INFO);
         when(mIdentityMutator.setPrimaryAccount(any(), anyInt(), anyInt()))
@@ -344,7 +399,7 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signOutNonSyncingAccountFromJavaWithManagedDomain() {
         when(mNativeMock.getManagementDomain(NATIVE_SIGNIN_MANAGER)).thenReturn("TestDomain");
 
@@ -362,7 +417,7 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signOutNonSyncingAccountFromJavaWithManagedDomain_seedAccountsRevampEnabled() {
         when(mNativeMock.getManagementDomain(NATIVE_SIGNIN_MANAGER)).thenReturn("TestDomain");
 
@@ -382,7 +437,7 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signOutSyncingAccountFromJavaWithManagedDomain() {
         when(mNativeMock.getManagementDomain(NATIVE_SIGNIN_MANAGER)).thenReturn("TestDomain");
 
@@ -400,7 +455,7 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signOutSyncingAccountFromJavaWithManagedDomain_seedAccountsRevampEnabled() {
         when(mNativeMock.getManagementDomain(NATIVE_SIGNIN_MANAGER)).thenReturn("TestDomain");
 
@@ -420,7 +475,7 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signOutNonSyncingAccountFromJavaWithNullDomain() {
         mSigninManager.signOut(SignoutReason.TEST);
 
@@ -436,7 +491,7 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signOutNonSyncingAccountFromJavaWithNullDomain_seedAccountsRevampEnabled() {
         mSigninManager.signOut(SignoutReason.TEST);
 
@@ -454,7 +509,7 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signOutSyncingAccountFromJavaWithNullDomain() {
         // Simulate sign-out with non-managed account.
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
@@ -475,7 +530,7 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signOutSyncingAccountFromJavaWithNullDomain_seedAccountsRevampEnabled() {
         // Simulate sign-out with non-managed account.
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
@@ -498,7 +553,7 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     @EnableFeatures(ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS)
     public void syncPromoShowCountResetWhenSignOutSyncingAccount() {
         ChromeSharedPreferences.getInstance()
@@ -531,7 +586,7 @@ public class SigninManagerImplTest {
     @Test
     @EnableFeatures({
         ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS,
-        ChromeFeatureList.SEED_ACCOUNTS_REVAMP
+        SigninFeatures.SEED_ACCOUNTS_REVAMP
     })
     public void syncPromoShowCountResetWhenSignOutSyncingAccount_seedAccountsRevampEnabled() {
         ChromeSharedPreferences.getInstance()
@@ -562,7 +617,7 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signOutSyncingAccountFromJavaWithNullDomainAndForceWipe() {
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
                         eq(NATIVE_IDENTITY_MANAGER), anyInt()))
@@ -582,7 +637,7 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void
             signOutSyncingAccountFromJavaWithNullDomainAndForceWipe_seedAccountsRevampEnabled() {
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
@@ -607,7 +662,7 @@ public class SigninManagerImplTest {
     // SigninManagerImpl.
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void revokeSyncConsentFromJavaWithNullDomain() {
         SigninManager.SignOutCallback callback = mock(SigninManager.SignOutCallback.class);
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
@@ -628,7 +683,7 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void revokeSyncConsentFromJavaWithNullDomain_seedAccountsRevampEnabled() {
         SigninManager.SignOutCallback callback = mock(SigninManager.SignOutCallback.class);
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
@@ -649,7 +704,7 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void clearingAccountCookieDoesNotTriggerSignoutWhenUserIsSignedOut() {
         mFakeAccountManagerFacade.addAccount(
                 AccountUtils.createAccountFromName(ACCOUNT_INFO.getEmail()));
@@ -662,11 +717,10 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void
             clearingAccountCookieDoesNotTriggerSignoutWhenUserIsSignedOut_seedAccountsRevampEnabled() {
-        mFakeAccountManagerFacade.addAccount(
-                AccountUtils.createAccountFromName(ACCOUNT_INFO.getEmail()));
+        mFakeAccountManagerFacade.addAccount(ACCOUNT_FROM_INFO);
 
         mIdentityManager.onAccountsCookieDeletedByUserAction();
 
@@ -676,11 +730,8 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void clearingAccountCookieDoesNotTriggerSignoutWhenUserIsSignedInAndSync() {
-        when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
-                        eq(NATIVE_IDENTITY_MANAGER), anyInt()))
-                .thenReturn(ACCOUNT_INFO);
         mFakeAccountManagerFacade.addAccount(
                 AccountUtils.createAccountFromName(ACCOUNT_INFO.getEmail()));
 
@@ -692,12 +743,9 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void
             clearingAccountCookieDoesNotTriggerSignoutWhenUserIsSignedInAndSync_seedAccountsRevampEnabled() {
-        when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
-                        eq(NATIVE_IDENTITY_MANAGER), anyInt()))
-                .thenReturn(ACCOUNT_INFO);
         mFakeAccountManagerFacade.addAccount(
                 AccountUtils.createAccountFromName(ACCOUNT_INFO.getEmail()));
 
@@ -709,7 +757,7 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void clearingAccountCookieDoesNotTriggerSignoutWhenUserIsSignedInWithoutSync() {
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
                         NATIVE_IDENTITY_MANAGER, ConsentLevel.SIGNIN))
@@ -725,14 +773,19 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void
             clearingAccountCookieDoesNotTriggerSignoutWhenUserIsSignedInWithoutSync_seedAccountsRevampEnabled() {
-        when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
-                        NATIVE_IDENTITY_MANAGER, ConsentLevel.SIGNIN))
-                .thenReturn(ACCOUNT_INFO);
+        // TODO(crbug.com/1491005): Figure out why adding an account to the fake account manager
+        // changes its id to `id[gaia-id-user_at_domain.com]` and fix this.
         mFakeAccountManagerFacade.addAccount(
                 AccountUtils.createAccountFromName(ACCOUNT_INFO.getEmail()));
+        when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
+                        NATIVE_IDENTITY_MANAGER, ConsentLevel.SIGNIN))
+                .thenReturn(
+                        AccountUtils.findCoreAccountInfoByEmail(
+                                mFakeAccountManagerFacade.getCoreAccountInfos().getResult(),
+                                ACCOUNT_INFO.getEmail()));
 
         mIdentityManager.onAccountsCookieDeletedByUserAction();
 
@@ -742,7 +795,7 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void callbackNotifiedWhenNoOperationIsInProgress() {
         AtomicInteger callCount = new AtomicInteger(0);
 
@@ -751,7 +804,7 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void callbackNotifiedWhenNoOperationIsInProgress_seedAccountsRevampEnabled() {
         AtomicInteger callCount = new AtomicInteger(0);
 
@@ -765,7 +818,7 @@ public class SigninManagerImplTest {
     // removed if the flag is removed.
     @DisableFeatures({
         ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS,
-        ChromeFeatureList.SEED_ACCOUNTS_REVAMP
+        SigninFeatures.SEED_ACCOUNTS_REVAMP
     })
     public void callbackNotifiedOnSignout() {
         doAnswer(
@@ -793,7 +846,7 @@ public class SigninManagerImplTest {
     // provide a default value. This should be enabled if the feature is enabled by default or
     // removed if the flag is removed.
     @DisableFeatures(ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS)
-    @EnableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void callbackNotifiedOnSignout_seedAccountsRevampEnabled() {
         doAnswer(
                         invocation -> {
@@ -816,7 +869,7 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void callbackNotifiedOnSignin() {
         final Answer<Integer> setPrimaryAccountAnswer =
                 invocation -> {
@@ -845,7 +898,7 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void callbackNotifiedOnSignin_seedAccountsRevampEnabled() {
         mFakeAccountManagerFacade.addAccount(ACCOUNT_FROM_INFO);
         final Answer<Integer> setPrimaryAccountAnswer =
@@ -872,7 +925,7 @@ public class SigninManagerImplTest {
     }
 
     @Test(expected = AssertionError.class)
-    @DisableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signinfailsWhenAlreadySignedIn() {
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
                         eq(NATIVE_IDENTITY_MANAGER), anyInt()))
@@ -884,7 +937,7 @@ public class SigninManagerImplTest {
     }
 
     @Test(expected = AssertionError.class)
-    @EnableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signinfailsWhenAlreadySignedIn_seedAccountsRevampEnabled() {
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
                         eq(NATIVE_IDENTITY_MANAGER), anyInt()))
@@ -896,7 +949,7 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signInStateObserverCallOnSignIn() {
         final Answer<Integer> setPrimaryAccountAnswer =
                 invocation -> {
@@ -926,7 +979,7 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signInStateObserverCallOnSignIn_seedAccountsRevampEnabled() {
         mFakeAccountManagerFacade.addAccount(ACCOUNT_FROM_INFO);
         List<CoreAccountInfo> coreAccountInfos =
@@ -962,7 +1015,7 @@ public class SigninManagerImplTest {
     @Test
     @DisableFeatures({
         ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS,
-        ChromeFeatureList.SEED_ACCOUNTS_REVAMP
+        SigninFeatures.SEED_ACCOUNTS_REVAMP
     })
     public void signInStateObserverCallOnSignOut() {
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
@@ -978,7 +1031,7 @@ public class SigninManagerImplTest {
 
     @Test
     @DisableFeatures(ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS)
-    @EnableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signInStateObserverCallOnSignOut_seedAccountsRevampEnabled() {
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
                         eq(NATIVE_IDENTITY_MANAGER), anyInt()))
@@ -992,7 +1045,7 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signOutNotAllowedForChildAccounts() {
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
                         eq(NATIVE_IDENTITY_MANAGER), anyInt()))
@@ -1004,7 +1057,7 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signOutNotAllowedForChildAccounts_seedAccountsRevampEnabled() {
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
                         eq(NATIVE_IDENTITY_MANAGER), anyInt()))
@@ -1016,7 +1069,7 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signInShouldBeSupportedForNonDemoUsers() {
         when(mExternalAuthUtils.canUseGooglePlayServices()).thenReturn(true);
 
@@ -1031,7 +1084,7 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signInShouldBeSupportedForNonDemoUsers_seedAccountsRevampEnabled() {
         when(mExternalAuthUtils.canUseGooglePlayServices()).thenReturn(true);
 
@@ -1046,7 +1099,7 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signInShouldNotBeSupportedWhenGooglePlayServicesIsRequiredAndNotAvailable() {
         when(mExternalAuthUtils.canUseGooglePlayServices()).thenReturn(false);
 
@@ -1060,7 +1113,7 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void
             signInShouldNotBeSupportedWhenGooglePlayServicesIsRequiredAndNotAvailable_seedAccountsRevampEnabled() {
         when(mExternalAuthUtils.canUseGooglePlayServices()).thenReturn(false);

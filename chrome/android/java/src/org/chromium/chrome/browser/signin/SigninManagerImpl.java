@@ -198,11 +198,27 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
             throw new IllegalStateException(
                     "This method should never be called when SeedAccountsRevamp is disabled");
         }
+
         Promise<List<CoreAccountInfo>> coreAccountInfosPromise =
                 mAccountManagerFacade.getCoreAccountInfos();
         assert coreAccountInfosPromise.isFulfilled();
-        // TODO(crbug/1491005): Add the seeding logic here and move the primary account validation
-        // for the signin checker to here
+        List<CoreAccountInfo> coreAccountInfos = coreAccountInfosPromise.getResult();
+        @Nullable
+        CoreAccountInfo primaryAccountInfo =
+                mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        if (primaryAccountInfo == null || coreAccountInfos.contains(primaryAccountInfo)) {
+            // Reload the coreAccountInfos if the primary account is still on the device or if the
+            // user is signed out.
+            seedThenReloadAllAccountsFromSystem(CoreAccountInfo.getIdFrom(primaryAccountInfo));
+            return;
+        }
+        if (isOperationInProgress()) {
+            // Re-check whether there's still a primary account after the current operation.
+            runAfterOperationInProgress(this::onCoreAccountInfosChanged);
+        } else {
+            // Sign out if the current primary account is no longer on the device.
+            signOut(SignoutReason.ACCOUNT_REMOVED_FROM_DEVICE);
+        }
     }
 
     /** Extracts the domain name of a given account's email. */
