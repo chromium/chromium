@@ -927,6 +927,10 @@ class EnterpriseReportingPrivateGetContextInfoOSFirewallTest
   }
 
   void TearDown() override {
+    if (!::IsUserAnAdmin()) {
+      // Test already skipped in `SetUp`.
+      return;
+    }
     // Resetting the firewall to its initial state
     HRESULT hr =
         firewall_policy_->put_FirewallEnabled(active_profile_, enabled_);
