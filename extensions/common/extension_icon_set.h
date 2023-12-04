@@ -5,10 +5,10 @@
 #ifndef EXTENSIONS_COMMON_EXTENSION_ICON_SET_H_
 #define EXTENSIONS_COMMON_EXTENSION_ICON_SET_H_
 
-#include <map>
 #include <set>
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/strings/string_piece.h"
 
 namespace base {
@@ -27,7 +27,7 @@ class ExtensionIconSet {
   };
 
   // Access to the underlying map from icon size->{path, bitmap}.
-  typedef std::map<int, std::string> IconMap;
+  typedef base::flat_map<int, std::string> IconMap;
 
   ExtensionIconSet();
   ExtensionIconSet(const ExtensionIconSet& other);
