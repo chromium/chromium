@@ -235,7 +235,8 @@ help.
   some issues reported in Chromium are already known or even fixed upstream.
 * **URL spoofing issues**, especially related to RTL or IDNs? See
   [go/url-spoofs](http://go/url-spoofs) for a guide to triaging these.
-* **SQLite bugs** can be assigned to mek@. CC drhsqlite@ for upstream issues.
+* **SQLite bugs** can be assigned to an owner from //third_party/sqlite/OWNERS.
+  CC drhsqlite@ for upstream issues.
 * **Fullscreen bugs** the Open Screen team is taking ownership of Full Screen
   issues, including security bugs. Please assign Full Screen security issues to
   takumif@chromium.org and cc: atadres@chromium.org, muyaoxu@google.com, and
