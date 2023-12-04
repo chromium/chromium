@@ -66,6 +66,8 @@ export class SeaPenTemplateQueryElement extends WithPersonalizationStore {
         type: String,
       },
 
+      path: String,
+
       seaPenTemplate_: {
         type: Object,
         computed: 'computeSeaPenTemplate_(templateId)',
@@ -104,6 +106,7 @@ export class SeaPenTemplateQueryElement extends WithPersonalizationStore {
   private templateTokens_: TemplateToken[];
   private options_: SeaPenOption[]|null;
   private selectedChip_: ChipToken|null;
+  path: string;
   templateId: string|null;
 
   private computeSeaPenTemplate_(templateId: string|null) {
@@ -239,6 +242,16 @@ export class SeaPenTemplateQueryElement extends WithPersonalizationStore {
         this.getTemplateRequest_(), getSeaPenProvider(), this.getStore());
     PersonalizationRouterElement.instance().goToRoute(
         Paths.SEA_PEN_RESULTS, {seaPenTemplateId: this.templateId!.toString()});
+  }
+
+  private getSearchButtonText_(path: string): string {
+    // TODO(b/308200616) Add finalized text.
+    return path === Paths.SEA_PEN_COLLECTION ? 'Search' : 'Search again';
+  }
+
+  private getSearchButtonIcon_(path: string): string {
+    return path === Paths.SEA_PEN_COLLECTION ? 'sea-pen:photo-spark' :
+                                               'personalization:refresh';
   }
 }
 

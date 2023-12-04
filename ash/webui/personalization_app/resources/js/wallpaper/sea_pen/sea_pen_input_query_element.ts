@@ -36,6 +36,8 @@ export class SeaPenInputQueryElement extends WithPersonalizationStore {
 
   static get properties() {
     return {
+      path: String,
+
       textValue_: String,
 
       thumbnailsLoading_: Boolean,
@@ -49,6 +51,7 @@ export class SeaPenInputQueryElement extends WithPersonalizationStore {
 
   private textValue_: string;
   private thumbnailsLoading_: boolean;
+  path: string;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -66,6 +69,16 @@ export class SeaPenInputQueryElement extends WithPersonalizationStore {
     searchSeaPenThumbnails(query, getSeaPenProvider(), this.getStore());
     PersonalizationRouterElement.instance().goToRoute(
         Paths.SEA_PEN_RESULTS, {seaPenTemplateId: QUERY});
+  }
+
+  private getSearchButtonText_(path: string): string {
+    // TODO(b/308200616) Add finalized text.
+    return path === Paths.SEA_PEN_COLLECTION ? 'Search' : 'Search again';
+  }
+
+  private getSearchButtonIcon_(path: string): string {
+    return path === Paths.SEA_PEN_COLLECTION ? 'sea-pen:photo-spark' :
+                                               'personalization:refresh';
   }
 }
 customElements.define(SeaPenInputQueryElement.is, SeaPenInputQueryElement);

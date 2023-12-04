@@ -118,6 +118,7 @@ export {LocalImagesElement} from './wallpaper/local_images_element.js';
 export {RecentSeaPenData} from './wallpaper/sea_pen/constants.js';
 export * from './wallpaper/sea_pen/sea_pen_actions.js';
 export {SeaPenImagesElement} from './wallpaper/sea_pen/sea_pen_images_element.js';
+export {SeaPenInputQueryElement} from './wallpaper/sea_pen/sea_pen_input_query_element.js';
 export {SeaPenRecentWallpapersElement} from './wallpaper/sea_pen/sea_pen_recent_wallpapers_element.js';
 export {SeaPenTemplateQueryElement} from './wallpaper/sea_pen/sea_pen_template_query_element.js';
 export {setSeaPenProviderForTesting} from './wallpaper/sea_pen/sea_pen_interface_provider.js';

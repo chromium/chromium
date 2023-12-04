@@ -38,6 +38,7 @@ build_webui_tests("build_webui_tests") {
     "personalization_theme_element_test.ts",
     "personalization_toast_element_test.ts",
     "sea_pen_images_element_test.ts",
+    "sea_pen_input_query_element_test.ts",
     "sea_pen_recent_wallpapers_element_test.ts",
     "sea_pen_template_query_element_test.ts",
     "test_ambient_interface_provider.ts",

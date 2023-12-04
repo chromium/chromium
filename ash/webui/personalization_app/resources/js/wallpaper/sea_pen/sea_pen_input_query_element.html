@@ -15,10 +15,6 @@
   #buttonContainer {
     margin-block-start: 12px;
   }
-
-  #searchButton .text {
-    margin-inline-start: 8px;
-  }
 </style>
 
 <div id="container">
@@ -34,8 +30,8 @@
         class="action-button"
         disabled$="[[thumbnailsLoading_]]"
         on-click="onClickInputQuerySearchButton_">
-      <iron-icon icon="sea-pen:photo-spark"></iron-icon>
-      <div class="text">Search Wallpaper</div>
+      <iron-icon icon$="[[getSearchButtonIcon_(path)]]" slot="prefix-icon"></iron-icon>
+      [[getSearchButtonText_(path)]]
     </cr-button>
   </div>
 </div>

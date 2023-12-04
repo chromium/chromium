@@ -127,6 +127,11 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppComponentTest, SeaPenImages) {
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(PersonalizationAppComponentTest, SeaPenInputQuery) {
+  RunTest("chromeos/personalization_app/sea_pen_input_query_element_test.js",
+          "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(PersonalizationAppComponentTest,
                        SeaPenRecentWallpapers) {
   RunTest(

@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {SeaPenTemplateId, SeaPenTemplateQueryElement} from 'chrome://personalization/js/personalization_app.js';
+import {Paths, SeaPenTemplateId, SeaPenTemplateQueryElement} from 'chrome://personalization/js/personalization_app.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -20,9 +20,10 @@ suite('SeaPenTemplateQueryElementTest', function() {
   });
 
   test('displays sea pen template', async () => {
-    seaPenTemplateQueryElement = initElement(
-        SeaPenTemplateQueryElement,
-        {'templateId': SeaPenTemplateId.kFlower.toString()});
+    seaPenTemplateQueryElement = initElement(SeaPenTemplateQueryElement, {
+      'templateId': SeaPenTemplateId.kFlower.toString(),
+      'path': Paths.SEA_PEN_COLLECTION,
+    });
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
     const chips =
@@ -35,6 +36,8 @@ suite('SeaPenTemplateQueryElementTest', function() {
     const unselectedTemplate =
         seaPenTemplateQueryElement.shadowRoot!.querySelectorAll(
             '#template .unselected');
+    const searchButton = seaPenTemplateQueryElement.shadowRoot!.querySelector(
+                             '#searchButton') as HTMLElement;
 
     assertTrue(chips.length > 0, 'there should be chips to select');
     assertEquals(
@@ -43,6 +46,20 @@ suite('SeaPenTemplateQueryElementTest', function() {
     assertEquals(
         0, unselectedTemplate.length,
         'there should be no unselected templates');
+    assertEquals('Search', searchButton!.innerText);
+  });
+
+  test('displays search again button on results page', async () => {
+    seaPenTemplateQueryElement = initElement(SeaPenTemplateQueryElement, {
+      'templateId': SeaPenTemplateId.kFlower.toString(),
+      'path': Paths.SEA_PEN_RESULTS,
+    });
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+
+    const searchButton = seaPenTemplateQueryElement.shadowRoot!.querySelector(
+                             '#searchButton') as HTMLElement;
+
+    assertEquals('Search again', searchButton!.innerText);
   });
 
   test('selects chip', async () => {
