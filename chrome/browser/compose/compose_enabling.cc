@@ -197,12 +197,6 @@ bool ComposeEnabling::ShouldTriggerPopup(
     return false;
   }
 
-  // Check autocomplete attribute.
-  if (!AutocompleteAllowed(autocomplete_attribute)) {
-    DVLOG(2) << "autocomplete=off";
-    return false;
-  }
-
   auto& config = compose::GetComposeConfig();
 
   if (ongoing_session) {
@@ -211,6 +205,11 @@ bool ComposeEnabling::ShouldTriggerPopup(
     }
   } else {
     if (!config.popup_with_no_saved_state) {
+      return false;
+    }
+    // Check autocomplete attribute if the proactive nudge would be presented.
+    if (!AutocompleteAllowed(autocomplete_attribute)) {
+      DVLOG(2) << "autocomplete=off";
       return false;
     }
   }

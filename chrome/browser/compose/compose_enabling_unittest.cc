@@ -484,7 +484,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupLanguageBypassTest) {
       has_saved_state, GetOrigin(), GetOrigin(), GURL(kExampleURL)));
 }
 
-TEST_F(ComposeEnablingTest, ShouldTriggerPopupAutocompleteTest) {
+TEST_F(ComposeEnablingTest, ShouldNotTriggerProactivePopupAutocompleteOffTest) {
   ComposeEnabling compose_enabling(&mock_translate_language_provider_,
                                    GetProfile());
   // Enable everything.
@@ -497,6 +497,23 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupAutocompleteTest) {
   SetLanguage("en");
 
   EXPECT_FALSE(compose_enabling.ShouldTriggerPopup(
+      autocomplete_attribute, GetProfile(), mock_translate_manager_.get(),
+      has_saved_state, GetOrigin(), GetOrigin(), GURL(kExampleURL)));
+}
+
+TEST_F(ComposeEnablingTest, ShouldTriggerSavedStatePopupAutocompleteOffTest) {
+  ComposeEnabling compose_enabling(&mock_translate_language_provider_,
+                                   GetProfile());
+  // Enable everything.
+  compose_enabling.SetEnabledForTesting();
+  // Autocomplete is set to off for this page.
+  std::string autocomplete_attribute("off");
+  bool has_saved_state = true;
+
+  // Set the language to something we support.
+  SetLanguage("en");
+
+  EXPECT_TRUE(compose_enabling.ShouldTriggerPopup(
       autocomplete_attribute, GetProfile(), mock_translate_manager_.get(),
       has_saved_state, GetOrigin(), GetOrigin(), GURL(kExampleURL)));
 }
