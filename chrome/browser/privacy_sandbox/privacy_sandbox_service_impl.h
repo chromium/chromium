@@ -292,10 +292,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   // profile startup.
   void LogPrivacySandboxState();
 
-  // Logs the state of privacy sandbox 3 in regards to prompts. Called once per
-  // profile startup.
-  void RecordPrivacySandbox3StartupMetrics();
-
   // Logs the state of privacy sandbox 4 in regards to prompts. Called once per
   // profile startup.
   void RecordPrivacySandbox4StartupMetrics();
