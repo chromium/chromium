@@ -32,7 +32,7 @@ namespace mojo {
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) GenericPendingAssociatedReceiver {
  public:
   GenericPendingAssociatedReceiver();
-  GenericPendingAssociatedReceiver(base::StringPiece interface_name,
+  GenericPendingAssociatedReceiver(std::string_view interface_name,
                                    mojo::ScopedInterfaceEndpointHandle handle);
 
   template <typename Interface>

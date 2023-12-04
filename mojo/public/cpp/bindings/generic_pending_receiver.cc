@@ -12,7 +12,7 @@ namespace mojo {
 GenericPendingReceiver::GenericPendingReceiver() = default;
 
 GenericPendingReceiver::GenericPendingReceiver(
-    base::StringPiece interface_name,
+    std::string_view interface_name,
     mojo::ScopedMessagePipeHandle receiving_pipe)
     : interface_name_(std::string(interface_name)),
       pipe_(std::move(receiving_pipe)) {}

@@ -14,7 +14,7 @@
 
 namespace mojo {
 
-// A class to wrap base::StringPiece as DataPipeProducer::DataSource class.
+// A class to wrap std::string_view as DataPipeProducer::DataSource class.
 class MOJO_CPP_SYSTEM_EXPORT StringDataSource final
     : public DataPipeProducer::DataSource {
  public:

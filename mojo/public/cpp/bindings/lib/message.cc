@@ -67,7 +67,7 @@ internal::MessageDispatchContext* GetMessageDispatchContext() {
   }
 }
 
-void DoNotifyBadMessage(Message message, base::StringPiece error) {
+void DoNotifyBadMessage(Message message, std::string_view error) {
   message.NotifyBadMessage(error);
 }
 
@@ -458,7 +458,7 @@ ScopedMessageHandle Message::TakeMojoMessage() {
   return handle;
 }
 
-void Message::NotifyBadMessage(base::StringPiece error) {
+void Message::NotifyBadMessage(std::string_view error) {
   DCHECK(handle_.is_valid());
   mojo::NotifyBadMessage(handle_.get(), error);
 }
@@ -623,7 +623,7 @@ bool PassThroughFilter::Accept(Message* message) {
   return true;
 }
 
-void ReportBadMessage(base::StringPiece error) {
+void ReportBadMessage(std::string_view error) {
   internal::MessageDispatchContext* context =
       internal::MessageDispatchContext::current();
   DCHECK(context);

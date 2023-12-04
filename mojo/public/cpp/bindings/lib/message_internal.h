@@ -67,7 +67,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageDispatchContext {
 
   static MessageDispatchContext* current();
 
-  base::OnceCallback<void(base::StringPiece)> GetBadMessageCallback();
+  base::OnceCallback<void(std::string_view)> GetBadMessageCallback();
 
  private:
   raw_ptr<MessageDispatchContext> outer_context_;

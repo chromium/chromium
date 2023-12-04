@@ -18,7 +18,7 @@ bool StructTraits<
   mojo::MapDataView<mojo::StringDataView, mojo_base::mojom::ValueDataView> view;
   data.GetStorageDataView(&view);
   for (size_t i = 0; i < view.size(); ++i) {
-    base::StringPiece key;
+    std::string_view key;
     base::Value value;
     if (!view.keys().Read(i, &key) || !view.values().Read(i, &value))
       return false;
@@ -62,7 +62,7 @@ bool UnionTraits<mojo_base::mojom::ValueDataView, base::Value>::Read(
       return true;
     }
     case mojo_base::mojom::ValueDataView::Tag::kStringValue: {
-      base::StringPiece string_piece;
+      std::string_view string_piece;
       if (!data.ReadStringValue(&string_piece))
         return false;
       *value_out = base::Value(string_piece);

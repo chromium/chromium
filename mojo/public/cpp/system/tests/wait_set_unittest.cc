@@ -23,7 +23,7 @@ namespace {
 using WaitSetTest = testing::Test;
 
 void WriteMessage(const ScopedMessagePipeHandle& handle,
-                  const base::StringPiece& message) {
+                  const std::string_view& message) {
   MojoResult rv = WriteMessageRaw(handle.get(), message.data(),
                                   static_cast<uint32_t>(message.size()),
                                   nullptr, 0, MOJO_WRITE_MESSAGE_FLAG_NONE);

@@ -538,7 +538,7 @@ void InterfaceEndpointClient::RaiseError() {
 }
 
 void InterfaceEndpointClient::CloseWithReason(uint32_t custom_reason,
-                                              base::StringPiece description) {
+                                              std::string_view description) {
   CHECK(sequence_checker_.CalledOnValidSequence());
 
   auto handle = PassHandle();

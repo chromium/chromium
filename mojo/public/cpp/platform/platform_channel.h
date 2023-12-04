@@ -86,7 +86,7 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformChannel {
   // its creator. |value| is a string returned by
   // |PrepareToPassRemoteEndpoint()| in the creator's process.
   [[nodiscard]] static PlatformChannelEndpoint RecoverPassedEndpointFromString(
-      base::StringPiece value);
+      std::string_view value);
 
   // Like above but extracts the input string from |command_line| via the
   // |kHandleSwitch| flag.

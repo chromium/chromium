@@ -1497,12 +1497,12 @@ namespace mojo {
 
 template <>
 struct StructTraits<url::mojom::UrlDataView, GURL> {
-  static base::StringPiece url(const GURL& r) {
+  static std::string_view url(const GURL& r) {
     if (r.possibly_invalid_spec().length() > url::kMaxURLChars ||
         !r.is_valid()) {
-      return base::StringPiece();
+      return std::string_view();
     }
-    return base::StringPiece(r.possibly_invalid_spec().c_str(),
+    return std::string_view(r.possibly_invalid_spec().c_str(),
                              r.possibly_invalid_spec().length());
   }
 }  // namespace mojo
@@ -1631,7 +1631,7 @@ to valid getter return types:
 | `pending_receiver<Foo>`      | `mojo::PendingReceiver<Foo>`
 | `pending_associated_remote<Foo>`    | `mojo::PendingAssociatedRemote<Foo>`
 | `pending_associated_receiver<Foo>`    | `mojo::PendingAssociatedReceiver<Foo>`
-| `string`                     | Value or reference to any type `T` that has a `mojo::StringTraits` specialization defined. By default this includes `std::string`, `base::StringPiece`, and `WTF::String` (Blink).
+| `string`                     | Value or reference to any type `T` that has a `mojo::StringTraits` specialization defined. By default this includes `std::string`, `std::string_view`, and `WTF::String` (Blink).
 | `array<T>`                   | Value or reference to any type `T` that has a `mojo::ArrayTraits` specialization defined. By default this includes `std::array<T, N>`, `std::vector<T>`, `WTF::Vector<T>` (Blink), etc.
 | `array<T, N>`                | Similar to the above, but the length of the data must be always the same as `N`.
 | `map<K, V>`                  | Value or reference to any type `T` that has a `mojo::MapTraits` specialization defined. By default this includes `std::map<T>`, `mojo::unordered_map<T>`, `WTF::HashMap<T>` (Blink), etc.

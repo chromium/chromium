@@ -14,7 +14,7 @@ namespace mojo {
 GenericPendingAssociatedReceiver::GenericPendingAssociatedReceiver() = default;
 
 GenericPendingAssociatedReceiver::GenericPendingAssociatedReceiver(
-    base::StringPiece interface_name,
+    std::string_view interface_name,
     mojo::ScopedInterfaceEndpointHandle handle)
     : interface_name_(std::string(interface_name)),
       handle_(std::move(handle)) {}

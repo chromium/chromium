@@ -229,7 +229,7 @@ class MAYBE_InvitationCppTest
   }
 
   static void WriteMessage(const ScopedMessagePipeHandle& pipe,
-                           base::StringPiece message) {
+                           std::string_view message) {
     CHECK_EQ(MOJO_RESULT_OK,
              WriteMessageRaw(pipe.get(), message.data(), message.size(),
                              nullptr, 0, MOJO_WRITE_MESSAGE_FLAG_NONE));

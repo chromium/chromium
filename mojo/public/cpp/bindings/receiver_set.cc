@@ -92,7 +92,7 @@ ReportBadMessageCallback ReceiverSetState::GetBadMessageCallback() {
   return base::BindOnce(
       [](ReportBadMessageCallback error_callback,
          base::WeakPtr<ReceiverSetState> receiver_set, ReceiverId receiver_id,
-         base::StringPiece error) {
+         std::string_view error) {
         std::move(error_callback).Run(error);
         if (receiver_set)
           receiver_set->Remove(receiver_id);

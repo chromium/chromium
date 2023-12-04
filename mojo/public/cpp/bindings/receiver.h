@@ -114,7 +114,7 @@ class Receiver {
 
   // Similar to the method above, but also specifies a disconnect reason.
   void ResetWithReason(uint32_t custom_reason_code,
-                       base::StringPiece description) {
+                       std::string_view description) {
     internal_state_.CloseWithReason(custom_reason_code, description);
   }
 
@@ -299,7 +299,7 @@ class Receiver {
   // message dispatch. If you need to do asynchronous work before determining
   // the legitimacy of a message, use GetBadMessageCallback() and retain its
   // result until ready to invoke or discard it.
-  NOT_TAIL_CALLED void ReportBadMessage(base::StringPiece error) {
+  NOT_TAIL_CALLED void ReportBadMessage(std::string_view error) {
     GetBadMessageCallback().Run(error);
   }
 

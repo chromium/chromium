@@ -59,7 +59,7 @@ struct StructTraits<test::StructWithTraitsDataView,
     return value.get_uint64();
   }
 
-  static base::StringPiece f_string(const test::StructWithTraitsImpl& value) {
+  static std::string_view f_string(const test::StructWithTraitsImpl& value) {
     return value.get_string_as_string_piece();
   }
 

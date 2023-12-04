@@ -25,7 +25,7 @@ TEST(ConstantTest, GlobalConstants) {
   static_assert(kDoubleValue == 3.14159, "");
   static_assert(kFloatValue == 2.71828f, "");
 
-  EXPECT_EQ(base::StringPiece(kStringValue), "test string contents");
+  EXPECT_EQ(std::string_view(kStringValue), "test string contents");
   EXPECT_TRUE(std::isnan(kDoubleNaN));
   EXPECT_TRUE(std::isinf(kDoubleInfinity));
   EXPECT_TRUE(std::isinf(kDoubleNegativeInfinity));
@@ -41,7 +41,7 @@ TEST(ConstantTest, StructConstants) {
   static_assert(StructWithConstants::kInt8Value == 5U, "");
   static_assert(StructWithConstants::kFloatValue == 765.432f, "");
 
-  EXPECT_EQ(base::StringPiece(StructWithConstants::kStringValue),
+  EXPECT_EQ(std::string_view(StructWithConstants::kStringValue),
             "struct test string contents");
 }
 
@@ -50,9 +50,9 @@ TEST(ConstantTest, InterfaceConstants) {
   static_assert(InterfaceWithConstants::kUint32Value == 20100722, "");
   static_assert(InterfaceWithConstants::kDoubleValue == 12.34567, "");
 
-  EXPECT_EQ(base::StringPiece(InterfaceWithConstants::kStringValue),
+  EXPECT_EQ(std::string_view(InterfaceWithConstants::kStringValue),
             "interface test string contents");
-  EXPECT_EQ(base::StringPiece(InterfaceWithConstants::Name_),
+  EXPECT_EQ(std::string_view(InterfaceWithConstants::Name_),
             "mojo.test.InterfaceWithConstants");
 }
 

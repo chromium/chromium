@@ -155,12 +155,12 @@ extern "C" {
 MojoResult MojoInitialize(const struct MojoInitializeOptions* options) {
   static base::NoDestructor<mojo::CoreLibraryInitializer> initializer;
 
-  base::StringPiece library_path_utf8;
+  std::string_view library_path_utf8;
   if (options) {
     if (!MOJO_IS_STRUCT_FIELD_PRESENT(options, mojo_core_path_length))
       return MOJO_RESULT_INVALID_ARGUMENT;
-    library_path_utf8 = base::StringPiece(options->mojo_core_path,
-                                          options->mojo_core_path_length);
+    library_path_utf8 = std::string_view(options->mojo_core_path,
+                                         options->mojo_core_path_length);
   }
 
   MojoResult load_result = initializer->LoadLibrary(

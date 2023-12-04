@@ -112,7 +112,7 @@ struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
     return value.GetDouble();
   }
 
-  static base::StringPiece string_value(const base::Value& value) {
+  static std::string_view string_value(const base::Value& value) {
     return value.GetString();
   }
 

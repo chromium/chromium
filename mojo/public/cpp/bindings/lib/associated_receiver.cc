@@ -27,7 +27,7 @@ void AssociatedReceiverBase::reset() {
 }
 
 void AssociatedReceiverBase::ResetWithReason(uint32_t custom_reason,
-                                             base::StringPiece description) {
+                                             std::string_view description) {
   // TODO(dcheng): This should unconditionally assert that there is an endpoint
   // client.
   if (endpoint_client_)

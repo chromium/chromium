@@ -27,7 +27,7 @@ bool StructTraits<mojo_base::mojom::GenericPendingAssociatedReceiverDataView,
                   GenericPendingAssociatedReceiver>::
     Read(mojo_base::mojom::GenericPendingAssociatedReceiverDataView data,
          GenericPendingAssociatedReceiver* out) {
-  base::StringPiece interface_name;
+  std::string_view interface_name;
   if (!data.ReadInterfaceName(&interface_name))
     return false;
   *out = GenericPendingAssociatedReceiver(

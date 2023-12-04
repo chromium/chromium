@@ -72,7 +72,7 @@ class MOJO_CPP_SYSTEM_EXPORT OutgoingInvitation {
   //
   // |name| is an arbitrary value that must be used by the invitee to extract
   // the corresponding attached endpoint.
-  ScopedMessagePipeHandle AttachMessagePipe(base::StringPiece name);
+  ScopedMessagePipeHandle AttachMessagePipe(std::string_view name);
 
   // Same as above but allows use of an integer name for convenience.
   ScopedMessagePipeHandle AttachMessagePipe(uint64_t name);
@@ -81,7 +81,7 @@ class MOJO_CPP_SYSTEM_EXPORT OutgoingInvitation {
   // is potentially necessary in cases where a caller wants to, e.g., abort
   // launching another process and recover a pipe endpoint they had previously
   // attached.
-  ScopedMessagePipeHandle ExtractMessagePipe(base::StringPiece name);
+  ScopedMessagePipeHandle ExtractMessagePipe(std::string_view name);
 
   // Same as above but allows use of an integer name for convenience.
   ScopedMessagePipeHandle ExtractMessagePipe(uint64_t name);
@@ -138,7 +138,7 @@ class MOJO_CPP_SYSTEM_EXPORT OutgoingInvitation {
   // connection using the same name will be disconnected.
   static ScopedMessagePipeHandle SendIsolated(
       PlatformChannelEndpoint channel_endpoint,
-      base::StringPiece connection_name = {},
+      std::string_view connection_name = {},
       base::ProcessHandle target_process = base::kNullProcessHandle);
 
   // Similar to above but sends |invitation| via |server_endpoint|, which should
@@ -149,7 +149,7 @@ class MOJO_CPP_SYSTEM_EXPORT OutgoingInvitation {
   // connection using the same name will be disconnected.
   static ScopedMessagePipeHandle SendIsolated(
       PlatformChannelServerEndpoint server_endpoint,
-      base::StringPiece connection_name = {},
+      std::string_view connection_name = {},
       base::ProcessHandle target_process = base::kNullProcessHandle);
 
  private:
@@ -200,7 +200,7 @@ class MOJO_CPP_SYSTEM_EXPORT IncomingInvitation {
   // Extracts an attached message pipe from this invitation. This may succeed
   // even if no such pipe was attached, though the extracted pipe will
   // eventually observe peer closure.
-  ScopedMessagePipeHandle ExtractMessagePipe(base::StringPiece name);
+  ScopedMessagePipeHandle ExtractMessagePipe(std::string_view name);
 
   // Same as above but allows use of an integer name for convenience.
   ScopedMessagePipeHandle ExtractMessagePipe(uint64_t name);

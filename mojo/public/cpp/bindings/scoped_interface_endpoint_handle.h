@@ -76,7 +76,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ScopedInterfaceEndpointHandle {
   void SetAssociationEventHandler(AssociationEventCallback handler);
 
   void reset();
-  void ResetWithReason(uint32_t custom_reason, base::StringPiece description);
+  void ResetWithReason(uint32_t custom_reason, std::string_view description);
 
  private:
   friend class AssociatedGroupController;

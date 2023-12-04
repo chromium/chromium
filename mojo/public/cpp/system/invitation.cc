@@ -27,7 +27,7 @@ namespace mojo {
 
 namespace {
 
-static constexpr base::StringPiece kIsolatedPipeName = {"\0\0\0\0", 4};
+static constexpr std::string_view kIsolatedPipeName = {"\0\0\0\0", 4};
 
 void ProcessHandleToMojoProcessHandle(base::ProcessHandle target_process,
                                       MojoPlatformProcessHandle* handle) {
@@ -72,7 +72,7 @@ void SendInvitation(ScopedInvitationHandle invitation,
                     MojoInvitationTransportType transport_type,
                     MojoSendInvitationFlags flags,
                     const ProcessErrorCallback& error_callback,
-                    base::StringPiece isolated_connection_name) {
+                    std::string_view isolated_connection_name) {
   std::unique_ptr<MojoPlatformProcessHandle> process_handle;
   if (target_process != base::kNullProcessHandle) {
     process_handle = std::make_unique<MojoPlatformProcessHandle>();
@@ -165,7 +165,7 @@ OutgoingInvitation& OutgoingInvitation::operator=(OutgoingInvitation&& other) =
     default;
 
 ScopedMessagePipeHandle OutgoingInvitation::AttachMessagePipe(
-    base::StringPiece name) {
+    std::string_view name) {
   DCHECK(!name.empty());
   DCHECK(base::IsValueInRangeForNumericType<uint32_t>(name.size()));
   MojoHandle message_pipe_handle;
@@ -178,11 +178,11 @@ ScopedMessagePipeHandle OutgoingInvitation::AttachMessagePipe(
 
 ScopedMessagePipeHandle OutgoingInvitation::AttachMessagePipe(uint64_t name) {
   return AttachMessagePipe(
-      base::StringPiece(reinterpret_cast<const char*>(&name), sizeof(name)));
+      std::string_view(reinterpret_cast<const char*>(&name), sizeof(name)));
 }
 
 ScopedMessagePipeHandle OutgoingInvitation::ExtractMessagePipe(
-    base::StringPiece name) {
+    std::string_view name) {
   DCHECK(!name.empty());
   DCHECK(base::IsValueInRangeForNumericType<uint32_t>(name.size()));
   MojoHandle message_pipe_handle;
@@ -195,7 +195,7 @@ ScopedMessagePipeHandle OutgoingInvitation::ExtractMessagePipe(
 
 ScopedMessagePipeHandle OutgoingInvitation::ExtractMessagePipe(uint64_t name) {
   return ExtractMessagePipe(
-      base::StringPiece(reinterpret_cast<const char*>(&name), sizeof(name)));
+      std::string_view(reinterpret_cast<const char*>(&name), sizeof(name)));
 }
 
 // static
@@ -246,7 +246,7 @@ void OutgoingInvitation::SendAsync(OutgoingInvitation invitation,
 // static
 ScopedMessagePipeHandle OutgoingInvitation::SendIsolated(
     PlatformChannelEndpoint channel_endpoint,
-    base::StringPiece connection_name,
+    std::string_view connection_name,
     base::ProcessHandle target_process) {
   OutgoingInvitation invitation;
   ScopedMessagePipeHandle pipe =
@@ -262,7 +262,7 @@ ScopedMessagePipeHandle OutgoingInvitation::SendIsolated(
 // static
 ScopedMessagePipeHandle OutgoingInvitation::SendIsolated(
     PlatformChannelServerEndpoint server_endpoint,
-    base::StringPiece connection_name,
+    std::string_view connection_name,
     base::ProcessHandle target_process) {
   OutgoingInvitation invitation;
   ScopedMessagePipeHandle pipe =
@@ -382,7 +382,7 @@ ScopedMessagePipeHandle IncomingInvitation::AcceptIsolated(
 }
 
 ScopedMessagePipeHandle IncomingInvitation::ExtractMessagePipe(
-    base::StringPiece name) {
+    std::string_view name) {
   DCHECK(!name.empty());
   DCHECK(base::IsValueInRangeForNumericType<uint32_t>(name.size()));
   DCHECK(handle_.is_valid());
@@ -396,7 +396,7 @@ ScopedMessagePipeHandle IncomingInvitation::ExtractMessagePipe(
 
 ScopedMessagePipeHandle IncomingInvitation::ExtractMessagePipe(uint64_t name) {
   return ExtractMessagePipe(
-      base::StringPiece(reinterpret_cast<const char*>(&name), sizeof(name)));
+      std::string_view(reinterpret_cast<const char*>(&name), sizeof(name)));
 }
 
 }  // namespace mojo

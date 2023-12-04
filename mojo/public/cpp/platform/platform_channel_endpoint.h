@@ -82,7 +82,7 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformChannelEndpoint {
   void ProcessLaunchAttempted();
 
   [[nodiscard]] static PlatformChannelEndpoint RecoverFromString(
-      base::StringPiece value);
+      std::string_view value);
 
  private:
   PlatformHandle handle_;

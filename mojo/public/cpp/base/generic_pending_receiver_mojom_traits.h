@@ -20,7 +20,7 @@ struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
   static bool IsNull(const GenericPendingReceiver& receiver);
   static void SetToNull(GenericPendingReceiver* receiver);
 
-  static base::StringPiece interface_name(
+  static std::string_view interface_name(
       const GenericPendingReceiver& receiver) {
     DCHECK(receiver.interface_name().has_value());
     return receiver.interface_name().value();

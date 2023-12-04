@@ -101,7 +101,7 @@ class StringDataSourceTest : public testing::Test {
 
   static void WriteStringThenCloseProducer(
       std::unique_ptr<DataPipeProducer> producer,
-      const base::StringPiece& str,
+      const std::string_view& str,
       StringDataSource::AsyncWritingMode mode) {
     DataPipeProducer* raw_producer = producer.get();
     raw_producer->Write(
@@ -113,16 +113,16 @@ class StringDataSourceTest : public testing::Test {
 
   static void WriteStringsThenCloseProducer(
       std::unique_ptr<DataPipeProducer> producer,
-      std::list<base::StringPiece> strings,
+      std::list<std::string_view> strings,
       StringDataSource::AsyncWritingMode mode) {
     DataPipeProducer* raw_producer = producer.get();
-    base::StringPiece str = strings.front();
+    std::string_view str = strings.front();
     strings.pop_front();
     raw_producer->Write(
         std::make_unique<mojo::StringDataSource>(str, mode),
         base::BindOnce(
             [](std::unique_ptr<DataPipeProducer> producer,
-               std::list<base::StringPiece> strings,
+               std::list<std::string_view> strings,
                StringDataSource::AsyncWritingMode mode, MojoResult result) {
               if (!strings.empty())
                 WriteStringsThenCloseProducer(std::move(producer),

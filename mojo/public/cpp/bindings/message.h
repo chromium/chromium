@@ -33,7 +33,7 @@ namespace mojo {
 class AssociatedGroupController;
 
 using ReportBadMessageCallback =
-    base::OnceCallback<void(base::StringPiece error)>;
+    base::OnceCallback<void(std::string_view error)>;
 
 // Message is a holder for the data and handles to be sent over a MessagePipe.
 // Message owns its data and handles, but a consumer of Message is free to
@@ -230,7 +230,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
 
   // Notifies the system that this message is "bad," in this case meaning it was
   // rejected by bindings validation code.
-  void NotifyBadMessage(base::StringPiece error);
+  void NotifyBadMessage(std::string_view error);
 
   // Serializes and attaches Mojo handles and associated endpoint handles from
   // |handles_| and |associated_endpoint_handles_| respectively.
@@ -414,7 +414,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) PassThroughFilter
 // a message, use GetBadMessageCallback() and retain its result until you're
 // ready to invoke or discard it.
 NOT_TAIL_CALLED COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) void ReportBadMessage(
-    base::StringPiece error);
+    std::string_view error);
 
 // Acquires a callback which may be run to report the currently dispatching
 // Message as bad. Note that this is only legal to call from directly within the

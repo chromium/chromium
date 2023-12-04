@@ -113,7 +113,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   // and notifies all interfaces running on this pipe.
   void RaiseError();
 
-  void CloseWithReason(uint32_t custom_reason, base::StringPiece description);
+  void CloseWithReason(uint32_t custom_reason, std::string_view description);
 
   // Used by ControlMessageProxy to send messages through this endpoint.
   void SendControlMessage(Message* message);

@@ -351,7 +351,7 @@ void ScopedInterfaceEndpointHandle::reset() {
 
 void ScopedInterfaceEndpointHandle::ResetWithReason(
     uint32_t custom_reason,
-    base::StringPiece description) {
+    std::string_view description) {
   ResetInternal(DisconnectReason(custom_reason, std::string(description)));
 }
 

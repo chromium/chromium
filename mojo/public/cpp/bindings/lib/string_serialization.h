@@ -43,7 +43,7 @@ struct Serializer<StringDataView, MaybeConstUserType> {
       return CallSetToNullIfExists<Traits>(output);
     bool ok = Traits::Read(StringDataView(input, message), output);
     if (ok && !base::IsStringUTF8(
-                  base::StringPiece(input->storage(), input->size()))) {
+                  std::string_view(input->storage(), input->size()))) {
       RecordInvalidStringDeserialization();
     }
     return ok;

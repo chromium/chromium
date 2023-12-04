@@ -54,7 +54,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) BindingStateBase {
   void FlushAsync(AsyncFlusher flusher);
 
   void Close();
-  void CloseWithReason(uint32_t custom_reason, base::StringPiece description);
+  void CloseWithReason(uint32_t custom_reason, std::string_view description);
 
   void RaiseError() { endpoint_client_->RaiseError(); }
 

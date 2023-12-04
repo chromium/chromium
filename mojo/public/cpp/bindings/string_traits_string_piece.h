@@ -11,9 +11,9 @@
 namespace mojo {
 
 template <>
-struct StringTraits<base::StringPiece> {
-  static bool IsNull(base::StringPiece input) {
-    // base::StringPiece is always converted to non-null mojom string. We could
+struct StringTraits<std::string_view> {
+  static bool IsNull(std::string_view input) {
+    // std::string_view is always converted to non-null mojom string. We could
     // have let StringPiece containing a null data pointer map to null mojom
     // string, but StringPiece::empty() returns true in this case. It seems
     // confusing to mix the concept of empty and null strings, especially
@@ -21,15 +21,15 @@ struct StringTraits<base::StringPiece> {
     return false;
   }
 
-  static void SetToNull(base::StringPiece* output) {
-    // Convert null to an "empty" base::StringPiece.
-    *output = base::StringPiece();
+  static void SetToNull(std::string_view* output) {
+    // Convert null to an "empty" std::string_view.
+    *output = std::string_view();
   }
 
-  static base::StringPiece GetUTF8(base::StringPiece input) { return input; }
+  static std::string_view GetUTF8(std::string_view input) { return input; }
 
-  static bool Read(StringDataView input, base::StringPiece* output) {
-    *output = base::StringPiece(input.storage(), input.size());
+  static bool Read(StringDataView input, std::string_view* output) {
+    *output = std::string_view(input.storage(), input.size());
     return true;
   }
 };

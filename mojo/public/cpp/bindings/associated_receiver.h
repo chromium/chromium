@@ -41,7 +41,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) AssociatedReceiverBase {
   void SetFilter(std::unique_ptr<MessageFilter> filter);
 
   void reset();
-  void ResetWithReason(uint32_t custom_reason, base::StringPiece description);
+  void ResetWithReason(uint32_t custom_reason, std::string_view description);
 
   void set_disconnect_handler(base::OnceClosure error_handler);
   void set_disconnect_with_reason_handler(
@@ -318,8 +318,7 @@ class AssociatedReceiver : public internal::AssociatedReceiverBase {
   ReportBadMessageCallback GetBadMessageCallback() {
     return base::BindOnce(
         [](ReportBadMessageCallback inner_callback,
-           base::WeakPtr<AssociatedReceiver> receiver,
-           base::StringPiece error) {
+           base::WeakPtr<AssociatedReceiver> receiver, std::string_view error) {
           std::move(inner_callback).Run(error);
           if (receiver)
             receiver->reset();

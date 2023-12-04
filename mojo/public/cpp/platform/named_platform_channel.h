@@ -76,7 +76,7 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) NamedPlatformChannel {
   }
 
   // Helper to create a ServerName from a UTF8 string regardless of platform.
-  static ServerName ServerNameFromUTF8(base::StringPiece name);
+  static ServerName ServerNameFromUTF8(std::string_view name);
 
 #if BUILDFLAG(IS_WIN)
   static ServerName GenerateRandomServerName();
