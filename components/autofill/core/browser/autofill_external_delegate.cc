@@ -446,28 +446,29 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case PopupItemId::kAutofillOptions:
     case PopupItemId::kCompose:
     case PopupItemId::kDatalistEntry:
-    case PopupItemId::kPasswordEntry:
-    case PopupItemId::kUsernameEntry:
-    case PopupItemId::kAllSavedPasswordsEntry:
-    case PopupItemId::kGeneratePasswordEntry:
     case PopupItemId::kShowAccountCards:
-    case PopupItemId::kPasswordAccountStorageOptIn:
-    case PopupItemId::kPasswordAccountStorageOptInAndGenerate:
-    case PopupItemId::kAccountStoragePasswordEntry:
-    case PopupItemId::kAccountStorageUsernameEntry:
-    case PopupItemId::kPasswordAccountStorageReSignin:
-    case PopupItemId::kPasswordAccountStorageEmpty:
     case PopupItemId::kInsecureContextPaymentDisabledMessage:
     case PopupItemId::kScanCreditCard:
     case PopupItemId::kCreateNewPlusAddress:
     case PopupItemId::kSeePromoCodeDetails:
-    case PopupItemId::kWebauthnCredential:
-    case PopupItemId::kWebauthnSignInWithAnotherDevice:
-    case PopupItemId::kSeparator:
     case PopupItemId::kMixedFormMessage:
     case PopupItemId::kDevtoolsTestAddresses:
     case PopupItemId::kDevtoolsTestAddressEntry:
       break;
+    case PopupItemId::kSeparator:
+    case PopupItemId::kPasswordEntry:
+    case PopupItemId::kUsernameEntry:
+    case PopupItemId::kAccountStoragePasswordEntry:
+    case PopupItemId::kAccountStorageUsernameEntry:
+    case PopupItemId::kAllSavedPasswordsEntry:
+    case PopupItemId::kPasswordAccountStorageEmpty:
+    case PopupItemId::kGeneratePasswordEntry:
+    case PopupItemId::kPasswordAccountStorageOptIn:
+    case PopupItemId::kPasswordAccountStorageReSignin:
+    case PopupItemId::kPasswordAccountStorageOptInAndGenerate:
+    case PopupItemId::kWebauthnCredential:
+    case PopupItemId::kWebauthnSignInWithAnotherDevice:
+      NOTREACHED_NORETURN();  // Should be handled elsewhere.
   }
 }
 
@@ -502,12 +503,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
         AutofillMetrics::LogAutofillFormCleared();
         manager_->driver().RendererShouldClearFilledSection();
       }
-      break;
-    case PopupItemId::kPasswordEntry:
-    case PopupItemId::kUsernameEntry:
-    case PopupItemId::kAccountStoragePasswordEntry:
-    case PopupItemId::kAccountStorageUsernameEntry:
-      NOTREACHED();  // Should be handled elsewhere.
       break;
     case PopupItemId::kDatalistEntry:
       manager_->driver().RendererShouldAcceptDataListSuggestion(
@@ -669,39 +664,72 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     case PopupItemId::kEntryNotSelectable:
       return;
-    default:
-      if (suggestion.popup_item_id == PopupItemId::kAddressEntry ||
-          suggestion.popup_item_id == PopupItemId::kCreditCardEntry ||
-          suggestion.popup_item_id ==
-              PopupItemId::kFillEverythingFromAddressProfile) {
-        // Only log suggestion selection index of the main popup
-        // (position.sub_popup_level == 0). This metrics intends to give us an
-        // understanding of how well we are sorting the first level suggestions,
-        // therefore logging for selections on the second/third level is
-        // undesirable.
-        if (position.sub_popup_level == 0) {
-          autofill_metrics::LogAutofillSuggestionAcceptedIndex(
-              position.row, popup_type_, manager_->client().IsOffTheRecord());
-        }
-        if (suggestion.popup_item_id == PopupItemId::kAddressEntry ||
-            suggestion.popup_item_id ==
-                PopupItemId::kFillEverythingFromAddressProfile) {
-          autofill_metrics::LogFillingMethodUsed(
-              autofill_metrics::AutofillFillingMethodMetric::kFullForm);
-        }
+    case PopupItemId::kAddressEntry:
+      autofill_metrics::LogFillingMethodUsed(
+          autofill_metrics::AutofillFillingMethodMetric::kFullForm);
+      // Only log suggestion selection index of the main popup
+      // (position.sub_popup_level == 0). This metrics intends to give us an
+      // understanding of how well we are sorting the first level suggestions,
+      // therefore logging for selections on the second/third level is
+      // undesirable.
+      if (position.sub_popup_level == 0) {
+        autofill_metrics::LogAutofillSuggestionAcceptedIndex(
+            position.row, popup_type_, manager_->client().IsOffTheRecord());
       }
-      if (suggestion.popup_item_id == PopupItemId::kAddressEntry &&
-          manager_->WasSuggestionPreviouslyHidden(
+      if (manager_->WasSuggestionPreviouslyHidden(
               query_form_, query_field_,
               suggestion.GetPayload<Suggestion::BackendId>(), trigger_source)) {
         autofill_metrics::LogUserAcceptedPreviouslyHiddenProfileSuggestion();
       }
       FillAutofillFormData(
           suggestion.popup_item_id,
-          suggestion.GetPayload<Suggestion::BackendId>(), false,
+          suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source)});
       break;
+    case PopupItemId::kFillEverythingFromAddressProfile:
+      autofill_metrics::LogFillingMethodUsed(
+          autofill_metrics::AutofillFillingMethodMetric::kFullForm);
+      ABSL_FALLTHROUGH_INTENDED;
+    case PopupItemId::kCreditCardEntry:
+      // Only log suggestion selection index of the main popup
+      // (position.sub_popup_level == 0). This metrics intends to give us an
+      // understanding of how well we are sorting the first level suggestions,
+      // therefore logging for selections on the second/third level is
+      // undesirable.
+      if (position.sub_popup_level == 0) {
+        autofill_metrics::LogAutofillSuggestionAcceptedIndex(
+            position.row, popup_type_, manager_->client().IsOffTheRecord());
+      }
+      FillAutofillFormData(
+          suggestion.popup_item_id,
+          suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,
+          {.trigger_source =
+               TriggerSourceFromSuggestionTriggerSource(trigger_source)});
+      break;
+    case PopupItemId::kDevtoolsTestAddresses:
+    case PopupItemId::kDevtoolsTestAddressEntry:
+    case PopupItemId::kTitle:
+      FillAutofillFormData(
+          suggestion.popup_item_id,
+          suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,
+          {.trigger_source =
+               TriggerSourceFromSuggestionTriggerSource(trigger_source)});
+      break;
+    case PopupItemId::kSeparator:
+    case PopupItemId::kPasswordEntry:
+    case PopupItemId::kUsernameEntry:
+    case PopupItemId::kAccountStoragePasswordEntry:
+    case PopupItemId::kAccountStorageUsernameEntry:
+    case PopupItemId::kAllSavedPasswordsEntry:
+    case PopupItemId::kPasswordAccountStorageEmpty:
+    case PopupItemId::kGeneratePasswordEntry:
+    case PopupItemId::kPasswordAccountStorageOptIn:
+    case PopupItemId::kPasswordAccountStorageReSignin:
+    case PopupItemId::kPasswordAccountStorageOptInAndGenerate:
+    case PopupItemId::kWebauthnCredential:
+    case PopupItemId::kWebauthnSignInWithAnotherDevice:
+      NOTREACHED_NORETURN();  // Should be handled elsewhere.
   }
 
   if (should_show_scan_credit_card_) {

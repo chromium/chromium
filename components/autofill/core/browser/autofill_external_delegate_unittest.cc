@@ -1046,7 +1046,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateClearPreviewedForm) {
   IssueOnQuery();
   EXPECT_CALL(driver(), RendererShouldClearPreviewedForm());
   external_delegate().DidSelectSuggestion(
-      test::CreateAutofillSuggestion(PopupItemId::kPasswordEntry, u"baz foo"),
+      test::CreateAutofillSuggestion(PopupItemId::kAddressEntry, u"baz foo"),
       kDefaultTriggerSource);
   EXPECT_CALL(driver(), RendererShouldClearPreviewedForm());
   EXPECT_CALL(manager(), FillOrPreviewProfileForm(
