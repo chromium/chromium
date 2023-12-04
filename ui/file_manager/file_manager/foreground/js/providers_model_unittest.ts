@@ -8,15 +8,14 @@ import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {VolumeInfoImpl} from '../../background/js/volume_info_impl.js';
 import {installMockChrome, MockCommandLinePrivate} from '../../common/js/mock_chrome.js';
 import {MockDirectoryEntry, MockFileSystem} from '../../common/js/mock_entry.js';
-import {reportPromise} from '../../common/js/test_error_reporting.js';
 import {FileSystemType, Source, VolumeType} from '../../common/js/volume_manager_types.js';
+import type {VolumeManager} from '../../externs/volume_manager.js';
 
 import {ProvidersModel} from './providers_model.js';
 
 /**
  * Providing extension which has a mounted file system and doesn't support
  * multiple mounts.
- * @type {Partial<chrome.fileManagerPrivate.Provider>}
  */
 const MOUNTED_SINGLE_PROVIDING_EXTENSION = {
   name: 'mounted-single-extension-name',
@@ -36,7 +35,6 @@ const MOUNTED_SINGLE_PROVIDING_EXTENSION = {
 /**
  * Providing extension which has a not-mounted file system and doesn't support
  * multiple mounts.
- * @type {Partial<chrome.fileManagerPrivate.Provider>}
  */
 const NOT_MOUNTED_SINGLE_PROVIDING_EXTENSION = {
   name: 'not-mounted-single-extension-name',
@@ -56,7 +54,6 @@ const NOT_MOUNTED_SINGLE_PROVIDING_EXTENSION = {
 /**
  * Providing extension which has a mounted file system and supports multiple
  * mounts.
- * @type {Partial<chrome.fileManagerPrivate.Provider>}
  */
 const MOUNTED_MULTIPLE_PROVIDING_EXTENSION = {
   name: 'mounted-multiple-extension-name',
@@ -76,7 +73,6 @@ const MOUNTED_MULTIPLE_PROVIDING_EXTENSION = {
 /**
  * Providing extension which has a not-mounted file system of FILE source.
  * Such providers are mounted via file handlers.
- * @type {Partial<chrome.fileManagerPrivate.Provider>}
  */
 const NOT_MOUNTED_FILE_PROVIDING_EXTENSION = {
   name: 'file-extension-name',
@@ -97,7 +93,6 @@ const NOT_MOUNTED_FILE_PROVIDING_EXTENSION = {
  * Providing extension which has a not-mounted file system of DEVICE source.
  * Such providers are not mounted by users: they automatically mount when the
  * DEVICE is attached.
- * @type {Partial<chrome.fileManagerPrivate.Provider>}
  */
 const NOT_MOUNTED_DEVICE_PROVIDING_EXTENSION = {
   name: 'device-extension-name',
@@ -114,16 +109,10 @@ const NOT_MOUNTED_DEVICE_PROVIDING_EXTENSION = {
   multipleMounts: true,
 };
 
-/** @type {!import('../../externs/volume_manager.js').VolumeManager} */
-let volumeManager;
+let volumeManager: VolumeManager;
 
-/**
- * @param {import('../../externs/volume_manager.js').VolumeManager}
- *     volumeManager
- * @param {string} providerId
- * @param {string} volumeId
- */
-function addProvidedVolume(volumeManager, providerId, volumeId) {
+function addProvidedVolume(
+    volumeManager: VolumeManager, providerId: string, volumeId: string) {
   const fileSystem = new MockFileSystem(volumeId, 'filesystem:' + volumeId);
   fileSystem.entries['/'] = MockDirectoryEntry.create(fileSystem, '');
 
@@ -142,12 +131,10 @@ function addProvidedVolume(volumeManager, providerId, volumeId) {
       false,                                      // watchable
       Source.NETWORK,                             // source
       FileSystemType.UNKNOWN,                     // diskFileSystemType
-      // @ts-ignore: error TS2345: Argument of type '{}' is not assignable to
-      // parameter of type 'IconSet'.
-      {},          // iconSet
-      '',          // driveLabel
-      '',          // remoteMountPath
-      undefined);  // vmType
+      {icon16x16Url: '', icon32x32Url: ''},       // iconSet
+      '',                                         // driveLabel
+      '',                                         // remoteMountPath
+      undefined);                                 // vmType
 
   volumeManager.volumeInfoList.add(volumeInfo);
 }
@@ -156,8 +143,10 @@ export function setUp() {
   const mockChrome = {
     runtime: {},
     fileManagerPrivate: {
-      /** @param {(_: any[])=>void} callback */
-      getProviders: function(callback) {
+      getProviders: function(
+          callback:
+              (providers: Array<Partial<chrome.fileManagerPrivate.Provider>>) =>
+                  void) {
         callback([
           MOUNTED_SINGLE_PROVIDING_EXTENSION,
           NOT_MOUNTED_SINGLE_PROVIDING_EXTENSION,
@@ -177,81 +166,61 @@ export function setUp() {
 
   // Add provided test volumes.
   const single = MOUNTED_SINGLE_PROVIDING_EXTENSION.providerId;
-  // @ts-ignore: error TS2345: Argument of type 'string | undefined' is not
-  // assignable to parameter of type 'string'.
   addProvidedVolume(volumeManager, single, 'volume-1');
   const multiple = MOUNTED_MULTIPLE_PROVIDING_EXTENSION.providerId;
-  // @ts-ignore: error TS2345: Argument of type 'string | undefined' is not
-  // assignable to parameter of type 'string'.
   addProvidedVolume(volumeManager, multiple, 'volume-2');
 }
 
-/** @param {()=>void} callback */
-export function testGetInstalledProviders(callback) {
+export async function testGetInstalledProviders() {
   const model = new ProvidersModel(volumeManager);
-  reportPromise(
-      model.getInstalledProviders().then(providers => {
-        assertEquals(5, providers.length);
-        assertEquals(
-            MOUNTED_SINGLE_PROVIDING_EXTENSION.providerId,
-            providers[0]?.providerId);
-        assertEquals(
-            MOUNTED_SINGLE_PROVIDING_EXTENSION.iconSet, providers[0]?.iconSet);
-        assertEquals(
-            MOUNTED_SINGLE_PROVIDING_EXTENSION.name, providers[0]?.name);
-        assertEquals(
-            MOUNTED_SINGLE_PROVIDING_EXTENSION.configurable,
-            providers[0]?.configurable);
-        assertEquals(
-            MOUNTED_SINGLE_PROVIDING_EXTENSION.watchable,
-            providers[0]?.watchable);
-        assertEquals(
-            MOUNTED_SINGLE_PROVIDING_EXTENSION.multipleMounts,
-            providers[0]?.multipleMounts);
-        assertEquals(
-            MOUNTED_SINGLE_PROVIDING_EXTENSION.source, providers[0]?.source);
+  const providers = await model.getInstalledProviders();
+  assertEquals(5, providers.length);
+  assertEquals(
+      MOUNTED_SINGLE_PROVIDING_EXTENSION.providerId, providers[0]?.providerId);
+  assertEquals(
+      MOUNTED_SINGLE_PROVIDING_EXTENSION.iconSet, providers[0]?.iconSet);
+  assertEquals(MOUNTED_SINGLE_PROVIDING_EXTENSION.name, providers[0]?.name);
+  assertEquals(
+      MOUNTED_SINGLE_PROVIDING_EXTENSION.configurable,
+      providers[0]?.configurable);
+  assertEquals(
+      MOUNTED_SINGLE_PROVIDING_EXTENSION.watchable, providers[0]?.watchable);
+  assertEquals(
+      MOUNTED_SINGLE_PROVIDING_EXTENSION.multipleMounts,
+      providers[0]?.multipleMounts);
+  assertEquals(MOUNTED_SINGLE_PROVIDING_EXTENSION.source, providers[0]?.source);
 
-        assertEquals(
-            NOT_MOUNTED_SINGLE_PROVIDING_EXTENSION.providerId,
-            providers[1]?.providerId);
-        assertEquals(
-            MOUNTED_MULTIPLE_PROVIDING_EXTENSION.providerId,
-            providers[2]?.providerId);
-        assertEquals(
-            NOT_MOUNTED_FILE_PROVIDING_EXTENSION.providerId,
-            providers[3]?.providerId);
-        assertEquals(
-            NOT_MOUNTED_DEVICE_PROVIDING_EXTENSION.providerId,
-            providers[4]?.providerId);
+  assertEquals(
+      NOT_MOUNTED_SINGLE_PROVIDING_EXTENSION.providerId,
+      providers[1]?.providerId);
+  assertEquals(
+      MOUNTED_MULTIPLE_PROVIDING_EXTENSION.providerId,
+      providers[2]?.providerId);
+  assertEquals(
+      NOT_MOUNTED_FILE_PROVIDING_EXTENSION.providerId,
+      providers[3]?.providerId);
+  assertEquals(
+      NOT_MOUNTED_DEVICE_PROVIDING_EXTENSION.providerId,
+      providers[4]?.providerId);
 
-        assertEquals(
-            NOT_MOUNTED_SINGLE_PROVIDING_EXTENSION.iconSet,
-            providers[1]?.iconSet);
-        assertEquals(
-            MOUNTED_MULTIPLE_PROVIDING_EXTENSION.iconSet,
-            providers[2]?.iconSet);
-        assertEquals(
-            NOT_MOUNTED_FILE_PROVIDING_EXTENSION.iconSet,
-            providers[3]?.iconSet);
-        assertEquals(
-            NOT_MOUNTED_DEVICE_PROVIDING_EXTENSION.iconSet,
-            providers[4]?.iconSet);
-      }),
-      callback);
+  assertEquals(
+      NOT_MOUNTED_SINGLE_PROVIDING_EXTENSION.iconSet, providers[1]?.iconSet);
+  assertEquals(
+      MOUNTED_MULTIPLE_PROVIDING_EXTENSION.iconSet, providers[2]?.iconSet);
+  assertEquals(
+      NOT_MOUNTED_FILE_PROVIDING_EXTENSION.iconSet, providers[3]?.iconSet);
+  assertEquals(
+      NOT_MOUNTED_DEVICE_PROVIDING_EXTENSION.iconSet, providers[4]?.iconSet);
 }
 
-/** @param {()=>void} callback */
-export function testGetMountableProviders(callback) {
+export async function testGetMountableProviders() {
   const model = new ProvidersModel(volumeManager);
-  reportPromise(
-      model.getMountableProviders().then(providers => {
-        assertEquals(2, providers.length);
-        assertEquals(
-            NOT_MOUNTED_SINGLE_PROVIDING_EXTENSION.providerId,
-            providers[0]?.providerId);
-        assertEquals(
-            MOUNTED_MULTIPLE_PROVIDING_EXTENSION.providerId,
-            providers[1]?.providerId);
-      }),
-      callback);
+  const providers = await model.getMountableProviders();
+  assertEquals(2, providers.length);
+  assertEquals(
+      NOT_MOUNTED_SINGLE_PROVIDING_EXTENSION.providerId,
+      providers[0]?.providerId);
+  assertEquals(
+      MOUNTED_MULTIPLE_PROVIDING_EXTENSION.providerId,
+      providers[1]?.providerId);
 }
