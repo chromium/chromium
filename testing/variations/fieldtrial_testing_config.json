@@ -1114,6 +1114,40 @@
             ]
         }
     ],
+    "AutoSpeculationRules": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20231201",
+                    "params": {
+                        "config": "{\"framework_to_speculation_rules\":{\"12\":\"{\\\"prefetch\\\":[{\\\"source\\\":\\\"document\\\",\\\"eagerness\\\":\\\"conservative\\\",\\\"where\\\":{\\\"href_matches\\\":\\\"/*\\\"}}]}\"}}",
+                        "holdback": "false"
+                    },
+                    "enable_features": [
+                        "AutoSpeculationRules"
+                    ]
+                },
+                {
+                    "name": "Holdback_20231201",
+                    "params": {
+                        "config": "{\"framework_to_speculation_rules\":{\"12\":\"{\\\"prefetch\\\":[{\\\"source\\\":\\\"document\\\",\\\"eagerness\\\":\\\"conservative\\\",\\\"where\\\":{\\\"href_matches\\\":\\\"/*\\\"}}]}\"}}",
+                        "holdback": "true"
+                    },
+                    "enable_features": [
+                        "AutoSpeculationRules"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutocorrectByDefault": [
         {
             "platforms": [
