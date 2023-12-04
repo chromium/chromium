@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] calc((1em + 1px) * (sign(1em - 10px - 10%) + 1)) should be used-value-equivalent to 21px
-  assert_not_equals: calc((1em + 1px) * (sign(1em - 10px - 10%) + 1)) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
-Harness: the test ran to completion.
-

@@ -109,6 +109,10 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
     }
     case CalculationOperator::kMultiply: {
       DCHECK_EQ(children.size(), 2u);
+      if (children.front()->IsOperation() || children.back()->IsOperation()) {
+        return base::MakeRefCounted<CalculationExpressionOperationNode>(
+            Children({std::move(children[0]), std::move(children[1])}), op);
+      }
       auto& maybe_pixels_and_percent_node =
           children[0]->IsNumber() ? children[1] : children[0];
       if (!maybe_pixels_and_percent_node->IsPixelsAndPercent()) {
@@ -511,8 +515,7 @@ CalculationExpressionOperationNode::ResolvedResultType() const {
     case CalculationOperator::kMod:
     case CalculationOperator::kRem:
     case CalculationOperator::kHypot:
-    case CalculationOperator::kAbs:
-    case CalculationOperator::kSign: {
+    case CalculationOperator::kAbs: {
       DCHECK(children_.size());
       auto first_child_type = children_.front()->ResolvedResultType();
       for (const auto& child : children_) {
@@ -522,6 +525,7 @@ CalculationExpressionOperationNode::ResolvedResultType() const {
 
       return first_child_type;
     }
+    case CalculationOperator::kSign:
     case CalculationOperator::kProgress:
       return ResultType::kNumber;
     case CalculationOperator::kInvalid:

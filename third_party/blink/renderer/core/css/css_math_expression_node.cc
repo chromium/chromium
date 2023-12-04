@@ -742,6 +742,10 @@ CSSMathExpressionNumericLiteral::ToPixelsAndPercent(
 scoped_refptr<const CalculationExpressionNode>
 CSSMathExpressionNumericLiteral::ToCalculationExpression(
     const CSSLengthResolver& length_resolver) const {
+  if (Category() == kCalcNumber) {
+    return base::MakeRefCounted<CalculationExpressionNumberNode>(
+        value_->DoubleValue());
+  }
   return base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
       *ToPixelsAndPercent(length_resolver));
 }
@@ -1345,7 +1349,7 @@ CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
     return result;
   }
 
-  if (left_side->IsMathFunction() || right_side->IsMathFunction()) {
+  if (left_side->IsOperation() || right_side->IsOperation()) {
     return CreateArithmeticOperation(left_side, right_side, op);
   }
 
@@ -1355,7 +1359,8 @@ CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
   DCHECK_NE(right_category, kCalcOther);
 
   // Simplify numbers.
-  if (left_category == kCalcNumber && right_category == kCalcNumber) {
+  if (left_category == kCalcNumber && left_side->IsNumericLiteral() &&
+      right_category == kCalcNumber && right_side->IsNumericLiteral()) {
     return CSSMathExpressionNumericLiteral::Create(
         EvaluateOperator({left_side->DoubleValue(), right_side->DoubleValue()},
                          op),
@@ -1402,7 +1407,7 @@ CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
     // Simplify multiplying or dividing by a number for simplifiable types.
     DCHECK(op == CSSMathOperator::kMultiply || op == CSSMathOperator::kDivide);
     const CSSMathExpressionNode* number_side =
-        GetNumberSide(left_side, right_side);
+        GetNumericLiteralSide(left_side, right_side);
     if (!number_side) {
       return CreateArithmeticOperation(left_side, right_side, op);
     }
@@ -1521,7 +1526,10 @@ absl::optional<PixelsAndPercent> CSSMathExpressionOperation::ToPixelsAndPercent(
     case CSSMathOperator::kDivide: {
       DCHECK_EQ(operands_.size(), 2u);
       const CSSMathExpressionNode* number_side =
-          GetNumberSide(operands_[0], operands_[1]);
+          GetNumericLiteralSide(operands_[0], operands_[1]);
+      if (!number_side) {
+        return absl::nullopt;
+      }
       const CSSMathExpressionNode* other_side =
           operands_[0] == number_side ? operands_[1] : operands_[0];
       result = other_side->ToPixelsAndPercent(length_resolver);
@@ -1575,21 +1583,9 @@ CSSMathExpressionOperation::ToCalculationExpression(
           CalculationOperator::kSubtract);
     case CSSMathOperator::kMultiply:
       DCHECK_EQ(operands_.size(), 2u);
-      DCHECK_NE((operands_[0]->Category() == kCalcNumber),
-                (operands_[1]->Category() == kCalcNumber));
-      if (operands_[0]->Category() == kCalcNumber) {
-        return CalculationExpressionOperationNode::CreateSimplified(
-            CalculationExpressionOperationNode::Children(
-                {operands_[1]->ToCalculationExpression(length_resolver),
-                 base::MakeRefCounted<CalculationExpressionNumberNode>(
-                     operands_[0]->DoubleValue())}),
-            CalculationOperator::kMultiply);
-      }
       return CalculationExpressionOperationNode::CreateSimplified(
-          CalculationExpressionOperationNode::Children(
-              {operands_[0]->ToCalculationExpression(length_resolver),
-               base::MakeRefCounted<CalculationExpressionNumberNode>(
-                   operands_[1]->DoubleValue())}),
+          {operands_.front()->ToCalculationExpression(length_resolver),
+           operands_.back()->ToCalculationExpression(length_resolver)},
           CalculationOperator::kMultiply);
     case CSSMathOperator::kDivide:
       DCHECK_EQ(operands_.size(), 2u);
@@ -1976,8 +1972,7 @@ CSSPrimitiveValue::UnitType CSSMathExpressionOperation::ResolvedUnitType()
         case CSSMathOperator::kMod:
         case CSSMathOperator::kRem:
         case CSSMathOperator::kHypot:
-        case CSSMathOperator::kAbs:
-        case CSSMathOperator::kSign: {
+        case CSSMathOperator::kAbs: {
           CSSPrimitiveValue::UnitType first_type =
               operands_.front()->ResolvedUnitType();
           if (first_type == CSSPrimitiveValue::UnitType::kUnknown) {
@@ -1992,6 +1987,7 @@ CSSPrimitiveValue::UnitType CSSMathExpressionOperation::ResolvedUnitType()
           }
           return first_type;
         }
+        case CSSMathOperator::kSign:
         case CSSMathOperator::kProgress:
           return CSSPrimitiveValue::UnitType::kNumber;
         case CSSMathOperator::kInvalid:
@@ -2015,13 +2011,13 @@ void CSSMathExpressionOperation::Trace(Visitor* visitor) const {
 }
 
 // static
-const CSSMathExpressionNode* CSSMathExpressionOperation::GetNumberSide(
+const CSSMathExpressionNode* CSSMathExpressionOperation::GetNumericLiteralSide(
     const CSSMathExpressionNode* left_side,
     const CSSMathExpressionNode* right_side) {
-  if (left_side->Category() == kCalcNumber) {
+  if (left_side->Category() == kCalcNumber && left_side->IsNumericLiteral()) {
     return left_side;
   }
-  if (right_side->Category() == kCalcNumber) {
+  if (right_side->Category() == kCalcNumber && right_side->IsNumericLiteral()) {
     return right_side;
   }
   return nullptr;
@@ -3049,6 +3045,12 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(
         To<CalculationExpressionIdentifierNode>(node).Value());
   }
 
+  if (node.IsNumber()) {
+    return CSSMathExpressionNumericLiteral::Create(
+        To<CalculationExpressionNumberNode>(node).Value(),
+        CSSPrimitiveValue::UnitType::kNumber);
+  }
+
   if (node.IsAnchorQuery()) {
     const auto& anchor_query = To<CalculationExpressionAnchorQueryNode>(node);
     CSSAnchorQueryType type = anchor_query.Type() == CSSAnchorQueryType::kAnchor
@@ -3078,16 +3080,8 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(
   switch (calc_op) {
     case CalculationOperator::kMultiply: {
       DCHECK_EQ(children.size(), 2u);
-      auto& pixels_and_percent_node =
-          children[0]->IsNumber() ? children[1] : children[0];
-      auto& number_node = children[0]->IsNumber() ? children[0] : children[1];
-      const auto& number = To<CalculationExpressionNumberNode>(*number_node);
-      double number_value = number.Value();
       return CSSMathExpressionOperation::CreateArithmeticOperation(
-          Create(*pixels_and_percent_node),
-          CSSMathExpressionNumericLiteral::Create(
-              CSSNumericLiteralValue::Create(
-                  number_value, CSSPrimitiveValue::UnitType::kNumber)),
+          Create(*children.front()), Create(*children.back()),
           CSSMathOperator::kMultiply);
     }
     case CalculationOperator::kAdd:

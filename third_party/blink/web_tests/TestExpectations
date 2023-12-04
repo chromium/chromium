@@ -2475,7 +2475,6 @@ crbug.com/1350027 [ Mac ] external/wpt/css/css-values/ic-unit-003.html [ Failure
 crbug.com/1350027 [ Mac ] external/wpt/css/css-values/ic-unit-009.html [ Failure ]
 crbug.com/1350027 [ Mac ] external/wpt/css/css-values/ic-unit-010.html [ Failure ]
 crbug.com/246571 external/wpt/css/css-values/attr-notype-fallback.html [ Failure ]
-crbug.com/1491039 external/wpt/css/css-values/calc-complex-sign-function-crash.html [ Crash ]
 
 crbug.com/1069300 external/wpt/css/css-pseudo/active-selection-063.html [ Failure ]
 crbug.com/1108711 external/wpt/css/css-pseudo/active-selection-057.html [ Failure ]
@@ -2648,7 +2647,6 @@ crbug.com/1446038 [ Debug Mac13-arm64 ] external/wpt/webaudio/the-audio-api/the-
 crbug.com/1446038 [ Debug Mac13-arm64 ] external/wpt/webaudio/the-audio-api/the-mediaelementaudiosourcenode-interface/no-cors.https.html [ Crash ]
 
 # ====== Test expectations added to unblock wpt-importer ======
-crbug.com/626703 external/wpt/css/css-values/signs-abs-computed.html [ Crash ]
 crbug.com/626703 external/wpt/css/css-ui/outline-auto-width-001.html [ Failure ]
 crbug.com/626703 virtual/fedcm-login-status/external/wpt/credential-management/fedcm-login-status/confirm-idp-login.https.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/text-align/text-align-justify-tabs-001.html [ Failure ]

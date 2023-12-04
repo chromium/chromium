@@ -588,6 +588,39 @@ TEST(CSSMathExpressionNode, TestInvalidProgressNotation) {
   }
 }
 
+TEST(CSSMathExpressionNode, TestFunctionsWithNumberReturn) {
+  const struct TestCase {
+    const String input;
+    const CalculationResultCategory category;
+    const double output;
+  } test_cases[] = {
+      {"10 * sign(10%)", CalculationResultCategory::kCalcNumber, 10.0},
+      {"10px * sign(10%)", CalculationResultCategory::kCalcLength, 10.0},
+      {"10 + 2 * (1 + sign(10%))", CalculationResultCategory::kCalcNumber,
+       14.0},
+  };
+
+  for (const auto& test_case : test_cases) {
+    CSSTokenizer tokenizer(test_case.input);
+    const auto tokens = tokenizer.TokenizeToEOF();
+    const CSSParserTokenRange range(tokens);
+    const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
+        kHTMLStandardMode, SecureContextMode::kInsecureContext);
+    const CSSMathExpressionNode* css_node =
+        CSSMathExpressionNode::ParseMathFunction(
+            CSSValueID::kCalc, range, *context, true, kCSSAnchorQueryTypesNone);
+    EXPECT_EQ(css_node->CustomCSSText(), test_case.input);
+    EXPECT_EQ(css_node->Category(), test_case.category);
+    EXPECT_TRUE(css_node->IsOperation());
+    scoped_refptr<const CalculationExpressionNode> calc_node =
+        css_node->ToCalculationExpression(CSSToLengthConversionData());
+    EXPECT_TRUE(calc_node->IsOperation());
+    EXPECT_EQ(calc_node->Evaluate(100.0, nullptr), test_case.output);
+    css_node = CSSMathExpressionNode::Create(*calc_node);
+    EXPECT_EQ(css_node->CustomCSSText(), test_case.input);
+  }
+}
+
 }  // anonymous namespace
 
 }  // namespace blink

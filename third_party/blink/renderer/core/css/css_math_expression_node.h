@@ -468,7 +468,7 @@ class CORE_EXPORT CSSMathExpressionOperation final
   double ComputeDouble(const CSSLengthResolver& length_resolver) const final;
 
  private:
-  static const CSSMathExpressionNode* GetNumberSide(
+  static const CSSMathExpressionNode* GetNumericLiteralSide(
       const CSSMathExpressionNode* left_side,
       const CSSMathExpressionNode* right_side);
 
