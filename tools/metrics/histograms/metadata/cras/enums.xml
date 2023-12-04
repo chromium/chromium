@@ -1,0 +1,1044 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="AlsaSampleFormatType">
+  <int value="-1" label="SND_PCM_FORMAT_UNKNOWN"/>
+  <int value="0" label="SND_PCM_FORMAT_S8"/>
+  <int value="1" label="SND_PCM_FORMAT_U8"/>
+  <int value="2" label="SND_PCM_FORMAT_S16_LE"/>
+  <int value="3" label="SND_PCM_FORMAT_S16_BE"/>
+  <int value="4" label="SND_PCM_FORMAT_U16_LE"/>
+  <int value="5" label="SND_PCM_FORMAT_U16_BE"/>
+  <int value="6" label="SND_PCM_FORMAT_S24_LE"/>
+  <int value="7" label="SND_PCM_FORMAT_S24_BE"/>
+  <int value="8" label="SND_PCM_FORMAT_U24_LE"/>
+  <int value="9" label="SND_PCM_FORMAT_U24_BE"/>
+  <int value="10" label="SND_PCM_FORMAT_S32_LE"/>
+  <int value="11" label="SND_PCM_FORMAT_S32_BE"/>
+  <int value="12" label="SND_PCM_FORMAT_U32_LE"/>
+  <int value="13" label="SND_PCM_FORMAT_U32_BE"/>
+  <int value="14" label="SND_PCM_FORMAT_FLOAT_LE"/>
+  <int value="15" label="SND_PCM_FORMAT_FLOAT_BE"/>
+  <int value="16" label="SND_PCM_FORMAT_FLOAT64_LE"/>
+  <int value="17" label="SND_PCM_FORMAT_FLOAT64_BE"/>
+  <int value="18" label="SND_PCM_FORMAT_IEC958_SUBFRAME_LE"/>
+  <int value="19" label="SND_PCM_FORMAT_IEC958_SUBFRAME_BE"/>
+  <int value="20" label="SND_PCM_FORMAT_MU_LAW"/>
+  <int value="21" label="SND_PCM_FORMAT_A_LAW"/>
+  <int value="22" label="SND_PCM_FORMAT_IMA_ADPCM"/>
+  <int value="23" label="SND_PCM_FORMAT_MPEG"/>
+  <int value="24" label="SND_PCM_FORMAT_GSM"/>
+  <int value="25" label="SND_PCM_FORMAT_S20_LE"/>
+  <int value="26" label="SND_PCM_FORMAT_S20_BE"/>
+  <int value="27" label="SND_PCM_FORMAT_U20_LE"/>
+  <int value="28" label="SND_PCM_FORMAT_U20_BE"/>
+  <int value="31" label="SND_PCM_FORMAT_SPECIAL = 31"/>
+  <int value="32" label="SND_PCM_FORMAT_S24_3LE = 32"/>
+  <int value="33" label="SND_PCM_FORMAT_S24_3BE"/>
+  <int value="34" label="SND_PCM_FORMAT_U24_3LE"/>
+  <int value="35" label="SND_PCM_FORMAT_U24_3BE"/>
+  <int value="36" label="SND_PCM_FORMAT_S20_3LE"/>
+  <int value="37" label="SND_PCM_FORMAT_S20_3BE"/>
+  <int value="38" label="SND_PCM_FORMAT_U20_3LE"/>
+  <int value="39" label="SND_PCM_FORMAT_U20_3BE"/>
+  <int value="40" label="SND_PCM_FORMAT_S18_3LE"/>
+  <int value="41" label="SND_PCM_FORMAT_S18_3BE"/>
+  <int value="42" label="SND_PCM_FORMAT_U18_3LE"/>
+  <int value="43" label="SND_PCM_FORMAT_U18_3BE"/>
+  <int value="44" label="SND_PCM_FORMAT_G723_24"/>
+  <int value="45" label="SND_PCM_FORMAT_G723_24_1B"/>
+  <int value="46" label="SND_PCM_FORMAT_G723_40"/>
+  <int value="47" label="SND_PCM_FORMAT_G723_40_1B"/>
+  <int value="48" label="SND_PCM_FORMAT_DSD_U8"/>
+  <int value="49" label="SND_PCM_FORMAT_DSD_U16_LE"/>
+  <int value="50" label="SND_PCM_FORMAT_DSD_U32_LE"/>
+  <int value="51" label="SND_PCM_FORMAT_DSD_U16_BE"/>
+  <int value="52" label="SND_PCM_FORMAT_DSD_U32_BE"/>
+</enum>
+
+<enum name="AudioSettingsChangeSource">
+  <int value="0" label="System Tray"/>
+  <int value="1" label="OS Settings"/>
+  <int value="2" label="Accelerator"/>
+  <int value="3" label="Video Conference Tray"/>
+</enum>
+
+<enum name="CrasA2dpExitCode">
+  <summary>
+    List of codes to indicate why Bluetooth A2DP audio session exits the
+    connected state. CRAS side definition in
+    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/main/cras/src/server/cras_server_metrics.h
+  </summary>
+  <int value="0" label="A2DP_EXIT_IDLE">
+    Disconnected while idle. The default exit code without anything special.
+  </int>
+  <int value="1" label="A2DP_EXIT_WHILE_STREAMING">
+    Disconnected while a2dp is streaming and audio thread didn't catch any
+    socket error.
+  </int>
+  <int value="2" label="A2DP_EXIT_CONN_RESET">
+    Disconnected while streaming and receiving ECONNRESET code.
+  </int>
+  <int value="3" label="A2DP_EXIT_LONG_TX_FAILURE">
+    CRAS request the disconnection because of longer than 5 seconds of
+    consecutive packet Tx failure.
+  </int>
+  <int value="4" label="A2DP_EXIT_TX_FATAL_ERROR">
+    CRAS request the disconnection because kernel socket returns error code that
+    CRAS treats as fatal error.
+  </int>
+</enum>
+
+<enum name="CrasApNcStartStatus">
+  <summary/>
+  <int value="0" label="CRAS_AP_NC_REQUESTED_FAILED"/>
+  <int value="1" label="CRAS_AP_NC_REQUESTED_SUCCEEDED"/>
+</enum>
+
+<enum name="CrasClientType">
+  <summary>
+    List of the client type of CRAS. The list can be found in
+    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/main/cras/src/common/cras_types.h
+    (enum CRAS_CLIENT_TYPE).
+  </summary>
+  <int value="0" label="CRAS_CLIENT_TYPE_UNKNOWN">Unknown client.</int>
+  <int value="1" label="CRAS_CLIENT_TYPE_LEGACY">
+    A client using an old CRAS lib. (CRAS_PROTO_VER = 3)
+  </int>
+  <int value="2" label="CRAS_CLIENT_TYPE_TEST">
+    A client created by cras_test_client.
+  </int>
+  <int value="3" label="CRAS_CLIENT_TYPE_PCM">
+    A client using CRAS via pcm, like aplay.
+  </int>
+  <int value="4" label="CRAS_CLIENT_TYPE_CHROME"/>
+  <int value="5" label="CRAS_CLIENT_TYPE_ARC"/>
+  <int value="6" label="CRAS_CLIENT_TYPE_CROSVM"/>
+  <int value="7" label="CRAS_CLIENT_TYPE_SERVER_STREAM"/>
+  <int value="8" label="CRAS_CLIENT_TYPE_LACROS"/>
+  <int value="9" label="CRAS_CLIENT_TYPE_PLUGIN"/>
+  <int value="10" label="CRAS_CLIENT_TYPE_ARCVM"/>
+  <int value="11" label="CRAS_CLIENT_TYPE_BOREALIS"/>
+  <int value="12" label="CRAS_CLIENT_TYPE_SOUND_CARD_INIT"/>
+</enum>
+
+<enum name="CrasDeviceDspOffloadStatus">
+  <summary>
+    List of the device DSP offload status of CRAS. The list can be found in
+    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/main/cras/src/server/cras_server_metrics.h
+    (enum CRAS_DEVICE_DSP_OFFLOAD_STATUS).
+  </summary>
+  <int value="0" label="CRAS_DEVICE_DSP_OFFLOAD_SUCCESS">
+    DSP modules are requested to offload to DSP FW and done successfully.
+  </int>
+  <int value="1" label="CRAS_DEVICE_DSP_OFFLOAD_FALLBACK_SUCCESS">
+    DSP modules are requested to offload to DSP FW but failed; fallback to
+    disable the offload is triggered and done successfully. DSP modules will run
+    on CRAS then.
+  </int>
+  <int value="2" label="CRAS_DEVICE_DSP_OFFLOAD_FALLBACK_ERROR">
+    DSP modules are requested to offload to DSP FW but failed; fallback to
+    disable the offload is triggered but still failed.
+  </int>
+  <int value="3" label="CRAS_DEVICE_DSP_OFFLOAD_ERROR">
+    The offload is disabled intentionally by CRAS but failed.
+  </int>
+</enum>
+
+<enum name="CrasDeviceOpenStatus">
+  <summary>
+    List of the device open status of CRAS. The list can be found in
+    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/main/cras/src/server/cras_server_metrics.h
+    (enum CRAS_DEVICE_OPEN_STATUS).
+  </summary>
+  <int value="0" label="CRAS_DEVICE_OPEN_SUCCESS"/>
+  <int value="1" label="CRAS_DEVICE_OPEN_ERROR_OPEN"/>
+  <int value="2" label="CRAS_DEVICE_OPEN_ERROR_SET_FORMAT"/>
+  <int value="3" label="CRAS_DEVICE_OPEN_ERROR_CONFIGURE"/>
+</enum>
+
+<enum name="CrasDevicePair">
+  <summary>
+    List of the device pair of CRAS. The value is combined from two device
+    types.
+    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/main/cras/src/server/cras_server_metrics.c
+    (enum CRAS_METRICS_DEVICE_TYPE).
+  </summary>
+  <int value="0" label="INTERNAL_SPEAKER, INTERNAL_SPEAKER"/>
+  <int value="1" label="INTERNAL_SPEAKER, HEADPHONE"/>
+  <int value="2" label="INTERNAL_SPEAKER, HDMI"/>
+  <int value="3" label="INTERNAL_SPEAKER, HAPTIC"/>
+  <int value="4" label="INTERNAL_SPEAKER, LINEOUT"/>
+  <int value="5" label="INTERNAL_SPEAKER, INTERNAL_MIC"/>
+  <int value="6" label="INTERNAL_SPEAKER, FRONT_MIC"/>
+  <int value="7" label="INTERNAL_SPEAKER, REAR_MIC"/>
+  <int value="8" label="INTERNAL_SPEAKER, KEYBOARD_MIC"/>
+  <int value="9" label="INTERNAL_SPEAKER, MIC"/>
+  <int value="10" label="INTERNAL_SPEAKER, HOTWORD"/>
+  <int value="11" label="INTERNAL_SPEAKER, POST_MIX_LOOPBACK"/>
+  <int value="12" label="INTERNAL_SPEAKER, POST_DSP_LOOPBACK"/>
+  <int value="13" label="INTERNAL_SPEAKER, USB"/>
+  <int value="14" label="INTERNAL_SPEAKER, A2DP"/>
+  <int value="15" label="INTERNAL_SPEAKER, HFP"/>
+  <int value="16" label="INTERNAL_SPEAKER, HSP"/>
+  <int value="17" label="INTERNAL_SPEAKER, BLUETOOTH"/>
+  <int value="18" label="INTERNAL_SPEAKER, BLUETOOTH_NB_MIC"/>
+  <int value="19" label="INTERNAL_SPEAKER, NO_DEVICE"/>
+  <int value="20" label="INTERNAL_SPEAKER, NORMAL_FALLBACK"/>
+  <int value="21" label="INTERNAL_SPEAKER, ABNORMAL_FALLBACK"/>
+  <int value="22" label="INTERNAL_SPEAKER, SILENT_HOTWORD"/>
+  <int value="23" label="INTERNAL_SPEAKER, UNKNOWN"/>
+  <int value="24" label="INTERNAL_SPEAKER, BLUETOOTH_WB_MIC"/>
+  <int value="25" label="INTERNAL_SPEAKER, ALSA_LOOPBACK"/>
+  <int value="100" label="HEADPHONE, INTERNAL_SPEAKER"/>
+  <int value="101" label="HEADPHONE, HEADPHONE"/>
+  <int value="102" label="HEADPHONE, HDMI"/>
+  <int value="103" label="HEADPHONE, HAPTIC"/>
+  <int value="104" label="HEADPHONE, LINEOUT"/>
+  <int value="105" label="HEADPHONE, INTERNAL_MIC"/>
+  <int value="106" label="HEADPHONE, FRONT_MIC"/>
+  <int value="107" label="HEADPHONE, REAR_MIC"/>
+  <int value="108" label="HEADPHONE, KEYBOARD_MIC"/>
+  <int value="109" label="HEADPHONE, MIC"/>
+  <int value="110" label="HEADPHONE, HOTWORD"/>
+  <int value="111" label="HEADPHONE, POST_MIX_LOOPBACK"/>
+  <int value="112" label="HEADPHONE, POST_DSP_LOOPBACK"/>
+  <int value="113" label="HEADPHONE, USB"/>
+  <int value="114" label="HEADPHONE, A2DP"/>
+  <int value="115" label="HEADPHONE, HFP"/>
+  <int value="116" label="HEADPHONE, HSP"/>
+  <int value="117" label="HEADPHONE, BLUETOOTH"/>
+  <int value="118" label="HEADPHONE, BLUETOOTH_NB_MIC"/>
+  <int value="119" label="HEADPHONE, NO_DEVICE"/>
+  <int value="120" label="HEADPHONE, NORMAL_FALLBACK"/>
+  <int value="121" label="HEADPHONE, ABNORMAL_FALLBACK"/>
+  <int value="122" label="HEADPHONE, SILENT_HOTWORD"/>
+  <int value="123" label="HEADPHONE, UNKNOWN"/>
+  <int value="124" label="HEADPHONE, BLUETOOTH_WB_MIC"/>
+  <int value="125" label="HEADPHONE, ALSA_LOOPBACK"/>
+  <int value="200" label="HDMI, INTERNAL_SPEAKER"/>
+  <int value="201" label="HDMI, HEADPHONE"/>
+  <int value="202" label="HDMI, HDMI"/>
+  <int value="203" label="HDMI, HAPTIC"/>
+  <int value="204" label="HDMI, LINEOUT"/>
+  <int value="205" label="HDMI, INTERNAL_MIC"/>
+  <int value="206" label="HDMI, FRONT_MIC"/>
+  <int value="207" label="HDMI, REAR_MIC"/>
+  <int value="208" label="HDMI, KEYBOARD_MIC"/>
+  <int value="209" label="HDMI, MIC"/>
+  <int value="210" label="HDMI, HOTWORD"/>
+  <int value="211" label="HDMI, POST_MIX_LOOPBACK"/>
+  <int value="212" label="HDMI, POST_DSP_LOOPBACK"/>
+  <int value="213" label="HDMI, USB"/>
+  <int value="214" label="HDMI, A2DP"/>
+  <int value="215" label="HDMI, HFP"/>
+  <int value="216" label="HDMI, HSP"/>
+  <int value="217" label="HDMI, BLUETOOTH"/>
+  <int value="218" label="HDMI, BLUETOOTH_NB_MIC"/>
+  <int value="219" label="HDMI, NO_DEVICE"/>
+  <int value="220" label="HDMI, NORMAL_FALLBACK"/>
+  <int value="221" label="HDMI, ABNORMAL_FALLBACK"/>
+  <int value="222" label="HDMI, SILENT_HOTWORD"/>
+  <int value="223" label="HDMI, UNKNOWN"/>
+  <int value="224" label="HDMI, BLUETOOTH_WB_MIC"/>
+  <int value="225" label="HDMI, ALSA_LOOPBACK"/>
+  <int value="300" label="HAPTIC, INTERNAL_SPEAKER"/>
+  <int value="301" label="HAPTIC, HEADPHONE"/>
+  <int value="302" label="HAPTIC, HDMI"/>
+  <int value="303" label="HAPTIC, HAPTIC"/>
+  <int value="304" label="HAPTIC, LINEOUT"/>
+  <int value="305" label="HAPTIC, INTERNAL_MIC"/>
+  <int value="306" label="HAPTIC, FRONT_MIC"/>
+  <int value="307" label="HAPTIC, REAR_MIC"/>
+  <int value="308" label="HAPTIC, KEYBOARD_MIC"/>
+  <int value="309" label="HAPTIC, MIC"/>
+  <int value="310" label="HAPTIC, HOTWORD"/>
+  <int value="311" label="HAPTIC, POST_MIX_LOOPBACK"/>
+  <int value="312" label="HAPTIC, POST_DSP_LOOPBACK"/>
+  <int value="313" label="HAPTIC, USB"/>
+  <int value="314" label="HAPTIC, A2DP"/>
+  <int value="315" label="HAPTIC, HFP"/>
+  <int value="316" label="HAPTIC, HSP"/>
+  <int value="317" label="HAPTIC, BLUETOOTH"/>
+  <int value="318" label="HAPTIC, BLUETOOTH_NB_MIC"/>
+  <int value="319" label="HAPTIC, NO_DEVICE"/>
+  <int value="320" label="HAPTIC, NORMAL_FALLBACK"/>
+  <int value="321" label="HAPTIC, ABNORMAL_FALLBACK"/>
+  <int value="322" label="HAPTIC, SILENT_HOTWORD"/>
+  <int value="323" label="HAPTIC, UNKNOWN"/>
+  <int value="324" label="HAPTIC, BLUETOOTH_WB_MIC"/>
+  <int value="325" label="HAPTIC, ALSA_LOOPBACK"/>
+  <int value="400" label="LINEOUT, INTERNAL_SPEAKER"/>
+  <int value="401" label="LINEOUT, HEADPHONE"/>
+  <int value="402" label="LINEOUT, HDMI"/>
+  <int value="403" label="LINEOUT, HAPTIC"/>
+  <int value="404" label="LINEOUT, LINEOUT"/>
+  <int value="405" label="LINEOUT, INTERNAL_MIC"/>
+  <int value="406" label="LINEOUT, FRONT_MIC"/>
+  <int value="407" label="LINEOUT, REAR_MIC"/>
+  <int value="408" label="LINEOUT, KEYBOARD_MIC"/>
+  <int value="409" label="LINEOUT, MIC"/>
+  <int value="410" label="LINEOUT, HOTWORD"/>
+  <int value="411" label="LINEOUT, POST_MIX_LOOPBACK"/>
+  <int value="412" label="LINEOUT, POST_DSP_LOOPBACK"/>
+  <int value="413" label="LINEOUT, USB"/>
+  <int value="414" label="LINEOUT, A2DP"/>
+  <int value="415" label="LINEOUT, HFP"/>
+  <int value="416" label="LINEOUT, HSP"/>
+  <int value="417" label="LINEOUT, BLUETOOTH"/>
+  <int value="418" label="LINEOUT, BLUETOOTH_NB_MIC"/>
+  <int value="419" label="LINEOUT, NO_DEVICE"/>
+  <int value="420" label="LINEOUT, NORMAL_FALLBACK"/>
+  <int value="421" label="LINEOUT, ABNORMAL_FALLBACK"/>
+  <int value="422" label="LINEOUT, SILENT_HOTWORD"/>
+  <int value="423" label="LINEOUT, UNKNOWN"/>
+  <int value="424" label="LINEOUT, BLUETOOTH_WB_MIC"/>
+  <int value="425" label="LINEOUT, ALSA_LOOPBACK"/>
+  <int value="500" label="INTERNAL_MIC, INTERNAL_SPEAKER"/>
+  <int value="501" label="INTERNAL_MIC, HEADPHONE"/>
+  <int value="502" label="INTERNAL_MIC, HDMI"/>
+  <int value="503" label="INTERNAL_MIC, HAPTIC"/>
+  <int value="504" label="INTERNAL_MIC, LINEOUT"/>
+  <int value="505" label="INTERNAL_MIC, INTERNAL_MIC"/>
+  <int value="506" label="INTERNAL_MIC, FRONT_MIC"/>
+  <int value="507" label="INTERNAL_MIC, REAR_MIC"/>
+  <int value="508" label="INTERNAL_MIC, KEYBOARD_MIC"/>
+  <int value="509" label="INTERNAL_MIC, MIC"/>
+  <int value="510" label="INTERNAL_MIC, HOTWORD"/>
+  <int value="511" label="INTERNAL_MIC, POST_MIX_LOOPBACK"/>
+  <int value="512" label="INTERNAL_MIC, POST_DSP_LOOPBACK"/>
+  <int value="513" label="INTERNAL_MIC, USB"/>
+  <int value="514" label="INTERNAL_MIC, A2DP"/>
+  <int value="515" label="INTERNAL_MIC, HFP"/>
+  <int value="516" label="INTERNAL_MIC, HSP"/>
+  <int value="517" label="INTERNAL_MIC, BLUETOOTH"/>
+  <int value="518" label="INTERNAL_MIC, BLUETOOTH_NB_MIC"/>
+  <int value="519" label="INTERNAL_MIC, NO_DEVICE"/>
+  <int value="520" label="INTERNAL_MIC, NORMAL_FALLBACK"/>
+  <int value="521" label="INTERNAL_MIC, ABNORMAL_FALLBACK"/>
+  <int value="522" label="INTERNAL_MIC, SILENT_HOTWORD"/>
+  <int value="523" label="INTERNAL_MIC, UNKNOWN"/>
+  <int value="524" label="INTERNAL_MIC, BLUETOOTH_WB_MIC"/>
+  <int value="525" label="INTERNAL_MIC, ALSA_LOOPBACK"/>
+  <int value="600" label="FRONT_MIC, INTERNAL_SPEAKER"/>
+  <int value="601" label="FRONT_MIC, HEADPHONE"/>
+  <int value="602" label="FRONT_MIC, HDMI"/>
+  <int value="603" label="FRONT_MIC, HAPTIC"/>
+  <int value="604" label="FRONT_MIC, LINEOUT"/>
+  <int value="605" label="FRONT_MIC, INTERNAL_MIC"/>
+  <int value="606" label="FRONT_MIC, FRONT_MIC"/>
+  <int value="607" label="FRONT_MIC, REAR_MIC"/>
+  <int value="608" label="FRONT_MIC, KEYBOARD_MIC"/>
+  <int value="609" label="FRONT_MIC, MIC"/>
+  <int value="610" label="FRONT_MIC, HOTWORD"/>
+  <int value="611" label="FRONT_MIC, POST_MIX_LOOPBACK"/>
+  <int value="612" label="FRONT_MIC, POST_DSP_LOOPBACK"/>
+  <int value="613" label="FRONT_MIC, USB"/>
+  <int value="614" label="FRONT_MIC, A2DP"/>
+  <int value="615" label="FRONT_MIC, HFP"/>
+  <int value="616" label="FRONT_MIC, HSP"/>
+  <int value="617" label="FRONT_MIC, BLUETOOTH"/>
+  <int value="618" label="FRONT_MIC, BLUETOOTH_NB_MIC"/>
+  <int value="619" label="FRONT_MIC, NO_DEVICE"/>
+  <int value="620" label="FRONT_MIC, NORMAL_FALLBACK"/>
+  <int value="621" label="FRONT_MIC, ABNORMAL_FALLBACK"/>
+  <int value="622" label="FRONT_MIC, SILENT_HOTWORD"/>
+  <int value="623" label="FRONT_MIC, UNKNOWN"/>
+  <int value="624" label="FRONT_MIC, BLUETOOTH_WB_MIC"/>
+  <int value="625" label="FRONT_MIC, ALSA_LOOPBACK"/>
+  <int value="700" label="REAR_MIC, INTERNAL_SPEAKER"/>
+  <int value="701" label="REAR_MIC, HEADPHONE"/>
+  <int value="702" label="REAR_MIC, HDMI"/>
+  <int value="703" label="REAR_MIC, HAPTIC"/>
+  <int value="704" label="REAR_MIC, LINEOUT"/>
+  <int value="705" label="REAR_MIC, INTERNAL_MIC"/>
+  <int value="706" label="REAR_MIC, FRONT_MIC"/>
+  <int value="707" label="REAR_MIC, REAR_MIC"/>
+  <int value="708" label="REAR_MIC, KEYBOARD_MIC"/>
+  <int value="709" label="REAR_MIC, MIC"/>
+  <int value="710" label="REAR_MIC, HOTWORD"/>
+  <int value="711" label="REAR_MIC, POST_MIX_LOOPBACK"/>
+  <int value="712" label="REAR_MIC, POST_DSP_LOOPBACK"/>
+  <int value="713" label="REAR_MIC, USB"/>
+  <int value="714" label="REAR_MIC, A2DP"/>
+  <int value="715" label="REAR_MIC, HFP"/>
+  <int value="716" label="REAR_MIC, HSP"/>
+  <int value="717" label="REAR_MIC, BLUETOOTH"/>
+  <int value="718" label="REAR_MIC, BLUETOOTH_NB_MIC"/>
+  <int value="719" label="REAR_MIC, NO_DEVICE"/>
+  <int value="720" label="REAR_MIC, NORMAL_FALLBACK"/>
+  <int value="721" label="REAR_MIC, ABNORMAL_FALLBACK"/>
+  <int value="722" label="REAR_MIC, SILENT_HOTWORD"/>
+  <int value="723" label="REAR_MIC, UNKNOWN"/>
+  <int value="724" label="REAR_MIC, BLUETOOTH_WB_MIC"/>
+  <int value="725" label="REAR_MIC, ALSA_LOOPBACK"/>
+  <int value="800" label="KEYBOARD_MIC, INTERNAL_SPEAKER"/>
+  <int value="801" label="KEYBOARD_MIC, HEADPHONE"/>
+  <int value="802" label="KEYBOARD_MIC, HDMI"/>
+  <int value="803" label="KEYBOARD_MIC, HAPTIC"/>
+  <int value="804" label="KEYBOARD_MIC, LINEOUT"/>
+  <int value="805" label="KEYBOARD_MIC, INTERNAL_MIC"/>
+  <int value="806" label="KEYBOARD_MIC, FRONT_MIC"/>
+  <int value="807" label="KEYBOARD_MIC, REAR_MIC"/>
+  <int value="808" label="KEYBOARD_MIC, KEYBOARD_MIC"/>
+  <int value="809" label="KEYBOARD_MIC, MIC"/>
+  <int value="810" label="KEYBOARD_MIC, HOTWORD"/>
+  <int value="811" label="KEYBOARD_MIC, POST_MIX_LOOPBACK"/>
+  <int value="812" label="KEYBOARD_MIC, POST_DSP_LOOPBACK"/>
+  <int value="813" label="KEYBOARD_MIC, USB"/>
+  <int value="814" label="KEYBOARD_MIC, A2DP"/>
+  <int value="815" label="KEYBOARD_MIC, HFP"/>
+  <int value="816" label="KEYBOARD_MIC, HSP"/>
+  <int value="817" label="KEYBOARD_MIC, BLUETOOTH"/>
+  <int value="818" label="KEYBOARD_MIC, BLUETOOTH_NB_MIC"/>
+  <int value="819" label="KEYBOARD_MIC, NO_DEVICE"/>
+  <int value="820" label="KEYBOARD_MIC, NORMAL_FALLBACK"/>
+  <int value="821" label="KEYBOARD_MIC, ABNORMAL_FALLBACK"/>
+  <int value="822" label="KEYBOARD_MIC, SILENT_HOTWORD"/>
+  <int value="823" label="KEYBOARD_MIC, UNKNOWN"/>
+  <int value="824" label="KEYBOARD_MIC, BLUETOOTH_WB_MIC"/>
+  <int value="825" label="KEYBOARD_MIC, ALSA_LOOPBACK"/>
+  <int value="900" label="MIC, INTERNAL_SPEAKER"/>
+  <int value="901" label="MIC, HEADPHONE"/>
+  <int value="902" label="MIC, HDMI"/>
+  <int value="903" label="MIC, HAPTIC"/>
+  <int value="904" label="MIC, LINEOUT"/>
+  <int value="905" label="MIC, INTERNAL_MIC"/>
+  <int value="906" label="MIC, FRONT_MIC"/>
+  <int value="907" label="MIC, REAR_MIC"/>
+  <int value="908" label="MIC, KEYBOARD_MIC"/>
+  <int value="909" label="MIC, MIC"/>
+  <int value="910" label="MIC, HOTWORD"/>
+  <int value="911" label="MIC, POST_MIX_LOOPBACK"/>
+  <int value="912" label="MIC, POST_DSP_LOOPBACK"/>
+  <int value="913" label="MIC, USB"/>
+  <int value="914" label="MIC, A2DP"/>
+  <int value="915" label="MIC, HFP"/>
+  <int value="916" label="MIC, HSP"/>
+  <int value="917" label="MIC, BLUETOOTH"/>
+  <int value="918" label="MIC, BLUETOOTH_NB_MIC"/>
+  <int value="919" label="MIC, NO_DEVICE"/>
+  <int value="920" label="MIC, NORMAL_FALLBACK"/>
+  <int value="921" label="MIC, ABNORMAL_FALLBACK"/>
+  <int value="922" label="MIC, SILENT_HOTWORD"/>
+  <int value="923" label="MIC, UNKNOWN"/>
+  <int value="924" label="MIC, BLUETOOTH_WB_MIC"/>
+  <int value="925" label="MIC, ALSA_LOOPBACK"/>
+  <int value="1000" label="HOTWORD, INTERNAL_SPEAKER"/>
+  <int value="1001" label="HOTWORD, HEADPHONE"/>
+  <int value="1002" label="HOTWORD, HDMI"/>
+  <int value="1003" label="HOTWORD, HAPTIC"/>
+  <int value="1004" label="HOTWORD, LINEOUT"/>
+  <int value="1005" label="HOTWORD, INTERNAL_MIC"/>
+  <int value="1006" label="HOTWORD, FRONT_MIC"/>
+  <int value="1007" label="HOTWORD, REAR_MIC"/>
+  <int value="1008" label="HOTWORD, KEYBOARD_MIC"/>
+  <int value="1009" label="HOTWORD, MIC"/>
+  <int value="1010" label="HOTWORD, HOTWORD"/>
+  <int value="1011" label="HOTWORD, POST_MIX_LOOPBACK"/>
+  <int value="1012" label="HOTWORD, POST_DSP_LOOPBACK"/>
+  <int value="1013" label="HOTWORD, USB"/>
+  <int value="1014" label="HOTWORD, A2DP"/>
+  <int value="1015" label="HOTWORD, HFP"/>
+  <int value="1016" label="HOTWORD, HSP"/>
+  <int value="1017" label="HOTWORD, BLUETOOTH"/>
+  <int value="1018" label="HOTWORD, BLUETOOTH_NB_MIC"/>
+  <int value="1019" label="HOTWORD, NO_DEVICE"/>
+  <int value="1020" label="HOTWORD, NORMAL_FALLBACK"/>
+  <int value="1021" label="HOTWORD, ABNORMAL_FALLBACK"/>
+  <int value="1022" label="HOTWORD, SILENT_HOTWORD"/>
+  <int value="1023" label="HOTWORD, UNKNOWN"/>
+  <int value="1024" label="HOTWORD, BLUETOOTH_WB_MIC"/>
+  <int value="1025" label="HOTWORD, ALSA_LOOPBACK"/>
+  <int value="1100" label="POST_MIX_LOOPBACK, INTERNAL_SPEAKER"/>
+  <int value="1101" label="POST_MIX_LOOPBACK, HEADPHONE"/>
+  <int value="1102" label="POST_MIX_LOOPBACK, HDMI"/>
+  <int value="1103" label="POST_MIX_LOOPBACK, HAPTIC"/>
+  <int value="1104" label="POST_MIX_LOOPBACK, LINEOUT"/>
+  <int value="1105" label="POST_MIX_LOOPBACK, INTERNAL_MIC"/>
+  <int value="1106" label="POST_MIX_LOOPBACK, FRONT_MIC"/>
+  <int value="1107" label="POST_MIX_LOOPBACK, REAR_MIC"/>
+  <int value="1108" label="POST_MIX_LOOPBACK, KEYBOARD_MIC"/>
+  <int value="1109" label="POST_MIX_LOOPBACK, MIC"/>
+  <int value="1110" label="POST_MIX_LOOPBACK, HOTWORD"/>
+  <int value="1111" label="POST_MIX_LOOPBACK, POST_MIX_LOOPBACK"/>
+  <int value="1112" label="POST_MIX_LOOPBACK, POST_DSP_LOOPBACK"/>
+  <int value="1113" label="POST_MIX_LOOPBACK, USB"/>
+  <int value="1114" label="POST_MIX_LOOPBACK, A2DP"/>
+  <int value="1115" label="POST_MIX_LOOPBACK, HFP"/>
+  <int value="1116" label="POST_MIX_LOOPBACK, HSP"/>
+  <int value="1117" label="POST_MIX_LOOPBACK, BLUETOOTH"/>
+  <int value="1118" label="POST_MIX_LOOPBACK, BLUETOOTH_NB_MIC"/>
+  <int value="1119" label="POST_MIX_LOOPBACK, NO_DEVICE"/>
+  <int value="1120" label="POST_MIX_LOOPBACK, NORMAL_FALLBACK"/>
+  <int value="1121" label="POST_MIX_LOOPBACK, ABNORMAL_FALLBACK"/>
+  <int value="1122" label="POST_MIX_LOOPBACK, SILENT_HOTWORD"/>
+  <int value="1123" label="POST_MIX_LOOPBACK, UNKNOWN"/>
+  <int value="1124" label="POST_MIX_LOOPBACK, BLUETOOTH_WB_MIC"/>
+  <int value="1125" label="POST_MIX_LOOPBACK, ALSA_LOOPBACK"/>
+  <int value="1200" label="POST_DSP_LOOPBACK, INTERNAL_SPEAKER"/>
+  <int value="1201" label="POST_DSP_LOOPBACK, HEADPHONE"/>
+  <int value="1202" label="POST_DSP_LOOPBACK, HDMI"/>
+  <int value="1203" label="POST_DSP_LOOPBACK, HAPTIC"/>
+  <int value="1204" label="POST_DSP_LOOPBACK, LINEOUT"/>
+  <int value="1205" label="POST_DSP_LOOPBACK, INTERNAL_MIC"/>
+  <int value="1206" label="POST_DSP_LOOPBACK, FRONT_MIC"/>
+  <int value="1207" label="POST_DSP_LOOPBACK, REAR_MIC"/>
+  <int value="1208" label="POST_DSP_LOOPBACK, KEYBOARD_MIC"/>
+  <int value="1209" label="POST_DSP_LOOPBACK, MIC"/>
+  <int value="1210" label="POST_DSP_LOOPBACK, HOTWORD"/>
+  <int value="1211" label="POST_DSP_LOOPBACK, POST_MIX_LOOPBACK"/>
+  <int value="1212" label="POST_DSP_LOOPBACK, POST_DSP_LOOPBACK"/>
+  <int value="1213" label="POST_DSP_LOOPBACK, USB"/>
+  <int value="1214" label="POST_DSP_LOOPBACK, A2DP"/>
+  <int value="1215" label="POST_DSP_LOOPBACK, HFP"/>
+  <int value="1216" label="POST_DSP_LOOPBACK, HSP"/>
+  <int value="1217" label="POST_DSP_LOOPBACK, BLUETOOTH"/>
+  <int value="1218" label="POST_DSP_LOOPBACK, BLUETOOTH_NB_MIC"/>
+  <int value="1219" label="POST_DSP_LOOPBACK, NO_DEVICE"/>
+  <int value="1220" label="POST_DSP_LOOPBACK, NORMAL_FALLBACK"/>
+  <int value="1221" label="POST_DSP_LOOPBACK, ABNORMAL_FALLBACK"/>
+  <int value="1222" label="POST_DSP_LOOPBACK, SILENT_HOTWORD"/>
+  <int value="1223" label="POST_DSP_LOOPBACK, UNKNOWN"/>
+  <int value="1224" label="POST_DSP_LOOPBACK, BLUETOOTH_WB_MIC"/>
+  <int value="1225" label="POST_DSP_LOOPBACK, ALSA_LOOPBACK"/>
+  <int value="1300" label="USB, INTERNAL_SPEAKER"/>
+  <int value="1301" label="USB, HEADPHONE"/>
+  <int value="1302" label="USB, HDMI"/>
+  <int value="1303" label="USB, HAPTIC"/>
+  <int value="1304" label="USB, LINEOUT"/>
+  <int value="1305" label="USB, INTERNAL_MIC"/>
+  <int value="1306" label="USB, FRONT_MIC"/>
+  <int value="1307" label="USB, REAR_MIC"/>
+  <int value="1308" label="USB, KEYBOARD_MIC"/>
+  <int value="1309" label="USB, MIC"/>
+  <int value="1310" label="USB, HOTWORD"/>
+  <int value="1311" label="USB, POST_MIX_LOOPBACK"/>
+  <int value="1312" label="USB, POST_DSP_LOOPBACK"/>
+  <int value="1313" label="USB, USB"/>
+  <int value="1314" label="USB, A2DP"/>
+  <int value="1315" label="USB, HFP"/>
+  <int value="1316" label="USB, HSP"/>
+  <int value="1317" label="USB, BLUETOOTH"/>
+  <int value="1318" label="USB, BLUETOOTH_NB_MIC"/>
+  <int value="1319" label="USB, NO_DEVICE"/>
+  <int value="1320" label="USB, NORMAL_FALLBACK"/>
+  <int value="1321" label="USB, ABNORMAL_FALLBACK"/>
+  <int value="1322" label="USB, SILENT_HOTWORD"/>
+  <int value="1323" label="USB, UNKNOWN"/>
+  <int value="1324" label="USB, BLUETOOTH_WB_MIC"/>
+  <int value="1325" label="USB, ALSA_LOOPBACK"/>
+  <int value="1400" label="A2DP, INTERNAL_SPEAKER"/>
+  <int value="1401" label="A2DP, HEADPHONE"/>
+  <int value="1402" label="A2DP, HDMI"/>
+  <int value="1403" label="A2DP, HAPTIC"/>
+  <int value="1404" label="A2DP, LINEOUT"/>
+  <int value="1405" label="A2DP, INTERNAL_MIC"/>
+  <int value="1406" label="A2DP, FRONT_MIC"/>
+  <int value="1407" label="A2DP, REAR_MIC"/>
+  <int value="1408" label="A2DP, KEYBOARD_MIC"/>
+  <int value="1409" label="A2DP, MIC"/>
+  <int value="1410" label="A2DP, HOTWORD"/>
+  <int value="1411" label="A2DP, POST_MIX_LOOPBACK"/>
+  <int value="1412" label="A2DP, POST_DSP_LOOPBACK"/>
+  <int value="1413" label="A2DP, USB"/>
+  <int value="1414" label="A2DP, A2DP"/>
+  <int value="1415" label="A2DP, HFP"/>
+  <int value="1416" label="A2DP, HSP"/>
+  <int value="1417" label="A2DP, BLUETOOTH"/>
+  <int value="1418" label="A2DP, BLUETOOTH_NB_MIC"/>
+  <int value="1419" label="A2DP, NO_DEVICE"/>
+  <int value="1420" label="A2DP, NORMAL_FALLBACK"/>
+  <int value="1421" label="A2DP, ABNORMAL_FALLBACK"/>
+  <int value="1422" label="A2DP, SILENT_HOTWORD"/>
+  <int value="1423" label="A2DP, UNKNOWN"/>
+  <int value="1424" label="A2DP, BLUETOOTH_WB_MIC"/>
+  <int value="1425" label="A2DP, ALSA_LOOPBACK"/>
+  <int value="1500" label="HFP, INTERNAL_SPEAKER"/>
+  <int value="1501" label="HFP, HEADPHONE"/>
+  <int value="1502" label="HFP, HDMI"/>
+  <int value="1503" label="HFP, HAPTIC"/>
+  <int value="1504" label="HFP, LINEOUT"/>
+  <int value="1505" label="HFP, INTERNAL_MIC"/>
+  <int value="1506" label="HFP, FRONT_MIC"/>
+  <int value="1507" label="HFP, REAR_MIC"/>
+  <int value="1508" label="HFP, KEYBOARD_MIC"/>
+  <int value="1509" label="HFP, MIC"/>
+  <int value="1510" label="HFP, HOTWORD"/>
+  <int value="1511" label="HFP, POST_MIX_LOOPBACK"/>
+  <int value="1512" label="HFP, POST_DSP_LOOPBACK"/>
+  <int value="1513" label="HFP, USB"/>
+  <int value="1514" label="HFP, A2DP"/>
+  <int value="1515" label="HFP, HFP"/>
+  <int value="1516" label="HFP, HSP"/>
+  <int value="1517" label="HFP, BLUETOOTH"/>
+  <int value="1518" label="HFP, BLUETOOTH_NB_MIC"/>
+  <int value="1519" label="HFP, NO_DEVICE"/>
+  <int value="1520" label="HFP, NORMAL_FALLBACK"/>
+  <int value="1521" label="HFP, ABNORMAL_FALLBACK"/>
+  <int value="1522" label="HFP, SILENT_HOTWORD"/>
+  <int value="1523" label="HFP, UNKNOWN"/>
+  <int value="1524" label="HFP, BLUETOOTH_WB_MIC"/>
+  <int value="1525" label="HFP, ALSA_LOOPBACK"/>
+  <int value="1600" label="HSP, INTERNAL_SPEAKER"/>
+  <int value="1601" label="HSP, HEADPHONE"/>
+  <int value="1602" label="HSP, HDMI"/>
+  <int value="1603" label="HSP, HAPTIC"/>
+  <int value="1604" label="HSP, LINEOUT"/>
+  <int value="1605" label="HSP, INTERNAL_MIC"/>
+  <int value="1606" label="HSP, FRONT_MIC"/>
+  <int value="1607" label="HSP, REAR_MIC"/>
+  <int value="1608" label="HSP, KEYBOARD_MIC"/>
+  <int value="1609" label="HSP, MIC"/>
+  <int value="1610" label="HSP, HOTWORD"/>
+  <int value="1611" label="HSP, POST_MIX_LOOPBACK"/>
+  <int value="1612" label="HSP, POST_DSP_LOOPBACK"/>
+  <int value="1613" label="HSP, USB"/>
+  <int value="1614" label="HSP, A2DP"/>
+  <int value="1615" label="HSP, HFP"/>
+  <int value="1616" label="HSP, HSP"/>
+  <int value="1617" label="HSP, BLUETOOTH"/>
+  <int value="1618" label="HSP, BLUETOOTH_NB_MIC"/>
+  <int value="1619" label="HSP, NO_DEVICE"/>
+  <int value="1620" label="HSP, NORMAL_FALLBACK"/>
+  <int value="1621" label="HSP, ABNORMAL_FALLBACK"/>
+  <int value="1622" label="HSP, SILENT_HOTWORD"/>
+  <int value="1623" label="HSP, UNKNOWN"/>
+  <int value="1624" label="HSP, BLUETOOTH_WB_MIC"/>
+  <int value="1625" label="HSP, ALSA_LOOPBACK"/>
+  <int value="1700" label="BLUETOOTH, INTERNAL_SPEAKER"/>
+  <int value="1701" label="BLUETOOTH, HEADPHONE"/>
+  <int value="1702" label="BLUETOOTH, HDMI"/>
+  <int value="1703" label="BLUETOOTH, HAPTIC"/>
+  <int value="1704" label="BLUETOOTH, LINEOUT"/>
+  <int value="1705" label="BLUETOOTH, INTERNAL_MIC"/>
+  <int value="1706" label="BLUETOOTH, FRONT_MIC"/>
+  <int value="1707" label="BLUETOOTH, REAR_MIC"/>
+  <int value="1708" label="BLUETOOTH, KEYBOARD_MIC"/>
+  <int value="1709" label="BLUETOOTH, MIC"/>
+  <int value="1710" label="BLUETOOTH, HOTWORD"/>
+  <int value="1711" label="BLUETOOTH, POST_MIX_LOOPBACK"/>
+  <int value="1712" label="BLUETOOTH, POST_DSP_LOOPBACK"/>
+  <int value="1713" label="BLUETOOTH, USB"/>
+  <int value="1714" label="BLUETOOTH, A2DP"/>
+  <int value="1715" label="BLUETOOTH, HFP"/>
+  <int value="1716" label="BLUETOOTH, HSP"/>
+  <int value="1717" label="BLUETOOTH, BLUETOOTH"/>
+  <int value="1718" label="BLUETOOTH, BLUETOOTH_NB_MIC"/>
+  <int value="1719" label="BLUETOOTH, NO_DEVICE"/>
+  <int value="1720" label="BLUETOOTH, NORMAL_FALLBACK"/>
+  <int value="1721" label="BLUETOOTH, ABNORMAL_FALLBACK"/>
+  <int value="1722" label="BLUETOOTH, SILENT_HOTWORD"/>
+  <int value="1723" label="BLUETOOTH, UNKNOWN"/>
+  <int value="1724" label="BLUETOOTH, BLUETOOTH_WB_MIC"/>
+  <int value="1725" label="BLUETOOTH, ALSA_LOOPBACK"/>
+  <int value="1800" label="BLUETOOTH_NB_MIC, INTERNAL_SPEAKER"/>
+  <int value="1801" label="BLUETOOTH_NB_MIC, HEADPHONE"/>
+  <int value="1802" label="BLUETOOTH_NB_MIC, HDMI"/>
+  <int value="1803" label="BLUETOOTH_NB_MIC, HAPTIC"/>
+  <int value="1804" label="BLUETOOTH_NB_MIC, LINEOUT"/>
+  <int value="1805" label="BLUETOOTH_NB_MIC, INTERNAL_MIC"/>
+  <int value="1806" label="BLUETOOTH_NB_MIC, FRONT_MIC"/>
+  <int value="1807" label="BLUETOOTH_NB_MIC, REAR_MIC"/>
+  <int value="1808" label="BLUETOOTH_NB_MIC, KEYBOARD_MIC"/>
+  <int value="1809" label="BLUETOOTH_NB_MIC, MIC"/>
+  <int value="1810" label="BLUETOOTH_NB_MIC, HOTWORD"/>
+  <int value="1811" label="BLUETOOTH_NB_MIC, POST_MIX_LOOPBACK"/>
+  <int value="1812" label="BLUETOOTH_NB_MIC, POST_DSP_LOOPBACK"/>
+  <int value="1813" label="BLUETOOTH_NB_MIC, USB"/>
+  <int value="1814" label="BLUETOOTH_NB_MIC, A2DP"/>
+  <int value="1815" label="BLUETOOTH_NB_MIC, HFP"/>
+  <int value="1816" label="BLUETOOTH_NB_MIC, HSP"/>
+  <int value="1817" label="BLUETOOTH_NB_MIC, BLUETOOTH"/>
+  <int value="1818" label="BLUETOOTH_NB_MIC, BLUETOOTH_NB_MIC"/>
+  <int value="1819" label="BLUETOOTH_NB_MIC, NO_DEVICE"/>
+  <int value="1820" label="BLUETOOTH_NB_MIC, NORMAL_FALLBACK"/>
+  <int value="1821" label="BLUETOOTH_NB_MIC, ABNORMAL_FALLBACK"/>
+  <int value="1822" label="BLUETOOTH_NB_MIC, SILENT_HOTWORD"/>
+  <int value="1823" label="BLUETOOTH_NB_MIC, UNKNOWN"/>
+  <int value="1824" label="BLUETOOTH_NB_MIC, BLUETOOTH_WB_MIC"/>
+  <int value="1825" label="BLUETOOTH_NB_MIC, ALSA_LOOPBACK"/>
+  <int value="1900" label="NO_DEVICE, INTERNAL_SPEAKER"/>
+  <int value="1901" label="NO_DEVICE, HEADPHONE"/>
+  <int value="1902" label="NO_DEVICE, HDMI"/>
+  <int value="1903" label="NO_DEVICE, HAPTIC"/>
+  <int value="1904" label="NO_DEVICE, LINEOUT"/>
+  <int value="1905" label="NO_DEVICE, INTERNAL_MIC"/>
+  <int value="1906" label="NO_DEVICE, FRONT_MIC"/>
+  <int value="1907" label="NO_DEVICE, REAR_MIC"/>
+  <int value="1908" label="NO_DEVICE, KEYBOARD_MIC"/>
+  <int value="1909" label="NO_DEVICE, MIC"/>
+  <int value="1910" label="NO_DEVICE, HOTWORD"/>
+  <int value="1911" label="NO_DEVICE, POST_MIX_LOOPBACK"/>
+  <int value="1912" label="NO_DEVICE, POST_DSP_LOOPBACK"/>
+  <int value="1913" label="NO_DEVICE, USB"/>
+  <int value="1914" label="NO_DEVICE, A2DP"/>
+  <int value="1915" label="NO_DEVICE, HFP"/>
+  <int value="1916" label="NO_DEVICE, HSP"/>
+  <int value="1917" label="NO_DEVICE, BLUETOOTH"/>
+  <int value="1918" label="NO_DEVICE, BLUETOOTH_NB_MIC"/>
+  <int value="1919" label="NO_DEVICE, NO_DEVICE"/>
+  <int value="1920" label="NO_DEVICE, NORMAL_FALLBACK"/>
+  <int value="1921" label="NO_DEVICE, ABNORMAL_FALLBACK"/>
+  <int value="1922" label="NO_DEVICE, SILENT_HOTWORD"/>
+  <int value="1923" label="NO_DEVICE, UNKNOWN"/>
+  <int value="1924" label="NO_DEVICE, BLUETOOTH_WB_MIC"/>
+  <int value="1925" label="NO_DEVICE, ALSA_LOOPBACK"/>
+  <int value="2000" label="NORMAL_FALLBACK, INTERNAL_SPEAKER"/>
+  <int value="2001" label="NORMAL_FALLBACK, HEADPHONE"/>
+  <int value="2002" label="NORMAL_FALLBACK, HDMI"/>
+  <int value="2003" label="NORMAL_FALLBACK, HAPTIC"/>
+  <int value="2004" label="NORMAL_FALLBACK, LINEOUT"/>
+  <int value="2005" label="NORMAL_FALLBACK, INTERNAL_MIC"/>
+  <int value="2006" label="NORMAL_FALLBACK, FRONT_MIC"/>
+  <int value="2007" label="NORMAL_FALLBACK, REAR_MIC"/>
+  <int value="2008" label="NORMAL_FALLBACK, KEYBOARD_MIC"/>
+  <int value="2009" label="NORMAL_FALLBACK, MIC"/>
+  <int value="2010" label="NORMAL_FALLBACK, HOTWORD"/>
+  <int value="2011" label="NORMAL_FALLBACK, POST_MIX_LOOPBACK"/>
+  <int value="2012" label="NORMAL_FALLBACK, POST_DSP_LOOPBACK"/>
+  <int value="2013" label="NORMAL_FALLBACK, USB"/>
+  <int value="2014" label="NORMAL_FALLBACK, A2DP"/>
+  <int value="2015" label="NORMAL_FALLBACK, HFP"/>
+  <int value="2016" label="NORMAL_FALLBACK, HSP"/>
+  <int value="2017" label="NORMAL_FALLBACK, BLUETOOTH"/>
+  <int value="2018" label="NORMAL_FALLBACK, BLUETOOTH_NB_MIC"/>
+  <int value="2019" label="NORMAL_FALLBACK, NO_DEVICE"/>
+  <int value="2020" label="NORMAL_FALLBACK, NORMAL_FALLBACK"/>
+  <int value="2021" label="NORMAL_FALLBACK, ABNORMAL_FALLBACK"/>
+  <int value="2022" label="NORMAL_FALLBACK, SILENT_HOTWORD"/>
+  <int value="2023" label="NORMAL_FALLBACK, UNKNOWN"/>
+  <int value="2024" label="NORMAL_FALLBACK, BLUETOOTH_WB_MIC"/>
+  <int value="2025" label="NORMAL_FALLBACK, ALSA_LOOPBACK"/>
+  <int value="2100" label="ABNORMAL_FALLBACK, INTERNAL_SPEAKER"/>
+  <int value="2101" label="ABNORMAL_FALLBACK, HEADPHONE"/>
+  <int value="2102" label="ABNORMAL_FALLBACK, HDMI"/>
+  <int value="2103" label="ABNORMAL_FALLBACK, HAPTIC"/>
+  <int value="2104" label="ABNORMAL_FALLBACK, LINEOUT"/>
+  <int value="2105" label="ABNORMAL_FALLBACK, INTERNAL_MIC"/>
+  <int value="2106" label="ABNORMAL_FALLBACK, FRONT_MIC"/>
+  <int value="2107" label="ABNORMAL_FALLBACK, REAR_MIC"/>
+  <int value="2108" label="ABNORMAL_FALLBACK, KEYBOARD_MIC"/>
+  <int value="2109" label="ABNORMAL_FALLBACK, MIC"/>
+  <int value="2110" label="ABNORMAL_FALLBACK, HOTWORD"/>
+  <int value="2111" label="ABNORMAL_FALLBACK, POST_MIX_LOOPBACK"/>
+  <int value="2112" label="ABNORMAL_FALLBACK, POST_DSP_LOOPBACK"/>
+  <int value="2113" label="ABNORMAL_FALLBACK, USB"/>
+  <int value="2114" label="ABNORMAL_FALLBACK, A2DP"/>
+  <int value="2115" label="ABNORMAL_FALLBACK, HFP"/>
+  <int value="2116" label="ABNORMAL_FALLBACK, HSP"/>
+  <int value="2117" label="ABNORMAL_FALLBACK, BLUETOOTH"/>
+  <int value="2118" label="ABNORMAL_FALLBACK, BLUETOOTH_NB_MIC"/>
+  <int value="2119" label="ABNORMAL_FALLBACK, NO_DEVICE"/>
+  <int value="2120" label="ABNORMAL_FALLBACK, NORMAL_FALLBACK"/>
+  <int value="2121" label="ABNORMAL_FALLBACK, ABNORMAL_FALLBACK"/>
+  <int value="2122" label="ABNORMAL_FALLBACK, SILENT_HOTWORD"/>
+  <int value="2123" label="ABNORMAL_FALLBACK, UNKNOWN"/>
+  <int value="2124" label="ABNORMAL_FALLBACK, BLUETOOTH_WB_MIC"/>
+  <int value="2125" label="ABNORMAL_FALLBACK, ALSA_LOOPBACK"/>
+  <int value="2200" label="SILENT_HOTWORD, INTERNAL_SPEAKER"/>
+  <int value="2201" label="SILENT_HOTWORD, HEADPHONE"/>
+  <int value="2202" label="SILENT_HOTWORD, HDMI"/>
+  <int value="2203" label="SILENT_HOTWORD, HAPTIC"/>
+  <int value="2204" label="SILENT_HOTWORD, LINEOUT"/>
+  <int value="2205" label="SILENT_HOTWORD, INTERNAL_MIC"/>
+  <int value="2206" label="SILENT_HOTWORD, FRONT_MIC"/>
+  <int value="2207" label="SILENT_HOTWORD, REAR_MIC"/>
+  <int value="2208" label="SILENT_HOTWORD, KEYBOARD_MIC"/>
+  <int value="2209" label="SILENT_HOTWORD, MIC"/>
+  <int value="2210" label="SILENT_HOTWORD, HOTWORD"/>
+  <int value="2211" label="SILENT_HOTWORD, POST_MIX_LOOPBACK"/>
+  <int value="2212" label="SILENT_HOTWORD, POST_DSP_LOOPBACK"/>
+  <int value="2213" label="SILENT_HOTWORD, USB"/>
+  <int value="2214" label="SILENT_HOTWORD, A2DP"/>
+  <int value="2215" label="SILENT_HOTWORD, HFP"/>
+  <int value="2216" label="SILENT_HOTWORD, HSP"/>
+  <int value="2217" label="SILENT_HOTWORD, BLUETOOTH"/>
+  <int value="2218" label="SILENT_HOTWORD, BLUETOOTH_NB_MIC"/>
+  <int value="2219" label="SILENT_HOTWORD, NO_DEVICE"/>
+  <int value="2220" label="SILENT_HOTWORD, NORMAL_FALLBACK"/>
+  <int value="2221" label="SILENT_HOTWORD, ABNORMAL_FALLBACK"/>
+  <int value="2222" label="SILENT_HOTWORD, SILENT_HOTWORD"/>
+  <int value="2223" label="SILENT_HOTWORD, UNKNOWN"/>
+  <int value="2224" label="SILENT_HOTWORD, BLUETOOTH_WB_MIC"/>
+  <int value="2225" label="SILENT_HOTWORD, ALSA_LOOPBACK"/>
+  <int value="2300" label="UNKNOWN, INTERNAL_SPEAKER"/>
+  <int value="2301" label="UNKNOWN, HEADPHONE"/>
+  <int value="2302" label="UNKNOWN, HDMI"/>
+  <int value="2303" label="UNKNOWN, HAPTIC"/>
+  <int value="2304" label="UNKNOWN, LINEOUT"/>
+  <int value="2305" label="UNKNOWN, INTERNAL_MIC"/>
+  <int value="2306" label="UNKNOWN, FRONT_MIC"/>
+  <int value="2307" label="UNKNOWN, REAR_MIC"/>
+  <int value="2308" label="UNKNOWN, KEYBOARD_MIC"/>
+  <int value="2309" label="UNKNOWN, MIC"/>
+  <int value="2310" label="UNKNOWN, HOTWORD"/>
+  <int value="2311" label="UNKNOWN, POST_MIX_LOOPBACK"/>
+  <int value="2312" label="UNKNOWN, POST_DSP_LOOPBACK"/>
+  <int value="2313" label="UNKNOWN, USB"/>
+  <int value="2314" label="UNKNOWN, A2DP"/>
+  <int value="2315" label="UNKNOWN, HFP"/>
+  <int value="2316" label="UNKNOWN, HSP"/>
+  <int value="2317" label="UNKNOWN, BLUETOOTH"/>
+  <int value="2318" label="UNKNOWN, BLUETOOTH_NB_MIC"/>
+  <int value="2319" label="UNKNOWN, NO_DEVICE"/>
+  <int value="2320" label="UNKNOWN, NORMAL_FALLBACK"/>
+  <int value="2321" label="UNKNOWN, ABNORMAL_FALLBACK"/>
+  <int value="2322" label="UNKNOWN, SILENT_HOTWORD"/>
+  <int value="2323" label="UNKNOWN, UNKNOWN"/>
+  <int value="2324" label="UNKNOWN, BLUETOOTH_WB_MIC"/>
+  <int value="2325" label="UNKNOWN, ALSA_LOOPBACK"/>
+  <int value="2400" label="BLUETOOTH_WB_MIC, INTERNAL_SPEAKER"/>
+  <int value="2401" label="BLUETOOTH_WB_MIC, HEADPHONE"/>
+  <int value="2402" label="BLUETOOTH_WB_MIC, HDMI"/>
+  <int value="2403" label="BLUETOOTH_WB_MIC, HAPTIC"/>
+  <int value="2404" label="BLUETOOTH_WB_MIC, LINEOUT"/>
+  <int value="2405" label="BLUETOOTH_WB_MIC, INTERNAL_MIC"/>
+  <int value="2406" label="BLUETOOTH_WB_MIC, FRONT_MIC"/>
+  <int value="2407" label="BLUETOOTH_WB_MIC, REAR_MIC"/>
+  <int value="2408" label="BLUETOOTH_WB_MIC, KEYBOARD_MIC"/>
+  <int value="2409" label="BLUETOOTH_WB_MIC, MIC"/>
+  <int value="2410" label="BLUETOOTH_WB_MIC, HOTWORD"/>
+  <int value="2411" label="BLUETOOTH_WB_MIC, POST_MIX_LOOPBACK"/>
+  <int value="2412" label="BLUETOOTH_WB_MIC, POST_DSP_LOOPBACK"/>
+  <int value="2413" label="BLUETOOTH_WB_MIC, USB"/>
+  <int value="2414" label="BLUETOOTH_WB_MIC, A2DP"/>
+  <int value="2415" label="BLUETOOTH_WB_MIC, HFP"/>
+  <int value="2416" label="BLUETOOTH_WB_MIC, HSP"/>
+  <int value="2417" label="BLUETOOTH_WB_MIC, BLUETOOTH"/>
+  <int value="2418" label="BLUETOOTH_WB_MIC, BLUETOOTH_NB_MIC"/>
+  <int value="2419" label="BLUETOOTH_WB_MIC, NO_DEVICE"/>
+  <int value="2420" label="BLUETOOTH_WB_MIC, NORMAL_FALLBACK"/>
+  <int value="2421" label="BLUETOOTH_WB_MIC, ABNORMAL_FALLBACK"/>
+  <int value="2422" label="BLUETOOTH_WB_MIC, SILENT_HOTWORD"/>
+  <int value="2423" label="BLUETOOTH_WB_MIC, UNKNOWN"/>
+  <int value="2424" label="BLUETOOTH_WB_MIC, BLUETOOTH_WB_MIC"/>
+  <int value="2425" label="BLUETOOTH_WB_MIC, ALSA_LOOPBACK"/>
+  <int value="2500" label="ALSA_LOOPBACK, INTERNAL_SPEAKER"/>
+  <int value="2501" label="ALSA_LOOPBACK, HEADPHONE"/>
+  <int value="2502" label="ALSA_LOOPBACK, HDMI"/>
+  <int value="2503" label="ALSA_LOOPBACK, HAPTIC"/>
+  <int value="2504" label="ALSA_LOOPBACK, LINEOUT"/>
+  <int value="2505" label="ALSA_LOOPBACK, INTERNAL_MIC"/>
+  <int value="2506" label="ALSA_LOOPBACK, FRONT_MIC"/>
+  <int value="2507" label="ALSA_LOOPBACK, REAR_MIC"/>
+  <int value="2508" label="ALSA_LOOPBACK, KEYBOARD_MIC"/>
+  <int value="2509" label="ALSA_LOOPBACK, MIC"/>
+  <int value="2510" label="ALSA_LOOPBACK, HOTWORD"/>
+  <int value="2511" label="ALSA_LOOPBACK, POST_MIX_LOOPBACK"/>
+  <int value="2512" label="ALSA_LOOPBACK, POST_DSP_LOOPBACK"/>
+  <int value="2513" label="ALSA_LOOPBACK, USB"/>
+  <int value="2514" label="ALSA_LOOPBACK, A2DP"/>
+  <int value="2515" label="ALSA_LOOPBACK, HFP"/>
+  <int value="2516" label="ALSA_LOOPBACK, HSP"/>
+  <int value="2517" label="ALSA_LOOPBACK, BLUETOOTH"/>
+  <int value="2518" label="ALSA_LOOPBACK, BLUETOOTH_NB_MIC"/>
+  <int value="2519" label="ALSA_LOOPBACK, NO_DEVICE"/>
+  <int value="2520" label="ALSA_LOOPBACK, NORMAL_FALLBACK"/>
+  <int value="2521" label="ALSA_LOOPBACK, ABNORMAL_FALLBACK"/>
+  <int value="2522" label="ALSA_LOOPBACK, SILENT_HOTWORD"/>
+  <int value="2523" label="ALSA_LOOPBACK, UNKNOWN"/>
+  <int value="2524" label="ALSA_LOOPBACK, BLUETOOTH_WB_MIC"/>
+  <int value="2525" label="ALSA_LOOPBACK, ALSA_LOOPBACK"/>
+</enum>
+
+<enum name="CrasDeviceType">
+  <summary>
+    List of the device type of CRAS. The list can be found in
+    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/main/cras/src/server/cras_server_metrics.c
+    (enum CRAS_METRICS_DEVICE_TYPE).
+  </summary>
+  <int value="0" label="CRAS_METRICS_DEVICE_INTERNAL_SPEAKER"/>
+  <int value="1" label="CRAS_METRICS_DEVICE_HEADPHONE"/>
+  <int value="2" label="CRAS_METRICS_DEVICE_HDMI"/>
+  <int value="3" label="CRAS_METRICS_DEVICE_HAPTIC"/>
+  <int value="4" label="CRAS_METRICS_DEVICE_LINEOUT"/>
+  <int value="5" label="CRAS_METRICS_DEVICE_INTERNAL_MIC"/>
+  <int value="6" label="CRAS_METRICS_DEVICE_FRONT_MIC"/>
+  <int value="7" label="CRAS_METRICS_DEVICE_REAR_MIC"/>
+  <int value="8" label="CRAS_METRICS_DEVICE_KEYBOARD_MIC"/>
+  <int value="9" label="CRAS_METRICS_DEVICE_MIC"/>
+  <int value="10" label="CRAS_METRICS_DEVICE_HOTWORD"/>
+  <int value="11" label="CRAS_METRICS_DEVICE_POST_MIX_LOOPBACK"/>
+  <int value="12" label="CRAS_METRICS_DEVICE_POST_DSP_LOOPBACK"/>
+  <int value="13" label="CRAS_METRICS_DEVICE_USB"/>
+  <int value="14" label="CRAS_METRICS_DEVICE_A2DP"/>
+  <int value="15" label="CRAS_METRICS_DEVICE_HFP"/>
+  <int value="16" label="CRAS_METRICS_DEVICE_HSP"/>
+  <int value="17" label="CRAS_METRICS_DEVICE_BLUETOOTH (Deprecated)"/>
+  <int value="18" label="CRAS_METRICS_DEVICE_BLUETOOTH_NB_MIC"/>
+  <int value="19" label="CRAS_METRICS_DEVICE_NO_DEVICE"/>
+  <int value="20" label="CRAS_METRICS_DEVICE_NORMAL_FALLBACK"/>
+  <int value="21" label="CRAS_METRICS_DEVICE_ABNORMAL_FALLBACK"/>
+  <int value="22" label="CRAS_METRICS_DEVICE_SILENT_HOTWORD"/>
+  <int value="23" label="CRAS_METRICS_DEVICE_UNKNOWN"/>
+  <int value="24" label="CRAS_METRICS_DEVICE_BLUETOOTH_WB_MIC"/>
+  <int value="25" label="CRAS_METRICS_DEVICE_ALSA_LOOPBACK"/>
+</enum>
+
+<enum name="CrasDlcManagerDlcStatus">
+  <summary>
+    Availability of CRAS DLC. This list should be aligned with CRAS:
+    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/main/cras/src/server/cras_server_metrics.h
+  </summary>
+  <int value="0" label="CRAS_METRICS_DLC_STATUS_UNAVAILABLE"/>
+  <int value="1" label="CRAS_METRICS_DLC_STATUS_AVAILABLE"/>
+</enum>
+
+<enum name="CrasHfpBatteryIndicator">
+  <summary>
+    List of known battery indicator supports in Bluetooth Hands-free profile.
+    This list should be aligned with CRAS:
+    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/main/cras/src/server/cras_hfp_slc.h
+  </summary>
+  <int value="0" label="CRAS_HFP_BATTERY_INDICATOR_NONE"/>
+  <int value="1" label="CRAS_HFP_BATTERY_INDICATOR_HFP"/>
+  <int value="2" label="CRAS_HFP_BATTERY_INDICATOR_APPLE"/>
+  <int value="3" label="CRAS_HFP_BATTERY_INDICATOR_HFP_APPLE"/>
+  <int value="4" label="CRAS_HFP_BATTERY_INDICATOR_PLANTRONICS"/>
+  <int value="5" label="CRAS_HFP_BATTERY_INDICATOR_HFP_PLANTRONICS"/>
+  <int value="6" label="CRAS_HFP_BATTERY_INDICATOR_APPLE_PLANTRONICS"/>
+  <int value="7" label="CRAS_HFP_BATTERY_INDICATOR_ALL"/>
+</enum>
+
+<enum name="CrasHfpCodec">
+  <summary>
+    List of codec ids used for SCO audio, in Bluetooth Hands-free profile. This
+    list should be aligned with CRAS:
+    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/main/cras/src/server/cras_hfp_slc.h
+  </summary>
+  <int value="0" label="HFP_CODEC_UNUSED"/>
+  <int value="1" label="HFP_CODEC_ID_CVSD"/>
+  <int value="2" label="HFP_CODEC_ID_MSBC"/>
+</enum>
+
+<enum name="CrasHfpMicSuperResolutionStatus">
+  <summary>
+    List of status types of Super Resolution for the bluetooth microphone audio.
+    This list should be aligned with CRAS:
+    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/main/cras/src/server/cras_server_metrics.h
+  </summary>
+  <int value="0" label="CRAS_METRICS_HFP_MIC_SR_ENABLE_SUCCESS"/>
+  <int value="1" label="CRAS_METRICS_HFP_MIC_SR_ENABLE_FAILED"/>
+  <int value="2" label="CRAS_METRICS_HFP_MIC_SR_FEATURE_DISABLED"/>
+  <int value="3" label="CRAS_METRICS_HFP_MIC_SR_DLC_UNAVAILABLE"/>
+  <int value="4" label="CRAS_METRICS_HFP_MIC_SR_FEATURE_UNSUPPORTED"/>
+</enum>
+
+<enum name="CrasHfpScoError">
+  <summary>
+    List of results(success or error code) of setting up a SCO connection for
+    Bluetooth Hands-free profile. This list should be aligned with CRAS:
+    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/main/cras/src/server/cras_server_metrics.h
+  </summary>
+  <int value="0" label="SKT_SUCCESS"/>
+  <int value="1" label="SKT_CONNECTION_ERROR"/>
+  <int value="2" label="SKT_OPEN_ERROR"/>
+  <int value="3" label="SKT_POLL_TIMEOUT"/>
+  <int value="4" label="SKT_POLL_ERR_HUP"/>
+</enum>
+
+<enum name="CrasNoiseCancellationStatus">
+  <summary>
+    List of status types of Noise Cancellation for the supported audio device.
+    This list should be aligned with CRAS:
+    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/main/cras/src/server/cras_alsa_io.c
+  </summary>
+  <int value="0" label="CRAS_NOISE_CANCELLATION_BLOCKED"/>
+  <int value="1" label="CRAS_NOISE_CANCELLATION_DISABLED"/>
+  <int value="2" label="CRAS_NOISE_CANCELLATION_ENABLED"/>
+</enum>
+
+<enum name="CrasStreamAddError">
+  <summary>
+    List of errors could happen when CRAS adds a stream to its audio thread.
+    Cras side definition in
+    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/main/cras/src/server/cras_server_metrics.h
+  </summary>
+  <int value="0" label="CRAS_STREAM_ADD_IO_ERROR">
+    The IO device has encountered error.
+  </int>
+  <int value="1" label="CRAS_STREAM_ADD_INVALID_ARG">
+    Certain arguments are invalid.
+  </int>
+  <int value="2" label="CRAS_STREAM_ADD_OTHER_ERR">Other errors.</int>
+</enum>
+
+<enum name="CrasStreamConnectStatus">
+  <summary>
+    List of status when client requests to connect a stream to CRAS. Cras side
+    definition in
+    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/main/cras/src/server/cras_server_metrics.h
+  </summary>
+  <int value="0" label="CRAS_STREAM_CONN_SUCCESS"/>
+  <int value="1" label="CRAS_STREAM_CONN_INVALID_FORMAT">
+    The requested format is invalid.
+  </int>
+  <int value="2" label="CRAS_STREAM_CONN_INVALID_SHM_SIZE">
+    The shared memory size is invalid.
+  </int>
+  <int value="3" label="CRAS_STREAM_CONN_INVALID_SHM_FDS">
+    Fails to get shm fds.
+  </int>
+  <int value="4" label="CRAS_STREAM_CONN_ADD_FAIL">
+    Fails to add stream to stream_list at CRAS server side.
+  </int>
+  <int value="5" label="CRAS_STREAM_CONN_REPLY_FAIL">
+    Fails to send reply to CRAS client.
+  </int>
+</enum>
+
+<enum name="CrasStreamCreateError">
+  <summary>
+    List of errors could happen when CRAS creates a stream. Cras side definition
+    in
+    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/main/cras/src/server/cras_server_metrics.h
+  </summary>
+  <int value="0" label="CRAS_STREAM_CREATE_ERROR_INVALID_PARAM">
+    Certain arguments are invalid.
+  </int>
+  <int value="1" label="CRAS_STREAM_CREATE_ERROR_NO_MEMORY">No memory.</int>
+  <int value="2" label="CRAS_STREAM_CREATE_ERROR_SHM_SETUP_FAILURE">
+    Fail to set up shared memory.
+  </int>
+</enum>
+
+<enum name="InternalSoundcardStatus">
+  <int value="0" label="Not detected"/>
+  <int value="1" label="Detected"/>
+</enum>
+
+<enum name="StreamEffectState">
+  <int value="0" label="Force disable system effect"/>
+  <int value="1" label="Force enable system effect"/>
+  <int value="2" label="Use platform default state"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>
