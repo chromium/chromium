@@ -149,17 +149,23 @@ export class SearchEngineChoiceAppElement extends
     });
 
     afterNextRender(this, () => {
+      if (this.withForcedScroll_) {
+        // If the choice list and the page don't contain a scrollbar then the
+        // user is already at the bottom.
+        this.hasUserScrolledToTheBottom_ =
+            !this.isChoiceListScrollable_() && !this.isPageScrollable_();
+
+        if (this.isChoiceListScrollable_()) {
+          this.$.choiceList.addEventListener(
+              'scroll', this.onChoiceListScroll_.bind(this));
+        }
+        if (this.isPageScrollable_()) {
+          document.addEventListener('scroll', this.onPageScroll_.bind(this));
+        }
+      }
+
       this.pageHandler_.displayDialog();
     });
-  }
-
-  override ready() {
-    super.ready();
-
-    if (this.withForcedScroll_) {
-      this.$.choiceList.addEventListener(
-          'scroll', this.onChoiceListScroll_.bind(this));
-    }
   }
 
   private onLinkClicked_() {
@@ -183,8 +189,12 @@ export class SearchEngineChoiceAppElement extends
 
   private onActionButtonClicked_() {
     if (this.needsScrollToTheBottom_()) {
-      const scrollPosition = this.$.choiceList.getBoundingClientRect().top;
-      this.$.choiceList.scrollTo({top: scrollPosition, behavior: 'smooth'});
+      if (this.isChoiceListScrollable_()) {
+        const scrollPosition = this.$.choiceList.getBoundingClientRect().top;
+        this.$.choiceList.scrollTo({top: scrollPosition, behavior: 'smooth'});
+      } else if (this.isPageScrollable_()) {
+        window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'});
+      }
       return;
     }
     this.pageHandler_.handleSearchEngineChoiceSelected(
@@ -256,17 +266,45 @@ export class SearchEngineChoiceAppElement extends
   }
 
   private onChoiceListScroll_() {
-    const scrollHeight = this.$.choiceList.scrollHeight;
-    const clientHeight = this.$.choiceList.clientHeight;
-    const scrollTop = this.$.choiceList.scrollTop;
+    this.processScroll_(
+        /*contentHeight=*/ this.$.choiceList.scrollHeight,
+        /*viewportHeight=*/ this.$.choiceList.clientHeight,
+        /*scrollPosition=*/ this.$.choiceList.scrollTop,
+    );
+  }
 
+  private onPageScroll_() {
+    this.processScroll_(
+        /*contentHeight=*/ document.body.scrollHeight,
+        /*viewportHeight=*/ window.innerHeight,
+        /*scrollPosition=*/ window.scrollY,
+    );
+  }
+
+  private processScroll_(
+      contentHeight: number, viewportHeight: number, scrollPosition: number) {
     // We check for `< 1` so that we don't care about rounding issues.
-    if (Math.abs(scrollHeight - clientHeight - scrollTop) < 1) {
+    if (Math.abs(contentHeight - viewportHeight - scrollPosition) < 1) {
       this.hasUserScrolledToTheBottom_ = true;
-
-      this.$.choiceList.removeEventListener(
+      document.removeEventListener('scroll', this.onPageScroll_.bind(this));
+      document.removeEventListener(
           'scroll', this.onChoiceListScroll_.bind(this));
     }
+  }
+
+  // The choice list is scrollable at the dialog's full height.
+  private isChoiceListScrollable_() {
+    const choiceListOverflow = getComputedStyle(this.$.choiceList).overflow;
+    return choiceListOverflow === 'auto' &&
+        this.$.choiceList.scrollHeight > this.$.choiceList.clientHeight;
+  }
+
+  // We make the page scrollable instead of the choice lists at specific
+  // heights.
+  private isPageScrollable_() {
+    const choiceListOverflow = getComputedStyle(this.$.choiceList).overflow;
+    return choiceListOverflow === 'visible' &&
+        document.body.scrollHeight > document.body.clientHeight;
   }
 
   private getActionButtonText_() {

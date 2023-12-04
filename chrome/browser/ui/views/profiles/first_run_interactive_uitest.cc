@@ -63,6 +63,7 @@ namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kProfilePickerViewId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kButtonEnabled);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kButtonDisabled);
 
 using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
 const DeepQuery kSignInButton{"intro-app", "sign-in-promo",
@@ -218,6 +219,16 @@ class FirstRunInteractiveUiTestBase
     return WaitForStateChange(web_contents_id, button_enabled);
   }
 
+  auto WaitForButtonDisabled(const ui::ElementIdentifier web_contents_id,
+                             const DeepQuery& button_query) {
+    StateChange button_disabled;
+    button_disabled.event = kButtonDisabled;
+    button_disabled.where = button_query;
+    button_disabled.type = StateChange::Type::kExistsAndConditionTrue;
+    button_disabled.test_function = "(btn) => btn.disabled";
+    return WaitForStateChange(web_contents_id, button_disabled);
+  }
+
   // Waits for the intro buttons to be shown and presses to proceed according
   // to the value of `sign_in`.
   auto CompleteIntroStep(bool sign_in) {
@@ -346,14 +357,12 @@ class FirstRunParameterizedInteractiveUiTest
     return Steps(
         WaitForWebContentsNavigation(
             kWebContentsId, GURL(chrome::kChromeUISearchEngineChoiceURL)),
+        // Click on "More" to scroll to the bottom of the search engine list.
+        PressJsButton(kWebContentsId, kSearchEngineChoiceActionButton),
+        // The button should become disabled because we didn't make a choice.
+        WaitForButtonDisabled(kWebContentsId, kSearchEngineChoiceActionButton),
         PressJsButton(kWebContentsId, first_search_engine),
-        // Simulate scrolling to the bottom of the choice list.
-        ExecuteJsAt(kWebContentsId, searchEngineChoiceList, R"js(
-          element => {
-            element.scrollTop = element.scrollHeight - element.clientHeight;
-            element.dispatchEvent(new CustomEvent('scroll'));
-          }
-        )js"),
+        WaitForButtonEnabled(kWebContentsId, kSearchEngineChoiceActionButton),
         PressJsButton(kWebContentsId, kSearchEngineChoiceActionButton));
   }
 #endif
