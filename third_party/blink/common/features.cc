@@ -2290,6 +2290,9 @@ BASE_FEATURE(kExpandCompositedCullRect,
 const base::FeatureParam<int> kPixelDistanceToExpand(&kExpandCompositedCullRect,
                                                      "pixels",
                                                      4000);
+BASE_FEATURE(kTreatHTTPExpiresHeaderValueZeroAsExpiredInBlink,
+             "TreatHTTPExpiresHeaderValueZeroAsExpiredInBlink",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace blink

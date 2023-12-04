@@ -481,6 +481,12 @@ NET_EXPORT BASE_DECLARE_FEATURE(kNewCertPathBuilderIterationLimit);
 // Enables using the new ALPS codepoint to negotiate application settings.
 NET_EXPORT BASE_DECLARE_FEATURE(kUseAlpsNewCodepoint);
 
+// Treat HTTP header `Expires: "0"` as expired value according section 5.3 on
+// RFC 9111.
+// TODO(https://crbug.com/853508): Remove after the bug fix will go well for a
+// while on stable channels.
+NET_EXPORT BASE_DECLARE_FEATURE(kTreatHTTPExpiresHeaderValueZeroAsExpired);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

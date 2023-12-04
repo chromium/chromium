@@ -973,6 +973,29 @@ const struct RequiresValidationTestData requires_validation_tests[] = {
      "last-modified: Wed, 27 Nov 2007 08:00:00 GMT\n"
      "\n",
      VALIDATION_NONE},
+    // Last-modified heuristic: modified a while ago and it's VALIDATION_NONE
+    // (fresh) like above but VALIDATION_SYNCHRONOUS if expires header value is
+    // "0".
+    {"HTTP/1.1 200 OK\n"
+     "date: Wed, 28 Nov 2007 00:40:11 GMT\n"
+     "last-modified: Tue, 27 Nov 2007 08:00:00 GMT\n"
+     "expires: 0\n"
+     "\n",
+     VALIDATION_SYNCHRONOUS},
+    {"HTTP/1.1 200 OK\n"
+     "date: Wed, 28 Nov 2007 00:40:11 GMT\n"
+     "last-modified: Tue, 27 Nov 2007 08:00:00 GMT\n"
+     "expires:  0 \n"
+     "\n",
+     VALIDATION_SYNCHRONOUS},
+    // The cache is fresh if the expires header value is an invalid date string
+    // except for "0"
+    {"HTTP/1.1 200 OK\n"
+     "date: Wed, 28 Nov 2007 00:40:11 GMT\n"
+     "last-modified: Tue, 27 Nov 2007 08:00:00 GMT\n"
+     "expires: banana \n"
+     "\n",
+     VALIDATION_NONE},
     // Last-modified heuristic: modified recently.
     {"HTTP/1.1 200 OK\n"
      "date: Wed, 28 Nov 2007 00:40:11 GMT\n"

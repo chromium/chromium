@@ -33,6 +33,7 @@
 #include "net/ssl/ssl_info.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
@@ -346,11 +347,24 @@ static absl::optional<base::Time> ParseDateValueInHeader(
   const AtomicString& header_value = headers.Get(header_name);
   if (header_value.empty())
     return absl::nullopt;
+
+  // In case of parsing the Expires header value, an invalid string 0 should be
+  // treated as expired according to the RFC 9111 section 5.3 as below:
+  //
+  // > A cache recipient MUST interpret invalid date formats, especially the
+  // > value "0", as representing a time in the past (i.e., "already expired").
+  if (base::FeatureList::IsEnabled(
+          blink::features::kTreatHTTPExpiresHeaderValueZeroAsExpiredInBlink) &&
+      header_name == http_names::kLowerExpires && header_value == "0") {
+    return base::Time::Min();
+  }
+
   // This handles all date formats required by RFC2616:
   // Sun, 06 Nov 1994 08:49:37 GMT  ; RFC 822, updated by RFC 1123
   // Sunday, 06-Nov-94 08:49:37 GMT ; RFC 850, obsoleted by RFC 1036
   // Sun Nov  6 08:49:37 1994       ; ANSI C's asctime() format
   absl::optional<base::Time> date = ParseDate(header_value);
+
   if (date && date.value().is_max())
     return absl::nullopt;
   return date;
