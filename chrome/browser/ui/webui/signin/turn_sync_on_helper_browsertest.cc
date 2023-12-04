@@ -193,9 +193,7 @@ class TurnSyncOnHelperBrowserTestWithParam
           std::tuple<TurnSyncOnHelper::SigninAbortedMode, bool>> {
  public:
   TurnSyncOnHelperBrowserTestWithParam()
-      : SigninBrowserTestBase(/*use_main_profile=*/false) {
-    feature_list_.InitAndDisableFeature(switches::kUnoDesktop);
-  }
+      : SigninBrowserTestBase(/*use_main_profile=*/false) {}
 
  protected:
   bool should_remove_initial_account() const {
@@ -205,9 +203,6 @@ class TurnSyncOnHelperBrowserTestWithParam
   TurnSyncOnHelper::SigninAbortedMode aborted_mode() const {
     return std::get<TurnSyncOnHelper::SigninAbortedMode>(GetParam());
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that aborting a Sync opt-in flow started with a secondary account
@@ -329,12 +324,7 @@ INSTANTIATE_TEST_SUITE_P(
 class TurnSyncOnHelperBrowserTest : public SigninBrowserTestBase {
  public:
   TurnSyncOnHelperBrowserTest()
-      : SigninBrowserTestBase(/*use_main_profile=*/false) {
-    feature_list_.InitAndDisableFeature(switches::kUnoDesktop);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
+      : SigninBrowserTestBase(/*use_main_profile=*/false) {}
 };
 
 // Regression test for https://crbug.com/1404961
