@@ -7,11 +7,11 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <bit>
 #include <memory>
 #include <utility>
 #include <vector>
 
-#include "base/bits.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -407,7 +407,7 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
   uint32_t sample_count =
       std::clamp(playback_settings.msaa_sample_count, 1, 64);
   UMA_HISTOGRAM_CUSTOM_COUNTS("Gpu.Rasterization.Raster.MSAASampleCountLog2",
-                              base::bits::Log2Floor(sample_count), 0, 7, 7);
+                              std::bit_width(sample_count) - 1, 0, 7, 7);
   // With Raw Draw, the framebuffer will be the rasterization target. It cannot
   // support LCD text, so disable LCD text for Raw Draw backings.
   // TODO(penghuang): remove it when sktext::gpu::Slug can be serialized.
