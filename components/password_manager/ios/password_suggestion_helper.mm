@@ -28,6 +28,13 @@ using password_manager::AccountSelectFillData;
 using password_manager::FillData;
 using password_manager::IsCrossOriginIframe;
 
+// Status of form extraction for a given frame.
+enum class FormExtractionStatus {
+  kNotRequested = 0,
+  kRequested = 1,
+  kCompleted = 2
+};
+
 @protocol FillDataProvider <NSObject>
 
 // True if suggestions are available for the field in form.
@@ -107,6 +114,9 @@ using password_manager::IsCrossOriginIframe;
 
   // Pending form queries that are waiting for forms extraction results.
   NSMutableArray<PendingFormQuery*>* _pendingFormQueries;
+
+  // Map of frame ids to the form extraction status for that frame.
+  std::map<std::string, FormExtractionStatus> _framesFormExtractionStatus;
 }
 
 #pragma mark - Initialization
@@ -193,12 +203,17 @@ using password_manager::IsCrossOriginIframe;
 
   AccountSelectFillData* fillData = [self fillDataForFrameId:frame_id];
 
-  if (![formQuery hasFocusType] || !fillData->Empty()) {
+  if (![formQuery hasFocusType] || !fillData->Empty() ||
+      _framesFormExtractionStatus[frame_id] ==
+          FormExtractionStatus::kCompleted) {
     // If the query isn't triggered by focusing on the form or there is fill
     // data available, complete the check immediately with the available fill
     // data. If there is fill data, it doesn't mean that there are suggestions
     // for the form targeted by the query, but at least there are some chances
-    // that suggestions will be available.
+    // that suggestions will be available. If the extraction status is complete,
+    // it means we already know whether or not suggestions are available and
+    // there's no point in attempting form extraction again, so we can run the
+    // completion block right away and exit early.
     [query runCompletion];
     return;
   }
@@ -222,6 +237,7 @@ using password_manager::IsCrossOriginIframe;
   // because the pipeline is blocked by an hanging request).
   [self.delegate suggestionHelperShouldTriggerFormExtraction:self
                                                      inFrame:frame];
+  _framesFormExtractionStatus[frame_id] = FormExtractionStatus::kRequested;
 }
 
 - (std::unique_ptr<password_manager::FillData>)
@@ -234,6 +250,7 @@ using password_manager::IsCrossOriginIframe;
 - (void)resetForNewPage {
   _fillDataMap.clear();
   [_pendingFormQueries removeAllObjects];
+  _framesFormExtractionStatus.clear();
 }
 
 - (void)processWithPasswordFormFillData:(const PasswordFormFillData&)formData
@@ -296,6 +313,15 @@ using password_manager::IsCrossOriginIframe;
     }
   }
   _pendingFormQueries = remainingQueries;
+
+  // Only if the form extraction request has been made from
+  // PasswordSuggestionHelper do we set the extraction status' value to
+  // completed. Otherwise, the request could have happened too early and not yet
+  // contain the information we are interested in.
+  if (_framesFormExtractionStatus[frameId] ==
+      FormExtractionStatus::kRequested) {
+    _framesFormExtractionStatus[frameId] = FormExtractionStatus::kCompleted;
+  }
 }
 
 - (AccountSelectFillData*)fillDataForFrameId:(const std::string&)frameId {

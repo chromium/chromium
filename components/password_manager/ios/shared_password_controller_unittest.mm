@@ -1035,7 +1035,7 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
 // Tests the completion handler for suggestions availability is not called
 // until password manager replies with suggestions.
 TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
-       WaitForPasswordmanagerResponseToShowSuggestionsTwoFields) {
+       WaitForPasswordManagerResponseToShowSuggestionsTwoFields) {
   // Simulate that the form is parsed and sent to PasswordManager.
   FormData form = test_helpers::MakeSimpleFormData();
 
