@@ -63,12 +63,12 @@ int GetShadowPrediction(ServerFieldType current,
 void LogShadowPredictionComparison(const AutofillField& field) {
   const auto& submitted_types = field.possible_types();
 
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   base::UmaHistogramSparse(
       "Autofill.ShadowPredictions.DefaultHeuristicToDefaultServer",
       GetShadowPrediction(field.heuristic_type(), field.server_type(),
                           submitted_types));
 
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   base::UmaHistogramSparse(
       "Autofill.ShadowPredictions.ExperimentalToDefault",
       GetShadowPrediction(field.heuristic_type(HeuristicSource::kDefault),

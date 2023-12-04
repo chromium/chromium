@@ -227,16 +227,11 @@ TEST_F(AutofillShadowPredictionMetricsTest,
           Bucket(kNameFullDifferentPredictionsValueAgreesWithOld, 1),
           Bucket(kEmailAddressDifferentPredictionsValueAgreesWithOld, 1)));
 }
-#endif
 
 // Test that Autofill.ShadowPredictions.DefaultHeuristicToDefaultServer compares
 // heuristics to server predictions.
 TEST_F(AutofillShadowPredictionMetricsTest, CompareHeuristicsAndServer) {
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   constexpr HeuristicSource source = HeuristicSource::kDefault;
-#else
-  constexpr HeuristicSource source = HeuristicSource::kLegacy;
-#endif
 
   FormData form = GetFormWith2Fields(autofill_client_->form_origin());
   form.fields[0].value = u"Elvis Aaron Presley";  // A known `NAME_FULL`.
@@ -264,6 +259,7 @@ TEST_F(AutofillShadowPredictionMetricsTest, CompareHeuristicsAndServer) {
           Bucket(kNameFullSamePredictionValueAgrees, 1),
           Bucket(kSearchTermDifferentPredictionsValueAgreesWithNew, 1)));
 }
+#endif
 
 }  // namespace
 
