@@ -157,7 +157,8 @@ class WaylandToplevelWindow : public WaylandWindow,
   void SetImmersiveFullscreenStatus(bool status) override;
   void SetTopInset(int height) override;
   gfx::RoundedCornersF GetWindowCornersRadii() override;
-#endif
+  void SetShadowCornersRadii(const gfx::RoundedCornersF& radii) override;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   void ShowSnapPreview(WaylandWindowSnapDirection snap,
                        bool allow_haptic_feedback) override;
   void CommitSnap(WaylandWindowSnapDirection snap, float snap_ratio) override;

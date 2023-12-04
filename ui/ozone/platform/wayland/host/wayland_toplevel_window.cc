@@ -847,6 +847,13 @@ gfx::RoundedCornersF WaylandToplevelWindow::GetWindowCornersRadii() {
   return zaura_shell->GetWindowCornersRadii();
 }
 
+void WaylandToplevelWindow::SetShadowCornersRadii(
+    const gfx::RoundedCornersF& radii) {
+  if (shell_toplevel_) {
+    shell_toplevel_->SetShadowCornersRadii(radii);
+  }
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void WaylandToplevelWindow::ShowSnapPreview(

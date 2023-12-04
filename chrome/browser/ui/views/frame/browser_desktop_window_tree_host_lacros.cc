@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host_lacros.h"
 
+#include "base/check.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
@@ -61,32 +62,31 @@ BrowserDesktopWindowTreeHostLacros::~BrowserDesktopWindowTreeHostLacros() {
 }
 
 void BrowserDesktopWindowTreeHostLacros::UpdateFrameHints() {
-  auto* const view = browser_view_->frame()->GetFrameView();
-  const bool showing_frame =
-      browser_view_->frame()->UseCustomFrame() && !view->IsFrameCondensed();
   const float scale = device_scale_factor();
   const gfx::Size widget_size_px =
       platform_window()->GetBoundsInPixels().size();
 
   auto* wayland_extension = ui::GetWaylandExtension(*platform_window());
-  const chromeos::WindowStateType window_state =
-      browser_view_->GetNativeWindow()->GetProperty(
-          chromeos::kWindowStateTypeKey);
+  DCHECK(wayland_extension);
 
   const gfx::RoundedCornersF window_radii =
-      chromeos::ShouldHaveRoundedWindow(window_state)
-          ? wayland_extension->GetWindowCornersRadii()
-          : gfx::RoundedCornersF();
+      wayland_extension->GetWindowCornersRadii();
 
   std::vector<gfx::Rect> opaque_region;
-  const bool should_have_rounded_corners = !window_radii.IsEmpty();
-  if (showing_frame && should_have_rounded_corners) {
+
+  const aura::Window* native_window = browser_view_->GetNativeWindow();
+  const bool should_have_rounded_corners =
+      chromeos::ShouldWindowHaveRoundedCorners(native_window);
+  if (should_have_rounded_corners) {
     GetContentWindow()->layer()->SetRoundedCornerRadius(window_radii);
     GetContentWindow()->layer()->SetIsFastRoundedCorner(true);
 
     // The opaque region is a list of rectangles that contain only fully
     // opaque pixels of the window.  We need to convert the clipping
     // rounded-rect into this format.
+
+    const BrowserNonClientFrameView* view =
+        browser_view_->frame()->GetFrameView();
     gfx::Rect local_bounds = view->GetLocalBounds();
     gfx::RRectF rounded_corners_rect(gfx::RectF(local_bounds), window_radii);
     gfx::RectF rect_f = rounded_corners_rect.rect();
@@ -134,6 +134,13 @@ void BrowserDesktopWindowTreeHostLacros::UpdateFrameHints() {
   // TODO(crbug.com/1306688): Instead of setting OpaqueRegion, set the rounded
   // corners in dp.
   platform_window()->SetOpaqueRegion(opaque_region);
+
+  // If the window is rounded, we hint the platform to match the drop shadow's
+  // radii to the window's radii. Otherwise, we allow the platform to
+  // determine the drop shadow's radii.
+  if (should_have_rounded_corners) {
+    wayland_extension->SetShadowCornersRadii(window_radii);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

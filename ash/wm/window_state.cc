@@ -939,7 +939,7 @@ void WindowState::UpdateWindowPropertiesFromStateType() {
     const gfx::Size& size = window_->bounds().size();
     // WindowManager manages the window opacity. Make it opaque unless
     // the window has rounded corners.
-    if (chromeos::ShouldHaveRoundedWindow(GetStateType())) {
+    if (chromeos::ShouldWindowStateHaveRoundedCorners(GetStateType())) {
       window_->SetTransparent(true);
       window_->SetOpaqueRegionsForOcclusion({gfx::Rect(size)});
     } else {

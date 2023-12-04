@@ -134,7 +134,7 @@ std::unique_ptr<ArcGhostWindowShellSurface> ArcGhostWindowShellSurface::Create(
     DCHECK_NE(window_state, chromeos::WindowStateType::kPip);
 
     const int window_corner_radius =
-        chromeos::ShouldHaveRoundedWindow(window_state)
+        chromeos::ShouldWindowStateHaveRoundedCorners(window_state)
             ? chromeos::features::RoundedWindowsRadius()
             : 0;
 
