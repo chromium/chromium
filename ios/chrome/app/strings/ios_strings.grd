@@ -2239,7 +2239,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         See all your tracked packages here in this carousel
       </message>
       <message name="IDS_IOS_PARCEL_TRACKING_OPT_IN_ENABLE_TRACKING" desc="Text for the button that allows the user to enable parcel tracking.">
-        Allow Package Tracking
+        Allow
       </message>
       <message name="IDS_IOS_PARCEL_TRACKING_INFOBAR_ASK_TO_TRACK_TITLE" desc="Text for the title string of the infobar that is displayed to prompt user to track a package.">
         {COUNT, plural,
@@ -2286,10 +2286,10 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         other {Untrack All Packages}}
       </message>
       <message name="IDS_IOS_PARCEL_TRACKING_OPT_IN_PRIMARY_ACTION" desc="Text for the primary action string of the parcel tracking opt-in half-sheet screen.">
-        Always Track Detected Packages
+        Always Track Packages
       </message>
       <message name="IDS_IOS_PARCEL_TRACKING_OPT_IN_SECONDARY_ACTION" desc="Text for the secondary action string of the parcel tracking opt-in half-sheet screen.">
-        No, Thanks
+        No Thanks
       </message>
       <message name="IDS_IOS_PARCEL_TRACKING_OPT_IN_SUBTITLE" desc="Text for the subtitle string of the parcel tracking opt-in half-sheet screen.">
         Chrome will detect tracking numbers on sites you visit and show you package updates on the New Tab page. Your data will be shared with Google to provide this feature and to improve Shopping for everyone. You can change this in <ph name="BEGIN_LINK">BEGIN_LINK</ph>Package Tracking Settings<ph name="END_LINK">END_LINK</ph>.
