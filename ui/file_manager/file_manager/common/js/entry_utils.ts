@@ -142,6 +142,13 @@ export function isEntryInsideComputers(fileData: FileData): boolean {
 export function isEntryInsideDrive(fileData: FileData|
                                    CurrentDirectory): boolean {
   const {rootType} = fileData;
+  return isDriveRootType(rootType);
+}
+
+/**
+ * Returns whether or not the root type is one of Google Drive root types.
+ */
+export function isDriveRootType(rootType: RootType|null|undefined): boolean {
   return !!rootType &&
       (rootType === RootType.DRIVE ||
        rootType === RootType.SHARED_DRIVES_GRAND_ROOT ||

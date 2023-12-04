@@ -28,7 +28,7 @@ import {clearSearch, getDefaultSearchOptions, updateSearch} from '../../state/du
 import {getFileData, getStore, getVolume} from '../../state/store.js';
 
 import {constants} from './constants.js';
-import {ContentScanner, CrostiniMounter, DirectoryContents, DirectoryContentScanner, DriveMetadataSearchContentScanner, FileFilter, FileListContext, GuestOsMounter, MediaViewContentScanner, RecentContentScanner, SearchV2ContentScanner, TrashContentScanner} from './directory_contents.js';
+import {ContentScanner, CrostiniMounter, DirectoryContents, DirectoryContentScanner, DriveMetadataSearchContentScanner, EmptyContentScanner, FileFilter, FileListContext, GuestOsMounter, MediaViewContentScanner, RecentContentScanner, SearchV2ContentScanner, TrashContentScanner} from './directory_contents.js';
 import {FileListModel} from './file_list_model.js';
 import {FileWatcher, type WatcherDirectoryChangedEvent} from './file_watcher.js';
 import type {MetadataModel} from './metadata/metadata_model.js';
@@ -1546,7 +1546,7 @@ export class DirectoryModel extends EventTarget {
     }
     if (rootType == RootType.DRIVE_FAKE_ROOT) {
       return () => {
-        return new ContentScanner();
+        return new EmptyContentScanner();
       };
     }
     if (rootType == RootType.TRASH) {
@@ -1557,7 +1557,9 @@ export class DirectoryModel extends EventTarget {
     if (sanitizedQuery) {
       return () => {
         return new SearchV2ContentScanner(
-            this.volumeManager_, entry, sanitizedQuery,
+            this.volumeManager_,
+            // TODO(b/289003444): Fix this cast.
+            entry as DirectoryEntry | FilesAppDirEntry, sanitizedQuery,
             options || getDefaultSearchOptions());
       };
     }

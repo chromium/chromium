@@ -6,6 +6,7 @@ import {assertEquals, assertFalse} from 'chrome://webui-test/chromeos/chai_asser
 
 import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {RootType} from '../../common/js/volume_manager_types.js';
+import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 
@@ -114,8 +115,8 @@ export async function testRecentScannerFilter() {
     },
   } as VolumeManager;
   const scanner = new RecentContentScanner('txt', 30, volumeManager);
-  let entriesCallbackResult: FileEntry[] = [];
-  function entriesCallback(entries: FileEntry[]) {
+  let entriesCallbackResult: Array<Entry|FilesAppEntry> = [];
+  function entriesCallback(entries: Array<Entry|FilesAppEntry>) {
     entriesCallbackResult = entries;
   }
   function otherCallback() {}
