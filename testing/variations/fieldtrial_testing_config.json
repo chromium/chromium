@@ -21021,14 +21021,28 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled1",
+                    "name": "EnabledAllUsers",
                     "params": {
                         "IOSHideFeedWithSearchChoiceTargeted": "true"
                     },
                     "enable_features": [
                         "IOSHideFeedWithSearchChoice",
                         "SearchEngineChoice",
-                        "SearchEngineChoiceFre"
+                        "SearchEngineChoiceFre",
+                        "SearchEngineChoiceTrigger"
+                    ]
+                },
+                {
+                    "name": "EnabledNewUsers",
+                    "params": {
+                        "IOSHideFeedWithSearchChoiceTargeted": "true",
+                        "for_tagged_profiles_only": "true"
+                    },
+                    "enable_features": [
+                        "IOSHideFeedWithSearchChoice",
+                        "SearchEngineChoice",
+                        "SearchEngineChoiceFre",
+                        "SearchEngineChoiceTrigger"
                     ]
                 }
             ]
