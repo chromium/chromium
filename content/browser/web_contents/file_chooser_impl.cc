@@ -48,6 +48,10 @@ std::vector<blink::mojom::FileChooserFileInfoPtr> RemoveSymlinks(
 
 }  // namespace
 
+FileChooserImpl::FileSelectListenerImpl::FileSelectListenerImpl(
+    FileChooserImpl* owner)
+    : owner_(owner ? owner->GetWeakPtr() : nullptr) {}
+
 FileChooserImpl::FileSelectListenerImpl::~FileSelectListenerImpl() {
 #if DCHECK_IS_ON()
   if (!was_file_select_listener_function_called_) {
@@ -93,8 +97,7 @@ void FileChooserImpl::FileSelectListenerImpl::FileSelected(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&RemoveSymlinks, std::move(files), base_dir),
-      base::BindOnce(&FileChooserImpl::FileSelected, owner_->GetWeakPtr(),
-                     base_dir, mode));
+      base::BindOnce(&FileChooserImpl::FileSelected, owner_, base_dir, mode));
 }
 
 void FileChooserImpl::FileSelectListenerImpl::FileSelectionCanceled() {
@@ -143,18 +146,13 @@ FileChooserImpl::CreateForTesting(RenderFrameHostImpl* render_frame_host) {
 }
 
 FileChooserImpl::FileChooserImpl(RenderFrameHostImpl* render_frame_host)
-    : render_frame_host_(render_frame_host) {
-  Observe(WebContents::FromRenderFrameHost(render_frame_host));
-}
+    : render_frame_host_id_(render_frame_host->GetGlobalId()) {}
 
-FileChooserImpl::~FileChooserImpl() {
-  if (listener_impl_)
-    listener_impl_->ResetOwner();
-}
+FileChooserImpl::~FileChooserImpl() = default;
 
 void FileChooserImpl::OpenFileChooser(blink::mojom::FileChooserParamsPtr params,
                                       OpenFileChooserCallback callback) {
-  if (listener_impl_ || !render_frame_host_) {
+  if (listener_impl_ || !render_frame_host()) {
     std::move(callback).Run(nullptr);
     return;
   }
@@ -174,19 +172,19 @@ void FileChooserImpl::OpenFileChooser(blink::mojom::FileChooserParamsPtr params,
   // Don't allow page with open FileChooser to enter BackForwardCache to avoid
   // any unexpected behaviour from BackForwardCache.
   BackForwardCache::DisableForRenderFrameHost(
-      render_frame_host_,
+      render_frame_host(),
       BackForwardCacheDisable::DisabledReason(
           BackForwardCacheDisable::DisabledReasonId::kFileChooser));
 
-  static_cast<WebContentsImpl*>(web_contents())
-      ->RunFileChooser(GetWeakPtr(), render_frame_host_, std::move(listener),
+  WebContentsImpl::FromRenderFrameHostImpl(render_frame_host())
+      ->RunFileChooser(GetWeakPtr(), render_frame_host(), std::move(listener),
                        *params);
 }
 
 void FileChooserImpl::EnumerateChosenDirectory(
     const base::FilePath& directory_path,
     EnumerateChosenDirectoryCallback callback) {
-  if (listener_impl_ || !render_frame_host_) {
+  if (listener_impl_ || !render_frame_host()) {
     std::move(callback).Run(nullptr);
     return;
   }
@@ -194,10 +192,10 @@ void FileChooserImpl::EnumerateChosenDirectory(
   auto listener = base::MakeRefCounted<FileSelectListenerImpl>(this);
   listener_impl_ = listener.get();
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  if (policy->CanReadFile(render_frame_host_->GetProcess()->GetID(),
+  if (policy->CanReadFile(render_frame_host()->GetProcess()->GetID(),
                           directory_path)) {
-    static_cast<WebContentsImpl*>(web_contents())
-        ->EnumerateDirectory(GetWeakPtr(), render_frame_host_,
+    WebContentsImpl::FromRenderFrameHostImpl(render_frame_host())
+        ->EnumerateDirectory(GetWeakPtr(), render_frame_host(),
                              std::move(listener), directory_path);
   } else {
     listener->FileSelectionCanceled();
@@ -209,12 +207,12 @@ void FileChooserImpl::FileSelected(
     blink::mojom::FileChooserParams::Mode mode,
     std::vector<blink::mojom::FileChooserFileInfoPtr> files) {
   listener_impl_ = nullptr;
-  if (!render_frame_host_) {
+  if (!render_frame_host()) {
     std::move(callback_).Run(nullptr);
     return;
   }
   storage::FileSystemContext* file_system_context = nullptr;
-  const int pid = render_frame_host_->GetProcess()->GetID();
+  const int pid = render_frame_host()->GetProcess()->GetID();
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   // Grant the security access requested to the given files.
   for (const auto& file : files) {
@@ -223,8 +221,9 @@ void FileChooserImpl::FileSelected(
     } else {
       if (file->is_file_system()) {
         if (!file_system_context) {
-          file_system_context =
-              render_frame_host_->GetStoragePartition()->GetFileSystemContext();
+          file_system_context = render_frame_host()
+                                    ->GetStoragePartition()
+                                    ->GetFileSystemContext();
         }
         policy->GrantReadFileSystem(
             pid, file_system_context
@@ -243,19 +242,12 @@ void FileChooserImpl::FileSelectionCanceled() {
   std::move(callback_).Run(nullptr);
 }
 
-void FileChooserImpl::RenderFrameHostChanged(RenderFrameHost* old_host,
-                                             RenderFrameHost* new_host) {
-  if (old_host == render_frame_host_)
-    render_frame_host_ = nullptr;
-}
-
-void FileChooserImpl::RenderFrameDeleted(RenderFrameHost* render_frame_host) {
-  if (render_frame_host == render_frame_host_)
-    render_frame_host_ = nullptr;
-}
-
-void FileChooserImpl::WebContentsDestroyed() {
-  render_frame_host_ = nullptr;
+RenderFrameHostImpl* FileChooserImpl::render_frame_host() {
+  RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(render_frame_host_id_);
+  if (rfh && rfh->IsRenderFrameLive()) {
+    return rfh;
+  }
+  return nullptr;
 }
 
 }  // namespace content
