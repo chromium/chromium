@@ -167,6 +167,11 @@ SystemNudgeView::SystemNudgeView(AnchoredNudgeData& nudge_data) {
             .SetPreferredSize(gfx::Size(kImageViewSize, kImageViewSize))
             .SetImage(nudge_data.image_model)
             .Build());
+    // Certain `ImageModels` do not have the ability to set their size in the
+    // constructor, so instead we can do it here.
+    if (nudge_data.fill_image_size) {
+      image_view->SetImageSize(gfx::Size(kImageViewSize, kImageViewSize));
+    }
     SetupViewCornerRadius(image_view, kImageViewCornerRadius);
 
     if (nudge_data.image_background_color_id) {

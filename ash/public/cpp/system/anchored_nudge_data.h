@@ -113,6 +113,10 @@ struct ASH_PUBLIC_EXPORT AnchoredNudgeData {
   // It will maintain the shelf visible while a nudge is being shown.
   bool anchored_to_shelf = false;
 
+  // Whether the image will be set to the same size as its container view. This
+  // is required for lottie images, which need their size to be set directly.
+  bool fill_image_size = false;
+
   // Nudge action callbacks.
   HoverStateChangeCallback hover_state_change_callback;
   NudgeClickCallback click_callback;

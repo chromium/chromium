@@ -43,9 +43,6 @@ constexpr base::TimeDelta kNudgeTimeBetweenShown = base::Hours(24);
 
 constexpr char kCaptureModeNudgeId[] = "kCaptureModeNudge";
 
-// Nudge styling values.
-constexpr int kShortcutIconSize = 60;
-
 // Tutorial styling values.
 constexpr int kRowSpacing = 30;
 constexpr int kTitleShortcutSpacing = 8;
@@ -69,8 +66,10 @@ AnchoredNudgeData CreateBaseNudgeData(NudgeCatalogName catalog_name) {
       kCaptureModeNudgeId, catalog_name,
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_EDUCATION_NUDGE_LABEL));
 
-  nudge_data.image_model = ui::ImageModel::FromVectorIcon(
-      kCaptureModeIcon, kColorAshIconColorPrimary, kShortcutIconSize);
+  nudge_data.image_model =
+      ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
+          IDR_SCREEN_CAPTURE_EDUCATION_NUDGE_IMAGE);
+  nudge_data.fill_image_size = true;
   nudge_data.keyboard_codes = {ui::VKEY_CONTROL, ui::VKEY_SHIFT,
                                ui::VKEY_MEDIA_LAUNCH_APP1};
 
@@ -267,8 +266,10 @@ void CaptureModeEducationController::ShowQuickSettingsNudge() {
       l10n_util::GetStringUTF16(
           IDS_ASH_SCREEN_CAPTURE_EDUCATION_SETTINGS_NUDGE_LABEL));
 
-  nudge_data.image_model = ui::ImageModel::FromVectorIcon(
-      kCaptureModeIcon, kColorAshIconColorPrimary, kShortcutIconSize);
+  nudge_data.image_model =
+      ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
+          IDR_SCREEN_CAPTURE_EDUCATION_NUDGE_IMAGE);
+  nudge_data.fill_image_size = true;
   nudge_data.SetAnchorView(
       RootWindowController::ForWindow(Shell::GetRootWindowForNewWindows())
           ->shelf()
