@@ -107,7 +107,7 @@ TEST_F(VaapiUtilsTest, ScopedVAImage) {
 // This test exercises creation of a ScopedVAImage with a bad VASurfaceID.
 TEST_F(VaapiUtilsTest, BadScopedVAImage) {
 #if DCHECK_IS_ON()
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 #endif
 
   const std::vector<VASurfaceID> va_surfaces = {VA_INVALID_ID};
@@ -133,7 +133,7 @@ TEST_F(VaapiUtilsTest, BadScopedVAImage) {
 
 // This test exercises creation of a ScopedVABufferMapping with bad VABufferIDs.
 TEST_F(VaapiUtilsTest, BadScopedVABufferMapping) {
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
   base::AutoLockMaybe auto_lock(vaapi_wrapper_->va_lock_.get());
 
   // A ScopedVABufferMapping with a VA_INVALID_ID VABufferID is DCHECK()ed.
