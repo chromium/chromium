@@ -225,7 +225,6 @@ class PrintContentAnalysisUtilsTest
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
   signin::IdentityTestEnvironment identity_test_environment_;
   base::HistogramTester histogram_tester_;
@@ -839,6 +838,26 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyBlocked) {
     histogram_tester().ExpectTotalCount("Enterprise.OnPrint.Cloud.PrintType",
                                         0);
   }
+}
+
+TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyNullInitiator) {
+  enterprise_connectors::test::EventReportValidator validator(client_.get());
+  validator.ExpectNoReport();
+
+  auto data = CreateData();
+  base::RunLoop run_loop;
+  auto on_verdict = base::BindLambdaForTesting([&run_loop](bool allowed) {
+    EXPECT_FALSE(allowed);
+    run_loop.Quit();
+  });
+  PrintIfAllowedByPolicy(data, /*initiator=*/nullptr, kPrinterName,
+                         PrintScanningContext::kNormalPrintAfterPreview,
+                         std::move(on_verdict),
+                         /*hide_preview=*/base::DoNothing());
+  run_loop.Run();
+
+  histogram_tester().ExpectTotalCount("Enterprise.OnPrint.Local.PrintType", 0);
+  histogram_tester().ExpectTotalCount("Enterprise.OnPrint.Cloud.PrintType", 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(

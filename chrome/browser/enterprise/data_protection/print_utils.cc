@@ -107,7 +107,13 @@ void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> print_data,
                             PrintScanningContext context,
                             base::OnceCallback<void(bool)> on_verdict,
                             base::OnceClosure hide_preview) {
-  DCHECK(initiator);
+  // In some cases like the web contents closing or the render process crashing,
+  // tt's possible for `initiator` to be null. In that case, printing can simply
+  // be aborted.
+  if (!initiator) {
+    std::move(on_verdict).Run(/*allowed=*/false);
+    return;
+  }
 
   // This needs to be done to avoid having an embedded page compare against
   // policies and report its URL. This is especially important when Chrome's PDF
