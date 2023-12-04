@@ -3561,6 +3561,37 @@ TEST_F(SplitViewControllerTest, StackingOrderWithDivider) {
       window_util::IsStackedBelow(w2.get(), divider_widget_native_window));
 }
 
+// Tests that the divider remains visible when minimizing and restoring the
+// window in tablet split view.
+TEST_F(SplitViewControllerTest, DividerStaysVisibleDuringMinimizeAndRestore) {
+  std::unique_ptr<aura::Window> w1(CreateTestWindow());
+  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+  SplitViewController* controller = split_view_controller();
+  controller->SnapWindow(w1.get(), SplitViewController::SnapPosition::kPrimary);
+  EXPECT_EQ(split_view_controller()->primary_window(), w1.get());
+  split_view_controller()->SnapWindow(
+      w2.get(), SplitViewController::SnapPosition::kSecondary);
+  EXPECT_EQ(controller->state(), SplitViewController::State::kBothSnapped);
+  SplitViewDivider* divider = split_view_divider();
+  ASSERT_TRUE(divider);
+  aura::Window* divider_widget_native_window =
+      divider->divider_widget()->GetNativeWindow();
+  EXPECT_TRUE(divider_widget_native_window->IsVisible());
+
+  // Tests that the divider stays visible on `w1` minimized and restore.
+  // To simulate the actual CUJ when user minimizes a window i.e. the minimized
+  // window will be activated by either clicking on the minimize button or
+  // shortcut.
+  wm::ActivateWindow(w1.get());
+  WMEvent w1_minimize(WM_EVENT_MINIMIZE);
+  WindowState::Get(w1.get())->OnWMEvent(&w1_minimize);
+  EXPECT_FALSE(w1->IsVisible());
+  EXPECT_TRUE(divider_widget_native_window->IsVisible());
+  WMEvent w1_restore(WM_EVENT_RESTORE);
+  WindowState::Get(w1.get())->OnWMEvent(&w1_restore);
+  EXPECT_TRUE(divider_widget_native_window->IsVisible());
+}
+
 // Tests that windows with different containers can be snapped properly with no
 // crash. The stacking order and parent of the split view divider will be
 // updated correctly with window activation and dragging operations.
