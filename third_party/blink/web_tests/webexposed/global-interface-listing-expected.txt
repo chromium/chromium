@@ -7090,7 +7090,6 @@ interface PerformanceEventTiming : PerformanceEntry
 interface PerformanceLongAnimationFrameTiming : PerformanceEntry
     attribute @@toStringTag
     getter blockingDuration
-    getter desiredRenderStart
     getter firstUIEventTimestamp
     getter renderStart
     getter scripts
@@ -7183,7 +7182,6 @@ interface PerformanceResourceTiming : PerformanceEntry
     method toJSON
 interface PerformanceScriptTiming : PerformanceEntry
     attribute @@toStringTag
-    getter desiredExecutionStart
     getter executionStart
     getter forcedStyleAndLayoutDuration
     getter pauseDuration

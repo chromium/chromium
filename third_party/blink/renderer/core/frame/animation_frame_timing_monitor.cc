@@ -54,7 +54,6 @@ void AnimationFrameTimingMonitor::BeginMainFrame(base::TimeTicks frame_time) {
   }
 
   current_frame_timing_info_->SetRenderStartTime(now);
-  current_frame_timing_info_->SetDesiredRenderStartTime(frame_time);
   state_ = State::kRenderingFrame;
   ApplyTaskDuration(now - current_task_start_);
 }
@@ -82,16 +81,6 @@ void AnimationFrameTimingMonitor::DidBeginMainFrame() {
   }
   did_pause_ = false;
 
-  // These would be (non-event) scripts that are handled while rendering, e.g.
-  // ResizeObserver and requestAnimationFrame callbacks.
-  // Their desired execution time would be set to the frame's desired render
-  // start time.
-  for (ScriptTimingInfo* script : current_scripts_) {
-    if (script->DesiredExecutionStartTime().is_null()) {
-      script->SetDesiredExecutionStartTime(
-          current_frame_timing_info_->DesiredRenderStartTime());
-    }
-  }
   current_frame_timing_info_->SetScripts(current_scripts_);
   if (current_frame_timing_info_->Duration() >= kLongAnimationFrameDuration) {
     if (!first_ui_event_timestamp_.is_null()) {
@@ -157,7 +146,6 @@ void AnimationFrameTimingMonitor::ApplyTaskDuration(
 void AnimationFrameTimingMonitor::OnTaskCompleted(
     base::TimeTicks start_time,
     base::TimeTicks end_time,
-    base::TimeTicks desired_execution_time,
     LocalFrame* frame) {
   HeapVector<Member<ScriptTimingInfo>> scripts;
 
@@ -195,19 +183,6 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
   }
 
   bool should_report = client_.ShouldReportLongAnimationFrameTiming();
-  if (should_report && !desired_execution_time.is_null()) {
-    // These would be (non-event) scripts that are executed outside of the
-    // rendering phase. e.g. a timer callback or deferred script blocks.
-    // Their desired execution time would be set to the time the task was
-    // posted to the event loop - in the case of a timer this would be the
-    // timer expiry time.
-    for (ScriptTimingInfo* script : current_scripts_) {
-      if (script->DesiredExecutionStartTime().is_null()) {
-        script->SetDesiredExecutionStartTime(desired_execution_time);
-      }
-    }
-  }
-
   if (client_.RequestedMainFramePending() && should_report) {
     current_frame_timing_info_ =
         MakeGarbageCollected<AnimationFrameTimingInfo>(start_time);
@@ -304,18 +279,6 @@ void AnimationFrameTimingMonitor::RecordLongAnimationFrameUKMAndTrace(
 
   ukm::builders::PerformanceAPI_LongAnimationFrame builder(source_id);
   builder.SetDuration_Total(info.Duration().InMilliseconds());
-  base::TimeTicks desired_start_time = info.FrameStartTime();
-  if (!info.FirstUIEventTime().is_null()) {
-    desired_start_time = info.FirstUIEventTime();
-  }
-  if (!info.DesiredRenderStartTime().is_null()) {
-    desired_start_time = info.DesiredRenderStartTime() < desired_start_time
-                             ? info.DesiredRenderStartTime()
-                             : desired_start_time;
-  }
-
-  builder.SetDuration_DelayDefer(
-      (info.FrameStartTime() - desired_start_time).InMilliseconds());
   builder.SetDuration_EffectiveBlocking(
       info.TotalBlockingDuration().InMilliseconds());
   builder.SetDuration_StyleAndLayout_RenderPhase(
@@ -627,7 +590,6 @@ void AnimationFrameTimingMonitor::Did(
   }
 
   info->SetPropertyLikeName(probe_data.event->type());
-  info->SetDesiredExecutionStartTime(probe_data.event->PlatformTimeStamp());
   if (Node* node = probe_data.event_target->ToNode()) {
     StringBuilder builder;
     builder.Append(node->nodeName());

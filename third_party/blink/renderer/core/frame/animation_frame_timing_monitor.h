@@ -62,7 +62,6 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   void DidBeginMainFrame();
   void OnTaskCompleted(base::TimeTicks start_time,
                        base::TimeTicks end_time,
-                       base::TimeTicks desired_execution_time,
                        LocalFrame* frame);
 
   // TaskTimeObsrver
@@ -70,7 +69,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
 
   void DidProcessTask(base::TimeTicks start_time,
                       base::TimeTicks end_time) override {
-    OnTaskCompleted(start_time, end_time, base::TimeTicks(), /*frame=*/nullptr);
+    OnTaskCompleted(start_time, end_time, /*frame=*/nullptr);
   }
 
   // probes

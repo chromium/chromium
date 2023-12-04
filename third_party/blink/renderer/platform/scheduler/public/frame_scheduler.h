@@ -42,8 +42,7 @@ class FrameScheduler : public FrameOrWorkerScheduler {
     virtual const base::UnguessableToken& GetAgentClusterId() const = 0;
 
     virtual void OnTaskCompleted(base::TimeTicks start_time,
-                                 base::TimeTicks end_time,
-                                 base::TimeTicks desired_execution_time) = 0;
+                                 base::TimeTicks end_time) = 0;
     virtual void MainFrameInteractive() {}
   };
 

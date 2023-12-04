@@ -113,10 +113,6 @@ DOMHighResTimeStamp PerformanceScriptTiming::executionStart() const {
   return ToMonotonicTime(info_->ExecutionStartTime());
 }
 
-DOMHighResTimeStamp PerformanceScriptTiming::desiredExecutionStart() const {
-  return ToMonotonicTime(info_->DesiredExecutionStartTime());
-}
-
 DOMHighResTimeStamp PerformanceScriptTiming::ToMonotonicTime(
     base::TimeTicks time) const {
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
@@ -189,7 +185,6 @@ void PerformanceScriptTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   builder.AddString("type", type());
   builder.AddString("windowAttribution", windowAttribution());
   builder.AddNumber("executionStart", executionStart());
-  builder.AddNumber("desiredExecutionStart", desiredExecutionStart());
   builder.AddNumber("forcedStyleAndLayoutDuration",
                     forcedStyleAndLayoutDuration());
   builder.AddNumber("pauseDuration", pauseDuration());

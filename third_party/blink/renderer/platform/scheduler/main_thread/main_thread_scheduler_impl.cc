@@ -2433,8 +2433,7 @@ void MainThreadSchedulerImpl::OnTaskCompleted(
     queue->OnTaskRunTimeReported(task_timing);
 
     if (FrameSchedulerImpl* frame_scheduler = queue->GetFrameScheduler()) {
-      frame_scheduler->OnTaskCompleted(task_timing,
-                                       task.GetDesiredExecutionTime());
+      frame_scheduler->OnTaskCompleted(task_timing);
     }
   }
 

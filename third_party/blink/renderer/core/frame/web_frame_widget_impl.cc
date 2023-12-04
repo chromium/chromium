@@ -1500,11 +1500,10 @@ bool WebFrameWidgetImpl::ShouldReportLongAnimationFrameTiming() const {
 void WebFrameWidgetImpl::OnTaskCompletedForFrame(
     base::TimeTicks start_time,
     base::TimeTicks end_time,
-    base::TimeTicks desired_execution_time,
     LocalFrame* frame) {
   if (animation_frame_timing_monitor_) {
-    animation_frame_timing_monitor_->OnTaskCompleted(
-        start_time, end_time, desired_execution_time, frame);
+    animation_frame_timing_monitor_->OnTaskCompleted(start_time, end_time,
+                                                     frame);
   }
 }
 
