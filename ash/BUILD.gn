@@ -4129,6 +4129,7 @@ test("ash_pixeltests") {
     "system/video_conference/bubble/bubble_view_pixeltest.cc",
     "system/video_conference/video_conference_tray_pixeltest.cc",
     "test/pixel/demo_ash_pixel_diff_test.cc",
+    "touch/touch_selection_pixeltest.cc",
     "user_education/views/help_bubble_view_ash_pixeltest.cc",
     "user_education/welcome_tour/welcome_tour_dialog_pixeltest.cc",
     "wm/test/wm_pixel_diff_test.cc",
@@ -4167,6 +4168,7 @@ test("ash_pixeltests") {
     "//ui/chromeos/styles:cros_tokens_color_mappings",
     "//ui/events:test_support",
     "//ui/message_center",
+    "//ui/touch_selection",
     "//ui/views:test_support",
   ]
 }
