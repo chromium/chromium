@@ -17,6 +17,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -112,6 +113,7 @@ public class DisplayCutoutTest {
         ChromeFeatureList.DRAW_CUTOUT_EDGE_TO_EDGE,
         ChromeFeatureList.DRAW_EDGE_TO_EDGE
     })
+    @DisabledTest(message = "crbug.com/1508054")
     public void testViewportFitCover_NotFullscreen() throws TimeoutException {
         // Start without entering fullscreen.
         mTestRule.setViewportFit(DisplayCutoutTestRule.VIEWPORT_FIT_COVER);
