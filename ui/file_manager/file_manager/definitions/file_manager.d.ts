@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {FileManagerBase} from '../background/js/file_manager_base.js';
 import type {VolumeManager} from '../externs/volume_manager.js';
-import {MetadataModel} from '../foreground/js/metadata/metadata_model.js';
+import type {MetadataModel} from '../foreground/js/metadata/metadata_model.js';
 
 /**
  * Type definition for foreground/js/file_manager.js:FileManager.
@@ -54,6 +55,9 @@ declare global {
         isChromeVoxActive: () => boolean,
       },
     };
+
+    // Defined in the file_manager_base.ts
+    background: FileManagerBase;
 
     // Defined in the main_window_component.ts
     isFocused?: () => boolean;

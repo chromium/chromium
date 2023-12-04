@@ -18,6 +18,7 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
+import {FileManagerBase} from '../../background/js/file_manager_base.js';
 import {getBulkPinProgress, getDialogCaller, getDlpBlockedComponents, getDriveConnectionState, getPreferences} from '../../common/js/api.js';
 import {ArrayDataModel} from '../../common/js/array_data_model.js';
 import {isFolderDialogType} from '../../common/js/dialog_type.js';
@@ -35,11 +36,9 @@ import {AllowedPaths, ARCHIVE_OPENED_EVENT_TYPE, RootType, VolumeType} from '../
 import {DirectoryTreeContainer} from '../../containers/directory_tree_container.js';
 import {NudgeType} from '../../containers/nudge_container.js';
 import {Crostini} from '../../externs/background/crostini.js';
-import {FileManagerBaseInterface} from '../../externs/background/file_manager_base.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
 import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
-import {ForegroundWindow} from '../../externs/foreground_window.js';
 import {DialogType, PropStatus, SearchLocation} from '../../externs/ts/state.js';
 import {Store} from '../../externs/ts/store.js';
 import {getMyFiles} from '../../state/ducks/all_entries.js';
@@ -344,7 +343,7 @@ export class FileManager extends EventTarget {
     // DOM elements.
 
     /**
-     * @private @type {?FileManagerBaseInterface}
+     * @private @type {?FileManagerBase}
      */
     this.fileBrowserBackground_ = null;
 
@@ -1097,16 +1096,9 @@ export class FileManager extends EventTarget {
   async startInitBackgroundPage_() {
     startInterval('Load.InitBackgroundPage');
 
-    this.fileBrowserBackground_ =
-        // @ts-ignore: error TS2352: Conversion of type 'Window & typeof
-        // globalThis' to type 'ForegroundWindow' may be a mistake because
-        // neither type sufficiently overlaps with the other. If this was
-        // intentional, convert the expression to 'unknown' first.
-        /** @type {!ForegroundWindow} */ (window).background;
+    this.fileBrowserBackground_ = window.background;
 
-    // @ts-ignore: error TS2345: Argument of type '(value: any) => void' is not
-    // assignable to parameter of type '() => void'.
-    await new Promise(resolve => this.fileBrowserBackground_.ready(resolve));
+    await this.fileBrowserBackground_.ready();
 
     // For the SWA, we load background and foreground in the same Window, avoid
     // loading the `data` twice.

@@ -171,21 +171,6 @@ export function timeoutPromise<T>(
 }
 
 /**
- * Executes a functions only when the context is not the incognito one in a
- * regular session. Returns a promise that when fulfilled informs us whether or
- * not the callback was invoked.
- */
-export async function doIfPrimaryContext(callback: VoidCallback):
-    Promise<boolean> {
-  const guestMode = await isInGuestMode();
-  if (guestMode) {
-    callback();
-    return true;
-  }
-  return false;
-}
-
-/**
  * Returns the Files app modal dialog used to embed any files app dialog
  * that derives from cr.ui.dialogs.
  */

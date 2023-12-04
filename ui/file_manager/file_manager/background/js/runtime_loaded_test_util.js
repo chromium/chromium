@@ -14,15 +14,8 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {entriesToURLs} from '../../common/js/entry_utils.js';
 import {recordEnum} from '../../common/js/metrics.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
-import {FileManagerBaseInterface} from '../../externs/background/file_manager_base.js';
 
 import {test} from './test_util_base.js';
-
-
-/** @type {!FileManagerBaseInterface} */
-// @ts-ignore: error TS2339: Property 'background' does not exist on type
-// 'Window & typeof globalThis'.
-window.background;
 
 /**
  * @typedef {{

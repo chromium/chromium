@@ -15,8 +15,6 @@ image_loader_ts = [ "image_loader/background.ts" ]
 
 static_js_files = [
   # Background:
-  "file_manager/background/js/file_manager_base.js",
-
   "file_manager/background/js/runtime_loaded_test_util.js",
   "file_manager/background/js/test_util.js",
 
@@ -31,13 +29,11 @@ static_js_files = [
   # Externs:
   "file_manager/externs/background/crostini.js",
   "file_manager/externs/background/drive_sync_handler.js",
-  "file_manager/externs/background/file_manager_base.js",
   "file_manager/externs/background/progress_center.js",
   "file_manager/externs/command_handler_deps.js",
   "file_manager/externs/entry_location.js",
   "file_manager/externs/exif_entry.js",
   "file_manager/externs/files_app_entry_interfaces.js",
-  "file_manager/externs/foreground_window.js",
   "file_manager/externs/metadata_model.js",
   "file_manager/externs/progress_center_panel.js",
   "file_manager/externs/volume_info_list.js",
@@ -285,9 +281,9 @@ ts_files = [
   "file_manager/background/js/drive_sync_handler.ts",
   "file_manager/background/js/entry_location_impl.ts",
   "file_manager/foreground/js/file_selection.ts",
+  "file_manager/background/js/file_manager_base.ts",
   "file_manager/background/js/file_operation_handler.ts",
   "file_manager/foreground/js/file_watcher.ts",
-  "file_manager/background/js/launcher.ts",
   "file_manager/foreground/js/main_window_component.ts",
   "file_manager/background/js/metrics_start.ts",
   "file_manager/foreground/js/mock_actions_model.ts",

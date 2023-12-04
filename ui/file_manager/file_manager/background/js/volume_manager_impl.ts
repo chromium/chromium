@@ -153,7 +153,7 @@ export async function createVolumeInfo(
 }
 
 
-type VolumeAlreadyMountedEvent = Event&{
+export type VolumeAlreadyMountedEvent = Event&{
   volumeId: string,
 };
 
