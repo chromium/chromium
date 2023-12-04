@@ -5714,27 +5714,7 @@ TEST_F(BidderWorkletTest, ReportWinNoBrowserSignalRecencyForAdditionalBid) {
       kScript, GURL("https://report-additional-bid-win.test/"));
 }
 
-TEST_F(BidderWorkletTest, ReportWinSignalKAnonStatusNotExposedByDefault) {
-  RunReportWinWithFunctionBodyExpectingResult(
-      R"(if (!("kAnonStatus" in browserSignals))
-            sendReportTo('https://pass.test');)",
-      GURL("https://pass.test"));
-}
-
-class BidderWorkletReportWinSignalKAnonStatusEnableTest
-    : public BidderWorkletTest {
- public:
-  BidderWorkletReportWinSignalKAnonStatusEnableTest() {
-    feature_list_.InitAndEnableFeature(
-        blink::features::kFledgePassKAnonStatusToReportWin);
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(BidderWorkletReportWinSignalKAnonStatusEnableTest,
-       KAnonStatusSignalExposed) {
+TEST_F(BidderWorkletTest, KAnonStatusExposesInReportWinBrowserSignals) {
   kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kEnforce;
   bid_is_kanon_ = true;
   RunReportWinWithFunctionBodyExpectingResult(
