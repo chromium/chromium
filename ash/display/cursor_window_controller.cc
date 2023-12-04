@@ -22,6 +22,7 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/prefs/pref_service.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
@@ -47,6 +48,7 @@ namespace {
 
 const int kMinLargeCursorSize = 25;
 const int kMaxLargeCursorSize = 64;
+const int kMaxExtraLargeCursorSize = 128;
 
 SkBitmap GetColorAdjustedBitmap(const gfx::ImageSkiaRep& image_rep,
                                 SkColor cursor_color) {
@@ -265,7 +267,10 @@ void CursorWindowController::RemoveObserver(Observer* observer) {
 void CursorWindowController::SetLargeCursorSizeInDip(
     int large_cursor_size_in_dip) {
   large_cursor_size_in_dip =
-      std::min(large_cursor_size_in_dip, kMaxLargeCursorSize);
+      std::min(large_cursor_size_in_dip,
+               ::features::IsAccessibilityExtraLargeCursorEnabled()
+                   ? kMaxExtraLargeCursorSize
+                   : kMaxLargeCursorSize);
   large_cursor_size_in_dip =
       std::max(large_cursor_size_in_dip, kMinLargeCursorSize);
 

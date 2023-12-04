@@ -1131,6 +1131,11 @@ const char kAccessibilityDictationKeyboardImprovementsDescription[] =
     "supported keyboards. This feature also includes some UI enhancements for "
     "Dictation, including notifications during error states.";
 
+const char kAccessibilityExtraLargeCursorName[] =
+    "Experimental extra large cursor";
+const char kAccessibilityExtraLargeCursorDescription[] =
+    "This option lets users make their large mouse cursor even larger";
+
 const char kAccessibilityFaceGazeName[] = "Experimental FaceGaze integration";
 const char kAccessibilityFaceGazeDescription[] =
     "This option enables the experimental FaceGaze ChromeOS integration";

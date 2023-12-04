@@ -173,6 +173,11 @@ IsExperimentalAccessibilityGoogleTtsHighQualityVoicesEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(
     kExperimentalAccessibilityGoogleTtsLanguagePacks);
 AX_BASE_EXPORT bool IsExperimentalAccessibilityGoogleTtsLanguagePacksEnabled();
+
+// Whether the extra-large cursor size feature is enabled.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityExtraLargeCursor);
+AX_BASE_EXPORT bool IsAccessibilityExtraLargeCursorEnabled();
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)

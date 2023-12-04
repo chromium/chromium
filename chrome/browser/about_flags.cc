@@ -7909,6 +7909,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityDictationKeyboardImprovements)},
 
+    {"enable-accessibility-extra-large-cursor",
+     flag_descriptions::kAccessibilityExtraLargeCursorName,
+     flag_descriptions::kAccessibilityExtraLargeCursorDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kAccessibilityExtraLargeCursor)},
+
     {"enable-accessibility-facegaze",
      flag_descriptions::kAccessibilityFaceGazeName,
      flag_descriptions::kAccessibilityFaceGazeDescription, kOsCrOS,

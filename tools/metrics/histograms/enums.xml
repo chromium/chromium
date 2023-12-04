@@ -30358,6 +30358,7 @@ from previous Chrome versions.
   <int value="-1679624666" label="NtpRealbox:enabled"/>
   <int value="-1678325491" label="AvifGainmapHdrImages:disabled"/>
   <int value="-1677715989" label="UnifiedConsent:disabled"/>
+  <int value="-1677531841" label="AccessibilityExtraLargeCursor:disabled"/>
   <int value="-1677516670" label="PageInfoAboutThisSiteEn:enabled"/>
   <int value="-1677087930" label="ClipboardHistoryUrlTitles:disabled"/>
   <int value="-1676256979"
@@ -34941,6 +34942,7 @@ from previous Chrome versions.
   <int value="482577697" label="PdfOcr:enabled"/>
   <int value="483155358" label="GlobalMediaControlsForChromeOS:disabled"/>
   <int value="483173979" label="SecurePaymentConfirmationExtensions:disabled"/>
+  <int value="483629979" label="AccessibilityExtraLargeCursor:enabled"/>
   <int value="484581911" label="ServiceWorkerSubresourceFilter:disabled"/>
   <int value="484596410" label="EnterpriseRealtimeExtensionRequest:disabled"/>
   <int value="484611531" label="AccessibilityGameFaceIntegration:enabled"/>

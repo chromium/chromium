@@ -212,6 +212,15 @@ bool IsExperimentalAccessibilityGoogleTtsLanguagePacksEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kExperimentalAccessibilityGoogleTtsLanguagePacks);
 }
+
+BASE_FEATURE(kAccessibilityExtraLargeCursor,
+             "AccessibilityExtraLargeCursor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityExtraLargeCursorEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityExtraLargeCursor);
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)

@@ -656,6 +656,9 @@ extern const char kAccessibilityChromeVoxPageMigrationDescription[];
 extern const char kAccessibilityDictationKeyboardImprovementsName[];
 extern const char kAccessibilityDictationKeyboardImprovementsDescription[];
 
+extern const char kAccessibilityExtraLargeCursorName[];
+extern const char kAccessibilityExtraLargeCursorDescription[];
+
 extern const char kAccessibilityFaceGazeName[];
 extern const char kAccessibilityFaceGazeDescription[];
 

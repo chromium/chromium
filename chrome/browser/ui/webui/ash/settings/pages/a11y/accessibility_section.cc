@@ -459,6 +459,10 @@ bool IsAccessibilityFaceGazeEnabled() {
   return ::features::IsAccessibilityFaceGazeEnabled();
 }
 
+bool IsAccessibilityExtraLargeCursorEnabled() {
+  return ::features::IsAccessibilityExtraLargeCursorEnabled();
+}
+
 }  // namespace
 
 AccessibilitySection::AccessibilitySection(
@@ -1121,6 +1125,9 @@ void AccessibilitySection::AddLoadTimeData(
 
   html_source->AddBoolean("isAccessibilityFaceGazeEnabled",
                           IsAccessibilityFaceGazeEnabled());
+
+  html_source->AddBoolean("isAccessibilityExtraLargeCursorEnabled",
+                          IsAccessibilityExtraLargeCursorEnabled());
 
   ::settings::AddCaptionSubpageStrings(html_source);
 }

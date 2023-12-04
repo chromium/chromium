@@ -18,7 +18,9 @@
 #include "base/command_line.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_service.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/client/cursor_shape_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -63,32 +65,33 @@ class CursorWindowControllerTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kAccessibilityExtraLargeCursor);
+
     // Shell hides the cursor by default; show it for these tests.
     Shell::Get()->cursor_manager()->ShowCursor();
 
-    cursor_window_controller_ =
-        Shell::Get()->window_tree_host_manager()->cursor_window_controller();
     SetCursorCompositionEnabled(true);
   }
 
   CursorType GetCursorType() const {
-    return cursor_window_controller_->cursor_.type();
+    return cursor_window_controller()->cursor_.type();
   }
 
   const gfx::Point& GetCursorHotPoint() const {
-    return cursor_window_controller_->hot_point_;
+    return cursor_window_controller()->hot_point_;
   }
 
   aura::Window* GetCursorWindow() const {
-    return cursor_window_controller_->cursor_window_.get();
+    return cursor_window_controller()->cursor_window_.get();
   }
 
   const gfx::ImageSkia& GetCursorImage() const {
-    return cursor_window_controller_->GetCursorImageForTest();
+    return cursor_window_controller()->GetCursorImageForTest();
   }
 
   int64_t GetCursorDisplayId() const {
-    return cursor_window_controller_->display_.id();
+    return cursor_window_controller()->display_.id();
   }
 
   void SetCursorCompositionEnabled(bool enabled) {
@@ -99,14 +102,12 @@ class CursorWindowControllerTest : public AshTestBase {
         enabled);
   }
 
-  CursorWindowController* cursor_window_controller() {
-    return cursor_window_controller_;
+  CursorWindowController* cursor_window_controller() const {
+    return Shell::Get()->window_tree_host_manager()->cursor_window_controller();
   }
 
  private:
-  // Not owned.
-  raw_ptr<CursorWindowController, DanglingUntriaged | ExperimentalAsh>
-      cursor_window_controller_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test that the composited cursor moves to another display when the real cursor
@@ -324,7 +325,7 @@ TEST_F(CursorWindowControllerTest, DSF) {
                             ->GetPrimaryDisplay()
                             .device_scale_factor();
 
-      for (const int size : {0, 32, 64}) {
+      for (const int size : {0, 32, 64, 128}) {
         cursor_manager->SetCursorSize(size == 0 ? ui::CursorSize::kNormal
                                                 : ui::CursorSize::kLarge);
         Shell::Get()->SetLargeCursorSizeInDip(size);
