@@ -33,10 +33,18 @@ class ASH_EXPORT FocusModeTasksProvider {
   // Adds `task` to `tasks_data_`.
   void AddTask(std::unique_ptr<api::Task> task);
 
+  // Creates a new task with name `task_title` and adds it to `tasks_data_`.
+  // TODO(b/306271332): Create a new task.
+  void CreateTask(const std::string& task_title);
+
   // Removes the task with `task_id` from `tasks_data_`.
   void MarkAsCompleted(const std::string& task_id);
 
  private:
+  // ID counter for creating tasks. Start from above where IDs in
+  // `kTaskInitializationData` end to avoid conflicts.
+  // TODO(b/306271332): Create a new task.
+  int task_id_ = 10;
   // Tasks for the loaded list.
   std::vector<std::unique_ptr<api::Task>> tasks_data_;
 };

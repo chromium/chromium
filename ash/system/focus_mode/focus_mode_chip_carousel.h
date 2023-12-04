@@ -16,13 +16,19 @@ class ScrollView;
 
 namespace ash {
 
+namespace api {
+struct Task;
+}  // namespace api
+
 // A horizontal scroll bar of chips for tasks. Selecting a task chip will save
 // it as the currently selected task for the focus session.
 class ASH_EXPORT FocusModeChipCarousel : public views::BoxLayoutView {
  public:
-  // Called when a task chip is pressed, contains a task name string.
-  using ChipPressedCallback =
-      base::RepeatingCallback<void(const std::u16string&)>;
+  // Called when a task chip is pressed, contains a task pointer that is alive
+  // for the lifetime of the task chip.
+  // TODO(b/306272008): Update carousel tasks when a task is completed to avoid
+  // dangling pointers.
+  using ChipPressedCallback = base::RepeatingCallback<void(const api::Task*)>;
 
   FocusModeChipCarousel(ChipPressedCallback on_chip_pressed);
   FocusModeChipCarousel(const FocusModeChipCarousel&) = delete;
@@ -31,7 +37,7 @@ class ASH_EXPORT FocusModeChipCarousel : public views::BoxLayoutView {
 
   // TODO(b/305085993): Update setting logic once API is integrated.
   // Updates the carousel of task chips from the first 5 tasks in `tasks`.
-  void SetTasks(const std::vector<std::u16string>& tasks);
+  void SetTasks(const std::vector<const api::Task*>& tasks);
 
   // Returns whether the carousel is currently displaying any tasks.
   bool HasTasks() const;

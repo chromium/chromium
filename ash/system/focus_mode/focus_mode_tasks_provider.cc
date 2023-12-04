@@ -8,7 +8,9 @@
 
 #include "ash/api/tasks/tasks_types.h"
 #include "base/containers/cxx20_erase_vector.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -124,6 +126,15 @@ void FocusModeTasksProvider::AddTask(std::unique_ptr<api::Task> task) {
   }
 
   tasks_data_.push_back(std::move(task));
+}
+
+void FocusModeTasksProvider::CreateTask(const std::string& task_title) {
+  AddTask(std::make_unique<api::Task>(
+      /*id=*/base::NumberToString(task_id_++), task_title,
+      /*completed=*/false,
+      /*due=*/absl::nullopt, /*has_subtasks=*/false,
+      /*has_email_link=*/false,
+      /*has_notes=*/false, /*updated=*/base::Time::Now()));
 }
 
 void FocusModeTasksProvider::MarkAsCompleted(const std::string& task_id) {

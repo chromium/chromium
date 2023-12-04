@@ -14,6 +14,10 @@ class ImageButton;
 
 namespace ash {
 
+namespace api {
+struct Task;
+}  // namespace api
+
 class FocusModeChipCarousel;
 
 // The class will be used in the `FocusModeDetailedView` under the task view
@@ -26,11 +30,14 @@ class ASH_EXPORT FocusModeTaskView : public views::BoxLayoutView {
   FocusModeTaskView& operator=(const FocusModeTaskView&) = delete;
   ~FocusModeTaskView() override;
 
-  // Handles finished editing event from the text field, updates `task_title_`,
-  // and saves the task information to the focus mode controller and user
-  // prefs.
-  // TODO(b/305085993): Update task data representation once API is integrated.
-  void SelectTask(const std::u16string& task_title);
+  // Handles finished editing event from the text field, creates, saves, and
+  // selects a new task with the user entered task title.
+  // TODO(b/306271332): Create a new task.
+  void AddTask(const std::u16string& task_title);
+
+  // Updates `task_title_` and saves the task information to the focus mode
+  // controller and user prefs.
+  void SelectTask(const api::Task* task);
 
  private:
   friend class FocusModeTaskViewTest;

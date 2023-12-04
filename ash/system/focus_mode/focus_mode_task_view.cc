@@ -4,6 +4,7 @@
 
 #include "ash/system/focus_mode/focus_mode_task_view.h"
 
+#include "ash/api/tasks/tasks_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/system_textfield.h"
@@ -130,7 +131,7 @@ class FocusModeTaskView::TaskTextfieldController
   }
 
   void OnViewBlurred(views::View* view) override {
-    owner_->SelectTask(textfield_->GetText());
+    owner_->AddTask(textfield_->GetText());
   }
 
  private:
@@ -172,7 +173,8 @@ FocusModeTaskView::FocusModeTaskView() {
                                      kIconSize));
   add_task_button_->SetFocusBehavior(View::FocusBehavior::NEVER);
 
-  task_title_ = FocusModeController::Get()->selected_task_title();
+  auto* focus_mode_controller = FocusModeController::Get();
+  task_title_ = focus_mode_controller->selected_task_title();
   textfield_ =
       textfield_container_->AddChildView(std::make_unique<TaskTextfield>());
   textfield_->SetAccessibleName(l10n_util::GetStringUTF16(
@@ -209,6 +211,8 @@ FocusModeTaskView::FocusModeTaskView() {
   chip_carousel_ =
       AddChildView(std::make_unique<FocusModeChipCarousel>(base::BindRepeating(
           &FocusModeTaskView::SelectTask, base::Unretained(this))));
+  chip_carousel_->SetTasks(
+      focus_mode_controller->tasks_provider().GetTaskList());
 
   UpdateStyle(!task_title_.empty());
 
@@ -218,8 +222,27 @@ FocusModeTaskView::FocusModeTaskView() {
 
 FocusModeTaskView::~FocusModeTaskView() = default;
 
-void FocusModeTaskView::SelectTask(const std::u16string& task_title) {
+void FocusModeTaskView::AddTask(const std::u16string& task_title) {
+  if (task_title.empty()) {
+    return;
+  }
+
+  // If a task is already selected, edit it. Add it otherwise.
+  auto* controller = FocusModeController::Get();
+  if (!controller->selected_task_title().empty()) {
+    // TODO(b/306271947): Edit an existing task
+  } else {
+    controller->tasks_provider().CreateTask(base::UTF16ToUTF8(task_title));
+  }
+
   task_title_ = task_title;
+  controller->set_selected_task_title(task_title_);
+  UpdateStyle(/*show_selected_state=*/true);
+}
+
+void FocusModeTaskView::SelectTask(const api::Task* task) {
+  task_title_ = base::UTF8ToUTF16(task->title);
+  textfield_->SetText(task_title_);
   FocusModeController::Get()->set_selected_task_title(task_title_);
   UpdateStyle(/*show_selected_state=*/!task_title_.empty());
   // TODO(b/306271332): Call the tasks API to either save or update a task.
@@ -262,8 +285,7 @@ void FocusModeTaskView::OnAddTaskButtonPressed() {
 
 void FocusModeTaskView::UpdateStyle(bool show_selected_state) {
   textfield_->SetText(task_title_);
-  // If a task chip was selected, populate the textfield with its name and
-  // unfocus the textfield.
+  // Unfocus the textfield if a task is selected.
   if (show_selected_state) {
     auto* focus_manager = textfield_->GetFocusManager();
     // If a task was selected from a chip, the textfield will still be focused.
@@ -274,7 +296,20 @@ void FocusModeTaskView::UpdateStyle(bool show_selected_state) {
       // method again.
       return;
     }
+  } else {
+    // Clear `task_title_` if no task is selected so that if a list of tasks is
+    // returned while editing the textfield, the chip carousel is shown.
+    task_title_.clear();
   }
+
+  textfield_container_->SetBorder(views::CreateEmptyBorder(
+      show_selected_state ? kSelectedStateBoxInsets
+                          : kUnselectedStateBoxInsets));
+  textfield_container_->SetBackground(
+      show_selected_state ? nullptr
+                          : views::CreateThemedRoundedRectBackground(
+                                cros_tokens::kCrosSysInputFieldOnShaded,
+                                kUnselectedStateBoxCornerRadius));
 
   textfield_container_->SetBorder(views::CreateEmptyBorder(
       show_selected_state ? kSelectedStateBoxInsets

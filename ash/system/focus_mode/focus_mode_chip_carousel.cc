@@ -4,6 +4,7 @@
 
 #include "ash/system/focus_mode/focus_mode_chip_carousel.h"
 
+#include "ash/api/tasks/tasks_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/containers/adapters.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -74,7 +75,7 @@ void SetupOverflowIcon(views::ImageButton* overflow_icon, bool left) {
 }  // namespace
 
 // `on_chip_pressed` will be called when a task chip is clicked, containing a
-// string name of a task.
+// task.
 FocusModeChipCarousel::FocusModeChipCarousel(
     ChipPressedCallback on_chip_pressed)
     : on_chip_pressed_(std::move(on_chip_pressed)) {
@@ -150,7 +151,8 @@ void FocusModeChipCarousel::OnMouseExited(const ui::MouseEvent& event) {
   UpdateGradient();
 }
 
-void FocusModeChipCarousel::SetTasks(const std::vector<std::u16string>& tasks) {
+void FocusModeChipCarousel::SetTasks(
+    const std::vector<const api::Task*>& tasks) {
   scroll_contents_->RemoveAllChildViews();
   if (tasks.empty()) {
     return;
@@ -159,10 +161,11 @@ void FocusModeChipCarousel::SetTasks(const std::vector<std::u16string>& tasks) {
   // Populate a maximum of `kMaxTasks` tasks.
   const size_t num_tasks = std::min(tasks.size(), kMaxTasks);
   for (size_t i = 0; i < num_tasks; i++) {
-    const std::u16string& task = tasks[i];
+    const api::Task* task = tasks[i];
     views::LabelButton* chip =
         scroll_contents_->AddChildView(std::make_unique<views::LabelButton>(
-            base::BindRepeating(on_chip_pressed_, task), task));
+            base::BindRepeating(on_chip_pressed_, task),
+            base::UTF8ToUTF16(task->title)));
     SetupChip(chip, /*first=*/(i == 0));
   }
 }

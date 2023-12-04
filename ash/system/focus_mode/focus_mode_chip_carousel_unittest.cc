@@ -4,6 +4,7 @@
 
 #include "ash/system/focus_mode/focus_mode_chip_carousel.h"
 
+#include "ash/api/tasks/tasks_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
@@ -20,9 +21,9 @@ MATCHER_P(LabelMatcher, task, "") {
   return static_cast<views::LabelButton*>(arg)->GetText() == task;
 }
 
-std::vector<std::u16string> kTestTaskTitles = {u"Preparing for I485 form",
-                                               u"Podcast interview Script",
-                                               u"Book a flight to Seoul"};
+std::vector<std::string> kTestTaskTitles = {"Preparing for I485 form",
+                                            "Podcast interview Script",
+                                            "Book a flight to Seoul"};
 
 }  // namespace
 
@@ -49,6 +50,31 @@ class FocusModeChipCarouselTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
+  std::unique_ptr<api::Task> MakeTask(const std::string& title) {
+    return std::make_unique<api::Task>(
+        /*id=*/base::NumberToString(task_id_++), title, /*completed=*/false,
+        /*due=*/absl::nullopt, /*has_subtasks=*/false, /*has_email_link=*/false,
+        /*has_notes=*/false, /*updated=*/base::Time::Now());
+  }
+
+  std::vector<std::unique_ptr<const api::Task>> MakeTasks(
+      const std::vector<std::string>& titles) {
+    std::vector<std::unique_ptr<const api::Task>> tasks;
+    for (const std::string& title : titles) {
+      tasks.push_back(MakeTask(title));
+    }
+    return tasks;
+  }
+
+  std::vector<const api::Task*> GetTaskPtrs(
+      const std::vector<std::unique_ptr<const api::Task>>& tasks) {
+    std::vector<const api::Task*> task_ptrs;
+    for (const auto& task : tasks) {
+      task_ptrs.push_back(task.get());
+    }
+    return task_ptrs;
+  }
+
   FocusModeChipCarousel* focus_mode_chip_carousel() {
     return focus_mode_chip_carousel_;
   }
@@ -73,51 +99,52 @@ class FocusModeChipCarouselTest : public AshTestBase {
   base::test::ScopedFeatureList scoped_feature_;
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<FocusModeChipCarousel> focus_mode_chip_carousel_;
+  // ID counter for creating fake tasks.
+  int task_id_ = 0;
 };
 
 // Tests that the task list displays the list of tasks.
 TEST_F(FocusModeChipCarouselTest, ChipCarouselPopulates) {
   EXPECT_FALSE(focus_mode_chip_carousel()->HasTasks());
-  auto validate_tasks = [&](const std::vector<std::u16string> tasks) {
-    SCOPED_TRACE(::testing::Message() << "Tasks length: " << tasks.size());
-    focus_mode_chip_carousel()->SetTasks(tasks);
-    std::vector<views::View*> task_chips =
-        GetScrollContents()->GetChildrenInZOrder();
+  auto validate_tasks = [&](const std::vector<std::string> task_titles) {
+    SCOPED_TRACE(::testing::Message()
+                 << "Tasks length: " << task_titles.size());
+    auto tasks = MakeTasks(task_titles);
+    focus_mode_chip_carousel()->SetTasks(GetTaskPtrs(tasks));
 
-    EXPECT_EQ(tasks.size(), task_chips.size());
-    EXPECT_NE(tasks.empty(), focus_mode_chip_carousel()->HasTasks());
+    EXPECT_EQ(task_titles.size(),
+              GetScrollContents()->GetChildrenInZOrder().size());
+    EXPECT_NE(task_titles.empty(), focus_mode_chip_carousel()->HasTasks());
 
     std::vector<LabelMatcherMatcherP<std::u16string>> task_labels = {};
-    for (const std::u16string& task : tasks) {
-      task_labels.push_back(LabelMatcher(task));
+    for (const std::string& task : task_titles) {
+      task_labels.push_back(LabelMatcher(base::UTF8ToUTF16(task)));
     }
 
-    EXPECT_THAT(task_chips, testing::ElementsAreArray(task_labels));
+    EXPECT_THAT(GetScrollContents()->GetChildrenInZOrder(),
+                testing::ElementsAreArray(task_labels));
   };
 
   validate_tasks({});
   validate_tasks(kTestTaskTitles);
-  validate_tasks({u"Only one task"});
-  validate_tasks({u"Maximum", u"of", u"five", u"tasks", u"populated"});
+  validate_tasks({"Only one task"});
+  validate_tasks({"Maximum", "of", "five", "tasks", "populated"});
 }
 
 // Tests that if more than 5 tasks are provided, the carousel only populates the
 // first 5.
 TEST_F(FocusModeChipCarouselTest, MaxOfFive) {
-  focus_mode_chip_carousel()->SetTasks(
-      {u"one", u"two", u"three", u"four", u"five", u"six"});
-
-  std::vector<views::View*> task_chips =
-      GetScrollContents()->GetChildrenInZOrder();
-  EXPECT_EQ(5u, task_chips.size());
+  auto tasks = MakeTasks({"one", "two", "three", "four", "five", "six"});
+  focus_mode_chip_carousel()->SetTasks(GetTaskPtrs(tasks));
+  EXPECT_EQ(5u, GetScrollContents()->GetChildrenInZOrder().size());
 
   // The first 5 tasks should be populated.
   std::vector<LabelMatcherMatcherP<std::u16string>> task_labels = {};
-  for (const std::u16string& task :
-       {u"one", u"two", u"three", u"four", u"five"}) {
-    task_labels.push_back(LabelMatcher(task));
+  for (const std::string& task : {"one", "two", "three", "four", "five"}) {
+    task_labels.push_back(LabelMatcher(base::UTF8ToUTF16(task)));
   }
-  EXPECT_THAT(task_chips, testing::ElementsAreArray(task_labels));
+  EXPECT_THAT(GetScrollContents()->GetChildrenInZOrder(),
+              testing::ElementsAreArray(task_labels));
 }
 
 // Tests that the gradient exists on sides of the scroll that are overflowed,
@@ -128,12 +155,14 @@ TEST_F(FocusModeChipCarouselTest, GradientOnScroll) {
 
   // Setting 1 task shouldn't make the scroll view overflow, so there should
   // still be no gradient.
-  focus_mode_chip_carousel()->SetTasks({u"Preparing for I485 form"});
+  auto tasks_1 = MakeTasks({"Preparing for I485 form"});
+  focus_mode_chip_carousel()->SetTasks(GetTaskPtrs(tasks_1));
   views::test::RunScheduledLayout(focus_mode_chip_carousel());
   EXPECT_FALSE(GetScrollView()->layer()->HasGradientMask());
 
   // Three tasks should overflow the scroll view and the gradient should appear.
-  focus_mode_chip_carousel()->SetTasks(kTestTaskTitles);
+  auto tasks_2 = MakeTasks(kTestTaskTitles);
+  focus_mode_chip_carousel()->SetTasks(GetTaskPtrs(tasks_2));
   views::test::RunScheduledLayout(focus_mode_chip_carousel());
   EXPECT_TRUE(GetScrollView()->layer()->HasGradientMask());
 
