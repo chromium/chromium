@@ -29,6 +29,19 @@ bool IsAccessibilityFocusHighlightEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityFocusHighlight);
 }
 
+BASE_FEATURE(kAccessibilityPdfOcrForSelectToSpeak,
+             "kAccessibilityPdfOcrForSelectToSpeak",
+#if BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_CHROMEOS)
+);
+bool IsAccessibilityPdfOcrForSelectToSpeakEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityPdfOcrForSelectToSpeak);
+}
+
 BASE_FEATURE(kAugmentExistingImageLabels,
              "AugmentExistingImageLabels",
              base::FEATURE_DISABLED_BY_DEFAULT);

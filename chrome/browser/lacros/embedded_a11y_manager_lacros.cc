@@ -177,6 +177,10 @@ void EmbeddedA11yManagerLacros::SpeakSelectedText() {
   }
 }
 
+bool EmbeddedA11yManagerLacros::IsSelectToSpeakEnabled() {
+  return select_to_speak_enabled_;
+}
+
 void EmbeddedA11yManagerLacros::AddExtensionChangedCallbackForTest(
     base::RepeatingClosure callback) {
   extension_installation_changed_callback_for_test_ = std::move(callback);

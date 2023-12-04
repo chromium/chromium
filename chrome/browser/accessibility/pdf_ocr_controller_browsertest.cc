@@ -109,11 +109,20 @@ class PdfOcrControllerBrowserTest : public base::test::WithFeatureOverride,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void EnableSelectToSpeak(bool enabled) {
+    ash::AccessibilityManager::Get()->SetSelectToSpeakEnabled(enabled);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   bool UseOopif() const override { return GetParam(); }
 
   std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
     auto enabled = PDFExtensionTestBase::GetEnabledFeatures();
     enabled.push_back(features::kPdfOcr);
+#if BUILDFLAG(IS_CHROMEOS)
+    enabled.push_back(features::kAccessibilityPdfOcrForSelectToSpeak);
+#endif  // BUILDFLAG(IS_CHROMEOS)
     return enabled;
   }
 };
@@ -259,6 +268,34 @@ IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
   ui::AXMode ax_mode = pdf_contents->GetAccessibilityMode();
   EXPECT_FALSE(ax_mode.has_mode(ui::AXMode::kPDFOcr));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
+                       NotEnabledWithoutSelectToSpeak) {
+  // TODO(crbug.com/1445746): Remove once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
+  EnableSelectToSpeak(false);
+
+  screen_ai::ScreenAIInstallState::GetInstance()->SetStateForTesting(
+      screen_ai::ScreenAIInstallState::State::kReady);
+  PrefChangeWaiter pref_waiter(browser()->profile());
+  // Turn on PDF OCR.
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kAccessibilityPdfOcrAlwaysActive, true);
+  // Wait until the PDF OCR pref changes accordingly.
+  pref_waiter.Wait();
+
+  extensions::MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
+      embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_TRUE(guest);
+  content::WebContents* pdf_contents = GetActiveWebContents();
+  ui::AXMode ax_mode = pdf_contents->GetAccessibilityMode();
+  EXPECT_FALSE(ax_mode.has_mode(ui::AXMode::kPDFOcr));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Multi-profile is not supported on Ash.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

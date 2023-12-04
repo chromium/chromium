@@ -1283,6 +1283,13 @@ void AccessibilityManager::OnSelectToSpeakChanged() {
       prefs::kAccessibilitySelectToSpeakEnabled);
   if (enabled) {
     select_to_speak_loader_->SetBrowserContext(profile_, base::OnceClosure());
+
+    if (::features::IsAccessibilityPdfOcrForSelectToSpeakEnabled() &&
+        ::features::IsPdfOcrEnabled()) {
+      // Create PdfOcrController when both the PDF OCR feature flag and STS are
+      // enabled.
+      ::screen_ai::PdfOcrControllerFactory::GetForProfile(profile());
+    }
   }
 
   if (select_to_speak_enabled_ == enabled)

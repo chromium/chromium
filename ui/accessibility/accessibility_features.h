@@ -51,6 +51,11 @@ AX_BASE_EXPORT bool IsAblateSendPendingAccessibilityEventsEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityFocusHighlight);
 AX_BASE_EXPORT bool IsAccessibilityFocusHighlightEnabled();
 
+// Enable PDF OCR for Select-to-Speak. It will be disabled by default on
+// platforms other than ChromeOS as STS is available only on ChromeOS.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityPdfOcrForSelectToSpeak);
+AX_BASE_EXPORT bool IsAccessibilityPdfOcrForSelectToSpeakEnabled();
+
 // Augment existing images labels in addition to unlabeled images.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAugmentExistingImageLabels);
 AX_BASE_EXPORT bool IsAugmentExistingImageLabelsEnabled();

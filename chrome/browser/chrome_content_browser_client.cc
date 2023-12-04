@@ -7279,7 +7279,9 @@ ui::AXMode ChromeContentBrowserClient::GetAXModeForBrowserContext(
   }
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   if (features::IsPdfOcrEnabled() &&
-      accessibility_state_utils::IsScreenReaderEnabled()) {
+      (accessibility_state_utils::IsScreenReaderEnabled() ||
+       (features::IsAccessibilityPdfOcrForSelectToSpeakEnabled() &&
+        accessibility_state_utils::IsSelectToSpeakEnabled()))) {
     // PdfOcrController will be created when the user turns on a screen reader
     // before or even after starting the browser.
     auto* pdf_ocr_controller =
