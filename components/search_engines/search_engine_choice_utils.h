@@ -22,6 +22,10 @@ extern const char kSearchEngineChoiceScreenProfileInitConditionsHistogram[];
 extern const char kSearchEngineChoiceScreenNavigationConditionsHistogram[];
 extern const char kSearchEngineChoiceScreenEventsHistogram[];
 extern const char kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram[];
+extern const char kSearchEngineChoiceWipeReasonHistogram[];
+extern const char kSearchEngineChoiceRepromptHistogram[];
+extern const char kSearchEngineChoiceRepromptWildcardHistogram[];
+extern const char kSearchEngineChoiceRepromptSpecificCountryHistogram[];
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -116,6 +120,43 @@ enum class ChoiceMadeLocation {
   kMaxValue = kChoiceScreen,
 };
 
+// The cause for wiping the search engine choice preferences. Only used for
+// metrics.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class WipeSearchEngineChoiceReason {
+  kProfileWipe = 0,
+  kMissingChoiceVersion = 1,
+  kInvalidChoiceVersion = 2,
+  kReprompt = 3,
+
+  kMaxValue = kReprompt,
+};
+
+// Exposed for testing.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class RepromptResult {
+  // Reprompt.
+  kReprompt = 0,
+
+  // Cases below do not reprompt.
+  //
+  // Wrong JSON syntax.
+  kInvalidDictionary = 1,
+  // There was no applicable key (specific country or wildcard).
+  kNoDictionaryKey = 2,
+  // The reprompt version could not be parsed.
+  kInvalidVersion = 3,
+  // Chrome older than the requested version, reprompting would not make the
+  // version recent enough.
+  kChromeTooOld = 4,
+  // The choice was made recently enough.
+  kRecentChoice = 5,
+
+  kMaxValue = kRecentChoice,
+};
+
 // Whether the choice screen flag is generally enabled for the specific flow.
 bool IsChoiceScreenFlagEnabled(ChoicePromo promo);
 
@@ -183,7 +224,8 @@ void RecordChoiceScreenDefaultSearchProviderType(SearchEngineType engine_type);
 
 // Clears the search engine choice prefs, such as the timestamp and the Chrome
 // version, to ensure the choice screen is shown again.
-void WipeSearchEngineChoicePrefs(PrefService& profile_prefs);
+void WipeSearchEngineChoicePrefs(PrefService& profile_prefs,
+                                 WipeSearchEngineChoiceReason reason);
 
 #if !BUILDFLAG(IS_ANDROID)
 // Returns the engine marketing snippet string resource id or -1 if the snippet

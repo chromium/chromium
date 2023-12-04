@@ -511,7 +511,9 @@ double Profile::GetDefaultZoomLevelForProfile() {
 void Profile::Wipe() {
   // Clear the search engine choice prefs.
   // TODO(b/312180262): Consider clearing other preferences as well.
-  search_engines::WipeSearchEngineChoicePrefs(CHECK_DEREF(GetPrefs()));
+  search_engines::WipeSearchEngineChoicePrefs(
+      CHECK_DEREF(GetPrefs()),
+      search_engines::WipeSearchEngineChoiceReason::kProfileWipe);
 
   GetBrowsingDataRemover()->Remove(
       base::Time(), base::Time::Max(),

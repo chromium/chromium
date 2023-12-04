@@ -28,6 +28,8 @@
 #include "components/version_info/version_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using search_engines::RepromptResult;
+using search_engines::WipeSearchEngineChoiceReason;
 using ::testing::NiceMock;
 
 namespace search_engines {
@@ -525,9 +527,81 @@ TEST_F(SearchEngineChoiceUtilsTest, IsChoiceScreenFlagEnabled) {
 #endif
 }
 
+// Test that the user is not reprompted is the reprompt parameter is not a valid
+// JSON string.
+TEST_F(SearchEngineChoiceUtilsTest, NoRepromptForSyntaxError) {
+  // Set the reprompt parameters with invalid syntax.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      switches::kSearchEngineChoiceTrigger,
+      {{switches::kSearchEngineChoiceTriggerRepromptParams.name, "Foo"}});
+  ASSERT_EQ("Foo", switches::kSearchEngineChoiceTriggerRepromptParams.Get());
+
+  // Initialize the preference with some previous choice.
+  int64_t kPreviousTimestamp = 1;
+  pref_service()->SetInt64(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
+      kPreviousTimestamp);
+  base::Version choice_version({1, 2, 3, 4});
+  pref_service()->SetString(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionVersion,
+      choice_version.GetString());
+
+  // The user should not be reprompted.
+  search_engines::PreprocessPrefsForReprompt(*pref_service());
+
+  EXPECT_EQ(kPreviousTimestamp,
+            pref_service()->GetInt64(
+                prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
+  EXPECT_EQ(choice_version.GetString(),
+            pref_service()->GetString(
+                prefs::kDefaultSearchProviderChoiceScreenCompletionVersion));
+  histogram_tester_.ExpectTotalCount(
+      search_engines::kSearchEngineChoiceWipeReasonHistogram, 0);
+  histogram_tester_.ExpectTotalCount(
+      search_engines::kSearchEngineChoiceRepromptSpecificCountryHistogram, 0);
+  histogram_tester_.ExpectTotalCount(
+      search_engines::kSearchEngineChoiceRepromptWildcardHistogram, 0);
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::kSearchEngineChoiceRepromptHistogram,
+      RepromptResult::kInvalidDictionary, 1);
+}
+
+// The user is reprompted if the version preference is missing.
+TEST_F(SearchEngineChoiceUtilsTest, RepromptForMissingChoiceVersion) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kSearchEngineChoiceTrigger};
+
+  // Initialize the timestamp, but not the version.
+  int64_t kPreviousTimestamp = 1;
+  pref_service()->SetInt64(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
+      kPreviousTimestamp);
+
+  // The user should be reprompted.
+  search_engines::PreprocessPrefsForReprompt(*pref_service());
+
+  EXPECT_FALSE(pref_service()->HasPrefPath(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
+  EXPECT_FALSE(pref_service()->HasPrefPath(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionVersion));
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::kSearchEngineChoiceWipeReasonHistogram,
+      WipeSearchEngineChoiceReason::kMissingChoiceVersion, 1);
+  histogram_tester_.ExpectTotalCount(
+      search_engines::kSearchEngineChoiceRepromptSpecificCountryHistogram, 0);
+  histogram_tester_.ExpectTotalCount(
+      search_engines::kSearchEngineChoiceRepromptWildcardHistogram, 0);
+  histogram_tester_.ExpectTotalCount(
+      search_engines::kSearchEngineChoiceRepromptHistogram, 0);
+}
+
 struct RepromptTestParam {
   // Whether the user should be reprompted or not.
-  bool expects_reprompt = false;
+  absl::optional<WipeSearchEngineChoiceReason> wipe_reason;
+  // Internal results of the reprompt computation.
+  absl::optional<RepromptResult> wildcard_result;
+  absl::optional<RepromptResult> country_result;
   // Version of the choice.
   const base::StringPiece choice_version;
   // The reprompt params, as sent by the server.  Use `CURRENT_VERSION` for the
@@ -572,12 +646,17 @@ TEST_P(SearchEngineChoiceUtilsParamTest, Reprompt) {
   // Check whether the user is reprompted.
   search_engines::PreprocessPrefsForReprompt(*pref_service());
 
-  if (GetParam().expects_reprompt) {
+  if (GetParam().wipe_reason) {
+    // User is reprompted, prefs were wiped.
     EXPECT_FALSE(pref_service()->HasPrefPath(
         prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
     EXPECT_FALSE(pref_service()->HasPrefPath(
         prefs::kDefaultSearchProviderChoiceScreenCompletionVersion));
+    histogram_tester_.ExpectUniqueSample(
+        search_engines::kSearchEngineChoiceWipeReasonHistogram,
+        *GetParam().wipe_reason, 1);
   } else {
+    // User is not reprompted, prefs were not wiped.
     EXPECT_EQ(
         kPreviousTimestamp,
         pref_service()->GetInt64(
@@ -585,29 +664,77 @@ TEST_P(SearchEngineChoiceUtilsParamTest, Reprompt) {
     EXPECT_EQ(GetParam().choice_version,
               pref_service()->GetString(
                   prefs::kDefaultSearchProviderChoiceScreenCompletionVersion));
+    histogram_tester_.ExpectTotalCount(
+        search_engines::kSearchEngineChoiceWipeReasonHistogram, 0);
   }
+
+  int total_reprompt_record_count = 0;
+  if (GetParam().wildcard_result) {
+    ++total_reprompt_record_count;
+    histogram_tester_.ExpectUniqueSample(
+        search_engines::kSearchEngineChoiceRepromptWildcardHistogram,
+        *GetParam().wildcard_result, 1);
+    EXPECT_GE(histogram_tester_.GetBucketCount(
+                  search_engines::kSearchEngineChoiceRepromptHistogram,
+                  *GetParam().wildcard_result),
+              1);
+  } else {
+    histogram_tester_.ExpectTotalCount(
+        search_engines::kSearchEngineChoiceRepromptWildcardHistogram, 0);
+  }
+  if (GetParam().country_result) {
+    ++total_reprompt_record_count;
+    histogram_tester_.ExpectUniqueSample(
+        search_engines::kSearchEngineChoiceRepromptSpecificCountryHistogram,
+        *GetParam().country_result, 1);
+    EXPECT_GE(histogram_tester_.GetBucketCount(
+                  search_engines::kSearchEngineChoiceRepromptHistogram,
+                  *GetParam().country_result),
+              1);
+  } else {
+    histogram_tester_.ExpectTotalCount(
+        search_engines::kSearchEngineChoiceRepromptSpecificCountryHistogram, 0);
+  }
+  histogram_tester_.ExpectTotalCount(
+      search_engines::kSearchEngineChoiceRepromptHistogram,
+      total_reprompt_record_count);
 }
 
 constexpr RepromptTestParam kRepromptTestParams[] = {
     // Reprompt all countries with the wildcard.
-    {true, "1.0.0.0", R"( {"*":"1.0.0.1"} )"},
+    {WipeSearchEngineChoiceReason::kReprompt, RepromptResult::kReprompt,
+     RepromptResult::kNoDictionaryKey, "1.0.0.0", R"( {"*":"1.0.0.1"} )"},
     // Reprompt works with all version components.
-    {true, "1.0.0.100", R"( {"*":"1.0.1.0"} )"},
-    {true, "1.0.200.0", R"( {"*":"1.1.0.0"} )"},
-    {true, "1.300.0.0", R"( {"*":"2.0.0.0"} )"},
-    {true, "10.10.1.1", R"( {"*":"30.45.678.9100"} )"},
+    {WipeSearchEngineChoiceReason::kReprompt, RepromptResult::kReprompt,
+     RepromptResult::kNoDictionaryKey, "1.0.0.100", R"( {"*":"1.0.1.0"} )"},
+    {WipeSearchEngineChoiceReason::kReprompt, RepromptResult::kReprompt,
+     RepromptResult::kNoDictionaryKey, "1.0.200.0", R"( {"*":"1.1.0.0"} )"},
+    {WipeSearchEngineChoiceReason::kReprompt, RepromptResult::kReprompt,
+     RepromptResult::kNoDictionaryKey, "1.300.0.0", R"( {"*":"2.0.0.0"} )"},
+    {WipeSearchEngineChoiceReason::kReprompt, RepromptResult::kReprompt,
+     RepromptResult::kNoDictionaryKey, "10.10.1.1",
+     R"( {"*":"30.45.678.9100"} )"},
     // Reprompt a specific country.
-    {true, "1.0.0.0", R"( {"BE":"1.0.0.1"} )"},
+    {WipeSearchEngineChoiceReason::kReprompt, absl::nullopt,
+     RepromptResult::kReprompt, "1.0.0.0", R"( {"BE":"1.0.0.1"} )"},
     // Reprompt for params inclusive of current version
-    {true, "1.0.0.0", R"( {"BE":"CURRENT_VERSION"} )"},
+    {WipeSearchEngineChoiceReason::kReprompt, absl::nullopt,
+     RepromptResult::kReprompt, "1.0.0.0", R"( {"BE":"CURRENT_VERSION"} )"},
     // Reprompt when the choice version is malformed.
-    {true, "Blah", ""},
+    {WipeSearchEngineChoiceReason::kInvalidChoiceVersion, absl::nullopt,
+     absl::nullopt, "Blah", ""},
     // Reprompt when both the country and the wild card are specified, as long
     // as one of them qualifies.
-    {true, "1.0.0.0", R"( {"*":"1.0.0.1","BE":"1.0.0.1"} )"},
-    {true, "1.0.0.0", R"( {"*":"FUTURE_VERSION","BE":"1.0.0.1"} )"},
+    {WipeSearchEngineChoiceReason::kReprompt, absl::nullopt,
+     RepromptResult::kReprompt, "1.0.0.0",
+     R"( {"*":"1.0.0.1","BE":"1.0.0.1"} )"},
+    {WipeSearchEngineChoiceReason::kReprompt, absl::nullopt,
+     RepromptResult::kReprompt, "1.0.0.0",
+     R"( {"*":"FUTURE_VERSION","BE":"1.0.0.1"} )"},
     // Still works with irrelevant parameters for other countries.
-    {true, "1.0.0.0", R"(
+    {WipeSearchEngineChoiceReason::kReprompt, absl::nullopt,
+     RepromptResult::kReprompt, "1.0.0.0",
+     R"(
        {
          "FR":"FUTURE_VERSION",
          "INVALID_COUNTRY":"INVALID_VERSION",
@@ -616,34 +743,52 @@ constexpr RepromptTestParam kRepromptTestParams[] = {
        } )"},
 
     // Don't reprompt when the choice was made in the current version.
-    {false, version_info::GetVersionNumber(), "{\"*\":\"CURRENT_VERSION\"}"},
+    {absl::nullopt, RepromptResult::kRecentChoice,
+     RepromptResult::kNoDictionaryKey, version_info::GetVersionNumber(),
+     "{\"*\":\"CURRENT_VERSION\"}"},
     // Don't reprompt when the choice was recent enough.
-    {false, "2.0.0.0", R"( {"*":"1.0.0.1"} )"},
+    {absl::nullopt, RepromptResult::kRecentChoice,
+     RepromptResult::kNoDictionaryKey, "2.0.0.0", R"( {"*":"1.0.0.1"} )"},
     // Don't reprompt for another country.
-    {false, "1.0.0.0", R"( {"FR":"1.0.0.1"} )"},
-    {false, "1.0.0.0", R"( {"US":"1.0.0.1"} )"},
-    {false, "1.0.0.0", R"( {"XX":"1.0.0.1"} )"},
-    {false, "1.0.0.0", R"( {"INVALID_COUNTRY":"1.0.0.1"} )"},
-    {false, "1.0.0.0", R"( {"FR":"1.0.0.1","BE":"FUTURE_VERSION"} )"},
+    {absl::nullopt, RepromptResult::kNoDictionaryKey,
+     RepromptResult::kNoDictionaryKey, "1.0.0.0", R"( {"FR":"1.0.0.1"} )"},
+    {absl::nullopt, RepromptResult::kNoDictionaryKey,
+     RepromptResult::kNoDictionaryKey, "1.0.0.0", R"( {"US":"1.0.0.1"} )"},
+    {absl::nullopt, RepromptResult::kNoDictionaryKey,
+     RepromptResult::kNoDictionaryKey, "1.0.0.0", R"( {"XX":"1.0.0.1"} )"},
+    {absl::nullopt, RepromptResult::kNoDictionaryKey,
+     RepromptResult::kNoDictionaryKey, "1.0.0.0",
+     R"( {"INVALID_COUNTRY":"1.0.0.1"} )"},
+    {absl::nullopt, absl::nullopt, RepromptResult::kChromeTooOld, "1.0.0.0",
+     R"( {"FR":"1.0.0.1","BE":"FUTURE_VERSION"} )"},
     // Don't reprompt for future versions.
-    {false, "1.0.0.0", R"( {"*":"FUTURE_VERSION"} )"},
+    {absl::nullopt, RepromptResult::kChromeTooOld,
+     RepromptResult::kNoDictionaryKey, "1.0.0.0",
+     R"( {"*":"FUTURE_VERSION"} )"},
     // Wildcard is overridden by specific country.
-    {false, "1.0.0.0", R"( {"*":"1.0.0.1","BE":"FUTURE_VERSION"} )"},
+    {absl::nullopt, absl::nullopt, RepromptResult::kChromeTooOld, "1.0.0.0",
+     R"( {"*":"1.0.0.1","BE":"FUTURE_VERSION"} )"},
     // Combination of right version for wrong country and wrong version for
     // right country.
-    {false, "2.0.0.0", R"(
+    {absl::nullopt, absl::nullopt, RepromptResult::kChromeTooOld, "2.0.0.0",
+     R"(
        {
           "*":"1.1.0.0",
           "BE":"FUTURE_VERSION",
           "FR":"2.0.0.1"
         } )"},
     // Empty dictionary.
-    {false, "1.0.0.0", "{}"},
-    // Don't reprompt for bad format.
-    {false, "1.0.0.0", ""},                      // Empty parameter.
-    {false, "1.0.0.0", "Foo"},                   // Wrong syntax.
-    {false, "1.0.0.0", R"( {"*":"2.0"} )"},      // Wrong number of components.
-    {false, "1.0.0.0", R"( {"*":"2.0.0.*"} )"},  // Wildcard in version.
+    {absl::nullopt, RepromptResult::kNoDictionaryKey,
+     RepromptResult::kNoDictionaryKey, "1.0.0.0", "{}"},
+    // Empty parameter.
+    {absl::nullopt, RepromptResult::kNoDictionaryKey,
+     RepromptResult::kNoDictionaryKey, "1.0.0.0", ""},
+    // Wrong number of components.
+    {absl::nullopt, RepromptResult::kInvalidVersion,
+     RepromptResult::kNoDictionaryKey, "1.0.0.0", R"( {"*":"2.0"} )"},
+    // Wildcard in version.
+    {absl::nullopt, RepromptResult::kInvalidVersion,
+     RepromptResult::kNoDictionaryKey, "1.0.0.0", R"( {"*":"2.0.0.*"} )"},
 };
 
 INSTANTIATE_TEST_SUITE_P(,

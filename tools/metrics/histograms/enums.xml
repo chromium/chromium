@@ -51873,6 +51873,15 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="Received Answer - Too Large"/>
 </enum>
 
+<enum name="SearchEngineChoiceReprompt">
+  <int value="0" label="Reprompt"/>
+  <int value="1" label="No reprompt: invalid dictionary"/>
+  <int value="2" label="No reprompt: no dictionary key"/>
+  <int value="3" label="No reprompt: invalid value"/>
+  <int value="4" label="No reprompt: Chrome too old"/>
+  <int value="5" label="No reprompt: recent choice"/>
+</enum>
+
 <enum name="SearchEngineChoiceScreenConditions">
   <int value="0" label="Has custom search engine set"/>
   <int value="1" label="Has search provider override"/>
@@ -51902,6 +51911,13 @@ Called by update_net_error_codes.py.-->
   <int value="9"
       label="Learn More Screen Was Displayed in the Profile Creation Specific
              Screen (Desktop only)"/>
+</enum>
+
+<enum name="SearchEngineChoiceWipeReason">
+  <int value="0" label="Profile wipe"/>
+  <int value="1" label="Missing choice version"/>
+  <int value="2" label="Invalid choice version"/>
+  <int value="3" label="Force reprompt"/>
 </enum>
 
 <enum name="SearchEntryPoint">

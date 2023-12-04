@@ -6,6 +6,7 @@
 #include <string>
 
 #include "base/check_deref.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
@@ -26,6 +27,22 @@
 
 namespace search_engines {
 namespace {
+
+// Logs the outcome of a reprompt attempt for a specific key (either a specific
+// country or the wildcard).
+void LogSearchRepromptKeyHistograms(RepromptResult result, bool is_wildcard) {
+  // `RepromptResult::kInvalidDictionary` is recorded separately.
+  CHECK_NE(result, RepromptResult::kInvalidDictionary);
+
+  base::UmaHistogramEnumeration(kSearchEngineChoiceRepromptHistogram, result);
+  if (is_wildcard) {
+    base::UmaHistogramEnumeration(kSearchEngineChoiceRepromptWildcardHistogram,
+                                  result);
+  } else {
+    base::UmaHistogramEnumeration(
+        kSearchEngineChoiceRepromptSpecificCountryHistogram, result);
+  }
+}
 
 // The choice screen should be shown if the `DefaultSearchProviderEnabled`
 // policy is not set, or set to true and the
@@ -155,6 +172,16 @@ const char kSearchEngineChoiceScreenEventsHistogram[] =
 
 const char kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram[] =
     "Search.ChoiceScreenDefaultSearchEngineType";
+
+const char kSearchEngineChoiceWipeReasonHistogram[] = "Search.ChoiceWipeReason";
+
+const char kSearchEngineChoiceRepromptHistogram[] = "Search.ChoiceReprompt";
+
+const char kSearchEngineChoiceRepromptWildcardHistogram[] =
+    "Search.ChoiceReprompt.Wildcard";
+
+const char kSearchEngineChoiceRepromptSpecificCountryHistogram[] =
+    "Search.ChoiceReprompt.SpecificCountry";
 
 // Returns whether the choice screen flag is generally enabled for the specific
 // user flow.
@@ -364,8 +391,11 @@ void RecordChoiceMade(PrefService* profile_prefs,
   }
 }
 
-void WipeSearchEngineChoicePrefs(PrefService& profile_prefs) {
+void WipeSearchEngineChoicePrefs(PrefService& profile_prefs,
+                                 WipeSearchEngineChoiceReason reason) {
   if (IsChoiceScreenFlagEnabled(ChoicePromo::kAny)) {
+    base::UmaHistogramEnumeration(kSearchEngineChoiceWipeReasonHistogram,
+                                  reason);
     profile_prefs.ClearPref(
         prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp);
     profile_prefs.ClearPref(
@@ -392,11 +422,19 @@ void PreprocessPrefsForReprompt(PrefService& profile_prefs) {
     return;
   }
 
-  // If existing prefs have a wrong format, force a reprompt.
+  // If existing prefs are missing or have a wrong format, force a reprompt.
+  if (!profile_prefs.HasPrefPath(
+          prefs::kDefaultSearchProviderChoiceScreenCompletionVersion)) {
+    WipeSearchEngineChoicePrefs(
+        profile_prefs, WipeSearchEngineChoiceReason::kMissingChoiceVersion);
+    return;
+  }
+
   base::Version choice_version(profile_prefs.GetString(
       prefs::kDefaultSearchProviderChoiceScreenCompletionVersion));
   if (!IsValidVersionFormat(choice_version)) {
-    WipeSearchEngineChoicePrefs(profile_prefs);
+    WipeSearchEngineChoicePrefs(
+        profile_prefs, WipeSearchEngineChoiceReason::kInvalidChoiceVersion);
     return;
   }
 
@@ -406,40 +444,54 @@ void PreprocessPrefsForReprompt(PrefService& profile_prefs) {
           switches::kSearchEngineChoiceTriggerRepromptParams.Get());
   if (!reprompt_params) {
     // No valid reprompt parameters.
+    base::UmaHistogramEnumeration(kSearchEngineChoiceRepromptHistogram,
+                                  RepromptResult::kInvalidDictionary);
     return;
   }
 
   const base::Version& current_version = version_info::GetVersion();
   int country_id = GetSearchEngineChoiceCountryId(&profile_prefs);
+  const std::string wildcard_string("*");
   // Explicit country key takes precedence over the wildcard.
-  for (const std::string* reprompt_version_string :
-       {reprompt_params->FindString(
-            country_codes::CountryIDToCountryString(country_id)),
-        reprompt_params->FindString("*")}) {
+  for (const std::string& key :
+       {country_codes::CountryIDToCountryString(country_id), wildcard_string}) {
+    bool is_wildcard = key == wildcard_string;
+    const std::string* reprompt_version_string =
+        reprompt_params->FindString(key);
     if (!reprompt_version_string) {
       // No version string for this country. Fallback to the wildcard.
+      LogSearchRepromptKeyHistograms(RepromptResult::kNoDictionaryKey,
+                                     is_wildcard);
       continue;
     }
 
     base::Version reprompt_version(*reprompt_version_string);
     if (!IsValidVersionFormat(reprompt_version)) {
       // The version is ill-formatted.
+      LogSearchRepromptKeyHistograms(RepromptResult::kInvalidVersion,
+                                     is_wildcard);
       break;
     }
 
     // Do not reprompt if the current version is too old, to avoid endless
     // reprompts.
     if (current_version < reprompt_version) {
+      LogSearchRepromptKeyHistograms(RepromptResult::kChromeTooOld,
+                                     is_wildcard);
       break;
     }
 
     if (choice_version >= reprompt_version) {
       // No need to reprompt, the choice is recent enough.
+      LogSearchRepromptKeyHistograms(RepromptResult::kRecentChoice,
+                                     is_wildcard);
       break;
     }
 
     // Wipe the choice to force a reprompt.
-    WipeSearchEngineChoicePrefs(profile_prefs);
+    LogSearchRepromptKeyHistograms(RepromptResult::kReprompt, is_wildcard);
+    WipeSearchEngineChoicePrefs(profile_prefs,
+                                WipeSearchEngineChoiceReason::kReprompt);
     return;
   }
 }
