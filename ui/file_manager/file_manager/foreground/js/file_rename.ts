@@ -7,34 +7,34 @@
  * by the files app frontend.
  */
 
-import {assert} from 'chrome://resources/ash/common/assert.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {getEntry, getParentEntry, moveEntryTo, validatePathNameLength} from '../../common/js/api.js';
 import {createDOMError} from '../../common/js/dom_utils.js';
 import {getFileErrorString, str, strf} from '../../common/js/translations.js';
 import {FileErrorToDomError} from '../../common/js/util.js';
 import {FileSystemType, FileSystemTypeVolumeNameLengthLimit} from '../../common/js/volume_manager_types.js';
+import type {VolumeInfo} from '../../externs/volume_info.js';
 
 /**
  * Verifies name for file, folder, or removable root to be created or renamed.
  * Names are restricted according to the target filesystem.
  *
- * @param {!Entry} entry The entry to be named.
- * @param {string} name New file, folder, or removable root name.
- * @param {boolean} areHiddenFilesVisible Whether to report hidden file
- *     name errors or not.
- * @param {?import("../../externs/volume_info.js").VolumeInfo} volumeInfo Volume
- *     information about the target entry.
- * @param {boolean} isRemovableRoot Whether the target is a removable root.
- * @return {!Promise<void>} Fulfills on success, throws error message otherwise.
+ * @param entry The entry to be named.
+ * @param name New file, folder, or removable root name.
+ * @param areHiddenFilesVisible Whether to report hidden file name errors or
+ *     not.
+ * @param volumeInfo Volume information about the target entry.
+ * @param isRemovableRoot Whether the target is a removable root.
+ * @return Fulfills on success, throws error message otherwise.
  */
 export async function validateEntryName(
-    entry, name, areHiddenFilesVisible, volumeInfo, isRemovableRoot) {
+    entry: Entry, name: string, areHiddenFilesVisible: boolean,
+    volumeInfo: null|VolumeInfo, isRemovableRoot: boolean) {
   if (isRemovableRoot) {
     const diskFileSystemType = volumeInfo && volumeInfo.diskFileSystemType;
-    // @ts-ignore: error TS2345: Argument of type 'string | null' is not
-    // assignable to parameter of type 'string'.
-    validateExternalDriveName(name, assert(diskFileSystemType));
+    assert(diskFileSystemType);
+    validateExternalDriveName(name, diskFileSystemType);
   } else {
     const parentEntry = await getParentEntry(entry);
     await validateFileName(parentEntry, name, areHiddenFilesVisible);
@@ -50,10 +50,10 @@ export async function validateEntryName(
  *
  * This function throws if the new label is invalid, else it completes.
  *
- * @param {string} name New external drive name.
- * @param {!FileSystemType} fileSystem
+ * @param name New external drive name.
  */
-export function validateExternalDriveName(name, fileSystem) {
+export function validateExternalDriveName(
+    name: string, fileSystem: FileSystemType) {
   // Verify if entered name for external drive respects restrictions
   // provided by the target filesystem.
 
@@ -62,14 +62,8 @@ export function validateExternalDriveName(name, fileSystem) {
 
   // Verify length for the target file system type.
   if (lengthLimit.hasOwnProperty(fileSystem) &&
-      // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-      // expression of type 'string' can't be used to index type '{ vfat:
-      // number; exfat: number; ntfs: number; }'.
-      nameLength > lengthLimit[fileSystem]) {
+      nameLength > lengthLimit[fileSystem]!) {
     throw Error(
-        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
-        // because expression of type 'string' can't be used to index type '{
-        // vfat: number; exfat: number; ntfs: number; }'.
         strf('ERROR_EXTERNAL_DRIVE_LONG_NAME', lengthLimit[fileSystem]));
   }
 
@@ -77,11 +71,9 @@ export function validateExternalDriveName(name, fileSystem) {
   // special characters. This needs to stay in sync with
   // cros-disks/filesystem_label.cc on the ChromeOS side.
   const validCharRegex = /[a-zA-Z0-9 \!\#\$\%\&\(\)\-\@\^\_\`\{\}\~]/;
-  for (let i = 0; i < nameLength; i++) {
-    // @ts-ignore: error TS2345: Argument of type 'string | undefined' is not
-    // assignable to parameter of type 'string'.
-    if (!validCharRegex.test(name[i])) {
-      throw Error(strf('ERROR_EXTERNAL_DRIVE_INVALID_CHARACTER', name[i]));
+  for (const n of name) {
+    if (!validCharRegex.test(n)) {
+      throw Error(strf('ERROR_EXTERNAL_DRIVE_INVALID_CHARACTER', n));
     }
   }
 }
@@ -96,14 +88,14 @@ export function validateExternalDriveName(name, fileSystem) {
  *
  * It also verifies if the name length is in the limit of the filesystem.
  *
- * @param {!DirectoryEntry} parentEntry The entry of the parent directory.
- * @param {string} name New file or folder name.
- * @param {boolean} areHiddenFilesVisible Whether to report the hidden file
- *     name error or not.
- * @return {!Promise<void>} Fulfills on success, throws error message otherwise.
+ * @param parentEntry The entry of the parent directory.
+ * @param name New file or folder name.
+ * @param areHiddenFilesVisible Whether to report the hidden file name error or
+ *     not.
+ * @return Fulfills on success, throws error message otherwise.
  */
 export async function validateFileName(
-    parentEntry, name, areHiddenFilesVisible) {
+    parentEntry: DirectoryEntry, name: string, areHiddenFilesVisible: boolean) {
   const testResult = /[\/\\\<\>\:\?\*\"\|]/.exec(name);
   if (testResult) {
     throw Error(strf('ERROR_INVALID_CHARACTER', testResult[0]));
@@ -129,18 +121,17 @@ export async function validateFileName(
 
 /**
  * Renames file, folder, or removable root with newName.
- * @param {!Entry} entry The entry to be renamed.
- * @param {string} newName The new name.
- * @param {?import("../../externs/volume_info.js").VolumeInfo} volumeInfo Volume
- *     information about the target entry.
- * @param {boolean} isRemovableRoot Whether the target is a removable root.
- * @return {!Promise<!Entry>} Resolves the renamed entry if successful, else
- * throws error message.
+ * @param entry The entry to be renamed.
+ * @param newName The new name.
+ * @param volumeInfo Volume information about the target entry.
+ * @param isRemovableRoot Whether the target is a removable root.
+ * @return Resolves the renamed entry if successful, else throws error message.
  */
-export async function renameEntry(entry, newName, volumeInfo, isRemovableRoot) {
+export async function renameEntry(
+    entry: Entry, newName: string, volumeInfo: null|VolumeInfo,
+    isRemovableRoot: boolean): Promise<Entry> {
   if (isRemovableRoot) {
-    // @ts-ignore: error TS18047: 'volumeInfo' is possibly 'null'.
-    chrome.fileManagerPrivate.renameVolume(volumeInfo.volumeId, newName);
+    chrome.fileManagerPrivate.renameVolume(volumeInfo!.volumeId, newName);
     return entry;
   }
   return renameFile(entry, newName);
@@ -148,12 +139,12 @@ export async function renameEntry(entry, newName, volumeInfo, isRemovableRoot) {
 
 /**
  * Renames the entry to newName.
- * @param {!Entry} entry The entry to be renamed.
- * @param {string} newName The new name.
- * @return {!Promise<!Entry>} Resolves the renamed entry if successful, else
- * throws error message.
+ * @param entry The entry to be renamed.
+ * @param newName The new name.
+ * @return Resolves the renamed entry if successful, else throws error message.
  */
-export async function renameFile(entry, newName) {
+export async function renameFile(
+    entry: Entry, newName: string): Promise<Entry> {
   try {
     // Before moving, we need to check if there is an existing entry at
     // parent/newName, since moveTo will overwrite it.
@@ -161,13 +152,11 @@ export async function renameFile(entry, newName) {
     // a new entry may be created in the background. However, there is no way
     // not to overwrite the existing file, unfortunately. The risk should be
     // low, assuming the unsafe period is very short.
-
     const parent = await getParentEntry(entry);
 
     try {
       await getEntry(parent, newName, entry.isFile, {create: false});
-    } catch (error) {
-      // @ts-ignore: error TS18046: 'error' is of type 'unknown'.
+    } catch (error: any) {
       if (error.name == FileErrorToDomError.NOT_FOUND_ERR) {
         return moveEntryTo(entry, parent, newName);
       }
@@ -178,21 +167,16 @@ export async function renameFile(entry, newName) {
 
     // The entry with the name already exists.
     throw createDOMError(FileErrorToDomError.PATH_EXISTS_ERR);
-  } catch (error) {
-    // @ts-ignore: error TS2345: Argument of type 'unknown' is not assignable to
-    // parameter of type 'DOMError'.
+  } catch (error: any) {
     throw getRenameErrorMessage(error, entry, newName);
   }
 }
 
 /**
  * Converts DOMError response from renameEntry() to error message.
- * @param {DOMError} error
- * @param {!Entry} entry
- * @param {string} newName
- * @return {!Error}
  */
-function getRenameErrorMessage(error, entry, newName) {
+function getRenameErrorMessage(
+    error: DOMError, entry: Entry, newName: string): Error {
   if (error &&
       (error.name == FileErrorToDomError.PATH_EXISTS_ERR ||
        error.name == FileErrorToDomError.TYPE_MISMATCH_ERR)) {
