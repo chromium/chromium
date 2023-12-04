@@ -174,6 +174,8 @@ GetUrlRequestDestinationFromMojomRequestDestination(
       return CSBRR::WEB_IDENTITY;
     case network::mojom::RequestDestination::kDictionary:
       return CSBRR::DICTIONARY;
+    case network::mojom::RequestDestination::kSpeculationRules:
+      return CSBRR::SPECULATION_RULES;
   }
 }
 

@@ -143,6 +143,8 @@ const char* RequestContextName(mojom::blink::RequestContextType context) {
       return "Service Worker script";
     case mojom::blink::RequestContextType::SHARED_WORKER:
       return "Shared Worker script";
+    case mojom::blink::RequestContextType::SPECULATION_RULES:
+      return "speculation rules";
     case mojom::blink::RequestContextType::STYLE:
       return "stylesheet";
     case mojom::blink::RequestContextType::SUBRESOURCE:

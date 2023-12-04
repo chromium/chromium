@@ -7,10 +7,12 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "net/http/structured_headers.h"
+#include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/origin_trials/trial_token.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_result.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
@@ -239,6 +241,11 @@ void SpeculationRulesHeader::StartFetches(Document& document) {
     resource_request.RemoveUserAndPassFromURL();
     resource_request.SetRequestorOrigin(origin);
     resource_request.SetHTTPOrigin(origin);
+
+    resource_request.SetRequestContext(
+        mojom::blink::RequestContextType::SPECULATION_RULES);
+    resource_request.SetRequestDestination(
+        network::mojom::blink::RequestDestination::kSpeculationRules);
 
     ResourceLoaderOptions options(
         document.GetExecutionContext()->GetCurrentWorld());

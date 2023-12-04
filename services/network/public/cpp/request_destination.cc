@@ -63,6 +63,8 @@ const char* RequestDestinationToString(
       return "webidentity";
     case network::mojom::RequestDestination::kDictionary:
       return "dictionary";
+    case network::mojom::RequestDestination::kSpeculationRules:
+      return "speculationrules";
   }
 }
 

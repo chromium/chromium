@@ -663,6 +663,11 @@ bool WriteToBlinkCondition(
             request.destination =
                 network::mojom::RequestDestination::kDictionary;
             break;
+          case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+              Request::kSpeculationRulesDestination:
+            request.destination =
+                network::mojom::RequestDestination::kSpeculationRules;
+            break;
         }
       }
       out_request = request;
@@ -978,6 +983,11 @@ void WriteConditionToProtoWithHelper(
           mutable_request->set_destination(
               ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
                   Request::kDictionaryDestination);
+          break;
+        case network::mojom::RequestDestination::kSpeculationRules:
+          mutable_request->set_destination(
+              ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+                  Request::kSpeculationRulesDestination);
           break;
       }
     }

@@ -112,6 +112,7 @@ net::NetworkTrafficAnnotationTag FetchUtils::GetTrafficAnnotationTag(
     case network::mojom::RequestDestination::kScript:
     case network::mojom::RequestDestination::kServiceWorker:
     case network::mojom::RequestDestination::kSharedWorker:
+    case network::mojom::RequestDestination::kSpeculationRules:
     case network::mojom::RequestDestination::kStyle:
     case network::mojom::RequestDestination::kTrack:
     case network::mojom::RequestDestination::kVideo:

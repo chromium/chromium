@@ -362,6 +362,8 @@ RequestContextToMixedContentResourceType(
       return protocol::Audits::MixedContentResourceTypeEnum::ServiceWorker;
     case mojom::blink::RequestContextType::SHARED_WORKER:
       return protocol::Audits::MixedContentResourceTypeEnum::SharedWorker;
+    case mojom::blink::RequestContextType::SPECULATION_RULES:
+      return protocol::Audits::MixedContentResourceTypeEnum::SpeculationRules;
     case mojom::blink::RequestContextType::STYLE:
       return protocol::Audits::MixedContentResourceTypeEnum::Stylesheet;
     case mojom::blink::RequestContextType::SUBRESOURCE:

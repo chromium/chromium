@@ -68,6 +68,9 @@ enum RequestDestination {
   kWebIdentity = 23,
   // Requests for compression dictionary
   kDictionary = 24,
+  // Requests for speculation rules.
+  // https://wicg.github.io/nav-speculation/speculation-rules.html
+  kSpeculationRules = 25,
 };
 
 // Corresponds to Fetch request's "redirect mode":

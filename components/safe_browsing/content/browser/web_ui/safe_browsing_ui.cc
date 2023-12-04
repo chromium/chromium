@@ -1465,6 +1465,8 @@ std::string UrlRequestDestinationToString(
       return "WEB_IDENTITY";
     case ClientSafeBrowsingReportRequest::DICTIONARY:
       return "DICTIONARY";
+    case ClientSafeBrowsingReportRequest::SPECULATION_RULES:
+      return "SPECULATION_RULES";
   }
 }
 
