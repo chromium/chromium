@@ -5099,4 +5099,30 @@ TEST_P(PaintArtifactCompositorTest,
   EXPECT_TRUE(cc_clip_expander->AppliesLocalClip());
 }
 
+TEST_P(PaintArtifactCompositorTest,
+       CreatePictureLayerForSolidColorBackdropFilterMask) {
+  CompositorFilterOperations filter;
+  filter.AppendBlurFilter(5);
+  auto backdrop_filter = CreateBackdropFilterEffect(e0(), filter);
+
+  EffectPaintPropertyNode::State mask_state;
+  mask_state.local_transform_space = &t0();
+  mask_state.output_clip = &c0();
+  mask_state.blend_mode = SkBlendMode::kDstIn;
+  mask_state.direct_compositing_reasons =
+      CompositingReason::kBackdropFilterMask;
+  auto mask =
+      EffectPaintPropertyNode::Create(*backdrop_filter, std::move(mask_state));
+
+  Update(TestPaintArtifact()
+             .Chunk(t0(), c0(), *backdrop_filter)
+             .RectDrawing(gfx::Rect(150, 150, 100, 100), Color::kWhite)
+             .Chunk(t0(), c0(), *mask)
+             .RectDrawing(gfx::Rect(150, 150, 100, 100), Color::kBlack)
+             .IsSolidColor()
+             .Build());
+  ASSERT_EQ(2u, LayerCount());
+  EXPECT_FALSE(LayerAt(1)->IsSolidColorLayerForTesting());
+}
+
 }  // namespace blink
