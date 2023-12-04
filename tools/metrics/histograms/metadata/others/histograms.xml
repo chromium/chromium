@@ -2259,8 +2259,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ComponentUpdater.AndroidComponentLoader.LoadStatus.{Component}"
-    units="BooleanSuccess" expires_after="2023-12-15">
-  <owner>hazems@chromium.org</owner>
+    units="BooleanSuccess" expires_after="2024-11-28">
+  <owner>avvall@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <owner>src/components/component_updater/android/OWNERS</owner>
   <summary>
@@ -2272,7 +2272,6 @@ chromium-metrics-reviews@google.com.
     ComponentLoaderPolicy implementation.
   </summary>
   <token key="Component">
-    <variant name="ClientSidePhishing" summary="ClientSidePhishing"/>
     <variant name="OriginTrials" summary="OriginTrials"/>
     <variant name="TrustTokenKeyCommitments"
         summary="TrustTokenKeyCommitments"/>
