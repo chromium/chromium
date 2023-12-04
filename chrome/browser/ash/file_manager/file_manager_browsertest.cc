@@ -2222,8 +2222,10 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         // Section end - browser tests for new directory tree
         TestCase("trashMoveToTrash")
             .FeatureIds({"screenplay-a06f961a-17f5-4fbd-8285-49abb000dee1"}),
-        TestCase("trashMultipleEntries"),
-        TestCase("trashNonEmptyFolder"),
+        TestCase("trashMultipleEntries")
+            .FeatureIds({"screenplay-a06f961a-17f5-4fbd-8285-49abb000dee1"}),
+        TestCase("trashNonEmptyFolder")
+            .FeatureIds({"screenplay-a06f961a-17f5-4fbd-8285-49abb000dee1"}),
         TestCase("trashPermanentlyDelete"),
         TestCase("trashRestoreFromToast"),
 // TODO(crbug.com/1425820): Re-enable this test on ChromiumOS MSAN.
