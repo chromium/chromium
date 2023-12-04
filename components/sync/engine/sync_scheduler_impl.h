@@ -242,13 +242,14 @@ class SyncSchedulerImpl : public SyncScheduler {
   // Set in Start(), unset in Stop().
   bool started_ = false;
 
-  // Modifiable versions of kDefaultPollIntervalSeconds which can be
-  // updated by the server.
-  base::TimeDelta syncer_poll_interval_seconds_;
+  // The interval between poll requests. Can be updated by the server.
+  base::TimeDelta syncer_poll_interval_;
 
   // Timer for polling. Restarted on each successful poll, and when entering
   // normal sync mode or exiting an error state. Not active in configuration
   // mode.
+  // TODO(crbug.com/1497926): Use a WallClockTimer, so that polls happen
+  // consistently even if the device was suspended.
   base::OneShotTimer poll_timer_;
 
   // The mode of operation.
@@ -259,11 +260,11 @@ class SyncSchedulerImpl : public SyncScheduler {
 
   std::unique_ptr<BackoffDelayProvider> delay_provider_;
 
-  // TODO(gangwu): http://crbug.com/714868 too many timers in this class, try to
-  // reduce them.
-  // The event that will wake us up.
-  // When the whole client got throttling or backoff, we will delay this timer
-  // as well.
+  // The timer for the next pending task (except for polling, which has its own
+  // timer). This can be a delayed nudge (standard case), or throttling/backoff
+  // (either global or for some data type(s)).
+  // TODO(crbug.com/1497926): Maybe use a WallClockTimer, so that
+  // throttling/backoff continue counting even if the device is suspended?
   base::OneShotTimer pending_wakeup_timer_;
 
   // Storage for variables related to an in-progress configure request.  Note
@@ -278,9 +279,10 @@ class SyncSchedulerImpl : public SyncScheduler {
 
   const raw_ptr<SyncCycleContext> cycle_context_;
 
-  // TryJob might get called for multiple reasons. It should only call
-  // DoPollSyncCycleJob after some time since the last attempt.
-  // last_poll_reset_ keeps track of when was last attempt.
+  // The time when the last poll request finished. Used for computing the next
+  // poll time.
+  // TODO(crbug.com/1497926): Once `poll_timer_` is a WallClockTimer, this
+  // should become a Time instead of TimeTicks.
   base::TimeTicks last_poll_reset_;
 
   // next_sync_cycle_job_priority_ defines which priority will be used next

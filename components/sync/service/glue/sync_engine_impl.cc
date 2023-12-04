@@ -191,12 +191,14 @@ void SyncEngineImpl::StartConfiguration() {
 
 void SyncEngineImpl::StartSyncingWithServer() {
   DVLOG(1) << name_ << ": SyncEngineImpl::StartSyncingWithServer called.";
-  // TODO(crbug.com/1448012): introduce a helper to deal with poll times.
   base::Time last_poll_time = prefs_->GetLastPollTime();
-  // If there's no known last poll time (e.g. on initial start-up), we treat
-  // this as if a poll just happened.
+  // If there's no known last poll time, that means this is the initial Sync
+  // startup. Treat it as if a poll just happened.
   if (last_poll_time.is_null()) {
     last_poll_time = base::Time::Now();
+    // Note: Persisting this is important to ensure that polling correctly
+    // resumes after a browser restart, even if no poll request happens during
+    // this run.
     prefs_->SetLastPollTime(last_poll_time);
   }
   sync_task_runner_->PostTask(
@@ -523,7 +525,6 @@ void SyncEngineImpl::OnCookieJarChanged(bool account_mismatch,
 bool SyncEngineImpl::IsNextPollTimeInThePast() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/1448012): introduce a helper to deal with poll times.
   base::Time last_poll_time = prefs_->GetLastPollTime();
   base::TimeDelta poll_interval = prefs_->GetPollInterval();
   if (last_poll_time.is_null() || poll_interval.is_zero()) {

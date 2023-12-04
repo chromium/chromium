@@ -96,7 +96,7 @@ SyncSchedulerImpl::SyncSchedulerImpl(
     bool ignore_auth_credentials,
     bool sync_poll_immediately_on_every_startup)
     : name_(name),
-      syncer_poll_interval_seconds_(context->poll_interval()),
+      syncer_poll_interval_(context->poll_interval()),
       delay_provider_(std::move(delay_provider)),
       syncer_(std::move(syncer)),
       cycle_context_(context),
@@ -164,25 +164,20 @@ void SyncSchedulerImpl::Start(Mode mode, base::Time last_poll_time) {
     SendInitialSnapshot();
   }
 
-  DCHECK(syncer_);
-
   Mode old_mode = mode_;
   mode_ = mode;
   base::Time now = base::Time::Now();
 
-  // Only adjust the poll reset time if it was valid and in the past.
+  // Only adjust the poll reset time if the last poll is valid and in the past.
   if (!last_poll_time.is_null() && last_poll_time <= now) {
-    // Convert from base::Time to base::TimeTicks. The reason we use Time
-    // for persisting is that TimeTicks can stop making forward progress when
-    // the machine is suspended. This implies that on resume the client might
-    // actually have miss the real poll, unless the client is restarted.
-    // Fixing that would require using an AlarmTimer though, which is only
-    // supported on certain platforms.
-    // TODO(crbug.com/1448012): introduce a helper to deal with poll times.
-    last_poll_reset_ =
-        TimeTicks::Now() -
-        (now - ComputeLastPollOnStart(last_poll_time, GetPollInterval(), now,
-                                      sync_poll_immediately_on_every_startup_));
+    base::Time adjusted_last_poll_time =
+        ComputeLastPollOnStart(last_poll_time, GetPollInterval(), now,
+                               sync_poll_immediately_on_every_startup_);
+    // Convert from base::Time (used for persisting) to base::TimeTicks (used
+    // for scheduling). Note that TimeTicks values are not safe to persist, and
+    // may "pause" while the device is suspended.
+    base::TimeDelta time_since_last_poll = now - adjusted_last_poll_time;
+    last_poll_reset_ = TimeTicks::Now() - time_since_last_poll;
   }
 
   if (old_mode != mode_ && mode_ == NORMAL_MODE) {
@@ -523,7 +518,7 @@ void SyncSchedulerImpl::DoPollSyncCycleJob() {
 }
 
 base::TimeDelta SyncSchedulerImpl::GetPollInterval() {
-  return syncer_poll_interval_seconds_;
+  return syncer_poll_interval_;
 }
 
 void SyncSchedulerImpl::AdjustPolling(PollAdjustType type) {
@@ -532,38 +527,33 @@ void SyncSchedulerImpl::AdjustPolling(PollAdjustType type) {
   if (!started_)
     return;
 
-  base::TimeDelta poll_interval = GetPollInterval();
-  base::TimeDelta poll_delay = poll_interval;
-  const TimeTicks now = TimeTicks::Now();
+  const base::TimeTicks now = base::TimeTicks::Now();
 
-  if (type == UPDATE_INTERVAL) {
-    if (!last_poll_reset_.is_null()) {
-      // Override the delay based on the last successful poll time (if it was
-      // set).
-      TimeTicks new_poll_time = poll_interval + last_poll_reset_;
-      poll_delay = new_poll_time - TimeTicks::Now();
-
-      if (poll_delay.is_negative()) {
-        // The desired poll time was in the past, so trigger a poll now (the
-        // timer will post the task asynchronously, so re-entrancy isn't an
-        // issue).
-        poll_delay = base::TimeDelta();
+  switch (type) {
+    case UPDATE_INTERVAL:
+      if (last_poll_reset_.is_null()) {
+        // There was no previous poll. Treat this as if a poll had just been
+        // completed.
+        last_poll_reset_ = now;
       }
-    } else {
-      // There was no previous poll. Keep the delay set to the normal interval,
-      // as if we had just completed a poll.
-      DCHECK_EQ(GetPollInterval(), poll_delay);
+      break;
+    case FORCE_RESET:
+      // Just restart the timer.
       last_poll_reset_ = now;
-    }
-  } else {
-    // Otherwise just restart the timer.
-    DCHECK_EQ(FORCE_RESET, type);
-    DCHECK_EQ(GetPollInterval(), poll_delay);
-    last_poll_reset_ = now;
+      break;
   }
 
-  SDVLOG(1) << "Updating polling delay to " << poll_delay.InMinutes()
-            << " minutes.";
+  const base::TimeTicks new_poll_time = last_poll_reset_ + GetPollInterval();
+  base::TimeDelta poll_delay = new_poll_time - now;
+
+  if (poll_delay.is_negative()) {
+    // The desired poll time was in the past, so trigger a poll now (the
+    // timer will post the task asynchronously, so re-entrancy isn't an
+    // issue).
+    poll_delay = base::TimeDelta();
+  }
+
+  SDVLOG(1) << "Scheduling a poll in " << poll_delay.InMinutes() << " minutes.";
 
   // Adjust poll rate. Start will reset the timer if it was already running.
   poll_timer_.Start(FROM_HERE, poll_delay, this,
@@ -664,6 +654,9 @@ void SyncSchedulerImpl::TrySyncCycleJobImpl() {
       SDVLOG(2) << "Found pending nudge job";
       DoNudgeSyncCycleJob(priority);
     } else if (((TimeTicks::Now() - last_poll_reset_) >= GetPollInterval())) {
+      // TODO(crbug.com/1497926): When using a WallClockTimer to schedule
+      // polling, use Time instead of TimeTicks for the above computation for
+      // consistency.
       SDVLOG(2) << "Found pending poll";
       DoPollSyncCycleJob();
     }
@@ -829,11 +822,12 @@ void SyncSchedulerImpl::OnReceivedPollIntervalUpdate(
     const base::TimeDelta& new_interval) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (new_interval == syncer_poll_interval_seconds_)
+  if (new_interval == syncer_poll_interval_) {
     return;
+  }
   SDVLOG(1) << "Updating poll interval to " << new_interval.InMinutes()
             << " minutes.";
-  syncer_poll_interval_seconds_ = new_interval;
+  syncer_poll_interval_ = new_interval;
   AdjustPolling(UPDATE_INTERVAL);
 }
 
