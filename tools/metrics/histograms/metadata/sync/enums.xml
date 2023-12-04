@@ -110,12 +110,13 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="SyncablePref">
+  <int value="0" label="(test) SyncablePrefForTesting"/>
   <int value="1" label="AutofillCreditCardEnabled"/>
   <int value="2" label="(obsolete) AutofillEnabledDeprecated"/>
   <int value="3" label="AutofillHasSeenIban"/>
-  <int value="4" label="AutofillIBANEnabled (obsolete)"/>
+  <int value="4" label="(obsolete) AutofillIBANEnabled"/>
   <int value="5" label="AutofillLastVersionDeduped"/>
-  <int value="6" label="AutofillLastVersionDisusedAddressesDeleted (obsolete)"/>
+  <int value="6" label="(obsolete) AutofillLastVersionDisusedAddressesDeleted"/>
   <int value="7" label="AutofillProfileEnabled"/>
   <int value="8" label="ShowAppsShortcutInBookmarkBar"/>
   <int value="9" label="ShowBookmarkBar"/>
@@ -142,7 +143,7 @@ chromium-metrics-reviews@google.com.
   <int value="30" label="ReaderForAccessibility"/>
   <int value="31" label="Theme"/>
   <int value="32" label="AcceptLanguages"/>
-  <int value="33" label="ApplicationLocale (obsolete)"/>
+  <int value="33" label="(obsolete) ApplicationLocale"/>
   <int value="34" label="SelectedLanguages"/>
   <int value="35" label="SyncDemographicsPrefName"/>
   <int value="36" label="CustomLinksInitialized"/>
@@ -173,6 +174,7 @@ chromium-metrics-reviews@google.com.
   <int value="60" label="PrefNeverPromptSitesWithTime"/>
   <int value="61" label="PrefTranslateRecentTarget"/>
   <int value="62" label="PrefDogfoodGroups"/>
+  <int value="63" label="(test) SyncableMergeableDictPrefForTesting"/>
   <int value="64" label="AutofillPaymentCvcStorage"/>
   <int value="65" label="DeleteTimePeriodV2"/>
   <int value="66" label="DeleteTimePeriodV2Basic"/>
@@ -384,12 +386,24 @@ chromium-metrics-reviews@google.com.
   <int value="100196" label="DynamicColorColorScheme"/>
   <int value="100197" label="DynamicColorSeedColor"/>
   <int value="100198" label="LongPressDiacritics"/>
+  <int value="100199" label="SidePanelCompanionEntryPinnedToToolbar"/>
   <int value="100200" label="AccessibilityColorCorrectionEnabled"/>
   <int value="100201" label="AccessibilityColorVisionCorrectionAmount"/>
   <int value="100202" label="AccessibilityColorVisionCorrectionType"/>
   <int value="100203" label="ShowDeskButtonInShelf"/>
-  <int value="100204" label="ProjectorSWAUIPrefsMigrated"/>
+  <int value="100204" label="OsDogfoodGroupsSyncPrefName"/>
+  <int value="100205" label="ProjectorSWAUIPrefsMigrated"/>
+  <int value="100206" label="iOSPasswordPromoLastImpressionTimestamp"/>
+  <int value="100207" label="iOSPasswordPromoImpressionsCounter"/>
+  <int value="100208" label="iOSPasswordPromoOptOut"/>
   <int value="100209" label="DynamicColorUseKMeans"/>
+  <int value="100210" label="RemapToRightClickNotificationsRemaining"/>
+  <int value="100211" label="SixPackKeyDeleteNotificationsRemaining"/>
+  <int value="100212" label="SixPackKeyHomeNotificationsRemaining"/>
+  <int value="100213" label="SixPackKeyEndNotificationsRemaining"/>
+  <int value="100214" label="SixPackKeyPageUpNotificationsRemaining"/>
+  <int value="100215" label="SixPackKeyPageDownNotificationsRemaining"/>
+  <int value="100216" label="SixPackKeyInsertNotificationsRemaining"/>
   <int value="100217" label="LiveCaptionMaskOffensiveWords"/>
   <int value="100218" label="AshSessionTimeOfLastActivation"/>
   <int value="100219" label="BrowserColorScheme"/>

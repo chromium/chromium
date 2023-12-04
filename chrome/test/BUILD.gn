@@ -6661,6 +6661,7 @@ test("unit_tests") {
     "//net/tools/testserver/",
     "//third_party/pywebsocket3/src/mod_pywebsocket/",
     "//tools/metrics/histograms/enums.xml",
+    "//tools/metrics/histograms/metadata/sync/enums.xml",
   ]
 
   if (build_with_tflite_lib) {
@@ -7774,6 +7775,7 @@ test("unit_tests") {
       "../browser/support_tool/screenshot_data_collector_unittest.cc",
       "../browser/support_tool/support_tool_handler_unittest.cc",
       "../browser/support_tool/system_log_source_data_collector_adaptor_unittest.cc",
+      "../browser/sync/prefs/chrome_syncable_prefs_database_unittest.cc",
       "../browser/sync/sessions/browser_list_router_helper_unittest.cc",
       "../browser/sync/sessions/sync_sessions_router_tab_helper_unittest.cc",
       "../browser/sync/sync_ui_util_unittest.cc",  # Sync setup uses native ui.

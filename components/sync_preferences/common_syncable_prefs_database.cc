@@ -339,4 +339,10 @@ CommonSyncablePrefsDatabase::GetSyncablePrefMetadata(
   return it->second;
 }
 
+std::map<base::StringPiece, SyncablePrefMetadata>
+CommonSyncablePrefsDatabase::GetAllSyncablePrefsForTest() const {
+  const auto& syncable_prefs = SyncablePreferences();
+  return {syncable_prefs.begin(), syncable_prefs.end()};
+}
+
 }  // namespace sync_preferences

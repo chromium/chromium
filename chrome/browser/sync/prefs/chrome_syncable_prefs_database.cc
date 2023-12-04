@@ -1354,4 +1354,16 @@ ChromeSyncablePrefsDatabase::GetSyncablePrefMetadata(
   // Check in `common_syncable_prefs_database_`.
   return common_syncable_prefs_database_.GetSyncablePrefMetadata(pref_name);
 }
+
+std::map<base::StringPiece, sync_preferences::SyncablePrefMetadata>
+ChromeSyncablePrefsDatabase::GetAllSyncablePrefsForTest() const {
+  std::map<base::StringPiece, sync_preferences::SyncablePrefMetadata>
+      syncable_prefs;
+  base::ranges::copy(SyncablePreferences(),
+                     std::inserter(syncable_prefs, syncable_prefs.end()));
+  base::ranges::move(
+      common_syncable_prefs_database_.GetAllSyncablePrefsForTest(),  // IN-TEST
+      std::inserter(syncable_prefs, syncable_prefs.end()));
+  return syncable_prefs;
+}
 }  // namespace browser_sync
