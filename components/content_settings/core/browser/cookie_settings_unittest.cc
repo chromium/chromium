@@ -6,6 +6,8 @@
 
 #include <cstddef>
 #include <memory>
+#include <string>
+#include <tuple>
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
@@ -46,7 +48,6 @@
 #endif
 
 namespace {
-
 const bool kSupports3pcBlocking = {
 #if BUILDFLAG(IS_IOS)
     false
@@ -60,54 +61,17 @@ constexpr char kAllowedRequestsHistogram[] =
     "API.StorageAccess.AllowedRequests2";
 #endif
 
-struct TestCase {
-  const char* test_name;
-  bool storage_access_grant_eligible;
-  bool top_level_storage_access_grant_eligible;
+enum TestVariables {
+  kTopLevelStorageAccessGrantEligible = 0,
+  kStorageAccessGrantsEligible,
   // Whether `net::features::kTpcdSupportSettings` is enabled.
-  bool eligible_for_3pcd_support;
-  // Whether `net::features::kThirdPartyStoragePartitioning` is enabled.
-  bool tpcd_metadata_grants_eligible;
-};
-
-static constexpr TestCase kTestCases[] = {
-    {"disable_all", false, false, false, false},
-    {"ineligible_SAA_ineligible_TopLevel_disable_3PCD_enable_metadata", false,
-     false, false, true},
-    {"ineligible_SAA_eligible_TopLevel_disable_3PCD_enable_metadata", false,
-     true, false, true},
-    {"ineligible_SAA_eligible_TopLevel_disable_3PCD_disable_metadata", false,
-     true, false, false},
-#if !BUILDFLAG(IS_IOS)
-    {"ineligible_SAA_eligible_TopLevel_enable_3PCD_enable_metadata", false,
-     true, true, true},
-    {"ineligible_SAA_ineligible_TopLevel_enable_3PCD_enable_metadata", false,
-     false, true, true},
-    {"eligible_SAA_ineligible_TopLevel_disable_3PCD_enable_metadata", true,
-     false, false, true},
-    {"eligible_SAA_ineligible_TopLevel_enable_3PCD_enable_metadata", true,
-     false, true, true},
-    {"eligible_SAA_eligible_TopLevel_disable_3PCD_enable_metadata", true, true,
-     false, true},
-    {"ineligible_SAA_eligible_TopLevel_enable_3PCD_disable_metadata", false,
-     true, true, false},
-    {"ineligible_SAA_ineligible_TopLevel_enable_3PCD_disable_metadata", false,
-     false, true, false},
-    {"eligible_SAA_ineligible_TopLevel_disable_3PCD_disable_metadata", true,
-     false, false, false},
-    {"eligible_SAA_ineligible_TopLevel_enable_3PCD_disable_metadata", true,
-     false, true, false},
-    {"eligible_SAA_eligible_TopLevel_disable_3PCD_disable_metadata", true, true,
-     false, false},
-    {"enable_all", true, true, true, true},
-#endif
+  k3pcdSupportEligible,
+  // Whether `net::features::kTpcdMetadataGrants` is enabled.
+  kTpcdMetadataGrantsEligible,
 };
 }  // namespace
 
 namespace content_settings {
-
-namespace {
-
 class CookieSettingsObserver : public CookieSettings::Observer {
  public:
   explicit CookieSettingsObserver(CookieSettings* settings)
@@ -134,7 +98,12 @@ class CookieSettingsObserver : public CookieSettings::Observer {
       scoped_observation_{this};
 };
 
-class CookieSettingsTest : public testing::TestWithParam<TestCase> {
+class CookieSettingsTest
+    : public testing::TestWithParam<
+          std::tuple</*kStorageAccessGrantsEligible*/ bool,
+                     /*kTopLevelStorageAccessGrantEligible*/ bool,
+                     /*k3pcdSupportEligible*/ bool,
+                     /*kTpcdMetadataGrantsEligible*/ bool>> {
  public:
   CookieSettingsTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
@@ -166,8 +135,15 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
         kAllHttpsSitesPattern(ContentSettingsPattern::FromString("https://*")) {
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
+
     enabled_features.push_back(
         {content_settings::features::kUserBypassUI, {{"expiration", "0d"}}});
+
+    if (Is3pcdSupportEligible()) {
+      enabled_features.push_back({net::features::kTpcdSupportSettings, {}});
+    } else {
+      disabled_features.push_back(net::features::kTpcdSupportSettings);
+    }
 
     if (Is3pcdMetadataGrantEligible()) {
       enabled_features.push_back({net::features::kTpcdMetadataGrants, {}});
@@ -177,20 +153,13 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
 
     enabled_features.push_back({features::kTpcdHeuristicsGrants,
                                 {{"TpcdReadHeuristicsGrants", "true"}}});
-#if BUILDFLAG(IS_IOS)
-    disabled_features.push_back(net::features::kTpcdSupportSettings);
-#else
-    if (Is3pcdSupportEligible()) {
-      enabled_features.push_back({net::features::kTpcdSupportSettings, {}});
-    } else {
-      disabled_features.push_back(net::features::kTpcdSupportSettings);
-    }
-
+#if !BUILDFLAG(IS_IOS)
     if (IsStorageAccessGrantEligible() ||
         IsTopLevelStorageAccessGrantEligible()) {
       enabled_features.push_back({blink::features::kStorageAccessAPI, {}});
     }
 #endif
+
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
   }
@@ -231,19 +200,20 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
   }
 
   bool IsStorageAccessGrantEligible() const {
-    return GetParam().storage_access_grant_eligible;
+    return std::get<TestVariables::kStorageAccessGrantsEligible>(GetParam());
   }
 
   bool IsTopLevelStorageAccessGrantEligible() const {
-    return GetParam().top_level_storage_access_grant_eligible;
+    return std::get<TestVariables::kTopLevelStorageAccessGrantEligible>(
+        GetParam());
   }
 
   bool Is3pcdSupportEligible() const {
-    return GetParam().eligible_for_3pcd_support;
+    return std::get<TestVariables::k3pcdSupportEligible>(GetParam());
   }
 
   bool Is3pcdMetadataGrantEligible() const {
-    return GetParam().tpcd_metadata_grants_eligible;
+    return std::get<TestVariables::kTpcdMetadataGrantsEligible>(GetParam());
   }
 
   net::CookieSettingOverrides GetCookieSettingOverrides() const {
@@ -1952,32 +1922,65 @@ TEST_P(CookieSettingsTest, LegacyCookieAccessAllowDomainWildcardPattern) {
                                test.cookie_domain));
   }
 }
+std::string CustomTestName(
+    const testing::TestParamInfo<CookieSettingsTest::ParamType>& info) {
+  std::stringstream custom_test_name;
+  // clang-format off
+  custom_test_name
+      << "TopLevelStorageAccessGrantEligible_"
+      << std::get<TestVariables::kTopLevelStorageAccessGrantEligible>(
+             info.param)
+      << "_StorageAccessGrantsEligible_"
+      << std::get<TestVariables::kStorageAccessGrantsEligible>(info.param)
+      << "_3pcdSupportEligible_"
+      << std::get<TestVariables::k3pcdSupportEligible>(info.param)
+      << "_TpcdMetadataGrantsEligible_"
+      << std::get<TestVariables::kTpcdMetadataGrantsEligible>(info.param);
+  // clang-format on
+  return custom_test_name.str();
+}
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     CookieSettingsTest,
-    testing::ValuesIn(kTestCases),
-    [](const testing::TestParamInfo<CookieSettingsTest::ParamType>& info) {
-      return info.param.test_name;
-    });
+    testing::Combine(testing::Bool(),
+#if BUILDFLAG(IS_IOS)
+                     testing::Values(false),
+                     testing::Values(false),
+                     testing::Values(false)
+#else
+                     testing::Bool(),
+                     testing::Bool(),
+                     testing::Bool()
+#endif
+                         ),
+    CustomTestName);
 
 #if !BUILDFLAG(IS_IOS)
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     CookieSettingsTestSandboxV4Enabled,
-    testing::ValuesIn(kTestCases),
-    [](const testing::TestParamInfo<CookieSettingsTest::ParamType>& info) {
-      return info.param.test_name;
-    });
+    testing::Combine(testing::Bool(),
+                     testing::Bool(),
+                     testing::Bool(),
+                     testing::Bool()),
+    CustomTestName);
 #endif
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     CookieSettingsTestUserBypass,
-    testing::ValuesIn(kTestCases),
-    [](const testing::TestParamInfo<CookieSettingsTest::ParamType>& info) {
-      return info.param.test_name;
-    });
-}  // namespace
+    testing::Combine(testing::Bool(),
+#if BUILDFLAG(IS_IOS)
+                     testing::Values(false),
+                     testing::Values(false),
+                     testing::Values(false)
+#else
+                     testing::Bool(),
+                     testing::Bool(),
+                     testing::Bool()
+#endif
+                         ),
+    CustomTestName);
 
 }  // namespace content_settings
