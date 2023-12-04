@@ -19,8 +19,10 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "ui/base/hit_test.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
+#include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
 
@@ -124,6 +126,20 @@ void SplitViewOverviewSession::OnKeyEvent() {
                    OverviewEnterExitType::kImmediateExit);
 }
 
+void SplitViewOverviewSession::OnMouseEvent(const ui::MouseEvent& event) {
+  aura::Window* target = static_cast<aura::Window*>(event.target());
+  if (window_util::GetNonClientComponent(target, event.location()) !=
+      HTNOWHERE) {
+    // Ignore events in the window caption areas.
+    return;
+  }
+  gfx::Point location_in_screen = event.location();
+  wm::ConvertPointToScreen(target, &location_in_screen);
+  if (window_->GetBoundsInScreen().Contains(location_in_screen)) {
+    MaybeEndOverview(SplitViewOverviewSessionExitPoint::kSkip);
+  }
+}
+
 void SplitViewOverviewSession::OnResizeLoopStarted(aura::Window* window) {
   auto* split_view_controller =
       SplitViewController::Get(window->GetRootWindow());
@@ -190,6 +206,7 @@ void SplitViewOverviewSession::OnResizeLoopEnded(aura::Window* window) {
   if (!window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
     split_view_controller->MaybeEndOverviewOnWindowResize(window);
   }
+
   is_resizing_ = false;
 }
 

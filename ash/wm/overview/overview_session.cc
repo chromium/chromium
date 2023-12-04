@@ -1339,6 +1339,18 @@ void OverviewSession::OnWindowAdded(aura::Window* new_window) {
   active_window_before_overview_ = nullptr;
 }
 
+void OverviewSession::OnMouseEvent(ui::MouseEvent* event) {
+  for (auto& grid : grid_list_) {
+    if (auto* split_view_overview_session =
+            RootWindowController::ForWindow(grid->root_window())
+                ->split_view_overview_session();
+        split_view_overview_session) {
+      split_view_overview_session->OnMouseEvent(*event);
+      return;
+    }
+  }
+}
+
 void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
   // If app list is open when overview is active (it can happen in clamshell
   // mode, when we snap an overview window to one side of the screen and then

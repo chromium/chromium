@@ -456,7 +456,7 @@ TEST_F(FasterSplitScreenTest, DragToPartialOverview) {
   EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
 }
 
-TEST_F(FasterSplitScreenTest, SkipPairingInOverviewWhenClickingEmptyArea) {
+TEST_F(FasterSplitScreenTest, SkipPairingInOverviewOnMouseEvent) {
   std::unique_ptr<aura::Window> w1(CreateTestWindow());
   std::unique_ptr<aura::Window> w2(CreateTestWindow());
 
@@ -479,6 +479,13 @@ TEST_F(FasterSplitScreenTest, SkipPairingInOverviewWhenClickingEmptyArea) {
   EXPECT_FALSE(overview_controller->InOverviewSession());
   EXPECT_EQ(WindowState::Get(w1.get())->GetStateType(),
             chromeos::WindowStateType::kPrimarySnapped);
+
+  // Snap `w1`. Test that clicking on `w1` again exits overview.
+  SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped);
+  VerifySplitViewOverviewSession(w1.get());
+  event_generator->MoveMouseTo(w1->GetBoundsInScreen().CenterPoint());
+  event_generator->ClickLeftButton();
+  EXPECT_FALSE(overview_controller->InOverviewSession());
 }
 
 TEST_F(FasterSplitScreenTest, SkipPairingInOverviewOnKeyEvent) {
@@ -589,7 +596,6 @@ TEST_F(FasterSplitScreenTest, NoCrashWhenDoubleTapAfterTransition) {
   GetEventGenerator()->GestureTapAt(divider_center);
   GetEventGenerator()->GestureTapAt(divider_center);
 }
-
 // Tests the histograms for the split view overview session exit points are
 // recorded correctly in clamshell.
 TEST_F(FasterSplitScreenTest,

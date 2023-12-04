@@ -343,6 +343,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   void OnWindowAdded(aura::Window* new_window) override;
 
   // ui::EventHandler:
+  void OnMouseEvent(ui::MouseEvent* event) override;
   void OnKeyEvent(ui::KeyEvent* event) override;
 
   // ShellObserver:

@@ -14,6 +14,7 @@
 #include "base/scoped_observation.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/presentation_time_recorder.h"
+#include "ui/events/event_handler.h"
 
 namespace ash {
 
@@ -81,9 +82,10 @@ class ASH_EXPORT SplitViewOverviewSession : public aura::WindowObserver,
     return auto_snap_controller_.get();
   }
 
-  // Called by `OverviewSession` on a key event that isn't processed by overview
-  // session.
+  // Called by `OverviewSession` on a key or mouse event that isn't processed by
+  // overview session.
   void OnKeyEvent();
+  void OnMouseEvent(const ui::MouseEvent& event);
 
   // aura::WindowObserver:
   void OnResizeLoopStarted(aura::Window* window) override;
