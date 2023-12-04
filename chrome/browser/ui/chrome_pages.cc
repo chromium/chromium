@@ -234,19 +234,15 @@ bool SiteGURLIsValid(const GURL& url) {
 void ShowSiteSettingsImpl(Browser* browser, Profile* profile, const GURL& url) {
   // If a valid non-file origin, open a settings page specific to the current
   // origin of the page. Otherwise, open Content Settings.
-  std::string link_destination(chrome::kChromeUIContentSettingsURL);
+  constexpr char kParamRequest[] = "site";
+  GURL link_destination = GetSettingsUrl(chrome::kContentSettingsSubPage);
   if (SiteGURLIsValid(url)) {
     std::string origin_string = url::Origin::Create(url).Serialize();
-    // TODO(crbug.com/1505848): Update encoding to use
-    // `net::AppendQueryParameter`, similarly to
-    // `ShowFileSystemSettingsSiteImpl`.
-    url::RawCanonOutputT<char> percent_encoded_origin;
-    url::EncodeURIComponent(origin_string, &percent_encoded_origin);
-    link_destination = base::StrCat(
-        {chrome::kChromeUISiteDetailsPrefixURL, percent_encoded_origin.view()});
+    link_destination =
+        net::AppendQueryParameter(GetSettingsUrl(chrome::kSiteDetailsSubpage),
+                                  kParamRequest, origin_string);
   }
-  NavigateParams params(profile, GURL(link_destination),
-                        ui::PAGE_TRANSITION_TYPED);
+  NavigateParams params(profile, link_destination, ui::PAGE_TRANSITION_TYPED);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   params.browser = browser;
   Navigate(&params);

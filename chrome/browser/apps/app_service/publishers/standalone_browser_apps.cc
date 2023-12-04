@@ -16,6 +16,7 @@
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
@@ -149,8 +150,9 @@ void StandaloneBrowserApps::OpenNativeSettings(const std::string& app_id) {
   // `browser_manager` may be null in tests.
   if (!browser_manager)
     return;
-  browser_manager->SwitchToTab(GURL(chrome::kChromeUIContentSettingsURL),
-                               /*path_behavior=*/NavigateParams::RESPECT);
+  browser_manager->SwitchToTab(
+      chrome::GetSettingsUrl(chrome::kContentSettingsSubPage),
+      /*path_behavior=*/NavigateParams::RESPECT);
 }
 
 void StandaloneBrowserApps::StopApp(const std::string& app_id) {

@@ -366,8 +366,10 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, ViewSourceURL) {
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, SiteSettingsLink) {
   SetupSentimentServiceExpectations(/*interacted=*/true);
   GURL url = GURL("https://www.google.com/");
-  std::string expected_origin = "https%3A%2F%2Fwww.google.com";
-  EXPECT_EQ(GURL(chrome::kChromeUISiteDetailsPrefixURL + expected_origin),
+  std::string expected_url =
+      base::StrCat({chrome::kChromeUISettingsURL, chrome::kSiteDetailsSubpage});
+  std::string expected_query = "?site=https%3A%2F%2Fwww.google.com";
+  EXPECT_EQ(GURL(expected_url + expected_query),
             OpenSiteSettingsForUrl(browser(), url));
 }
 
@@ -376,8 +378,10 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, SiteSettingsLink) {
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
                        SiteSettingsLinkWithNonAsciiUrl) {
   GURL url = GURL("http://🥄.ws/other/stuff.htm");
-  std::string expected_origin = "http%3A%2F%2Fxn--9q9h.ws";
-  EXPECT_EQ(GURL(chrome::kChromeUISiteDetailsPrefixURL + expected_origin),
+  std::string expected_url =
+      base::StrCat({chrome::kChromeUISettingsURL, chrome::kSiteDetailsSubpage});
+  std::string expected_query = "?site=http%3A%2F%2Fxn--9q9h.ws";
+  EXPECT_EQ(GURL(expected_url + expected_query),
             OpenSiteSettingsForUrl(browser(), url));
 }
 
@@ -386,8 +390,10 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
                        SiteSettingsLinkWithNonDefaultPort) {
   GURL url = GURL("https://www.example.com:8372");
-  std::string expected_origin = "https%3A%2F%2Fwww.example.com%3A8372";
-  EXPECT_EQ(GURL(chrome::kChromeUISiteDetailsPrefixURL + expected_origin),
+  std::string expected_url =
+      base::StrCat({chrome::kChromeUISettingsURL, chrome::kSiteDetailsSubpage});
+  std::string expected_query = "?site=https%3A%2F%2Fwww.example.com%3A8372";
+  EXPECT_EQ(GURL(expected_url + expected_query),
             OpenSiteSettingsForUrl(browser(), url));
 }
 
@@ -395,7 +401,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
 // Settings" (the alternative is a blank origin being sent to "Site Details").
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
                        SiteSettingsLinkWithAboutBlankURL) {
-  EXPECT_EQ(GURL(chrome::kChromeUIContentSettingsURL),
+  EXPECT_EQ(chrome::GetSettingsUrl(chrome::kContentSettingsSubPage),
             OpenSiteSettingsForUrl(browser(), GURL(url::kAboutBlankURL)));
 }
 
