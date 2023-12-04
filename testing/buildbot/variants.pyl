@@ -248,6 +248,7 @@
     'identifier': 'OCTOPUS_RELEASE_CHROME_FROM_TLS_LKGM',
     'skylab': {
       'cros_board': 'octopus',
+      'cros_model': 'casta',
       'use_lkgm': True,
     },
   },

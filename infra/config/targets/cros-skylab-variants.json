@@ -333,6 +333,7 @@
   "CROS_OCTOPUS_RELEASE_CHROME_FROM_TLS_ASH_LKGM": {
     "skylab": {
       "cros_board": "octopus",
+      "cros_model": "casta",
       "use_lkgm": true
     },
     "identifier": "OCTOPUS_RELEASE_CHROME_FROM_TLS_LKGM"
