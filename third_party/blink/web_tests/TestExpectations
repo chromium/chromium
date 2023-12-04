@@ -6467,7 +6467,6 @@ crbug.com/1446039 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.
 [ Debug Mac13 ] media/video-source-error-no-candidate.html [ Failure ]
 [ Debug Mac13 ] external/wpt/permissions-policy/permissions-policy-frame-policy-timing.https.sub.html [ Failure ]
 [ Debug Mac13 ] external/wpt/feature-policy/feature-policy-frame-policy-timing.https.sub.html [ Failure ]
-[ Debug Mac13 ] external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/access-from-coop-page-to-opener_coop-ro_cross-origin.https.html [ Failure ]
 [ Debug Mac13 ] external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Failure Skip Timeout ]
 [ Debug Mac13 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/anchor-focus.https.html [ Failure ]
 [ Debug Mac13 ] animations/insert-composited-animation.html [ Skip Timeout ]
@@ -6619,6 +6618,7 @@ crbug.com/1446039 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.
 [ Debug Mac13 ] external/wpt/webxr/xr_viewport_scale.https.html [ Failure ]
 crbug.com/1446040 [ Mac ] virtual/oopr-canvas2d/external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html [ Failure ]
 
+crbug.com/1401170 [ Debug ] external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/access-from-coop-page-to-opener_coop-ro_cross-origin.https.html [ Failure ]
 
 # Sheriff 2023-05-23
 crbug.com/1448021 fast/webgl/texture-color-profile.html [ Failure Pass ]
