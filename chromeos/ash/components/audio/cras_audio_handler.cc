@@ -2079,6 +2079,7 @@ void CrasAudioHandler::PauseAllStreams() {
 
 void CrasAudioHandler::HandleNonHotplugNodesChange(
     bool is_input,
+    const AudioDeviceList& devices,
     const AudioDeviceList& hotplug_devices,
     bool has_device_change,
     bool has_device_removed,
@@ -2108,7 +2109,7 @@ void CrasAudioHandler::HandleNonHotplugNodesChange(
         }
 
         // Unplugged the current active device.
-        SwitchToTopPriorityDevice(is_input);
+        SwitchToTopPriorityDevice(devices);
 
         return;
       }
@@ -2118,10 +2119,10 @@ void CrasAudioHandler::HandleNonHotplugNodesChange(
     // Either cras sent stale nodes to chrome again or cras triggered some
     // error. Restore the previously selected active.
     VLOG(1) << "Odd case from cras, the active node is lost unexpectedly.";
-    SwitchToPreviousActiveDeviceIfAvailable(is_input);
+    SwitchToPreviousActiveDeviceIfAvailable(is_input, devices);
   } else {
     // Looks like a new chrome session starts.
-    SwitchToPreviousActiveDeviceIfAvailable(is_input);
+    SwitchToPreviousActiveDeviceIfAvailable(is_input, devices);
   }
 }
 
@@ -2180,8 +2181,8 @@ void CrasAudioHandler::HandleHotPlugDeviceByUserPriority(
           << hotplug_device.ToString();
 }
 
-void CrasAudioHandler::SwitchToTopPriorityDevice(bool is_input) {
-  const AudioDeviceList& devices = is_input ? input_devices_ : output_devices_;
+void CrasAudioHandler::SwitchToTopPriorityDevice(
+    const AudioDeviceList& devices) {
   if (devices.empty()) {
     return;
   }
@@ -2201,7 +2202,9 @@ void CrasAudioHandler::SwitchToTopPriorityDevice(bool is_input) {
   SwitchToDevice(top_device, true, ACTIVATE_BY_PRIORITY);
 }
 
-void CrasAudioHandler::SwitchToPreviousActiveDeviceIfAvailable(bool is_input) {
+void CrasAudioHandler::SwitchToPreviousActiveDeviceIfAvailable(
+    bool is_input,
+    const AudioDeviceList& devices) {
   AudioDevice previous_active_device;
   if (GetActiveDeviceFromUserPref(is_input, &previous_active_device)) {
     DCHECK(previous_active_device.is_for_simple_usage());
@@ -2210,12 +2213,14 @@ void CrasAudioHandler::SwitchToPreviousActiveDeviceIfAvailable(bool is_input) {
                    ACTIVATE_BY_RESTORE_PREVIOUS_STATE);
   } else {
     // No previous active device, switch to the top priority device.
-    SwitchToTopPriorityDevice(is_input);
+    SwitchToTopPriorityDevice(devices);
   }
 }
 
 void CrasAudioHandler::UpdateDevicesAndSwitchActive(
     const AudioNodeList& nodes) {
+  AudioDeviceList output_devices;
+  AudioDeviceList input_devices;
   AudioDeviceList hotplug_output_devices;
   AudioDeviceList hotplug_input_devices;
   bool has_output_removed = false;
@@ -2252,9 +2257,6 @@ void CrasAudioHandler::UpdateDevicesAndSwitchActive(
   has_alternative_input_ = false;
   has_alternative_output_ = false;
 
-  input_devices_.clear();
-  output_devices_.clear();
-
   for (AudioDevice device : devices) {
     audio_devices_[device.id] = device;
     if (!has_alternative_input_ && device.is_input &&
@@ -2266,19 +2268,19 @@ void CrasAudioHandler::UpdateDevicesAndSwitchActive(
     }
 
     if (device.is_input) {
-      input_devices_.push_back(device);
+      input_devices.push_back(device);
     } else {
-      output_devices_.push_back(device);
+      output_devices.push_back(device);
     }
   }
 
   // Handle output device changes.
-  HandleAudioDeviceChange(false, output_devices_, hotplug_output_devices,
+  HandleAudioDeviceChange(false, output_devices, hotplug_output_devices,
                           output_devices_changed, has_output_removed,
                           active_output_removed);
 
   // Handle input device changes.
-  HandleAudioDeviceChange(true, input_devices_, hotplug_input_devices,
+  HandleAudioDeviceChange(true, input_devices, hotplug_input_devices,
                           input_devices_changed, has_input_removed,
                           active_input_removed);
 
@@ -2333,8 +2335,9 @@ void CrasAudioHandler::HandleAudioDeviceChange(
 
   if (!active_node_id || hotplug_devices.empty() ||
       hotplug_devices.size() > 1) {
-    HandleNonHotplugNodesChange(is_input, hotplug_devices, has_device_change,
-                                has_device_removed, active_device_removed);
+    HandleNonHotplugNodesChange(is_input, devices, hotplug_devices,
+                                has_device_change, has_device_removed,
+                                active_device_removed);
   } else {
     // Typical user hotplug case.
     HandleHotPlugDeviceByUserPriority(hotplug_devices.front());

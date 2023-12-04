@@ -834,6 +834,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // Handles non-hotplug nodes change cases.
   void HandleNonHotplugNodesChange(bool is_input,
+                                   const AudioDeviceList& devices,
                                    const AudioDeviceList& hotplug_nodes,
                                    bool has_device_change,
                                    bool has_device_removed,
@@ -842,11 +843,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Handles the regular user hotplug case with user priority.
   void HandleHotPlugDeviceByUserPriority(const AudioDevice& hotplug_device);
 
-  void SwitchToTopPriorityDevice(bool is_input);
+  // Switch to the top priority device in |devices|. |devices| must be a list
+  // of devices with the same direction.
+  void SwitchToTopPriorityDevice(const AudioDeviceList& devices);
 
   // Switch to previous active device if it is found, otherwise, switch
   // to the top priority device.
-  void SwitchToPreviousActiveDeviceIfAvailable(bool is_input);
+  void SwitchToPreviousActiveDeviceIfAvailable(bool is_input,
+                                               const AudioDeviceList& devices);
 
   // Activates the internal mic attached with the camera specified by
   // |camera_facing|.
@@ -978,9 +982,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // Audio data and state.
   AudioDeviceMap audio_devices_;
-
-  AudioDeviceList input_devices_;
-  AudioDeviceList output_devices_;
 
   bool output_mute_on_ = false;
   bool input_mute_on_ = false;
