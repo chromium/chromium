@@ -14,49 +14,49 @@ namespace {
 // The vertical offset distance used in the sink-down animation.
 const CGFloat kVerticalOffset = 8.0f;
 
-BubbleView* BubbleViewWithType(BubbleViewType bubbleViewType,
+BubbleView* BubbleViewWithType(BubbleViewType bubble_view_type,
                                NSString* text,
                                NSString* title,
                                UIImage* image,
-                               BubbleArrowDirection arrowDirection,
+                               BubbleArrowDirection arrow_direction,
                                BubbleAlignment alignment,
                                id<BubbleViewDelegate> delegate) {
-  BOOL showTitle = NO;
-  BOOL showImage = NO;
-  BOOL showCloseButton = NO;
-  BOOL showSnoozeButton = NO;
-  NSTextAlignment textAlignment = NSTextAlignmentNatural;
+  BOOL show_title = NO;
+  BOOL show_image = NO;
+  BOOL show_close_button = NO;
+  BOOL show_snooze_button = NO;
+  NSTextAlignment text_alignment = NSTextAlignmentNatural;
 
-  switch (bubbleViewType) {
+  switch (bubble_view_type) {
     case BubbleViewTypeDefault:
-      textAlignment = NSTextAlignmentCenter;
+      text_alignment = NSTextAlignmentCenter;
       break;
     case BubbleViewTypeWithClose:
-      showCloseButton = YES;
+      show_close_button = YES;
       break;
     case BubbleViewTypeRich:
-      showCloseButton = YES;
-      showTitle = YES;
-      showImage = YES;
+      show_close_button = YES;
+      show_title = YES;
+      show_image = YES;
       break;
     case BubbleViewTypeRichWithSnooze:
-      showCloseButton = YES;
-      showTitle = YES;
-      showImage = YES;
-      showSnoozeButton = YES;
+      show_close_button = YES;
+      show_title = YES;
+      show_image = YES;
+      show_snooze_button = YES;
       break;
   }
-  BubbleView* bubbleView =
+  BubbleView* bubble_view =
       [[BubbleView alloc] initWithText:text
-                        arrowDirection:arrowDirection
+                        arrowDirection:arrow_direction
                              alignment:alignment
-                      showsCloseButton:showCloseButton
-                                 title:showTitle ? title : nil
-                                 image:showImage ? image : nil
-                     showsSnoozeButton:showSnoozeButton
-                         textAlignment:textAlignment
+                      showsCloseButton:show_close_button
+                                 title:show_title ? title : nil
+                                 image:show_image ? image : nil
+                     showsSnoozeButton:show_snooze_button
+                         textAlignment:text_alignment
                               delegate:delegate];
-  return bubbleView;
+  return bubble_view;
 }
 
 }  // namespace
