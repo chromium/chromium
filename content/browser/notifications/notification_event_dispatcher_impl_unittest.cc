@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
