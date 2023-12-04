@@ -13,7 +13,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './confirmation_page.html.js';
-import {FeedbackFlowState} from './feedback_flow.js';
+import {FeedbackFlowButtonClickEvent, FeedbackFlowState} from './feedback_flow.js';
 import {showScrollingEffects} from './feedback_utils.js';
 import {getFeedbackServiceProvider} from './mojo_interface_provider.js';
 import {FeedbackAppPostSubmitAction, FeedbackServiceProviderInterface, SendReportStatus} from './os_feedback_ui.mojom-webui.js';
@@ -150,9 +150,7 @@ export class ConfirmationPageElement extends ConfirmationPageElementBase {
 
 declare global {
   interface HTMLElementEventMap {
-    'go-back-click': CustomEvent<{
-      details: {currentState: FeedbackFlowState},
-    }>;
+    'go-back-click': FeedbackFlowButtonClickEvent;
   }
 
   interface HTMLElementTagNameMap {

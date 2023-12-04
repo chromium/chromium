@@ -220,15 +220,15 @@
     <h1 class="page-title">[[i18n('pageTitle')]]</h1>
   </div>
   <div id="shadowElevation"></div>
-  <div id="content" on-scroll="onContainerScroll_">
+  <div id="content" on-scroll="onContainerScroll">
     <!-- Attach files -->
     <div id="attachFiles">
       <div id="attachFilesLabelContainer">
-        <h2 id="attachFilesLabel">[[getAttachFilesLabel_(feedbackContext)]]</h2>
+        <h2 id="attachFilesLabel">[[getAttachFilesLabel(feedbackContext)]]</h2>
         <iron-icon icon="os-feedback:info" id="attachFilesIcon"
             class="focusable" tabindex="0"
             aria-labelledby="attachFilesTooltipContent"
-            hidden$="[[!isUserLoggedIn_(feedbackContext)]]">
+            hidden$="[[!isUserLoggedIn(feedbackContext)]]">
         </iron-icon>
         <paper-tooltip for="attachFilesIcon" position="top" offset="0" fit-to-visible-bounds>
           <div id="attachFilesTooltipContent">
@@ -240,23 +240,23 @@
         <!-- Attach a screenshot -->
         <div id="screenshotContainer" class="card-frame">
           <cr-checkbox id="screenshotCheckbox"
-              disabled="[[!hasScreenshot_(screenshotUrl)]]">
+              disabled="[[!hasScreenshot(screenshotUrl)]]">
             <div id="screenshotCheckLabel" class="checkbox-label">[[i18n('attachScreenshotLabel')]]</div>
           </cr-checkbox>
-          <button id="imageButton" class="focusable" on-click="handleScreenshotClick_">
+          <button id="imageButton" class="focusable" on-click="handleScreenshotClick">
             <img id="screenshotImage" src="[[screenshotUrl]]">
           </button>
         </div>
         <!-- Attach a file -->
         <div id="addFileContainer" class="card-frame"
-            hidden$="[[!isUserLoggedIn_(feedbackContext)]]">
+            hidden$="[[!isUserLoggedIn(feedbackContext)]]">
           <file-attachment></file-attachment>
         </div>
       </div>
     </div>
     <!-- User e-mail -->
     <div id="userEmail" class="text-field-container"
-        hidden$="[[!hasEmail_(feedbackContext)]]">
+        hidden$="[[!hasEmail(feedbackContext)]]">
       <h2 id="userEmailLabel">[[i18n('userEmailLabel')]]</h2>
       <select id="userEmailDropDown" class="md-select"
           aria-label="[[i18n('userEmailAriaLabel')]]">
@@ -270,7 +270,7 @@
     </div>
     <!-- User consent -->
     <div id="userConsent" class="checkbox-field-container"
-        hidden$="[[!hasEmail_(feedbackContext)]]">
+        hidden$="[[!hasEmail(feedbackContext)]]">
       <cr-checkbox id="userConsentCheckbox" aria-labelledby="userConsentLabel">
         <div id="userConsentLabel" class="checkbox-label">[[i18n('userConsentLabel')]]</div>
       </cr-checkbox>
@@ -297,15 +297,15 @@
         <cr-checkbox id="autofillCheckbox"
             aria-labelledby="autofillCheckboxLabel" checked>
           <div id="autofillCheckboxLabel"
-            inner-h-t-m-l="[[autofillCheckboxLabel_]]" class="checkbox-label">
+            inner-h-t-m-l="[[getAutofillCheckboxLabel()]]" class="checkbox-label">
           </div>
         </cr-checkbox>
       </div>
       <!-- System Information -->
       <div id="sysInfoContainer" class="checkbox-field-container">
         <cr-checkbox id="sysInfoCheckbox" aria-labelledby="sysInfoCheckboxLabel"
-            checked="[[checkSysInfoAndMetrics_(feedbackContext.fromSettingsSearch)]]">
-          <div id="sysInfoCheckboxLabel" inner-h-t-m-l="[[sysInfoCheckboxLabel_]]"
+            checked="[[checkSysInfoAndMetrics(feedbackContext.fromSettingsSearch)]]">
+          <div id="sysInfoCheckboxLabel" inner-h-t-m-l="[[getSysInfoCheckboxLabel()]]"
               class="checkbox-label"></div>
         </cr-checkbox>
       </div>
@@ -313,7 +313,8 @@
       <div id="assistantLogsContainer" class="checkbox-field-container"
           hidden="[[!shouldShowAssistantCheckbox]]">
         <cr-checkbox id="assiatantLogsCheckbox" aria-labelledby="assistantLogsLabel" checked>
-          <div id="assistantLogsLabel" class="checkbox-label" inner-h-t-m-l="[[assistantLogsCheckboxLabel_]]"></div>
+          <div id="assistantLogsLabel" class="checkbox-label"
+              inner-h-t-m-l="[[getAssistantLogsCheckboxLabel()]]"></div>
         </cr-checkbox>
       </div>
       <!-- Bluetooth Logs (Googler Internal Only) -->
@@ -321,7 +322,7 @@
           hidden="[[!shouldShowBluetoothCheckbox]]">
         <cr-checkbox id="bluetoothLogsCheckbox" aria-labelledby="bluetoothInfoLabel" checked>
           <div id="bluetoothInfoLabel" class="checkbox-label"
-              inner-h-t-m-l="[[bluetoothLogsCheckboxLabel_]]"></div>
+              inner-h-t-m-l="[[getBluetoothLogsCheckboxLabel()]]"></div>
         </cr-checkbox>
       </div>
       <!-- Wifi debug Logs (Googler Internal Only) -->
@@ -330,7 +331,7 @@
         <cr-checkbox id="wifiDebugLogsCheckbox"
             aria-labelledby="wifiDebugLogsInfoLabel" checked>
           <div id="wifiDebugLogsInfoLabel" class="checkbox-label"
-              inner-h-t-m-l="[[wifiDebugLogsCheckboxLabel_]]"></div>
+              inner-h-t-m-l="[[getWifiDebugLogsCheckboxLabel()]]"></div>
         </cr-checkbox>
       </div>
       <!-- Link Cross Device Doogfood Feedback (Googler Internal Only) -->
@@ -338,22 +339,22 @@
           hidden="[[!shouldShowLinkCrossDeviceDogfoodFeedbackCheckbox]]">
         <cr-checkbox id="linkCrossDeviceDogfoodFeedbackCheckbox" aria-labelledby="linkCrossDeviceDogfoodFeedbackInfoLabel" checked>
           <div id="linkCrossDeviceDogfoodFeedbackInfoLabel" class="checkbox-label"
-              inner-h-t-m-l="[[linkCrossDeviceDogfoodFeedbackCheckboxLabel_]]"></div>
+              inner-h-t-m-l="[[getLinkCrossDeviceDogfoodFeedbackCheckboxLabel()]]"></div>
         </cr-checkbox>
       </div>
       <!-- Performance trace -->
       <div id="performanceTraceContainer" class="checkbox-field-container"
-          hidden="[[!shouldShowPerformanceTraceCheckbox_(feedbackContext)]]">
+          hidden="[[!shouldShowPerformanceTraceCheckbox(feedbackContext)]]">
         <cr-checkbox id="performanceTraceCheckbox"
             aria-labelledby="performanceTraceCheckboxLabel" checked>
           <div id="performanceTraceCheckboxLabel" class="checkbox-label"
-              inner-h-t-m-l="[[performanceTraceCheckboxLabel_]]">
+              inner-h-t-m-l="[[getPerformanceTraceCheckboxLabel()]]">
           </div>
         </cr-checkbox>
       </div>
     </div>
     <!-- Privacy note -->
-    <div id="privacyNote" inner-h-t-m-l="[[privacyNote_]]"
+    <div id="privacyNote" inner-h-t-m-l="[[getPrivacyNote(feedbackContext)]]"
         class="privacy-note">
     </div>
     <div id="shareWithPartnerNote" class="privacy-note">
@@ -363,11 +364,11 @@
   <div id="separator"></div>
   <div id="navButtons">
     <cr-button id="buttonBack" class="cancel-button"
-        on-click="handleBackButtonClicked_">
+        on-click="handleBackButtonClicked">
       [[i18n('backButtonLabel')]]
     </cr-button>
     <cr-button id="buttonSend" class="action-button"
-        on-click="handleSendButtonClicked_">
+        on-click="handleSendButtonClicked">
         [[i18n('sendButtonLabel')]]
     </cr-button>
   </div>
@@ -378,7 +379,7 @@
         class="close-dialog-button"
         title="[[i18n('dialogBackButtonAriaLabel')]]"
         aria-label="[[i18n('dialogBackButtonAriaLabel')]]"
-        on-click="handleScreenshotDialogCloseClick_">
+        on-click="handleScreenshotDialogCloseClick">
       <iron-icon id="backArrow" class="dialog-back-arrow"
           icon="cr:arrow-back"></iron-icon>
     </cr-button>
@@ -396,7 +397,7 @@
   </div>
   <div slot="button-container">
     <cr-button id="bluetoothDialogDoneButton" class="action-button"
-        on-click="handleCloseBluetoothDialogClicked_">
+        on-click="handleCloseBluetoothDialogClicked">
       [[i18n('buttonDone')]]
     </cr-button>
   </div>
@@ -407,7 +408,7 @@
   </div>
   <div slot="button-container">
     <cr-button id="wifiDebugLogsDialogDoneButton" class="action-button"
-        on-click="handleCloseWifiDebugLogsDialogClicked_">
+        on-click="handleCloseWifiDebugLogsDialogClicked">
       [[i18n('buttonDone')]]
     </cr-button>
   </div>
@@ -418,7 +419,7 @@
   </div>
   <div slot="button-container">
     <cr-button id="linkCrossDeviceDogfoodFeedbackDialogDoneButton" class="action-button"
-        on-click="handleCloseLinkCrossDeviceDogfoodFeedbackDialogClicked_">
+        on-click="handleCloseLinkCrossDeviceDogfoodFeedbackDialogClicked">
       [[i18n('buttonDone')]]
     </cr-button>
   </div>
@@ -429,7 +430,7 @@
   </div>
   <div slot="button-container">
     <cr-button id="assistantDialogDoneButton" class="action-button"
-        on-click="handleCloseAssistantDialogClicked_">
+        on-click="handleCloseAssistantDialogClicked">
       [[i18n('buttonDone')]]
     </cr-button>
   </div>

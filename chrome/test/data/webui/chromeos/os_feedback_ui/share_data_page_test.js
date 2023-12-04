@@ -49,6 +49,7 @@ suite('shareDataPageTestSuite', () => {
         /** @type {!ShareDataPageElement} */ (
             document.createElement('share-data-page'));
     assertTrue(!!page);
+    page.feedbackContext = fakeEmptyFeedbackContext;
     document.body.appendChild(page);
     return flushTasks();
   }
