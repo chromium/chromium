@@ -34,17 +34,26 @@ const char16_t kBrowserWindowTitle[] = u"Chrome - New Tab";
 const char16_t kBrowserWindowTitle[] = u"Chromium - New Tab";
 #endif
 
-using ShelfIntegrationTest = InteractiveAshTest;
+class ShelfIntegrationTest : public InteractiveAshTest {
+ public:
+  ShelfIntegrationTest()
+      : zero_duration_scoped_animation_scale_mode_(
+            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
+
+  ~ShelfIntegrationTest() override = default;
+
+ private:
+  // Ensure shelf icon positions are stable. This needs to be created before the
+  // test starts for the shelf view's bounds animator.
+  ui::ScopedAnimationDurationScaleMode
+      zero_duration_scoped_animation_scale_mode_;
+};
 
 IN_PROC_BROWSER_TEST_F(ShelfIntegrationTest, OpenCloseSwitchApps) {
   base::AddFeatureIdTagToTestResult(
       "screenplay-441c1034-bfff-42c0-ad81-79332c9e2304");
 
   SetupContextWidget();
-
-  // Ensure shelf icon positions are stable.
-  ui::ScopedAnimationDurationScaleMode zero_duration(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   InstallSystemApps();  // For files app.
 
