@@ -1032,22 +1032,6 @@ gfx::Rect SplitViewController::GetSnappedWindowBoundsInScreen(
   int divider_position = divider_position_ < 0
                              ? GetDividerPosition(snap_position, snap_ratio)
                              : divider_position_;
-  // Edit `divider_position` if window restore is currently restoring a snapped
-  // window; take into account the snap percentage saved by the window. Only do
-  // this for clamshell mode; in tablet mode we are OK with restoring to the
-  // default half snap state.
-  if (divider_position_ < 0 && !in_tablet_mode) {
-    if (auto* window = WindowRestoreController::Get()->to_be_snapped_window()) {
-      app_restore::WindowInfo* window_info =
-          window->GetProperty(app_restore::kWindowInfoKey);
-      if (window_info && window_info->snap_percentage) {
-        const int snap_percentage = *window_info->snap_percentage;
-        divider_position = snap_percentage * work_area_size / 100;
-        if (!snap_left_or_top)
-          divider_position = work_area_size - divider_position;
-      }
-    }
-  }
 
   int window_size;
   if (snap_left_or_top) {

@@ -1644,16 +1644,22 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchSnappedWindow) {
   event_generator.set_current_screen_location(gfx::Point(1000, 500));
   event_generator.DragMouseBy(200, 0);
   ASSERT_EQ(gfx::Rect(1200, 1000), window->GetBoundsInScreen());
+  auto* window_state = ash::WindowState::Get(window);
+  EXPECT_EQ(0.6f, *window_state->snap_ratio());
 
   // Enter overview and save our snapped window as a template.
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
+  auto* split_view_controller =
+      ash::SplitViewController::Get(window->GetRootWindow());
+  ASSERT_FALSE(split_view_controller->IsWindowInSplitView(window));
   ClickSaveDeskAsTemplateButton();
 
   // Launch our template and then exit overview.
   ClickFirstTemplateItem();
   ash::ToggleOverview();
   ash::WaitForOverviewExitAnimation();
+  ASSERT_FALSE(split_view_controller->IsWindowInSplitView(window));
 
   // Our snapped window should have the similar bounds as it did when it was
   // saved. We may lose some precision when saving a float as a percentage.
@@ -1665,6 +1671,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchSnappedWindow) {
   EXPECT_EQ(0, new_bounds.y());
   EXPECT_NEAR(1200, new_bounds.width(), 5);
   EXPECT_EQ(1000, new_bounds.height());
+  EXPECT_EQ(0.6f, *window_state->snap_ratio());
 
   // Launches the first template on the template grid.
   auto launch_first_template = []() {
@@ -1697,6 +1704,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchSnappedWindow) {
   EXPECT_EQ(0, new_bounds.y());
   EXPECT_NEAR(1200, new_bounds.width(), 5);
   EXPECT_EQ(1000, new_bounds.height());
+  EXPECT_EQ(0.6f, *window_state->snap_ratio());
 
   // Change to portrait mode, work area is 1000x2000.
   display_manager_test_api.UpdateDisplay(
@@ -1712,6 +1720,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchSnappedWindow) {
   EXPECT_EQ(0, new_bounds.y());
   EXPECT_EQ(1000, new_bounds.width());
   EXPECT_NEAR(1200, new_bounds.height(), 5);
+  EXPECT_EQ(0.6f, *window_state->snap_ratio());
 
   // Launch the window in upside down portrait mode. The height is 60% of the
   // work area height and the window is physically on the top, but the
@@ -1727,6 +1736,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchSnappedWindow) {
   EXPECT_EQ(800, new_bounds.y());
   EXPECT_EQ(1000, new_bounds.width());
   EXPECT_NEAR(1200, new_bounds.height(), 5);
+  EXPECT_EQ(0.6f, *window_state->snap_ratio());
 }
 
 // Tests that incognito browser windows will NOT be captured in the desk

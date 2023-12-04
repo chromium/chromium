@@ -188,25 +188,23 @@ gfx::Rect BaseState::GetSnappedWindowBoundsInParent(
     aura::Window* window,
     const WindowStateType state_type,
     float snap_ratio) {
-  DCHECK(chromeos::IsSnappedWindowStateType(state_type));
-  gfx::Rect bounds_in_parent;
-  if (ShouldAllowSplitView()) {
-    bounds_in_parent =
-        SplitViewController::Get(window)->GetSnappedWindowBoundsInParent(
-            (state_type == WindowStateType::kPrimarySnapped)
-                ? SplitViewController::SnapPosition::kPrimary
-                : SplitViewController::SnapPosition::kSecondary,
-            window, snap_ratio);
-  } else {
-    // Use `window_positioning_utils` to calculate the snapped window bounds.
-    bounds_in_parent = ash::GetSnappedWindowBoundsInParent(
-        window,
-        state_type == WindowStateType::kPrimarySnapped
-            ? SnapViewType::kPrimary
-            : SnapViewType::kSecondary,
-        snap_ratio);
+  CHECK(chromeos::IsSnappedWindowStateType(state_type));
+  if (auto* split_view_controller = SplitViewController::Get(window);
+      split_view_controller->IsWindowInSplitView(window) ||
+      Shell::Get()->IsInTabletMode()) {
+    // In tablet mode `SplitViewController` always manages snapped windows, in
+    // clamshell state it only manages windows in split view.
+    return split_view_controller->GetSnappedWindowBoundsInParent(
+        (state_type == WindowStateType::kPrimarySnapped)
+            ? SplitViewController::SnapPosition::kPrimary
+            : SplitViewController::SnapPosition::kSecondary,
+        window, snap_ratio);
   }
-  return bounds_in_parent;
+  return ash::GetSnappedWindowBoundsInParent(
+      window,
+      state_type == WindowStateType::kPrimarySnapped ? SnapViewType::kPrimary
+                                                     : SnapViewType::kSecondary,
+      snap_ratio);
 }
 
 void BaseState::HandleWindowSnapping(
