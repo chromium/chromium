@@ -80,9 +80,7 @@ class PortForwardingTest: public InProcessBrowserTest {
   };
 };
 
-// Flaky on all platforms. https://crbug.com/477696
-IN_PROC_BROWSER_TEST_F(PortForwardingTest,
-                       DISABLED_LoadPageWithStyleAnsScript) {
+IN_PROC_BROWSER_TEST_F(PortForwardingTest, LoadPageWithStyleAnsScript) {
   Profile* profile = browser()->profile();
   AndroidDeviceManager::DeviceProviders device_providers;
 
