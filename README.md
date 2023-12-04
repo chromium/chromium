@@ -1,7 +1,7 @@
 # ![Logo](chrome/app/theme/chromium/product_logo_64.png) Chromium
 
-Chromium is an open-source browser project that aims to build a safer, faster,
-and more stable way for all users to experience the web.
+Chromium, an open-source browser project, strives to create a secure, 
+high-speed, and robust platform, ensuring an enhanced web experience for all users.
 
 The project's web site is https://www.chromium.org.
 
