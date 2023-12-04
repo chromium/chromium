@@ -37,7 +37,7 @@ void ExpectConnectTimingHasTimes(
 
   if (!(connect_timing_flags & CONNECT_TIMING_HAS_SSL_TIMES)) {
     EXPECT_TRUE(connect_timing.ssl_start.is_null());
-    EXPECT_TRUE(connect_timing.ssl_start.is_null());
+    EXPECT_TRUE(connect_timing.ssl_end.is_null());
   } else {
     EXPECT_FALSE(connect_timing.ssl_start.is_null());
     EXPECT_LE(connect_timing.connect_start, connect_timing.ssl_start);
