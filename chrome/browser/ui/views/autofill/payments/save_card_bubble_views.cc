@@ -188,11 +188,17 @@ std::unique_ptr<views::View> SaveCardBubbleViews::GetCardIdentifierView() {
         views::BoxLayout::CrossAxisAlignment::kStart);
   }
 
+  const CreditCard& card = controller_->GetCard();
   auto* const card_identifier_label =
       card_identifier_view->AddChildView(std::make_unique<views::Label>(
-          GetCardIdentifierString(), views::style::CONTEXT_DIALOG_BODY_TEXT,
-          views::style::STYLE_PRIMARY));
-  card_identifier_label->SetMultiLine(true);
+          is_cvc_only_save ? card.CardNameForAutofillDisplay()
+                           : GetCardIdentifierString(),
+          views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
+  // Disable multi line for CVC-only save (prompted after card usage) as the
+  // name can be very long with card name and art enabled. This change does not
+  // affect credit card upload save (prompted after a new or local card is
+  // entered).
+  card_identifier_label->SetMultiLine(!is_cvc_only_save);
   card_identifier_label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
 
   // Flex |card_identifier_label| to fill up remaining space and tail align
@@ -201,12 +207,14 @@ std::unique_ptr<views::View> SaveCardBubbleViews::GetCardIdentifierView() {
   if (is_cvc_only_save ||
       !base::FeatureList::IsEnabled(
           features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment)) {
-    card_identifier_view->SetFlexForView(card_identifier_label, 1);
+    card_identifier_view->SetFlexForView(card_identifier_label, /*flex=*/1);
   }
 
-  const CreditCard& card = controller_->GetCard();
   // Show CVC icon for CVC only save cases and card expiration in other cases
   if (is_cvc_only_save) {
+    card_identifier_view->AddChildView(std::make_unique<views::Label>(
+        card.ObfuscatedNumberWithVisibleLastFourDigits(),
+        views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
     card_identifier_view->AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromImage(
             ui::ResourceBundle::GetSharedInstance().GetImageNamed(
