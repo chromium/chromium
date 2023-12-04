@@ -7367,6 +7367,7 @@ static_library("browser") {
     public_deps += [
       "//chrome/browser/apps/platform_apps",
       "//chrome/browser/apps/platform_apps/api",
+      "//chrome/browser/controlled_frame",
       "//chrome/browser/extensions",
       "//chrome/browser/extensions/api",
     ]

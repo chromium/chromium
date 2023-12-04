@@ -92,6 +92,7 @@
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/permissions/permission_set.h"
+#include "ipc/ipc_message.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -546,8 +547,12 @@ void ChromeExtensionsBrowserClient::CleanUpWebView(
   // Clean up context menus for the WebView.
   auto* menu_manager = MenuManager::Get(profile);
   DCHECK(menu_manager);
-  menu_manager->RemoveAllContextItems(
-      MenuItem::ExtensionKey("", embedder_process_id, view_instance_id));
+  // The |webview_embedder_frame_id| parameter of ExtensionKey is not used to
+  // identify the context menu items that belong to a WebView so it is OK for it
+  // to be |MSG_ROUTING_NONE| here.
+  menu_manager->RemoveAllContextItems(MenuItem::ExtensionKey(
+      "", embedder_process_id, /*webview_embedder_frame_id=*/MSG_ROUTING_NONE,
+      view_instance_id));
 }
 
 void ChromeExtensionsBrowserClient::ClearBackForwardCache() {

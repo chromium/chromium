@@ -976,6 +976,7 @@ void RenderViewContextMenu::AppendCurrentExtensionItems() {
                       : web_view_guest->owner_web_contents()->GetTitle();
     key = MenuItem::ExtensionKey(
         extension_id, web_view_guest->owner_rfh()->GetProcess()->GetID(),
+        web_view_guest->owner_rfh()->GetRoutingID(),
         web_view_guest->view_instance_id());
   } else {
     key = MenuItem::ExtensionKey(extension->id());

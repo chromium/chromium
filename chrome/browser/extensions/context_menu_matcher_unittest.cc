@@ -53,13 +53,14 @@ class ContextMenuMatcherTest : public testing::Test {
   // Returns a test item with the given string ID for WebView.
   std::unique_ptr<MenuItem> CreateTestItem(Extension* extension,
                                            int webview_embedder_process_id,
+                                           int webview_embedder_frame_id,
                                            int webview_instance_id,
                                            const std::string& string_id,
                                            bool visible) {
     const std::string& extension_id = MaybeGetExtensionId(extension);
-    MenuItem::Id id(
-        false, MenuItem::ExtensionKey(extension_id, webview_embedder_process_id,
-                                      webview_instance_id));
+    MenuItem::Id id(false, MenuItem::ExtensionKey(
+                               extension_id, webview_embedder_process_id,
+                               webview_embedder_frame_id, webview_instance_id));
     id.string_uid = string_id;
     return std::make_unique<MenuItem>(
         id, "test", false, visible, true, MenuItem::NORMAL,
@@ -197,17 +198,20 @@ TEST_F(ContextMenuMatcherTest, AppendExtensionItemsGroupTitle) {
 
 TEST_F(ContextMenuMatcherTest,
        AppendExtensionItemsGroupTitleWithNullExtension) {
-  const int fake_webview_embedder_process_id = 1;
-  const int fake_webview_instance_id = 1;
+  static constexpr int kFakeWebViewEmbedderPid = 1;
+  static constexpr int kFakeWebViewEmbedderFrameId = 1;
+  static constexpr int kFakeWebViewInstanceId = 1;
   // Add a parent item, with a visible child item.
   std::unique_ptr<MenuItem> parent =
-      CreateTestItem(/*extension=*/nullptr, fake_webview_embedder_process_id,
-                     fake_webview_instance_id, "parent", /*visible=*/true);
+      CreateTestItem(/*extension=*/nullptr, kFakeWebViewEmbedderPid,
+                     kFakeWebViewEmbedderFrameId, kFakeWebViewInstanceId,
+                     "parent", /*visible=*/true);
   MenuItem::Id parent_id = parent->id();
   int parent_index = 0;
   std::unique_ptr<MenuItem> child =
-      CreateTestItem(/*extension=*/nullptr, fake_webview_embedder_process_id,
-                     fake_webview_instance_id, "child", /*visible=*/true);
+      CreateTestItem(/*extension=*/nullptr, kFakeWebViewEmbedderPid,
+                     kFakeWebViewEmbedderFrameId, kFakeWebViewInstanceId,
+                     "child", /*visible=*/true);
   int child_index = 1;
   ASSERT_TRUE(
       manager_->AddContextItem(/*extension=*/nullptr, std::move(parent)));
@@ -224,9 +228,9 @@ TEST_F(ContextMenuMatcherTest,
   int index = 0;
   std::u16string group_title = u"test";
   extension_items->AppendExtensionItems(
-      MenuItem::ExtensionKey(/*extension_id=*/"",
-                             fake_webview_embedder_process_id,
-                             fake_webview_instance_id),
+      MenuItem::ExtensionKey(/*extension_id=*/"", kFakeWebViewEmbedderPid,
+                             kFakeWebViewEmbedderFrameId,
+                             kFakeWebViewInstanceId),
       /*selection_text=*/u"test", &index, /*is_action_menu=*/false,
       group_title);
 

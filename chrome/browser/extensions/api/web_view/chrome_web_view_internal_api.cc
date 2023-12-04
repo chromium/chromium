@@ -30,6 +30,7 @@ ChromeWebViewInternalContextMenusCreateFunction::Run() {
       Profile::FromBrowserContext(browser_context())->IsOffTheRecord(),
       MenuItem::ExtensionKey(MaybeGetExtensionId(extension()),
                              render_frame_host()->GetProcess()->GetID(),
+                             render_frame_host()->GetRoutingID(),
                              params->instance_id));
 
   if (params->create_properties.id) {
@@ -64,6 +65,7 @@ ChromeWebViewInternalContextMenusUpdateFunction::Run() {
       profile->IsOffTheRecord(),
       MenuItem::ExtensionKey(MaybeGetExtensionId(extension()),
                              render_frame_host()->GetProcess()->GetID(),
+                             render_frame_host()->GetRoutingID(),
                              params->instance_id));
 
   if (params->id.as_string)
@@ -93,6 +95,7 @@ ChromeWebViewInternalContextMenusRemoveFunction::Run() {
       Profile::FromBrowserContext(browser_context())->IsOffTheRecord(),
       MenuItem::ExtensionKey(MaybeGetExtensionId(extension()),
                              render_frame_host()->GetProcess()->GetID(),
+                             render_frame_host()->GetRoutingID(),
                              params->instance_id));
 
   if (params->menu_item_id.as_string) {
@@ -126,7 +129,8 @@ ChromeWebViewInternalContextMenusRemoveAllFunction::Run() {
       MenuManager::Get(Profile::FromBrowserContext(browser_context()));
   menu_manager->RemoveAllContextItems(MenuItem::ExtensionKey(
       MaybeGetExtensionId(extension()),
-      render_frame_host()->GetProcess()->GetID(), params->instance_id));
+      render_frame_host()->GetProcess()->GetID(),
+      render_frame_host()->GetRoutingID(), params->instance_id));
 
   return RespondNow(NoArguments());
 }

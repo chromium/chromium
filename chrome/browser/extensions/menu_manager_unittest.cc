@@ -97,12 +97,14 @@ class MenuManagerTest : public testing::Test {
   std::unique_ptr<MenuItem> CreateTestItemForWebView(
       const Extension* extension,
       int webview_embedder_process_id,
+      int webview_embedder_frame_id,
       int webview_instance_id,
       const std::string& string_id) {
     MenuItem::Type type = MenuItem::NORMAL;
     MenuItem::ContextList contexts(MenuItem::ALL);
     std::string extension_id = extension ? extension->id() : "";
     const MenuItem::ExtensionKey key(extension_id, webview_embedder_process_id,
+                                     webview_embedder_frame_id,
                                      webview_instance_id);
     MenuItem::Id id(false, key);
     if (string_id.empty()) {
@@ -188,10 +190,12 @@ TEST_F(MenuManagerTest, AddGetRemoveItems) {
 
 TEST_F(MenuManagerTest, AddGetRemoveItemsNoExtension) {
   static constexpr int kFakeWebViewEmbedderPid = 1;
+  static constexpr int kFakeWebViewEmbedderFrameId = 1;
   static constexpr int kFakeWebViewInstanceId = 1;
   // Add a new item, make sure you can get it back.
   std::unique_ptr<MenuItem> item1 = CreateTestItemForWebView(
-      /*extension=*/nullptr, kFakeWebViewEmbedderPid, kFakeWebViewInstanceId,
+      /*extension=*/nullptr, kFakeWebViewEmbedderPid,
+      kFakeWebViewEmbedderFrameId, kFakeWebViewInstanceId,
       /*string_id=*/"");
   ASSERT_TRUE(item1 != nullptr);
   MenuItem* item1_ptr = item1.get();
@@ -204,7 +208,8 @@ TEST_F(MenuManagerTest, AddGetRemoveItemsNoExtension) {
 
   // Add a second item, make sure it comes back too.
   std::unique_ptr<MenuItem> item2 = CreateTestItemForWebView(
-      /*extension=*/nullptr, kFakeWebViewEmbedderPid, kFakeWebViewInstanceId,
+      /*extension=*/nullptr, kFakeWebViewEmbedderPid,
+      kFakeWebViewEmbedderFrameId, kFakeWebViewInstanceId,
       /*string_id=*/"id2");
   MenuItem* item2_ptr = item2.get();
   ASSERT_TRUE(manager_.AddContextItem(/*extension=*/nullptr, std::move(item2)));
@@ -216,7 +221,8 @@ TEST_F(MenuManagerTest, AddGetRemoveItemsNoExtension) {
 
   // Try adding item 3, then removing it.
   std::unique_ptr<MenuItem> item3 = CreateTestItemForWebView(
-      /*extension=*/nullptr, kFakeWebViewEmbedderPid, kFakeWebViewInstanceId,
+      /*extension=*/nullptr, kFakeWebViewEmbedderPid,
+      kFakeWebViewEmbedderFrameId, kFakeWebViewInstanceId,
       /*string_id=*/"");
   MenuItem* item3_ptr = item3.get();
   MenuItem::Id id3 = item3_ptr->id();
@@ -231,6 +237,7 @@ TEST_F(MenuManagerTest, AddGetRemoveItemsNoExtension) {
 
   // Make sure removing a non-existent item returns false.
   const MenuItem::ExtensionKey key(/*extension_id=*/"", kFakeWebViewEmbedderPid,
+                                   kFakeWebViewEmbedderFrameId,
                                    kFakeWebViewInstanceId);
   MenuItem::Id id(false, key);
   id.uid = id3.uid + 50;
@@ -238,7 +245,8 @@ TEST_F(MenuManagerTest, AddGetRemoveItemsNoExtension) {
 
   // Make sure adding an item with the same string ID returns false.
   std::unique_ptr<MenuItem> item2too = CreateTestItemForWebView(
-      /*extension=*/nullptr, kFakeWebViewEmbedderPid, kFakeWebViewInstanceId,
+      /*extension=*/nullptr, kFakeWebViewEmbedderPid,
+      kFakeWebViewEmbedderFrameId, kFakeWebViewInstanceId,
       /*string_id=*/"id2");
   ASSERT_FALSE(
       manager_.AddContextItem(/*extension=*/nullptr, std::move(item2too)));
@@ -246,7 +254,8 @@ TEST_F(MenuManagerTest, AddGetRemoveItemsNoExtension) {
   // But the same string ID should not collide with another WebView instance.
   static constexpr int kFakeWebViewEmbedderPid2 = 2;
   std::unique_ptr<MenuItem> item2other = CreateTestItemForWebView(
-      /*extension=*/nullptr, kFakeWebViewEmbedderPid2, kFakeWebViewInstanceId,
+      /*extension=*/nullptr, kFakeWebViewEmbedderPid2,
+      kFakeWebViewEmbedderFrameId, kFakeWebViewInstanceId,
       /*string_id=*/"id2");
   ASSERT_TRUE(
       manager_.AddContextItem(/*extension=*/nullptr, std::move(item2other)));
