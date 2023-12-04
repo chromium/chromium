@@ -22,7 +22,7 @@ test("some_unittests") {
 }
 ```
 
-To add a Rust file to the test suite, simply add it to the `rs_sources`. Unlike
+To add a Rust file to the test suite, simply add it to the `sources`. Unlike
 other Rust crates, the `crate_root` is not specified, since it is generated from
 the sources list.
 
@@ -32,13 +32,35 @@ test("some_unittests") {
   sources = [
     "a_cpp_file.cc",
     "another_cpp_file.cc",
-  ]
-  rs_sources = [
     "a_rust_file.rs",
   ]
   deps = [
     "//testing/gtest",
   ]
+}
+```
+
+Transitively depending on a `rust_static_library` will include its tests
+(similarly to tests authored in C++), although in that case the
+`rust_static_library` should explicitly declare its dependency on
+`//testing/rust_gtest_interop` and set `testonly` as well as
+`is_gtest_unittests`.
+
+```gn
+rust_static_library("my_rust_lib_unittests") {
+  testonly = true
+  is_gtest_unittests = true
+  crate_root = "my_rust_lib_unittest.rs"
+  sources = [ "my_rust_lib_unittest.rs" ]
+  deps = [
+    ":my_rust_lib",
+    "//testing/rust_gtest_interop",
+  ]
+}
+
+test("some_unittests") {
+  ...
+  deps += [ ":my_rust_lib_unittests" ]
 }
 ```
 
