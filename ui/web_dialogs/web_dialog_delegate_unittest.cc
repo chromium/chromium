@@ -109,5 +109,28 @@ TEST(WebDialogDelegateTest, NoDeleteOnClose) {
   EXPECT_TRUE(deleted);
 }
 
+TEST(WebDialogDelegateTest, AcceleratorsAreHandled) {
+  bool called = false;
+  auto delegate = std::make_unique<WebDialogDelegate>();
+
+  const ui::Accelerator accelerator{ui::VKEY_Z, ui::EF_CONTROL_DOWN};
+  const ui::Accelerator other_accelerator{ui::VKEY_Z, ui::EF_SHIFT_DOWN};
+
+  delegate->RegisterAccelerator(
+      accelerator, base::BindLambdaForTesting(
+                       [&](WebDialogDelegate& provided_delegate,
+                           const ui::Accelerator& provided_accelerator) {
+                         EXPECT_EQ(&provided_delegate, delegate.get());
+                         EXPECT_EQ(provided_accelerator, accelerator);
+                         called = true;
+                         return true;
+                       }));
+
+  EXPECT_FALSE(delegate->AcceleratorPressed(other_accelerator));
+  EXPECT_FALSE(called);
+  EXPECT_TRUE(delegate->AcceleratorPressed(accelerator));
+  EXPECT_TRUE(called);
+}
+
 }  // namespace
 }  // namespace ui
