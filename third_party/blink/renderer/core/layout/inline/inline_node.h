@@ -105,7 +105,7 @@ class CORE_EXPORT InlineNode : public LayoutInputNode {
   bool IsBisectLineBreakDisabled() const {
     return Data().IsBisectLineBreakDisabled();
   }
-  // True if this node can't use the `NGScorehLineBreaker`, that can be
+  // True if this node can't use the `ScoreLineBreaker`, that can be
   // determined by `CollectInlines`. Conditions that can change without
   // `CollectInlines` are in `LineBreaker::ShouldDisableScoreLineBreak()`.
   bool IsScoreLineBreakDisabled() const {

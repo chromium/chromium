@@ -360,7 +360,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
     return true;
   }
 
-  // Override |LayoutObject| implementation to invalidate |LayoutNGtextCombine|.
+  // Override |LayoutObject| implementation to invalidate |LayoutTextCombine|.
   // Note: This isn't a virtual function.
   void SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
       LayoutInvalidationReasonForTracing reason);

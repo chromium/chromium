@@ -261,7 +261,7 @@ const FragmentItem* FragmentItems::EndOfReusableItems(
       return &item;
 
     // Abort reusing block-in-inline because it may need to set
-    // |NGPreviousInflowData|.
+    // |PreviousInflowData|.
     if (UNLIKELY(line_box_fragment.IsBlockInInline()))
       return &item;
 

@@ -169,7 +169,7 @@ class CORE_EXPORT BlockLayoutAlgorithm
                    BlockNode,
                    const BlockBreakToken*);
 
-  // This uses the NGLayoutOpporunityIterator to position the fragment.
+  // This uses the LayoutOpporunityIterator to position the fragment.
   //
   // An element that establishes a new formatting context must not overlap the
   // margin box of any floats within the current BFC.
@@ -361,7 +361,7 @@ class CORE_EXPORT BlockLayoutAlgorithm
   }
 
   // Returns true if |this| is a ruby segment (LayoutRubyColumn) and the
-  // specified |child| is a ruby annotation box (LayoutNGRubyText).
+  // specified |child| is a ruby annotation box (LayoutRubyText).
   bool IsRubyText(const LayoutInputNode& child) const;
 
   // Layout |ruby_text_child| content, and decide the location of

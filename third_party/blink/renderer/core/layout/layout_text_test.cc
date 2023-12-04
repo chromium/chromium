@@ -1072,7 +1072,7 @@ TEST_F(LayoutTextTest, PhysicalLinesBoundingBoxTextCombine) {
   //         LayoutText {#text} at (15,0) size 100x100
   //           text run at (15,0) width 100: "a"
   //         LayoutInline {C} at (15,100) size 100x100
-  //           LayoutNGTextCombine (anonymous) at (15,100) size 100x100
+  //           LayoutTextCombine (anonymous) at (15,100) size 100x100
   //             LayoutText {#text} at (-5,0) size 110x100
   //               text run at (0,0) width 500: "01234"
   //         LayoutText {#text} at (15,200) size 100x100
@@ -1081,7 +1081,7 @@ TEST_F(LayoutTextTest, PhysicalLinesBoundingBoxTextCombine) {
 
   EXPECT_EQ(PhysicalRect(15, 0, 100, 100), text_a.PhysicalLinesBoundingBox());
   // Note: Width 110 comes from |100px * kTextCombineMargin| in
-  // |LayoutNGTextCombine::DesiredWidth()|.
+  // |LayoutTextCombine::DesiredWidth()|.
   EXPECT_EQ(PhysicalRect(-5, 0, 110, 100),
             text_01234.PhysicalLinesBoundingBox());
   EXPECT_EQ(PhysicalRect(15, 200, 100, 100), text_b.PhysicalLinesBoundingBox());

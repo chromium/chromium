@@ -310,7 +310,7 @@ void InlineLayoutAlgorithm::PrepareBoxStates(
     return;
   }
 
-  // Check if the box states in NGChildLayoutContext is valid for this line.
+  // Check if the box states in InlineChildLayoutContext is valid for this line.
   // If the previous line was ::first-line, always rebuild because box states
   // have ::first-line styles.
   const HeapVector<InlineItem>& items = line_info.ItemsData().items;
@@ -712,7 +712,7 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
   //
   // For SVG <text>, the block offset of the initial 'current text position'
   // should be 0. As for the inline offset, see
-  // NGSvgTextLayoutAttributesBuilder::Build().
+  // SvgTextLayoutAttributesBuilder::Build().
   //
   // For text-combine-upright:all, the block offset should be zero to make
   // combined text in 1em x 1em box.
@@ -815,7 +815,7 @@ InlineBoxState* InlineLayoutAlgorithm::PlaceAtomicInline(
     const auto& style = layout_object->Parent()->StyleRef();
     box->ComputeTextMetrics(style, style.GetFont(), baseline_type_);
     // Note: |item_result->spacing_before| is non-zero if this |item_result|
-    // is |LayoutNGTextCombine| and after CJK character.
+    // is |LayoutTextCombine| and after CJK character.
     // See "text-combine-justify.html".
     const LayoutUnit inline_offset =
         box->margin_inline_start + item_result->spacing_before;
@@ -1136,7 +1136,7 @@ absl::optional<LayoutUnit> InlineLayoutAlgorithm::ApplyJustify(
   const UChar kTextCombineItemMarker = 0x3042;  // U+3042 Hiragana Letter A
 
   // Note: |line_info->StartOffset()| can be different from
-  // |NGItemsResults[0].StartOffset()|, e.g. <b><input> <input></b> when
+  // |ItemsResults[0].StartOffset()|, e.g. <b><input> <input></b> when
   // line break before space (leading space). See http://crbug.com/1240791
   const unsigned line_text_start_offset =
       line_info->Results().front().StartOffset();

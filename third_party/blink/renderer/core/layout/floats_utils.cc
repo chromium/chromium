@@ -177,7 +177,7 @@ void LayoutFloatWithoutFragmentation(UnpositionedFloat* unpositioned_float) {
   // Pass in the break token if one exists. This can happen when we relayout
   // without fragmentation to handle clipping. We still want to look at the
   // break token so that layout is resumed correctly. See
-  // NGFragmentationUtils::InvolvedInBlockFragmentation() for more details.
+  // InvolvedInBlockFragmentation() in fragmentation_utils.h for more details.
   unpositioned_float->layout_result =
       unpositioned_float->node.Layout(space, unpositioned_float->token);
   unpositioned_float->margins =

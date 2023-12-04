@@ -134,7 +134,7 @@ void ScrollableOverflowCalculator::AddItemsInternal(
   bool has_hanging = false;
   PhysicalRect line_rect;
 
-  // |LayoutNGTextCombine| doesn't not cause scrollable overflow because
+  // |LayoutTextCombine| doesn't not cause scrollable overflow because
   // combined text fits in 1em by using width variant font or scaling.
   if (UNLIKELY(IsA<LayoutTextCombine>(layout_object))) {
     return;

@@ -703,7 +703,7 @@ static bool ShouldMergeCombinedTextAfterRemoval(const Node& old_child) {
   if (!layout_object)
     return false;
 
-  // Request to merge previous and next |LayoutNGTextCombine| of |child|.
+  // Request to merge previous and next |LayoutTextCombine| of |child|.
   // See http:://crbug.com/1227066
   auto* const previous_sibling = layout_object->PreviousSibling();
   if (!previous_sibling)

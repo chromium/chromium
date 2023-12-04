@@ -462,7 +462,7 @@ class CORE_EXPORT FragmentItem final {
   TextDirection ResolvedDirection() const;
 
   // Returns |PhysicalRect| to intersect with hit test location for |this|
-  // text item. See |NGBoxFragmentPainter::HitTestTextItem()|.
+  // text item. See |BoxFragmentPainter::HitTestTextItem()|.
   PhysicalRect ComputeTextBoundsRectForHitTest(
       const PhysicalOffset& inline_root_offset,
       bool is_occlusion_test) const;

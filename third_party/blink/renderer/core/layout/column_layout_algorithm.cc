@@ -223,7 +223,7 @@ ColumnLayoutAlgorithm::ColumnLayoutAlgorithm(
     : LayoutAlgorithm(params) {
   // When a list item has multicol, |ColumnLayoutAlgorithm| needs to keep
   // track of the list marker instead of the child layout algorithm. See
-  // |NGBlockLayoutAlgorithm|.
+  // |BlockLayoutAlgorithm|.
   if (const BlockNode marker_node = Node().ListMarkerBlockNodeIfListItem()) {
     if (!marker_node.ListMarkerOccupiesWholeLine() &&
         (!GetBreakToken() || GetBreakToken()->HasUnpositionedListMarker())) {

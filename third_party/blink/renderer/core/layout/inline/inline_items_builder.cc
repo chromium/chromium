@@ -1252,7 +1252,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::EnterBlock(
         // Isolate and embed values are enforced by default and redundant on the
         // block elements.
         // Direction is handled as the paragraph level by
-        // NGBidiParagraph::SetParagraph().
+        // BidiParagraph::SetParagraph().
         if (style->Direction() == TextDirection::kRtl)
           has_bidi_controls_ = true;
         break;
@@ -1264,7 +1264,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::EnterBlock(
         break;
       case UnicodeBidi::kPlaintext:
         // Plaintext is handled as the paragraph level by
-        // NGBidiParagraph::SetParagraph().
+        // BidiParagraph::SetParagraph().
         has_bidi_controls_ = true;
         // It's not easy to compute which lines will change with `unicode-bidi:
         // plaintext`. Since it is quite uncommon that just disable line cache.

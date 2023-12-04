@@ -180,7 +180,7 @@ void LayoutBlockFlow::AddChild(LayoutObject* new_child,
       return;
     }
 
-    // LayoutNGOutsideListMarker is out-of-flow for the tree building purpose,
+    // LayoutOutsideListMarker is out-of-flow for the tree building purpose,
     // and that is not inline level, but IsInline().
     if (new_child->IsInline() && !new_child->IsLayoutOutsideListMarker()) {
       // No suitable existing anonymous box - create a new one.
@@ -484,7 +484,7 @@ static void GetInlineRun(LayoutObject* start,
   // Start by skipping as many non-inlines as we can.
   LayoutObject* curr = start;
 
-  // LayoutNGOutsideListMarker is out-of-flow for the tree building purpose.
+  // LayoutOutsideListMarker is out-of-flow for the tree building purpose.
   // Skip here because it's the first child.
   if (curr && curr->IsLayoutOutsideListMarker()) {
     curr = curr->NextSibling();

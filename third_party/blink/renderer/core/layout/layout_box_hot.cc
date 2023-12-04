@@ -519,7 +519,7 @@ const LayoutResult* LayoutBox::CachedLayoutResult(
 #endif
   }
 
-  // Optimization: NGTableConstraintSpaceData can be large, and it is shared
+  // Optimization: TableConstraintSpaceData can be large, and it is shared
   // between all the rows in a table. Make constraint space table data for
   // reused row fragment be identical to the one used by other row fragments.
   if (IsTableRow() && IsLayoutNGObject()) {

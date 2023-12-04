@@ -459,7 +459,7 @@ LayoutUnit LineInfo::ComputeTotalBlockSize(
 }
 
 std::ostream& operator<<(std::ostream& ostream, const LineInfo& line_info) {
-  // Feel free to add more NGLneInfo members.
+  // Feel free to add more LineInfo members.
   ostream << "LineInfo available_width_=" << line_info.AvailableWidth()
           << " width_=" << line_info.Width() << " Results=[\n";
   for (const auto& result : line_info.Results()) {

@@ -1162,7 +1162,7 @@
       // crbug.com/1463891: CSS `text-spacing-trim` property
       name: "CSSTextSpacingTrim",
     },
-    // Use the `NGSCoreLineBreaker` for `text-wrap: balance`. crbug.com/1451205
+    // Use the `ScoreLineBreaker` for `text-wrap: balance`. crbug.com/1451205
     {
       name: "CSSTextWrapBalanceByScore",
       status: "stable",

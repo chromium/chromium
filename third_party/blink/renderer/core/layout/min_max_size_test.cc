@@ -10,7 +10,7 @@ namespace blink {
 
 namespace {
 
-TEST(NGUnitsTest, ShrinkToFit) {
+TEST(MinMaxSizesTest, ShrinkToFit) {
   MinMaxSizes sizes;
 
   sizes.min_size = LayoutUnit(100);

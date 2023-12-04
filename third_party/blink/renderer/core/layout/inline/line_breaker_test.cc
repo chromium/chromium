@@ -208,7 +208,7 @@ TEST_F(LineBreakerTest, TextCombineCloseTag) {
   EXPECT_EQ(1u, lines.size());
   // |LineBreaker::auto_wrap_| doesn't care about CSS "white-space" property
   // in the element with "text-combine-upright:all".
-  //  NGInlineItemResult
+  //  InlineItemResult
   //    [0] kText 0-3 can_break_after_=false
   //    [1] kOpenTag 3-3 can_break_after_=false
   //    [2] kStartTag 3-3 can_break_after _= fasle
@@ -547,7 +547,7 @@ struct WhitespaceStateTestData {
     // The most common cases.
     {"12", "normal", LineBreaker::WhitespaceState::kNone},
     {"1234 5678", "normal", LineBreaker::WhitespaceState::kCollapsed},
-    // |NGInlineItemsBuilder| collapses trailing spaces of a block, so
+    // |InlineItemsBuilder| collapses trailing spaces of a block, so
     // |LineBreaker| computes to `none`.
     {"12 ", "normal", LineBreaker::WhitespaceState::kNone},
     // pre/pre-wrap should preserve trailing spaces if exists.

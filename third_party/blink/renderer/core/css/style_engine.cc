@@ -3277,7 +3277,7 @@ void StyleEngine::UpdateStyleForNonEligibleContainer(Element& container) {
   DCHECK(InRebuildLayoutTree());
   // This method is called from AttachLayoutTree() when we skipped style recalc
   // for descendants of a size query container but figured that the LayoutObject
-  // we created is not going to be reached for layout in ng_block_node.cc where
+  // we created is not going to be reached for layout in block_node.cc where
   // we would otherwise resume style recalc.
   //
   // This may be due to legacy layout fallback, inline box, table box, etc.

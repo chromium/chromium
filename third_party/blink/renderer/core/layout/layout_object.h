@@ -1117,7 +1117,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   // Returns true if the text is generated (from, e.g., list marker,
   // pseudo-element, ...) instead of from a DOM text node. See
-  // |NGTextType::kLayoutGenerated| for the other type of generated text.
+  // |TextFragmentType::kLayoutGenerated| for the other type of generated text.
   bool IsStyleGenerated() const;
 
   bool HasCounterNodeMap() const {

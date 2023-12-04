@@ -56,7 +56,7 @@ PhysicalSize SvgTextLayoutAlgorithm::Layout(
 
   // 3. Resolve character positioning
   // This was already done in PrepareLayout() step. See
-  // NGSvgTextLayoutAttributesBuilder.
+  // SvgTextLayoutAttributesBuilder.
   // Copy |rotate| and |anchored_chunk| fields.
   ResolvedTextLayoutAttributesIterator iterator(
       inline_node_.SvgCharacterDataList());
@@ -269,7 +269,7 @@ void SvgTextLayoutAlgorithm::ResolveTextLength(
 
   // 2.2. Let i and j be the global index of the first character and last
   // characters in node, respectively.
-  // ==> They are computed in NGTextLayoutAttributeBuilder.
+  // ==> They are computed in TextLayoutAttributeBuilder.
 
   // 2.3. For each index k in the range [i, j] where the "addressable" flag of
   // result[k] is true:

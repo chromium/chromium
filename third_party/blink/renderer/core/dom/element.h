@@ -1684,8 +1684,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void DetachAttrNodeFromElementWithValue(Attr*, const AtomicString& value);
   void DetachAttrNodeAtIndex(Attr*, wtf_size_t index);
 
-  FRIEND_TEST_ALL_PREFIXES(LayoutNGTextCombineTest, LegacyQuote);
-
   void SynchronizeContentAttributeAndElementReference(
       const QualifiedName& name);
 

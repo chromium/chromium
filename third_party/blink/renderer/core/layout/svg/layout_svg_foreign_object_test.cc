@@ -7,13 +7,13 @@
 
 namespace blink {
 
-class LayoutNGSVGForeignObjectTest : public RenderingTest {
+class LayoutSVGForeignObjectTest : public RenderingTest {
  public:
-  LayoutNGSVGForeignObjectTest()
+  LayoutSVGForeignObjectTest()
       : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
 };
 
-TEST_F(LayoutNGSVGForeignObjectTest, DivInForeignObject) {
+TEST_F(LayoutSVGForeignObjectTest, DivInForeignObject) {
   SetBodyInnerHTML(R"HTML(
     <style>body { margin: 0 }</style>
     <svg id='svg' style='width: 500px; height: 400px'>
@@ -69,7 +69,7 @@ TEST_F(LayoutNGSVGForeignObjectTest, DivInForeignObject) {
   EXPECT_EQ(3, count);
 }
 
-TEST_F(LayoutNGSVGForeignObjectTest, IframeInForeignObject) {
+TEST_F(LayoutSVGForeignObjectTest, IframeInForeignObject) {
   SetBodyInnerHTML(R"HTML(
     <style>body { margin: 0 }</style>
     <svg id='svg' style='width: 500px; height: 450px'>
@@ -140,7 +140,7 @@ TEST_F(LayoutNGSVGForeignObjectTest, IframeInForeignObject) {
   EXPECT_EQ(4, count);
 }
 
-TEST_F(LayoutNGSVGForeignObjectTest, HitTestZoomedForeignObject) {
+TEST_F(LayoutSVGForeignObjectTest, HitTestZoomedForeignObject) {
   SetBodyInnerHTML(R"HTML(
     <style>* { margin: 0; zoom: 150% }</style>
     <svg id='svg' style='width: 200px; height: 200px'>
@@ -206,7 +206,7 @@ TEST_F(LayoutNGSVGForeignObjectTest, HitTestZoomedForeignObject) {
   EXPECT_EQ(3, count);
 }
 
-TEST_F(LayoutNGSVGForeignObjectTest, HitTestViewBoxForeignObject) {
+TEST_F(LayoutSVGForeignObjectTest, HitTestViewBoxForeignObject) {
   SetBodyInnerHTML(R"HTML(
     <svg id='svg' style='width: 200px; height: 200px' viewBox='0 0 100 100'>
       <foreignObject id='foreign' x='10' y='10' width='100' height='150'>
@@ -236,7 +236,7 @@ TEST_F(LayoutNGSVGForeignObjectTest, HitTestViewBoxForeignObject) {
   EXPECT_EQ(div, HitTest(160, 160));
 }
 
-TEST_F(LayoutNGSVGForeignObjectTest, HitTestUnderClipPath) {
+TEST_F(LayoutSVGForeignObjectTest, HitTestUnderClipPath) {
   SetBodyInnerHTML(R"HTML(
     <style>
       * {
@@ -273,7 +273,7 @@ TEST_F(LayoutNGSVGForeignObjectTest, HitTestUnderClipPath) {
   EXPECT_EQ(svg, GetDocument().ElementFromPoint(400, 400));
 }
 
-TEST_F(LayoutNGSVGForeignObjectTest,
+TEST_F(LayoutSVGForeignObjectTest,
        HitTestUnderClippedPositionedForeignObjectDescendant) {
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -308,7 +308,7 @@ TEST_F(LayoutNGSVGForeignObjectTest,
   EXPECT_EQ(PhysicalOffset(206, 206), result.PointInInnerNodeFrame());
 }
 
-TEST_F(LayoutNGSVGForeignObjectTest,
+TEST_F(LayoutSVGForeignObjectTest,
        HitTestUnderTransformedForeignObjectDescendant) {
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -343,7 +343,7 @@ TEST_F(LayoutNGSVGForeignObjectTest,
   EXPECT_EQ(PhysicalOffset(236, 206), result.PointInInnerNodeFrame());
 }
 
-TEST_F(LayoutNGSVGForeignObjectTest, HitTestUnderScrollingAncestor) {
+TEST_F(LayoutSVGForeignObjectTest, HitTestUnderScrollingAncestor) {
   SetBodyInnerHTML(R"HTML(
     <style>
       * {
@@ -381,7 +381,7 @@ TEST_F(LayoutNGSVGForeignObjectTest, HitTestUnderScrollingAncestor) {
   EXPECT_EQ(PhysicalOffset(450, 450), result.PointInInnerNodeFrame());
 }
 
-TEST_F(LayoutNGSVGForeignObjectTest, BBoxPropagationZoomed) {
+TEST_F(LayoutSVGForeignObjectTest, BBoxPropagationZoomed) {
   GetFrame().SetPageZoomFactor(2);
   SetBodyInnerHTML(R"HTML(
     <svg>
@@ -403,7 +403,7 @@ TEST_F(LayoutNGSVGForeignObjectTest, BBoxPropagationZoomed) {
 }
 
 // crbug.com/1335655
-TEST_F(LayoutNGSVGForeignObjectTest, SetNeedsCollectInlines) {
+TEST_F(LayoutSVGForeignObjectTest, SetNeedsCollectInlines) {
   SetBodyInnerHTML(R"HTML(
     <svg><foreignObject id="target">abc</foreignObject></svg>)HTML");
   UpdateAllLifecyclePhasesForTest();
@@ -416,7 +416,7 @@ TEST_F(LayoutNGSVGForeignObjectTest, SetNeedsCollectInlines) {
 }
 
 // crbug.com/1372886
-TEST_F(LayoutNGSVGForeignObjectTest, SubtreeLayoutCrash) {
+TEST_F(LayoutSVGForeignObjectTest, SubtreeLayoutCrash) {
   SetBodyInnerHTML(R"HTML(
 <svg style="position:absolute;">
   <svg></svg>
@@ -443,7 +443,7 @@ TEST_F(LayoutNGSVGForeignObjectTest, SubtreeLayoutCrash) {
   // Pass if no crashes.
 }
 
-TEST_F(LayoutNGSVGForeignObjectTest, ZoomChangesInvalidatePaintProperties) {
+TEST_F(LayoutSVGForeignObjectTest, ZoomChangesInvalidatePaintProperties) {
   SetBodyInnerHTML(R"HTML(
     <style> body { margin: 0; } </style>
     <svg id="svg" xmlns="http://www.w3.org/2000/svg" width="100px"
@@ -481,7 +481,7 @@ TEST_F(LayoutNGSVGForeignObjectTest, ZoomChangesInvalidatePaintProperties) {
   EXPECT_EQ(gfx::Vector2dF(0.5, 0.5), foreign_transform->Matrix().To2dScale());
 }
 
-TEST_F(LayoutNGSVGForeignObjectTest, DisplayLocked) {
+TEST_F(LayoutSVGForeignObjectTest, DisplayLocked) {
   GetDocument().body()->setInnerHTML(R"HTML(<style>
 foreignObject {
   content-visibility: auto;
@@ -499,7 +499,7 @@ foreignObject {
   // Pass if no DCHECK failures.
 }
 
-TEST_F(LayoutNGSVGForeignObjectTest, LocalToAncestorPoint) {
+TEST_F(LayoutSVGForeignObjectTest, LocalToAncestorPoint) {
   SetBodyInnerHTML(R"HTML(
 <style>body { margin:0; }</style>
 <div style="height:3px"></div>

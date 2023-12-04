@@ -146,7 +146,7 @@ const LayoutResult* MathOperatorLayoutAlgorithm::Layout() {
   // the one of the stretched glyph, but LayoutNG currently relies on the
   // min-max sizes. This means there can be excessive gap around vertical
   // stretchy operators and that unstretched size will be used for horizontal
-  // stretchy operators. See also NGMathMLPainter::PaintOperator.
+  // stretchy operators. See also MathMLPainter::PaintOperator.
   LayoutUnit operator_ascent = LayoutUnit::FromFloatFloor(metrics.ascent);
   LayoutUnit operator_descent = LayoutUnit::FromFloatFloor(metrics.descent);
 

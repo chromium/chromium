@@ -9640,7 +9640,7 @@ AnchorPositionScrollData* Element::GetAnchorPositionScrollData() const {
 void Element::IncrementImplicitlyAnchoredElementCount() {
   DCHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
   if (!HasImplicitlyAnchoredElement() && GetLayoutObject()) {
-    // Invalidate layout to populate itself into NGPhysical/LogicalAnchorQuery.
+    // Invalidate layout to populate itself into Physical/LogicalAnchorQuery.
     GetLayoutObject()->SetNeedsLayoutAndFullPaintInvalidation(
         layout_invalidation_reason::kAnchorPositioning);
     GetLayoutObject()->MarkMayHaveAnchorQuery();

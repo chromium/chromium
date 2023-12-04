@@ -224,8 +224,8 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   bool IsRubyBase() const { return layout_object_->IsRubyBase(); }
   bool IsRubyColumn() const { return layout_object_->IsRubyColumn(); }
 
-  // Return true if this fragment is for LayoutRubyColumn, LayoutNGRubyText, or
-  // LayoutNGRubyBase. They are handled specially in scrollable overflow
+  // Return true if this fragment is for LayoutRubyColumn, LayoutRubyText, or
+  // LayoutRubyBase. They are handled specially in scrollable overflow
   // computation.
   bool IsRubyBox() const {
     return layout_object_->IsRubyColumn() || layout_object_->IsRubyText() ||
@@ -763,7 +763,7 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   PhysicalSize size_;
 
   const uint8_t type_ : 1;           // FragmentType
-  const uint8_t sub_type_ : 4;       // BoxType, NGTextType, or LineBoxType
+  const uint8_t sub_type_ : 4;       // BoxType, TextItemType, or LineBoxType
   const uint8_t style_variant_ : 2;  // StyleVariant
   const uint8_t is_hidden_for_paint_ : 1;
   uint8_t : 0;  // NOLINT, zero-length bitfield used to allow the compiler to

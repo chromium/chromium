@@ -33,7 +33,7 @@ struct CORE_EXPORT InlineNodeData final : InlineItemsData {
   bool IsBisectLineBreakDisabled() const {
     return is_bisect_line_break_disabled_;
   }
-  // True if this node can't use the `NGScorehLineBreaker`, that can be
+  // True if this node can't use the `ScoreLineBreaker`, that can be
   // determined by `CollectInlines`. Conditions that can change without
   // `CollectInlines` are in `LineBreaker::ShouldDisableScoreLineBreak()`.
   bool IsScoreLineBreakDisabled() const {

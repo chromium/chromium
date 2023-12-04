@@ -49,8 +49,6 @@ class CORE_EXPORT LayoutNGBlockFlow : public LayoutBlockFlow {
   void DirtyLinesFromChangedChild(LayoutObject* child) final;
 
   Member<InlineNodeData> ng_inline_node_data_;
-
-  friend class NGBaseLayoutAlgorithmTest;
 };
 
 template <>

@@ -201,12 +201,12 @@ TEST_F(TextOffsetMappingTest, RangeOfBlockWithRubyAsBlock) {
   // before "abc" but in DOM tree, order is "abc" then "XYZ".
   // Layout tree:
   //  LayoutNGBlockFlow {BODY} at (8,8) size 784x27
-  //   LayoutNGRubyAsBlock {RUBY} at (0,0) size 784x27
+  //   LayoutRubyAsBlock {RUBY} at (0,0) size 784x27
   //     LayoutRubyColumn (anonymous) at (0,7) size 22x20
-  //       LayoutNGRubyText {RT} at (0,-10) size 22x12
+  //       LayoutRubyText {RT} at (0,-10) size 22x12
   //         LayoutText {#text} at (2,0) size 18x12
   //           text run at (2,0) width 18: "XYZ"
-  //       LayoutNGRubyBase (anonymous) at (0,0) size 22x20
+  //       LayoutRubyBase (anonymous) at (0,0) size 22x20
   //         LayoutText {#text} at (0,0) size 22x19
   //           text run at (0,0) width 22: "abc"
   InsertStyleElement("ruby { display: block; }");

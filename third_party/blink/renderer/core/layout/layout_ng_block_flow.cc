@@ -70,7 +70,7 @@ void LayoutNGBlockFlow::AddOutlineRects(
     OutlineType include_block_overflows) const {
   NOT_DESTROYED();
 
-  // TODO(crbug.com/1145048): Currently |NGBoxPhysicalFragment| does not support
+  // TODO(crbug.com/1145048): Currently |PhysicalBoxFragment| does not support
   // NG block fragmentation. Fallback to the legacy code path.
   if (PhysicalFragmentCount() == 1) {
     const PhysicalBoxFragment* fragment = GetPhysicalFragment(0);

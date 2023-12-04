@@ -66,13 +66,13 @@ struct LayoutAlgorithmParams {
 };
 
 // Base class for all LayoutNG algorithms.
-template <typename NGInputNodeType,
+template <typename InputNodeType,
           typename BoxFragmentBuilderType,
           typename BreakTokenType>
 class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
   STACK_ALLOCATED();
  public:
-  LayoutAlgorithm(NGInputNodeType node,
+  LayoutAlgorithm(InputNodeType node,
                   const ComputedStyle* style,
                   const ConstraintSpace& space,
                   TextDirection direction,
@@ -87,7 +87,7 @@ class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
   // Constructor for algorithms that use BoxFragmentBuilder and
   // BlockBreakToken.
   explicit LayoutAlgorithm(const LayoutAlgorithmParams& params)
-      : node_(To<NGInputNodeType>(params.node)),
+      : node_(To<InputNodeType>(params.node)),
         early_break_(params.early_break),
         break_token_(params.break_token),
         container_builder_(
@@ -121,7 +121,7 @@ class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
             *container_builder_.BfcBlockOffset()};
   }
 
-  const NGInputNodeType& Node() const { return node_; }
+  const InputNodeType& Node() const { return node_; }
 
   const BreakTokenType* GetBreakToken() const { return break_token_; }
 
@@ -203,7 +203,7 @@ class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
     return algorithm_without_fragmentation.Layout();
   }
 
-  NGInputNodeType node_;
+  InputNodeType node_;
 
   // When set, this will specify where to break before or inside. If not set,
   // the algorithm will need to figure out where to break on its own.

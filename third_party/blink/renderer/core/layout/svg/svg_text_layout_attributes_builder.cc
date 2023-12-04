@@ -356,7 +356,7 @@ void SvgTextLayoutAttributesBuilder::Build(
 
       // Not in the specification; The following code sets the initial inline
       // offset of 'current text position' to 0.
-      // See NGInlineLayoutAlgorithm::CreateLine() for the initial block offset.
+      // See InlineLayoutAlgorithm::CreateLine() for the initial block offset.
       if (is_first_char) {
         is_first_char = false;
         if (horizontal) {

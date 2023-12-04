@@ -113,7 +113,7 @@ class CORE_EXPORT SVGLayoutSupport {
 
   static float CalculateScreenFontSizeScalingFactor(const LayoutObject*);
 
-  // This returns a LayoutSVGText, a LayoutNGSVGText, or nullptr.
+  // This returns a LayoutSVGText or nullptr.
   static LayoutObject* FindClosestLayoutSVGText(const LayoutObject*,
                                                 const gfx::PointF&);
 };

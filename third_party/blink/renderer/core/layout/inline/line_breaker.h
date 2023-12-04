@@ -109,7 +109,7 @@ class CORE_EXPORT LineBreaker {
   }
 
   // Find break candidates in the `item_result` and append to `context`. See
-  // `NGLineBreakCandidate` and `NGLineBreakCandidateContext` for more details.
+  // `LineBreakCandidate` and `LineBreakCandidateContext` for more details.
   void AppendCandidates(const InlineItemResult& item_result,
                         const LineInfo& line_info,
                         LineBreakCandidateContext& context);

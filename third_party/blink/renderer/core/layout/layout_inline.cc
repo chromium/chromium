@@ -191,7 +191,7 @@ bool LayoutInline::ComputeInitialShouldCreateBoxFragment(
   NOT_DESTROYED();
 
   // We'd like to use ScopedSVGPaintState in
-  // NGInlineBoxFragmentPainter::Paint().
+  // InlineBoxFragmentPainter::Paint().
   // TODO(layout-dev): Improve the below condition so that we a create box
   // fragment only if this requires ScopedSVGPaintState, instead of
   // creating box fragments for all LayoutSVGInlines.
@@ -625,7 +625,7 @@ bool LayoutInline::NodeAtPoint(HitTestResult& result,
       const FragmentItem& item = *cursor.Current().Item();
       const PhysicalBoxFragment* box_fragment = item.BoxFragment();
       DCHECK(box_fragment);
-      // NGBoxFragmentPainter::NodeAtPoint() takes an offset that is accumulated
+      // BoxFragmentPainter::NodeAtPoint() takes an offset that is accumulated
       // up to the fragment itself. Compute this offset.
       const PhysicalOffset child_offset =
           accumulated_offset + item.OffsetInContainerFragment();

@@ -138,7 +138,7 @@ const ExclusionArea* CreateExclusionSpaceForInitialLetterBox(
     const LogicalSize& border_box_size,
     const BoxStrut& margins) {
   // Note: In case of `margins.inline_start` or `margins.line_over` are
-  // negative, left top of `NGExclusionSpace` are out of `ConstraintSpace`.
+  // negative, left top of `ExclusionSpace` are out of `ConstraintSpace`.
   const BfcOffset local_start_offset(
       border_box_offset.line_offset - margins.inline_start,
       border_box_offset.block_offset - margins.block_start);
@@ -149,7 +149,7 @@ const ExclusionArea* CreateExclusionSpaceForInitialLetterBox(
       (border_box_size.inline_size + margins.InlineSum()).ClampNegativeToZero(),
       (border_box_size.block_size + margins.BlockSum()).ClampNegativeToZero());
 
-  // Note: The block offset of `NGExclusionSpace` is `origin.block_offset`
+  // Note: The block offset of `ExclusionSpace` is `origin.block_offset`
   // when initial letter positioned below the first line.
   //
   // Example:

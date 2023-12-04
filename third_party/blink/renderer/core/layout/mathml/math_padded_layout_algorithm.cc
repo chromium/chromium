@@ -45,7 +45,7 @@ absl::optional<LayoutUnit> MathPaddedLayoutAlgorithm::RequestedDescent(
 
 void MathPaddedLayoutAlgorithm::GetContentAsAnonymousMrow(
     BlockNode* content) const {
-  // Node() is a LayoutNGMathMLBlockWithAnonymousMrow node, which is either
+  // Node() is a LayoutMathMLBlockWithAnonymousMrow node, which is either
   // empty or contains a single anonymous mrow child.
   if (LayoutInputNode child = Node().FirstChild()) {
     DCHECK(!child.NextSibling());

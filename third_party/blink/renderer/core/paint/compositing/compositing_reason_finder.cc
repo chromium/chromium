@@ -150,7 +150,7 @@ CompositingReasons CompositingReasonsFor3DSceneLeaf(
   // This could be improved by skipping this if we know that the descendants
   // won't produce any quads in the render pass's quad list.
   if (layout_object.IsText()) {
-    // A LayoutNGBR is both IsText() and IsForElement(), but we shouldn't
+    // A LayoutBR is both IsText() and IsForElement(), but we shouldn't
     // produce compositing reasons if IsText() is true.  Since we only need
     // this for objects that have interesting descendants, we can just return.
     return CompositingReason::kNone;

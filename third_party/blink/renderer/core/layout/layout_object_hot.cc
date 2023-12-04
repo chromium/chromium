@@ -156,7 +156,7 @@ void LayoutObject::PropagateStyleToAnonymousChildren() {
 
     if (UNLIKELY(IsA<LayoutTextCombine>(child))) {
       if (blink::IsHorizontalWritingMode(new_style_builder.GetWritingMode())) {
-        // |LayoutNGTextCombine| will be removed when recalculating style for
+        // |LayoutTextCombine| will be removed when recalculating style for
         // <br> or <wbr>.
         // See StyleToHorizontalWritingModeWithWordBreak
         DCHECK(child->SlowFirstChild()->IsBR() ||

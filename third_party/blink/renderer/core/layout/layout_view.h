@@ -394,8 +394,8 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
   bool needs_marker_counter_update_ = false;
 
   // This map keeps track of SVG <text> descendants.
-  // LayoutNGSVGText needs to do re-layout on transform changes of any ancestor
-  // because LayoutNGSVGText's layout result depends on scaling factors
+  // LayoutSVGText needs to do re-layout on transform changes of any ancestor
+  // because LayoutSVGText's layout result depends on scaling factors
   // computed with ancestor transforms.
   Member<TrackedDescendantsMap> svg_text_descendants_;
 

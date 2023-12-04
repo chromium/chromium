@@ -71,10 +71,10 @@ MinMaxSizesResult FrameSetLayoutAlgorithm::ComputeMinMaxSizes(
   MinMaxSizes sizes;
   const auto& space = GetConstraintSpace();
   // This function needs to return a value which is >= border+padding in order
-  // to pass a DCHECK in NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems()
+  // to pass a DCHECK in FlexLayoutAlgorithm::ConstructAndAppendFlexItems()
   // though <frameset> ignores border and padding.
   //
-  // We can't use BorderPadding() here because NGFragmentGeometry for <frameset>
+  // We can't use BorderPadding() here because FragmentGeometry for <frameset>
   // doesn't provide it.
   //
   // Test: external/wpt/css/css-flexbox/frameset-crash.html

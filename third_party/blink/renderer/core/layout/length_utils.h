@@ -593,7 +593,7 @@ inline BoxStrut ComputeMarginsForSelf(const ConstraintSpace& constraint_space,
 
 // Compute line logical margins for the style owner.
 //
-// The "line" versions compute line-relative logical values. See NGLineBoxStrut
+// The "line" versions compute line-relative logical values. See LineBoxStrut
 // for more details.
 inline LineBoxStrut ComputeLineMarginsForSelf(
     const ConstraintSpace& constraint_space,

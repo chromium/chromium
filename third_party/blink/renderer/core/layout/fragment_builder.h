@@ -457,7 +457,7 @@ class CORE_EXPORT FragmentBuilder {
   }
   LayoutUnit AnnotationOverflow() const { return annotation_overflow_; }
 
-  // See NGLayoutRsult::BlockEndAnnotatioSpace().
+  // See LayoutResult::BlockEndAnnotatioSpace().
   void SetBlockEndAnnotationSpace(LayoutUnit space) {
     block_end_annotation_space_ = space;
   }
