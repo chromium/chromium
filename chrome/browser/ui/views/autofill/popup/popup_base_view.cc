@@ -207,9 +207,8 @@ PopupBaseView::PopupBaseView(
 PopupBaseView::~PopupBaseView() {
   if (delegate_) {
     delegate_->ViewDestroyed();
-
-    RemoveWidgetObservers();
   }
+  RemoveWidgetObservers();
 
   CHECK(!IsInObserverList());
 }
@@ -371,7 +370,9 @@ void PopupBaseView::RemoveWidgetObservers() {
   if (parent_widget_) {
     parent_widget_->RemoveObserver(this);
   }
-  GetWidget()->RemoveObserver(this);
+  if (views::Widget* widget = GetWidget()) {
+    widget->RemoveObserver(this);
+  }
   focus_observation_.Reset();
 }
 
