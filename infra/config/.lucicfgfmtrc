@@ -94,7 +94,6 @@ rules {
 
         # tests
         arg: "test"
-        arg: "override_compile_targets"
         arg: "results_handler"
         arg: "telemetry_test_name"
         arg: "tast_expr"

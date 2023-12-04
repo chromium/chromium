@@ -599,7 +599,6 @@ def _legacy_test_config(
         *,
         script = None,
         test = None,
-        override_compile_targets = [],
         results_handler = None,
         telemetry_test_name = None,
         tast_expr = None,
@@ -614,10 +613,6 @@ def _legacy_test_config(
             run as the test. Only applicable to script tests.
         test: The name of the isolate to run as the test. Only applicable to
             gtests, isolated script tests and junit tests.
-        override_compile_targets: A list of compile targets that need to be
-            built to run the test instead of whatever the standard set of
-            compile targets would be. Only applicable to gtests, isolated
-            script tests and script tests.
         results_handler: The name of the results handler to use for the test.
             Only applicable to isolated script tests and gtests that set
             use_isolated_scripts_api.
@@ -638,7 +633,6 @@ def _legacy_test_config(
     return struct(
         script = script,
         test = test,
-        override_compile_targets = override_compile_targets,
         telemetry_test_name = telemetry_test_name,
         results_handler = results_handler,
         tast_expr = tast_expr,
@@ -1066,11 +1060,6 @@ def _generate_test_suites_pyl(ctx):
 
             if test_config.test:
                 formatter.add_line("'test': '{}',".format(test_config.test))
-            if test_config.override_compile_targets:
-                formatter.open_scope("'override_compile_targets': [")
-                for t in test_config.override_compile_targets:
-                    formatter.add_line("'{}',".format(t))
-                formatter.close_scope("],")
             if test_config.results_handler:
                 formatter.add_line("'results_handler': '{}',".format(test_config.results_handler))
 
