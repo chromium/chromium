@@ -229,7 +229,13 @@ base::Value::Dict SearchEnginesHandler::CreateDictionaryForEngine(
   const bool is_search_engine_choice_settings_ui =
       search_engines::IsChoiceScreenFlagEnabled(
           search_engines::ChoicePromo::kAny);
-  if (is_search_engine_choice_settings_ui &&
+
+  // The icons that are used for search engines in the EEA region are bundled
+  // with Chrome. We use the favicon service for countries outside the EEA
+  // region to guarantee having icons for all search engines.
+  const bool is_eea_region = search_engines::IsEeaChoiceCountry(
+      search_engines::GetSearchEngineChoiceCountryId(profile_->GetPrefs()));
+  if (is_search_engine_choice_settings_ui && is_eea_region &&
       template_url->prepopulate_id() != 0) {
     const std::u16string icon_path = GetGeneratedIconPath(
         template_url->keyword(), /*parent_directory_path=*/u"images/");
