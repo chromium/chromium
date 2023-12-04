@@ -135,22 +135,6 @@ struct CustomizationDocumentTestOverride {
 // Global overrider for ServicesCustomizationDocument for tests.
 CustomizationDocumentTestOverride* g_test_overrides = nullptr;
 
-// Services customization document load results reported via the
-// "ServicesCustomization.LoadResult" histogram.
-// It is append-only enum due to use in a histogram!
-enum HistogramServicesCustomizationLoadResult {
-  HISTOGRAM_LOAD_RESULT_SUCCESS = 0,
-  HISTOGRAM_LOAD_RESULT_FILE_NOT_FOUND = 1,
-  HISTOGRAM_LOAD_RESULT_PARSING_ERROR = 2,
-  HISTOGRAM_LOAD_RESULT_RETRIES_FAIL = 3,
-  HISTOGRAM_LOAD_RESULT_MAX_VALUE = 4
-};
-
-void LogManifestLoadResult(HistogramServicesCustomizationLoadResult result) {
-  UMA_HISTOGRAM_ENUMERATION("ServicesCustomization.LoadResult",
-                            result,
-                            HISTOGRAM_LOAD_RESULT_MAX_VALUE);
-}
 
 std::string GetLocaleSpecificStringImpl(const base::Value::Dict& root,
                                         const std::string& locale,
@@ -657,12 +641,10 @@ void ServicesCustomizationDocument::DoStartFileFetch() {
 bool ServicesCustomizationDocument::LoadManifestFromString(
     const std::string& manifest) {
   if (CustomizationDocument::LoadManifestFromString(manifest)) {
-    LogManifestLoadResult(HISTOGRAM_LOAD_RESULT_SUCCESS);
     OnManifestLoaded();
     return true;
   }
 
-  LogManifestLoadResult(HISTOGRAM_LOAD_RESULT_PARSING_ERROR);
   return false;
 }
 
@@ -710,7 +692,6 @@ void ServicesCustomizationDocument::OnSimpleLoaderComplete(
                << " response code = " << response_code
                << " URL = " << url_.spec();
 
-    LogManifestLoadResult(HISTOGRAM_LOAD_RESULT_RETRIES_FAIL);
   }
   load_started_ = false;
 }
@@ -821,7 +802,6 @@ extensions::ExternalLoader* ServicesCustomizationDocument::CreateExternalLoader(
 }
 
 void ServicesCustomizationDocument::OnCustomizationNotFound() {
-  LogManifestLoadResult(HISTOGRAM_LOAD_RESULT_FILE_NOT_FOUND);
   LoadManifestFromString(kEmptyServicesCustomizationManifest);
 }
 

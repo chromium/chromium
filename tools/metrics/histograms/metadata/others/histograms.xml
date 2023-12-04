@@ -9081,15 +9081,6 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
-<histogram name="ServicesCustomization.LoadResult"
-    enum="ServicesCustomizationLoadResult" expires_after="M77">
-  <owner>alemate@chromium.org</owner>
-  <summary>
-    Records result of fetching and parsing OEM customization manifest. See
-    ServicesCustomizationDocument class for more info. Used only on Chrome OS.
-  </summary>
-</histogram>
-
 <histogram name="Servicification.Startup2" enum="ServicificationStartupMode"
     expires_after="2024-04-28">
   <owner>hanxi@chromium.org</owner>
