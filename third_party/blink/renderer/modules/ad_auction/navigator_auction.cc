@@ -2032,6 +2032,42 @@ bool CopyRequiredSellerSignalsFromIdlToMojo(
   return true;
 }
 
+mojom::blink::AdSizePtr ParseAdSize(const AuctionAdConfig& input,
+                                    const AuctionAdInterestGroupSize& size,
+                                    const char* field_name,
+                                    ExceptionState& exception_state) {
+  auto [width_val, width_units] =
+      blink::ParseAdSizeString(size.width().Ascii());
+  auto [height_val, height_units] =
+      blink::ParseAdSizeString(size.height().Ascii());
+  if (width_units == blink::AdSize::LengthUnit::kInvalid) {
+    exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
+        input, String::Format("%s width", field_name), size.width(),
+        "must use units '', 'px', 'sw', or 'sh'."));
+    return mojom::blink::AdSizePtr();
+  }
+  if (height_units == blink::AdSize::LengthUnit::kInvalid) {
+    exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
+        input, String::Format("%s height", field_name), size.height(),
+        "must use units '', 'px', 'sw', or 'sh'."));
+    return mojom::blink::AdSizePtr();
+  }
+  if (width_val <= 0 || !std::isfinite(width_val)) {
+    exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
+        input, String::Format("%s width", field_name), size.width(),
+        "must be finite and positive."));
+    return mojom::blink::AdSizePtr();
+  }
+  if (height_val <= 0 || !std::isfinite(height_val)) {
+    exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
+        input, String::Format("%s height", field_name), size.height(),
+        "must be finite and positive."));
+    return mojom::blink::AdSizePtr();
+  }
+  return mojom::blink::AdSize::New(width_val, width_units, height_val,
+                                   height_units);
+}
+
 bool CopyRequestedSizeFromIdlToMojo(const ExecutionContext& execution_context,
                                     ExceptionState& exception_state,
                                     const AuctionAdConfig& input,
@@ -2039,37 +2075,47 @@ bool CopyRequestedSizeFromIdlToMojo(const ExecutionContext& execution_context,
   if (!input.hasRequestedSize()) {
     return true;
   }
-  auto [width_val, width_units] =
-      blink::ParseAdSizeString(input.requestedSize()->width().Ascii());
-  auto [height_val, height_units] =
-      blink::ParseAdSizeString(input.requestedSize()->height().Ascii());
-  if (width_units == blink::AdSize::LengthUnit::kInvalid) {
-    exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
-        input, "requestedSize width", input.requestedSize()->width(),
-        "must use units '', 'px', 'sw', or 'sh'."));
+
+  mojom::blink::AdSizePtr size = ParseAdSize(input, *input.requestedSize(),
+                                             "requestedSize", exception_state);
+  if (!size) {
     return false;
   }
-  if (height_units == blink::AdSize::LengthUnit::kInvalid) {
-    exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
-        input, "requestedSize height", input.requestedSize()->height(),
-        "must use units '', 'px', 'sw', or 'sh'."));
-    return false;
+
+  output.auction_ad_config_non_shared_params->requested_size = std::move(size);
+  return true;
+}
+
+bool CopyAllSlotsRequestedSizesFromIdlToMojo(
+    const ExecutionContext& execution_context,
+    ExceptionState& exception_state,
+    const AuctionAdConfig& input,
+    mojom::blink::AuctionAdConfig& output) {
+  if (!input.hasAllSlotsRequestedSizes()) {
+    return true;
   }
-  if (width_val <= 0 || !std::isfinite(width_val)) {
-    exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
-        input, "requestedSize width", input.requestedSize()->width(),
-        "must be finite and positive."));
-    return false;
+
+  std::set<mojom::blink::AdSize> distinct_sizes;
+  output.auction_ad_config_non_shared_params->all_slots_requested_sizes
+      .emplace();
+  for (const auto& unparsed_size : input.allSlotsRequestedSizes()) {
+    mojom::blink::AdSizePtr size = ParseAdSize(
+        input, *unparsed_size, "allSlotsRequestedSizes", exception_state);
+    if (!size) {
+      return false;
+    }
+    if (!distinct_sizes.insert(*size).second) {
+      exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
+          input, "allSlotsRequestedSizes",
+          String::Format(R"({"width": "%s", "height": "%s"})",
+                         unparsed_size->width().Utf8().c_str(),
+                         unparsed_size->height().Utf8().c_str()),
+          "must be distinct from other sizes in the list."));
+      return false;
+    }
+    output.auction_ad_config_non_shared_params->all_slots_requested_sizes
+        ->emplace_back(std::move(size));
   }
-  if (height_val <= 0 || !std::isfinite(height_val)) {
-    exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
-        input, "requestedSize height", input.requestedSize()->height(),
-        "must be finite and positive."));
-    return false;
-  }
-  output.auction_ad_config_non_shared_params->requested_size =
-      mojom::blink::AdSize::New(width_val, width_units, height_val,
-                                height_units);
   return true;
 }
 
@@ -2143,6 +2189,8 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
                                               *mojo_config) ||
       !CopyRequestedSizeFromIdlToMojo(context, exception_state, config,
                                       *mojo_config) ||
+      !CopyAllSlotsRequestedSizesFromIdlToMojo(context, exception_state, config,
+                                               *mojo_config) ||
       !CopyAuctionNonceFromIdlToMojo(context, exception_state, config,
                                      *mojo_config) ||
       !CopyAdditionalBidsFromIdlToMojo(auction_handle, auction_id.get(),

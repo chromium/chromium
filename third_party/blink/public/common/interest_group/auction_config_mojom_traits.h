@@ -325,6 +325,12 @@ struct BLINK_COMMON_EXPORT
     return params.requested_size;
   }
 
+  static const absl::optional<std::vector<blink::AdSize>>
+  all_slots_requested_sizes(
+      const blink::AuctionConfig::NonSharedParams& params) {
+    return params.all_slots_requested_sizes;
+  }
+
   static const absl::optional<base::Uuid>& auction_nonce(
       const blink::AuctionConfig::NonSharedParams& params) {
     return params.auction_nonce;

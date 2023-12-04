@@ -180,6 +180,7 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
       !data.ReadRequiredSellerCapabilities(
           &out->required_seller_capabilities) ||
       !data.ReadRequestedSize(&out->requested_size) ||
+      !data.ReadAllSlotsRequestedSizes(&out->all_slots_requested_sizes) ||
       !data.ReadAuctionNonce(&out->auction_nonce) ||
       !data.ReadComponentAuctions(&out->component_auctions)) {
     return false;
@@ -223,6 +224,14 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
     if (!component_auction.non_shared_params.component_auctions.empty()) {
       return false;
     }
+  }
+
+  // Each entry in `all_slots_requested_sizes` must be distinct.
+  if (out->all_slots_requested_sizes &&
+      std::set<blink::AdSize>(out->all_slots_requested_sizes->begin(),
+                              out->all_slots_requested_sizes->end())
+              .size() != out->all_slots_requested_sizes->size()) {
+    return false;
   }
 
   return true;
