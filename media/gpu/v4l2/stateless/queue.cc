@@ -277,6 +277,8 @@ OutputQueue::OutputQueue(scoped_refptr<StatelessDevice> device)
                                   gfx::Size(0, 0),
                                   BufferType::kRawFrames)) {}
 
+OutputQueue::~OutputQueue() {}
+
 bool OutputQueue::NegotiateFormat() {
   DVLOGF(4);
   CHECK(device_);
@@ -321,11 +323,84 @@ bool OutputQueue::NegotiateFormat() {
   return false;
 }
 
+scoped_refptr<VideoFrame> OutputQueue::CreateVideoFrame(uint32_t index) {
+  const VideoPixelFormat video_format =
+      buffer_format_.fourcc.ToVideoPixelFormat();
+  const size_t num_color_planes = VideoFrame::NumPlanes(video_format);
+  if (num_color_planes == 0) {
+    DVLOGF(1) << "Unsupported video format for NumPlanes(): "
+              << VideoPixelFormatToString(video_format);
+    return nullptr;
+  }
+
+  if (buffer_format_.NumPlanes() > num_color_planes) {
+    DVLOGF(1) << "Number of planes for the format ("
+              << buffer_format_.NumPlanes()
+              << ") should not be larger than number of color planes("
+              << num_color_planes << ") for format "
+              << VideoPixelFormatToString(video_format);
+    return nullptr;
+  }
+
+  std::vector<ColorPlaneLayout> color_planes;
+  for (const auto& plane : buffer_format_.planes) {
+    color_planes.emplace_back(plane.stride, 0u, plane.image_size);
+  }
+
+  // This code has been developed for exclusively for MM21. For other formats
+  // such as NV12 and YUV420 there would be color plane duplications, or
+  // a VideoFrameLayout::CreateWithPlanes.
+  CHECK_EQ(static_cast<size_t>(buffer_format_.NumPlanes()), num_color_planes);
+  CHECK_EQ(buffer_format_.NumPlanes(), 2u);
+
+  std::vector<base::ScopedFD> dmabuf_fds =
+      device_->ExportAsDMABUF(index, buffer_format_.NumPlanes());
+  if (dmabuf_fds.empty()) {
+    DVLOGF(1) << "Failed to get DMABUFs of V4L2 buffer";
+    return nullptr;
+  }
+
+  for (const auto& dmabuf_fd : dmabuf_fds) {
+    if (!dmabuf_fd.is_valid()) {
+      DVLOGF(1) << "Fail to get DMABUFs of V4L2 buffer - invalid fd";
+      return nullptr;
+    }
+  }
+
+  // Some V4L2 devices expect buffers to be page-aligned. We cannot detect
+  // such devices individually, so set this as a video frame layout property.
+  constexpr size_t buffer_alignment = 0x1000;
+  auto layout = VideoFrameLayout::CreateMultiPlanar(
+      video_format, buffer_format_.resolution, std::move(color_planes),
+      buffer_alignment);
+
+  if (!layout) {
+    return nullptr;
+  }
+
+  return VideoFrame::WrapExternalDmabufs(
+      *layout, gfx::Rect(buffer_format_.resolution), buffer_format_.resolution,
+      std::move(dmabuf_fds), base::TimeDelta());
+}
+
 bool OutputQueue::PrepareBuffers() {
   DVLOGF(4);
 
   if (!AllocateBuffers(buffer_format_.NumPlanes())) {
     return false;
+  }
+
+  // Create a video frame for each buffer
+  video_frames_.reserve(buffers_.size());
+
+  // VideoFrames are used to display the decoded buffers. They wrap the
+  // underlying DMABUF by referencing the index of the V4L2 buffers;
+  for (uint32_t index = 0; index < buffers_.size(); ++index) {
+    auto video_frame = CreateVideoFrame(index);
+    if (!video_frame) {
+      return false;
+    }
+    video_frames_.push_back(std::move(video_frame));
   }
 
   // Queue all buffers after allocation in anticipation of being used.

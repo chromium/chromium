@@ -405,6 +405,32 @@ bool Device::StreamOff(BufferType type) {
   return true;
 }
 
+// VIDIOC_EXPBUF
+std::vector<base::ScopedFD> Device::ExportAsDMABUF(int index,
+                                                   uint32_t num_planes) {
+  DVLOGF(4);
+
+  std::vector<base::ScopedFD> dmabuf_fds;
+  for (uint32_t i = 0; i < num_planes; ++i) {
+    struct v4l2_exportbuffer expbuf;
+    memset(&expbuf, 0, sizeof(expbuf));
+    expbuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
+    expbuf.index = index;
+    expbuf.plane = i;
+    expbuf.flags = O_CLOEXEC;
+    if (IoctlDevice(VIDIOC_EXPBUF, &expbuf) != 0) {
+      DVLOGF(1) << "VIDIOC_EXPBUF failed to export " << i << " of "
+                << num_planes << " planes";
+      dmabuf_fds.clear();
+      break;
+    }
+
+    dmabuf_fds.push_back(base::ScopedFD(expbuf.fd));
+  }
+
+  return dmabuf_fds;
+}
+
 // VIDIOC_REQBUFS
 absl::optional<uint32_t> Device::RequestBuffers(BufferType type,
                                                 MemoryType memory,
