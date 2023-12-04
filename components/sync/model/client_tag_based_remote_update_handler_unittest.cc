@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/sync/base/features.h"
 #include "components/sync/model/metadata_batch.h"
@@ -350,6 +351,50 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
   EXPECT_EQ(0U, db()->data_count());
   EXPECT_EQ(0U, db()->metadata_count());
   EXPECT_EQ(0U, ProcessorEntityCount());
+}
+
+TEST_F(ClientTagBasedRemoteUpdateHandlerTest, ShouldLogFreshnessToUma) {
+  {
+    base::HistogramTester histogram_tester;
+    ProcessSingleUpdate(GenerateUpdate(kKey1, kValue1));
+    histogram_tester.ExpectTotalCount(
+        "Sync.NonReflectionUpdateFreshnessPossiblySkewed2.PREFERENCE", 1);
+  }
+
+  // Process the same update again, which should be ignored because the version
+  // hasn't increased.
+  {
+    base::HistogramTester histogram_tester;
+    ProcessSingleUpdate(GenerateUpdate(kKey1, kValue1, /*version_offset=*/0));
+    histogram_tester.ExpectTotalCount(
+        "Sync.NonReflectionUpdateFreshnessPossiblySkewed2.PREFERENCE", 0);
+  }
+
+  // Increase version and process again; should log freshness.
+  {
+    base::HistogramTester histogram_tester;
+    ProcessSingleUpdate(GenerateUpdate(kKey1, kValue1, /*version_offset=*/1));
+    histogram_tester.ExpectTotalCount(
+        "Sync.NonReflectionUpdateFreshnessPossiblySkewed2.PREFERENCE", 1);
+  }
+
+  // Process remote deletion; should log freshness.
+  {
+    base::HistogramTester histogram_tester;
+    ProcessSingleUpdate(
+        worker()->GenerateTombstoneUpdateData(GetPrefHash(kKey1)));
+    histogram_tester.ExpectTotalCount(
+        "Sync.NonReflectionUpdateFreshnessPossiblySkewed2.PREFERENCE", 1);
+  }
+
+  // Process a deletion for an entity that doesn't exist; should not log.
+  {
+    base::HistogramTester histogram_tester;
+    ProcessSingleUpdate(
+        worker()->GenerateTombstoneUpdateData(GetPrefHash(kKey2)));
+    histogram_tester.ExpectTotalCount(
+        "Sync.NonReflectionUpdateFreshnessPossiblySkewed2.PREFERENCE", 0);
+  }
 }
 
 }  // namespace

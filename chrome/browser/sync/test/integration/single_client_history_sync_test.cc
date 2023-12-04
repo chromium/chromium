@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/path_service.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -829,6 +830,56 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
       history_helper::GetVisitsForURLFromClient(/*index=*/0, url2).empty());
   EXPECT_TRUE(
       history_helper::GetVisitsForURLFromClient(/*index=*/0, url3).empty());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
+                       RecordsLatencyForIncrementalUpdates) {
+  const base::Time now = base::Time::Now();
+  // Lots of history exists on the server - enough to require multiple
+  // GetUpdates requests.
+  GetFakeServer()->SetMaxGetUpdatesBatchSize(10);
+  for (int i = 0; i < 30; i++) {
+    const GURL url(base::StringPrintf("https://www.url%i.com", i));
+    GetFakeServer()->InjectEntity(CreateFakeServerEntity(
+        CreateSpecifics(now - base::Seconds(60 + i), "other_cache_guid", url)));
+  }
+
+  base::HistogramTester histograms;
+
+  // Turn on Sync - this causes all of the remote URLs to get downloaded.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  // Spot-check that the URLs made it to the client.
+  history::URLRow row0;
+  ASSERT_TRUE(history_helper::GetUrlFromClient(
+      /*index=*/0, GURL("https://www.url0.com"), &row0));
+  ASSERT_EQ(row0.visit_count(), 1);
+
+  history::URLRow row29;
+  ASSERT_TRUE(history_helper::GetUrlFromClient(
+      /*index=*/0, GURL("https://www.url29.com"), &row29));
+  ASSERT_EQ(row29.visit_count(), 1);
+
+  // Since this was all the initial sync (even across multiple GetUpdates
+  // requests), no latency metrics should have been reported.
+  histograms.ExpectTotalCount(
+      "Sync.NonReflectionUpdateFreshnessPossiblySkewed2.HISTORY", 0);
+
+  // Add another URL to the server, simulating that the user is browsing on a
+  // different device.
+  const GURL new_url("https://www.new-url.com");
+  GetFakeServer()->InjectEntity(CreateFakeServerEntity(
+      CreateSpecifics(now - base::Seconds(1), "other_cache_guid", new_url)));
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, invalidations for HISTORY are disabled by default, so
+  // explicitly trigger a GetUpdates.
+  GetSyncService(0)->TriggerRefresh({syncer::HISTORY});
+#endif  // BUILDFLAG(IS_ANDROID)
+  WaitForLocalHistory({{new_url, testing::SizeIs(1)}});
+
+  // The latency of this update should've been recorded.
+  histograms.ExpectTotalCount(
+      "Sync.NonReflectionUpdateFreshnessPossiblySkewed2.HISTORY", 1);
 }
 
 // Signing out or turning off Sync isn't possible in ChromeOS-Ash.

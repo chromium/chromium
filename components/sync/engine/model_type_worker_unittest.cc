@@ -3427,4 +3427,110 @@ TEST_F(ModelTypeWorkerAckTrackingTest, MultipleGetUpdates) {
   EXPECT_TRUE(AllInvalidationsAccountedFor());
 }
 
+// Analogous test fixture to ModelTypeWorkerTest but uses HISTORY instead of
+// PREFERENCES, in order to test special ApplyUpdatesImmediatelyTypes()
+// behavior.
+class ModelTypeWorkerHistoryTest : public ModelTypeWorkerTest {
+ protected:
+  ModelTypeWorkerHistoryTest()
+      : ModelTypeWorkerTest(HISTORY, /*is_encrypted_type=*/false) {
+    CHECK(ApplyUpdatesImmediatelyTypes().Has(HISTORY));
+  }
+};
+
+TEST_F(ModelTypeWorkerHistoryTest, AppliesPartialUpdateImmediately) {
+  FirstInitialize();  // Initialize with no saved sync state.
+  // This did not send anything to the processor yet.
+  ASSERT_EQ(0u, processor()->GetNumUpdateResponses());
+  ASSERT_FALSE(worker()->IsInitialSyncEnded());
+
+  EntitySpecifics specifics;
+  specifics.mutable_history()->set_visit_time_windows_epoch_micros(12345);
+  SyncEntity entity = server()->UpdateFromServer(
+      /*version_offset=*/10, ClientTagHash::FromUnhashed(HISTORY, "12345"),
+      specifics);
+
+  worker()->ProcessGetUpdatesResponse(server()->GetProgress(),
+                                      server()->GetContext(), {&entity},
+                                      status_controller());
+  // Even though worker()->ApplyUpdates() wasn't called yet, the received entity
+  // should've been sent to the processor, and initial sync marked as partially
+  // done, because HISTORY is in ApplyUpdatesImmediatelyTypes().
+  ASSERT_EQ(processor()->GetNumUpdateResponses(), 1u);
+  EXPECT_EQ(processor()->GetNthUpdateResponse(0).size(), 1u);
+  EXPECT_EQ(
+      processor()->GetNthUpdateState(0).initial_sync_state(),
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_PARTIALLY_DONE);
+  EXPECT_FALSE(worker()->IsInitialSyncEnded());
+
+  // Now the GetUpdatesProcessor indicates that the cycle is done.
+  worker()->ApplyUpdates(status_controller(), /*cycle_done=*/true);
+
+  // This should've been forwarded to the processor again, with no additional
+  // entities, but with initial sync marked as fully done.
+  ASSERT_EQ(processor()->GetNumUpdateResponses(), 2u);
+  EXPECT_EQ(processor()->GetNthUpdateResponse(1).size(), 0u);
+  EXPECT_EQ(processor()->GetNthUpdateState(1).initial_sync_state(),
+            sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  EXPECT_TRUE(worker()->IsInitialSyncEnded());
+}
+
+TEST_F(ModelTypeWorkerHistoryTest, KeepsInitialSyncMarkedAsDone) {
+  FirstInitialize();  // Initialize with no saved sync state.
+  // This did not send anything to the processor yet.
+  ASSERT_EQ(0u, processor()->GetNumUpdateResponses());
+  ASSERT_FALSE(worker()->IsInitialSyncEnded());
+
+  EntitySpecifics specifics;
+  specifics.mutable_history()->set_visit_time_windows_epoch_micros(12345);
+  SyncEntity entity1 = server()->UpdateFromServer(
+      /*version_offset=*/10, ClientTagHash::FromUnhashed(HISTORY, "12345"),
+      specifics);
+
+  worker()->ProcessGetUpdatesResponse(server()->GetProgress(),
+                                      server()->GetContext(), {&entity1},
+                                      status_controller());
+  // Even though worker()->ApplyUpdates() wasn't called yet, initial sync
+  // should've been marked as partially done, because HISTORY is in
+  // ApplyUpdatesImmediatelyTypes().
+  ASSERT_EQ(processor()->GetNumUpdateResponses(), 1u);
+  ASSERT_EQ(
+      processor()->GetNthUpdateState(0).initial_sync_state(),
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_PARTIALLY_DONE);
+  ASSERT_FALSE(worker()->IsInitialSyncEnded());
+
+  // Now the GetUpdatesProcessor indicates that the cycle is done.
+  worker()->ApplyUpdates(status_controller(), /*cycle_done=*/true);
+
+  // Now initial sync is marked as fully done.
+  ASSERT_EQ(processor()->GetNumUpdateResponses(), 2u);
+  ASSERT_EQ(processor()->GetNthUpdateState(1).initial_sync_state(),
+            sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  ASSERT_TRUE(worker()->IsInitialSyncEnded());
+
+  // Another update comes in.
+  SyncEntity entity2 = server()->UpdateFromServer(
+      /*version_offset=*/20, ClientTagHash::FromUnhashed(HISTORY, "12345"),
+      specifics);
+  worker()->ProcessGetUpdatesResponse(server()->GetProgress(),
+                                      server()->GetContext(), {&entity2},
+                                      status_controller());
+
+  // This again should've been forwarded to the processor immediately, and
+  // initial sync should still be marked as fully done.
+  ASSERT_EQ(processor()->GetNumUpdateResponses(), 3u);
+  EXPECT_EQ(processor()->GetNthUpdateState(2).initial_sync_state(),
+            sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  EXPECT_TRUE(worker()->IsInitialSyncEnded());
+
+  // Again, the GetUpdatesProcessor indicates that the cycle is done.
+  worker()->ApplyUpdates(status_controller(), /*cycle_done=*/true);
+
+  // This should send another update to the processor, but not change anything.
+  ASSERT_EQ(processor()->GetNumUpdateResponses(), 4u);
+  EXPECT_EQ(processor()->GetNthUpdateState(3).initial_sync_state(),
+            sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  EXPECT_TRUE(worker()->IsInitialSyncEnded());
+}
+
 }  // namespace syncer

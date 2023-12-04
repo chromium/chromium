@@ -690,8 +690,11 @@ void ModelTypeWorker::ApplyUpdates(StatusController* status, bool cycle_done) {
         sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   } else {
     DCHECK(ApplyUpdatesImmediatelyTypes().Has(type_));
-    model_type_state_.set_initial_sync_state(
-        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_PARTIALLY_DONE);
+    if (model_type_state_.initial_sync_state() !=
+        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE) {
+      model_type_state_.set_initial_sync_state(
+          sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_PARTIALLY_DONE);
+    }
   }
 
   if (!entries_pending_decryption_.empty() &&
