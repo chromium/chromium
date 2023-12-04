@@ -97,6 +97,11 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
   virtual std::vector<base::test::FeatureRef> GetDisabledFeatures() const;
 
  private:
+  // Check if the PDF loaded. The test will fail if the frame tree does not have
+  // exactly one PDF extension host and one PDF content host. For GuestView PDF
+  // viewer, the test will also fail if there is not exactly one GuestView.
+  testing::AssertionResult EnsurePDFHasLoadedWithValidFrameTree();
+
   base::test::ScopedFeatureList feature_list_;
   guest_view::TestGuestViewManagerFactory factory_;
 };
