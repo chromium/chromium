@@ -4,9 +4,24 @@
 
 #include "base/pending_task.h"
 
-#include "base/task/task_features.h"
+#include "base/dcheck_is_on.h"
+#include "base/debug/alias.h"
 
 namespace base {
+
+#if DCHECK_IS_ON()
+namespace {
+
+// Returns `str`, or an empty string if `str` is null.
+const char* EmptyIfNull(const char* str) {
+  if (str) {
+    return str;
+  }
+  return "";
+}
+
+}  // namespace
+#endif
 
 TaskMetadata::TaskMetadata() = default;
 
@@ -49,7 +64,18 @@ PendingTask::PendingTask(const TaskMetadata& metadata, OnceClosure task)
 
 PendingTask::PendingTask(PendingTask&& other) = default;
 
-PendingTask::~PendingTask() = default;
+PendingTask::~PendingTask() {
+#if DCHECK_IS_ON()
+  // Instrumentation to investigate crbug.com/1494307 (only required in
+  // DCHECK-enabled builds since this is a DCHECK failure).
+  // TODO(crbug.com/1494307): Remove after March 2024.
+  DEBUG_ALIAS_FOR_CSTR(posted_from_function,
+                       EmptyIfNull(posted_from.function_name()), 256);
+  DEBUG_ALIAS_FOR_CSTR(posted_from_file, EmptyIfNull(posted_from.file_name()),
+                       256);
+#endif
+  task.Reset();
+}
 
 PendingTask& PendingTask::operator=(PendingTask&& other) = default;
 
