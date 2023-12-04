@@ -574,7 +574,9 @@ void DocumentProvider::OnURLLoadComplete(
   // based on experience working with the owners of the API. Since they are
   // expected to be semi-persistent, it does not make sense to continue to issue
   // requests during the current session after receiving one.
-  if (response_code == 400 || response_code == 403 || response_code == 499) {
+  if (response_code == 400 || response_code == 403 || response_code == 499 ||
+      (omnibox_feature_configs::DocumentProvider::Get().backoff_on_401 &&
+       response_code == 401)) {
     backoff_for_session_ = true;
   }
 

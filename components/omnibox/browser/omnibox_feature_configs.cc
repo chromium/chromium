@@ -39,6 +39,10 @@ DocumentProvider::DocumentProvider() {
       base::FeatureParam<bool>(&omnibox::kDocumentProvider,
                                "DocumentProviderIgnoreWhenDebouncing", false)
           .Get();
+  backoff_on_401 =
+      base::FeatureParam<bool>(&omnibox::kDocumentProvider,
+                               "DocumentProviderBackoffOn401", false)
+          .Get();
 }
 
 // static
