@@ -3882,8 +3882,14 @@
   },
   {
     "name": "enable-windows-gaming-input-data-fetcher",
-    "owners": ["gabrielbrito@microsoft.com", "qiaye@microsoft.com" ],
-    "expiry_milestone": 121
+    "owners": ["gabrielbrito@microsoft.com", "qiaye@microsoft.com", "deviceapi-team@google.com" ],
+    // This flag selects the platform API used for Xbox-compatible gamepads on
+    // Windows. When disabled, the older XInput API is used which has better
+    // compatibility with unofficial controllers. The flag can be removed once
+    // Windows.Gaming.Input API supports all XInput-compatible gamepads, or
+    // when Chrome removes support for versions of Windows that ship with
+    // XInput. See https://crbug.com/1499321.
+    "expiry_milestone": -1
   },
   {
     "name": "enable-winrt-geolocation-implementation",

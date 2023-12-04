@@ -74,6 +74,7 @@
   "enable-webgl-developer-extensions",
   "enable-webgl-draft-extensions",
   "enable-webgpu-developer-features",
+  "enable-windows-gaming-input-data-fetcher",
   "enable-zero-copy",
   "extensions-on-chrome-urls",
   "external-navigation-debug-logs",
