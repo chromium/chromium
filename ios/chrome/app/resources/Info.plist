@@ -7,7 +7,7 @@
 	<key>UIApplicationShortcutWidget</key>
 	<string>${CONTENT_WIDGET_EXTENSION_BUNDLE_ID}</string>
 	<key>CFBundleDevelopmentRegion</key>
-	<string>English</string>
+	<string>en</string>
 	<key>CFBundleDisplayName</key>
 	<string>${CHROMIUM_SHORT_NAME}</string>
 	<key>CFBundleDocumentTypes</key>
