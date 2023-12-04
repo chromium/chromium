@@ -636,6 +636,8 @@ action("cronet_combine_proguard_flags") {
     ":repackage_native_impl",
     ":repackage_api",
   ]
+  # TODO(b/313416274): Change the output name to something else 
+  # that doesn't actually exist.
   outputs = [ "$target_gen_dir/cronet_impl_native_proguard.cfg" ]
   sources = []
   depfile = "$target_out_dir/$target_name.d"
@@ -1057,7 +1059,6 @@ android_resources("cronet_test_apk_resources") {
     "test/res/raw/quicroot.pem",
     "test/res/values/strings.xml",
     "test/res/xml/network_security_config.xml",
-    "test/smoketests/res/native/values/strings.xml",
   ]
 }
 
@@ -1114,6 +1115,7 @@ cronet_smoketests_platform_only_common_srcs = [
   "test/smoketests/src/org/chromium/net/smoke/HttpTestServer.java",
   "test/smoketests/src/org/chromium/net/smoke/SmokeTestRequestCallback.java",
   "test/smoketests/src/org/chromium/net/smoke/TestSupport.java",
+  "test/smoketests/src/org/chromium/net/smoke/CronetPlatformSmokeTestRule.java",
 ]
 
 cronet_smoketests_native_common_srcs = cronet_smoketests_platform_only_common_srcs + [
@@ -1360,14 +1362,6 @@ instrumentation_test_apk("cronet_test_instrumentation_apk") {
   ]
 }
 
-android_resources("cronet_smoketests_platform_only_apk_resources") {
-  testonly = true
-  sources = [
-    "test/smoketests/res/platform_only/values/strings.xml",
-    "test/smoketests/res/platform_only/xml/network_security_config.xml",
-  ]
-}
-
 instrumentation_test_apk(
     "cronet_smoketests_platform_only_instrumentation_apk") {
   apk_name = "PlatformOnlyEngineSmokeTestInstrumentation"
@@ -1383,7 +1377,7 @@ instrumentation_test_apk(
            ":cronet_api_java",
            ":cronet_impl_common_base_java",
            ":cronet_impl_platform_base_java",
-           ":cronet_smoketests_platform_only_apk_resources",
+           ":cronet_test_apk_resources",
            "//base:base_java_test_support",
            "//third_party/android_sdk:android_test_base_java",
            "//third_party/android_sdk:android_test_mock_java",
@@ -1444,6 +1438,50 @@ instrumentation_test_apk(
   # There is no native in this apk. However, since we depend on //base, we
   # need something that provides a GEN_JNI, as //base uses GEN_JNI.
   srcjar_deps = [ ":cronet_jni_registration" ]
+}
+
+# The smoketests included in this test target are already included in
+# cronet_test_instrumentation_apk, but they are proguarded here using
+# the same proguard rules for which we release Cronet with. This is
+# to ensure that any changes to the proguard does not break Cronet.
+# Note: The proguard rules includes the test proguard configs as
+# the build system automatically pulls in all transitive proguard
+# configs that can be found through the dependency chain.
+instrumentation_test_apk("cronet_smoketests_apk") {
+  apk_name = "CronetSmokeTestInstrumentation"
+  android_manifest = "test/javatests/AndroidManifest.xml"
+  shared_libraries = [
+    ":cronet",
+    ":cronet_tests",
+  ]
+  loadable_modules = [ "$root_out_dir/libnetty-tcnative.so" ]
+  sources = cronet_smoketests_native_common_srcs + [
+              "test/smoketests/src/org/chromium/net/smoke/Http2Test.java",
+              "test/smoketests/src/org/chromium/net/smoke/QuicTest.java",
+            ]
+  deps = [
+           ":cronet_api_java",
+
+           # cronet_test_apk_java pulls all implementation of Cronet along with their proguard cfgs.
+           ":cronet_test_apk_java",
+           ":cronet_test_apk_resources",
+           "//base:base_java",
+           "//base:base_java_test_support",
+           "//build/android:build_java",
+           "//third_party/android_sdk:android_test_base_java",
+           "//third_party/android_sdk:android_test_mock_java",
+           "//third_party/google-truth:google_truth_java",
+           "//third_party/junit",
+           "//third_party/netty-tcnative:netty-tcnative-so",
+           "//third_party/netty4:netty_all_java",
+         ] + cronet_tests_androidx_common_srcs
+
+  proguard_enabled = true
+  proguard_configs = [ "test/proguard.cfg" ]
+  srcjar_deps = [
+    ":cronet_jni_registration",
+    ":cronet_tests_jni_registration",
+  ]
 }
 
 android_apk("cronet_perf_test_apk") {

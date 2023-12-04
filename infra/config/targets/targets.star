@@ -836,6 +836,11 @@ targets.generated_script(
 )
 
 targets.console_test_launcher(
+    name = "cronet_smoketests_apk",
+    label = "//components/cronet/android:cronet_smoketests_apk",
+)
+
+targets.console_test_launcher(
     name = "cronet_smoketests_missing_native_library_instrumentation_apk",
     label = "//components/cronet/android:cronet_smoketests_missing_native_library_instrumentation_apk",
 )

@@ -921,6 +921,7 @@
           'cronet_package',
           'cronet_perf_test_apk',
           'cronet_sample_test_apk',
+          'cronet_smoketests_apk',
           'cronet_smoketests_missing_native_library_instrumentation_apk',
           'cronet_smoketests_platform_only_instrumentation_apk',
           'cronet_test_instrumentation_apk',
@@ -942,7 +943,8 @@
         ],
         'os_type': 'android',
         'test_suites': {
-          'gtest_tests': 'cronet_gtests',
+          # TODO(b/314092564): Remove cronet_proguard_test once merged with cronet_gtests
+          'gtest_tests': 'cronet_gtests_and_proguarded_smoketest',
         },
       },
       'android-cronet-x64-dbg-13-tests': {

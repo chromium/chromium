@@ -30,7 +30,7 @@ import java.util.List;
  */
 @RunWith(AndroidJUnit4.class)
 public class MissingNativeLibraryTest {
-    @Rule public CronetSmokeTestRule mRule = new CronetSmokeTestRule();
+    @Rule public CronetSmokeTestRule mRule = new CronetPlatformSmokeTestRule();
     @Rule public ExpectedException thrown = ExpectedException.none();
 
     /** If the ".so" file is missing, instantiating the Cronet engine should throw an exception. */

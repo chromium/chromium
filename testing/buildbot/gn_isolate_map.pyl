@@ -673,6 +673,10 @@
     "label": "//components/cronet/android:cronet_sizes",
     "type": "generated_script",
   },
+  "cronet_smoketests_apk": {
+    "label": "//components/cronet/android:cronet_smoketests_apk",
+    "type": "console_test_launcher",
+  },
   "cronet_smoketests_missing_native_library_instrumentation_apk": {
     "label": "//components/cronet/android:cronet_smoketests_missing_native_library_instrumentation_apk",
     "type": "console_test_launcher",

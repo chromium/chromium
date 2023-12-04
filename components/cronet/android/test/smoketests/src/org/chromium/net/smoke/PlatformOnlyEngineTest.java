@@ -27,7 +27,7 @@ public class PlatformOnlyEngineTest {
     private String mURL;
     private TestSupport.TestServer mServer;
 
-    @Rule public CronetSmokeTestRule mRule = new CronetSmokeTestRule();
+    @Rule public CronetSmokeTestRule mRule = new CronetPlatformSmokeTestRule();
 
     @Before
     public void setUp() throws Exception {

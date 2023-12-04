@@ -1791,6 +1791,25 @@
       },
     },
 
+    'cronet_gtests_and_proguarded_smoketest': {
+      'cronet_sample_test_apk': {},
+      'cronet_smoketests_apk': {},
+      'cronet_smoketests_missing_native_library_instrumentation_apk': {},
+      'cronet_smoketests_platform_only_instrumentation_apk': {},
+      'cronet_test_instrumentation_apk': {
+        'mixins': [
+          'emulator-enable-network',
+        ],
+      },
+      'cronet_tests_android': {},
+      'cronet_unittests_android': {},
+      'net_unittests': {
+        'swarming': {
+          'shards': 4,
+        },
+      },
+    },
+
     'cronet_resource_sizes': {
       'resource_sizes_cronet_sample_apk': {
         'swarming': {

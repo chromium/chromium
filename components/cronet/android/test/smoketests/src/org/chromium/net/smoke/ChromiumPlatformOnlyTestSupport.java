@@ -9,6 +9,8 @@ import android.content.Context;
 import org.json.JSONObject;
 
 import org.chromium.net.ExperimentalCronetEngine;
+import org.chromium.net.smoke.TestSupport.Protocol;
+import org.chromium.net.smoke.TestSupport.TestServer;
 
 import java.io.File;
 

@@ -14,9 +14,7 @@ import java.io.File;
 
 /**
  * Provides support for tests, so they can be run in different environments against different
- * servers. It contains methods, which behavior can be different in different testing environments.
- * The concrete implementation of this interface is determined dynamically at runtime by reading
- * the value of |TestSupportImplClass| from the Android string resource file.
+ * servers.
  */
 public interface TestSupport {
     enum Protocol {
