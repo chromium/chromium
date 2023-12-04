@@ -6544,6 +6544,63 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadWithBlockedHostsBrowserTest,
   EXPECT_EQ(0, GetRequestCount(relative_url));
 }
 
+class ServiceWorkerAutoPreloadWithEnableSubresourcePreloadBrowserTest
+    : public ServiceWorkerAutoPreloadBrowserTest {
+ public:
+  ServiceWorkerAutoPreloadWithEnableSubresourcePreloadBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {
+            {features::kServiceWorkerAutoPreload,
+             {{"enable_subresource_preload", "false"}}},
+        },
+        {});
+    ServiceWorkerRaceNetworkRequestURLLoaderClient::
+        SetDataPipeCapacityBytesForTest(1024);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerAutoPreloadWithEnableSubresourcePreloadBrowserTest,
+    Disabled) {
+  SetupAndRegisterServiceWorker();
+  // Check the main resource request, ensuring the preload request is
+  // dispatched.
+  const std::string relative_url =
+      "/service_worker/mock_response?sw_slow&sw_respond";
+  const GURL test_url = embedded_test_server()->GetURL(relative_url);
+  NavigationHandleObserver observer(web_contents(), test_url);
+  WorkerRunningStatusObserver service_worker_running_status_observer(
+      public_context());
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+  EXPECT_TRUE(observer.has_committed());
+  service_worker_running_status_observer.WaitUntilRunning();
+
+  // ServiceWorker will respond after the delay, so we expect the network
+  // request initiated by the RaceNetworkRequest is requested to the server
+  // although it's not actually used.
+  while (GetRequestCount(relative_url) != 1) {
+    base::RunLoop().RunUntilIdle();
+  }
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the fetch handler",
+            GetInnerText());
+  EXPECT_EQ("fetch-handler",
+            observer.GetNormalizedResponseHeader("X-Response-From"));
+
+  // Check the subresource request, ensuring the preload request is not
+  // dispatched. The request recorded count is not changed, because the
+  // subresource preload request is not dispatched.
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the fetch handler",
+            EvalJs(GetPrimaryMainFrame(),
+                   "fetch('" + relative_url +
+                       "').then(response => response.text())"));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+}
+
 class ServiceWorkerRaceNetworkRequestOriginTrialBrowserTest
     : public ServiceWorkerRaceNetworkRequestBrowserTest {
  public:

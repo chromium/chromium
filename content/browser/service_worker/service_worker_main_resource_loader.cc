@@ -472,9 +472,17 @@ bool ServiceWorkerMainResourceLoader::MaybeStartAutoPreload(
     // handler result is fallback. The fallback case is handled after
     // receiving the fetch handler result.
     SetCommitResponsibility(FetchResponseFrom::kServiceWorker);
-    version->set_fetch_handler_bypass_option(
-        blink::mojom::ServiceWorkerFetchHandlerBypassOption::kAutoPreload);
   }
+
+  // If |enable_subresource_preload| feature param is true, preload requests
+  // are dispatched on any subresources, otherwise preload requests won't be
+  // dispatched for subresources.
+  version->set_fetch_handler_bypass_option(
+      base::GetFieldTrialParamByFeatureAsBool(
+          features::kServiceWorkerAutoPreload, "enable_subresource_preload",
+          /*default_value=*/true)
+          ? blink::mojom::ServiceWorkerFetchHandlerBypassOption::kAutoPreload
+          : blink::mojom::ServiceWorkerFetchHandlerBypassOption::kDefault);
 
   return result;
 }
