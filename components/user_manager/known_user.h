@@ -121,7 +121,7 @@ class USER_MANAGER_EXPORT KnownUser final {
   // This is a temporary call while migrating to AccountId.
   AccountId GetAccountId(const std::string& user_email,
                          const std::string& id,
-                         const AccountType& account_type);
+                         const AccountType& account_type) const;
 
   AccountId GetAccountIdByCryptohomeId(const CryptohomeId& cryptohome_id);
 

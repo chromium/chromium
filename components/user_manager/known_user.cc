@@ -395,7 +395,7 @@ void KnownUser::RemovePref(const AccountId& account_id,
 
 AccountId KnownUser::GetAccountId(const std::string& user_email,
                                   const std::string& id,
-                                  const AccountType& account_type) {
+                                  const AccountType& account_type) const {
   DCHECK((id.empty() && account_type == AccountType::UNKNOWN) ||
          (!id.empty() && account_type != AccountType::UNKNOWN));
   // In tests empty accounts are possible.
