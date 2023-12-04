@@ -31,9 +31,14 @@
 #include "chrome/browser/nearby_sharing/incoming_frames_reader.h"
 #include "chrome/browser/nearby_sharing/incoming_share_target_info.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager.h"
+#include "chrome/browser/nearby_sharing/metrics/attachment_metric_logger.h"
+#include "chrome/browser/nearby_sharing/metrics/discovery_metric_logger.h"
+#include "chrome/browser/nearby_sharing/metrics/nearby_share_metric_logger.h"
+#include "chrome/browser/nearby_sharing/metrics/throughput_metric_logger.h"
 #include "chrome/browser/nearby_sharing/nearby_file_handler.h"
 #include "chrome/browser/nearby_sharing/nearby_notification_manager.h"
 #include "chrome/browser/nearby_sharing/nearby_share_feature_usage_metrics.h"
+#include "chrome/browser/nearby_sharing/nearby_share_logger.h"
 #include "chrome/browser/nearby_sharing/nearby_share_profile_info_provider_impl.h"
 #include "chrome/browser/nearby_sharing/nearby_share_settings.h"
 #include "chrome/browser/nearby_sharing/nearby_share_transfer_profiler.h"
@@ -460,6 +465,7 @@ class NearbySharingServiceImpl
   std::unique_ptr<NearbyShareContactManager> contact_manager_;
   std::unique_ptr<NearbyShareCertificateManager> certificate_manager_;
   std::unique_ptr<NearbyShareTransferProfiler> transfer_profiler_;
+  std::unique_ptr<NearbyShareLogger> logger_;
   NearbyShareSettings settings_;
   NearbyShareFeatureUsageMetrics feature_usage_metrics_;
   std::unique_ptr<FastInitiationScannerFeatureUsageMetrics>
@@ -524,6 +530,11 @@ class NearbySharingServiceImpl
   // retry certificate decryption.
   base::flat_map<std::string, std::vector<uint8_t>>
       discovered_advertisements_to_retry_map_;
+
+  // Mapping of Endpoint Id to share targets.
+  base::flat_map<std::string, ShareTarget> share_target_map_;
+  // Mapping of Endpoint Id to total transfer size.
+  base::flat_map<std::string, int64_t> transfer_size_map_;
 
   // A mapping of Attachment Id to additional AttachmentInfo related to the
   // Attachment.
@@ -604,6 +615,16 @@ class NearbySharingServiceImpl
   // screen is locked and visibility is set to kYourDevices.
   nearby_share::mojom::Visibility user_visibility_;
   std::set<std::string> user_allowed_contacts_ = {};
+
+  // Metrics loggers.
+  std::unique_ptr<nearby::share::metrics::DiscoveryMetricLogger>
+      discovery_metric_logger_;
+  std::unique_ptr<nearby::share::metrics::ThroughputMetricLogger>
+      throughput_metric_logger_;
+  std::unique_ptr<nearby::share::metrics::AttachmentMetricLogger>
+      attachment_metric_logger_;
+  std::unique_ptr<nearby::share::metrics::NearbyShareMetricLogger>
+      neaby_share_metric_logger_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
