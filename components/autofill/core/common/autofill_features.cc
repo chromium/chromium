@@ -462,8 +462,9 @@ BASE_FEATURE(kAutofillParsingPatternProvider,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The specific pattern set is controlled by the `kAutofillParsingPatternActive`
-// parameter. One of "legacy", "default", "experimental", "nextgen". All other
-// values are equivalent to "default".
+// parameter. One of "default", "experimental", "nextgen".
+// This parameter is only supported in Chrome-branded builds. Non-Chrome branded
+// builds default to the legacy patterns.
 // TODO(crbug/1248339): Remove once experiment is finished.
 const base::FeatureParam<std::string> kAutofillParsingPatternActiveSource{
     &kAutofillParsingPatternProvider, "prediction_source", "default"};

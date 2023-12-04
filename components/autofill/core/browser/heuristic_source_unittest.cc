@@ -74,6 +74,8 @@ INSTANTIATE_TEST_SUITE_P(
     HeuristicSourceTest,
     HeuristicSourceTest,
     testing::Values(
+// Tests when `kAutofillParsingPatternProvider` is enabled. In this case, the
+// behavior is different for Chrome and non-Chrome branded instances.
 #if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
         HeuristicSourceParams{
             .pattern_provider_feature = "legacy",
@@ -96,8 +98,7 @@ INSTANTIATE_TEST_SUITE_P(
             .model_predictions_feature = true,
             .pattern_provider_feature = "default",
             .expected_active_source = HeuristicSource::kMachineLearning,
-            .expected_nonactive_sources = {HeuristicSource::kLegacy,
-                                           HeuristicSource::kDefault,
+            .expected_nonactive_sources = {HeuristicSource::kDefault,
                                            HeuristicSource::kExperimental,
                                            HeuristicSource::kNextGen}},
 
@@ -105,27 +106,27 @@ INSTANTIATE_TEST_SUITE_P(
             .model_predictions_feature = false,
             .pattern_provider_feature = "default",
             .expected_active_source = HeuristicSource::kDefault,
-            .expected_nonactive_sources = {HeuristicSource::kLegacy,
-                                           HeuristicSource::kExperimental,
+            .expected_nonactive_sources = {HeuristicSource::kExperimental,
                                            HeuristicSource::kNextGen,
                                            HeuristicSource::kMachineLearning}},
         HeuristicSourceParams{
             .pattern_provider_feature = "default",
             .expected_active_source = HeuristicSource::kDefault,
-            .expected_nonactive_sources = {HeuristicSource::kLegacy,
-                                           HeuristicSource::kExperimental,
+            .expected_nonactive_sources = {HeuristicSource::kExperimental,
                                            HeuristicSource::kNextGen}},
 
 #endif
+        // Tests when `kAutofillParsingPatternProvider` is disabled. In this
+        // case, parsing doesn't depend on the pattern source. But since
+        // `MatchPatternRef`s are loaded regardless, expect that the code
+        // defaults to `kLegacy`.
         HeuristicSourceParams{
             .expected_active_source = HeuristicSource::kLegacy,
             .expected_nonactive_sources = {}},
-
         HeuristicSourceParams{
             .model_predictions_feature = true,
             .expected_active_source = HeuristicSource::kMachineLearning,
             .expected_nonactive_sources = {HeuristicSource::kLegacy}},
-
         HeuristicSourceParams{
             .model_predictions_feature = false,
             .expected_active_source = HeuristicSource::kLegacy,
