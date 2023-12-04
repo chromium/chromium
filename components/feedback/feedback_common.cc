@@ -28,9 +28,8 @@ namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr int kChromeOSProductId = 208;
-#else
-constexpr int kChromeBrowserProductId = 237;
 #endif
+constexpr int kChromeBrowserProductId = 237;
 
 // The below thresholds were chosen arbitrarily to conveniently show small data
 // as part of the report itself without having to look into the system_logs.zip
@@ -241,6 +240,11 @@ bool FeedbackCommon::IncludeInSystemLogs(const std::string& key,
                                          bool is_google_email) {
   return is_google_email ||
          key != feedback::FeedbackReport::kAllCrashReportIdsKey;
+}
+
+// static
+int FeedbackCommon::GetChromeBrowserProductId() {
+  return kChromeBrowserProductId;
 }
 
 FeedbackCommon::~FeedbackCommon() = default;

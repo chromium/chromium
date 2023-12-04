@@ -9,6 +9,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
+#include "components/feedback/feedback_common.h"
 #include "extensions/browser/api/feedback_private/feedback_private_api_unittest_base_chromeos.h"
 #include "extensions/browser/api/feedback_private/feedback_service.h"
 #include "extensions/browser/api/feedback_private/log_source_access_manager.h"
@@ -732,6 +733,25 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackAiFlow) {
   EXPECT_EQ("test-desc", feedback_data->description());
   EXPECT_EQ("test-category", feedback_data->category_tag());
   EXPECT_EQ("test-ai-metadata", feedback_data->ai_metadata());
+}
+
+TEST_F(FeedbackPrivateApiUnittest, SendFeedbackInfoAiFlow) {
+  extensions::FeedbackPrivateAPI* api =
+      FeedbackPrivateAPI::GetFactoryInstance()->Get(browser_context());
+
+  std::string unused;
+  auto feedback_info = api->CreateFeedbackInfo(
+      /*description_template=*/unused, /*description_placeholder_text=*/unused,
+      /*category_tag=*/unused, /*extra_diagnostics=*/unused,
+      /*page_url=*/GURL(),
+      /*flow=*/api::feedback_private::FeedbackFlow::kAi,
+      /*from_assistant=*/false, /*include_bluetooth_logs=*/false,
+      /*show_questionnaire=*/false, /*from_chrome_labs_or_kaleidoscope=*/false,
+      /*from_autofill=*/false, /*autofill_metadata=*/base::Value::Dict(),
+      /*ai_metadata=*/base::Value::Dict());
+
+  EXPECT_EQ(FeedbackCommon::GetChromeBrowserProductId(),
+            feedback_info->product_id);
 }
 
 }  // namespace extensions

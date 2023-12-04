@@ -60,6 +60,8 @@ class FeedbackCommon : public base::RefCountedThreadSafe<FeedbackCommon> {
   // the feedback report's system logs.
   static bool IncludeInSystemLogs(const std::string& key, bool is_google_email);
 
+  static int GetChromeBrowserProductId();
+
   // Getters
   const absl::optional<std::string>& mac_address() const {
     return mac_address_;

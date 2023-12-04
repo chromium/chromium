@@ -278,6 +278,10 @@ std::unique_ptr<FeedbackInfo> FeedbackPrivateAPI::CreateFeedbackInfo(
   // a custom product ID.
   if (from_chrome_labs_or_kaleidoscope) {
     info->product_id = kChromeLabsAndKaleidoscopeProductId;
+  } else if (info->flow == FeedbackFlow::kAi) {
+    // Use Chrome browser product id for all platforms including ChromeOS in
+    // this flow.
+    info->product_id = FeedbackCommon::GetChromeBrowserProductId();
   }
 
   return info;
