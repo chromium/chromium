@@ -113,6 +113,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "eche_minimize.icon",
     "eight_files.icon",
     "expand_all.icon",
+    "facegaze.icon",
     "feedback.icon",
     "files_app.icon",
     "filter.icon",

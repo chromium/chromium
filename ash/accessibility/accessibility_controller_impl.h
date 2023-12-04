@@ -292,6 +292,9 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   bool IsDictationSettingVisibleInTray();
   bool IsEnterpriseIconVisibleForDictation();
 
+  bool IsFaceGazeSettingVisibleInTray();
+  bool IsEnterpriseIconVisibleForFaceGaze();
+
   bool IsFocusHighlightSettingVisibleInTray();
   bool IsEnterpriseIconVisibleForFocusHighlight();
 

@@ -78,6 +78,7 @@ class ASH_EXPORT AccessibilityDetailedView
   HoverHighlightView* AddSpokenFeedbackView(views::View* container);
   HoverHighlightView* AddSelectToSpeakView(views::View* container);
   HoverHighlightView* AddDictationView(views::View* container);
+  HoverHighlightView* AddFaceGazeView(views::View* container);
   HoverHighlightView* AddColorCorrectionView(views::View* container);
   HoverHighlightView* AddHighContrastView(views::View* container);
   HoverHighlightView* AddScreenMagnifierView(views::View* container);
@@ -126,6 +127,7 @@ class ASH_EXPORT AccessibilityDetailedView
   raw_ptr<HoverHighlightView, ExperimentalAsh> spoken_feedback_view_ = nullptr;
   raw_ptr<HoverHighlightView, ExperimentalAsh> select_to_speak_view_ = nullptr;
   raw_ptr<HoverHighlightView, ExperimentalAsh> dictation_view_ = nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> facegaze_view_ = nullptr;
   raw_ptr<HoverHighlightView, ExperimentalAsh> color_correction_view_ = nullptr;
   raw_ptr<HoverHighlightView, ExperimentalAsh> high_contrast_view_ = nullptr;
   raw_ptr<HoverHighlightView, ExperimentalAsh> screen_magnifier_view_ = nullptr;
@@ -150,6 +152,7 @@ class ASH_EXPORT AccessibilityDetailedView
   raw_ptr<HoverHighlightView, ExperimentalAsh> select_to_speak_top_view_ =
       nullptr;
   raw_ptr<HoverHighlightView, ExperimentalAsh> dictation_top_view_ = nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> facegaze_top_view_ = nullptr;
   raw_ptr<HoverHighlightView, ExperimentalAsh> color_correction_top_view_ =
       nullptr;
   raw_ptr<HoverHighlightView, ExperimentalAsh> high_contrast_top_view_ =

@@ -31,6 +31,7 @@
 #include "ash/keyboard/ui/keyboard_util.h"
 #include "ash/login_status.h"
 #include "ash/policy/policy_recommendation_restorer.h"
+#include "ash/public/cpp/accessibility_controller.h"
 #include "ash/public/cpp/accessibility_controller_client.h"
 #include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/notification_utils.h"
@@ -54,6 +55,7 @@
 #include "ash/system/power/backlights_forced_off_setter.h"
 #include "ash/system/power/power_status.h"
 #include "ash/system/power/scoped_backlights_forced_off.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -163,8 +165,9 @@ const FeatureData kFeatures[] = {
     {FeatureType::kVirtualKeyboard, prefs::kAccessibilityVirtualKeyboardEnabled,
      &kSystemMenuKeyboardLegacyIcon,
      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD},
-    {FeatureType::kFaceGaze, prefs::kAccessibilityFaceGazeEnabled, nullptr, 0,
-     /*toggleable_in_quicksettings=*/false},
+    {FeatureType::kFaceGaze, prefs::kAccessibilityFaceGazeEnabled, nullptr,
+     IDS_ASH_STATUS_TRAY_ACCESSIBILITY_FACEGAZE,
+     /*toggleable_in_quicksettings=*/true},
 };
 
 // An array describing the confirmation dialogs for the features which have
@@ -1455,6 +1458,7 @@ bool AccessibilityControllerImpl::IsPrimarySettingsViewVisibleInTray() {
   return (IsSpokenFeedbackSettingVisibleInTray() ||
           IsSelectToSpeakSettingVisibleInTray() ||
           IsDictationSettingVisibleInTray() ||
+          IsFaceGazeSettingVisibleInTray() ||
           IsColorCorrectionSettingVisibleInTray() ||
           IsHighContrastSettingVisibleInTray() ||
           IsFullScreenMagnifierSettingVisibleInTray() ||
@@ -1487,6 +1491,14 @@ bool AccessibilityControllerImpl::IsDictationSettingVisibleInTray() {
 
 bool AccessibilityControllerImpl::IsEnterpriseIconVisibleForDictation() {
   return dictation().IsEnterpriseIconVisible();
+}
+
+bool AccessibilityControllerImpl::IsFaceGazeSettingVisibleInTray() {
+  return face_gaze().IsVisibleInTray();
+}
+
+bool AccessibilityControllerImpl::IsEnterpriseIconVisibleForFaceGaze() {
+  return face_gaze().IsEnterpriseIconVisible();
 }
 
 bool AccessibilityControllerImpl::IsFocusHighlightSettingVisibleInTray() {

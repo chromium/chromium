@@ -36080,6 +36080,20 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="StatusArea_FaceGazeDisabled">
+  <owner>katie@chromium.org</owner>
+  <owner>akihiroota@chromium.org</owner>
+  <owner>bkersting@google.com</owner>
+  <description>Ash system menu: Accessibility: Disable FaceGaze.</description>
+</action>
+
+<action name="StatusArea_FaceGazeEnabled">
+  <owner>katie@chromium.org</owner>
+  <owner>akihiroota@chromium.org</owner>
+  <owner>bkersting@google.com</owner>
+  <description>Ash system menu: Accessibility: Enable FaceGaze.</description>
+</action>
+
 <action name="StatusArea_FocusMode_Detailed">
   <owner>richui@chromium.org</owner>
   <description>
