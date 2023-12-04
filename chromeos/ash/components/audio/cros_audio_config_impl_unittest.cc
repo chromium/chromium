@@ -134,7 +134,7 @@ class FakeAudioSystemPropertiesObserver
     return last_audio_system_properties_.value()->output_devices[index].Clone();
   }
 
-  absl::optional<mojom::AudioSystemPropertiesPtr> last_audio_system_properties_;
+  std::optional<mojom::AudioSystemPropertiesPtr> last_audio_system_properties_;
   size_t num_properties_updated_calls_ = 0u;
   mojo::Receiver<mojom::AudioSystemPropertiesObserver> receiver_{this};
 };

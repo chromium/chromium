@@ -393,7 +393,7 @@ void CrasAudioHandler::MediaSessionInfoChanged(
 }
 
 void CrasAudioHandler::MediaSessionMetadataChanged(
-    const absl::optional<media_session::MediaMetadata>& metadata) {
+    const std::optional<media_session::MediaMetadata>& metadata) {
   if (!metadata || metadata->IsEmpty()) {
     HandleMediaSessionMetadataReset();
     return;
@@ -420,7 +420,7 @@ void CrasAudioHandler::MediaSessionMetadataChanged(
 }
 
 void CrasAudioHandler::MediaSessionPositionChanged(
-    const absl::optional<media_session::MediaPosition>& position) {
+    const std::optional<media_session::MediaPosition>& position) {
   if (!position) {
     return;
   }
@@ -674,7 +674,7 @@ void CrasAudioHandler::RequestNoiseCancellationSupported(
 
 void CrasAudioHandler::HandleGetNoiseCancellationSupported(
     OnNoiseCancellationSupportedCallback callback,
-    absl::optional<bool> noise_cancellation_supported) {
+    std::optional<bool> noise_cancellation_supported) {
   if (!noise_cancellation_supported.has_value()) {
     LOG(ERROR)
         << "cras_audio_handler: Failed to retrieve noise cancellation support";
@@ -736,7 +736,7 @@ void CrasAudioHandler::SetHfpMicSrSupportedForTesting(bool supported) {
 
 void CrasAudioHandler::HandleGetHfpMicSrSupported(
     OnHfpMicSrSupportedCallback callback,
-    absl::optional<bool> hfp_mic_sr_supported) {
+    std::optional<bool> hfp_mic_sr_supported) {
   if (!hfp_mic_sr_supported.has_value()) {
     LOG(ERROR) << "cras_audio_handler: Failed to retrieve hfp_mic_sr support";
   } else {
@@ -2344,7 +2344,7 @@ void CrasAudioHandler::HandleAudioDeviceChange(
   }
 }
 
-void CrasAudioHandler::HandleGetNodes(absl::optional<AudioNodeList> node_list) {
+void CrasAudioHandler::HandleGetNodes(std::optional<AudioNodeList> node_list) {
   if (!node_list.has_value()) {
     LOG(ERROR) << "Failed to retrieve audio nodes data";
     return;
@@ -2368,7 +2368,7 @@ void CrasAudioHandler::HandleGetNodes(absl::optional<AudioNodeList> node_list) {
 }
 
 void CrasAudioHandler::HandleGetNumberOfNonChromeOutputStreams(
-    absl::optional<int32_t> new_output_streams_count) {
+    std::optional<int32_t> new_output_streams_count) {
   if (!new_output_streams_count.has_value()) {
     LOG(ERROR) << "Failed to retrieve number of active output streams.";
     return;
@@ -2390,7 +2390,7 @@ void CrasAudioHandler::HandleGetNumberOfNonChromeOutputStreams(
 }
 
 void CrasAudioHandler::HandleGetNumActiveOutputStreams(
-    absl::optional<int> new_output_streams_count) {
+    std::optional<int> new_output_streams_count) {
   if (!new_output_streams_count.has_value()) {
     LOG(ERROR) << "Failed to retrieve number of active output streams";
     return;
@@ -2620,7 +2620,7 @@ CrasAudioHandler::ClientType CrasAudioHandler::ConvertClientTypeStringToEnum(
 }
 
 void CrasAudioHandler::HandleGetNumberOfInputStreamsWithPermission(
-    absl::optional<base::flat_map<std::string, uint32_t>> num_input_streams) {
+    std::optional<base::flat_map<std::string, uint32_t>> num_input_streams) {
   if (!num_input_streams.has_value()) {
     LOG(ERROR) << "Failed to retrieve number of input streams with permission";
     return;
@@ -2641,7 +2641,7 @@ void CrasAudioHandler::GetDefaultOutputBufferSizeInternal() {
 }
 
 void CrasAudioHandler::HandleGetDefaultOutputBufferSize(
-    absl::optional<int> buffer_size) {
+    std::optional<int> buffer_size) {
   if (!buffer_size.has_value()) {
     LOG(ERROR) << "Failed to retrieve output buffer size";
     return;
@@ -2674,7 +2674,7 @@ void CrasAudioHandler::GetSystemAecSupported() {
 }
 
 void CrasAudioHandler::HandleGetSystemAecSupported(
-    absl::optional<bool> system_aec_supported) {
+    std::optional<bool> system_aec_supported) {
   if (!system_aec_supported.has_value()) {
     LOG(ERROR) << "Failed to retrieve system aec supported";
     return;
@@ -2698,7 +2698,7 @@ void CrasAudioHandler::GetSystemAecGroupId() {
 }
 
 void CrasAudioHandler::HandleGetSystemAecGroupId(
-    absl::optional<int32_t> system_aec_group_id) {
+    std::optional<int32_t> system_aec_group_id) {
   if (!system_aec_group_id.has_value()) {
     // If the group Id is not available, set the ID to reflect that.
     system_aec_group_id_ = kSystemAecGroupIdNotAvailable;
@@ -2723,7 +2723,7 @@ void CrasAudioHandler::GetSystemNsSupported() {
 }
 
 void CrasAudioHandler::HandleGetSystemNsSupported(
-    absl::optional<bool> system_ns_supported) {
+    std::optional<bool> system_ns_supported) {
   if (!system_ns_supported.has_value()) {
     LOG(ERROR) << "Failed to retrieve system ns supported";
     return;
@@ -2751,7 +2751,7 @@ void CrasAudioHandler::GetSystemAgcSupported() {
 }
 
 void CrasAudioHandler::HandleGetSystemAgcSupported(
-    absl::optional<bool> system_agc_supported) {
+    std::optional<bool> system_agc_supported) {
   if (!system_agc_supported.has_value()) {
     LOG(ERROR) << "Failed to retrieve system agc supported";
     return;
@@ -2766,7 +2766,7 @@ void CrasAudioHandler::GetNumStreamIgnoreUiGains() {
 }
 
 void CrasAudioHandler::HandleGetNumStreamIgnoreUiGains(
-    absl::optional<int32_t> new_stream_ignore_ui_gains_count) {
+    std::optional<int32_t> new_stream_ignore_ui_gains_count) {
   if (!new_stream_ignore_ui_gains_count.has_value()) {
     LOG(ERROR) << "Failed to retrieve number of ignore ui gains streams.";
     return;
