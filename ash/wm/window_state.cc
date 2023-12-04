@@ -1136,7 +1136,7 @@ void WindowState::OnPrePipStateChange(WindowStateType old_window_state_type) {
     window_->ClearProperty(ash::kExcludeInMruKey);
 
     // Unset PiP window when exiting PiP state to another state.
-    pip_controller->UnsetPipWindow();
+    pip_controller->UnsetPipWindow(window_);
   }
   // PIP uses the snap fraction to place the PIP window at the correct position
   // after screen rotation, system UI area change, etc. Make sure to reset this
@@ -1379,14 +1379,22 @@ void WindowState::OnWindowParentChanged(aura::Window* window,
 
 void WindowState::OnWindowVisibilityChanged(aura::Window* window,
                                             bool visible) {
-  // If this window is a PiP and its SnapFraction is null.
-  // Note that, at this point, ARC PiP may not be ready as visibility can be
-  // updated when it transitions from minimized to PiP. In this case, snap
-  // fraction is updated in `ClientControlledShellSurface::OnPostWidgetCommit`.
-  if (window == window_ && visible && IsPip() &&
-      !PipPositioner::HasSnapFraction(this) && !IsArcWindow(window)) {
-    PipPositioner::SaveSnapFraction(this, window_->GetBoundsInScreen());
+  if (IsPip() && window == window_) {
+    if (visible) {
+      // If this window is a PiP and its SnapFraction is null.
+      // Note that, at this point, ARC PiP may not be ready as visibility can be
+      // updated when it transitions from minimized to PiP. In this case, snap
+      // fraction is updated in
+      // `ClientControlledShellSurface::OnPostWidgetCommit`.
+      if (!PipPositioner::HasSnapFraction(this) && !IsArcWindow(window)) {
+        PipPositioner::SaveSnapFraction(this, window_->GetBoundsInScreen());
+      }
+      Shell::Get()->pip_controller()->SetPipWindow(window);
+    } else {
+      Shell::Get()->pip_controller()->UnsetPipWindow(window);
+    }
   }
+
   // From here, we are only interested if the parent visibility changes, i.e.
   // desk changes.
   if (window != window_->parent()) {

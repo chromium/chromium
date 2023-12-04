@@ -27,7 +27,7 @@ class ASH_EXPORT PipController : public aura::WindowObserver {
   void SetPipWindow(aura::Window* window);
 
   // Remove the target window from this controller.
-  void UnsetPipWindow();
+  void UnsetPipWindow(aura::Window* window);
 
   // Updates the PiP bounds if necessary. This may need to happen when the
   // display work area changes, or if system ui regions like the virtual
