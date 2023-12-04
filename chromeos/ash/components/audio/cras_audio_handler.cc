@@ -19,6 +19,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/system/system_monitor.h"
@@ -1932,7 +1933,7 @@ void CrasAudioHandler::SwitchToDevice(const AudioDevice& device,
 
 bool CrasAudioHandler::HasDeviceChange(const AudioNodeList& new_nodes,
                                        bool is_input,
-                                       AudioDevicePriorityQueue* new_discovered,
+                                       AudioDeviceList* new_discovered,
                                        bool* device_removed,
                                        bool* active_device_removed) {
   *device_removed = false;
@@ -1951,9 +1952,7 @@ bool CrasAudioHandler::HasDeviceChange(const AudioNodeList& new_nodes,
   }
 
   bool new_or_changed_device = false;
-  while (!new_discovered->empty()) {
-    new_discovered->pop();
-  }
+  new_discovered->clear();
 
   for (const AudioNode& node : new_nodes) {
     if (is_input != node.is_input) {
@@ -1963,7 +1962,7 @@ bool CrasAudioHandler::HasDeviceChange(const AudioNodeList& new_nodes,
     AudioDevice device = ConvertAudioNodeWithModifiedPriority(node);
     DeviceStatus status = CheckDeviceStatus(device);
     if (status == NEW_DEVICE) {
-      new_discovered->push(device);
+      new_discovered->push_back(device);
     }
     if (status == NEW_DEVICE || status == CHANGED_DEVICE) {
       new_or_changed_device = true;
@@ -2080,7 +2079,7 @@ void CrasAudioHandler::PauseAllStreams() {
 
 void CrasAudioHandler::HandleNonHotplugNodesChange(
     bool is_input,
-    const AudioDevicePriorityQueue& hotplug_devices,
+    const AudioDeviceList& hotplug_devices,
     bool has_device_change,
     bool has_device_removed,
     bool active_device_removed) {
@@ -2182,8 +2181,12 @@ void CrasAudioHandler::HandleHotPlugDeviceByUserPriority(
 }
 
 void CrasAudioHandler::SwitchToTopPriorityDevice(bool is_input) {
-  AudioDevice top_device =
-      is_input ? input_devices_pq_.top() : output_devices_pq_.top();
+  const AudioDeviceList& devices = is_input ? input_devices_ : output_devices_;
+  if (devices.empty()) {
+    return;
+  }
+
+  AudioDevice top_device = base::ranges::max(devices, LessUserPriority);
   if (!top_device.is_for_simple_usage()) {
     return;
   }
@@ -2213,8 +2216,8 @@ void CrasAudioHandler::SwitchToPreviousActiveDeviceIfAvailable(bool is_input) {
 
 void CrasAudioHandler::UpdateDevicesAndSwitchActive(
     const AudioNodeList& nodes) {
-  AudioDevicePriorityQueue hotplug_output_devices;
-  AudioDevicePriorityQueue hotplug_input_devices;
+  AudioDeviceList hotplug_output_devices;
+  AudioDeviceList hotplug_input_devices;
   bool has_output_removed = false;
   bool has_input_removed = false;
   bool active_output_removed = false;
@@ -2249,12 +2252,8 @@ void CrasAudioHandler::UpdateDevicesAndSwitchActive(
   has_alternative_input_ = false;
   has_alternative_output_ = false;
 
-  while (!input_devices_pq_.empty()) {
-    input_devices_pq_.pop();
-  }
-  while (!output_devices_pq_.empty()) {
-    output_devices_pq_.pop();
-  }
+  input_devices_.clear();
+  output_devices_.clear();
 
   for (AudioDevice device : devices) {
     audio_devices_[device.id] = device;
@@ -2267,19 +2266,19 @@ void CrasAudioHandler::UpdateDevicesAndSwitchActive(
     }
 
     if (device.is_input) {
-      input_devices_pq_.push(device);
+      input_devices_.push_back(device);
     } else {
-      output_devices_pq_.push(device);
+      output_devices_.push_back(device);
     }
   }
 
   // Handle output device changes.
-  HandleAudioDeviceChange(false, output_devices_pq_, hotplug_output_devices,
+  HandleAudioDeviceChange(false, output_devices_, hotplug_output_devices,
                           output_devices_changed, has_output_removed,
                           active_output_removed);
 
   // Handle input device changes.
-  HandleAudioDeviceChange(true, input_devices_pq_, hotplug_input_devices,
+  HandleAudioDeviceChange(true, input_devices_, hotplug_input_devices,
                           input_devices_changed, has_input_removed,
                           active_input_removed);
 
@@ -2297,8 +2296,8 @@ void CrasAudioHandler::UpdateDevicesAndSwitchActive(
 
 void CrasAudioHandler::HandleAudioDeviceChange(
     bool is_input,
-    const AudioDevicePriorityQueue& devices_pq,
-    const AudioDevicePriorityQueue& hotplug_devices,
+    const AudioDeviceList& devices,
+    const AudioDeviceList& hotplug_devices,
     bool has_device_change,
     bool has_device_removed,
     bool active_device_removed) {
@@ -2317,7 +2316,7 @@ void CrasAudioHandler::HandleAudioDeviceChange(
   }
 
   // No audio devices found.
-  if (devices_pq.empty()) {
+  if (devices.empty()) {
     VLOG(1) << "No " << (is_input ? "input" : "output") << " devices found";
     active_node_id = 0;
     NotifyActiveNodeChanged(is_input);
@@ -2338,7 +2337,7 @@ void CrasAudioHandler::HandleAudioDeviceChange(
                                 has_device_removed, active_device_removed);
   } else {
     // Typical user hotplug case.
-    HandleHotPlugDeviceByUserPriority(hotplug_devices.top());
+    HandleHotPlugDeviceByUserPriority(hotplug_devices.front());
   }
 }
 

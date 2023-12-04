@@ -68,9 +68,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
       public media::VideoCaptureObserver,
       public media_session::mojom::MediaControllerObserver {
  public:
-  typedef std::
-      priority_queue<AudioDevice, std::vector<AudioDevice>, AudioDeviceCompare>
-          AudioDevicePriorityQueue;
   typedef std::vector<uint64_t> NodeIdList;
 
   enum class SurveyType {
@@ -775,7 +772,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // removed.
   bool HasDeviceChange(const AudioNodeList& new_nodes,
                        bool is_input,
-                       AudioDevicePriorityQueue* new_discovered,
+                       AudioDeviceList* new_discovered,
                        bool* device_removed,
                        bool* active_device_removed);
 
@@ -829,19 +826,18 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // Handles either input or output device changes, specified by |is_input|.
   void HandleAudioDeviceChange(bool is_input,
-                               const AudioDevicePriorityQueue& devices_pq,
-                               const AudioDevicePriorityQueue& hotplug_nodes,
+                               const AudioDeviceList& devices,
+                               const AudioDeviceList& hotplug_nodes,
                                bool has_device_change,
                                bool has_device_removed,
                                bool active_device_removed);
 
   // Handles non-hotplug nodes change cases.
-  void HandleNonHotplugNodesChange(
-      bool is_input,
-      const AudioDevicePriorityQueue& hotplug_nodes,
-      bool has_device_change,
-      bool has_device_removed,
-      bool active_device_removed);
+  void HandleNonHotplugNodesChange(bool is_input,
+                                   const AudioDeviceList& hotplug_nodes,
+                                   bool has_device_change,
+                                   bool has_device_removed,
+                                   bool active_device_removed);
 
   // Handles the regular user hotplug case with user priority.
   void HandleHotPlugDeviceByUserPriority(const AudioDevice& hotplug_device);
@@ -983,8 +979,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Audio data and state.
   AudioDeviceMap audio_devices_;
 
-  AudioDevicePriorityQueue input_devices_pq_;
-  AudioDevicePriorityQueue output_devices_pq_;
+  AudioDeviceList input_devices_;
+  AudioDeviceList output_devices_;
 
   bool output_mute_on_ = false;
   bool input_mute_on_ = false;
