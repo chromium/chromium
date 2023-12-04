@@ -10,7 +10,7 @@ import {MetadataModel} from './metadata_model.js';
 /**
  * Metadata containing thumbnail information.
  */
-interface ThumbnailMetadataItem {
+export interface ThumbnailMetadataItem {
   filesystem: {modificationTime?: Date, modificationTimeError?: Error};
   external: {
     thumbnailUrl?: string,
@@ -29,6 +29,7 @@ interface ThumbnailMetadataItem {
     transformError?: Error,
   };
   media: {imageTransform?: ImageTransformation, imageTransformError?: Error};
+  contentMimeType?: string;
 }
 
 export class ThumbnailModel {

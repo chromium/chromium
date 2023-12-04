@@ -63,7 +63,6 @@ static_js_files = [
   "file_manager/foreground/js/metrics_start.js",
   "file_manager/foreground/js/mock_folder_shortcut_data_model.js",
   "file_manager/foreground/js/mock_navigation_list_model.js",
-  "file_manager/foreground/js/mock_thumbnail_loader.js",
   "file_manager/foreground/js/naming_controller.js",
   "file_manager/foreground/js/file_rename.js",
   "file_manager/foreground/js/navigation_list_model.js",
@@ -73,7 +72,6 @@ static_js_files = [
   "file_manager/foreground/js/selection_menu_controller.js",
   "file_manager/foreground/js/spinner_controller.js",
   "file_manager/foreground/js/task_history.js",
-  "file_manager/foreground/js/thumbnail_loader.js",
 
   # Metadata:
   "file_manager/foreground/js/metadata/id3_parser.js",
@@ -294,6 +292,7 @@ ts_files = [
   "file_manager/background/js/progress_center.ts",
   "file_manager/foreground/js/providers_model.ts",
   "file_manager/background/js/test_util_base.ts",
+  "file_manager/foreground/js/thumbnail_loader.ts",
   "file_manager/background/js/volume_info_impl.ts",
   "file_manager/background/js/volume_info_list_impl.ts",
   "file_manager/background/js/volume_manager_factory.ts",
@@ -312,6 +311,7 @@ ts_files = [
   "file_manager/foreground/js/launch_param.ts",
   "file_manager/foreground/js/main.ts",
   "file_manager/foreground/js/metadata_box_controller.ts",
+  "file_manager/foreground/js/mock_thumbnail_loader.ts",
   "file_manager/foreground/js/quick_view_controller.ts",
   "file_manager/foreground/js/quick_view_model.ts",
   "file_manager/foreground/js/quick_view_uma.ts",
@@ -514,6 +514,7 @@ ts_test_files = [
   "file_manager/foreground/js/file_transfer_controller_unittest.ts",
   "file_manager/foreground/js/task_controller_unittest.ts",
   "file_manager/foreground/js/metadata/dlp_metadata_provider_unittest.ts",
+  "file_manager/foreground/js/thumbnail_loader_unittest.ts",
 
   # 3-line header to avoid conflict.
   # Don't remove this.
@@ -615,7 +616,6 @@ unittest_files = [
   "file_manager/foreground/js/metadata/metadata_cache_set_unittest.js",
   "file_manager/foreground/js/metadata/multi_metadata_provider_unittest.js",
   "file_manager/foreground/js/file_manager_commands_unittest.js",
-  "file_manager/foreground/js/thumbnail_loader_unittest.js",
   "file_manager/foreground/js/file_list_model_unittest.js",
   "file_manager/foreground/js/providers_model_unittest.js",
   "file_manager/foreground/js/spinner_controller_unittest.js",

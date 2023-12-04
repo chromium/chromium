@@ -13,7 +13,7 @@ import {DirectoryModel} from './directory_model.js';
 // read.
 import {FileListModel} from './file_list_model.js';
 import {ThumbnailModel} from './metadata/thumbnail_model.js';
-import {ThumbnailLoader} from './thumbnail_loader.js';
+import {FillMode, LoaderType, LoadTarget, ThumbnailLoader} from './thumbnail_loader.js';
 
 /**
  * A thumbnail loader for list style UI.
@@ -468,8 +468,8 @@ ListThumbnailLoader.Task = class {
         })
         .then(metadata => {
           const loadTargets = [
-            ThumbnailLoader.LoadTarget.CONTENT_METADATA,
-            ThumbnailLoader.LoadTarget.EXTERNAL_METADATA,
+            LoadTarget.CONTENT_METADATA,
+            LoadTarget.EXTERNAL_METADATA,
           ];
 
           // If the file is on a network filesystem, don't generate thumbnails
@@ -480,15 +480,15 @@ ListThumbnailLoader.Task = class {
           if (volumeInfo &&
               (volumeInfo.source !== Source.NETWORK ||
                volumeInfo.volumeType === VolumeType.DRIVE)) {
-            loadTargets.push(ThumbnailLoader.LoadTarget.FILE_ENTRY);
+            loadTargets.push(LoadTarget.FILE_ENTRY);
           }
 
           // @ts-ignore: error TS2351: This expression is not constructable.
           return new this
               .thumbnailLoaderConstructor_(
-                  this.entry_, ThumbnailLoader.LoaderType.IMAGE, metadata,
+                  this.entry_, LoaderType.IMAGE, metadata,
                   undefined /* opt_mediaType */, loadTargets)
-              .loadAsDataUrl(ThumbnailLoader.FillMode.OVER_FILL);
+              .loadAsDataUrl(FillMode.OVER_FILL);
         })
         .then(result => {
           return new ListThumbnailLoader.ThumbnailData(

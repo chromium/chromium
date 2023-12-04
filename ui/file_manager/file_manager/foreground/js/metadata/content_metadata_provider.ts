@@ -10,7 +10,7 @@ import {unwrapEntry} from '../../../common/js/entry_utils.js';
 import {getType} from '../../../common/js/file_type.js';
 import {getSanitizedScriptUrl} from '../../../common/js/trusted_script_url_policy_util.js';
 import {testSendMessage} from '../../../common/js/util.js';
-import {ThumbnailLoader} from '../thumbnail_loader.js';
+import {THUMBNAIL_MAX_HEIGHT, THUMBNAIL_MAX_WIDTH} from '../thumbnail_loader.js';
 
 import {MetadataItem, ParserMetadata} from './metadata_item.js';
 import {MetadataProvider} from './metadata_provider.js';
@@ -165,8 +165,8 @@ export class ContentMetadataProvider extends MetadataProvider {
             .file(
                 file => {
                   const request = LoadImageRequest.createForUrl(entry.toURL());
-                  request.maxWidth = ThumbnailLoader.THUMBNAIL_MAX_WIDTH;
-                  request.maxHeight = ThumbnailLoader.THUMBNAIL_MAX_HEIGHT;
+                  request.maxWidth = THUMBNAIL_MAX_WIDTH;
+                  request.maxHeight = THUMBNAIL_MAX_HEIGHT;
                   request.timestamp = file.lastModified;
                   request.cache = true;
                   request.priority = 0;

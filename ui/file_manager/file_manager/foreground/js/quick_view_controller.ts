@@ -27,7 +27,7 @@ import {MetadataBoxController} from './metadata_box_controller.js';
 import {QuickViewModel} from './quick_view_model.js';
 import {QuickViewUma, WayToOpen} from './quick_view_uma.js';
 import {TaskController} from './task_controller.js';
-import {ThumbnailLoader} from './thumbnail_loader.js';
+import {THUMBNAIL_MAX_HEIGHT, THUMBNAIL_MAX_WIDTH} from './thumbnail_loader.js';
 import type {CommandEvent} from './ui/command.js';
 import {FileListSelectionModel} from './ui/file_list_selection_model.js';
 import {FilesConfirmDialog} from './ui/files_confirm_dialog.js';
@@ -653,8 +653,8 @@ export class QuickViewController {
     return new Promise((resolve, reject) => {
       entry.file(function requestFileThumbnail(file) {
         const request = LoadImageRequest.createForUrl(entry.toURL());
-        request.maxWidth = ThumbnailLoader.THUMBNAIL_MAX_WIDTH;
-        request.maxHeight = ThumbnailLoader.THUMBNAIL_MAX_HEIGHT;
+        request.maxWidth = THUMBNAIL_MAX_WIDTH;
+        request.maxHeight = THUMBNAIL_MAX_HEIGHT;
         request.timestamp = file.lastModified;
         request.cache = true;
         request.priority = 0;
