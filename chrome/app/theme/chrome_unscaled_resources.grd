@@ -27,7 +27,14 @@
         </else>
       </if>
       <if expr="is_macosx">
-        <include name="IDR_STATUS_TRAY_ICON" file="${branding_path_component}/product_logo_22_mono.png" type="BINDATA" />
+        <if expr="_is_chrome_for_testing_branded">
+          <then>
+            <include name="IDR_STATUS_TRAY_ICON" file="google_chrome/product_logo_22_mono.png" type="BINDATA" />
+          </then>
+          <else> <!-- not _is_chrome_for_testing_branded -->
+            <include name="IDR_STATUS_TRAY_ICON" file="${branding_path_component}/product_logo_22_mono.png" type="BINDATA" />
+          </else>
+        </if> <!-- _is_chrome_for_testing_branded -->
       </if>
       <if expr="_google_chrome">
         <then>
