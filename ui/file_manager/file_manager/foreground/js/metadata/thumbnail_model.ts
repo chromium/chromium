@@ -24,7 +24,7 @@ export interface ThumbnailMetadataItem {
   };
   thumbnail: {
     url?: string,
-    urlError?: Error,
+    urlError?: Error&{errorDescription?: string},
     transform?: ImageTransformation,
     transformError?: Error,
   };

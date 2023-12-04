@@ -50,7 +50,7 @@ export class FileGrid extends Grid {
   private listThumbnailLoader_: ListThumbnailLoader|null = null;
   private volumeManager_: VolumeManager|null = null;
   private relayoutRateLimiter_: RateLimiter|null = null;
-  private onThumbnailLoadedBound_: null|((_: Event) => void) = null;
+  private onThumbnailLoadedBound_: null|EventListener = null;
   a11y: A11yAnnounce|null = null;
 
   override get dataModel() {
@@ -94,7 +94,8 @@ export class FileGrid extends Grid {
     self.listThumbnailLoader_ = null;
     self.beginIndex_ = 0;
     self.endIndex_ = 0;
-    self.onThumbnailLoadedBound_ = self.onThumbnailLoaded_.bind(self);
+    self.onThumbnailLoadedBound_ =
+        self.onThumbnailLoaded_.bind(self) as EventListener;
 
     self.itemConstructor = function(entry: Entry) {
       const item = self.ownerDocument.createElement('li') as FileGridItem;
@@ -195,11 +196,10 @@ export class FileGrid extends Grid {
         null;
   }
 
-  private onThumbnailLoaded_(e: Event) {
-    const event = e as ThumbnailLoadedEvent;
+  private onThumbnailLoaded_(event: ThumbnailLoadedEvent) {
     assert(this.dataModel);
     assert(this.metadataModel_);
-    const listItem = this.getListItemByIndex(event.index);
+    const listItem = this.getListItemByIndex(event.detail.index);
     const entry = listItem && this.dataModel.item(listItem.listIndex);
     if (!entry) {
       return;
@@ -210,19 +210,19 @@ export class FileGrid extends Grid {
           this.metadataModel_.getCache(
                                  [entry],
                                  ['contentMimeType'])[0]!.contentMimeType;
-      if (!event.dataUrl) {
+      if (!event.detail.dataUrl) {
         FileGrid.clearThumbnailImage_(assertInstanceof(box, HTMLDivElement));
         this.setGenericThumbnail_(
             assertInstanceof(box, HTMLDivElement), entry, mimeType);
       } else {
-        assert(event.width);
-        assert(event.height);
+        assert(event.detail.width);
+        assert(event.detail.height);
         FileGrid.setThumbnailImage_(
-            assertInstanceof(box, HTMLDivElement), entry, event.dataUrl,
-            event.width, event.height, mimeType);
+            assertInstanceof(box, HTMLDivElement), entry, event.detail.dataUrl,
+            event.detail.width, event.detail.height, mimeType);
       }
     }
-    listItem.classList.toggle('thumbnail-loaded', !!event.dataUrl);
+    listItem.classList.toggle('thumbnail-loaded', !!event.detail.dataUrl);
   }
 
   override mergeItems(beginIndex: number, endIndex: number) {

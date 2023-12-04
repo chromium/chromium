@@ -375,7 +375,7 @@ export class FileTable extends Table {
   private useModificationByMeTime_: boolean = false;
   private volumeManager_: VolumeManager|null = null;
   private lastSelection_: unknown[] = [];
-  private onThumbnailLoadedBound_: null|((e: Event) => void) = null;
+  private onThumbnailLoadedBound_: null|EventListener = null;
   a11y: A11yAnnounce|null = null;
 
   constructor() {
@@ -416,7 +416,8 @@ export class FileTable extends Table {
     self.listThumbnailLoader_ = null;
     self.beginIndex_ = 0;
     self.endIndex_ = 0;
-    self.onThumbnailLoadedBound_ = self.onThumbnailLoaded_.bind(self);
+    self.onThumbnailLoadedBound_ =
+        self.onThumbnailLoaded_.bind(self) as EventListener;
 
     self.useModificationByMeTime_ = false;
 
@@ -603,21 +604,19 @@ export class FileTable extends Table {
 
   /**
    * Handles thumbnail loaded event.
-   * @param e An event.
    */
-  private onThumbnailLoaded_(e: Event) {
-    const event = e as ThumbnailLoadedEvent;
-    const listItem = this.getListItemByIndex(event.index);
+  private onThumbnailLoaded_(event: ThumbnailLoadedEvent) {
+    const listItem = this.getListItemByIndex(event.detail.index);
     if (listItem) {
       const box = listItem.querySelector<HTMLDivElement>('.detail-thumbnail');
       if (box) {
-        if (event.dataUrl) {
-          this.setThumbnailImage_(box, event.dataUrl);
+        if (event.detail.dataUrl) {
+          this.setThumbnailImage_(box, event.detail.dataUrl);
         } else {
           this.clearThumbnailImage_(box);
         }
         const icon = listItem.querySelector<HTMLElement>('.detail-icon')!;
-        icon.classList.toggle('has-thumbnail', !!event.dataUrl);
+        icon.classList.toggle('has-thumbnail', !!event.detail.dataUrl);
       }
     }
   }
