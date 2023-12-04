@@ -472,7 +472,11 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
     if (!hidden) {
       document.title = this.i18n('wallpaperLabel');
     }
-    afterNextRender(this, () => this.$.grid.fire('iron-resize'));
+    afterNextRender(this, () => {
+      this.$.grid.fire('iron-resize');
+      (this.shadowRoot!.getElementById('promoted') as IronListElement | null)
+          ?.fire('iron-resize');
+    });
   }
 
   /**

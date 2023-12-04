@@ -4,7 +4,7 @@
 
 import 'chrome://personalization/strings.m.js';
 
-import {Paths, PersonalizationRouterElement, WallpaperSubpageElement} from 'chrome://personalization/js/personalization_app.js';
+import {Paths, PersonalizationRouterElement, WallpaperCollectionsElement, WallpaperGridItemElement, WallpaperSubpageElement} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -112,5 +112,28 @@ suite('WallpaperSubpageElementTest', function() {
     const seaPenImages =
         wallpaperSubpage!.shadowRoot!.querySelector('sea-pen-images');
     assertFalse(!!seaPenImages, 'sea pen images are not displayed');
+  });
+
+  test('show promoted tiles for sea pen', async () => {
+    loadTimeData.overrideValues(
+        {isSeaPenEnabled: true, isTimeOfDayWallpaperEnabled: true});
+    wallpaperSubpage =
+        initElement(WallpaperSubpageElement, {path: Paths.SEA_PEN_COLLECTION});
+    await waitAfterNextRender(wallpaperSubpage);
+
+    let collections: WallpaperCollectionsElement =
+        wallpaperSubpage!.shadowRoot!.querySelector('wallpaper-collections')!;
+    assertTrue(!!collections && collections.hidden, 'collections are hidden');
+
+    wallpaperSubpage.path = Paths.COLLECTIONS;
+    await waitAfterNextRender(wallpaperSubpage);
+    collections =
+        wallpaperSubpage!.shadowRoot!.querySelector('wallpaper-collections')!;
+    assertTrue(!!collections, 'collections are displayed');
+    assertFalse(collections.hidden, 'collections are not hidden');
+    const promotedTiles =
+        collections.shadowRoot!.querySelectorAll<WallpaperGridItemElement>(
+            `${WallpaperGridItemElement.is}[data-is-promoted-tile]`);
+    assertEquals(2, promotedTiles.length, 'two tiles are promoted');
   });
 });
