@@ -1821,7 +1821,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/task-tracking"],
     "exclusive_tests": "ALL",
-    "args": ["--enable-blink-features=UnexposedTaskIds"],
+    "args": ["--enable-blink-features=UnexposedTaskIds", "--enable-threaded-compositing"],
     "expires": "Jul 1, 2024"
   },
   {
