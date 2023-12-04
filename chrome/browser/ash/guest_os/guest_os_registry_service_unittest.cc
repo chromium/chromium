@@ -152,7 +152,6 @@ TEST_F(GuestOsRegistryServiceTest, SetAndGetRegistration) {
   EXPECT_EQ(result->VmName(), vm_name);
   EXPECT_EQ(result->ContainerName(), container_name);
   EXPECT_EQ(result->Name(), name[""]);
-  EXPECT_EQ(result->Comment(), comment[""]);
   EXPECT_EQ(result->Keywords(), keywords[""]);
   EXPECT_EQ(result->MimeTypes(), mime_types);
   EXPECT_EQ(result->NoDisplay(), no_display);
