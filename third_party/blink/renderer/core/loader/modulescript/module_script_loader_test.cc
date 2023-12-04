@@ -94,8 +94,7 @@ class ModuleScriptLoaderTestModulator final : public DummyModulator {
     if (auto* scope = DynamicTo<WorkletGlobalScope>(execution_context)) {
       EXPECT_EQ(ModuleScriptCustomFetchType::kWorkletAddModule,
                 custom_fetch_type);
-      return MakeGarbageCollected<WorkletModuleScriptFetcher>(
-          scope->GetModuleResponsesMap(), pass_key);
+      return MakeGarbageCollected<WorkletModuleScriptFetcher>(scope, pass_key);
     }
     EXPECT_EQ(ModuleScriptCustomFetchType::kNone, custom_fetch_type);
     return MakeGarbageCollected<DocumentModuleScriptFetcher>(pass_key);
