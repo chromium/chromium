@@ -6,11 +6,8 @@
 // to define <webview> at the extensions layer and may be extended by an
 // embedder that wants to define its own <webview>.
 
-var forwardApiMethods = require('guestViewContainerElement').forwardApiMethods;
 var GuestViewContainerElement =
     require('guestViewContainerElement').GuestViewContainerElement;
-var WebViewImpl = require('webView').WebViewImpl;
-var WEB_VIEW_API_METHODS = require('webViewApiMethods').WEB_VIEW_API_METHODS;
 var WebViewInternal = getInternalApi('webViewInternal');
 
 class WebViewElement extends GuestViewContainerElement {}
@@ -44,6 +41,7 @@ WebViewElement.prototype.print = function() {
 };
 
 WebViewElement.prototype.back = function(callback) {
+  var originalGo = privates(this).originalGo;
   return $Function.call(originalGo, this, -1, callback);
 };
 
@@ -59,6 +57,7 @@ WebViewElement.prototype.canGoForward = function() {
 };
 
 WebViewElement.prototype.forward = function(callback) {
+  var originalGo = privates(this).originalGo;
   return $Function.call(originalGo, this, 1, callback);
 };
 
@@ -77,16 +76,6 @@ WebViewElement.prototype.isUserAgentOverridden = function() {
   return !!internal.userAgentOverride &&
       internal.userAgentOverride != navigator.userAgent;
 };
-
-// Forward remaining WebViewElement.foo* method calls to WebViewImpl.foo* or
-// WebViewInternal.foo*.
-forwardApiMethods(
-    WebViewElement, WebViewImpl, WebViewInternal, WEB_VIEW_API_METHODS);
-
-// Since |back| and |forward| are implemented in terms of |go|, we need to
-// keep a reference to the real |go| function, since user code may override
-// |WebViewElement.prototype.go|.
-var originalGo = WebViewElement.prototype.go;
 
 // Exports.
 exports.$set('WebViewElement', WebViewElement);
