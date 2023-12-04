@@ -19,7 +19,6 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/signin_manager.h"
 #include "chrome/browser/signin/signin_manager_factory.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -84,7 +83,6 @@ std::unique_ptr<KeyedService> BuildSigninManager(
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<SigninManager>(
       *profile->GetPrefs(), *IdentityManagerFactory::GetForProfile(profile),
-      SyncServiceFactory::GetForProfile(profile),
       *ChromeSigninClientFactory::GetForProfile(profile));
 }
 

@@ -38,9 +38,6 @@ struct CoreAccountId;
 class PrefService;
 class SigninClient;
 
-namespace syncer {
-class SyncService;
-}
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 BASE_DECLARE_FEATURE(kPreventSignoutIfAccountValid);
@@ -65,7 +62,6 @@ class SigninManager : public KeyedService,
  public:
   SigninManager(PrefService& prefs,
                 signin::IdentityManager& identity_manager,
-                syncer::SyncService* sync_service,
                 SigninClient& client);
   ~SigninManager() override;
 
@@ -140,7 +136,6 @@ class SigninManager : public KeyedService,
   const raw_ref<PrefService> prefs_;
   const raw_ref<SigninClient> signin_client_;
   const raw_ref<signin::IdentityManager> identity_manager_;
-  const raw_ptr<syncer::SyncService> sync_service_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};

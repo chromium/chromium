@@ -14,6 +14,7 @@
 #include "components/prefs/pref_value_map.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/gaia_id_hash.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -363,6 +364,20 @@ TEST_F(SyncPrefsTest,
 
   EXPECT_EQ(sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_),
             expected_types);
+}
+
+TEST_F(SyncPrefsTest, PasswordsSelectedByDefault_UnoEnabled) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{password_manager::features::
+                                kEnablePasswordsAccountStorage,
+                            switches::kUnoDesktop},
+      /*disabled_features=*/{});
+
+  // Based on the feature flags set above, Passwords is supported
+  // and enabled by default.
+  EXPECT_TRUE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_)
+                  .Has(UserSelectableType::kPayments));
 }
 
 TEST_F(SyncPrefsTest, SetSelectedTypesForAccountInTransportMode) {
@@ -1298,7 +1313,7 @@ TEST_F(SyncPrefsMigrationTest, GlobalToAccount_TabsDisabled) {
   base::test::ScopedFeatureList enable_sync_to_signin(
       kReplaceSyncPromosWithSignInPromos);
 
-  // All types except for kHistory are selected in the global prefs.
+  // All types except for kTabs are selected in the global prefs.
   {
     SyncPrefs old_prefs(&pref_service_);
     UserSelectableTypeSet selected_types = UserSelectableTypeSet::All();

@@ -668,6 +668,8 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
 
   EXPECT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
       signin::ConsentLevel::kSignin));
+  EXPECT_FALSE(password_manager::features_util::IsOptedInForAccountStorage(
+      SyncServiceFactory::GetForProfile(GetProfile())));
   // The pref should have recorded the declined action.
   EXPECT_EQ(GetChromeSigninInterceptDeclinedCountPref(account_info), 1);
 
@@ -902,6 +904,47 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Signin.Intercept.HeuristicOutcome",
       SigninInterceptionHeuristicOutcome::kAbortNoSupportedBrowser, 1);
+}
+
+// Test the memory of the user's account storage preference.
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
+                       OptOutOfAccountStorage) {
+  // Setup account and accept intersection.
+  AccountInfo account_info =
+      MakeAccountInfoAvailableAndUpdate("alice@example.com");
+  ShowAndCompleteSigninBubbleWithResult(account_info,
+                                        SigninInterceptionResult::kAccepted);
+
+  // Check that the password account storage is enabled.
+  PrefService* pref_service = GetProfile()->GetPrefs();
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(GetProfile());
+  EXPECT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
+      sync_service));
+
+  // Opt out of account storage.
+  password_manager::features_util::OptOutOfAccountStorageAndClearSettings(
+      pref_service, sync_service);
+
+  // Check that the password account storage is disabled.
+  EXPECT_FALSE(password_manager::features_util::IsOptedInForAccountStorage(
+      sync_service));
+
+  // Log out.
+  identity_test_env()->ClearPrimaryAccount();
+
+  // Check that the password account storage is false if there is no account.
+  EXPECT_FALSE(password_manager::features_util::IsOptedInForAccountStorage(
+      sync_service));
+
+  // Log in again.
+  account_info = MakeAccountInfoAvailableAndUpdate("alice@example.com");
+  ShowAndCompleteSigninBubbleWithResult(account_info,
+                                        SigninInterceptionResult::kAccepted);
+
+  // Check that the password account storage is still disabled.
+  EXPECT_FALSE(password_manager::features_util::IsOptedInForAccountStorage(
+      sync_service));
 }
 
 // Tests the complete interception flow including profile and browser creation.

@@ -7,7 +7,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 
 // static
 SigninManagerFactory* SigninManagerFactory::GetInstance() {
@@ -26,7 +25,6 @@ SigninManagerFactory::SigninManagerFactory()
     : ProfileKeyedServiceFactory("SigninManager") {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(ChromeSigninClientFactory::GetInstance());
-  DependsOn(SyncServiceFactory::GetInstance());
 }
 
 SigninManagerFactory::~SigninManagerFactory() = default;
@@ -37,7 +35,6 @@ SigninManagerFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<SigninManager>(
       *profile->GetPrefs(), *IdentityManagerFactory::GetForProfile(profile),
-      SyncServiceFactory::GetForProfile(profile),
       *ChromeSigninClientFactory::GetForProfile(profile));
 }
 

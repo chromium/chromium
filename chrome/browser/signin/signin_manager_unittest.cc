@@ -85,8 +85,8 @@ class SigninManagerTest : public testing::Test,
 
   void RecreateSigninManager() {
     // `profile` is not tested here.
-    signin_manager_ = std::make_unique<SigninManager>(
-        prefs_, *identity_manager(), /*sync_service=*/nullptr, client_);
+    signin_manager_ =
+        std::make_unique<SigninManager>(prefs_, *identity_manager(), client_);
   }
 
   void InitializeSignoutDecision() {

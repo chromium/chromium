@@ -13,8 +13,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/dice_response_handler.h"
-#include "chrome/browser/sync/sync_service_factory.h"
-#include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -67,12 +65,10 @@ class AccountSelectionInProgressHandleInternal
 
 SigninManager::SigninManager(PrefService& prefs,
                              signin::IdentityManager& identity_manager,
-                             syncer::SyncService* sync_service,
                              SigninClient& client)
     : prefs_(prefs),
       signin_client_(client),
-      identity_manager_(identity_manager),
-      sync_service_(sync_service) {
+      identity_manager_(identity_manager) {
   signin_allowed_.Init(
       prefs::kSigninAllowed, &prefs,
       base::BindRepeating(&SigninManager::OnSigninAllowedPrefChanged,
@@ -306,14 +302,6 @@ void SigninManager::Shutdown() {
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 void SigninManager::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
-  // Enables butter features on Signin event with Uno.
-  if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
-          signin::PrimaryAccountChangeEvent::Type::kSet &&
-      base::FeatureList::IsEnabled(switches::kUnoDesktop)) {
-    password_manager::features_util::OptInToAccountStorage(&prefs_.get(),
-                                                           sync_service_.get());
-  }
-
   // This is needed for the case where the user chooses to start syncing
   // with an account that is different from the unconsented primary account
   // (not the first in cookies) but then cancels. In that case, the tokens stay

@@ -337,7 +337,6 @@ class MockSigninManager : public SigninManager {
   explicit MockSigninManager(Profile* profile)
       : SigninManager(*profile->GetPrefs(),
                       *IdentityManagerFactory::GetForProfile(profile),
-                      SyncServiceFactory::GetForProfile(profile),
                       *ChromeSigninClientFactory::GetForProfile(profile)) {}
   ~MockSigninManager() override = default;
 
