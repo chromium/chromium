@@ -253,9 +253,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
     network request, or when the server response is received and parsed, right
     before calling back the requester.
   </summary>
-  <token key="ParcelRequestTypes">
-    <variant name="ParcelRequestType"/>
-  </token>
+  <token key="ParcelRequestTypes" variants="ParcelRequestTypes"/>
 </histogram>
 
 <histogram name="Commerce.PDPNavigation.{FeatureName}.Eligible" enum="Boolean"
