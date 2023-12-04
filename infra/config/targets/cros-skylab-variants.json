@@ -191,8 +191,8 @@
   "CROS_PUFF_RELEASE_STABLE": {
     "skylab": {
       "cros_board": "puff",
-      "cros_chrome_version": "120.0.6099.25",
-      "cros_img": "puff-release/R120-15662.16.0",
+      "cros_chrome_version": "118.0.5993.124",
+      "cros_img": "puff-release/R118-15604.57.0",
       "dut_pool": "chrome"
     },
     "enabled": true,
