@@ -426,8 +426,9 @@ bool DoResolveRelativeHost(const char* base_url,
   // Parse the relative URL, just like we would for anything following a
   // scheme.
   Parsed relative_parsed;  // Everything but the scheme is valid.
-  ParseAfterScheme(relative_url, relative_component.end(),
-                   relative_component.begin, &relative_parsed);
+  // TODO(crbug.com/1416006): Support non-special URLs.
+  ParseAfterSpecialScheme(relative_url, relative_component.end(),
+                          relative_component.begin, &relative_parsed);
 
   // Now we can just use the replacement function to replace all the necessary
   // parts of the old URL with the new one.

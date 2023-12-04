@@ -86,16 +86,16 @@ void ParsePathInternal(const char16_t* spec,
                        Component* ref);
 
 // Given a spec and a pointer to the character after the colon following the
-// scheme, this parses it and fills in the structure, Every item in the parsed
-// structure is filled EXCEPT for the scheme, which is untouched.
-void ParseAfterScheme(const char* spec,
-                      int spec_len,
-                      int after_scheme,
-                      Parsed* parsed);
-void ParseAfterScheme(const char16_t* spec,
-                      int spec_len,
-                      int after_scheme,
-                      Parsed* parsed);
+// special scheme, this parses it and fills in the structure, Every item in the
+// parsed structure is filled EXCEPT for the scheme, which is untouched.
+void ParseAfterSpecialScheme(const char* spec,
+                             int spec_len,
+                             int after_scheme,
+                             Parsed* parsed);
+void ParseAfterSpecialScheme(const char16_t* spec,
+                             int spec_len,
+                             int after_scheme,
+                             Parsed* parsed);
 
 }  // namespace url
 
