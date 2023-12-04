@@ -1944,20 +1944,28 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpJob.ProxyTypeFailed" enum="ProxyScheme"
-    expires_after="2022-11-13">
+    expires_after="2024-03-19">
   <owner>rch@chromium.org</owner>
+  <owner>djmitche@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     Scheme of the proxy server used by an HTTP job that failed, or SCHEME_DIRECT
-    if not proxy was used.
+    if no proxy was used. A value is emitted for each failed HTTP stream.
+    Warning: this histogram was expired from 2022-11-13 to 2023-12-01; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Net.HttpJob.ProxyTypeSuccess" enum="ProxyScheme"
-    expires_after="2023-03-19">
+    expires_after="2024-03-19">
   <owner>rch@chromium.org</owner>
+  <owner>djmitche@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     Scheme of the proxy server used by an HTTP job that succeeded, or
-    SCHEME_DIRECT if not proxy was used.
+    SCHEME_DIRECT if no proxy was used. A value is emitted for each successful
+    HTTP stream. Warning: this histogram was expired from 2023-03-19 to
+    2023-12-01; data may be missing.
   </summary>
 </histogram>
 
