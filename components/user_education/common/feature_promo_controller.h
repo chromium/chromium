@@ -341,8 +341,12 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   }
 
  private:
+  struct ShowPromoBubbleParams;
+
   bool EndPromo(const base::Feature& iph_feature,
                 FeaturePromoClosedReason close_reason);
+  void RecordPromoEnded(FeaturePromoClosedReason close_reason,
+                        bool continue_after_close);
 
   FeaturePromoHandle CloseBubbleAndContinuePromoWithReason(
       const base::Feature& iph_action,
@@ -380,12 +384,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // Method that creates the bubble for a feature promo. May return null if the
   // bubble cannot be shown.
   std::unique_ptr<HelpBubble> ShowPromoBubbleImpl(
-      const FeaturePromoSpecification& spec,
-      ui::TrackedElement* anchor_element,
-      FeaturePromoSpecification::FormatParameters body_params,
-      FeaturePromoSpecification::FormatParameters title_params,
-      bool screen_reader_prompt_available,
-      bool is_critical_promo);
+      ShowPromoBubbleParams show_params);
 
   // Callback that cleans up a help bubble when it is closed.
   void OnHelpBubbleClosed(HelpBubble* bubble);
@@ -428,7 +427,8 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
 
   // Create appropriate buttons for a snoozeable promo on the current platform.
   std::vector<HelpBubbleButtonParams> CreateSnoozeButtons(
-      const base::Feature& feature);
+      const base::Feature& feature,
+      bool can_snooze);
 
   // Create appropriate buttons for a tutorial promo on the current platform.
   std::vector<HelpBubbleButtonParams> CreateTutorialButtons(

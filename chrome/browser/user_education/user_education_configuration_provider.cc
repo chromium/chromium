@@ -24,11 +24,6 @@ std::string FeatureNameToEventName(const base::Feature& feature) {
   return name;
 }
 
-bool ShouldOverwriteValidConfigurations() {
-  return base::FeatureList::IsEnabled(
-      user_education::features::kUserEducationExperienceVersion2);
-}
-
 }  // namespace
 
 // Implemented in chrome/browser/ui/views/user_education.
@@ -36,14 +31,16 @@ extern void MaybeRegisterChromeFeaturePromos(
     user_education::FeaturePromoRegistry& registry);
 
 UserEducationConfigurationProvider::UserEducationConfigurationProvider()
-    : overwrite_valid_configurations_(ShouldOverwriteValidConfigurations()) {
+    : overwrite_valid_configurations_(
+          user_education::features::IsUserEducationV2()) {
   MaybeRegisterChromeFeaturePromos(registry_);
 }
 
 UserEducationConfigurationProvider::UserEducationConfigurationProvider(
     user_education::FeaturePromoRegistry registry_for_testing)
     : registry_(std::move(registry_for_testing)),
-      overwrite_valid_configurations_(ShouldOverwriteValidConfigurations()) {}
+      overwrite_valid_configurations_(
+          user_education::features::IsUserEducationV2()) {}
 
 UserEducationConfigurationProvider::~UserEducationConfigurationProvider() =
     default;

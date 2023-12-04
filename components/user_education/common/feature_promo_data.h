@@ -56,7 +56,6 @@ struct FeaturePromoData {
   base::Time first_show_time = base::Time();
   base::Time last_show_time = base::Time();
   base::Time last_snooze_time = base::Time();
-  base::TimeDelta last_snooze_duration = base::TimeDelta();
   int snooze_count = 0;
   int show_count = 0;
   std::set<std::string> shown_for_apps;

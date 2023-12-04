@@ -14,16 +14,6 @@
 
 namespace user_education {
 
-namespace {
-
-base::TimeDelta GetV2TimeDelta(const std::string& param_name,
-                               base::TimeDelta default_value) {
-  return base::GetFieldTrialParamByFeatureAsTimeDelta(
-      features::kUserEducationExperienceVersion2, param_name, default_value);
-}
-
-}  // namespace
-
 // Monitors the idle state of the current program/computer using various low-
 // level APIs.
 FeaturePromoSessionManager::IdleObserver::IdleObserver() = default;
@@ -52,12 +42,9 @@ base::Time FeaturePromoSessionManager::IdleObserver::GetCurrentTime() const {
 }
 
 FeaturePromoSessionManager::IdlePolicy::IdlePolicy()
-    : IdlePolicy(GetV2TimeDelta(features::kTimeToIdleParamName,
-                                features::kDefaultTimeToIdle),
-                 GetV2TimeDelta(features::kIdleTimeBetweenSessionsParamName,
-                                features::kDefaultIdleTimeBetweenSessions),
-                 GetV2TimeDelta(features::kMinimumValidSessionLengthParamName,
-                                features::kDefaultMinimumValidSessionLength)) {}
+    : IdlePolicy(features::GetTimeToIdle(),
+                 features::GetIdleTimeBetweenSessions(),
+                 features::GetMinimumValidSessionLength()) {}
 
 FeaturePromoSessionManager::IdlePolicy::IdlePolicy(
     base::TimeDelta minimum_idle_time,

@@ -61,6 +61,9 @@ std::ostream& operator<<(std::ostream& os,
     case FeaturePromoResult::kBlockedByCooldown:
       os << "kBlockedByCooldown";
       break;
+    case FeaturePromoResult::kRecentlyAborted:
+      os << "kRecentlyAborted";
+      break;
   }
   return os;
 }

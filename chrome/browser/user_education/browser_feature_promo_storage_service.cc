@@ -35,9 +35,6 @@ constexpr char kIPHLastShowTimePath[] = "last_show_time";
 // Path to the timestamp an IPH was last snoozed.
 // in_product_help.snoozed_feature.[iph_name].last_snooze_time
 constexpr char kIPHLastSnoozeTimePath[] = "last_snooze_time";
-// Path to the duration of snooze.
-// in_product_help.snoozed_feature.[iph_name].last_snooze_duration
-constexpr char kIPHLastSnoozeDurationPath[] = "last_snooze_duration";
 // Path to the count of how many times this IPH has been snoozed.
 // in_product_help.snoozed_feature.[iph_name].snooze_count
 constexpr char kIPHSnoozeCountPath[] = "snooze_count";
@@ -97,8 +94,6 @@ BrowserFeaturePromoStorageService::ReadPromoData(
       pref_data.FindByDottedPath(path_prefix + kIPHLastShowTimePath));
   absl::optional<base::Time> snooze_time = base::ValueToTime(
       pref_data.FindByDottedPath(path_prefix + kIPHLastSnoozeTimePath));
-  absl::optional<base::TimeDelta> snooze_duration = base::ValueToTimeDelta(
-      pref_data.FindByDottedPath(path_prefix + kIPHLastSnoozeDurationPath));
   absl::optional<int> snooze_count =
       pref_data.FindIntByDottedPath(path_prefix + kIPHSnoozeCountPath);
   absl::optional<int> show_count =
@@ -108,7 +103,7 @@ BrowserFeaturePromoStorageService::ReadPromoData(
 
   absl::optional<user_education::FeaturePromoData> promo_data;
 
-  if (!is_dismissed || !snooze_time || !snooze_count || !snooze_duration) {
+  if (!is_dismissed || !snooze_time || !snooze_count) {
     // IPH data is corrupt. Ignore the previous data.
     return promo_data;
   }
@@ -131,7 +126,6 @@ BrowserFeaturePromoStorageService::ReadPromoData(
   promo_data->first_show_time = *first_show_time;
   promo_data->last_show_time = *last_show_time;
   promo_data->last_snooze_time = *snooze_time;
-  promo_data->last_snooze_duration = *snooze_duration;
   promo_data->snooze_count = *snooze_count;
   promo_data->show_count = *show_count;
 
@@ -178,9 +172,6 @@ void BrowserFeaturePromoStorageService::SavePromoData(
                             base::TimeToValue(promo_data.last_show_time));
   pref_data.SetByDottedPath(path_prefix + kIPHLastSnoozeTimePath,
                             base::TimeToValue(promo_data.last_snooze_time));
-  pref_data.SetByDottedPath(
-      path_prefix + kIPHLastSnoozeDurationPath,
-      base::TimeDeltaToValue(promo_data.last_snooze_duration));
   pref_data.SetByDottedPath(path_prefix + kIPHSnoozeCountPath,
                             promo_data.snooze_count);
   pref_data.SetByDottedPath(path_prefix + kIPHShowCountPath,

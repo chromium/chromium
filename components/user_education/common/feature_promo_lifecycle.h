@@ -31,8 +31,6 @@ class FeaturePromoLifecycle {
   using PromoSubtype = FeaturePromoSpecification::PromoSubtype;
   using PromoType = FeaturePromoSpecification::PromoType;
 
-  static constexpr base::TimeDelta kDefaultSnoozeDuration = base::Days(7);
-
   FeaturePromoLifecycle(FeaturePromoStorageService* storage_service,
                         const base::StringPiece& app_id,
                         const base::Feature* iph_feature,
@@ -47,6 +45,10 @@ class FeaturePromoLifecycle {
   // be shown again; for example, a snoozeable IPH cannot show if it is
   // currently in the snooze period.
   FeaturePromoResult CanShow() const;
+
+  // Returns whether the policy and previous usage of this IPH would allow it to
+  // be snoozed if it were shown; meaningless if `CanShow()` is false.
+  bool CanSnooze() const;
 
   // Notifies that the promo was shown. `tracker` will be used to release the
   // feature when the promo ends.
@@ -100,6 +102,15 @@ class FeaturePromoLifecycle {
 
   // If the promo is running, ends it, possibly dismissing the Tracker.
   bool MaybeEndPromo();
+
+  // Returns whether `promo_data` satisfies the requirements for being shown as
+  // a snooze promo.
+  FeaturePromoResult CanShowSnoozePromo(
+      const FeaturePromoData& promo_data) const;
+
+  // Gets the current time, which is based on the reference clock provided by
+  // `storage_service` and can be overridden by tests.
+  base::Time GetCurrentTime() const;
 
   // The service that stores non-transient data about the IPH.
   const raw_ptr<FeaturePromoStorageService> storage_service_;

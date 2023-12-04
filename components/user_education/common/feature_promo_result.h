@@ -50,7 +50,9 @@ class FeaturePromoResult {
     kBlockedByCooldown =
         10,  // The promo could not be shown because it hasn't been long enough
              // since the last heavyweight promo.
-    kMaxValue = kBlockedByCooldown
+    kRecentlyAborted = 11,  // The promo recently aborted due to a UI change and
+                            // cannot be shown again for a short period of time.
+    kMaxValue = kRecentlyAborted
   };
 
   constexpr FeaturePromoResult() = default;

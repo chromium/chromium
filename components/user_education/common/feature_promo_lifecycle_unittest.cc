@@ -21,6 +21,7 @@
 #include "components/user_education/common/feature_promo_specification.h"
 #include "components/user_education/common/feature_promo_storage_service.h"
 #include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/common/user_education_features.h"
 #include "components/user_education/test/test_feature_promo_storage_service.h"
 #include "components/user_education/test/test_help_bubble.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -446,8 +447,7 @@ TEST_P(FeaturePromoLifecycleTypesTest, ReleaseSnoozedIPH) {
   lifecycle->OnPromoEnded(CloseReason::kSnooze);
   lifecycle = CreateLifecycle(kTestIPHFeature);
   EXPECT_EQ(GetSnoozedResult(), lifecycle->CanShow());
-  task_environment_.FastForwardBy(
-      FeaturePromoLifecycle::kDefaultSnoozeDuration);
+  task_environment_.FastForwardBy(features::GetSnoozeDuration());
   lifecycle = CreateLifecycle(kTestIPHFeature);
   EXPECT_TRUE(lifecycle->CanShow());
 }
@@ -471,8 +471,8 @@ TEST_P(FeaturePromoLifecycleTypesTest, MultipleIPH) {
   lifecycle = CreateLifecycle(kTestIPHFeature2);
   EXPECT_EQ(GetSnoozedResult(), lifecycle->CanShow());
 
-  task_environment_.FastForwardBy(
-      FeaturePromoLifecycle::kDefaultSnoozeDuration - base::Hours(1));
+  task_environment_.FastForwardBy(features::GetSnoozeDuration() -
+                                  base::Hours(1));
 
   lifecycle = CreateLifecycle(kTestIPHFeature);
   EXPECT_TRUE(lifecycle->CanShow());
@@ -495,8 +495,7 @@ TEST_P(FeaturePromoLifecycleTypesTest, SnoozeNonInteractedIPH) {
   lifecycle = CreateLifecycle(kTestIPHFeature);
   EXPECT_EQ(GetSnoozedResult(), lifecycle->CanShow());
 
-  task_environment_.FastForwardBy(
-      FeaturePromoLifecycle::kDefaultSnoozeDuration);
+  task_environment_.FastForwardBy(features::GetSnoozeDuration());
 
   lifecycle = CreateLifecycle(kTestIPHFeature);
   EXPECT_TRUE(lifecycle->CanShow());

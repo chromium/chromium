@@ -21,8 +21,7 @@ UserEducationService::UserEducationService(
     : tutorial_service_(&tutorial_registry_, &help_bubble_factory_registry_),
       feature_promo_storage_service_(std::move(storage_service)),
       feature_promo_session_policy_(
-          base::FeatureList::IsEnabled(
-              user_education::features::kUserEducationExperienceVersion2)
+          user_education::features::IsUserEducationV2()
               ? std::make_unique<user_education::FeaturePromoSessionPolicyV2>()
               : std::make_unique<user_education::FeaturePromoSessionPolicy>()) {
   feature_promo_session_policy_->Init(&feature_promo_session_manager_,

@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "components/user_education/common/feature_promo_data.h"
 #include "components/user_education/common/feature_promo_result.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -52,6 +53,10 @@ class FeaturePromoSessionPolicy {
   // Indicates that a promo is being shown. Value must not be `NoPromo`.
   virtual void NotifyPromoShown(const PromoInfo& promo_shown);
 
+  // Indicates that a promo has been dismissed. Value must not be `NoPromo`.
+  virtual void NotifyPromoEnded(const PromoInfo& promo_ended,
+                                FeaturePromoClosedReason close_reason);
+
   // Gets a promo info from a specification. Different policies might interpret
   // different specifications differently.
   virtual PromoInfo SpecificationToPromoInfo(
@@ -79,6 +84,7 @@ class FeaturePromoSessionPolicy {
 
   raw_ptr<const FeaturePromoSessionManager> session_manager_ = nullptr;
   raw_ptr<FeaturePromoStorageService> storage_service_ = nullptr;
+  absl::optional<base::Time> current_promo_shown_time_;
 };
 
 // Represents the promo policy for User Education Experience V2, above and

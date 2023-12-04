@@ -26,6 +26,7 @@
 #include "components/user_education/common/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo_specification.h"
 #include "components/user_education/common/feature_promo_storage_service.h"
+#include "components/user_education/common/user_education_features.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "components/webapps/common/web_app_id.h"
@@ -316,8 +317,8 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest, CanReSnooze) {
   data.is_dismissed = false;
   data.show_count = 1;
   data.snooze_count = 1;
-  data.last_snooze_duration = base::Hours(26);
-  data.last_snooze_time = base::Time::Now() - data.last_snooze_duration;
+  data.last_snooze_time =
+      base::Time::Now() - user_education::features::GetSnoozeDuration();
   data.last_show_time = data.last_snooze_time - base::Seconds(1);
 
   RunTestSequence(SetSnoozePrefs(data), AttemptIPH(true), SnoozeIPH(),
@@ -341,7 +342,6 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest,
   data.is_dismissed = false;
   data.show_count = 1;
   data.snooze_count = 1;
-  data.last_snooze_duration = base::Hours(26);
   data.last_snooze_time = base::Time::Now();
   data.last_show_time = data.last_snooze_time - base::Seconds(1);
 
@@ -406,8 +406,8 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest, WorkWithoutNonClickerData) {
   PromoData data;
   data.is_dismissed = false;
   data.snooze_count = 1;
-  data.last_snooze_duration = base::Hours(26);
-  data.last_snooze_time = base::Time::Now() - data.last_snooze_duration;
+  data.last_snooze_time =
+      base::Time::Now() - user_education::features::GetSnoozeDuration();
 
   // Non-clicker policy shipped pref entries that don't exist before.
   // Make sure empty entries are properly handled.

@@ -52,7 +52,6 @@ class BrowserFeaturePromoStorageServiceTest : public testing::Test {
     data.last_snooze_time = base::Time::FromMillisecondsSinceUnixEpoch(200);
     data.snooze_count = 3;
     data.show_count = 4;
-    data.last_snooze_duration = base::Days(3);
     data.shown_for_apps.insert(kAppName1);
     data.shown_for_apps.insert(kAppName2);
     return data;
@@ -72,7 +71,6 @@ class BrowserFeaturePromoStorageServiceTest : public testing::Test {
     EXPECT_EQ(expected.last_snooze_time, actual->last_snooze_time);
     EXPECT_EQ(expected.snooze_count, actual->snooze_count);
     EXPECT_EQ(expected.show_count, actual->show_count);
-    EXPECT_EQ(expected.last_snooze_duration, actual->last_snooze_duration);
     EXPECT_THAT(actual->shown_for_apps,
                 testing::ContainerEq(expected.shown_for_apps));
   }

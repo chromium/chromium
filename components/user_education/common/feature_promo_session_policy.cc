@@ -18,12 +18,6 @@ namespace {
 
 enum class PromoPriority { kNone, kLow, kMedium, kHigh };
 
-base::TimeDelta GetV2TimeDelta(const std::string& param_name,
-                               base::TimeDelta default_value) {
-  return base::GetFieldTrialParamByFeatureAsTimeDelta(
-      features::kUserEducationExperienceVersion2, param_name, default_value);
-}
-
 }  // namespace
 
 FeaturePromoSessionPolicy::FeaturePromoSessionPolicy() = default;
@@ -37,10 +31,48 @@ void FeaturePromoSessionPolicy::Init(
 }
 
 void FeaturePromoSessionPolicy::NotifyPromoShown(const PromoInfo& promo_shown) {
-  if (promo_shown.weight == PromoWeight::kHeavy) {
-    auto new_data = storage_service_->ReadPolicyData();
-    new_data.last_heavyweight_promo_time = storage_service_->GetCurrentTime();
-    storage_service_->SavePolicyData(new_data);
+  current_promo_shown_time_ = storage_service_->GetCurrentTime();
+}
+
+void FeaturePromoSessionPolicy::NotifyPromoEnded(
+    const PromoInfo& promo_ended,
+    FeaturePromoClosedReason close_reason) {
+  // The close time may already have been recorded; for example, when a bubble
+  // is closed but the promo continues and then ends later.
+  if (!current_promo_shown_time_) {
+    return;
+  }
+
+  // Save and reset the show time.
+  const base::Time show_time = *current_promo_shown_time_;
+  current_promo_shown_time_.reset();
+
+  // Lightweight promos don't count for cooldown.
+  if (promo_ended.weight != PromoWeight::kHeavy) {
+    return;
+  }
+
+  switch (close_reason) {
+    case FeaturePromoClosedReason::kDismiss:
+    case FeaturePromoClosedReason::kSnooze:
+    case FeaturePromoClosedReason::kAction:
+    case FeaturePromoClosedReason::kCancel:
+    case FeaturePromoClosedReason::kFeatureEngaged: {
+      // Thees all count as active user dismiss, so full cooldown applies.
+      auto new_data = storage_service_->ReadPolicyData();
+      new_data.last_heavyweight_promo_time = show_time;
+      storage_service_->SavePolicyData(new_data);
+      break;
+    }
+    case FeaturePromoClosedReason::kTimeout:
+    case FeaturePromoClosedReason::kAbortPromo:
+    case FeaturePromoClosedReason::kOverrideForDemo:
+    case FeaturePromoClosedReason::kOverrideForPrecedence:
+    case FeaturePromoClosedReason::kOverrideForTesting:
+    case FeaturePromoClosedReason::kOverrideForUIRegionConflict:
+      // These count as the user not interacting, so they cannot trigger a full
+      // cooldown. Do not record the shown time.
+      break;
   }
 }
 
@@ -53,11 +85,8 @@ FeaturePromoResult FeaturePromoSessionPolicy::CanShowPromo(
 }
 
 FeaturePromoSessionPolicyV2::FeaturePromoSessionPolicyV2()
-    : FeaturePromoSessionPolicyV2(
-          GetV2TimeDelta(features::kSessionStartGracePeriod,
-                         features::kDefaultSessionStartGracePeriod),
-          GetV2TimeDelta(features::kLowPriorityIphCooldown,
-                         features::kDefaultLowPriorityIphCooldown)) {}
+    : FeaturePromoSessionPolicyV2(features::GetSessionStartGracePeriod(),
+                                  features::GetLowPriorityCooldown()) {}
 
 FeaturePromoSessionPolicyV2::FeaturePromoSessionPolicyV2(
     base::TimeDelta session_start_grace_period,
