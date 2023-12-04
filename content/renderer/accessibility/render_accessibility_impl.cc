@@ -183,7 +183,6 @@ void RenderAccessibilityImpl::DidCommitProvisionalLoad(
       accessibility_mode_.has_mode(ui::AXMode::kLabelImages)) {
     return;
   }
-  ax_image_annotator_->Destroy();
   ax_image_annotator_.reset();
   page_language_.clear();
   serialization_in_flight_ = false;
@@ -212,9 +211,6 @@ void RenderAccessibilityImpl::AccessibilityModeChanged(const ui::AXMode& mode) {
 
   SetAccessibilityCrashKey(mode);
 
-  // Initialize features based on the accessibility mode.
-  StartOrStopLabelingImages(old_mode, mode);
-
   if (ax_context_) {
     ax_context_->SetAXMode(mode);
   } else {
@@ -233,6 +229,9 @@ void RenderAccessibilityImpl::AccessibilityModeChanged(const ui::AXMode& mode) {
   if (was_on) {
     ax_context_->MarkDocumentDirty();
   }
+
+  // Initialize features based on the accessibility mode.
+  StartOrStopLabelingImages(old_mode, mode);
 
   // Fire a load complete event so that any ATs present can treat the page as
   // fresh and newly loaded.
@@ -1548,7 +1547,6 @@ void RenderAccessibilityImpl::StartOrStopLabelingImages(ui::AXMode old_mode,
     CreateAXImageAnnotator();
   } else if (old_mode.has_mode(ui::AXMode::kLabelImages) &&
              !new_mode.has_mode(ui::AXMode::kLabelImages)) {
-    ax_image_annotator_->Destroy();
     ax_image_annotator_.reset();
   }
 }
