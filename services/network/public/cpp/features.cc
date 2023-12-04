@@ -408,6 +408,13 @@ BASE_FEATURE(kCompressionDictionaryTransportOverHttp1,
              "CompressionDictionaryTransportOverHttp1",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When this feature is enabled, Chromium will use stored shared dictionaries
+// only if the request URL is a localhost URL or the transport layer is using a
+// certificate rooted at a standard CA root.
+BASE_FEATURE(kCompressionDictionaryTransportRequireKnownRootCert,
+             "CompressionDictionaryTransportRequireKnownRootCert",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kVisibilityAwareResourceScheduler,
              "VisibilityAwareResourceScheduler",
              base::FEATURE_DISABLED_BY_DEFAULT);

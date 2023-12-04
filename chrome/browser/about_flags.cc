@@ -10586,6 +10586,15 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          network::features::kCompressionDictionaryTransportOverHttp1)},
 
+    {"enable-compression-dictionary-transport-require-known-root-cert",
+     flag_descriptions::kCompressionDictionaryTransportRequireKnownRootCertName,
+     flag_descriptions::
+         kCompressionDictionaryTransportRequireKnownRootCertDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         network::features::
+             kCompressionDictionaryTransportRequireKnownRootCert)},
+
     {"enable-compute-pressure-rate-obfuscation-mitigation",
      flag_descriptions::kComputePressureRateObfuscationMitigationName,
      flag_descriptions::kComputePressureRateObfuscationMitigationDescription,

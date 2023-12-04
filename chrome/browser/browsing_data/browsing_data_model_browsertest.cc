@@ -281,7 +281,11 @@ class BrowsingDataModelBrowserTest
         {network::features::kCompressionDictionaryTransportOverHttp1, {}},
     };
 
-    std::vector<FeatureRef> disabled_features = {};
+    std::vector<FeatureRef> disabled_features = {
+        // Need to disable kCompressionDictionaryTransportRequireKnownRootCert
+        // because EmbeddedTestServer's certificate is not rooted at a standard
+        // CA root.
+        network::features::kCompressionDictionaryTransportRequireKnownRootCert};
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
     enabled_features.push_back({media::kExternalClearKeyForTesting, {}});

@@ -2258,6 +2258,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "enable-compression-dictionary-transport-require-known-root-cert",
+    "owners": [ "horo@chromium.org", "net-dev@chromium.org" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "enable-compute-pressure-break-calibration-mitigation",
     "owners": [ "arnaud.mandy@intel.com" ],
     "expiry_milestone": 140

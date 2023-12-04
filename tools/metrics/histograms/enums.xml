@@ -32511,6 +32511,8 @@ from previous Chrome versions.
   <int value="-1856902397" label="LoadingWithMojo:enabled"/>
   <int value="-1856118202" label="AdvancedDocumentScanAPI:disabled"/>
   <int value="-1855347512" label="FormControlsRefresh:disabled"/>
+  <int value="-1855339525"
+      label="CompressionDictionaryTransportRequireKnownRootCert:enabled"/>
   <int value="-1854432127" label="ChromeHomePullToRefreshIphAtTop:disabled"/>
   <int value="-1854372227" label="VrBrowsingExperimentalFeatures:enabled"/>
   <int value="-1853877370" label="CastStreamingVp9:disabled"/>
@@ -32892,6 +32894,8 @@ from previous Chrome versions.
   <int value="-1660884825" label="ReadLaterNewBadgePromo:enabled"/>
   <int value="-1659445938" label="RealboxSecondaryZeroSuggest:enabled"/>
   <int value="-1658461830" label="SharedHighlightingRefinedBlocklist:enabled"/>
+  <int value="-1658154886"
+      label="CompressionDictionaryTransportRequireKnownRootCert:disabled"/>
   <int value="-1657056532" label="FilesNewDirectoryTree:disabled"/>
   <int value="-1656667928"
       label="UseSyncInvalidationsForWalletAndOffer:disabled"/>

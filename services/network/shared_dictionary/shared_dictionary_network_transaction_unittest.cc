@@ -24,6 +24,7 @@
 #include "services/network/shared_dictionary/shared_dictionary_manager.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace network {
 
@@ -362,6 +363,126 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NotAllowedToUseDictionary) {
                                                  CreateNetworkTransaction());
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return false; }));
+
+  net::TestCompletionCallback start_callback;
+  ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
+                                net::NetLogWithSource()),
+              net::test::IsError(net::ERR_IO_PENDING));
+  EXPECT_THAT(start_callback.WaitForResult(), net::test::IsError(net::OK));
+
+  scoped_refptr<net::IOBufferWithSize> buf =
+      base::MakeRefCounted<net::IOBufferWithSize>(kDefaultBufferSize);
+  net::TestCompletionCallback read_callback;
+  ASSERT_THAT(
+      transaction.Read(buf.get(), buf->size(), read_callback.callback()),
+      net::test::IsError(net::ERR_IO_PENDING));
+  int read_result = read_callback.WaitForResult();
+  EXPECT_THAT(read_result, kTestData.size());
+  EXPECT_EQ(kTestData, std::string(buf->data(), read_result));
+}
+
+TEST_F(SharedDictionaryNetworkTransactionTest,
+       RequireKnownRootCertCheckFailure) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      network::features::kCompressionDictionaryTransportRequireKnownRootCert);
+  DummySharedDictionaryManager manager(
+      base::MakeRefCounted<DummySharedDictionaryStorage>(
+          std::make_unique<DummySyncDictionary>(kTestDictionaryData)));
+
+  // Override MockTransaction to check that there is no sec-available-dictionary
+  // header.
+  net::MockTransaction new_mock_transaction = kBrotliDictionaryTestTransaction;
+  new_mock_transaction.handler =
+      kTestTransactionHandlerWithoutAvailableDictionary;
+  new_mock_transaction.transport_info.cert_is_issued_by_known_root = false;
+
+  net::AddMockTransaction(&new_mock_transaction);
+
+  net::MockHttpRequest request(new_mock_transaction);
+  SharedDictionaryNetworkTransaction transaction(manager,
+                                                 CreateNetworkTransaction());
+  transaction.SetIsSharedDictionaryReadAllowedCallback(
+      base::BindRepeating([]() { return true; }));
+
+  net::TestCompletionCallback start_callback;
+  ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
+                                net::NetLogWithSource()),
+              net::test::IsError(net::ERR_IO_PENDING));
+  EXPECT_THAT(start_callback.WaitForResult(), net::test::IsError(net::OK));
+
+  scoped_refptr<net::IOBufferWithSize> buf =
+      base::MakeRefCounted<net::IOBufferWithSize>(kDefaultBufferSize);
+  net::TestCompletionCallback read_callback;
+  ASSERT_THAT(
+      transaction.Read(buf.get(), buf->size(), read_callback.callback()),
+      net::test::IsError(net::ERR_IO_PENDING));
+  int read_result = read_callback.WaitForResult();
+  EXPECT_THAT(read_result, kTestData.size());
+  EXPECT_EQ(kTestData, std::string(buf->data(), read_result));
+}
+
+TEST_F(SharedDictionaryNetworkTransactionTest,
+       RequireKnownRootCertCheckSuccess) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      network::features::kCompressionDictionaryTransportRequireKnownRootCert);
+  DummySharedDictionaryManager manager(
+      base::MakeRefCounted<DummySharedDictionaryStorage>(
+          std::make_unique<DummySyncDictionary>(kTestDictionaryData)));
+
+  // The BrotliTestTransactionHandler `new_mock_transaction.handler` will check
+  // that the there is a correct sec-available-dictionary request header.
+  net::MockTransaction new_mock_transaction = kBrotliDictionaryTestTransaction;
+  new_mock_transaction.transport_info.cert_is_issued_by_known_root = true;
+
+  net::AddMockTransaction(&new_mock_transaction);
+
+  net::MockHttpRequest request(new_mock_transaction);
+  SharedDictionaryNetworkTransaction transaction(manager,
+                                                 CreateNetworkTransaction());
+  transaction.SetIsSharedDictionaryReadAllowedCallback(
+      base::BindRepeating([]() { return true; }));
+
+  net::TestCompletionCallback start_callback;
+  ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
+                                net::NetLogWithSource()),
+              net::test::IsError(net::ERR_IO_PENDING));
+  EXPECT_THAT(start_callback.WaitForResult(), net::test::IsError(net::OK));
+
+  scoped_refptr<net::IOBufferWithSize> buf =
+      base::MakeRefCounted<net::IOBufferWithSize>(kDefaultBufferSize);
+  net::TestCompletionCallback read_callback;
+  ASSERT_THAT(
+      transaction.Read(buf.get(), buf->size(), read_callback.callback()),
+      net::test::IsError(net::ERR_IO_PENDING));
+  int read_result = read_callback.WaitForResult();
+  EXPECT_THAT(read_result, kTestData.size());
+  EXPECT_EQ(kTestData, std::string(buf->data(), read_result));
+}
+
+TEST_F(SharedDictionaryNetworkTransactionTest,
+       RequireKnownRootCertCheckSuccessForLocalhost) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      network::features::kCompressionDictionaryTransportRequireKnownRootCert);
+  DummySharedDictionaryManager manager(
+      base::MakeRefCounted<DummySharedDictionaryStorage>(
+          std::make_unique<DummySyncDictionary>(kTestDictionaryData)));
+
+  // The BrotliTestTransactionHandler `new_mock_transaction.handler` will check
+  // that the there is a correct sec-available-dictionary request header.
+  net::MockTransaction new_mock_transaction = kBrotliDictionaryTestTransaction;
+  new_mock_transaction.url = "http:///localhost:1234/test";
+  new_mock_transaction.transport_info.cert_is_issued_by_known_root = false;
+
+  net::AddMockTransaction(&new_mock_transaction);
+
+  net::MockHttpRequest request(new_mock_transaction);
+  SharedDictionaryNetworkTransaction transaction(manager,
+                                                 CreateNetworkTransaction());
+  transaction.SetIsSharedDictionaryReadAllowedCallback(
+      base::BindRepeating([]() { return true; }));
 
   net::TestCompletionCallback start_callback;
   ASSERT_THAT(transaction.Start(&request, start_callback.callback(),

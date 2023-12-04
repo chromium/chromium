@@ -922,6 +922,13 @@ const char kCompressionDictionaryTransportOverHttp1Description[] =
     "When this is enabled, Chromium can use stored shared dictionaries even "
     "when the connection is using HTTP/1 for non-localhost requests.";
 
+const char kCompressionDictionaryTransportRequireKnownRootCertName[] =
+    "Compression dictionary transport require knwon root cert";
+const char kCompressionDictionaryTransportRequireKnownRootCertDescription[] =
+    "When this is enabled, Chromium can use stored shared dictionaries only "
+    "when the connection is using a well known root cert or when the server is "
+    "a localhost.";
+
 const char kForceColorProfileSRGB[] = "sRGB";
 const char kForceColorProfileP3[] = "Display P3 D65";
 const char kForceColorProfileRec2020[] = "ITU-R BT.2020";

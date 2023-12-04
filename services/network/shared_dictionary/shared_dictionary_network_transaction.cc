@@ -195,6 +195,13 @@ void SharedDictionaryNetworkTransaction::ModifyRequestHeaders(
     shared_dictionary_.reset();
     return;
   }
+  if (base::FeatureList::IsEnabled(
+          network::features::
+              kCompressionDictionaryTransportRequireKnownRootCert) &&
+      !cert_is_issued_by_known_root_ && !net::IsLocalhost(request_url)) {
+    shared_dictionary_.reset();
+    return;
+  }
 
   // `is_shared_dictionary_read_allowed_callback_` triggers a notification of
   // the shared dictionary usage to the browser process. So we need to call
