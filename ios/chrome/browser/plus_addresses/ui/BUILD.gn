@@ -39,6 +39,7 @@ source_set("eg2_tests") {
     ":constants",
     "//components/plus_addresses",
     "//components/strings:components_strings_grit",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",

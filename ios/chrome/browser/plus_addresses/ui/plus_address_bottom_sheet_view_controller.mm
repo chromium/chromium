@@ -9,8 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/types/expected.h"
 #import "components/plus_addresses/features.h"
-#import "components/plus_addresses/plus_address_service.h"
-#import "components/plus_addresses/plus_address_types.h"
+#import "components/plus_addresses/plus_address_metrics.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_constants.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_delegate.h"
@@ -130,6 +129,8 @@ NSAttributedString* DescriptionMessage() {
   // fill any fields on the page.
   self.primaryActionButton.enabled = NO;
   [_delegate reservePlusAddress];
+  plus_addresses::PlusAddressMetrics::RecordModalEvent(
+      plus_addresses::PlusAddressMetrics::PlusAddressModalEvent::kModalShown);
 }
 
 #pragma mark - ConfirmationAlertActionHandler
@@ -139,11 +140,17 @@ NSAttributedString* DescriptionMessage() {
   // Make sure the user perceives that something is happening via a spinner.
   [_activityIndicator startAnimating];
   [_delegate confirmPlusAddress];
+  plus_addresses::PlusAddressMetrics::RecordModalEvent(
+      plus_addresses::PlusAddressMetrics::PlusAddressModalEvent::
+          kModalConfirmed);
 }
 
 - (void)confirmationAlertSecondaryAction {
   // The cancel button was tapped, which dismisses the bottom sheet.
   // Call out to the command handler to hide the view and stop the coordinator.
+  plus_addresses::PlusAddressMetrics::RecordModalEvent(
+      plus_addresses::PlusAddressMetrics::PlusAddressModalEvent::
+          kModalCanceled);
   [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
 }
 
@@ -189,6 +196,11 @@ NSAttributedString* DescriptionMessage() {
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
+  // TODO(crbug.com/1467623): separate out the cancel click from other exit
+  // patterns, on all platforms.
+  plus_addresses::PlusAddressMetrics::RecordModalEvent(
+      plus_addresses::PlusAddressMetrics::PlusAddressModalEvent::
+          kModalCanceled);
   [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
 }
 

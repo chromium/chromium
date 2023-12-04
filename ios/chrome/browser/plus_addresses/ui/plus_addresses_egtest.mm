@@ -5,7 +5,9 @@
 #import "base/strings/escape.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/plus_addresses/plus_address_metrics.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -26,6 +28,18 @@ namespace {
 const char kEmailFormUrl[] = "/email_signup_form.html";
 const char kEmailFieldId[] = "email";
 const char kFakeSuggestionLabel[] = "plus?";
+
+// Assert that a given plus address modal event of type `event_type` occurred
+// `count` times.
+void ExpectModalHistogram(
+    plus_addresses::PlusAddressMetrics::PlusAddressModalEvent event_type,
+    int count) {
+  NSError* error =
+      [MetricsAppInterface expectCount:count
+                             forBucket:static_cast<int>(event_type)
+                          forHistogram:@"Autofill.PlusAddresses.Modal.Events"];
+  GREYAssertNil(error, @"Failed to record modal event histogram");
+}
 }  // namespace
 
 // Test suite that tests plus addresses functionality.
@@ -40,13 +54,20 @@ const char kFakeSuggestionLabel[] = "plus?";
   [super setUp];
   net::test_server::RegisterDefaultHandlers(self.testServer);
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Failed to set up histogram tester.");
   // Ensure a fake identity is available, as this is required by the
   // plus_addresses feature.
-
   _fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:_fakeIdentity];
 
   [self loadPlusAddressEligiblePage];
+}
+
+- (void)tearDown {
+  [super tearDown];
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Cannot reset histogram tester.");
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -122,6 +143,13 @@ id<GREYMatcher> GetMatcherForSettingsLink() {
 
   // Click the cancel button, dismissing the bottom sheet.
   [[EarlGrey selectElementWithMatcher:cancelButton] performAction:grey_tap()];
+
+  ExpectModalHistogram(
+      plus_addresses::PlusAddressMetrics::PlusAddressModalEvent::kModalShown,
+      1);
+  ExpectModalHistogram(
+      plus_addresses::PlusAddressMetrics::PlusAddressModalEvent::kModalCanceled,
+      1);
 }
 
 - (void)testPlusAddressBottomSheetSettingsLink {
@@ -181,6 +209,15 @@ id<GREYMatcher> GetMatcherForSettingsLink() {
   // It should no longer be shown.
   [[EarlGrey selectElementWithMatcher:primary_email_label]
       assertWithMatcher:grey_notVisible()];
+
+  ExpectModalHistogram(
+      plus_addresses::PlusAddressMetrics::PlusAddressModalEvent::kModalShown,
+      1);
+  // TODO(crbug.com/1467623): separate out the cancel click from other exit
+  // patterns, on all platforms.
+  ExpectModalHistogram(
+      plus_addresses::PlusAddressMetrics::PlusAddressModalEvent::kModalCanceled,
+      1);
 }
 
 @end
