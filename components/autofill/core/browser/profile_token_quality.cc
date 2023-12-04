@@ -274,7 +274,6 @@ ObservationType ProfileTokenQuality::GetObservationTypeFromField(
 
   // Since the `autofill_source_profile_guid()` is set and the field is not
   // autofilled anymore, it must have been previously autofilled.
-  CHECK(field.previously_autofilled());
   return GetObservationTypeForEditedField(type, current_field_value, *profile_,
                                           other_profiles, app_locale);
 }
