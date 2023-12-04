@@ -109,6 +109,9 @@ bool ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::Lock() {
   base::AutoLock lock(manager_->lock_);
   DCHECK(!is_locked());
 
+  recordreplay::Assert(
+    "[RUN-2947-2951] ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::Lock %d",
+    span_ ? recordreplay::PointerId(span_->shared_memory()) : -1);
   if (span_ && manager_->LockSpan(span_.get()))
     last_locked_ = base::TimeTicks();
 
@@ -131,6 +134,12 @@ std::unique_ptr<DiscardableSharedMemoryHeap::Span>
 ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::Purge(
     base::TimeTicks min_ticks) {
   DCHECK(span_);
+
+  recordreplay::Assert(
+    "[RUN-2947-2951] ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::Purge %d %d %d",
+    is_locked(),
+    last_locked_ > min_ticks,
+    span_ ? recordreplay::PointerId(span_->shared_memory()) : -1);
 
   if (is_locked())
     return nullptr;
@@ -464,6 +473,9 @@ void ClientDiscardableSharedMemoryManager::PurgeUnlockedMemory(
 
     auto now = base::TimeTicks::Now();
 
+    recordreplay::Assert(
+      "[RUN-2947-2951] ClientDiscardableSharedMemoryManager::PurgeUnlockedMemory A %zu",
+      allocated_memory_.size());
     // Iterate this way in order to avoid invalidating the iterator while
     // removing elements from |allocated_memory_| as we iterate over it.
     for (auto it = allocated_memory_.begin(); it != allocated_memory_.end();
@@ -484,6 +496,9 @@ void ClientDiscardableSharedMemoryManager::PurgeUnlockedMemory(
       }
     }
   }
+  
+  recordreplay::Assert(
+    "[RUN-2947-2951] ClientDiscardableSharedMemoryManager::PurgeUnlockedMemory B");
 
   ReleaseFreeMemory();
 }
@@ -654,6 +669,9 @@ void ClientDiscardableSharedMemoryManager::DeletedDiscardableSharedMemory(
 void ClientDiscardableSharedMemoryManager::MemoryUsageChanged(
     size_t new_bytes_total,
     size_t new_bytes_free) const {
+  recordreplay::Assert(
+    "[RUN-2947-2951] ClientDiscardableSharedMemoryManager::MemoryUsageChanged %zu %zu",
+    new_bytes_total, new_bytes_free);
   static crash_reporter::CrashKeyString<24> discardable_memory_allocated(
       "discardable-memory-allocated");
   discardable_memory_allocated.Set(base::NumberToString(new_bytes_total));
