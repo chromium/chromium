@@ -2283,14 +2283,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ComponentUpdater.Calls" enum="ComponentUpdaterCalls"
-    expires_after="2022-12-20">
+    expires_after="2024-05-01">
   <owner>sorin@chromium.org</owner>
   <owner>src/components/component_updater/OWNERS</owner>
   <summary>
     The number of times the component updater called UpdateClient::Install or
     UpdateClient::Update. These correspond to the number of manual component
     update checks performed as a result of a user action, and the number of
-    automated component update checks.
+    automated component update checks. Warning: this histogram was expired from
+    2022-12-20 to 2023-12-04; data may be missing.
   </summary>
 </histogram>
 
@@ -2330,11 +2331,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ComponentUpdater.UpdateCompleteTime" units="ms"
-    expires_after="2022-12-20">
+    expires_after="2024-05-01">
   <owner>sorin@chromium.org</owner>
   <owner>src/components/component_updater/OWNERS</owner>
   <summary>
-    Time to complete an Install or an Update component update call.
+    Time to complete an Install or an Update component update call. Warning:
+    this histogram was expired from 2022-12-20 to 2023-12-04; data may be
+    missing.
   </summary>
 </histogram>
 
