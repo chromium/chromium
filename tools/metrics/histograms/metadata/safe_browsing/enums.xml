@@ -224,6 +224,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="SUCCESS_FALLBACK_REAL_TIME_THROTTLED"/>
   <int value="4" label="FAILURE_NETWORK_UNAVAILABLE"/>
   <int value="5" label="FAILURE_BLOCK_LIST_UNAVAILABLE"/>
+  <int value="6" label="FAILURE_INVALID_URL"/>
 </enum>
 
 <enum name="SafeBrowsingApiThreatAttribute">
@@ -233,9 +234,9 @@ chromium-metrics-reviews@google.com.
 
 <enum name="SafeBrowsingApiThreatType">
   <int value="0" label="NO_THREAT"/>
+  <int value="2" label="SOCIAL_ENGINEERING"/>
   <int value="3" label="UNWANTED_SOFTWARE"/>
   <int value="4" label="POTENTIALLY_HARMFUL_APPLICATION"/>
-  <int value="5" label="SOCIAL_ENGINEERING"/>
   <int value="13" label="SUBRESOURCE_FILTER"/>
   <int value="15" label="BILLING"/>
 </enum>

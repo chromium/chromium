@@ -64,9 +64,9 @@ enum class SafeBrowsingApiLookupResult {
 // values are changed.
 enum class SafeBrowsingJavaThreatType {
   NO_THREAT = 0,
+  SOCIAL_ENGINEERING = 2,
   UNWANTED_SOFTWARE = 3,
   POTENTIALLY_HARMFUL_APPLICATION = 4,
-  SOCIAL_ENGINEERING = 5,
   SUBRESOURCE_FILTER = 13,
   BILLING = 15
 };
@@ -93,7 +93,8 @@ enum class SafeBrowsingJavaResponseStatus {
   SUCCESS_FALLBACK_REAL_TIME_TIMEOUT = 2,
   SUCCESS_FALLBACK_REAL_TIME_THROTTLED = 3,
   FAILURE_NETWORK_UNAVAILABLE = 4,
-  FAILURE_BLOCK_LIST_UNAVAILABLE = 5
+  FAILURE_BLOCK_LIST_UNAVAILABLE = 5,
+  FAILURE_INVALID_URL = 6
 };
 
 // The result logged when validating the response from SafeBrowsing API.

@@ -108,7 +108,7 @@ void ReportSafeBrowsingJavaResponse(
     return;
   }
   ReportUmaHistogramSparseWithAndWithoutSuffix(
-      "SafeBrowsing.GmsSafeBrowsingApi.ThreatType", suffix,
+      "SafeBrowsing.GmsSafeBrowsingApi.ThreatType2", suffix,
       static_cast<int>(threat_type));
   base::UmaHistogramCounts100(
       "SafeBrowsing.GmsSafeBrowsingApi.ThreatAttributeCount",
@@ -149,9 +149,9 @@ SafeBrowsingJavaValidationResult GetJavaValidationResult(
   bool is_threat_type_recognized = false;
   switch (threat_type) {
     case SafeBrowsingJavaThreatType::NO_THREAT:
+    case SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING:
     case SafeBrowsingJavaThreatType::UNWANTED_SOFTWARE:
     case SafeBrowsingJavaThreatType::POTENTIALLY_HARMFUL_APPLICATION:
-    case SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING:
     case SafeBrowsingJavaThreatType::SUBRESOURCE_FILTER:
     case SafeBrowsingJavaThreatType::BILLING:
       is_threat_type_recognized = true;
@@ -184,6 +184,7 @@ SafeBrowsingJavaValidationResult GetJavaValidationResult(
     case SafeBrowsingJavaResponseStatus::SUCCESS_FALLBACK_REAL_TIME_THROTTLED:
     case SafeBrowsingJavaResponseStatus::FAILURE_NETWORK_UNAVAILABLE:
     case SafeBrowsingJavaResponseStatus::FAILURE_BLOCK_LIST_UNAVAILABLE:
+    case SafeBrowsingJavaResponseStatus::FAILURE_INVALID_URL:
       is_reponse_status_recognized = true;
       break;
   }
@@ -254,6 +255,7 @@ bool IsLookupSuccessful(SafeBrowsingApiLookupResult lookup_result,
       break;
     case SafeBrowsingJavaResponseStatus::FAILURE_NETWORK_UNAVAILABLE:
     case SafeBrowsingJavaResponseStatus::FAILURE_BLOCK_LIST_UNAVAILABLE:
+    case SafeBrowsingJavaResponseStatus::FAILURE_INVALID_URL:
       is_response_status_success = false;
       break;
   }
@@ -317,12 +319,12 @@ SBThreatType SafeBrowsingJavaToSBThreatType(
   switch (java_threat_num) {
     case SafeBrowsingJavaThreatType::NO_THREAT:
       return SB_THREAT_TYPE_SAFE;
+    case SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING:
+      return SB_THREAT_TYPE_URL_PHISHING;
     case SafeBrowsingJavaThreatType::UNWANTED_SOFTWARE:
       return SB_THREAT_TYPE_URL_UNWANTED;
     case SafeBrowsingJavaThreatType::POTENTIALLY_HARMFUL_APPLICATION:
       return SB_THREAT_TYPE_URL_MALWARE;
-    case SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING:
-      return SB_THREAT_TYPE_URL_PHISHING;
     case SafeBrowsingJavaThreatType::SUBRESOURCE_FILTER:
       return SB_THREAT_TYPE_SUBRESOURCE_FILTER;
     case SafeBrowsingJavaThreatType::BILLING:
@@ -335,12 +337,12 @@ SBThreatType SafeBrowsingJavaToSBThreatType(
 SafeBrowsingJavaThreatType SBThreatTypeToSafeBrowsingApiJavaThreatType(
     const SBThreatType& sb_threat_type) {
   switch (sb_threat_type) {
+    case SB_THREAT_TYPE_URL_PHISHING:
+      return SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING;
     case SB_THREAT_TYPE_URL_UNWANTED:
       return SafeBrowsingJavaThreatType::UNWANTED_SOFTWARE;
     case SB_THREAT_TYPE_URL_MALWARE:
       return SafeBrowsingJavaThreatType::POTENTIALLY_HARMFUL_APPLICATION;
-    case SB_THREAT_TYPE_URL_PHISHING:
-      return SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING;
     case SB_THREAT_TYPE_SUBRESOURCE_FILTER:
       return SafeBrowsingJavaThreatType::SUBRESOURCE_FILTER;
     case SB_THREAT_TYPE_BILLING:

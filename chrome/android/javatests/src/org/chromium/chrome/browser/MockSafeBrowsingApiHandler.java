@@ -18,7 +18,7 @@ public class MockSafeBrowsingApiHandler implements SafeBrowsingApiHandler {
     private static final long DEFAULT_CHECK_DELTA_US = 15;
 
     // These codes are defined in safe_browsing_api_handler_util.h
-    public static final int SOCIAL_ENGINEERING_CODE = 5;
+    public static final int SOCIAL_ENGINEERING_CODE = 2;
     private static final int NO_THREAT_CODE = 0;
     private static final int SUCCESS_RESPONSE_STATUS_CODE = 0;
 

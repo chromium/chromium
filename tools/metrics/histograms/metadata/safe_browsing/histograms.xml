@@ -1092,14 +1092,15 @@ chromium-metrics-reviews@google.com.
   <token key="Protocol" variants="GmsSafeBrowsingApiProtocol"/>
 </histogram>
 
-<histogram name="SafeBrowsing.GmsSafeBrowsingApi.ThreatType{Protocol}"
+<histogram name="SafeBrowsing.GmsSafeBrowsingApi.ThreatType2{Protocol}"
     enum="SafeBrowsingApiThreatType" expires_after="2024-05-12">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the threat type from SafeBrowsing API if the {Protocol} lookup
     result is successful. In rare circumstance (e.g. version mismatch), there
-    may be out of range samples in this histogram.
+    may be out of range samples in this histogram. The second version is
+    introduced because SOCIAL_ENGINEERING is switched from 2 to 5.
   </summary>
   <token key="Protocol" variants="GmsSafeBrowsingApiProtocol"/>
 </histogram>

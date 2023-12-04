@@ -46,9 +46,9 @@ std::vector<SafetyNetJavaThreatType> GetAllSafetyNetThreatsOfInterest() {
 }
 
 std::vector<SafeBrowsingJavaThreatType> GetAllSafeBrowsingThreatTypes() {
-  return {SafeBrowsingJavaThreatType::UNWANTED_SOFTWARE,
+  return {SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING,
+          SafeBrowsingJavaThreatType::UNWANTED_SOFTWARE,
           SafeBrowsingJavaThreatType::POTENTIALLY_HARMFUL_APPLICATION,
-          SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING,
           SafeBrowsingJavaThreatType::BILLING};
 }
 
@@ -234,19 +234,19 @@ class SafeBrowsingApiHandlerBridgeTest : public testing::Test {
         /*expected_bucket_count=*/1);
     if (expected_threat_type.has_value()) {
       histogram_tester_.ExpectUniqueSample(
-          "SafeBrowsing.GmsSafeBrowsingApi.ThreatType",
+          "SafeBrowsing.GmsSafeBrowsingApi.ThreatType2",
           /*sample=*/expected_threat_type.value(),
           /*expected_bucket_count=*/1);
       histogram_tester_.ExpectUniqueSample(
-          "SafeBrowsing.GmsSafeBrowsingApi.ThreatType" + suffix,
+          "SafeBrowsing.GmsSafeBrowsingApi.ThreatType2" + suffix,
           /*sample=*/expected_threat_type.value(),
           /*expected_bucket_count=*/1);
     } else {
       histogram_tester_.ExpectTotalCount(
-          /*name=*/"SafeBrowsing.GmsSafeBrowsingApi.ThreatType",
+          /*name=*/"SafeBrowsing.GmsSafeBrowsingApi.ThreatType2",
           /*expected_count=*/0);
       histogram_tester_.ExpectTotalCount(
-          /*name=*/"SafeBrowsing.GmsSafeBrowsingApi.ThreatType" + suffix,
+          /*name=*/"SafeBrowsing.GmsSafeBrowsingApi.ThreatType2" + suffix,
           /*expected_count=*/0);
     }
     if (expected_threat_attribute.has_value()) {
@@ -417,12 +417,12 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest,
       /*sample=*/kExpectedSafeBrowsingCheckDeltaMicroseconds,
       /*expected_bucket_count=*/2);
   histogram_tester_.ExpectBucketCount(
-      "SafeBrowsing.GmsSafeBrowsingApi.ThreatType",
+      "SafeBrowsing.GmsSafeBrowsingApi.ThreatType2",
       /*sample=*/
       static_cast<int>(SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING),
       /*expected_count=*/1);
   histogram_tester_.ExpectBucketCount(
-      "SafeBrowsing.GmsSafeBrowsingApi.ThreatType",
+      "SafeBrowsing.GmsSafeBrowsingApi.ThreatType2",
       /*sample=*/
       static_cast<int>(SafeBrowsingJavaThreatType::NO_THREAT),
       /*expected_count=*/1);
