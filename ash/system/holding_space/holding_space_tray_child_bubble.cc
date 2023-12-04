@@ -36,20 +36,26 @@ constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(167);
 // Helpers ---------------------------------------------------------------------
 
 // Returns a callback which deletes the associated animation observer after
-// running another `callback`.
-using AnimationCompletedCallback = base::OnceCallback<void(bool aborted)>;
+// running another `callback` by returning true. This workaround is needed
+// because callbacks that bind to a WeakPtr receiver cannot return a non-void
+// type.
+//
+// TODO(crbug.com/1506856): It would be nice if CallbackLayerAnimationObserver
+// took a OnceCallback and used that as an implicit signal to self-delete the
+// observer on completion. Until then, this needs to use a RepeatingCallback,
+// even though the callback only runs once.
+using AnimationCompletedCallback = base::RepeatingCallback<void(bool aborted)>;
 base::RepeatingCallback<bool(const ui::CallbackLayerAnimationObserver&)>
 DeleteObserverAfterRunning(AnimationCompletedCallback callback) {
   return base::BindRepeating(
-      [](AnimationCompletedCallback callback,
+      [](const AnimationCompletedCallback& callback,
          const ui::CallbackLayerAnimationObserver& observer) {
-        // NOTE: It's safe to move `callback` since this code will only run
-        // once due to deletion of the associated `observer`. The `observer` is
-        // deleted by returning `true`.
-        std::move(callback).Run(/*aborted=*/observer.aborted_count() > 0);
+        callback.Run(/*aborted=*/observer.aborted_count() > 0);
+        // Returning true is load-bearing; when returning true, the observer
+        // self-deletes so this callback will only ever run at most once.
         return true;
       },
-      base::Passed(std::move(callback)));
+      std::move(callback));
 }
 
 // Returns whether the given holding space item views `section` has content
@@ -388,9 +394,10 @@ void HoldingSpaceTrayChildBubble::MaybeAnimateIn() {
 
   // NOTE: `animate_in_observer` is deleted after `OnAnimateInCompleted()`.
   ui::CallbackLayerAnimationObserver* animate_in_observer =
-      new ui::CallbackLayerAnimationObserver(DeleteObserverAfterRunning(
-          base::BindOnce(&HoldingSpaceTrayChildBubble::OnAnimateInCompleted,
-                         weak_factory_.GetWeakPtr())));
+      new ui::CallbackLayerAnimationObserver(
+          DeleteObserverAfterRunning(base::BindRepeating(
+              &HoldingSpaceTrayChildBubble::OnAnimateInCompleted,
+              weak_factory_.GetWeakPtr())));
 
   AnimateIn(animate_in_observer);
   animate_in_observer->SetActive();
@@ -407,9 +414,10 @@ void HoldingSpaceTrayChildBubble::MaybeAnimateOut() {
 
   // NOTE: `animate_out_observer` is deleted after `OnAnimateOutCompleted()`.
   ui::CallbackLayerAnimationObserver* animate_out_observer =
-      new ui::CallbackLayerAnimationObserver(DeleteObserverAfterRunning(
-          base::BindOnce(&HoldingSpaceTrayChildBubble::OnAnimateOutCompleted,
-                         weak_factory_.GetWeakPtr())));
+      new ui::CallbackLayerAnimationObserver(
+          DeleteObserverAfterRunning(base::BindRepeating(
+              &HoldingSpaceTrayChildBubble::OnAnimateOutCompleted,
+              weak_factory_.GetWeakPtr())));
 
   AnimateOut(animate_out_observer);
   animate_out_observer->SetActive();
