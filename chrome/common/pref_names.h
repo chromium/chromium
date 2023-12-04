@@ -2405,10 +2405,6 @@ inline constexpr char kWebAppsUninstalledDefaultChromeApps[] =
 // outlive the app installation and uninstallation.
 inline constexpr char kWebAppsPreferences[] = "web_apps.web_app_ids";
 
-// Dictionary that maps the origin of a web app to other preferences related to
-// its isolation requirements.
-inline constexpr char kWebAppsIsolationState[] = "web_apps.isolation_state";
-
 // The default audio capture device used by the Media content setting.
 // TODO(crbug.com/311205211): Remove this once users have been migrated to
 // `kAudioInputUserPreferenceRanking`.

@@ -171,13 +171,6 @@ void RemoveWebAppPref(PrefService* pref_service,
 //     since the Windows epoch, using base::TimeToValue().
 //     "IPH_last_ignore_time": "13249617864945500",
 //   },
-//   isolation_state is managed by isolation_prefs_utils
-//   "isolation_state": {
-//     "<origin>": {
-//       "storage_isolation_key": "abc123",
-//     },
-//   }
-//
 
 void WebAppPrefsUtilsRegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
