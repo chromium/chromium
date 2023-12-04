@@ -7,10 +7,13 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/actions/actions.h"
 #include "ui/base/class_property.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -21,6 +24,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/action_view_controller.h"
+#include "ui/views/action_view_interface.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_impl.h"
@@ -645,6 +649,10 @@ void Button::OnBlur() {
   }
 }
 
+std::unique_ptr<ActionViewInterface> Button::GetActionViewInterface() {
+  return std::make_unique<ButtonActionViewInterface>(this);
+}
+
 void Button::AnimationProgressed(const gfx::Animation* animation) {
   SchedulePaint();
 }
@@ -783,12 +791,22 @@ void Button::ReleaseAnchorHighlight() {
   }
 }
 
-// TOOD(crbug.com/147023): Implement ActionItemChangedImpl for
-// ButtonActionViewController.
-template <>
-void ActionViewControllerTemplate<Button, ActionViewControllerTemplate<View>>::
-    ActionItemChangedImpl(Button* action_view,
-                          actions::ActionItem* action_item) {}
+ButtonActionViewInterface::ButtonActionViewInterface(Button* action_view)
+    : BaseActionViewInterface(action_view), action_view_(action_view) {}
+
+void ButtonActionViewInterface::ActionItemChangedImpl(
+    actions::ActionItem* action_item) {
+  BaseActionViewInterface::ActionItemChangedImpl(action_item);
+  action_view_->SetTooltipText(action_item->GetTooltipText());
+}
+
+void ButtonActionViewInterface::LinkActionTriggerToView(
+    base::RepeatingClosure trigger_action_callback) {
+  if (!action_view_) {
+    return;
+  }
+  action_view_->SetCallback(trigger_action_callback);
+}
 
 BEGIN_METADATA(Button)
 ADD_PROPERTY_METADATA(PressedCallback, Callback)

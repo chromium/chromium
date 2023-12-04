@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
@@ -25,6 +26,7 @@
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/action_view_interface.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button_border.h"
@@ -504,6 +506,10 @@ void LabelButton::RemoveLayerFromRegions(ui::Layer* old_layer) {
   image()->DestroyLayer();
 }
 
+std::unique_ptr<ActionViewInterface> LabelButton::GetActionViewInterface() {
+  return std::make_unique<LabelButtonActionViewInterface>(this);
+}
+
 void LabelButton::GetExtraParams(ui::NativeTheme::ExtraParams* params) const {
   auto& button = absl::get<ui::NativeTheme::ButtonExtraParams>(*params);
   button.checked = false;
@@ -684,6 +690,18 @@ Button::ButtonState LabelButton::ImageStateForState(
 
 void LabelButton::FlipCanvasOnPaintForRTLUIChanged() {
   image_->SetFlipCanvasOnPaintForRTLUI(GetFlipCanvasOnPaintForRTLUI());
+}
+
+LabelButtonActionViewInterface::LabelButtonActionViewInterface(
+    LabelButton* action_view)
+    : ButtonActionViewInterface(action_view), action_view_(action_view) {}
+
+void LabelButtonActionViewInterface::ActionItemChangedImpl(
+    actions::ActionItem* action_item) {
+  ButtonActionViewInterface::ActionItemChangedImpl(action_item);
+  action_view_->SetText(action_item->GetText());
+  action_view_->SetImageModel(action_view_->GetState(),
+                              action_item->GetImage());
 }
 
 BEGIN_METADATA(LabelButton, Button)

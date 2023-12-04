@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/actions/actions.h"
 
 class Browser;
 class SidePanelRegistry;

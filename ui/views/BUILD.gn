@@ -87,6 +87,7 @@ component("views") {
     "accessibility/widget_ax_tree_id_map.h",
     "accessible_pane_view.h",
     "action_view_controller.h",
+    "action_view_interface.h",
     "animation/animation_abort_handle.h",
     "animation/animation_builder.h",
     "animation/animation_delegate_views.h",

@@ -237,6 +237,7 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
       const ViewHierarchyChangedDetails& details) override;
   void OnFocus() override;
   void OnBlur() override;
+  std::unique_ptr<ActionViewInterface> GetActionViewInterface() override;
 
   // Overridden from views::AnimationDelegateViews:
   void AnimationProgressed(const gfx::Animation* animation) override;
@@ -385,15 +386,19 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
   base::WeakPtrFactory<Button> weak_ptr_factory_{this};
 };
 
-template <>
-struct ActionViewControllerSuperClassT<Button> {
-  using SuperClass = ActionViewControllerTemplate<View>;
-};
+class VIEWS_EXPORT ButtonActionViewInterface : public BaseActionViewInterface {
+ public:
+  explicit ButtonActionViewInterface(Button* action_view);
+  ~ButtonActionViewInterface() override = default;
 
-template <>
-void ActionViewControllerTemplate<Button, ActionViewControllerTemplate<View>>::
-    ActionItemChangedImpl(Button* action_view,
-                          actions::ActionItem* action_item);
+  // BaseActionViewInterface:
+  void ActionItemChangedImpl(actions::ActionItem* action_item) override;
+  void LinkActionTriggerToView(
+      base::RepeatingClosure trigger_action_callback) override;
+
+ private:
+  raw_ptr<Button> action_view_;
+};
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Button, View)
 VIEW_BUILDER_PROPERTY(Button::PressedCallback, Callback)

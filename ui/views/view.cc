@@ -30,6 +30,7 @@
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_id_forward.h"
+#include "ui/actions/actions.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -60,6 +61,7 @@
 #include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/accessibility/ax_event_manager.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/action_view_interface.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/buildflags.h"
@@ -3702,11 +3704,17 @@ int View::DefaultFillLayout::GetPreferredHeightForWidth(const View* host,
   return preferred_height;
 }
 
-template <>
-void ActionViewControllerTemplate<View, ActionViewControllerBase>::
-    ActionItemChangedImpl(View* action_view, actions::ActionItem* action_item) {
-  action_view->SetEnabled(action_item->GetEnabled());
-  action_view->SetVisible(action_item->GetVisible());
+std::unique_ptr<ActionViewInterface> View::GetActionViewInterface() {
+  return std::make_unique<BaseActionViewInterface>(this);
+}
+
+BaseActionViewInterface::BaseActionViewInterface(View* action_view)
+    : action_view_(action_view) {}
+
+void BaseActionViewInterface::ActionItemChangedImpl(
+    actions::ActionItem* action_item) {
+  action_view_->SetEnabled(action_item->GetEnabled());
+  action_view_->SetVisible(action_item->GetVisible());
 }
 
 // This block requires the existence of METADATA_HEADER(View) in the class

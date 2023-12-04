@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_switches.h"
@@ -979,6 +980,25 @@ TEST_F(LabelButtonVisualStateTest, ChildWidget) {
   EXPECT_EQ(button()->GetVisualState(), style_of_inactive_widget_);
 #endif
   EXPECT_EQ(child_button->GetVisualState(), Button::STATE_NORMAL);
+}
+
+using LabelButtonActionViewInterfaceTest = ViewsTestBase;
+
+TEST_F(LabelButtonActionViewInterfaceTest, TestActionChanged) {
+  auto label_button = std::make_unique<LabelButton>();
+  const std::u16string test_string = u"test_string";
+  std::unique_ptr<actions::ActionItem> action_item =
+      actions::ActionItem::Builder()
+          .SetText(test_string)
+          .SetActionId(0)
+          .SetEnabled(false)
+          .Build();
+  label_button->GetActionViewInterface()->ActionItemChangedImpl(
+      action_item.get());
+  // Test some properties to ensure that the right ActionViewInterface is linked
+  // to the view.
+  EXPECT_EQ(test_string, label_button->GetText());
+  EXPECT_FALSE(label_button->GetEnabled());
 }
 
 }  // namespace views

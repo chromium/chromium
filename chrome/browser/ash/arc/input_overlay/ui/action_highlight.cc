@@ -15,6 +15,7 @@
 #include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/views/view.h"
 
 namespace arc::input_overlay {
 

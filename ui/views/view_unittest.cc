@@ -6757,4 +6757,17 @@ TEST(ViewTestUnfixtured, ViewLayerSizeStayInSync) {
   view = nullptr;
 }
 
+using BaseActionViewInterfaceTest = ViewsTestBase;
+
+TEST_F(BaseActionViewInterfaceTest, TestActionChanged) {
+  auto action_view = std::make_unique<View>();
+  std::unique_ptr<actions::ActionItem> action_item =
+      actions::ActionItem::Builder().SetActionId(0).SetEnabled(false).Build();
+  action_view->GetActionViewInterface()->ActionItemChangedImpl(
+      action_item.get());
+  // Test some properties to ensure that the right ActionViewInterface is linked
+  // to the view.
+  EXPECT_FALSE(action_view->GetEnabled());
+}
+
 }  // namespace views

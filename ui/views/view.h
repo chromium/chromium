@@ -52,7 +52,7 @@
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/views/action_view_controller.h"
+#include "ui/views/action_view_interface.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/metadata/view_factory.h"
@@ -1590,6 +1590,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   void RemoveObserver(ViewObserver* observer);
   bool HasObserver(const ViewObserver* observer) const;
 
+  virtual std::unique_ptr<ActionViewInterface> GetActionViewInterface();
+
   // http://crbug.com/1162949 : Instrumentation that indicates if this is alive.
   // Callers should not depend on this as it is meant to be temporary.
   enum class LifeCycleState : uint32_t {
@@ -2435,14 +2437,15 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   LifeCycleState life_cycle_state_ = LifeCycleState::kAlive;
 };
 
-template <>
-struct ActionViewControllerSuperClassT<View> {
-  using SuperClass = ActionViewControllerBase;
-};
+class VIEWS_EXPORT BaseActionViewInterface : public ActionViewInterface {
+ public:
+  explicit BaseActionViewInterface(View* action_view);
+  ~BaseActionViewInterface() override = default;
+  void ActionItemChangedImpl(actions::ActionItem* action_item) override;
 
-template <>
-void ActionViewControllerTemplate<View, ActionViewControllerBase>::
-    ActionItemChangedImpl(View* action_view, actions::ActionItem* action_item);
+ private:
+  raw_ptr<View> action_view_;
+};
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, View, BaseView)
 template <typename LayoutManager>

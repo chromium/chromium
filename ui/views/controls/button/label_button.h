@@ -14,6 +14,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/action_view_interface.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button_label.h"
 #include "ui/views/controls/focus_ring.h"
@@ -24,6 +25,10 @@
 #include "ui/views/native_theme_delegate.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
+
+namespace actions {
+class ActionItem;
+}
 
 namespace views {
 
@@ -146,6 +151,7 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
   void AddLayerToRegion(ui::Layer* new_layer,
                         views::LayerRegion region) override;
   void RemoveLayerFromRegions(ui::Layer* old_layer) override;
+  std::unique_ptr<ActionViewInterface> GetActionViewInterface() override;
 
   // NativeThemeDelegate:
   ui::NativeTheme::Part GetThemePart() const override;
@@ -299,6 +305,19 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
       AddFlipCanvasOnPaintForRTLUIChangedCallback(
           base::BindRepeating(&LabelButton::FlipCanvasOnPaintForRTLUIChanged,
                               base::Unretained(this)));
+};
+
+class VIEWS_EXPORT LabelButtonActionViewInterface
+    : public ButtonActionViewInterface {
+ public:
+  explicit LabelButtonActionViewInterface(LabelButton* action_view);
+  ~LabelButtonActionViewInterface() override = default;
+
+  // ButtonActionViewInterface:
+  void ActionItemChangedImpl(actions::ActionItem* action_item) override;
+
+ private:
+  raw_ptr<LabelButton> action_view_;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, LabelButton, Button)
