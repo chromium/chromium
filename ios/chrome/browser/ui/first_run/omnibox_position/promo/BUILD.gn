@@ -18,6 +18,8 @@ source_set("promo") {
     "//ios/chrome/browser/promos_manager:types",
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/ui/first_run/omnibox_position:omnibox_position_ui",
     "//ios/chrome/browser/ui/promos_manager:promos",
   ]

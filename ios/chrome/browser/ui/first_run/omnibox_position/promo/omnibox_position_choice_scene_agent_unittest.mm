@@ -70,7 +70,7 @@ TEST_F(OmniboxPositionChoiceSceneAgentTest, TestPromoRegistration) {
       RegisterPromoForContinuousDisplay(promos_manager::Promo::OmniboxPosition))
       .Times(1);
   EXPECT_CALL(*promos_manager_.get(),
-              DeregisterPromo(promos_manager::Promo::Choice))
+              DeregisterPromo(promos_manager::Promo::OmniboxPosition))
       .Times(0);
 
   // Register the promo when there is no user preferred omnibox position.
@@ -97,4 +97,39 @@ TEST_F(OmniboxPositionChoiceSceneAgentTest, TestNoPromoRegistration) {
   browser_state_->GetPrefs()->SetBoolean(prefs::kBottomOmnibox, false);
 
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+}
+
+// Tests that the promo derigisters when a preferred omnibox position is set.
+TEST_F(OmniboxPositionChoiceSceneAgentTest, TestDeregistration) {
+  // OmniboxPositionChoice is only available on phones.
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
+    return;
+  }
+  scene_state_.UIEnabled = YES;
+  EXPECT_CALL(
+      *promos_manager_.get(),
+      RegisterPromoForContinuousDisplay(promos_manager::Promo::OmniboxPosition))
+      .Times(1);
+  EXPECT_CALL(*promos_manager_.get(),
+              DeregisterPromo(promos_manager::Promo::OmniboxPosition))
+      .Times(0);
+
+  // Register the promo on app foreground when there is no user preferred
+  // omnibox position.
+  browser_state_->GetPrefs()->ClearPref(prefs::kBottomOmnibox);
+
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_CALL(
+      *promos_manager_.get(),
+      RegisterPromoForContinuousDisplay(promos_manager::Promo::OmniboxPosition))
+      .Times(0);
+  EXPECT_CALL(*promos_manager_.get(),
+              DeregisterPromo(promos_manager::Promo::OmniboxPosition))
+      .Times(1);
+
+  // Deregister the promo if a preferred omnibox position is set.
+  browser_state_->GetPrefs()->SetBoolean(prefs::kBottomOmnibox, false);
+
+  scene_state_.UIEnabled = NO;
 }
