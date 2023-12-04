@@ -39,7 +39,7 @@ class ASH_EXPORT SystemTextfield : public views::Textfield {
   void SetSelectionBackgroundColorId(ui::ColorId color_id);
   void SetBackgroundColorId(ui::ColorId color_id);
   void SetPlaceholderTextColorId(ui::ColorId color_id);
-  void SetActiveStateChangedCallback(base::RepeatingCallback<void()> callback);
+  void SetActiveStateChangedCallback(base::RepeatingClosure callback);
 
   // Activates or deactivates the textfield. The textfield can only be edited if
   // it is active.
@@ -101,7 +101,7 @@ class ASH_EXPORT SystemTextfield : public views::Textfield {
   std::optional<ui::ColorId> placeholder_text_color_id_;
 
   // Active state changed callback.
-  base::RepeatingCallback<void()> active_state_changed_callback_;
+  base::RepeatingClosure active_state_changed_callback_;
 
   // Enabled state changed callback.
   base::CallbackListSubscription enabled_changed_subscription_;

@@ -30,7 +30,7 @@ class ASH_EXPORT FocusModeChipCarousel : public views::BoxLayoutView {
   // dangling pointers.
   using ChipPressedCallback = base::RepeatingCallback<void(const api::Task*)>;
 
-  FocusModeChipCarousel(ChipPressedCallback on_chip_pressed);
+  explicit FocusModeChipCarousel(ChipPressedCallback on_chip_pressed);
   FocusModeChipCarousel(const FocusModeChipCarousel&) = delete;
   FocusModeChipCarousel& operator=(const FocusModeChipCarousel&) = delete;
   ~FocusModeChipCarousel() override;

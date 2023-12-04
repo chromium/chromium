@@ -1469,6 +1469,8 @@ component("ash") {
     "system/federated/test_federated_service_controller.h",
     "system/firmware_update/firmware_update_notification_controller.cc",
     "system/firmware_update/firmware_update_notification_controller.h",
+    "system/focus_mode/focus_mode_animations.cc",
+    "system/focus_mode/focus_mode_animations.h",
     "system/focus_mode/focus_mode_chip_carousel.cc",
     "system/focus_mode/focus_mode_chip_carousel.h",
     "system/focus_mode/focus_mode_controller.cc",

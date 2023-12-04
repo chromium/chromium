@@ -12,11 +12,14 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
+#include "ash/style/rounded_container.h"
 #include "ash/style/switch.h"
 #include "ash/style/system_textfield.h"
+#include "ash/system/focus_mode/focus_mode_chip_carousel.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_countdown_view.h"
 #include "ash/system/focus_mode/focus_mode_feature_pod_controller.h"
+#include "ash/system/focus_mode/focus_mode_task_view.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/fake_detailed_view_delegate.h"
@@ -33,12 +36,20 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/message_center/message_center.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
+
+namespace {
+
+constexpr base::TimeDelta kStartAnimationDelay = base::Milliseconds(300);
+
+}  // namespace
 
 class FocusModeDetailedViewTest : public AshTestBase {
  public:
@@ -118,6 +129,10 @@ class FocusModeDetailedViewTest : public AshTestBase {
     return focus_mode_detailed_view_->timer_decrement_button_;
   }
 
+  RoundedContainer* GetDoNotDisturbContainer() {
+    return focus_mode_detailed_view_->do_not_disturb_view_;
+  }
+
   Switch* GetDoNotDisturbToggleButton() {
     CHECK(!FocusModeController::Get()->in_focus_session());
     return focus_mode_detailed_view_->do_not_disturb_toggle_button_;
@@ -133,6 +148,14 @@ class FocusModeDetailedViewTest : public AshTestBase {
 
   PrefService* prefs() {
     return Shell::Get()->session_controller()->GetActivePrefService();
+  }
+
+  FocusModeTaskView* GetTaskView() {
+    return focus_mode_detailed_view_->focus_mode_task_view_;
+  }
+
+  RoundedContainer* GetTaskContainerView() {
+    return focus_mode_detailed_view_->task_view_container_;
   }
 
   FakeDetailedViewDelegate detailed_view_delegate_;
@@ -581,6 +604,34 @@ TEST_F(FocusModeDetailedViewTest, SubLabelVisibility) {
 
   focus_mode_controller->ToggleFocusMode();
   EXPECT_FALSE(IsToggleRowSubLabelVisible());
+}
+
+// Tests that when the user select a task or mark a selected task as completed,
+// the task view container will shrink or expand.
+TEST_F(FocusModeDetailedViewTest, ExpandOrShrinkTaskViewContainer) {
+  auto* task_container_view = GetTaskContainerView();
+  auto* task_view = GetTaskView();
+  auto* chip_carousel = task_view->chip_carousel_for_testing();
+  EXPECT_TRUE(chip_carousel->HasTasks());
+  EXPECT_TRUE(chip_carousel->GetVisible());
+
+  auto* radio_button = task_view->radio_button_for_testing();
+  // `radio_button` is invisible before we select a task title.
+  EXPECT_FALSE(radio_button->GetVisible());
+  const int old_height_before_shrink = task_container_view->bounds().height();
+
+  // 1. Shrink the `task_container_view`.
+  task_view->AddTask(u"my task title");
+  views::test::RunScheduledLayout(task_container_view);
+  EXPECT_TRUE(radio_button->GetVisible());
+  EXPECT_FALSE(chip_carousel->GetVisible());
+  EXPECT_GT(old_height_before_shrink, task_container_view->bounds().height());
+
+  // 2. Expand the `task_container_view`.
+  LeftClickOn(radio_button);
+  task_environment()->FastForwardBy(kStartAnimationDelay);
+  views::test::RunScheduledLayout(task_container_view);
+  EXPECT_EQ(old_height_before_shrink, task_container_view->bounds().height());
 }
 
 }  // namespace ash

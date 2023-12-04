@@ -20,6 +20,7 @@
 #include "ash/style/system_textfield.h"
 #include "ash/style/system_textfield_controller.h"
 #include "ash/style/typography.h"
+#include "ash/system/focus_mode/focus_mode_animations.h"
 #include "ash/system/focus_mode/focus_mode_countdown_view.h"
 #include "ash/system/focus_mode/focus_mode_task_view.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
@@ -28,6 +29,7 @@
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tri_view.h"
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
+#include "base/check_op.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -36,6 +38,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
@@ -283,10 +286,28 @@ FocusModeDetailedView::FocusModeDetailedView(DetailedViewDelegate* delegate)
   }
 
   focus_mode_controller->AddObserver(this);
+  task_view_container_->AddObserver(this);
 }
 
 FocusModeDetailedView::~FocusModeDetailedView() {
+  task_view_container_->RemoveObserver(this);
   FocusModeController::Get()->RemoveObserver(this);
+}
+
+void FocusModeDetailedView::OnViewBoundsChanged(views::View* observed_view) {
+  DCHECK_EQ(task_view_container_, observed_view);
+
+  const int old_height = task_view_container_height_;
+  task_view_container_height_ = task_view_container_->bounds().height();
+  // Skip the animations during the first time the user opens the
+  // `FocusModeDetailedView`.
+  const int shift_height = old_height - task_view_container_height_;
+  if (old_height == 0) {
+    return;
+  }
+  PerformTaskContainerViewResizeAnimation(task_view_container_->layer(),
+                                          old_height);
+  OnTaskViewAnimate(shift_height);
 }
 
 void FocusModeDetailedView::AddedToWidget() {
@@ -533,16 +554,18 @@ void FocusModeDetailedView::UpdateTimerView(bool in_focus_session) {
 }
 
 void FocusModeDetailedView::CreateTaskView() {
-  auto* task_view_container =
+  task_view_container_ =
       scroll_content()->AddChildView(std::make_unique<RoundedContainer>(
           RoundedContainer::Behavior::kAllRounded));
-  task_view_container->SetProperty(views::kMarginsKey,
-                                   kDisconnectedContainerMargins);
-  task_view_container->SetBorderInsets(kTaskViewContainerInsets);
+  task_view_container_->SetProperty(views::kMarginsKey,
+                                    kDisconnectedContainerMargins);
+  task_view_container_->SetBorderInsets(kTaskViewContainerInsets);
+  task_view_container_->SetPaintToLayer();
+  task_view_container_->layer()->SetFillsBoundsOpaquely(false);
 
   // Create the task header.
   auto* task_view_header =
-      task_view_container->AddChildView(std::make_unique<views::Label>());
+      task_view_container_->AddChildView(std::make_unique<views::Label>());
   task_view_header->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_SUBHEADER));
   task_view_header->SetHorizontalAlignment(
@@ -553,7 +576,23 @@ void FocusModeDetailedView::CreateTaskView() {
                                         *task_view_header);
 
   // Create the focus mode task view.
-  task_view_container->AddChildView(std::make_unique<FocusModeTaskView>());
+  focus_mode_task_view_ =
+      task_view_container_->AddChildView(std::make_unique<FocusModeTaskView>());
+}
+
+void FocusModeDetailedView::OnTaskViewAnimate(const int shift_height) {
+  std::vector<views::View*> animatable_views;
+
+  // Currently, we only have the `do_not_disturb_view_` below the task view
+  // container. We only need to insert a new added view into this map in future.
+  if (do_not_disturb_view_->GetVisible()) {
+    animatable_views.push_back(do_not_disturb_view_);
+  }
+
+  if (animatable_views.empty()) {
+    return;
+  }
+  PerformViewsVerticalShitfAnimation(animatable_views, shift_height);
 }
 
 void FocusModeDetailedView::CreateDoNotDisturbContainer() {

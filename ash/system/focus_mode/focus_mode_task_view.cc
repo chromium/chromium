@@ -38,6 +38,8 @@ constexpr int kUnselectedStateBoxCornerRadius = 4;
 constexpr auto kUnselectedStateBoxInsets = gfx::Insets::TLBR(4, 8, 4, 16);
 constexpr auto kUnselectedStateTextfieldInsets = gfx::Insets::TLBR(0, 8, 0, 0);
 
+constexpr base::TimeDelta kStartAnimationDelay = base::Milliseconds(300);
+
 }  // namespace
 
 //---------------------------------------------------------------------
@@ -250,6 +252,7 @@ void FocusModeTaskView::SelectTask(const api::Task* task) {
 }
 
 void FocusModeTaskView::OnCompleteTask() {
+  radio_button_->SetEnabled(false);
   radio_button_->SetImageModel(
       views::Button::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(kDoneIcon, cros_tokens::kCrosSysPrimary,
@@ -262,7 +265,11 @@ void FocusModeTaskView::OnCompleteTask() {
   task_title_.clear();
   FocusModeController::Get()->set_selected_task_title(task_title_);
 
-  UpdateStyle(/*show_selected_state=*/false);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&FocusModeTaskView::UpdateStyle,
+                     weak_factory_.GetWeakPtr(), false),
+      kStartAnimationDelay);
 }
 
 void FocusModeTaskView::OnDeselectButtonPressed() {
@@ -311,15 +318,7 @@ void FocusModeTaskView::UpdateStyle(bool show_selected_state) {
                                 cros_tokens::kCrosSysInputFieldOnShaded,
                                 kUnselectedStateBoxCornerRadius));
 
-  textfield_container_->SetBorder(views::CreateEmptyBorder(
-      show_selected_state ? kSelectedStateBoxInsets
-                          : kUnselectedStateBoxInsets));
-  textfield_container_->SetBackground(
-      show_selected_state ? nullptr
-                          : views::CreateThemedRoundedRectBackground(
-                                cros_tokens::kCrosSysInputFieldOnShaded,
-                                kUnselectedStateBoxCornerRadius));
-
+  radio_button_->SetEnabled(true);
   radio_button_->SetVisible(show_selected_state);
   deselect_button_->SetVisible(show_selected_state);
   add_task_button_->SetVisible(!show_selected_state);

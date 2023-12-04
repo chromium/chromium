@@ -191,7 +191,7 @@ void SystemTextfield::SetPlaceholderTextColorId(ui::ColorId color_id) {
 }
 
 void SystemTextfield::SetActiveStateChangedCallback(
-    base::RepeatingCallback<void()> callback) {
+    base::RepeatingClosure callback) {
   active_state_changed_callback_ = std::move(callback);
 }
 

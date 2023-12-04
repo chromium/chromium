@@ -39,9 +39,11 @@ class ASH_EXPORT FocusModeTaskView : public views::BoxLayoutView {
   // controller and user prefs.
   void SelectTask(const api::Task* task);
 
- private:
-  friend class FocusModeTaskViewTest;
+  views::ImageButton* radio_button_for_testing() { return radio_button_; }
+  views::ImageButton* deselect_button_for_testing() { return deselect_button_; }
+  FocusModeChipCarousel* chip_carousel_for_testing() { return chip_carousel_; }
 
+ private:
   class TaskTextfield;
   class TaskTextfieldController;
 
