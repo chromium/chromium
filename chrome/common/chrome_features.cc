@@ -117,6 +117,18 @@ BASE_FEATURE(kQuickOfficeForceFileDownload,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_ANDROID)
+// Enable boarding pass detector on Chrome Android.
+BASE_FEATURE(kBoardingPassDetector,
+             "BoardingPassDetector",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const char kBoardingPassDetectorUrlParamName[] = "boarding_pass_detector_urls";
+const base::FeatureParam<std::string> kBoardingPassDetectorUrlParam(
+    &kBoardingPassDetector,
+    kBoardingPassDetectorUrlParamName,
+    "");
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enable Borealis on Chrome OS.
 BASE_FEATURE(kBorealis, "Borealis", base::FEATURE_DISABLED_BY_DEFAULT);

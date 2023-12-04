@@ -41,7 +41,6 @@ BASE_DECLARE_FEATURE(kBackGestureRefactorAndroid);
 BASE_DECLARE_FEATURE(kBackgroundThreadPool);
 BASE_DECLARE_FEATURE(kBaselineGM3SurfaceColors);
 BASE_DECLARE_FEATURE(kBlockIntentsWhileLocked);
-BASE_DECLARE_FEATURE(kBoardingPassDetector);
 BASE_DECLARE_FEATURE(kCacheActivityTaskID);
 BASE_DECLARE_FEATURE(kClearOmniboxFocusAfterNavigation);
 BASE_DECLARE_FEATURE(kCloseTabSaveTabList);
@@ -229,11 +228,6 @@ constexpr base::FeatureParam<int> kAuxiliarySearchMaxTabsCountParam(
     &kAuxiliarySearchDonation,
     "auxiliary_search_max_donation_tab",
     100);
-
-constexpr base::FeatureParam<std::string> kBoardingPassDetectorUrlParam(
-    &kBoardingPassDetector,
-    "boarding_pass_detector_urls",
-    "");
 
 }  // namespace android
 }  // namespace chrome

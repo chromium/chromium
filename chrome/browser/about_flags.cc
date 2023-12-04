@@ -2759,13 +2759,13 @@ const FeatureEntry::FeatureVariation kAuxiliarySearchDonationVariations[] = {
 };
 
 const FeatureEntry::FeatureParam kBoardingPassDetectorUrl_AA[] = {
-    {chrome::android::kBoardingPassDetectorUrlParam.name,
+    {features::kBoardingPassDetectorUrlParamName,
      "https://www.aa.com/checkin/viewMobileBoardingPass"}};
 const FeatureEntry::FeatureParam kBoardingPassDetectorUrl_All[] = {
-    {chrome::android::kBoardingPassDetectorUrlParam.name,
+    {features::kBoardingPassDetectorUrlParamName,
      "https://www.aa.com/checkin/viewMobileBoardingPass,https://united.com"}};
 const FeatureEntry::FeatureParam kBoardingPassDetectorUrl_Test[] = {
-    {chrome::android::kBoardingPassDetectorUrlParam.name, "http"}};
+    {features::kBoardingPassDetectorUrlParamName, "http"}};
 const FeatureEntry::FeatureVariation kBoardingPassDetectorVariations[] = {
     {"AA", kBoardingPassDetectorUrl_AA, std::size(kBoardingPassDetectorUrl_AA),
      nullptr},
@@ -11261,7 +11261,7 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_ANDROID)
     {"boarding-pass-detector", flag_descriptions::kBoardingPassDetectorName,
      flag_descriptions::kBoardingPassDetectorDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kBoardingPassDetector,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kBoardingPassDetector,
                                     kBoardingPassDetectorVariations,
                                     "Allowed Urls")},
 #endif  // BUILDFLAG(IS_ANDROID)
