@@ -58,36 +58,33 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-#define IN_PROC_BROWSER_TEST_(                                               \
-    test_case_name, test_name, parent_class, parent_id)                      \
-  class GTEST_TEST_CLASS_NAME_(test_case_name, test_name)                    \
-      : public parent_class {                                                \
-   public:                                                                   \
-    GTEST_TEST_CLASS_NAME_(test_case_name, test_name)() {}                   \
-                                                                             \
-   protected:                                                                \
-    void RunTestOnMainThread() override;                                     \
-                                                                             \
-   private:                                                                  \
-    void TestBody() override {}                                              \
-    static ::testing::TestInfo* const test_info_;                            \
-    GTEST_DISALLOW_COPY_AND_ASSIGN_(GTEST_TEST_CLASS_NAME_(test_case_name,   \
-                                                           test_name));      \
-  };                                                                         \
-                                                                             \
-  ::testing::TestInfo* const GTEST_TEST_CLASS_NAME_(test_case_name,          \
-                                                    test_name)::test_info_ = \
-      ::testing::internal::MakeAndRegisterTestInfo(                          \
-          #test_case_name,                                                   \
-          #test_name,                                                        \
-          "",                                                                \
-          "",                                                                \
-          ::testing::internal::CodeLocation(__FILE__, __LINE__),             \
-          (parent_id),                                                       \
-          parent_class::SetUpTestCase,                                       \
-          parent_class::TearDownTestCase,                                    \
-          new ::testing::internal::TestFactoryImpl<GTEST_TEST_CLASS_NAME_(   \
-              test_case_name, test_name)>);                                  \
+#define IN_PROC_BROWSER_TEST_(test_case_name, test_name, parent_class,        \
+                              parent_id)                                      \
+  class GTEST_TEST_CLASS_NAME_(test_case_name, test_name)                     \
+      : public parent_class {                                                 \
+   public:                                                                    \
+    GTEST_TEST_CLASS_NAME_(test_case_name, test_name)() {}                    \
+    GTEST_TEST_CLASS_NAME_(test_case_name, test_name)                         \
+    (const GTEST_TEST_CLASS_NAME_(test_case_name, test_name) &) = delete;     \
+    GTEST_TEST_CLASS_NAME_(test_case_name, test_name) & operator=(            \
+        const GTEST_TEST_CLASS_NAME_(test_case_name, test_name) &) = delete;  \
+                                                                              \
+   protected:                                                                 \
+    void RunTestOnMainThread() override;                                      \
+                                                                              \
+   private:                                                                   \
+    void TestBody() override {}                                               \
+    static ::testing::TestInfo* const test_info_;                             \
+  };                                                                          \
+                                                                              \
+  ::testing::TestInfo* const GTEST_TEST_CLASS_NAME_(test_case_name,           \
+                                                    test_name)::test_info_ =  \
+      ::testing::internal::MakeAndRegisterTestInfo(                           \
+          #test_case_name, #test_name, "", "",                                \
+          ::testing::internal::CodeLocation(__FILE__, __LINE__), (parent_id), \
+          parent_class::SetUpTestCase, parent_class::TearDownTestCase,        \
+          new ::testing::internal::TestFactoryImpl<GTEST_TEST_CLASS_NAME_(    \
+              test_case_name, test_name)>);                                   \
   void GTEST_TEST_CLASS_NAME_(test_case_name, test_name)::RunTestOnMainThread()
 
 #define IN_PROC_BROWSER_TEST_F(test_fixture, test_name)\
@@ -99,6 +96,10 @@
       : public test_case_name {                                                \
    public:                                                                     \
     GTEST_TEST_CLASS_NAME_(test_case_name, test_name)() {}                     \
+    GTEST_TEST_CLASS_NAME_(test_case_name, test_name)                          \
+    (const GTEST_TEST_CLASS_NAME_(test_case_name, test_name) &) = delete;      \
+    GTEST_TEST_CLASS_NAME_(test_case_name, test_name) & operator=(             \
+        const GTEST_TEST_CLASS_NAME_(test_case_name, test_name) &) = delete;   \
                                                                                \
    protected:                                                                  \
     void RunTestOnMainThread() override;                                       \
@@ -119,8 +120,6 @@
       return 0;                                                                \
     }                                                                          \
     static int gtest_registering_dummy_;                                       \
-    GTEST_DISALLOW_COPY_AND_ASSIGN_(GTEST_TEST_CLASS_NAME_(test_case_name,     \
-                                                           test_name));        \
   };                                                                           \
   int GTEST_TEST_CLASS_NAME_(test_case_name,                                   \
                              test_name)::gtest_registering_dummy_ =            \
