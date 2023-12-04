@@ -10,6 +10,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 
 namespace autofill {
@@ -31,17 +32,25 @@ AutofillMlPredictionModelServiceFactory::GetForBrowserContext(
 
 AutofillMlPredictionModelServiceFactory::
     AutofillMlPredictionModelServiceFactory()
-    : ProfileKeyedServiceFactory(
+    : BrowserContextKeyedServiceFactory(
           "AutofillMlPredictionModelHandler",
-          ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kRedirectedToOriginal)
-              .WithGuest(ProfileSelection::kRedirectedToOriginal)
-              .Build()) {
+          BrowserContextDependencyManager::GetInstance()) {
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
 }
 
 AutofillMlPredictionModelServiceFactory::
     ~AutofillMlPredictionModelServiceFactory() = default;
+
+content::BrowserContext*
+AutofillMlPredictionModelServiceFactory::GetBrowserContextToUse(
+    content::BrowserContext* context) const {
+  // `AutofillMlPredictionModelHandler` is not supported without an
+  // `OptimizationGuideKeyedService`.
+  return OptimizationGuideKeyedServiceFactory::GetForProfile(
+             Profile::FromBrowserContext(context))
+             ? context
+             : nullptr;
+}
 
 std::unique_ptr<KeyedService>
 AutofillMlPredictionModelServiceFactory::BuildServiceInstanceForBrowserContext(
