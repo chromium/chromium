@@ -294,23 +294,34 @@ bool CanEagerlySimplify(const CSSMathExpressionOperation::Operands& operands) {
   return true;
 }
 
+enum class ProgressArgsSimplificationStatus {
+  kAllArgsResolveToCanonical,
+  kAllArgsHaveSameType,
+  kCanNotSimplify,
+};
+
 // Either all the arguments are numerics and have the same unit type (e.g.
 // progress(1em from 0em to 1em)), or they are all numerics and can be resolved
 // to the canonical unit (e.g. progress(1deg from 0rad to 1deg)). Note: this
 // can't be eagerly simplified - progress(1em from 0px to 1em).
-bool CanEagerlySimplifyProgressArgs(
+ProgressArgsSimplificationStatus CanEagerlySimplifyProgressArgs(
     const CSSMathExpressionOperation::Operands& operands) {
-  return std::all_of(operands.begin(), operands.end(),
-                     [](const CSSMathExpressionNode* node) {
-                       return node->IsNumericLiteral() &&
-                              node->ComputeValueInCanonicalUnit().has_value();
-                     }) ||
-         std::all_of(operands.begin(), operands.end(),
-                     [&](const CSSMathExpressionNode* node) {
-                       return node->IsNumericLiteral() &&
-                              node->ResolvedUnitType() ==
-                                  operands.front()->ResolvedUnitType();
-                     });
+  if (std::all_of(operands.begin(), operands.end(),
+                  [](const CSSMathExpressionNode* node) {
+                    return node->IsNumericLiteral() &&
+                           node->ComputeValueInCanonicalUnit().has_value();
+                  })) {
+    return ProgressArgsSimplificationStatus::kAllArgsResolveToCanonical;
+  }
+  if (std::all_of(operands.begin(), operands.end(),
+                  [&](const CSSMathExpressionNode* node) {
+                    return node->IsNumericLiteral() &&
+                           node->ResolvedUnitType() ==
+                               operands.front()->ResolvedUnitType();
+                  })) {
+    return ProgressArgsSimplificationStatus::kAllArgsHaveSameType;
+  }
+  return ProgressArgsSimplificationStatus::kCanNotSimplify;
 }
 
 using UnitsHashMap = HashMap<CSSPrimitiveValue::UnitType, double>;
@@ -2471,17 +2482,25 @@ class CSSMathExpressionNodeParser {
     // Note: we don't need to resolve percents in such case,
     // as all the operands are numeric literals,
     // so p% / (t% - f%) will lose %.
-    if (CanEagerlySimplifyProgressArgs(nodes)) {
-      Vector<double> canonical_values;
-      canonical_values.reserve(nodes.size());
+    ProgressArgsSimplificationStatus status =
+        CanEagerlySimplifyProgressArgs(nodes);
+    if (status != ProgressArgsSimplificationStatus::kCanNotSimplify) {
+      Vector<double> double_values;
+      double_values.reserve(nodes.size());
       for (const CSSMathExpressionNode* operand : nodes) {
-        absl::optional<double> canonical_value =
-            operand->ComputeValueInCanonicalUnit();
-        CHECK(canonical_value.has_value());
-        canonical_values.push_back(canonical_value.value());
+        if (status ==
+            ProgressArgsSimplificationStatus::kAllArgsResolveToCanonical) {
+          absl::optional<double> canonical_value =
+              operand->ComputeValueInCanonicalUnit();
+          CHECK(canonical_value.has_value());
+          double_values.push_back(canonical_value.value());
+        } else {
+          CHECK(HasDoubleValue(operand->ResolvedUnitType()));
+          double_values.push_back(operand->DoubleValue());
+        }
       }
       double progress_value =
-          canonical_values[0] / (canonical_values[2] - canonical_values[1]);
+          double_values[0] / (double_values[2] - double_values[1]);
       return CSSMathExpressionNumericLiteral::Create(
           progress_value, CSSPrimitiveValue::UnitType::kNumber);
     }
