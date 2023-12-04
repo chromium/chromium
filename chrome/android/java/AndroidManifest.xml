@@ -1214,6 +1214,8 @@ by a child template that "extends" this file.
             android:label="WebXR"
             android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
             tools:ignore="NonResizeableActivity">
+            <property android:name="android.window.PROPERTY_ACTIVITY_STARTS_IN_IMMERSIVE_XR"
+                android:value="true" />
             <intent-filter>
               <category android:name="android.intent.category.XR" />
             </intent-filter>
