@@ -22,7 +22,7 @@
 <translation id="1145018782460575098">Fönstret Uppdatera firmware för externa enheter är öppet. <ph name="NUM_UPDATES" /> uppdateringar är tillgängliga.</translation>
 <translation id="1145516343487477149">Hitta hjälpartiklar och svar på vanliga frågor om Chromebook</translation>
 <translation id="1154390310959620237">Du kan bara anpassa fem kortkommandon. Du måste radera ett kortkommando innan du kan lägga till ett nytt.</translation>
-<translation id="1164939766849482256">Skärmsläckare med gryning till skymning</translation>
+<translation id="1164939766849482256">Morgon till kväll-skärmsläckare</translation>
 <translation id="1167755866710282443">Öppna menyn för att anpassa tangenter. Flytta menyn genom att trycka och dra.</translation>
 <translation id="1174073918202301297">Genvägen har lagts till</translation>
 <translation id="1175697296044146566">Denna <ph name="DEVICE_TYPE" /> hanteras av <ph name="MANAGER" />.</translation>
@@ -281,7 +281,7 @@
 <translation id="315738237743207937">Infångstportal har upptäckts</translation>
 <translation id="3160172848211257835">Skicka <ph name="BEGIN_LINK1" />system- och appinformation<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />statistik<ph name="END_LINK2" /></translation>
 <translation id="3170673040743561620">Sätt dokumentet i skannern</translation>
-<translation id="3174321110679064523">Bakgrund med gryning till skymning</translation>
+<translation id="3174321110679064523">Morgon till kväll-bakgrund</translation>
 <translation id="3188257591659621405">Mina filer</translation>
 <translation id="319101249942218879">Avatarbild har ändrats</translation>
 <translation id="3192947282887913208">Ljudfiler</translation>
@@ -733,7 +733,7 @@
 <translation id="6494974875566443634">Anpassning</translation>
 <translation id="6500818810472529210">Visa resultat på Google Sök</translation>
 <translation id="650266656685499220">Besök Google Foto om du vill skapa album</translation>
-<translation id="6505750420152840539">Dawn to dark</translation>
+<translation id="6505750420152840539">Morgon till kväll</translation>
 <translation id="6516990319416533844">Om du vill testa batteriets laddningshastighet låter du det laddas ur under en kortare period</translation>
 <translation id="6517239166834772319">Utforska</translation>
 <translation id="6526200165918397681">Matcha bakgrund</translation>
@@ -886,7 +886,7 @@
 <translation id="7730077286107534951">Vissa konto- och systemuppgifter kan skickas till Google. Vi använder uppgifterna till att åtgärda tekniska problem och förbättra våra tjänster i enlighet med vår <ph name="BEGIN_LINK2" />integritetspolicy<ph name="END_LINK2" /> och våra <ph name="BEGIN_LINK3" />användarvillkor<ph name="END_LINK3" />. Besök sidan för <ph name="BEGIN_LINK1" />juridisk hjälp<ph name="END_LINK1" /> om du vill begära innehållsändringar.</translation>
 <translation id="773153675489693198">Antal cykler</translation>
 <translation id="7747039790905080783">I förväg delad nyckel</translation>
-<translation id="7752963721013053477">Från gryning till mörker – exklusivt</translation>
+<translation id="7752963721013053477">Morgon till kväll – exklusivt</translation>
 <translation id="7762130827864645708">Lösenordet har bytts. Använd det nya lösenordet i fortsättningen.</translation>
 <translation id="7763470514545477072">Matchning av domänsuffix</translation>
 <translation id="7769672763586021400">Modell-id</translation>
