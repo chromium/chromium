@@ -102,6 +102,7 @@ source_set("browser_tests") {
       "chromeos/enterprise_reporting/enterprise_reporting_browsertest.cc",
       "chromeos/firmware_update/firmware_update_browsertest.cc",
       "chromeos/personalization_app/personalization_app_browsertest.cc",
+      "chromeos/personalization_app/sea_pen_browsertest.cc",
       "chromeos/scanning/scanning_app_browsertest.cc",
       "chromeos/vc_background_ui/vc_background_ui_browsertest.cc",
     ]

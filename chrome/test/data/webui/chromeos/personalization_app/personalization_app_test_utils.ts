@@ -123,3 +123,35 @@ export function dispatchKeydown(element: HTMLElement, key: string) {
 export function getActiveElement(element: Element): HTMLElement {
   return (element.shadowRoot!.activeElement as HTMLElement);
 }
+
+/**
+ * Get a sub-property in obj. Splits on '.'
+ */
+function getProperty(obj: object, key: string): unknown {
+  let ref: any = obj;
+  for (const part of key.split('.')) {
+    ref = ref[part];
+  }
+  return ref;
+}
+
+/**
+ * Returns a function that returns only nested subproperties in state.
+ */
+export function filterAndFlattenState(keys: string[]): (state: any) => any {
+  return (state) => {
+    const result: any = {};
+    for (const key of keys) {
+      result[key] = getProperty(state, key);
+    }
+    return result;
+  };
+}
+
+/**
+ * Forces typescript compiler to check that an anonymous value is a specific
+ * type.
+ */
+export function typeCheck<T>(value: T): T {
+  return value;
+}

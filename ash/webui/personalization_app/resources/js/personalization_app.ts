@@ -117,6 +117,7 @@ export {DEFAULT_COLOR_SCHEME} from './theme/utils.js';
 export {LocalImagesElement} from './wallpaper/local_images_element.js';
 export {RecentSeaPenData} from './wallpaper/sea_pen/constants.js';
 export * from './wallpaper/sea_pen/sea_pen_actions.js';
+export {getRecentSeaPenImages, selectRecentSeaPenImage, searchSeaPenThumbnails} from './wallpaper/sea_pen/sea_pen_controller.js';
 export {SeaPenImagesElement} from './wallpaper/sea_pen/sea_pen_images_element.js';
 export {SeaPenInputQueryElement} from './wallpaper/sea_pen/sea_pen_input_query_element.js';
 export {SeaPenRecentWallpapersElement} from './wallpaper/sea_pen/sea_pen_recent_wallpapers_element.js';
