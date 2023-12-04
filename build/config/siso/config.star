@@ -12,6 +12,9 @@ __KNOWN_CONFIG_OPTIONS = [
 
     # TODO: b/308405411 - Enable this config for all builders.
     "remote-devtools-frontend-typescript",
+
+    # TODO: b/314693395 - Enable reproxy mode for cros by default.
+    "reproxy-cros",
 ]
 
 def __check(ctx):
