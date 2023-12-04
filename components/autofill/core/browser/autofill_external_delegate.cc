@@ -665,22 +665,12 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case PopupItemId::kEntryNotSelectable:
       return;
     case PopupItemId::kAddressEntry:
+      autofill_metrics::LogAutofillSuggestionAcceptedIndex(
+          position.row, popup_type_, manager_->client().IsOffTheRecord());
       autofill_metrics::LogFillingMethodUsed(
           autofill_metrics::AutofillFillingMethodMetric::kFullForm);
-      // Only log suggestion selection index of the main popup
-      // (position.sub_popup_level == 0). This metrics intends to give us an
-      // understanding of how well we are sorting the first level suggestions,
-      // therefore logging for selections on the second/third level is
-      // undesirable.
-      if (position.sub_popup_level == 0) {
-        autofill_metrics::LogAutofillSuggestionAcceptedIndex(
-            position.row, popup_type_, manager_->client().IsOffTheRecord());
-      }
-      if (manager_->WasSuggestionPreviouslyHidden(
-              query_form_, query_field_,
-              suggestion.GetPayload<Suggestion::BackendId>(), trigger_source)) {
-        autofill_metrics::LogUserAcceptedPreviouslyHiddenProfileSuggestion();
-      }
+      autofill_metrics::LogUserAcceptedPreviouslyHiddenProfileSuggestion(
+          suggestion.hidden_prior_to_address_rewriter_usage);
       FillAutofillFormData(
           suggestion.popup_item_id,
           suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,
@@ -690,17 +680,15 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case PopupItemId::kFillEverythingFromAddressProfile:
       autofill_metrics::LogFillingMethodUsed(
           autofill_metrics::AutofillFillingMethodMetric::kFullForm);
-      ABSL_FALLTHROUGH_INTENDED;
+      FillAutofillFormData(
+          suggestion.popup_item_id,
+          suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,
+          {.trigger_source =
+               TriggerSourceFromSuggestionTriggerSource(trigger_source)});
+      break;
     case PopupItemId::kCreditCardEntry:
-      // Only log suggestion selection index of the main popup
-      // (position.sub_popup_level == 0). This metrics intends to give us an
-      // understanding of how well we are sorting the first level suggestions,
-      // therefore logging for selections on the second/third level is
-      // undesirable.
-      if (position.sub_popup_level == 0) {
-        autofill_metrics::LogAutofillSuggestionAcceptedIndex(
-            position.row, popup_type_, manager_->client().IsOffTheRecord());
-      }
+      autofill_metrics::LogAutofillSuggestionAcceptedIndex(
+          position.row, popup_type_, manager_->client().IsOffTheRecord());
       FillAutofillFormData(
           suggestion.popup_item_id,
           suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,

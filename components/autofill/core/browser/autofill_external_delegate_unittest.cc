@@ -88,7 +88,7 @@ constexpr auto kDefaultTriggerSource =
 constexpr std::string_view kPlusAddressSuggestionMetric =
     "Autofill.PlusAddresses.Suggestion.Events";
 
-// Creates a `PopupItemdId::kFieldByFieldFilling` suggestion.
+// Creates a `PopupItemId::kFieldByFieldFilling` suggestion.
 // `guid` is used to set `Suggestion::payload` as
 // `Suggestion::Guid(guid)`. This method also sets the
 // `Suggestion::field_by_field_filling_type_used` to `fbf_type_used`.
@@ -101,7 +101,7 @@ Suggestion CreateFieldByFieldFillingSuggestion(const std::string& guid,
   return suggestion;
 }
 
-Matcher<const AutofillTriggerDetails&> EqualsAutofilltriggerDetails(
+Matcher<const AutofillTriggerDetails&> EqualsAutofillTriggerDetails(
     AutofillTriggerDetails details) {
   return AllOf(
       Field(&AutofillTriggerDetails::trigger_source, details.trigger_source),
@@ -1131,7 +1131,7 @@ const FillingMethodMetricsTestParams kFillingMethodMetricsTestCases[] = {
      .test_name = "addressEntry"},
     {.popup_item_id = PopupItemId::kFillEverythingFromAddressProfile,
      .target_metric = autofill_metrics::AutofillFillingMethodMetric::kFullForm,
-     .test_name = "fillEveythingFromAddressProfile"},
+     .test_name = "fillEverythingFromAddressProfile"},
     {.popup_item_id = PopupItemId::kFieldByFieldFilling,
      .target_metric =
          autofill_metrics::AutofillFillingMethodMetric::kFieldByFieldFilling,
@@ -1226,7 +1226,7 @@ TEST_P(GroupFillingUnitTest, GroupFillingTests_FillAndPreview) {
               FillOrPreviewProfileForm(
                   mojom::ActionPersistence::kPreview, HasQueriedFormId(),
                   HasQueriedFieldId(), _,
-                  EqualsAutofilltriggerDetails(
+                  EqualsAutofillTriggerDetails(
                       {.trigger_source = expected_source,
                        .field_types_to_fill = params.field_types_to_fill})));
   external_delegate().DidSelectSuggestion(suggestion, kDefaultTriggerSource);
@@ -1236,7 +1236,7 @@ TEST_P(GroupFillingUnitTest, GroupFillingTests_FillAndPreview) {
               FillOrPreviewProfileForm(
                   mojom::ActionPersistence::kFill, HasQueriedFormId(),
                   HasQueriedFieldId(), _,
-                  EqualsAutofilltriggerDetails(
+                  EqualsAutofillTriggerDetails(
                       {.trigger_source = expected_source,
                        .field_types_to_fill = params.field_types_to_fill})));
   external_delegate().DidAcceptSuggestion(
@@ -1283,29 +1283,6 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
   histogram_tester.ExpectUniqueSample("Autofill.SuggestionAcceptedIndex",
                                       suggestion_accepted_row, 1);
-}
-
-// When a suggestion is selected in one of the subpopups, we do not emit
-// Autofill.SuggestionAcceptedIndex, since for example selecting the first
-// suggestion in a supopup that was open from the third suggestion in the root
-// popup, does not mean the same as choosing the first suggestion from the root
-// popup.
-TEST_F(AutofillExternalDelegateUnitTest,
-       AcceptSecondPopupevelSuggestion_DoNotLogSuggestionAcceptedMetric) {
-  const AutofillProfile profile = test::GetFullProfile();
-  pdm().AddProfile(profile);
-  const int suggestion_accepted_row = 2;
-  base::HistogramTester histogram_tester;
-
-  external_delegate().DidAcceptSuggestion(
-      test::CreateAutofillSuggestion(PopupItemId::kAddressEntry, u"John Legend",
-                                     Suggestion::Guid(profile.guid())),
-      AutofillPopupDelegate::SuggestionPosition{.row = suggestion_accepted_row,
-                                                .sub_popup_level = 1},
-      kDefaultTriggerSource);
-
-  histogram_tester.ExpectUniqueSample("Autofill.SuggestionAcceptedIndex",
-                                      suggestion_accepted_row, 0);
 }
 
 TEST_F(AutofillExternalDelegateUnitTest,
@@ -1360,7 +1337,7 @@ TEST_F(AutofillExternalDelegateUnitTest, AcceptSuggestion_TriggerSource) {
       FillOrPreviewProfileForm(
           mojom::ActionPersistence::kFill, HasQueriedFormId(),
           HasQueriedFieldId(), _,
-          EqualsAutofilltriggerDetails({.trigger_source = expected_source})));
+          EqualsAutofillTriggerDetails({.trigger_source = expected_source})));
   external_delegate().DidAcceptSuggestion(
       suggestion, SuggestionPosition{.row = 1}, suggestion_source);
 
@@ -1373,7 +1350,7 @@ TEST_F(AutofillExternalDelegateUnitTest, AcceptSuggestion_TriggerSource) {
       FillOrPreviewProfileForm(
           mojom::ActionPersistence::kFill, HasQueriedFormId(),
           HasQueriedFieldId(), _,
-          EqualsAutofilltriggerDetails({.trigger_source = expected_source})));
+          EqualsAutofillTriggerDetails({.trigger_source = expected_source})));
   external_delegate().DidAcceptSuggestion(
       suggestion, SuggestionPosition{.row = 1}, suggestion_source);
 }

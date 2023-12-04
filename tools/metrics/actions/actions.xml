@@ -4162,14 +4162,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="Autofill_AcceptedPreviouslyHiddenSuggestion">
-  <owner>jihadghanna@google.com</owner>
-  <description>
-    The user has accepted a suggestion that would have been hidden if the
-    feature `kAutofillUseAddressRewriterInProfileSubsetComparison` was disabled.
-  </description>
-</action>
-
 <action name="Autofill_BrandingTapped">
   <owner>ginnyhuang@chromium.org</owner>
   <description>

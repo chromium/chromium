@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
+#include "components/autofill/core/browser/metrics/address_rewriter_in_profile_subset_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
@@ -918,8 +919,8 @@ AutofillSuggestionGenerator::~AutofillSuggestionGenerator() = default;
 
 std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
     const ServerFieldTypeSet& field_types,
-    const FormFieldData& triggering_field,
-    ServerFieldType triggering_field_type,
+    const FormFieldData& trigger_field,
+    ServerFieldType trigger_field_type,
     absl::optional<ServerFieldTypeSet> last_targeted_fields,
     AutofillSuggestionTriggerSource trigger_source) {
   // If the user manually triggered suggestions from the context menu, all
@@ -927,16 +928,43 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
   // triggering field's value.
   const std::u16string field_value_for_filtering =
       trigger_source != AutofillSuggestionTriggerSource::kManualFallbackAddress
-          ? triggering_field.value
+          ? trigger_field.value
           : u"";
 
   std::vector<const AutofillProfile*> profiles_to_suggest =
-      GetProfilesToSuggest(triggering_field_type, field_value_for_filtering,
-                           triggering_field.is_autofilled, field_types);
+      GetProfilesToSuggest(trigger_field_type, field_value_for_filtering,
+                           trigger_field.is_autofilled, field_types);
 
-  return CreateSuggestionsFromProfiles(
-      profiles_to_suggest, field_types, last_targeted_fields,
-      triggering_field_type, triggering_field.max_length);
+  // Find the profiles that were hidden prior to the effects of the feature
+  // kAutofillUseAddressRewriterInProfileSubsetComparison.
+  std::set<std::string> previously_hidden_profiles_guid;
+  for (const AutofillProfile* profile : profiles_to_suggest) {
+    previously_hidden_profiles_guid.insert(profile->guid());
+  }
+  constexpr ServerFieldTypeSet street_address_field_types = {
+      ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2,
+      ADDRESS_HOME_LINE3};
+  ServerFieldTypeSet field_types_without_address_types = field_types;
+  field_types_without_address_types.erase_all(street_address_field_types);
+
+  // Autofill already considers suggestions as different if the suggestion's
+  // main text, to be filled in the triggering field, differs regardless of
+  // the other fields.
+  std::vector<const AutofillProfile*> previously_suggested_profiles =
+      street_address_field_types.contains(trigger_field_type)
+          ? profiles_to_suggest
+          : GetProfilesToSuggest(trigger_field_type, field_value_for_filtering,
+                                 trigger_field.is_autofilled,
+                                 field_types_without_address_types);
+  for (const AutofillProfile* profile : previously_suggested_profiles) {
+    previously_hidden_profiles_guid.erase(profile->guid());
+  }
+  autofill_metrics::LogPreviouslyHiddenProfileSuggestionNumber(
+      previously_hidden_profiles_guid.size());
+  return CreateSuggestionsFromProfiles(profiles_to_suggest, field_types,
+                                       last_targeted_fields, trigger_field_type,
+                                       trigger_field.max_length,
+                                       previously_hidden_profiles_guid);
 }
 
 std::vector<const AutofillProfile*>
@@ -981,7 +1009,8 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
     const ServerFieldTypeSet& field_types,
     absl::optional<ServerFieldTypeSet> last_targeted_fields,
     ServerFieldType trigger_field_type,
-    uint64_t trigger_field_max_length) {
+    uint64_t trigger_field_max_length,
+    const std::set<std::string>& previously_hidden_profiles_guid) {
   std::vector<Suggestion> suggestions;
   std::string app_locale = personal_data_->app_locale();
 
@@ -1014,6 +1043,8 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM);
     suggestions.back().popup_item_id = GetProfileSuggestionPopupItemId(
         last_targeted_fields, trigger_field_type_group);
+    suggestions.back().hidden_prior_to_address_rewriter_usage =
+        previously_hidden_profiles_guid.contains(profile->guid());
     if (suggestions.back().popup_item_id == PopupItemId::kFieldByFieldFilling) {
       suggestions.back().field_by_field_filling_type_used =
           std::optional(trigger_field_type);
@@ -1323,42 +1354,6 @@ AutofillSuggestionGenerator::GetSuggestionsForVirtualCardStandaloneCvc(
     suggestions.push_back(suggestion);
   }
   return suggestions;
-}
-
-bool AutofillSuggestionGenerator::WasProfileSuggestionPreviouslyHidden(
-    const FormStructure& form,
-    const AutofillField& field,
-    Suggestion::BackendId backend_id,
-    const ServerFieldTypeSet& field_types) {
-  constexpr ServerFieldTypeSet street_address_field_types = {
-      ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2,
-      ADDRESS_HOME_LINE3};
-  if (street_address_field_types.contains(field.Type().GetStorableType())) {
-    // Autofill already considers suggestions as different if the suggestion's
-    // main text, to be filled in the triggering field, differs regardless of
-    // the other fields.
-    return false;
-  }
-  ServerFieldTypeSet suggestion_field_types_without_address_types = field_types;
-  for (ServerFieldType field_type : field_types) {
-    if (street_address_field_types.contains(field_type)) {
-      suggestion_field_types_without_address_types.erase(field_type);
-    }
-  }
-  // Get the profiles to be suggested when we remove address field types. This
-  // way if the profile represented by `backend_id` is not included we can
-  // conclude that it was hidden previously and is only showing now because
-  // Autofill is considering address field types.
-  std::vector<const AutofillProfile*> profiles_to_suggest =
-      GetProfilesToSuggest(field.Type().GetStorableType(), field.value,
-                           field.is_autofilled,
-                           suggestion_field_types_without_address_types);
-
-  return base::ranges::find_if(
-             profiles_to_suggest, [backend_id](const AutofillProfile* profile) {
-               return Suggestion::BackendId(
-                          Suggestion::Guid(profile->guid())) == backend_id;
-             }) == profiles_to_suggest.end();
 }
 
 // static

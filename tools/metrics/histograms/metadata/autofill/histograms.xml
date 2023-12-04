@@ -496,6 +496,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.AcceptedPreviouslyHiddenSuggestion" enum="Boolean"
+    expires_after="2024-12-12">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logs if the suggestion accepted by the user was previously hidden due to
+    address types being initially ignored in profile subset comparison. Emitted
+    every time a user accepts a `PopupItemId::kAddressEntry` suggestion.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Address.IsEnabled.PageLoad" enum="BooleanEnabled"
     expires_after="2024-04-28">
   <owner>koerber@google.com</owner>
@@ -3348,6 +3359,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.PreviouslyHiddenSuggestionNumber" units="suggestions"
+    expires_after="2024-12-12">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logs the number suggestion displayed to the user that were previously hidden
+    due to address types being initially ignored in profile subset comparison.
+    Emitted once per suggestion generation.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.ProfileActionOnFormSubmitted"
     enum="AutofillProfileAction" expires_after="2024-12-12">
   <owner>battre@chromium.org</owner>
@@ -3620,18 +3642,6 @@ chromium-metrics-reviews@google.com.
     Logs the number of fields that have been edited by the user in the process
     of succesfully updating an existing profile after an observed form
     submission.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.ProfilesDifferOnAddressLineOnly" enum="Boolean"
-    expires_after="2024-05-19">
-  <owner>jihadghanna@chromium.org</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Given a field set S containing an address field type, logs whether two
-    profiles A and B, where A is a subset of B with respect to the field type
-    set S minus the address field types, have different values for those address
-    field types.
   </summary>
 </histogram>
 

@@ -228,18 +228,6 @@ class BrowserAutofillManager : public AutofillManager {
   // Upload the current pending form.
   void ProcessPendingFormForUpload();
 
-  // Checks whether a suggestion accepted by the user was hidden prior to
-  // landing the feature `kAutofillUseAddressRewriterInProfileSubsetComparison`.
-  // `field` is the one that triggered the suggestions. `backend_id` is the
-  // guid of the underlying profile, used to retrieve the suggestion itself.
-  // TODO(crbug/1439742): Remove when
-  // `kAutofillUseAddressRewriterInProfileSubsetComparison` launches.
-  bool WasSuggestionPreviouslyHidden(
-      const FormData& form,
-      const FormFieldData& field,
-      Suggestion::BackendId backend_id,
-      AutofillSuggestionTriggerSource trigger_source);
-
   CreditCardAccessManager& GetCreditCardAccessManager();
   const CreditCardAccessManager& GetCreditCardAccessManager() const;
 

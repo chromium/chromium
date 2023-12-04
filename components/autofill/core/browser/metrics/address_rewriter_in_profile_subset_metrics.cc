@@ -9,14 +9,14 @@
 
 namespace autofill::autofill_metrics {
 
-void LogProfilesDifferOnAddressLineOnly(bool has_different_address) {
-  base::UmaHistogramBoolean("Autofill.ProfilesDifferOnAddressLineOnly",
-                            has_different_address);
+void LogPreviouslyHiddenProfileSuggestionNumber(size_t hidden_profiles_number) {
+  base::UmaHistogramCounts100("Autofill.PreviouslyHiddenSuggestionNumber",
+                              hidden_profiles_number);
 }
 
-void LogUserAcceptedPreviouslyHiddenProfileSuggestion() {
-  base::RecordAction(
-      base::UserMetricsAction("Autofill_AcceptedPreviouslyHiddenSuggestion"));
+void LogUserAcceptedPreviouslyHiddenProfileSuggestion(bool previously_hidden) {
+  base::UmaHistogramBoolean("Autofill.AcceptedPreviouslyHiddenSuggestion",
+                            previously_hidden);
 }
 
 }  // namespace autofill::autofill_metrics

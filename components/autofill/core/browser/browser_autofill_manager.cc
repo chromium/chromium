@@ -1032,45 +1032,6 @@ void BrowserAutofillManager::ProcessPendingFormForUpload() {
                               /*observed_submission=*/false);
 }
 
-bool BrowserAutofillManager::WasSuggestionPreviouslyHidden(
-    const FormData& form,
-    const FormFieldData& field,
-    Suggestion::BackendId backend_id,
-    AutofillSuggestionTriggerSource trigger_source) {
-  FormStructure* form_structure = nullptr;
-  AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
-    return false;
-  }
-  // Getting the filling-relevant fields so that suggestions are based only on
-  // those fields. BrowserAutofillManager::GetFieldFillingSkipReasons() assumes
-  // that the passed FormData and FormStructure have the same size. If it's not
-  // the case we just assume as a fallback that all fields are relevant.
-  std::vector<FieldFillingSkipReason> skip_reasons =
-      form.fields.size() == form_structure->field_count()
-          ? GetFieldFillingSkipReasons(
-                form, *form_structure, field, autofill_field->section,
-                /*optional_credit_card=*/nullptr, kAllServerFieldTypes,
-                /*optional_type_groups_originally_filled=*/nullptr,
-                /*skip_unrecognized_autocomplete_fields=*/
-                trigger_source !=
-                    AutofillSuggestionTriggerSource::kManualFallbackAddress,
-                /*is_refill=*/false)
-          : std::vector<FieldFillingSkipReason>(
-                form_structure->field_count(),
-                FieldFillingSkipReason::kNotSkipped);
-  ServerFieldTypeSet suggestion_field_types;
-  for (size_t i = 0; i < form_structure->field_count(); ++i) {
-    if (skip_reasons[i] == FieldFillingSkipReason::kNotSkipped) {
-      suggestion_field_types.insert(
-          form_structure->field(i)->Type().GetStorableType());
-    }
-  }
-  return suggestion_generator_->WasProfileSuggestionPreviouslyHidden(
-      CHECK_DEREF(form_structure), CHECK_DEREF(autofill_field), backend_id,
-      suggestion_field_types);
-}
-
 void BrowserAutofillManager::OnTextFieldDidChangeImpl(
     const FormData& form,
     const FormFieldData& field,
