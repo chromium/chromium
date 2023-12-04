@@ -807,6 +807,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 #endif
 
   void AddAbsoluteRectForLayer(gfx::Rect& result);
+
+ protected:
+  // A helper for AddChild().
   bool RequiresAnonymousTableWrappers(const LayoutObject*) const;
 
  public:

@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape_outside_info.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/layout/unpositioned_float.h"
 #include "third_party/blink/renderer/core/paint/block_flow_paint_invalidator.h"
@@ -142,8 +143,14 @@ void LayoutBlockFlow::AddChild(LayoutObject* new_child,
   // children as blocks.
   // So, if our children are currently inline and a block child has to be
   // inserted, we move all our inline children into anonymous block boxes.
+  const bool child_is_inline_level =
+      RuntimeEnabledFeatures::RubyInlinifyEnabled()
+          ? (new_child->IsInline() ||
+             (LayoutObject::RequiresAnonymousTableWrappers(new_child) &&
+              LayoutTable::ShouldCreateInlineAnonymous(*this)))
+          : new_child->IsInline();
   bool child_is_block_level =
-      !new_child->IsInline() && !new_child->IsFloatingOrOutOfFlowPositioned();
+      !child_is_inline_level && !new_child->IsFloatingOrOutOfFlowPositioned();
 
   if (ChildrenInline()) {
     if (child_is_block_level) {

@@ -660,28 +660,12 @@ void LayoutObject::AddChild(LayoutObject* new_child,
     LayoutObject* table = nullptr;
     LayoutObject* after_child =
         before_child ? before_child->PreviousSibling() : children->LastChild();
-    if (after_child && after_child->IsAnonymous() &&
+    if (after_child && after_child->IsAnonymous() && after_child->IsTable() &&
         !after_child->IsBeforeContent()) {
-      if (after_child->IsTable()) {
-        table = after_child;
-      } else if (RuntimeEnabledFeatures::RubyInlinifyEnabled() &&
-                 after_child->IsAnonymousBlock()) {
-        // An anonymous table might be in an anonymous block.
-        after_child = To<LayoutBlock>(after_child)->LastChild();
-        if (after_child->IsAnonymous() && !after_child->IsBeforeContent() &&
-            after_child->IsTable()) {
-          table = after_child;
-        }
-      }
-    }
-    if (!table) {
+      table = after_child;
+    } else {
       table = LayoutTable::CreateAnonymousWithParent(*this);
-      if (RuntimeEnabledFeatures::RubyInlinifyEnabled()) {
-        // An anonymous table might be added to an anonymous block child.
-        AddChild(table, before_child);
-      } else {
-        children->InsertChildNode(this, table, before_child);
-      }
+      children->InsertChildNode(this, table, before_child);
     }
     table->AddChild(new_child);
   } else if (LIKELY(new_child->IsHorizontalWritingMode()) ||
