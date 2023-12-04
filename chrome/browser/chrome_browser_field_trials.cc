@@ -30,7 +30,6 @@
 #include "base/android/bundle_utils.h"
 #include "base/task/thread_pool/environment_config.h"
 #include "chrome/browser/android/flags/chrome_cached_flags.h"
-#include "chrome/browser/android/signin/fre_mobile_identity_consistency_field_trial.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/common/chrome_features.h"
 #endif
@@ -106,18 +105,6 @@ void ChromeBrowserFieldTrials::SetUpClientSideFieldTrials(
         entropy_providers.default_entropy(), feature_list, local_state_);
 #endif  // BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  // RegisterSyntheticTrials doesn't have access to entropy providers which are
-  // needed to verify group consistency for
-  // FREMobileIdentityConsistencySynthetic and decide whether to assign
-  // a variation ID to that study. To work around that - grab the variation ID
-  // here and perform the actual registration in RegisterSyntheticTrials().
-  fre_consistency_trial_variation_id_ =
-      fre_mobile_identity_consistency_field_trial::GetFREFieldTrialVariationId(
-          entropy_providers.low_entropy_value(),
-          entropy_providers.low_entropy_domain());
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {
@@ -169,24 +156,6 @@ void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {
         "BackgroundThreadPoolSynthetic";
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
         kBackgroundThreadPoolTrial, group_name);
-  }
-
-  // MobileIdentityConsistencyFREVariationsSynthetic field trial.
-  // This trial experiments with different title and subtitle variation in
-  // the FRE UI. This is a follow up experiment to
-  // MobileIdentityConsistencyFRESynthetic.
-  static constexpr char kFREMobileIdentityConsistencyVariationsTrial[] =
-      "FREMobileIdentityConsistencyVariationsSynthetic";
-  const std::string variation_group =
-      fre_mobile_identity_consistency_field_trial::GetFREFieldTrialGroupName();
-  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      kFREMobileIdentityConsistencyVariationsTrial, variation_group,
-      variations::SyntheticTrialAnnotationMode::kCurrentLog);
-  if (fre_consistency_trial_variation_id_ != variations::EMPTY_ID) {
-    variations::AssociateGoogleVariationID(
-        variations::GOOGLE_WEB_PROPERTIES_ANY_CONTEXT,
-        kFREMobileIdentityConsistencyVariationsTrial, variation_group,
-        fre_consistency_trial_variation_id_);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)

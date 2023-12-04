@@ -44,8 +44,6 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImp
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.SigninFirstRunFragmentTest.CustomSigninFirstRunFragment;
-import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial;
-import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial.VariationsGroup;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninChecker;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -170,8 +168,6 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
                             .thenReturn(mIdentityManagerMock);
                 });
         SigninCheckerProvider.setForTests(mSigninCheckerMock);
-        FREMobileIdentityConsistencyFieldTrial.setFirstRunVariationsTrialGroupForTesting(
-                VariationsGroup.DEFAULT);
         when(mPolicyLoadListenerMock.get()).thenReturn(false);
         when(mFirstRunPageDelegateMock.getPolicyLoadListener()).thenReturn(mPolicyLoadListenerMock);
         when(mFirstRunPageDelegateMock.canUseLandscapeLayout()).thenReturn(true);
@@ -268,8 +264,6 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
     @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
     public void testFragmentWithAccountOnManagedDevice_doesNotApplyFREStringVariations(
             boolean nightModeEnabled, int orientation) throws IOException {
-        FREMobileIdentityConsistencyFieldTrial.setFirstRunVariationsTrialGroupForTesting(
-                VariationsGroup.MAKE_CHROME_YOUR_OWN);
         when(mPolicyLoadListenerMock.get()).thenReturn(true);
         mAccountManagerTestRule.addAccount(TEST_EMAIL1);
 
@@ -306,8 +300,6 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
     @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
     public void testFragmentWithAccountWhenSigninIsDisabledByPolicy_doesNotApplyFREStringVariation(
             boolean nightModeEnabled, int orientation) throws IOException {
-        FREMobileIdentityConsistencyFieldTrial.setFirstRunVariationsTrialGroupForTesting(
-                VariationsGroup.MAKE_CHROME_YOUR_OWN);
         when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(true);
         when(mPolicyLoadListenerMock.get()).thenReturn(true);
         mAccountManagerTestRule.addAccount(TEST_EMAIL1);
@@ -366,8 +358,6 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
     @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
     public void testFragmentWithChildAccount_doesNotApplyFREStringVariation(
             boolean nightModeEnabled, int orientation) throws IOException {
-        FREMobileIdentityConsistencyFieldTrial.setFirstRunVariationsTrialGroupForTesting(
-                VariationsGroup.MAKE_CHROME_YOUR_OWN);
         mAccountManagerTestRule.addAccount(CHILD_ACCOUNT_NAME);
 
         launchActivityWithFragment(orientation);
@@ -464,48 +454,10 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
                 "signin_first_run_fragment_when_metrics_reporting_is_disabled_by_policy_with_child_account");
     }
 
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
-    public void testFragment_WelcomeToChrome(boolean nightModeEnabled, int orientation)
-            throws IOException {
-        FREMobileIdentityConsistencyFieldTrial.setFirstRunVariationsTrialGroupForTesting(
-                VariationsGroup.WELCOME_TO_CHROME);
-        launchActivityWithFragment(orientation);
 
-        mRenderTestRule.render(mFragment.getView(), "signin_first_run_fragment_welcome_to_chrome");
-    }
 
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
-    public void testFragment_WelcomeToChrome_MostOutOfChrome(
-            boolean nightModeEnabled, int orientation) throws IOException {
-        FREMobileIdentityConsistencyFieldTrial.setFirstRunVariationsTrialGroupForTesting(
-                VariationsGroup.WELCOME_TO_CHROME_MOST_OUT_OF_CHROME);
-        launchActivityWithFragment(orientation);
 
-        mRenderTestRule.render(
-                mFragment.getView(),
-                "signin_first_run_fragment_welcome_to_chrome_most_out_of_chrome");
-    }
 
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
-    public void testFragment_WelcomeToChrome_AdditionalFeatures(
-            boolean nightModeEnabled, int orientation) throws IOException {
-        FREMobileIdentityConsistencyFieldTrial.setFirstRunVariationsTrialGroupForTesting(
-                VariationsGroup.WELCOME_TO_CHROME_ADDITIONAL_FEATURES);
-        launchActivityWithFragment(orientation);
-
-        mRenderTestRule.render(
-                mFragment.getView(),
-                "signin_first_run_fragment_welcome_to_chrome_additional_features");
-    }
 
     @Test
     @MediumTest
@@ -513,8 +465,6 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
     @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
     public void testFragment_WelcomeToChrome_EasierAcrossDevices(
             boolean nightModeEnabled, int orientation) throws IOException {
-        FREMobileIdentityConsistencyFieldTrial.setFirstRunVariationsTrialGroupForTesting(
-                VariationsGroup.WELCOME_TO_CHROME_EASIER_ACROSS_DEVICES);
         launchActivityWithFragment(orientation);
 
         mRenderTestRule.render(
@@ -522,32 +472,8 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
                 "signin_first_run_fragment_welcome_to_chrome_easier_across_devices");
     }
 
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
-    public void testFragment_MostOutOfChrome(boolean nightModeEnabled, int orientation)
-            throws IOException {
-        FREMobileIdentityConsistencyFieldTrial.setFirstRunVariationsTrialGroupForTesting(
-                VariationsGroup.MOST_OUT_OF_CHROME);
-        launchActivityWithFragment(orientation);
 
-        mRenderTestRule.render(mFragment.getView(), "signin_first_run_fragment_most_out_chrome");
-    }
 
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
-    public void testFragment_MakeChromeYourOwn(boolean nightModeEnabled, int orientation)
-            throws IOException {
-        FREMobileIdentityConsistencyFieldTrial.setFirstRunVariationsTrialGroupForTesting(
-                VariationsGroup.MAKE_CHROME_YOUR_OWN);
-        launchActivityWithFragment(orientation);
-
-        mRenderTestRule.render(
-                mFragment.getView(), "signin_first_run_fragment_make_chrome_your_own");
-    }
 
     private void launchActivityWithFragment(int orientation) {
         ActivityTestUtils.rotateActivityToOrientation(getActivity(), orientation);
