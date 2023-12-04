@@ -106,10 +106,10 @@
         </div>
         <div id="barcode-chip-url-container"
              class="invisible barcode-chip-container">
-          <div class="barcode-chip-url">
+          <button id="barcode-chip-url" tabindex="0">
             <svg-wrapper name="barcode_url.svg"></svg-wrapper>
-            <a href="#barcode-chip-url-container"></a>
-          </div>
+            <span id="barcode-chip-url-content"></span>
+          </button>
           <div class="circle">
             <button class="barcode-copy-button" tabindex="0"
               i18n-label="barcode_copy_link_button"
@@ -121,7 +121,7 @@
              role="dialog" i18n-label="barcode_text_detected"
              aria-live="polite" aria-describedby="barcode-chip-text-content">
           <div class="barcode-chip-text">
-            <div id="barcode-chip-text-content"></div>
+            <span id="barcode-chip-text-content"></span>
             <button id="barcode-chip-text-expand"
                     aria-expanded="false">
               <svg-wrapper name="barcode_chevron_up.svg" class="up-icon">
@@ -141,7 +141,7 @@
           <div id="barcode-chip-wifi" tabindex="0"
               role="button">
             <svg-wrapper name="wifi.svg"></svg-wrapper>
-            <div id="barcode-chip-wifi-content"></div>
+            <span id="barcode-chip-wifi-content"></span>
           </div>
         </div>
       </div>

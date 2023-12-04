@@ -34,6 +34,7 @@ const struct {
     {"back_button", IDS_BACK_BUTTON},
     {"barcode_copy_link_button", IDS_BARCODE_COPY_LINK_BUTTON},
     {"barcode_copy_text_button", IDS_BARCODE_COPY_TEXT_BUTTON},
+    {"barcode_link_chiptext", IDS_BARCODE_LINK_CHIPTEXT},
     {"barcode_link_detected", IDS_BARCODE_LINK_DETECTED},
     {"barcode_text_detected", IDS_BARCODE_TEXT_DETECTED},
     {"barcode_wifi_detected", IDS_BARCODE_WIFI_DETECTED},

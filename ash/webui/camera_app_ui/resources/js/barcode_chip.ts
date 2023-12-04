@@ -168,18 +168,20 @@ function showUrl(url: string) {
   const container = dom.get('#barcode-chip-url-container', HTMLDivElement);
   activate(container);
 
-  const anchor = dom.getFrom(container, 'a', HTMLAnchorElement);
-  anchor.onclick = (ev) => {
-    ev.preventDefault();
+  const textEl = dom.get('#barcode-chip-url-content', HTMLSpanElement);
+  textEl.textContent =
+      loadTimeData.getI18nMessage(I18nString.BARCODE_LINK_CHIPTEXT, url);
+
+  const chip = dom.get('#barcode-chip-url', HTMLButtonElement);
+  chip.onclick = () => {
     ChromeHelper.getInstance().openUrlInBrowser(url);
   };
-  anchor.href = url;
-  anchor.textContent = url;
+  chip.focus();
+
   const hostname = new URL(url).hostname;
   const label =
       loadTimeData.getI18nMessage(I18nString.BARCODE_LINK_DETECTED, hostname);
-  anchor.setAttribute('aria-label', label);
-  anchor.focus();
+  chip.setAttribute('aria-label', label);
 
   createCopyButton(container, url, I18nString.SNACKBAR_LINK_COPIED);
 }
@@ -192,7 +194,7 @@ function showText(text: string) {
   activate(container);
   container.classList.remove('expanded');
 
-  const textEl = dom.get('#barcode-chip-text-content', HTMLDivElement);
+  const textEl = dom.get('#barcode-chip-text-content', HTMLSpanElement);
   textEl.textContent = text;
   const expandable = textEl.scrollWidth > textEl.clientWidth;
 
@@ -223,7 +225,7 @@ function showWifi(wifiConfig: WifiConfig) {
   const container = dom.get('#barcode-chip-wifi-container', HTMLDivElement);
   activate(container);
 
-  const textEl = dom.get('#barcode-chip-wifi-content', HTMLDivElement);
+  const textEl = dom.get('#barcode-chip-wifi-content', HTMLSpanElement);
   const label = loadTimeData.getI18nMessage(
       I18nString.BARCODE_WIFI_DETECTED, wifiConfig.ssid);
   textEl.textContent = label;

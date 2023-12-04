@@ -94,7 +94,7 @@ body.enable-scan-barcode .barcode-scan-box {
               visibility 0s var(--fast2-duration);
 }
 
-.barcode-chip-url {
+#barcode-chip-url {
   align-items: center;
   background: var(--cros-sys-base_elevated);
   border-radius: 16px;
@@ -104,24 +104,23 @@ body.enable-scan-barcode .barcode-scan-box {
   font: var(--cros-body-2-font);
   height: var(--chip-height);
   justify-content: center;
+  gap: 10px;
+  max-width: 100%;
+  overflow:hidden;
   padding: 8px 16px;
 }
 
-.barcode-chip-url > svg-wrapper {
+#barcode-chip-url > svg-wrapper {
   color: var(--cros-sys-primary);
-  margin-inline-end: 10px;
 }
 
-.barcode-chip-url > a {
+#barcode-chip-url-content {
   color: var(--cros-sys-primary);
-  overflow: hidden;
+  line-height: var(--text-line-height);
   text-decoration: none;
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.barcode-chip-url > a:focus {
-  outline: none;
 }
 
 .barcode-copy-button:hover {
