@@ -71,6 +71,12 @@ class CONTENT_EXPORT PreloadingPredictor {
   int64_t ukm_value() const { return ukm_value_; }
   base::StringPiece name() const { return name_; }
 
+  bool operator==(const PreloadingPredictor& other) const {
+    // There's no need to compare name_ since every PreloadingPredictor has a
+    // distinct ukm_value_.
+    return other.ukm_value_ == ukm_value_;
+  }
+
  private:
   int64_t ukm_value_;
   base::StringPiece name_;

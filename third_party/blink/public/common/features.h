@@ -137,6 +137,8 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAutoSpeculationRules);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kAutoSpeculationRulesConfig;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kAutoSpeculationRulesHoldback;
 
 // Switch to enabling rendering of gainmap-based AVIF HDR images.
 // For this feature to work, kGainmapHdrImages must also be enabled.

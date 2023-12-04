@@ -163,6 +163,8 @@ BASE_FEATURE(kAutoSpeculationRules,
              base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kAutoSpeculationRulesConfig{
     &kAutoSpeculationRules, "config", "{}"};
+const base::FeatureParam<bool> kAutoSpeculationRulesHoldback{
+    &kAutoSpeculationRules, "holdback", false};
 
 // The timeout value that forces loading iframes that are lazy loaded by
 // LazyAds. After this timeout, the frame loading is triggered even when the

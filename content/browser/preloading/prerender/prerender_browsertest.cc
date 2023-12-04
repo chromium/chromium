@@ -481,7 +481,7 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     prerender_helper_->WaitForPrerenderLoadCompletion(url);
   }
 
-  GURL GetUrl(const std::string& path) {
+  GURL GetUrl(const std::string& path) const {
     return ssl_server_.GetURL("a.test", path);
   }
 
@@ -884,20 +884,14 @@ INSTANTIATE_TEST_SUITE_P(All,
                          });
 
 class AutoSpeculationRulesPrerenderBrowserTest : public PrerenderBrowserTest {
-  void SetUp() override {
-    // JavaScriptFramework::kReact is 9, and it is detected by the presence of
-    // data-reactroot attributes.
+ public:
+  AutoSpeculationRulesPrerenderBrowserTest() {
     sub_feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kAutoSpeculationRules,
-        {{"config", base::StringPrintf(R"(
-    {
-      "framework_to_speculation_rules": {
-        "9": "{\"prerender\":[{\"source\":\"list\", \"urls\":[\"%s\"]}]}"
-      }
-    }
-    )",
-                                       kPrerenderedUrlPath)}});
+        blink::features::kAutoSpeculationRules, {{"config", GetConfig()}});
+  }
 
+ protected:
+  void SetUp() override {
     ssl_server().RegisterRequestHandler(base::BindLambdaForTesting(
         [&](const net::test_server::HttpRequest& request)
             -> std::unique_ptr<net::test_server::HttpResponse> {
@@ -919,21 +913,46 @@ class AutoSpeculationRulesPrerenderBrowserTest : public PrerenderBrowserTest {
     PrerenderBrowserTest::SetUp();
   }
 
- protected:
   PreloadingPredictor PredictorToExpectInUkm() override {
     return content_preloading_predictor::
         kSpeculationRulesFromAutoSpeculationRules;
   }
 
-  GURL GetInitialUrl() { return GetUrl(kInitialUrlPath); }
+  GURL GetInitialUrl() const { return GetUrl(kInitialUrlPath); }
 
-  GURL GetPrerenderedUrl() { return GetUrl(kPrerenderedUrlPath); }
+  GURL GetPrerenderedUrl() const { return GetUrl(kPrerenderedUrlPath); }
+
+  std::string GetConfig() const {
+    // JavaScriptFramework::kReact is 9, and it is detected by the presence of
+    // data-reactroot attributes.
+    return base::StringPrintf(R"(
+    {
+      "framework_to_speculation_rules": {
+        "9": "{\"prerender\":[{\"source\":\"list\", \"urls\":[\"%s\"]}]}"
+      }
+    }
+    )",
+                              kPrerenderedUrlPath);
+  }
 
  private:
   base::test::ScopedFeatureList sub_feature_list_;
 
   static constexpr char kInitialUrlPath[] = "/start.html";
   static constexpr char kPrerenderedUrlPath[] = "/empty.html?prerender";
+};
+
+class AutoSpeculationRulesPrerenderBrowserTestWithHoldback
+    : public AutoSpeculationRulesPrerenderBrowserTest {
+ public:
+  AutoSpeculationRulesPrerenderBrowserTestWithHoldback() {
+    sub_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kAutoSpeculationRules,
+        {{"config", GetConfig()}, {"holdback", "true"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList sub_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(AutoSpeculationRulesPrerenderBrowserTest, Metrics) {
@@ -993,6 +1012,66 @@ IN_PROC_BROWSER_TEST_F(AutoSpeculationRulesPrerenderBrowserTest, Metrics) {
         PreloadingFailureReason::kUnspecified,
         /*accurate=*/true,
         /*ready_time=*/kMockElapsedTime,
+        blink::mojom::SpeculationEagerness::kEager)});
+
+    ExpectPreloadingPredictionUkm({prediction_ukm_entry_builder().BuildEntry(
+        ukm_source_id,
+        /*confidence=*/100,
+        /*accurate_prediction=*/true)});
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(AutoSpeculationRulesPrerenderBrowserTestWithHoldback,
+                       Metrics) {
+  const GURL kInitialUrl = GetInitialUrl();
+  const GURL kPrerenderingUrl = GetPrerenderedUrl();
+
+  test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Wait for PrerenderHostRegistry to receive the holdback prerender
+  // request, and it should be ignored.
+  registry_observer.WaitForTrigger(kPrerenderingUrl);
+  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 0);
+
+  NavigationHandleObserver next_page_observer(web_contents(), kPrerenderingUrl);
+  NavigatePrimaryPage(kPrerenderingUrl);
+
+  // No final status for holdbacks.
+
+  // Check UKM metrics: similar to the non-holdback case, except for the
+  // holdback status and no prerender page load entries.
+  {
+    // Cross-check that both Preloading_Prediction and Preloading_Attempt UKMs
+    // are logged on successful activation for speculation rules prerender.
+    ukm::SourceId ukm_source_id = next_page_observer.next_page_ukm_source_id();
+    auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName, test::kPreloadingAttemptUkmMetrics);
+    auto prediction_ukm_entries =
+        test_ukm_recorder()->GetEntries(Preloading_Prediction::kEntryName,
+                                        test::kPreloadingPredictionUkmMetrics);
+    EXPECT_EQ(prediction_ukm_entries.size(), 1u);
+    EXPECT_EQ(attempt_ukm_entries.size(), 1u);
+
+    auto prerender_page_load_ukm_entries =
+        test_ukm_recorder()->GetEntriesByName(
+            ukm::builders::PrerenderPageLoad::kEntryName);
+
+    ukm::SourceId next_page_id = ToSourceId(navigation_ids_[1]);
+    EXPECT_TRUE(prerender_page_load_ukm_entries.empty());
+    EXPECT_EQ(prediction_ukm_entries.back().source_id, next_page_id);
+    EXPECT_EQ(attempt_ukm_entries.back().source_id, next_page_id);
+
+    ExpectPreloadingAttemptUkm({attempt_ukm_entry_builder().BuildEntry(
+        next_page_id, PreloadingType::kPrerender,
+        PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kHoldback,
+        PreloadingTriggeringOutcome::kUnspecified,
+        PreloadingFailureReason::kUnspecified,
+        /*accurate=*/true,
+        /*ready_time=*/absl::nullopt,
         blink::mojom::SpeculationEagerness::kEager)});
 
     ExpectPreloadingPredictionUkm({prediction_ukm_entry_builder().BuildEntry(
