@@ -92,6 +92,7 @@ source_set("unit_tests") {
   }
 
   sources = [
+    "video_toolbox_av1_accelerator_unittest.cc",
     "video_toolbox_decompression_session_manager_unittest.cc",
     "video_toolbox_h264_accelerator_unittest.cc",
     "video_toolbox_output_queue_unittest.cc",
