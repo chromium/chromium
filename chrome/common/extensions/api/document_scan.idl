@@ -361,5 +361,23 @@ namespace documentScan {
     // |callback| : Called with the result and list of scanners.
     [nodoc, supportsPromises] static void getScannerList(
         DeviceFilter filter, GetScannerListCallback callback);
+
+    // Opens a scanner for exclusive access.  On success, the response containing
+    // a scanner handle and configuration will be sent to the callback.
+    // |scannerId| : Scanner id previously returned from <code>getScannerList</code>
+    // indicating which scanner should be opened.
+    // |callback| : Called with the result.
+    [nodoc, supportsPromises] static void openScanner(
+        DOMString scannerId, OpenScannerCallback callback);
+
+    // Closes a previously opened scanner handle.  A response indicating the
+    // outcome will be sent to the callback.  Even if the response is not a
+    // success, the supplied handle will become invalid and should not be used
+    // for further operations.
+    // |scannerHandle| : Open scanner handle previously returned from
+    // <code>openScanner</code>.
+    // |callback| : Called with the result.
+    [nodoc, supportsPromises] static void closeScanner(
+        DOMString scannerHandle, CloseScannerCallback callback);
   };
 };

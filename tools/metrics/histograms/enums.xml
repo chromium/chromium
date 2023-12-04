@@ -16967,6 +16967,8 @@ Called by update_extension_histograms.py.-->
   <int value="1849" label="ODFSCONFIGPRIVATE_GETACCOUNTRESTRICTIONS"/>
   <int value="1850" label="DOCUMENT_SCAN_GETSCANNERLIST"/>
   <int value="1851" label="OS_MANAGEMENT_SETAUDIOGAIN"/>
+  <int value="1852" label="DOCUMENT_SCAN_OPENSCANNER"/>
+  <int value="1853" label="DOCUMENT_SCAN_CLOSESCANNER"/>
 </enum>
 
 <enum name="ExtensionInProgressRequestState">

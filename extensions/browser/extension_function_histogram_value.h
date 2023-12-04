@@ -1911,6 +1911,8 @@ enum HistogramValue {
   ODFSCONFIGPRIVATE_GETACCOUNTRESTRICTIONS = 1849,
   DOCUMENT_SCAN_GETSCANNERLIST = 1850,
   OS_MANAGEMENT_SETAUDIOGAIN = 1851,
+  DOCUMENT_SCAN_OPENSCANNER = 1852,
+  DOCUMENT_SCAN_CLOSESCANNER = 1853,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

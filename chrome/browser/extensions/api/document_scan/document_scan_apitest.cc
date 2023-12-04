@@ -158,6 +158,14 @@ IN_PROC_BROWSER_TEST_P(DocumentScanApiTest, GetScannerList_DiscoveryTrusted) {
   RunTest("get_scanner_list_approved.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DocumentScanApiTest, OpenCloseScannerHandles) {
+  AutoTruster extension_truster(extension_registry());
+  document_scan()->AddScanner(CreateTestScannerInfo());
+  // TODO(b/313494616): Load a second extension to verify (lack of)
+  // cross-extension handle sharing.
+  RunTest("open_scanner.html");
+}
+
 // TODO (b/313494616): Add a test that checks for the expected unsupported
 // response when the AdvancedDocumentScan flag is disabled.
 

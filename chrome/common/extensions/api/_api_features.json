@@ -362,6 +362,12 @@
   "documentScan.getScannerList": {
     "channel": "dev"
   },
+  "documentScan.openScanner": {
+    "channel": "dev"
+  },
+  "documentScan.closeScanner": {
+    "channel": "dev"
+  },
   "dom": {
     "channel": "stable",
     "contexts": ["blessed_extension", "content_script"]
