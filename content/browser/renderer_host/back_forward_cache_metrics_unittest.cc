@@ -236,16 +236,10 @@ TEST_F(BackForwardCacheMetricsTest, MAYBE_TimeRecordedWhenRendererIsKilled) {
 
 // Test that |GetDisallowedFeatures()| and |GetAllowedFeatures()| cover all the
 // blocklisted features.
-// TODO(crbug.com/1504558): Re-enable the test
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
-#define MAYBE_AllFeaturesCovered DISABLED_AllFeaturesCovered
-#else
-#define MAYBE_AllFeaturesCovered AllFeaturesCovered
-#endif  // BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
-TEST_F(BackForwardCacheMetricsTest, MAYBE_AllFeaturesCovered) {
+TEST_F(BackForwardCacheMetricsTest, AllFeaturesCovered) {
   // Features that were removed from the enum must have their int value listed
   // here because ::All() will still include them.
-  std::vector<uint64_t> removed_features{
+  std::unordered_set<uint64_t> removed_features{
       /* WebSchedulerTrackedFeature::kPageShowEventListener =*/6,
       /* WebSchedulerTrackedFeature::kPageHideEventListener =*/7,
       /* WebSchedulerTrackedFeature::kBeforeUnloadEventListener =*/8,
@@ -270,27 +264,30 @@ TEST_F(BackForwardCacheMetricsTest, MAYBE_AllFeaturesCovered) {
         BackForwardCacheImpl::kNotInCCNSContext}) {
     // Combine the result of |GetDisallowedFeatures()| and
     // |GetAllowedFeatures()|.
-    std::vector<uint64_t> combined_features;
+    std::unordered_set<uint64_t> combined_features;
     auto disallowed_features = BackForwardCacheImpl::GetDisallowedFeatures(
         BackForwardCacheImpl::RequestedFeatures::kAll, ccns_context);
     auto allowed_features = BackForwardCacheImpl::GetAllowedFeatures(
         BackForwardCacheImpl::RequestedFeatures::kAll, ccns_context);
-    EXPECT_TRUE(Intersection(disallowed_features, allowed_features).Empty());
-
+    ASSERT_TRUE(Intersection(disallowed_features, allowed_features).Empty());
     for (auto feature : Union(disallowed_features, allowed_features)) {
-      combined_features.push_back(static_cast<uint64_t>(feature));
+      combined_features.emplace(static_cast<uint64_t>(feature));
     }
     // Add the removed features to the list.
-    combined_features.insert(combined_features.begin(),
-                             removed_features.begin(), removed_features.end());
-    // Make a list of all the WebSchedulerTrackedFeatures indices.
-    std::vector<uint64_t> all_features;
-    for (auto feature : blink::scheduler::WebSchedulerTrackedFeatures::All()) {
-      all_features.push_back(static_cast<uint64_t>(feature));
+    for (auto feature : removed_features) {
+      ASSERT_FALSE(combined_features.contains(feature));
+      combined_features.emplace(feature);
     }
+    // Make a list of all the WebSchedulerTrackedFeatures indices.
+    std::unordered_set<uint64_t> all_features;
+    for (auto feature : blink::scheduler::WebSchedulerTrackedFeatures::All()) {
+      all_features.emplace(static_cast<uint64_t>(feature));
+    }
+    SCOPED_TRACE(ccns_context == BackForwardCacheImpl::kInCCNSContext
+                     ? "InCCNSContext"
+                     : "NotInCCNSContext");
     EXPECT_THAT(combined_features,
-                testing::UnorderedElementsAreArray(all_features.begin(),
-                                                   all_features.end()));
+                testing::UnorderedElementsAreArray(all_features));
   }
 }
 
