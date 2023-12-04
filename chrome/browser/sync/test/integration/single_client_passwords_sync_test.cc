@@ -21,7 +21,6 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/sync/password_sync_bridge.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
@@ -318,7 +317,7 @@ class SingleClientPasswordsWithAccountStorageSyncTest : public SyncTest {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{password_manager::features::
                                   kEnablePasswordsAccountStorage},
-        /*disabled_features=*/{switches::kUnoDesktop});
+        /*disabled_features=*/{});
   }
 
   SingleClientPasswordsWithAccountStorageSyncTest(

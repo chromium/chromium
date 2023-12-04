@@ -120,9 +120,7 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest
   SigninInterceptFirstRunExperienceDialogBrowserTest()
       : SigninBrowserTestBase(/*use_main_profile=*/true) {
     feature_list_.InitAndEnableFeatures(
-        /*allow_and_enable_features=*/{feature_engagement::
-                                           kIPHProfileSwitchFeature},
-        /*disable_features=*/{switches::kUnoDesktop});
+        {feature_engagement::kIPHProfileSwitchFeature});
   }
 
   ~SigninInterceptFirstRunExperienceDialogBrowserTest() override = default;
@@ -175,11 +173,10 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest
     account_id_ = SetAccountsCookiesAndTokens({email})[0].account_id;
   }
 
+  // To be used only when `switches::kUnoDesktop` is disabled, otherwise the
+  // primary account will not be set.
   void SignIn(const std::string& email) {
-    account_id_ =
-        identity_test_env()
-            ->MakePrimaryAccountAvailable(email, signin::ConsentLevel::kSignin)
-            .account_id;
+    SetAccountCookieAndToken(email);
     EXPECT_EQ(
         identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
         account_id());
