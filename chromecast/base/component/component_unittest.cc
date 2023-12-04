@@ -163,13 +163,13 @@ std::string DeathRegex(const std::string& regex) {
 
 #if (!defined(NDEBUG) || defined(DCHECK_ALWAYS_ON)) && GTEST_HAS_DEATH_TEST
 TEST_F(ComponentDeathTest, SelfDependency) {
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
   ComponentA a;
   EXPECT_DEATH(a.MakeSelfDependency(), DeathRegex("Circular dependency"));
 }
 
 TEST_F(ComponentDeathTest, CircularDependency) {
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
   ComponentA a;
   ComponentB b(a.GetRef());
   EXPECT_DEATH(a.MakeCircularDependency(b.GetRef()),
@@ -177,7 +177,7 @@ TEST_F(ComponentDeathTest, CircularDependency) {
 }
 
 TEST_F(ComponentDeathTest, TransitiveCircularDependency) {
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
   ComponentA a;
   ComponentB b(a.GetRef());
   ComponentC c(b.GetRef());
