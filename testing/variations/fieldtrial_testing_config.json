@@ -7098,27 +7098,6 @@
             ]
         }
     ],
-    "FeedPerformanceStudyV2": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "rs2_rr05_im0_rvip0_20230824",
-                    "params": {
-                        "rangeRatio": "0.5",
-                        "rangeSize": "2",
-                        "useIncrementalMount": "false",
-                        "useRecyclerViewItemPrefetch": "false"
-                    },
-                    "enable_features": [
-                        "FeedPerformanceStudy"
-                    ]
-                }
-            ]
-        }
-    ],
     "FeedPositionAndroid": [
         {
             "platforms": [
