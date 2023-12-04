@@ -56,6 +56,10 @@
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_MAC)
+#include "components/os_crypt/sync/os_crypt.h"
+#endif
+
 using autofill::FieldDataManager;
 using autofill::FieldRendererId;
 using autofill::FormData;
@@ -216,6 +220,16 @@ bool UsernameOutsideOfFormHasHigherPriority(
               FormDataParser::UsernameDetectionMethod::kServerSidePrediction);
 }
 
+#if BUILDFLAG(IS_MAC)
+bool ShouldShowKeychainErrorBubble(
+    absl::optional<PasswordStoreBackendError> backend_error) {
+  if (!backend_error.has_value()) {
+    return false;
+  }
+  return backend_error.value().type ==
+         PasswordStoreBackendErrorType::kKeychainError;
+}
+#endif
 }  // namespace
 
 PasswordFormManager::PasswordFormManager(
@@ -753,6 +767,16 @@ void PasswordFormManager::OnFetchCompleted() {
             ? password_manager::ErrorMessageFlowType::kSaveFlow
             : password_manager::ErrorMessageFlowType::kFillFlow,
         error_type);
+  }
+#elif BUILDFLAG(IS_MAC)
+  if (ShouldShowKeychainErrorBubble(
+          form_fetcher_->GetProfileStoreBackendError())) {
+    client_->NotifyKeychainError();
+  } else {
+    if (OSCrypt::IsEncryptionAvailable() && client_->GetPrefs()) {
+      client_->GetPrefs()->SetInteger(
+          password_manager::prefs::kRelaunchChromeBubbleDismissedCounter, 0);
+    }
   }
 #endif
 

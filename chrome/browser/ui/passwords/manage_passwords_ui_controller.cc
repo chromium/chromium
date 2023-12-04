@@ -86,6 +86,12 @@ int ManagePasswordsUIController::save_fallback_timeout_in_seconds_ = 90;
 
 namespace {
 
+#if BUILDFLAG(IS_MAC)
+// Should be kept in sync with constant declared in
+// bubble_controllers/relaunch_chrome_bubble_controller.cc.
+constexpr int kMaxNumberOfTimesKeychainErrorBubbleIsShown = 3;
+#endif
+
 password_manager::PasswordStoreInterface* GetProfilePasswordStore(
     content::WebContents* web_contents) {
   return ProfilePasswordStoreFactory::GetForProfile(
@@ -441,6 +447,24 @@ void ManagePasswordsUIController::OnBiometricAuthBeforeFillingDeclined() {
   CHECK(!dialog_controller_);
   passwords_data_.TransitionToState(password_manager::ui::MANAGE_STATE);
   UpdateBubbleAndIconVisibility();
+}
+
+void ManagePasswordsUIController::OnKeychainError() {
+#if BUILDFLAG(IS_MAC)
+  CHECK(!dialog_controller_);
+  PrefService* prefs =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext())
+          ->GetPrefs();
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kRestartToGainAccessToKeychain) &&
+      prefs->GetInteger(
+          password_manager::prefs::kRelaunchChromeBubbleDismissedCounter) <=
+          kMaxNumberOfTimesKeychainErrorBubbleIsShown) {
+    passwords_data_.OnKeychainError();
+    bubble_status_ = BubbleStatus::SHOULD_POP_UP;
+    UpdateBubbleAndIconVisibility();
+  }
+#endif
 }
 
 void ManagePasswordsUIController::OnAddUsernameSaveClicked(

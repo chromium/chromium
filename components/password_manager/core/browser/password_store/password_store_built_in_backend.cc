@@ -158,7 +158,6 @@ void PasswordStoreBuiltInBackend::FillMatchingLoginsAsync(
           forms, include_psl),
       ReportMetricsForResultCallback<LoginsResultOrError>(
           MetricInfix("FillMatchingLoginsAsync"))
-          .Then(base::BindOnce(&GetLoginsOrEmptyListOnFailure))
           .Then(std::move(callback)));
 }
 

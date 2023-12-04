@@ -670,4 +670,10 @@ TEST_F(ManagePasswordsStateTest, OnMovablePasswordSubmitted) {
   TestAllUpdates();
 }
 
+TEST_F(ManagePasswordsStateTest, OnKeychainError) {
+  passwords_data().OnKeychainError();
+  EXPECT_EQ(password_manager::ui::KEYCHAIN_ERROR_STATE,
+            passwords_data().state());
+}
+
 }  // namespace

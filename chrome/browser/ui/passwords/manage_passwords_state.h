@@ -88,6 +88,9 @@ class ManagePasswordsState {
   // Move to INACTIVE_STATE.
   void OnInactive();
 
+  // Move to KEYCHAIN_ERROR_STATE.
+  void OnKeychainError();
+
   // Move to CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE. Triggers a bubble to move the
   // just submitted form to the user's account store.
   void OnPasswordMovable(

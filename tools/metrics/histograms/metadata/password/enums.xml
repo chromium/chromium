@@ -1152,6 +1152,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Uncategorized"/>
   <int value="1" label="AuthErrorResolvable"/>
   <int value="2" label="AuthErrorUnresolvable"/>
+  <int value="3" label="KeychainError"/>
 </enum>
 
 <enum name="PasswordSubmissionEvent">

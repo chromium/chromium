@@ -17,6 +17,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "components/os_crypt/sync/os_crypt_mocker.h"
+#endif
+
 using base::ASCIIToUTF16;
 using testing::_;
 using testing::Invoke;
@@ -73,6 +77,10 @@ class CredentialManagerPasswordFormManagerTest : public testing::Test {
     form_to_save_.scheme = PasswordForm::Scheme::kHtml;
     form_to_save_.type = PasswordForm::Type::kApi;
     form_to_save_.in_store = PasswordForm::Store::kProfileStore;
+
+#if BUILDFLAG(IS_MAC)
+    OSCryptMocker::SetUp();
+#endif
   }
   CredentialManagerPasswordFormManagerTest(
       const CredentialManagerPasswordFormManagerTest&) = delete;

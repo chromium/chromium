@@ -108,6 +108,7 @@ class WebViewPasswordManagerClient
       password_manager::CredentialLeakType leak_type,
       const GURL& origin,
       const std::u16string& username) override;
+  void NotifyKeychainError() override;
   bool IsSavingAndFillingEnabled(const GURL& url) const override;
   bool IsCommittedMainFrameSecure() const override;
   const GURL& GetLastCommittedURL() const override;

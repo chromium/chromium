@@ -68,6 +68,10 @@
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_MAC)
+#include "components/os_crypt/sync/os_crypt_mocker.h"
+#endif
+
 namespace password_manager {
 
 namespace {
@@ -174,6 +178,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               GetWebAuthnCredentialsDelegateForDriver,
               (PasswordManagerDriver*),
               (override));
+  MOCK_METHOD(void, NotifyKeychainError, (), (override));
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(void,
               ShowPasswordManagerErrorMessage,
@@ -336,7 +341,11 @@ class PasswordFormManagerTest : public testing::Test,
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
 #endif
-
+#if BUILDFLAG(IS_MAC)
+    OSCryptMocker::SetUp();
+    pref_service_.registry()->RegisterIntegerPref(
+        password_manager::prefs::kRelaunchChromeBubbleDismissedCounter, 0);
+#endif
     form_manager_->set_wait_for_server_predictions_for_filling(true);
 
     GURL origin = GURL("https://accounts.google.com/a/ServiceLoginAuth");
@@ -4148,6 +4157,37 @@ TEST_P(PasswordFormManagerTest, ClientShouldNotShowErrorMessageWhenUnenrolled) {
 
   EXPECT_CALL(client_, ShowPasswordManagerErrorMessage).Times(0);
   fetcher_->NotifyFetchCompleted();
+}
+#endif
+
+#if BUILDFLAG(IS_MAC)
+TEST_P(PasswordFormManagerTest, ClientShouldShowKeychainErrorMessage) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kRestartToGainAccessToKeychain);
+
+  fetcher_->SetProfileStoreBackendError(PasswordStoreBackendError(
+      PasswordStoreBackendErrorType::kKeychainError,
+      PasswordStoreBackendErrorRecoveryType::kRecoverable));
+
+  EXPECT_CALL(client_, NotifyKeychainError);
+  fetcher_->NotifyFetchCompleted();
+}
+
+TEST_P(PasswordFormManagerTest, ClientShouldNotShowKeychainErrorMessage) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kRestartToGainAccessToKeychain);
+
+  fetcher_->SetProfileStoreBackendError(absl::nullopt);
+
+  EXPECT_CALL(client_, NotifyKeychainError).Times(0);
+  fetcher_->NotifyFetchCompleted();
+
+  // If the bubble shouldn't be shown, the counter should be reset.
+  EXPECT_EQ(client_.GetPrefs()->GetInteger(
+                password_manager::prefs::kRelaunchChromeBubbleDismissedCounter),
+            0);
 }
 #endif
 

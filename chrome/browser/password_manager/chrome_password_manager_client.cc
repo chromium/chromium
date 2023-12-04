@@ -655,6 +655,14 @@ void ChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
+void ChromePasswordManagerClient::NotifyKeychainError() {
+#if BUILDFLAG(IS_MAC)
+  PasswordsClientUIDelegate* manage_passwords_ui_controller =
+      PasswordsClientUIDelegateFromWebContents(web_contents());
+  manage_passwords_ui_controller->OnKeychainError();
+#endif
+}
+
 void ChromePasswordManagerClient::TriggerReauthForPrimaryAccount(
     signin_metrics::ReauthAccessPoint access_point,
     base::OnceCallback<void(ReauthSucceeded)> reauth_callback) {

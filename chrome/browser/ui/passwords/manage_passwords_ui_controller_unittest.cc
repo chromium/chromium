@@ -2005,6 +2005,31 @@ TEST_F(ManagePasswordsUIControllerTest, OnBiometricAuthBeforeFillingDeclined) {
 
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_MAC)
+TEST_F(ManagePasswordsUIControllerTest, OnKeychainErrorShouldShowBubble) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kRestartToGainAccessToKeychain);
+  profile()->GetPrefs()->SetInteger(
+      password_manager::prefs::kRelaunchChromeBubbleDismissedCounter, 0);
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
+  controller()->OnKeychainError();
+  EXPECT_EQ(password_manager::ui::KEYCHAIN_ERROR_STATE,
+            controller()->GetState());
+}
+
+TEST_F(ManagePasswordsUIControllerTest, OnKeychainErrorShouldNotShowBubble) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kRestartToGainAccessToKeychain);
+  profile()->GetPrefs()->SetInteger(
+      password_manager::prefs::kRelaunchChromeBubbleDismissedCounter, 4);
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility()).Times(0);
+  controller()->OnKeychainError();
+  EXPECT_EQ(password_manager::ui::INACTIVE_STATE, controller()->GetState());
+}
+#endif
+
 class ManagePasswordsUIControllerWithBrowserTest
     : public BrowserWithTestWindowTest {
  public:

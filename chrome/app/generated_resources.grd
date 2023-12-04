@@ -9806,6 +9806,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_PASSWORD_MANAGER_TOOLTIP_SHARED_NOTIFICATION" desc="Text for the 'Manage Passwords' icon's 'shared password notification' state">
           New password received
         </message>
+        <message name="IDS_PASSWORD_MANAGER_TOOLTIP_KEYCHAIN_ERROR" desc="Text for the 'Manage Passwords' icon's 'keychain error' state">
+          Fix password error
+        </message>
         <message name="IDS_PASSWORD_MANAGER_IMPORT_DIALOG_TITLE" desc="The title of the file selection dialog for importing passwords">
           Import Passwords To Chrome
         </message>
