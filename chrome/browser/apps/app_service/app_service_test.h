@@ -29,8 +29,6 @@ class AppServiceTest {
 
   void SetUp(Profile* profile);
 
-  void WaitForAppServiceProxyReady(AppServiceProxy* proxy);
-
   void UninstallAllApps(Profile* profile);
 
   std::string GetAppName(const std::string& app_id) const;
@@ -43,9 +41,13 @@ class AppServiceTest {
 
   bool AreIconImageEqual(const gfx::ImageSkia& src, const gfx::ImageSkia& dst);
 
+  AppServiceProxy* proxy() { return app_service_proxy_; }
+
  private:
   raw_ptr<AppServiceProxy, DanglingUntriaged> app_service_proxy_ = nullptr;
 };
+
+void WaitForAppServiceProxyReady(AppServiceProxy* proxy);
 
 }  // namespace apps
 

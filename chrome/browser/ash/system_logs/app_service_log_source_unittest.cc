@@ -9,6 +9,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -40,6 +41,9 @@ class AppServiceLogSourceTest : public ::testing::Test {
     fake_user_manager->SwitchActiveUser(account_id);
     user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(fake_user_manager));
+
+    // Wait for AppServiceProxy to be ready.
+    app_service_test_.SetUp(profile_);
   }
   void TearDown() override { user_manager_.reset(); }
 
@@ -71,6 +75,7 @@ class AppServiceLogSourceTest : public ::testing::Test {
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<TestingProfile> profile_;
+  apps::AppServiceTest app_service_test_;
 };
 
 TEST_F(AppServiceLogSourceTest, InstalledApps) {

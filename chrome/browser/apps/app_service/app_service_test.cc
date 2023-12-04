@@ -30,19 +30,6 @@ void AppServiceTest::SetUp(Profile* profile) {
   WaitForAppServiceProxyReady(app_service_proxy_);
 }
 
-void AppServiceTest::WaitForAppServiceProxyReady(AppServiceProxy* proxy) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!base::FeatureList::IsEnabled(kAppServiceStorage)) {
-    return;
-  }
-
-  base::test::TestFuture<void> result;
-  CHECK(proxy->OnReady());
-  proxy->OnReady()->Post(FROM_HERE, result.GetCallback());
-  CHECK(result.Wait());
-#endif
-}
-
 void AppServiceTest::UninstallAllApps(Profile* profile) {
   auto* app_service_proxy = AppServiceProxyFactory::GetForProfile(profile);
   std::vector<AppPtr> apps;
@@ -82,6 +69,19 @@ bool AppServiceTest::AreIconImageEqual(const gfx::ImageSkia& src,
                                        const gfx::ImageSkia& dst) {
   return gfx::test::AreBitmapsEqual(src.GetRepresentation(1.0f).GetBitmap(),
                                     dst.GetRepresentation(1.0f).GetBitmap());
+}
+
+void WaitForAppServiceProxyReady(AppServiceProxy* proxy) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!base::FeatureList::IsEnabled(kAppServiceStorage)) {
+    return;
+  }
+
+  base::test::TestFuture<void> result;
+  CHECK(proxy->OnReady());
+  proxy->OnReady()->Post(FROM_HERE, result.GetCallback());
+  CHECK(result.Wait());
+#endif
 }
 
 }  // namespace apps
