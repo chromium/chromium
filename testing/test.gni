@@ -700,10 +700,13 @@ template("test") {
     ios_test_runner_wrapper(_wrapper_output_name) {
       forward_variables_from(invoker,
                              [
+                               "clones",
                                "data",
                                "deps",
                                "executable_args",
                                "retries",
+
+                               # TODO(crbug.com/1500395) deprecate shards
                                "shards",
                              ])
 

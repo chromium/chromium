@@ -177,12 +177,15 @@ template("chrome_ios_eg2_test") {
   ios_eg2_test(target_name) {
     forward_variables_from(invoker,
                            [
+                             "clones",
                              "bundle_deps",
                              "data",
                              "deps",
                              "data_deps",
                              "executable_args",
                              "retries",
+
+                             # TODO(crbug.com/1500395) deprecate shards
                              "shards",
                              "xcode_test_application_name",
                            ])

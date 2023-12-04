@@ -148,7 +148,7 @@ class SimulatorTestRunnerTest(TestCase):
       return
 
     @staticmethod
-    def _run(cmd, shards=None):
+    def _run(cmd, clones=None):
       if not any('retry_after_crash' in cmd_arg for cmd_arg in cmd):
         # First run, has no test filter supplied. Mock a crash.
         result = ResultCollection(

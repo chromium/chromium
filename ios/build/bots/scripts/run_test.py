@@ -181,12 +181,12 @@ class UnitTest(unittest.TestCase):
     json_args = {
         'test_cases': ['test1'],
         'restart': 'true',
-        'xcode_parallelization': True,
-        'shards': 2
+        'xcodebuild_sim_runner': True,
+        'clones': 2
     }
 
     cmd = [
-        '--shards',
+        '--clones',
         '1',
         '--platform',
         'iPhone X',
@@ -202,14 +202,14 @@ class UnitTest(unittest.TestCase):
         'some/dir'
     ]
 
-    # shards should be 2, since json arg takes precedence over cmd line
+    # clones should be 2, since json arg takes precedence over cmd line
     runner = run.Runner()
     runner.parse_args(cmd)
     # Empty array
     self.assertEquals(len(runner.args.env_var), 0)
-    self.assertTrue(runner.args.xcode_parallelization)
+    self.assertTrue(runner.args.xcodebuild_sim_runner)
     self.assertTrue(runner.args.restart)
-    self.assertEquals(runner.args.shards, 2)
+    self.assertEquals(runner.args.clones, 2)
 
   def test_parse_args_record_video_without_xcode_parallelization(self):
     """

@@ -115,11 +115,14 @@ template("ios_eg2_test") {
   ios_test_runner_wrapper(target_name) {
     forward_variables_from(invoker,
                            [
+                             "clones",
                              "data",
                              "data_deps",
                              "deps",
                              "executable_args",
                              "retries",
+
+                             # TODO(crbug.com/1500395) deprecate shards
                              "shards",
                              "xcode_test_application_name",
                            ])

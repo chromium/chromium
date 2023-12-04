@@ -247,7 +247,7 @@ class GTestsApp(object):
       })
     return xctestrun_data
 
-  def command(self, out_dir, destination, shards):
+  def command(self, out_dir, destination, clones):
     """Returns the command that launches tests using xcodebuild.
 
     Format of command:
@@ -258,7 +258,7 @@ class GTestsApp(object):
     Args:
       out_dir: (str) An output directory.
       destination: (str) A destination of running simulator.
-      shards: (int) A number of shards.
+      clones: (int) A number of simulator clones to run tests against.
 
     Returns:
       A list of strings forming the command to launch the test.
@@ -271,10 +271,10 @@ class GTestsApp(object):
         self.fill_xctest_run(out_dir), '-destination', destination,
         '-resultBundlePath', out_dir
     ])
-    if shards > 1:
+    if clones > 1:
       cmd.extend([
           '-parallel-testing-enabled', 'YES', '-parallel-testing-worker-count',
-          str(shards)
+          str(clones)
       ])
     return cmd
 
@@ -386,13 +386,13 @@ class EgtestsApp(GTestsApp):
         libs.append(os.path.join('@executable_path', child))
     return libs
 
-  def command(self, out_dir, destination, shards):
+  def command(self, out_dir, destination, clones):
     """Returns the command that launches tests for EG Tests.
 
     See details in parent class method docstring. This method appends the
     command line switch if test repeat is required.
     """
-    cmd = super(EgtestsApp, self).command(out_dir, destination, shards)
+    cmd = super(EgtestsApp, self).command(out_dir, destination, clones)
     if self.repeat_count > 1:
       if xcode_util.using_xcode_13_or_higher():
         cmd += ['-test-iterations', str(self.repeat_count)]

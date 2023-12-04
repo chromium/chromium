@@ -276,7 +276,7 @@ targets.legacy_matrix_compound_suite(
     basic_suites = {
         "ios_eg2_cq_tests": targets.legacy_matrix_config(
             mixins = [
-                "xcode_parallelization",
+                "xcodebuild_sim_runner",
                 "disable_field_trial_config_for_earl_grey",
             ],
             variants = [
@@ -286,7 +286,7 @@ targets.legacy_matrix_compound_suite(
         ),
         "ios_eg2_tests": targets.legacy_matrix_config(
             mixins = [
-                "xcode_parallelization",
+                "xcodebuild_sim_runner",
                 "disable_field_trial_config_for_earl_grey",
             ],
             variants = [
@@ -418,7 +418,7 @@ targets.legacy_matrix_compound_suite(
         ),
         "ios_eg2_tests": targets.legacy_matrix_config(
             mixins = [
-                "xcode_parallelization",
+                "xcodebuild_sim_runner",
                 "record_failed_tests",
             ],
             variants = [
@@ -430,7 +430,7 @@ targets.legacy_matrix_compound_suite(
         ),
         "ios_eg2_cq_tests": targets.legacy_matrix_config(
             mixins = [
-                "xcode_parallelization",
+                "xcodebuild_sim_runner",
                 "record_failed_tests",
             ],
             variants = [
@@ -449,7 +449,7 @@ targets.legacy_matrix_compound_suite(
         ),
         "ios_crash_xcuitests": targets.legacy_matrix_config(
             mixins = [
-                "xcode_parallelization",
+                "xcodebuild_sim_runner",
             ],
             variants = [
                 "SIM_IPHONE_14_16_4",
@@ -468,7 +468,7 @@ targets.legacy_matrix_compound_suite(
         ),
         "ios_crash_xcuitests": targets.legacy_matrix_config(
             mixins = [
-                "xcode_parallelization",
+                "xcodebuild_sim_runner",
             ],
             variants = [
                 "SIM_IPHONE_14_16_4",
@@ -476,7 +476,7 @@ targets.legacy_matrix_compound_suite(
         ),
         "ios_eg2_tests": targets.legacy_matrix_config(
             mixins = [
-                "xcode_parallelization",
+                "xcodebuild_sim_runner",
                 "record_failed_tests",
             ],
             variants = [
@@ -487,7 +487,7 @@ targets.legacy_matrix_compound_suite(
         ),
         "ios_eg2_cq_tests": targets.legacy_matrix_config(
             mixins = [
-                "xcode_parallelization",
+                "xcodebuild_sim_runner",
                 "record_failed_tests",
             ],
             variants = [
@@ -518,7 +518,7 @@ targets.legacy_matrix_compound_suite(
         ),
         "ios_eg2_tests": targets.legacy_matrix_config(
             mixins = [
-                "xcode_parallelization",
+                "xcodebuild_sim_runner",
                 "record_failed_tests",
             ],
             variants = [
@@ -528,7 +528,7 @@ targets.legacy_matrix_compound_suite(
         ),
         "ios_eg2_cq_tests": targets.legacy_matrix_config(
             mixins = [
-                "xcode_parallelization",
+                "xcodebuild_sim_runner",
                 "record_failed_tests",
             ],
             variants = [
@@ -545,7 +545,7 @@ targets.legacy_matrix_compound_suite(
         ),
         "ios_crash_xcuitests": targets.legacy_matrix_config(
             mixins = [
-                "xcode_parallelization",
+                "xcodebuild_sim_runner",
             ],
             variants = [
                 "SIM_IPHONE_14_17_2",
@@ -566,7 +566,7 @@ targets.legacy_matrix_compound_suite(
         ),
         "ios_eg2_tests": targets.legacy_matrix_config(
             mixins = [
-                "xcode_parallelization",
+                "xcodebuild_sim_runner",
             ],
             variants = [
                 "SIM_IPHONE_14_17_2",
@@ -575,7 +575,7 @@ targets.legacy_matrix_compound_suite(
         ),
         "ios_eg2_cq_tests": targets.legacy_matrix_config(
             mixins = [
-                "xcode_parallelization",
+                "xcodebuild_sim_runner",
             ],
             variants = [
                 "SIM_IPAD_AIR_5TH_GEN_17_2",
@@ -658,7 +658,7 @@ targets.legacy_matrix_compound_suite(
         ),
         "ios_eg2_cq_tests": targets.legacy_matrix_config(
             mixins = [
-                "xcode_parallelization",
+                "xcodebuild_sim_runner",
             ],
             variants = [
                 "SIM_IPHONE_14_16_4",
@@ -671,7 +671,7 @@ targets.legacy_matrix_compound_suite(
         ),
         "ios_eg2_tests": targets.legacy_matrix_config(
             mixins = [
-                "xcode_parallelization",
+                "xcodebuild_sim_runner",
             ],
             variants = [
                 "SIM_IPHONE_14_16_4",
@@ -702,7 +702,7 @@ targets.legacy_matrix_compound_suite(
         ),
         "ios_eg2_tests": targets.legacy_matrix_config(
             mixins = [
-                "xcode_parallelization",
+                "xcodebuild_sim_runner",
                 "record_failed_tests",
             ],
             variants = [
@@ -712,7 +712,7 @@ targets.legacy_matrix_compound_suite(
         ),
         "ios_eg2_cq_tests": targets.legacy_matrix_config(
             mixins = [
-                "xcode_parallelization",
+                "xcodebuild_sim_runner",
                 "record_failed_tests",
             ],
             variants = [
@@ -753,7 +753,7 @@ targets.legacy_matrix_compound_suite(
         ),
         "ios_eg2_tests": targets.legacy_matrix_config(
             mixins = [
-                "xcode_parallelization",
+                "xcodebuild_sim_runner",
             ],
             variants = [
                 "SIM_IPHONE_14_16_4",
@@ -764,7 +764,7 @@ targets.legacy_matrix_compound_suite(
         ),
         "ios_eg2_cq_tests": targets.legacy_matrix_config(
             mixins = [
-                "xcode_parallelization",
+                "xcodebuild_sim_runner",
             ],
             variants = [
                 "SIM_IPAD_PRO_6TH_GEN_16_4",
@@ -797,7 +797,7 @@ targets.legacy_matrix_compound_suite(
         ),
         "ios_eg2_cq_tests": targets.legacy_matrix_config(
             mixins = [
-                "xcode_parallelization",
+                "xcodebuild_sim_runner",
             ],
             variants = [
                 "SIM_IPAD_AIR_5TH_GEN_16_4",
@@ -806,7 +806,7 @@ targets.legacy_matrix_compound_suite(
         ),
         "ios_eg2_tests": targets.legacy_matrix_config(
             mixins = [
-                "xcode_parallelization",
+                "xcodebuild_sim_runner",
             ],
             variants = [
                 "SIM_IPAD_AIR_5TH_GEN_16_4",
@@ -827,7 +827,7 @@ targets.legacy_matrix_compound_suite(
     basic_suites = {
         "ios_eg2_tests": targets.legacy_matrix_config(
             mixins = [
-                "xcode_parallelization",
+                "xcodebuild_sim_runner",
                 "record_failed_tests",
             ],
             variants = [
@@ -838,7 +838,7 @@ targets.legacy_matrix_compound_suite(
         ),
         "ios_eg2_cq_tests": targets.legacy_matrix_config(
             mixins = [
-                "xcode_parallelization",
+                "xcodebuild_sim_runner",
                 "record_failed_tests",
             ],
             variants = [
@@ -863,7 +863,7 @@ targets.legacy_matrix_compound_suite(
         ),
         "ios_crash_xcuitests": targets.legacy_matrix_config(
             mixins = [
-                "xcode_parallelization",
+                "xcodebuild_sim_runner",
             ],
             variants = [
                 "SIM_IPHONE_13_15_5",
@@ -886,7 +886,7 @@ targets.legacy_matrix_compound_suite(
         ),
         "ios_eg2_cq_tests": targets.legacy_matrix_config(
             mixins = [
-                "xcode_parallelization",
+                "xcodebuild_sim_runner",
             ],
             variants = [
                 "SIM_IPHONE_14_16_4",
@@ -917,7 +917,7 @@ targets.legacy_matrix_compound_suite(
         ),
         "ios_eg2_cq_tests": targets.legacy_matrix_config(
             mixins = [
-                "xcode_parallelization",
+                "xcodebuild_sim_runner",
             ],
             variants = [
                 "SIM_IPHONE_14_16_4",
@@ -928,7 +928,7 @@ targets.legacy_matrix_compound_suite(
         ),
         "ios_eg2_tests": targets.legacy_matrix_config(
             mixins = [
-                "xcode_parallelization",
+                "xcodebuild_sim_runner",
             ],
             variants = [
                 "SIM_IPHONE_14_16_4",

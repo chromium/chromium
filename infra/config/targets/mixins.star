@@ -630,7 +630,7 @@ targets.mixin(
 targets.mixin(
     name = "ios_parallel_simulators",
     args = [
-        "--shards",
+        "--clones",
         "2",
     ],
 )
@@ -1677,9 +1677,9 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "xcode_parallelization",
+    name = "xcodebuild_sim_runner",
     args = [
-        "--xcode-parallelization",
+        "--xcodebuild-sim-runner",
     ],
 )
 

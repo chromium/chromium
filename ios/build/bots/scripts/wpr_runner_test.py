@@ -242,7 +242,7 @@ class WprProxySimulatorTestRunnerTest(test_runner_test.TestCase):
 
     tr.xctest_path = 'fake.xctest'
     cmd = {'invert': invert, 'test_filter': test_filter}
-    return tr._run(cmd=cmd, shards=1)
+    return tr._run(cmd=cmd, clones=1)
 
   def test_run_no_filter(self):
     """Ensures the _run method can handle passed and failed tests."""

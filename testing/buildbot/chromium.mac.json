@@ -9123,9 +9123,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -9176,9 +9176,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -10015,7 +10015,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -10065,7 +10065,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -12670,7 +12670,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -12720,7 +12720,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -12770,7 +12770,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -12820,7 +12820,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -12870,9 +12870,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -12923,9 +12923,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -12976,9 +12976,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13029,9 +13029,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13082,9 +13082,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13135,9 +13135,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13188,9 +13188,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13241,9 +13241,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13294,9 +13294,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13347,9 +13347,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13400,7 +13400,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13451,7 +13451,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13502,7 +13502,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13553,7 +13553,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13604,7 +13604,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13654,7 +13654,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13704,7 +13704,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13754,7 +13754,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13804,9 +13804,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13857,9 +13857,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13910,9 +13910,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13963,9 +13963,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -14212,7 +14212,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -14263,7 +14263,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -14314,7 +14314,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -14365,7 +14365,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -14712,7 +14712,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -14762,7 +14762,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -14812,7 +14812,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -14862,7 +14862,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -15206,7 +15206,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -15256,7 +15256,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -15306,7 +15306,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -15356,7 +15356,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -15406,7 +15406,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -15456,7 +15456,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -18325,7 +18325,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -18376,7 +18376,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -18427,7 +18427,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -18478,9 +18478,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -18532,9 +18532,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -18586,9 +18586,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -18640,9 +18640,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -18694,9 +18694,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -18748,9 +18748,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -18802,7 +18802,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -18854,7 +18854,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -18906,7 +18906,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -18958,7 +18958,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -19009,7 +19009,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -19060,7 +19060,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -19111,9 +19111,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -19165,9 +19165,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -19219,9 +19219,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -19753,7 +19753,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -19805,7 +19805,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -19857,7 +19857,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -19909,7 +19909,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -19958,7 +19958,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -20007,7 +20007,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -20056,7 +20056,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -20107,7 +20107,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -20158,7 +20158,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -20689,7 +20689,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -20740,7 +20740,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -20791,7 +20791,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],

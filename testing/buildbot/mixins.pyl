@@ -500,7 +500,7 @@
   },
   'ios_parallel_simulators': {
     'args': [
-      '--shards',
+      '--clones',
       '2',
     ],
   },
@@ -1325,9 +1325,9 @@
       ],
     },
   },
-  'xcode_parallelization': {
+  'xcodebuild_sim_runner': {
     'args': [
-      '--xcode-parallelization',
+      '--xcodebuild-sim-runner',
     ],
   },
   'xctest': {

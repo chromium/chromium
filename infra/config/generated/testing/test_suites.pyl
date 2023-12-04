@@ -6936,7 +6936,7 @@
     'fieldtrial_ios_simulator_tests': {
       'ios_eg2_cq_tests': {
         'mixins': [
-          'xcode_parallelization',
+          'xcodebuild_sim_runner',
           'disable_field_trial_config_for_earl_grey',
         ],
         'variants': [
@@ -6946,7 +6946,7 @@
       },
       'ios_eg2_tests': {
         'mixins': [
-          'xcode_parallelization',
+          'xcodebuild_sim_runner',
           'disable_field_trial_config_for_earl_grey',
         ],
         'variants': [
@@ -7063,7 +7063,7 @@
       },
       'ios_crash_xcuitests': {
         'mixins': [
-          'xcode_parallelization',
+          'xcodebuild_sim_runner',
         ],
         'variants': [
           'SIM_IPHONE_14_16_4',
@@ -7071,7 +7071,7 @@
       },
       'ios_eg2_cq_tests': {
         'mixins': [
-          'xcode_parallelization',
+          'xcodebuild_sim_runner',
           'record_failed_tests',
         ],
         'variants': [
@@ -7082,7 +7082,7 @@
       },
       'ios_eg2_tests': {
         'mixins': [
-          'xcode_parallelization',
+          'xcodebuild_sim_runner',
           'record_failed_tests',
         ],
         'variants': [
@@ -7110,7 +7110,7 @@
       },
       'ios_crash_xcuitests': {
         'mixins': [
-          'xcode_parallelization',
+          'xcodebuild_sim_runner',
         ],
         'variants': [
           'SIM_IPHONE_14_16_4',
@@ -7118,7 +7118,7 @@
       },
       'ios_eg2_cq_tests': {
         'mixins': [
-          'xcode_parallelization',
+          'xcodebuild_sim_runner',
           'record_failed_tests',
         ],
         'variants': [
@@ -7129,7 +7129,7 @@
       },
       'ios_eg2_tests': {
         'mixins': [
-          'xcode_parallelization',
+          'xcodebuild_sim_runner',
           'record_failed_tests',
         ],
         'variants': [
@@ -7157,7 +7157,7 @@
       },
       'ios_crash_xcuitests': {
         'mixins': [
-          'xcode_parallelization',
+          'xcodebuild_sim_runner',
         ],
         'variants': [
           'SIM_IPAD_AIR_5TH_GEN_17_2',
@@ -7166,7 +7166,7 @@
       },
       'ios_eg2_cq_tests': {
         'mixins': [
-          'xcode_parallelization',
+          'xcodebuild_sim_runner',
           'record_failed_tests',
         ],
         'variants': [
@@ -7176,7 +7176,7 @@
       },
       'ios_eg2_tests': {
         'mixins': [
-          'xcode_parallelization',
+          'xcodebuild_sim_runner',
           'record_failed_tests',
         ],
         'variants': [
@@ -7202,7 +7202,7 @@
       },
       'ios_eg2_cq_tests': {
         'mixins': [
-          'xcode_parallelization',
+          'xcodebuild_sim_runner',
         ],
         'variants': [
           'SIM_IPAD_AIR_5TH_GEN_17_2',
@@ -7211,7 +7211,7 @@
       },
       'ios_eg2_tests': {
         'mixins': [
-          'xcode_parallelization',
+          'xcodebuild_sim_runner',
         ],
         'variants': [
           'SIM_IPAD_AIR_5TH_GEN_17_2',
@@ -7277,7 +7277,7 @@
       },
       'ios_eg2_cq_tests': {
         'mixins': [
-          'xcode_parallelization',
+          'xcodebuild_sim_runner',
         ],
         'variants': [
           'SIM_IPAD_AIR_5TH_GEN_16_4',
@@ -7290,7 +7290,7 @@
       },
       'ios_eg2_tests': {
         'mixins': [
-          'xcode_parallelization',
+          'xcodebuild_sim_runner',
         ],
         'variants': [
           'SIM_IPAD_PRO_6TH_GEN_16_4',
@@ -7318,7 +7318,7 @@
       },
       'ios_eg2_cq_tests': {
         'mixins': [
-          'xcode_parallelization',
+          'xcodebuild_sim_runner',
           'record_failed_tests',
         ],
         'variants': [
@@ -7334,7 +7334,7 @@
       },
       'ios_eg2_tests': {
         'mixins': [
-          'xcode_parallelization',
+          'xcodebuild_sim_runner',
           'record_failed_tests',
         ],
         'variants': [
@@ -7365,7 +7365,7 @@
       },
       'ios_eg2_cq_tests': {
         'mixins': [
-          'xcode_parallelization',
+          'xcodebuild_sim_runner',
         ],
         'variants': [
           'SIM_IPAD_AIR_5TH_GEN_16_4',
@@ -7378,7 +7378,7 @@
       },
       'ios_eg2_tests': {
         'mixins': [
-          'xcode_parallelization',
+          'xcodebuild_sim_runner',
         ],
         'variants': [
           'SIM_IPAD_PRO_6TH_GEN_16_4',
@@ -7406,7 +7406,7 @@
       },
       'ios_eg2_cq_tests': {
         'mixins': [
-          'xcode_parallelization',
+          'xcodebuild_sim_runner',
         ],
         'variants': [
           'SIM_IPAD_AIR_5TH_GEN_16_4',
@@ -7415,7 +7415,7 @@
       },
       'ios_eg2_tests': {
         'mixins': [
-          'xcode_parallelization',
+          'xcodebuild_sim_runner',
         ],
         'variants': [
           'SIM_IPAD_AIR_5TH_GEN_16_4',
@@ -7433,7 +7433,7 @@
     'ios_simulator_noncq_tests': {
       'ios_crash_xcuitests': {
         'mixins': [
-          'xcode_parallelization',
+          'xcodebuild_sim_runner',
         ],
         'variants': [
           'SIM_IPHONE_13_15_5',
@@ -7443,7 +7443,7 @@
       },
       'ios_eg2_cq_tests': {
         'mixins': [
-          'xcode_parallelization',
+          'xcodebuild_sim_runner',
           'record_failed_tests',
         ],
         'variants': [
@@ -7454,7 +7454,7 @@
       },
       'ios_eg2_tests': {
         'mixins': [
-          'xcode_parallelization',
+          'xcodebuild_sim_runner',
           'record_failed_tests',
         ],
         'variants': [
@@ -7488,7 +7488,7 @@
       },
       'ios_eg2_cq_tests': {
         'mixins': [
-          'xcode_parallelization',
+          'xcodebuild_sim_runner',
         ],
         'variants': [
           'SIM_IPHONE_14_16_4',
@@ -7516,7 +7516,7 @@
       },
       'ios_eg2_cq_tests': {
         'mixins': [
-          'xcode_parallelization',
+          'xcodebuild_sim_runner',
         ],
         'variants': [
           'SIM_IPAD_AIR_5TH_GEN_16_4',
@@ -7527,7 +7527,7 @@
       },
       'ios_eg2_tests': {
         'mixins': [
-          'xcode_parallelization',
+          'xcodebuild_sim_runner',
         ],
         'variants': [
           'SIM_IPAD_AIR_5TH_GEN_16_4',

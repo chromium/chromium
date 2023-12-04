@@ -13,6 +13,10 @@ import("//build/util/generate_wrapper.gni")
 #
 # Arguments:
 #
+# clones
+#   (optional) number of ios simulator clones to execute tests on
+#   in parallel
+#
 # data
 #   (optional, default [ "//ios/build/bots/scripts/" ]) list of files or
 #   directories required to run target
@@ -30,8 +34,9 @@ import("//build/util/generate_wrapper.gni")
 #   (optional, default 3) number of retry attempts
 #
 # shards
-#   (optional, default 1) number of shards to execute tests in parallel. not
-#   the same as swarming shards.
+#   (optional) number of ios simulator clones to execute tests in parallel. not
+#   the same as swarming shards. Only used if clones is not provided. Will be
+#   deprecated.
 #
 # wrapper_output_name
 #   (optional, default "run_${target_name}") name of the wrapper script
@@ -84,14 +89,22 @@ template("ios_test_runner_wrapper") {
       "${retries}",
     ]
 
-    # Default shards to 1
-    if (!defined(shards)) {
-      shards = 1
+    # Clones is not required by test runner so only pass if defined.
+    # For now preserve passing shards during transition ifff clones not passed
+    # TODO(crbug.com/1500395) deprecate shards
+    if (defined(clones)) {
+      executable_args += [
+        "--clones",
+        "${clones}",
+      ]
+    } else {
+      if (defined(shards)) {
+        executable_args += [
+          "--shards",
+          "${shards}",
+        ]
+      }
     }
-    executable_args += [
-      "--shards",
-      "${shards}",
-    ]
 
     if (xcode_version_int >= 1400) {
       executable_args += [
