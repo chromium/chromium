@@ -13,7 +13,9 @@
 #include "gin/function_template.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "v8/include/v8-context.h"
 #include "v8/include/v8-function.h"
+#include "v8/include/v8-local-handle.h"
 
 namespace content {
 
