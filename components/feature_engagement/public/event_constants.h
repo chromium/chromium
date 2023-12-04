@@ -209,6 +209,10 @@ extern const char kIOSMultiGestureRefreshUsed[];
 // The user has used the pull-to-refresh feature in iOS.
 extern const char kIOSPullToRefreshUsed[];
 
+// The user has met a condition that makes the Enhanced Safe Browsing
+// inline and blue-dot promos eligible to be displayed.
+extern const char kEnhancedSafeBrowsingPromoCriterionMet[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

@@ -111,6 +111,8 @@ const char kParcelTrackingTriggered[] = "parcel_tracking_triggered";
 const char kParcelTracked[] = "parcel_tracked";
 const char kIOSMultiGestureRefreshUsed[] = "multi_gesture_refresh_used";
 const char kIOSPullToRefreshUsed[] = "pull_to_refresh_feature_used";
+const char kEnhancedSafeBrowsingPromoCriterionMet[] =
+    "enhanced_safe_browsing_promo_criterion_met";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

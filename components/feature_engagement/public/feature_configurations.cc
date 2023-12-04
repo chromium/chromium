@@ -1923,6 +1923,26 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHiOSBlueDotPromoEnhancedSafeBrowsingFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(LESS_THAN, 1);
+    config->trigger =
+        EventConfig("enhanced_safe_browsing_blue_dot_promo_trigger",
+                    Comparator(LESS_THAN_OR_EQUAL, 3), 360, 360);
+    config->event_configs.insert(EventConfig(
+        feature_engagement::events::kEnhancedSafeBrowsingPromoCriterionMet,
+        Comparator(GREATER_THAN_OR_EQUAL, 1), 7, 360));
+    config->used =
+        EventConfig("enhanced_safe_browsing_blue_dot_promo_used",
+                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    config->blocked_by.type = BlockedBy::Type::NONE;
+    config->blocking.type = Blocking::Type::NONE;
+    return config;
+  }
+
   // iOS Promo Configs are split out into a separate file, so check that too.
   if (absl::optional<FeatureConfig> ios_promo_feature_config =
           GetClientSideiOSPromoFeatureConfig(feature)) {
