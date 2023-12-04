@@ -262,6 +262,11 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
 
+  bool CancelHostInternal(int frame_tree_node_id,
+                          const PrerenderCancellationReason& reason);
+  bool CancelNewTabHostInternal(int frame_tree_node_id,
+                                const PrerenderCancellationReason& reason);
+
   int FindHostToActivateInternal(NavigationRequest& navigation_request);
 
   void ScheduleToDeleteAbandonedHost(
