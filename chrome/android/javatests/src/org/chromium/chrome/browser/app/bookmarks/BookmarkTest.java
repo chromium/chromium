@@ -104,6 +104,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -419,6 +420,26 @@ public class BookmarkTest {
         assertEquals("Bookmarks", mToolbar.getTitle());
         assertEquals(NavigationButton.NONE, mToolbar.getNavigationButtonForTests());
         assertFalse(mToolbar.getMenu().findItem(R.id.edit_menu_id).isVisible());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
+    public void testEmptyBookmarkFolder() throws InterruptedException {
+        openBookmarkManager();
+        BookmarkTestUtil.openMobileBookmarks(mItemsContainer, mDelegate, mBookmarkModel);
+        BookmarkTestUtil.waitForBookmarkModelLoaded();
+        onView(withText("You'll find your bookmarks here"));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
+    public void testEmptyReadingListFolder() throws InterruptedException {
+        openBookmarkManager();
+        BookmarkTestUtil.openReadingList(mItemsContainer, mDelegate, mBookmarkModel);
+        BookmarkTestUtil.waitForBookmarkModelLoaded();
+        onView(withText("You'll find your reading list here"));
     }
 
     // TODO(twellington): Write a folder navigation test for tablets that waits for the Tab hosting

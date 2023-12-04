@@ -167,6 +167,7 @@ public class BookmarkManagerCoordinator
                 R.drawable.bookmark_empty_state_illustration,
                 R.string.bookmark_manager_empty_state,
                 R.string.bookmark_manager_back_to_page_by_adding_bookmark);
+        mSelectableListLayout.ignoreItemTypeForEmptyState(ViewType.SEARCH_BOX);
 
         ModelList modelList = new ModelList();
         DragReorderableRecyclerViewAdapter dragReorderableRecyclerViewAdapter =

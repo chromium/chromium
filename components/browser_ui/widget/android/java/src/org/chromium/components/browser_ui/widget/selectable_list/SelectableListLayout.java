@@ -38,7 +38,9 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
 import org.chromium.ui.widget.LoadingView;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Contains UI elements common to selectable list views: a loading view, empty view, selection
@@ -73,6 +75,7 @@ public class SelectableListLayout<E> extends FrameLayout
 
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
             new ObservableSupplierImpl<>();
+    private final Set<Integer> mIgnoredTypesForEmptyState = new HashSet<>();
 
     private final AdapterDataObserver mAdapterObserver =
             new AdapterDataObserver() {
@@ -319,6 +322,14 @@ public class SelectableListLayout<E> extends FrameLayout
         mEmptyStateSubHeadingView.setText(emptySubheadingStringResId);
     }
 
+    /**
+     * Adds the given type to the set of ignored item types. Items of this type in the adapter won't
+     * be counted when deciding to show the empty state view.
+     */
+    public void ignoreItemTypeForEmptyState(int type) {
+        mIgnoredTypesForEmptyState.add(type);
+    }
+
     /** Called when the view that owns the SelectableListLayout is destroyed. */
     public void onDestroyed() {
         mAdapter.unregisterAdapterDataObserver(mAdapterObserver);
@@ -426,9 +437,27 @@ public class SelectableListLayout<E> extends FrameLayout
      * view implementation. We need to check it ourselves.
      */
     private void updateEmptyViewVisibility() {
-        int visible = mAdapter.getItemCount() == 0 ? View.VISIBLE : View.GONE;
+        int visible = isListEffectivelyEmpty() ? View.VISIBLE : View.GONE;
         mEmptyView.setVisibility(visible);
         mEmptyViewWrapper.setVisibility(visible);
+    }
+
+    /**
+     * For efficiency, only loop over the items if there are ignored types present in the set and
+     * bail on the loop as soon as one is detected.
+     */
+    private boolean isListEffectivelyEmpty() {
+        if (mIgnoredTypesForEmptyState.isEmpty()) {
+            return mAdapter.getItemCount() == 0;
+        }
+
+        for (int i = 0; i < mAdapter.getItemCount(); i++) {
+            if (!mIgnoredTypesForEmptyState.contains(mAdapter.getItemViewType(i))) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private void updateLayout() {

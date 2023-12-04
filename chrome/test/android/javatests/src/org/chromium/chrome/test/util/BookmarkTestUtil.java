@@ -62,6 +62,7 @@ public class BookmarkTestUtil {
     }
 
     /** Opens the mobile bookmarks folder in the bookmarks manager. */
+    // TODO(crbug.com/1467286): Remove use of waitForIdleSync here.
     public static void openMobileBookmarks(
             RecyclerView recyclerView,
             BookmarkDelegate bookmarkDelegate,
@@ -69,6 +70,18 @@ public class BookmarkTestUtil {
         openRootFolder(recyclerView, bookmarkDelegate, bookmarkModel);
 
         onView(withText("Mobile bookmarks")).perform(click());
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+    }
+
+    /** Opens the reading list folder in the bookmarks manager. */
+    // TODO(crbug.com/1467286): Remove use of waitForIdleSync here.
+    public static void openReadingList(
+            RecyclerView recyclerView,
+            BookmarkDelegate bookmarkDelegate,
+            BookmarkModel bookmarkModel) {
+        openRootFolder(recyclerView, bookmarkDelegate, bookmarkModel);
+
+        onView(withText("Reading list")).perform(click());
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
