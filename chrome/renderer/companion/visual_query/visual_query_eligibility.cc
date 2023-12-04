@@ -507,6 +507,9 @@ double EligibilityModule::GetImageFeatureValue(
     case FeatureLibrary::IMAGE_LEVEL_UNSPECIFIED:
     case FeatureLibrary::SHOPPING_CLASSIFIER_SCORE:
     case FeatureLibrary::SENS_CLASSIFIER_SCORE:
+    // TODO(b/314789511): Implement these after setting server-side
+    case FeatureLibrary::NAT_WORLD_CLASSIFIER_SCORE:
+    case FeatureLibrary::PUB_FIGURES_CLASSIFIER_SCORE:
       NOTREACHED();
       break;
   }
