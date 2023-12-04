@@ -39,7 +39,9 @@ TestInterestGroupManagerImpl::TestInterestGroupManagerImpl(
           /*in_memory=*/true,
           InterestGroupManagerImpl::ProcessMode::kDedicated,
           /*url_loader_factory=*/nullptr,
-          /*k_anonymity_service=*/nullptr),
+          /*k_anonymity_service_callback=*/
+          base::BindLambdaForTesting(
+              []() -> KAnonymityServiceDelegate* { return nullptr; })),
       expected_frame_origin_(expected_frame_origin),
       expected_client_security_state_(
           std::move(expected_client_security_state)),
@@ -48,7 +50,8 @@ TestInterestGroupManagerImpl::TestInterestGroupManagerImpl(
   set_k_anonymity_manager_for_testing(
       std::make_unique<InterestGroupKAnonymityManager>(
           /*interest_group_manager=*/this,
-          /*k_anonymity_service=*/this));
+          /*k_anonymity_service_callback=*/base::BindLambdaForTesting(
+              [&]() -> KAnonymityServiceDelegate* { return this; })));
 }
 
 TestInterestGroupManagerImpl::~TestInterestGroupManagerImpl() {
@@ -58,7 +61,8 @@ TestInterestGroupManagerImpl::~TestInterestGroupManagerImpl() {
   set_k_anonymity_manager_for_testing(
       std::make_unique<InterestGroupKAnonymityManager>(
           /*interest_group_manager=*/this,
-          /*k_anonymity_service=*/nullptr));
+          /*k_anonymity_service_callback=*/base::BindLambdaForTesting(
+              []() -> KAnonymityServiceDelegate* { return nullptr; })));
   RemoveInterestGroupObserver(this);
 }
 

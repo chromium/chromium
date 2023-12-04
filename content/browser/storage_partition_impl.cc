@@ -1546,7 +1546,10 @@ void StoragePartitionImpl::Initialize(
         InterestGroupManagerImpl::ProcessMode::kDedicated,
 #endif
         GetURLLoaderFactoryForBrowserProcess(),
-        browser_context_->GetKAnonymityServiceDelegate());
+        base::BindRepeating(&BrowserContext::GetKAnonymityServiceDelegate,
+                            // This use of Unretained is safe since the browser
+                            // context owns this storage partition.
+                            base::Unretained(browser_context_)));
   }
 
   // The Topics API is not available in Incognito mode.

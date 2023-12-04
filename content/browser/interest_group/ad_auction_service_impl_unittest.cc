@@ -754,8 +754,11 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
     manager_->set_auction_process_manager_for_testing(
         std::make_unique<SameProcessAuctionProcessManager>());
     manager_->set_k_anonymity_manager_for_testing(
-        std::make_unique<InterestGroupKAnonymityManager>(manager_.get(),
-                                                         &k_anon_delegate_));
+        std::make_unique<InterestGroupKAnonymityManager>(
+            manager_.get(),
+            base::BindLambdaForTesting([&]() -> KAnonymityServiceDelegate* {
+              return &k_anon_delegate_;
+            })));
   }
 
   void TearDown() override {

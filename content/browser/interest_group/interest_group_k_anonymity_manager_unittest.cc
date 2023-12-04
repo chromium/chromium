@@ -119,7 +119,7 @@ class InterestGroupKAnonymityManagerTest : public testing::Test {
     return std::make_unique<InterestGroupManagerImpl>(
         temp_directory_.GetPath(), false,
         InterestGroupManagerImpl::ProcessMode::kDedicated, nullptr,
-        delegate_.get());
+        base::BindLambdaForTesting([&]() { return delegate_.get(); }));
   }
 
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
@@ -334,7 +334,7 @@ class InterestGroupKAnonymityManagerTestWithMock
     return std::make_unique<InterestGroupManagerImpl>(
         temp_directory_.GetPath(), false,
         InterestGroupManagerImpl::ProcessMode::kDedicated, nullptr,
-        delegate_.get());
+        base::BindLambdaForTesting([&]() { return delegate_.get(); }));
   }
 
   MockAnonymityServiceDelegate* delegate() {

@@ -61,6 +61,8 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
  public:
   using AreReportingOriginsAttestedCallback =
       base::RepeatingCallback<bool(const std::vector<url::Origin>&)>;
+  using GetKAnonymityServiceDelegateCallback =
+      InterestGroupKAnonymityManager::GetKAnonymityServiceDelegateCallback;
 
   // Controls how auction worklets will be run. kDedicated will use
   // fully-isolated utility processes solely for worklet. kInRenderer will
@@ -84,7 +86,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       bool in_memory,
       ProcessMode process_mode,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      KAnonymityServiceDelegate* k_anonymity_service);
+      GetKAnonymityServiceDelegateCallback k_anonymity_service_callback);
   ~InterestGroupManagerImpl() override;
   InterestGroupManagerImpl(const InterestGroupManagerImpl& other) = delete;
   InterestGroupManagerImpl& operator=(const InterestGroupManagerImpl& other) =

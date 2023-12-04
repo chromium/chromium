@@ -171,7 +171,7 @@ InterestGroupManagerImpl::InterestGroupManagerImpl(
     bool in_memory,
     ProcessMode process_mode,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    KAnonymityServiceDelegate* k_anonymity_service)
+    GetKAnonymityServiceDelegateCallback k_anonymity_service_callback)
     : caching_storage_(path, in_memory),
       auction_process_manager_(
           base::WrapUnique(process_mode == ProcessMode::kDedicated
@@ -181,7 +181,7 @@ InterestGroupManagerImpl::InterestGroupManagerImpl(
       update_manager_(this, std::move(url_loader_factory)),
       k_anonymity_manager_(std::make_unique<InterestGroupKAnonymityManager>(
           this,
-          k_anonymity_service)),
+          std::move(k_anonymity_service_callback))),
       max_active_report_requests_(kMaxActiveReportRequests),
       max_report_queue_length_(kMaxReportQueueLength),
       reporting_interval_(kReportingInterval),
