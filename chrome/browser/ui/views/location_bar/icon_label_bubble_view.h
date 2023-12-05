@@ -97,7 +97,7 @@ class IconLabelBubbleView : public views::InkDropObserver,
 
   // Call to have the icon label paint over a solid background when the label
   // text is shown.
-  void SetPaintLabelOverSolidBackground(bool paint_label_over_solid_backround);
+  void SetPaintLabelOverSolidBackground(bool paint_label_over_solid_background);
 
   void SetLabel(const std::u16string& label);
   void SetLabel(const std::u16string& label,
@@ -284,7 +284,7 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // when the label text is showing.
   // TODO(tluk): Remove the opt-in after UX has conslusively decided how icon
   // labels should be painted when the label text is shown.
-  bool paint_label_over_solid_backround_ = false;
+  bool paint_label_over_solid_background_ = false;
 
   // Whether the tonal color should be used when the icon is expanded to show
   // the label.

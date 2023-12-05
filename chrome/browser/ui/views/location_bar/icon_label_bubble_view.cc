@@ -210,8 +210,8 @@ bool IconLabelBubbleView::ShouldShowLabel() const {
 }
 
 void IconLabelBubbleView::SetPaintLabelOverSolidBackground(
-    bool paint_label_over_solid_backround) {
-  paint_label_over_solid_backround_ = paint_label_over_solid_backround;
+    bool paint_label_over_solid_background) {
+  paint_label_over_solid_background_ = paint_label_over_solid_background;
   UpdateBackground();
 }
 
@@ -249,7 +249,7 @@ void IconLabelBubbleView::UpdateBackground() {
   // If the label is showing we must ensure the icon label is painted over a
   // solid background.
   const bool painted_on_solid_background =
-      paint_label_over_solid_backround_ && ShouldShowLabel();
+      paint_label_over_solid_background_ && ShouldShowLabel();
   const ui::ColorId background_color = use_tonal_color_when_expanded_
                                            ? kColorPageInfoBackgroundTonal
                                            : kColorPageInfoBackground;
