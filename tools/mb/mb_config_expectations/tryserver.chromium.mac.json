@@ -1,16 +1,4 @@
 {
-  "ios-simulator-cr-recipe": {
-    "gn_args": {
-      "enable_run_ios_unittests_with_xctest": true,
-      "is_component_build": false,
-      "is_debug": true,
-      "symbol_level": 1,
-      "target_cpu": "x64",
-      "target_environment": "simulator",
-      "target_os": "ios",
-      "use_goma": true
-    }
-  },
   "ios-simulator-siso": {
     "gn_args": {
       "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
@@ -22,18 +10,6 @@
       "target_environment": "simulator",
       "target_os": "ios",
       "use_clang_coverage": true,
-      "use_remoteexec": true
-    }
-  },
-  "mac13-arm64-siso-rel": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 0,
-      "target_cpu": "arm64",
       "use_remoteexec": true
     }
   },

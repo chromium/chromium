@@ -439,23 +439,13 @@
       'gen-win-try': 'codesearch_gen_chromium_bot_reclient',
     },
 
-    'tryserver.chromium.fuchsia': {
-      'fuchsia-code-coverage': 'fuchsia_clang_code_coverage_reclient',
-    },
-
     'tryserver.chromium.linux': {
-      'cast-binary-size': 'cast_binary_size',
-      'chromium_presubmit': 'presubmit',
-      'gpu-try-linux-nvidia-rel': 'gpu_tests_release_trybot_reclient',
       'linux-afl-asan-rel': 'afl_asan_release_trybot_reclient',
-      'linux-blink-heap-concurrent-marking-tsan-rel': 'release_trybot_tsan',
       'linux-centipede-asan-rel': 'centipede_asan_release_trybot_reclient',
-      'linux-cr23-rel': 'release_trybot_reclient',
       'linux-dcheck-off-rel': 'release_trybot_dcheck_off_reclient',
       'linux-layout-tests-edit-ng': 'release_trybot_reclient',
       'linux-libfuzzer-asan-rel': 'libfuzzer_asan_release_trybot_reclient',
       'linux-mbi-mode-per-render-process-host-rel': 'gpu_tests_release_trybot_mbi_mode_per_render_process_host_reclient',
-      'linux-rel-warmed': 'gpu_tests_release_trybot_no_symbols_code_coverage',
       'linux_chromium_asan_siso_rel_ng': 'asan_lsan_failsan_release_trybot_reclient',
       'linux_chromium_clobber_deterministic': 'release_trybot_reclient',
       'linux_chromium_compile_rel_ng': 'release_trybot_reclient',
@@ -467,9 +457,7 @@
     },
 
     'tryserver.chromium.mac': {
-      'ios-simulator-cr-recipe': 'ios_simulator_debug_static_bot_xctest',
       'ios-simulator-siso': 'ios_simulator_code_coverage_partial_instrumentation_xctest_reclient',
-      'mac13-arm64-siso-rel': 'mac_arm64_gpu_tests_release_trybot_no_symbols_reclient',
       'mac_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot_x64_reclient',
       'mac_upload_clang': 'release_bot',
       'mac_upload_clang_arm': 'release_bot',
@@ -507,11 +495,8 @@
 
     'tryserver.chromium.win': {
       'win-celab-try-rel': 'release_bot_minimal_symbols_reclient',
-      'win-cr23-rel': 'release_trybot_reclient',
       'win-libfuzzer-asan-rel': 'libfuzzer_windows_asan_release_trybot_reclient',
       'win-siso-rel': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient',
-      'win10_chromium_x64_rel_ng_exp': 'release_trybot',
-      'win_chromium_compile_dbg_ng': 'gpu_tests_debug_bot_x86_no_symbols_reclient',
       'win_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot_reclient',
       'win_upload_clang': 'release_bot',
     },
@@ -651,9 +636,6 @@
       'asan', 'lsan', 'release_trybot_minimal_symbols_reclient',
     ],
 
-    'cast_binary_size': [
-      'cast_receiver', 'cast_os', 'minimal_symbols', 'release_bot',
-    ],
     'cast_binary_size_reclient': [
       'cast_receiver', 'cast_os', 'minimal_symbols', 'release_bot_reclient',
     ],
@@ -948,11 +930,6 @@
       'debug_bot_reclient',
     ],
 
-    'fuchsia_clang_code_coverage_reclient': [
-      'clang', 'fuchsia', 'fuchsia_code_coverage', 'no_symbols', 'release_bot_reclient',
-      'use_clang_coverage',
-    ],
-
     'gpu_fyi_tests_lacros_jacuzzi_release_trybot_dcheck_off_no_symbols_reclient': [
       'chromeos', 'jacuzzi', 'official', 'release_bot_reclient', 'no_symbols',
       'chromeos_device_reclient', 'also_build_lacros_chrome_for_architecture_arm64',
@@ -1047,13 +1024,6 @@
       'gpu_tests', 'release_trybot_minimal_symbols_reclient',
     ],
 
-    # Keep in sync with
-    # gpu_tests_release_trybot_no_symbols.
-    'gpu_tests_release_trybot_no_symbols_code_coverage': [
-      'gpu_tests', 'release_trybot', 'no_symbols',
-      'use_clang_coverage', 'partial_code_coverage_instrumentation',
-    ],
-
     'gpu_tests_release_trybot_ptr_comp_reclient': [
       'gpu_tests', 'release_trybot_minimal_symbols_reclient', 'v8_pointer_compression',
     ],
@@ -1084,10 +1054,6 @@
       'use_clang_coverage', 'debug_static_bot_reclient', 'x64', 'ios', 'ios_simulator', 'partial_code_coverage_instrumentation', 'xctest',
     ],
 
-    'ios_simulator_debug_static_bot_xctest': [
-        'debug_static_bot', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest',
-    ],
-
     'ios_simulator_debug_static_bot_xctest_reclient': [
         'debug_static_bot_reclient', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest',
     ],
@@ -1102,10 +1068,6 @@
 
     'libfuzzer_windows_asan_release_trybot_reclient': [
       'libfuzzer', 'asan', 'release_trybot_reclient', 'chrome_with_codecs', 'pdf_xfa', 'disable_nacl', 'mojo_fuzzer', 'skip_generate_fuzzer_owners', 'no_symbols',
-    ],
-
-    'mac_arm64_gpu_tests_release_trybot_no_symbols_reclient': [
-      'arm64', 'gpu_tests', 'release_trybot_reclient', 'no_symbols',
     ],
 
     'mac_clang_tot_official': [
@@ -1333,11 +1295,6 @@
       'minimal_symbols', 'optimization_guide', 'reclient', 'release', 'x86',
     ],
 
-    'presubmit': [
-      # The chromium_presubmit bot does not use mb.
-      'error',
-    ],
-
     'release_bot': [
       'release_bot',
     ],
@@ -1392,10 +1349,6 @@
       'release_bot', 'x86', 'minimal_symbols',
     ],
 
-    'release_trybot': [
-      'release_trybot',
-    ],
-
     'release_trybot_blink': [
       'release_trybot_blink',
     ],
@@ -1414,10 +1367,6 @@
 
     'release_trybot_reclient': [
       'release_trybot_reclient',
-    ],
-
-    'release_trybot_tsan': [
-      'release_trybot', 'tsan'
     ],
 
     'tsan_disable_nacl_release_trybot_reclient': [
@@ -1721,10 +1670,6 @@
       'mixins': ['debug', 'shared', 'reclient', 'minimal_symbols'],
     },
 
-    'debug_static_bot': {
-      'mixins': ['debug', 'static', 'minimal_symbols', 'goma'],
-    },
-
     'debug_static_bot_reclient': {
       'mixins': ['debug', 'static', 'minimal_symbols', 'reclient'],
     },
@@ -1756,14 +1701,6 @@
       'mixins': ["enable_dangling_raw_ptr_checks"],
     },
 
-    # This mixin is used to force configs that use it to fail. It
-    # is used in two cases: when we have bots that we haven't looked
-    # at yet and don't know whether they need MB or not, and for bots
-    # that are test-only and should never run MB.
-    'error': {
-      'gn_args': 'error',
-    },
-
     'eve': {
       'args_file': '//build/args/chromeos/eve.gni',
     },
@@ -1790,10 +1727,6 @@
 
     'fuchsia_chrome': {
       'gn_args': 'fuchsia_browser_type="chrome"',
-    },
-
-    'fuchsia_code_coverage': {
-      'gn_args': 'fuchsia_code_coverage=true',
     },
 
     'fuchsia_include_sd_images': {

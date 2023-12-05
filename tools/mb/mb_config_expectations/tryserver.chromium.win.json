@@ -8,15 +8,6 @@
       "use_remoteexec": true
     }
   },
-  "win-cr23-rel": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
-      "use_remoteexec": true
-    }
-  },
   "win-libfuzzer-asan-rel": {
     "gn_args": {
       "dcheck_always_on": true,
@@ -47,26 +38,6 @@
       "proprietary_codecs": true,
       "symbol_level": 0,
       "use_clang_coverage": true,
-      "use_remoteexec": true
-    }
-  },
-  "win10_chromium_x64_rel_ng_exp": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
-      "use_goma": true
-    }
-  },
-  "win_chromium_compile_dbg_ng": {
-    "gn_args": {
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": true,
-      "is_debug": true,
-      "proprietary_codecs": true,
-      "symbol_level": 0,
-      "target_cpu": "x86",
       "use_remoteexec": true
     }
   },
