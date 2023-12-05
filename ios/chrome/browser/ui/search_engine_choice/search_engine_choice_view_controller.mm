@@ -288,6 +288,16 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
   ]];
 }
 
+#pragma mark - UITraitEnvironment
+
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  // Reset the title font to make sure that it is
+  // properly scaled.
+  _titleLabel.font = GetTitleFontWithTraitCollection(self.traitCollection);
+}
+
 #pragma mark - SearchEngineChoiceConsumer
 
 - (void)updateFakeOmniboxWithFavicon:(UIImageView*)icon
