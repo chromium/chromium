@@ -125,9 +125,7 @@ void GenerateTestAutofillPopup(ContentAutofillDriver& driver,
   std::vector<Suggestion> suggestions = {Suggestion(u"Test suggestion")};
   test_api(static_cast<BrowserAutofillManager&>(driver.GetAutofillManager()))
       .external_delegate()
-      ->OnSuggestionsReturned(
-          form.fields.front().global_id(), suggestions,
-          AutofillSuggestionTriggerSource::kFormControlElementClicked);
+      ->OnSuggestionsReturned(form.fields.front().global_id(), suggestions);
 }
 
 }  // namespace autofill

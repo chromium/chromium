@@ -2220,13 +2220,11 @@ TEST_F(BrowserAutofillManagerTest,
 
   // Mock returning some autocomplete `suggestions`.
   EXPECT_CALL(*single_field_form_fill_router(), OnGetSingleFieldSuggestions)
-      .WillOnce([&](AutofillSuggestionTriggerSource trigger_source,
-                    const FormFieldData& field, const AutofillClient& client,
+      .WillOnce([&](const FormFieldData& field, const AutofillClient& client,
                     SingleFieldFormFiller::OnSuggestionsReturnedCallback
                         on_suggestions_returned,
                     const SuggestionsContext& context) {
-        std::move(on_suggestions_returned)
-            .Run(field.global_id(), trigger_source, suggestions);
+        std::move(on_suggestions_returned).Run(field.global_id(), suggestions);
         return true;
       });
   GetAutofillSuggestions(

@@ -163,9 +163,8 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
     base::MockCallback<SingleFieldFormFiller::OnSuggestionsReturnedCallback>
         callback;
     std::vector<Suggestion> suggestions;
-    EXPECT_CALL(callback, Run).WillOnce(testing::SaveArg<2>(&suggestions));
+    EXPECT_CALL(callback, Run).WillOnce(testing::SaveArg<1>(&suggestions));
     EXPECT_TRUE(autocomplete_history_manager()->OnGetSingleFieldSuggestions(
-        AutofillSuggestionTriggerSource::kFormControlElementClicked,
         test::CreateTestFormField(/*label=*/"", input_name, prefix,
                                   FormControlType::kInputText),
         manager().client(), callback.Get(), SuggestionsContext()));

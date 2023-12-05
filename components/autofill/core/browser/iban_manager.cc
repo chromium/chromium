@@ -27,7 +27,6 @@ IbanManager::IbanManager(PersonalDataManager* personal_data_manager)
 IbanManager::~IbanManager() = default;
 
 bool IbanManager::OnGetSingleFieldSuggestions(
-    AutofillSuggestionTriggerSource trigger_source,
     const FormFieldData& field,
     const AutofillClient& client,
     OnSuggestionsReturnedCallback on_suggestions_returned,
@@ -74,7 +73,7 @@ bool IbanManager::OnGetSingleFieldSuggestions(
     return iban0->HasGreaterRankingThan(iban1, comparison_time);
   });
   SendIbanSuggestions(std::move(ibans), field,
-                      std::move(on_suggestions_returned), trigger_source);
+                      std::move(on_suggestions_returned));
 
   return true;
 }
@@ -118,8 +117,7 @@ void IbanManager::UmaRecorder::OnIbanSuggestionSelected() {
 void IbanManager::SendIbanSuggestions(
     std::vector<const Iban*> ibans,
     const FormFieldData& field,
-    OnSuggestionsReturnedCallback on_suggestions_returned,
-    AutofillSuggestionTriggerSource trigger_source) {
+    OnSuggestionsReturnedCallback on_suggestions_returned) {
   // If the input box content equals any of the available IBANs, then
   // assume the IBAN has been filled, and don't show any suggestions.
   if (!field.value.empty() &&
@@ -134,7 +132,7 @@ void IbanManager::SendIbanSuggestions(
   }
 
   std::move(on_suggestions_returned)
-      .Run(field.global_id(), trigger_source,
+      .Run(field.global_id(),
            AutofillSuggestionGenerator::GetSuggestionsForIbans(ibans));
 
   uma_recorder_.OnIbanSuggestionsShown(field.global_id());

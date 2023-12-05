@@ -44,7 +44,6 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
 
   // SingleFieldFormFiller overrides:
   [[nodiscard]] bool OnGetSingleFieldSuggestions(
-      AutofillSuggestionTriggerSource trigger_source,
       const FormFieldData& field,
       const AutofillClient& client,
       OnSuggestionsReturnedCallback on_suggestions_returned,
@@ -81,7 +80,6 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
   // with the appropriate response.
   struct QueryHandler {
     QueryHandler(FieldGlobalId field_id,
-                 AutofillSuggestionTriggerSource trigger_source,
                  std::u16string prefix,
                  OnSuggestionsReturnedCallback on_suggestions_returned);
     QueryHandler(const QueryHandler&) = delete;
@@ -90,12 +88,6 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
 
     // The queried field ID.
     FieldGlobalId field_id_;
-
-    // Describes what caused the suggestions to trigger. This value was provided
-    // by the handler when requesting suggestions. It is temporarily stored
-    // while suggestions are queried, so it can be passed on to the
-    // `on_suggestions_returned_` callback.
-    AutofillSuggestionTriggerSource trigger_source_;
 
     // Prefix used to search suggestions, submitted by the handler.
     std::u16string prefix_;

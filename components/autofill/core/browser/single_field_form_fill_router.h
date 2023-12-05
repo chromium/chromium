@@ -46,7 +46,6 @@ class SingleFieldFormFillRouter : public SingleFieldFormFiller {
 
   // SingleFieldFormFiller overrides:
   [[nodiscard]] bool OnGetSingleFieldSuggestions(
-      AutofillSuggestionTriggerSource trigger_source,
       const FormFieldData& field,
       const AutofillClient& client,
       OnSuggestionsReturnedCallback on_suggestions_returned,

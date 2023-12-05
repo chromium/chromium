@@ -716,7 +716,6 @@ void BrowserAutofillManager::RefetchCardsAndUpdatePopup(
   DCHECK(!cards.empty());
   external_delegate_->OnSuggestionsReturned(
       field_data.global_id(), cards,
-      AutofillSuggestionTriggerSource::kShowCardsFromAccount,
       should_display_gpay_logo);
 }
 
@@ -1138,7 +1137,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
       case SuppressReason::kAblation:
         single_field_form_fill_router_->CancelPendingQueries();
         external_delegate_->OnSuggestionsReturned(field.global_id(),
-                                                  suggestions, trigger_source);
+                                                  suggestions);
         LOG_AF(log_manager())
             << LoggingScope::kFilling << LogMessage::kSuggestionSuppressed
             << " Reason: Ablation experiment";
@@ -1243,15 +1242,14 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
       // TODO(crbug.com/1007974): The callback will only be called once.
       bool handled_by_single_field_form_filler =
           single_field_form_fill_router_->OnGetSingleFieldSuggestions(
-              trigger_source, field, client(),
+              field, client(),
               base::BindRepeating(
                   [](base::WeakPtr<BrowserAutofillManager> self,
                      FieldGlobalId field_id,
-                     AutofillSuggestionTriggerSource trigger_source,
                      const std::vector<Suggestion>& suggestions) {
                     if (self) {
                       self->external_delegate_->OnSuggestionsReturned(
-                          field_id, suggestions, trigger_source);
+                          field_id, suggestions);
                     }
                   },
                   weak_ptr_factory_.GetWeakPtr()),
@@ -1289,7 +1287,6 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   if (show_suggestion) {
     // Send Autofill suggestions (could be an empty list).
     external_delegate_->OnSuggestionsReturned(field.global_id(), suggestions,
-                                              trigger_source,
                                               context.should_display_gpay_logo);
   }
 }

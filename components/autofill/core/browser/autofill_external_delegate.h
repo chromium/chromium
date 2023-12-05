@@ -94,11 +94,9 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
 
   // Records query results and correctly formats them before sending them off
   // to be displayed. Called when an Autofill query result is available.
-  // TODO(crbug.com/1493361): `trigger_source` is unused, remove.
   virtual void OnSuggestionsReturned(
       FieldGlobalId field_id,
       const std::vector<Suggestion>& suggestions,
-      AutofillSuggestionTriggerSource trigger_source,
       bool is_all_server_suggestions = false);
 
   // Returns the last targeted field types to be filled. This does not

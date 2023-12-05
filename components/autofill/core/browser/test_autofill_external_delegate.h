@@ -33,7 +33,6 @@ class TestAutofillExternalDelegate : public AutofillExternalDelegate {
                AutofillSuggestionTriggerSource trigger_source) override;
   void OnSuggestionsReturned(FieldGlobalId field_id,
                              const std::vector<Suggestion>& suggestions,
-                             AutofillSuggestionTriggerSource trigger_source,
                              bool is_all_server_suggestions) override;
   bool HasActiveScreenReader() const override;
   void OnAutofillAvailabilityEvent(

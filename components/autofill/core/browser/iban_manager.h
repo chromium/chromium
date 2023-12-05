@@ -39,7 +39,6 @@ class IbanManager : public SingleFieldFormFiller, public KeyedService {
 
   // SingleFieldFormFiller overrides:
   [[nodiscard]] bool OnGetSingleFieldSuggestions(
-      AutofillSuggestionTriggerSource trigger_source,
       const FormFieldData& field,
       const AutofillClient& client,
       OnSuggestionsReturnedCallback on_suggestions_returned,
@@ -77,8 +76,7 @@ class IbanManager : public SingleFieldFormFiller, public KeyedService {
   void SendIbanSuggestions(
       std::vector<const Iban*> ibans,
       const FormFieldData& field,
-      OnSuggestionsReturnedCallback on_suggestions_returned,
-      AutofillSuggestionTriggerSource trigger_source);
+      OnSuggestionsReturnedCallback on_suggestions_returned);
 
   // Filter out IBAN-based suggestions based on the following criteria:
   // For local IBANs: Filter out the IBAN value which does not starts with the

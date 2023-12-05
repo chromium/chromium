@@ -36,7 +36,6 @@ class MerchantPromoCodeManager : public SingleFieldFormFiller,
 
   // SingleFieldFormFiller overrides:
   [[nodiscard]] bool OnGetSingleFieldSuggestions(
-      AutofillSuggestionTriggerSource trigger_source,
       const FormFieldData& field,
       const AutofillClient& client,
       OnSuggestionsReturnedCallback on_suggestions_returned,
@@ -100,8 +99,7 @@ class MerchantPromoCodeManager : public SingleFieldFormFiller,
   void SendPromoCodeSuggestions(
       std::vector<const AutofillOfferData*> promo_code_offers,
       const FormFieldData& field,
-      OnSuggestionsReturnedCallback on_suggestions_returned,
-      AutofillSuggestionTriggerSource trigger_source);
+      OnSuggestionsReturnedCallback on_suggestions_returned);
 
   raw_ptr<PersonalDataManager> personal_data_manager_ = nullptr;
 

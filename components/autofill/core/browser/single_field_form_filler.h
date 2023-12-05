@@ -31,7 +31,6 @@ class SingleFieldFormFiller {
   // only one of them will end up calling it).
   using OnSuggestionsReturnedCallback =
       base::RepeatingCallback<void(FieldGlobalId,
-                                   AutofillSuggestionTriggerSource,
                                    const std::vector<Suggestion>&)>;
 
   SingleFieldFormFiller();
@@ -56,7 +55,6 @@ class SingleFieldFormFiller {
   // SingleFieldFormFillers to offer filling the field. The callback can happen
   // synchronously even before OnGetSingleFieldSuggestions returns true.
   [[nodiscard]] virtual bool OnGetSingleFieldSuggestions(
-      AutofillSuggestionTriggerSource trigger_source,
       const FormFieldData& field,
       const AutofillClient& client,
       OnSuggestionsReturnedCallback on_suggestions_returned,

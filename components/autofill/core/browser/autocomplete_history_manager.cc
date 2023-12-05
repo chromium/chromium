@@ -77,7 +77,6 @@ AutocompleteHistoryManager::~AutocompleteHistoryManager() {
 }
 
 bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
-    AutofillSuggestionTriggerSource trigger_source,
     const FormFieldData& field,
     const AutofillClient& client,
     OnSuggestionsReturnedCallback on_suggestions_returned,
@@ -90,9 +89,8 @@ bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
   if (!IsMeaningfulFieldName(field.name) || !client.IsAutocompleteEnabled() ||
       field.form_control_type == FormControlType::kTextArea ||
       IsInAutofillSuggestionsDisabledExperiment()) {
-    SendSuggestions({},
-                    QueryHandler(field.global_id(), trigger_source, field.value,
-                                 std::move(on_suggestions_returned)));
+    SendSuggestions({}, QueryHandler(field.global_id(), field.value,
+                                     std::move(on_suggestions_returned)));
     return true;
   }
 
@@ -102,9 +100,8 @@ bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
 
     // We can simply insert, since |query_handle| is always unique.
     pending_queries_.insert(
-        {query_handle,
-         QueryHandler(field.global_id(), trigger_source, field.value,
-                      std::move(on_suggestions_returned))});
+        {query_handle, QueryHandler(field.global_id(), field.value,
+                                    std::move(on_suggestions_returned))});
     return true;
   }
 
@@ -224,11 +221,9 @@ void AutocompleteHistoryManager::OnWebDataServiceRequestDone(
 
 AutocompleteHistoryManager::QueryHandler::QueryHandler(
     FieldGlobalId field_id,
-    AutofillSuggestionTriggerSource trigger_source,
     std::u16string prefix,
     OnSuggestionsReturnedCallback on_suggestions_returned)
     : field_id_(field_id),
-      trigger_source_(trigger_source),
       prefix_(std::move(prefix)),
       on_suggestions_returned_(std::move(on_suggestions_returned)) {}
 
@@ -256,7 +251,7 @@ void AutocompleteHistoryManager::SendSuggestions(
   }
 
   std::move(query_handler.on_suggestions_returned_)
-      .Run(query_handler.field_id_, query_handler.trigger_source_, suggestions);
+      .Run(query_handler.field_id_, suggestions);
 }
 
 void AutocompleteHistoryManager::CancelAllPendingQueries() {

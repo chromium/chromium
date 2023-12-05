@@ -235,9 +235,7 @@ const AutofillField* AutofillExternalDelegate::GetQueriedAutofillField() const {
 void AutofillExternalDelegate::OnSuggestionsReturned(
     FieldGlobalId field_id,
     const std::vector<Suggestion>& input_suggestions,
-    AutofillSuggestionTriggerSource trigger_source,
     bool is_all_server_suggestions) {
-  CHECK_EQ(trigger_source, trigger_source_);
   // Only include "Autofill Options" special menu item if we have Autofill
   // suggestions.
   bool has_autofill_suggestions = base::ranges::any_of(
