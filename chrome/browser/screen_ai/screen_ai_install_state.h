@@ -57,6 +57,9 @@ class ScreenAIInstallState {
   // expected.
   static bool VerifyLibraryVersion(const std::string& version);
 
+  // Verifies that the library is in the expected folder and can be loaded.
+  static bool VerifyLibraryAvailablity(const base::FilePath& install_dir);
+
   // Returns true if the library is used recently and we need to keep it on
   // device and updated.
   static bool ShouldInstall(PrefService* local_state);
