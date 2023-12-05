@@ -73,6 +73,7 @@ void GeometryCache::OnGetGeometryResponse(GetGeometryResponse response) {
 void GeometryCache::OnParentChanged(Window parent, const gfx::Point& position) {
   const bool was_ready = Ready();
   bool parent_changed = true;
+  const gfx::Rect old_geometry = geometry_;
 
   have_parent_ = true;
   if (parent == Window::None) {
@@ -91,19 +92,20 @@ void GeometryCache::OnParentChanged(Window parent, const gfx::Point& position) {
   geometry_.set_origin(position);
 
   if (Ready() && (!was_ready || parent_changed || position_changed)) {
-    bounds_changed_callback_.Run(geometry_);
+    bounds_changed_callback_.Run(old_geometry, geometry_);
   }
 }
 
 void GeometryCache::OnGeometryChanged(const gfx::Rect& geometry) {
   const bool was_ready = Ready();
   const bool geometry_changed = geometry_ != geometry;
+  const gfx::Rect old_geometry = geometry_;
 
   have_geometry_ = true;
   geometry_ = geometry;
 
   if (Ready() && (!was_ready || geometry_changed)) {
-    bounds_changed_callback_.Run(geometry_);
+    bounds_changed_callback_.Run(old_geometry, geometry_);
   }
 }
 
@@ -111,10 +113,13 @@ bool GeometryCache::Ready() const {
   return have_geometry_ && have_parent_ && (!parent_ || parent_->Ready());
 }
 
-void GeometryCache::OnParentGeometryChanged(const gfx::Rect& parent_bounds) {
+void GeometryCache::OnParentGeometryChanged(
+    const gfx::Rect& old_parent_bounds,
+    const gfx::Rect& new_parent_bounds) {
   if (have_geometry_) {
-    gfx::Vector2d offset(parent_bounds.x(), parent_bounds.y());
-    bounds_changed_callback_.Run(geometry_ + offset);
+    bounds_changed_callback_.Run(
+        geometry_ + old_parent_bounds.OffsetFromOrigin(),
+        geometry_ + new_parent_bounds.OffsetFromOrigin());
   }
 }
 
