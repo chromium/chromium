@@ -10,6 +10,16 @@
 
 #if BUILDFLAG(USE_FUZZING_ENGINE)
 #include <stdlib.h>
+
+#if BUILDFLAG(IS_LINUX)
+// The fuzzing coverage display wants to record coverage even
+// for failure cases. It's Linux-only. So on Linux, dump coverage
+// before we immediately exit. We provide a weak symbol so that
+// this causes no link problems on configurations that don't involve
+// coverage.
+extern "C" void __attribute__((weak)) __llvm_profile_write_file() {}
+#endif  // BUILDFLAG(IS_LINUX)
+
 #endif  // BUILDFLAG(USE_FUZZING_ENGINE)
 
 // Crashes in the fastest possible way with no attempt at logging.
@@ -150,8 +160,15 @@ namespace base {
 [[noreturn]] IMMEDIATE_CRASH_ALWAYS_INLINE void ImmediateCrash() {
 #if BUILDFLAG(USE_FUZZING_ENGINE)
   // If fuzzing, exit in such a way that atexit() handlers are run in order
-  // to write out coverage information or failing fuzz cases. This is similar
-  // behavior to __sanitizer::Die
+  // to write out failing fuzz cases. This is similar
+  // behavior to __sanitizer::Die.
+  // libfuzzer has its own atexit handler which unfortunately calls the
+  // equivalent of base::ImmediateCrash, thus not running any other atexit
+  // handlers. We want to dump coverage information so we'll do that
+  // here explicitly too.
+#if BUILDFLAG(IS_LINUX)
+  __llvm_profile_write_file();
+#endif  // BUILDFLAG(IS_LINUX)
   exit(-1);
 #else   // BUILDFLAG(USE_FUZZING_ENGINE)
   TRAP_SEQUENCE_();
