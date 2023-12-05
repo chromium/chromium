@@ -12,9 +12,9 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager_impl.h"
-#include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 
 class NearbyShareClientFactory;
 class NearbyShareProfileInfoProvider;
@@ -65,23 +65,23 @@ class FakeNearbyShareLocalDeviceDataManager
   };
 
   struct UploadContactsCall {
-    UploadContactsCall(std::vector<nearbyshare::proto::Contact> contacts,
+    UploadContactsCall(std::vector<nearby::sharing::proto::Contact> contacts,
                        UploadCompleteCallback callback);
     UploadContactsCall(UploadContactsCall&&);
     ~UploadContactsCall();
 
-    std::vector<nearbyshare::proto::Contact> contacts;
+    std::vector<nearby::sharing::proto::Contact> contacts;
     UploadCompleteCallback callback;
   };
 
   struct UploadCertificatesCall {
     UploadCertificatesCall(
-        std::vector<nearbyshare::proto::PublicCertificate> certificates,
+        std::vector<nearby::sharing::proto::PublicCertificate> certificates,
         UploadCompleteCallback callback);
     UploadCertificatesCall(UploadCertificatesCall&&);
     ~UploadCertificatesCall();
 
-    std::vector<nearbyshare::proto::PublicCertificate> certificates;
+    std::vector<nearby::sharing::proto::PublicCertificate> certificates;
     UploadCompleteCallback callback;
   };
 
@@ -99,10 +99,10 @@ class FakeNearbyShareLocalDeviceDataManager
   nearby_share::mojom::DeviceNameValidationResult SetDeviceName(
       const std::string& name) override;
   void DownloadDeviceData() override;
-  void UploadContacts(std::vector<nearbyshare::proto::Contact> contacts,
+  void UploadContacts(std::vector<nearby::sharing::proto::Contact> contacts,
                       UploadCompleteCallback callback) override;
   void UploadCertificates(
-      std::vector<nearbyshare::proto::PublicCertificate> certificates,
+      std::vector<nearby::sharing::proto::PublicCertificate> certificates,
       UploadCompleteCallback callback) override;
 
   // Make protected observer-notification methods from base class public in this

@@ -9,10 +9,10 @@
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_encrypted_metadata_key.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_private_certificate.h"
 #include "chrome/browser/nearby_sharing/certificates/test_util.h"
-#include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 
 TEST(NearbySharePrivateCertificateTest, Construction) {
   NearbySharePrivateCertificate private_certificate(
@@ -110,7 +110,7 @@ TEST(NearbySharePrivateCertificateTest, PublicCertificateConversion) {
       GetNearbyShareTestPrivateCertificate(
           nearby_share::mojom::Visibility::kSelectedContacts);
   private_certificate.offset_for_testing() = GetNearbyShareTestValidityOffset();
-  absl::optional<nearbyshare::proto::PublicCertificate> public_certificate =
+  absl::optional<nearby::sharing::proto::PublicCertificate> public_certificate =
       private_certificate.ToPublicCertificate();
   ASSERT_TRUE(public_certificate);
   EXPECT_EQ(GetNearbyShareTestPublicCertificate(

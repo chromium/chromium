@@ -25,8 +25,6 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_profile_info_provider.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_switches.h"
-#include "chrome/browser/nearby_sharing/proto/certificate_rpc.pb.h"
-#include "chrome/browser/nearby_sharing/proto/encrypted_metadata.pb.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
 #include "chromeos/ash/components/nearby/common/scheduling/nearby_scheduler_factory.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
@@ -36,6 +34,8 @@
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
+#include "third_party/nearby/sharing/proto/certificate_rpc.pb.h"
+#include "third_party/nearby/sharing/proto/encrypted_metadata.pb.h"
 
 namespace {
 
@@ -118,13 +118,13 @@ absl::optional<std::string> GetBluetoothMacAddress(
   return std::string(bytes.begin(), bytes.end());
 }
 
-absl::optional<nearbyshare::proto::EncryptedMetadata> BuildMetadata(
+absl::optional<nearby::sharing::proto::EncryptedMetadata> BuildMetadata(
     std::string device_name,
     absl::optional<std::string> full_name,
     absl::optional<std::string> icon_url,
     absl::optional<std::string> account_name,
     device::BluetoothAdapter* bluetooth_adapter) {
-  nearbyshare::proto::EncryptedMetadata metadata;
+  nearby::sharing::proto::EncryptedMetadata metadata;
   if (device_name.empty()) {
     CD_LOG(WARNING, Feature::NS)
         << __func__ << ": Failed to create private certificate metadata; "
@@ -197,7 +197,7 @@ void TryDecryptPublicCertificates(
     const NearbyShareEncryptedMetadataKey& encrypted_metadata_key,
     NearbyShareCertificateManager::CertDecryptedCallback callback,
     bool success,
-    std::unique_ptr<std::vector<nearbyshare::proto::PublicCertificate>>
+    std::unique_ptr<std::vector<nearby::sharing::proto::PublicCertificate>>
         public_certificates) {
   if (!success || !public_certificates) {
     CD_LOG(ERROR, Feature::NS)
@@ -350,11 +350,11 @@ NearbyShareCertificateManagerImpl::~NearbyShareCertificateManagerImpl() {
   contact_manager_->RemoveObserver(this);
 }
 
-std::vector<nearbyshare::proto::PublicCertificate>
+std::vector<nearby::sharing::proto::PublicCertificate>
 NearbyShareCertificateManagerImpl::GetPrivateCertificatesAsPublicCertificates(
     nearby_share::mojom::Visibility visibility) {
   NOTIMPLEMENTED();
-  return std::vector<nearbyshare::proto::PublicCertificate>();
+  return std::vector<nearby::sharing::proto::PublicCertificate>();
 }
 
 void NearbyShareCertificateManagerImpl::GetDecryptedPublicCertificate(
@@ -410,7 +410,7 @@ void NearbyShareCertificateManagerImpl::UpdatePrivateCertificateInStorage(
 
 void NearbyShareCertificateManagerImpl::OnContactsDownloaded(
     const std::set<std::string>& allowed_contact_ids,
-    const std::vector<nearbyshare::proto::ContactRecord>& contacts,
+    const std::vector<nearby::sharing::proto::ContactRecord>& contacts,
     uint32_t num_unreachable_contacts_filtered_out) {}
 
 void NearbyShareCertificateManagerImpl::OnContactsUploaded(
@@ -502,7 +502,7 @@ void NearbyShareCertificateManagerImpl::FinishPrivateCertificateRefresh(
         std::max(latest_not_after[cert.visibility()], cert.not_after());
   }
 
-  absl::optional<nearbyshare::proto::EncryptedMetadata> metadata =
+  absl::optional<nearby::sharing::proto::EncryptedMetadata> metadata =
       BuildMetadata(local_device_data_manager_->GetDeviceName(),
                     local_device_data_manager_->GetFullName(),
                     local_device_data_manager_->GetIconUrl(),
@@ -568,7 +568,7 @@ void NearbyShareCertificateManagerImpl::FinishPrivateCertificateRefresh(
 
 void NearbyShareCertificateManagerImpl::
     OnLocalDeviceCertificateUploadRequest() {
-  std::vector<nearbyshare::proto::PublicCertificate> public_certs;
+  std::vector<nearby::sharing::proto::PublicCertificate> public_certs;
   std::vector<NearbySharePrivateCertificate> private_certs =
       *certificate_storage_->GetPrivateCertificates();
   for (const NearbySharePrivateCertificate& private_cert : private_certs) {
@@ -626,7 +626,7 @@ void NearbyShareCertificateManagerImpl::OnDownloadPublicCertificatesRequest(
     size_t certificate_count) {
   DCHECK(!client_);
 
-  nearbyshare::proto::ListPublicCertificatesRequest request;
+  nearby::sharing::proto::ListPublicCertificatesRequest request;
   request.set_parent(kDeviceIdPrefix + local_device_data_manager_->GetId());
   if (page_token) {
     request.set_page_token(*page_token);
@@ -660,10 +660,10 @@ void NearbyShareCertificateManagerImpl::OnDownloadPublicCertificatesRequest(
 void NearbyShareCertificateManagerImpl::OnListPublicCertificatesSuccess(
     size_t page_number,
     size_t certificate_count,
-    const nearbyshare::proto::ListPublicCertificatesResponse& response) {
+    const nearby::sharing::proto::ListPublicCertificatesResponse& response) {
   timer_.Stop();
 
-  std::vector<nearbyshare::proto::PublicCertificate> certs(
+  std::vector<nearby::sharing::proto::PublicCertificate> certs(
       response.public_certificates().begin(),
       response.public_certificates().end());
 

@@ -10,8 +10,8 @@
 #include "base/i18n/string_compare.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 
 namespace {
 
@@ -29,25 +29,27 @@ struct ContactSortingFields {
 };
 
 ContactSortingFields GetContactSortingFields(
-    const nearbyshare::proto::ContactRecord& contact) {
+    const nearby::sharing::proto::ContactRecord& contact) {
   ContactSortingFields fields;
   fields.id = contact.id();
   for (const auto& identifier : contact.identifiers()) {
     switch (identifier.identifier_case()) {
-      case nearbyshare::proto::Contact_Identifier::IdentifierCase::kAccountName:
+      case nearby::sharing::proto::Contact_Identifier::IdentifierCase::
+          kAccountName:
         if (!fields.email) {
           fields.email = identifier.account_name();
         }
         break;
-      case nearbyshare::proto::Contact_Identifier::IdentifierCase::kPhoneNumber:
+      case nearby::sharing::proto::Contact_Identifier::IdentifierCase::
+          kPhoneNumber:
         if (!fields.phone_number) {
           fields.phone_number = identifier.phone_number();
         }
         break;
-      case nearbyshare::proto::Contact_Identifier::IdentifierCase::
+      case nearby::sharing::proto::Contact_Identifier::IdentifierCase::
           kObfuscatedGaia:
         break;
-      case nearbyshare::proto::Contact_Identifier::IdentifierCase::
+      case nearby::sharing::proto::Contact_Identifier::IdentifierCase::
           IDENTIFIER_NOT_SET:
         break;
     }
@@ -65,8 +67,8 @@ class ContactRecordComparator {
   explicit ContactRecordComparator(icu::Collator* collator)
       : collator_(collator) {}
 
-  bool operator()(const nearbyshare::proto::ContactRecord& c1,
-                  const nearbyshare::proto::ContactRecord& c2) const {
+  bool operator()(const nearby::sharing::proto::ContactRecord& c1,
+                  const nearby::sharing::proto::ContactRecord& c2) const {
     ContactSortingFields f1 = GetContactSortingFields(c1);
     ContactSortingFields f2 = GetContactSortingFields(c2);
 
@@ -132,7 +134,7 @@ class ContactRecordComparator {
 }  // namespace
 
 void SortNearbyShareContactRecords(
-    std::vector<nearbyshare::proto::ContactRecord>* contacts,
+    std::vector<nearby::sharing::proto::ContactRecord>* contacts,
     icu::Locale locale) {
   UErrorCode error = U_ZERO_ERROR;
   std::unique_ptr<icu::Collator> collator(

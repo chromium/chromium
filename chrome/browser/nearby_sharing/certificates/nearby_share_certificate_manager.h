@@ -14,9 +14,9 @@
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_decrypted_public_certificate.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_encrypted_metadata_key.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_private_certificate.h"
-#include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 
 // The Nearby Share certificate manager maintains the local device's private
 // certificates and contacts' public certificates. The manager communicates with
@@ -86,7 +86,7 @@ class NearbyShareCertificateManager {
   // requested visibility will be returned; if selected-contacts visibility is
   // passed in, the all-contacts visibility certificates will *not* be returned
   // as well.
-  virtual std::vector<nearbyshare::proto::PublicCertificate>
+  virtual std::vector<nearby::sharing::proto::PublicCertificate>
   GetPrivateCertificatesAsPublicCertificates(
       nearby_share::mojom::Visibility visibility) = 0;
 

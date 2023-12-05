@@ -45,7 +45,6 @@
 #include "chrome/browser/nearby_sharing/nearby_share_feature_status.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/nearby_sharing/power_client.h"
-#include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chrome/browser/nearby_sharing/public/cpp/fake_nearby_connections_manager.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
 #include "chrome/browser/nearby_sharing/wifi_network_configuration/fake_wifi_network_configuration_handler.h"
@@ -54,7 +53,6 @@
 #include "chrome/browser/ui/ash/test_session_controller.h"
 #include "chrome/services/sharing/nearby/decoder/advertisement_decoder.h"
 #include "chrome/services/sharing/public/cpp/advertisement.h"
-#include "chrome/services/sharing/public/proto/wire_format.pb.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -74,6 +72,8 @@
 #include "net/base/mock_network_change_notifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
+#include "third_party/nearby/sharing/proto/wire_format.pb.h"
 
 using ::testing::_;
 using testing::AtLeast;
@@ -385,7 +385,7 @@ nearby::connections::mojom::PayloadPtr GetTextPayloadPtr(
 nearby::connections::mojom::PayloadPtr GetWifiPayloadPtr(
     int64_t payload_id,
     const std::string& password) {
-  sharing::nearby::WifiCredentials credentials_proto;
+  nearby::sharing::service::proto::WifiCredentials credentials_proto;
   credentials_proto.set_password(password);
   const std::string& proto_string = credentials_proto.SerializeAsString();
   return nearby::connections::mojom::Payload::New(
@@ -767,7 +767,7 @@ class NearbySharingServiceImplTestBase : public testing::Test {
               calls.back().encrypted_metadata_key.encrypted_key());
 
     if (success) {
-      nearbyshare::proto::PublicCertificate cert =
+      nearby::sharing::proto::PublicCertificate cert =
           GetNearbyShareTestPublicCertificate(
               nearby_share::mojom::Visibility::kAllContacts);
       cert.set_for_self_share(for_self_share);
@@ -1001,44 +1001,45 @@ class NearbySharingServiceImplTestBase : public testing::Test {
                                        /*is_incoming=*/true);
   }
 
-  sharing::nearby::Frame GetWrittenFrame() {
+  nearby::sharing::service::proto::Frame GetWrittenFrame() {
     std::vector<uint8_t> data = connection_.GetWrittenData();
-    sharing::nearby::Frame frame;
+    nearby::sharing::service::proto::Frame frame;
     frame.ParseFromArray(data.data(), data.size());
     return frame;
   }
 
   void ExpectPairedKeyEncryptionFrame() {
-    sharing::nearby::Frame frame = GetWrittenFrame();
+    nearby::sharing::service::proto::Frame frame = GetWrittenFrame();
     ASSERT_TRUE(frame.has_v1());
     ASSERT_TRUE(frame.v1().has_paired_key_encryption());
   }
 
   void ExpectPairedKeyResultFrame() {
-    sharing::nearby::Frame frame = GetWrittenFrame();
+    nearby::sharing::service::proto::Frame frame = GetWrittenFrame();
     ASSERT_TRUE(frame.has_v1());
     ASSERT_TRUE(frame.v1().has_paired_key_result());
   }
 
   void ExpectConnectionResponseFrame(
-      sharing::nearby::ConnectionResponseFrame::Status status) {
-    sharing::nearby::Frame frame = GetWrittenFrame();
+      nearby::sharing::service::proto::ConnectionResponseFrame::Status status) {
+    nearby::sharing::service::proto::Frame frame = GetWrittenFrame();
     ASSERT_TRUE(frame.has_v1());
     ASSERT_TRUE(frame.v1().has_connection_response());
     EXPECT_EQ(status, frame.v1().connection_response().status());
   }
 
-  sharing::nearby::IntroductionFrame ExpectIntroductionFrame() {
-    sharing::nearby::Frame frame = GetWrittenFrame();
+  nearby::sharing::service::proto::IntroductionFrame ExpectIntroductionFrame() {
+    nearby::sharing::service::proto::Frame frame = GetWrittenFrame();
     EXPECT_TRUE(frame.has_v1());
     EXPECT_TRUE(frame.v1().has_introduction());
     return frame.v1().introduction();
   }
 
   void ExpectCancelFrame() {
-    sharing::nearby::Frame frame = GetWrittenFrame();
+    nearby::sharing::service::proto::Frame frame = GetWrittenFrame();
     ASSERT_TRUE(frame.has_v1());
-    EXPECT_EQ(sharing::nearby::V1Frame::CANCEL, frame.v1().type());
+    EXPECT_EQ(nearby::sharing::service::proto::V1Frame::CANCEL,
+              frame.v1().type());
   }
 
   // Optionally, |new_share_target| is updated with the ShareTargets sent to
@@ -2856,7 +2857,8 @@ TEST_P(NearbySharingServiceImplTest,
   ExpectPairedKeyEncryptionFrame();
   ExpectPairedKeyResultFrame();
   ExpectConnectionResponseFrame(
-      sharing::nearby::ConnectionResponseFrame::UNSUPPORTED_ATTACHMENT_TYPE);
+      nearby::sharing::service::proto::ConnectionResponseFrame::
+          UNSUPPORTED_ATTACHMENT_TYPE);
 
   // To avoid UAF in OnIncomingTransferUpdate().
   service_->UnregisterReceiveSurface(&callback);
@@ -3318,7 +3320,7 @@ TEST_P(NearbySharingServiceImplTest, AcceptValidShareTarget) {
   ExpectPairedKeyEncryptionFrame();
   ExpectPairedKeyResultFrame();
   ExpectConnectionResponseFrame(
-      sharing::nearby::ConnectionResponseFrame::ACCEPT);
+      nearby::sharing::service::proto::ConnectionResponseFrame::ACCEPT);
 
   EXPECT_FALSE(connection_.IsClosed());
 
@@ -3366,7 +3368,7 @@ TEST_P(NearbySharingServiceImplTest,
 
 TEST_P(NearbySharingServiceImplTest,
        AcceptValidShareTarget_WifiProtoPasswordEmpty) {
-  sharing::nearby::WifiCredentials credentials_proto;
+  nearby::sharing::service::proto::WifiCredentials credentials_proto;
   credentials_proto.set_password("");
   credentials_proto.set_hidden_ssid(false);
   const std::string& proto_string = credentials_proto.SerializeAsString();
@@ -3379,7 +3381,7 @@ TEST_P(NearbySharingServiceImplTest,
 }
 
 TEST_P(NearbySharingServiceImplTest, AcceptValidShareTarget_HiddenNetwork) {
-  sharing::nearby::WifiCredentials credentials_proto;
+  nearby::sharing::service::proto::WifiCredentials credentials_proto;
   credentials_proto.set_password(kWifiPassword);
   credentials_proto.set_hidden_ssid(true);
   const std::string& proto_string = credentials_proto.SerializeAsString();
@@ -3698,7 +3700,7 @@ TEST_P(NearbySharingServiceImplTest, RejectValidShareTarget) {
   ExpectPairedKeyEncryptionFrame();
   ExpectPairedKeyResultFrame();
   ExpectConnectionResponseFrame(
-      sharing::nearby::ConnectionResponseFrame::REJECT);
+      nearby::sharing::service::proto::ConnectionResponseFrame::REJECT);
 
   task_environment_.FastForwardBy(kIncomingRejectionDelay + kDelta);
   EXPECT_TRUE(connection_.IsClosed());
@@ -4208,7 +4210,8 @@ TEST_P(NearbySharingServiceImplTest, SendText_Success) {
 
   EXPECT_EQ(kTextPayload, meta.text_title());
   EXPECT_EQ(strlen(kTextPayload), static_cast<size_t>(meta.size()));
-  EXPECT_EQ(sharing::nearby::TextMetadata_Type_TEXT, meta.type());
+  EXPECT_EQ(nearby::sharing::service::proto::TextMetadata_Type_TEXT,
+            meta.type());
 
   ASSERT_TRUE(
       fake_nearby_connections_manager_->connection_endpoint_info(kEndpointId));
@@ -4303,7 +4306,8 @@ TEST_P(NearbySharingServiceImplTest, SendFiles_Success) {
   EXPECT_EQ(file_name, meta.name());
   EXPECT_EQ("text/plain", meta.mime_type());
   EXPECT_EQ(test_data.size(), static_cast<size_t>(meta.size()));
-  EXPECT_EQ(sharing::nearby::FileMetadata_Type_UNKNOWN, meta.type());
+  EXPECT_EQ(nearby::sharing::service::proto::FileMetadata_Type_UNKNOWN,
+            meta.type());
 
   // Expect the file payload to be sent in the end.
   base::RunLoop payload_run_loop;
@@ -4596,7 +4600,8 @@ TEST_P(NearbySharingServiceImplTest, SendPayloadWithArcCallback) {
 
   EXPECT_EQ(kTextPayload, meta.text_title());
   EXPECT_EQ(strlen(kTextPayload), static_cast<size_t>(meta.size()));
-  EXPECT_EQ(sharing::nearby::TextMetadata_Type_TEXT, meta.type());
+  EXPECT_EQ(nearby::sharing::service::proto::TextMetadata_Type_TEXT,
+            meta.type());
 
   ASSERT_TRUE(
       fake_nearby_connections_manager_->connection_endpoint_info(kEndpointId));
@@ -5257,7 +5262,7 @@ TEST_P(NearbySharingServiceImplTest, CreateShareTarget) {
 
   // Flip |for_self_share| to true to ensure the resulting ShareTarget picks
   // this up.
-  nearbyshare::proto::PublicCertificate certificate_proto =
+  nearby::sharing::proto::PublicCertificate certificate_proto =
       GetNearbyShareTestPublicCertificate(
           nearby_share::mojom::Visibility::kAllContacts);
   certificate_proto.set_for_self_share(true);
@@ -5332,7 +5337,7 @@ TEST_P(NearbySharingServiceImplTest, SelfShareAutoAccept) {
   ExpectPairedKeyEncryptionFrame();
   ExpectPairedKeyResultFrame();
   ExpectConnectionResponseFrame(
-      sharing::nearby::ConnectionResponseFrame::ACCEPT);
+      nearby::sharing::service::proto::ConnectionResponseFrame::ACCEPT);
 
   EXPECT_FALSE(connection_.IsClosed());
 
@@ -5381,7 +5386,7 @@ TEST_P(NearbySharingServiceImplTest, SelfShareAutoAccept_WiFiCredentials) {
   ExpectPairedKeyEncryptionFrame();
   ExpectPairedKeyResultFrame();
   ExpectConnectionResponseFrame(
-      sharing::nearby::ConnectionResponseFrame::ACCEPT);
+      nearby::sharing::service::proto::ConnectionResponseFrame::ACCEPT);
 
   EXPECT_FALSE(connection_.IsClosed());
 

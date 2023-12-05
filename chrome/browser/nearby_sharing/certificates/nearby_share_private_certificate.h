@@ -15,10 +15,10 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_encrypted_metadata_key.h"
-#include "chrome/browser/nearby_sharing/proto/encrypted_metadata.pb.h"
-#include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/nearby/sharing/proto/encrypted_metadata.pb.h"
+#include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 
 namespace crypto {
 class ECPrivateKey;
@@ -45,7 +45,7 @@ class NearbySharePrivateCertificate {
   NearbySharePrivateCertificate(
       nearby_share::mojom::Visibility visibility,
       base::Time not_before,
-      nearbyshare::proto::EncryptedMetadata unencrypted_metadata);
+      nearby::sharing::proto::EncryptedMetadata unencrypted_metadata);
 
   NearbySharePrivateCertificate(
       nearby_share::mojom::Visibility visibility,
@@ -55,7 +55,7 @@ class NearbySharePrivateCertificate {
       std::unique_ptr<crypto::SymmetricKey> secret_key,
       std::vector<uint8_t> metadata_encryption_key,
       std::vector<uint8_t> id,
-      nearbyshare::proto::EncryptedMetadata unencrypted_metadata,
+      nearby::sharing::proto::EncryptedMetadata unencrypted_metadata,
       std::set<std::vector<uint8_t>> consumed_salts);
 
   NearbySharePrivateCertificate(const NearbySharePrivateCertificate& other);
@@ -71,7 +71,8 @@ class NearbySharePrivateCertificate {
   nearby_share::mojom::Visibility visibility() const { return visibility_; }
   base::Time not_before() const { return not_before_; }
   base::Time not_after() const { return not_after_; }
-  const nearbyshare::proto::EncryptedMetadata& unencrypted_metadata() const {
+  const nearby::sharing::proto::EncryptedMetadata& unencrypted_metadata()
+      const {
     return unencrypted_metadata_;
   }
 
@@ -96,8 +97,8 @@ class NearbySharePrivateCertificate {
   // Converts this private certificate to a public certificate proto that can be
   // shared with select contacts. Returns absl::nullopt if the conversion was
   // unsuccessful.
-  absl::optional<nearbyshare::proto::PublicCertificate> ToPublicCertificate()
-      const;
+  absl::optional<nearby::sharing::proto::PublicCertificate>
+  ToPublicCertificate() const;
 
   // Converts this private certificate to a dictionary value for storage
   // in Prefs.
@@ -153,7 +154,7 @@ class NearbySharePrivateCertificate {
 
   // Unencrypted device metadata. The proto name is misleading; it holds data
   // that will eventually be serialized and encrypted.
-  nearbyshare::proto::EncryptedMetadata unencrypted_metadata_;
+  nearby::sharing::proto::EncryptedMetadata unencrypted_metadata_;
 
   // The set of 2-byte salts already used to encrypt the metadata key.
   std::set<std::vector<uint8_t>> consumed_salts_;

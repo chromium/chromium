@@ -9,9 +9,9 @@
 
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
-#include "chrome/browser/nearby_sharing/proto/device_rpc.pb.h"
-#include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/nearby/sharing/proto/device_rpc.pb.h"
+#include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 
 // Manages a queue of data needed to make UpdateDevice RPC requests to the
 // Nearby Server. Implementations should make the actual HTTP calls by
@@ -32,22 +32,23 @@ class NearbyShareDeviceDataUpdater {
  public:
   // If the request is unsuccessful, |response| is absl::nullopt.
   using ResultCallback = base::OnceCallback<void(
-      const absl::optional<nearbyshare::proto::UpdateDeviceResponse>&
+      const absl::optional<nearby::sharing::proto::UpdateDeviceResponse>&
           response)>;
 
   struct Request {
-    Request(absl::optional<std::vector<nearbyshare::proto::Contact>> contacts,
-            absl::optional<std::vector<nearbyshare::proto::PublicCertificate>>
-                certificates,
-            ResultCallback callback);
+    Request(
+        absl::optional<std::vector<nearby::sharing::proto::Contact>> contacts,
+        absl::optional<std::vector<nearby::sharing::proto::PublicCertificate>>
+            certificates,
+        ResultCallback callback);
     Request(Request&& request);
     Request& operator=(Request&& request);
     Request(const Request&) = delete;
     Request& operator=(const Request&) = delete;
     ~Request();
 
-    absl::optional<std::vector<nearbyshare::proto::Contact>> contacts;
-    absl::optional<std::vector<nearbyshare::proto::PublicCertificate>>
+    absl::optional<std::vector<nearby::sharing::proto::Contact>> contacts;
+    absl::optional<std::vector<nearby::sharing::proto::PublicCertificate>>
         certificates;
     ResultCallback callback;
   };
@@ -72,8 +73,8 @@ class NearbyShareDeviceDataUpdater {
   // If only the UpdateDevice RPC response data is desired, set all
   // aforementioned parameters to absl::nullopt.
   void UpdateDeviceData(
-      absl::optional<std::vector<nearbyshare::proto::Contact>> contacts,
-      absl::optional<std::vector<nearbyshare::proto::PublicCertificate>>
+      absl::optional<std::vector<nearby::sharing::proto::Contact>> contacts,
+      absl::optional<std::vector<nearby::sharing::proto::PublicCertificate>>
           certificates,
       ResultCallback callback);
 
@@ -83,7 +84,8 @@ class NearbyShareDeviceDataUpdater {
 
   // If the request is unsuccessful, |response| is absl::nullopt.
   void FinishAttempt(
-      const absl::optional<nearbyshare::proto::UpdateDeviceResponse>& response);
+      const absl::optional<nearby::sharing::proto::UpdateDeviceResponse>&
+          response);
 
   std::string device_id_;
   bool is_request_in_progress_ = false;

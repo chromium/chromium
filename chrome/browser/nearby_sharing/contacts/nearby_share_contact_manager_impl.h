@@ -11,11 +11,11 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager.h"
-#include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 
 class NearbyShareClientFactory;
 class NearbyShareContactDownloader;
@@ -96,7 +96,7 @@ class NearbyShareContactManagerImpl : public NearbyShareContactManager {
   void OnPeriodicContactsUploadRequested();
   void OnContactsDownloadRequested();
   void OnContactsDownloadSuccess(
-      std::vector<nearbyshare::proto::ContactRecord> contacts,
+      std::vector<nearby::sharing::proto::ContactRecord> contacts,
       uint32_t num_unreachable_contacts_filtered_out);
   void OnContactsDownloadFailure();
   void OnContactsUploadFinished(bool did_contacts_change_since_last_upload,
@@ -107,7 +107,7 @@ class NearbyShareContactManagerImpl : public NearbyShareContactManager {
   // Notify the base-class and mojo observers that contacts were downloaded.
   void NotifyAllObserversContactsDownloaded(
       const std::set<std::string>& allowed_contact_ids,
-      const std::vector<nearbyshare::proto::ContactRecord>& contacts,
+      const std::vector<nearby::sharing::proto::ContactRecord>& contacts,
       uint32_t num_unreachable_contacts_filtered_out);
 
   raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;

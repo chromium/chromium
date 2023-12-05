@@ -51,7 +51,7 @@ FakeNearbyShareCertificateManager::FakeNearbyShareCertificateManager()
 FakeNearbyShareCertificateManager::~FakeNearbyShareCertificateManager() =
     default;
 
-std::vector<nearbyshare::proto::PublicCertificate>
+std::vector<nearby::sharing::proto::PublicCertificate>
 FakeNearbyShareCertificateManager::GetPrivateCertificatesAsPublicCertificates(
     nearby_share::mojom::Visibility visibility) {
   ++num_get_private_certificates_as_public_certificates_calls_;

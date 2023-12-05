@@ -158,7 +158,7 @@ base::TimeDelta GetCertificateValidityPeriod() {
 NearbySharePrivateCertificate::NearbySharePrivateCertificate(
     nearby_share::mojom::Visibility visibility,
     base::Time not_before,
-    nearbyshare::proto::EncryptedMetadata unencrypted_metadata)
+    nearby::sharing::proto::EncryptedMetadata unencrypted_metadata)
     : visibility_(visibility),
       not_before_(not_before),
       not_after_(not_before_ + GetCertificateValidityPeriod()),
@@ -181,7 +181,7 @@ NearbySharePrivateCertificate::NearbySharePrivateCertificate(
     std::unique_ptr<crypto::SymmetricKey> secret_key,
     std::vector<uint8_t> metadata_encryption_key,
     std::vector<uint8_t> id,
-    nearbyshare::proto::EncryptedMetadata unencrypted_metadata,
+    nearby::sharing::proto::EncryptedMetadata unencrypted_metadata,
     std::set<std::vector<uint8_t>> consumed_salts)
     : visibility_(visibility),
       not_before_(not_before),
@@ -278,7 +278,7 @@ std::vector<uint8_t> NearbySharePrivateCertificate::HashAuthenticationToken(
       base::as_bytes(base::make_span(secret_key_->key())));
 }
 
-absl::optional<nearbyshare::proto::PublicCertificate>
+absl::optional<nearby::sharing::proto::PublicCertificate>
 NearbySharePrivateCertificate::ToPublicCertificate() const {
   std::vector<uint8_t> public_key;
   if (!key_pair_->ExportPublicKey(&public_key)) {
@@ -306,7 +306,7 @@ NearbySharePrivateCertificate::ToPublicCertificate() const {
   base::TimeDelta not_after_offset =
       offset_for_testing_.value_or(GenerateRandomOffset());
 
-  nearbyshare::proto::PublicCertificate public_certificate;
+  nearby::sharing::proto::PublicCertificate public_certificate;
   public_certificate.set_secret_id(std::string(id_.begin(), id_.end()));
   public_certificate.set_secret_key(secret_key_->key());
   public_certificate.set_public_key(
@@ -420,7 +420,7 @@ NearbySharePrivateCertificate::FromDictionary(const base::Value::Dict& dict) {
   if (!str_opt)
     return absl::nullopt;
 
-  nearbyshare::proto::EncryptedMetadata unencrypted_metadata;
+  nearby::sharing::proto::EncryptedMetadata unencrypted_metadata;
   if (!unencrypted_metadata.ParseFromString(*str_opt))
     return absl::nullopt;
 

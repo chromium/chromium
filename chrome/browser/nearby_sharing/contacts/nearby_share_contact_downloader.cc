@@ -26,7 +26,7 @@ void NearbyShareContactDownloader::Run() {
 }
 
 void NearbyShareContactDownloader::Succeed(
-    std::vector<nearbyshare::proto::ContactRecord> contacts,
+    std::vector<nearby::sharing::proto::ContactRecord> contacts,
     uint32_t num_unreachable_contacts_filtered_out) {
   DCHECK(was_run_);
   DCHECK(success_callback_);

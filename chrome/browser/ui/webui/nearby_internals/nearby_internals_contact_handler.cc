@@ -45,7 +45,7 @@ const char kContactMessageNumUnreachableContactsKey[] =
 base::Value::Dict ContactMessageToDictionary(
     absl::optional<bool> did_contacts_change_since_last_upload,
     const absl::optional<std::set<std::string>>& allowed_contact_ids,
-    const absl::optional<std::vector<nearbyshare::proto::ContactRecord>>&
+    const absl::optional<std::vector<nearby::sharing::proto::ContactRecord>>&
         contacts,
     absl::optional<uint32_t> num_unreachable_contacts_filtered_out) {
   base::Value::Dict dictionary;
@@ -132,7 +132,7 @@ void NearbyInternalsContactHandler::HandleDownloadContacts(
 
 void NearbyInternalsContactHandler::OnContactsDownloaded(
     const std::set<std::string>& allowed_contact_ids,
-    const std::vector<nearbyshare::proto::ContactRecord>& contacts,
+    const std::vector<nearby::sharing::proto::ContactRecord>& contacts,
     uint32_t num_unreachable_contacts_filtered_out) {
   FireWebUIListener("contacts-updated",
                     ContactMessageToDictionary(

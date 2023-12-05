@@ -14,7 +14,7 @@
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_decrypted_public_certificate.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_encrypted_metadata_key.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_private_certificate.h"
-#include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
+#include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 
 class NearbyShareProfileInfoProvider;
 
@@ -74,7 +74,7 @@ class FakeNearbyShareCertificateManager : public NearbyShareCertificateManager {
   ~FakeNearbyShareCertificateManager() override;
 
   // NearbyShareCertificateManager:
-  std::vector<nearbyshare::proto::PublicCertificate>
+  std::vector<nearby::sharing::proto::PublicCertificate>
   GetPrivateCertificatesAsPublicCertificates(
       nearby_share::mojom::Visibility visibility) override;
   void GetDecryptedPublicCertificate(

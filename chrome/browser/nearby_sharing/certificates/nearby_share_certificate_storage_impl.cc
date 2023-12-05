@@ -19,12 +19,12 @@
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_private_certificate.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
-#include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "components/cross_device/logging/logging.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 
 namespace {
 
@@ -128,7 +128,7 @@ NearbyShareCertificateStorageImpl::ExpirationList MergeExpirations(
   return merged;
 }
 
-base::Time TimestampToTime(ash::nearby::proto::Timestamp timestamp) {
+base::Time TimestampToTime(nearby::sharing::proto::Timestamp timestamp) {
   return base::Time::UnixEpoch() + base::Seconds(timestamp.seconds()) +
          base::Nanoseconds(timestamp.nanos());
 }
@@ -158,7 +158,7 @@ NearbyShareCertificateStorageImpl::Factory::Create(
 
   return std::make_unique<NearbyShareCertificateStorageImpl>(
       pref_service,
-      proto_database_provider->GetDB<nearbyshare::proto::PublicCertificate>(
+      proto_database_provider->GetDB<nearby::sharing::proto::PublicCertificate>(
           leveldb_proto::ProtoDbType::NEARBY_SHARE_PUBLIC_CERTIFICATE_DATABASE,
           database_path, database_task_runner));
 }
@@ -174,7 +174,7 @@ NearbyShareCertificateStorageImpl::Factory::~Factory() = default;
 NearbyShareCertificateStorageImpl::NearbyShareCertificateStorageImpl(
     PrefService* pref_service,
     std::unique_ptr<
-        leveldb_proto::ProtoDatabase<nearbyshare::proto::PublicCertificate>>
+        leveldb_proto::ProtoDatabase<nearby::sharing::proto::PublicCertificate>>
         proto_database)
     : pref_service_(pref_service), db_(std::move(proto_database)) {
   FetchPublicCertificateExpirations();
@@ -382,7 +382,7 @@ void NearbyShareCertificateStorageImpl::ReplacePrivateCertificates(
 }
 
 void NearbyShareCertificateStorageImpl::AddPublicCertificates(
-    const std::vector<nearbyshare::proto::PublicCertificate>&
+    const std::vector<nearby::sharing::proto::PublicCertificate>&
         public_certificates,
     ResultCallback callback) {
   if (init_status_ == InitStatus::kFailed) {
@@ -398,9 +398,9 @@ void NearbyShareCertificateStorageImpl::AddPublicCertificates(
   }
 
   auto new_entries = std::make_unique<std::vector<
-      std::pair<std::string, nearbyshare::proto::PublicCertificate>>>();
+      std::pair<std::string, nearby::sharing::proto::PublicCertificate>>>();
   auto new_expirations = std::make_unique<ExpirationList>();
-  for (const nearbyshare::proto::PublicCertificate& cert :
+  for (const nearby::sharing::proto::PublicCertificate& cert :
        public_certificates) {
     new_entries->emplace_back(cert.secret_id(), cert);
     new_expirations->emplace_back(cert.secret_id(),
@@ -456,7 +456,7 @@ void NearbyShareCertificateStorageImpl::RemoveExpiredPublicCertificates(
   }
 
   auto ids_to_add = std::make_unique<leveldb_proto::ProtoDatabase<
-      nearbyshare::proto::PublicCertificate>::KeyEntryVector>();
+      nearby::sharing::proto::PublicCertificate>::KeyEntryVector>();
 
   auto ids_to_remove_set = std::make_unique<base::flat_set<std::string>>(
       ids_to_remove->begin(), ids_to_remove->end());

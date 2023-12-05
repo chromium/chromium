@@ -15,11 +15,11 @@
 #include "chrome/browser/nearby_sharing/client/fake_nearby_share_client.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_downloader_impl.h"
-#include "chrome/browser/nearby_sharing/proto/contact_rpc.pb.h"
-#include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/nearby/sharing/proto/contact_rpc.pb.h"
+#include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 
 namespace {
 
@@ -33,40 +33,46 @@ const char kTestPageToken[] = "token";
 
 constexpr base::TimeDelta kTestTimeout = base::Minutes(123);
 
-const std::vector<nearbyshare::proto::ContactRecord>& TestContactRecordList() {
+const std::vector<nearby::sharing::proto::ContactRecord>&
+TestContactRecordList() {
   static const base::NoDestructor<
-      std::vector<nearbyshare::proto::ContactRecord>>
+      std::vector<nearby::sharing::proto::ContactRecord>>
       list([] {
-        nearbyshare::proto::ContactRecord contact1;
+        nearby::sharing::proto::ContactRecord contact1;
         contact1.set_id(kTestContactRecordId1);
-        contact1.set_type(nearbyshare::proto::ContactRecord::GOOGLE_CONTACT);
+        contact1.set_type(
+            nearby::sharing::proto::ContactRecord::GOOGLE_CONTACT);
         contact1.set_is_reachable(true);
-        nearbyshare::proto::ContactRecord contact2;
+        nearby::sharing::proto::ContactRecord contact2;
         contact2.set_id(kTestContactRecordId2);
-        contact2.set_type(nearbyshare::proto::ContactRecord::DEVICE_CONTACT);
+        contact2.set_type(
+            nearby::sharing::proto::ContactRecord::DEVICE_CONTACT);
         contact2.set_is_reachable(true);
-        nearbyshare::proto::ContactRecord contact3;
+        nearby::sharing::proto::ContactRecord contact3;
         contact3.set_id(kTestContactRecordId3);
-        contact3.set_type(nearbyshare::proto::ContactRecord::UNKNOWN);
+        contact3.set_type(nearby::sharing::proto::ContactRecord::UNKNOWN);
         contact3.set_is_reachable(true);
-        nearbyshare::proto::ContactRecord contact4;
+        nearby::sharing::proto::ContactRecord contact4;
         contact4.set_id(kTestContactRecordId4);
-        contact4.set_type(nearbyshare::proto::ContactRecord::GOOGLE_CONTACT);
+        contact4.set_type(
+            nearby::sharing::proto::ContactRecord::GOOGLE_CONTACT);
         contact4.set_is_reachable(false);
-        nearbyshare::proto::ContactRecord contact5;
+        nearby::sharing::proto::ContactRecord contact5;
         contact5.set_id(kTestContactRecordId5);
-        contact5.set_type(nearbyshare::proto::ContactRecord::GOOGLE_CONTACT);
+        contact5.set_type(
+            nearby::sharing::proto::ContactRecord::GOOGLE_CONTACT);
         contact5.set_is_reachable(false);
-        return std::vector<nearbyshare::proto::ContactRecord>{
+        return std::vector<nearby::sharing::proto::ContactRecord>{
             contact1, contact2, contact3, contact4, contact5};
       }());
   return *list;
 }
 
-nearbyshare::proto::ListContactPeopleResponse CreateListContactPeopleResponse(
-    const std::vector<nearbyshare::proto::ContactRecord>& contact_records,
+nearby::sharing::proto::ListContactPeopleResponse
+CreateListContactPeopleResponse(
+    const std::vector<nearby::sharing::proto::ContactRecord>& contact_records,
     const absl::optional<std::string>& next_page_token) {
-  nearbyshare::proto::ListContactPeopleResponse response;
+  nearby::sharing::proto::ListContactPeopleResponse response;
   *response.mutable_contact_records() = {contact_records.begin(),
                                          contact_records.end()};
   if (next_page_token)
@@ -82,7 +88,7 @@ class NearbyShareContactDownloaderImplTest
  protected:
   struct Result {
     bool success;
-    absl::optional<std::vector<nearbyshare::proto::ContactRecord>> contacts;
+    absl::optional<std::vector<nearby::sharing::proto::ContactRecord>> contacts;
     absl::optional<uint32_t> num_unreachable_contacts_filtered_out;
   };
 
@@ -101,7 +107,7 @@ class NearbyShareContactDownloaderImplTest
 
   void SucceedListContactPeopleRequest(
       const absl::optional<std::string>& expected_page_token_in_request,
-      const nearbyshare::proto::ListContactPeopleResponse& response) {
+      const nearby::sharing::proto::ListContactPeopleResponse& response) {
     VerifyListContactPeopleRequest(expected_page_token_in_request);
 
     EXPECT_FALSE(result_);
@@ -127,9 +133,9 @@ class NearbyShareContactDownloaderImplTest
     FastForward(kTestTimeout);
   }
 
-  void VerifySuccess(
-      const std::vector<nearbyshare::proto::ContactRecord>& expected_contacts,
-      uint32_t expected_num_unreachable_contacts_filtered_out) {
+  void VerifySuccess(const std::vector<nearby::sharing::proto::ContactRecord>&
+                         expected_contacts,
+                     uint32_t expected_num_unreachable_contacts_filtered_out) {
     ASSERT_TRUE(result_);
     EXPECT_TRUE(result_->success);
     ASSERT_TRUE(result_->contacts);
@@ -162,14 +168,14 @@ class NearbyShareContactDownloaderImplTest
     FakeNearbyShareClient* client = fake_client_factory_.instances().back();
     ASSERT_EQ(1u, client->list_contact_people_requests().size());
 
-    const nearbyshare::proto::ListContactPeopleRequest& request =
+    const nearby::sharing::proto::ListContactPeopleRequest& request =
         client->list_contact_people_requests()[0].request;
     EXPECT_EQ(expected_page_token.value_or(std::string()),
               request.page_token());
   }
 
   // The callbacks passed into NearbyShareContactDownloader ctor.
-  void OnSuccess(std::vector<nearbyshare::proto::ContactRecord> contacts,
+  void OnSuccess(std::vector<nearby::sharing::proto::ContactRecord> contacts,
                  uint32_t num_unreachable_contacts_filtered_out) {
     result_ = Result();
     result_->success = true;
@@ -198,21 +204,21 @@ TEST_F(NearbyShareContactDownloaderImplTest, Success) {
   SucceedListContactPeopleRequest(
       /*expected_page_token=*/absl::nullopt,
       CreateListContactPeopleResponse(
-          std::vector<nearbyshare::proto::ContactRecord>(
+          std::vector<nearby::sharing::proto::ContactRecord>(
               TestContactRecordList().begin(),
               TestContactRecordList().begin() + 1),
           kTestPageToken));
   SucceedListContactPeopleRequest(
       /*expected_page_token=*/kTestPageToken,
       CreateListContactPeopleResponse(
-          std::vector<nearbyshare::proto::ContactRecord>(
+          std::vector<nearby::sharing::proto::ContactRecord>(
               TestContactRecordList().begin() + 1,
               TestContactRecordList().end()),
           /*next_page_token=*/absl::nullopt));
 
   // The last two records are filtered out because the are not reachable.
   VerifySuccess(/*expected_contacts=*/
-                std::vector<nearbyshare::proto::ContactRecord>(
+                std::vector<nearby::sharing::proto::ContactRecord>(
                     TestContactRecordList().begin(),
                     TestContactRecordList().begin() + 3),
                 /*expected_num_unreachable_contacts_filtered_out=*/2);
@@ -226,7 +232,7 @@ TEST_F(NearbyShareContactDownloaderImplTest, Failure_ListContactPeople) {
   SucceedListContactPeopleRequest(
       /*expected_page_token=*/absl::nullopt,
       CreateListContactPeopleResponse(
-          std::vector<nearbyshare::proto::ContactRecord>(
+          std::vector<nearby::sharing::proto::ContactRecord>(
               TestContactRecordList().begin(),
               TestContactRecordList().begin() + 1),
           kTestPageToken));
@@ -244,7 +250,7 @@ TEST_F(NearbyShareContactDownloaderImplTest, Timeout_ListContactPeople) {
   SucceedListContactPeopleRequest(
       /*expected_page_token=*/absl::nullopt,
       CreateListContactPeopleResponse(
-          std::vector<nearbyshare::proto::ContactRecord>(
+          std::vector<nearby::sharing::proto::ContactRecord>(
               TestContactRecordList().begin(),
               TestContactRecordList().begin() + 1),
           kTestPageToken));

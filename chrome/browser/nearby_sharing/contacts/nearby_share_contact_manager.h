@@ -12,10 +12,10 @@
 #include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 
 // The Nearby Share contacts manager interfaces with the Nearby server in the
 // following ways:
@@ -36,7 +36,7 @@ class NearbyShareContactManager : public nearby_share::mojom::ContactManager {
    public:
     virtual void OnContactsDownloaded(
         const std::set<std::string>& allowed_contact_ids,
-        const std::vector<nearbyshare::proto::ContactRecord>& contacts,
+        const std::vector<nearby::sharing::proto::ContactRecord>& contacts,
         uint32_t num_unreachable_contacts_filtered_out) = 0;
     virtual void OnContactsUploaded(
         bool did_contacts_change_since_last_upload) = 0;
@@ -88,7 +88,7 @@ class NearbyShareContactManager : public nearby_share::mojom::ContactManager {
 
   void NotifyContactsDownloaded(
       const std::set<std::string>& allowed_contact_ids,
-      const std::vector<nearbyshare::proto::ContactRecord>& contacts,
+      const std::vector<nearby::sharing::proto::ContactRecord>& contacts,
       uint32_t num_unreachable_contacts_filtered_out);
   void NotifyContactsUploaded(bool did_contacts_change_since_last_upload);
 

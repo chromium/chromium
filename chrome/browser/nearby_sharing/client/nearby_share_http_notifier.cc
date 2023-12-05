@@ -17,37 +17,37 @@ void NearbyShareHttpNotifier::RemoveObserver(Observer* observer) {
 }
 
 void NearbyShareHttpNotifier::NotifyOfRequest(
-    const nearbyshare::proto::UpdateDeviceRequest& request) {
+    const nearby::sharing::proto::UpdateDeviceRequest& request) {
   for (auto& observer : observers_)
     observer.OnUpdateDeviceRequest(request);
 }
 
 void NearbyShareHttpNotifier::NotifyOfResponse(
-    const nearbyshare::proto::UpdateDeviceResponse& response) {
+    const nearby::sharing::proto::UpdateDeviceResponse& response) {
   for (auto& observer : observers_)
     observer.OnUpdateDeviceResponse(response);
 }
 
 void NearbyShareHttpNotifier::NotifyOfRequest(
-    const nearbyshare::proto::ListContactPeopleRequest& request) {
+    const nearby::sharing::proto::ListContactPeopleRequest& request) {
   for (auto& observer : observers_)
     observer.OnListContactPeopleRequest(request);
 }
 
 void NearbyShareHttpNotifier::NotifyOfResponse(
-    const nearbyshare::proto::ListContactPeopleResponse& response) {
+    const nearby::sharing::proto::ListContactPeopleResponse& response) {
   for (auto& observer : observers_)
     observer.OnListContactPeopleResponse(response);
 }
 
 void NearbyShareHttpNotifier::NotifyOfRequest(
-    const nearbyshare::proto::ListPublicCertificatesRequest& request) {
+    const nearby::sharing::proto::ListPublicCertificatesRequest& request) {
   for (auto& observer : observers_)
     observer.OnListPublicCertificatesRequest(request);
 }
 
 void NearbyShareHttpNotifier::NotifyOfResponse(
-    const nearbyshare::proto::ListPublicCertificatesResponse& response) {
+    const nearby::sharing::proto::ListPublicCertificatesResponse& response) {
   for (auto& observer : observers_)
     observer.OnListPublicCertificatesResponse(response);
 }

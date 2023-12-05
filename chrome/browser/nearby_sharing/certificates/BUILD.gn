@@ -33,7 +33,6 @@ source_set("certificates") {
     "//chrome/browser/nearby_sharing/contacts",
     "//chrome/browser/nearby_sharing/local_device_data",
     "//chrome/browser/nearby_sharing/logging",
-    "//chrome/browser/nearby_sharing/proto",
     "//chromeos/ash/components/nearby/common/client",
     "//chromeos/ash/components/nearby/common/proto",
     "//chromeos/ash/components/nearby/common/scheduling",
@@ -43,6 +42,9 @@ source_set("certificates") {
     "//components/prefs",
     "//crypto",
     "//device/bluetooth",
+    "//third_party/nearby:certificate_rpc_proto",
+    "//third_party/nearby:encrypted_metadata_proto",
+    "//third_party/nearby:rpc_resources_proto",
   ]
 }
 
@@ -61,13 +63,15 @@ source_set("test_support") {
   deps = [
     ":certificates",
     "//base",
-    "//chrome/browser/nearby_sharing/proto",
     "//chromeos/ash/components/nearby/common/proto",
     "//chromeos/ash/services/nearby/public/mojom",
     "//components/leveldb_proto",
     "//components/prefs",
     "//crypto",
     "//device/bluetooth/public/cpp",
+    "//third_party/nearby:encrypted_metadata_proto",
+    "//third_party/nearby:rpc_resources_proto",
+    "//third_party/nearby:timestamp_proto",
   ]
 }
 
@@ -92,7 +96,6 @@ source_set("unit_tests") {
     "//chrome/browser/nearby_sharing/common:test_support",
     "//chrome/browser/nearby_sharing/contacts:test_support",
     "//chrome/browser/nearby_sharing/local_device_data:test_support",
-    "//chrome/browser/nearby_sharing/proto",
     "//chromeos/ash/components/nearby/common/client",
     "//chromeos/ash/components/nearby/common/proto",
     "//chromeos/ash/components/nearby/common/scheduling:test_support",
@@ -103,5 +106,6 @@ source_set("unit_tests") {
     "//device/bluetooth",
     "//device/bluetooth:mocks",
     "//testing/gtest",
+    "//third_party/nearby:rpc_resources_proto",
   ]
 }

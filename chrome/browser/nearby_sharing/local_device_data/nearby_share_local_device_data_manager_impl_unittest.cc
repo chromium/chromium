@@ -15,7 +15,6 @@
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_device_data_updater.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_device_data_updater_impl.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager_impl.h"
-#include "chrome/browser/nearby_sharing/proto/device_rpc.pb.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/nearby/common/scheduling/fake_nearby_scheduler.h"
 #include "chromeos/ash/components/nearby/common/scheduling/fake_nearby_scheduler_factory.h"
@@ -24,6 +23,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/nearby/sharing/proto/device_rpc.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 
@@ -43,11 +43,11 @@ const char16_t kFakeTooLongGivenName[] = u"this is a 33-byte string in utf-8";
 const char kFakeTooLongTruncatedDeviceName[] =
     "this is a 33-...'s Chrome device";
 
-nearbyshare::proto::UpdateDeviceResponse CreateResponse(
+nearby::sharing::proto::UpdateDeviceResponse CreateResponse(
     const absl::optional<std::string>& full_name,
     const absl::optional<std::string>& icon_url,
     const absl::optional<std::string>& icon_token) {
-  nearbyshare::proto::UpdateDeviceResponse response;
+  nearby::sharing::proto::UpdateDeviceResponse response;
   if (full_name)
     response.set_person_name(*full_name);
 
@@ -60,17 +60,17 @@ nearbyshare::proto::UpdateDeviceResponse CreateResponse(
   return response;
 }
 
-std::vector<nearbyshare::proto::Contact> GetFakeContacts() {
-  nearbyshare::proto::Contact contact1;
-  nearbyshare::proto::Contact contact2;
+std::vector<nearby::sharing::proto::Contact> GetFakeContacts() {
+  nearby::sharing::proto::Contact contact1;
+  nearby::sharing::proto::Contact contact2;
   contact1.mutable_identifier()->set_account_name("account1");
   contact2.mutable_identifier()->set_account_name("account2");
   return {std::move(contact1), std::move(contact2)};
 }
 
-std::vector<nearbyshare::proto::PublicCertificate> GetFakeCertificates() {
-  nearbyshare::proto::PublicCertificate cert1;
-  nearbyshare::proto::PublicCertificate cert2;
+std::vector<nearby::sharing::proto::PublicCertificate> GetFakeCertificates() {
+  nearby::sharing::proto::PublicCertificate cert1;
+  nearby::sharing::proto::PublicCertificate cert2;
   cert1.set_secret_id("id1");
   cert2.set_secret_id("id2");
   return {std::move(cert1), std::move(cert2)};
@@ -141,7 +141,7 @@ class NearbyShareLocalDeviceDataManagerImplTest
   }
 
   void DownloadDeviceData(
-      const absl::optional<nearbyshare::proto::UpdateDeviceResponse>&
+      const absl::optional<nearby::sharing::proto::UpdateDeviceResponse>&
           response) {
     manager_->DownloadDeviceData();
 
@@ -163,7 +163,7 @@ class NearbyShareLocalDeviceDataManagerImplTest
   }
 
   void UploadContacts(
-      const absl::optional<nearbyshare::proto::UpdateDeviceResponse>&
+      const absl::optional<nearby::sharing::proto::UpdateDeviceResponse>&
           response) {
     absl::optional<bool> returned_success;
     manager_->UploadContacts(
@@ -173,7 +173,7 @@ class NearbyShareLocalDeviceDataManagerImplTest
                        &returned_success));
 
     EXPECT_FALSE(updater()->pending_requests().front().certificates);
-    std::vector<nearbyshare::proto::Contact> expected_fake_contacts =
+    std::vector<nearby::sharing::proto::Contact> expected_fake_contacts =
         GetFakeContacts();
     for (size_t i = 0; i < expected_fake_contacts.size(); ++i) {
       EXPECT_EQ(expected_fake_contacts[i].SerializeAsString(),
@@ -190,7 +190,7 @@ class NearbyShareLocalDeviceDataManagerImplTest
   }
 
   void UploadCertificates(
-      const absl::optional<nearbyshare::proto::UpdateDeviceResponse>&
+      const absl::optional<nearby::sharing::proto::UpdateDeviceResponse>&
           response) {
     absl::optional<bool> returned_success;
     manager_->UploadCertificates(
@@ -200,7 +200,7 @@ class NearbyShareLocalDeviceDataManagerImplTest
                        &returned_success));
 
     EXPECT_FALSE(updater()->pending_requests().front().contacts);
-    std::vector<nearbyshare::proto::PublicCertificate>
+    std::vector<nearby::sharing::proto::PublicCertificate>
         expected_fake_certificates = GetFakeCertificates();
     for (size_t i = 0; i < expected_fake_certificates.size(); ++i) {
       EXPECT_EQ(expected_fake_certificates[i].SerializeAsString(),

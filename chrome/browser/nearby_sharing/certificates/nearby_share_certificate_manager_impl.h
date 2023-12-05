@@ -21,10 +21,10 @@
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_private_certificate.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager.h"
-#include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 
 class NearbyShareClient;
 class NearbyShareClientFactory;
@@ -44,11 +44,9 @@ namespace ash::nearby {
 class NearbyScheduler;
 }  // namespace ash::nearby
 
-namespace nearbyshare {
-namespace proto {
+namespace nearby::sharing::proto {
 class ListPublicCertificatesResponse;
-}  // namespace proto
-}  // namespace nearbyshare
+}  // namespace nearby::sharing::proto
 
 // An implementation of the NearbyShareCertificateManager that handles
 //   1) creating, storing, and uploading local device certificates, as well as
@@ -107,7 +105,7 @@ class NearbyShareCertificateManagerImpl
       const base::Clock* clock);
 
   // NearbyShareCertificateManager:
-  std::vector<nearbyshare::proto::PublicCertificate>
+  std::vector<nearby::sharing::proto::PublicCertificate>
   GetPrivateCertificatesAsPublicCertificates(
       nearby_share::mojom::Visibility visibility) override;
   void GetDecryptedPublicCertificate(
@@ -124,7 +122,7 @@ class NearbyShareCertificateManagerImpl
   // NearbyShareContactManager::Observer:
   void OnContactsDownloaded(
       const std::set<std::string>& allowed_contact_ids,
-      const std::vector<nearbyshare::proto::ContactRecord>& contacts,
+      const std::vector<nearby::sharing::proto::ContactRecord>& contacts,
       uint32_t num_unreachable_contacts_filtered_out) override;
   void OnContactsUploaded(bool did_contacts_change_since_last_upload) override;
 
@@ -176,7 +174,7 @@ class NearbyShareCertificateManagerImpl
   void OnListPublicCertificatesSuccess(
       size_t page_number,
       size_t certificate_count,
-      const nearbyshare::proto::ListPublicCertificatesResponse& response);
+      const nearby::sharing::proto::ListPublicCertificatesResponse& response);
   void OnListPublicCertificatesFailure(size_t page_number,
                                        size_t certificate_count,
                                        ash::nearby::NearbyHttpError error);

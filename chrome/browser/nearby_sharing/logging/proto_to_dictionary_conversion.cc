@@ -27,7 +27,7 @@ std::string TruncateString(const std::string& str) {
 }  // namespace
 
 base::Value::Dict ListPublicCertificatesRequestToReadableDictionary(
-    const nearbyshare::proto::ListPublicCertificatesRequest& request) {
+    const nearby::sharing::proto::ListPublicCertificatesRequest& request) {
   base::Value::List secret_ids_list;
   for (const auto& secret_id : request.secret_ids()) {
     secret_ids_list.Append(TruncateString(Encode(secret_id)));
@@ -41,7 +41,7 @@ base::Value::Dict ListPublicCertificatesRequestToReadableDictionary(
 }
 
 base::Value::Dict ListPublicCertificatesResponseToReadableDictionary(
-    const nearbyshare::proto::ListPublicCertificatesResponse& response) {
+    const nearby::sharing::proto::ListPublicCertificatesResponse& response) {
   base::Value::List public_certificates_list;
   for (const auto& public_certificate : response.public_certificates()) {
     public_certificates_list.Append(
@@ -54,7 +54,7 @@ base::Value::Dict ListPublicCertificatesResponseToReadableDictionary(
 }
 
 base::Value::Dict PublicCertificateToReadableDictionary(
-    const nearbyshare::proto::PublicCertificate& certificate) {
+    const nearby::sharing::proto::PublicCertificate& certificate) {
   return base::Value::Dict()
       .Set("secret_id", TruncateString(Encode(certificate.secret_id())))
       .Set("secret_key", TruncateString(Encode(certificate.secret_key())))
@@ -73,21 +73,21 @@ base::Value::Dict PublicCertificateToReadableDictionary(
 }
 
 base::Value::Dict TimestampToReadableDictionary(
-    const ash::nearby::proto::Timestamp& timestamp) {
+    const nearby::sharing::proto::Timestamp& timestamp) {
   return base::Value::Dict()
       .Set("seconds", base::NumberToString(timestamp.seconds()))
       .Set("nanos", base::NumberToString(timestamp.nanos()));
 }
 
 base::Value::Dict ListContactPeopleRequestToReadableDictionary(
-    const nearbyshare::proto::ListContactPeopleRequest& request) {
+    const nearby::sharing::proto::ListContactPeopleRequest& request) {
   return base::Value::Dict()
       .Set("page_size", request.page_size())
       .Set("page_token", request.page_token());
 }
 
 base::Value::Dict ListContactPeopleResponseToReadableDictionary(
-    const nearbyshare::proto::ListContactPeopleResponse& response) {
+    const nearby::sharing::proto::ListContactPeopleResponse& response) {
   base::Value::List contact_records_list;
   for (const auto& contact_record : response.contact_records()) {
     contact_records_list.Append(
@@ -100,7 +100,7 @@ base::Value::Dict ListContactPeopleResponseToReadableDictionary(
 }
 
 base::Value::Dict ContactRecordToReadableDictionary(
-    const nearbyshare::proto::ContactRecord& contact_record) {
+    const nearby::sharing::proto::ContactRecord& contact_record) {
   base::Value::List identifiers_list;
   for (const auto& identifier : contact_record.identifiers()) {
     identifiers_list.Append(IdentifierToReadableDictionary(identifier));
@@ -114,11 +114,10 @@ base::Value::Dict ContactRecordToReadableDictionary(
 }
 
 base::Value::Dict IdentifierToReadableDictionary(
-    const nearbyshare::proto::Contact::Identifier& identifier) {
+    const nearby::sharing::proto::Contact::Identifier& identifier) {
   base::Value::Dict dict;
   if (!identifier.obfuscated_gaia().empty()) {
     dict.Set("identifier", identifier.obfuscated_gaia());
-  } else if (!identifier.phone_number().empty()) {
     dict.Set("identifier", identifier.phone_number());
   } else if (!identifier.account_name().empty()) {
     dict.Set("identifier", identifier.account_name());
@@ -127,14 +126,14 @@ base::Value::Dict IdentifierToReadableDictionary(
 }
 
 base::Value::Dict UpdateDeviceRequestToReadableDictionary(
-    const nearbyshare::proto::UpdateDeviceRequest& request) {
+    const nearby::sharing::proto::UpdateDeviceRequest& request) {
   return base::Value::Dict()
       .Set("device", DeviceToReadableDictionary(request.device()))
       .Set("update_mask", FieldMaskToReadableDictionary(request.update_mask()));
 }
 
 base::Value::Dict DeviceToReadableDictionary(
-    const nearbyshare::proto::Device& device) {
+    const nearby::sharing::proto::Device& device) {
   base::Value::List contacts_list;
   for (const auto& contact : device.contacts()) {
     contacts_list.Append(ContactToReadableDictionary(contact));
@@ -154,14 +153,14 @@ base::Value::Dict DeviceToReadableDictionary(
 }
 
 base::Value::Dict ContactToReadableDictionary(
-    const nearbyshare::proto::Contact& contact) {
+    const nearby::sharing::proto::Contact& contact) {
   return base::Value::Dict()
       .Set("identifier", IdentifierToReadableDictionary(contact.identifier()))
       .Set("is_selected", contact.is_selected());
 }
 
 base::Value::Dict FieldMaskToReadableDictionary(
-    const ash::nearby::proto::FieldMask& mask) {
+    const nearby::sharing::proto::FieldMask& mask) {
   base::Value::List paths_list;
   for (const auto& path : mask.paths()) {
     paths_list.Append(path);
@@ -171,7 +170,7 @@ base::Value::Dict FieldMaskToReadableDictionary(
 }
 
 base::Value::Dict UpdateDeviceResponseToReadableDictionary(
-    const nearbyshare::proto::UpdateDeviceResponse& response) {
+    const nearby::sharing::proto::UpdateDeviceResponse& response) {
   return base::Value::Dict()
       .Set("device", DeviceToReadableDictionary(response.device()))
       .Set("person_name", response.person_name())
@@ -180,7 +179,7 @@ base::Value::Dict UpdateDeviceResponseToReadableDictionary(
 }
 
 base::Value::Dict EncryptedMetadataToReadableDictionary(
-    const nearbyshare::proto::EncryptedMetadata& data) {
+    const nearby::sharing::proto::EncryptedMetadata& data) {
   return base::Value::Dict()
       .Set("device_name", data.device_name())
       .Set("full_name", data.full_name())
