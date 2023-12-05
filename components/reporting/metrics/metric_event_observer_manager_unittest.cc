@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/reporting/metrics/collector_base.h"
@@ -283,6 +284,39 @@ TEST_F(MetricEventObserverManagerTest, EventDrivenTelemetry) {
   EXPECT_TRUE(metric_data_reported.has_event_data());
   EXPECT_THAT(metric_data_reported.event_data().type(), Eq(network_event));
   EXPECT_TRUE(metric_report_queue_->IsEmpty());
+}
+
+TEST_F(MetricEventObserverManagerTest, ReportsEnqueuedEventsToUMA) {
+  settings_->SetReportingEnabled(kEventEnableSettingPath, true);
+
+  auto* const event_observer_ptr = event_observer_.get();
+  MetricEventObserverManager event_manager(
+      std::move(event_observer_), metric_report_queue_.get(), settings_.get(),
+      kEventEnableSettingPath, /*setting_enabled_default_value=*/false,
+      /*collector_pool=*/nullptr);
+  ASSERT_TRUE(event_observer_ptr->GetReportingEnabled());
+
+  static constexpr MetricEventType kEventType = MetricEventType::FATAL_CRASH;
+  MetricData metric_data;
+  metric_data.mutable_event_data()->set_type(kEventType);
+
+  const base::HistogramTester histogram_tester;
+  static constexpr size_t kTotalRecordCount = 2;
+  for (size_t record_count = 1; record_count <= kTotalRecordCount;
+       ++record_count) {
+    event_observer_ptr->RunCallback(metric_data);
+    const MetricData metric_data_reported =
+        metric_report_queue_->GetMetricDataReported();
+    EXPECT_TRUE(metric_data_reported.has_timestamp_ms());
+    ASSERT_TRUE(metric_data_reported.has_event_data());
+    EXPECT_THAT(metric_data_reported.event_data().type(), Eq(kEventType));
+    histogram_tester.ExpectBucketCount(
+        MetricEventObserverManager::kEventMetricEnqueuedMetricsName, kEventType,
+        record_count);
+    histogram_tester.ExpectTotalCount(
+        MetricEventObserverManager::kEventMetricEnqueuedMetricsName,
+        record_count);
+  }
 }
 
 }  // namespace

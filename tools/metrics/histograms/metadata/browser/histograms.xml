@@ -178,6 +178,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Browser.ERP.MetricsReporting.EventMetricEnqueued"
+    enum="EnterpriseCloudReportingMetricEventType" expires_after="2024-12-04">
+  <owner>vshenvi@google.com</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    Recorded when the MetricEventObserverManager enqueues an event metric. It
+    counts occurences of the event type that was extracted from the event
+    payload.
+  </summary>
+</histogram>
+
 <histogram name="Browser.ERP.MetricsReporting.{MetricCollector}NoMetricData"
     enum="EnterpriseCloudReportingDestination" expires_after="2024-11-22">
   <owner>vshenvi@google.com</owner>

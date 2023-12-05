@@ -13553,6 +13553,29 @@ Called by update_document_policy_enum.py.-->
   <int value="30" label="CHROME_BROWSER_ENTERPRISE"/>
 </enum>
 
+<enum name="EnterpriseCloudReportingMetricEventType">
+<!-- This must be kept in sync with
+     //components/reporting/proto/synced/metric_data.proto's
+     MetricEventType. -->
+
+  <int value="0" label="EVENT_TYPE_UNSPECIFIED"/>
+  <int value="1" label="NETWORK_HTTPS_LATENCY_CHANGE"/>
+  <int value="4" label="AUDIO_SEVERE_UNDERRUN"/>
+  <int value="5" label="USB_ADDED"/>
+  <int value="6" label="USB_REMOVED"/>
+  <int value="7" label="APP_INSTALLED"/>
+  <int value="8" label="APP_UNINSTALLED"/>
+  <int value="9" label="APP_LAUNCHED"/>
+  <int value="13" label="WIFI_SIGNAL_STRENGTH_LOW"/>
+  <int value="14" label="WIFI_SIGNAL_STRENGTH_RECOVERED"/>
+  <int value="15" label="NETWORK_STATE_CHANGE"/>
+  <int value="16" label="VPN_CONNECTION_STATE_CHANGE"/>
+  <int value="17" label="FATAL_CRASH"/>
+  <int value="18" label="URL_OPENED"/>
+  <int value="19" label="URL_CLOSED"/>
+  <int value="20" label="KIOSK_HEARTBEAT"/>
+</enum>
+
 <enum name="EnterpriseCloudReportingStatusCode">
   <summary>Defined as Code in components/reporting/util/status.h</summary>
   <int value="0" label="OK"/>

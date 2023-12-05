@@ -448,6 +448,9 @@ message TelemetryData {
   optional KioskHeartbeatTelemetry heartbeat_telemetry = 12;
 }
 
+// Type of event metric being reported.
+// This must be kept in sync with //tools/metrics/histograms/enums.xml's
+// EnterpriseCloudReportingMetricEventType in the Chromium repo.
 enum MetricEventType {
   EVENT_TYPE_UNSPECIFIED = 0;
   NETWORK_HTTPS_LATENCY_CHANGE = 1;
