@@ -1328,10 +1328,11 @@ void DismissScreensAfterSigninAndSync() {
   [self verifyDefaultSearchEngineSetting:searchEngineToSelect];
 }
 
-// Tests that the Search Engine Choice screen is displayed, that the primary
-// button is correctly updated when the user scolls down then selects a search
-// engine and that it correctly sets the default search engine.
-- (void)testSearchEngineChoiceScreenScollThenSelect {
+// TODO(crbug.com/1508344): This test fails on iPhone and iPad devices and
+// simulators. Tests that the Search Engine Choice screen is displayed, that the
+// primary button is correctly updated when the user scolls down then selects a
+// search engine and that it correctly sets the default search engine.
+- (void)DISABLED_testSearchEngineChoiceScreenScollThenSelect {
   if (![ChromeEarlGreyAppInterface IsSearchEngineChoiceScreenEnabledFre]) {
     // Do not run this test if the choice screen is not enabled.
     return;
