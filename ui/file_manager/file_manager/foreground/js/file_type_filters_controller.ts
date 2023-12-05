@@ -21,28 +21,29 @@ import {A11yAnnounce} from './ui/a11y_announce.js';
  * Recents view.
  */
 export class FileTypeFiltersController {
-  private readonly filterTypeToTranslationKeyMap_ = new Map([
-    [
-      chrome.fileManagerPrivate.FileCategory.ALL,
-      'MEDIA_VIEW_ALL_ROOT_LABEL',
-    ],
-    [
-      chrome.fileManagerPrivate.FileCategory.AUDIO,
-      'MEDIA_VIEW_AUDIO_ROOT_LABEL',
-    ],
-    [
-      chrome.fileManagerPrivate.FileCategory.IMAGE,
-      'MEDIA_VIEW_IMAGES_ROOT_LABEL',
-    ],
-    [
-      chrome.fileManagerPrivate.FileCategory.VIDEO,
-      'MEDIA_VIEW_VIDEOS_ROOT_LABEL',
-    ],
-    [
-      chrome.fileManagerPrivate.FileCategory.DOCUMENT,
-      'MEDIA_VIEW_DOCUMENTS_ROOT_LABEL',
-    ],
-  ]);
+  private readonly filterTypeToTranslationKeyMap_ =
+      new Map<chrome.fileManagerPrivate.FileCategory, string>([
+        [
+          chrome.fileManagerPrivate.FileCategory.ALL,
+          'MEDIA_VIEW_ALL_ROOT_LABEL',
+        ],
+        [
+          chrome.fileManagerPrivate.FileCategory.AUDIO,
+          'MEDIA_VIEW_AUDIO_ROOT_LABEL',
+        ],
+        [
+          chrome.fileManagerPrivate.FileCategory.IMAGE,
+          'MEDIA_VIEW_IMAGES_ROOT_LABEL',
+        ],
+        [
+          chrome.fileManagerPrivate.FileCategory.VIDEO,
+          'MEDIA_VIEW_VIDEOS_ROOT_LABEL',
+        ],
+        [
+          chrome.fileManagerPrivate.FileCategory.DOCUMENT,
+          'MEDIA_VIEW_DOCUMENTS_ROOT_LABEL',
+        ],
+      ]);
   private readonly allFilterButton_: CrButtonElement;
   private readonly audioFilterButton_: CrButtonElement;
   private readonly documentFilterButton_: CrButtonElement;
@@ -97,7 +98,7 @@ export class FileTypeFiltersController {
      * The array indices will be recorded in UMA as enum values. The index for
      * each filter type should never be renumbered nor reused in this array.
      */
-    const FileTypeFiltersForUMA = ([
+    const FileTypeFiltersForUMA: chrome.fileManagerPrivate.FileCategory[] = ([
       chrome.fileManagerPrivate.FileCategory.ALL,       // 0
       chrome.fileManagerPrivate.FileCategory.AUDIO,     // 1
       chrome.fileManagerPrivate.FileCategory.IMAGE,     // 2
