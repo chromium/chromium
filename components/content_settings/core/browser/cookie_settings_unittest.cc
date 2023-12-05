@@ -68,6 +68,8 @@ enum TestVariables {
   k3pcdSupportEligible,
   // Whether `net::features::kTpcdMetadataGrants` is enabled.
   kTpcdMetadataGrantsEligible,
+  // Whether `content_settings_features::kHostIndexedMetadataGrants` is enabled
+  kHostIndexedMetadataGrantsEnabled,
 };
 }  // namespace
 
@@ -103,7 +105,8 @@ class CookieSettingsTest
           std::tuple</*kStorageAccessGrantsEligible*/ bool,
                      /*kTopLevelStorageAccessGrantEligible*/ bool,
                      /*k3pcdSupportEligible*/ bool,
-                     /*kTpcdMetadataGrantsEligible*/ bool>> {
+                     /*kTpcdMetadataGrantsEligible*/ bool,
+                     /*kHostIndexedMetadataGrantsEnabled*/ bool>> {
  public:
   CookieSettingsTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
@@ -146,9 +149,15 @@ class CookieSettingsTest
     }
 
     if (Is3pcdMetadataGrantEligible()) {
+      if (IsHostIndexedMetadataGrantsEnabled()) {
+        enabled_features.push_back({features::kHostIndexedMetadataGrants, {}});
+      } else {
+        disabled_features.push_back(features::kHostIndexedMetadataGrants);
+      }
       enabled_features.push_back({net::features::kTpcdMetadataGrants, {}});
     } else {
       disabled_features.push_back(net::features::kTpcdMetadataGrants);
+      disabled_features.push_back(features::kHostIndexedMetadataGrants);
     }
 
     enabled_features.push_back({features::kTpcdHeuristicsGrants,
@@ -210,6 +219,11 @@ class CookieSettingsTest
 
   bool Is3pcdMetadataGrantEligible() const {
     return std::get<TestVariables::kTpcdMetadataGrantsEligible>(GetParam());
+  }
+
+  bool IsHostIndexedMetadataGrantsEnabled() const {
+    return std::get<TestVariables::kHostIndexedMetadataGrantsEnabled>(
+        GetParam());
   }
 
   net::CookieSettingOverrides GetCookieSettingOverrides() const {
@@ -1875,7 +1889,9 @@ std::string CustomTestName(
       << "_3pcdSupportEligible_"
       << std::get<TestVariables::k3pcdSupportEligible>(info.param)
       << "_TpcdMetadataGrantsEligible_"
-      << std::get<TestVariables::kTpcdMetadataGrantsEligible>(info.param);
+      << std::get<TestVariables::kTpcdMetadataGrantsEligible>(info.param)
+      << "_HostIndexedMetadataGrantsEnabled_"
+      << std::get<TestVariables::kHostIndexedMetadataGrantsEnabled>(info.param);
   // clang-format on
   return custom_test_name.str();
 }
@@ -1887,8 +1903,10 @@ INSTANTIATE_TEST_SUITE_P(
 #if BUILDFLAG(IS_IOS)
                      testing::Values(false),
                      testing::Values(false),
+                     testing::Values(false),
                      testing::Values(false)
 #else
+                     testing::Bool(),
                      testing::Bool(),
                      testing::Bool(),
                      testing::Bool()
@@ -1903,8 +1921,10 @@ INSTANTIATE_TEST_SUITE_P(
 #if BUILDFLAG(IS_IOS)
                      testing::Values(false),
                      testing::Values(false),
+                     testing::Values(false),
                      testing::Values(false)
 #else
+                     testing::Bool(),
                      testing::Bool(),
                      testing::Bool(),
                      testing::Bool()

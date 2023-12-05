@@ -38,6 +38,8 @@ static_library("browser") {
     "cookie_settings.h",
     "host_content_settings_map.cc",
     "host_content_settings_map.h",
+    "host_indexed_content_settings.cc",
+    "host_indexed_content_settings.h",
     "private_network_settings.cc",
     "private_network_settings.h",
     "user_modifiable_provider.cc",
@@ -97,6 +99,7 @@ source_set("unit_tests") {
     "content_settings_rule_unittest.cc",
     "content_settings_utils_unittest.cc",
     "cookie_settings_unittest.cc",
+    "host_indexed_content_settings_unittest.cc",
     "website_settings_registry_unittest.cc",
   ]
 

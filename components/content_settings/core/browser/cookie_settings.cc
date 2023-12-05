@@ -14,6 +14,7 @@
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/browser/host_indexed_content_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -111,15 +112,22 @@ bool CookieSettings::IsAllowedByTpcdMetadataGrant(
   }
 
   base::AutoLock lock(tpcd_lock_);
-  const auto& entry = base::ranges::find_if(
-      settings_for_3pcd_metadata_grants_,
-      [&](const ContentSettingPatternSource& entry) {
-        CHECK(IsAllowed(
-            content_settings::ValueToContentSetting(entry.setting_value)));
-        return entry.primary_pattern.Matches(url) &&
-               entry.secondary_pattern.Matches(first_party_url);
-      });
-  return entry != settings_for_3pcd_metadata_grants_.end();
+  if (base::FeatureList::IsEnabled(features::kHostIndexedMetadataGrants)) {
+    DCHECK(
+        FindInHostIndexedContentSettings(
+            url, first_party_url, indexed_settings_for_3pcd_metadata_grants_) ==
+        FindContentSetting(url, first_party_url,
+                           settings_for_3pcd_metadata_grants_))
+        << " Different result in index lookup: " << url.spec() << " "
+        << first_party_url.spec();
+    return FindInHostIndexedContentSettings(
+               url, first_party_url,
+               indexed_settings_for_3pcd_metadata_grants_) ==
+           CONTENT_SETTING_ALLOW;
+  }
+  return FindContentSetting(url, first_party_url,
+                            settings_for_3pcd_metadata_grants_) ==
+         CONTENT_SETTING_ALLOW;
 }
 
 void CookieSettings::SetTemporaryCookieGrantForHeuristic(

@@ -91,5 +91,9 @@ BASE_FEATURE(kContentSettingsPartitioning,
              "ContentSettingsPartitioning",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kHostIndexedMetadataGrants,
+             "HostIndexedMetadataGrants",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace content_settings
