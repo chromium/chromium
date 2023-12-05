@@ -41,8 +41,10 @@ class SeaPenFetcher {
       OnFetchThumbnailsComplete callback) = 0;
 
   // Calls the Manta API to fetch a higher resolution image of the thumbnail.
-  virtual void FetchWallpaper(const ash::SeaPenImage& thumbnail,
-                              OnFetchWallpaperComplete callback) = 0;
+  virtual void FetchWallpaper(
+      const ash::SeaPenImage& thumbnail,
+      const ash::personalization_app::mojom::SeaPenQueryPtr& query,
+      OnFetchWallpaperComplete callback) = 0;
 
  private:
   // Allow delegate to view the constructor function.

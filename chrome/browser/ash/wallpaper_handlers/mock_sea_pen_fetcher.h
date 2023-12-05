@@ -31,6 +31,7 @@ class MockSeaPenFetcher : public SeaPenFetcher {
   MOCK_METHOD(void,
               FetchWallpaper,
               (const ash::SeaPenImage& image,
+               const ash::personalization_app::mojom::SeaPenQueryPtr& query,
                SeaPenFetcher::OnFetchWallpaperComplete callback),
               (override));
 };

@@ -18,7 +18,6 @@ namespace ash {
 struct ASH_PUBLIC_EXPORT SeaPenImage {
   SeaPenImage(std::string jpg_bytes,
               uint32_t id,
-              const std::string& query,
               manta::proto::ImageResolution resolution);
 
   SeaPenImage(SeaPenImage&& other);
@@ -34,9 +33,6 @@ struct ASH_PUBLIC_EXPORT SeaPenImage {
 
   // A unique identifier for this image. Set by the Manta API.
   uint32_t id;
-
-  // The string used to query for this image.
-  std::string query;
 
   // The resolution of this image.
   manta::proto::ImageResolution resolution;

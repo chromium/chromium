@@ -64,6 +64,7 @@ void PersonalizationAppSeaPenProviderImpl::SearchWallpaper(
         "SearchWallpaper exceeded maximum text length");
     return;
   }
+  last_query_ = query.Clone();
   auto* sea_pen_fetcher = GetOrCreateSeaPenFetcher();
   CHECK(sea_pen_fetcher);
   sea_pen_fetcher->FetchThumbnails(
@@ -83,8 +84,11 @@ void PersonalizationAppSeaPenProviderImpl::SelectSeaPenThumbnail(
 
   auto* sea_pen_fetcher = GetOrCreateSeaPenFetcher();
   CHECK(sea_pen_fetcher);
+  // |last_query_| is set when calling SearchWallpaper() to fetch thumbnails. It
+  // should not be null when a thumbnail is selected.
+  CHECK(last_query_);
   sea_pen_fetcher->FetchWallpaper(
-      it->second,
+      it->second, last_query_,
       base::BindOnce(
           &PersonalizationAppSeaPenProviderImpl::OnFetchWallpaperDone,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

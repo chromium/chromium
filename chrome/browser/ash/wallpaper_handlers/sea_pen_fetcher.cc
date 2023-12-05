@@ -371,10 +371,6 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
       return;
     }
 
-    // TODO(b/309679160): Save template query to SeaPenImage
-    auto thumbnail_query =
-        query->is_text_query() ? query->get_text_query() : std::string();
-
     std::vector<ash::SeaPenImage> images;
     for (auto& data : *response->mutable_output_data()) {
       if (!IsValidOutput(data, __func__)) {
@@ -382,20 +378,25 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
       }
       images.emplace_back(
           std::move(*data.mutable_image()->mutable_serialized_bytes()),
-          data.generation_seed(), thumbnail_query, resolution);
+          data.generation_seed(), resolution);
     }
     std::move(pending_fetch_thumbnails_callback_).Run(std::move(images));
   }
 
-  void FetchWallpaper(const ash::SeaPenImage& thumbnail,
-                      OnFetchWallpaperComplete callback) override {
+  void FetchWallpaper(
+      const ash::SeaPenImage& thumbnail,
+      const ash::personalization_app::mojom::SeaPenQueryPtr& query,
+      OnFetchWallpaperComplete callback) override {
     if (!snapper_provider_) {
       LOG(WARNING) << "SnapperProvider not available";
       std::move(callback).Run(absl::nullopt);
       return;
     }
-    CHECK_LE(thumbnail.query.size(),
-             ash::personalization_app::mojom::kMaximumSearchWallpaperTextBytes);
+    if (query->is_text_query()) {
+      CHECK_LE(
+          query->get_text_query().size(),
+          ash::personalization_app::mojom::kMaximumSearchWallpaperTextBytes);
+    }
     weak_ptr_factory_.InvalidateWeakPtrs();
     if (pending_fetch_wallpaper_callback_) {
       std::move(pending_fetch_wallpaper_callback_).Run(absl::nullopt);
@@ -404,20 +405,14 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
     // TODO(b/300129219): Add higher resolution when supported
     auto target_resolution = manta::proto::ImageResolution::RESOLUTION_1024;
 
-    // TODO(b/309679160): Update when ash::SeaPenImage holds SeaPenQuery.
-    ash::personalization_app::mojom::SeaPenQueryPtr thumbnail_query =
-        ash::personalization_app::mojom::SeaPenQuery::NewTextQuery(
-            thumbnail.query);
     snapper_provider_->Call(
-        CreateMantaRequest(thumbnail_query, thumbnail.id, /*num_output=*/1,
+        CreateMantaRequest(query, thumbnail.id, /*num_output=*/1,
                            target_resolution),
         base::BindOnce(&SeaPenFetcherImpl::OnFetchWallpaperDone,
-                       weak_ptr_factory_.GetWeakPtr(), thumbnail.query,
-                       target_resolution));
+                       weak_ptr_factory_.GetWeakPtr(), target_resolution));
   }
 
-  void OnFetchWallpaperDone(const std::string& query,
-                            manta::proto::ImageResolution resolution,
+  void OnFetchWallpaperDone(manta::proto::ImageResolution resolution,
                             std::unique_ptr<manta::proto::Response> response,
                             manta::MantaStatus status) {
     DCHECK(pending_fetch_wallpaper_callback_);
@@ -433,7 +428,7 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
       }
       images.emplace_back(
           std::move(*data.mutable_image()->mutable_serialized_bytes()),
-          data.generation_seed(), query, resolution);
+          data.generation_seed(), resolution);
     }
     if (images.empty()) {
       LOG(WARNING) << "Got empty images";

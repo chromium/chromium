@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PERSONALIZATION_APP_PERSONALIZATION_APP_SEA_PEN_PROVIDER_IMPL_H_
 #define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PERSONALIZATION_APP_PERSONALIZATION_APP_SEA_PEN_PROVIDER_IMPL_H_
 
+#include "ash/webui/personalization_app/mojom/sea_pen.mojom-forward.h"
 #include "ash/webui/personalization_app/mojom/sea_pen.mojom.h"
 #include "ash/webui/personalization_app/personalization_app_sea_pen_provider.h"
 
@@ -95,6 +96,10 @@ class PersonalizationAppSeaPenProviderImpl
   // set. This is checked when the SWA requests thumbnail data or sets an image
   // as the user's background.
   std::set<base::FilePath> recent_sea_pen_images_;
+
+  // The last query made to the sea pen provider. This can be null when
+  // SearchWallpaper() is never called.
+  mojom::SeaPenQueryPtr last_query_;
 
   // Perform a network request to search/upscale available wallpapers.
   // Constructed lazily at the time of the first request and then persists for
