@@ -40,8 +40,6 @@ import java.util.List;
  * a particular tab so it can draw itself onto the GL canvas.
  */
 public class StripLayoutTab implements VirtualView {
-    private static final String TAG = "StripLayoutTab";
-
     /** An observer interface for StripLayoutTab. */
     public interface Observer {
         /** @param visible Whether the StripLayoutTab is visible. */
@@ -66,7 +64,7 @@ public class StripLayoutTab implements VirtualView {
 
     /** A property for animations to use for changing the X offset of the tab. */
     public static final FloatProperty<StripLayoutTab> X_OFFSET =
-            new FloatProperty<StripLayoutTab>("offsetX") {
+            new FloatProperty<>("offsetX") {
                 @Override
                 public void setValue(StripLayoutTab object, float value) {
                     object.setOffsetX(value);
@@ -80,7 +78,7 @@ public class StripLayoutTab implements VirtualView {
 
     /** A property for animations to use for changing the Y offset of the tab. */
     public static final FloatProperty<StripLayoutTab> Y_OFFSET =
-            new FloatProperty<StripLayoutTab>("offsetY") {
+            new FloatProperty<>("offsetY") {
                 @Override
                 public void setValue(StripLayoutTab object, float value) {
                     object.setOffsetY(value);
@@ -94,7 +92,7 @@ public class StripLayoutTab implements VirtualView {
 
     /** A property for animations to use for changing the width of the tab. */
     public static final FloatProperty<StripLayoutTab> WIDTH =
-            new FloatProperty<StripLayoutTab>("width") {
+            new FloatProperty<>("width") {
                 @Override
                 public void setValue(StripLayoutTab object, float value) {
                     object.setWidth(value);
@@ -108,7 +106,7 @@ public class StripLayoutTab implements VirtualView {
 
     /** A property for animations to use for changing the drawX of the tab. */
     public static final FloatProperty<StripLayoutTab> DRAW_X =
-            new FloatProperty<StripLayoutTab>("drawX") {
+            new FloatProperty<>("drawX") {
                 @Override
                 public void setValue(StripLayoutTab object, float value) {
                     object.setDrawX(value);
@@ -122,7 +120,7 @@ public class StripLayoutTab implements VirtualView {
 
     /** A property for animations to use for changing the drawX of the tab. */
     public static final FloatProperty<StripLayoutTab> BOTTOM_MARGIN =
-            new FloatProperty<StripLayoutTab>("bottomMargin") {
+            new FloatProperty<>("bottomMargin") {
                 @Override
                 public void setValue(StripLayoutTab object, float value) {
                     object.setBottomMargin(value);
@@ -136,7 +134,7 @@ public class StripLayoutTab implements VirtualView {
 
     /** A property for animations to use for changing the trailingMargin of the tab. */
     public static final FloatProperty<StripLayoutTab> TRAILING_MARGIN =
-            new FloatProperty<StripLayoutTab>("trailingMargin") {
+            new FloatProperty<>("trailingMargin") {
                 @Override
                 public void setValue(StripLayoutTab object, float value) {
                     object.setTrailingMargin(value);
@@ -150,7 +148,7 @@ public class StripLayoutTab implements VirtualView {
 
     /** A property for animations to use for changing the opacity of the tab. */
     public static final FloatProperty<StripLayoutTab> OPACITY =
-            new FloatProperty<StripLayoutTab>("opacity") {
+            new FloatProperty<>("opacity") {
                 @Override
                 public void setValue(StripLayoutTab object, float value) {
                     object.setContainerOpacity(value);
@@ -174,7 +172,6 @@ public class StripLayoutTab implements VirtualView {
     // Strip Tab Offset Constants
     private static final float TOP_MARGIN_DP = 2.f;
     private static final float FOLIO_CONTENT_OFFSET_Y = 8.f;
-    private static final float DETACHED_CONTENT_OFFSET_Y = 10.f;
     private static final float TOUCH_TARGET_INSET = 16.f;
 
     // Divider Constants
@@ -185,7 +182,7 @@ public class StripLayoutTab implements VirtualView {
     private static final float CLOSE_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY = 0.08f;
     @VisibleForTesting static final float DIVIDER_FOLIO_LIGHT_OPACITY = 0.2f;
 
-    private int mId = Tab.INVALID_TAB_ID;
+    private int mId;
 
     private final Context mContext;
     private final StripLayoutTabDelegate mDelegate;
@@ -237,15 +234,14 @@ public class StripLayoutTab implements VirtualView {
     private ObserverList<Observer> mObservers = new ObserverList<>();
 
     /**
-     * Create a {@link StripLayoutTab} that represents the {@link Tab} with an id of
-     * {@code id}.
+     * Create a {@link StripLayoutTab} that represents the {@link Tab} with an id of {@code id}.
      *
      * @param context An Android context for accessing system resources.
      * @param id The id of the {@link Tab} to visually represent.
      * @param delegate The delegate for additional strip tab functionality.
      * @param loadTrackerCallback The {@link TabLoadTrackerCallback} to be notified of loading state
-     *                            changes.
-     * @param renderHost The {@link LayoutRenderHost}.
+     *     changes.
+     * @param updateHost The {@link LayoutRenderHost}.
      * @param incognito Whether or not this layout tab is incognito.
      */
     public StripLayoutTab(
@@ -262,12 +258,7 @@ public class StripLayoutTab implements VirtualView {
         mUpdateHost = updateHost;
         mIncognito = incognito;
         CompositorOnClickHandler closeClickAction =
-                new CompositorOnClickHandler() {
-                    @Override
-                    public void onClick(long time) {
-                        mDelegate.handleCloseButtonClick(StripLayoutTab.this, time);
-                    }
-                };
+                time -> mDelegate.handleCloseButtonClick(StripLayoutTab.this, time);
         mCloseButton =
                 new TintedCompositorButton(
                         context, 0, 0, closeClickAction, R.drawable.btn_tab_close_normal);
@@ -776,9 +767,7 @@ public class StripLayoutTab implements VirtualView {
      *         if the button can be clicked.
      */
     public boolean checkCloseHitTest(float x, float y) {
-        return mShowingCloseButton
-                ? ((CompositorButton) mCloseButton).checkClickedOrHovered(x, y)
-                : false;
+        return mShowingCloseButton ? mCloseButton.checkClickedOrHovered(x, y) : false;
     }
 
     /**
