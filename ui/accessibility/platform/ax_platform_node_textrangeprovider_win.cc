@@ -1036,6 +1036,13 @@ HRESULT AXPlatformNodeTextRangeProviderWin::ScrollIntoView(BOOL align_to_top) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTRANGE_SCROLLINTOVIEW);
   UIA_VALIDATE_TEXTRANGEPROVIDER_CALL();
 
+  // Return early when we're trying to scroll in a View.
+  // TODO(accessibility): Investigate if Views support scrolling and how to
+  // implement it.
+  if (!GetOwner()->GetDelegate()->IsWebContent()) {
+    return S_OK;
+  }
+
   AXPlatformNode* start_platform_node =
       GetOwner()->GetDelegate()->GetFromTreeIDAndNodeID(
           start()->tree_id(), start()->GetAnchor()->id());

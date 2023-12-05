@@ -74,6 +74,10 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
   std::wstring ComputeListItemNameFromContent() const override;
   // Also in |ViewAccessibility|.
   bool IsChildOfLeaf() const override;
+  ui::AXNodePosition::AXPositionInstance CreatePositionAt(
+      int offset,
+      ax::mojom::TextAffinity affinity =
+          ax::mojom::TextAffinity::kDownstream) const override;
   ui::AXNodePosition::AXPositionInstance CreateTextPositionAt(
       int offset,
       ax::mojom::TextAffinity affinity) const override;
@@ -88,6 +92,12 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
   bool IsFocused() const override;
   bool IsToplevelBrowserWindow() override;
   gfx::Rect GetBoundsRect(
+      const ui::AXCoordinateSystem coordinate_system,
+      const ui::AXClippingBehavior clipping_behavior,
+      ui::AXOffscreenResult* offscreen_result) const override;
+  gfx::Rect GetInnerTextRangeBoundsRect(
+      const int start_offset,
+      const int end_offset,
       const ui::AXCoordinateSystem coordinate_system,
       const ui::AXClippingBehavior clipping_behavior,
       ui::AXOffscreenResult* offscreen_result) const override;
@@ -118,6 +128,10 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
   absl::optional<int> GetSetSize() const override;
 
   bool TableHasColumnOrRowHeaderNodeForTesting() const;
+
+  // Return the bounds of inline text in this node's coordinate system.
+  gfx::RectF GetInlineTextRect(const int start_offset,
+                               const int end_offset) const;
 
   AtomicViewAXTreeManager* GetAtomicViewAXTreeManagerForTesting()
       const override;

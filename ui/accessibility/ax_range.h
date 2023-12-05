@@ -462,20 +462,24 @@ class AXRange {
 
       // For text anchors, we retrieve the bounding rectangles of its text
       // content. For non-text anchors (such as checkboxes, images, etc.), we
-      // want to directly retrieve their bounding rectangles.
+      // want to directly retrieve their bounding rectangles. Since text fields
+      // in Views do not have text nodes as children (the text is in the text
+      // field itself), we need to expose the inner bounds of those nodes too.
       AXOffscreenResult offscreen_result;
-      gfx::Rect current_rect =
-          (current_line_start->GetAnchor()->IsLineBreak() ||
-           current_line_start->IsInTextObject())
-              ? delegate->GetInnerTextRangeBoundsRect(
-                    current_line_start->tree_id(),
-                    current_line_start->anchor_id(),
-                    current_line_start->text_offset(),
-                    current_line_end->text_offset(),
-                    ui::AXClippingBehavior::kClipped, &offscreen_result)
-              : delegate->GetBoundsRect(current_line_start->tree_id(),
-                                        current_line_start->anchor_id(),
-                                        &offscreen_result);
+      gfx::Rect current_rect;
+      if (current_line_start->GetAnchor()->IsLineBreak() ||
+          current_line_start->IsInTextObject() ||
+          (current_line_start->GetAnchor()->IsView() &&
+           current_line_start->IsInTextField())) {
+        current_rect = delegate->GetInnerTextRangeBoundsRect(
+            current_line_start->tree_id(), current_line_start->anchor_id(),
+            current_line_start->text_offset(), current_line_end->text_offset(),
+            ui::AXClippingBehavior::kClipped, &offscreen_result);
+      } else {
+        current_rect = delegate->GetBoundsRect(current_line_start->tree_id(),
+                                               current_line_start->anchor_id(),
+                                               &offscreen_result);
+      }
 
       // If the bounding box of the current range is clipped because it lies
       // outside an ancestor’s bounds, then the bounding box is pushed to the

@@ -107,6 +107,30 @@ gfx::Rect ViewAXPlatformNodeDelegateWin::GetBoundsRect(
   }
 }
 
+gfx::Rect ViewAXPlatformNodeDelegateWin::GetInnerTextRangeBoundsRect(
+    const int start_offset,
+    const int end_offset,
+    const ui::AXCoordinateSystem coordinate_system,
+    const ui::AXClippingBehavior clipping_behavior,
+    ui::AXOffscreenResult* offscreen_result) const {
+  switch (coordinate_system) {
+    case ui::AXCoordinateSystem::kScreenPhysicalPixels:
+      return display::win::ScreenWin::DIPToScreenRect(
+          HWNDForView(view()),
+          ViewAXPlatformNodeDelegate::GetInnerTextRangeBoundsRect(
+              start_offset, end_offset, ui::AXCoordinateSystem::kScreenDIPs,
+              clipping_behavior, offscreen_result));
+    case ui::AXCoordinateSystem::kScreenDIPs:
+      return ViewAXPlatformNodeDelegate::GetInnerTextRangeBoundsRect(
+          start_offset, end_offset, coordinate_system, clipping_behavior,
+          offscreen_result);
+    case ui::AXCoordinateSystem::kRootFrame:
+    case ui::AXCoordinateSystem::kFrame:
+      NOTIMPLEMENTED();
+      return gfx::Rect();
+  }
+}
+
 void ViewAXPlatformNodeDelegateWin::EnsureAtomicViewAXTreeManager() {
   DCHECK(needs_ax_tree_manager());
   if (atomic_view_ax_tree_manager_) {
