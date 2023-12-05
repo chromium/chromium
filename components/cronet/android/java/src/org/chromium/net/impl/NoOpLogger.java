@@ -7,12 +7,17 @@ package org.chromium.net.impl;
 /** Implements a CronetLogger that does nothing. */
 public final class NoOpLogger extends CronetLogger {
     @Override
+    public long generateId() {
+        return 0;
+    }
+
+    @Override
     public void logCronetEngineCreation(
-            int cronetEngineId,
+            long cronetEngineId,
             CronetEngineBuilderInfo engineBuilderInfo,
             CronetVersion version,
             CronetSource source) {}
 
     @Override
-    public void logCronetTrafficInfo(int cronetEngineId, CronetTrafficInfo trafficInfo) {}
+    public void logCronetTrafficInfo(long cronetEngineId, CronetTrafficInfo trafficInfo) {}
 }

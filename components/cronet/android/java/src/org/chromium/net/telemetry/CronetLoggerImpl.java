@@ -17,6 +17,7 @@ import org.chromium.net.impl.CronetLogger;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /** Logger for logging cronet's telemetry */
@@ -51,8 +52,16 @@ public class CronetLoggerImpl extends CronetLogger {
     }
 
     @Override
+    public long generateId() {
+        // Pick an ID at random, but avoid Long.MIN_VALUE, Long.MAX_VALUE, 0 and -1, as these may
+        // be confused with values people may think of as sentinels.
+        long id = ThreadLocalRandom.current().nextLong(Long.MIN_VALUE + 1, Long.MAX_VALUE - 2);
+        return id >= -1 ? id + 2 : id;
+    }
+
+    @Override
     public void logCronetEngineCreation(
-            int cronetEngineId,
+            long cronetEngineId,
             CronetEngineBuilderInfo builder,
             CronetVersion version,
             CronetSource source) {
@@ -64,7 +73,7 @@ public class CronetLoggerImpl extends CronetLogger {
     }
 
     @Override
-    public void logCronetTrafficInfo(int cronetEngineId, CronetTrafficInfo trafficInfo) {
+    public void logCronetTrafficInfo(long cronetEngineId, CronetTrafficInfo trafficInfo) {
         if (trafficInfo == null) {
             return;
         }

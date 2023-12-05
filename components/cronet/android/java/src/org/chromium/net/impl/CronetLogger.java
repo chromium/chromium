@@ -23,27 +23,31 @@ public abstract class CronetLogger {
         CRONET_SOURCE_PLATFORM,
     }
 
+    /** Generates a new unique ID suitable for use as reference for cross-linking log events. */
+    public abstract long generateId();
+
     /**
      * Logs a cronetEngine creation action with the details of the creation.
      *
      * @param cronetEngineId the id of the engine being created.
      * @param engineBuilderInfo the configuration of the CronetEngine being created. See {@link
-     *        CronetEngineBuilderInfo}
+     *     CronetEngineBuilderInfo}
      * @param version the version of cronet used for the engine. See {@link CronetVersion}
      * @param source the source of the cronet provider for the engine. See {@link CronetSource}
      */
     public abstract void logCronetEngineCreation(
-            int cronetEngineId,
+            long cronetEngineId,
             CronetEngineBuilderInfo engineBuilderInfo,
             CronetVersion version,
             CronetSource source);
 
     /**
      * Logs a request/response action.
+     *
      * @param cronetEngineId the id of the engine used for the request
      * @param trafficInfo the associated traffic information. See {@link CronetTrafficInfo}
      */
-    public abstract void logCronetTrafficInfo(int cronetEngineId, CronetTrafficInfo trafficInfo);
+    public abstract void logCronetTrafficInfo(long cronetEngineId, CronetTrafficInfo trafficInfo);
 
     /** Aggregates the information about a CronetEngine configuration. */
     public static class CronetEngineBuilderInfo {

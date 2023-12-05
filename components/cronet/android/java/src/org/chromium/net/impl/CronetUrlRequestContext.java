@@ -173,7 +173,8 @@ public class CronetUrlRequestContext extends CronetEngineBase {
     /** The network handle to be used for requests that do not explicitly specify one. **/
     private long mNetworkHandle = DEFAULT_NETWORK_HANDLE;
 
-    private final int mCronetEngineId;
+    /** The ID of this CronetEngine for CronetLogger purposes. */
+    private final long mLogId;
 
     /** Whether Cronet Telemetry should be enabled or not. */
     private final boolean mEnableTelemetry;
@@ -181,8 +182,8 @@ public class CronetUrlRequestContext extends CronetEngineBase {
     /** The logger to be used for logging. */
     private final CronetLogger mLogger;
 
-    int getCronetEngineId() {
-        return mCronetEngineId;
+    long getLogId() {
+        return mLogId;
     }
 
     CronetLogger getCronetLogger() {
@@ -195,7 +196,6 @@ public class CronetUrlRequestContext extends CronetEngineBase {
 
     @UsedByReflection("CronetEngine.java")
     public CronetUrlRequestContext(final CronetEngineBuilderImpl builder) {
-        mCronetEngineId = hashCode();
         mRttListenerList.disableThreadAsserts();
         mThroughputListenerList.disableThreadAsserts();
         mNetworkQualityEstimatorEnabled = builder.networkQualityEstimatorEnabled();
@@ -229,9 +229,10 @@ public class CronetUrlRequestContext extends CronetEngineBase {
         } else {
             mLogger = CronetLoggerFactory.createNoOpLogger();
         }
+        mLogId = mLogger.generateId();
         try {
             mLogger.logCronetEngineCreation(
-                    getCronetEngineId(),
+                    getLogId(),
                     new CronetEngineBuilderInfo(builder),
                     buildCronetVersion(),
                     getCronetSource());

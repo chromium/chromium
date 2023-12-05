@@ -4,6 +4,7 @@
 
 package org.chromium.net.telemetry;
 
+import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.TruthJUnit.assume;
 
 import static org.mockito.Mockito.never;
@@ -55,6 +56,15 @@ public final class CronetLoggerImplTest {
     @Before
     public void setUp() {
         mCronetLoggerImpl = spy(new CronetLoggerImpl(1));
+    }
+
+    @Test
+    public void testGenerateId() {
+        long id = mCronetLoggerImpl.generateId();
+        assertThat(id).isNotEqualTo(Long.MIN_VALUE);
+        assertThat(id).isNotEqualTo(Long.MAX_VALUE);
+        assertThat(id).isNotEqualTo(-1);
+        assertThat(id).isNotEqualTo(0);
     }
 
     @Test
