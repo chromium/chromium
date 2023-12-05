@@ -169,12 +169,13 @@ export function testSplice() {
   });
 
   fileListModel.addEventListener('permuted', event => {
-    // @ts-ignore: error TS2339: Property 'permutation' does not exist on type
-    // 'Event'.
-    assertArrayEquals(event.permutation, [0, 2, -1, 4]);
-    // @ts-ignore: error TS2339: Property 'newLength' does not exist on type
-    // 'Event'.
-    assertEquals(event.newLength, 5);
+    const
+        permutedEventDetail = /**
+                                 @type {import('../../definitions/array_data_model_events.js').ArrayDataModelPermutationEvent}
+                                   */
+        (event).detail;
+    assertArrayEquals(permutedEventDetail.permutation, [0, 2, -1, 4]);
+    assertEquals(permutedEventDetail.newLength, 5);
   });
 
   fileListModel.splice(
@@ -198,12 +199,13 @@ export function testSpliceWithoutSortStatus() {
   });
 
   fileListModel.addEventListener('permuted', event => {
-    // @ts-ignore: error TS2339: Property 'permutation' does not exist on type
-    // 'Event'.
-    assertArrayEquals(event.permutation, [0, 1, -1, 4]);
-    // @ts-ignore: error TS2339: Property 'newLength' does not exist on type
-    // 'Event'.
-    assertEquals(event.newLength, 5);
+    const
+        permutedEventDetail = /**
+                                 @type {import('../../definitions/array_data_model_events.js').ArrayDataModelPermutationEvent}
+                                   */
+        (event).detail;
+    assertArrayEquals(permutedEventDetail.permutation, [0, 1, -1, 4]);
+    assertEquals(permutedEventDetail.newLength, 5);
   });
 
   fileListModel.splice(
@@ -232,12 +234,13 @@ export function testSpliceWithoutAddingNewItems() {
   });
 
   fileListModel.addEventListener('permuted', event => {
-    // @ts-ignore: error TS2339: Property 'permutation' does not exist on type
-    // 'Event'.
-    assertArrayEquals(event.permutation, [0, 1, -1, 2]);
-    // @ts-ignore: error TS2339: Property 'newLength' does not exist on type
-    // 'Event'.
-    assertEquals(event.newLength, 3);
+    const
+        permutedEventDetail = /**
+                                 @type {import('../../definitions/array_data_model_events.js').ArrayDataModelPermutationEvent}
+                                   */
+        (event).detail;
+    assertArrayEquals(permutedEventDetail.permutation, [0, 1, -1, 2]);
+    assertEquals(permutedEventDetail.newLength, 3);
   });
 
   fileListModel.splice(2, 1);
@@ -260,12 +263,13 @@ export function testSpliceWithoutDeletingItems() {
   });
 
   fileListModel.addEventListener('permuted', event => {
-    // @ts-ignore: error TS2339: Property 'permutation' does not exist on type
-    // 'Event'.
-    assertArrayEquals(event.permutation, [0, 2, 3, 5]);
-    // @ts-ignore: error TS2339: Property 'newLength' does not exist on type
-    // 'Event'.
-    assertEquals(event.newLength, 6);
+    const
+        permutedEventDetail = /**
+                                 @type {import('../../definitions/array_data_model_events.js').ArrayDataModelPermutationEvent}
+                                   */
+        (event).detail;
+    assertArrayEquals(permutedEventDetail.permutation, [0, 2, 3, 5]);
+    assertEquals(permutedEventDetail.newLength, 6);
   });
 
   fileListModel.splice(

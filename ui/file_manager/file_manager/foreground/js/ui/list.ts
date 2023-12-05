@@ -8,7 +8,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {ArrayDataModel} from '../../../common/js/array_data_model.js';
 import {boolAttrSetter, decorate, PropertyChangeEvent} from '../../../common/js/cr_ui.js';
 import {isNullOrUndefined} from '../../../common/js/util.js';
-import type {ArrayDataModelChangeEvent} from '../../../definitions/array_data_model_events.js';
+import type {ArrayDataModelChangeEvent, ArrayDataModelPermutationEvent} from '../../../definitions/array_data_model_events.js';
 
 import {createListItem, ListItem} from './list_item.js';
 import {ListSelectionController} from './list_selection_controller.js';
@@ -29,13 +29,6 @@ interface Size {
 }
 
 type EventHandler = (event: Event) => void;
-
-// TODO: Move ArrayDataModel event types when array_data_model is converted to
-// TS.
-type ArrayDataModelPermutationEvent = Event&{
-  permutation: number[],
-  newLength: number,
-};
 
 /**
  * Whether a mouse event is inside the element viewport. This will return
@@ -155,7 +148,7 @@ export class List extends HTMLUListElement {
 
     if (!this.boundHandleDataModelPermuted_) {
       this.boundHandleDataModelPermuted_ =
-          this.handleDataModelPermuted_.bind(this);
+          this.handleDataModelPermuted_.bind(this) as EventListener;
       this.boundHandleDataModelChange_ =
           this.handleDataModelChange_.bind(this) as EventListener;
     }
@@ -712,12 +705,11 @@ export class List extends HTMLUListElement {
    * model adjustments.
    * @param event The 'permuted' event.
    */
-  private handleDataModelPermuted_(event: Event) {
-    const e = event as ArrayDataModelPermutationEvent;
+  private handleDataModelPermuted_(event: ArrayDataModelPermutationEvent) {
     const newCachedItems: Record<number, ListItem> = {};
     for (const index in this.cachedItems_) {
-      if (e.permutation[index] !== -1) {
-        const newIndex = e.permutation[index]!;
+      if (event.detail.permutation[index] !== -1) {
+        const newIndex = event.detail.permutation[index]!;
         newCachedItems[newIndex] = this.cachedItems_[index]!;
         newCachedItems[newIndex]!.listIndex = newIndex;
       }
@@ -727,8 +719,8 @@ export class List extends HTMLUListElement {
 
     const newCachedItemHeights: Record<number, number> = {};
     for (const index in this.cachedItemHeights_) {
-      if (e.permutation[index] !== -1) {
-        newCachedItemHeights[e.permutation[index]!] =
+      if (event.detail.permutation[index] !== -1) {
+        newCachedItemHeights[event.detail.permutation[index]!] =
             this.cachedItemHeights_[index]!;
       }
     }
@@ -738,8 +730,8 @@ export class List extends HTMLUListElement {
 
     assert(this.selectionModel);
     const sm = this.selectionModel;
-    sm.adjustLength(e.newLength);
-    sm.adjustToReordering(e.permutation);
+    sm.adjustLength(event.detail.newLength);
+    sm.adjustToReordering(event.detail.permutation);
 
     this.endBatchUpdates();
   }

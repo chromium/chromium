@@ -65,9 +65,12 @@ export function testPermutation() {
     const m = new ArrayDataModel(sourceArray.slice());
     let permutation;
     m.addEventListener('permuted', function(event) {
-      // @ts-ignore: error TS2339: Property 'permutation' does not exist on type
-      // 'Event'.
-      permutation = event.permutation;
+      const
+          permutedEventDetail = /**
+                                   @type {import('../../definitions/array_data_model_events.js').ArrayDataModelPermutationEvent}
+                                     */
+          (event).detail;
+      permutation = permutedEventDetail.permutation;
     });
     m.splice.apply(m, spliceArgs);
     let deleted = 0;
@@ -115,9 +118,12 @@ export function testReplaceItem() {
   let permutation = null;
   let changeIndex;
   m.addEventListener('permuted', function(event) {
-    // @ts-ignore: error TS2339: Property 'permutation' does not exist on type
-    // 'Event'.
-    permutation = event.permutation;
+    const
+        permutedEventDetail = /**
+                                 @type {import('../../definitions/array_data_model_events.js').ArrayDataModelPermutationEvent}
+                                   */
+        (event).detail;
+    permutation = permutedEventDetail.permutation;
   });
   m.addEventListener('change', function(event) {
     const

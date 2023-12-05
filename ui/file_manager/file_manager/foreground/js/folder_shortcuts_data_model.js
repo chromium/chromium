@@ -524,13 +524,8 @@ export class FolderShortcutsDataModel extends EventTarget {
    * @param {Array<number>} permutation Permutation array.
    */
   firePermutedEvent_(permutation) {
-    const permutedEvent = new Event('permuted');
-    // @ts-ignore: error TS2339: Property 'newLength' does not exist on type
-    // 'Event'.
-    permutedEvent.newLength = this.length;
-    // @ts-ignore: error TS2339: Property 'permutation' does not exist on type
-    // 'Event'.
-    permutedEvent.permutation = permutation;
+    const permutedEvent = new CustomEvent(
+        'permuted', {detail: {newLength: this.length, permutation}});
     this.dispatchEvent(permutedEvent);
 
     // Note: This model only fires 'permuted' event, because:

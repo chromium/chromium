@@ -434,13 +434,8 @@ export class ArrayDataModel extends EventTarget {
   // @ts-ignore: error TS7006: Parameter 'permutation' implicitly has an 'any'
   // type.
   dispatchPermutedEvent_(permutation) {
-    const e = new Event('permuted');
-    // @ts-ignore: error TS2339: Property 'permutation' does not exist on type
-    // 'Event'.
-    e.permutation = permutation;
-    // @ts-ignore: error TS2339: Property 'newLength' does not exist on type
-    // 'Event'.
-    e.newLength = this.length;
+    const e = new CustomEvent(
+        'permuted', {detail: {permutation, newLength: this.length}});
     this.dispatchEvent(e);
   }
 

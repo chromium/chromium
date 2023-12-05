@@ -41,7 +41,7 @@ export class AndroidAppListModel extends EventTarget {
     chrome.fileManagerPrivate.getAndroidPickerApps(extensions, apps => {
       this.apps_ = apps;
       getStore().dispatch(addAndroidApps({apps}));
-      this.dispatchEvent(new Event('permuted'));
+      this.dispatchEvent(new CustomEvent('permuted'));
     });
   }
 

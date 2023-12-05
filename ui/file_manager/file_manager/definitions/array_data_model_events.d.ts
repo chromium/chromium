@@ -11,3 +11,8 @@ export type ArrayDataModelSpliceEvent = CustomEvent<{
 export type ArrayDataModelChangeEvent = CustomEvent<{
   index: number,
 }>;
+
+export type ArrayDataModelPermutationEvent = CustomEvent<{
+  permutation: number[],
+  newLength: number,
+}>;
