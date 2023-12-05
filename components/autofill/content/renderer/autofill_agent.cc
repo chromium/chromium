@@ -710,13 +710,11 @@ void AutofillAgent::ApplyFormAction(mojom::ActionType action_type,
             : form_util::ExtractFormData(updated_form_element,
                                          field_data_manager());
 
-    if (auto* autofill_driver = unsafe_autofill_driver()) {
-      autofill_driver->DidFillAutofillFormData(form,
-                                               AutofillTickClock::NowTicks());
-    }
     if (auto* autofill_driver = unsafe_autofill_driver();
         autofill_driver && updated_form_data) {
       CHECK_EQ(action_persistence, mojom::ActionPersistence::kFill);
+      autofill_driver->DidFillAutofillFormData(*updated_form_data,
+                                               AutofillTickClock::NowTicks());
       autofill_driver->FormsSeen({std::move(*updated_form_data)},
                                  /*removed_forms=*/{});
     }
