@@ -134,7 +134,7 @@ void RenderingTest::SetUp() {
   UpdateAllLifecyclePhasesForTest();
 
   // Allow ASSERT_DEATH and EXPECT_DEATH for multiple threads.
-  testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 }
 
 void RenderingTest::TearDown() {

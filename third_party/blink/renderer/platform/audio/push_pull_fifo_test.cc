@@ -25,7 +25,7 @@ namespace {
 TEST(PushPullFIFOBasicTest, BasicTests) {
   // This suppresses the multi-thread warning for GTest. Potently it increases
   // the test execution time, but this specific test is very short and simple.
-  testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 
   const unsigned kRenderQuantumFrames = 128;
 
