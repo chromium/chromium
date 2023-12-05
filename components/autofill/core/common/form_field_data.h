@@ -85,7 +85,7 @@ class Section {
     HtmlFieldMode mode = HtmlFieldMode::kNone;
   };
 
-  using Default = base::StrongAlias<struct DefaultTag, absl::monostate>;
+  using Default = absl::monostate;
 
   struct FieldIdentifier {
     FieldIdentifier() = default;

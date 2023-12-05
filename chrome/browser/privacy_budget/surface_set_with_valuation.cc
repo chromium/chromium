@@ -13,11 +13,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 
-namespace base {
-template <typename TagType, typename UnderlyingType>
-class StrongAlias;
-}  // namespace base
-
 static_assert(std::is_same<RepresentativeSurface,
                            SurfaceSetWithValuation::key_type>::value,
               "");

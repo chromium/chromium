@@ -7,10 +7,11 @@
 
 #include <stdint.h>
 
+#include <algorithm>
+#include <compare>
 #include <cstddef>
 #include <functional>
 #include <tuple>
-#include <algorithm>
 
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
@@ -402,6 +403,11 @@ class IdentifiableSurface {
 
   constexpr bool IsValid() const { return metric_hash_ != kInvalidHash; }
 
+  friend constexpr auto operator<=>(const IdentifiableSurface& lhs,
+                                    const IdentifiableSurface& rhs) = default;
+  friend constexpr bool operator==(const IdentifiableSurface& lhs,
+                                   const IdentifiableSurface& rhs) = default;
+
  private:
   constexpr explicit IdentifiableSurface(uint64_t metric_hash)
       : metric_hash_(metric_hash) {}
@@ -431,48 +437,10 @@ class IdentifiableSurface {
   uint64_t metric_hash_;
 };
 
-constexpr bool operator<(const IdentifiableSurface& left,
-                         const IdentifiableSurface& right) {
-  return left.ToUkmMetricHash() < right.ToUkmMetricHash();
-}
-
-constexpr bool operator<=(const IdentifiableSurface& left,
-                          const IdentifiableSurface& right) {
-  return left.ToUkmMetricHash() <= right.ToUkmMetricHash();
-}
-
-constexpr bool operator>(const IdentifiableSurface& left,
-                         const IdentifiableSurface& right) {
-  return left.ToUkmMetricHash() > right.ToUkmMetricHash();
-}
-
-constexpr bool operator>=(const IdentifiableSurface& left,
-                          const IdentifiableSurface& right) {
-  return left.ToUkmMetricHash() >= right.ToUkmMetricHash();
-}
-
-constexpr bool operator==(const IdentifiableSurface& left,
-                          const IdentifiableSurface& right) {
-  return left.ToUkmMetricHash() == right.ToUkmMetricHash();
-}
-
-constexpr bool operator!=(const IdentifiableSurface& left,
-                          const IdentifiableSurface& right) {
-  return left.ToUkmMetricHash() != right.ToUkmMetricHash();
-}
-
 // Hash function compatible with std::hash.
 struct IdentifiableSurfaceHash {
   size_t operator()(const IdentifiableSurface& s) const {
     return std::hash<uint64_t>{}(s.ToUkmMetricHash());
-  }
-};
-
-// Compare function compatible with std::less
-struct IdentifiableSurfaceCompLess {
-  bool operator()(const IdentifiableSurface& lhs,
-                  const IdentifiableSurface& rhs) const {
-    return lhs.ToUkmMetricHash() < rhs.ToUkmMetricHash();
   }
 };
 

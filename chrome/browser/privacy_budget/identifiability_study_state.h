@@ -143,9 +143,7 @@ class IdentifiabilityStudyState {
   friend class test_utils::InspectableIdentifiabilityStudyState;
 
   using SurfaceSelectionRateMap =
-      base::flat_map<blink::IdentifiableSurface,
-                     int,
-                     blink::IdentifiableSurfaceCompLess>;
+      base::flat_map<blink::IdentifiableSurface, int>;
   using TypeSelectionRateMap =
       base::flat_map<blink::IdentifiableSurface::Type, int>;
 
