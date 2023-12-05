@@ -3,8 +3,7 @@ import './other1.css.js';
 import './other2.css.js';
 
 const template = html`
-<custom-style>
-  <style>
+<style>
 
 html {
   --my-var: 9px;
@@ -15,7 +14,6 @@ html {
     --my-var: 10px;
   }
 }
-  </style>
-</custom-style>
+</style>
 `;
 document.head.appendChild(template.content);

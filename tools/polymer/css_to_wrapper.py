@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 # Generetes a wrapper TS file around a source CSS file holding a Polymer style
-# module, or a Polymer <custom-style> holding CSS variable. Any metadata
+# module, or a Polymer <style> holding CSS variable. Any metadata
 # necessary for populating the wrapper file are provided in the form of special
 # CSS comments. The ID of a style module is inferred from the filename, for
 # example foo_style.css will be held in a module with ID 'foo-style'.
@@ -47,11 +47,9 @@ _VARS_TEMPLATE = """import {html} from \'%(scheme)s//resources/polymer/v3_0/poly
 %(imports)s
 
 const template = html`
-<custom-style>
-  <style>
+<style>
 %(content)s
-  </style>
-</custom-style>
+</style>
 `;
 document.head.appendChild(template.content);"""
 
