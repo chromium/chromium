@@ -4,7 +4,9 @@
 
 #include "components/url_formatter/spoof_checks/idn_spoof_checker.h"
 
-#include "base/bits.h"
+#include <bit>
+#include <cstdint>
+
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
@@ -39,9 +41,8 @@ class TopDomainPreloadDecoder : public net::extras::PreloadDecoder {
                  bool* out_found) override {
     // Make sure the assigned bit length is enough to encode all SkeletonType
     // values.
-    DCHECK_EQ(
-        kSkeletonTypeBitLength,
-        base::bits::Log2Floor(url_formatter::SkeletonType::kMaxValue) + 1);
+    DCHECK_EQ(kSkeletonTypeBitLength,
+              std::bit_width<uint32_t>(url_formatter::SkeletonType::kMaxValue));
 
     bool is_same_skeleton;
 
