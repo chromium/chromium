@@ -144,6 +144,15 @@ WallpaperSearchHandler::~WallpaperSearchHandler() {
         image_quality->set_selected(true);
       }
     }
+    // Upload all the log entries once you set the final request.
+    auto* optimization_guide_keyed_service =
+        OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
+    if (optimization_guide_keyed_service) {
+      for (auto& entry : log_entries_) {
+        optimization_guide_keyed_service->UploadModelQualityLogs(
+            std::move(entry));
+      }
+    }
   }
 }
 
