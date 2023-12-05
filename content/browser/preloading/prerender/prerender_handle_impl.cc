@@ -8,6 +8,7 @@
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/public/browser/preloading_trigger_type.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -34,7 +35,7 @@ PrerenderHandleImpl::~PrerenderHandleImpl() {
   }
 }
 
-GURL PrerenderHandleImpl::GetInitialPrerenderingUrl() {
+const GURL& PrerenderHandleImpl::GetInitialPrerenderingUrl() const {
   return prerendering_url_;
 }
 
