@@ -2877,6 +2877,7 @@ if (!is_android) {
     if (enable_compose) {
       sources += [
         "../browser/compose/compose_dialog_browsertest.cc",
+        "../browser/compose/compose_enabling_browsertest.cc",
         "../browser/compose/compose_inner_text_browsertest.cc",
       ]
 
