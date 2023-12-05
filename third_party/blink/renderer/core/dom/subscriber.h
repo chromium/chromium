@@ -18,7 +18,6 @@ namespace blink {
 
 class AbortController;
 class Observable;
-class Observer;
 class ScriptState;
 class SubscribeOptions;
 class V8ObserverCallback;
@@ -32,7 +31,9 @@ class CORE_EXPORT Subscriber final : public ScriptWrappable,
  public:
   Subscriber(base::PassKey<Observable>,
              ScriptState*,
-             Observer*,
+             V8ObserverCallback* next,
+             V8ObserverCompleteCallback* complete,
+             V8ObserverCallback* error,
              SubscribeOptions*);
 
   // API methods.

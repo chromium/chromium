@@ -18,9 +18,11 @@ dictionary SubscribeOptions {
   AbortSignal signal;
 };
 
+typedef (ObserverCallback or Observer) ObserverUnion;
+
 [Exposed=(Window,Worker), RuntimeEnabled=ObservableAPI]
 interface Observable {
     [CallWith=ScriptState, MeasureAs=ObservableConstructor] constructor(SubscribeCallback callback);
-    [CallWith=ScriptState] void subscribe(optional Observer observer = {}, optional SubscribeOptions options = {});
+    [CallWith=ScriptState] void subscribe(optional ObserverUnion observer = {}, optional SubscribeOptions options = {});
 };
 

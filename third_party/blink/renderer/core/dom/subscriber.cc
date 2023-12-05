@@ -59,12 +59,14 @@ class Subscriber::CloseSubscriptionAlgorithm final
 
 Subscriber::Subscriber(base::PassKey<Observable>,
                        ScriptState* script_state,
-                       Observer* observer,
+                       V8ObserverCallback* next,
+                       V8ObserverCompleteCallback* complete,
+                       V8ObserverCallback* error,
                        SubscribeOptions* options)
     : ExecutionContextClient(ExecutionContext::From(script_state)),
-      next_(observer->hasNext() ? observer->next() : nullptr),
-      complete_(observer->hasComplete() ? observer->complete() : nullptr),
-      error_(observer->hasError() ? observer->error() : nullptr),
+      next_(next),
+      complete_(complete),
+      error_(error),
       complete_or_error_controller_(AbortController::Create(script_state)) {
   // Initialize `signal_` as a dependent signal on based on two input signals:
   //   1. [Possibly null]: The input `Observer#signal` member, if it exists.

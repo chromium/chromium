@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/core/dom/observable.h"
 
 #include "base/types/pass_key.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_observer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_subscribe_callback.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_observer_observercallback.h"
 #include "third_party/blink/renderer/core/dom/subscriber.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -32,7 +34,7 @@ Observable::Observable(ExecutionContext* execution_context,
 }
 
 void Observable::subscribe(ScriptState* script_state,
-                           Observer* observer,
+                           V8UnionObserverOrObserverCallback* observer_union,
                            SubscribeOptions* options) {
   // Cannot subscribe to an Observable that was constructed in a detached
   // context, because this might involve reporting an exception with the global,
@@ -44,8 +46,24 @@ void Observable::subscribe(ScriptState* script_state,
 
   // Build and initialize a `Subscriber` with a dictionary of `Observer`
   // callbacks.
-  Subscriber* subscriber = MakeGarbageCollected<Subscriber>(
-      PassKey(), script_state, observer, options);
+  Subscriber* subscriber = nullptr;
+  switch (observer_union->GetContentType()) {
+    case V8UnionObserverOrObserverCallback::ContentType::kObserver: {
+      Observer* observer = observer_union->GetAsObserver();
+      subscriber = MakeGarbageCollected<Subscriber>(
+          PassKey(), script_state,
+          observer->hasNext() ? observer->next() : nullptr,
+          observer->hasComplete() ? observer->complete() : nullptr,
+          observer->hasError() ? observer->error() : nullptr, options);
+      break;
+    }
+    case V8UnionObserverOrObserverCallback::ContentType::kObserverCallback:
+      subscriber = MakeGarbageCollected<Subscriber>(
+          PassKey(), script_state,
+          /*next=*/observer_union->GetAsObserverCallback(),
+          /*complete=*/nullptr, /*error=*/nullptr, options);
+      break;
+  }
 
   DCHECK(subscribe_callback_);
   // Ordinarily we'd just invoke `subscribe_callback_` with

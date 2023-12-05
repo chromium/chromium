@@ -12,10 +12,10 @@
 namespace blink {
 
 class ExecutionContext;
-class Observer;
 class ScriptState;
 class SubscribeOptions;
 class V8SubscribeCallback;
+class V8UnionObserverOrObserverCallback;
 
 // Implementation of the DOM `Observable` API. See
 // https://github.com/WICG/observable and
@@ -31,7 +31,9 @@ class CORE_EXPORT Observable final : public ScriptWrappable,
   Observable(ExecutionContext*, V8SubscribeCallback*);
 
   // API methods:
-  void subscribe(ScriptState*, Observer*, SubscribeOptions*);
+  void subscribe(ScriptState*,
+                 V8UnionObserverOrObserverCallback*,
+                 SubscribeOptions*);
 
   void Trace(Visitor*) const override;
 
