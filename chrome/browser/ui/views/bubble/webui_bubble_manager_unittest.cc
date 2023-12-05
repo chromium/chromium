@@ -29,7 +29,9 @@ WEB_UI_CONTROLLER_TYPE_IMPL(TestWebUIController)
 
 template <>
 class BubbleContentsWrapperT<TestWebUIController>
-    : public BubbleContentsWrapper {
+    : public BubbleContentsWrapper,
+      public base::SupportsWeakPtr<
+          BubbleContentsWrapperT<TestWebUIController>> {
  public:
   BubbleContentsWrapperT(const GURL& webui_url,
                          content::BrowserContext* browser_context,
@@ -42,6 +44,9 @@ class BubbleContentsWrapperT<TestWebUIController>
                               webui_resizes_host,
                               esc_closes_ui) {}
   void ReloadWebContents() override {}
+  base::WeakPtr<BubbleContentsWrapper> GetWeakPtr() override {
+    return AsWeakPtr();
+  }
 };
 
 class WebUIBubbleManagerTest : public ChromeViewsTestBase {

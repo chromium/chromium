@@ -46,7 +46,7 @@ class MakoRewriteView : public WebUIBubbleDialogView {
   METADATA_HEADER(MakoRewriteView);
   MakoRewriteView(BubbleContentsWrapper* contents_wrapper,
                   const gfx::Rect& caret_bounds)
-      : WebUIBubbleDialogView(nullptr, contents_wrapper),
+      : WebUIBubbleDialogView(nullptr, contents_wrapper->GetWeakPtr()),
         caret_bounds_(caret_bounds) {
     set_has_parent(false);
     set_corner_radius(kMakoCornerRadius);
@@ -117,7 +117,7 @@ class MakoConsentView : public WebUIBubbleDialogView {
   METADATA_HEADER(MakoConsentView);
   MakoConsentView(BubbleContentsWrapper* contents_wrapper,
                   const gfx::Rect& caret_bounds)
-      : WebUIBubbleDialogView(nullptr, contents_wrapper) {
+      : WebUIBubbleDialogView(nullptr, contents_wrapper->GetWeakPtr()) {
     set_has_parent(false);
     set_corner_radius(kMakoCornerRadius);
     SetModalType(ui::MODAL_TYPE_SYSTEM);

@@ -107,6 +107,9 @@ class BubbleContentsWrapper : public content::WebContentsDelegate,
   // Reloads the WebContents hosting the WebUI.
   virtual void ReloadWebContents() = 0;
 
+  // Gets weak ptr to prevent UAF.
+  virtual base::WeakPtr<BubbleContentsWrapper> GetWeakPtr() = 0;
+
   base::WeakPtr<BubbleContentsWrapper::Host> GetHost();
   void SetHost(base::WeakPtr<BubbleContentsWrapper::Host> host);
 
@@ -162,6 +165,10 @@ class BubbleContentsWrapperT : public BubbleContentsWrapper {
     return webui && webui->GetController()
                ? webui->GetController()->template GetAs<T>()
                : nullptr;
+  }
+
+  base::WeakPtr<BubbleContentsWrapper> GetWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
   }
 
  private:

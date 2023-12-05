@@ -16,7 +16,7 @@ ComposeDialogView::ComposeDialogView(
     const gfx::Rect& anchor_bounds,
     views::BubbleBorder::Arrow anchor_position)
     : WebUIBubbleDialogView(anchor_view,
-                            bubble_wrapper.get(),
+                            bubble_wrapper->GetWeakPtr(),
                             anchor_bounds,
                             anchor_position),
       bubble_wrapper_(std::move(bubble_wrapper)) {

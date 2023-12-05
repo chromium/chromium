@@ -39,7 +39,7 @@ class EmojiBubbleDialogView : public WebUIBubbleDialogView {
   METADATA_HEADER(EmojiBubbleDialogView);
   explicit EmojiBubbleDialogView(
       std::unique_ptr<BubbleContentsWrapper> contents_wrapper)
-      : WebUIBubbleDialogView(nullptr, contents_wrapper.get()),
+      : WebUIBubbleDialogView(nullptr, contents_wrapper->GetWeakPtr()),
         contents_wrapper_(std::move(contents_wrapper)) {
     set_has_parent(false);
 
