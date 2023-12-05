@@ -891,6 +891,8 @@ source_set("browser") {
     "display_cutout/display_cutout_host_impl.h",
     "display_cutout/safe_area_insets_host.cc",
     "display_cutout/safe_area_insets_host.h",
+    "display_cutout/safe_area_insets_host_impl.cc",
+    "display_cutout/safe_area_insets_host_impl.h",
     "dom_storage/dom_storage_context_wrapper.cc",
     "dom_storage/dom_storage_context_wrapper.h",
     "dom_storage/session_storage_namespace_impl.cc",

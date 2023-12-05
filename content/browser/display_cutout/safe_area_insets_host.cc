@@ -5,6 +5,7 @@
 #include "content/browser/display_cutout/safe_area_insets_host.h"
 
 #include "content/browser/display_cutout/display_cutout_host_impl.h"
+#include "content/browser/display_cutout/safe_area_insets_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -17,7 +18,11 @@ namespace content {
 // static
 std::unique_ptr<SafeAreaInsetsHost> SafeAreaInsetsHost::Create(
     WebContentsImpl* web_contents_impl) {
-  return absl::make_unique<DisplayCutoutHostImpl>(web_contents_impl);
+  if (base::FeatureList::IsEnabled(features::kDrawCutoutEdgeToEdge)) {
+    return absl::make_unique<SafeAreaInsetsHostImpl>(web_contents_impl);
+  } else {
+    return absl::make_unique<DisplayCutoutHostImpl>(web_contents_impl);
+  }
 }
 
 SafeAreaInsetsHost::SafeAreaInsetsHost(WebContentsImpl* web_contents)

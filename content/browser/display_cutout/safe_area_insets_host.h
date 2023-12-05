@@ -15,8 +15,19 @@ namespace content {
 class RenderFrameHost;
 class WebContentsImpl;
 
-// This is an Abstract base class for a Host that handles Safe Area Insets such
+// Handles the connection between Blink and the browser / embedder for
+// safe area insets.
+// This is a `WebContents` scoped abstract base class for a Host that
+// handles Safe Area Insets such
 // as the Notch (Display Cutout) and the Android Edge To Edge feature.
+// The implementation within this class handles communication with Blink.
+// The viewport-fit metadata from a page is sent by Blink to
+// the embedder through
+// `NotifyViewportFitChanged`. When that triggers a change to the Safe
+// Area, e.g. a `viewport-fit=cover` to allow drawing under the Notch, the
+// embedder responds to Blink through `SetSafeArea` to allow the CSS of
+// the page to adjust its drawing appropriately for that Safe Area, e.g.
+// pad a header to extend below the Notch.
 class CONTENT_EXPORT SafeAreaInsetsHost
     : public blink::mojom::DisplayCutoutHost {
  public:
@@ -27,12 +38,12 @@ class CONTENT_EXPORT SafeAreaInsetsHost
 
   ~SafeAreaInsetsHost() override;
 
-  // Binds a new receiver for the specified frame.
+  // Binds a new Blink receiver for the specified frame.
   void BindReceiver(
       mojo::PendingAssociatedReceiver<blink::mojom::DisplayCutoutHost> receiver,
       RenderFrameHost* rfh);
 
-  // blink::mojom::DisplayCutoutHost
+  // blink::mojom::DisplayCutoutHost interface.
   void NotifyViewportFitChanged(blink::mojom::ViewportFit value) final;
 
   // Called by WebContents when various events occur.
@@ -43,21 +54,23 @@ class CONTENT_EXPORT SafeAreaInsetsHost
   virtual void RenderFrameCreated(RenderFrameHost* rfh) = 0;
 
   // Updates the safe area insets on the current frame.
+  // Exposes `SendSafeAreaToFrame` to subclasses.
   virtual void SetDisplayCutoutSafeArea(gfx::Insets insets) = 0;
 
  protected:
   explicit SafeAreaInsetsHost(WebContentsImpl*);
 
-  // Stores the updated viewport fit value for a |frame| and notifies observers
-  // if it has changed.
+  // Stores the updated viewport fit value for a `frame` and notifies observers
+  // if it has changed. Called directly by Blink through Mojo.
   virtual void ViewportFitChangedForFrame(RenderFrameHost* rfh,
                                           blink::mojom::ViewportFit value) = 0;
 
-  // Send the safe area insets to Blink through a |RenderFrameHost|.
+  // Send the safe area insets to Blink through the given `RenderFrameHost`
+  // through the blink::mojom::DisplayCutoutclient interface.
   // Protected and virtual for testing only.
   virtual void SendSafeAreaToFrame(RenderFrameHost* rfh, gfx::Insets insets);
 
-  // Weak pointer to the owning |WebContentsImpl| instance.
+  // Weak pointer to the owning `WebContentsImpl` instance.
   raw_ptr<WebContentsImpl> web_contents_impl_;
 
  private:
