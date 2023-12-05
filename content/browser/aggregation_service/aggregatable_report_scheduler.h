@@ -18,6 +18,7 @@
 #include "content/common/content_export.h"
 
 namespace base {
+class ElapsedTimer;
 class Time;
 }  // namespace base
 
@@ -112,11 +113,13 @@ class CONTENT_EXPORT AggregatableReportScheduler {
     // ReportSchedulerTimer::Delegate:
     void GetNextReportTime(base::OnceCallback<void(std::optional<base::Time>)>,
                            base::Time now) override;
-    void OnReportingTimeReached(base::Time now) override;
+    void OnReportingTimeReached(base::Time now,
+                                base::Time timer_desired_run_time) override;
     void AdjustOfflineReportTimes(
         base::OnceCallback<void(std::optional<base::Time>)>) override;
 
     void OnRequestsReturnedFromStorage(
+        base::ElapsedTimer task_timer,
         std::vector<AggregationServiceStorage::RequestAndId> requests_and_ids);
 
     // Using a raw reference is safe because `storage_context_` is guaranteed to

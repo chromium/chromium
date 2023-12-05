@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
@@ -44,10 +45,12 @@ class CONTENT_EXPORT ReportSchedulerTimer
         base::OnceCallback<void(std::optional<base::Time>)>,
         base::Time now) = 0;
 
-    // Called when the timer is fired, with the current time `now`. `Refresh()`
-    // is automatically called after. If this causes a `GetNextReportTime()`
-    // call, that will be passed the same `now`.
-    virtual void OnReportingTimeReached(base::Time now) = 0;
+    // Called when the timer is fired, with the current time `now` and the time
+    // the timer was instructed to fire `timer_desired_run_time`. `Refresh()` is
+    // automatically called after. If this causes a `GetNextReportTime()` call,
+    // that will be passed the same `now`.
+    virtual void OnReportingTimeReached(base::Time now,
+                                        base::Time timer_desired_run_time) = 0;
 
     // Called when the connection changes from online to offline. When this
     // happens the timer is paused which means `OnReportingTimeReached` will not

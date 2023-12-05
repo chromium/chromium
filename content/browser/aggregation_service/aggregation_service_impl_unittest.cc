@@ -5,7 +5,6 @@
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
 
 #include <memory>
-#include <optional>
 #include <utility>
 #include <vector>
 
@@ -14,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_base.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
@@ -179,36 +179,77 @@ class AggregationServiceImplTest : public testing::Test {
     service_impl_->OnScheduledReportTimeReached(std::move(requests));
   }
 
-  void VerifyNoHistograms() {
-    // As `count` is 0, the other arguments have no impact.
-    VerifyHistograms(/*was_scheduled=*/false,
-                     AggregationServiceObserver::ReportStatus::kSent,
-                     /*count=*/0);
-  }
+  // Verify bucket counts and/or total counts of relevant histograms nested
+  // under "PrivacySandbox.AggregationService.ScheduledRequests".
+  //
+  // Args:
+  //   `statuses`: The complete expected contents of the Status histogram.
+  //   `num_retries_recorded`: The expected number of samples in the
+  //                           NumRetriesBeforeSuccess histogram. (If you expect
+  //                           one send with zero retries, that's one sample!)
+  //   `num_assemblies`: The number of samples expected for the AssemblyTime
+  //                     histogram.
+  //   `num_sends`: The number of samples expected for the SendAttemptTime
+  //                histogram.
+  void VerifyScheduledHistograms(
+      std::vector<base::Bucket> statuses = {},
+      base::HistogramBase::Count num_successful_sends = 0,
+      base::HistogramBase::Count num_assemblies = 0,
+      base::HistogramBase::Count num_attempted_sends = 0) {
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(
+            "PrivacySandbox.AggregationService.ScheduledRequests.Status"),
+        base::BucketsAreArray(statuses));
 
-  // Helper for the simple case of a single status and type of report. Only
-  // verifies the count for the number of retries before success histogram.
-  // Separate calls are needed to verify the buckets (if count is non-zero).
-  void VerifyHistograms(bool was_scheduled,
-                        AggregationServiceObserver::ReportStatus final_status,
-                        int count = 1) {
-    int scheduled_count = was_scheduled ? count : 0;
-    int scheduled_successes =
-        final_status == AggregationServiceObserver::ReportStatus::kSent
-            ? scheduled_count
-            : 0;
-    int unscheduled_count = was_scheduled ? 0 : count;
-
-    histogram_tester_.ExpectUniqueSample(
-        "PrivacySandbox.AggregationService.ScheduledRequests.Status",
-        final_status, scheduled_count);
     histogram_tester_.ExpectTotalCount(
         "PrivacySandbox.AggregationService.ScheduledRequests."
         "NumRetriesBeforeSuccess",
-        scheduled_successes);
-    histogram_tester_.ExpectUniqueSample(
-        "PrivacySandbox.AggregationService.UnscheduledRequests.Status",
-        final_status, unscheduled_count);
+        num_successful_sends);
+
+    histogram_tester_.ExpectTotalCount(
+        "PrivacySandbox.AggregationService.ScheduledRequests.AssemblyTime",
+        num_assemblies);
+
+    histogram_tester_.ExpectTotalCount(
+        "PrivacySandbox.AggregationService.ScheduledRequests.SendAttemptTime",
+        num_attempted_sends);
+
+    histogram_tester_.ExpectTotalCount(
+        "PrivacySandbox.AggregationService.ScheduledRequests."
+        "DelayFromOriginalReportTime",
+        num_attempted_sends);
+  }
+
+  // Verify bucket counts and/or total counts of relevant histograms nested
+  // under "PrivacySandbox.AggregationService.UnscheduledRequests".
+  //
+  // Args:
+  //   `statuses`: The complete expected contents of the Status histogram.
+  //   `num_assemblies`: The number of samples expected for the AssemblyTime
+  //                     histogram.
+  //   `num_sends`: The number of samples expected for the SendAttemptTime
+  //                histogram.
+  void VerifyUnscheduledHistograms(
+      std::vector<base::Bucket> statuses = {},
+      base::HistogramBase::Count num_assemblies = 0,
+      base::HistogramBase::Count num_attempted_sends = 0) {
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(
+            "PrivacySandbox.AggregationService.UnscheduledRequests.Status"),
+        base::BucketsAreArray(statuses));
+
+    histogram_tester_.ExpectTotalCount(
+        "PrivacySandbox.AggregationService.UnscheduledRequests.AssemblyTime",
+        num_assemblies);
+
+    histogram_tester_.ExpectTotalCount(
+        "PrivacySandbox.AggregationService.UnscheduledRequests.SendAttemptTime",
+        num_attempted_sends);
+
+    histogram_tester_.ExpectTotalCount(
+        "PrivacySandbox.AggregationService.UnscheduledRequests."
+        "DelayFromOriginalReportTime",
+        num_attempted_sends);
   }
 
  protected:
@@ -245,7 +286,8 @@ TEST_F(AggregationServiceImplTest, AssembleReport_Succeed) {
 
   run_loop.Run();
 
-  VerifyNoHistograms();
+  VerifyScheduledHistograms();
+  VerifyUnscheduledHistograms();
 }
 
 TEST_F(AggregationServiceImplTest, AssembleReport_Fail) {
@@ -270,7 +312,8 @@ TEST_F(AggregationServiceImplTest, AssembleReport_Fail) {
 
   run_loop.Run();
 
-  VerifyNoHistograms();
+  VerifyScheduledHistograms();
+  VerifyUnscheduledHistograms();
 }
 
 TEST_F(AggregationServiceImplTest, SendReport) {
@@ -288,7 +331,8 @@ TEST_F(AggregationServiceImplTest, SendReport) {
 
   run_loop.Run();
 
-  VerifyNoHistograms();
+  VerifyScheduledHistograms();
+  VerifyUnscheduledHistograms();
 }
 
 TEST_F(AggregationServiceImplTest, ScheduleReport_Success) {
@@ -319,8 +363,13 @@ TEST_F(AggregationServiceImplTest, ScheduleReport_Success) {
   EXPECT_THAT(requests_and_ids, SizeIs(1));
   OnScheduledReportTimeReached(std::move(requests_and_ids));
 
-  VerifyHistograms(/*was_scheduled=*/true,
-                   AggregationServiceObserver::ReportStatus::kSent);
+  VerifyScheduledHistograms(
+      /*statuses=*/{{AggregationServiceObserver::ReportStatus::kSent, 1}},
+      /*num_successful_sends=*/1,
+      /*num_assemblies=*/1,
+      /*num_attempted_sends=*/1);
+  VerifyUnscheduledHistograms();
+
   histogram_tester_.ExpectUniqueSample(
       "PrivacySandbox.AggregationService.ScheduledRequests."
       "NumRetriesBeforeSuccess",
@@ -370,8 +419,14 @@ TEST_F(AggregationServiceImplTest, ScheduleReport_FailedAssembly) {
   EXPECT_THAT(requests_and_ids, SizeIs(1));
   OnScheduledReportTimeReached(std::move(requests_and_ids));
 
-  VerifyHistograms(/*was_scheduled=*/true,
-                   AggregationServiceObserver::ReportStatus::kFailedToAssemble);
+  VerifyScheduledHistograms(
+      /*statuses=*/{{AggregationServiceObserver::ReportStatus::
+                         kFailedToAssemble,
+                     1}},
+      /*num_successful_sends=*/0,
+      /*num_assemblies=*/1,
+      /*num_attempted_sends=*/0);
+  VerifyUnscheduledHistograms();
 }
 
 TEST_F(AggregationServiceImplTest, ScheduleReport_FailedSending) {
@@ -414,7 +469,12 @@ TEST_F(AggregationServiceImplTest, ScheduleReport_FailedSending) {
   EXPECT_THAT(requests_and_ids, SizeIs(1));
   OnScheduledReportTimeReached(std::move(requests_and_ids));
 
-  VerifyNoHistograms();
+  VerifyScheduledHistograms(
+      /*statuses=*/{},
+      /*num_successful_sends=*/0,
+      /*num_assemblies=*/1,
+      /*num_attempted_sends=*/1);
+  VerifyUnscheduledHistograms();
 }
 
 TEST_F(AggregationServiceImplTest,
@@ -463,15 +523,17 @@ TEST_F(AggregationServiceImplTest,
   EXPECT_THAT(requests_and_ids, SizeIs(2));
   OnScheduledReportTimeReached(std::move(requests_and_ids));
 
-  VerifyHistograms(/*was_scheduled=*/true,
-                   AggregationServiceObserver::ReportStatus::kSent,
-                   /*count=*/2);
+  VerifyScheduledHistograms(
+      /*statuses=*/{{AggregationServiceObserver::ReportStatus::kSent, 2}},
+      /*num_successful_sends=*/2,
+      /*num_assemblies=*/2,
+      /*num_attempted_sends=*/2);
+  VerifyUnscheduledHistograms();
 
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.AggregationService.ScheduledRequests."
       "NumRetriesBeforeSuccess",
       /*sample=*/0, 1);
-
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.AggregationService.ScheduledRequests."
       "NumRetriesBeforeSuccess",
@@ -504,8 +566,12 @@ TEST_F(AggregationServiceImplTest, AssembleAndSendReport_Success) {
   service_impl_->AssembleAndSendReport(
       aggregation_service::CreateExampleRequest());
 
-  VerifyHistograms(/*was_scheduled=*/false,
-                   AggregationServiceObserver::ReportStatus::kSent);
+  VerifyScheduledHistograms();
+  VerifyUnscheduledHistograms(
+      /*statuses=*/
+      {{AggregationServiceObserver::ReportStatus::kSent, 1}},
+      /*num_assemblies=*/1,
+      /*num_attempted_sends=*/1);
 }
 
 TEST_F(AggregationServiceImplTest, AssembleAndSendReport_FailedAssembly) {
@@ -531,8 +597,12 @@ TEST_F(AggregationServiceImplTest, AssembleAndSendReport_FailedAssembly) {
   service_impl_->AssembleAndSendReport(
       aggregation_service::CreateExampleRequest());
 
-  VerifyHistograms(/*was_scheduled=*/false,
-                   AggregationServiceObserver::ReportStatus::kFailedToAssemble);
+  VerifyScheduledHistograms();
+  VerifyUnscheduledHistograms(
+      /*statuses=*/{{AggregationServiceObserver::ReportStatus::
+                         kFailedToAssemble,
+                     1}},
+      /*num_assemblies=*/1);
 }
 
 TEST_F(AggregationServiceImplTest, AssembleAndSendReport_FailedSender) {
@@ -562,8 +632,12 @@ TEST_F(AggregationServiceImplTest, AssembleAndSendReport_FailedSender) {
   service_impl_->AssembleAndSendReport(
       aggregation_service::CreateExampleRequest());
 
-  VerifyHistograms(/*was_scheduled=*/false,
-                   AggregationServiceObserver::ReportStatus::kFailedToSend);
+  VerifyScheduledHistograms();
+  VerifyUnscheduledHistograms(
+      /*statuses=*/
+      {{AggregationServiceObserver::ReportStatus::kFailedToSend, 1}},
+      /*num_assemblies=*/1,
+      /*num_attempted_sends=*/1);
 }
 
 TEST_F(AggregationServiceImplTest, GetPendingReportRequestsForWebUI) {

@@ -530,6 +530,37 @@ reviewer.
 </histogram>
 
 <histogram
+    name="PrivacySandbox.AggregationService.ScheduledRequests.AssemblyTime"
+    units="ms" expires_after="2024-05-20">
+  <owner>dmcardle@chromium.org</owner>
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records the duration of time spent assembling a report. Recorded for each
+    assembly attempt for each scheduled report request. (See
+    content/browser/aggregation_service/README.md for more info on scheduled vs
+    unscheduled requests.)
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.AggregationService.ScheduledRequests.DelayFromOriginalReportTime"
+    units="ms" expires_after="2024-05-20">
+  <owner>dmcardle@chromium.org</owner>
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records the duration of time between a request's original scheduled report
+    time and the actual send completion time. This delay may be expected, e.g.
+    due to the browser being offline. System clock corrections and inaccuracies
+    may contribute noise to this metric. Recorded for each scheduled report
+    request, and repeated for each attempt to send it, whether successful or
+    not. Not recorded if no attempt is made due to the request already being
+    marked as in-progress.
+  </summary>
+</histogram>
+
+<histogram
     name="PrivacySandbox.AggregationService.ScheduledRequests.NumRetriesBeforeSuccess"
     units="retries" expires_after="2024-05-19">
   <owner>alexmt@chromium.org</owner>
@@ -541,6 +572,20 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram
+    name="PrivacySandbox.AggregationService.ScheduledRequests.SendAttemptTime"
+    units="ms" expires_after="2024-05-20">
+  <owner>dmcardle@chromium.org</owner>
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records duration of time spent sending scheduled reports. The duration
+    starts before the call to AggregatableReportSender::SendReport() and it ends
+    when the HTTP request is complete. Recorded for each send attempt for each
+    scheduled report request.
+  </summary>
+</histogram>
+
 <histogram name="PrivacySandbox.AggregationService.ScheduledRequests.Status"
     enum="AggregationServiceObserverReportStatus" expires_after="2024-05-19">
   <owner>alexmt@chromium.org</owner>
@@ -549,6 +594,34 @@ reviewer.
     Records the final status of a scheduled report request, i.e. whether it
     succeeded eventually, including after retries (if any). In case of failure,
     records the type of failure in the final retry attempt.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.AggregationService.Scheduler.TimerFireDelay"
+    units="ms" expires_after="2024-05-20">
+  <owner>dmcardle@chromium.org</owner>
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records the difference between the time the AggregatableReportScheduler
+    timer actually fires and when it was supposed to fire. A large positive
+    delay would be a sign that the timer task is blocked by other tasks on the
+    queue. Negative delays will be recorded in the zero bucket. System clock
+    corrections and inaccuracies may contribute noise to this metric. Recorded
+    for each timer fire.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.AggregationService.Storage.RequestsRetrievalTime"
+    units="ms" expires_after="2024-05-20">
+  <owner>dmcardle@chromium.org</owner>
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records the duration of time that AggregatableReportScheduler spends looking
+    up requests in the storage layer, including async call overhead. Recorded
+    for each ReportSchedulerTimer fire.
   </summary>
 </histogram>
 
@@ -576,6 +649,25 @@ reviewer.
 </histogram>
 
 <histogram
+    name="PrivacySandbox.AggregationService.Storage.Sql.RequestDelayFromUpdatedReportTime"
+    units="ms" expires_after="2024-05-20">
+  <owner>dmcardle@chromium.org</owner>
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records the difference in time between a request's report time (which may
+    have been updated, e.g. due to a failed send attempt or the network coming
+    back online) and when the storage task to retrieve reports was posted.
+    Whereas we expect a large non-zero component in the
+    &quot;DelayFromOriginalReportTime&quot; histograms due to browsers closing,
+    going offline, etc., we expect this histogram to stay near zero. System
+    clock corrections and inaccuracies may contribute noise to this metric.
+    Recorded for each report request on each storage retrieval task, even if the
+    request is marked as in-progress.
+  </summary>
+</histogram>
+
+<histogram
     name="PrivacySandbox.AggregationService.Storage.Sql.StoreRequestHasCapacity"
     enum="Boolean" expires_after="2024-05-19">
   <owner>alexmt@chromium.org</owner>
@@ -584,6 +676,57 @@ reviewer.
     Records whether there was sufficient capacity to store the request, i.e.
     that the per-reporting origin limit had not been reached. Recorded for each
     StoreRequest attempt.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.AggregationService.UnscheduledRequests.AssemblyTime"
+    units="ms" expires_after="2024-05-20">
+  <owner>dmcardle@chromium.org</owner>
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records the duration of time spent assembling a report. Recorded for each
+    assembly attempt for each unscheduled report request. Unlike scheduled
+    reports, unscheduled reports are sent as soon as they are requested. (See
+    content/browser/aggregation_service/README.md for more info on scheduled vs
+    unscheduled requests.) Currently, unscheduled reports are always debug
+    reports.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.AggregationService.UnscheduledRequests.DelayFromOriginalReportTime"
+    units="ms" expires_after="2024-05-20">
+  <owner>dmcardle@chromium.org</owner>
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records the duration of time between a request's original unscheduled report
+    time and the actual send completion time. Unlike scheduled reports,
+    unscheduled reports are sent as soon as they are requested. (See
+    content/browser/aggregation_service/README.md for more info on scheduled vs
+    unscheduled requests.) System clock corrections and inaccuracies may
+    contribute noise to this metric. Currently, unscheduled reports are always
+    debug reports. Recorded for each unscheduled report request.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.AggregationService.UnscheduledRequests.SendAttemptTime"
+    units="ms" expires_after="2024-05-20">
+  <owner>dmcardle@chromium.org</owner>
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records duration of time spent sending unscheduled reports. The duration
+    starts before the call to AggregatableReportSender::SendReport() and it ends
+    when the HTTP request is complete. Recorded for each send attempt for each
+    unscheduled report request. Unlike scheduled reports, unscheduled reports
+    are sent as soon as they are requested. (See
+    content/browser/aggregation_service/README.md for more info on scheduled vs
+    unscheduled requests.) Currently, unscheduled reports are always debug
+    reports.
   </summary>
 </histogram>
 
@@ -797,6 +940,19 @@ reviewer.
     Records the initialization statuses of PrivateAggregationBudgetStorage,
     indicating whether it was successful and, if not, why it failed. Recorded
     when the initialization reply callback is run on the main sequence.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.PrivateAggregation.BudgetStorage.InitTime"
+    units="ms" expires_after="2024-05-20">
+  <owner>dmcardle@chromium.org</owner>
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records the time spent initializing the PrivateAggregationBudgetStorage,
+    i.e. between running CreateAsync() and FinishInitializationOnMainSequence().
+    Recorded for each initialization attempt, whether successful or not.
+    Recorded when the initialization reply callback is run on the main sequence.
   </summary>
 </histogram>
 

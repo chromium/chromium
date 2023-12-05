@@ -21,6 +21,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/sqlite_proto/key_value_data.h"
 #include "components/sqlite_proto/key_value_table.h"
 #include "components/sqlite_proto/proto_table_manager.h"
@@ -79,7 +80,7 @@ base::OnceClosure PrivateAggregationBudgetStorage::CreateAsync(
       base::BindOnce(
           &PrivateAggregationBudgetStorage::FinishInitializationOnMainSequence,
           base::Unretained(raw_storage), std::move(storage),
-          std::move(on_done_initializing)));
+          std::move(on_done_initializing), base::ElapsedTimer()));
 
   return base::BindOnce(&PrivateAggregationBudgetStorage::Shutdown,
                         raw_storage->weak_factory_.GetWeakPtr());
@@ -182,6 +183,7 @@ void PrivateAggregationBudgetStorage::FinishInitializationOnMainSequence(
     std::unique_ptr<PrivateAggregationBudgetStorage> owned_this,
     base::OnceCallback<void(std::unique_ptr<PrivateAggregationBudgetStorage>)>
         on_done_initializing,
+    base::ElapsedTimer elapsed_timer,
     bool was_successful) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(owned_this);
@@ -190,6 +192,9 @@ void PrivateAggregationBudgetStorage::FinishInitializationOnMainSequence(
       "PrivacySandbox.PrivateAggregation.BudgetStorage."
       "ShutdownBeforeFinishingInitialization",
       !db_);
+  base::UmaHistogramTimes(
+      "PrivacySandbox.PrivateAggregation.BudgetStorage.InitTime",
+      elapsed_timer.Elapsed());
 
   // If the initialization failed, `this` will be destroyed after its unique_ptr
   // passes out of scope here.

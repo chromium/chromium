@@ -73,7 +73,8 @@ void ReportSchedulerTimer::OnTimerFired() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::Time now = base::Time::Now();
-  delegate_->OnReportingTimeReached(now);
+  delegate_->OnReportingTimeReached(
+      now, reporting_time_reached_timer_.desired_run_time());
   Refresh(now);
 }
 

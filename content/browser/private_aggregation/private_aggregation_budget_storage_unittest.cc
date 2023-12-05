@@ -100,6 +100,9 @@ class PrivateAggregationBudgetStorageTest : public testing::Test {
         "PrivacySandbox.PrivateAggregation.BudgetStorage."
         "ShutdownBeforeFinishingInitialization",
         shutdown_before_finishing_initialization, expected_bucket_count);
+    histogram_tester_.ExpectUniqueTimeSample(
+        "PrivacySandbox.PrivateAggregation.BudgetStorage.InitTime",
+        base::TimeDelta(), expected_bucket_count);
     VerifyInitializationCountHistogram(
         /*expected_count=*/expected_bucket_count);
   }

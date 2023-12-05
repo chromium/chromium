@@ -37,7 +37,10 @@ class MockReportSchedulerTimerDelegate : public ReportSchedulerTimer::Delegate {
               GetNextReportTime,
               (base::OnceCallback<void(std::optional<base::Time>)>, base::Time),
               (override));
-  MOCK_METHOD(void, OnReportingTimeReached, (base::Time), (override));
+  MOCK_METHOD(void,
+              OnReportingTimeReached,
+              (base::Time, base::Time),
+              (override));
 
   MOCK_METHOD(void,
               AdjustOfflineReportTimes,

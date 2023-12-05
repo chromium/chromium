@@ -632,6 +632,17 @@ AggregationServiceStorageSql::GetRequestsReportingOnOrBefore(
       continue;
     }
 
+    // Exclude internals page requests
+    if (!not_after_time.is_max()) {
+      base::UmaHistogramCustomTimes(
+          "PrivacySandbox.AggregationService.Storage.Sql."
+          "RequestDelayFromUpdatedReportTime",
+          not_after_time - get_requests_statement.ColumnTime(1),
+          /*min=*/base::Seconds(1),
+          /*max=*/base::Days(24),
+          /*buckets=*/50);
+    }
+
     result.push_back(AggregationServiceStorage::RequestAndId{
         .request = std::move(parsed_request.value()), .id = request_id});
   }

@@ -162,7 +162,10 @@ class AttributionReportScheduler : public ReportSchedulerTimer::Delegate {
         .WithArgs(now)
         .Then(std::move(callback));
   }
-  void OnReportingTimeReached(base::Time now) override { send_reports_.Run(); }
+  void OnReportingTimeReached(base::Time now,
+                              base::Time timer_desired_run_time) override {
+    send_reports_.Run();
+  }
   void AdjustOfflineReportTimes(
       base::OnceCallback<void(absl::optional<base::Time>)> maybe_set_timer_cb)
       override {

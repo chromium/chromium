@@ -12,13 +12,14 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_storage.h"
@@ -127,13 +128,19 @@ void AggregatableReportScheduler::TimerDelegate::GetNextReportTime(
 }
 
 void AggregatableReportScheduler::TimerDelegate::OnReportingTimeReached(
-    base::Time now) {
+    base::Time now,
+    base::Time timer_desired_run_time) {
+  base::UmaHistogramLongTimes100(
+      "PrivacySandbox.AggregationService.Scheduler.TimerFireDelay",
+      now - timer_desired_run_time);
+
   storage_context_->GetStorage()
       .AsyncCall(&AggregationServiceStorage::GetRequestsReportingOnOrBefore)
       .WithArgs(now, /*limit=*/std::nullopt)
       .Then(base::BindOnce(&AggregatableReportScheduler::TimerDelegate::
                                OnRequestsReturnedFromStorage,
-                           weak_ptr_factory_.GetWeakPtr()));
+                           weak_ptr_factory_.GetWeakPtr(),
+                           /*task_timer=*/base::ElapsedTimer()));
 }
 
 void AggregatableReportScheduler::TimerDelegate::AdjustOfflineReportTimes(
@@ -160,10 +167,15 @@ void AggregatableReportScheduler::TimerDelegate::NotifySendAttemptCompleted(
 }
 
 void AggregatableReportScheduler::TimerDelegate::OnRequestsReturnedFromStorage(
+    base::ElapsedTimer task_timer,
     std::vector<AggregationServiceStorage::RequestAndId> requests_and_ids) {
+  base::UmaHistogramLongTimes100(
+      "PrivacySandbox.AggregationService.Storage.RequestsRetrievalTime",
+      task_timer.Elapsed());
+
   // TODO(alexmt): Consider adding metrics of the number of in-progress requests
   // erased to see if optimizations would be desirable.
-  base::EraseIf(
+  std::erase_if(
       requests_and_ids,
       [this](const AggregationServiceStorage::RequestAndId& request_and_id) {
         return base::Contains(in_progress_requests_, request_and_id.id);
@@ -172,7 +184,6 @@ void AggregatableReportScheduler::TimerDelegate::OnRequestsReturnedFromStorage(
        requests_and_ids) {
     in_progress_requests_.insert(request_and_id.id);
   }
-
   if (!requests_and_ids.empty()) {
     on_scheduled_report_time_reached_.Run(std::move(requests_and_ids));
   }

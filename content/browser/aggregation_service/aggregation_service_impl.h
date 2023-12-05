@@ -29,6 +29,7 @@ class GURL;
 
 namespace base {
 class Clock;
+class ElapsedTimer;
 class FilePath;
 class UpdateableSequencedTaskRunner;
 }  // namespace base
@@ -132,6 +133,7 @@ class CONTENT_EXPORT AggregationServiceImpl
       base::OnceClosure done,
       std::optional<AggregationServiceStorage::RequestId> request_id,
       GURL reporting_url,
+      base::ElapsedTimer elapsed_timer,
       AggregatableReportRequest report_request,
       std::optional<AggregatableReport> report,
       AggregatableReportAssembler::AssemblyStatus status);
@@ -140,6 +142,7 @@ class CONTENT_EXPORT AggregationServiceImpl
       AggregatableReportRequest report_request,
       std::optional<AggregationServiceStorage::RequestId> request_id,
       AggregatableReport report,
+      base::ElapsedTimer elapsed_timer,
       AggregatableReportSender::RequestStatus status);
   void OnUserVisibleTaskStarted();
   void OnUserVisibleTaskComplete();

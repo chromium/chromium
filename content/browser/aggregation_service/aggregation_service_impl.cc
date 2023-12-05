@@ -27,6 +27,7 @@
 #include "base/task/updateable_sequenced_task_runner.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/values.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregatable_report_assembler.h"
@@ -199,7 +200,7 @@ void AggregationServiceImpl::AssembleAndSendReportImpl(
           &AggregationServiceImpl::OnReportAssemblyComplete,
           // `base::Unretained` is safe as the assembler is owned by `this`.
           base::Unretained(this), std::move(done), request_id,
-          std::move(reporting_url)));
+          std::move(reporting_url), base::ElapsedTimer()));
 }
 
 void AggregationServiceImpl::OnScheduledReportTimeReached(
@@ -212,11 +213,19 @@ void AggregationServiceImpl::OnReportAssemblyComplete(
     base::OnceClosure done,
     std::optional<AggregationServiceStorage::RequestId> request_id,
     GURL reporting_url,
+    base::ElapsedTimer elapsed_timer,
     AggregatableReportRequest report_request,
     std::optional<AggregatableReport> report,
     AggregatableReportAssembler::AssemblyStatus status) {
   DCHECK_EQ(report.has_value(),
             status == AggregatableReportAssembler::AssemblyStatus::kOk);
+  base::UmaHistogramLongTimes100(
+      request_id.has_value()
+          ? "PrivacySandbox.AggregationService.ScheduledRequests.AssemblyTime"
+          : "PrivacySandbox.AggregationService.UnscheduledRequests."
+            "AssemblyTime",
+      elapsed_timer.Elapsed());
+
   if (!report.has_value()) {
     std::move(done).Run();
 
@@ -246,7 +255,8 @@ void AggregationServiceImpl::OnReportAssemblyComplete(
                  &AggregationServiceImpl::OnReportSendingComplete,
                  // `base::Unretained` is safe as the sender is owned by `this`.
                  base::Unretained(this), std::move(done),
-                 std::move(report_request), request_id, std::move(*report)));
+                 std::move(report_request), request_id, std::move(*report),
+                 /*sending_timer=*/base::ElapsedTimer()));
 }
 
 void AggregationServiceImpl::OnReportSendingComplete(
@@ -254,7 +264,25 @@ void AggregationServiceImpl::OnReportSendingComplete(
     AggregatableReportRequest report_request,
     std::optional<AggregationServiceStorage::RequestId> request_id,
     AggregatableReport report,
+    base::ElapsedTimer sending_timer,
     AggregatableReportSender::RequestStatus status) {
+  base::UmaHistogramLongTimes100(request_id.has_value()
+                                     ? "PrivacySandbox.AggregationService."
+                                       "ScheduledRequests.SendAttemptTime"
+                                     : "PrivacySandbox.AggregationService."
+                                       "UnscheduledRequests.SendAttemptTime",
+                                 sending_timer.Elapsed());
+  base::UmaHistogramCustomTimes(
+      request_id.has_value()
+          ? "PrivacySandbox.AggregationService.ScheduledRequests."
+            "DelayFromOriginalReportTime"
+          : "PrivacySandbox.AggregationService.UnscheduledRequests."
+            "DelayFromOriginalReportTime",
+      base::Time::Now() - report_request.shared_info().scheduled_report_time,
+      /*min=*/base::Seconds(1),
+      /*max=*/base::Days(24),
+      /*buckets=*/50);
+
   std::move(done).Run();
 
   AggregationServiceObserver::ReportStatus observer_status;
