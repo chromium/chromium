@@ -12,283 +12,584 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/disallow_unretained.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/memory/ref_counted.h"
+#include "base/test/bind.h"
 
 namespace base {
 
-void NonConstFunctionWithConstObject() {
-  struct S : public RefCounted<S> {
-    void Method() {}
-  } s;
-  const S* const const_s_ptr = &s;
-  // Non-`const` methods may not be bound with a `const` receiver.
-  BindRepeating(&S::Method, const_s_ptr);  // expected-error@*:* {{Type mismatch between bound argument and bound functor's parameter.}}
-  // `const` pointer cannot be bound to non-`const` parameter.
-  BindRepeating([] (S*) {}, const_s_ptr);  // expected-error@*:* {{Type mismatch between bound argument and bound functor's parameter.}}
+// Do not put everything inside an anonymous namespace.  If you do, many of the
+// helper function declarations will generate unused definition warnings.
+
+static const int kParentValue = 1;
+static const int kChildValue = 2;
+
+class NoRef {
+ public:
+  void VoidMethod0() {}
+  void VoidConstMethod0() const {}
+  int IntMethod0() { return 1; }
+};
+
+class HasRef : public NoRef, public base::RefCounted<HasRef> {
+};
+
+class Parent {
+ public:
+  void AddRef() const {}
+  void Release() const {}
+  virtual void VirtualSet() { value = kParentValue; }
+  void NonVirtualSet() { value = kParentValue; }
+  int value;
+};
+
+class Child : public Parent {
+ public:
+  virtual void VirtualSet() { value = kChildValue; }
+  void NonVirtualSet() { value = kChildValue; }
+};
+
+class NoRefParent {
+ public:
+  virtual void VirtualSet() { value = kParentValue; }
+  void NonVirtualSet() { value = kParentValue; }
+  int value;
+};
+
+class NoRefChild : public NoRefParent {
+  virtual void VirtualSet() { value = kChildValue; }
+  void NonVirtualSet() { value = kChildValue; }
+};
+
+template <typename T>
+T PolymorphicIdentity(T t) {
+  return t;
 }
 
-void WrongReceiverTypeForNonRefcounted() {
-  // 1. Non-refcounted objects must use `Unretained()` for the `this` argument.
-  // 2. Reference-like objects may not be used as the receiver.
-  struct A {
-    void Method() {}
-    void ConstMethod() const {}
-  } a;
-  // Using distinct types causes distinct template instantiations, so we get
-  // assertion failures below where we expect. These types facilitate that.
-  struct B : public A {} b;
-  struct C : public A {} c;
-  struct D : public A {} d;
-  struct E : public A {};
-  A* ptr_a = &a;
-  A& ref_a = a;
-  raw_ptr<A> rawptr_a(&a);
-  raw_ref<A> rawref_a(a);
-  const B const_b;
-  B* ptr_b = &b;
-  const B* const_ptr_b = &const_b;
-  B& ref_b = b;
-  const B& const_ref_b = const_b;
-  raw_ptr<B> rawptr_b(&b);
-  raw_ptr<const B> const_rawptr_b(&const_b);
-  raw_ref<B> rawref_b(b);
-  raw_ref<const B> const_rawref_b(const_b);
-  C& ref_c = c;
-  D& ref_d = d;
-  const E const_e;
-  const E& const_ref_e = const_e;
-  BindRepeating(&A::Method, &a);                   // expected-error@*:* {{Receivers may not be raw pointers.}}
-  BindRepeating(&A::Method, ptr_a);                // expected-error@*:* {{Receivers may not be raw pointers.}}
-  BindRepeating(&A::Method, a);                    // expected-error@*:* {{Cannot convert `this` argument to address.}}
-  BindRepeating(&C::Method, ref_c);                // expected-error@*:* {{Cannot convert `this` argument to address.}}
-  BindRepeating(&A::Method, std::ref(a));          // expected-error@*:* {{Cannot convert `this` argument to address.}}
-  BindRepeating(&A::Method, std::cref(a));         // expected-error@*:* {{Cannot convert `this` argument to address.}}
-  BindRepeating(&A::Method, rawptr_a);             // expected-error@*:* {{Receivers may not be raw pointers.}}
-  BindRepeating(&A::Method, rawref_a);             // expected-error@*:* {{Receivers may not be raw_ref<T>.}}
-  BindRepeating(&B::ConstMethod, &b);              // expected-error@*:* {{Receivers may not be raw pointers.}}
-  BindRepeating(&B::ConstMethod, &const_b);        // expected-error@*:* {{Receivers may not be raw pointers.}}
-  BindRepeating(&B::ConstMethod, ptr_b);           // expected-error@*:* {{Receivers may not be raw pointers.}}
-  BindRepeating(&B::ConstMethod, const_ptr_b);     // expected-error@*:* {{Receivers may not be raw pointers.}}
-  BindRepeating(&B::ConstMethod, b);               // expected-error@*:* {{Cannot convert `this` argument to address.}}
-  BindRepeating(&D::ConstMethod, ref_d);           // expected-error@*:* {{Cannot convert `this` argument to address.}}
-  BindRepeating(&E::ConstMethod, const_ref_e);     // expected-error@*:* {{Cannot convert `this` argument to address.}}
-  BindRepeating(&B::ConstMethod, std::ref(b));     // expected-error@*:* {{Cannot convert `this` argument to address.}}
-  BindRepeating(&B::ConstMethod, std::cref(b));    // expected-error@*:* {{Cannot convert `this` argument to address.}}
-  BindRepeating(&B::ConstMethod, rawptr_b);        // expected-error@*:* {{Receivers may not be raw pointers.}}
-  BindRepeating(&B::ConstMethod, const_rawptr_b);  // expected-error@*:* {{Receivers may not be raw pointers.}}
-  BindRepeating(&B::ConstMethod, rawref_b);        // expected-error@*:* {{Receivers may not be raw_ref<T>.}}
-  BindRepeating(&B::ConstMethod, const_rawref_b);  // expected-error@*:* {{Receivers may not be raw_ref<T>.}}
+int UnwrapParentRef(Parent& p) {
+  return p.value;
 }
 
-void WrongReceiverTypeForRefcounted() {
-  // Refcounted objects must pass a pointer-like `this` argument.
-  struct A : public RefCounted<A> {
-    void Method() const {}
-  } a;
-  // Using distinct types causes distinct template instantiations, so we get
-  // assertion failures below where we expect. These types facilitate that.
-  struct B : public A {} b;
-  struct C : public A {};
-  const A const_a;
-  B& ref_b = b;
-  const C const_c;
-  const C& const_ref_c = const_c;
-  raw_ref<A> rawref_a(a);
-  raw_ref<const A> const_rawref_a(const_a);
-  BindRepeating(&A::Method, a);               // expected-error@*:* {{Cannot convert `this` argument to address.}}
-  BindRepeating(&B::Method, ref_b);           // expected-error@*:* {{Cannot convert `this` argument to address.}}
-  BindRepeating(&C::Method, const_ref_c);     // expected-error@*:* {{Cannot convert `this` argument to address.}}
-  BindRepeating(&A::Method, std::ref(a));     // expected-error@*:* {{Cannot convert `this` argument to address.}}
-  BindRepeating(&A::Method, std::cref(a));    // expected-error@*:* {{Cannot convert `this` argument to address.}}
-  BindRepeating(&A::Method, rawref_a);        // expected-error@*:* {{Receivers may not be raw_ref<T>.}}
-  BindRepeating(&A::Method, const_rawref_a);  // expected-error@*:* {{Receivers may not be raw_ref<T>.}}
+template <typename T>
+void VoidPolymorphic1(T t) {
 }
 
-void RemovesConst() {
-  // Callbacks that expect non-const refs/ptrs should not be callable with const
-  // ones.
-  const int i = 0;
-  const int* p = &i;
-  BindRepeating([] (int&) {}).Run(i);  // expected-error {{no matching member function for call to 'Run'}}
-  BindRepeating([] (int*) {}, p);      // expected-error@*:* {{Type mismatch between bound argument and bound functor's parameter.}}
-  BindRepeating([] (int*) {}).Run(p);  // expected-error {{no matching member function for call to 'Run'}}
+void TakesMoveOnly(std::unique_ptr<int>) {
 }
 
-void PassingIncorrectRef() {
-  // Functions that take non-const reference arguments require the parameters to
-  // be bound as matching `std::ref()`s or `OwnedRef()`s.
-  int i = 1;
+void TakesIntRef(int& ref) {}
+
+struct NonEmptyFunctor {
+  int x;
+  void operator()() const {}
+};
+
+class Incomplete;
+void PassIncompleteByPtr(Incomplete*) {}
+
+class Dangerous {
+ public:
+  void Method() {}
+
+  DISALLOW_UNRETAINED();
+};
+
+void PassDangerousByPtr(Dangerous*) {}
+void PassDangerousByConstRef(const Dangerous&) {}
+void PassDangerousByMutableRef(Dangerous&) {}
+
+
+#if defined(NCTEST_METHOD_ON_CONST_OBJECT)  // [r"Type mismatch between bound argument and bound functor's parameter\."]
+
+// Method bound to const-object.
+//
+// Only const methods should be allowed to work with const objects.
+void WontCompile() {
+  HasRef has_ref;
+  const HasRef* const_has_ref_ptr_ = &has_ref;
+  RepeatingCallback<void()> method_to_const_cb =
+      BindRepeating(&HasRef::VoidMethod0, const_has_ref_ptr_);
+  method_to_const_cb.Run();
+}
+
+#elif defined(NCTEST_METHOD_BIND_NEEDS_REFCOUNTED_OBJECT)  // [r"Receivers may not be raw pointers. If using a raw pointer here is safe and has no lifetime concerns, use base::Unretained\(\) and document why it's safe."]
+
+
+// Method bound to non-refcounted object.
+//
+// We require refcounts unless you have Unretained().
+void WontCompile() {
+  NoRef no_ref;
+  RepeatingCallback<void()> no_ref_cb =
+      BindRepeating(&NoRef::VoidMethod0, &no_ref);
+  no_ref_cb.Run();
+}
+
+#elif defined(NCTEST_CONST_METHOD_BIND_NEEDS_REFCOUNTED_OBJECT)  // [r"Receivers may not be raw pointers. If using a raw pointer here is safe and has no lifetime concerns, use base::Unretained\(\) and document why it's safe."]
+
+// Const Method bound to non-refcounted object.
+//
+// We require refcounts unless you have Unretained().
+void WontCompile() {
+  NoRef no_ref;
+  RepeatingCallback<void()> no_ref_const_cb =
+      BindRepeating(&NoRef::VoidConstMethod0, &no_ref);
+  no_ref_const_cb.Run();
+}
+
+#elif defined(NCTEST_METHOD_BIND_RAW_PTR_RECEIVER_NEEDS_REFCOUNTED_OBJECT)  // [r"Receivers may not be raw pointers. If using a raw pointer here is safe and has no lifetime concerns, use base::Unretained\(\) and document why it's safe."]
+
+
+// Method bound to non-refcounted object.
+//
+// We require refcounts unless you have Unretained().
+void WontCompile() {
+  NoRef no_ref;
+  raw_ptr<NoRef> rawptr(&no_ref);
+  RepeatingCallback<void()> no_ref_cb =
+      BindRepeating(&NoRef::VoidMethod0, rawptr);
+  no_ref_cb.Run();
+}
+
+#elif defined(NCTEST_CONST_METHOD_BIND_RAW_PTR_RECEIVER_NEEDS_REFCOUNTED_OBJECT)  // [r"Receivers may not be raw pointers. If using a raw pointer here is safe and has no lifetime concerns, use base::Unretained\(\) and document why it's safe."]
+
+// Const Method bound to non-refcounted object.
+//
+// We require refcounts unless you have Unretained().
+void WontCompile() {
+  NoRef no_ref;
+  raw_ptr<NoRef> rawptr(&no_ref);
+  RepeatingCallback<void()> no_ref_const_cb =
+      BindRepeating(&NoRef::VoidConstMethod0, rawptr);
+  no_ref_const_cb.Run();
+}
+
+#elif defined(NCTEST_METHOD_BIND_REF_WRAPPER_RECEIVER_NON_REFCOUNTED_OBJECT)  // [r"Cannot convert `this` argument to address\. Method calls must be bound using a pointer-like `this` argument\."]
+
+// Method bound to non-refcounted object. It fails to compile with
+// std::reference_wrapper.
+void WontCompile() {
+  NoRef no_ref;
+  RepeatingCallback<void()> no_ref_cb =
+      BindRepeating(&NoRef::VoidMethod0, std::cref(no_ref));
+  no_ref_cb.Run();
+}
+
+#elif defined(NCTEST_METHOD_BIND_NATIVE_REF_RECEIVER_NON_REFCOUNTED_OBJECT)  // [r"Cannot convert `this` argument to address\. Method calls must be bound using a pointer-like `this` argument\."]
+
+// Method bound to non-refcounted object. It fails to compile with
+// a native reference.
+void WontCompile() {
+  NoRef no_ref;
+  RepeatingCallback<void()> no_ref_cb =
+      BindRepeating(&NoRef::VoidMethod0, no_ref);
+  no_ref_cb.Run();
+}
+
+#elif defined(NCTEST_METHOD_BIND_RAW_REF_RECEIVER_NON_REFCOUNTED_OBJECT)  // [r"Receivers may not be raw_ref<T>\."]
+
+// Method bound to non-refcounted object. It fails to compile with
+// a raw_ref.
+void WontCompile() {
+  NoRef no_ref;
+  raw_ref<NoRef> rawref(no_ref);
+  RepeatingCallback<void()> no_ref_cb =
+      BindRepeating(&NoRef::VoidMethod0, rawref);
+  no_ref_cb.Run();
+}
+
+#elif defined(NCTEST_METHOD_BIND_REF_WRAPPER_RECEIVER_REFCOUNTED_OBJECT)  // [r"Cannot convert `this` argument to address\. Method calls must be bound using a pointer-like `this` argument\."]
+
+// Method bound to non-refcounted object. It fails to compile with
+// std::reference_wrapper.
+void WontCompile() {
+  HasRef has_ref;
+  RepeatingCallback<void()> has_ref_cb =
+      BindRepeating(&HasRef::VoidMethod0, std::cref(has_ref));
+  has_ref_cb.Run();
+}
+
+#elif defined(NCTEST_METHOD_BIND_NATIVE_REF_RECEIVER_REFCOUNTED_OBJECT)  // [r"Cannot convert `this` argument to address\. Method calls must be bound using a pointer-like `this` argument\."]
+
+// Method bound to non-refcounted object. It fails to compile with
+// a native reference.
+void WontCompile() {
+  HasRef has_ref;
+  RepeatingCallback<void()> has_ref_cb =
+      BindRepeating(&HasRef::VoidMethod0, has_ref);
+  has_ref_cb.Run();
+}
+
+#elif defined(NCTEST_METHOD_BIND_RAW_REF_RECEIVER_REFCOUNTED_OBJECT)  // [r"Receivers may not be raw_ref<T>\."]
+
+// Method bound to non-refcounted object. It fails to compile with
+// a raw_ref.
+void WontCompile() {
+  HasRef has_ref;
+  raw_ref<HasRef> rawref(has_ref);
+  RepeatingCallback<void()> has_ref_cb =
+      BindRepeating(&HasRef::VoidMethod0, rawref);
+  has_ref_cb.Run();
+}
+
+#elif defined(NCTEST_CONST_POINTER)  // [r"Type mismatch between bound argument and bound functor's parameter\."]
+// Const argument used with non-const pointer parameter of same type.
+//
+// This is just a const-correctness check.
+void WontCompile() {
+  const NoRef* const_no_ref_ptr;
+  RepeatingCallback<NoRef*()> pointer_same_cb =
+      BindRepeating(&PolymorphicIdentity<NoRef*>, const_no_ref_ptr);
+  pointer_same_cb.Run();
+}
+
+#elif defined(NCTEST_CONST_POINTER_SUBTYPE)  // [r"Type mismatch between bound argument and bound functor's parameter\."]
+
+// Const argument used with non-const pointer parameter of super type.
+//
+// This is just a const-correctness check.
+void WontCompile() {
+  const NoRefChild* const_child_ptr;
+  RepeatingCallback<NoRefParent*()> pointer_super_cb =
+    BindRepeating(&PolymorphicIdentity<NoRefParent*>, const_child_ptr);
+  pointer_super_cb.Run();
+}
+
+#elif defined(DISABLED_NCTEST_DISALLOW_NON_CONST_REF_PARAM)  // [r"no member named 'AddRef' in 'base::NoRef'"]
+// TODO(dcheng): I think there's a type safety promotion issue here where we can
+// pass a const ref to a non const-ref function, or vice versa accidentally. Or
+// we make a copy accidentally. Check.
+
+// Functions with reference parameters, unsupported.
+//
+// First, non-const reference parameters are disallowed by the Google
+// style guide. Second, since we are doing argument forwarding it becomes
+// very tricky to avoid copies, maintain const correctness, and not
+// accidentally have the function be modifying a temporary, or a copy.
+void WontCompile() {
+  Parent p;
+  RepeatingCallback<int(Parent&)> ref_arg_cb = BindRepeating(&UnwrapParentRef);
+  ref_arg_cb.Run(p);
+}
+
+#elif defined(NCTEST_BIND_ONCE_WITH_NON_CONST_REF_PARAM)  // [r"Bound argument for non-const reference parameter must be wrapped in std::ref\(\) or base::OwnedRef\(\)."]
+
+// Binding functions with reference parameters requires `std::ref()` or
+// 'base::OwnedRef()`.
+void WontCompile() {
+  int v = 1;
+  auto cb = BindOnce(&TakesIntRef, v);
+}
+
+#elif defined(NCTEST_BIND_REPEATING_WITH_NON_CONST_REF_PARAM)  // [r"Bound argument for non-const reference parameter must be wrapped in std::ref\(\) or base::OwnedRef\(\)."]
+
+// Binding functions with reference parameters requires `std::ref()` or
+// 'base::OwnedRef()`.
+void WontCompile() {
+  int v = 1;
+  auto cb = BindRepeating(&TakesIntRef, v);
+}
+
+#elif defined(NCTEST_NON_CONST_REF_PARAM_WRONG_TYPE)  // [r"Type mismatch between bound argument and bound functor's parameter."]
+
+// If the argument and parameter types mismatch then the compile error should be
+// the generic type mismatch error.
+void WontCompile() {
   float f = 1.0f;
-  // No wrapper.
-  BindOnce([] (int&) {}, i);       // expected-error@*:* {{Bound argument for non-const reference parameter must be wrapped in std::ref() or base::OwnedRef().}}
-  BindRepeating([] (int&) {}, i);  // expected-error@*:* {{Bound argument for non-const reference parameter must be wrapped in std::ref() or base::OwnedRef().}}
-  // Wrapper, but with mismatched type.
-  BindOnce([] (int&) {}, f);            // expected-error@*:* {{Type mismatch between bound argument and bound functor's parameter.}}
-  BindOnce([] (int&) {}, std::ref(f));  // expected-error@*:* {{Type mismatch between bound argument and bound functor's parameter.}}
-  BindOnce([] (int&) {}, OwnedRef(f));  // expected-error@*:* {{Type mismatch between bound argument and bound functor's parameter.}}
+  auto cb = BindOnce(&TakesIntRef, f);
 }
 
-void ArrayAsReceiver() {
-  // A method should not be bindable with an array of objects. Users could
-  // unintentionally attempt to do this via array->pointer decay.
-  struct S : public RefCounted<S> {
-    void Method() const {}
-  };
-  S s[2];
-  BindRepeating(&S::Method, s);  // expected-error@*:* {{First bound argument to a method cannot be an array.}}
+#elif defined(NCTEST_NON_CONST_REF_PARAM_WRONG_TYPE_AND_WRAPPED)  // [r"Type mismatch between bound argument and bound functor's parameter."]
+
+// If the argument and parameter types mismatch then the compile error should be
+// the generic type mismatch error even if the argument is wrapped in
+// base::OwnedRef().
+void WontCompile() {
+  float f = 1.0f;
+  auto cb = BindOnce(&TakesIntRef, base::OwnedRef(f));
 }
 
-void RefCountedArgs() {
-  // Refcounted types should not be bound as a raw pointers.
-  struct S : public RefCounted<S> {};
-  S s;
-  const S const_s;
-  S* ptr_s = &s;
-  const S* const_ptr_s = &const_s;
-  raw_ptr<S> rawptr(&s);
-  raw_ptr<const S> const_rawptr(&const_s);
-  raw_ref<S> rawref(s);
-  raw_ref<const S> const_rawref(const_s);
-  BindRepeating([] (S*) {}, &s);                          // expected-error@*:* {{A parameter is a refcounted type and needs scoped_refptr.}}
-  BindRepeating([] (const S*) {}, &const_s);              // expected-error@*:* {{A parameter is a refcounted type and needs scoped_refptr.}}
-  BindRepeating([] (S*) {}, ptr_s);                       // expected-error@*:* {{A parameter is a refcounted type and needs scoped_refptr.}}
-  BindRepeating([] (const S*) {}, const_ptr_s);           // expected-error@*:* {{A parameter is a refcounted type and needs scoped_refptr.}}
-  BindRepeating([] (S*) {}, rawptr);                      // expected-error@*:* {{A parameter is a refcounted type and needs scoped_refptr.}}
-  BindRepeating([] (const S*) {}, const_rawptr);          // expected-error@*:* {{A parameter is a refcounted type and needs scoped_refptr.}}
-  BindRepeating([] (raw_ref<S>) {}, rawref);              // expected-error@*:* {{A parameter is a refcounted type and needs scoped_refptr.}}
-  BindRepeating([] (raw_ref<const S>) {}, const_rawref);  // expected-error@*:* {{A parameter is a refcounted type and needs scoped_refptr.}}
+#elif defined(NCTEST_NO_IMPLICIT_ARRAY_PTR_CONVERSION)  // [r"First bound argument to a method cannot be an array."]
+
+// A method should not be bindable with an array of objects.
+//
+// This is likely not wanted behavior. We specifically check for it though
+// because it is possible, depending on how you implement prebinding, to
+// implicitly convert an array type to a pointer type.
+void WontCompile() {
+  HasRef p[10];
+  RepeatingCallback<void()> method_bound_to_array_cb =
+      BindRepeating(&HasRef::VoidMethod0, p);
+  method_bound_to_array_cb.Run();
 }
 
-void WeakPtrWithReturnType() {
-  // WeakPtrs cannot be bound to methods with return types, since if the WeakPtr
-  // is null when the callback runs, it's not clear what the framework should
-  // return.
-  struct S {
-    int ReturnsInt() const { return 1; }
-  } s;
-  WeakPtrFactory<S> weak_factory(&s);
-  BindRepeating(&S::ReturnsInt, weak_factory.GetWeakPtr());  // expected-error@*:* {{WeakPtrs can only bind to methods without return values.}}
+#elif defined(NCTEST_NO_RVALUE_RAW_REF_FOR_REFCOUNTED_TYPES)  // [r"A parameter is a refcounted type and needs scoped_refptr."]
+
+// Refcounted types should not be bound as a raw pointer.
+void WontCompile() {
+  HasRef has_ref;
+  raw_ref<HasRef> rr(has_ref);
+  int a;
+  raw_ref<int> rr_a(a);
+  RepeatingCallback<void()> ref_count_as_raw_ptr_a =
+      BindRepeating(&VoidPolymorphic1<raw_ref<int>>, rr_a);
+  RepeatingCallback<void()> ref_count_as_raw_ptr =
+      BindRepeating(&VoidPolymorphic1<raw_ref<HasRef>>, rr);
 }
 
-void CallbackConversion() {
-  // Callbacks should not be constructible from other callbacks in ways that
-  // would drop ref or pointer constness or change arity.
-  RepeatingCallback<int(int&)> wrong_ref_constness = BindRepeating([] (const int&) {});  // expected-error {{no viable conversion from 'RepeatingCallback<UnboundRunType>' to 'RepeatingCallback<int (int &)>'}}
-  RepeatingCallback<int(int*)> wrong_ptr_constness = BindRepeating([] (const int*) {});  // expected-error {{no viable conversion from 'RepeatingCallback<UnboundRunType>' to 'RepeatingCallback<int (int *)>'}}
-  RepeatingClosure arg_count_too_low = BindRepeating([] (int) {});                       // expected-error {{no viable conversion from 'RepeatingCallback<UnboundRunType>' to 'RepeatingCallback<void ()>'}}
-  RepeatingCallback<int(int)> arg_count_too_high = BindRepeating([] { return 0; });      // expected-error {{no viable conversion from 'RepeatingCallback<UnboundRunType>' to 'RepeatingCallback<int (int)>'}}
-  RepeatingClosure discarding_return = BindRepeating([] { return 0; });                  // expected-error {{no viable conversion from 'RepeatingCallback<UnboundRunType>' to 'RepeatingCallback<void ()>'}}
+#elif defined(NCTEST_NO_RVALUE_RAW_PTR_FOR_REFCOUNTED_TYPES)  // [r"A parameter is a refcounted type and needs scoped_refptr."]
+
+// Refcounted types should not be bound as a raw pointer.
+void WontCompile() {
+  HasRef for_raw_ptr;
+  int a;
+  RepeatingCallback<void()> ref_count_as_raw_ptr_a =
+      BindRepeating(&VoidPolymorphic1<int*>, &a);
+  RepeatingCallback<void()> ref_count_as_raw_ptr =
+      BindRepeating(&VoidPolymorphic1<HasRef*>, &for_raw_ptr);
 }
 
-void CapturingOrStatefulLambdaOrFunctor() {
-  // Bind disallows capturing and stateful lambdas/functors.
+#elif defined(NCTEST_NO_LVALUE_RAW_PTR_FOR_REFCOUNTED_TYPES)  // [r"A parameter is a refcounted type and needs scoped_refptr."]
+
+// Refcounted types should not be bound as a raw pointer.
+void WontCompile() {
+  HasRef* for_raw_ptr = nullptr;
+  RepeatingCallback<void()> ref_count_as_raw_ptr =
+      BindRepeating(&VoidPolymorphic1<HasRef*>, for_raw_ptr);
+}
+
+#elif defined(NCTEST_NO_RVALUE_CONST_RAW_PTR_FOR_REFCOUNTED_TYPES)  // [r"A parameter is a refcounted type and needs scoped_refptr."]
+
+// Refcounted types should not be bound as a raw pointer.
+void WontCompile() {
+  const HasRef for_raw_ptr;
+  RepeatingCallback<void()> ref_count_as_raw_ptr =
+      BindRepeating(&VoidPolymorphic1<const HasRef*>, &for_raw_ptr);
+}
+
+#elif defined(NCTEST_NO_LVALUE_CONST_RAW_PTR_FOR_REFCOUNTED_TYPES)  // [r"A parameter is a refcounted type and needs scoped_refptr."]
+
+// Refcounted types should not be bound as a raw pointer.
+void WontCompile() {
+  const HasRef* for_raw_ptr = nullptr;
+  RepeatingCallback<void()> ref_count_as_raw_ptr =
+      BindRepeating(&VoidPolymorphic1<const HasRef*>, for_raw_ptr);
+}
+
+#elif defined(NCTEST_WEAKPTR_BIND_MUST_RETURN_VOID)  // [r"WeakPtrs can only bind to methods without return values."]
+
+// WeakPtrs cannot be bound to methods with return types.
+void WontCompile() {
+  NoRef no_ref;
+  WeakPtrFactory<NoRef> weak_factory(&no_ref);
+  RepeatingCallback<int()> weak_ptr_with_non_void_return_type =
+      BindRepeating(&NoRef::IntMethod0, weak_factory.GetWeakPtr());
+  weak_ptr_with_non_void_return_type.Run();
+}
+
+#elif defined(NCTEST_DISALLOW_ASSIGN_DIFFERENT_TYPES)  // [r"no viable conversion from 'RepeatingCallback<UnboundRunType>' to 'RepeatingCallback<void \(\)>'"]
+
+// Bind result cannot be assigned to Callbacks with a mismatching type.
+void WontCompile() {
+  RepeatingClosure callback_mismatches_bind_type =
+      BindRepeating(&VoidPolymorphic1<int>);
+}
+
+#elif defined(NCTEST_DISALLOW_CAPTURING_LAMBDA)  // [r"Capturing lambdas and stateful lambdas are intentionally not supported\."]
+
+void WontCompile() {
   int i = 0, j = 0;
-  struct S {
-    void operator()() const {}
-    int x;
+  BindOnce([i,&j]() {j = i;});
+}
+
+#elif defined(NCTEST_DISALLOW_ONCECALLBACK_RUN_ON_LVALUE)  // [r"OnceCallback::Run\(\) may only be invoked on a non-const rvalue, i\.e\. std::move\(callback\).Run\(\)."]
+
+void WontCompile() {
+  OnceClosure cb = BindOnce([] {});
+  cb.Run();
+}
+
+#elif defined(NCTEST_DISALLOW_ONCECALLBACK_RUN_ON_CONST_LVALUE)  // [r"OnceCallback::Run\(\) may only be invoked on a non-const rvalue, i\.e\. std::move\(callback\).Run\(\)."]
+
+void WontCompile() {
+  const OnceClosure cb = BindOnce([] {});
+  cb.Run();
+}
+
+#elif defined(NCTEST_DISALLOW_ONCECALLBACK_RUN_ON_CONST_RVALUE)  // [r"OnceCallback::Run\(\) may only be invoked on a non-const rvalue, i\.e\. std::move\(callback\).Run\(\)."]
+
+void WontCompile() {
+  const OnceClosure cb = BindOnce([] {});
+  std::move(cb).Run();
+}
+
+#elif defined(NCTEST_DISALLOW_BIND_ONCECALLBACK)  // [r"BindRepeating\(\) cannot bind OnceCallback. Use BindOnce\(\) with std::move\(\)\."]
+
+void WontCompile() {
+  BindRepeating(BindOnce([](int) {}), 42);
+}
+
+#elif defined(NCTEST_DISALLOW_BINDONCE_LVALUE_ONCECALLBACK)  // [r"BindOnce\(\) requires non-const rvalue for OnceCallback binding, i\.e\. base::BindOnce\(std::move\(callback\)\)\."]
+void WontCompile() {
+  auto cb = BindOnce([](int) {});
+  BindOnce(cb, 42);
+}
+
+#elif defined(NCTEST_DISALLOW_BINDONCE_RVALUE_CONST_ONCECALLBACK)  // [r"BindOnce\(\) requires non-const rvalue for OnceCallback binding, i\.e\. base::BindOnce\(std::move\(callback\)\)\."]
+
+void WontCompile() {
+  const auto cb = BindOnce([](int) {});
+  BindOnce(std::move(cb), 42);
+}
+
+#elif defined(NCTEST_BINDONCE_MOVEONLY_TYPE_BY_VALUE)  // [r"Attempting to bind a move-only type\. Use std::move\(\) to transfer ownership to the created callback\."]
+
+void WontCompile() {
+  std::unique_ptr<int> x;
+  BindOnce(&TakesMoveOnly, x);
+}
+
+#elif defined(NCTEST_BIND_MOVEONLY_TYPE_BY_VALUE)  // [r"base::BindRepeating\(\) argument is a move-only type\. Use base::Passed\(\) instead of std::move\(\) to transfer ownership from the callback to the bound functor\."]
+
+void WontCompile() {
+  std::unique_ptr<int> x;
+  BindRepeating(&TakesMoveOnly, x);
+}
+
+#elif defined(NCTEST_BIND_MOVEONLY_TYPE_WITH_STDMOVE)  // [r"base::BindRepeating\(\) argument is a move-only type\. Use base::Passed\(\) instead of std::move\(\) to transfer ownership from the callback to the bound functor\."]
+
+void WontCompile() {
+  std::unique_ptr<int> x;
+  BindRepeating(&TakesMoveOnly, std::move(x));
+}
+
+#elif defined(NCTEST_BIND_NON_EMPTY_FUNCTOR)  // [r"Capturing lambdas and stateful lambdas are intentionally not supported\."]
+
+void WontCompile() {
+  BindRepeating(NonEmptyFunctor());
+}
+
+#elif defined(NCTEST_DISALLOW_BINDLAMBDAFORTESTING_LVALUE_MUTABLE_LAMBDA)  // [r"BindLambdaForTesting\(\) requires non-const rvalue for mutable lambda binding, i\.e\. base::BindLambdaForTesting\(std::move\(lambda\)\)\."]
+void WontCompile() {
+  int foo = 42;
+  auto mutable_lambda = [&]() mutable {};
+  BindLambdaForTesting(mutable_lambda);
+}
+
+#elif defined(NCTEST_DISALLOW_BINDLAMBDAFORTESTING_RVALUE_CONST_MUTABLE_LAMBDA)  // [r"BindLambdaForTesting\(\) requires non-const rvalue for mutable lambda binding, i\.e\. base::BindLambdaForTesting\(std::move\(lambda\)\)\."]
+
+void WontCompile() {
+  int foo = 42;
+  const auto mutable_lambda = [&]() mutable {};
+  BindLambdaForTesting(std::move(mutable_lambda));
+}
+
+#elif defined(NCTEST_BIND_UNCOPYABLE_AND_UNMOVABLE_TYPE)  // [r"Cannot capture argument: is the argument copyable or movable\?"]
+
+void WontCompile() {
+  struct UncopyableUnmovable {
+    UncopyableUnmovable() = default;
+    UncopyableUnmovable(const UncopyableUnmovable&) = delete;
+    UncopyableUnmovable& operator=(const UncopyableUnmovable&) = delete;
   };
-  BindOnce([&]() { j = i; });        // expected-error@*:* {{Capturing lambdas and stateful lambdas are intentionally not supported.}}
-  BindRepeating([&]() { j = i; });   // expected-error@*:* {{Capturing lambdas and stateful lambdas are intentionally not supported.}}
-  BindRepeating(S());                // expected-error@*:* {{Capturing lambdas and stateful lambdas are intentionally not supported.}}
+
+  UncopyableUnmovable u;
+  BindOnce([] (const UncopyableUnmovable&) {}, u);
 }
 
-void OnceCallbackRequiresNonConstRvalue() {
-  // `OnceCallback::Run()` can only be invoked on a non-const rvalue.
-  // Using distinct types causes distinct template instantiations, so we get
-  // assertion failures below where we expect. These types facilitate that.
-  enum class A {};
-  enum class B {};
-  enum class C {};
-  OnceCallback<void(A)> cb_a = BindOnce([] (A) {});
-  const OnceCallback<void(B)> const_cb_b = BindOnce([] (B) {});
-  const OnceCallback<void(C)> const_cb_c = BindOnce([] (C) {});
-  cb_a.Run(A{});                   // expected-error@*:* {{OnceCallback::Run() may only be invoked on a non-const rvalue, i.e. std::move(callback).Run().}}
-  const_cb_b.Run(B{});             // expected-error@*:* {{OnceCallback::Run() may only be invoked on a non-const rvalue, i.e. std::move(callback).Run().}}
-  std::move(const_cb_c).Run(C{});  // expected-error@*:* {{OnceCallback::Run() may only be invoked on a non-const rvalue, i.e. std::move(callback).Run().}}
+#elif defined(NCTEST_BIND_ONCE_WITH_PASSED)  // [r"Use std::move\(\) instead of base::Passed\(\) with base::BindOnce\(\)\."]
+
+void WontCompile() {
+  std::unique_ptr<int> x;
+  BindOnce([] (std::unique_ptr<int>) {}, Passed(&x));
 }
 
-void OnceCallbackAsArgMustBeNonConstRvalue() {
-  // A `OnceCallback` passed to another callback must be a non-const rvalue.
-  auto cb = BindOnce([] (int) {});
-  const auto const_cb = BindOnce([] (int) {});
-  BindOnce(cb, 0);                   // expected-error@*:* {{BindOnce() requires non-const rvalue for OnceCallback binding, i.e. base::BindOnce(std::move(callback)).}}
-  BindOnce(std::move(const_cb), 0);  // expected-error@*:* {{BindOnce() requires non-const rvalue for OnceCallback binding, i.e. base::BindOnce(std::move(callback)).}}
+#elif defined(NCTEST_BIND_ONCE_WITH_ADDRESS_OF_OVERLOADED_FUNCTION)  // [r"reference to overloaded function could not be resolved; did you mean to call it\?"]
+
+void F(int);
+void F(float);
+
+void WontCompile() {
+  BindOnce(&F, 1, 2, 3);
 }
 
-void OnceCallbackBoundByRepeatingCallback() {
-  // `BindRepeating()` does not accept `OnceCallback`s.
-  BindRepeating(BindOnce([] (int) {}), 0);  // expected-error@*:* {{BindRepeating() cannot bind OnceCallback. Use BindOnce() with std::move().}}
+#elif defined(NCTEST_BIND_REPEATING_WITH_ADDRESS_OF_OVERLOADED_FUNCTION)  // [r"reference to overloaded function could not be resolved; did you mean to call it\?"]
+
+void F(int);
+void F(float);
+
+void WontCompile() {
+  BindRepeating(&F, 1, 2, 3);
 }
 
-void MoveOnlyArg() {
-  // Move-only types require `std::move()` for `BindOnce()` and `base::Passed()` for `BindRepeating()`.
-  struct S {
-    S() = default;
-    S(S&&) = default;
-    S& operator=(S&&) = default;
-  } s1, s2;
-  BindOnce([] (S) {}, s1);                  // expected-error@*:* {{Attempting to bind a move-only type. Use std::move() to transfer ownership to the created callback.}}
-  BindOnce([] (S) {}, Passed(&s1));         // expected-error@*:* {{Use std::move() instead of base::Passed() with base::BindOnce().}}
-  BindRepeating([] (S) {}, s2);             // expected-error@*:* {{base::BindRepeating() argument is a move-only type. Use base::Passed() instead of std::move() to transfer ownership from the callback to the bound functor.}}
-  BindRepeating([] (S) {}, std::move(s2));  // expected-error@*:* {{base::BindRepeating() argument is a move-only type. Use base::Passed() instead of std::move() to transfer ownership from the callback to the bound functor.}}
+#elif defined(NCTEST_UNRETAINED_WITH_INCOMPLETE_TYPE)  // [r"T must be fully defined\."]
+
+void WontCompile(Incomplete* incomplete) {
+  BindOnce(&PassIncompleteByPtr, base::Unretained(incomplete));
 }
 
-void NonCopyableNonMovable() {
-  // Arguments must be either copyable or movable to be captured.
-  struct S {
-    S() = default;
-    S(const S&) = delete;
-    S& operator=(const S&) = delete;
-  } s;
-  BindOnce([](const S&) {}, s);  // expected-error@*:* {{Cannot capture argument: is the argument copyable or movable?}}
+#elif defined(NCTEST_RAW_POINTER_WITH_INCOMPLETE_TYPE)  // [r"T must be fully defined\."]
+
+void WontCompile(Incomplete* incomplete) {
+  BindOnce(&PassIncompleteByPtr, incomplete);
 }
 
-void OverloadedFunction() {
-  // Overloaded function types cannot be disambiguated. (It might be nice to fix
-  // this.)
-  void F(int);
-  void F(float);
-  BindOnce(&F, 1);          // expected-error {{reference to overloaded function could not be resolved; did you mean to call it?}}
-  BindRepeating(&F, 1.0f);  // expected-error {{reference to overloaded function could not be resolved; did you mean to call it?}}
+#elif defined(NCTEST_UNRETAINED_WITH_DISALLOWED_TYPE)  // [r"Callback cannot capture an unprotected C\+\+ pointer since this type is annotated with DISALLOW_UNRETAINED\(\)\."]
+
+void WontCompile() {
+  Dangerous dangerous;
+  BindOnce(&Dangerous::Method, base::Unretained(&dangerous));
 }
 
-void IncompleteType() {
-  // Argument types must be complete.
-  class A;
-  class B;
-  A* a;
-  B* b;
-  BindOnce([] (A*) {}, Unretained(a));  // expected-error@*:* {{T must be fully defined.}}
-  BindOnce([] (B*) {}, b);              // expected-error@*:* {{T must be fully defined.}}
+#elif defined(NCTEST_RAW_POINTER_WITH_DISALLOWED_TYPE)  // [r"Callback cannot capture an unprotected C\+\+ pointer since this type is annotated with DISALLOW_UNRETAINED\(\)\."]
+
+void WontCompile() {
+  Dangerous dangerous;
+  BindOnce(&PassDangerousByPtr, &dangerous);
 }
 
-void DisallowedType() {
-  // Arguments passed as pointers or refs cannot use DISALLOW_UNRETAINED().
-  struct A {
-    void Method() {}
-    DISALLOW_UNRETAINED();
-  };
-  // Using distinct types causes distinct template instantiations, so we get
-  // assertion failures below where we expect. This type facilitates that.
-  struct B : public A {};
-  A a;
-  B b;
-  BindOnce(&A::Method, Unretained(&a));      // expected-error@*:* {{Callback cannot capture an unprotected C++ pointer since this type is annotated with DISALLOW_UNRETAINED().}}
-  BindOnce([] (B*) {}, &b);                  // expected-error@*:* {{Callback cannot capture an unprotected C++ pointer since this type is annotated with DISALLOW_UNRETAINED().}}
-  BindOnce([] (const A&) {}, std::cref(a));  // expected-error@*:* {{Callback cannot capture an unprotected C++ reference since this type is annotated with DISALLOW_UNRETAINED().}}
-  BindOnce([] (A&) {}, std::ref(a));         // expected-error@*:* {{Callback cannot capture an unprotected C++ reference since this type is annotated with DISALLOW_UNRETAINED().}}
+#elif defined(NCTEST_RAW_CONST_REFERENCE_WITH_DISALLOWED_TYPE)  // [r"Callback cannot capture an unprotected C\+\+ reference since this type is annotated with DISALLOW_UNRETAINED\(\)\."]
+
+void WontCompile() {
+  Dangerous dangerous;
+  BindOnce(&PassDangerousByConstRef, std::cref(dangerous));
 }
 
-void UnsafeDangling() {
-  // Pointers marked as `UnsafeDangling` may only be be received by
-  // `MayBeDangling` args with matching traits.
-  int i;
-  BindOnce([] (int*) {}, UnsafeDangling(&i));                      // expected-error@*:* {{base::UnsafeDangling() pointers must be received by functors with MayBeDangling<T> as parameter.}}
-  BindOnce([] (MayBeDangling<int>) {},
-           UnsafeDangling<int, RawPtrTraits::kDummyForTest>(&i));  // expected-error@*:* {{MayBeDangling<T> parameter must receive the same RawPtrTraits as the one passed to the corresponding base::UnsafeDangling() call.}}
-  BindOnce([] (raw_ptr<int>) {}, UnsafeDanglingUntriaged(&i));     // expected-error@*:* {{base::Bind() target functor has a parameter of type raw_ptr<T>. raw_ptr<T> should not be used for function parameters; please use T* or T& instead.}}
+#elif defined(NCTEST_RAW_MUTABLE_REFERENCE_WITH_DISALLOWED_TYPE)  // [r"Callback cannot capture an unprotected C\+\+ reference since this type is annotated with DISALLOW_UNRETAINED\(\)\."]
+
+void WontCompile() {
+  Dangerous dangerous;
+  BindOnce(&PassDangerousByMutableRef, std::ref(dangerous));
 }
+
+#elif defined(NCTEST_UNSAFE_DANLING_WITHOUT_RAW_PTR_RECEIVER) // [r"base::UnsafeDangling\(\) pointers must be received by functors with MayBeDangling<T> as parameter\."]
+
+void PassIntPtr(int *ptr) {}
+
+void WontCompile() {
+  int val;
+  BindOnce(&PassIntPtr, UnsafeDangling(&val));
+}
+
+#elif defined(NCTEST_UNSAFE_DANLING_WITH_DIFFERENT_PTR_TRAITS) // [r"MayBeDangling<T> parameter must receive the same RawPtrTraits as the one passed to the corresponding base::UnsafeDangling\(\) call\."]
+
+void PassIntPtr(MayBeDangling<int> ptr) {}
+
+void WontCompile() {
+  int val;
+  BindOnce(&PassIntPtr, UnsafeDangling<int, RawPtrTraits::kDummyForTest>(&val));
+}
+
+#elif defined(NCTEST_UNSAFE_DANLING_UNTRIAGED_WITH_RAW_PTR_RECEIVER) // [r"base::Bind\(\) target functor has a parameter of type raw_ptr<T>."]
+
+void PassIntRawPtr(raw_ptr<int> ptr) {}
+
+void WontCompile() {
+  int val;
+  BindOnce(&PassIntRawPtr, UnsafeDanglingUntriaged(&val));
+}
+
+#endif
 
 }  // namespace base

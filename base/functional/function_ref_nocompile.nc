@@ -12,18 +12,45 @@
 
 namespace base {
 
-void NoImplicitVoidify() {
-  // Return values cannot be implicitly discarded.
-  FunctionRef<void()> ref([] { return 0; });  // expected-error {{no matching constructor for initialization of 'FunctionRef<void ()>'}}
+#if defined(NCTEST_NO_IMPLICIT_VOIDIFY)  // [r"note: candidate template ignored: requirement '[^']+' was not satisfied \[with Functor = \(lambda at [^)]+\)\]"]
+
+void WontCompile() {
+  auto returns_int = [] () { return 42; };
+  FunctionRef<void()> ref(returns_int);
 }
 
-void CannotBindFunctionRefs() {
-  // `Bind{Once,Repeating}` do not accept `FunctionRef` args due to potential
-  // lifetime concerns.
-  [](absl::FunctionRef<void()> ref) { BindOnce(ref); }([] {});       // expected-error@*:* {{base::Bind{Once,Repeating} require strong ownership: non-owning function references may not be bound as the functor due to potential lifetime issues.}}
-  [](absl::FunctionRef<void()> ref) { BindRepeating(ref); }([] {});  // expected-error@*:* {{base::Bind{Once,Repeating} require strong ownership: non-owning function references may not be bound as the functor due to potential lifetime issues.}}
-  [](FunctionRef<void()> ref) { BindOnce(ref); }([] {});             // expected-error@*:* {{base::Bind{Once,Repeating} require strong ownership: non-owning function references may not be bound as the functor due to potential lifetime issues.}}
-  [](FunctionRef<void()> ref) { BindRepeating(ref); }([] {});        // expected-error@*:* {{base::Bind{Once,Repeating} require strong ownership: non-owning function references may not be bound as the functor due to potential lifetime issues.}}
+#elif defined(NCTEST_BIND_ONCE_TO_ABSL_FUNCTION_REF)  // [r"base::Bind{Once,Repeating} require strong ownership: non-owning function references may not be bound as the functor due to potential lifetime issues\."]
+
+void WontCompile() {
+  [] (absl::FunctionRef<void()> ref) {
+    BindOnce(ref).Run();
+  }([] {});
 }
+
+#elif defined(NCTEST_BIND_REPEATING_TO_ABSL_FUNCTION_REF)  // [r"base::Bind{Once,Repeating} require strong ownership: non-owning function references may not be bound as the functor due to potential lifetime issues\."]
+
+void WontCompile() {
+  [] (FunctionRef<void()> ref) {
+    BindRepeating(ref).Run();
+  }([] {});
+}
+
+#elif defined(NCTEST_BIND_ONCE_TO_BASE_FUNCTION_REF)  // [r"base::Bind{Once,Repeating} require strong ownership: non-owning function references may not be bound as the functor due to potential lifetime issues\."]
+
+void WontCompile() {
+  [] (FunctionRef<void()> ref) {
+    BindOnce(ref).Run();
+  }([] {});
+}
+
+#elif defined(NCTEST_BIND_REPEATING_TO_BASE_FUNCTION_REF)  // [r"base::Bind{Once,Repeating} require strong ownership: non-owning function references may not be bound as the functor due to potential lifetime issues\."]
+
+void WontCompile() {
+  [] (FunctionRef<void()> ref) {
+    BindRepeating(ref).Run();
+  }([] {});
+}
+
+#endif
 
 }  // namespace base
