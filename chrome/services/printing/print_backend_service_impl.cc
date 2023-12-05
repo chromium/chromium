@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -743,6 +744,11 @@ void PrintBackendServiceImpl::StartPrinting(
 
 #if !BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
   if (settings) {
+    // Now have the printer name for the print job for use with crash keys.
+    std::string printer_name = base::UTF16ToUTF8(settings->device_name());
+    crash_keys_ = std::make_unique<crash_keys::ScopedPrinterInfo>(
+        printer_name, print_backend_->GetPrinterDriverInfo(printer_name));
+
     // Apply the settings from the in-browser system dialog to the context.
     context_container->context->SetPrintSettings(*settings);
   }
@@ -853,6 +859,13 @@ void PrintBackendServiceImpl::OnDidAskUserForSettings(
     std::move(callback).Run(mojom::PrintSettingsResult::NewResultCode(result));
     return;
   }
+
+  // Set the crash keys for the document that should start printing next.
+  std::string printer_name =
+      base::UTF16ToUTF8(context->settings().device_name());
+  crash_keys_ = std::make_unique<crash_keys::ScopedPrinterInfo>(
+      printer_name, print_backend_->GetPrinterDriverInfo(printer_name));
+
   std::move(callback).Run(mojom::PrintSettingsResult::NewSettings(
       *context->TakeAndResetSettings()));
 }
