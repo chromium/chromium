@@ -10,6 +10,7 @@
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '../../../css/common.css.js';
 import '../../../css/wallpaper.css.js';
+import '../../../css/sea_pen.css.js';
 
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert} from 'chrome://resources/js/assert.js';

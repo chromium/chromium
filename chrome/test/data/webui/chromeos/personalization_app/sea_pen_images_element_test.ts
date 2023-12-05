@@ -5,8 +5,8 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {SeaPenImagesElement, SparklePlaceholderElement} from 'chrome://personalization/js/personalization_app.js';
-import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
+import {SeaPenImagesElement, SparklePlaceholderElement, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
@@ -88,13 +88,16 @@ suite('SeaPenImagesElementTest', function() {
     seaPenImagesElement = initElement(SeaPenImagesElement);
     await waitAfterNextRender(seaPenImagesElement);
 
-    const thumbnail =
-        seaPenImagesElement.shadowRoot!.querySelector<HTMLElement>(
-            'div:not([hidden]).thumbnail-item-container img');
-    thumbnail!.click();
+    const thumbnails: WallpaperGridItemElement[] =
+        Array.from(seaPenImagesElement.shadowRoot!.querySelectorAll<
+                   WallpaperGridItemElement>(
+            `div:not([hidden]).thumbnail-item-container wallpaper-grid-item:not([hidden])`));
+    assertEquals(4, thumbnails!.length, 'should be 4 images available.');
+    thumbnails[0]!.click();
 
     const id = await seaPenProvider.whenCalled('selectSeaPenThumbnail');
     assertEquals(
         seaPenProvider.images[0]!.id, id, 'id sent for first SeaPenThumbnail');
+    assertTrue(thumbnails[0]!.getAttribute('aria-selected') === 'true');
   });
 });

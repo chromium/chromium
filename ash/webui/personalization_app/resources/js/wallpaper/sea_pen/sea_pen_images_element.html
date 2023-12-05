@@ -1,4 +1,4 @@
-<style include="common wallpaper">
+<style include="common wallpaper sea-pen">
   :host {
     overflow: hidden;
   }
@@ -12,24 +12,20 @@
     box-sizing: border-box;
     height: 250px;
     overflow: hidden;
-    padding: calc(var(--personalization-app-grid-item-spacing) / 2);
     /* Subtract 0.5px to fix subpixel rounding issues with iron-list. This
      * ensures all grid items in a row add up to at least 1px smaller than the
      * parent width. */
     width: calc(100% / 2 - 0.5px);
   }
 
+  .thumbnail-placeholder-container {
+    padding: calc(var(--personalization-app-grid-item-spacing) / 2);
+  }
+
   .thumbnail-placeholder {
     background-color: var(--personalization-app-grid-item-background-color);
     border-radius: var(--personalization-app-grid-item-border-radius);
     height: 100%;
-  }
-
-  img {
-    border-radius: var(--personalization-app-grid-item-border-radius);
-    height: 100%;
-    object-fit: cover;
-    width: 100%;
   }
 </style>
 <!-- TODO(b/308200616): Add real text -->
@@ -58,13 +54,20 @@
   <iron-list id="grid"
       items="[[thumbnails_]]"
       grid
-      role="list">
+      role="listbox">
     <template>
-      <div class="thumbnail-item-container" role="listitem">
-        <img auto-src="[[item.image.url]]"
-            is="cr-auto-img"
-            on-click="onThumbnailSelected_"
-            on-keypress="onThumbnailSelected_">
+      <div class="thumbnail-item-container">
+        <wallpaper-grid-item
+            class="sea-pen-image"
+            index="[[index]]"
+            data-sea-pen-image
+            aria-posinset$="[[getAriaIndex_(index)]]"
+            on-wallpaper-grid-item-selected="onThumbnailSelected_"
+            role="option"
+            selected="[[isThumbnailSelected_(item, pendingSelected_)]]"
+            src="[[item.image]]"
+            tabindex$="[[tabIndex]]">
+        </wallpaper-grid-item>
       </div>
     </template>
   </iron-list>

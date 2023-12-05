@@ -10,10 +10,11 @@
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import '../../../css/common.css.js';
 import './sparkle_placeholder_element.js';
+import '../../../css/sea_pen.css.js';
 
 import {SeaPenThumbnail} from '../../../sea_pen.mojom-webui.js';
 import {WithPersonalizationStore} from '../../personalization_store.js';
-import {getZerosArray, isNonEmptyArray, isSelectionEvent} from '../../utils.js';
+import {getZerosArray, isNonEmptyArray} from '../../utils.js';
 
 import {selectSeaPenWallpaper} from './sea_pen_controller.js';
 import {getTemplate} from './sea_pen_images_element.html.js';
@@ -35,12 +36,17 @@ export class SeaPenImagesElement extends WithPersonalizationStore {
       thumbnails_: Object,
 
       thumbnailsLoading_: Boolean,
+
+      // The pending selected image. Not persisted in store as it is only
+      // temporarily available in this element.
+      pendingSelected_: Object,
     };
   }
 
   private templateId: string;
   private thumbnails_: SeaPenThumbnail[]|null;
   private thumbnailsLoading_: boolean;
+  private pendingSelected_: SeaPenThumbnail|null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -75,10 +81,17 @@ export class SeaPenImagesElement extends WithPersonalizationStore {
   }
 
   private onThumbnailSelected_(event: Event&{model: {item: SeaPenThumbnail}}) {
-    if (!isSelectionEvent(event)) {
-      return;
-    }
+    this.pendingSelected_ = event.model.item;
     selectSeaPenWallpaper(event.model.item, getSeaPenProvider());
+  }
+
+  private getAriaIndex_(i: number): number {
+    return i + 1;
+  }
+
+  private isThumbnailSelected_(
+      thumbnail: SeaPenThumbnail, pendingSelected: SeaPenThumbnail|null) {
+    return thumbnail === pendingSelected;
   }
 }
 

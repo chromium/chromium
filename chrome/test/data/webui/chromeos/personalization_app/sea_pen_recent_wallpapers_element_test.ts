@@ -27,7 +27,7 @@ suite('SeaPenRecentWallpapersElementTest', function() {
 
     return Array.from(seaPenRecentWallpapersElement.shadowRoot!
                           .querySelectorAll<WallpaperGridItemElement>(
-                              'div:not([hidden]) .recent-image[placeholder]'));
+                              'div:not([hidden]) .sea-pen-image[placeholder]'));
   }
 
   function getDisplayedRecentImages(): WallpaperGridItemElement[] {
@@ -38,7 +38,7 @@ suite('SeaPenRecentWallpapersElementTest', function() {
     return Array.from(
         seaPenRecentWallpapersElement.shadowRoot!
             .querySelectorAll<WallpaperGridItemElement>(
-                'div:not([hidden]) .recent-image:not([placeholder])'));
+                'div:not([hidden]) .sea-pen-image:not([placeholder])'));
   }
 
   setup(() => {
@@ -415,7 +415,7 @@ suite('SeaPenRecentWallpapersElementTest', function() {
     // Sea Pen wallpaper thumbnails should display.
     const recentImages =
         seaPenRecentWallpapersElement.shadowRoot!.querySelectorAll(
-            'div:not([hidden]) .recent-image');
+            'div:not([hidden]) .sea-pen-image');
     assertEquals(3, recentImages!.length, 'should be 3 images available.');
 
     // Click on the second image to set it as wallpaper.

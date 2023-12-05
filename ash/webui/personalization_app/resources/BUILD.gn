@@ -169,6 +169,7 @@ build_webui("build") {
   css_files = [
     "css/common.css",
     "css/cros_button_style.css",
+    "css/sea_pen.css",
     "css/wallpaper.css",
   ]
 
