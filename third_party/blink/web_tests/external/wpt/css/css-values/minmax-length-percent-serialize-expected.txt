@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] 'max((min(10%, 30px) + 10px) * 2 + 10px, 5em + 5%)' as a specified value should serialize as 'max(10px + ((10px + min(10%, 30px)) * 2), 5% + 5em)'.
+  assert_equals: 'max(10px + ((10px + min(10%, 30px)) * 2), 5% + 5em)' should round-trip exactly in specified values. expected "max(10px + ((10px + min(10%, 30px)) * 2), 5% + 5em)" but got "max(10px + (10px + min(10%, 30px)) * 2, 5% + 5em)"
+[FAIL] 'max((min(10%, 30px) + 10px) * 2 + 10px, 5em + 5%)' as a computed value should serialize as 'max(10px + ((10px + min(10%, 30px)) * 2), 5% + 80px)'.
+  assert_equals: 'max(10px + ((10px + min(10%, 30px)) * 2), 5% + 80px)' should round-trip exactly in computed values. expected "max(10px + ((10px + min(10%, 30px)) * 2), 5% + 80px)" but got "max(10px + (10px + min(10%, 30px)) * 2, 5% + 80px)"
+Harness: the test ran to completion.
+
