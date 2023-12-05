@@ -291,9 +291,7 @@ void FillSegmentationParams(struct v4l2_av1_segmentation* v4l2_seg,
 void FillCdefParams(struct v4l2_av1_cdef* v4l2_cdef,
                     const libgav1::Cdef& cdef,
                     uint8_t color_bitdepth) {
-  // Damping value parsed in libgav1 is from the spec + (bitdepth - 8).
-  // All the strength values parsed in libgav1 are from the spec and left
-  // shifted by (bitdepth - 8).
+  // Damping value parsed in libgav1 is from the spec + (|color_bitdepth| - 8).
   CHECK_GE(color_bitdepth, 8u);
   const uint8_t coeff_shift = color_bitdepth - 8u;
 
@@ -322,6 +320,16 @@ void FillCdefParams(struct v4l2_av1_cdef* v4l2_cdef,
   SafeArrayMemcpy(v4l2_cdef->y_sec_strength, cdef.y_secondary_strength);
   SafeArrayMemcpy(v4l2_cdef->uv_pri_strength, cdef.uv_primary_strength);
   SafeArrayMemcpy(v4l2_cdef->uv_sec_strength, cdef.uv_secondary_strength);
+
+  // All the strength values parsed in libgav1 are from the AV1 spec and left
+  // shifted by (|color_bitdepth| - 8). So these values need to be right shifted
+  // by (|color_bitdepth| - 8) before passing to a driver.
+  for (size_t i = 0; i < libgav1::kMaxCdefStrengths; i++) {
+    v4l2_cdef->y_pri_strength[i] >>= coeff_shift;
+    v4l2_cdef->y_sec_strength[i] >>= coeff_shift;
+    v4l2_cdef->uv_pri_strength[i] >>= coeff_shift;
+    v4l2_cdef->uv_sec_strength[i] >>= coeff_shift;
+  }
 }
 
 // 5.9.20. Loop restoration params syntax
