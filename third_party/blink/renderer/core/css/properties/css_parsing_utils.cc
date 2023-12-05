@@ -3290,15 +3290,13 @@ void CountKeywordOnlyPropertyUsage(CSSPropertyID property,
               NonStandardAppearanceValueSliderVerticalEnabled() &&
           value_id == CSSValueID::kSliderVertical) {
         if (const auto* document = context.GetDocument()) {
-          // TODO(crbug.com/681917): Remove "currently experimental" note when
-          // feature FormControlsVerticalWritingModeSupport is in stable.
           document->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
               mojom::blink::ConsoleMessageSource::kDeprecation,
               mojom::blink::ConsoleMessageLevel::kWarning,
               "The keyword 'slider-vertical' specified to an 'appearance' "
-              "property is not standardized. It will be removed in the future "
-              "and replaced by vertical writing-mode (currently "
-              "experimental)."));
+              "property is not standardized. It will be removed in the future. "
+              "Use <input type=range style=\"writing-mode: vertical-lr\"> "
+              "instead."));
           Deprecation::CountDeprecation(
               document->GetExecutionContext(),
               WebFeature::kCSSValueAppearanceSliderVertical);
