@@ -11,11 +11,9 @@ namespace base {
 
 // Implementation of C++23's std::to_underlying.
 //
-// Note: This has an additional `std::is_enum<EnumT>` requirement to be SFINAE
-// friendly prior to C++20.
-//
 // Reference: https://en.cppreference.com/w/cpp/utility/to_underlying
-template <typename EnumT, typename = std::enable_if_t<std::is_enum<EnumT>{}>>
+template <typename EnumT>
+  requires(std::is_enum_v<EnumT>)
 constexpr std::underlying_type_t<EnumT> to_underlying(EnumT e) noexcept {
   return static_cast<std::underlying_type_t<EnumT>>(e);
 }
