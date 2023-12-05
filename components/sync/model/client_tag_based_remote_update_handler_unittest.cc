@@ -340,7 +340,7 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
 }
 
 TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
-       ShouldIgnoreInvalidRemoteUpdates) {
+       ShouldIgnoreInvalidRemoteCreation) {
   // To ensure the update is not ignored because of empty storage key.
   bridge()->SetSupportsGetStorageKey(false);
   // Force flag next remote update as invalid.
@@ -351,6 +351,23 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
   EXPECT_EQ(0U, db()->data_count());
   EXPECT_EQ(0U, db()->metadata_count());
   EXPECT_EQ(0U, ProcessorEntityCount());
+}
+
+TEST_F(ClientTagBasedRemoteUpdateHandlerTest, ShouldIgnoreInvalidRemoteUpdate) {
+  ProcessSingleUpdate(GenerateUpdate(kKey1, kValue1));
+  ASSERT_EQ(1U, ProcessorEntityCount());
+  ASSERT_EQ(1U, db()->data_change_count());
+  ASSERT_EQ(1U, db()->metadata_change_count());
+
+  // To ensure the update is not ignored because of empty storage key.
+  bridge()->SetSupportsGetStorageKey(false);
+  // Force flag next remote update as invalid.
+  bridge()->TreatRemoteUpdateAsInvalid(GetPrefHash(kKey1));
+
+  ProcessSingleUpdate(GenerateUpdate(kKey1, kValue2));
+  ASSERT_EQ(1U, db()->data_change_count());
+  ASSERT_EQ(1U, db()->metadata_change_count());
+  EXPECT_EQ(1U, ProcessorEntityCount());
 }
 
 TEST_F(ClientTagBasedRemoteUpdateHandlerTest, ShouldLogFreshnessToUma) {

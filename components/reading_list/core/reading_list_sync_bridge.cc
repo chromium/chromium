@@ -230,13 +230,8 @@ ReadingListSyncBridge::ApplyIncrementalSyncChanges(
       const sync_pb::ReadingListSpecifics& specifics =
           change->data().specifics.reading_list();
 
-      // TODO(crbug.com/1484570): Ignoring the invalid specifics is just a
-      // workaround, the specifics validity should be checked here via CHECK()
-      // as the invalid specifics is supposed to be filtered earlier by
-      // IsEntityDataValid().
-      if (!ReadingListEntry::IsSpecificsValid(specifics)) {
-        continue;
-      }
+      // The specifics validity is guaranteed by IsEntityDataValid().
+      CHECK(ReadingListEntry::IsSpecificsValid(specifics));
 
       scoped_refptr<ReadingListEntry> entry(
           ReadingListEntry::FromReadingListValidSpecifics(specifics,
