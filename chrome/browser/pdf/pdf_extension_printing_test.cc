@@ -6,6 +6,7 @@
 #include <tuple>
 #include <utility>
 #include <variant>
+#include <vector>
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -14,6 +15,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
+#include "chrome/browser/pdf/pdf_frame_util.h"
 #include "chrome/browser/printing/browser_printing_context_factory_for_test.h"
 #include "chrome/browser/printing/print_error_dialog.h"
 #include "chrome/browser/printing/print_job.h"
@@ -202,6 +204,19 @@ class PDFExtensionPrintingTest
     return disabled;
   }
 
+  content::WebContents* GetEmbedderWebContents() {
+    content::WebContents* contents = GetActiveWebContents();
+
+    // OOPIF PDF viewer only has a single `WebContents`.
+    if (UseOopif()) {
+      return contents;
+    }
+
+    MimeHandlerViewGuest* guest =
+        pdf_extension_test_util::GetOnlyMimeHandlerView(contents);
+    return guest ? guest->embedder_web_contents() : nullptr;
+  }
+
   void SetupPrintViewManagerForJobMonitoring(content::RenderFrameHost* frame) {
     auto* web_contents = content::WebContents::FromRenderFrameHost(frame);
     auto manager = std::make_unique<printing::TestPrintViewManager>(
@@ -267,37 +282,25 @@ class PDFExtensionPrintingTest
 };
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest, BasicPrintCommand) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Acknowledge print job creation so that the mojo callback doesn't hang.
   EXPECT_CALL(local_printer(), CreatePrintJob(_, _))
       .WillOnce(base::test::RunOnceCallback<1>());
 #endif
 
-  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/test.pdf"));
-  content::RenderFrameHost* frame = GetPluginFrame(guest);
-  ASSERT_TRUE(frame);
-  SetupPrintViewManagerForJobMonitoring(frame);
+  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
+  content::RenderFrameHost* plugin_frame =
+      pdf_extension_test_util::GetOnlyPdfPluginFrame(GetActiveWebContents());
+  ASSERT_TRUE(plugin_frame);
+
+  SetupPrintViewManagerForJobMonitoring(plugin_frame);
   chrome::BasicPrint(browser());
   WaitForPrintJobDestruction();
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest, PrintCommand) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
-  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/test.pdf"));
-  content::RenderFrameHost* frame = GetPluginFrame(guest);
-  ASSERT_TRUE(frame);
+  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
 
   printing::TestPrintPreviewObserver print_observer(/*wait_for_loaded=*/false);
   chrome::Print(browser());
@@ -319,20 +322,20 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
     GTEST_SKIP();
   }
 
-  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/test.pdf"));
-  content::RenderFrameHost* plugin_frame = GetPluginFrame(guest);
-  ASSERT_TRUE(plugin_frame);
+  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
 
-  content::RenderFrameHost* guest_main_frame = guest->GetGuestMainFrame();
+  content::RenderFrameHost* extension_host =
+      pdf_extension_test_util::GetOnlyPdfExtensionHost(GetActiveWebContents());
+  ASSERT_TRUE(extension_host);
+
   // Makes sure that the correct frame invoked the context menu.
-  content::ContextMenuInterceptor menu_interceptor(guest_main_frame);
+  content::ContextMenuInterceptor menu_interceptor(extension_host);
 
   // Executes the print command as soon as the context menu is shown.
   ContextMenuNotificationObserver context_menu_observer(IDC_PRINT);
 
   printing::TestPrintPreviewObserver print_observer(/*wait_for_loaded=*/false);
-  guest_main_frame->GetRenderWidgetHost()->ShowContextMenuAtPoint(
+  extension_host->GetRenderWidgetHost()->ShowContextMenuAtPoint(
       {1, 1}, ui::MENU_SOURCE_MOUSE);
   print_observer.WaitUntilPreviewIsReady();
   menu_interceptor.Wait();
@@ -342,27 +345,27 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
 IN_PROC_BROWSER_TEST_P(
     PDFExtensionPrintingTest,
     DISABLED_ContextMenuPrintCommandEmbeddedExtensionMainFrame) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
+  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
 
-  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/pdf_embed.html"));
-  content::RenderFrameHost* plugin_frame = GetPluginFrame(guest);
-  ASSERT_TRUE(plugin_frame);
+  content::WebContents* contents = GetActiveWebContents();
+  content::RenderFrameHost* extension_host =
+      pdf_extension_test_util::GetOnlyPdfExtensionHost(contents);
+  ASSERT_TRUE(extension_host);
 
-  content::RenderFrameHost* guest_main_frame = guest->GetGuestMainFrame();
+  content::WebContents* embedder_web_contents = GetEmbedderWebContents();
+  ASSERT_TRUE(embedder_web_contents);
+
   // Makes sure that the correct frame invoked the context menu.
-  content::ContextMenuInterceptor menu_interceptor(guest_main_frame);
+  content::ContextMenuInterceptor menu_interceptor(extension_host);
 
   // Executes the print command as soon as the context menu is shown.
   ContextMenuNotificationObserver context_menu_observer(IDC_PRINT);
 
   printing::TestPrintPreviewObserver print_observer(/*wait_for_loaded=*/false);
-  SimulateMouseClickAt(guest, blink::WebInputEvent::kNoModifiers,
+  SimulateMouseClickAt(extension_host, embedder_web_contents,
+                       blink::WebInputEvent::kNoModifiers,
                        blink::WebMouseEvent::Button::kLeft, {1, 1});
-  guest_main_frame->GetRenderWidgetHost()->ShowContextMenuAtPoint(
+  extension_host->GetRenderWidgetHost()->ShowContextMenuAtPoint(
       {1, 1}, ui::MENU_SOURCE_MOUSE);
   print_observer.WaitUntilPreviewIsReady();
   menu_interceptor.Wait();
@@ -370,15 +373,18 @@ IN_PROC_BROWSER_TEST_P(
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
                        ContextMenuPrintCommandPluginFrame) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
+  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
 
-  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/test.pdf"));
-  content::RenderFrameHost* plugin_frame = GetPluginFrame(guest);
+  content::WebContents* contents = GetActiveWebContents();
+  content::RenderFrameHost* extension_host =
+      pdf_extension_test_util::GetOnlyPdfExtensionHost(contents);
+  content::RenderFrameHost* plugin_frame =
+      pdf_extension_test_util::GetOnlyPdfPluginFrame(contents);
+  ASSERT_TRUE(extension_host);
   ASSERT_TRUE(plugin_frame);
+
+  content::WebContents* embedder_web_contents = GetEmbedderWebContents();
+  ASSERT_TRUE(embedder_web_contents);
 
   // Makes sure that the correct frame invoked the context menu.
   content::ContextMenuInterceptor menu_interceptor(plugin_frame);
@@ -387,7 +393,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
   ContextMenuNotificationObserver context_menu_observer(IDC_PRINT);
 
   printing::TestPrintPreviewObserver print_observer(/*wait_for_loaded=*/false);
-  SetInputFocusOnPlugin(guest);
+  SetInputFocusOnPlugin(extension_host, embedder_web_contents);
   plugin_frame->GetRenderWidgetHost()->ShowContextMenuAtPoint(
       {1, 1}, ui::MENU_SOURCE_MOUSE);
   print_observer.WaitUntilPreviewIsReady();
@@ -397,15 +403,18 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
 // TODO(crbug.com/1330032): Fix flakiness.
 IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
                        DISABLED_ContextMenuPrintCommandEmbeddedPluginFrame) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
+  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
 
-  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/pdf_embed.html"));
-  content::RenderFrameHost* plugin_frame = GetPluginFrame(guest);
+  content::WebContents* contents = GetActiveWebContents();
+  content::RenderFrameHost* extension_host =
+      pdf_extension_test_util::GetOnlyPdfExtensionHost(contents);
+  content::RenderFrameHost* plugin_frame =
+      pdf_extension_test_util::GetOnlyPdfPluginFrame(contents);
+  ASSERT_TRUE(extension_host);
   ASSERT_TRUE(plugin_frame);
+
+  content::WebContents* embedder_web_contents = GetEmbedderWebContents();
+  ASSERT_TRUE(embedder_web_contents);
 
   // Makes sure that the correct frame invoked the context menu.
   content::ContextMenuInterceptor menu_interceptor(plugin_frame);
@@ -414,7 +423,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
   ContextMenuNotificationObserver context_menu_observer(IDC_PRINT);
 
   printing::TestPrintPreviewObserver print_observer(/*wait_for_loaded=*/false);
-  SetInputFocusOnPlugin(guest);
+  SetInputFocusOnPlugin(extension_host, embedder_web_contents);
   plugin_frame->GetRenderWidgetHost()->ShowContextMenuAtPoint(
       {1, 1}, ui::MENU_SOURCE_MOUSE);
   print_observer.WaitUntilPreviewIsReady();
@@ -422,15 +431,11 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest, PrintButton) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
+  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
 
-  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/test.pdf"));
-  content::RenderFrameHost* frame = GetPluginFrame(guest);
-  ASSERT_TRUE(frame);
+  content::RenderFrameHost* extension_host =
+      pdf_extension_test_util::GetOnlyPdfExtensionHost(GetActiveWebContents());
+  ASSERT_TRUE(extension_host);
 
   printing::TestPrintPreviewObserver print_observer(/*wait_for_loaded=*/false);
   constexpr char kClickPrintButtonScript[] = R"(
@@ -438,7 +443,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest, PrintButton) {
         .shadowRoot.querySelector('#print')
         .click();
   )";
-  EXPECT_TRUE(ExecJs(guest->GetGuestMainFrame(), kClickPrintButtonScript));
+  EXPECT_TRUE(ExecJs(extension_host, kClickPrintButtonScript));
   print_observer.WaitUntilPreviewIsReady();
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -471,21 +476,24 @@ class PDFExtensionBasicPrintingTest : public PDFExtensionPrintingTest {
 // defined above.
 IN_PROC_BROWSER_TEST_P(PDFExtensionBasicPrintingTest,
                        MAYBE_ContextMenuPrintCommandExtensionMainFrame) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Acknowledge print job creation so that the mojo callback doesn't hang.
   EXPECT_CALL(local_printer(), CreatePrintJob(_, _))
       .WillOnce(base::test::RunOnceCallback<1>());
 #endif
 
-  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/test.pdf"));
-  content::RenderFrameHost* plugin_frame = GetPluginFrame(guest);
+  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
+
+  content::WebContents* contents = GetActiveWebContents();
+  content::RenderFrameHost* extension_host =
+      pdf_extension_test_util::GetOnlyPdfExtensionHost(contents);
+  content::RenderFrameHost* plugin_frame =
+      pdf_extension_test_util::GetOnlyPdfPluginFrame(contents);
+  ASSERT_TRUE(extension_host);
   ASSERT_TRUE(plugin_frame);
+
+  content::WebContents* embedder_web_contents = GetEmbedderWebContents();
+  ASSERT_TRUE(embedder_web_contents);
 
   // Makes sure that the correct frame invoked the context menu.
   content::ContextMenuInterceptor menu_interceptor(plugin_frame);
@@ -494,7 +502,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionBasicPrintingTest,
   ContextMenuNotificationObserver context_menu_observer(IDC_PRINT);
 
   SetupPrintViewManagerForJobMonitoring(plugin_frame);
-  SetInputFocusOnPlugin(guest);
+  SetInputFocusOnPlugin(extension_host, embedder_web_contents);
   plugin_frame->GetRenderWidgetHost()->ShowContextMenuAtPoint(
       {1, 1}, ui::MENU_SOURCE_MOUSE);
   menu_interceptor.Wait();
