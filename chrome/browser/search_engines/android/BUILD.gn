@@ -76,6 +76,7 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable/search_sogou.xml",
     "java/res/layout/search_engine.xml",
+    "java/res/layout/search_engine_choice_header.xml",
     "java/res/layout/search_engine_choice_item.xml",
     "java/res/layout/search_engine_choice_view.xml",
     "java/res/layout/search_engine_recent_title.xml",
@@ -87,6 +88,7 @@ android_resources("java_resources") {
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/widget/android:java_resources",
+    "//components/strings:components_strings_grd",
   ]
 }
 
