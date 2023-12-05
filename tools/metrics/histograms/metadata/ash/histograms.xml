@@ -5369,6 +5369,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Picker.Session.InputReadyLatency" units="ms"
+    expires_after="2024-12-31">
+  <owner>shend@chromium.org</owner>
+  <owner>jopalmer@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    The delay from when the user triggered the picker to when the picker search
+    field is focused for the first time. If the picker is triggered by an
+    accelerator, the start time is calculated as the event timestamp of the
+    accelerator. Recorded when the picker search field receives focus for the
+    first time.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Pip.AndroidPipUseTime" units="ms"
     expires_after="2024-05-12">
   <owner>takise@chromium.org</owner>

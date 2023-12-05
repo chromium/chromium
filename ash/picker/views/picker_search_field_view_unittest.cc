@@ -21,7 +21,8 @@ using PickerSearchFieldViewTest = AshTestBase;
 
 TEST_F(PickerSearchFieldViewTest, TriggersSearchOnConstruction) {
   base::test::TestFuture<const std::u16string&> future;
-  PickerSearchFieldView view(future.GetRepeatingCallback());
+  PickerSessionMetrics metrics;
+  PickerSearchFieldView view(future.GetRepeatingCallback(), &metrics);
 
   EXPECT_EQ(future.Get(), u"");
 }
@@ -29,8 +30,9 @@ TEST_F(PickerSearchFieldViewTest, TriggersSearchOnConstruction) {
 TEST_F(PickerSearchFieldViewTest, TriggersSearchOnContentsChange) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
   base::test::TestFuture<const std::u16string&> future;
-  auto* view = widget->SetContentsView(
-      std::make_unique<PickerSearchFieldView>(future.GetRepeatingCallback()));
+  PickerSessionMetrics metrics;
+  auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
+      future.GetRepeatingCallback(), &metrics));
   future.Clear();
 
   view->RequestFocus();
@@ -40,7 +42,8 @@ TEST_F(PickerSearchFieldViewTest, TriggersSearchOnContentsChange) {
 }
 
 TEST_F(PickerSearchFieldViewTest, SetPlaceholderText) {
-  PickerSearchFieldView view(base::DoNothing());
+  PickerSessionMetrics metrics;
+  PickerSearchFieldView view(base::DoNothing(), &metrics);
 
   view.SetPlaceholderText(u"hello");
 

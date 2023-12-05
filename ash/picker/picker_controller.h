@@ -31,7 +31,12 @@ class ASH_EXPORT PickerController {
 
   // Toggles the visibility of the Picker widget.
   // This must only be called after `SetClient` is called with a valid client.
-  void ToggleWidget();
+  // `trigger_event_timestamp` is the timestamp of the event that triggered the
+  // Widget to be toggled. For example, if the feature was triggered by a mouse
+  // click, then it should be the timestamp of the click. By default, the
+  // timestamp is the time this function is called.
+  void ToggleWidget(
+      base::TimeTicks trigger_event_timestamp = base::TimeTicks::Now());
 
   // Returns the Picker widget for tests.
   views::Widget* widget_for_testing() { return widget_.get(); }

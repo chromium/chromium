@@ -72,14 +72,16 @@ void PickerController::SetClient(PickerClient* client) {
   client_ = client;
 }
 
-void PickerController::ToggleWidget() {
+void PickerController::ToggleWidget(
+    const base::TimeTicks trigger_event_timestamp) {
   CHECK(client_);
 
   if (widget_) {
     widget_->Close();
   } else {
     widget_ = PickerView::CreateWidget(
-        std::make_unique<PickerViewDelegateImpl>(client_));
+        std::make_unique<PickerViewDelegateImpl>(client_),
+        trigger_event_timestamp);
     widget_->Show();
   }
 }

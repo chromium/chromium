@@ -1103,9 +1103,9 @@ void ShiftPrimaryDisplay() {
       primary_display_iter->id(), true /* throttle */);
 }
 
-void ShowEmojiPicker() {
+void ShowEmojiPicker(const base::TimeTicks accelerator_timestamp) {
   if (auto* picker_controller = Shell::Get()->picker_controller()) {
-    picker_controller->ToggleWidget();
+    picker_controller->ToggleWidget(accelerator_timestamp);
   } else {
     ui::ShowEmojiPanel();
   }

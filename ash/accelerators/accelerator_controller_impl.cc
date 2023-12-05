@@ -1247,7 +1247,7 @@ void AcceleratorControllerImpl::PerformAction(
       break;
     case AcceleratorAction::kShowEmojiPicker:
       base::RecordAction(UserMetricsAction("Accel_Show_Emoji_Picker"));
-      accelerators::ShowEmojiPicker();
+      accelerators::ShowEmojiPicker(accelerator.time_stamp());
       break;
     case AcceleratorAction::kToggleImeMenuBubble:
       base::RecordAction(UserMetricsAction("Accel_Show_Ime_Menu_Bubble"));

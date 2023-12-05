@@ -9,14 +9,18 @@
 #include "ash/style/typography.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/view_class_properties.h"
 
 namespace ash {
 
-PickerSearchFieldView::PickerSearchFieldView(SearchCallback search_callback)
-    : search_callback_(std::move(search_callback)) {
+PickerSearchFieldView::PickerSearchFieldView(
+    SearchCallback search_callback,
+    PickerSessionMetrics* session_metrics)
+    : search_callback_(std::move(search_callback)),
+      session_metrics_(session_metrics) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   textfield_ = AddChildView(std::make_unique<views::Textfield>());
@@ -35,10 +39,28 @@ void PickerSearchFieldView::RequestFocus() {
   textfield_->RequestFocus();
 }
 
+void PickerSearchFieldView::AddedToWidget() {
+  GetFocusManager()->AddFocusChangeListener(this);
+}
+
+void PickerSearchFieldView::RemovedFromWidget() {
+  GetFocusManager()->RemoveFocusChangeListener(this);
+}
+
 void PickerSearchFieldView::ContentsChanged(
     views::Textfield* sender,
     const std::u16string& new_contents) {
   search_callback_.Run(new_contents);
+}
+
+void PickerSearchFieldView::OnWillChangeFocus(View* focused_before,
+                                              View* focused_now) {}
+
+void PickerSearchFieldView::OnDidChangeFocus(View* focused_before,
+                                             View* focused_now) {
+  if (focused_now == textfield_) {
+    session_metrics_->MarkInputFocus();
+  }
 }
 
 void PickerSearchFieldView::SetPlaceholderText(

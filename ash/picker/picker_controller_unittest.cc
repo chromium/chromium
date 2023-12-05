@@ -7,13 +7,18 @@
 #include "ash/public/cpp/picker/picker_client.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_ash_web_view_factory.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/test/widget_test.h"
 
 namespace ash {
 namespace {
 
-using PickerControllerTest = AshTestBase;
+class PickerControllerTest : public AshTestBase {
+ public:
+  PickerControllerTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+};
 
 // A PickerClient implementation used for testing.
 // Automatically sets itself as the client when it's created, and unsets itself
@@ -80,6 +85,19 @@ TEST_F(PickerControllerTest, SetClientToNullDestroysWidgetImmediately) {
   controller.SetClient(nullptr);
 
   EXPECT_FALSE(controller.widget_for_testing());
+}
+
+TEST_F(PickerControllerTest, ShowWidgetRecordsInputReadyLatency) {
+  base::HistogramTester histogram;
+  PickerController controller;
+  TestPickerClient client(&controller);
+
+  controller.ToggleWidget(base::TimeTicks::Now());
+  views::test::WidgetVisibleWaiter widget_visible_waiter(
+      controller.widget_for_testing());
+  widget_visible_waiter.Wait();
+
+  histogram.ExpectTotalCount("Ash.Picker.Session.InputReadyLatency", 1);
 }
 
 }  // namespace
