@@ -523,6 +523,7 @@ source_set("unit_tests") {
     "policy/dlp/dlp_confidential_file_unittest.cc",
     "policy/dlp/dlp_content_tab_helper_unittest.cc",
     "policy/dlp/dlp_copy_or_move_hook_delegate_unittest.cc",
+    "policy/dlp/dlp_download_observer_unittest.cc",
     "policy/dlp/dlp_drag_drop_notifier_unittest.cc",
     "policy/dlp/dlp_file_access_copy_or_move_delegate_factory_unittest.cc",
     "policy/dlp/dlp_file_destination_unittest.cc",
