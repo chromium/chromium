@@ -24453,6 +24453,9 @@ should be able to be added at any place in this file.
     Note: this is even emitted on a &quot;navigation&quot; to non-web pages,
     such as loading the NTP.
 
+    Prior to M-121, this was also emitted for navigations in non-tab WebContents
+    (e.g. DevTools, extension popups).
+
     Each set of NavEntryCommitted emitted in quick succession usually are
     triggered by a single user action. In this sense, all but the first in the
     set are &quot;not user triggered&quot;.
@@ -24484,7 +24487,10 @@ should be able to be added at any place in this file.
     changes. This can happen via Javascript by, for example, scrolling through a
     news article carousel on the user's search engine page. As such,
     NavEntryCommitted.SRP does not necessarily align with the number of searches
-    done, though it's certainly related.
+    done, though it's certainly related. This should never be emitted for
+    navigations in non-tab WebContents, such as DevTools or extension popups
+    (which could not navigate to the SRP), but we do include the Side Panel
+    Search WebContents.
 
     Desktop-only.
   </description>

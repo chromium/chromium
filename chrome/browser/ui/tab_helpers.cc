@@ -198,6 +198,7 @@
 #include "chrome/browser/ui/side_panel/read_anything/read_anything_tab_helper.h"
 #include "chrome/browser/ui/sync/browser_synced_tab_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/uma_browsing_activity_observer.h"
 #include "components/commerce/content/browser/hint/commerce_hint_tab_helper.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -543,7 +544,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   }
   PolicyAuditorBridge::CreateForWebContents(web_contents);
   PluginObserverAndroid::CreateForWebContents(web_contents);
-#else
+#else  // BUILDFLAG(IS_ANDROID)
   if (web_app::AreWebAppsUserInstallable(profile)) {
     webapps::MLInstallabilityPromoter::CreateForWebContents(web_contents);
     webapps::AppBannerManagerDesktop::CreateForWebContents(web_contents);
@@ -580,13 +581,11 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   SadTabHelper::CreateForWebContents(web_contents);
   SearchTabHelper::CreateForWebContents(web_contents);
   TabDialogs::CreateForWebContents(web_contents);
-#if !BUILDFLAG(IS_ANDROID)
   if (privacy_sandbox::TrackingProtectionNoticeService::TabHelper::
           IsHelperNeeded(profile)) {
     privacy_sandbox::TrackingProtectionNoticeService::TabHelper::
         CreateForWebContents(web_contents);
   }
-#endif
   HighEfficiencyChipTabHelper::CreateForWebContents(web_contents);
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kMemoryUsageInHovercards)) {
@@ -598,6 +597,8 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
       base::FeatureList::IsEnabled(features::kWebUITabStrip)) {
     ThumbnailTabHelper::CreateForWebContents(web_contents);
   }
+  chrome::UMABrowsingActivityObserver::TabHelper::CreateForWebContents(
+      web_contents);
   web_modal::WebContentsModalDialogManager::CreateForWebContents(web_contents);
   if (OmniboxFieldTrial::IsZeroSuggestPrefetchingEnabled()) {
     ZeroSuggestPrefetchTabHelper::CreateForWebContents(web_contents);
@@ -626,7 +627,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
     companion::ExpsRegistrationSuccessObserver::CreateForWebContents(
         web_contents);
   }
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_COMPOSE)
   if (base::FeatureList::IsEnabled(compose::features::kEnableCompose) &&
@@ -784,7 +785,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   // NONO    NO   NONONO   !
   // NO NO   NO  NO    NO  !
   // NO  NO  NO  NO    NO  !
-  // NO   NO NO  NO    NO
+  // NO   NO NO  NO    NO  !
   // NO    NONO   NONONO   !
 
   // Do NOT just drop your tab helpers here! There are three sections above (1.

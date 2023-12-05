@@ -401,6 +401,11 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of tabs groups that are collapsed in all browsers (counting
     app-mode windows) when a load completes.
+
+    Prior to M-121, this was also recorded when a navigation in a non-tab
+    WebContents (e.g. DevTools, extension popups) happens. Such a navigation
+    would not have affected the recorded value. It would only duplicate a
+    previous recording.
   </summary>
 </histogram>
 
@@ -573,6 +578,11 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of tabs groups with a user-set name or color open in all browsers
     (counting app-mode windows) when a load completes.
+
+    Prior to M-121, this was also recorded when a navigation in a non-tab
+    WebContents (e.g. DevTools, extension popups) happens. Such a navigation
+    would not have affected the recorded value. It would only duplicate a
+    previous recording.
   </summary>
 </histogram>
 
@@ -593,6 +603,11 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of tabs groups open in all browsers (counting app-mode windows)
     when a load completes.
+
+    Prior to M-121, this was also recorded when a navigation in a non-tab
+    WebContents (e.g. DevTools, extension popups) happens. Such a navigation
+    would not have affected the recorded value. It would only duplicate a
+    previous recording.
   </summary>
 </histogram>
 
@@ -603,6 +618,11 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of pinned tabs in the tabstrip in all browser windows, when a
     page load completes.
+
+    Prior to M-121, this was also recorded when a navigation in a non-tab
+    WebContents (e.g. DevTools, extension popups) happens. Such a navigation
+    would not have affected the recorded value. It would only duplicate a
+    previous recording.
   </summary>
 </histogram>
 
@@ -1463,6 +1483,11 @@ chromium-metrics-reviews@google.com.
   <owner>markchang@google.com</owner>
   <summary>
     The number of tabs open in the active window when a load completes.
+
+    Prior to M-121, this was also recorded when a navigation in a non-tab
+    WebContents (e.g. DevTools, extension popups) happens. Such a navigation
+    would not have affected the recorded value. It would only duplicate a
+    previous recording.
   </summary>
 </histogram>
 
@@ -1473,35 +1498,12 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of tabs in the current active group when a load completes.
     Records 0 if the active tab is not in a group.
-  </summary>
-</histogram>
 
-<histogram name="Tabs.TabCountPerDomainPerLoad.{TotalTabCountBucket}"
-    units="tabs" expires_after="2021-06-30">
-  <owner>dpenning@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
-  <summary>
-    The number of tabs across all browsers (counting app-mode windows) with the
-    same host piece when a load completes. {TotalTabCountBucket} is inclusive
-    and describes the total number of tabs when logging.
+    Prior to M-121, this was also recorded when a navigation in a non-tab
+    WebContents (e.g. DevTools, extension popups) happens. Such a navigation
+    would not have affected the recorded value. It would only duplicate a
+    previous recording.
   </summary>
-  <token key="TotalTabCountBucket">
-    <variant name="0to5" summary=""/>
-    <variant name="6to10" summary=""/>
-    <variant name="10to15" summary=""/>
-    <variant name="16to20" summary=""/>
-    <variant name="21to30" summary=""/>
-    <variant name="31to40" summary=""/>
-    <variant name="41to60" summary=""/>
-    <variant name="61to80" summary=""/>
-    <variant name="81to100" summary=""/>
-    <variant name="101to150" summary=""/>
-    <variant name="151to200" summary=""/>
-    <variant name="201to300" summary=""/>
-    <variant name="301to400" summary=""/>
-    <variant name="401to500" summary=""/>
-    <variant name="500+" summary=""/>
-  </token>
 </histogram>
 
 <histogram name="Tabs.TabCountPerLoad" units="tabs" expires_after="2024-05-19">
@@ -1513,6 +1515,11 @@ chromium-metrics-reviews@google.com.
     load completes.
 
     This is basically the average number of tabs over time.
+
+    Prior to M-121, this was also recorded when a navigation in a non-tab
+    WebContents (e.g. DevTools, extension popups) happens. Such a navigation
+    would not have affected the recorded value. It would only duplicate a
+    previous recording.
   </summary>
 </histogram>
 
@@ -1526,6 +1533,11 @@ chromium-metrics-reviews@google.com.
 
     This value will be recorded multiple times per load if more than one window
     is open.
+
+    Prior to M-121, this was also recorded when a navigation in a non-tab
+    WebContents (e.g. DevTools, extension popups) happens. Such a navigation
+    would not have affected the recorded value. It would only duplicate a
+    previous recording.
   </summary>
 </histogram>
 
