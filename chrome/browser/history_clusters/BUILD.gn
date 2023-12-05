@@ -10,7 +10,6 @@ import("//third_party/jni_zero/jni_zero.gni")
 android_resources("java_resources") {
   sources = [
     "java/res/drawable/selectable_rounded_rectangle.xml",
-    "java/res/layout/empty_text_view.xml",
     "java/res/layout/history_cluster.xml",
     "java/res/layout/history_cluster_visit.xml",
     "java/res/layout/history_clusters_activity_content.xml",
@@ -20,6 +19,7 @@ android_resources("java_resources") {
     "java/res/values/dimens.xml",
   ]
   deps = [
+    "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/widget/android:java_resources",
   ]

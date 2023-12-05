@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout.LayoutParams;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -47,6 +46,8 @@ import java.util.List;
  */
 public class HistoryClustersCoordinator extends RecyclerView.OnScrollListener
         implements OnMenuItemClickListener, SnackbarController {
+
+
     private static class DisabledSelectionDelegate extends SelectionDelegate {
         @Override
         public boolean toggleSelectionForItem(Object o) {
@@ -132,7 +133,6 @@ public class HistoryClustersCoordinator extends RecyclerView.OnScrollListener
      * @param activity Activity in which this UI resides.
      * @param historyClustersDelegate Delegate that provides functionality that must be implemented
      *         externally, e.g. populating intents targeting activities we can't reference directly.
-     * @param accessibilityUtil Utility object that tells us about the current accessibility state.
      * @param snackbarManager The {@link SnackbarManager} used to display snackbars.
      */
     public HistoryClustersCoordinator(
@@ -238,10 +238,6 @@ public class HistoryClustersCoordinator extends RecyclerView.OnScrollListener
                 ItemType.MORE_PROGRESS,
                 this::buildMoreProgressView,
                 HistoryClustersViewBinder::bindMoreProgressView);
-        mAdapter.registerType(
-                ItemType.EMPTY_TEXT,
-                this::buildEmptyTextView,
-                HistoryClustersViewBinder::noopBindView);
 
         LayoutInflater layoutInflater = LayoutInflater.from(mActivity);
         mActivityContentView =
@@ -250,6 +246,13 @@ public class HistoryClustersCoordinator extends RecyclerView.OnScrollListener
 
         mSelectableListLayout = mActivityContentView.findViewById(R.id.selectable_list);
         mSelectableListLayout.setEmptyViewText(R.string.history_manager_empty);
+        mSelectableListLayout.ignoreItemTypeForEmptyState(ItemType.TOGGLE);
+        mSelectableListLayout.ignoreItemTypeForEmptyState(ItemType.PRIVACY_DISCLAIMER);
+        mSelectableListLayout.ignoreItemTypeForEmptyState(ItemType.CLEAR_BROWSING_DATA);
+        mSelectableListLayout.initializeEmptyStateView(
+                R.drawable.history_empty_state_illustration,
+                R.string.history_manager_empty_state,
+                R.string.history_manager_empty_state_view_or_clear_page_visited);
         mRecyclerView = mSelectableListLayout.initializeRecyclerView(mAdapter);
 
         mRecyclerView.setLayoutManager(
@@ -331,15 +334,6 @@ public class HistoryClustersCoordinator extends RecyclerView.OnScrollListener
     private View buildRelatedSearchesView(ViewGroup parent) {
         return LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.history_clusters_related_searches_view, parent, false);
-    }
-
-    private View buildEmptyTextView(ViewGroup parent) {
-        View wrapper =
-                LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.empty_text_view, parent, false);
-        TextView innerView = wrapper.findViewById(R.id.empty_view);
-        innerView.setText(R.string.history_manager_empty);
-        return wrapper;
     }
 
     private void updateTabGroupMenuItemVisibility(List<ClusterVisit> selectedItems) {

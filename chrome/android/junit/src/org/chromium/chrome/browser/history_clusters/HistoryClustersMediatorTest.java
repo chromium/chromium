@@ -596,23 +596,16 @@ public class HistoryClustersMediatorTest {
                 hasExactItemTypes(
                         ItemType.PRIVACY_DISCLAIMER,
                         ItemType.CLEAR_BROWSING_DATA,
-                        ItemType.TOGGLE,
-                        ItemType.EMPTY_TEXT));
+                        ItemType.TOGGLE));
 
         mShouldShowPrivacyDisclaimerSupplier.set(false);
-        assertThat(
-                mModelList,
-                hasExactItemTypes(
-                        ItemType.CLEAR_BROWSING_DATA, ItemType.TOGGLE, ItemType.EMPTY_TEXT));
+        assertThat(mModelList, hasExactItemTypes(ItemType.CLEAR_BROWSING_DATA, ItemType.TOGGLE));
 
         mShouldShowClearBrowsingDataSupplier.set(false);
-        assertThat(mModelList, hasExactItemTypes(ItemType.TOGGLE, ItemType.EMPTY_TEXT));
+        assertThat(mModelList, hasExactItemTypes(ItemType.TOGGLE));
 
         mShouldShowClearBrowsingDataSupplier.set(true);
-        assertThat(
-                mModelList,
-                hasExactItemTypes(
-                        ItemType.CLEAR_BROWSING_DATA, ItemType.TOGGLE, ItemType.EMPTY_TEXT));
+        assertThat(mModelList, hasExactItemTypes(ItemType.CLEAR_BROWSING_DATA, ItemType.TOGGLE));
 
         mShouldShowPrivacyDisclaimerSupplier.set(true);
         assertThat(
@@ -620,8 +613,7 @@ public class HistoryClustersMediatorTest {
                 hasExactItemTypes(
                         ItemType.PRIVACY_DISCLAIMER,
                         ItemType.CLEAR_BROWSING_DATA,
-                        ItemType.TOGGLE,
-                        ItemType.EMPTY_TEXT));
+                        ItemType.TOGGLE));
 
         promise = new Promise<>();
         doReturn(promise).when(mBridge).queryClusters("");

@@ -107,7 +107,6 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     private ListItem mClearBrowsingDataItem;
     private QueryState mQueryState;
     private final ListItem mMoreProgressItem;
-    private final ListItem mEmptyTextListItem;
     private final HistoryClustersMetricsLogger mMetricsLogger;
     private final Map<String, PropertyModel> mLabelToModelMap = new LinkedHashMap<>();
     private final Map<ClusterVisit, VisitMetadata> mVisitMetadataMap = new HashMap<>();
@@ -199,7 +198,6 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
                                                 this::onPromiseRejected))
                         .build();
         mMoreProgressItem = new ListItem(ItemType.MORE_PROGRESS, moreProgressModel);
-        mEmptyTextListItem = new ListItem(ItemType.EMPTY_TEXT, new PropertyModel());
     }
 
     // SearchDelegate implementation.
@@ -700,20 +698,6 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
                     HistoryClustersItemProperties.SHOW_VERTICALLY_CENTERED, showVerticallyCentered);
             mMoreProgressItem.model.set(
                     HistoryClustersItemProperties.PROGRESS_BUTTON_STATE, buttonState);
-        }
-
-        boolean emptyTextShowing = mModelList.indexOf(mEmptyTextListItem) != -1;
-        boolean shouldShowEmptyText =
-                !mQueryState.isSearching()
-                        && result != null
-                        && !result.isContinuation()
-                        && result.getClusters().isEmpty();
-        if (emptyTextShowing) {
-            mModelList.remove(mEmptyTextListItem);
-        }
-
-        if (shouldShowEmptyText) {
-            mModelList.add(mEmptyTextListItem);
         }
     }
 
