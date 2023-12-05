@@ -303,6 +303,7 @@
 -All/YieldingParserDumpAccessibilityTreeTest.AccessibilityPopoverApi/blink*
 
 # TODO(crbug.com/1508346): Flakily fails a check.
+-IndexedDBQuotaClientTest.DeleteBucketMixedParty/0
 -IndexedDBQuotaClientTest.DeleteBucketMixedParty/1
 
 # These tests are flaky.
