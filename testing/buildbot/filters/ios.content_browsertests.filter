@@ -246,6 +246,7 @@
 -Default/MediaTest.VideoTulipWebm/0
 -Default/MediaTest.VideoTulipWebm/1
 -MSE_ClearKey/EncryptedMediaTest.ConfigChangeVideo_ClearToClear/0
+-MSE_ClearKey/EncryptedMediaTest.Playback_Encryption_CENC/0
 -MediaRedirectTest.CanPlayHiddenWebm
 -MediaSourceTest.ConfigChangeVideo
 -MediaSourceTest.Playback_AudioOnly_AAC_ADTS
@@ -255,6 +256,7 @@
 -MediaSourceTest.Playback_AudioOnly_WebM
 -MediaSourceTest.Playback_VideoAudio_WebM
 -MediaSourceTest.Playback_Video_WEBM_Audio_MP4
+-MediaSuspendTest.ForcedSrcSuspend
 -OpenCodec/WebRtcMediaRecorderTest.PeerConnection/0
 -OpenCodec/WebRtcMediaRecorderTest.PeerConnection/1
 -OpenCodec/WebRtcMediaRecorderTest.PeerConnection/2
@@ -284,7 +286,9 @@
 -ThirdPartyCookiesContentSecurityPolicyBrowserTest.CSPMediaThirdPartyCookieBlocking
 
 # TODO(crbug.com/1502136): Flakily fails on the platform.
+-TouchInputBrowserTest.TouchStartConsume
 -TouchInputBrowserTest.TouchStartNoConsume
+-TouchInputBrowserTest.MultiPointTouchPress
 
 # TODO(crbug.com/1501820): Consistently fails on the platform.
 -PrerenderBrowserTest.ActivateOnWindowOpen
@@ -297,6 +301,9 @@
 
 # TODO(crbug.com/1504145): Fails due to incorrect line wrapping.
 -All/YieldingParserDumpAccessibilityTreeTest.AccessibilityPopoverApi/blink*
+
+# TODO(crbug.com/1508346): Flakily fails a check.
+-IndexedDBQuotaClientTest.DeleteBucketMixedParty/1
 
 # These tests are flaky.
 -All/CoopRestrictPropertiesReportingBrowserTest.NavigationVirtualBrowsingContextGroup/RDCrashedFrame_BFCacheDisabled
