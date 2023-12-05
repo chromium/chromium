@@ -10,12 +10,15 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "base/uuid.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -87,6 +90,22 @@ std::string GetSSOProfile() {
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   return connector->GetSSOProfile();
+}
+
+std::string GetDeviceId(const user_manager::KnownUser& known_user) {
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->GetActiveUser();
+  CHECK(user) << "Could not find an active user for lock screen";
+
+  std::string device_id = known_user.GetDeviceId(user->GetAccountId());
+  if (device_id.empty()) {
+    // TODO(http://b/311342008): Unify the error handling for missing device ids
+    // post login. We should ideally CHECK() here.
+    LOG(ERROR) << "Could not find a device id associated with this user";
+    return base::Uuid::GenerateRandomV4().AsLowercaseString();
+  }
+
+  return device_id;
 }
 
 const char kMainElement[] = "$(\'main-element\').";
@@ -460,6 +479,16 @@ void LockScreenReauthHandler::HandleWebviewLoadAborted(int error_code) {
   lock_screen_online_reauth_dialog->OnWebviewLoadAborted();
 }
 
+void LockScreenReauthHandler::HandleGetDeviceId(
+    const std::string& callback_id) {
+  if (!IsJavascriptAllowed()) {
+    return;
+  }
+
+  user_manager::KnownUser known_user{g_browser_process->local_state()};
+  ResolveJavascriptCallback(callback_id, GetDeviceId(known_user));
+}
+
 void LockScreenReauthHandler::ReloadGaia() {
   CallJavascriptFunction(std::string(kMainElement) + "reloadAuthenticator");
 }
@@ -490,6 +519,10 @@ void LockScreenReauthHandler::RegisterMessages() {
   web_ui()->RegisterHandlerCallback(
       "webviewLoadAborted",
       base::BindRepeating(&LockScreenReauthHandler::HandleWebviewLoadAborted,
+                          weak_factory_.GetWeakPtr()));
+  web_ui()->RegisterHandlerCallback(
+      "getDeviceId",
+      base::BindRepeating(&LockScreenReauthHandler::HandleGetDeviceId,
                           weak_factory_.GetWeakPtr()));
 }
 

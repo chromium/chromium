@@ -23,6 +23,7 @@ import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -194,6 +195,10 @@ class LockReauth extends LockReauthBase {
         'authCompleted', (e) => void this.onAuthCompletedMessage_(e));
     this.authenticator_.addEventListener(
         'loadAbort', (e) => void this.onLoadAbortMessage_(e.detail));
+    this.authenticator_.addEventListener('getDeviceId', (e) => {
+      sendWithPromise('getDeviceId')
+          .then(deviceId => this.authenticator_.getDeviceIdResponse(deviceId));
+    });
     chrome.send('initialize');
   }
 
