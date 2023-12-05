@@ -180,7 +180,7 @@ export function sortEntries(
       const compareFunction = compareLabelAndGroupBottomEntries(
           locationInfo,
           // Only Linux/Play/GuestOS files are in the UI children.
-          parentEntry.getUIChildren(),
+          parentEntry.getUiChildren(),
       );
       return entries.filter(entry => fileFilter.filter(entry))
           .sort(compareFunction);
@@ -413,8 +413,8 @@ export function isDescendantEntry(
   }
 
   // For EntryList and VolumeEntry they can contain entries from different
-  // files systems, so we should check its getUIChildren.
-  if ('getUIChildren' in ancestorEntry) {
+  // files systems, so we should check its getUiChildren.
+  if ('getUiChildren' in ancestorEntry) {
     const volumeOrEntryList = ancestorEntry as VolumeEntry | EntryList;
     // VolumeEntry has to check to root entry descendant entry.
     if ('getNativeEntry' in volumeOrEntryList) {
@@ -425,7 +425,7 @@ export function isDescendantEntry(
       }
     }
 
-    return volumeOrEntryList.getUIChildren().some(
+    return volumeOrEntryList.getUiChildren().some(
         (ancestorChild: Entry|FilesAppEntry) => {
           if (isSameEntry(ancestorChild, childEntry)) {
             return true;
@@ -766,7 +766,7 @@ export function readEntriesRecursively(
  * returns false if it's FakeEntry or any one of the FilesAppEntry types.
  */
 export function isNativeEntry(entry: Entry|FilesAppEntry) {
-  return !('type_name' in entry);
+  return !('typeName' in entry);
 }
 
 /**

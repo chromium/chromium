@@ -52,12 +52,12 @@ export function testEntryList(done) {
   assertEquals('my_files', entryList.rootType);
   assertFalse(entryList.isNativeType);
   assertEquals(null, entryList.getNativeEntry());
-  assertEquals(0, entryList.getUIChildren().length);
+  assertEquals(0, entryList.getUiChildren().length);
   assertTrue(entryList.isDirectory);
   assertFalse(entryList.isFile);
 
   entryList.addEntry(new EntryList('Child Entry', RootType.MY_FILES));
-  assertEquals(1, entryList.getUIChildren().length);
+  assertEquals(1, entryList.getUiChildren().length);
 
   const reader = entryList.createReader();
   // How many times the reader callback |accumulateResults| has been called?
@@ -108,12 +108,12 @@ export function testEntryListGetParent(done) {
 /** Tests method EntryList.addEntry. */
 export function testEntryListAddEntry() {
   const entryList = new EntryList('My files', RootType.MY_FILES);
-  assertEquals(0, entryList.getUIChildren().length);
+  assertEquals(0, entryList.getUiChildren().length);
 
   const childEntry = fakeVolumeEntry(VolumeType.DOWNLOADS);
   entryList.addEntry(childEntry);
-  assertEquals(1, entryList.getUIChildren().length);
-  assertEquals(childEntry, entryList.getUIChildren()[0]);
+  assertEquals(1, entryList.getUiChildren().length);
+  assertEquals(childEntry, entryList.getUiChildren()[0]);
 }
 
 /**
@@ -149,23 +149,23 @@ export function testEntryFindIndex() {
 
   // Test removeByVolumeType.
   assertTrue(entryList.removeByVolumeType(VolumeType.CROSTINI));
-  assertEquals(1, entryList.getUIChildren().length);
+  assertEquals(1, entryList.getUiChildren().length);
   // Now crostini volume doesn't exist anymore, so should return False.
   assertFalse(entryList.removeByVolumeType(VolumeType.CROSTINI));
 
   // Test removeAllByRootType.
   entryList.addEntry(fakeEntry);
   entryList.addEntry(fakeEntry);
-  assertEquals(3, entryList.getUIChildren().length);
+  assertEquals(3, entryList.getUiChildren().length);
   entryList.removeAllByRootType(RootType.CROSTINI);
-  assertEquals(1, entryList.getUIChildren().length);
+  assertEquals(1, entryList.getUiChildren().length);
 
   // Test removeChildEntry.
   // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry | FilesAppEntry
   // | undefined' is not assignable to parameter of type 'FileSystemEntry |
   // FilesAppEntry'.
-  assertTrue(entryList.removeChildEntry(entryList.getUIChildren()[0]));
-  assertEquals(0, entryList.getUIChildren().length);
+  assertTrue(entryList.removeChildEntry(entryList.getUiChildren()[0]));
+  assertEquals(0, entryList.getUiChildren().length);
   // Nothing left to remove.
   assertFalse(entryList.removeChildEntry(/** @type {Entry} */ ({})));
 }
@@ -201,9 +201,9 @@ export function testVolumeEntryFindIndex() {
   // Test findIndexByVolumeInfo.
   assertEquals(0, volumeEntry.findIndexByVolumeInfo(crostini.volumeInfo));
   assertEquals(1, volumeEntry.findIndexByVolumeInfo(android.volumeInfo));
-  assertEquals(2, volumeEntry.getUIChildren().length);
-  assertEquals(crostini, volumeEntry.getUIChildren()[0]);
-  assertEquals(android, volumeEntry.getUIChildren()[1]);
+  assertEquals(2, volumeEntry.getUiChildren().length);
+  assertEquals(crostini, volumeEntry.getUiChildren()[0]);
+  assertEquals(android, volumeEntry.getUiChildren()[1]);
 
   // Test removeByVolumeType.
   assertTrue(volumeEntry.removeByVolumeType(VolumeType.CROSTINI));
@@ -228,8 +228,8 @@ export function testVolumeEntryFindIndex() {
   // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry | FilesAppEntry
   // | undefined' is not assignable to parameter of type 'FileSystemEntry |
   // FilesAppEntry'.
-  assertTrue(volumeEntry.removeChildEntry(volumeEntry.getUIChildren()[0]));
-  assertEquals(0, volumeEntry.getUIChildren().length);
+  assertTrue(volumeEntry.removeChildEntry(volumeEntry.getUiChildren()[0]));
+  assertEquals(0, volumeEntry.getUiChildren().length);
   // Nothing left to remove.
   assertFalse(volumeEntry.removeChildEntry(/** @type {Entry} */ ({})));
 }
@@ -635,7 +635,9 @@ export function testVolumeEntryDelayedDisplayRoot(done) {
   });
 
   // rootEntry_ starts as null.
-  assertEquals(null, volumeEntry.rootEntry_);
+  assertEquals('', volumeEntry.fullPath);
+  assertTrue(volumeEntry.isDirectory);
+  assertFalse(volumeEntry.isFile);
   assertEquals(null, volumeEntry.getNativeEntry());
   reportPromise(
       waitUntil(() => callbackTriggered).then(() => {
@@ -692,7 +694,7 @@ export function testEntryListAddEntrySetsPrefix() {
   const entryList = new EntryList('My files', RootType.MY_FILES);
 
   entryList.addEntry(volumeEntry);
-  assertEquals(1, entryList.getUIChildren().length);
+  assertEquals(1, entryList.getUiChildren().length);
   // entryList is parent of volumeEntry so it should be its prefix.
   assertEquals(entryList, volumeEntry.volumeInfo.prefixEntry);
 }
@@ -705,7 +707,7 @@ export function testFakeEntry(done) {
   let fakeEntry = new FakeEntryImpl('label', RootType.CROSTINI);
 
   assertEquals(undefined, fakeEntry.sourceRestriction);
-  assertEquals('FakeEntry', fakeEntry.type_name);
+  assertEquals('FakeEntry', fakeEntry.typeName);
   assertEquals('label', fakeEntry.label);
   assertEquals('label', fakeEntry.name);
   assertEquals('fake-entry://crostini', fakeEntry.toURL());

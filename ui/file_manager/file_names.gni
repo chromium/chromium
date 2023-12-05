@@ -20,7 +20,6 @@ static_js_files = [
 
   # Files Common:
   "file_manager/common/js/array_data_model.js",
-  "file_manager/common/js/files_app_entry_types.js",
 
   "file_manager/common/js/filtered_volume_manager.js",
   "file_manager/common/js/mock_chrome.js",
@@ -112,6 +111,7 @@ ts_files = [
   "file_manager/common/js/app_util.ts",
   "file_manager/common/js/async_util.ts",
   "file_manager/common/js/cr_ui.ts",
+  "file_manager/common/js/files_app_entry_types.ts",
   "file_manager/common/js/dialog_type.ts",
   "file_manager/common/js/dom_utils.ts",
   "file_manager/common/js/entry_utils.ts",

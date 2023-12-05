@@ -251,8 +251,7 @@ export class TrashEntry implements Entry {
   /**
    * The type name of TrashEntry.
    */
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  readonly type_name = 'TrashEntry';
+  readonly typeName = 'TrashEntry';
 
   /**
    * True if the trashed item is a file, false otherwise.

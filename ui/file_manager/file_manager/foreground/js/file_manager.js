@@ -1279,7 +1279,7 @@ export class FileManager extends EventTarget {
     this.recentEntry_ = new FakeEntryImpl(
         str('RECENT_ROOT_LABEL'), RootType.RECENT, this.getSourceRestriction_(),
         chrome.fileManagerPrivate.FileCategory.ALL);
-    // @ts-ignore: error TS2741: Property 'getUIChildren' is missing in type
+    // @ts-ignore: error TS2741: Property 'getUiChildren' is missing in type
     // 'FakeEntry' but required in type 'FakeEntryImpl'.
     this.store_.dispatch(addUiEntry({entry: this.recentEntry_}));
     assert(this.launchParams_);

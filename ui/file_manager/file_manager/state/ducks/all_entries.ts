@@ -342,12 +342,12 @@ export function cacheEntries(
 }
 
 function getEntryType(entry: Entry|FilesAppEntry): EntryType {
-  // Entries from FilesAppEntry have the `type_name` property.
-  if (!('type_name' in entry)) {
+  // Entries from FilesAppEntry have the `typeName` property.
+  if (!('typeName' in entry)) {
     return EntryType.FS_API;
   }
 
-  switch (entry.type_name) {
+  switch (entry.typeName) {
     case 'EntryList':
       return EntryType.ENTRY_LIST;
     case 'VolumeEntry':
@@ -375,7 +375,7 @@ function getEntryType(entry: Entry|FilesAppEntry): EntryType {
     case 'TrashEntry':
       return EntryType.TRASH;
     default:
-      console.warn(`Invalid entry.type_name='${entry.type_name}`);
+      console.warn(`Invalid entry.typeName='${entry.typeName}`);
       return EntryType.FS_API;
   }
 }
@@ -578,7 +578,7 @@ export async function*
  * Read entries for Drive root entry list (aka "Google Drive"), there are some
  * differences compared to the `readSubDirectoriesForDirectoryEntry`:
  * * We don't need to call readEntries to get its child entries. Instead, all
- * its children are from its entry.getUIChildren().
+ * its children are from its entry.getUiChildren().
  * * For fake entries children (e.g. Shared with me and Offline), we only show
  * them based on the dialog type.
  * * For curtain children (e.g. team drives and computers grand root), we only
@@ -594,7 +594,7 @@ async function*
     [COMPUTERS_DIRECTORY_PATH]: 'ComputerCount',
   };
 
-  const driveChildren = entry.getUIChildren();
+  const driveChildren = entry.getUiChildren();
   /**
    * Store the filtered children, for fake entries or grand roots we might need
    * to hide them based on curtain conditions.

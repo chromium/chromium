@@ -196,11 +196,11 @@ export class SearchV2ContentScanner extends ContentScanner {
    */
   private getSearchRoots_(dirEntry: UniversalDirectory): DirectoryEntry[] {
     const typeName: string|null =
-        'type_name' in dirEntry ? dirEntry.type_name : null;
+        'typeName' in dirEntry ? dirEntry.typeName : null;
     if (typeName !== 'EntryList' && typeName !== 'VolumeEntry') {
       return [dirEntry as DirectoryEntry];
     }
-    const children = (dirEntry as EntryList).getUIChildren();
+    const children = (dirEntry as EntryList).getUiChildren();
     const allRoots = [dirEntry, ...children];
     return allRoots.filter(entry => !isFakeEntry(entry))
         .map(entry => entry.filesystem!.root);

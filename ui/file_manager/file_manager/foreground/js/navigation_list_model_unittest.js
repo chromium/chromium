@@ -129,8 +129,8 @@ export function testModel() {
   // Downloads and Crostini are displayed within My files.
   const myFilesItem = /** @type NavigationModelFakeItem */ (model.item(2));
   const myFilesEntryList = /** @type {!EntryList} */ (myFilesItem.entry);
-  assertEquals(1, myFilesEntryList.getUIChildren().length);
-  assertEquals('linux-files-label', myFilesEntryList.getUIChildren()[0]?.name);
+  assertEquals(1, myFilesEntryList.getUiChildren().length);
+  assertEquals('linux-files-label', myFilesEntryList.getUiChildren()[0]?.name);
 
   // Trash is displayed as a root when feature is enabled and should be the last
   // item in the model.
@@ -302,9 +302,9 @@ export function testAddAndRemoveVolumes() {
     assertEquals('External Drive', drive.label);
     assertEquals(
         'removable:hoge', /** @type {!NavigationModelFakeItem} */
-        // @ts-ignore: error TS2339: Property 'getUIChildren' does not exist on
+        // @ts-ignore: error TS2339: Property 'getUiChildren' does not exist on
         // type 'FilesAppEntry'.
-        (drive).entry.getUIChildren()[0].volumeInfo.volumeId);
+        (drive).entry.getUiChildren()[0].volumeInfo.volumeId);
   } else {
     assertEquals(
         'removable:hoge', /** @type {!NavigationModelVolumeItem} */
@@ -334,14 +334,14 @@ export function testAddAndRemoveVolumes() {
     assertEquals('External Drive', drive2.label);
     assertEquals(
         'removable:hoge', /** @type {!NavigationModelFakeItem} */
-        // @ts-ignore: error TS2339: Property 'getUIChildren' does not exist on
+        // @ts-ignore: error TS2339: Property 'getUiChildren' does not exist on
         // type 'FilesAppEntry'.
-        (drive1).entry.getUIChildren()[0].volumeInfo.volumeId);
+        (drive1).entry.getUiChildren()[0].volumeInfo.volumeId);
     assertEquals(
         'removable:fuga', /** @type {!NavigationModelFakeItem} */
-        // @ts-ignore: error TS2339: Property 'getUIChildren' does not exist on
+        // @ts-ignore: error TS2339: Property 'getUiChildren' does not exist on
         // type 'FilesAppEntry'.
-        (drive2).entry.getUIChildren()[0].volumeInfo.volumeId);
+        (drive2).entry.getUiChildren()[0].volumeInfo.volumeId);
   } else {
     assertEquals(
         'removable:hoge', /** @type {!NavigationModelVolumeItem} */
@@ -623,11 +623,11 @@ export function testMyFilesVolumeEnabled(callback) {
   // the My files volume.
   const myFilesItem = /** @type NavigationModelFakeItem */ (model.item(0));
   const myFilesEntryList = /** @type {!EntryList} */ (myFilesItem.entry);
-  assertEquals(2, myFilesEntryList.getUIChildren().length);
+  assertEquals(2, myFilesEntryList.getUiChildren().length);
   // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-  assertEquals('android_files:droid', myFilesEntryList.getUIChildren()[0].name);
+  assertEquals('android_files:droid', myFilesEntryList.getUiChildren()[0].name);
   // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-  assertEquals('linux-files-label', myFilesEntryList.getUIChildren()[1].name);
+  assertEquals('linux-files-label', myFilesEntryList.getUiChildren()[1].name);
 
   const reader = myFilesEntryList.createReader();
   // @ts-ignore: error TS7034: Variable 'foundEntries' implicitly has type
@@ -703,11 +703,11 @@ export function testMyFilesSubdirectoriesCanBeDisabled() {
   // Android is displayed within My files, and should be disabled.
   const myFilesItem = /** @type {!NavigationModelFakeItem} */ (model.item(0));
   const myFilesEntryList = /** @type {!EntryList} */ (myFilesItem.entry);
-  assertEquals(2, myFilesEntryList.getUIChildren().length);
+  assertEquals(2, myFilesEntryList.getUiChildren().length);
   const androidItem =
-      /** @type {!VolumeEntry} */ (myFilesEntryList.getUIChildren()[0]);
+      /** @type {!VolumeEntry} */ (myFilesEntryList.getUiChildren()[0]);
   const crostiniItem =
-      /** @type {!VolumeEntry} */ (myFilesEntryList.getUIChildren()[1]);
+      /** @type {!VolumeEntry} */ (myFilesEntryList.getUiChildren()[1]);
   assertEquals('android_files:droid', androidItem.name);
   assertTrue(androidItem.disabled);
   assertEquals('crostini', crostiniItem.name);
@@ -741,9 +741,9 @@ export function testMultipleUsbPartitionsGrouping() {
   // Check that the common root shows 3 partitions.
   let groupedUsbs = /** @type NavigationModelFakeItem */ (model.item(2));
   assertEquals('External Drive', groupedUsbs.label);
-  // @ts-ignore: error TS2339: Property 'getUIChildren' does not exist on type
+  // @ts-ignore: error TS2339: Property 'getUiChildren' does not exist on type
   // 'FilesAppEntry'.
-  assertEquals(3, groupedUsbs.entry.getUIChildren().length);
+  assertEquals(3, groupedUsbs.entry.getUiChildren().length);
 
   // Add a 4th partition, which triggers NavigationListModel to recalculate.
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
@@ -753,9 +753,9 @@ export function testMultipleUsbPartitionsGrouping() {
   // Check that the common root shows 4 partitions.
   groupedUsbs = /** @type NavigationModelFakeItem */ (model.item(2));
   assertEquals('External Drive', groupedUsbs.label);
-  // @ts-ignore: error TS2339: Property 'getUIChildren' does not exist on type
+  // @ts-ignore: error TS2339: Property 'getUiChildren' does not exist on type
   // 'FilesAppEntry'.
-  assertEquals(4, groupedUsbs.entry.getUIChildren().length);
+  assertEquals(4, groupedUsbs.entry.getUiChildren().length);
 
   // Remove the 4th partition, which triggers NavigationListModel to
   // recalculate.
@@ -764,9 +764,9 @@ export function testMultipleUsbPartitionsGrouping() {
   // Check that the common root shows 3 partitions.
   groupedUsbs = /** @type NavigationModelFakeItem */ (model.item(2));
   assertEquals('External Drive', groupedUsbs.label);
-  // @ts-ignore: error TS2339: Property 'getUIChildren' does not exist on type
+  // @ts-ignore: error TS2339: Property 'getUiChildren' does not exist on type
   // 'FilesAppEntry'.
-  assertEquals(3, groupedUsbs.entry.getUIChildren().length);
+  assertEquals(3, groupedUsbs.entry.getUiChildren().length);
 
   // Add an extra copy of partition3, which replaces the existing partition3
   // and triggers NavigationListModel to recalculate.
@@ -777,7 +777,7 @@ export function testMultipleUsbPartitionsGrouping() {
   // Check that partition3 is not duplicated.
   groupedUsbs = /** @type NavigationModelFakeItem */ (model.item(2));
   assertEquals('External Drive', groupedUsbs.label);
-  // @ts-ignore: error TS2339: Property 'getUIChildren' does not exist on type
+  // @ts-ignore: error TS2339: Property 'getUiChildren' does not exist on type
   // 'FilesAppEntry'.
-  assertEquals(3, groupedUsbs.entry.getUIChildren().length);
+  assertEquals(3, groupedUsbs.entry.getUiChildren().length);
 }

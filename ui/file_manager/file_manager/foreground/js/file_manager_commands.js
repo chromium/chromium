@@ -920,7 +920,7 @@ CommandHandler.COMMANDS_['unmount'] = new (class extends FilesCommand {
       // Add child partitions to the list of volumes to be unmounted.
       // @ts-ignore: error TS2339: Property 'volumeInfo' does not exist on type
       // 'FileSystemEntry | FilesAppEntry'.
-      volumes = entry.getUIChildren().map(child => child.volumeInfo);
+      volumes = entry.getUiChildren().map(child => child.volumeInfo);
       label = entry.label || '';
     } else {
       // The element is a removable volume with no partitions.
@@ -1064,7 +1064,7 @@ CommandHandler.COMMANDS_['format'] = new (class extends FilesCommand {
       let isDevice = false;
       if (root && root instanceof EntryList) {
         // root entry is device node if it has child (partition).
-        isDevice = !!removableRoot && root.getUIChildren().length > 0;
+        isDevice = !!removableRoot && root.getUiChildren().length > 0;
       }
       // Disable format command on device when SinglePartitionFormat on,
       // erase command will be available.
@@ -1113,7 +1113,7 @@ CommandHandler.COMMANDS_['erase-device'] = new (class extends FilesCommand {
     let isDevice = false;
     if (root && root instanceof EntryList) {
       // root entry is device node if it has child (partition).
-      isDevice = !!removableRoot && root.getUIChildren().length > 0;
+      isDevice = !!removableRoot && root.getUiChildren().length > 0;
     }
 
     event.canExecute = removableRoot && !writable;

@@ -188,7 +188,7 @@ export class FilesFormatDialog extends PolymerElement {
 
     this.root_ = root;
     this.title = root.label;
-    const childVolumes = this.root_.getUIChildren();
+    const childVolumes = this.root_.getUiChildren();
     let totalSpaceUsed = 0;
 
     const getSpaceUsedRequests = childVolumes.map((childVolume) => {

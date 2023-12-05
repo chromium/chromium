@@ -638,7 +638,7 @@ export async function testRemoveVolumeFromMyFiles(done: () => void) {
                                     }));
 
   // Check the volume entry has also been removed from MyFiles entry.
-  const uiChildren = myFilesVolumeEntry.getUIChildren();
+  const uiChildren = myFilesVolumeEntry.getUiChildren();
   assertEquals(1, uiChildren.length);
   assertTrue(isSameEntry(linuxFilesUiEntry, uiChildren[0]!));
 
@@ -728,7 +728,7 @@ export async function testRemoveGroupedRemovableVolume(done: () => void) {
                                           }));
 
   // Check the partition1 entry has also been removed from parent entry.
-  const uiChildrenAfterRemovingPartition1 = parentEntry.getUIChildren();
+  const uiChildrenAfterRemovingPartition1 = parentEntry.getUiChildren();
   assertEquals(1, uiChildrenAfterRemovingPartition1.length);
   assertTrue(isSameEntry(
       partition2VolumeEntry, uiChildrenAfterRemovingPartition1[0]!));
@@ -760,7 +760,7 @@ export async function testRemoveGroupedRemovableVolume(done: () => void) {
                                           }));
 
   // Check parent entry now has no children.
-  const uiChildrenAfterRemovingPartition2 = parentEntry.getUIChildren();
+  const uiChildrenAfterRemovingPartition2 = parentEntry.getUiChildren();
   assertEquals(0, uiChildrenAfterRemovingPartition2.length);
 
   done();

@@ -127,8 +127,8 @@ export async function testAddUiEntryForMyFiles(done: () => void) {
                                     }));
 
   // Check the UI entry is added to MyFiles entry.
-  assertEquals(2, myFilesEntry.getUIChildren().length);
-  assertEquals(uiEntry, myFilesEntry.getUIChildren()[1]);
+  assertEquals(2, myFilesEntry.getUiChildren().length);
+  assertEquals(uiEntry, myFilesEntry.getUiChildren()[1]);
 
   done();
 }
@@ -160,8 +160,8 @@ export async function testAddDuplicateUiEntryForMyFiles(done: () => void) {
   await waitDeepEquals(store, initialState, (state) => state);
 
   // Check the UI entry is not being added to MyFiles entry again.
-  assertEquals(1, myFilesEntry.getUIChildren().length);
-  assertEquals(uiEntry, myFilesEntry.getUIChildren()[0]);
+  assertEquals(1, myFilesEntry.getUiChildren().length);
+  assertEquals(uiEntry, myFilesEntry.getUiChildren()[0]);
 
   done();
 }
@@ -200,8 +200,8 @@ export async function testAddDuplicateUiEntryForMyFilesWhenVolumeExists(
   await waitDeepEquals(store, [], (state) => state.uiEntries);
 
   // Check the UI entry is not being added to MyFiles entry again.
-  assertEquals(1, myFilesEntry.getUIChildren().length);
-  assertEquals(playFilesVolumeEntry, myFilesEntry.getUIChildren()[0]);
+  assertEquals(1, myFilesEntry.getUiChildren().length);
+  assertEquals(playFilesVolumeEntry, myFilesEntry.getUiChildren()[0]);
 
   done();
 }
@@ -304,7 +304,7 @@ export async function testRemoveUiEntryFromMyFiles(done: () => void) {
                                     }));
 
   // Check the UI entry has also been removed from MyFiles entry.
-  assertEquals(0, myFilesEntry.getUIChildren().length);
+  assertEquals(0, myFilesEntry.getUiChildren().length);
 
   done();
 }

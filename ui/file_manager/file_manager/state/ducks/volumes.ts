@@ -161,7 +161,7 @@ function addVolumeReducer(currentState: State, payload: {
     // the same object might be referenced in the UI.
     const myFilesFileData = {...getFileData(currentState, myFilesEntryKey)!};
     // Nest the entry for the new volume info in MyFiles.
-    const uiEntryPlaceholder = myFilesEntry.getUIChildren().find(
+    const uiEntryPlaceholder = myFilesEntry.getUiChildren().find(
         childEntry => childEntry.name === newVolumeEntry.name);
     // Remove a placeholder for the currently mounting volume.
     if (uiEntryPlaceholder) {
@@ -213,7 +213,7 @@ function addVolumeReducer(currentState: State, payload: {
     if (myFilesEntryList) {
       // We need to copy the children of the entry list to the real volume
       // entry.
-      const uiChildren = [...myFilesEntryList.getUIChildren()];
+      const uiChildren = [...myFilesEntryList.getUiChildren()];
       for (const childEntry of uiChildren) {
         appendChildIfNotExisted(newVolumeEntry, childEntry);
         myFilesEntryList.removeChildEntry(childEntry);
@@ -391,7 +391,7 @@ function addVolumeReducer(currentState: State, payload: {
 function appendChildIfNotExisted(
     parentEntry: VolumeEntry|EntryList,
     childEntry: Entry|FilesAppEntry): boolean {
-  if (!parentEntry.getUIChildren().find(
+  if (!parentEntry.getUiChildren().find(
           (entry) => isSameEntry(entry, childEntry))) {
     parentEntry.addEntry(childEntry);
     return true;

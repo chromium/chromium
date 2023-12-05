@@ -22,50 +22,58 @@ import {RootType, VolumeType} from '../common/js/volume_manager_types.js';
 export class FilesAppEntry {
   constructor() {
     /**
-     * @public @type {boolean} true if this entry represents a Directory-like
-     * entry, as in have sub-entries and implements {createReader} method. This
-     * attribute is defined on Entry.
-     */
-    this.isDirectory = false;
-
-    /**
-     * @public @type {boolean} true if this entry represents a File-like entry.
-     * Implementations of FilesAppEntry are expected to have this as |true|.
-     * Whereas implementations of FilesAppDirEntry are expected to have this as
-     * |false|.
-     * This attribute is defined on Entry.
-     */
-    this.isFile = true;
-
-    /**
-     * @public @type {string} absolute path from the file system's root to the
-     * entry. It can also be thought of as a path which is relative to the root
-     * directory, prepended with a "/" character.
-     * This attribute is defined on Entry.
-     */
-    this.fullPath = '';
-
-    /**
-     * @public @type {string} the name of the entry (the final part of the path,
-     * after the last.
-     * This attribute is defined on Entry.
-     */
-    this.name = '';
-
-    /**
      * @public @type {string} the class name for this class. It's workaround for
      * the fact that an instance created on foreground page and sent to
      * background page can't be checked with "instanceof".
      */
-    this.type_name = 'FilesAppEntry';
+    this.typeName = 'FilesAppEntry';
 
     /** @type {RootType|null} */
     this.rootType = null;
+  }
 
-    /**
-     * @type {?FileSystem}
-     */
-    this.filesystem = null;
+  /**
+   * This attribute is defined on Entry.
+   * @return {boolean} true if this entry represents a Directory-like entry, as
+   * in have sub-entries and implements {createReader} method.
+   */
+  get isDirectory() {
+    return false;
+  }
+
+  /**
+   * This attribute is defined on Entry.
+   * @return {boolean} true if this entry represents a File-like entry.
+   * Implementations of FilesAppEntry are expected to have this as true.
+   * Whereas implementations of FilesAppDirEntry are expected to have this as
+   * false.
+   */
+  get isFile() {
+    return true;
+  }
+
+  /** @return {?FileSystem} */
+  get filesystem() {
+    return null;
+  }
+
+  /**
+   * This attribute is defined on Entry.
+   * @return {string} absolute path from the file system's root to the entry. It
+   * can also be thought of as a path which is relative to the root directory,
+   * prepended with a "/" character.
+   */
+  get fullPath() {
+    return '';
+  }
+
+  /**
+   * This attribute is defined on Entry.
+   * @return {string} the name of the entry (the final part of the path, after
+   * the last.
+   */
+  get name() {
+    return '';
   }
 
   /**
@@ -102,7 +110,6 @@ export class FilesAppEntry {
    * or DirectoryEntry, this means it can interact with VolumeManager.
    * @return {boolean}
    */
-  // @ts-ignore: error TS2378: A 'get' accessor must return a value.
   get isNativeType() {
     return false;
   }
@@ -159,14 +166,17 @@ export class FilesAppEntry {
 export class FilesAppDirEntry extends FilesAppEntry {
   constructor() {
     super();
-    /**
-     * @public @type {boolean} true if this entry represents a Directory-like
-     * entry, as in have sub-entries and implements {createReader} method.
-     * Implementations of FilesAppEntry are expected to have this as |true|.
-     * This attribute is defined on Entry.
-     */
-    this.isDirectory = true;
-    this.type_name = 'FilesAppDirEntry';
+    this.typeName = 'FilesAppDirEntry';
+  }
+
+  /** @override */
+  get isDirectory() {
+    return true;
+  }
+
+  /** @override */
+  get isFile() {
+    return false;
   }
 
   /**
@@ -221,30 +231,13 @@ export class FakeEntry extends FilesAppDirEntry {
    * @param {chrome.fileManagerPrivate.FileCategory=} opt_fileCategory
    *    used on Recents to filter recent files by their file types.
    */
-  // @ts-ignore: error TS6133: 'opt_fileCategory' is declared but its value is
-  // never read.
   constructor(label, rootType, opt_sourceRestriction, opt_fileCategory) {
     super();
-    /**
-     * @type {string} label: Label to be used when displaying to user, it
-     *      should be already translated.
-     */
-    this.label;
-
-    /** @type {string} Name for this volume. */
-    this.name;
-
-    /** @type {!RootType} */
-    this.rootType;
-
-    /** @type {boolean} true FakeEntry are always directory-like. */
-    this.isDirectory = true;
-
-    /** @type {boolean} false FakeEntry are always directory-like. */
-    this.isFile = false;
+    this.label = label;
+    this.rootType = rootType;
 
     /**
-     * @type {boolean} false FakeEntry can be disabled if it represents the
+     * @type {boolean} FakeEntry can be disabled if it represents the
      * placeholder of the real volume.
      */
     this.disabled = false;
@@ -254,21 +247,31 @@ export class FakeEntry extends FilesAppDirEntry {
      * to communicate restrictions about sources to
      * chrome.fileManagerPrivate.getRecentFiles API.
      */
-    this.sourceRestriction;
+    this.sourceRestriction = opt_sourceRestriction;
 
     /**
      * @type {chrome.fileManagerPrivate.FileCategory|undefined} It's used to
      * communicate category filter to chrome.fileManagerPrivate.getRecentFiles
      * API.
      */
-    this.fileCategory;
+    this.fileCategory = opt_fileCategory;
 
     /**
      * @type {string} the class name for this class. It's workaround for the
      * fact that an instance created on foreground page and sent to background
      * page can't be checked with "instanceof".
      */
-    this.type_name = 'FakeEntry';
+    this.typeName = 'FakeEntry';
+  }
+
+  /** @override FakeEntry is always directory-like. */
+  get isDirectory() {
+    return true;
+  }
+
+  /** @override FakeEntry is always directory-like. */
+  get isFile() {
+    return false;
   }
 
   /**

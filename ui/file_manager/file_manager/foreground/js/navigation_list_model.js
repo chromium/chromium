@@ -813,9 +813,9 @@ export class NavigationListModel extends EventTarget {
       }
       // For each entry in the list, remove any for volumes that no longer
       // exist.
-      // @ts-ignore: error TS2339: Property 'getUIChildren' does not exist on
+      // @ts-ignore: error TS2339: Property 'getUiChildren' does not exist on
       // type 'FilesAppEntry | EntryList | VolumeEntry'.
-      for (const volume of myFilesEntry.getUIChildren()) {
+      for (const volume of myFilesEntry.getUiChildren()) {
         if (!volume.volumeInfo ||
             volume.volumeInfo.volumeType != VolumeType.GUEST_OS) {
           continue;
@@ -937,9 +937,9 @@ export class NavigationListModel extends EventTarget {
           // @ts-ignore: error TS7006: Parameter 'p' implicitly has an 'any'
           // type.
           new Set(removableGroup.map(p => p.volumeInfo));
-      // @ts-ignore: error TS2339: Property 'getUIChildren' does not exist on
+      // @ts-ignore: error TS2339: Property 'getUiChildren' does not exist on
       // type 'FilesAppEntry | EntryList'.
-      for (const partition of removableEntry.getUIChildren()) {
+      for (const partition of removableEntry.getUiChildren()) {
         if (!existingVolumeInfos.has(partition.volumeInfo)) {
           // @ts-ignore: error TS2339: Property 'removeChildEntry' does not
           // exist on type 'FilesAppEntry | EntryList'.

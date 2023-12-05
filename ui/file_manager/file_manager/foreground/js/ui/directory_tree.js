@@ -1193,9 +1193,9 @@ export class EntryListItem extends DirectoryItem {
         // FilesAppEntry'.
         this.parentTree_.volumeManager_.getLocationInfo(entries[0]);
     const compareFunction = compareLabelAndGroupBottomEntries(
-        // @ts-ignore: error TS2339: Property 'getUIChildren' does not exist on
+        // @ts-ignore: error TS2339: Property 'getUiChildren' does not exist on
         // type 'FileSystemDirectoryEntry'.
-        locationInfo, this.entry.getUIChildren());
+        locationInfo, this.entry.getUiChildren());
 
     const filter = this.fileFilter_.filter.bind(this.fileFilter_);
     return entries.filter(filter).sort(compareFunction);
