@@ -183,6 +183,11 @@ id<GREYMatcher> GetMatcherForSettingsLink() {
 }
 
 - (void)testSwipeToDismiss {
+  // TODO(crbug.com/1508365): Test fails on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iPad.");
+  }
+
   // Tap an element that is eligible for plus_address autofilling.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kEmailFieldId)];
