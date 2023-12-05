@@ -1289,6 +1289,8 @@ source_set("browser") {
     "media/audio_muting_session.h",
     "media/audio_output_stream_broker.cc",
     "media/audio_output_stream_broker.h",
+    "media/audio_stream_broker_helper.cc",
+    "media/audio_stream_broker_helper.h",
     "media/audio_stream_broker_impl.cc",
     "media/audio_stream_broker_impl.h",
     "media/audio_stream_monitor.cc",
