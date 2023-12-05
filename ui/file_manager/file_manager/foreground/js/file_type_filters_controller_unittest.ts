@@ -8,40 +8,28 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeo
 import {EntryList, FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {RootType} from '../../common/js/volume_manager_types.js';
-import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
+import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
 
 import {DirectoryModel} from './directory_model.js';
 import {FileTypeFiltersController} from './file_type_filters_controller.js';
 import {A11yAnnounce} from './ui/a11y_announce.js';
 
 /**
- * @type {!HTMLElement}
  */
-let container;
+let container: HTMLElement;
 
 /**
- * @type {!DirectoryModel}
  */
-let directoryModel;
+let directoryModel: DirectoryModel;
 
 /**
- * @type {!FakeEntry}
  */
-let recentEntry;
+let recentEntry: FakeEntry;
 
 /**
- * @type {!EntryList}
  */
-let myFilesEntry;
+let myFilesEntry: EntryList;
 
-/**
- * @type {!FileTypeFiltersController}
- */
-// @ts-ignore: error TS6133: 'fileTypeFiltersController' is declared but its
-// value is never read.
-let fileTypeFiltersController;
-
-/** @type {boolean} */
 let isScanCalled = false;
 
 const TOTAL_FILTER_BUTTON_COUNT = 5;
@@ -50,6 +38,8 @@ export function setUp() {
   installMockChrome({});
   isScanCalled = false;
   class MockDirectoryModel extends EventTarget {
+    currentDirEntry: DirectoryEntry|FilesAppDirEntry|null;
+
     constructor() {
       super();
 
@@ -61,9 +51,7 @@ export function setUp() {
       isScanCalled = true;
     }
 
-    // @ts-ignore: error TS7006: Parameter 'dirEntry' implicitly has an 'any'
-    // type.
-    changeDirectoryEntry(dirEntry) {
+    changeDirectoryEntry(dirEntry: DirectoryEntry|FilesAppDirEntry) {
       // Change the directory model's current directory to |dirEntry|.
       const previousDirEntry = this.currentDirEntry;
       this.currentDirEntry = dirEntry;
@@ -79,23 +67,23 @@ export function setUp() {
     }
 
     static create() {
-      const model = /** @type {!Object} */ (new MockDirectoryModel());
-      return /** @type {!DirectoryModel} */ (model);
+      const model = new MockDirectoryModel();
+      return model as any as DirectoryModel;
     }
   }
 
-  const mockA11y = /** @type {!A11yAnnounce} */ ({
+  const mockA11y = {
     speakA11yMessage: () => {},
-  });
+  } as A11yAnnounce;
 
   // Create FileTypeFiltersController instance with dependencies.
-  container = /** @type {!HTMLInputElement} */ (document.createElement('div'));
+  container = document.createElement('div');
   directoryModel = MockDirectoryModel.create();
   recentEntry = new FakeEntryImpl(
       'Recent', RootType.RECENT,
       chrome.fileManagerPrivate.SourceRestriction.ANY_SOURCE,
       chrome.fileManagerPrivate.FileCategory.ALL);
-  fileTypeFiltersController = new FileTypeFiltersController(
+  new FileTypeFiltersController(
       container, directoryModel, recentEntry, mockA11y);
 
   // Create a directory entry which is not Recents to simulate directory change.
@@ -107,8 +95,7 @@ export function setUp() {
  * given container element.
  */
 export function testCreatedButtonLabels() {
-  const buttons = /** @type {!Array<!HTMLButtonElement>} */ (
-      Array.from(container.children));
+  const buttons = Array.from(container.children) as HTMLButtonElement[];
   assertEquals(buttons.length, TOTAL_FILTER_BUTTON_COUNT);
 
   assertEquals(buttons[0]?.textContent, 'All');
@@ -123,8 +110,7 @@ export function testCreatedButtonLabels() {
  * except the first button (button with label "All").
  */
 export function testButtonInitialActiveState() {
-  const buttons = /** @type {!Array<!HTMLButtonElement>} */ (
-      Array.from(container.children));
+  const buttons = Array.from(container.children) as HTMLButtonElement[];
   assertEquals(buttons.length, TOTAL_FILTER_BUTTON_COUNT);
 
   assertTrue(!!buttons[0]?.classList.contains('active'));
@@ -140,8 +126,7 @@ export function testButtonInitialActiveState() {
  * active.
  */
 export function testButtonToggleState() {
-  const buttons = /** @type {!Array<!HTMLButtonElement>} */ (
-      Array.from(container.children));
+  const buttons = Array.from(container.children) as HTMLButtonElement[];
   assertEquals(buttons.length, TOTAL_FILTER_BUTTON_COUNT);
 
   // State change: inactive -> active -> inactive.
@@ -162,8 +147,7 @@ export function testButtonToggleState() {
  * button_1 becomes active.
  */
 export function testOnlyOneButtonCanActive() {
-  const buttons = /** @type {!Array<!HTMLButtonElement>} */ (
-      Array.from(container.children));
+  const buttons = Array.from(container.children) as HTMLButtonElement[];
   assertEquals(buttons.length, TOTAL_FILTER_BUTTON_COUNT);
 
   assertTrue(!!buttons[0]?.classList.contains('active'));
@@ -215,8 +199,7 @@ export function testContainerIsShownOnlyInRecents() {
  * Recents view and go back again.
  */
 export function testActiveButtonIsResetOnLeavingRecents() {
-  const buttons = /** @type {!Array<!HTMLButtonElement>} */ (
-      Array.from(container.children));
+  const buttons = Array.from(container.children) as HTMLButtonElement[];
   assertEquals(buttons.length, TOTAL_FILTER_BUTTON_COUNT);
 
   directoryModel.changeDirectoryEntry(recentEntry);
@@ -257,8 +240,7 @@ export function testActiveButtonIsResetOnLeavingRecents() {
  * Recent entry's property is modified.
  */
 export function testAppliedFilters() {
-  const buttons = /** @type {!Array<!HTMLButtonElement>} */ (
-      Array.from(container.children));
+  const buttons = Array.from(container.children) as HTMLButtonElement[];
   assertEquals(buttons.length, TOTAL_FILTER_BUTTON_COUNT);
 
   directoryModel.changeDirectoryEntry(recentEntry);
