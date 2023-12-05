@@ -910,4 +910,70 @@ TEST_F(PlusAddressAuthToken, RequestFails_ManyCallers) {
   EXPECT_FALSE(third.Get().has_value());
 }
 
+class PlusAddressClientNullServerUrl : public PlusAddressClientRequests {
+ protected:
+  void SetUp() override {
+    // Disable feature plus_addresses, which should also set `server_url_` to
+    // `nullopt`.
+    scoped_feature_list_.InitAndDisableFeature(plus_addresses::kFeature);
+  }
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  signin::IdentityTestEnvironment identity_test_env_;
+};
+
+TEST_F(PlusAddressClientNullServerUrl, CreatePlusAddress_SendsNoRequest) {
+  const url::Origin origin = url::Origin::Create(GURL("https://foobar.com"));
+  base::test::TestFuture<const std::string&> callback;
+  PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
+
+  EXPECT_FALSE(client.GetServerUrlForTesting().has_value());
+  // CreatePlusAddress should return without making any request when no valid
+  // `server_ur_` is provided.
+  client.CreatePlusAddress(origin, callback.GetCallback());
+  EXPECT_EQ(test_url_loader_factory.NumPending(), 0);
+  EXPECT_FALSE(callback.IsReady());
+}
+
+TEST_F(PlusAddressClientNullServerUrl, ReservePlusAddress_SendsNoRequest) {
+  const url::Origin origin = url::Origin::Create(GURL("https://foobar.com"));
+  base::test::TestFuture<const PlusProfileOrError&> callback;
+
+  PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
+
+  EXPECT_FALSE(client.GetServerUrlForTesting().has_value());
+  // ReservePlusAddress should return without making any request when no valid
+  // `server_ur_` is provided.
+  client.ReservePlusAddress(origin, callback.GetCallback());
+  EXPECT_EQ(test_url_loader_factory.NumPending(), 0);
+  EXPECT_FALSE(callback.IsReady());
+}
+
+TEST_F(PlusAddressClientNullServerUrl, ConfirmPlusAddress_SendsNoRequest) {
+  const url::Origin origin = url::Origin::Create(GURL("https://foobar.com"));
+  base::test::TestFuture<const PlusProfileOrError&> callback;
+
+  PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
+
+  EXPECT_FALSE(client.GetServerUrlForTesting().has_value());
+  // ConfirmPlusAddress should return without making any request when no valid
+  // `server_ur_` is provided.
+  client.ConfirmPlusAddress(origin, "random_address", callback.GetCallback());
+  EXPECT_EQ(test_url_loader_factory.NumPending(), 0);
+  EXPECT_FALSE(callback.IsReady());
+}
+
+TEST_F(PlusAddressClientNullServerUrl, GetAllPlusAddresses_SendsNoRequest) {
+  base::test::TestFuture<const PlusAddressMap&> callback;
+
+  PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
+
+  EXPECT_FALSE(client.GetServerUrlForTesting().has_value());
+  // GetAllPlusAddresses should return without making any request
+  // when no valid `server_ur_` is provided.
+  client.GetAllPlusAddresses(callback.GetCallback());
+  EXPECT_EQ(test_url_loader_factory.NumPending(), 0);
+  EXPECT_FALSE(callback.IsReady());
+}
+
 }  // namespace plus_addresses

@@ -375,7 +375,7 @@ void PlusAddressClient::GetAllPlusAddressesInternal(
                      // Safe since this class owns the loader_for_sync_.
                      base::Unretained(this), clock_->Now(),
                      std::move(callback)),
-      // TODO(b/301984623) - Measure average downloadsize and change this.
+      // TODO(b/301984623) - Measure average download size and change this.
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
 
