@@ -75,6 +75,9 @@ chromium-metrics-reviews@google.com.
       summary="Showing cache patterns only for OfflinePages."/>
   <variant name=".Omnibox"
       summary="Showing cache patterns only for Omnibox (valid since M117)."/>
+  <variant name=".PasswordBottomSheet"
+      summary="Profile image fetcher for Password Manager sign-in bottom
+               sheet."/>
   <variant name=".PriceDropNotification"
       summary="Images fetched for the icon of price drop notification."/>
   <variant name=".QueryTiles" summary="Showing Query tiles images."/>

@@ -7,12 +7,17 @@
 
 #import <optional>
 
+#import "base/memory/scoped_refptr.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_exit_reason.h"
 
 namespace autofill {
 struct FormActivityParams;
 }  // namespace autofill
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace password_manager {
 struct CredentialUIEntry;
@@ -46,7 +51,10 @@ class GURL;
                         profilePasswordStore
                 accountPasswordStore:
                     (scoped_refptr<password_manager::PasswordStoreInterface>)
-                        accountPasswordStore;
+                        accountPasswordStore
+              sharedURLLoaderFactory:
+                  (scoped_refptr<network::SharedURLLoaderFactory>)
+                      sharedURLLoaderFactory;
 
 // Disconnects the mediator.
 - (void)disconnect;

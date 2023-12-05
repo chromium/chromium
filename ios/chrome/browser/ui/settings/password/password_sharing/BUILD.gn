@@ -38,6 +38,7 @@ source_set("password_sharing") {
     ":password_sharing_constants",
     ":password_sharing_metrics",
     ":password_sharing_ui",
+    ":password_sharing_util",
     "//components/image_fetcher/core",
     "//components/image_fetcher/ios",
     "//components/password_manager/core/browser",
@@ -135,6 +136,17 @@ source_set("password_sharing_metrics") {
   deps = [ "//base" ]
 }
 
+source_set("password_sharing_util") {
+  sources = [
+    "multi_avatar_image_util.h",
+    "multi_avatar_image_util.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+  ]
+}
+
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
@@ -195,6 +207,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/signin/model:fake_system_identity_manager",
     "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/ui/authentication:authentication_constants",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/test:test_support",
     "//ios/chrome/test/fakes",

@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/scoped_password_suggestion_bottom_sheet_reauth_module_override.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/web/public/web_state.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 
 using PasswordSuggestionBottomSheetExitReason::kShowPasswordDetails;
 using PasswordSuggestionBottomSheetExitReason::kShowPasswordManager;
@@ -76,15 +77,16 @@ using PasswordSuggestionBottomSheetExitReason::kShowPasswordManager;
                   ->module
             : [[ReauthenticationModule alloc] init];
     self.mediator = [[PasswordSuggestionBottomSheetMediator alloc]
-        initWithWebStateList:webStateList
-               faviconLoader:IOSChromeFaviconLoaderFactory::GetForBrowserState(
-                                 browserState)
-                 prefService:browserState->GetPrefs()
-                      params:params
-                reauthModule:_reauthModule
-                         URL:URL
-        profilePasswordStore:profilePasswordStore
-        accountPasswordStore:accountPasswordStore];
+          initWithWebStateList:webStateList
+                 faviconLoader:IOSChromeFaviconLoaderFactory::
+                                   GetForBrowserState(browserState)
+                   prefService:browserState->GetPrefs()
+                        params:params
+                  reauthModule:_reauthModule
+                           URL:URL
+          profilePasswordStore:profilePasswordStore
+          accountPasswordStore:accountPasswordStore
+        sharedURLLoaderFactory:browserState->GetSharedURLLoaderFactory()];
     self.viewController.delegate = self.mediator;
     self.mediator.consumer = self.viewController;
   }

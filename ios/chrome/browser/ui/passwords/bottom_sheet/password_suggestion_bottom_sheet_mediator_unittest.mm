@@ -250,15 +250,17 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
                 chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS)
                 .get()));
     mediator_ = [[PasswordSuggestionBottomSheetMediator alloc]
-        initWithWebStateList:web_state_list_.get()
-               faviconLoader:IOSChromeFaviconLoaderFactory::GetForBrowserState(
-                                 chrome_browser_state_.get())
-                 prefService:prefs_.get()
-                      params:params_
-                reauthModule:nil
-                         URL:URL()
-        profilePasswordStore:store_
-        accountPasswordStore:nullptr];
+          initWithWebStateList:web_state_list_.get()
+                 faviconLoader:IOSChromeFaviconLoaderFactory::
+                                   GetForBrowserState(
+                                       chrome_browser_state_.get())
+                   prefService:prefs_.get()
+                        params:params_
+                  reauthModule:nil
+                           URL:URL()
+          profilePasswordStore:store_
+          accountPasswordStore:nullptr
+        sharedURLLoaderFactory:nullptr];
   }
 
   // Creates the bottom sheet mediator with custom suggestions `providers`.

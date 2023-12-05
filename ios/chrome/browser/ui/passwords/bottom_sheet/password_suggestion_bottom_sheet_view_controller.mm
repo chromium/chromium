@@ -91,9 +91,18 @@ CGFloat const kSpacingAfterTitle = 4;
   _tableViewIsMinimized = YES;
 
   self.view.accessibilityViewIsModal = YES;
-  self.aboveTitleView = [self setUpTitleView];
-  self.customSpacing = kSpacingAfterTitle;
-  self.customSpacingBeforeImageIfNoNavigationBar = kSpacingBeforeTitle;
+
+  // Image needs to be above title view, which is the case only when the latter
+  // is a `titleView`. In more common case without the image, title should be an
+  // `aboveTitleView`.
+  if (self.image) {
+    self.titleView = [self setUpTitleView];
+    self.customSpacing = 0;
+  } else {
+    self.aboveTitleView = [self setUpTitleView];
+    self.customSpacing = kSpacingAfterTitle;
+    self.customSpacingBeforeImageIfNoNavigationBar = kSpacingBeforeTitle;
+  }
 
   // Set the properties read by the super when constructing the
   // views in `-[ConfirmationAlertViewController viewDidLoad]`.
@@ -176,6 +185,10 @@ CGFloat const kSpacingAfterTitle = 4;
 - (void)setTitle:(NSString*)title subtitle:(NSString*)subtitle {
   _title = title;
   _subtitle = subtitle;
+}
+
+- (void)setAvatarImage:(UIImage*)avatarImage {
+  self.image = avatarImage;
 }
 
 - (void)dismiss {

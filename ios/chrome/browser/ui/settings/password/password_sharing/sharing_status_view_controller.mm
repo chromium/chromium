@@ -34,7 +34,6 @@ const CGFloat kProgressBarCircleSpacing = 2.0;
 const NSInteger kProgressBarCirclesAmount = 20;
 
 // Loaded images size dimensions.
-const CGFloat kProfileImageSize = 60.0;
 const CGFloat kLockSymbolPointSize = 22.0;
 const CGFloat kFaviconContainerSize = 30.0;
 const CGFloat kFaviconSize = 22.0;
@@ -314,9 +313,8 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
 
 // Helper for creating recipient image view.
 - (UIImageView*)createRecipientImageView {
-  UIImageView* recipientImageView = [[UIImageView alloc]
-      initWithImage:CircularImageFromImage(self.recipientImage,
-                                           kProfileImageSize)];
+  UIImageView* recipientImageView =
+      [[UIImageView alloc] initWithImage:self.recipientImage];
   recipientImageView.translatesAutoresizingMaskIntoConstraints = NO;
   self.recipientImageView = recipientImageView;
   return recipientImageView;

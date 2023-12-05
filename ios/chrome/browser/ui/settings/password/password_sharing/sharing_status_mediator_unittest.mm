@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/recipient_info.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/sharing_status_consumer.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -179,8 +180,10 @@ TEST_F(SharingStatusMediatorTest, NotifiesConsumerWithRecipientImage) {
           changePasswordURL:std::nullopt];
   mediator.consumer = consumer;
 
-  EXPECT_NSEQ(UIImagePNGRepresentation(DefaultSymbolTemplateWithPointSize(
-                  kPersonCropCircleSymbol, 40.0)),
+  EXPECT_NSEQ(UIImagePNGRepresentation(CircularImageFromImage(
+                  DefaultSymbolTemplateWithPointSize(
+                      kPersonCropCircleSymbol, kAccountProfilePhotoDimension),
+                  60.0)),
               UIImagePNGRepresentation(consumer.recipientImage));
 }
 
