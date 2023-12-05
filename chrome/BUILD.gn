@@ -204,7 +204,7 @@ if (!is_android && !is_mac) {
           ":chrome_dll",
           ":chrome_exe_version",
           ":copy_first_run",
-          ":packed_resources_integrity_header",
+          ":packed_resources_integrity",
           ":visual_elements_resources",
           "//base",
           "//build:branding_buildflags",
@@ -1621,7 +1621,6 @@ if (!is_android) {
       public_deps = [ ":preinstalled_apps" ]
     }
 
-    # This needs to be in-sync with //chrome/app/packed_resources_integrity.h.
     files_to_hash = [
       "resources.pak",
       "chrome_100_percent.pak",
@@ -1629,15 +1628,6 @@ if (!is_android) {
     if (enable_hidpi) {
       files_to_hash += [ "chrome_200_percent.pak" ]
     }
-  }
-
-  # This is extracted to deserialize build dependency around
-  # :packed_resources_integrity_hash and improve build parallelism.
-  source_set("packed_resources_integrity_header") {
-    sources = [ "app/packed_resources_integrity.h" ]
-
-    # chrome/app/packed_resources_integrity.cc file is generated in dependency.
-    deps = [ ":packed_resources_integrity" ]
   }
 }
 

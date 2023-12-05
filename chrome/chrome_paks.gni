@@ -580,9 +580,10 @@ template("chrome_paks") {
 
   if (defined(invoker.files_to_hash)) {
     _prefix = "$target_gen_dir/app/${target_name}_integrity"
-
-    # User of this template needs to check in a pre-generated "$_prefix.h".
-    _integrity_outputs = [ "$_prefix.cc" ]
+    _integrity_outputs = [
+      "$_prefix.cc",
+      "$_prefix.h",
+    ]
 
     action("${target_name}_integrity_hash") {
       script = "tools/build/sha256_file.py"
@@ -593,15 +594,12 @@ template("chrome_paks") {
       }
 
       args = rebase_path([ _prefix ] + inputs, root_build_dir)
+
       deps = [ ":${invoker.target_name}" ]
     }
 
     source_set("${target_name}_integrity") {
       sources = _integrity_outputs
-
-      # This allows starting compilation in dependent targets earlier.
-      public = []
-
       deps = [ ":${target_name}_hash" ]
     }
   }
