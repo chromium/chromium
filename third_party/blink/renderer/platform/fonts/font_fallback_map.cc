@@ -23,7 +23,7 @@ scoped_refptr<FontFallbackList> FontFallbackMap::Get(
     const FontDescription& font_description) {
   AutoLockForParallelTextShaping guard(lock_);
   auto iter = fallback_list_for_description_.find(font_description);
-  recordreplay::Assert("[RUN-1436-2260] FontFallbackMap::Get %d %s",
+  recordreplay::Assert("[RUN-2953] FontFallbackMap::Get %d %s",
                        iter != fallback_list_for_description_.end(),
                        font_description.ToString().Utf8().c_str());
   if (iter != fallback_list_for_description_.end()) {
@@ -36,6 +36,10 @@ scoped_refptr<FontFallbackList> FontFallbackMap::Get(
 }
 
 void FontFallbackMap::Remove(const FontDescription& font_description) {
+    if (recordreplay::AreEventsDisallowed("FontFallbackMap::Remove")) {
+    // Leak fallback_list_for_description_ contents.
+    return;
+  }
   AutoLockForParallelTextShaping guard(lock_);
   auto iter = fallback_list_for_description_.find(font_description);
   DCHECK_NE(iter, fallback_list_for_description_.end());
@@ -45,6 +49,10 @@ void FontFallbackMap::Remove(const FontDescription& font_description) {
 }
 
 void FontFallbackMap::InvalidateAll() {
+    if (recordreplay::AreEventsDisallowed("FontFallbackMap::InvalidateAll")) {
+    // Leak fallback_list_for_description_ contents.
+    return;
+  }
   lock_.AssertAcquired();
   for (auto& entry : fallback_list_for_description_)
     entry.value->MarkInvalid();
@@ -57,9 +65,6 @@ void FontFallbackMap::InvalidateInternal(Predicate predicate) {
   Vector<FontDescription> invalidated;
   for (auto& entry : fallback_list_for_description_) {
     if (predicate(*entry.value)) {
-      recordreplay::Assert(
-          "[RUN-1436-2260] FontFallbackMap::InvalidateInternal %s",
-          entry.key.ToString().Utf8().c_str());
       invalidated.push_back(entry.key);
       entry.value->MarkInvalid();
     }
