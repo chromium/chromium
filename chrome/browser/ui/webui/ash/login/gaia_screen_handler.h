@@ -308,6 +308,9 @@ class GaiaScreenHandler
 
   void HandleShowLoadingTimeoutError();
 
+  // Called when Gaia sends us a "getDeviceId" message.
+  void HandleGetDeviceId(const std::string& callback_id);
+
   // Really handles the complete login message.
   void DoCompleteLogin(const std::string& gaia_id,
                        const std::string& typed_email,

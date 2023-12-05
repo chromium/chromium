@@ -129,6 +129,8 @@
 #include "net/test/test_data_directory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -349,6 +351,10 @@ class WebviewLoginTest : public OobeBaseTest {
         ->Wait();
   }
 
+  void WaitForDeviceIdSet() {
+    SigninFrameJS().CreateWaiter("gaia.chromeOSLogin.receivedDeviceId")->Wait();
+  }
+
  protected:
   ScopedTestingCrosSettings scoped_testing_cros_settings_;
   FakeGaiaMixin fake_gaia_{&mixin_host_};
@@ -367,6 +373,17 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest, ErrorScreenOnGaiaError) {
   // Click back to reload (unreachable) identifier page.
   test::OobeJS().ClickOnPath(kBackButton);
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(WebviewLoginTest, GetDeviceId) {
+  WaitForGaiaPageLoadAndPropertyUpdate();
+  ExpectIdentifierPage();
+
+  SigninFrameJS().ExecuteAsync("gaia.chromeOSLogin.sendGetDeviceId()");
+  WaitForDeviceIdSet();
+  std::string received_device_id =
+      SigninFrameJS().GetString("gaia.chromeOSLogin.receivedDeviceId");
+  EXPECT_TRUE(!received_device_id.empty());
 }
 
 IN_PROC_BROWSER_TEST_F(WebviewLoginTest,
@@ -1037,6 +1054,26 @@ IN_PROC_BROWSER_TEST_F(ReauthEndpointWebviewLoginTest, SupervisedUser) {
             reauth_user_.account_id.GetUserEmail());
   EXPECT_EQ(fake_gaia_.fake_gaia()->is_supervised(), "1");
   EXPECT_TRUE(fake_gaia_.fake_gaia()->is_device_owner().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(ReauthEndpointWebviewLoginTest, GetDeviceId) {
+  const std::string fake_device_id = "fake-device-id-123";
+  EXPECT_TRUE(
+      LoginScreenTestApi::IsForcedOnlineSignin(reauth_user_.account_id));
+  // Focus triggers online signin.
+  EXPECT_TRUE(LoginScreenTestApi::FocusUser(reauth_user_.account_id));
+  WaitForGaiaPageLoadAndPropertyUpdate();
+  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_EQ(fake_gaia_.fake_gaia()->prefilled_email(),
+            reauth_user_.account_id.GetUserEmail());
+  user_manager::KnownUser known_user{g_browser_process->local_state()};
+  known_user.SetDeviceId(reauth_user_.account_id, fake_device_id);
+
+  SigninFrameJS().ExecuteAsync("gaia.chromeOSLogin.sendGetDeviceId()");
+  WaitForDeviceIdSet();
+  std::string received_device_id =
+      SigninFrameJS().GetString("gaia.chromeOSLogin.receivedDeviceId");
+  EXPECT_EQ(received_device_id, fake_device_id);
 }
 
 class ReauthEndpointWebviewLoginOwnerTest

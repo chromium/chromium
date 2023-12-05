@@ -69,6 +69,7 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/networking/device_network_configuration_updater_ash.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/ui/webui/ash/login/cookie_waiter.h"
 #include "chrome/browser/ui/webui/ash/login/enrollment_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
@@ -286,6 +287,39 @@ bool IsProxyError(NetworkStateInformer::State state,
 // Path without the leading slash, as expected by authenticator.js.
 std::string GetPath(const GURL& url) {
   return url.path().substr(1);
+}
+
+std::string GenerateDeviceId() {
+  // We need to generate a (per-user) device id here. The function which
+  // generates this device id needs to know if the user is an ephemeral user.
+  // But at this point, the user has not even entered their credentials - so we
+  // do not know if the user that is going to sign-in is an ephemeral user or
+  // not. We are going to assume that the user is not ephemeral.
+  // TODO(http://b/313824841): Figure out if we can unify the device id
+  // structure for ephemeral and non-ephemeral users. Clients that read device
+  // id should not care about this anyways. Also remove this function
+  // `GenerateDeviceId()`.
+  return GenerateSigninScopedDeviceId(/*for_ephemeral=*/false);
+}
+
+// Gets (or generates) device id associated with `email`.
+// `email` can be empty or belong to a user for which we do not have a device id
+// on disk. For both of these cases we will consider this to be a fresh signin
+// and generate a new device id.
+std::string GetOrGenerateDeviceId(const user_manager::KnownUser& known_user,
+                                  const std::string& email) {
+  if (email.empty()) {
+    return GenerateDeviceId();
+  }
+
+  const AccountId account_id = known_user.GetAccountId(
+      email, /*id=*/std::string(), AccountType::UNKNOWN);
+  std::string device_id = known_user.GetDeviceId(account_id);
+  if (device_id.empty()) {
+    return GenerateDeviceId();
+  }
+
+  return device_id;
 }
 
 }  // namespace
@@ -656,6 +690,7 @@ void GaiaScreenHandler::DeclareJSCallbacks() {
   AddCallback("passwordEntered", &GaiaScreenHandler::HandlePasswordEntered);
   AddCallback("showLoadingTimeoutError",
               &GaiaScreenHandler::HandleShowLoadingTimeoutError);
+  AddCallback("getDeviceId", &GaiaScreenHandler::HandleGetDeviceId);
 }
 
 void GaiaScreenHandler::HandleAuthenticatorLoaded() {
@@ -1067,6 +1102,22 @@ void GaiaScreenHandler::HandleShowLoadingTimeoutError() {
   UpdateState(NetworkError::ERROR_REASON_LOADING_TIMEOUT);
 }
 
+void GaiaScreenHandler::HandleGetDeviceId(const std::string& callback_id) {
+  if (!IsJavascriptAllowed()) {
+    return;
+  }
+
+  // TODO(http://b/314902371): Figure out if we can directly pass
+  // `populated_account_id_` to `GetOrGenerateDeviceId()` instead of searching
+  // inside `known_user` with a given email
+  // (`populated_account_id_.GetUserEmail()`).
+  ResolveJavascriptCallback(
+      base::Value(callback_id),
+      GetOrGenerateDeviceId(
+          user_manager::KnownUser{g_browser_process->local_state()},
+          populated_account_id_.GetUserEmail()));
+}
+
 void GaiaScreenHandler::DoCompleteLogin(const std::string& gaia_id,
                                         const std::string& typed_email,
                                         const std::string& password,
@@ -1411,11 +1462,19 @@ void GaiaScreenHandler::LoadAuthenticator(bool force) {
 
   if (!context.email.empty()) {
     user_manager::KnownUser known_user(g_browser_process->local_state());
+    // TODO(http://b/314902371): Figure out if we can read
+    // `populated_account_id_.GetGaiaId()` instead of searching inside
+    // `known_user`.
     if (const std::string* gaia_id =
             known_user.FindGaiaID(AccountId::FromUserEmail(context.email))) {
       context.gaia_id = *gaia_id;
     }
 
+    // TODO(http://b/314902371): This may be dangerous.
+    // `AccountId::FromUserEmail()` creates an `AccountId` with
+    // `AccountType::UNKNOWN` - and then we are searching for GAPS cookie, that
+    // should ideally be set only for `AccountType::GOOGLE`. Figure out if we
+    // can trust `populated_account_id_` here.
     context.gaps_cookie = known_user.GetGAPSCookie(
         AccountId::FromUserEmail(gaia::CanonicalizeEmail(context.email)));
   }
