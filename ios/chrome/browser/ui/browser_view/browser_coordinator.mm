@@ -1498,6 +1498,10 @@ enum class ToolbarKind {
 }
 
 - (void)sharePage {
+  // Defocus Find-In-Page before opening the share sheet. This will result in
+  // closing the Find-In-Page for some OS versions.
+  [self defocusFindInPage];
+
   if (!self.sharingCoordinator) {
     [self stopAndStartSharingCoordinator];
   } else {
