@@ -199,9 +199,7 @@ use_prebuilt_instrumented_libraries = is_msan
 use_fuzzing_engine =
     use_libfuzzer || use_afl || use_centipede || use_external_fuzzing_engine
 
-# Whether the current fuzzing engine supports libprotobuf_mutator. Right now
-# this is just libfuzzer, but others are likely to support this in future,
-# so it's preferable to check this.
+# Whether the current fuzzing engine supports libprotobuf_mutator.
 use_fuzzing_engine_with_lpm = use_libfuzzer || use_centipede
 
 # Whether the fuzzing engine supports fuzzers which supply their own
