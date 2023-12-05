@@ -66,7 +66,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="1283524564873030414">Last 24 hours</translation>
 <translation id="1285320974508926690">Never translate this site</translation>
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" />'<ph name="SITE_NAME" />'<ph name="END_BOLD" /> permissions will reset to off when you leave this site.</translation>
-<translation id="1295289763199166823">Customise Menu</translation>
+<translation id="1295289763199166823">Customise menu</translation>
 <translation id="1305822519689023679">To make sure that you can always use the passwords in your Google Account, verify that it's you.</translation>
 <translation id="1312721752506309252">Enhanced protection is on</translation>
 <translation id="1320164290882380380">{COUNT,plural, =1{Track this package}other{Track all packages}}</translation>
@@ -560,7 +560,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3904829425754749514">Your organisation turned off sync. You can still see your bookmarks, history, passwords and other settings on this device. If you make changes, they won’t sync to your account.</translation>
 <translation id="3909222758573607742">Save passwords and other items in account</translation>
 <translation id="3913386780052199712">Signed in to Chrome</translation>
-<translation id="3915450441834151894">Site Information</translation>
+<translation id="3915450441834151894">Site information</translation>
 <translation id="3918585468378680136">Getting package status</translation>
 <translation id="3922310737605261887">Search for copied text</translation>
 <translation id="3928666092801078803">Combine my data</translation>
@@ -1007,7 +1007,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="630693926528731525">Your password wasn't shared. Check your Internet connection and make sure that you're signed in to Chrome. Then try again.</translation>
 <translation id="6321526113093607004">Add to Bookmarks</translation>
 <translation id="6324669097367352121">Sign in settings</translation>
-<translation id="6328337032497818759">Customise Menu</translation>
+<translation id="6328337032497818759">Customise menu</translation>
 <translation id="6331180460633101391"><ph name="COUNT" /> reused passwords</translation>
 <translation id="6337234675334993532">Encryption</translation>
 <translation id="633809752005859102">Something went really wrong. We'll work on that.</translation>
@@ -1179,7 +1179,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7080806333218412752">Sends URLs to Safe Browsing to check them. Also sends a small sample of pages, downloads, extension activity and system information to help discover new threats. Temporarily links this data to your Google Account when you’re signed in, to protect you across Google apps.</translation>
 <translation id="7082853213442715471">When turned on, certain web technologies are blocked, which might cause some websites to load more slowly or not operate correctly.</translation>
 <translation id="7095110968493193530">To Google Password Manager for <ph name="EMAIL" /></translation>
-<translation id="7099761977003084116">Recent Tabs</translation>
+<translation id="7099761977003084116">Recent tabs</translation>
 <translation id="7101580180124131336">You'll now see content from and about <ph name="CHANNEL_NAME" /> in Following.</translation>
 <translation id="7102005569666697658">Downloading… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Hide</translation>

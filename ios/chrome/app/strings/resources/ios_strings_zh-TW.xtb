@@ -702,7 +702,7 @@
 <translation id="473775607612524610">更新</translation>
 <translation id="4746926359847517643">你隨時可以從歷史記錄重新開啟這些分頁。</translation>
 <translation id="4751162929052964260"><ph name="TITLE" />，<ph name="STATE" />，僅在這部裝置上，<ph name="URL" /></translation>
-<translation id="4751645464639803239">新無痕式分頁</translation>
+<translation id="4751645464639803239">新無痕分頁</translation>
 <translation id="4766112107778026136">探索和追蹤</translation>
 <translation id="47677902929517676">如要將密碼儲存到帳戶中，請先在裝置上設定密碼。</translation>
 <translation id="4775879719735953715">預設瀏覽器</translation>
@@ -1043,7 +1043,7 @@
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6453018583485750254">未曾執行過檢查。</translation>
 <translation id="6459307836338400162">如需更多有關隱私權、安全性和資料收集的設定，請參閱 <ph name="BEGIN_LINK" />Google Sync<ph name="END_LINK" /> 和 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />。</translation>
-<translation id="6464071786529933911">在新無痕式分頁中開啟</translation>
+<translation id="6464071786529933911">在新無痕分頁中開啟</translation>
 <translation id="6464397691496239022">網站可使用 Cookie 改善瀏覽體驗，例如讓你保持登入狀態，或記住購物車中的商品。
 
 網站無法使用 Cookie 查看你在各網站的瀏覽活動，也無法提供個人化廣告等服務。</translation>
@@ -1197,7 +1197,7 @@
 <translation id="721597782417389033">卡片暱稱無效</translation>
 <translation id="7221173315674413369">你可以前往「新功能」頁面探索新功能及相關提示</translation>
 <translation id="7223102419539744003">關閉分頁</translation>
-<translation id="722454870747268814">新無痕式分頁</translation>
+<translation id="722454870747268814">新無痕分頁</translation>
 <translation id="7233006041370588369">請選取要填入的密碼。</translation>
 <translation id="7265758999917665941">一律不儲存這個網站的密碼</translation>
 <translation id="7272437679830969316">無法驗證你的身分，因此未複製密碼。</translation>
@@ -1249,7 +1249,7 @@
 <translation id="7527917367892640435">已追蹤這個包裹</translation>
 <translation id="7531345132340165516">目前網站</translation>
 <translation id="7537586195939242955">很抱歉，目前無法將您的通行票證加到 Passbook。</translation>
-<translation id="754655535278952384">已在 <ph name="TIME" />勾選</translation>
+<translation id="754655535278952384">上次檢查時間：<ph name="TIME" /></translation>
 <translation id="7552154146060018538">最近在 <ph name="SOURCE_DEVICE" /> 上使用的分頁</translation>
 <translation id="7553234618121028547">如要關閉這項功能，請開啟「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」並前往「密碼選項」部分。</translation>
 <translation id="7554645225856321710">全部關閉</translation>

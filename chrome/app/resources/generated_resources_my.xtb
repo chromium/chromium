@@ -6126,7 +6126,7 @@
 <translation id="5833899990800318936">JavaScript သုံးရန် ဝဘ်ဆိုက်များကို ခွင့်မပြုပါနှင့်</translation>
 <translation id="583431638776747">ဝဘ်ဆိုက်ကို အသုံးပြု၍မရပါ</translation>
 <translation id="5834581999798853053"><ph name="TIME" /> မိနစ်ခန့် ကျန်</translation>
-<translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> သည် HID စက်များကို သုံးနေသည်}=2{စက်များကိုသုံးနေသည့် နောက်ဆက်တွဲများ- <ph name="EXTENSION1" />၊ <ph name="EXTENSION2" />}other{စက်များကိုသုံးနေသည့် နောက်ဆက်တွဲများ- <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> + နောက်ထပ် {3} ခု}}</translation>
+<translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> သည် HID စက်များကို သုံးနေသည်}=2{စက်များကိုသုံးနေသည့် နောက်ဆက်တွဲများ- <ph name="EXTENSION1" />၊ <ph name="EXTENSION2" />}other{စက်များကိုသုံးနေသည့် နောက်ဆက်တွဲများ- <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> +နောက်ထပ် {3} ခု}}</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - ကင်မရာ သို့မဟုတ် မိုက်ခရိုဖုန်း ဖမ်းယူရိုက်ကူးခြင်း</translation>
 <translation id="583673505367439042">သင့်စက်ပေါ်ရှိ ဖိုင်နှင့် ဖိုင်တွဲများ တည်းဖြတ်လိုပါက ဝဘ်ဆိုက်များက ခွင့်တောင်းနိုင်သည်</translation>
 <translation id="5836999627049108525">ဖော်ပြပါဘာသာစကားမှ ဘာသာပြန်ဆိုရန်</translation>

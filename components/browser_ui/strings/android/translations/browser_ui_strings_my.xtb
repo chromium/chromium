@@ -249,7 +249,7 @@
 <translation id="534295439873310000">NFC စက်များ</translation>
 <translation id="5344522958567249764">ကြော်ငြာဆိုင်ရာ အချက်အလက်လုံခြုံမှုကို စီမံရန်</translation>
 <translation id="5389626883706033615">ဝဘ်ဆိုက်များကို ၎င်းတို့တွင် သိမ်းထားသော သင့်အချက်အလက်များ သုံးခွင့်တောင်းဆိုခြင်းမှ ပိတ်ထားသည်</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ နောက်ထပ် ၁ ခု)}other{(+ နောက်ထပ် # ခု)}}</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+နောက်ထပ် ၁ ခု)}other{(+နောက်ထပ် # ခု)}}</translation>
 <translation id="5403592356182871684">အမည်များ</translation>
 <translation id="5438097262470833822">ဤရွေးချယ်မှုက <ph name="WEBSITE" /> အတွက် ခွင့်ပြုချက်များကို ပြင်ဆင်သတ်မှတ်ပါလိမ့်မည်</translation>
 <translation id="5489227211564503167">ကုန်လွန်သွားချိန် <ph name="TOTAL_TIME" /> အနက် <ph name="ELAPSED_TIME" />။</translation>
