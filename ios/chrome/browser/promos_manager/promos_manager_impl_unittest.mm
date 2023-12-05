@@ -678,7 +678,6 @@ TEST_F(PromosManagerImplTest, SortsPromosPreferCertainTypes) {
       {promos_manager::Promo::DefaultBrowser, PromoContext{true}},
       {promos_manager::Promo::PostRestoreSignInFullscreen, PromoContext{false}},
       {promos_manager::Promo::PostRestoreSignInAlert, PromoContext{false}},
-      {promos_manager::Promo::Choice, PromoContext{false}},
   };
 
   int today = TodaysDay();
@@ -697,15 +696,13 @@ TEST_F(PromosManagerImplTest, SortsPromosPreferCertainTypes) {
   promos_manager_->impression_history_ = impressions;
   std::vector<promos_manager::Promo> sorted =
       promos_manager_->SortPromos(active_promos);
-  EXPECT_EQ(sorted.size(), (size_t)5);
+  EXPECT_EQ(sorted.size(), (size_t)4);
   // tied for the type.
   EXPECT_TRUE(sorted[0] == promos_manager::Promo::PostRestoreSignInFullscreen ||
               sorted[0] == promos_manager::Promo::PostRestoreSignInAlert);
-  // Choice comes next
-  EXPECT_TRUE(sorted[2] == promos_manager::Promo::Choice);
   // with pending state, before the less recently shown promo (Test).
-  EXPECT_EQ(sorted[3], promos_manager::Promo::DefaultBrowser);
-  EXPECT_EQ(sorted[4], promos_manager::Promo::Test);
+  EXPECT_EQ(sorted[2], promos_manager::Promo::DefaultBrowser);
+  EXPECT_EQ(sorted[3], promos_manager::Promo::Test);
 }
 
 // Tests `SortPromos` sorts promos with pending state before others without.

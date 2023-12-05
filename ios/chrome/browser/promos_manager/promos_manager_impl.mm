@@ -559,13 +559,6 @@ std::vector<promos_manager::Promo> PromosManagerImpl::SortPromos(
         rhs.first == Promo::PostRestoreSignInAlert) {
       return false;
     }
-    // Choice screen promo comes next.
-    if (lhs.first == Promo::Choice) {
-      return true;
-    }
-    if (rhs.first == Promo::Choice) {
-      return false;
-    }
     // prefer the promo with pending state to the other without.
     if (lhs.second.was_pending && !rhs.second.was_pending) {
       return true;
