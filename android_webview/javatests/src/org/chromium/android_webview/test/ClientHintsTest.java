@@ -29,6 +29,7 @@ import org.chromium.android_webview.test.util.CookieUtils;
 import org.chromium.android_webview.test.util.JSUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.common.ContentSwitches;
@@ -703,6 +704,7 @@ public class ClientHintsTest extends AwParameterizedTest {
         "enable-features=UserAgentClientHint",
         ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
     })
+    @DisabledTest(message = "crbug.com/1508304")
     public void testOverrideUserAgentMetadataClearOverrideWithCustomUA() throws Throwable {
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
         final AwContents contents =
