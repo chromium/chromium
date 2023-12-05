@@ -145,9 +145,7 @@ CGFloat const kHalfSheetCornerRadius = 13;
             customDetentWithIdentifier:nil
                               resolver:resolver];
 
-    sheetPresentationController.detents =
-        @[ customDetent, UISheetPresentationControllerDetent.largeDetent ];
-
+    sheetPresentationController.detents = @[ customDetent ];
   } else {
     sheetPresentationController.detents = @[
       UISheetPresentationControllerDetent.mediumDetent,
