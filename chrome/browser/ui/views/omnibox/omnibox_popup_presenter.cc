@@ -128,11 +128,6 @@ void OmniboxPopupPresenter::OnPopupElementSizeChanged(gfx::Size size) {
     widget_bounds.set_height(widget_bounds.height() +
                              std::min(kMaxHeight, size.height()));
     widget_bounds.Inset(-RoundedOmniboxResultsFrame::GetShadowInsets());
-
-    // TODO(crbug.com/1494544): Remove this once Windows & Mac behavior
-    //  differences are debugged.
-    widget_bounds.set_height(widget_bounds.height() + 100);
-
     widget_->SetBounds(widget_bounds);
   }
 }
