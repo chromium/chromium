@@ -549,8 +549,8 @@ bool SendMouseEventsImpl(MouseButton type,
                          int button_state,
                          base::OnceClosure task,
                          int accelerator_state) {
-  DWORD down_flags = MOUSEEVENTF_ABSOLUTE;
-  DWORD up_flags = MOUSEEVENTF_ABSOLUTE;
+  DWORD down_flags = 0;
+  DWORD up_flags = 0;
   UINT last_event;
 
   switch (type) {

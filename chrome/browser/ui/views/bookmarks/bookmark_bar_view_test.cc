@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -64,6 +65,7 @@
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/menu_scroll_view_container.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -79,9 +81,21 @@
 #include "ui/aura/window.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ui/ozone/buildflags.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "ui/aura/window_tree_host.h"
 #endif
+
+// The build flag OZONE_PLATFORM_WAYLAND is only available on Linux or ChromeOS,
+// so this simplifies the later ifdefs.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(OZONE_PLATFORM_WAYLAND)
+#define OZONE_PLATFORM_WAYLAND
+#endif  // BUILDFLAG(OZONE_PLATFORM_WAYLAND)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
 
 using base::ASCIIToUTF16;
 using bookmarks::BookmarkModel;
@@ -430,17 +444,33 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
   bool MenuIsShowing() const { return MenuIsShowing(bb_view_->GetMenu()); }
 
   // Clicks `view`, which is expected to open a top-level menu from the bookmark
-  // bar, then calls `callback`.
+  // bar, then calls `callback`. This is a helper not only because it is common,
+  // but because there are subtleties around message loop management (see
+  // comments in implementation details) that not everyone should need to worry
+  // about.
   void OpenMenuByClick(views::View* view, base::OnceClosure callback) {
     ui_test_utils::MoveMouseToCenterAndPress(
         view, ui_controls::LEFT, ui_controls::DOWN | ui_controls::UP,
+        // On Windows, opening a new top-level menu can produce a new mouse move
+        // event (to the same screen coordinates). Leaving this event in the
+        // queue can cause test failures. So once we're called back and the menu
+        // is showing, post another task to the "real" `callback` to give the
+        // message loop a chance to process this if necessary. This is harmless
+        // on other platforms, so we don't #if it.
         base::BindOnce(&BookmarkBarViewEventTestBase::RunTestMethod,
                        base::Unretained(this),
-                       base::BindLambdaForTesting(
-                           [&, callback = std::move(callback)]() mutable {
-                             ASSERT_TRUE(MenuIsShowing());
-                             std::move(callback).Run();
-                           })));
+                       base::BindLambdaForTesting([&, callback = std::move(
+                                                          callback)]() mutable {
+                         ASSERT_TRUE(MenuIsShowing());
+                         // `callback` must be delayed by at least one tick of
+                         // the system timer to avoid the chance of posting it
+                         // before checking the OS event queue. In principle
+                         // this could vary but in practice it's always 15.625
+                         // ms (1/64 sec). Round to 20 Just Because.
+                         base::SingleThreadTaskRunner::GetCurrentDefault()
+                             ->PostDelayedTask(FROM_HERE, std::move(callback),
+                                               base::Milliseconds(20));
+                       })));
   }
 
   raw_ptr<BookmarkModel, AcrossTasksDanglingUntriaged> model_ = nullptr;
@@ -826,7 +856,14 @@ class BookmarkBarViewTest5 : public BookmarkBarViewDragTestBase {
   }
 
   const BookmarkNode* GetDroppedNode() const override {
-    return model_->bookmark_bar_node()->children()[0]->children()[1].get();
+    const auto& bar_items = model_->bookmark_bar_node()->children();
+    EXPECT_FALSE(bar_items.empty());
+    if (bar_items.empty()) {
+      return nullptr;
+    }
+    const auto& f1_items = bar_items.front()->children();
+    EXPECT_GE(f1_items.size(), 2u);
+    return (f1_items.size() >= 2) ? f1_items[1].get() : nullptr;
   }
 
   gfx::Point GetDragTargetInScreen() const override {
@@ -913,7 +950,9 @@ class BookmarkBarViewTest7 : public BookmarkBarViewDragTestBase {
  protected:
   // BookmarkBarViewDragTestBase:
   const BookmarkNode* GetDroppedNode() const override {
-    return model_->other_node()->children().front().get();
+    const auto& other_bookmarks = model_->other_node()->children();
+    EXPECT_FALSE(other_bookmarks.empty());
+    return other_bookmarks.empty() ? nullptr : other_bookmarks.front().get();
   }
 
   gfx::Point GetDragTargetInScreen() const override {
@@ -957,8 +996,19 @@ class BookmarkBarViewTest8 : public BookmarkBarViewDragTestBase {
  protected:
   // BookmarkBarViewDragTestBase:
   const BookmarkNode* GetDroppedNode() const override {
-    const auto& f1 = model_->bookmark_bar_node()->children()[0];
-    return f1->children()[0]->children()[1].get();
+    const auto& bar_items = model_->bookmark_bar_node()->children();
+    EXPECT_FALSE(bar_items.empty());
+    if (bar_items.empty()) {
+      return nullptr;
+    }
+    const auto& f1_items = bar_items.front()->children();
+    EXPECT_FALSE(f1_items.empty());
+    if (f1_items.empty()) {
+      return nullptr;
+    }
+    const auto& f11_items = f1_items.front()->children();
+    EXPECT_GE(f11_items.size(), 2u);
+    return (f11_items.size() >= 2) ? f11_items[1].get() : nullptr;
   }
 
   gfx::Point GetDragTargetInScreen() const override {
@@ -988,44 +1038,71 @@ class BookmarkBarViewTest9 : public BookmarkBarViewEventTestBase {
     views::View::ConvertPointToScreen(submenu->GetMenuItemAt(0), &menu_loc);
     start_y_ = menu_loc.y();
 
-    // Move the mouse over the scroll button.
-    views::View* scroll_container = submenu->parent();
+    // Get notified when the scroll up button becomes visible.
+    views::View* parent = submenu->parent();
+    while (parent &&
+           !views::IsViewClass<views::MenuScrollViewContainer>(parent)) {
+      parent = parent->parent();
+    }
+    auto* scroll_container =
+        views::AsViewClass<views::MenuScrollViewContainer>(parent);
     ASSERT_NE(nullptr, scroll_container);
-    scroll_container = scroll_container->parent();
-    ASSERT_NE(nullptr, scroll_container);
-    views::View* scroll_down_button = scroll_container->children()[2];
+    views::View* scroll_up_button = scroll_container->scroll_up_button();
+    ASSERT_NE(nullptr, scroll_up_button);
+    ASSERT_FALSE(scroll_up_button->GetVisible());
+    subscription_ = scroll_up_button->AddVisibleChangedCallback(
+        // We'd like to pass CreateEventTask(this, &Step3) directly, but that
+        // produces a OnceClosure and AddVisibleChangedCallback() requires a
+        // RepeatingClosure.
+        base::BindLambdaForTesting([&] {
+          CreateEventTask(this, &BookmarkBarViewTest9::Step3).Run();
+        }));
+
+    // Move the mouse over the scroll down button.
+    views::View* scroll_down_button = scroll_container->scroll_down_button();
     ASSERT_NE(nullptr, scroll_down_button);
+    ASSERT_TRUE(scroll_down_button->GetVisible());
     const gfx::Point loc =
         ui_test_utils::GetCenterInScreenCoordinates(scroll_down_button);
-
-    // On linux, the sending one location isn't enough.
-    ASSERT_TRUE(ui_controls::SendMouseMove(loc.x() - 1, loc.y() - 1));
-    ASSERT_TRUE(ui_controls::SendMouseMoveNotifyWhenDone(
-        loc.x(), loc.y(), CreateEventTask(this, &BookmarkBarViewTest9::Step3)));
+    const gfx::NativeWindow window =
+        scroll_down_button->GetWidget()->GetNativeWindow();
+    // TODO(pkasting): As of November 2023, LaCrOS fails without this first
+    // mouse move, which seems wrong.
+    ASSERT_TRUE(ui_controls::SendMouseMove(loc.x() - 1, loc.y() - 1, window));
+    ASSERT_TRUE(ui_controls::SendMouseMove(loc.x(), loc.y(), window));
   }
 
   void Step3() {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&BookmarkBarViewTest9::Step4, base::Unretained(this)),
-        base::Milliseconds(200));
-  }
+    subscription_.reset();
 
-  void Step4() {
+    ASSERT_TRUE(MenuIsShowing());
+
     gfx::Point menu_loc;
     views::View::ConvertPointToScreen(
         bb_view_->GetMenu()->GetSubmenu()->GetMenuItemAt(0), &menu_loc);
     ASSERT_NE(start_y_, menu_loc.y());
 
+    // The Cancel() call in Step4() will synchronously delete the view holding
+    // the callback list that is currently calling us, so it must be done after
+    // the current call stack unwinds.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, CreateEventTask(this, &BookmarkBarViewTest9::Step4));
+  }
+
+  void Step4() {
     bb_view_->GetMenu()->GetMenuController()->Cancel(
         views::MenuController::ExitType::kAll);
     Done();
   }
 
   int start_y_ = 0;
+  std::optional<base::CallbackListSubscription> subscription_;
 };
 
-#if BUILDFLAG(IS_LINUX)  // TODO(crbug.com/1216392): Flakily times out on Linux.
+// Something about coordinate transforms is wrong on Wayland -- attempting to
+// hover the scroll buttons sends the mouse to the wrong location, so it never
+// winds up over the button, so the test times out.
+#if defined(OZONE_PLATFORM_WAYLAND)
 #define MAYBE_ScrollButtonScrolls DISABLED_ScrollButtonScrolls
 #else
 #define MAYBE_ScrollButtonScrolls ScrollButtonScrolls
@@ -1129,8 +1206,8 @@ class BookmarkBarViewTest10 : public BookmarkBarViewEventTestBase {
   }
 };
 
-#if BUILDFLAG(IS_WIN)  // Fails on latest versions of Windows.
-                       // https://crbug.com/1108551.
+// TODO(https://crbug.com/1506808): Flaky on Windows.
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_KeyEvents DISABLED_KeyEvents
 #else
 #define MAYBE_KeyEvents KeyEvents
@@ -1886,8 +1963,8 @@ class BookmarkBarViewTest23 : public BookmarkBarViewEventTestBase {
   BookmarkContextMenuNotificationObserver observer_;
 };
 
-#if BUILDFLAG(IS_WIN)  // Fails on latest versions of Windows.
-                       // https://crbug.com/1108551.
+// TODO(https://crbug.com/1506808): Flaky on Windows.
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ContextMenusKeyboard DISABLED_ContextMenusKeyboard
 #else
 #define MAYBE_ContextMenusKeyboard ContextMenusKeyboard
@@ -2065,16 +2142,7 @@ class BookmarkBarViewTest28 : public BookmarkBarViewEventTestBase {
   }
 };
 
-// Flaky on Windows, see crbug.com/1156666
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ClickWithModifierOnFolderOpensAllBookmarks \
-  DISABLED_ClickWithModifierOnFolderOpensAllBookmarks
-#else
-#define MAYBE_ClickWithModifierOnFolderOpensAllBookmarks \
-  ClickWithModifierOnFolderOpensAllBookmarks
-#endif
-VIEW_TEST(BookmarkBarViewTest28,
-          MAYBE_ClickWithModifierOnFolderOpensAllBookmarks)
+VIEW_TEST(BookmarkBarViewTest28, ClickWithModifierOnFolderOpensAllBookmarks)
 
 // Tests drag and drop to an empty menu.
 class BookmarkBarViewTest29 : public BookmarkBarViewDragTestBase {
@@ -2085,31 +2153,36 @@ class BookmarkBarViewTest29 : public BookmarkBarViewDragTestBase {
     views::MenuItemView* drop_menu = bb_view_->GetDropMenu();
     ASSERT_TRUE(MenuIsShowing(drop_menu));
     views::SubmenuView* drop_submenu = drop_menu->GetSubmenu();
+    ASSERT_TRUE(drop_submenu->GetEnabled());
     ASSERT_FALSE(drop_submenu->children().empty());
     const views::View* target_view = drop_submenu->children().front();
     EXPECT_TRUE(views::IsViewClass<views::EmptyMenuMenuItem>(target_view));
 
     // Drag to the "(empty)" placeholder item, then release.
+    //
+    // Since the EmptyMenuMenuItem is disabled, we need to stop on the
+    // containing submenu, not on the item itself.
+    SetStopDraggingView(drop_submenu);
     const gfx::Point target =
         ui_test_utils::GetCenterInScreenCoordinates(target_view);
     GetDragTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(base::IgnoreResult(&ui_controls::SendMouseMove),
                        target.x(), target.y(), ui_controls::kNoWindowHint));
-    // The placeholder item is not an event target, so we can't automatically
-    // stop the drag when over it. Just post the mouse release after the move.
-    OnDragEntered();
   }
 
  protected:
   // BookmarkBarViewDragTestBase:
   const BookmarkNode* GetDroppedNode() const override {
     // Should be the first (and only) child of folder F2.
-    if (model_->bookmark_bar_node()->children().size() < 6) {
+    const auto& bar_items = model_->bookmark_bar_node()->children();
+    EXPECT_GE(bar_items.size(), 6u);
+    if (bar_items.size() < 6) {
       return nullptr;
     }
-    const auto* f2 = model_->bookmark_bar_node()->children()[5].get();
-    return f2->children().empty() ? nullptr : f2->children().front().get();
+    const auto& f2_items = bar_items[5]->children();
+    EXPECT_FALSE(f2_items.empty());
+    return f2_items.empty() ? nullptr : f2_items.front().get();
   }
 
   gfx::Point GetDragTargetInScreen() const override {
@@ -2118,12 +2191,8 @@ class BookmarkBarViewTest29 : public BookmarkBarViewDragTestBase {
   }
 };
 
-// TODO(https://crbug.com/1448943): Fails on Linux/CrOS, perhaps because
-// OnDropMenuShown() tries to call OnDragEntered() before waiting for
-// verification that we're actually over the target.
-//
-// Flaky on Mac.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+// TODO(https://crbug.com/1503458): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_DNDToEmptyMenu DISABLED_DNDToEmptyMenu
 #else
 #define MAYBE_DNDToEmptyMenu DNDToEmptyMenu
