@@ -18,6 +18,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
@@ -111,6 +112,11 @@ constexpr unsigned expected_client_hints_number = 21u;
 constexpr unsigned expected_default_third_party_client_hints_number = 3u;
 constexpr unsigned expected_requested_third_party_client_hints_number = 24u;
 constexpr unsigned expected_pre_merge_third_party_client_hints_number = 16u;
+
+constexpr char kDefaultFeatures[] =
+    "UserAgentClientHint,CriticalClientHint,AcceptCHFrame,"
+    "ClientHintsFormFactor,ClientHintsPrefersReducedTransparency,"
+    "UseAlpsNewCodepoint";
 
 // All of the status codes from HttpResponseHeaders::IsRedirectResponseCode.
 const net::HttpStatusCode kRedirectStatusCodes[] = {
@@ -651,11 +657,7 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
     // Force-enable the ClientHintsFormFactor feature, so that the header is
     // represented in the various header counts.
-    feature_list->InitFromCommandLine(
-        "UserAgentClientHint,CriticalClientHint,AcceptCHFrame,"
-        "ClientHintsFormFactor,ClientHintsPrefersReducedTransparency,"
-        "UseAlpsNewCodepoint",
-        "");
+    feature_list->InitFromCommandLine(kDefaultFeatures, "");
     return feature_list;
   }
 
@@ -4836,6 +4838,39 @@ IN_PROC_BROWSER_TEST_F(GreaseFeatureParamOptOutTest,
   std::string ua_ch_result = main_frame_ua_observed();
 
   ASSERT_TRUE(SawOldGrease(ua_ch_result));
+}
+
+class XRClientHintsTest : public ClientHintsBrowserTest {
+  // Enables ClientHintsXRFormFactor feature in addition to the default ones.
+  std::unique_ptr<base::FeatureList> EnabledFeatures() override {
+    std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
+    feature_list->InitFromCommandLine(
+        base::StrCat({kDefaultFeatures, ",ClientHintsXRFormFactor"}), "");
+    return feature_list;
+  }
+};
+
+// Tests that form_factor client hints include "XR" when ClientHintsXRFormFactor
+// is enabled.
+IN_PROC_BROWSER_TEST_F(XRClientHintsTest, UAHintsXRMode) {
+  const GURL gurl = accept_ch_url();
+
+  // First request: no high-entropy hints send in the request header because we
+  // don't know server preferences.
+  SetClientHintExpectationsOnMainFrame(false);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+  EXPECT_TRUE(main_frame_ua_form_factor_observed().empty());
+
+  // Send request: we should expect the high-entropy client hints send in the
+  // request header.
+  SetClientHintExpectationsOnMainFrame(true);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+
+  auto form_factors =
+      base::SplitString(main_frame_ua_form_factor_observed(), ",",
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  EXPECT_TRUE(base::Contains(form_factors, "\"XR\""))
+      << main_frame_ua_form_factor_observed();
 }
 
 class GreaseEnterprisePolicyTest : public ClientHintsBrowserTest {
