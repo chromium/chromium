@@ -112,7 +112,9 @@ bool CookieSettings::IsAllowedByTpcdMetadataGrant(
   }
 
   base::AutoLock lock(tpcd_lock_);
-  if (base::FeatureList::IsEnabled(features::kHostIndexedMetadataGrants)) {
+  if (base::FeatureList::IsEnabled(features::kHostIndexedMetadataGrants) &&
+      std::cmp_greater_equal(settings_for_3pcd_metadata_grants_.size(),
+                             features::kMetadataGrantsThreshold.Get())) {
     DCHECK(
         FindInHostIndexedContentSettings(
             url, first_party_url, indexed_settings_for_3pcd_metadata_grants_) ==

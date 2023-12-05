@@ -6,6 +6,7 @@
 #define COMPONENTS_CONTENT_SETTINGS_CORE_BROWSER_COOKIE_SETTINGS_H_
 
 #include <string>
+#include <utility>
 
 #include "base/feature_list.h"
 #include "base/observer_list.h"
@@ -154,7 +155,9 @@ class CookieSettings
       const ContentSettingsForOneType settings) {
     base::AutoLock lock(tpcd_lock_);
     settings_for_3pcd_metadata_grants_ = settings;
-    if (base::FeatureList::IsEnabled(features::kHostIndexedMetadataGrants)) {
+    if (base::FeatureList::IsEnabled(features::kHostIndexedMetadataGrants) &&
+        std::cmp_greater_equal(settings.size(),
+                               features::kMetadataGrantsThreshold.Get())) {
       indexed_settings_for_3pcd_metadata_grants_ = ToHostIndexedMap(settings);
       // TODO(b/314800700): clear settings_for_3pcd_metadata_grants_ since we
       // only need one copy.
