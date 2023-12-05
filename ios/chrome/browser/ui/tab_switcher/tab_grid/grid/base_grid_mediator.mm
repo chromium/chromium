@@ -56,6 +56,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_mediator_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_action_wrangler.h"
@@ -472,6 +473,14 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
 }
 
 - (void)selectItemWithID:(web::WebStateID)itemID {
+  // TODO(crbug.com/1501837): Adapt the condition to open a tab group UI only
+  // when `itemID` match a group.
+  if (base::FeatureList::IsEnabled(kTabGroupsInGrid)) {
+    // TODO(crbug.com/1501837): Set the group ID when it will be available.
+    [self.dispatcher showTabGroupWithID];
+    return;
+  }
+
   int index = GetWebStateIndex(self.webStateList, WebStateSearchCriteria{
                                                       .identifier = itemID,
                                                   });

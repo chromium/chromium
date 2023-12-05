@@ -6,9 +6,11 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_commands.h"
 
 @implementation TabGroupCoordinator {
   // Mediator for tab groups.
@@ -30,11 +32,23 @@
 - (void)start {
   _mediator = [[TabGroupMediator alloc]
       initWithWebStateList:self.browser->GetWebStateList()];
-  _viewController = [[TabGroupViewController alloc] init];
+  id<TabGroupsCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), TabGroupsCommands);
+  _viewController = [[TabGroupViewController alloc] initWithHandler:handler];
+
+  // TODO(crbug.com/1501837): Add the tab group animation when user tap on a tab
+  // group cell in the tab grid.
+  _viewController.modalPresentationStyle = UIModalPresentationFullScreen;
+  [self.baseViewController presentViewController:_viewController
+                                        animated:YES
+                                      completion:nil];
 }
 
 - (void)stop {
   _mediator = nil;
+
+  // TODO(crbug.com/1501837): Make the hide tab group animation.
+  [_viewController dismissViewControllerAnimated:YES completion:nil];
   _viewController = nil;
 }
 

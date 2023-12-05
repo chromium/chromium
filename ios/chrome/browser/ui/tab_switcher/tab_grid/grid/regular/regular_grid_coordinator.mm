@@ -75,6 +75,7 @@
   _mediator.delegate = self.gridMediatorDelegate;
   _mediator.toolbarsMutator = self.toolbarsMutator;
   _mediator.actionWrangler = self.tabGridViewController;
+  _mediator.dispatcher = self;
 
   self.tabGridViewController.regularTabsDelegate = _mediator;
   self.gridViewController.dragDropHandler = _mediator;
@@ -106,11 +107,15 @@
     self.tabGridViewController.pinnedTabsDelegate = _pinnedTabsMediator;
     self.tabGridViewController.pinnedTabsDragDropHandler = _pinnedTabsMediator;
   }
+
+  [super start];
 }
 
 - (void)stop {
   [_mediator disconnect];
   _mediator = nil;
+
+  [super stop];
 }
 
 #pragma mark - Public

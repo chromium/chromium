@@ -110,10 +110,13 @@
   _mediator.actionWrangler = self.tabGridViewController;
   _mediator.incognitoDelegate = self;
   _mediator.reauthSceneAgent = _reauthAgent;
+  _mediator.dispatcher = self;
 
   _incognitoAuthMediator =
       [[IncognitoReauthMediator alloc] initWithReauthAgent:_reauthAgent];
   _incognitoAuthMediator.consumer = self.gridViewController;
+
+  [super start];
 }
 
 - (void)stop {
@@ -123,6 +126,8 @@
   _tabContextMenuHelper = nil;
   _incognitoAuthMediator = nil;
   _reauthAgent = nil;
+
+  [super stop];
 }
 
 #pragma mark - Public

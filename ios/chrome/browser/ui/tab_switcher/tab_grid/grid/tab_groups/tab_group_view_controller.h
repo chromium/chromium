@@ -7,7 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol TabGroupsCommands;
+
 @interface TabGroupViewController : UIViewController
+
+// Initiates a TabGroupViewController with `handler` to handle user action.
+- (instancetype)initWithHandler:(id<TabGroupsCommands>)handler;
 
 @end
 

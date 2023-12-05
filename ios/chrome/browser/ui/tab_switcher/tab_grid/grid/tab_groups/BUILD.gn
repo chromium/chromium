@@ -15,6 +15,7 @@ source_set("tab_groups") {
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
   ]
 }
@@ -23,10 +24,12 @@ source_set("tab_groups_ui") {
   sources = [
     "tab_group_view_controller.h",
     "tab_group_view_controller.mm",
+    "tab_groups_commands.h",
   ]
   deps = [
     "//base",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
   ]
 }
 
@@ -35,11 +38,14 @@ source_set("unit_tests") {
   sources = [ "tab_group_coordinator_unittest.mm" ]
   deps = [
     ":tab_groups",
+    ":tab_groups_ui",
     "//base/test:test_support",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }

@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_BASE_GRID_COORDINATOR_H_
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_commands.h"
 
 class Browser;
 @protocol DisabledGridViewControllerDelegate;
@@ -14,7 +15,7 @@ class Browser;
 @protocol GridToolbarsMutator;
 @class TabGridViewController;
 
-@interface BaseGridCoordinator : ChromeCoordinator
+@interface BaseGridCoordinator : ChromeCoordinator <TabGroupsCommands>
 
 // Grid view controller container.
 @property(nonatomic, readonly, strong)

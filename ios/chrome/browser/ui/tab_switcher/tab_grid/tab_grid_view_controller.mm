@@ -1812,6 +1812,13 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   [tabsDelegate selectItemWithID:itemID];
 
+  // TODO(crbug.com/1501837): Change the condition to verify if the given item
+  // ID is a group or not.
+  if (base::FeatureList::IsEnabled(kTabGroupsInGrid)) {
+    // Do not present the currently selected tab.
+    return;
+  }
+
   if (self.tabGridMode == TabGridModeSearch) {
     if (![tabsDelegate isItemWithIDSelected:itemID]) {
       // That can happen when the search result that was selected is from

@@ -23,6 +23,7 @@ class Browser;
 @protocol GridToolbarsMutator;
 @protocol TabCollectionConsumer;
 @protocol TabGridToolbarsActionWrangler;
+@protocol TabGroupsCommands;
 @protocol TabPresentationDelegate;
 class WebStateList;
 
@@ -54,7 +55,8 @@ class WebStateList;
 @property(nonatomic, weak) id<GridConsumer> gridConsumer;
 // Delegate to handle presenting tab UI.
 @property(nonatomic, weak) id<TabPresentationDelegate> tabPresentationDelegate;
-
+// Tab Groups Dispatcher.
+@property(nonatomic, weak) id<TabGroupsCommands> dispatcher;
 @end
 
 @interface BaseGridMediator (Subclassing)
