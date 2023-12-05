@@ -24,7 +24,7 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_util.h"
-#import "ios/chrome/browser/web/load_timing_tab_helper.h"
+#import "ios/chrome/browser/web/model/load_timing_tab_helper.h"
 #import "net/base/url_util.h"
 
 BROWSER_USER_DATA_KEY_IMPL(UrlLoadingBrowserAgent)

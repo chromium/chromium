@@ -1,11 +1,10 @@
 include_rules = [
-  "+ios/chrome/browser/web",
+  "+ios/chrome/browser/web/model",
   "+ios/chrome/browser/policy",
   "+ios/chrome/browser/snapshots/model",
   "+ios/chrome/browser/crash_report/model",
   "+ios/chrome/browser/ntp/model/new_tab_page_util.h",
   "+ios/chrome/browser/prerender/model",
-  "+ios/chrome/browser/web",
   "+ios/chrome/browser/tab_insertion/model",
   "+ios/chrome/browser/sessions",
 ]

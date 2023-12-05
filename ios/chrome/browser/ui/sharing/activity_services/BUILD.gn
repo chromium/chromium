@@ -43,7 +43,7 @@ source_set("activity_services") {
     "//ios/chrome/browser/ui/sharing",
     "//ios/chrome/browser/ui/sharing/activity_services/activities",
     "//ios/chrome/browser/ui/sharing/activity_services/data",
-    "//ios/chrome/browser/web",
+    "//ios/chrome/browser/web/model",
     "//ios/web/public/js_messaging",
     "//ui/base",
     "//url",

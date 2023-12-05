@@ -48,7 +48,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/snapshots/model",
-    "//ios/chrome/browser/web",
+    "//ios/chrome/browser/web/model",
     "//ios/chrome/test:test_support",
     "//ios/web/public/session",
     "//ios/web/public/test",

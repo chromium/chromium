@@ -1,0 +1,16 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/build/config.gni")
+import("//ios/web/public/js_messaging/optimize_ts.gni")
+
+source_set("web_performance_metrics") {
+  sources = [
+    "web_performance_metrics_java_script_feature.h",
+    "web_performance_metrics_java_script_feature_util.h",
+    "web_performance_metrics_tab_helper.h",
+  ]
+
+  public_deps = [ "//ios/chrome/browser/web/web_performance_metrics" ]
+}

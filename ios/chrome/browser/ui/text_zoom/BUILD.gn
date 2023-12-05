@@ -18,8 +18,8 @@ source_set("text_zoom") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/ui/presenters",
     "//ios/chrome/browser/ui/toolbar/accessory",
-    "//ios/chrome/browser/web",
-    "//ios/chrome/browser/web/font_size",
+    "//ios/chrome/browser/web/model",
+    "//ios/chrome/browser/web/model/font_size",
     "//ios/chrome/common/ui/colors",
   ]
 }
