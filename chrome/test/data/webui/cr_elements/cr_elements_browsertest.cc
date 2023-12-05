@@ -147,6 +147,12 @@ IN_PROC_BROWSER_TEST_F(CrElementsTest, StoreClient) {
   RunTest("cr_elements/store_client_test.js", "mocha.run()");
 }
 
+#if !BUILDFLAG(OPTIMIZE_WEBUI)
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrLitElement) {
+  RunTest("cr_elements/cr_lit_element_test.js", "mocha.run()");
+}
+#endif
+
 IN_PROC_BROWSER_TEST_F(CrElementsTest, CrLoadingGradient) {
   RunTest("cr_elements/cr_loading_gradient_test.js", "mocha.run()");
 }

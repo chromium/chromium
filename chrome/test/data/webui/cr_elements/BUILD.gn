@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//ui/webui/webui_features.gni")
 import("../build_webui_tests.gni")
 
 assert(!is_android && !is_ios)
@@ -73,4 +74,9 @@ build_webui_tests("build") {
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
+
+  if (!optimize_webui) {
+    files += [ "cr_lit_element_test.ts" ]
+    ts_deps += [ "//third_party/lit/v3_0:build_ts" ]
+  }
 }

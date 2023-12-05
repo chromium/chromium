@@ -3,9 +3,9 @@
 # found in the LICENSE file.
 
 import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
-
 import("//ui/webui/resources/tools/bundle_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/resources/tools/minify_js.gni")
 import("//ui/webui/webui_features.gni")
 
 # TODO(crbug.com/1503223): Preventing Lit from being used in production. Remove
@@ -14,7 +14,10 @@ assert(!optimize_webui)
 
 ts_library("build_ts") {
   composite = true
-  in_files = [ "lit.ts" ]
+  in_files = [
+    "lit.ts",
+    "cr_lit_element.ts",
+  ]
 
   node_modules = "//third_party/node/node_modules"
   definitions = [
@@ -96,14 +99,22 @@ bundle_js("build_bundle") {
   input = rebase_path(target_gen_dir, root_build_dir)
   js_module_in_files = [ "lit.js" ]
   rollup_config = "rollup.config.mjs"
-  out_manifest = "${target_gen_dir}/build_bundle_manifest.json"
+  out_folder = "$target_gen_dir/bundled"
   deps = [ ":build_ts" ]
+}
+
+minify_js("build_min_js") {
+  deps = [ ":build_bundle" ]
+  in_folder = "$target_gen_dir/bundled"
+  in_files = [ "lit.rollup.js" ]
+  out_folder = "$target_gen_dir/minified"
+  out_manifest = "${target_gen_dir}/build_min_js_manifest.json"
 }
 
 generate_grd("build_grdp") {
   grd_prefix = "lit_v3_0"
   out_grd = "$target_gen_dir/resources.grdp"
   resource_path_prefix = "lit/v3_0"
-  manifest_files = [ "${target_gen_dir}/build_bundle_manifest.json" ]
-  deps = [ ":build_bundle" ]
+  manifest_files = [ "${target_gen_dir}/build_min_js_manifest.json" ]
+  deps = [ ":build_min_js" ]
 }

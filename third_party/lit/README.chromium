@@ -28,6 +28,11 @@ This directory contains
     A bundle_js() target, along with a custom Rollup config and plugin, used to
     create bundled JS file containing all Lit related dependencies. This file is
     shipped with the Chrome binary and used by WebUI.
- 4) //third_party/lit/v3_0:build_grdp
+ 4) //third_party/lit/v3_0:build_min_js
+    A minify_js() target used to minify the Lit bundle.
+ 5) //third_party/lit/v3_0:build_grdp
     A generate_grd() target, referred by other parts of the code, in order to
     include lit.rollup.js in the final build.
+ 6) cr_lit_element.ts: A Chromium specific LitElement subclass, to be used as
+    the superclass for all web components based on Lit. Offers some
+    functionality that bridges the gap between Polymer and Lit.

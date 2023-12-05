@@ -3,3 +3,4 @@
 // found in the LICENSE file.
 
 export {css, html, LitElement} from 'lit/index.js';
+export {CrLitElement} from './cr_lit_element.js';
