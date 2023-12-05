@@ -59,18 +59,6 @@ constexpr char kHatsSurveyTriggerTrackingProtectionControlDelayed[] =
     "tracking-protection-control-delayed";
 constexpr char kHatsSurveyTriggerTrackingProtectionTreatmentDelayed[] =
     "tracking-protection-treatment-delayed";
-constexpr char kHatsSurveyTriggerTrustSafetyPrivacySandbox3ConsentAccept[] =
-    "ts-ps3-consent-accept";
-constexpr char kHatsSurveyTriggerTrustSafetyPrivacySandbox3ConsentDecline[] =
-    "ts-ps3-consent-decline";
-constexpr char kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeDismiss[] =
-    "ts-ps3-notice-dismiss";
-constexpr char kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeOk[] =
-    "ts-ps3-notice-ok";
-constexpr char kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeSettings[] =
-    "ts-ps3-notice-settings";
-constexpr char kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeLearnMore[] =
-    "ts-ps3-notice-learn-more";
 constexpr char kHatsSurveyTriggerTrustSafetyPrivacySandbox4ConsentAccept[] =
     "ts-ps4-consent-accept";
 constexpr char kHatsSurveyTriggerTrustSafetyPrivacySandbox4ConsentDecline[] =
@@ -301,51 +289,6 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       kHatsSurveyTriggerTrustSafetyTransactions,
       features::kTrustSafetySentimentSurveyTransactionsTriggerId.Get(),
       std::vector<std::string>{"Saved password"});
-  survey_configs.emplace_back(
-      &features::kTrustSafetySentimentSurvey,
-      kHatsSurveyTriggerTrustSafetyPrivacySandbox3ConsentAccept,
-      features::kTrustSafetySentimentSurveyPrivacySandbox3ConsentAcceptTriggerId
-          .Get(),
-      std::vector<std::string>{"Stable channel", "3P cookies blocked",
-                               "Privacy Sandbox enabled"});
-  survey_configs.emplace_back(
-      &features::kTrustSafetySentimentSurvey,
-      kHatsSurveyTriggerTrustSafetyPrivacySandbox3ConsentDecline,
-      features::
-          kTrustSafetySentimentSurveyPrivacySandbox3ConsentDeclineTriggerId
-              .Get(),
-      std::vector<std::string>{"Stable channel", "3P cookies blocked",
-                               "Privacy Sandbox enabled"});
-  survey_configs.emplace_back(
-      &features::kTrustSafetySentimentSurvey,
-      kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeDismiss,
-      features::kTrustSafetySentimentSurveyPrivacySandbox3NoticeDismissTriggerId
-          .Get(),
-      std::vector<std::string>{"Stable channel", "3P cookies blocked",
-                               "Privacy Sandbox enabled"});
-  survey_configs.emplace_back(
-      &features::kTrustSafetySentimentSurvey,
-      kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeOk,
-      features::kTrustSafetySentimentSurveyPrivacySandbox3NoticeOkTriggerId
-          .Get(),
-      std::vector<std::string>{"Stable channel", "3P cookies blocked",
-                               "Privacy Sandbox enabled"});
-  survey_configs.emplace_back(
-      &features::kTrustSafetySentimentSurvey,
-      kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeSettings,
-      features::
-          kTrustSafetySentimentSurveyPrivacySandbox3NoticeSettingsTriggerId
-              .Get(),
-      std::vector<std::string>{"Stable channel", "3P cookies blocked",
-                               "Privacy Sandbox enabled"});
-  survey_configs.emplace_back(
-      &features::kTrustSafetySentimentSurvey,
-      kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeLearnMore,
-      features::
-          kTrustSafetySentimentSurveyPrivacySandbox3NoticeLearnMoreTriggerId
-              .Get(),
-      std::vector<std::string>{"Stable channel", "3P cookies blocked",
-                               "Privacy Sandbox enabled"});
   survey_configs.emplace_back(
       &features::kTrustSafetySentimentSurvey,
       kHatsSurveyTriggerTrustSafetyPrivacySandbox4ConsentAccept,

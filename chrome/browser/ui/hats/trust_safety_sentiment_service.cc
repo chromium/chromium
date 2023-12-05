@@ -423,28 +423,6 @@ void TrustSafetySentimentService::FinishedPrivacyGuide() {
   TriggerOccurred(FeatureArea::kPrivacyGuide, {});
 }
 
-void TrustSafetySentimentService::InteractedWithPrivacySandbox3(
-    FeatureArea feature_area) {
-  std::map<std::string, bool> product_specific_data;
-  product_specific_data["Stable channel"] =
-      (chrome::GetChannel() == version_info::Channel::STABLE) ? true : false;
-  scoped_refptr<content_settings::CookieSettings> cookie_settings =
-      CookieSettingsFactory::GetForProfile(profile_);
-  bool block_cookies = cookie_settings->GetDefaultCookieSetting() ==
-                       ContentSetting::CONTENT_SETTING_BLOCK;
-  block_cookies =
-      block_cookies ||
-      (static_cast<content_settings::CookieControlsMode>(
-           profile_->GetPrefs()->GetInteger(prefs::kCookieControlsMode)) ==
-       content_settings::CookieControlsMode::kBlockThirdParty);
-  product_specific_data["3P cookies blocked"] = block_cookies ? true : false;
-  product_specific_data["Privacy Sandbox enabled"] =
-      profile_->GetPrefs()->GetBoolean(prefs::kPrivacySandboxApisEnabledV2)
-          ? true
-          : false;
-  TriggerOccurred(feature_area, product_specific_data);
-}
-
 void TrustSafetySentimentService::InteractedWithPrivacySandbox4(
     FeatureArea feature_area) {
   TriggerOccurred(feature_area, {});
@@ -702,12 +680,6 @@ bool TrustSafetySentimentService::VersionCheck(FeatureArea feature_area) {
     // Version 1 only
     case (FeatureArea::kPrivacySettings):
     case (FeatureArea::kTransactions):
-    case (FeatureArea::kPrivacySandbox3ConsentAccept):
-    case (FeatureArea::kPrivacySandbox3ConsentDecline):
-    case (FeatureArea::kPrivacySandbox3NoticeDismiss):
-    case (FeatureArea::kPrivacySandbox3NoticeOk):
-    case (FeatureArea::kPrivacySandbox3NoticeSettings):
-    case (FeatureArea::kPrivacySandbox3NoticeLearnMore):
       return isV2 == false;
     // Version 2 only
     case (FeatureArea::kSafetyCheck):
@@ -778,18 +750,6 @@ std::string TrustSafetySentimentService::GetHatsTriggerForFeatureArea(
       return kHatsSurveyTriggerTrustSafetyTrustedSurface;
     case (FeatureArea::kTransactions):
       return kHatsSurveyTriggerTrustSafetyTransactions;
-    case (FeatureArea::kPrivacySandbox3ConsentAccept):
-      return kHatsSurveyTriggerTrustSafetyPrivacySandbox3ConsentAccept;
-    case (FeatureArea::kPrivacySandbox3ConsentDecline):
-      return kHatsSurveyTriggerTrustSafetyPrivacySandbox3ConsentDecline;
-    case (FeatureArea::kPrivacySandbox3NoticeDismiss):
-      return kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeDismiss;
-    case (FeatureArea::kPrivacySandbox3NoticeOk):
-      return kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeOk;
-    case (FeatureArea::kPrivacySandbox3NoticeSettings):
-      return kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeSettings;
-    case (FeatureArea::kPrivacySandbox3NoticeLearnMore):
-      return kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeLearnMore;
     case (FeatureArea::kPrivacySandbox4ConsentAccept):
       return kHatsSurveyTriggerTrustSafetyPrivacySandbox4ConsentAccept;
     case (FeatureArea::kPrivacySandbox4ConsentDecline):
@@ -889,36 +849,6 @@ bool TrustSafetySentimentService::ProbabilityCheck(FeatureArea feature_area) {
     case (FeatureArea::kTransactions):
       return base::RandDouble() <
              features::kTrustSafetySentimentSurveyTransactionsProbability.Get();
-    case (FeatureArea::kPrivacySandbox3ConsentAccept):
-      return base::RandDouble() <
-             features::
-                 kTrustSafetySentimentSurveyPrivacySandbox3ConsentAcceptProbability
-                     .Get();
-    case (FeatureArea::kPrivacySandbox3ConsentDecline):
-      return base::RandDouble() <
-             features::
-                 kTrustSafetySentimentSurveyPrivacySandbox3ConsentDeclineProbability
-                     .Get();
-    case (FeatureArea::kPrivacySandbox3NoticeDismiss):
-      return base::RandDouble() <
-             features::
-                 kTrustSafetySentimentSurveyPrivacySandbox3NoticeDismissProbability
-                     .Get();
-    case (FeatureArea::kPrivacySandbox3NoticeOk):
-      return base::RandDouble() <
-             features::
-                 kTrustSafetySentimentSurveyPrivacySandbox3NoticeOkProbability
-                     .Get();
-    case (FeatureArea::kPrivacySandbox3NoticeSettings):
-      return base::RandDouble() <
-             features::
-                 kTrustSafetySentimentSurveyPrivacySandbox3NoticeSettingsProbability
-                     .Get();
-    case (FeatureArea::kPrivacySandbox3NoticeLearnMore):
-      return base::RandDouble() <
-             features::
-                 kTrustSafetySentimentSurveyPrivacySandbox3NoticeLearnMoreProbability
-                     .Get();
     case (FeatureArea::kPrivacySandbox4ConsentAccept):
       return base::RandDouble() <
              features::

@@ -38,10 +38,6 @@ class MockTrustSafetySentimentService : public TrustSafetySentimentService {
               (override));
   MOCK_METHOD(void, SavedCard, (), (override));
   MOCK_METHOD(void,
-              InteractedWithPrivacySandbox3,
-              (FeatureArea feature_area),
-              (override));
-  MOCK_METHOD(void,
               InteractedWithPrivacySandbox4,
               (FeatureArea feature_area),
               (override));

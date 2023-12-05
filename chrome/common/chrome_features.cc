@@ -1360,30 +1360,6 @@ const base::FeatureParam<double>
     kTrustSafetySentimentSurveyTransactionsProbability{
         &kTrustSafetySentimentSurvey, "transactions-probability", 0.05};
 const base::FeatureParam<double>
-    kTrustSafetySentimentSurveyPrivacySandbox3ConsentAcceptProbability{
-        &kTrustSafetySentimentSurvey,
-        "privacy-sandbox-3-consent-accept-probability", 0.1};
-const base::FeatureParam<double>
-    kTrustSafetySentimentSurveyPrivacySandbox3ConsentDeclineProbability{
-        &kTrustSafetySentimentSurvey,
-        "privacy-sandbox-3-consent-decline-probability", 0.5};
-const base::FeatureParam<double>
-    kTrustSafetySentimentSurveyPrivacySandbox3NoticeDismissProbability{
-        &kTrustSafetySentimentSurvey,
-        "privacy-sandbox-3-notice-dismiss-probability", 0.5};
-const base::FeatureParam<double>
-    kTrustSafetySentimentSurveyPrivacySandbox3NoticeOkProbability{
-        &kTrustSafetySentimentSurvey, "privacy-sandbox-3-notice-ok-probability",
-        0.05};
-const base::FeatureParam<double>
-    kTrustSafetySentimentSurveyPrivacySandbox3NoticeSettingsProbability{
-        &kTrustSafetySentimentSurvey,
-        "privacy-sandbox-3-notice-settings-probability", 0.8};
-const base::FeatureParam<double>
-    kTrustSafetySentimentSurveyPrivacySandbox3NoticeLearnMoreProbability{
-        &kTrustSafetySentimentSurvey,
-        "privacy-sandbox-3-notice-learn-more-probability", 0.2};
-const base::FeatureParam<double>
     kTrustSafetySentimentSurveyPrivacySandbox4ConsentAcceptProbability{
         &kTrustSafetySentimentSurvey,
         "privacy-sandbox-4-consent-accept-probability", 0.0};
@@ -1410,30 +1386,6 @@ const base::FeatureParam<std::string>
 extern const base::FeatureParam<std::string>
     kTrustSafetySentimentSurveyTransactionsTriggerId{
         &kTrustSafetySentimentSurvey, "transactions-trigger-id", ""};
-extern const base::FeatureParam<std::string>
-    kTrustSafetySentimentSurveyPrivacySandbox3ConsentAcceptTriggerId{
-        &kTrustSafetySentimentSurvey,
-        "privacy-sandbox-3-consent-accept-trigger-id", ""};
-extern const base::FeatureParam<std::string>
-    kTrustSafetySentimentSurveyPrivacySandbox3ConsentDeclineTriggerId{
-        &kTrustSafetySentimentSurvey,
-        "privacy-sandbox-3-consent-decline-trigger-id", ""};
-extern const base::FeatureParam<std::string>
-    kTrustSafetySentimentSurveyPrivacySandbox3NoticeDismissTriggerId{
-        &kTrustSafetySentimentSurvey,
-        "privacy-sandbox-3-notice-dismiss-trigger-id", ""};
-extern const base::FeatureParam<std::string>
-    kTrustSafetySentimentSurveyPrivacySandbox3NoticeOkTriggerId{
-        &kTrustSafetySentimentSurvey, "privacy-sandbox-3-notice-ok-trigger-id",
-        ""};
-extern const base::FeatureParam<std::string>
-    kTrustSafetySentimentSurveyPrivacySandbox3NoticeSettingsTriggerId{
-        &kTrustSafetySentimentSurvey,
-        "privacy-sandbox-3-notice-settings-trigger-id", ""};
-extern const base::FeatureParam<std::string>
-    kTrustSafetySentimentSurveyPrivacySandbox3NoticeLearnMoreTriggerId{
-        &kTrustSafetySentimentSurvey,
-        "privacy-sandbox-3-notice-learn-more-trigger-id", ""};
 extern const base::FeatureParam<std::string>
     kTrustSafetySentimentSurveyPrivacySandbox4ConsentAcceptTriggerId{
         &kTrustSafetySentimentSurvey,
