@@ -68,6 +68,7 @@ class TabUsageRecorderBrowserAgentTest : public PlatformTest {
     auto fake_web_state = std::make_unique<web::FakeWebState>();
     fake_web_state->SetNavigationManager(std::move(fake_navigation_manager));
     fake_web_state->SetIsEvicted(in_memory == NOT_IN_MEMORY);
+    fake_web_state->SetVisibleURL(GURL(url));
 
     const int insertion_index = browser_->GetWebStateList()->InsertWebState(
         WebStateList::kInvalidIndex, std::move(fake_web_state),
@@ -183,6 +184,7 @@ TEST_F(TabUsageRecorderBrowserAgentTest,
   web::NavigationItem* item =
       InsertItemToFakeNavigationManager(fake_navigation_manager, kNativeURL);
   fake_navigation_manager->SetPendingItem(item);
+  new_evicted_tab->SetVisibleURL(GURL(kNativeURL));
 
   tab_usage_recorder_->RecordTabSwitched(old_tab, new_evicted_tab);
   histogram_tester_.ExpectTotalCount(
