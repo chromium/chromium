@@ -23,14 +23,13 @@ class CrosAppsApiInfo;
 class CrosAppsApiMutableRegistry : public CrosAppsApiRegistry,
                                    public base::SupportsUserData::Data {
  public:
+  // See CrosAppsApiRegistry::GetInstance() about lifetime.
   static CrosAppsApiMutableRegistry& GetInstance(Profile* profile);
 
   using PassKey = base::PassKey<CrosAppsApiMutableRegistry>;
   explicit CrosAppsApiMutableRegistry(PassKey passkey);
   ~CrosAppsApiMutableRegistry() override;
 
-  bool IsApiEnabledFor(const CrosAppsApiInfo& api_info,
-                       content::NavigationHandle* navigation_handle) const;
   void AddOrReplaceForTesting(CrosAppsApiInfo api_info);
 
   // CrosAppsApiRegistry:
@@ -39,6 +38,9 @@ class CrosAppsApiMutableRegistry : public CrosAppsApiRegistry,
       content::NavigationHandle* navigation_handle) const override;
 
  private:
+  bool IsApiEnabledFor(const CrosAppsApiInfo& api_info,
+                       content::NavigationHandle* navigation_handle) const;
+
   base::flat_map<blink::mojom::RuntimeFeature, CrosAppsApiInfo> apis_;
 };
 

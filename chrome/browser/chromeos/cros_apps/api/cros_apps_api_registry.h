@@ -23,6 +23,8 @@ class NavigationHandle;
 // To modify the registry, use CrosAppsApiMutableRegistry.
 class CrosAppsApiRegistry {
  public:
+  // Returns a lazily constructed API registry that's attached to `profile`. The
+  // returned registry is valid until `profile` destructs.
   static const CrosAppsApiRegistry& GetInstance(Profile* profile);
 
   // Return a list of functions that should be called on
