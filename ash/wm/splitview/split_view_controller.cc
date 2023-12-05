@@ -87,7 +87,7 @@ namespace ash {
 
 namespace {
 
-using ::chromeos::WindowStateType;
+using chromeos::WindowStateType;
 
 // Three fixed position ratios of the divider, which means the divider can
 // always be moved to these three positions.
@@ -368,8 +368,8 @@ class SplitViewController::ToBeSnappedWindowsObserver
                             WindowSnapActionSource snap_action_source) {
     if (DidInSplitViewWindowChange(window, split_view_controller_,
                                    snap_position)) {
-      split_view_controller_->AttachSnappingWindow(window, snap_position,
-                                                   snap_action_source);
+      split_view_controller_->AttachToBeSnappedWindow(window, snap_position,
+                                                      snap_action_source);
       return;
     }
 
@@ -394,8 +394,8 @@ class SplitViewController::ToBeSnappedWindowsObserver
     WindowState* window_state = WindowState::Get(window);
     if (window_state->GetStateType() ==
         GetStateTypeFromSnapPosition(snap_position)) {
-      split_view_controller_->AttachSnappingWindow(window, snap_position,
-                                                   snap_action_source);
+      split_view_controller_->AttachToBeSnappedWindow(window, snap_position,
+                                                      snap_action_source);
       split_view_controller_->OnWindowSnapped(window,
                                               /*previous_state=*/std::nullopt,
                                               snap_action_source);
@@ -440,8 +440,8 @@ class SplitViewController::ToBeSnappedWindowsObserver
       to_be_snapped_windows_.erase(iter);
       window_state->RemoveObserver(this);
       window->RemoveObserver(this);
-      split_view_controller_->AttachSnappingWindow(window, snap_position,
-                                                   cached_snap_action_source);
+      split_view_controller_->AttachToBeSnappedWindow(
+          window, snap_position, cached_snap_action_source);
     }
   }
 
@@ -532,7 +532,8 @@ bool SplitViewController::InTabletSplitViewMode() const {
 }
 
 bool SplitViewController::CanSnapWindow(aura::Window* window) const {
-  return CanSnapWindow(window, chromeos::kDefaultSnapRatio);
+  return CanSnapWindow(window, WindowState::Get(window)->snap_ratio().value_or(
+                                   chromeos::kDefaultSnapRatio));
 }
 
 bool SplitViewController::CanSnapWindow(aura::Window* window,
@@ -569,7 +570,7 @@ std::optional<float> SplitViewController::ComputeSnapRatio(
       default_window ? WindowState::Get(default_window)->snap_ratio()
                      : std::nullopt;
   if (!default_window_snap_ratio) {
-    return CanSnapWindow(window)
+    return CanSnapWindow(window, chromeos::kDefaultSnapRatio)
                ? std::make_optional(chromeos::kDefaultSnapRatio)
                : std::nullopt;
   }
@@ -585,7 +586,7 @@ std::optional<float> SplitViewController::ComputeSnapRatio(
   // TODO(sammiequon): Investigate if this check is needed. It may be needed for
   // rounding errors (i.e. 2/3 may be 0.67).
   if (it == kOppositeRatiosMap.end()) {
-    return CanSnapWindow(window)
+    return CanSnapWindow(window, chromeos::kDefaultSnapRatio)
                ? std::make_optional(chromeos::kDefaultSnapRatio)
                : std::nullopt;
   }
@@ -599,8 +600,9 @@ std::optional<float> SplitViewController::ComputeSnapRatio(
   // Reaching here, we cannot snap `window` to its ideal snap ratio. If the
   // ideal snap ratio was 1/3, we try snapping to 1/2, but only if the default
   // window can be snapped to 1/2 as well.
-  if (snap_ratio == chromeos::kOneThirdSnapRatio && CanSnapWindow(window) &&
-      CanSnapWindow(default_window)) {
+  if (snap_ratio == chromeos::kOneThirdSnapRatio &&
+      CanSnapWindow(window, chromeos::kDefaultSnapRatio) &&
+      CanSnapWindow(default_window, chromeos::kDefaultSnapRatio)) {
     return chromeos::kDefaultSnapRatio;
   }
 
@@ -620,7 +622,7 @@ void SplitViewController::SnapWindow(aura::Window* window,
                                      WindowSnapActionSource snap_action_source,
                                      bool activate_window,
                                      float snap_ratio) {
-  DCHECK(window && CanSnapWindow(window));
+  DCHECK(window && CanSnapWindow(window, snap_ratio));
   DCHECK_NE(snap_position, SnapPosition::kNone);
   DCHECK(!IsResizingWithDivider());
   if (IsDividerAnimating()) {
@@ -703,7 +705,7 @@ void SplitViewController::OnSnapEvent(
       window, to_snap_position, snap_action_source);
 }
 
-void SplitViewController::AttachSnappingWindow(
+void SplitViewController::AttachToBeSnappedWindow(
     aura::Window* window,
     SnapPosition snap_position,
     WindowSnapActionSource snap_action_source) {
@@ -1521,7 +1523,7 @@ void SplitViewController::OnDisplayMetricsChanged(
     return;
 
   // If one of the snapped windows becomes unsnappable, end the split view mode
-  // directly.
+  // directly if `IsUserSessionBlocked()`.
   if ((primary_window_ && !CanSnapWindow(primary_window_)) ||
       (secondary_window_ && !CanSnapWindow(secondary_window_))) {
     if (!Shell::Get()->session_controller()->IsUserSessionBlocked())
@@ -1566,9 +1568,6 @@ void SplitViewController::OnDisplayMetricsChanged(
   }
 
   EndSplitViewAfterResizingAtEdgeIfAppropriate();
-  if (!InSplitViewMode())
-    return;
-
   NotifyDividerPositionChanged();
   UpdateSnappedWindowsAndDividerBounds();
 }

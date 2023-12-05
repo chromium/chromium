@@ -204,8 +204,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // 4. |window|'s minimum size, if any, fits into the left or top with the
   //    default divider position. (If the work area length is odd, then the
   //    right or bottom will be one pixel larger.)
-  // See also the `DCHECK`s in `SnapWindow()`. If `snap_ratio` is not passed,
-  // default to check if we can snap to half.
+  // See also the `DCHECK`s in `SnapWindow()`.
   bool CanSnapWindow(aura::Window* window) const;
   bool CanSnapWindow(aura::Window* window, float snap_ratio) const;
 
@@ -254,9 +253,9 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // animation of `window` if split view mode is not already active, and if
   // `window` is not minimized and has a non-identity transform.
   // `snap_action_source` specifies the source for this snap event.
-  void AttachSnappingWindow(aura::Window* window,
-                            SnapPosition snap_position,
-                            WindowSnapActionSource snap_action_source);
+  void AttachToBeSnappedWindow(aura::Window* window,
+                               SnapPosition snap_position,
+                               WindowSnapActionSource snap_action_source);
 
   // Swaps the window(s). If the it is triggered by `kDoubleTap` with only one
   // window snapped, the window will be snapped to the other position. For all
