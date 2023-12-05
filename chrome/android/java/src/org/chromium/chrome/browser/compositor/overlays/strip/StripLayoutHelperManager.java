@@ -16,6 +16,7 @@ import android.view.View.OnDragListener;
 import android.view.ViewStub;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -325,33 +326,41 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         createModelSelectorButton(context, selectorClickHandler);
         // Model selector button background color.
         // Default bg color is surface inverse.
+        @ColorInt
         int BackgroundDefaultColor =
                 context.getResources().getColor(R.color.model_selector_button_bg_color);
 
         // Incognito bg color is surface 1 baseline.
+        @ColorInt
         int BackgroundIncognitoColor =
                 context.getResources().getColor(R.color.default_bg_color_dark_elev_1_baseline);
 
+        @ColorInt
         int apsBackgroundHoveredColor =
                 org.chromium.ui.util.ColorUtils.setAlphaComponent(
                         SemanticColorUtils.getDefaultTextColor(context),
                         (int) (MODEL_SELECTOR_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY * 255));
+        @ColorInt
         int apsBackgroundPressedColor =
                 org.chromium.ui.util.ColorUtils.setAlphaComponent(
                         SemanticColorUtils.getDefaultTextColor(context),
                         (int) (MODEL_SELECTOR_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY * 255));
+        @ColorInt
         int apsBackgroundHoveredIncognitoColor =
                 ColorUtils.setAlphaComponent(
                         context.getResources().getColor(R.color.tab_strip_button_hover_bg_color),
                         (int) (MODEL_SELECTOR_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY * 255));
+        @ColorInt
         int apsBackgroundPressedIncognitoColor =
                 ColorUtils.setAlphaComponent(
                         context.getResources().getColor(R.color.tab_strip_button_hover_bg_color),
                         (int) (MODEL_SELECTOR_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY * 255));
 
+        @ColorInt
         int iconDefaultColor =
                 AppCompatResources.getColorStateList(context, R.color.default_icon_color_tint_list)
                         .getDefaultColor();
+        @ColorInt
         int iconIncognitoColor =
                 context.getResources().getColor(R.color.default_icon_color_secondary_light);
 
@@ -684,8 +693,8 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         return leftFadeDrawable;
     }
 
-    public int getRightFadeDrawable() {
-        int rightFadeDrawable;
+    public @DrawableRes int getRightFadeDrawable() {
+        @DrawableRes int rightFadeDrawable;
         if (!LocalizationUtils.isLayoutRtl()) {
             if (mModelSelectorButton.isVisible()) {
                 rightFadeDrawable = R.drawable.tab_strip_fade_long;

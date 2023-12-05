@@ -22,6 +22,7 @@ import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewStub;
 
+import androidx.annotation.ColorInt;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.ColorUtils;
 import androidx.test.core.app.ApplicationProvider;
@@ -220,6 +221,7 @@ public class StripLayoutHelperManagerTest {
         when(msb.isHovered()).thenReturn(true);
         when(msb.isPressedFromMouse()).thenReturn(false);
 
+        @ColorInt
         int hoverBackgroundDefaultColor =
                 ColorUtils.setAlphaComponent(
                         SemanticColorUtils.getDefaultTextColor(mContext), (int) (0.08 * 255));
@@ -232,6 +234,7 @@ public class StripLayoutHelperManagerTest {
         when(msb.isPressed()).thenReturn(true);
         when(msb.isHovered()).thenReturn(false);
         when(msb.isPressedFromMouse()).thenReturn(true);
+        @ColorInt
         int hoverBackgroundPressedColor =
                 ColorUtils.setAlphaComponent(
                         SemanticColorUtils.getDefaultTextColor(mContext), (int) (0.12 * 255));
@@ -244,6 +247,7 @@ public class StripLayoutHelperManagerTest {
         // Verify model selector button incognito hover highlight default tint.
         when(msb.isHovered()).thenReturn(true);
         when(msb.isIncognito()).thenReturn(true);
+        @ColorInt
         int hoverBackgroundDefaultIncognitoColor =
                 ColorUtils.setAlphaComponent(
                         mContext.getResources().getColor(R.color.tab_strip_button_hover_bg_color),
@@ -257,6 +261,7 @@ public class StripLayoutHelperManagerTest {
         when(msb.isPressed()).thenReturn(true);
         when(msb.isHovered()).thenReturn(false);
         when(msb.isPressedFromMouse()).thenReturn(true);
+        @ColorInt
         int hoverBackgroundPressedIncognitoColor =
                 ColorUtils.setAlphaComponent(
                         mContext.getResources().getColor(R.color.tab_strip_button_hover_bg_color),

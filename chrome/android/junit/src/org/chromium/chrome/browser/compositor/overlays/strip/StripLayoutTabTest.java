@@ -9,6 +9,7 @@ import static org.junit.Assert.assertEquals;
 import android.content.Context;
 import android.view.ContextThemeWrapper;
 
+import androidx.annotation.ColorInt;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.test.core.app.ApplicationProvider;
 
@@ -56,7 +57,7 @@ public class StripLayoutTabTest {
     @Test
     @EnableFeatures({ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP})
     public void testGetTint() {
-        int expectedColor;
+        @ColorInt int expectedColor;
 
         // Normal active tab color.
         expectedColor = MaterialColors.getColor(mContext, R.attr.colorSurface, TAG);
@@ -120,7 +121,7 @@ public class StripLayoutTabTest {
         ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP
     })
     public void testGetTint_Startup() {
-        int expectedColor;
+        @ColorInt int expectedColor;
 
         mNormalTab.setIsPlaceholder(true);
         mIncognitoTab.setIsPlaceholder(true);
@@ -156,7 +157,7 @@ public class StripLayoutTabTest {
 
     @Test
     public void testGetDividerTint() {
-        int expectedColor;
+        @ColorInt int expectedColor;
 
         // Normal.
         expectedColor =

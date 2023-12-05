@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.content.Context;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
@@ -55,7 +56,7 @@ public class TabUiThemeUtil {
      * @return The color for the tab container.
      */
     // TODO (crbug.com/1469465): Encapsulate tab properties in a state object.
-    public static int getTabStripContainerColor(
+    public static @ColorInt int getTabStripContainerColor(
             Context context,
             boolean isIncognito,
             boolean foreground,
@@ -97,7 +98,7 @@ public class TabUiThemeUtil {
      * @param isIncognito Whether the color is used for incognito mode.
      * @return The value that corresponds to Surface-0.
      */
-    private static int getSurfaceColorElev0(Context context, boolean isIncognito) {
+    private static @ColorInt int getSurfaceColorElev0(Context context, boolean isIncognito) {
         if (isIncognito) {
             return context.getColor(R.color.default_bg_color_dark);
         }
@@ -112,7 +113,7 @@ public class TabUiThemeUtil {
      * @param isIncognito Whether the color is used for incognito mode.
      * @return The value that corresponds to Surface-5.
      */
-    private static int getSurfaceColorElev5(Context context, boolean isIncognito) {
+    private static @ColorInt int getSurfaceColorElev5(Context context, boolean isIncognito) {
         if (isIncognito) {
             return context.getColor(R.color.default_bg_color_dark_elev_5_baseline);
         }
@@ -120,11 +121,11 @@ public class TabUiThemeUtil {
         return ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_5);
     }
 
-    public static int getTabResource() {
+    public static @DrawableRes int getTabResource() {
         return R.drawable.bg_tabstrip_tab_folio;
     }
 
-    public static int getDetachedResource() {
+    public static @DrawableRes int getDetachedResource() {
         return R.drawable.bg_tabstrip_tab_detached;
     }
 

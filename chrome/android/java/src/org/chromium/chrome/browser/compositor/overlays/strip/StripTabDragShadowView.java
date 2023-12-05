@@ -15,6 +15,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -207,6 +208,7 @@ public class StripTabDragShadowView extends FrameLayout {
                                     /* isPlaceholder= */ false,
                                     /* isHovered= */ false)));
 
+            @ColorInt
             int textColor =
                     AppCompatResources.getColorStateList(
                                     getContext(),

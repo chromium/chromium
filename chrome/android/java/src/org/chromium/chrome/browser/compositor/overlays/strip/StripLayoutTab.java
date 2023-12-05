@@ -12,6 +12,7 @@ import android.graphics.RectF;
 import android.util.FloatProperty;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
@@ -269,19 +270,23 @@ public class StripLayoutTab implements VirtualView {
                 R.color.default_icon_color_light);
 
         mCloseButton.setBackgroundResourceId(R.drawable.tab_close_button_bg);
+        @ColorInt
         int apsBackgroundHoveredTint =
                 ColorUtils.setAlphaComponent(
                         SemanticColorUtils.getDefaultTextColor(context),
                         (int) (CLOSE_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY * 255));
+        @ColorInt
         int apsBackgroundPressedTint =
                 ColorUtils.setAlphaComponent(
                         SemanticColorUtils.getDefaultTextColor(context),
                         (int) (CLOSE_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY * 255));
 
+        @ColorInt
         int apsBackgroundIncognitoHoveredTint =
                 ColorUtils.setAlphaComponent(
                         context.getResources().getColor(R.color.tab_strip_button_hover_bg_color),
                         (int) (CLOSE_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY * 255));
+        @ColorInt
         int apsBackgroundIncognitoPressedTint =
                 ColorUtils.setAlphaComponent(
                         context.getResources().getColor(R.color.tab_strip_button_hover_bg_color),
@@ -410,7 +415,7 @@ public class StripLayoutTab implements VirtualView {
     /**
      * @return The Android resource that represents the tab background.
      */
-    public int getResourceId() {
+    public @DrawableRes int getResourceId() {
         if (!mFolioAttached || mIsPlaceholder) {
             return TabUiThemeUtil.getDetachedResource();
         } else {
@@ -421,14 +426,14 @@ public class StripLayoutTab implements VirtualView {
     /**
      * @return The Android resource that represents the tab outline.
      */
-    public int getOutlineResourceId() {
+    public @DrawableRes int getOutlineResourceId() {
         return R.drawable.bg_tabstrip_background_tab_outline;
     }
 
     /**
      * @return The Android resource that represents the tab divider.
      */
-    public int getDividerResourceId() {
+    public @DrawableRes int getDividerResourceId() {
         return R.drawable.bg_tabstrip_tab_divider;
     }
 
@@ -436,9 +441,9 @@ public class StripLayoutTab implements VirtualView {
      * @param foreground Whether or not this tab is a foreground tab.
      * @param hovered Whether or not this tab is hovered on.
      * @return The tint color resource that represents the tab background. A foreground tab will
-     *         have the same tint irrespective of its hover state.
+     *     have the same tint irrespective of its hover state.
      */
-    public int getTint(boolean foreground, boolean hovered) {
+    public @ColorInt int getTint(boolean foreground, boolean hovered) {
         hovered =
                 ChromeFeatureList.isEnabled(
                                 ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP)
