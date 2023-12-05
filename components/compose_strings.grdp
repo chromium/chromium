@@ -2,118 +2,116 @@
 <grit-part>
   <!-- TODO(b/301510467): Mark strings as translateable once all strings are aligned. -->
   <!-- Nudge -->
-  <message name="IDS_COMPOSE_SUGGESTION_MAIN_TEXT" desc="The main text displayed in the Autofill suggestion that a user sees after interacting with a supported text element." translateable="false">
-  Lorem ipsum
+  <message name="IDS_COMPOSE_SUGGESTION_MAIN_TEXT" desc="Text a user sees in the Autofill popup or context menu as the entry point for the Help me write feature.">
+    Help me write
   </message>
-  <message name="IDS_COMPOSE_SUGGESTION_LABEL" desc="The label beneath the main text in the Autofill suggestion that a user sees adter interacting with a supported text element." translateable="false">
-  Powered by Google
+  <message name="IDS_COMPOSE_SUGGESTION_LABEL" desc="The label beneath the main text in the Autofill suggestion that a user sees after interacting with a supported text element.">
+    Powered by Google
   </message>
-  <message name="IDS_COMPOSE_SUGGESTION_SAVED_TEXT" desc="The main text displayed in the Autofill suggestion that a user sees after interacting with a supported text element, indicating that user state was saved." translateable="false">
-  Progress saved
+  <message name="IDS_COMPOSE_SUGGESTION_SAVED_TEXT" desc="The main text displayed in the Autofill suggestion that a user sees after interacting with a supported text element, indicating that user state was saved.">
+    Progress saved
   </message>
-  <message name="IDS_COMPOSE_SUGGESTION_SAVED_LABEL" desc="The label beneath the main text in the Autofill suggestion that a user sees after interacting with a supported text element, indicating that user state was saved." translateable="false">
-  Re-open to continue
+  <message name="IDS_COMPOSE_SUGGESTION_SAVED_LABEL" desc="The label beneath the main text in the Autofill suggestion that a user sees after interacting with a supported text element, indicating that user state was saved.">
+    Re-open to continue
   </message>
 
   <!-- Consent dialog -->
   <message name="IDS_COMPOSE_CONSENT_TITLE" desc="The title of the consent dialog." translateable="false">
-    Conquer all those empty online text boxes with autofill from the web
+    Get contextual writing suggestions for reviews, posts and more
   </message>
   <message name="IDS_COMPOSE_CONSENT_MAIN_TOP" desc="The top main text of the consent dialog." translateable="false">
-  To provide you with the best autofill suggestions while using this feature, the content of pages you visit and the content you enter are sent to our servers. You can change this at anytime in
-  <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>settings<ph name="END_LINK">&lt;/a&gt;</ph>.
+    Sends open pages, related recent pages, their URLs, and your interactions with those features to Google. This data may be read, processed, and annotated by human reviewers to improve and develop Google products. You can change this anytime in
+    <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>settings<ph name="END_LINK">&lt;/a&gt;</ph>.
   </message>
   <message name="IDS_COMPOSE_CONSENT_MAIN_BOTTOM" desc="The bottom main text of the consent dialog." translateable="false">
-  Autofill relies on the information that you save.
-  </message>
-  <message name="IDS_COMPOSE_CONSENT_LEARN_LINK" desc="The bottom main text in the consent dialog used to link to the help page." translateable="false">
-  Learn more
+    This is an experimental AI writing aid and won't always get it right.
   </message>
   <message name="IDS_COMPOSE_CONSENT_NO_BUTTON" desc="The first option for the consent dialog." translateable="false">
-  No thanks
+    No thanks
   </message>
   <message name="IDS_COMPOSE_CONSENT_YES_BUTTON" desc="The first option for the consent dialog." translateable="false">
-  Yes I'm in
+    Yes I'm in
   </message>
 
   <!-- Disclaimer dialog -->
   <message name="IDS_COMPOSE_DISCLAIMER_BUTTON" desc="The button to acknowledge the disclaimer message." translateable="false">
-  Let's go
+    Let's go
   </message>
 
   <!-- Input dialog -->
-  <message name="IDS_COMPOSE_DIALOG_TITLE" desc="Compose input dialog title." translateable="false">
-  Lorem ipsum
+  <message name="IDS_COMPOSE_DIALOG_TITLE" desc="Compose input dialog title.">
+    Help me write
   </message>
-  <message name="IDS_COMPOSE_INPUT_PLACEHOLDER" desc="A placeholder text used in the input textfield." translateable="false">
-  We can Autofill many things (e.g., addresses, passwords, user names, credit card.). You can autofill any fields you want.
+  <message name="IDS_COMPOSE_INPUT_PLACEHOLDER" desc="A placeholder text used in the input textfield.">
+    You can enter things like: a few words that sum up your thoughts, a first draft, requests like "write a 5-star review for this restaurant"
   </message>
-  <message name="IDS_COMPOSE_INPUT_FOOTER" desc="The footer text for the input dialog." translateable="false">
-  Your bookmark is saved to <ph name="START">&lt;a href="chrome://bookmarks"&gt;</ph>Bookmark UI<ph name="END">&lt;/a&gt;</ph>.
+  <message name="IDS_COMPOSE_INPUT_FOOTER" desc="Privacy disclaimer in the input dialog." translateable="false">
+    Page content and your text are sent to Google, and may be used to improve or develop products.
+  <ph name="BEGIN_LINK">&lt;a href=""&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>.
   </message>
-  <message name="IDS_COMPOSE_SUBMIT_BUTTON" desc="The button to submit the input." translateable="false">
-  Submit
+  <message name="IDS_COMPOSE_SUBMIT_BUTTON" desc="The button to request Compose to generate text.">
+    Generate
   </message>
-  <message name="IDS_COMPOSE_EDIT" desc="Label for button that allows user to edit their input." translateable="false">
-  Edit
-  </message>
-  <message name="IDS_COMPOSE_EDIT_UPDATE_BUTTON" desc="The button that confirms the edited input." translateable="false">
-  Update
+  <message name="IDS_COMPOSE_EDIT_UPDATE_BUTTON" desc="The button that confirms the input should be updated.">
+    Update
   </message>
 
   <!-- Result dialog -->
-  <message name="IDS_COMPOSE_INSERT_BUTTON" desc="The button that inserts the result into the input textfield." translateable="false">
-  Insert
+  <message name="IDS_COMPOSE_EDIT" desc="Label shown on hover and read by screen-readers for button that allows user to edit their input.">
+  Edit
   </message>
-  <message name="IDS_COMPOSE_MENU_1_TITLE" desc="The first style menu title." translateable="false">
-  Length
+  <message name="IDS_COMPOSE_MENU_LENGTH_TITLE" desc="Title for options to select the length of returned text.">
+    Length
   </message>
-  <message name="IDS_COMPOSE_MENU_1_OPTION_1" desc="The first option for the first style." translateable="false">
-  Shorten
+  <message name="IDS_COMPOSE_MENU_SHORTER_OPTION" desc="Option title to request a shorter text result.">
+    Shorten
   </message>
-  <message name="IDS_COMPOSE_MENU_1_OPTION_2" desc="The second option for the first style." translateable="false">
-  Elaborate
+  <message name="IDS_COMPOSE_MENU_LONGER_OPTION" desc="Option title to request a more elaborate text result.">
+    Elaborate
   </message>
-  <message name="IDS_COMPOSE_MENU_2_TITLE" desc="The second style menu title." translateable="false">
-  Tone
+  <message name="IDS_COMPOSE_MENU_TONE_TITLE" desc="Title for options to select the tone of returned text.">
+    Tone
   </message>
-  <message name="IDS_COMPOSE_MENU_2_OPTION_1" desc="The first option for the second style." translateable="false">
-  Casual
+  <message name="IDS_COMPOSE_MENU_CASUAL_OPTION" desc="Option title to request a more casual text result.">
+    Casual
   </message>
-  <message name="IDS_COMPOSE_MENU_2_OPTION_2" desc="The second option for the second style." translateable="false">
-  Formal
+  <message name="IDS_COMPOSE_MENU_FORMAL_OPTION" desc="Option title to request a more formal text result.">
+    Formal
   </message>
-  <message name="IDS_COMPOSE_UNDO" desc="Label for button that user clicks to undo to the last result." translateable="false">
-  Undo
+  <message name="IDS_COMPOSE_UNDO" desc="Label shown on hover and read by screen-readers for button that user clicks to undo to the last result.">
+    Undo
   </message>
-  <message name="IDS_COMPOSE_RESUBMIT" desc="Label for button that user clicks to resubmit input." translateable="false">
-  Resubmit
+  <message name="IDS_COMPOSE_RESUBMIT" desc="Label shown on hover and read by screen-readers for button that user clicks to resubmit input.">
+    Resubmit
+  </message>
+  <message name="IDS_COMPOSE_INSERT_BUTTON" desc="The button that inserts the result into the selected textfield.">
+    Insert
   </message>
 
   <!-- Errors -->
   <message name="IDS_COMPOSE_CONFIGURATION_ERROR" desc="The error text shown when Compose is not available due to an internal configuration error." translateable="false">
-  Configuration error. Try again later.
+    Configuration error. Try again later.
   </message>
   <message name="IDS_COMPOSE_ERROR_TOO_SHORT" desc="Error that the input was too short." translateable="false">
-  Input is too short. Cannot use Autofill.
+    This is too short. Write at least 3 words.
   </message>
   <message name="IDS_COMPOSE_ERROR_TOO_LONG" desc="Error that the input was too long." translateable="false">
-  Input is too long. Cannot use Autofill.
+    This is too long. Shorten and try again.
   </message>
   <message name="IDS_COMPOSE_ERROR_TRY_AGAIN" desc="Error indicating that the request should be tried again." translateable="false">
-  Something went wrong. Try again.
+    Something went wrong. Try again.
   </message>
   <message name="IDS_COMPOSE_ERROR_TRY_AGAIN_LATER" desc="Error indicating that the request should be tried again later." translateable="false">
-  Something went wrong. Try again later.
+    Something went wrong. Try again later.
   </message>
   <message name="IDS_COMPOSE_ERROR_REQUEST_NOT_SUCCESSFUL" desc="Error that the request was not able to be fulfilled." translateable="false">
-    Autofill does not work in this field. Try a different field.
+    Your request wasn't understood. Try a different request.
   </message>
   <message name="IDS_COMPOSE_ERROR_PERMISSION_DENIED" desc="Error that the request failed by denied permission." translateable="false">
-  Something went wrong. Are you signed in?
+    Something went wrong. Are you signed in?
   </message>
   <message name="IDS_COMPOSE_ERROR_GENERIC" desc="Error without further details." translateable="false">
-  Something went wrong.
+    Something went wrong.
   </message>
 
   <!-- Cross-dialog -->
@@ -126,6 +124,6 @@
 
   <!-- Miscellaneous -->
   <message name="IDS_COMPOSE_FEEDBACK_PLACEHOLDER" desc="Placeholder text for feedback text field" translateable="false">
-    Send feedback for Autofill
+    Send feedback for Help me write.
   </message>
 </grit-part>
