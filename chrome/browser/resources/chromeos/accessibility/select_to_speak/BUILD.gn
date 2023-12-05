@@ -30,6 +30,7 @@ select_to_speak_tsc_out_dir = "$tsc_out_dir/select_to_speak"
 ts_modules = [
   "select_to_speak/select_to_speak_main.ts",
   "select_to_speak/metrics_utils.ts",
+  "select_to_speak/select_to_speak_constants.ts",
 ]
 
 # JS files required for ts build.
@@ -62,6 +63,7 @@ run_jsbundler("select_to_speak_copied_files") {
   deps = [ ":ts_build" ]
   sources = [
     "$select_to_speak_tsc_out_dir/metrics_utils.js",
+    "$select_to_speak_tsc_out_dir/select_to_speak_constants.js",
     "$select_to_speak_tsc_out_dir/select_to_speak_main.js",
     "background.html",
     "checked.png",
@@ -70,7 +72,6 @@ run_jsbundler("select_to_speak_copied_files") {
     "prefs_manager.js",
     "select_to_speak-2x.svg",
     "select_to_speak.js",
-    "select_to_speak_constants.js",
     "sts-icon-128.png",
     "sts-icon-16.png",
     "sts-icon-48.png",

@@ -10,7 +10,7 @@
  */
 
 /** @type {!Object<{code: !Key.Code, name: !Key.Name}>} */
-const DATA = {
+export const KeyCodeData = {
   UNKNOWN: {code: 0, name: ''},
   POWER_BUTTON: {code: 0, name: 'Power button'},
   CANCEL: {code: 3, name: ''},
@@ -216,11 +216,11 @@ Key.Name;
 
 /** @type {!Object<string, Key.Code>} */
 export const KeyCode = Object.fromEntries(
-    Object.entries(DATA).map(([key, data]) => [key, data.code]));
+    Object.entries(KeyCodeData).map(([key, data]) => [key, data.code]));
 
 /** @type {!Object<string, Key.Name>} */
 export const KeyName = Object.fromEntries(
-    Object.entries(DATA).map(([key, data]) => [key, data.name]));
+    Object.entries(KeyCodeData).map(([key, data]) => [key, data.name]));
 
 /**
  * @param {!Key.Code} code
