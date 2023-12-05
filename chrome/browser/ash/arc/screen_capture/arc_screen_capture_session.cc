@@ -60,10 +60,12 @@ scoped_refptr<viz::RasterContextProvider> GetContextProvider() {
 
 // Holds ARC++ provided buffer to copy into.
 struct ArcScreenCaptureSession::PendingBuffer {
-  PendingBuffer(SetOutputBufferCallback callback, const gpu::Mailbox& mailbox)
-      : buffer_ready_callback_(std::move(callback)), mailbox_(mailbox) {}
+  PendingBuffer(SetOutputBufferCallback callback,
+                scoped_refptr<gpu::ClientSharedImage> shared_image)
+      : buffer_ready_callback_(std::move(callback)),
+        shared_image_(std::move(shared_image)) {}
   SetOutputBufferCallback buffer_ready_callback_;
-  const gpu::Mailbox mailbox_;
+  scoped_refptr<gpu::ClientSharedImage> shared_image_;
 };
 
 // Holds CopyOutputResult texture.
@@ -228,11 +230,11 @@ void ArcScreenCaptureSession::SetOutputBuffer(
       gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_GLES2,
       "ArcScreenCapture", std::move(handle));
   CHECK(client_shared_image);
-  gpu::Mailbox mailbox = client_shared_image->mailbox();
   ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
   std::unique_ptr<PendingBuffer> pending_buffer =
-      std::make_unique<PendingBuffer>(std::move(callback), mailbox);
+      std::make_unique<PendingBuffer>(std::move(callback),
+                                      std::move(client_shared_image));
   if (texture_queue_.empty()) {
     // Put our GPU buffer into a queue so it can be used on the next callback
     // where we get a desktop texture.
@@ -270,7 +272,8 @@ void ArcScreenCaptureSession::QueryCompleted(
   ri->DeleteQueriesEXT(1, &query_id);
 
   // Return resources for ARC++ buffer.
-  sii->DestroySharedImage(gpu::SyncToken(), pending_buffer->mailbox_);
+  sii->DestroySharedImage(gpu::SyncToken(),
+                          std::move(pending_buffer->shared_image_));
 }
 
 void ArcScreenCaptureSession::OnDesktopCaptured(
@@ -332,8 +335,9 @@ void ArcScreenCaptureSession::CopyDesktopTextureToGpuBuffer(
   uint32_t query_id;
   ri->GenQueriesEXT(1, &query_id);
   ri->BeginQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM, query_id);
-  ri->CopySharedImage(desktop_texture->mailbox_, pending_buffer->mailbox_,
-                      GL_TEXTURE_2D, 0, 0, 0, 0, size_.width(), size_.height(),
+  ri->CopySharedImage(desktop_texture->mailbox_,
+                      pending_buffer->shared_image_->mailbox(), GL_TEXTURE_2D,
+                      0, 0, 0, 0, size_.width(), size_.height(),
                       /*unpack_flip_y=*/false,
                       /*unpack_premultiply_alpha=*/false);
   ri->EndQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM);
