@@ -106,8 +106,8 @@ const CGFloat kSwitchTrailingPadding = 22;
       [_switchView.centerYAnchor
           constraintEqualToAnchor:self.contentView.centerYAnchor],
       [textLayoutGuide.trailingAnchor
-          constraintLessThanOrEqualToAnchor:_switchView.leadingAnchor
-                                   constant:-kTableViewHorizontalSpacing],
+          constraintEqualToAnchor:_switchView.leadingAnchor
+                         constant:-kTableViewHorizontalSpacing],
       [textLayoutGuide.centerYAnchor
           constraintEqualToAnchor:self.contentView.centerYAnchor],
 
@@ -126,8 +126,8 @@ const CGFloat kSwitchTrailingPadding = 22;
           constraintEqualToAnchor:self.contentView.bottomAnchor
                          constant:-kTableViewLargeVerticalSpacing],
       [textLayoutGuide.trailingAnchor
-          constraintLessThanOrEqualToAnchor:self.contentView.trailingAnchor
-                                   constant:-kTableViewHorizontalSpacing],
+          constraintEqualToAnchor:self.contentView.trailingAnchor
+                         constant:-kTableViewHorizontalSpacing],
     ];
 
     [NSLayoutConstraint activateConstraints:@[
