@@ -114,12 +114,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                  browser:(Browser*)browser {
   DCHECK(localOrSyncableBookmarkModel);
   DCHECK(localOrSyncableBookmarkModel->loaded());
-  if (base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
-    DCHECK(accountBookmarkModel);
-    DCHECK(accountBookmarkModel->loaded());
-  } else {
-    DCHECK(!accountBookmarkModel);
-  }
+  DCHECK(accountBookmarkModel);
+  DCHECK(accountBookmarkModel->loaded());
   DCHECK(parentFolder);
   if (folder) {
     BookmarkModel* modelForFolder = bookmark_utils_ios::GetBookmarkModelForNode(

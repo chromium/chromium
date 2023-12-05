@@ -171,9 +171,6 @@ bookmarks::BookmarkModel* GetBookmarkModelForNode(
 }
 
 bool IsAccountBookmarkStorageOptedIn(syncer::SyncService* sync_service) {
-  if (!base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
-    return false;
-  }
   if (sync_service->GetAccountInfo().IsEmpty()) {
     return false;
   }
@@ -409,19 +406,11 @@ MDCSnackbarMessage* DeleteBookmarksWithUndoToast(
   [wrapper stopGroupingActions];
   [wrapper resetUndoManagerChanged];
 
-  NSString* text = nil;
-  if (base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
-    text = base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
-        IDS_IOS_BOOKMARK_DELETED_BOOKMARKS, node_count));
-  } else if (node_count == 1) {
-    text = l10n_util::GetNSString(IDS_IOS_BOOKMARK_NEW_SINGLE_BOOKMARK_DELETE);
-  } else {
-    text =
-        l10n_util::GetNSStringF(IDS_IOS_BOOKMARK_NEW_MULTIPLE_BOOKMARK_DELETE,
-                                base::NumberToString16(node_count));
-  }
-  return CreateUndoToastWithWrapper(wrapper, text,
-                                    "MobileBookmarkManagerDeletedEntryUndone");
+  return CreateUndoToastWithWrapper(
+      wrapper,
+      l10n_util::GetPluralNSStringF(IDS_IOS_BOOKMARK_DELETED_BOOKMARKS,
+                                    node_count),
+      "MobileBookmarkManagerDeletedEntryUndone");
 }
 
 using BookmarkNodeVectorIterator = std::vector<const BookmarkNode*>::iterator;

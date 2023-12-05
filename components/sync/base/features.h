@@ -133,19 +133,11 @@ inline constexpr base::FeatureParam<base::TimeDelta>
 // Feature flag to replace all sync-related UI with sign-in ones.
 BASE_DECLARE_FEATURE(kReplaceSyncPromosWithSignInPromos);
 
-// This gates the legacy two-model approach used on iOS.
-// If enabled, there will be two different BookmarkModel instances per profile:
-// one instance for "profile" bookmarks and another instance for "account"
-// bookmarks. See https://crbug.com/1404250 for details.
-BASE_DECLARE_FEATURE(kEnableBookmarksAccountStorage);
-
-#if !BUILDFLAG(IS_IOS)
 // This gates the new single-model approach where account bookmarks are stored
 // in separate permanent folders in BookmarkModel. The flag has to be in the
 // sync namespace as it controls whether BOOKMARKS datatype is enabled in the
 // transport mode.
 BASE_DECLARE_FEATURE(kEnableBookmarkFoldersForAccountStorage);
-#endif  // !BUILDFLAG(IS_IOS)
 
 // Feature flag used for enabling sync (transport mode) for signed-in users that
 // haven't turned on full sync.

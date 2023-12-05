@@ -1143,9 +1143,6 @@ syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
           syncer::kSyncEnableWalletOfferInTransportMode)) {
     allowed_types.Put(syncer::AUTOFILL_WALLET_OFFER);
   }
-  if (base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
-    allowed_types.Put(syncer::BOOKMARKS);
-  }
   if (base::FeatureList::IsEnabled(
           password_manager::features::kEnablePasswordsAccountStorage)) {
     allowed_types.Put(syncer::PASSWORDS);

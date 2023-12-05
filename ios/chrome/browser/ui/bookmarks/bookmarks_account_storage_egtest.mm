@@ -32,18 +32,11 @@ using chrome_test_util::OmniboxText;
 using chrome_test_util::PrimarySignInButton;
 using chrome_test_util::SecondarySignInButton;
 
-// Bookmark promo integration tests for Chrome with
-// kEnableBookmarksAccountStorage enabled.
+// Bookmark promo integration tests.
 @interface BookmarksAccountStorageTestCase : WebHttpServerChromeTestCase
 @end
 
 @implementation BookmarksAccountStorageTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(syncer::kEnableBookmarksAccountStorage);
-  return config;
-}
 
 - (void)setUp {
   [super setUp];

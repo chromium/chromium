@@ -598,7 +598,12 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
   // Features to be enabled.
   switch (type) {
     case UserSelectableType::kBookmarks:
-      return base::FeatureList::IsEnabled(kEnableBookmarksAccountStorage);
+#if BUILDFLAG(IS_IOS)
+      return true;
+#else
+      return base::FeatureList::IsEnabled(
+          kEnableBookmarkFoldersForAccountStorage);
+#endif
     case UserSelectableType::kReadingList:
       return base::FeatureList::IsEnabled(
                  kReadingListEnableSyncTransportModeUponSignIn);

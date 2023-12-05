@@ -1018,19 +1018,6 @@ id<SystemIdentity> GetDisplayedIdentity(
   return self.dataTypeToWaitForInitialSync != syncer::ModelType::UNSPECIFIED;
 }
 
-- (void)optInBookmarkReadingListAccountStorage {
-  bool bookmarksAccountStorageEnabled =
-      base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage);
-  bool readingListTransportUponSignInEnabled = base::FeatureList::IsEnabled(
-      syncer::kReadingListEnableSyncTransportModeUponSignIn);
-  CHECK(bookmarksAccountStorageEnabled || readingListTransportUponSignInEnabled)
-      << "bookmarksAccountStorageEnabled: " << bookmarksAccountStorageEnabled
-      << ", readingListTransportUponSignInEnabled: "
-      << readingListTransportUponSignInEnabled;
-  _syncService->GetUserSettings()
-      ->SetBookmarksAndReadingListAccountStorageOptIn(true);
-}
-
 #pragma mark - ChromeAccountManagerServiceObserver
 
 - (void)identityListChanged {

@@ -300,7 +300,7 @@ TEST_F(SyncPrefsTest,
        DefaultSelectedTypesForAccountInTransportMode_SyncToSigninDisabled) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{kEnableBookmarksAccountStorage,
+      /*enabled_features=*/{kEnableBookmarkFoldersForAccountStorage,
                             kReadingListEnableSyncTransportModeUponSignIn,
                             password_manager::features::
                                 kEnablePasswordsAccountStorage,
@@ -340,8 +340,8 @@ TEST_F(SyncPrefsTest,
        DefaultSelectedTypesForAccountInTransportMode_SyncToSigninEnabled) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{kReplaceSyncPromosWithSignInPromos,
-                            kEnableBookmarksAccountStorage,
+      /*enabled_features=*/{kEnableBookmarkFoldersForAccountStorage,
+                            kReplaceSyncPromosWithSignInPromos,
                             kReadingListEnableSyncTransportModeUponSignIn,
                             password_manager::features::
                                 kEnablePasswordsAccountStorage,
@@ -676,7 +676,7 @@ class SyncPrefsMigrationTest : public testing::Test {
     // Enable various features that are required for data types to be supported
     // in transport mode.
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{kEnableBookmarksAccountStorage,
+        /*enabled_features=*/{kEnableBookmarkFoldersForAccountStorage,
                               kReadingListEnableSyncTransportModeUponSignIn,
                               password_manager::features::
                                   kEnablePasswordsAccountStorage,

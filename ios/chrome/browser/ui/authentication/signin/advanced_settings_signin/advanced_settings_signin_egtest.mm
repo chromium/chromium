@@ -82,11 +82,6 @@ void WaitForSettingDoneButton() {
   config.features_disabled.push_back(
       syncer::kReplaceSyncPromosWithSignInPromos);
 
-  if ([self isRunningTest:@selector
-            (testInterruptAdvancedSigninBookmarksFromAdvancedSigninSettings)]) {
-    // TODO(crbug.com/1455018): Re-enable the flag for non-legacy tests.
-    config.features_disabled.push_back(syncer::kEnableBookmarksAccountStorage);
-  }
   return config;
 }
 
@@ -369,29 +364,6 @@ void WaitForSettingDoneButton() {
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsSignInRowMatcher()];
   [ChromeEarlGreyUI waitForAppToIdle];
 
-  [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
-  [ChromeEarlGreyUI waitForAppToIdle];
-
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  const GURL expectedURL = self.testServer->GetURL("/echo");
-  [ChromeEarlGrey
-      simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:expectedURL];
-
-  [SigninEarlGrey verifySignedOut];
-}
-
-// Tests interrupting sign-in by opening an URL from another app.
-// Sign-in opened from: bookmark view.
-// Interrupted at: advanced sign-in.
-- (void)testInterruptAdvancedSigninBookmarksFromAdvancedSigninSettings {
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-
-  [ChromeEarlGreyUI openToolsMenu];
-  [ChromeEarlGreyUI
-      tapToolsMenuButton:chrome_test_util::BookmarksDestinationButton()];
-  [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
-      performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
 

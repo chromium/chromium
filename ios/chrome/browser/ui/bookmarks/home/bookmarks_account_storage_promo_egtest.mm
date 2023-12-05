@@ -35,8 +35,7 @@ using chrome_test_util::IdentityCellMatcherForEmail;
 using chrome_test_util::PrimarySignInButton;
 using chrome_test_util::SecondarySignInButton;
 
-// Bookmark promo integration tests for Chrome with
-// kEnableBookmarksAccountStorage enabled.
+// Bookmark promo integration tests.
 @interface BookmarksAccountStoragePromoTestCase : WebHttpServerChromeTestCase
 @end
 
@@ -44,7 +43,6 @@ using chrome_test_util::SecondarySignInButton;
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(syncer::kEnableBookmarksAccountStorage);
   if ([self isRunningTest:@selector
             (testPromoViewNotShownWhenSyncDataNotRemoved)]) {
     config.features_disabled.push_back(

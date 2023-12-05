@@ -22,20 +22,9 @@
 
 namespace {
 
-class BookmarksHomeViewControllerTest
-    : public BookmarkIOSUnitTestSupport,
-      public testing::WithParamInterface<bool> {
- protected:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(
-        syncer::kEnableBookmarksAccountStorage, IsAccountStorageEnabled());
-    BookmarkIOSUnitTestSupport::SetUp();
-  }
+using BookmarksHomeViewControllerTest = BookmarkIOSUnitTestSupport;
 
-  bool IsAccountStorageEnabled() const { return GetParam(); }
-};
-
-TEST_P(BookmarksHomeViewControllerTest,
+TEST_F(BookmarksHomeViewControllerTest,
        TableViewPopulatedAfterBookmarkModelLoaded) {
   @autoreleasepool {
     id mockSnackbarCommandHandler =
@@ -99,7 +88,7 @@ TEST_P(BookmarksHomeViewControllerTest,
   }
 }
 
-TEST_P(BookmarksHomeViewControllerTest,
+TEST_F(BookmarksHomeViewControllerTest,
        TableViewPopulatedAfterBookmarkModelLoadedAtRootLevel) {
   @autoreleasepool {
     id mockSnackbarCommandHandler =
@@ -172,7 +161,7 @@ TEST_P(BookmarksHomeViewControllerTest,
 }
 
 // Checks that metrics are correctly reported.
-TEST_P(BookmarksHomeViewControllerTest, Metrics) {
+TEST_F(BookmarksHomeViewControllerTest, Metrics) {
   @autoreleasepool {
     id mockSnackbarCommandHandler =
         OCMProtocolMock(@protocol(SnackbarCommands));
@@ -211,9 +200,5 @@ TEST_P(BookmarksHomeViewControllerTest, Metrics) {
     [controller shutdown];
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         BookmarksHomeViewControllerTest,
-                         ::testing::Bool());
 
 }  // namespace

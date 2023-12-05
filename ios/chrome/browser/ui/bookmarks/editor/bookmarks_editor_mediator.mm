@@ -61,12 +61,8 @@
   if (self) {
     DCHECK(localOrSyncableBookmarkModel);
     DCHECK(localOrSyncableBookmarkModel->loaded());
-    if (base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
-      DCHECK(accountBookmarkModel);
-      DCHECK(accountBookmarkModel->loaded());
-    } else {
-      DCHECK(!accountBookmarkModel);
-    }
+    DCHECK(accountBookmarkModel);
+    DCHECK(accountBookmarkModel->loaded());
     DCHECK(bookmarkNode);
     DCHECK(bookmarkNode->is_url()) << "Type: " << bookmarkNode->type();
     _localOrSyncableBookmarkModel = localOrSyncableBookmarkModel->AsWeakPtr();

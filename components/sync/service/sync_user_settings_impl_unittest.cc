@@ -154,8 +154,8 @@ TEST_F(SyncUserSettingsImplTest, GetSelectedTypesWhileSignedOut) {
 TEST_F(SyncUserSettingsImplTest, DefaultSelectedTypesWhileSignedIn) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{kReplaceSyncPromosWithSignInPromos,
-                            kEnableBookmarksAccountStorage,
+      /*enabled_features=*/{kEnableBookmarkFoldersForAccountStorage,
+                            kReplaceSyncPromosWithSignInPromos,
                             kReadingListEnableSyncTransportModeUponSignIn,
                             password_manager::features::
                                 kEnablePasswordsAccountStorage,

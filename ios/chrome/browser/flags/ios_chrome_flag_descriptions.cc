@@ -356,11 +356,6 @@ const char kEnableAutofillAddressSavePromptName[] =
 const char kEnableAutofillAddressSavePromptDescription[] =
     "Enable the Autofill address save prompts.";
 
-const char kEnableBookmarksAccountStorageName[] =
-    "Enable Bookmarks Account Storage";
-const char kEnableBookmarksAccountStorageDescription[] =
-    "Enable bookmarks account storage and related UI features.";
-
 const char kEnableCompromisedPasswordsMutingName[] =
     "Enable the muting of compromised passwords in the Password Manager";
 const char kEnableCompromisedPasswordsMutingDescription[] =

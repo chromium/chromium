@@ -251,13 +251,11 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
             ->AsWeakPtr();
     _localOrSyncableBookmarkModelBridge = std::make_unique<BookmarkModelBridge>(
         self, _localOrSyncableBookmarkModel.get());
-    if (base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
-      _accountBookmarkModel =
-          ios::AccountBookmarkModelFactory::GetForBrowserState(_browserState)
-              ->AsWeakPtr();
-      _accountBookmarkModelBridge = std::make_unique<BookmarkModelBridge>(
-          self, _accountBookmarkModel.get());
-    }
+    _accountBookmarkModel =
+        ios::AccountBookmarkModelFactory::GetForBrowserState(_browserState)
+            ->AsWeakPtr();
+    _accountBookmarkModelBridge = std::make_unique<BookmarkModelBridge>(
+        self, _accountBookmarkModel.get());
   }
   return self;
 }

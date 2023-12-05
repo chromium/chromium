@@ -112,13 +112,6 @@ base::FilePath GetStorageFilePath(const base::FilePath& profile_path,
   }
 }
 
-// Synchronously deletes the account storage file. Should be invoked on a
-// background thread.
-void DeleteAccountStorageFileSynchronously(
-    const base::FilePath& account_storage_file_path) {
-  base::DeleteFile(account_storage_file_path);
-}
-
 }  // namespace
 
 // BookmarkModel --------------------------------------------------------------
@@ -1048,20 +1041,6 @@ std::vector<TitledUrlMatch> BookmarkModel::GetBookmarksMatching(
 void BookmarkModel::ClearStore() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   store_.reset();
-}
-
-// static
-void BookmarkModel::WipeAccountStorageForRollback(
-    const base::FilePath& profile_path) {
-  CHECK(base::FeatureList::IsEnabled(
-      bookmarks::kRollbackBookmarksAccountStorage));
-
-  base::FilePath account_storage_path =
-      GetStorageFilePath(profile_path, StorageType::kAccount);
-  base::ThreadPool::PostTask(
-      FROM_HERE, base::MayBlock(),
-      base::BindOnce(&DeleteAccountStorageFileSynchronously,
-                     std::move(account_storage_path)));
 }
 
 void BookmarkModel::LoadEmptyForTest() {

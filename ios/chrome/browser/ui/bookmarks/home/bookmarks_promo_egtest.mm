@@ -59,17 +59,12 @@ using chrome_test_util::SecondarySignInButton;
         "string></array></dict>");
   } else if ([self isRunningTest:@selector
                    (testSigninOnlyPromoWithoutAccount_NoSnackbar)]) {
-    config.features_enabled.push_back(syncer::kEnableBookmarksAccountStorage);
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   } else if ([self isRunningTest:@selector
                    (testSigninOnlyPromoWithoutAccount_WithSnackbar)]) {
-    config.features_enabled.push_back(syncer::kEnableBookmarksAccountStorage);
     config.features_disabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
-  } else if ([self isRunningTest:@selector(testSigninOnlyPromoWithAccount)] ||
-             [self isRunningTest:@selector(testPromoViewBody)]) {
-    config.features_enabled.push_back(syncer::kEnableBookmarksAccountStorage);
   } else if ([self isRunningTest:@selector
                    (testSyncPromoIfSyncToSigninDisabled)]) {
     config.features_disabled.push_back(
@@ -245,7 +240,6 @@ using chrome_test_util::SecondarySignInButton;
 // Tests that users with a device-level account see a promo whose primary
 // button a) signs in, b) hides the promo, c) shows a snackbar with an 'Undo'
 // button that signs-out the user when tapped.
-// kEnableBookmarksAccountStorage is enabled.
 - (void)testSigninOnlyPromoWithAccount {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
@@ -281,8 +275,7 @@ using chrome_test_util::SecondarySignInButton;
 // Tests that users with no device-level account see a promo that leads to an
 // SSO Auth flow on tap. Concluding the auth successfully hides the promo and
 // shows a snackbar with an 'Undo' button that signs-out the user when tapped.
-// kEnableBookmarksAccountStorage is enabled, kReplaceSyncPromosWithSignInPromos
-// is disabled.
+// kReplaceSyncPromosWithSignInPromos is disabled.
 - (void)testSigninOnlyPromoWithoutAccount_WithSnackbar {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
@@ -325,8 +318,7 @@ using chrome_test_util::SecondarySignInButton;
 
 // Tests that users with no device-level account see a promo that leads to an
 // SSO Auth flow on tap. Concluding the auth successfully hides the promo.
-// kEnableBookmarksAccountStorage and kReplaceSyncPromosWithSignInPromos are
-// enabled.
+// kReplaceSyncPromosWithSignInPromos is enabled.
 - (void)testSigninOnlyPromoWithoutAccount_NoSnackbar {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];

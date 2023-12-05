@@ -122,7 +122,6 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(syncer::kEnableBookmarksAccountStorage);
   config.features_enabled.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
   return config;
 }

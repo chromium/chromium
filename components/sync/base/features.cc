@@ -141,20 +141,9 @@ BASE_FEATURE(kReplaceSyncPromosWithSignInPromos,
 #endif
 );
 
-BASE_FEATURE(kEnableBookmarksAccountStorage,
-             "EnableBookmarksAccountStorage",
-#if BUILDFLAG(IS_IOS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_IOS)
-);
-
-#if !BUILDFLAG(IS_IOS)
 BASE_FEATURE(kEnableBookmarkFoldersForAccountStorage,
              "EnableBookmarkFoldersForAccountStorage",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // !BUILDFLAG(IS_IOS)
 
 BASE_FEATURE(kReadingListEnableSyncTransportModeUponSignIn,
              "ReadingListEnableSyncTransportModeUponSignIn",

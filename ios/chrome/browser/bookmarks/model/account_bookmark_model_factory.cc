@@ -33,18 +33,6 @@ namespace {
 std::unique_ptr<KeyedService> BuildBookmarkModel(web::BrowserState* context) {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
-  if (!base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
-    if (base::FeatureList::IsEnabled(
-            bookmarks::kRollbackBookmarksAccountStorage)) {
-      // Try deleting the file that was used by the account storage. This is a
-      // no-op if the file doesn't exist. Guarded by
-      // `kRollbackBookmarksAccountStorage` to minimize the performance impact.
-      bookmarks::BookmarkModel::WipeAccountStorageForRollback(
-          browser_state->GetStatePath());
-    }
-
-    return nullptr;
-  }
   // Using nullptr for `ManagedBookmarkService`, since managed bookmarks affect
   // only the local bookmark storage.
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model(

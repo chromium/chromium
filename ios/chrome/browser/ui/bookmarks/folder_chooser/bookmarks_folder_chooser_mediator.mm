@@ -56,12 +56,8 @@ using bookmarks::BookmarkNode;
                              syncService:(syncer::SyncService*)syncService {
   DCHECK(localOrSyncableBookmarkModel);
   DCHECK(localOrSyncableBookmarkModel->loaded());
-  if (base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
-    DCHECK(accountBookmarkModel);
-    DCHECK(accountBookmarkModel->loaded());
-  } else {
-    DCHECK(!accountBookmarkModel);
-  }
+  DCHECK(accountBookmarkModel);
+  DCHECK(accountBookmarkModel->loaded());
   DCHECK(authService->initialized());
 
   self = [super init];

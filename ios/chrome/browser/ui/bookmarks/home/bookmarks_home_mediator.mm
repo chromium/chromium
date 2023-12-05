@@ -135,9 +135,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 
     _browser = browser->AsWeakPtr();
     _localOrSyncableBookmarkModel = localOrSyncableBookmarkModel->AsWeakPtr();
-    if (base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
-      _accountBookmarkModel = accountBookmarkModel->AsWeakPtr();
-    }
+    _accountBookmarkModel = accountBookmarkModel->AsWeakPtr();
     _displayedNode = displayedNode;
   }
   return self;
@@ -150,10 +148,8 @@ bool IsABookmarkNodeSectionForIdentifier(
   ChromeBrowserState* browserState = [self originalBrowserState];
   _localOrSyncableBookmarkModelBridge = std::make_unique<BookmarkModelBridge>(
       self, _localOrSyncableBookmarkModel.get());
-  if (base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
     _accountBookmarkModelBridge = std::make_unique<BookmarkModelBridge>(
         self, _accountBookmarkModel.get());
-  }
   _syncedBookmarksObserver =
       std::make_unique<sync_bookmarks::SyncedBookmarksObserverBridge>(
           self, browserState);
@@ -411,9 +407,7 @@ bool IsABookmarkNodeSectionForIdentifier(
             initWithType:BookmarksHomeItemTypePromo];
     signinPromoItem.configurator = [signinPromoViewMediator createConfigurator];
     signinPromoItem.text =
-        base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)
-            ? l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_BOOKMARKS)
-            : l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_BOOKMARKS_WITH_UNITY);
+        l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_BOOKMARKS);
     signinPromoItem.delegate = signinPromoViewMediator;
     [signinPromoViewMediator signinPromoViewIsVisible];
 

@@ -263,11 +263,6 @@ extern const char kDynamicBackgroundColorDescription[];
 extern const char kDynamicThemeColorName[];
 extern const char kDynamicThemeColorDescription[];
 
-// Title and description for the flag to enable the bookmarks account storage
-// and related UI features.
-extern const char kEnableBookmarksAccountStorageName[];
-extern const char kEnableBookmarksAccountStorageDescription[];
-
 // Title and description for the flag to enable the muting of compromised
 // passwords in the Password Manager.
 extern const char kEnableCompromisedPasswordsMutingName[];
