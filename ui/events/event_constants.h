@@ -124,6 +124,12 @@ enum EventResult {
   ER_FORCE_PROCESS_GESTURE =
       1 << 3,  // The event should be processed by gesture recognizer even if
                // ER_HANDLED or ER_CONSUMED is set.
+  ER_SKIPPED =
+      1 << 4,  // The event has been been handled, and it should not be
+               // propagated to other handlers but the dispatchers may decide to
+               // handle the event themselves. A handler should set the result
+               // to this if it wishes to stop the event from propagating
+               // further but does not take any action other than stopping it.
 };
 
 // Phase of the event dispatch.

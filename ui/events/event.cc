@@ -294,6 +294,11 @@ void Event::SetHandled() {
   result_ = static_cast<EventResult>(result_ | ER_HANDLED);
 }
 
+void Event::SetSkipped() {
+  CHECK(cancelable_);
+  result_ = static_cast<EventResult>(result_ | ER_CONSUMED | ER_SKIPPED);
+}
+
 std::string Event::ToString() const {
   return base::StrCat(
       {GetName(), " time_stamp ",

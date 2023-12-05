@@ -910,10 +910,15 @@ bool WaylandWindow::IsScreenCoordinatesEnabled() const {
 
 uint32_t WaylandWindow::DispatchEventToDelegate(
     const PlatformEvent& native_event) {
-  bool handled = DispatchEventFromNativeUiEvent(
+  EventResult result = DispatchEventFromNativeUiEvent(
       native_event, base::BindOnce(&PlatformWindowDelegate::DispatchEvent,
                                    base::Unretained(delegate_)));
-  return handled ? POST_DISPATCH_STOP_PROPAGATION : POST_DISPATCH_NONE;
+  if (result == ER_UNHANDLED) {
+    return POST_DISPATCH_NONE;
+  }
+
+  return !!(result & ER_SKIPPED) ? POST_DISPATCH_PERFORM_DEFAULT
+                                 : POST_DISPATCH_STOP_PROPAGATION;
 }
 
 std::unique_ptr<WaylandSurface> WaylandWindow::TakeWaylandSurface() {

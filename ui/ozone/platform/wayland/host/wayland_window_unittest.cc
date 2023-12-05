@@ -18,6 +18,7 @@
 
 #include "base/environment.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/nix/xdg_util.h"
 #include "base/run_loop.h"
@@ -167,6 +168,33 @@ scoped_refptr<PlatformCursor> AsPlatformCursor(
   return bitmap_cursor;
 #endif
 }
+
+using DispatchEventCallback = base::OnceCallback<void(Event*)>;
+
+class TestWaylandWindowDelegate : public PlatformWindowDelegate {
+ public:
+  void SetDispatchEventCallback(DispatchEventCallback callback) {
+    callback_ = std::move(callback);
+  }
+
+  // ui::PlatformWindowDelegate implementation.
+  void OnBoundsChanged(const BoundsChange& change) override {}
+  void OnDamageRect(const gfx::Rect& damaged_region) override {}
+  void OnCloseRequest() override {}
+  void OnClosed() override {}
+  void OnWindowStateChanged(ui::PlatformWindowState old_state,
+                            ui::PlatformWindowState new_state) override {}
+  void OnLostCapture() override {}
+  void OnAcceleratedWidgetAvailable(gfx::AcceleratedWidget widget) override {}
+  void OnWillDestroyAcceleratedWidget() override {}
+  void OnAcceleratedWidgetDestroyed() override {}
+  void OnActivationChanged(bool active) override {}
+  void OnMouseEnter() override {}
+  void DispatchEvent(Event* event) override { std::move(callback_).Run(event); }
+
+ private:
+  DispatchEventCallback callback_;
+};
 
 }  // namespace
 
@@ -1707,6 +1735,35 @@ TEST_P(WaylandWindowTest, DispatchEvent) {
   EXPECT_EQ(mouse_event->button_flags(), test_mouse_event_.button_flags());
   EXPECT_EQ(mouse_event->changed_button_flags(),
             test_mouse_event_.changed_button_flags());
+}
+
+TEST_P(WaylandWindowTest, DispatchEventResult) {
+  // Create an arbitrary wayland window with a test delegate.
+  TestWaylandWindowDelegate window_delegate;
+  PlatformWindowInitProperties properties(gfx::Rect(10, 10));
+  auto window = WaylandWindow::Create(&window_delegate, connection_.get(),
+                                      std::move(properties));
+
+  KeyEvent event_1(ET_KEY_PRESSED, VKEY_0, 0);
+  window_delegate.SetDispatchEventCallback(
+      base::BindOnce([](Event* event) { event->SetSkipped(); }));
+  EXPECT_EQ(window->DispatchEvent(&event_1), POST_DISPATCH_PERFORM_DEFAULT);
+
+  KeyEvent event_2(ET_KEY_PRESSED, VKEY_0, 0);
+  window_delegate.SetDispatchEventCallback(
+      base::BindOnce([](Event* event) { event->StopPropagation(); }));
+  EXPECT_EQ(window->DispatchEvent(&event_2), POST_DISPATCH_STOP_PROPAGATION);
+
+  KeyEvent event_3(ET_KEY_PRESSED, VKEY_0, 0);
+  window_delegate.SetDispatchEventCallback(
+      base::BindOnce([](Event* event) { event->SetHandled(); }));
+  EXPECT_EQ(window->DispatchEvent(&event_3), POST_DISPATCH_STOP_PROPAGATION);
+
+  KeyEvent event_4(ET_KEY_PRESSED, VKEY_0, 0);
+  window_delegate.SetDispatchEventCallback(base::BindOnce([](Event* event) {
+    // Do nothing.
+  }));
+  EXPECT_EQ(window->DispatchEvent(&event_4), POST_DISPATCH_NONE);
 }
 
 TEST_P(WaylandWindowTest, ConfigureEvent) {

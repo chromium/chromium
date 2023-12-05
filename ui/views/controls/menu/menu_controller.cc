@@ -1396,7 +1396,7 @@ ui::PostDispatchAction MenuController::OnWillDispatchKeyEvent(
         kKeysThatDontPropagate.end())
       return ui::POST_DISPATCH_PERFORM_DEFAULT;
   }
-  event->StopPropagation();
+  event->SetSkipped();
   return ui::POST_DISPATCH_NONE;
 }
 
