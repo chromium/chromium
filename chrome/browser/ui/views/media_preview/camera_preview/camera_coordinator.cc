@@ -22,7 +22,7 @@ CameraCoordinator::CameraCoordinator(views::View& parent_view,
   camera_view_tracker_.SetView(camera_view);
   // Safe to use base::Unretained() because `this` owns / outlives
   // `camera_view_tracker_`.
-  camera_view_tracker_.SetOnViewIsDeletingCallback(base::BindOnce(
+  camera_view_tracker_.SetIsDeletingCallback(base::BindOnce(
       &CameraCoordinator::ResetViewController, base::Unretained(this)));
 
   // Safe to use base::Unretained() because `this` owns / outlives

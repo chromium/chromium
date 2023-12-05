@@ -38,7 +38,7 @@ MicCoordinator::MicCoordinator(views::View& parent_view, bool needs_borders)
   mic_view_tracker_.SetView(mic_view);
   // Safe to use base::Unretained() because `this` owns / outlives
   // `camera_view_tracker_`.
-  mic_view_tracker_.SetOnViewIsDeletingCallback(base::BindOnce(
+  mic_view_tracker_.SetIsDeletingCallback(base::BindOnce(
       &MicCoordinator::ResetViewController, base::Unretained(this)));
 
   // Safe to use base::Unretained() because `this` owns / outlives
