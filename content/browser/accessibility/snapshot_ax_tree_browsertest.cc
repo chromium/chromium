@@ -601,4 +601,58 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest, Metadata) {
           "<script type=\"application/ld+json\">{}</script>"));
 }
 
+// For Android, test the field trial param to change the number of max nodes.
+#if BUILDFLAG(IS_ANDROID)
+class SnapshotAXTreeMaxNodesParamBrowserTest : public ContentBrowserTest {
+ public:
+  SnapshotAXTreeMaxNodesParamBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kAccessibilitySnapshotStressTests,
+        {{"AccessibilitySnapshotStressTestsMaxNodes", "500"}});
+  }
+  ~SnapshotAXTreeMaxNodesParamBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SnapshotAXTreeMaxNodesParamBrowserTest, MaxNodes) {
+  GURL url(R"HTML(data:text/html,<body>
+                  <style> p { margin: 50px; } </style>
+                  <script>
+                    let outerDiv = document.createElement('div');
+                    for (let i = 0; i < 200; i++) {
+                      let div = document.createElement('div');
+                      for (let j = 0; j < 20; j++) {
+                        let p = document.createElement('p');
+                        p.innerHTML = j;
+                        div.appendChild(p);
+                      }
+                      outerDiv.appendChild(div);
+                    }
+                    document.body.appendChild(outerDiv);
+                  </script>
+                  </body>)HTML");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  AXTreeSnapshotWaiter waiter;
+  web_contents->RequestAXTreeSnapshot(
+      base::BindOnce(&AXTreeSnapshotWaiter::ReceiveSnapshot,
+                     base::Unretained(&waiter)),
+      ui::kAXModeComplete,
+      /* max_nodes= */ 10,
+      /* timeout= */ {});
+  waiter.Wait();
+
+  // If the feature flag and param was honored, we should see more than 100
+  // nodes (which was the value set on the method call), but less than all the
+  // possible nodes.
+  EXPECT_GT(waiter.snapshot().nodes.size(), 100U);
+  EXPECT_LT(waiter.snapshot().nodes.size(), 800U);
+}
+
+#endif
 }  // namespace content

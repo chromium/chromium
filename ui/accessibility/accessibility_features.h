@@ -7,6 +7,7 @@
 #define UI_ACCESSIBILITY_ACCESSIBILITY_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/accessibility/ax_base_export.h"
@@ -189,6 +190,13 @@ AX_BASE_EXPORT bool IsAccessibilityPerformanceFilteringEnabled();
 // AXTreeSnapshotter's Snapshot method, and track related histograms.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilitySnapshotStressTests);
 AX_BASE_EXPORT bool IsAccessibilitySnapshotStressTestsEnabled();
+// Controls the maximum amount of nodes in a given snapshot. We set an
+// arbitrarily high value as the default to simulate there being no max nodes
+// limit.
+AX_BASE_EXPORT const base::FeatureParam<int>
+    kAccessibilitySnapshotStressTestsMaxNodes{
+        &kAccessibilitySnapshotStressTests,
+        "AccessibilitySnapshotStressTestsMaxNodes", 100000};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
