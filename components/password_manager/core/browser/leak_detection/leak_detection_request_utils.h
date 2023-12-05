@@ -19,7 +19,8 @@ enum class LeakDetectionInitiator {
   kSignInCheck = 0,
   kBulkSyncedPasswordsCheck = 1,
   kEditCheck = 2,
-  kMaxValue = kEditCheck,
+  kIGABulkSyncedPasswordsCheck = 3,
+  kMaxValue = kIGABulkSyncedPasswordsCheck,
 };
 
 // Contains the payload for analysing one credential against the leaks.

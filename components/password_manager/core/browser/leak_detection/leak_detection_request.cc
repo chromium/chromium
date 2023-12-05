@@ -60,6 +60,10 @@ google::internal::identity::passwords::leak::check::v1::
       return google::internal::identity::passwords::leak::check::v1::
           LookupSingleLeakRequest::ClientUseCase::
               LookupSingleLeakRequest_ClientUseCase_CHROME_EDIT_CHECK;
+    case LeakDetectionInitiator::kIGABulkSyncedPasswordsCheck:
+      return google::internal::identity::passwords::leak::check::v1::
+          LookupSingleLeakRequest::ClientUseCase::
+              LookupSingleLeakRequest_ClientUseCase_IGA_BULK_SYNCED_PASSWORDS_CHECK;
   }
   NOTREACHED_NORETURN();
 }
