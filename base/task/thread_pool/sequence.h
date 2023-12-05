@@ -36,7 +36,7 @@ namespace internal {
 // architecture: Sequence -> Task -> TaskRunner -> Sequence -> ...
 // This is okay so long as the other owners of Sequence (PriorityQueue and
 // WorkerThread in alternation and
-// ThreadGroupImpl::WorkerThreadDelegateImpl::GetWork()
+// ThreadGroup::WorkerThreadDelegateImpl::GetWork()
 // temporarily) keep running it (and taking Tasks from it as a result). A
 // dangling reference cycle would only occur should they release their reference
 // to it while it's not empty. In other words, it is only correct for them to

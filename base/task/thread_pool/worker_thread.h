@@ -62,7 +62,7 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
 
     // Returns the ThreadLabel the Delegate wants its WorkerThreads' stacks
     // to be labeled with.
-    virtual ThreadLabel GetThreadLabel() const = 0;
+    virtual ThreadLabel GetThreadLabel() const;
 
     // Called by |worker|'s thread when it enters its main function.
     virtual void OnMainEntry(WorkerThread* worker) = 0;

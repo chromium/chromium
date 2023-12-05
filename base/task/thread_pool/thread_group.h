@@ -6,15 +6,19 @@
 #define BASE_TASK_THREAD_POOL_THREAD_GROUP_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_piece.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/thread_pool/priority_queue.h"
 #include "base/task/thread_pool/task.h"
 #include "base/task/thread_pool/task_source.h"
 #include "base/task/thread_pool/tracked_ref.h"
+#include "base/task/thread_pool/worker_thread.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -23,6 +27,9 @@
 #endif
 
 namespace base {
+
+class WorkerThreadObserver;
+
 namespace internal {
 
 class TaskTracker;
@@ -30,6 +37,8 @@ class TaskTracker;
 // Interface and base implementation for a thread group. A thread group is a
 // subset of the threads in the thread pool (see GetThreadGroupForTraits() for
 // thread group selection logic when posting tasks and creating task runners).
+//
+// This class is thread-safe.
 class BASE_EXPORT ThreadGroup {
  public:
   // Delegate interface for ThreadGroup.
@@ -110,7 +119,7 @@ class BASE_EXPORT ThreadGroup {
   // in this ThreadGroup.
   //
   // TODO(fdoray): Remove this method. https://crbug.com/687264
-  virtual size_t GetMaxConcurrentNonBlockedTasksDeprecated() const = 0;
+  virtual size_t GetMaxConcurrentNonBlockedTasksDeprecated() const;
 
   // Wakes up workers as appropriate for the new CanRunPolicy policy. Must be
   // called after an update to CanRunPolicy in TaskTracker.
@@ -122,7 +131,28 @@ class BASE_EXPORT ThreadGroup {
   // code to check whether it's inside a ThreadPool task.
   static bool CurrentThreadHasGroup();
 
+  // Returns |max_tasks_|/|max_best_effort_tasks_|.
+  size_t GetMaxTasksForTesting() const;
+  size_t GetMaxBestEffortTasksForTesting() const;
+
+  class ThreadGroupWorkerDelegate;
+
  protected:
+  ThreadGroup(StringPiece histogram_label,
+              StringPiece thread_group_label,
+              ThreadType thread_type_hint,
+              TrackedRef<TaskTracker> task_tracker,
+              TrackedRef<Delegate> delegate);
+
+  void Start(size_t max_tasks,
+             size_t max_best_effort_tasks,
+             TimeDelta suggested_reclaim_time,
+             scoped_refptr<SingleThreadTaskRunner> service_thread_task_runner,
+             WorkerThreadObserver* worker_thread_observer,
+             WorkerEnvironment worker_environment,
+             absl::optional<TimeDelta> may_block_threshold =
+                 absl::optional<TimeDelta>());
+
   // Derived classes must implement a ScopedCommandsExecutor that derives from
   // this to perform operations at the end of a scope, when all locks have been
   // released.
@@ -131,16 +161,19 @@ class BASE_EXPORT ThreadGroup {
     BaseScopedCommandsExecutor(const BaseScopedCommandsExecutor&) = delete;
     BaseScopedCommandsExecutor& operator=(const BaseScopedCommandsExecutor&) =
         delete;
+    virtual ~BaseScopedCommandsExecutor();
 
     void ScheduleReleaseTaskSource(RegisteredTaskSource task_source);
 
+    virtual void FlushWorkerCreation(CheckedLock* lock) = 0;
+
    protected:
     BaseScopedCommandsExecutor();
-    ~BaseScopedCommandsExecutor();
 
    private:
     std::vector<RegisteredTaskSource> task_sources_to_release_;
   };
+  virtual std::unique_ptr<BaseScopedCommandsExecutor> GetExecutor() = 0;
 
   // Allows a task source to be pushed to a ThreadGroup's PriorityQueue at the
   // end of a scope, when all locks have been released.
@@ -175,8 +208,6 @@ class BASE_EXPORT ThreadGroup {
 
   const TrackedRef<TaskTracker> task_tracker_;
   const TrackedRef<Delegate> delegate_;
-
-  void Start();
 
   // Returns the number of workers required of workers to run all queued
   // BEST_EFFORT task sources allowed to run by the current CanRunPolicy.
@@ -217,6 +248,114 @@ class BASE_EXPORT ThreadGroup {
       BaseScopedCommandsExecutor* executor,
       RegisteredTaskSourceAndTransaction transaction_with_task_source);
 
+  // Returns the desired number of awake workers, given current workload and
+  // concurrency limits.
+  size_t GetDesiredNumAwakeWorkersLockRequired() const
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  // Examines the list of WorkerThreads and increments |max_tasks_| for each
+  // worker that has been within the scope of a MAY_BLOCK ScopedBlockingCall for
+  // more than BlockedThreshold(). Reschedules a call if necessary.
+  virtual void AdjustMaxTasks() = 0;
+
+  // Schedules AdjustMaxTasks() through |executor| if required.
+  virtual void MaybeScheduleAdjustMaxTasksLockRequired(
+      BaseScopedCommandsExecutor* executor) EXCLUSIVE_LOCKS_REQUIRED(lock_) = 0;
+
+  // Returns the threshold after which the max tasks is increased to compensate
+  // for a worker that is within a MAY_BLOCK ScopedBlockingCall.
+  TimeDelta may_block_threshold_for_testing() const {
+    return after_start().may_block_threshold;
+  }
+
+  // Interval at which the service thread checks for workers in this thread
+  // group that have been in a MAY_BLOCK ScopedBlockingCall for more than
+  // may_block_threshold().
+  TimeDelta blocked_workers_poll_period_for_testing() const {
+    return after_start().blocked_workers_poll_period;
+  }
+
+  // Starts calling AdjustMaxTasks() periodically on
+  // |service_thread_task_runner_|.
+  void ScheduleAdjustMaxTasks();
+
+  // Returns true if AdjustMaxTasks() should periodically be called on
+  // |service_thread_task_runner_|.
+  bool ShouldPeriodicallyAdjustMaxTasksLockRequired()
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  // Updates the minimum priority allowed to run below which tasks should yield.
+  // This should be called whenever |num_running_tasks_| or |max_tasks| changes,
+  // or when a new task is added to |priority_queue_|.
+  void UpdateMinAllowedPriorityLockRequired() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  // Increments/decrements the number of tasks of |priority| that are currently
+  // running in this thread group. Must be invoked before/after running a task.
+  void DecrementTasksRunningLockRequired(TaskPriority priority)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void IncrementTasksRunningLockRequired(TaskPriority priority)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  // Increments/decrements the number of [best effort] tasks that can run in
+  // this thread group.
+  void DecrementMaxTasksLockRequired() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void IncrementMaxTasksLockRequired() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void DecrementMaxBestEffortTasksLockRequired()
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void IncrementMaxBestEffortTasksLockRequired()
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  // Values set at Start() and never modified afterwards.
+  struct InitializedInStart {
+    InitializedInStart();
+    ~InitializedInStart();
+
+#if DCHECK_IS_ON()
+    // Set after all members of this struct are set.
+    bool initialized = false;
+#endif
+
+    // Initial value of |max_tasks_|.
+    size_t initial_max_tasks = 0;
+
+    // Suggested reclaim time for workers.
+    TimeDelta suggested_reclaim_time;
+    bool no_worker_reclaim = false;
+
+    // Environment to be initialized per worker.
+    WorkerEnvironment worker_environment = WorkerEnvironment::NONE;
+
+    scoped_refptr<SingleThreadTaskRunner> service_thread_task_runner;
+
+    // Optional observer notified when a worker enters and exits its main.
+    raw_ptr<WorkerThreadObserver> worker_thread_observer = nullptr;
+
+    // Threshold after which the max tasks is increased to compensate for a
+    // worker that is within a MAY_BLOCK ScopedBlockingCall.
+    TimeDelta may_block_threshold;
+
+    // The period between calls to AdjustMaxTasks() when the thread group is at
+    // capacity.
+    TimeDelta blocked_workers_poll_period;
+
+    // Whether EnsureEnoughWorkersLockRequired() should be called at the end of
+    // GetWork() instead of at the beginning.
+    bool ensure_enough_workers_at_end_of_get_work = false;
+  } initialized_in_start_;
+
+  InitializedInStart& in_start() {
+#if DCHECK_IS_ON()
+    DCHECK(!initialized_in_start_.initialized);
+#endif
+    return initialized_in_start_;
+  }
+  const InitializedInStart& after_start() const {
+#if DCHECK_IS_ON()
+    DCHECK(initialized_in_start_.initialized);
+#endif
+    return initialized_in_start_;
+  }
+
   // Synchronizes accesses to all members of this class which are neither const,
   // atomic, nor immutable after start. Since this lock is a bottleneck to post
   // and schedule work, only simple data structure manipulations are allowed
@@ -252,6 +391,66 @@ class BASE_EXPORT ThreadGroup {
   // all task sources should be scheduled on |replacement_thread_group_|. Used
   // to support the UseNativeThreadPool experiment.
   raw_ptr<ThreadGroup> replacement_thread_group_ = nullptr;
+
+  const std::string histogram_label_;
+  const std::string thread_group_label_;
+  const ThreadType thread_type_hint_;
+
+  // All workers owned by this thread group.
+  size_t worker_sequence_num_ GUARDED_BY(lock_) = 0;
+
+  bool shutdown_started_ GUARDED_BY(lock_) = false;
+
+  // Maximum number of tasks of any priority / BEST_EFFORT priority that can run
+  // concurrently in this thread group.
+  size_t max_tasks_ GUARDED_BY(lock_) = 0;
+  size_t max_best_effort_tasks_ GUARDED_BY(lock_) = 0;
+
+  // Number of tasks of any priority / BEST_EFFORT priority that are currently
+  // running in this thread group.
+  size_t num_running_tasks_ GUARDED_BY(lock_) = 0;
+  size_t num_running_best_effort_tasks_ GUARDED_BY(lock_) = 0;
+
+  // Number of workers running a task of any priority / BEST_EFFORT priority
+  // that are within the scope of a MAY_BLOCK ScopedBlockingCall but haven't
+  // caused a max tasks increase yet.
+  int num_unresolved_may_block_ GUARDED_BY(lock_) = 0;
+  int num_unresolved_best_effort_may_block_ GUARDED_BY(lock_) = 0;
+
+  // Signaled when a worker is added to the idle workers set.
+  std::unique_ptr<ConditionVariable> idle_workers_set_cv_for_testing_
+      GUARDED_BY(lock_);
+
+  // Whether an AdjustMaxTasks() task was posted to the service thread.
+  bool adjust_max_tasks_posted_ GUARDED_BY(lock_) = false;
+
+  // Indicates to the delegates that workers are not permitted to cleanup.
+  bool worker_cleanup_disallowed_for_testing_ GUARDED_BY(lock_) = false;
+
+  // Counts the number of workers cleaned up (went through
+  // WorkerThreadDelegateImpl::OnMainExit()) since the last call to
+  // WaitForWorkersCleanedUpForTesting() (or Start() if that wasn't called yet).
+  // |some_workers_cleaned_up_for_testing_| is true if this was ever
+  // incremented. Tests with a custom |suggested_reclaim_time_| can wait on a
+  // specific number of workers being cleaned up via
+  // WaitForWorkersCleanedUpForTesting().
+  size_t num_workers_cleaned_up_for_testing_ GUARDED_BY(lock_) = 0;
+#if DCHECK_IS_ON()
+  bool some_workers_cleaned_up_for_testing_ GUARDED_BY(lock_) = false;
+#endif
+
+  // Signaled, if non-null, when |num_workers_cleaned_up_for_testing_| is
+  // incremented.
+  std::unique_ptr<ConditionVariable> num_workers_cleaned_up_for_testing_cv_
+      GUARDED_BY(lock_);
+
+  // Set at the start of JoinForTesting().
+  bool join_for_testing_started_ GUARDED_BY(lock_) = false;
+
+  // Null-opt unless |synchronous_thread_start_for_testing| was true at
+  // construction. In that case, it's signaled each time
+  // WorkerThreadDelegateImpl::OnMainEntry() completes.
+  absl::optional<WaitableEvent> worker_started_for_testing_;
 };
 
 }  // namespace internal

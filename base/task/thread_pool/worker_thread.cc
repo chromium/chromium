@@ -45,6 +45,10 @@ namespace base::internal {
 
 constexpr TimeDelta WorkerThread::Delegate::kPurgeThreadCacheIdleDelay;
 
+WorkerThread::ThreadLabel WorkerThread::Delegate::GetThreadLabel() const {
+  return WorkerThread::ThreadLabel::POOLED;
+}
+
 void WorkerThread::Delegate::WaitForWork() {
   const TimeDelta sleep_time = GetSleepTimeout();
 
@@ -162,7 +166,7 @@ bool WorkerThread::Start(
   // ThreadPoolInstance::Start() contractually happens-after FeatureList
   // initialization.
   // Note 2: This is done on Start instead of in the constructor as construction
-  // happens under a ThreadGroupImpl lock which precludes calling into
+  // happens under a ThreadGroup lock which precludes calling into
   // FeatureList (as that can also use a lock).
   delegate()->IsDelayFirstWorkerSleepEnabled();
 
@@ -421,7 +425,6 @@ void WorkerThread::RunWorker() {
       base::debug::Alias(&task_source_before_run);
 
       task_source = task_tracker_->RunAndPopNextTask(std::move(task_source));
-
       // Alias pointer for investigation of memory corruption. crbug.com/1218384
       TaskSource* task_source_before_move = task_source.get();
       base::debug::Alias(&task_source_before_move);
