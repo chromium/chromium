@@ -8,10 +8,10 @@
     Exposed=(Window, DedicatedWorker),
     SecureContext
 ] interface GPUAdapterInfo {
-  readonly attribute DOMString vendor;
-  readonly attribute DOMString architecture;
-  readonly attribute DOMString device;
-  readonly attribute DOMString description;
+  [HighEntropy] readonly attribute DOMString vendor;
+  [HighEntropy] readonly attribute DOMString architecture;
+  [HighEntropy] readonly attribute DOMString device;
+  [HighEntropy] readonly attribute DOMString description;
   [RuntimeEnabled=WebGPUDeveloperFeatures] readonly attribute DOMString driver;
   [RuntimeEnabled=WebGPUDeveloperFeatures] readonly attribute DOMString backend;
   [RuntimeEnabled=WebGPUDeveloperFeatures] readonly attribute DOMString type;
