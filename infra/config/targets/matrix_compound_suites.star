@@ -990,25 +990,8 @@ targets.legacy_matrix_compound_suite(
     basic_suites = {
         "lacros_skylab_tests": targets.legacy_matrix_config(
             variants = [
-                "CROS_JACUZZI_PUBLIC_LKGM",
                 "CROS_JACUZZI_CQ_PUBLIC_LKGM",
                 "CROS_TROGDOR_PUBLIC_LKGM",
-            ],
-        ),
-    },
-)
-
-targets.legacy_matrix_compound_suite(
-    name = "lacros_arm_generic_rel_skylab",
-    basic_suites = {
-        "lacros_skylab_tests": targets.legacy_matrix_config(
-            variants = [
-                "CROS_JACUZZI_PUBLIC_LKGM",
-            ],
-        ),
-        "lacros_skylab_tests_with_gtests": targets.legacy_matrix_config(
-            variants = [
-                "CROS_JACUZZI_PUBLIC_LKGM",
             ],
         ),
     },
@@ -1019,7 +1002,6 @@ targets.legacy_matrix_compound_suite(
     basic_suites = {
         "lacros_skylab_tests": targets.legacy_matrix_config(
             variants = [
-                "CROS_JACUZZI_PUBLIC_LKGM",
                 "CROS_TROGDOR_PUBLIC_LKGM",
             ],
         ),
@@ -1079,20 +1061,6 @@ targets.legacy_matrix_compound_suite(
             variants = [
                 "LACROS_AMD64_GENERIC",
                 "LACROS_EVE",
-            ],
-        ),
-    },
-)
-
-# Check go/lacros-on-skylab for details of Skylab configurations.
-targets.legacy_matrix_compound_suite(
-    name = "lacros_skylab_arm",
-    basic_suites = {
-        "lacros_skylab_tests_version_skew": targets.legacy_matrix_config(
-            variants = [
-                "CROS_JACUZZI_RELEASE_DEV",
-                "CROS_JACUZZI_RELEASE_BETA",
-                "CROS_JACUZZI_RELEASE_STABLE",
             ],
         ),
     },

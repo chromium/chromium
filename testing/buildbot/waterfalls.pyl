@@ -201,7 +201,6 @@
           'chrome-swarming-pool',
         ],
         'test_suites': {
-          'skylab_tests': 'lacros_skylab_arm',
           'isolated_scripts': 'chrome_sizes',
         },
         'os_type': 'chromeos',
@@ -1671,9 +1670,6 @@
         'additional_compile_targets': [
           'chrome',
         ],
-        'test_suites': {
-          'skylab_tests': 'lacros_arm_generic_rel_skylab',
-        },
         'os_type': 'chromeos'
       },
       'lacros-arm64-generic-rel': {

@@ -254,49 +254,12 @@
     "enabled": true,
     "identifier": "JACUZZI_RELEASE_LKGM"
   },
-  "CROS_JACUZZI_RELEASE_DEV": {
-    "skylab": {
-      "cros_board": "jacuzzi",
-      "cros_chrome_version": "121.0.6126.0",
-      "cros_img": "jacuzzi-release/R121-15678.0.0"
-    },
-    "enabled": true,
-    "identifier": "JACUZZI_RELEASE_DEV"
-  },
-  "CROS_JACUZZI_RELEASE_BETA": {
-    "skylab": {
-      "cros_board": "jacuzzi",
-      "cros_chrome_version": "120.0.6099.25",
-      "cros_img": "jacuzzi-release/R120-15662.16.0"
-    },
-    "enabled": true,
-    "identifier": "JACUZZI_RELEASE_BETA"
-  },
   "CROS_JACUZZI_RELEASE_CHROME_FROM_TLS_ASH_LKGM": {
     "skylab": {
       "cros_board": "jacuzzi",
       "use_lkgm": true
     },
     "identifier": "JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM"
-  },
-  "CROS_JACUZZI_RELEASE_STABLE": {
-    "skylab": {
-      "cros_board": "jacuzzi",
-      "cros_chrome_version": "119.0.6045.158",
-      "cros_img": "jacuzzi-release/R119-15633.44.0"
-    },
-    "enabled": true,
-    "identifier": "JACUZZI_RELEASE_STABLE"
-  },
-  "CROS_JACUZZI_PUBLIC_LKGM": {
-    "skylab": {
-      "cros_board": "jacuzzi",
-      "cros_chrome_version": "121.0.6110.0",
-      "cros_img": "jacuzzi-public/R121-15673.0.0",
-      "bucket": "chromiumos-image-archive"
-    },
-    "enabled": true,
-    "identifier": "JACUZZI_PUBLIC_LKGM"
   },
   "CROS_JACUZZI_CQ_PUBLIC_LKGM": {
     "skylab": {

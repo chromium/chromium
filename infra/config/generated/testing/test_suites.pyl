@@ -7581,21 +7581,7 @@
       'lacros_skylab_tests': {
         'variants': [
           'CROS_JACUZZI_CQ_PUBLIC_LKGM',
-          'CROS_JACUZZI_PUBLIC_LKGM',
           'CROS_TROGDOR_PUBLIC_LKGM',
-        ],
-      },
-    },
-
-    'lacros_arm_generic_rel_skylab': {
-      'lacros_skylab_tests': {
-        'variants': [
-          'CROS_JACUZZI_PUBLIC_LKGM',
-        ],
-      },
-      'lacros_skylab_tests_with_gtests': {
-        'variants': [
-          'CROS_JACUZZI_PUBLIC_LKGM',
         ],
       },
     },
@@ -7603,7 +7589,6 @@
     'lacros_arm_generic_rel_skylab_fyi': {
       'lacros_skylab_tests': {
         'variants': [
-          'CROS_JACUZZI_PUBLIC_LKGM',
           'CROS_TROGDOR_PUBLIC_LKGM',
         ],
       },
@@ -7657,16 +7642,6 @@
         'variants': [
           'LACROS_AMD64_GENERIC',
           'LACROS_EVE',
-        ],
-      },
-    },
-
-    'lacros_skylab_arm': {
-      'lacros_skylab_tests_version_skew': {
-        'variants': [
-          'CROS_JACUZZI_RELEASE_BETA',
-          'CROS_JACUZZI_RELEASE_DEV',
-          'CROS_JACUZZI_RELEASE_STABLE',
         ],
       },
     },

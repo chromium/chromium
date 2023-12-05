@@ -2520,36 +2520,6 @@
   "lacros-arm-generic-rel-skylab": {
     "additional_compile_targets": [
       "chrome"
-    ],
-    "skylab_tests": [
-      {
-        "autotest_name": "chromium",
-        "bucket": "chromiumos-image-archive",
-        "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-public/R121-15673.0.0",
-        "name": "chromeos_integration_tests JACUZZI_PUBLIC_LKGM",
-        "test": "chromeos_integration_tests",
-        "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
-        "variant_id": "JACUZZI_PUBLIC_LKGM"
-      },
-      {
-        "autotest_name": "tast.lacros-from-gcs",
-        "bucket": "chromiumos-image-archive",
-        "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-public/R121-15673.0.0",
-        "name": "lacros_all_tast_tests JACUZZI_PUBLIC_LKGM",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "shards": 2,
-        "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
-        "test": "lacros_all_tast_tests",
-        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
-        "test_level_retries": 2,
-        "timeout_sec": 10800,
-        "variant_id": "JACUZZI_PUBLIC_LKGM"
-      }
     ]
   },
   "lacros-arm64-generic-rel": {
