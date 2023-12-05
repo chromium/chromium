@@ -211,8 +211,6 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
 
   // Returns the non-reserved host for `prerendering_url`. Returns nullptr if
   // the URL doesn't match any non-reserved host.
-  // Note that the result of this function includes prerender-into-new-tab
-  // triggers.
   PrerenderHost* FindHostByUrlForTesting(const GURL& prerendering_url);
 
   // Cancels all hosts.
