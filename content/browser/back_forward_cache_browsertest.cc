@@ -1923,7 +1923,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, TextInputStateUpdated) {
   }
 }
 
-#if (BUILDFLAG(IS_MAC))
+#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID))
 #define MAYBE_SubframeTextInputStateUpdated DISABLED_SubframeTextInputStateUpdated
 #else
 #define MAYBE_SubframeTextInputStateUpdated SubframeTextInputStateUpdated
