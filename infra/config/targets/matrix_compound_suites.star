@@ -963,42 +963,7 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
-    name = "lacros_amd64_generic_rel_skylab_fyi",
-    basic_suites = {
-        "lacros_skylab_tests": targets.legacy_matrix_config(
-            variants = [
-                "CROS_OCTOPUS_PUBLIC_LKGM",
-                "CROS_EVE_PUBLIC_LKGM",
-            ],
-        ),
-    },
-)
-
-targets.legacy_matrix_compound_suite(
     name = "lacros_arm64_generic_rel_skylab",
-    basic_suites = {
-        "lacros_skylab_tests": targets.legacy_matrix_config(
-            variants = [
-                "CROS_TROGDOR_PUBLIC_LKGM",
-            ],
-        ),
-    },
-)
-
-targets.legacy_matrix_compound_suite(
-    name = "lacros_arm64_generic_rel_skylab_fyi",
-    basic_suites = {
-        "lacros_skylab_tests": targets.legacy_matrix_config(
-            variants = [
-                "CROS_JACUZZI_CQ_PUBLIC_LKGM",
-                "CROS_TROGDOR_PUBLIC_LKGM",
-            ],
-        ),
-    },
-)
-
-targets.legacy_matrix_compound_suite(
-    name = "lacros_arm_generic_rel_skylab_fyi",
     basic_suites = {
         "lacros_skylab_tests": targets.legacy_matrix_config(
             variants = [
@@ -1042,30 +1007,6 @@ targets.legacy_matrix_compound_suite(
     },
 )
 
-targets.legacy_matrix_compound_suite(
-    name = "lacros_device_or_vm_tests_fyi",
-    basic_suites = {
-        "lacros_all_tast_tests_informational": targets.legacy_matrix_config(
-            variants = [
-                "LACROS_AMD64_GENERIC",
-                "LACROS_EVE",
-            ],
-        ),
-        "lacros_device_or_vm_gtests": targets.legacy_matrix_config(
-            variants = [
-                "LACROS_AMD64_GENERIC",
-                "LACROS_EVE",
-            ],
-        ),
-        "lacros_fyi_tast_tests": targets.legacy_matrix_config(
-            variants = [
-                "LACROS_AMD64_GENERIC",
-                "LACROS_EVE",
-            ],
-        ),
-    },
-)
-
 # Check go/lacros-on-skylab for details of Skylab configurations.
 targets.legacy_matrix_compound_suite(
     name = "lacros_skylab_arm64",
@@ -1073,25 +1014,6 @@ targets.legacy_matrix_compound_suite(
         "lacros_skylab_tests": targets.legacy_matrix_config(
             variants = [
                 "CROS_STRONGBAD_RELEASE_LKGM",
-            ],
-        ),
-    },
-)
-
-# Check go/lacros-on-skylab for details of Skylab configurations.
-targets.legacy_matrix_compound_suite(
-    name = "lacros_skylab_arm_fyi",
-    basic_suites = {
-        "lacros_skylab_arm_tests_fyi": targets.legacy_matrix_config(
-            variants = [
-                "CROS_HANA_RELEASE_LKGM",
-                "CROS_HANA_RELEASE_DEV",
-                "CROS_HANA_RELEASE_BETA",
-                "CROS_HANA_RELEASE_STABLE",
-                "CROS_STRONGBAD_RELEASE_LKGM",
-                "CROS_STRONGBAD_RELEASE_DEV",
-                "CROS_STRONGBAD_RELEASE_BETA",
-                "CROS_STRONGBAD_RELEASE_STABLE",
             ],
         ),
     },
@@ -1135,20 +1057,6 @@ targets.legacy_matrix_compound_suite(
                 "CROS_FIZZ_RELEASE_LKGM",
                 "CROS_GUYBRUSH_RELEASE_LKGM",
                 "CROS_PUFF_RELEASE_LKGM",
-            ],
-        ),
-    },
-)
-
-targets.legacy_matrix_compound_suite(
-    name = "lacros_skylab_tests_amd64_generic_fyi",
-    basic_suites = {
-        "lacros_skylab_amd64_fyi": targets.legacy_matrix_config(
-            variants = [
-                "CROS_OCTOPUS_RELEASE_LKGM",
-                "CROS_OCTOPUS_RELEASE_DEV",
-                "CROS_OCTOPUS_RELEASE_BETA",
-                "CROS_OCTOPUS_RELEASE_STABLE",
             ],
         ),
     },

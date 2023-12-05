@@ -4161,17 +4161,6 @@
       },
     },
 
-    'lacros_all_tast_tests_informational': {
-      'lacros_all_tast_tests_informational': {
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'swarming': {
-          'idempotent': False,
-        },
-      },
-    },
-
     'lacros_cq_tast_tests_eve': {
       'lacros_cq_tast_tests_eve': {
         'mixins': [
@@ -4198,40 +4187,6 @@
           'libfake',
           '--gtest_filter="VaapiTest.*"',
         ],
-      },
-    },
-
-    'lacros_fyi_tast_tests': {
-      'lacros_fyi_tast_tests': {
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'swarming': {
-          'idempotent': False,
-        },
-      },
-    },
-
-    'lacros_skylab_amd64_fyi': {
-      'lacros_fyi_tast_tests': {
-        'tast_expr': '("group:mainline" && "dep:lacros" && !informational)',
-        'timeout_sec': 10800,
-      },
-      'ozone_unittests': {
-        'timeout_sec': 3600,
-      },
-    },
-
-    'lacros_skylab_arm_tests_fyi': {
-      'lacros_all_tast_tests': {
-        'tast_expr': '("group:mainline" && "dep:lacros" && !informational)',
-        'timeout_sec': 10800,
-      },
-      'ozone_unittests': {
-        'timeout_sec': 3600,
-      },
-      'viz_unittests': {
-        'timeout_sec': 3600,
       },
     },
 
@@ -7559,33 +7514,7 @@
       },
     },
 
-    'lacros_amd64_generic_rel_skylab_fyi': {
-      'lacros_skylab_tests': {
-        'variants': [
-          'CROS_EVE_PUBLIC_LKGM',
-          'CROS_OCTOPUS_PUBLIC_LKGM',
-        ],
-      },
-    },
-
     'lacros_arm64_generic_rel_skylab': {
-      'lacros_skylab_tests': {
-        'variants': [
-          'CROS_TROGDOR_PUBLIC_LKGM',
-        ],
-      },
-    },
-
-    'lacros_arm64_generic_rel_skylab_fyi': {
-      'lacros_skylab_tests': {
-        'variants': [
-          'CROS_JACUZZI_CQ_PUBLIC_LKGM',
-          'CROS_TROGDOR_PUBLIC_LKGM',
-        ],
-      },
-    },
-
-    'lacros_arm_generic_rel_skylab_fyi': {
       'lacros_skylab_tests': {
         'variants': [
           'CROS_TROGDOR_PUBLIC_LKGM',
@@ -7624,46 +7553,10 @@
       },
     },
 
-    'lacros_device_or_vm_tests_fyi': {
-      'lacros_all_tast_tests_informational': {
-        'variants': [
-          'LACROS_AMD64_GENERIC',
-          'LACROS_EVE',
-        ],
-      },
-      'lacros_device_or_vm_gtests': {
-        'variants': [
-          'LACROS_AMD64_GENERIC',
-          'LACROS_EVE',
-        ],
-      },
-      'lacros_fyi_tast_tests': {
-        'variants': [
-          'LACROS_AMD64_GENERIC',
-          'LACROS_EVE',
-        ],
-      },
-    },
-
     'lacros_skylab_arm64': {
       'lacros_skylab_tests': {
         'variants': [
           'CROS_STRONGBAD_RELEASE_LKGM',
-        ],
-      },
-    },
-
-    'lacros_skylab_arm_fyi': {
-      'lacros_skylab_arm_tests_fyi': {
-        'variants': [
-          'CROS_HANA_RELEASE_BETA',
-          'CROS_HANA_RELEASE_DEV',
-          'CROS_HANA_RELEASE_LKGM',
-          'CROS_HANA_RELEASE_STABLE',
-          'CROS_STRONGBAD_RELEASE_BETA',
-          'CROS_STRONGBAD_RELEASE_DEV',
-          'CROS_STRONGBAD_RELEASE_LKGM',
-          'CROS_STRONGBAD_RELEASE_STABLE',
         ],
       },
     },
@@ -7704,17 +7597,6 @@
           'CROS_FIZZ_RELEASE_LKGM',
           'CROS_GUYBRUSH_RELEASE_LKGM',
           'CROS_PUFF_RELEASE_LKGM',
-        ],
-      },
-    },
-
-    'lacros_skylab_tests_amd64_generic_fyi': {
-      'lacros_skylab_amd64_fyi': {
-        'variants': [
-          'CROS_OCTOPUS_RELEASE_BETA',
-          'CROS_OCTOPUS_RELEASE_DEV',
-          'CROS_OCTOPUS_RELEASE_LKGM',
-          'CROS_OCTOPUS_RELEASE_STABLE',
         ],
       },
     },

@@ -4861,20 +4861,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "lacros_all_tast_tests_informational",
-    tests = {
-        "lacros_all_tast_tests_informational": targets.legacy_test_config(
-            mixins = [
-                "has_native_resultdb_integration",
-            ],
-            swarming = targets.swarming(
-                idempotent = False,  # https://crbug.com/923426#c27
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "lacros_cq_tast_tests_eve",
     tests = {
         "lacros_cq_tast_tests_eve": targets.legacy_test_config(
@@ -4907,52 +4893,6 @@ targets.legacy_basic_suite(
                 "libfake",
                 "--gtest_filter=\"VaapiTest.*\"",
             ],
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "lacros_fyi_tast_tests",
-    tests = {
-        "lacros_fyi_tast_tests": targets.legacy_test_config(
-            mixins = [
-                "has_native_resultdb_integration",
-            ],
-            swarming = targets.swarming(
-                idempotent = False,  # https://crbug.com/923426#c27
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "lacros_skylab_amd64_fyi",
-    tests = {
-        "lacros_fyi_tast_tests": targets.legacy_test_config(
-            tast_expr = "(\"group:mainline\" && \"dep:lacros\" && !informational)",
-            timeout_sec = 10800,
-        ),
-        "ozone_unittests": targets.legacy_test_config(
-            timeout_sec = 3600,
-        ),
-    },
-)
-
-# create this temporary lacros arm test suites that runs on skylab
-# TODO(crbug.com/1247425): remove it if it is the same as
-# lacros_skylab
-targets.legacy_basic_suite(
-    name = "lacros_skylab_arm_tests_fyi",
-    tests = {
-        "lacros_all_tast_tests": targets.legacy_test_config(
-            tast_expr = "(\"group:mainline\" && \"dep:lacros\" && !informational)",
-            timeout_sec = 10800,
-        ),
-        "ozone_unittests": targets.legacy_test_config(
-            timeout_sec = 3600,
-        ),
-        "viz_unittests": targets.legacy_test_config(
-            timeout_sec = 3600,
         ),
     },
 )

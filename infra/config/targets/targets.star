@@ -1261,14 +1261,6 @@ targets.generated_script(
     ],
 )
 
-targets.generated_script(
-    name = "lacros_all_tast_tests_informational",
-    label = "//chromeos/lacros:lacros_all_tast_tests_informational",
-    args = [
-        "--logs-dir=${ISOLATED_OUTDIR}",
-    ],
-)
-
 targets.windowed_test_launcher(
     name = "lacros_chrome_browsertests",
     label = "//chrome/test:lacros_chrome_browsertests",
@@ -1285,14 +1277,6 @@ targets.console_test_launcher(
 targets.generated_script(
     name = "lacros_cq_tast_tests_eve",
     label = "//chromeos/lacros:lacros_cq_tast_tests_eve",
-    args = [
-        "--logs-dir=${ISOLATED_OUTDIR}",
-    ],
-)
-
-targets.generated_script(
-    name = "lacros_fyi_tast_tests",
-    label = "//chromeos/lacros:lacros_fyi_tast_tests",
     args = [
         "--logs-dir=${ISOLATED_OUTDIR}",
     ],

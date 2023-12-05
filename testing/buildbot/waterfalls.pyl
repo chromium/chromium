@@ -3636,42 +3636,6 @@
         ],
         'os_type': 'chromeos'
       },
-      'lacros-amd64-generic-rel-fyi': {
-        'additional_compile_targets': [
-          'chrome',
-        ],
-        'test_suites': {
-          'gtest_tests': 'lacros_device_or_vm_tests_fyi',
-        },
-        'os_type': 'chromeos'
-      },
-      'lacros-amd64-generic-rel-skylab-fyi': {
-        'additional_compile_targets': [
-          'chrome',
-        ],
-        'test_suites': {
-          'skylab_tests': 'lacros_amd64_generic_rel_skylab_fyi',
-        },
-        'os_type': 'chromeos'
-      },
-      'lacros-arm-generic-rel-skylab-fyi': {
-        'additional_compile_targets': [
-          'chrome',
-        ],
-        'test_suites': {
-          'skylab_tests': 'lacros_arm_generic_rel_skylab_fyi',
-        },
-        'os_type': 'chromeos',
-      },
-      'lacros-arm64-generic-rel-skylab-fyi': {
-        'additional_compile_targets': [
-          'chrome',
-        ],
-        'test_suites': {
-          'skylab_tests': 'lacros_arm64_generic_rel_skylab_fyi',
-        },
-        'os_type': 'chromeos',
-      },
       'linux-annotator-rel': {
         'test_suites': {
           'scripts': 'test_traffic_annotation_auditor_script',
@@ -6817,34 +6781,6 @@
           'skylab_tests': 'chromeos_trogdor_skylab_tests',
         },
         'os_type': 'chromeos',
-      },
-      'lacros-amd64-generic-chrome-fyi': {
-        'additional_compile_targets': [
-          'chrome',
-        ],
-        'test_suites': {
-          'skylab_tests': 'lacros_skylab_tests_amd64_generic_fyi',
-        },
-        'swarming': {
-          'dimensions': {
-            'pool': 'chrome.tests',
-          },
-        },
-        'os_type': 'chromeos'
-      },
-      'lacros-arm-generic-chrome-fyi': {
-        'additional_compile_targets': [
-          'chrome',
-        ],
-        'test_suites': {
-          'skylab_tests': 'lacros_skylab_arm_fyi',
-        },
-        'swarming': {
-          'dimensions': {
-            'pool': 'chrome.tests',
-          },
-        },
-        'os_type': 'chromeos'
       },
     },
   },
