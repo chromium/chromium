@@ -335,10 +335,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
   }
 
-  private onRefresh_() {
-    this.rewrite_(/*style=*/ {});
-  }
-
   private onSubmit_() {
     this.isSubmitEnabled_ = this.$.textarea.validate();
     if (!this.isSubmitEnabled_) {
