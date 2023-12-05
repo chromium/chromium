@@ -676,8 +676,8 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
     for (HelpBubbleButtonParams& button_params : params.buttons) {
       auto button = std::make_unique<MdIPHBubbleButton>(
           delegate,
-          base::BindRepeating(run_callback_and_close, base::Unretained(this),
-                              base::Passed(std::move(button_params.callback))),
+          base::BindOnce(run_callback_and_close, base::Unretained(this),
+                         std::move(button_params.callback)),
           button_params.text, button_params.is_default);
       button->SetMinSize(gfx::Size(0, 0));
       if (button_params.is_default) {
