@@ -186,7 +186,7 @@ std::unique_ptr<views::ImageView> GetIconImageViewFromIcon(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       return ImageViewFromVectorIcon(vector_icons::kPenSparkIcon, kIconSize);
 #else
-      return nullptr;
+      return ImageViewFromVectorIcon(vector_icons::kEditIcon, kIconSize);
 #endif
     case Suggestion::Icon::kGooglePasswordManager:
       return ImageViewFromVectorIcon(GooglePasswordManagerVectorIcon(),
