@@ -78,14 +78,17 @@
             ]
         }
     ],
-    "AdaptiveCharging": [
+    "AdaptiveChargingParamTuning": [
         {
             "platforms": [
                 "chromeos"
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20230518",
+                    "name": "Experimental_20231205",
+                    "params": {
+                        "adaptive_charging_min_probability": "0.5"
+                    },
                     "enable_features": [
                         "AdaptiveCharging"
                     ]
