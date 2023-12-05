@@ -222,8 +222,8 @@ function generateTestReport(map, parent) {
           map.stat.all === map.stat.pass
             ? 'pass'
             : map.stat.pass === 0
-            ? 'fail'
-            : 'part'
+              ? 'fail'
+              : 'part'
         }">
           <span class="short-name">${escapeHtml(name)}</span>
           <span class="long-name hidden">${escapeHtml(map.path)}</span>

@@ -175,7 +175,7 @@ export type InputSourceFor<Type extends SourceType> =
   Type extends SourceType.Key
     ? KeySource
     : Type extends SourceType.Pointer
-    ? PointerSource
-    : Type extends SourceType.Wheel
-    ? WheelSource
-    : NoneSource;
+      ? PointerSource
+      : Type extends SourceType.Wheel
+        ? WheelSource
+        : NoneSource;

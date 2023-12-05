@@ -169,9 +169,8 @@ export class Realm {
 
     if (deepSerializedValue.type === 'node') {
       if (Object.hasOwn(bidiValue, 'backendNodeId')) {
-        (
-          deepSerializedValue as unknown as Script.SharedReference
-        ).sharedId = `${this.navigableId}${SHARED_ID_DIVIDER}${bidiValue.backendNodeId}`;
+        (deepSerializedValue as unknown as Script.SharedReference).sharedId =
+          `${this.navigableId}${SHARED_ID_DIVIDER}${bidiValue.backendNodeId}`;
         delete bidiValue['backendNodeId'];
       }
       if (Object.hasOwn(bidiValue, 'children')) {

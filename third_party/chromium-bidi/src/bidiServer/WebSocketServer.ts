@@ -175,7 +175,7 @@ export class WebSocketServer {
       autoAcceptConnections: false,
     });
 
-    wsServer.on('request', async (request: websocket.request) => {
+    wsServer.on('request', (request: websocket.request) => {
       // Session is set either by Classic or BiDi commands.
       let session: Session | undefined;
 
