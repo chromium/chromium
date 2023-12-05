@@ -452,8 +452,8 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
     for (user_education::HelpBubbleButtonParams& button_params :
          params.buttons) {
       auto button = std::make_unique<PillButton>(
-          base::BindRepeating(run_callback_and_close, base::Unretained(this),
-                              base::Passed(std::move(button_params.callback))),
+          base::BindOnce(run_callback_and_close, base::Unretained(this),
+                         std::move(button_params.callback)),
           button_params.text,
           button_params.is_default ? PillButton::Type::kPrimaryWithoutIcon
                                    : PillButton::Type::kSecondaryWithoutIcon);
