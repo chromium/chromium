@@ -60,6 +60,7 @@ static_library("service") {
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
     "//build/config/chromebox_for_meetings:buildflags",
+    "//components/country_codes",
     "//components/encrypted_messages",
     "//components/keyed_service/core",
     "//components/language/core/browser",

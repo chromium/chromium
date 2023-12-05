@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 
 #import "components/commerce/core/commerce_feature_list.h"
-#import "components/commerce/core/country_code_checker.h"
 #import "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #import "components/commerce/core/proto/parcel_tracking_db_content.pb.h"
 #import "components/commerce/core/shopping_service.h"
@@ -13,6 +12,7 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/prefs/pref_service.h"
+#import "components/variations/service/variations_service_utils.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/commerce/model/session_proto_db_factory.h"

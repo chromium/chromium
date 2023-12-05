@@ -973,11 +973,11 @@ void VariationsService::OverridePlatform(
   osname_server_param_override_ = osname_server_param_override;
 }
 
-std::string VariationsService::GetOverriddenPermanentCountry() {
+std::string VariationsService::GetOverriddenPermanentCountry() const {
   return local_state_->GetString(prefs::kVariationsPermanentOverriddenCountry);
 }
 
-std::string VariationsService::GetStoredPermanentCountry() {
+std::string VariationsService::GetStoredPermanentCountry() const {
   const std::string variations_overridden_country =
       GetOverriddenPermanentCountry();
   if (!variations_overridden_country.empty())

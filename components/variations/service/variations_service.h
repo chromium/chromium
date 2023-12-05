@@ -129,12 +129,12 @@ class VariationsService
   // value will not be updated on Chrome updates.
   // Country code is in the format of lowercase ISO 3166-1 alpha-2. Example: us,
   // br, in.
-  std::string GetOverriddenPermanentCountry();
+  std::string GetOverriddenPermanentCountry() const;
 
   // Returns the permanent country code stored for this client.
   // Country code is in the format of lowercase ISO 3166-1 alpha-2. Example: us,
   // br, in.
-  std::string GetStoredPermanentCountry();
+  std::string GetStoredPermanentCountry() const;
 
   // Forces an override of the stored permanent country. Returns true
   // if the variable has been updated. Return false if the override country is

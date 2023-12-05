@@ -13,12 +13,12 @@ static_library("push_notification") {
   deps = [
     "//base",
     "//components/bookmarks/browser:browser",
-    "//components/commerce/core:country_code_checker",
     "//components/commerce/core:feature_list",
     "//components/commerce/core:proto",
     "//components/commerce/core:shopping_service",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/variations/service",
+    "//components/variations/service:service",
     "//ios/chrome/browser/bookmarks/model:model",
     "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/optimization_guide/model",

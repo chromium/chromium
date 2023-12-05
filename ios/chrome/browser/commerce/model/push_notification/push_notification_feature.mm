@@ -8,8 +8,8 @@
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/commerce/core/commerce_feature_list.h"
-#import "components/commerce/core/country_code_checker.h"
 #import "components/commerce/core/shopping_service.h"
+#import "components/variations/service/variations_service_utils.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -28,7 +28,7 @@ bool IsPriceTrackingEnabled(ChromeBrowserState* browser_state) {
 }
 
 bool IsPriceNotificationsEnabled() {
-  std::string country = base::ToLowerASCII(commerce::GetCurrentCountryCode(
+  std::string country = base::ToLowerASCII(variations::GetCurrentCountryCode(
       GetApplicationContext()->GetVariationsService()));
   std::string current_locale = base::ToLowerASCII(
       base::SysNSStringToUTF8([NSLocale currentLocale].localeIdentifier));

@@ -341,19 +341,6 @@ source_set("pref_names") {
   ]
 }
 
-source_set("country_code_checker") {
-  sources = [
-    "country_code_checker.cc",
-    "country_code_checker.h",
-  ]
-  deps = [
-    # TODO(crbug.com/1489531): We don't need base here after this bug is resolved.
-    "//base",
-    "//components/country_codes",
-    "//components/variations/service",
-  ]
-}
-
 source_set("account_checker") {
   sources = [
     "account_checker.cc",
