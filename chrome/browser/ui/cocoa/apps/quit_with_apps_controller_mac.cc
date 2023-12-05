@@ -77,9 +77,19 @@ QuitWithAppsController::QuitWithAppsController() {
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kQuitWithAppsNotificationID),
       rich_notification_data, this);
+  if (ProfileManager* profile_manager = g_browser_process->profile_manager()) {
+    profile_manager_observation_.Observe(profile_manager);
+  }
 }
 
 QuitWithAppsController::~QuitWithAppsController() {}
+
+void QuitWithAppsController::OnProfileManagerDestroying() {
+  // Set `notification_profile_` to null to avoid danling pointer detection when
+  // ProfileManager is destroyed.
+  notification_profile_ = nullptr;
+  profile_manager_observation_.Reset();
+}
 
 void QuitWithAppsController::Close(bool by_user) {
   if (by_user)
