@@ -289,8 +289,9 @@ class VotesUploader {
                                             const std::u16string& username);
 
   bool StartUploadRequest(
-      std::unique_ptr<autofill::FormStructure> form_to_upload,
-      const autofill::ServerFieldTypeSet& available_field_types);
+      autofill::FormStructure& form_to_upload,
+      const autofill::ServerFieldTypeSet& available_field_types,
+      const std::string& login_form_signature = std::string());
 
   // On username first and forgot password flows votes are uploaded both for the
   // single username form and for the single password form. This method sets the

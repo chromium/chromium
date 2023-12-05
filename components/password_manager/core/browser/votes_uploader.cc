@@ -441,10 +441,9 @@ bool VotesUploader::UploadPasswordVote(
     return false;
   }
 
-  AutofillCrowdsourcingManager* download_manager =
-      client_->GetAutofillCrowdsourcingManager();
-  if (!download_manager)
+  if (!client_->GetAutofillCrowdsourcingManager()) {
     return false;
+  }
 
   // If this is an update, a vote about the observed form is sent. If the user
   // re-uses credentials, a vote about the saved form is sent. If the user saves
@@ -548,17 +547,8 @@ bool VotesUploader::UploadPasswordVote(
 
   // Annotate the form with the source language of the page.
   form_structure.set_current_page_language(client_->GetPageLanguage());
-
-  // Attach the Randomized Encoder.
-  form_structure.set_randomized_encoder(
-      RandomizedEncoder::Create(client_->GetPrefs()));
-
-  // TODO(crbug.com/875768): Use VotesUploader::StartUploadRequest for avoiding
-  // code duplication.
-  return download_manager->StartUploadRequest(
-      form_structure, false /* was_autofilled */, available_field_types,
-      login_form_signature, true /* observed_submission */, nullptr /* prefs */,
-      nullptr /* observer */);
+  return StartUploadRequest(form_structure, available_field_types,
+                            login_form_signature);
 }
 
 // TODO(crbug.com/840384): Share common code with UploadPasswordVote.
@@ -566,10 +556,11 @@ void VotesUploader::UploadFirstLoginVotes(
     const std::vector<const PasswordForm*>& best_matches,
     const PasswordForm& pending_credentials,
     const PasswordForm& form_to_upload) {
-  AutofillCrowdsourcingManager* download_manager =
+  AutofillCrowdsourcingManager* crowdsourcing_manager =
       client_->GetAutofillCrowdsourcingManager();
-  if (!download_manager)
+  if (!crowdsourcing_manager) {
     return;
+  }
 
   if (form_to_upload.form_data.fields.empty()) {
     // List of fields may be empty in tests.
@@ -600,10 +591,6 @@ void VotesUploader::UploadFirstLoginVotes(
   // Annotate the form with the source language of the page.
   form_structure.set_current_page_language(client_->GetPageLanguage());
 
-  // Attach the Randomized Encoder.
-  form_structure.set_randomized_encoder(
-      RandomizedEncoder::Create(client_->GetPrefs()));
-
   SetInitialHashValueOfUsernameField(
       form_to_upload.username_element_renderer_id, &form_structure);
 
@@ -612,12 +599,7 @@ void VotesUploader::UploadFirstLoginVotes(
     logger.LogFormStructure(Logger::STRING_FIRSTUSE_FORM_VOTE, form_structure);
   }
 
-  // TODO(crbug.com/875768): Use VotesUploader::StartUploadRequest for avoiding
-  // code duplication.
-  download_manager->StartUploadRequest(
-      form_structure, false /* was_autofilled */, available_field_types,
-      std::string(), true /* observed_submission */, nullptr /* prefs */,
-      nullptr);
+  StartUploadRequest(form_structure, available_field_types);
 }
 
 void VotesUploader::SetInitialHashValueOfUsernameField(
@@ -906,21 +888,23 @@ void VotesUploader::StoreInitialFieldValues(
 }
 
 bool VotesUploader::StartUploadRequest(
-    std::unique_ptr<autofill::FormStructure> form_to_upload,
-    const ServerFieldTypeSet& available_field_types) {
-  AutofillCrowdsourcingManager* download_manager =
+    autofill::FormStructure& form_to_upload,
+    const ServerFieldTypeSet& available_field_types,
+    const std::string& login_form_signature) {
+  AutofillCrowdsourcingManager* crowdsourcing_manager =
       client_->GetAutofillCrowdsourcingManager();
-  if (!download_manager)
+  if (!crowdsourcing_manager) {
     return false;
+  }
 
-  // Attach the Randomized Encoder.
-  form_to_upload->set_randomized_encoder(
+  form_to_upload.set_randomized_encoder(
       RandomizedEncoder::Create(client_->GetPrefs()));
-
-  return download_manager->StartUploadRequest(
-      *form_to_upload, false /* was_autofilled */, available_field_types,
-      std::string(), true /* observed_submission */, nullptr /* prefs */,
-      nullptr);
+  return crowdsourcing_manager->StartUploadRequest(
+      form_to_upload, /*form_was_autofilled=*/false, available_field_types,
+      /*login_form_signature=*/login_form_signature,
+      /*observed_submission=*/true,
+      /*pref_service=*/nullptr,
+      /*observer=*/nullptr);
 }
 
 bool VotesUploader::SetSingleUsernameVoteOnUsernameForm(
@@ -1099,7 +1083,7 @@ bool VotesUploader::MaybeSendSingleUsernameVote(
                               *form_to_upload);
     }
 
-    if (StartUploadRequest(std::move(form_to_upload), available_field_types)) {
+    if (StartUploadRequest(*form_to_upload, available_field_types)) {
       return true;
     }
   }
