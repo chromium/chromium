@@ -13436,14 +13436,6 @@ Called by update_document_policy_enum.py.-->
   <int value="5" label="Error"/>
 </enum>
 
-<enum name="EfficiencyMode">
-  <int value="0" label="Normal"/>
-  <int value="1" label="High Efficiency"/>
-  <int value="2" label="Battery Saver"/>
-  <int value="3" label="Both"/>
-  <int value="4" label="Mixed"/>
-</enum>
-
 <enum name="EmbeddedWorkerStartingPhase">
   <int value="0" label="NOT_STARTING"/>
   <int value="1" label="ALLOCATING_PROCESS"/>
@@ -28803,13 +28795,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="1" label="Success"/>
   <int value="2" label="EmptyQuery"/>
   <int value="3" label="EmptyIndex"/>
-</enum>
-
-<enum name="LocalSiteCharacteristicsDBInitStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Corruption"/>
-  <int value="2" label="IO Error"/>
-  <int value="3" label="Unknown Error"/>
 </enum>
 
 <enum name="LocalStorageOpenError">

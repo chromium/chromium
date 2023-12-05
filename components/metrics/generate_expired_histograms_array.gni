@@ -168,6 +168,7 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/metadata/pcscan/histograms.xml",
       "//tools/metrics/histograms/metadata/pdf/histograms.xml",
       "//tools/metrics/histograms/metadata/performance_controls/histograms.xml",
+      "//tools/metrics/histograms/metadata/performance_manager/enums.xml",
       "//tools/metrics/histograms/metadata/performance_manager/histograms.xml",
       "//tools/metrics/histograms/metadata/permissions/enums.xml",
       "//tools/metrics/histograms/metadata/permissions/histograms.xml",
