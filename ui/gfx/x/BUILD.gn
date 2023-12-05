@@ -181,6 +181,8 @@ component("x") {
     "window_cache.h",
     "window_event_manager.cc",
     "window_event_manager.h",
+    "wm_sync.cc",
+    "wm_sync.h",
     "x11_path.cc",
     "x11_path.h",
     "xlib_support.cc",
@@ -216,6 +218,7 @@ source_set("unit_test") {
     "geometry_cache_unittest.cc",
     "property_cache_unittest.cc",
     "window_cache_unittest.cc",
+    "wm_sync_unittest.cc",
   ]
   deps = [
     "//base",
