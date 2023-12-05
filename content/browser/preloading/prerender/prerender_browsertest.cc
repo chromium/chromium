@@ -10505,7 +10505,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPurposePrefetchBrowserTest, ResourceRequests) {
   EXPECT_TRUE(ExecJs(prerender_main_frame.get(), "run('before');",
                      EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
-  // Requests from the prerenderered page should have the header.
+  // Requests from the prerendered page should have the header.
   EXPECT_TRUE(TestPurposePrefetchHeader(
       GetUrl("/prerender/purpose_prefetch_header_iframe.html?before")));
   EXPECT_TRUE(
