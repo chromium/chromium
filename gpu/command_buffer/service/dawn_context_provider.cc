@@ -269,7 +269,6 @@ bool DawnContextProvider::Initialize(
   wgpu::DeviceDescriptor descriptor;
   descriptor.nextInChain = &toggles_desc;
 
-  // TODO(crbug.com/1456492): verify the required features.
   std::vector<wgpu::FeatureName> features = {
       wgpu::FeatureName::DawnInternalUsages,
       wgpu::FeatureName::DawnMultiPlanarFormats,
