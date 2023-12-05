@@ -116,6 +116,7 @@ source_set("common") {
     "//media/gpu:video_frame_mapper_common",
     "//third_party/libyuv",
     "//ui/gfx:buffer_types",
+    "//ui/gfx:gfx_switches",
     "//ui/gfx:memory_buffer",
     "//ui/gfx/geometry",
     "//ui/gfx/linux:drm",
