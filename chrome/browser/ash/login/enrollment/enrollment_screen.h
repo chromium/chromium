@@ -209,8 +209,9 @@ class EnrollmentScreen
   bool AdvanceToNextAuth();
 
   // Similar to OnRetry(), but responds to a timer instead of the user
-  // pressing the Retry button.
-  void AutomaticRetry();
+  // pressing the Retry button. Does not retry if `ShouldAutoRetryOnError()`
+  // returns false.
+  void MaybeAutomaticRetry();
 
   // Processes a request to retry enrollment.
   // Called by OnRetry() and AutomaticRetry().
@@ -226,9 +227,13 @@ class EnrollmentScreen
   // to reboot the device.
   void CheckInstallAttributesState();
 
-  // Indicates whether this is an automatic enrollment as part of Zero-Touch
-  // Hands Off flow or Chromad Migration.
-  bool IsAutomaticEnrollmentFlow();
+  // Returns true if enrollment should be automatically retried on error. E.g.
+  // for Zero-Touch Hands Off flow.
+  bool ShouldAutoRetryOnError() const;
+
+  // Returns true if success screen should be skipped. E.g. for Zero-Touch Hands
+  // Off flow or rollback.
+  bool AutoCloseEnrollmentConfirmationOnSuccess() const;
 
   // Returns true if current visible screen is the error screen over
   // enrollment sign-in page.

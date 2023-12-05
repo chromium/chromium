@@ -502,7 +502,11 @@ void EnrollmentScreen::OnRetry() {
   ProcessRetry();
 }
 
-void EnrollmentScreen::AutomaticRetry() {
+void EnrollmentScreen::MaybeAutomaticRetry() {
+  if (!ShouldAutoRetryOnError()) {
+    return;
+  }
+
   retry_backoff_->InformOfRequest(false);
   retry_task_.Reset(base::BindOnce(&EnrollmentScreen::ProcessRetry,
                                    weak_ptr_factory_.GetWeakPtr()));
@@ -604,10 +608,11 @@ void EnrollmentScreen::OnEnrollmentError(policy::EnrollmentStatus status) {
     }
   }
 
-  if (view_)
+  if (view_) {
     view_->ShowEnrollmentStatus(status);
-  if (IsAutomaticEnrollmentFlow())
-    AutomaticRetry();
+  }
+
+  return MaybeAutomaticRetry();
 }
 
 void EnrollmentScreen::OnOtherError(EnrollmentLauncher::OtherError error) {
@@ -615,8 +620,8 @@ void EnrollmentScreen::OnOtherError(EnrollmentLauncher::OtherError error) {
   RecordEnrollmentErrorMetrics();
   if (view_)
     view_->ShowOtherError(error);
-  if (IsAutomaticEnrollmentFlow())
-    AutomaticRetry();
+
+  return MaybeAutomaticRetry();
 }
 
 void EnrollmentScreen::OnDeviceEnrolled() {
@@ -770,9 +775,11 @@ void EnrollmentScreen::ShowAttributePromptScreen() {
 
 void EnrollmentScreen::ShowEnrollmentStatusOnSuccess() {
   retry_backoff_->InformOfRequest(true);
-  if (elapsed_timer_)
+  if (elapsed_timer_) {
     UMA_ENROLLMENT_TIME(kMetricEnrollmentTimeSuccess, elapsed_timer_);
-  if (IsAutomaticEnrollmentFlow() ||
+  }
+
+  if (AutoCloseEnrollmentConfirmationOnSuccess() ||
       WizardController::skip_enrollment_prompts_for_testing()) {
     OnConfirmationClosed();
   } else if (view_) {
@@ -817,7 +824,11 @@ void EnrollmentScreen::OnUserAction(const base::Value::List& args) {
   BaseScreen::OnUserAction(args);
 }
 
-bool EnrollmentScreen::IsAutomaticEnrollmentFlow() {
+bool EnrollmentScreen::ShouldAutoRetryOnError() const {
+  return WizardController::IsZeroTouchHandsOffOobeFlow();
+}
+
+bool EnrollmentScreen::AutoCloseEnrollmentConfirmationOnSuccess() const {
   return WizardController::IsZeroTouchHandsOffOobeFlow() || is_rollback_flow_;
 }
 

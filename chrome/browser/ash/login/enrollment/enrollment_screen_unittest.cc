@@ -313,13 +313,27 @@ TEST_F(EnrollmentScreenUnitTest, RollbackFlowShouldFinishEnrollmentScreen) {
   TestEnrollmentFlowShouldComplete(config);
 }
 
-TEST_F(EnrollmentScreenUnitTest, RollbackFlowShouldRetryEnrollment) {
+TEST_F(EnrollmentScreenUnitTest, RollbackFlowShouldNotRetryEnrollment) {
   ConfigureRestoreAfterRollback();
   policy::EnrollmentConfig config;
   config.mode = policy::EnrollmentConfig::MODE_MANUAL_REENROLLMENT;
   config.auth_mechanism =
       policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE;
-  TestEnrollmentFlowRetriesOnFailure(config);
+
+  // Define behavior of MockEnrollmentLauncher to always fail enrollment.
+  SetupMockEnrollmentLauncher(AttestationEnrollmentStatus::DMSERVER_ERROR);
+
+  ScopedEnrollmentLauncherFactoryOverrideForTesting
+      enrollment_launcher_factory_override(base::BindRepeating(
+          FakeEnrollmentLauncher::Create, &mock_enrollment_launcher_));
+
+  SetUpEnrollmentScreen(config);
+
+  ShowEnrollmentScreen(/*suppress_jitter=*/true);
+
+  FastForwardTime(base::Days(1));
+
+  EXPECT_EQ(GetEnrollmentScreenRetries(), 0);
 }
 
 TEST_F(EnrollmentScreenUnitTest, ZeroTouchFlowShouldFinishEnrollmentScreen) {
