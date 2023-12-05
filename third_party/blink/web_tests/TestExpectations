@@ -5548,8 +5548,9 @@ crbug.com/1273409 [ Mac11 ] fast/canvas/OffscreenCanvas-2d-drawImage.html [ Fail
 crbug.com/1273409 [ Linux ] fast/canvas/OffscreenCanvas-2d-drawImage.html [ Failure Pass ]
 crbug.com/1273409 [ Win10.20h2 ] fast/canvas/OffscreenCanvas-2d-drawImage.html [ Failure Pass ]
 
-# Flaky on Windows
+# Flaky web-bundle tests
 crbug.com/1316343 [ Win ] external/wpt/web-bundle/subresource-loading/reuse-web-bundle-resource.https.tentative.html [ Failure ]
+crbug.com/1505807 external/wpt/web-bundle/subresource-loading/element-removal.https.tentative.html [ Pass Timeout ]
 
 # Manual test fails when run under automation due to lack of popup blocking. https://github.com/web-platform-tests/wpt/issues/3867
 
