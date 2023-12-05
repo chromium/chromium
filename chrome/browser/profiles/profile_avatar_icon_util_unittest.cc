@@ -33,7 +33,7 @@ void VerifyScaling(gfx::Image& image, gfx::Size& size) {
 }
 
 TEST(ProfileInfoUtilTest, SizedMenuIcon) {
-  gfx::Image rect_picture(gfx::test::CreateImage());
+  gfx::Image rect_picture(gfx::test::CreateImage(100, 50));
 
   gfx::Size size(30, 20);
   gfx::Image result =
@@ -43,7 +43,7 @@ TEST(ProfileInfoUtilTest, SizedMenuIcon) {
 }
 
 TEST(ProfileInfoUtilTest, WebUIIcon) {
-  gfx::Image rect_picture(gfx::test::CreateImage());
+  gfx::Image rect_picture(gfx::test::CreateImage(100, 50));
   gfx::Size size(profiles::kAvatarIconSize, profiles::kAvatarIconSize);
   gfx::Image result = profiles::GetAvatarIconForWebUI(rect_picture);
 

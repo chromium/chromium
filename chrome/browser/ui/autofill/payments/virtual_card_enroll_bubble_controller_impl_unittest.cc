@@ -23,7 +23,7 @@ namespace {
 class ControllerTestSupport {
  public:
   explicit ControllerTestSupport(content::WebContents* web_contents)
-      : card_art_image_(gfx::test::CreateImage().AsImageSkia()),
+      : card_art_image_(gfx::test::CreateImage(100, 50).AsImageSkia()),
         controller_(static_cast<VirtualCardEnrollBubbleControllerImpl*>(
             VirtualCardEnrollBubbleControllerImpl::GetOrCreate(web_contents))) {
     virtual_card_enrollment_fields_.credit_card = test::GetFullServerCard();

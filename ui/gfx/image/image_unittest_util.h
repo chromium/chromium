@@ -47,8 +47,6 @@ gfx::ImageSkia CreateImageSkia(int width,
 // Returns PNG encoded bytes for a bitmap of |edge_size|x|edge_size|.
 scoped_refptr<base::RefCountedMemory> CreatePNGBytes(int edge_size);
 
-// TODO(rohitrao): Remove the no-argument version of CreateImage().
-gfx::Image CreateImage();
 gfx::Image CreateImage(int size, SkColor color = SK_ColorGREEN);
 gfx::Image CreateImage(int width, int height, SkColor color = SK_ColorGREEN);
 

@@ -56,7 +56,7 @@ class IbanManagerTest : public testing::Test {
         "en-US", &mock_resource_delegate_,
         ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
     ON_CALL(mock_resource_delegate_, GetImageNamed(IDR_AUTOFILL_IBAN))
-        .WillByDefault(testing::Return(gfx::test::CreateImage()));
+        .WillByDefault(testing::Return(gfx::test::CreateImage(100, 50)));
 
     ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
                 autofill_client_.GetAutofillOptimizationGuide()),

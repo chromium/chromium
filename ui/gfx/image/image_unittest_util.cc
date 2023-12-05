@@ -69,10 +69,6 @@ scoped_refptr<base::RefCountedMemory> CreatePNGBytes(int edge_size) {
   return bytes;
 }
 
-gfx::Image CreateImage() {
-  return CreateImage(100, 50);
-}
-
 gfx::Image CreateImage(int size, SkColor color) {
   return CreateImage(size, size, color);
 }
