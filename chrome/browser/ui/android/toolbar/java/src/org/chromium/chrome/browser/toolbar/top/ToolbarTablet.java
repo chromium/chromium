@@ -862,6 +862,9 @@ public class ToolbarTablet extends ToolbarLayout
 
                     @Override
                     public void onAnimationEnd(Animator animation) {
+                        // Reset the capture state token to force a recapture. This is required
+                        // as the capture state token only checks the button's visibility.
+                        mLastCaptureStateToken = null;
                         mButtonVisibilityAnimators = null;
                     }
                 });
