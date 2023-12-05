@@ -43,6 +43,7 @@ bool IsAppListSearchResultAnApp(AppListSearchResultType result_type) {
     case AppListSearchResultType::kInstantApp:
     case AppListSearchResultType::kGames:
     case AppListSearchResultType::kZeroStateApp:
+    case AppListSearchResultType::kAppShortcutV2:
       return true;
     case AppListSearchResultType::kUnknown:
     case AppListSearchResultType::kOmnibox:
@@ -97,6 +98,7 @@ bool IsZeroStateResultType(AppListSearchResultType result_type) {
     case AppListSearchResultType::kPersonalization:
     case AppListSearchResultType::kImageSearch:
     case AppListSearchResultType::kSystemInfo:
+    case AppListSearchResultType::kAppShortcutV2:
       return false;
   }
 }

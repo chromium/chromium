@@ -52,6 +52,7 @@ bool ShouldIgnoreProvider(ProviderType type) {
     case ProviderType::kOpenTab:
     case ProviderType::kOsSettings:
     case ProviderType::kSystemInfo:
+    case ProviderType::kAppShortcutV2:
       return false;
   }
 }

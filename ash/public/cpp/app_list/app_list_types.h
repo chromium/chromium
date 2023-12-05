@@ -391,8 +391,9 @@ enum class AppListSearchResultType {
   kImageSearch,            // Local image search result.
   kSystemInfo,             // System Info search result.
   kDesksAdminTemplate,     // Admin templates search results.
+  kAppShortcutV2,          // App shortcuts V2 search results.
   // Add new values here.
-  kMaxValue = kDesksAdminTemplate,
+  kMaxValue = kAppShortcutV2,
 };
 
 ASH_PUBLIC_EXPORT bool IsAppListSearchResultAnApp(
