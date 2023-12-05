@@ -75,7 +75,7 @@ export class GearMenuController {
   onDirectoryChanged_(event) {
     const
         customEvent = /**
-                         @type {import('../../definitions/directory_change_event.js').DirectoryChangeEvent}
+                         @type {import('./directory_model.js').DirectoryChangeEvent}
                            */
         (event);
     if (customEvent.detail.volumeChanged) {

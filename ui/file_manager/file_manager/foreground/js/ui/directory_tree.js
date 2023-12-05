@@ -2847,7 +2847,7 @@ export class DirectoryTree extends Tree {
   async onCurrentDirectoryChanged_(event) {
     const
         customEvent = /**
-                         @type {import('../../../definitions/directory_change_event.js').DirectoryChangeEvent}
+                         @type {import('../directory_model.js').DirectoryChangeEvent}
                            */
         (event);
     // Clear last active item; this is set by search temporarily disabling

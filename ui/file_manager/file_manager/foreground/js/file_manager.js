@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cros_components/switch/switch.js';
+import '../../background/js/file_manager_base.js';
+import '../../background/js/test_util.js';
 import '../../definitions/file_manager_private.js';
 import '../../widgets/xf_jellybean.js';
-import 'chrome://resources/cros_components/switch/switch.js';
-import '../../background/js/test_util.js';
-import '../../background/js/file_manager_base.js';
 
 import {assert, assertInstanceof} from 'chrome://resources/ash/common/assert.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
@@ -703,7 +703,7 @@ export class FileManager extends EventTarget {
     this.directoryModel_.addEventListener('directory-changed', event => {
       const
           customEvent = /**
-                           @type {import('../../definitions/directory_change_event.js').DirectoryChangeEvent}
+                           @type {import('./directory_model.js').DirectoryChangeEvent}
                              */
           (event);
       // @ts-ignore: error TS2531: Object is possibly 'null'.

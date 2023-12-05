@@ -12,7 +12,6 @@ import {isCrosComponentsEnabled} from '../../common/js/flags.js';
 import {str, strf} from '../../common/js/translations.js';
 import {canBulkPinningCloudPanelShow} from '../../common/js/util.js';
 import {RootType} from '../../common/js/volume_manager_types.js';
-import type {DirectoryChangeEvent} from '../../definitions/directory_change_event.js';
 import {State} from '../../externs/ts/state.js';
 import {Store} from '../../externs/ts/store.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
@@ -20,6 +19,7 @@ import {getStore} from '../../state/store.js';
 import {XfCloudPanel} from '../../widgets/xf_cloud_panel.js';
 
 import {constants} from './constants.js';
+import type {DirectoryChangeEvent} from './directory_model.js';
 import {DirectoryModel} from './directory_model.js';
 import {EventType, FileSelectionHandler} from './file_selection.js';
 import {A11yAnnounce} from './ui/a11y_announce.js';

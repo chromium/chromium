@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
-import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {Aggregator, AsyncQueue} from '../../common/js/async_util.js';
 import {isModal} from '../../common/js/dialog_type.js';
 import {convertURLsToEntries, entriesToURLs, getRootType, isFakeEntry, isGuestOs, isNativeEntry, isOneDriveId, isRecentRootType, isSameEntry, urlToEntry} from '../../common/js/entry_utils.js';
 import type {GuestOsPlaceholder} from '../../common/js/files_app_entry_types.js';
+import {CustomEventMap, FilesEventTarget} from '../../common/js/files_event_target.js';
 import {isDlpEnabled, isDriveFsBulkPinningEnabled} from '../../common/js/flags.js';
 import {recordMediumCount, recordUserAction} from '../../common/js/metrics.js';
 import {getEntryLabel} from '../../common/js/translations.js';
@@ -17,8 +17,8 @@ import {testSendMessage} from '../../common/js/util.js';
 import {FileSystemType, getVolumeTypeFromRootType, isNative, RootType, Source, VolumeType} from '../../common/js/volume_manager_types.js';
 import type {ArrayDataModelSpliceEvent} from '../../definitions/array_data_model_events.js';
 import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {PropStatus, SearchLocation, SearchOptions, State, Volume, VolumeId} from '../../externs/ts/state.js';
 import type {SearchData} from '../../externs/ts/state.js';
+import {PropStatus, SearchLocation, SearchOptions, State, Volume, VolumeId} from '../../externs/ts/state.js';
 import type {Store} from '../../externs/ts/store.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
@@ -100,10 +100,20 @@ function getFileCategory(
   return entry.fileCategory;
 }
 
+export type DirectoryChangeEvent = CustomEvent<{
+  previousDirEntry: DirectoryEntry | FilesAppDirEntry | FakeEntry,
+  newDirEntry: DirectoryEntry | FilesAppDirEntry | FakeEntry,
+  volumeChanged: boolean,
+}>;
+
+interface DirectoryModelEventMap extends CustomEventMap {
+  'directory-changed': DirectoryChangeEvent;
+}
+
 /**
  * Data model of the file manager.
  */
-export class DirectoryModel extends EventTarget {
+export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
   private fileListSelection_: FileListSingleSelectionModel|
       FileListSelectionModel;
   private runningScan_: DirectoryContents|null = null;
