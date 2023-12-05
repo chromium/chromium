@@ -33,7 +33,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.BuildState.BuildStateUpdateType"
-    enum="BuildStateUpdateType" expires_after="2024-03-30">
+    enum="BuildStateUpdateType" expires_after="2024-06-02">
   <owner>ajgo@chromium.org</owner>
   <owner>anunoy@chromium.org</owner>
   <summary>

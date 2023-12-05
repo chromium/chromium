@@ -2904,7 +2904,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.ConnectAfterBroken" enum="BooleanSuccess"
-    expires_after="2024-04-03">
+    expires_after="2024-06-02">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3051,7 +3051,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.QuicSession.ConnectionCloseErrorCode{Closer}{ServerType}{HandshakeType}"
-    enum="QuicErrorCodes" expires_after="2024-04-03">
+    enum="QuicErrorCodes" expires_after="2024-06-02">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3282,7 +3282,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.HandshakeConfirmedTime.ECH"
-    units="Milliseconds" expires_after="2024-04-03">
+    units="Milliseconds" expires_after="2024-06-02">
   <owner>davidben@chromium.org</owner>
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>

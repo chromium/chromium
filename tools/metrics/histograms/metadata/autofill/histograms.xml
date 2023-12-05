@@ -789,7 +789,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Autofill.AutocompleteAttributeForFieldsWith.{FieldType}.{PredictionType}.Prediction"
     enum="AutocompleteValueForStructuredAddressPredictedFields"
-    expires_after="2024-03-30">
+    expires_after="2024-06-02">
   <owner>jihadghanna@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -4174,7 +4174,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.ShadowPredictions.{SourcePair}"
-    enum="AutofillPredictionsComparisonResult" expires_after="2024-04-01">
+    enum="AutofillPredictionsComparisonResult" expires_after="2024-06-02">
   <owner>schwering@google.com</owner>
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>

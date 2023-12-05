@@ -480,7 +480,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.StatusDidChangeTo.Startup"
-    enum="Boolean" expires_after="2024-03-31">
+    enum="Boolean" expires_after="2024-06-02">
   <owner>veronguyen@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <summary>
