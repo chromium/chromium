@@ -6,11 +6,14 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/ntp/feed_top_section/notifications_promo_view_constants.h"
 #import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/pointer_interaction_util.h"
+#import "ios/chrome/common/ui/util/sdk_forward_declares.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -24,12 +27,17 @@ constexpr CGFloat kCloseButtonTrailingMargin = -8.0;
 constexpr CGFloat kCloseButtonTopMargin = 8.0;
 // Size for the close button width and height.
 constexpr CGFloat kCloseButtonWidthHeight = 24;
+// Main button corner radius.
+constexpr CGFloat kButtonCornerRadius = 8.0;
+constexpr CGFloat kButtonTitleHorizontalContentInset = 42.0;
+constexpr CGFloat kButtonTitleVerticalContentInset = 9.0;
 }  // namespace
 
 @interface NotificationsPromoView ()
 
 @property(nonatomic, strong) UILabel* textLabel;
-@property(nonatomic, strong, readwrite) UIButton* closeButton;
+@property(nonatomic, strong) UIButton* primaryButton;
+@property(nonatomic, strong) UIButton* closeButton;
 
 // Stack View containing all internal views on the promo.
 @property(nonatomic, strong) UIStackView* promoStackView;
@@ -43,7 +51,9 @@ constexpr CGFloat kCloseButtonWidthHeight = 24;
   self = [super initWithFrame:frame];
   if (self) {
     _textLabel = [self createTextLabel];
-    _promoStackView = [self createPromoStackWithViewsArray:@[ _textLabel ]];
+    _primaryButton = [self createPrimaryButton];
+    _promoStackView =
+        [self createPromoStackWithViewsArray:@[ _textLabel, _primaryButton ]];
     _closeButton = [self createCloseButton];
     [self addSubview:_promoStackView];
     [self addSubview:_closeButton];
@@ -90,6 +100,42 @@ constexpr CGFloat kCloseButtonWidthHeight = 24;
   return stackView;
 }
 
+- (UIButton*)createPrimaryButton {
+  UIButton* button = [[UIButton alloc] init];
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
+  button.accessibilityIdentifier = kNotificationsPromoPrimaryButtonId;
+  [button addTarget:self
+                action:@selector(onPrimaryButtonAction:)
+      forControlEvents:UIControlEventTouchUpInside];
+  button.pointerInteractionEnabled = YES;
+  button.pointerStyleProvider = CreateOpaqueButtonPointerStyleProvider();
+
+  button.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  // TODO(b/287118358): Cleanup IsMagicStackEnabled() code from the sync
+  // promo after experiment.
+  if (IsMagicStackEnabled() && !IsFeedContainmentEnabled()) {
+    button.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
+  }
+  // Button layout and constraints.
+  button.layer.cornerRadius = kButtonCornerRadius;
+  buttonConfiguration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
+  button.translatesAutoresizingMaskIntoConstraints = NO;
+  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+      kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset,
+      kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset);
+  // Button text.
+  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+  NSAttributedString* attributedTitle = [[NSAttributedString alloc]
+      initWithString:l10n_util::GetNSString(
+                         IDS_IOS_CONTENT_NOTIFICATIONS_PROMO_PRIMARY_BUTTON)
+          attributes:@{NSFontAttributeName : font}];
+  buttonConfiguration.attributedTitle = attributedTitle;
+  button.configuration = buttonConfiguration;
+  return button;
+}
+
 - (UILabel*)createTextLabel {
   UILabel* textLabel = [[UILabel alloc] init];
   textLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -123,6 +169,9 @@ constexpr CGFloat kCloseButtonWidthHeight = 24;
   [self.closeButton sendActionsForControlEvents:UIControlEventTouchUpInside];
 }
 
+// Handles the primary button action.
+- (void)onPrimaryButtonAction:(id)unused {
+}
 // Handles close button action.
 - (void)onCloseButtonAction:(id)unused {
 }
