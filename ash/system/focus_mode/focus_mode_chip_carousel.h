@@ -26,8 +26,6 @@ class ASH_EXPORT FocusModeChipCarousel : public views::BoxLayoutView {
  public:
   // Called when a task chip is pressed, contains a task pointer that is alive
   // for the lifetime of the task chip.
-  // TODO(b/306272008): Update carousel tasks when a task is completed to avoid
-  // dangling pointers.
   using ChipPressedCallback = base::RepeatingCallback<void(const api::Task*)>;
 
   explicit FocusModeChipCarousel(ChipPressedCallback on_chip_pressed);

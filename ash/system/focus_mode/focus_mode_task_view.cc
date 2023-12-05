@@ -69,6 +69,9 @@ class FocusModeTaskView::TaskTextfield : public SystemTextfield {
   TaskTextfield& operator=(const TaskTextfield&) = delete;
   ~TaskTextfield() override = default;
 
+  // The max number of characters (UTF-16) allowed for the textfield.
+  static constexpr size_t kMaxLength = 1023;
+
   void set_show_tooltip(bool show_tooltip) { show_tooltip_ = show_tooltip; }
 
   void SetElideTail(bool elide_tail) {
@@ -107,7 +110,18 @@ class FocusModeTaskView::TaskTextfieldController
   TaskTextfieldController& operator=(const TaskTextfieldController&) = delete;
   ~TaskTextfieldController() override { textfield_->RemoveObserver(this); }
 
-  // views::SystemTextfieldController:
+  // SystemTextfieldController:
+  void ContentsChanged(views::Textfield* sender,
+                       const std::u16string& new_contents) override {
+    DCHECK_EQ(sender, textfield_);
+
+    // Google Tasks have a max length for each task title, so we trim if needed
+    // at kMaxLength UTF-16 boundary.
+    if (new_contents.size() > TaskTextfield::kMaxLength) {
+      textfield_->SetText(new_contents.substr(0, TaskTextfield::kMaxLength));
+    }
+  }
+
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override {
     if (key_event.type() == ui::ET_KEY_PRESSED &&
@@ -133,7 +147,7 @@ class FocusModeTaskView::TaskTextfieldController
   }
 
   void OnViewBlurred(views::View* view) override {
-    owner_->AddTask(textfield_->GetText());
+    owner_->AddOrUpdateTask(textfield_->GetText());
   }
 
  private:
@@ -175,8 +189,6 @@ FocusModeTaskView::FocusModeTaskView() {
                                      kIconSize));
   add_task_button_->SetFocusBehavior(View::FocusBehavior::NEVER);
 
-  auto* focus_mode_controller = FocusModeController::Get();
-  task_title_ = focus_mode_controller->selected_task_title();
   textfield_ =
       textfield_container_->AddChildView(std::make_unique<TaskTextfield>());
   textfield_->SetAccessibleName(l10n_util::GetStringUTF16(
@@ -212,11 +224,16 @@ FocusModeTaskView::FocusModeTaskView() {
 
   chip_carousel_ =
       AddChildView(std::make_unique<FocusModeChipCarousel>(base::BindRepeating(
-          &FocusModeTaskView::SelectTask, base::Unretained(this))));
-  chip_carousel_->SetTasks(
-      focus_mode_controller->tasks_provider().GetTaskList());
+          &FocusModeTaskView::OnTaskSelected, base::Unretained(this))));
+  auto* controller = FocusModeController::Get();
+  const bool has_selected_task = controller->HasSelectedTask();
+  if (has_selected_task) {
+    task_title_ = base::UTF8ToUTF16(controller->selected_task_title());
+  } else {
+    chip_carousel_->SetTasks(controller->tasks_provider().GetTaskList());
+  }
 
-  UpdateStyle(!task_title_.empty());
+  UpdateStyle(/*show_selected_state=*/has_selected_task);
 
   textfield_controller_ =
       std::make_unique<TaskTextfieldController>(textfield_, this);
@@ -224,34 +241,49 @@ FocusModeTaskView::FocusModeTaskView() {
 
 FocusModeTaskView::~FocusModeTaskView() = default;
 
-void FocusModeTaskView::AddTask(const std::u16string& task_title) {
+void FocusModeTaskView::AddOrUpdateTask(const std::u16string& task_title) {
   if (task_title.empty()) {
+    OnClearTask();
     return;
   }
 
-  // If a task is already selected, edit it. Add it otherwise.
   auto* controller = FocusModeController::Get();
-  if (!controller->selected_task_title().empty()) {
-    // TODO(b/306271947): Edit an existing task
+  if (controller->HasSelectedTask()) {
+    controller->tasks_provider().UpdateTaskTitle(
+        controller->selected_task_id(), base::UTF16ToUTF8(task_title),
+        base::BindOnce(&FocusModeTaskView::OnTaskSelected,
+                       weak_factory_.GetWeakPtr()));
   } else {
-    controller->tasks_provider().CreateTask(base::UTF16ToUTF8(task_title));
+    controller->tasks_provider().AddTask(
+        base::UTF16ToUTF8(task_title),
+        base::BindOnce(&FocusModeTaskView::OnTaskSelected,
+                       weak_factory_.GetWeakPtr()));
+  }
+}
+
+void FocusModeTaskView::OnTaskSelected(const api::Task* task) {
+  if (!task) {
+    OnClearTask();
+    return;
   }
 
-  task_title_ = task_title;
-  controller->set_selected_task_title(task_title_);
+  task_title_ = base::UTF8ToUTF16(task->title);
+  textfield_->SetText(task_title_);
+  FocusModeController::Get()->SetSelectedTask(task);
   UpdateStyle(/*show_selected_state=*/true);
 }
 
-void FocusModeTaskView::SelectTask(const api::Task* task) {
-  task_title_ = base::UTF8ToUTF16(task->title);
-  textfield_->SetText(task_title_);
-  FocusModeController::Get()->set_selected_task_title(task_title_);
-  UpdateStyle(/*show_selected_state=*/!task_title_.empty());
-  // TODO(b/306271332): Call the tasks API to either save or update a task.
-  // TODO(b/306271315): Save task info to user prefs.
+void FocusModeTaskView::OnClearTask() {
+  task_title_.clear();
+  textfield_->SetText(std::u16string());
+  auto* controller = FocusModeController::Get();
+  controller->SetSelectedTask(nullptr);
+  chip_carousel_->SetTasks(controller->tasks_provider().GetTaskList());
+  UpdateStyle(/*show_selected_state=*/false);
 }
 
 void FocusModeTaskView::OnCompleteTask() {
+  FocusModeController::Get()->CompleteTask();
   radio_button_->SetEnabled(false);
   radio_button_->SetImageModel(
       views::Button::STATE_NORMAL,
@@ -262,20 +294,16 @@ void FocusModeTaskView::OnCompleteTask() {
           ->ResolveTypographyToken(TypographyToken::kCrosBody2)
           .DeriveWithStyle(gfx::Font::FontStyle::STRIKE_THROUGH));
   textfield_->SetTextColorId(cros_tokens::kCrosSysSecondary);
-  task_title_.clear();
-  FocusModeController::Get()->set_selected_task_title(task_title_);
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&FocusModeTaskView::UpdateStyle,
-                     weak_factory_.GetWeakPtr(), false),
+      base::BindOnce(&FocusModeTaskView::OnClearTask,
+                     weak_factory_.GetWeakPtr()),
       kStartAnimationDelay);
 }
 
 void FocusModeTaskView::OnDeselectButtonPressed() {
-  task_title_.clear();
-  FocusModeController::Get()->set_selected_task_title(task_title_);
-  UpdateStyle(/*show_selected_state=*/false);
+  OnClearTask();
 }
 
 void FocusModeTaskView::OnAddTaskButtonPressed() {
@@ -322,7 +350,9 @@ void FocusModeTaskView::UpdateStyle(bool show_selected_state) {
   radio_button_->SetVisible(show_selected_state);
   deselect_button_->SetVisible(show_selected_state);
   add_task_button_->SetVisible(!show_selected_state);
+  // Note: don't show the carousel if we are editing a previously selected task.
   chip_carousel_->SetVisible(!show_selected_state &&
+                             !FocusModeController::Get()->HasSelectedTask() &&
                              chip_carousel_->HasTasks());
 
   radio_button_->SetImageModel(

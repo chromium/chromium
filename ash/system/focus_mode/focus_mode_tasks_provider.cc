@@ -9,6 +9,7 @@
 #include "ash/api/tasks/tasks_types.h"
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -98,7 +99,7 @@ std::unique_ptr<api::Task> GetTaskFromDummyTask(
 
 FocusModeTasksProvider::FocusModeTasksProvider() {
   for (const DummyTaskData& task_data : kTaskInitializationData) {
-    AddTask(GetTaskFromDummyTask(task_data));
+    InsertTask(GetTaskFromDummyTask(task_data));
   }
 }
 
@@ -115,7 +116,39 @@ std::vector<const api::Task*> FocusModeTasksProvider::GetTaskList() const {
   return tasks;
 }
 
-void FocusModeTasksProvider::AddTask(std::unique_ptr<api::Task> task) {
+void FocusModeTasksProvider::AddTask(const std::string& title,
+                                     OnTaskSavedCallback callback) {
+  std::unique_ptr<api::Task> task = std::make_unique<api::Task>(
+      /*id=*/base::NumberToString(task_id_++), title,
+      /*completed=*/false,
+      /*due=*/absl::nullopt, /*has_subtasks=*/false, /*has_email_link=*/false,
+      /*has_notes=*/false, /*updated=*/base::Time::Now());
+
+  api::Task* task_ptr = task.get();
+  InsertTask(std::move(task));
+  std::move(callback).Run(task_ptr);
+}
+
+void FocusModeTasksProvider::UpdateTaskTitle(const std::string& task_id,
+                                             const std::string& title,
+                                             OnTaskSavedCallback callback) {
+  api::Task* found_task = nullptr;
+  for (auto& task : tasks_data_) {
+    if (task_id == task->id) {
+      task->title = title;
+      found_task = task.get();
+      break;
+    }
+  }
+  std::move(callback).Run(found_task);
+}
+
+void FocusModeTasksProvider::MarkAsCompleted(const std::string& task_id) {
+  base::EraseIf(tasks_data_,
+                [task_id](const auto& task) { return task->id == task_id; });
+}
+
+void FocusModeTasksProvider::InsertTask(std::unique_ptr<api::Task> task) {
   for (auto it = tasks_data_.begin(); it != tasks_data_.end(); it++) {
     if ((task->due.value_or(base::Time::Max()) <
          it->get()->due.value_or(base::Time::Max())) ||
@@ -126,20 +159,6 @@ void FocusModeTasksProvider::AddTask(std::unique_ptr<api::Task> task) {
   }
 
   tasks_data_.push_back(std::move(task));
-}
-
-void FocusModeTasksProvider::CreateTask(const std::string& task_title) {
-  AddTask(std::make_unique<api::Task>(
-      /*id=*/base::NumberToString(task_id_++), task_title,
-      /*completed=*/false,
-      /*due=*/absl::nullopt, /*has_subtasks=*/false,
-      /*has_email_link=*/false,
-      /*has_notes=*/false, /*updated=*/base::Time::Now()));
-}
-
-void FocusModeTasksProvider::MarkAsCompleted(const std::string& task_id) {
-  base::EraseIf(tasks_data_,
-                [task_id](const auto& task) { return task->id == task_id; });
 }
 
 }  // namespace ash

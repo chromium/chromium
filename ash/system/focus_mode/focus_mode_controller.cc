@@ -4,6 +4,7 @@
 
 #include "ash/system/focus_mode/focus_mode_controller.h"
 
+#include "ash/api/tasks/tasks_types.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
@@ -135,6 +136,26 @@ void FocusModeController::SetSessionDuration(
   for (auto& observer : observers_) {
     observer.OnSessionDurationChanged();
   }
+}
+
+void FocusModeController::SetSelectedTask(const api::Task* task) {
+  if (!task) {
+    selected_task_id_.clear();
+    selected_task_title_.clear();
+  } else {
+    selected_task_id_ = task->id;
+    selected_task_title_ = task->title;
+  }
+  // TODO(b/305089077): Update user prefs.
+}
+
+bool FocusModeController::HasSelectedTask() const {
+  return !selected_task_id_.empty();
+}
+
+void FocusModeController::CompleteTask() {
+  tasks_provider_.MarkAsCompleted(selected_task_id_);
+  SetSelectedTask(nullptr);
 }
 
 void FocusModeController::SetEnabled(bool enabled) {

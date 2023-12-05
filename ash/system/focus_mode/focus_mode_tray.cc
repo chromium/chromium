@@ -236,13 +236,13 @@ void FocusModeTray::ShowBubble() {
       std::make_unique<FocusModeCountdownView>(/*include_end_button=*/true));
   countdown_view_->UpdateUI();
 
-  const std::u16string title =
-      FocusModeController::Get()->selected_task_title();
-  if (!title.empty()) {
+  auto* controller = FocusModeController::Get();
+  if (controller->HasSelectedTask()) {
     task_item_view_ =
         bubble_view_container_->AddChildView(std::make_unique<TaskItemView>(
-            title, base::BindRepeating(&FocusModeTray::OnCompleteTask,
-                                       weak_ptr_factory_.GetWeakPtr())));
+            base::UTF8ToUTF16(controller->selected_task_title()),
+            base::BindRepeating(&FocusModeTray::OnCompleteTask,
+                                weak_ptr_factory_.GetWeakPtr())));
     task_item_view_->SetProperty(
         views::kFlexBehaviorKey,
         views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
@@ -319,9 +319,8 @@ void FocusModeTray::OnCompleteTask() {
 
   task_item_view_->UpdateStyleToCompleted();
 
-  // TODO(b/309857026): Call the task API to mark the task as completed, then
-  // clean up the selected task title.
-  FocusModeController::Get()->set_selected_task_title(std::u16string());
+  // TODO(b/309857026): Call the task API to mark the task as completed.
+  FocusModeController::Get()->CompleteTask();
 
   // We want to show the check icon and a strikethrough on the label for
   // `kStartAnimationDelay` before removing `task_item_view_` from the

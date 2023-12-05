@@ -33,11 +33,15 @@ class ASH_EXPORT FocusModeTaskView : public views::BoxLayoutView {
   // Handles finished editing event from the text field, creates, saves, and
   // selects a new task with the user entered task title.
   // TODO(b/306271332): Create a new task.
-  void AddTask(const std::u16string& task_title);
+  void AddOrUpdateTask(const std::u16string& task_title);
 
   // Updates `task_title_` and saves the task information to the focus mode
-  // controller and user prefs.
-  void SelectTask(const api::Task* task);
+  // controller.
+  void OnTaskSelected(const api::Task* task);
+
+  // Clears the stored task data, and fetches an updated task list to display in
+  // the carousel.
+  void OnClearTask();
 
   views::ImageButton* radio_button_for_testing() { return radio_button_; }
   views::ImageButton* deselect_button_for_testing() { return deselect_button_; }

@@ -72,9 +72,9 @@ FocusModeEndingMomentView::FocusModeEndingMomentView() {
   text_container->AddChildView(CreateTextLabel(
       gfx::ALIGN_LEFT, TypographyToken::kCrosAnnotation1,
       cros_tokens::kCrosSysOnSurface, /*allow_multiline=*/true,
-      focus_mode_controller->selected_task_title().empty()
-          ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_BODY
-          : IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_BODY_WITH_TASK));
+      focus_mode_controller->HasSelectedTask()
+          ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_BODY_WITH_TASK
+          : IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_BODY));
 
   // Add a top level spacer in first layout manager, between the text container
   // and button container.

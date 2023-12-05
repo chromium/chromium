@@ -58,11 +58,9 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
   void set_turn_on_do_not_disturb(bool turn_on) {
     turn_on_do_not_disturb_ = turn_on;
   }
-  const std::u16string& selected_task_title() const {
+  const std::string& selected_task_id() const { return selected_task_id_; }
+  const std::string& selected_task_title() const {
     return selected_task_title_;
-  }
-  void set_selected_task_title(const std::u16string& selected_task_title) {
-    selected_task_title_ = selected_task_title;
   }
   FocusModeTasksProvider& tasks_provider() { return tasks_provider_; }
 
@@ -95,6 +93,17 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
 
   // Returns whether the user has ever started a focus session previously.
   bool HasStartedSessionBefore() const;
+
+  // Stores the `selected_task_id_` and `selected_task_title_` of the provided
+  // task. If task is `nullptr`, clears the selected task data.
+  void SetSelectedTask(const api::Task* task);
+
+  // Returns whether there is a currently selected task.
+  bool HasSelectedTask() const;
+
+  // Marks the task as completed with the tasks provider, and also clears the
+  // selected task data.
+  void CompleteTask();
 
  private:
   void SetEnabled(bool enabled);
@@ -144,9 +153,10 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
   // starts. Depends on previous session data (from user prefs) or user input.
   bool turn_on_do_not_disturb_ = true;
 
-  // This is the task title which was created by the user or selected from
-  // existing tasks.
-  std::u16string selected_task_title_;
+  // This is the selected task data, which can be populated from an existing
+  // task or created by the user.
+  std::string selected_task_id_;
+  std::string selected_task_title_;
 
   base::ObserverList<Observer> observers_;
 };
