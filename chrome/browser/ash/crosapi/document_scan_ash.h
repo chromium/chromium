@@ -43,6 +43,8 @@ class DocumentScanAsh : public mojom::DocumentScan {
                   SetOptionsCallback callback) override;
   void GetOptionGroups(const std::string& scanner_handle,
                        GetOptionGroupsCallback callback) override;
+  void CancelScan(const std::string& job_handle,
+                  CancelScanCallback callback) override;
 
  private:
   // This class supports any number of connections. This allows the client to

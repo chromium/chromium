@@ -842,5 +842,22 @@ TEST(DocumentScanAshTypeConvertersTest, GetOptionGroupsResponse_Success) {
   EXPECT_THAT(actual2->members, ElementsAre("group2-val1"));
 }
 
+TEST(DocumentScanAshTypeConvertersTest, CancelScanResponse_EmptyObject) {
+  lorgnette::CancelScanResponse input;
+  auto output = crosapi::mojom::CancelScanResponse::From(input);
+  EXPECT_EQ(output->result, crosapi::mojom::ScannerOperationResult::kUnknown);
+  EXPECT_TRUE(output->job_handle.empty());
+}
+
+TEST(DocumentScanAshTypeConvertersTest, CancelScanResponse_Success) {
+  lorgnette::CancelScanResponse input;
+  input.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
+  input.mutable_job_handle()->set_token("job-handle");
+
+  auto output = crosapi::mojom::CancelScanResponse::From(input);
+  EXPECT_EQ(output->result, crosapi::mojom::ScannerOperationResult::kSuccess);
+  EXPECT_EQ(output->job_handle, "job-handle");
+}
+
 }  // namespace
 }  // namespace mojo

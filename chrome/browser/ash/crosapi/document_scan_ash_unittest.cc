@@ -608,4 +608,51 @@ TEST_F(DocumentScanAshTest, GetOptionGroups_GoodResponse) {
   run_loop.Run();
 }
 
+TEST_F(DocumentScanAshTest, CancelScan_FeatureDisabled) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndDisableFeature(ash::features::kAdvancedDocumentScanAPI);
+
+  GetLorgnetteScannerManager()->SetCancelScanResponse(std::nullopt);
+  base::RunLoop run_loop;
+  document_scan_ash().CancelScan(
+      "job-handle",
+      base::BindLambdaForTesting([&](mojom::CancelScanResponsePtr response) {
+        run_loop.Quit();
+        EXPECT_EQ(response->result,
+                  mojom::ScannerOperationResult::kUnsupported);
+        EXPECT_EQ(response->job_handle, "job-handle");
+      }));
+  run_loop.Run();
+}
+
+TEST_F(DocumentScanAshTest, CancelScan_BadResponse) {
+  GetLorgnetteScannerManager()->SetCancelScanResponse(std::nullopt);
+  base::RunLoop run_loop;
+  document_scan_ash().CancelScan(
+      "job-handle",
+      base::BindLambdaForTesting([&](mojom::CancelScanResponsePtr response) {
+        run_loop.Quit();
+        EXPECT_EQ(response->result,
+                  mojom::ScannerOperationResult::kInternalError);
+        EXPECT_EQ(response->job_handle, "job-handle");
+      }));
+  run_loop.Run();
+}
+
+TEST_F(DocumentScanAshTest, CancelScan_GoodResponse) {
+  lorgnette::CancelScanResponse fake_response;
+  fake_response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
+  fake_response.mutable_job_handle()->set_token("job-handle");
+  GetLorgnetteScannerManager()->SetCancelScanResponse(std::move(fake_response));
+  base::RunLoop run_loop;
+  document_scan_ash().CancelScan(
+      "job-handle",
+      base::BindLambdaForTesting([&](mojom::CancelScanResponsePtr response) {
+        run_loop.Quit();
+        EXPECT_EQ(response->result, mojom::ScannerOperationResult::kSuccess);
+        EXPECT_EQ(response->job_handle, "job-handle");
+      }));
+  run_loop.Run();
+}
+
 }  // namespace crosapi

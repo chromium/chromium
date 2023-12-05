@@ -132,6 +132,12 @@ void FakeDocumentScanAsh::GetOptionGroups(const std::string& scanner_handle,
   NOTIMPLEMENTED();
 }
 
+void FakeDocumentScanAsh::CancelScan(const std::string& job_handle,
+                                     CancelScanCallback callback) {
+  // TODO(b/299489635): Implement this when adding the extension handler.
+  NOTIMPLEMENTED();
+}
+
 void FakeDocumentScanAsh::SetGetScannerNamesResponse(
     std::vector<std::string> scanner_names) {
   scanner_names_ = std::move(scanner_names);

@@ -464,9 +464,19 @@ struct GetOptionGroupsResponse {
   array<OptionGroup>? options@2;
 };
 
+// The response from calling `CancelScan`.
+[Stable]
+struct CancelScanResponse {
+  // The same job handle that was passed to `CancelScan()`.
+  string job_handle@0;
+
+  // The backend's cancel result.
+  ScannerOperationResult result@1;
+};
+
 // This interface is used to access scanners.
-// Next version: 5
-// Next method id: 9
+// Next version: 6
+// Next method id: 10
 [Stable, Uuid="f0c77c02-b5c1-4919-8218-3076ecad58db"]
 interface DocumentScan {
   // Returns the names of all available, de-duplicated scanners.
@@ -522,4 +532,8 @@ interface DocumentScan {
   [MinVersion=4]
   GetOptionGroups@8(string scanner_handle)
       => (GetOptionGroupsResponse response);
+
+  // Cancel a scan using the handle returned from `StartPreparedScan()`.
+  [MinVersion=5]
+  CancelScan@9(string job_handle) => (CancelScanResponse response);
 };

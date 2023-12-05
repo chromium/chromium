@@ -597,4 +597,16 @@ TypeConverter<crosapi::mojom::GetOptionGroupsResponsePtr,
   return output;
 }
 
+crosapi::mojom::CancelScanResponsePtr TypeConverter<
+    crosapi::mojom::CancelScanResponsePtr,
+    lorgnette::CancelScanResponse>::Convert(const lorgnette::CancelScanResponse&
+                                                input) {
+  auto output = crosapi::mojom::CancelScanResponse::New();
+  output->job_handle = input.job_handle().token();
+  output->result =
+      ConvertTo<crosapi::mojom::ScannerOperationResult>(input.result());
+
+  return output;
+}
+
 }  // namespace mojo
