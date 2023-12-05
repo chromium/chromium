@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -194,6 +195,10 @@ class ExtensionGlobalError : public GlobalErrorWithStandardBubble {
     delegate_->OnAlertClosed();
   }
 
+  base::WeakPtr<GlobalErrorWithStandardBubble> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   void BubbleViewDetailsButtonPressed(Browser* browser) override {
     delegate_->OnAlertDetails();
   }
@@ -203,6 +208,7 @@ class ExtensionGlobalError : public GlobalErrorWithStandardBubble {
   int app_count_ = 0;
   int extension_count_ = 0;
   bool item_blocked_by_policy_exists_ = false;
+  base::WeakPtrFactory<ExtensionGlobalError> weak_ptr_factory_{this};
 
   ExtensionGlobalError(const ExtensionGlobalError&) = delete;
   ExtensionGlobalError& operator=(const ExtensionGlobalError&) = delete;

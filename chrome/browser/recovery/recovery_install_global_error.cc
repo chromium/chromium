@@ -133,6 +133,11 @@ void RecoveryInstallGlobalError::BubbleViewCancelButtonPressed(
   component_updater::DeclinedElevatedRecoveryInstall(pref_registrar_.prefs());
 }
 
+base::WeakPtr<GlobalErrorWithStandardBubble>
+RecoveryInstallGlobalError::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 bool RecoveryInstallGlobalError::HasElevationNotification() const {
   // Do not show this bubble if we already have an upgrade notice.
   return elevation_needed_ && !UpgradeDetector::GetInstance()->notify_upgrade();

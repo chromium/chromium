@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -16,8 +17,8 @@ class Profile;
 
 // Shows elevation needed for recovery component install on the wrench menu
 // using a bubble view and a menu item.
-class RecoveryInstallGlobalError : public GlobalErrorWithStandardBubble,
-                                   public KeyedService {
+class RecoveryInstallGlobalError final : public GlobalErrorWithStandardBubble,
+                                         public KeyedService {
  public:
   explicit RecoveryInstallGlobalError(Profile* profile);
 
@@ -51,6 +52,7 @@ class RecoveryInstallGlobalError : public GlobalErrorWithStandardBubble,
   void OnBubbleViewDidClose(Browser* browser) override;
   void BubbleViewAcceptButtonPressed(Browser* browser) override;
   void BubbleViewCancelButtonPressed(Browser* browser) override;
+  base::WeakPtr<GlobalErrorWithStandardBubble> AsWeakPtr() override;
 
   bool HasElevationNotification() const;
   void OnElevationRequirementChanged();
@@ -64,6 +66,8 @@ class RecoveryInstallGlobalError : public GlobalErrorWithStandardBubble,
   PrefChangeRegistrar pref_registrar_;
 
   bool has_shown_bubble_view_;
+
+  base::WeakPtrFactory<RecoveryInstallGlobalError> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_RECOVERY_RECOVERY_INSTALL_GLOBAL_ERROR_H_
