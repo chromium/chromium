@@ -167,6 +167,7 @@ class DesktopMediaListController : public DesktopMediaListObserver,
 
   // Auto-selection. Used only in tests.
   const std::string auto_select_tab_;        // Only tabs, by title.
+  const std::string auto_select_window_;     // Only windows, by title.
   const std::string auto_select_source_;     // Any source by its title.
   const bool auto_accept_this_tab_capture_;  // Only for current-tab capture.
   const bool auto_reject_this_tab_capture_;  // Only for current-tab capture.

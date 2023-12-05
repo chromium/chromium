@@ -41,6 +41,9 @@ DesktopMediaListController::DesktopMediaListController(
       auto_select_tab_(
           base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
               switches::kAutoSelectTabCaptureSourceByTitle)),
+      auto_select_window_(
+          base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+              switches::kAutoSelectWindowCaptureSourceByTitle)),
       auto_select_source_(
           base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
               switches::kAutoSelectDesktopCaptureSource)),
@@ -267,6 +270,12 @@ bool DesktopMediaListController::ShouldAutoAccept(
                  DesktopMediaList::Type::kWebContents &&
              !auto_select_tab_.empty() &&
              source.name.find(base::ASCIIToUTF16(auto_select_tab_)) !=
+                 std::u16string::npos) {
+    return true;
+  } else if (media_list_->GetMediaListType() ==
+                 DesktopMediaList::Type::kWindow &&
+             !auto_select_window_.empty() &&
+             source.name.find(base::ASCIIToUTF16(auto_select_window_)) !=
                  std::u16string::npos) {
     return true;
   }
