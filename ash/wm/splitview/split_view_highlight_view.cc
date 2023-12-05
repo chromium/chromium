@@ -111,9 +111,7 @@ void SplitViewHighlightView::SetBounds(
     // it is unaffected by RTL and the nix inset animation will supply the
     // current bounds offset.
     if (base::i18n::IsRTL() &&
-        SplitViewController::IsLayoutHorizontal(
-            GetWidget()->GetNativeWindow()) &&
-        !nix_animation) {
+        IsLayoutHorizontal(GetWidget()->GetNativeWindow()) && !nix_animation) {
       clip_offset = gfx::Vector2d(bounds.width() - old_bounds.width(), 0);
     }
 
@@ -165,8 +163,8 @@ void SplitViewHighlightView::OnWindowDraggingStateChanged(
                                   SPLITVIEW_ANIMATION_HIGHLIGHT_FADE_OUT);
       return;
     }
-    if (is_right_or_bottom_ != SplitViewController::IsPhysicalLeftOrTop(
-                                   previous_preview_position, window)) {
+    if (is_right_or_bottom_ !=
+        IsPhysicalLeftOrTop(previous_preview_position, window)) {
       DoSplitviewOpacityAnimation(layer(),
                                   SPLITVIEW_ANIMATION_PREVIEW_AREA_FADE_OUT);
     }
@@ -176,8 +174,7 @@ void SplitViewHighlightView::OnWindowDraggingStateChanged(
   if (preview_position != SplitViewController::SnapPosition::kNone) {
     DoSplitviewOpacityAnimation(
         layer(),
-        is_right_or_bottom_ != SplitViewController::IsPhysicalLeftOrTop(
-                                   preview_position, window)
+        is_right_or_bottom_ != IsPhysicalLeftOrTop(preview_position, window)
             ? SPLITVIEW_ANIMATION_PREVIEW_AREA_FADE_IN
             : SPLITVIEW_ANIMATION_OTHER_HIGHLIGHT_FADE_OUT);
     return;
@@ -186,8 +183,8 @@ void SplitViewHighlightView::OnWindowDraggingStateChanged(
   if (previous_preview_position != SplitViewController::SnapPosition::kNone) {
     // There was a snap preview showing, but now the user has dragged away from
     // the edge of the screen, so that the preview should go away.
-    if (is_right_or_bottom_ != SplitViewController::IsPhysicalLeftOrTop(
-                                   previous_preview_position, window)) {
+    if (is_right_or_bottom_ !=
+        IsPhysicalLeftOrTop(previous_preview_position, window)) {
       // This code is for the preview. If |previews_only|, just fade out. Else
       // fade in from |kPreviewAreaHighlightOpacity| to |kHighlightOpacity|.
       DoSplitviewOpacityAnimation(

@@ -287,7 +287,7 @@ gfx::Rect GetGridBoundsInScreen(
   }
 
   DCHECK(opposite_position);
-  const bool horizontal = SplitViewController::IsLayoutHorizontal(target_root);
+  const bool horizontal = IsLayoutHorizontal(target_root);
   const int min_length =
       (horizontal ? work_area.width() : work_area.height()) / 3;
   const int current_length = horizontal ? bounds.width() : bounds.height();
@@ -301,8 +301,7 @@ gfx::Rect GetGridBoundsInScreen(
   else
     bounds.set_height(min_length);
 
-  if (SplitViewController::IsPhysicalLeftOrTop(*opposite_position,
-                                               target_root)) {
+  if (IsPhysicalLeftOrTop(*opposite_position, target_root)) {
     // If we are shifting to the left or top we need to update the origin as
     // well.
     const int offset = min_length - current_length;

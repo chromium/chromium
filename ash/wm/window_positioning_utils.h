@@ -34,7 +34,7 @@ inline constexpr float kMinimumPercentOnScreenArea = 0.3f;
 // top/bottom for vertical display. For primary-landscape-oriented display,
 // |kPrimary| and |kSecondary| are left snap and right snap.
 // For other orientation see the table of description for
-// `SplitViewController::IsLayoutHorizontal()`.
+// `IsLayoutHorizontal()`.
 enum class SnapViewType { kPrimary, kSecondary };
 
 // Adjusts |bounds| so that the size does not exceed |max_size|.

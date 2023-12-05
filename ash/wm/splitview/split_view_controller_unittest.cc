@@ -3872,7 +3872,7 @@ TEST_F(SplitViewKeyboardTest, PushUpBottomWindow) {
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(chromeos::OrientationType::kPortraitPrimary,
             test_api.GetCurrentOrientation());
-  EXPECT_FALSE(split_view_controller()->IsPhysicalLeftOrTop(
+  EXPECT_FALSE(IsPhysicalLeftOrTop(
       SplitViewController::SnapPosition::kSecondary, bottom_window.get()));
 
   const gfx::Rect keyboard_bounds =
@@ -3966,7 +3966,7 @@ TEST_F(SplitViewKeyboardTest, PushUpBottomWindowLimitHeight) {
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(chromeos::OrientationType::kPortraitPrimary,
             test_api.GetCurrentOrientation());
-  EXPECT_FALSE(split_view_controller()->IsPhysicalLeftOrTop(
+  EXPECT_FALSE(IsPhysicalLeftOrTop(
       SplitViewController::SnapPosition::kSecondary, bottom_window.get()));
 
   const gfx::Rect keyboard_bounds =
@@ -4057,8 +4057,8 @@ TEST_F(SplitViewKeyboardTest, RestoreByActivatingTopWindow) {
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(chromeos::OrientationType::kPortraitPrimary,
             test_api.GetCurrentOrientation());
-  EXPECT_TRUE(split_view_controller()->IsPhysicalLeftOrTop(
-      SplitViewController::SnapPosition::kPrimary, top_window.get()));
+  EXPECT_TRUE(IsPhysicalLeftOrTop(SplitViewController::SnapPosition::kPrimary,
+                                  top_window.get()));
 
   const gfx::Rect keyboard_bounds =
       keyboard_controller()->GetKeyboardWindow()->GetBoundsInScreen();
@@ -4125,7 +4125,7 @@ TEST_F(SplitViewKeyboardTest, NoInputField) {
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(chromeos::OrientationType::kPortraitPrimary,
             test_api.GetCurrentOrientation());
-  EXPECT_FALSE(split_view_controller()->IsPhysicalLeftOrTop(
+  EXPECT_FALSE(IsPhysicalLeftOrTop(
       SplitViewController::SnapPosition::kSecondary, bottom_window.get()));
 
   const gfx::Rect orig_bottom_bounds = bottom_window->GetBoundsInScreen();

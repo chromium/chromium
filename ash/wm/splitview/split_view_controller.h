@@ -165,30 +165,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // choose extend; we just are not yet trying to support it really well.
   static SplitViewController* Get(const aura::Window* window);
 
-  // The return values of these two functions together indicate what actual
-  // positions correspond to |PRIMARY| and |SECONDARY|:
-  // |IsLayoutHorizontal|  |IsLayoutPrimary|    |PRIMARY|           |SECONDARY|
-  // --------------------------------------------------------------------------
-  // true                  true                   left                 right
-  // true                  false                  right                left
-  // false                 true                   top                  bottom
-  // false                 false                  bottom               top
-  // In both clamshell and tablet mode, these functions return values based on
-  // display orientation. |window| is used to find the nearest display to check
-  // if the display layout is horizontal and is primary or not.
-  static bool IsLayoutHorizontal(aura::Window* window);
-  static bool IsLayoutHorizontal(const display::Display& display);
-  static bool IsLayoutPrimary(aura::Window* window);
-  static bool IsLayoutPrimary(const display::Display& display);
-
-  // Returns true if |position| actually signifies a left or top position,
-  // according to the return values of |IsLayoutHorizontal| and
-  // |IsLayoutPrimary|. Physical position refers to the position of the window
-  // on the display that is held upward.
-  static bool IsPhysicalLeftOrTop(SnapPosition position, aura::Window* window);
-  static bool IsPhysicalLeftOrTop(SnapPosition position,
-                                  const display::Display& display);
-
   explicit SplitViewController(aura::Window* root_window);
 
   SplitViewController(const SplitViewController&) = delete;
@@ -555,11 +531,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // After resizing, if we should end split view mode, returns the window that
   // needs to be activated. Returns nullptr if there is no such window.
   aura::Window* GetActiveWindowAfterResizingUponExit();
-
-  // Returns the maximum value of the `divider_position_`, which is the width of
-  // the current display's work area bounds in landscape orientation, or height
-  // of the current display's work area bounds in portrait orientation.
-  int GetDividerPositionUpperLimit() const;
 
   // Called after a to-be-snapped window `window` got snapped. It updates the
   // split view states and notifies observers about the change. It also restore
