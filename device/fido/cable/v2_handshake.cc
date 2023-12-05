@@ -8,10 +8,10 @@
 
 #include <algorithm>
 #include <array>
+#include <bit>
 #include <type_traits>
 
 #include "base/base64url.h"
-#include "base/bits.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/ranges/algorithm.h"
@@ -735,7 +735,7 @@ bool Crypter::Encrypt(std::vector<uint8_t>* message_to_encrypt) {
   // of kPaddingGranularity.
   constexpr size_t kPaddingGranularity = 32;
   static_assert(kPaddingGranularity < 256, "padding too large");
-  static_assert(base::bits::IsPowerOfTwo(kPaddingGranularity),
+  static_assert(std::has_single_bit(kPaddingGranularity),
                 "padding must be a power of two");
 
   // Padding consists of a some number of zero bytes appended to the message
