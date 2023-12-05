@@ -155,3 +155,17 @@ if (is_chromeos_device) {
     tast_tests = [ "lacros.VariationSmoke" ]
   }
 }
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":lacros",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/crosapi/mojom",
+    "//chromeos/startup",
+    "//testing/gtest",
+  ]
+  sources = [ "lacros_service_unittest.cc" ]
+}

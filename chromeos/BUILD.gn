@@ -132,6 +132,10 @@ test("chromeos_unittests") {
     ]
   }
 
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros:unit_tests" ]
+  }
+
   data = [ "test/data/" ]
 }
 

@@ -187,7 +187,10 @@ class LacrosService::InterfaceEntry : public LacrosService::InterfaceEntryBase {
   void MaybeBind(LacrosService* impl) override {
     available_ = impl->IsSupported<CrosapiInterface>();
     if (available_) {
-      impl->InitializeAndBindRemote<CrosapiInterface, bind_func>(&remote_);
+      if (!impl->MaybeInitializeAndBindRemote<CrosapiInterface, bind_func>(
+              &remote_)) {
+        LOG(ERROR) << "Failed to bind " << CrosapiInterface::Name_;
+      }
     }
   }
 
@@ -815,16 +818,6 @@ void LacrosService::StartSystemIdleCache() {
 
 void LacrosService::StartNativeThemeCache() {
   native_theme_cache_->Start();
-}
-
-template <typename CrosapiInterface,
-          void (Crosapi::*bind_func)(mojo::PendingReceiver<CrosapiInterface>)>
-void LacrosService::InitializeAndBindRemote(
-    mojo::Remote<CrosapiInterface>* remote) {
-  mojo::PendingReceiver<CrosapiInterface> pending_receiver =
-      remote->BindNewPipeAndPassReceiver();
-  BindPendingReceiverOrRemote<mojo::PendingReceiver<CrosapiInterface>,
-                              bind_func>(std::move(pending_receiver));
 }
 
 template <typename CrosapiInterface,
