@@ -2868,6 +2868,22 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 </histogram>
 
 <histogram
+    name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.AcceleratorAction.Pressed"
+    enum="AcceleratorAction" expires_after="2024-03-22">
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the value of the button_remapping AcceleratorAction property when
+    it's emitted due to the {Peripheral} device button presses.
+  </summary>
+  <token key="Peripheral">
+    <variant name="GraphicsTablet"/>
+    <variant name="GraphicsTabletPen"/>
+    <variant name="Mouse"/>
+  </token>
+</histogram>
+
+<histogram
     name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.KeyEvent.Changed"
     units="KeyEventEncodedInt" expires_after="2024-03-22">
   <owner>dpad@google.com</owner>
@@ -2899,6 +2915,26 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
     KeyboardCode/vkey, and the high 16 bits represent the KeyEvent's modifiers.
     See ui/events/keycodes/keyboard_codes_posix.h for the KeyboardCode values.
     and ui/events/event_constants.h for the modifier values.
+  </summary>
+  <token key="Peripheral">
+    <variant name="GraphicsTablet"/>
+    <variant name="GraphicsTabletPen"/>
+    <variant name="Mouse"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.KeyEvent.Pressed"
+    units="KeyEventEncodedInt" expires_after="2024-03-22">
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the value of the button_remapping KeyEvent property when the it's
+    emiited due to {Peripheral} device button presses. A KeyEvent is encoded as
+    an int where the low 16 bits represent the KeyEvent's KeyboardCode/vkey, and
+    the high 16 bits represent the KeyEvent's modifiers. See
+    ui/events/keycodes/keyboard_codes_posix.h for the KeyboardCode values. and
+    ui/events/event_constants.h for the modifier values.
   </summary>
   <token key="Peripheral">
     <variant name="GraphicsTablet"/>
@@ -2998,6 +3034,22 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   <summary>
     Records the value of the button_remapping StaticShortcutAction property when
     the {Peripheral} device button_remapping is first initialized.
+  </summary>
+  <token key="Peripheral">
+    <variant name="GraphicsTablet"/>
+    <variant name="GraphicsTabletPen"/>
+    <variant name="Mouse"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.StaticShortcutAction.Pressed"
+    enum="DeviceSettingsStaticShortcutAction" expires_after="2024-03-22">
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the value of the button_remapping StaticShortcutAction property when
+    it's emitted due the {Peripheral} device button presses.
   </summary>
   <token key="Peripheral">
     <variant name="GraphicsTablet"/>

@@ -21,6 +21,7 @@
 #include "base/containers/flat_map.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -293,6 +294,7 @@ class PeripheralCustomizationEventRewriterTest : public AshTestBase {
         .WillByDefault(testing::Return(graphics_tablet_settings_.get()));
     rewriter_ = std::make_unique<PeripheralCustomizationEventRewriter>(
         controller_.get());
+    metrics_manager_ = std::make_unique<InputDeviceSettingsMetricsManager>();
   }
 
   void TearDown() override {
@@ -301,6 +303,7 @@ class PeripheralCustomizationEventRewriterTest : public AshTestBase {
     controller_scoped_resetter_.reset();
     AshTestBase::TearDown();
     scoped_feature_list_.Reset();
+    metrics_manager_.reset();
   }
 
  protected:
@@ -311,6 +314,7 @@ class PeripheralCustomizationEventRewriterTest : public AshTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
   mojom::MouseSettingsPtr mouse_settings_;
   mojom::GraphicsTabletSettingsPtr graphics_tablet_settings_;
+  std::unique_ptr<InputDeviceSettingsMetricsManager> metrics_manager_;
 };
 
 TEST_F(PeripheralCustomizationEventRewriterTest, MouseButtonWithoutObserving) {
@@ -758,6 +762,57 @@ TEST_F(MouseButtonObserverTest, BlockEventRewritingForKeyEvent) {
   // mouse event.
   ASSERT_TRUE(continuation.discarded());
   EXPECT_EQ(nullptr, continuation.passthrough_event);
+}
+
+TEST_F(PeripheralCustomizationEventRewriterTest,
+       RewriteEventFromButtonEmitMetrics) {
+  TestEventRewriterContinuation continuation;
+  base::HistogramTester histogram_tester;
+  mouse_settings_->button_remappings.push_back(
+      mojom::ButtonRemapping::New("", mojom::Button::NewVkey(ui::VKEY_A),
+                                  mojom::RemappingAction::NewAcceleratorAction(
+                                      AcceleratorAction::kBrightnessDown)));
+
+  graphics_tablet_settings_->pen_button_remappings.push_back(
+      mojom::ButtonRemapping::New(
+          "", mojom::Button::NewVkey(ui::VKEY_Z),
+          mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
+              ui::KeyboardCode::VKEY_M, (int)ui::DomCode::US_M,
+              (int)ui::DomKey::FromCharacter('M'),
+              (int)ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
+              /*key_display=*/""))));
+
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Mouse.ButtonRemapping.AcceleratorAction."
+      "Pressed",
+      /*expected_count=*/0);
+
+  rewriter_->RewriteEvent(
+      CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_COMMAND_DOWN),
+      continuation.weak_ptr_factory_.GetWeakPtr());
+
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Mouse.ButtonRemapping.AcceleratorAction."
+      "Pressed",
+      /*expected_count=*/1u);
+
+  continuation.reset();
+
+  auto pen_button_event =
+      CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_Z, ui::EF_COMMAND_DOWN);
+  pen_button_event.set_source_device_id(kGraphicsTabletDeviceId);
+
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.GraphicsTabletPen.ButtonRemapping.KeyEvent."
+      "Pressed",
+      /*expected_count=*/0);
+
+  rewriter_->RewriteEvent(pen_button_event,
+                          continuation.weak_ptr_factory_.GetWeakPtr());
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.GraphicsTabletPen.ButtonRemapping.KeyEvent."
+      "Pressed",
+      /*expected_count=*/1u);
 }
 
 class GraphicsTabletButtonObserverTest

@@ -8,8 +8,10 @@
 #include "ash/ash_export.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "ash/system/input_device_settings/input_device_settings_metrics_manager.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "ui/events/event.h"
@@ -31,6 +33,12 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
 
   enum class DeviceType { kMouse, kGraphicsTablet };
 
+  enum class PeripheralCustomizationMetricsType {
+    kMouse,
+    kGraphicsTablet,
+    kGraphicsTabletPen
+  };
+
   struct DeviceIdButton {
     int device_id;
     mojom::ButtonPtr button;
@@ -42,6 +50,16 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
     DeviceIdButton& operator=(DeviceIdButton&& device_id_button);
     friend bool operator<(const DeviceIdButton& left,
                           const DeviceIdButton& right);
+  };
+
+  struct RemappingActionResult {
+    raw_ref<mojom::RemappingAction> remapping_action;
+    PeripheralCustomizationMetricsType peripheral_kind;
+
+    RemappingActionResult(mojom::RemappingAction& remapping_action,
+                          PeripheralCustomizationMetricsType peripheral_kind);
+    RemappingActionResult(RemappingActionResult&& result);
+    ~RemappingActionResult();
   };
 
   explicit PeripheralCustomizationEventRewriter(
@@ -101,8 +119,9 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
 
   std::optional<DeviceType> GetDeviceTypeToObserve(int device_id);
 
-  const mojom::RemappingAction* GetRemappingAction(int device_id,
-                                                   const mojom::Button& button);
+  std::optional<RemappingActionResult> GetRemappingAction(
+      int device_id,
+      const mojom::Button& button);
 
   void UpdatePressedButtonMap(
       mojom::ButtonPtr button,
@@ -127,6 +146,9 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
   base::flat_map<DeviceIdButton, int> device_button_to_flags_;
 
   raw_ptr<InputDeviceSettingsController> input_device_settings_controller_;
+
+  // Emit all metrics.
+  std::unique_ptr<InputDeviceSettingsMetricsManager> metrics_manager_;
 };
 
 }  // namespace ash

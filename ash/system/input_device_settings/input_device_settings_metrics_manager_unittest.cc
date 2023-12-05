@@ -1171,6 +1171,24 @@ TEST_F(InputDeviceSettingsMetricsManagerTest,
       ui::VKEY_B, 1);
 }
 
+TEST_F(InputDeviceSettingsMetricsManagerTest,
+       RecordRemappingActionWhenButtonPressed) {
+  const auto remappingAction = mojom::RemappingAction::NewStaticShortcutAction(
+      mojom::StaticShortcutAction::kPaste);
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Mouse.ButtonRemapping.StaticShortcutAction."
+      "Pressed",
+      /*expected_count=*/0);
+
+  manager_->RecordRemappingActionWhenButtonPressed(*remappingAction,
+                                                   /*peripheral_kind=*/"Mouse");
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Mouse.ButtonRemapping.StaticShortcutAction."
+      "Pressed",
+      /*expected_count=*/1u);
+}
+
 class SettingsUpdatedTimePeriodMetricsTest
     : public InputDeviceSettingsMetricsManagerTest,
       public testing::WithParamInterface<
