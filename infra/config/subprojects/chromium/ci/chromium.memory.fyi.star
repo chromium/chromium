@@ -30,47 +30,6 @@ consoles.console_view(
 # TODO(crbug.com/1442587): Remove this builder after burning down failures
 # found when we now post-process stdout.
 ci.builder(
-    name = "linux-exp-asan-lsan-fyi-rel",
-    schedule = "with 6h interval",
-    triggered_by = [],
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium_asan",
-            apply_configs = [
-                "lsan",
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-        ),
-    ),
-    builderless = 1,
-    cores = 16,
-    ssd = True,
-    console_view_entry = consoles.console_view_entry(
-        category = "experimental|linux",
-        short_name = "asan lsan",
-    ),
-    execution_timeout = 6 * time.hour,
-    gn_args = gn_args.config(
-        configs = [
-            "asan",
-            "lsan",
-            "fail_on_san_warnings",
-            "release_try_builder",
-            "minimal_symbols",
-            "reclient",
-        ],
-    ),
-    reclient_jobs = reclient.jobs.DEFAULT,
-)
-
-# TODO(crbug.com/1442587): Remove this builder after burning down failures
-# found when we now post-process stdout.
-ci.builder(
     name = "linux-exp-msan-fyi-rel",
     schedule = "with 6h interval",
     triggered_by = [],
