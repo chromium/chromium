@@ -5,7 +5,8 @@
 import {isFakeEntry} from '../../common/js/entry_utils.js';
 import {getEntryLabel, getRootTypeLabel, str} from '../../common/js/translations.js';
 import {COMPUTERS_DIRECTORY_PATH, RootType, SHARED_DRIVES_DIRECTORY_PATH} from '../../common/js/volume_manager_types.js';
-import {FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import type {VolumeManager} from '../../externs/volume_manager.js';
 
 /**
  * File path component.
@@ -18,26 +19,22 @@ import {FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces
  */
 export class PathComponent {
   /**
-   * @param {string} name Name.
-   * @param {string} url Url.
-   * @param {FilesAppEntry=} opt_fakeEntry Fake entry should be set when
-   *     this component represents fake entry.
+   * @param name Name.
+   * @param url Url.
+   * @param fakeEntry Fake entry should be set when this component represents
+   *     fake entry.
    */
-  constructor(name, url, opt_fakeEntry) {
-    this.name = name;
-    this.url_ = url;
-    this.fakeEntry_ = opt_fakeEntry || null;
-  }
+  constructor(
+      public readonly name: string, private readonly url_: string,
+      private fakeEntry_?: FilesAppEntry) {}
 
   /**
    * Resolve an entry of the component.
-   * @return {!Promise<!Entry|!FilesAppEntry>} A promise which is
-   *     resolved with an entry.
+   * @return A promise which is resolved with an entry.
    */
-  resolveEntry() {
+  resolveEntry(): Promise<Entry|FilesAppEntry> {
     if (this.fakeEntry_) {
-      return /** @type {!Promise<!Entry|!FilesAppEntry>} */ (
-          Promise.resolve(this.fakeEntry_));
+      return Promise.resolve(this.fakeEntry_);
     } else {
       return new Promise(
           window.webkitResolveLocalFileSystemURL.bind(null, this.url_));
@@ -53,12 +50,12 @@ export class PathComponent {
 
   /**
    * Computes path components for the path of entry.
-   * @param {!Entry|!FilesAppEntry} entry An entry.
-   * @return {!Array<!PathComponent>} Components.
+   * @param entry An entry.
+   * @return Components.
    */
-  // @ts-ignore: error TS7006: Parameter 'volumeManager' implicitly has an 'any'
-  // type.
-  static computeComponentsFromEntry(entry, volumeManager) {
+  static computeComponentsFromEntry(
+      entry: Entry|FilesAppEntry,
+      volumeManager: VolumeManager): PathComponent[] {
     /**
      * Replace the root directory name at the end of a url.
      * The input, |url| is a displayRoot URL of a Drive volume like
@@ -66,37 +63,32 @@ export class PathComponent {
      * The output is like:
      * filesystem:chrome-extension://....foo.com-hash/other
      *
-     * @param {string} url which points to a volume display root
-     * @param {string} newRoot new root directory name
-     * @return {string} new URL with the new root directory name
+     * @param url which points to a volume display root
+     * @param newRoot new root directory name
+     * @return new URL with the new root directory name
      */
-    const replaceRootName = (url, newRoot) => {
+    const replaceRootName = (url: string, newRoot: string): string => {
       return url.slice(0, url.length - '/root'.length) + newRoot;
     };
 
-    // @ts-ignore: error TS7034: Variable 'components' implicitly has type
-    // 'any[]' in some locations where its type cannot be determined.
-    const components = [];
+    const components: PathComponent[] = [];
     const locationInfo = volumeManager.getLocationInfo(entry);
 
     if (!locationInfo) {
-      // @ts-ignore: error TS7005: Variable 'components' implicitly has an
-      // 'any[]' type.
       return components;
     }
 
     if (isFakeEntry(entry)) {
       components.push(new PathComponent(
-          getEntryLabel(locationInfo, entry), entry.toURL(),
-          /** @type {!FakeEntry} */ (entry)));
+          getEntryLabel(locationInfo, entry), entry.toURL(), entry));
       return components;
     }
 
     // Add volume component.
-    let displayRootUrl = locationInfo.volumeInfo.displayRoot.toURL();
-    let displayRootFullPath = locationInfo.volumeInfo.displayRoot.fullPath;
+    let displayRootUrl = locationInfo.volumeInfo!.displayRoot.toURL();
+    let displayRootFullPath = locationInfo.volumeInfo!.displayRoot.fullPath;
 
-    const prefixEntry = locationInfo.volumeInfo.prefixEntry;
+    const prefixEntry = locationInfo.volumeInfo?.prefixEntry;
     // Directories under Drive Fake Root can return the fake root entry list as
     // prefix entry, but we will never show "Google Drive" as the prefix in the
     // breadcrumb.
@@ -117,7 +109,7 @@ export class PathComponent {
       }
       displayRootUrl = replaceRootName(displayRootUrl, displayRootFullPath);
       const sharedWithMeFakeEntry =
-          locationInfo.volumeInfo.fakeEntries[RootType.DRIVE_SHARED_WITH_ME];
+          locationInfo.volumeInfo!.fakeEntries[RootType.DRIVE_SHARED_WITH_ME]!;
       components.push(new PathComponent(
           str('DRIVE_SHARED_WITH_ME_COLLECTION_LABEL'),
           sharedWithMeFakeEntry.toURL(), sharedWithMeFakeEntry));
@@ -158,10 +150,8 @@ export class PathComponent {
     // Add directory components to the target path.
     const paths = relativePath.split('/');
     for (let i = 0; i < paths.length; i++) {
-      // @ts-ignore: error TS2345: Argument of type 'string | undefined' is not
-      // assignable to parameter of type 'string | number | boolean'.
-      currentUrl += '/' + encodeURIComponent(paths[i]);
-      let path = paths[i];
+      currentUrl += '/' + encodeURIComponent(paths[i]!);
+      let path = paths[i]!;
       if (i === 0 && locationInfo.rootType === RootType.DOWNLOADS) {
         if (path === 'Downloads') {
           path = str('DOWNLOADS_DIRECTORY_LABEL');
@@ -173,8 +163,6 @@ export class PathComponent {
           path = str('CAMERA_DIRECTORY_LABEL');
         }
       }
-      // @ts-ignore: error TS2345: Argument of type 'string | undefined' is not
-      // assignable to parameter of type 'string'.
       components.push(new PathComponent(path, currentUrl));
     }
 

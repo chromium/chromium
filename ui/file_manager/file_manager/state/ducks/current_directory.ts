@@ -140,7 +140,7 @@ function changeDirectoryReducer(currentState: State, payload: {
         return {
           name: c.name,
           label: c.name,
-          key: c.url_,
+          key: c.getKey(),
         };
       });
 

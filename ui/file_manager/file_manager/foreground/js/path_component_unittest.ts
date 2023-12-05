@@ -11,6 +11,8 @@ import {VolumeType} from '../../common/js/volume_manager_types.js';
 
 import {PathComponent} from './path_component.js';
 
+type LabelAndEntryUrl = [string, string];
+
 export async function testComputeComponentsFromEntry() {
   const volumeManager = new MockVolumeManager();
   window.webkitResolveLocalFileSystemURL =
@@ -21,26 +23,17 @@ export async function testComputeComponentsFromEntry() {
     throw new Error('Failed to get the drive volume info');
   }
   await driveVolumeInfo.resolveDisplayRoot();
-  let fs = /** @type {!MockFileSystem} */ (driveVolumeInfo.fileSystem);
+  let fs = driveVolumeInfo.fileSystem as MockFileSystem;
 
-  /**
-   * @param {string} path
-   * @param {Array<Array<any>>} components
-   */
-  async function validate(path, components) {
+  async function validate(path: string, components: LabelAndEntryUrl[]) {
     fs.populate([path]);
     const result = PathComponent.computeComponentsFromEntry(
-        // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry |
-        // undefined' is not assignable to parameter of type 'FileSystemEntry |
-        // FilesAppEntry'.
-        fs.entries[path], volumeManager);
+        fs.entries[path]!, volumeManager);
     assertEquals(components.length, result.length);
     for (let i = 0; i < components.length; i++) {
-      const c = components[i];
-      // @ts-ignore: error TS18048: 'c' is possibly 'undefined'.
+      const c = components[i]!;
       assertEquals(c[0], result[i]?.name);
       const entry = await result[i]?.resolveEntry();
-      // @ts-ignore: error TS18048: 'c' is possibly 'undefined'.
       assertEquals(c[1], entry?.toURL());
     }
   }
@@ -134,7 +127,7 @@ export async function testComputeComponentsFromEntry() {
   if (!downloadsVolumeInfo) {
     throw new Error('Failed to get the drive volume info');
   }
-  fs = /** @type {!MockFileSystem} */ (downloadsVolumeInfo.fileSystem);
+  fs = downloadsVolumeInfo.fileSystem as MockFileSystem;
 
   // Downloads.
   await validate('/file', [
