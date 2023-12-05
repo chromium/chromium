@@ -20,6 +20,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSu
 import static org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionFeedback.TabSuggestionResponse.NOT_CONSIDERED;
 
 import android.content.Context;
+import android.view.View;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -89,6 +90,7 @@ public class TabSuggestionMessageServiceUnitTest {
     @Mock MessageService.MessageObserver mMessageObserver;
     @Mock SelectionDelegate<Integer> mSelectionDelegate;
     @Mock ActionDelegate mActionDelegate;
+    @Mock View mCustomCardView;
 
     @Captor ArgumentCaptor<TabSuggestionFeedback> mTabSuggestionFeedbackCallbackArgumentCaptor;
 
@@ -129,7 +131,10 @@ public class TabSuggestionMessageServiceUnitTest {
 
         mMessageService =
                 new TabSuggestionMessageService(
-                        mContext, mTabModelSelector, () -> mTabListEditorController);
+                        mContext,
+                        mTabModelSelector,
+                        () -> mTabListEditorController,
+                        mCustomCardView);
         mMessageService.addObserver(mMessageObserver);
     }
 

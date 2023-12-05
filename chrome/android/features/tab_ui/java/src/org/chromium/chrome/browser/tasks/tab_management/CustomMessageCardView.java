@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 
 /**
@@ -30,6 +31,9 @@ public class CustomMessageCardView extends LinearLayout {
      * @param view The view to be displayed.
      */
     public void setChildView(View view) {
-        addView(view);
+        addView(
+                view,
+                new LinearLayout.LayoutParams(
+                        LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
     }
 }

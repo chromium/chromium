@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSu
 import static org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionFeedback.TabSuggestionResponse.NOT_CONSIDERED;
 
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -24,6 +25,7 @@ import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabContext;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestion;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionFeedback;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionsObserver;
+import org.chromium.chrome.tab_ui.R;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,14 +45,21 @@ public class TabSuggestionMessageService extends MessageService
         private final TabSuggestion mTabSuggestion;
         private final Callback<TabSuggestionFeedback> mTabSuggestionFeedback;
         private Profile mProfile;
+        private CustomMessageCardProvider mCustomMessageCardProvider;
 
         public TabSuggestionMessageData(
                 TabSuggestion tabSuggestion,
                 Callback<TabSuggestionFeedback> feedbackCallback,
-                Profile profile) {
+                Profile profile,
+                CustomMessageCardProvider customMessageCardProvider) {
             mTabSuggestion = tabSuggestion;
             mTabSuggestionFeedback = feedbackCallback;
             mProfile = profile;
+            mCustomMessageCardProvider = customMessageCardProvider;
+        }
+
+        public View getView() {
+            return mCustomMessageCardProvider.getCustomView();
         }
 
         /**
@@ -109,16 +118,33 @@ public class TabSuggestionMessageService extends MessageService
     private final TabModelSelector mTabModelSelector;
     private final Supplier<TabListEditorCoordinator.TabListEditorController>
             mTabListEditorControllerSupplier;
+    private final CustomMessageCardProvider mCustomMessageCardProvider;
+    private final View mCustomCardView;
 
     public TabSuggestionMessageService(
             Context context,
             TabModelSelector tabModelSelector,
             Supplier<TabListEditorCoordinator.TabListEditorController>
                     tabListEditorControllerSupplier) {
+        this(
+                context,
+                tabModelSelector,
+                tabListEditorControllerSupplier,
+                LayoutInflater.from(context).inflate(R.layout.declutter_message_card_layout, null));
+    }
+
+    protected TabSuggestionMessageService(
+            Context context,
+            TabModelSelector tabModelSelector,
+            Supplier<TabListEditorCoordinator.TabListEditorController>
+                    tabListEditorControllerSupplier,
+            View customCardView) {
         super(MessageType.TAB_SUGGESTION);
         mContext = context;
         mTabModelSelector = tabModelSelector;
         mTabListEditorControllerSupplier = tabListEditorControllerSupplier;
+        mCustomMessageCardProvider = this;
+        mCustomCardView = customCardView;
     }
 
     @VisibleForTesting
@@ -252,7 +278,8 @@ public class TabSuggestionMessageService extends MessageService
                     new TabSuggestionMessageData(
                             tabSuggestion,
                             tabSuggestionFeedback,
-                            mTabModelSelector.getModel(false).getProfile()));
+                            mTabModelSelector.getModel(false).getProfile(),
+                            mCustomMessageCardProvider));
         }
     }
 
@@ -269,8 +296,7 @@ public class TabSuggestionMessageService extends MessageService
     // CustomMessageCardProvider implementation
     @Override
     public View getCustomView() {
-        // TODO(crbug.com/1487664): Return the UI for custom message card entrypoint.
-        return null;
+        return mCustomCardView;
     }
 
     @Override
