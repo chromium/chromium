@@ -70,6 +70,29 @@ TEST_F(NetworkServiceProxyAllowListTest, AllowlistIsPopulatedWhenMDLUsed) {
   EXPECT_TRUE(allow_list.IsPopulated());
 }
 
+TEST_F(NetworkServiceProxyAllowListTest, ShouldntMatchHttp) {
+  NetworkServiceProxyAllowList allow_list_no_bypass(
+      network::mojom::IpProtectionProxyBypassPolicy::kNone);
+  NetworkServiceProxyAllowList allow_list_first_party_bypass(
+      network::mojom::IpProtectionProxyBypassPolicy::
+          kFirstPartyToTopLevelFrame);
+  MaskedDomainList mdl;
+  auto* resource_owner = mdl.add_resource_owners();
+  resource_owner->set_owner_name("foo");
+  resource_owner->add_owned_resources()->set_domain("example.com");
+  allow_list_no_bypass.UseMaskedDomainList(mdl);
+  allow_list_first_party_bypass.UseMaskedDomainList(mdl);
+
+  EXPECT_FALSE(allow_list_no_bypass.Matches(
+      GURL("http://example.com"),
+      net::NetworkAnonymizationKey::CreateCrossSite(
+          net::SchemefulSite(GURL("http://top.com")))));
+  EXPECT_FALSE(allow_list_first_party_bypass.Matches(
+      GURL("http://example.com"),
+      net::NetworkAnonymizationKey::CreateCrossSite(
+          net::SchemefulSite(GURL("http://top.com")))));
+}
+
 TEST_F(NetworkServiceProxyAllowListTest, ShouldMatchThirdPartyToTopLevelFrame) {
   NetworkServiceProxyAllowList allow_list_no_bypass(
       network::mojom::IpProtectionProxyBypassPolicy::kNone);
@@ -84,13 +107,13 @@ TEST_F(NetworkServiceProxyAllowListTest, ShouldMatchThirdPartyToTopLevelFrame) {
   allow_list_first_party_bypass.UseMaskedDomainList(mdl);
 
   EXPECT_TRUE(allow_list_no_bypass.Matches(
-      GURL("http://example.com"),
+      GURL("https://example.com"),
       net::NetworkAnonymizationKey::CreateCrossSite(
-          net::SchemefulSite(GURL("http://top.com")))));
+          net::SchemefulSite(GURL("https://top.com")))));
   EXPECT_TRUE(allow_list_first_party_bypass.Matches(
-      GURL("http://example.com"),
+      GURL("https://example.com"),
       net::NetworkAnonymizationKey::CreateCrossSite(
-          net::SchemefulSite(GURL("http://top.com")))));
+          net::SchemefulSite(GURL("https://top.com")))));
 }
 
 TEST_F(NetworkServiceProxyAllowListTest,
@@ -108,13 +131,13 @@ TEST_F(NetworkServiceProxyAllowListTest,
   allow_list_first_party_bypass.UseMaskedDomainList(mdl);
 
   EXPECT_TRUE(allow_list_no_bypass.Matches(
-      GURL("http://example.com"),
+      GURL("https://example.com"),
       net::NetworkAnonymizationKey::CreateCrossSite(
-          net::SchemefulSite(GURL("http://example.com")))));
+          net::SchemefulSite(GURL("https://example.com")))));
   EXPECT_FALSE(allow_list_first_party_bypass.Matches(
-      GURL("http://example.com"),
+      GURL("https://example.com"),
       net::NetworkAnonymizationKey::CreateCrossSite(
-          net::SchemefulSite(GURL("http://example.com")))));
+          net::SchemefulSite(GURL("https://example.com")))));
 }
 
 TEST_F(NetworkServiceProxyAllowListTest,
@@ -131,10 +154,10 @@ TEST_F(NetworkServiceProxyAllowListTest,
   allow_list_no_bypass.UseMaskedDomainList(mdl);
   allow_list_first_party_bypass.UseMaskedDomainList(mdl);
 
-  EXPECT_TRUE(allow_list_no_bypass.Matches(GURL("http://example.com"),
+  EXPECT_TRUE(allow_list_no_bypass.Matches(GURL("https://example.com"),
                                            net::NetworkAnonymizationKey()));
   EXPECT_FALSE(allow_list_first_party_bypass.Matches(
-      GURL("http://example.com"), net::NetworkAnonymizationKey()));
+      GURL("https://example.com"), net::NetworkAnonymizationKey()));
 }
 
 TEST_F(NetworkServiceProxyAllowListTest,
@@ -152,10 +175,10 @@ TEST_F(NetworkServiceProxyAllowListTest,
   allow_list_first_party_bypass.UseMaskedDomainList(mdl);
 
   EXPECT_FALSE(allow_list_no_bypass.Matches(
-      GURL("http://other.com"),
+      GURL("https://other.com"),
       net::NetworkAnonymizationKey::CreateTransient()));
   EXPECT_FALSE(allow_list_first_party_bypass.Matches(
-      GURL("http://other.com"),
+      GURL("https://other.com"),
       net::NetworkAnonymizationKey::CreateTransient()));
 }
 
@@ -174,10 +197,10 @@ TEST_F(NetworkServiceProxyAllowListTest,
   allow_list_first_party_bypass.UseMaskedDomainList(mdl);
 
   EXPECT_TRUE(allow_list_no_bypass.Matches(
-      GURL("http://example.com"),
+      GURL("https://example.com"),
       net::NetworkAnonymizationKey::CreateTransient()));
   EXPECT_TRUE(allow_list_first_party_bypass.Matches(
-      GURL("http://example.com"),
+      GURL("https://example.com"),
       net::NetworkAnonymizationKey::CreateTransient()));
 }
 }  // namespace network

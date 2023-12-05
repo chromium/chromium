@@ -336,9 +336,9 @@ TEST_F(NetworkServiceProxyDelegateTest,
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpUrl),
+  delegate->OnResolveProxy(GURL(kHttpsUrl),
                            net::NetworkAnonymizationKey::CreateCrossSite(
-                               net::SchemefulSite(GURL("http://top.com"))),
+                               net::SchemefulSite(GURL("https://top.com"))),
                            "GET", net::ProxyRetryInfoMap(), &result);
   EXPECT_TRUE(result.is_direct());
   EXPECT_TRUE(result.is_for_ip_protection());
@@ -705,9 +705,9 @@ TEST_F(NetworkServiceProxyDelegateTest,
   // Verify that the IP Protection proxy list is correctly merged with the
   // existing proxy list.
   result.UsePacString("PROXY bar; DIRECT; PROXY weird");
-  delegate->OnResolveProxy(GURL(kHttpUrl),
+  delegate->OnResolveProxy(GURL(kHttpsUrl),
                            net::NetworkAnonymizationKey::CreateCrossSite(
-                               net::SchemefulSite(GURL("http://top.com"))),
+                               net::SchemefulSite(GURL("https://top.com"))),
                            "GET", net::ProxyRetryInfoMap(), &result);
 
   net::ProxyList expected_proxy_list;
@@ -749,9 +749,9 @@ TEST_F(NetworkServiceProxyDelegateTest,
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpUrl),
+  delegate->OnResolveProxy(GURL(kHttpsUrl),
                            net::NetworkAnonymizationKey::CreateCrossSite(
-                               net::SchemefulSite(GURL("http://top.com"))),
+                               net::SchemefulSite(GURL("https://top.com"))),
                            "GET", net::ProxyRetryInfoMap(), &result);
 
   net::ProxyList expected_proxy_list;
@@ -782,9 +782,9 @@ TEST_F(
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpUrl),
+  delegate->OnResolveProxy(GURL(kHttpsUrl),
                            net::NetworkAnonymizationKey::CreateCrossSite(
-                               net::SchemefulSite(GURL("http://top.com"))),
+                               net::SchemefulSite(GURL("https://top.com"))),
                            "GET", net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
@@ -804,9 +804,9 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxy_NoConfigCache) {
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpUrl),
+  delegate->OnResolveProxy(GURL(kHttpsUrl),
                            net::NetworkAnonymizationKey::CreateCrossSite(
-                               net::SchemefulSite(GURL("http://top.com"))),
+                               net::SchemefulSite(GURL("https://top.com"))),
                            "GET", net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
@@ -831,9 +831,9 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxy_NoAuthToken) {
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpUrl),
+  delegate->OnResolveProxy(GURL(kHttpsUrl),
                            net::NetworkAnonymizationKey::CreateCrossSite(
-                               net::SchemefulSite(GURL("http://top.com"))),
+                               net::SchemefulSite(GURL("https://top.com"))),
                            "GET", net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
@@ -857,9 +857,9 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxy_NoProxyList) {
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpUrl),
+  delegate->OnResolveProxy(GURL(kHttpsUrl),
                            net::NetworkAnonymizationKey::CreateCrossSite(
-                               net::SchemefulSite(GURL("http://top.com"))),
+                               net::SchemefulSite(GURL("https://top.com"))),
                            "GET", net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
@@ -888,9 +888,9 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxy_AllowListDisabled) {
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpUrl),
+  delegate->OnResolveProxy(GURL(kHttpsUrl),
                            net::NetworkAnonymizationKey::CreateCrossSite(
-                               net::SchemefulSite(GURL("http://top.com"))),
+                               net::SchemefulSite(GURL("https://top.com"))),
                            "GET", net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
@@ -917,9 +917,9 @@ TEST_F(
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpUrl),
+  delegate->OnResolveProxy(GURL(kHttpsUrl),
                            net::NetworkAnonymizationKey::CreateCrossSite(
-                               net::SchemefulSite(GURL("http://top.com"))),
+                               net::SchemefulSite(GURL("https://top.com"))),
                            "GET", net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
@@ -975,10 +975,13 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyIpProtectionNoMatch) {
   EXPECT_FALSE(result.is_for_ip_protection());
 }
 
-// When a `config` does look like an IP Protection `CustomProxyConfig` and
-// the URLs match the allow list, and a token is available, the result is
-// flagged as for IP protection and is not direct.
-TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyMayNeedAuthTokenSoon) {
+// When a `config` does look like an IP Protection `CustomProxyConfig`, but
+// the URL is HTTP instead of HTTPS, the result is direct and not flagged as for
+// IP Protection.
+// TODO(https://crbug.com/1474932): Support proxying HTTP URLs by using
+// CONNECT requests (i.e. tunnelling) instead of using the old-style proxy GET
+// requests from the last proxy in the chain.
+TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyIpProtectionHttpFailure) {
   auto config =
       NetworkServiceProxyAllowList::MakeIpProtectionCustomProxyConfig();
   std::map<std::string, std::set<std::string>> first_party_map;
@@ -998,6 +1001,35 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyMayNeedAuthTokenSoon) {
   delegate->OnResolveProxy(GURL(kHttpUrl),
                            net::NetworkAnonymizationKey::CreateCrossSite(
                                net::SchemefulSite(GURL("http://top.com"))),
+                           "GET", net::ProxyRetryInfoMap(), &result);
+  EXPECT_TRUE(result.is_direct());
+  EXPECT_FALSE(result.is_for_ip_protection());
+}
+
+// When a `config` does look like an IP Protection `CustomProxyConfig` and
+// the URLs match the allow list, and a token is available, the result is
+// flagged as for IP protection and is not direct.
+TEST_F(NetworkServiceProxyDelegateTest,
+       OnResolveProxyIpProtectionHttpsSuccess) {
+  auto config =
+      NetworkServiceProxyAllowList::MakeIpProtectionCustomProxyConfig();
+  std::map<std::string, std::set<std::string>> first_party_map;
+  first_party_map["example.com"] = {};
+  auto network_service_proxy_allow_list =
+      NetworkServiceProxyAllowList::CreateForTesting(first_party_map);
+  auto delegate =
+      CreateDelegate(std::move(config), &network_service_proxy_allow_list);
+
+  auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
+  ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+  ipp_config_cache->SetProxyList({{"proxy"}});
+  delegate->SetIpProtectionConfigCache(std::move(ipp_config_cache));
+
+  net::ProxyInfo result;
+  result.UseDirect();
+  delegate->OnResolveProxy(GURL(kHttpsUrl),
+                           net::NetworkAnonymizationKey::CreateCrossSite(
+                               net::SchemefulSite(GURL("https://top.com"))),
                            "GET", net::ProxyRetryInfoMap(), &result);
   EXPECT_FALSE(result.is_direct());
   EXPECT_TRUE(result.is_for_ip_protection());
