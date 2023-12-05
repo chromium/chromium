@@ -1081,16 +1081,8 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixels(
                                     "Couldn't create SkImage for reading."));
   }
 
-  gfx::Size src_size = source_shared_image->size();
-  gfx::Rect src_rect(src_x, src_y, dst_info.width(), dst_info.height());
-  if (!gfx::Rect(src_size).Contains(src_rect)) {
-    source_scoped_access->ApplyBackendSurfaceEndState();
-    SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
-                      is_drdc_enabled_);
-    return base::unexpected(GLError(GL_INVALID_VALUE, "glReadbackImagePixels",
-                                    "source shared image bad dimensions."));
-  }
-
+  // TODO(crbug.com/1502623): Add back src_rect validation once renderer passes
+  // a correct rect size.
   bool success = false;
   if (gr_context) {
     success = sk_image->readPixels(gr_context, dst_info, pixel_address,
@@ -1098,6 +1090,7 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixels(
   } else {
     CHECK(shared_context_state_->graphite_context());
     ReadPixelsContext context;
+    gfx::Rect src_rect(src_x, src_y, dst_info.width(), dst_info.height());
     shared_context_state_->graphite_context()->asyncRescaleAndReadPixels(
         sk_image.get(), dst_info, RectToSkIRect(src_rect),
         SkImage::RescaleGamma::kSrc, SkImage::RescaleMode::kRepeatedLinear,
