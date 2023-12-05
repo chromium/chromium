@@ -1007,7 +1007,8 @@ void AuthenticatorRequestDialogModel::OnRetryUserVerification(int attempts) {
 
 void AuthenticatorRequestDialogModel::OnResidentCredentialConfirmed() {
   DCHECK_EQ(current_step(), Step::kResidentCredentialConfirmation);
-  HideDialogAndDispatchToPlatformAuthenticator();
+  HideDialogAndDispatchToPlatformAuthenticator(
+      device::AuthenticatorType::kWinNative);
 }
 
 void AuthenticatorRequestDialogModel::OnAttestationPermissionResponse(
@@ -1479,7 +1480,8 @@ void AuthenticatorRequestDialogModel::StartWinNativeApi() {
       !transport_availability_.win_native_ui_shows_resident_credential_notice) {
     SetCurrentStep(Step::kResidentCredentialConfirmation);
   } else {
-    HideDialogAndDispatchToPlatformAuthenticator();
+    HideDialogAndDispatchToPlatformAuthenticator(
+        device::AuthenticatorType::kWinNative);
   }
 }
 
