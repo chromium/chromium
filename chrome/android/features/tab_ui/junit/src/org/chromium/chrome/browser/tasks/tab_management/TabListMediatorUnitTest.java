@@ -87,6 +87,7 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.build.BuildConfig;
@@ -116,6 +117,7 @@ import org.chromium.chrome.browser.tab.state.PersistedTabDataConfiguration;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData.PriceDrop;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
@@ -274,6 +276,9 @@ public class TabListMediatorUnitTest {
     @Mock EndpointFetcher.Natives mEndpointFetcherJniMock;
     @Mock private Resources mResources;
 
+    private final ObservableSupplierImpl<TabModelFilter> mCurrentTabModelFilterSupplier =
+            new ObservableSupplierImpl<>();
+
     private TabObserver mTabObserver;
     private Tab mTab1;
     private Tab mTab2;
@@ -342,6 +347,11 @@ public class TabListMediatorUnitTest {
 
         doReturn(mTabModelFilterProvider).when(mTabModelSelector).getTabModelFilterProvider();
         doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
+        doReturn(mTabModel).when(mTabGroupModelFilter).getTabModel();
+        mCurrentTabModelFilterSupplier.set(mTabGroupModelFilter);
+        doReturn(mCurrentTabModelFilterSupplier)
+                .when(mTabModelFilterProvider)
+                .getCurrentTabModelFilterSupplier();
         doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getTabModelFilter(false);
         doReturn(mTab1).when(mTabModelSelector).getCurrentTab();
         doReturn(TAB1_ID).when(mTabModelSelector).getCurrentTabId();
@@ -631,8 +641,6 @@ public class TabListMediatorUnitTest {
     public void sendsMoveTabSignalCorrectlyWithGroup() {
         TabGridItemTouchHelperCallback itemTouchHelperCallback = getItemTouchHelperCallback();
         itemTouchHelperCallback.setActionsOnAllRelatedTabsForTesting(true);
-
-        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
 
         itemTouchHelperCallback.onMove(mRecyclerView, mViewHolder1, mViewHolder2);
 
@@ -1313,7 +1321,6 @@ public class TabListMediatorUnitTest {
         doReturn(mTab1).when(mTabGroupModelFilter).getTabAt(0);
         doReturn(mTab2).when(mTabGroupModelFilter).getTabAt(1);
         doReturn(2).when(mTabGroupModelFilter).getCount();
-        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
         if (isGrouped) {
             doReturn(Arrays.asList(mTab1, mTab2))
                     .when(mTabGroupModelFilter)
@@ -1399,7 +1406,6 @@ public class TabListMediatorUnitTest {
         // Assume that moveTab in TabModel is finished.
         doReturn(mTab1).when(mTabModel).getTabAt(POSITION2);
         doReturn(mTab2).when(mTabModel).getTabAt(POSITION1);
-        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
 
         assertThat(mModel.size(), equalTo(2));
         assertThat(mModel.get(1).model.get(TabProperties.TAB_ID), equalTo(TAB2_ID));
@@ -1417,7 +1423,6 @@ public class TabListMediatorUnitTest {
         // Assume that moveTab in TabModel is finished.
         doReturn(mTab1).when(mTabModel).getTabAt(POSITION2);
         doReturn(mTab2).when(mTabModel).getTabAt(POSITION1);
-        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
 
         assertThat(mModel.size(), equalTo(2));
         assertThat(mModel.get(1).model.get(TabProperties.TAB_ID), equalTo(TAB2_ID));
@@ -1437,7 +1442,6 @@ public class TabListMediatorUnitTest {
         // Assume that moveTab in TabModel is finished.
         doReturn(mTab1).when(mTabModel).getTabAt(POSITION2);
         doReturn(mTab2).when(mTabModel).getTabAt(POSITION1);
-        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
         doReturn(TAB1_ID).when(mTab1).getRootId();
         doReturn(TAB1_ID).when(mTab2).getRootId();
 
@@ -1459,7 +1463,6 @@ public class TabListMediatorUnitTest {
         // Assume that moveTab in TabModel is finished.
         doReturn(mTab1).when(mTabModel).getTabAt(POSITION2);
         doReturn(mTab2).when(mTabModel).getTabAt(POSITION1);
-        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
         doReturn(TAB1_ID).when(mTab1).getRootId();
         doReturn(TAB1_ID).when(mTab2).getRootId();
 
@@ -1493,7 +1496,6 @@ public class TabListMediatorUnitTest {
         doReturn(mTab1).when(mTabModel).getTabAt(POSITION1);
         doReturn(mTab2).when(mTabModel).getTabAt(POSITION2);
         doReturn(tab3).when(mTabModel).getTabAt(2);
-        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
         doReturn(TAB1_ID).when(mTab1).getRootId();
         doReturn(TAB1_ID).when(mTab2).getRootId();
         doReturn(TAB3_ID).when(tab3).getRootId();
@@ -1558,7 +1560,6 @@ public class TabListMediatorUnitTest {
         doReturn(mTab1).when(mTabModel).getTabAt(POSITION1);
         doReturn(mTab2).when(mTabModel).getTabAt(POSITION2);
         doReturn(tab3).when(mTabModel).getTabAt(2);
-        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
         doReturn(TAB1_ID).when(mTab1).getRootId();
         doReturn(TAB1_ID).when(mTab2).getRootId();
         doReturn(TAB3_ID).when(tab3).getRootId();
@@ -1624,7 +1625,6 @@ public class TabListMediatorUnitTest {
         doReturn(mTab1).when(mTabModel).getTabAt(POSITION1);
         doReturn(mTab2).when(mTabModel).getTabAt(POSITION2);
         doReturn(tab3).when(mTabModel).getTabAt(2);
-        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
         doReturn(TAB1_ID).when(mTab1).getRootId();
         doReturn(TAB1_ID).when(mTab2).getRootId();
         doReturn(TAB1_ID).when(tab3).getRootId();
@@ -1688,7 +1688,6 @@ public class TabListMediatorUnitTest {
         doReturn(mTab1).when(mTabModel).getTabAt(POSITION1);
         doReturn(mTab2).when(mTabModel).getTabAt(POSITION2);
         doReturn(tab3).when(mTabModel).getTabAt(2);
-        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
         doReturn(TAB1_ID).when(mTab1).getRootId();
         doReturn(TAB1_ID).when(mTab2).getRootId();
         doReturn(TAB1_ID).when(tab3).getRootId();
@@ -2901,7 +2900,6 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void testSelectableUpdates_withoutRelated() {
-        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
         doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getTabModelFilter(false);
         doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getTabModelFilter(true);
         when(mSelectionDelegate.isItemSelected(TAB1_ID)).thenReturn(true);
@@ -2948,7 +2946,6 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void testSelectableUpdates_withRelated() {
-        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
         doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getTabModelFilter(false);
         doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getTabModelFilter(true);
         when(mSelectionDelegate.isItemSelected(TAB1_ID)).thenReturn(true);
@@ -2995,7 +2992,6 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void testSelectableUpdates_onReset() {
-        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
         doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getTabModelFilter(false);
         doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getTabModelFilter(true);
         when(mSelectionDelegate.isItemSelected(TAB1_ID)).thenReturn(true);
@@ -3205,7 +3201,6 @@ public class TabListMediatorUnitTest {
             mMediator.destroy();
             mMediator = null;
         }
-        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
         doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getTabModelFilter(true);
         doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getTabModelFilter(false);
         doNothing()

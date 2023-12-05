@@ -77,10 +77,7 @@ public abstract class TabModelFilter implements TabModelObserver, TabList {
         mFilteredObservers.clear();
     }
 
-    /**
-     * @return The {@link TabModel} that the filter is acting on.
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    /** Returns the {@link TabModel} that the filter is acting on. */
     public TabModel getTabModel() {
         return mTabModel;
     }

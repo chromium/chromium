@@ -1031,11 +1031,13 @@ class TabListMediator {
                                     });
                 };
 
+        var currentTabModelFilterSupplier =
+                mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilterSupplier();
         mTabGridItemTouchHelperCallback =
                 new TabGridItemTouchHelperCallback(
                         context,
                         mModel,
-                        mTabModelSelector,
+                        currentTabModelFilterSupplier,
                         swipeSafeTabActionListener,
                         mTabGridDialogHandler,
                         mComponentName,

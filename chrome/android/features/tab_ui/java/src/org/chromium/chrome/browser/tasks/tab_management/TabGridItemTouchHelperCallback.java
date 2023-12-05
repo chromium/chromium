@@ -21,12 +21,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
@@ -54,7 +55,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
     }
 
     private final TabListModel mModel;
-    private final TabModelSelector mTabModelSelector;
+    private final Supplier<TabModelFilter> mCurrentTabModelFilterSupplier;
     private final TabListMediator.TabActionListener mTabClosedListener;
     private final String mComponentName;
     private final TabListMediator.TabGridDialogHandler mTabGridDialogHandler;
@@ -82,10 +83,21 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
     private Profile mProfile;
     private Context mContext;
 
+    /**
+     * @param context The activity context.
+     * @param tabListModel The property model of tab data to act on.
+     * @param currentTabModelFilterSupplier The supplier of the current {@link TabModelFilter}. It
+     *     should never return null.
+     * @param tabClosedListener The listener to invoke when a tab is closed.
+     * @param tabGridDialogHandler The interface for sending updates when using a tab grid dialog.
+     * @param componentName The name of the component for metrics logging.
+     * @param actionsOnAllRelatedTabs Whether to operate on related tabs.
+     * @param mode The mode of the tab list.
+     */
     public TabGridItemTouchHelperCallback(
             Context context,
             TabListModel tabListModel,
-            TabModelSelector tabModelSelector,
+            Supplier<TabModelFilter> currentTabModelFilterSupplier,
             TabActionListener tabClosedListener,
             TabGridDialogHandler tabGridDialogHandler,
             String componentName,
@@ -93,7 +105,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
             @TabListMode int mode) {
         super(0, 0);
         mModel = tabListModel;
-        mTabModelSelector = tabModelSelector;
+        mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
         mTabClosedListener = tabClosedListener;
         mComponentName = componentName;
         mActionsOnAllRelatedTabs = actionsOnAllRelatedTabs;
@@ -178,11 +190,11 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
                 ((SimpleRecyclerViewAdapter.ViewHolder) toViewHolder)
                         .model.get(TabProperties.TAB_ID);
         int distance = toViewHolder.getAdapterPosition() - fromViewHolder.getAdapterPosition();
-        TabModelFilter filter =
-                mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
-        TabModel tabModel = mTabModelSelector.getCurrentModel();
+        TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
+        TabModel tabModel = filter.getTabModel();
         if (!mActionsOnAllRelatedTabs) {
-            int destinationIndex = tabModel.indexOf(mTabModelSelector.getTabById(destinationTabId));
+            int destinationIndex =
+                    tabModel.indexOf(TabModelUtils.getTabById(tabModel, destinationTabId));
             tabModel.moveTab(currentTabId, distance > 0 ? destinationIndex + 1 : destinationIndex);
         } else {
             List<Tab> destinationTabGroup = getRelatedTabsForId(destinationTabId);
@@ -263,10 +275,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
             }
             if (mUnGroupTabIndex != TabModel.INVALID_TAB_INDEX) {
                 TabGroupModelFilter filter =
-                        (TabGroupModelFilter)
-                                mTabModelSelector
-                                        .getTabModelFilterProvider()
-                                        .getCurrentTabModelFilter();
+                        (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
                 RecyclerView.ViewHolder ungroupViewHolder =
                         mRecyclerView.findViewHolderForAdapterPosition(mUnGroupTabIndex);
                 if (ungroupViewHolder != null && !mRecyclerView.isComputingLayout()) {
@@ -441,16 +450,11 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
     }
 
     private List<Tab> getRelatedTabsForId(int id) {
-        return mTabModelSelector
-                .getTabModelFilterProvider()
-                .getCurrentTabModelFilter()
-                .getRelatedTabList(id);
+        return mCurrentTabModelFilterSupplier.get().getRelatedTabList(id);
     }
 
     private void onTabMergeToGroup(int selectedCardIndex, int hoveredCardIndex) {
-        TabGroupModelFilter filter =
-                (TabGroupModelFilter)
-                        mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
+        TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
         if (filter.getTabAt(selectedCardIndex) == null) return;
         if (filter.getTabAt(hoveredCardIndex) == null) return;
         filter.mergeTabsToGroup(
@@ -461,7 +465,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
         // FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE.
         final Tracker tracker =
                 TrackerFactory.getTrackerForProfile(
-                        mTabModelSelector.getCurrentModel().getProfile());
+                        mCurrentTabModelFilterSupplier.get().getTabModel().getProfile());
         tracker.notifyEvent(EventConstants.TAB_DRAG_AND_DROP_TO_GROUP);
     }
 
