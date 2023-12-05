@@ -7073,7 +7073,6 @@ crbug.com/1503067 [ Linux ] virtual/pna-navigations-enabled/external/wpt/fetch/p
 crbug.com/1503119 [ Mac11 ] external/wpt/webtransport/echo-large-bidirectional-streams.https.any.html [ Timeout ]
 
 # Gardener 2023-11-21
-crbug.com/1504071 [ Mac ] http/tests/navigation/ping-cross-origin-from-https.html [ Failure Pass ]
 crbug.com/1352545 [ Linux ] external/wpt/html/cross-origin-opener-policy/coop-sandbox-cuts-opener.https.html [ Failure Pass ]
 crbug.com/1501090 [ Linux ] external/wpt/preload/preload-strict-dynamic.sub.html [ Failure Pass ]
 
