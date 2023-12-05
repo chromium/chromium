@@ -120,8 +120,16 @@ class QuickStartMetrics {
     kMaxValue = kUnknownError,
   };
 
+  // This enum is tied directly to a UMA enum defined in
+  // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
+  // reflect it (do not change one without changing the other). Entries should
+  // be never modified or deleted. Only additions possible.
   enum class AttestationCertificateRequestErrorCode {
-    kCertificateNotObtained,
+    kUnknownError = 0,
+    kBadRequest = 1,
+    kAttestationNotSupportedOnDevice = 2,
+
+    kMaxValue = kAttestationNotSupportedOnDevice,
   };
 
   // This enum is tied directly to a UMA enum defined in
@@ -194,12 +202,12 @@ class QuickStartMetrics {
 
   static void RecordForcedUpdateRequired(int32_t session_id);
 
-  static void RecordAttestationCertificateRequested(int32_t session_id);
+  static void RecordAttestationCertificateRequested();
 
+  // Records the end of a Remote Attestation certificate request. `error_code`
+  // is empty if the request was successful - otherwise it contains the details
+  // of the error.
   static void RecordAttestationCertificateRequestEnded(
-      int32_t session_id,
-      bool succeeded,
-      int duration,
       absl::optional<AttestationCertificateRequestErrorCode> error_code);
 
   static void RecordGaiaTransferResult(

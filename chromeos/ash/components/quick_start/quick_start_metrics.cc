@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "quick_start_metrics.h"
+#include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 
 #include <string>
 
@@ -12,6 +12,8 @@ namespace ash::quick_start {
 
 namespace {
 
+constexpr const char kAttestationCertificateFailureReasonHistogramName[] =
+    "QuickStart.AttestationCertificate.FailureReason";
 constexpr const char kWifiTransferResultHistogramName[] =
     "QuickStart.WifiTransferResult";
 constexpr const char kWifiTransferResultFailureReasonHistogramName[] =
@@ -145,18 +147,17 @@ void QuickStartMetrics::RecordGaiaTransferAttempted(bool attempted) {
 }
 
 // static
-void QuickStartMetrics::RecordAttestationCertificateRequested(
-    int32_t session_id) {
-  // TODO(b/279614284): Add FIDO assertion metrics.
+void QuickStartMetrics::RecordAttestationCertificateRequested() {
+  // TODO(b/314143137): Add remote attestation metrics.
 }
 
 // static
 void QuickStartMetrics::RecordAttestationCertificateRequestEnded(
-    int32_t session_id,
-    bool succeded,
-    int duration,
     absl::optional<AttestationCertificateRequestErrorCode> error_code) {
-  // TODO(b/279614284): Add FIDO assertion metrics.
+  if (error_code) {
+    base::UmaHistogramEnumeration(
+        kAttestationCertificateFailureReasonHistogramName, error_code.value());
+  }
 }
 
 // static

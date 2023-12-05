@@ -16,6 +16,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
@@ -25,6 +26,7 @@
 #include "chromeos/ash/components/attestation/mock_attestation_flow.h"
 #include "chromeos/ash/components/attestation/stub_attestation_features.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
+#include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "chromeos/ash/components/quick_start/types.h"
 #include "components/account_id/account_id.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -576,6 +578,19 @@ TEST_F(
       FetchAttestationCertificate(fido_credential_id()),
       ErrorIs(
           Eq(SecondDeviceAuthBroker::AttestationErrorType::kPermanentError)));
+}
+
+TEST_F(SecondDeviceAuthBrokerTest,
+       FetchAttestationCertificateLogsMetricsIfAttestationIsUnavailable) {
+  MakeAttestationUnavailable();
+
+  base::HistogramTester histogram_tester;
+  auto certificate = FetchAttestationCertificate(fido_credential_id());
+  histogram_tester.ExpectBucketCount(
+      "QuickStart.AttestationCertificate.FailureReason",
+      QuickStartMetrics::AttestationCertificateRequestErrorCode::
+          kAttestationNotSupportedOnDevice,
+      1);
 }
 
 TEST_F(SecondDeviceAuthBrokerTest,

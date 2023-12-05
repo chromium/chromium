@@ -31,6 +31,12 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Pin"/>
 </enum>
 
+<enum name="QuickStartAttestationCertificateFetchFailureReason">
+  <int value="0" label="Unknown error"/>
+  <int value="1" label="Bad request"/>
+  <int value="2" label="Device does not support attestation"/>
+</enum>
+
 <enum name="QuickStartFastPairAdvertisingEndedErrorCode">
   <int value="0" label="Error: Unsupported platform"/>
   <int value="1" label="Error: Advertisement already exists"/>

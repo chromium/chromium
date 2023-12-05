@@ -26,6 +26,7 @@
 #include "chromeos/ash/components/dbus/attestation/keystore.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "chromeos/ash/components/quick_start/logging.h"
+#include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "chromeos/ash/components/quick_start/types.h"
 #include "components/account_id/account_id.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
@@ -256,6 +257,15 @@ void HandleFetchChallengeBytesErrorResponse(
   }
 }
 
+void HandleAttestationNotAvailableError(
+    SecondDeviceAuthBroker::AttestationCertificateCallback callback) {
+  QuickStartMetrics::RecordAttestationCertificateRequestEnded(
+      QuickStartMetrics::AttestationCertificateRequestErrorCode::
+          kAttestationNotSupportedOnDevice);
+  std::move(callback).Run(base::unexpected(
+      SecondDeviceAuthBroker::AttestationErrorType::kPermanentError));
+}
+
 void RunAttestationCertificateCallback(
     SecondDeviceAuthBroker::AttestationCertificateCallback callback,
     attestation::AttestationStatus status,
@@ -270,6 +280,8 @@ void RunAttestationCertificateCallback(
             SecondDeviceAuthBroker::AttestationErrorType::kPermanentError));
         return;
       }
+      QuickStartMetrics::RecordAttestationCertificateRequestEnded(
+          /*error_code=*/absl::nullopt);
       std::move(callback).Run(PEMCertChain(pem_certificate_chain));
       return;
     case attestation::ATTESTATION_UNSPECIFIED_FAILURE:
@@ -277,9 +289,11 @@ void RunAttestationCertificateCallback(
           SecondDeviceAuthBroker::AttestationErrorType::kTransientError));
       return;
     case attestation::ATTESTATION_SERVER_BAD_REQUEST_FAILURE:
-    case attestation::ATTESTATION_NOT_AVAILABLE:
       std::move(callback).Run(base::unexpected(
           SecondDeviceAuthBroker::AttestationErrorType::kPermanentError));
+      return;
+    case attestation::ATTESTATION_NOT_AVAILABLE:
+      HandleAttestationNotAvailableError(std::move(callback));
       return;
   }
 }
@@ -688,18 +702,14 @@ void SecondDeviceAuthBroker::FetchAttestationCertificateInternal(
 
   if (!attestation_features->IsAttestationAvailable()) {
     QS_LOG(ERROR) << "Attestation is not available";
-    std::move(certificate_callback)
-        .Run(base::unexpected(
-            SecondDeviceAuthBroker::AttestationErrorType::kPermanentError));
+    HandleAttestationNotAvailableError(std::move(certificate_callback));
     return;
   }
 
   if (!attestation_features->IsEccSupported() &&
       !attestation_features->IsRsaSupported()) {
     QS_LOG(ERROR) << "Could not find any supported attestation key type";
-    std::move(certificate_callback)
-        .Run(base::unexpected(
-            SecondDeviceAuthBroker::AttestationErrorType::kPermanentError));
+    HandleAttestationNotAvailableError(std::move(certificate_callback));
     return;
   }
 

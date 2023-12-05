@@ -22,6 +22,19 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="QuickStart.AttestationCertificate.FailureReason"
+    enum="QuickStartAttestationCertificateFetchFailureReason"
+    expires_after="2024-12-01">
+  <owner>sinhak@chromium.org</owner>
+  <owner>hansenmichael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Failure reason of attempted Remote Attestation certificate fetch. Recorded
+    when we receive a response from ChromeOS platform (e.g. when the device
+    itself cannot support attestation) or Google's Privacy CA.
+  </summary>
+</histogram>
+
 <histogram name="QuickStart.FastPairAdvertisementEnded.AdvertisingMethod"
     enum="QuickStartAdvertisingMethod" expires_after="2024-12-01">
   <owner>bhartmire@google.com</owner>
