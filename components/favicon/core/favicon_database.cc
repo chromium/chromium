@@ -7,11 +7,11 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <algorithm>
+#include <bit>
 #include <string>
 #include <tuple>
 #include <utility>
 
-#include "base/bits.h"
 #include "base/debug/alias.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -999,7 +999,7 @@ favicon_base::IconType FaviconDatabase::FromPersistedIconType(int icon_type) {
   if (icon_type == 0)
     return favicon_base::IconType::kInvalid;
 
-  int val = 1 + base::bits::Log2Floor(icon_type);
+  int val = std::bit_width<uint32_t>(icon_type);
   if (val > static_cast<int>(favicon_base::IconType::kMax))
     return favicon_base::IconType::kInvalid;
 
