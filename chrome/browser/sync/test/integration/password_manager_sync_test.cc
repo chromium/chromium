@@ -52,6 +52,7 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
@@ -161,11 +162,10 @@ class PasswordManagerSyncTest : public SyncTest {
     // all Javascript changes to it are discarded, and thus any tests that cover
     // updating a password become flaky.
     feature_list_.InitWithFeatures(
-        {
-            password_manager::features::kEnablePasswordsAccountStorage,
-            password_manager::features::kFillOnAccountSelect,
-        },
-        {});
+        /*enabled_features=*/{password_manager::features::
+                                  kEnablePasswordsAccountStorage,
+                              password_manager::features::kFillOnAccountSelect},
+        /*disabled_features=*/{switches::kUnoDesktop});
   }
 
   ~PasswordManagerSyncTest() override = default;

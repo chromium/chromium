@@ -35,6 +35,7 @@
 #include "components/policy/test_support/policy_storage.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_test_utils.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/command_line_switches.h"
@@ -111,11 +112,15 @@ class UserPolicySigninServiceTest : public InProcessBrowserTest,
         &FakeGaia::HandleRequest, base::Unretained(&fake_gaia_)));
 
     bool disallow_managed_profile_signout = GetParam();
+    std::vector<base::test::FeatureRef> enabled_features = {};
+    std::vector<base::test::FeatureRef> disabled_features = {
+        switches::kUnoDesktop};
     if (disallow_managed_profile_signout) {
-      feature_list_.InitAndEnableFeature(kDisallowManagedProfileSignout);
+      enabled_features.push_back(kDisallowManagedProfileSignout);
     } else {
-      feature_list_.InitAndDisableFeature(kDisallowManagedProfileSignout);
+      disabled_features.push_back(kDisallowManagedProfileSignout);
     }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   ~UserPolicySigninServiceTest() override {

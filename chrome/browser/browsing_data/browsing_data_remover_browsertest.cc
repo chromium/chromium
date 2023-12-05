@@ -45,6 +45,7 @@
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_reconcilor.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/test/test_sync_service.h"
@@ -825,8 +826,10 @@ class BrowsingDataRemoverWithPasswordsAccountStorageBrowserTest
     : public BrowsingDataRemoverBrowserTest {
  public:
   BrowsingDataRemoverWithPasswordsAccountStorageBrowserTest() {
-    features_.InitAndEnableFeature(
-        password_manager::features::kEnablePasswordsAccountStorage);
+    features_.InitWithFeatures(
+        /*enabled_features=*/{password_manager::features::
+                                  kEnablePasswordsAccountStorage},
+        /*disabled_features=*/{switches::kUnoDesktop});
   }
 
   void ClearSiteDataAndWait(

@@ -141,6 +141,7 @@ class FirstRunInteractiveUiTestBase
         identity_manager,
         signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
             .WithCookie()
+            .AsPrimary(signin::ConsentLevel::kSignin)
             .WithAccessPoint(
                 signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE)
             .Build(account_email));

@@ -19470,6 +19470,23 @@
             ]
         }
     ],
+    "UnoDesktopM0": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UnoDesktop"
+                    ]
+                }
+            ]
+        }
+    ],
     "UnoPhase2": [
         {
             "platforms": [
