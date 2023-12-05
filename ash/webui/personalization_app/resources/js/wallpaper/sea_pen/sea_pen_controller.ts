@@ -80,7 +80,7 @@ export async function fetchRecentSeaPenData(
     provider: SeaPenProviderInterface,
     store: PersonalizationStore): Promise<void> {
   // Do not restart loading local image list if a load is already in progress.
-  if (!store.data.wallpaper.loading.seaPen.recentImages) {
+  if (!store.data.wallpaper.seaPen.loading.recentImages) {
     await getRecentSeaPenImages(provider, store);
   }
   await getMissingRecentSeaPenImageData(provider, store);
@@ -109,7 +109,7 @@ async function getMissingRecentSeaPenImageData(
   store.beginBatchUpdate();
   for (const image of store.data.wallpaper.seaPen.recentImages) {
     if (store.data.wallpaper.seaPen.recentImageData[image.path] ||
-        store.data.wallpaper.loading.seaPen.recentImageData[image.path] ||
+        store.data.wallpaper.seaPen.loading.recentImageData[image.path] ||
         recentSeaPenImageDataToFetch.has(image.path)) {
       // Do not re-load thumbnail if already present, or already loading.
       continue;

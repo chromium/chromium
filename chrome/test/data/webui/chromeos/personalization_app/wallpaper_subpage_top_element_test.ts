@@ -216,7 +216,13 @@ suite('WallpaperSubpageTopElementTest', function() {
         SeaPenActionName.SET_SEA_PEN_THUMBNAILS);
 
     const expectedState: SeaPenState = {
-      thumbnailsLoading: false,
+      loading: {
+        recentImageData: {},
+        recentImages: false,
+        thumbnails: false,
+      },
+      recentImageData: {},
+      recentImages: null,
       thumbnails: [
         {
           id: 1,
@@ -235,8 +241,6 @@ suite('WallpaperSubpageTopElementTest', function() {
           image: {url: 'https://sea-pen-images.googleusercontent.com/4'},
         },
       ],
-      recentImages: null,
-      recentImageData: {},
     };
     assertDeepEquals(
         expectedState,

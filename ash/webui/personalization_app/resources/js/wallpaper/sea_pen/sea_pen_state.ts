@@ -8,18 +8,28 @@ import {SeaPenThumbnail} from '../../../sea_pen.mojom-webui.js';
 
 import {RecentSeaPenData} from './constants.js';
 
+export interface SeaPenLoadingState {
+  recentImageData: Record<FilePath['path'], boolean>;
+  recentImages: boolean;
+  thumbnails: boolean;
+}
+
 export interface SeaPenState {
-  thumbnails: SeaPenThumbnail[]|null;
-  thumbnailsLoading: boolean;
-  recentImages: FilePath[]|null;
+  loading: SeaPenLoadingState;
   recentImageData: Record<FilePath['path'], RecentSeaPenData>;
+  recentImages: FilePath[]|null;
+  thumbnails: SeaPenThumbnail[]|null;
 }
 
 export function emptyState(): SeaPenState {
   return {
-    thumbnails: null,
-    thumbnailsLoading: false,
-    recentImages: null,
+    loading: {
+      recentImages: false,
+      recentImageData: {},
+      thumbnails: false,
+    },
     recentImageData: {},
+    recentImages: null,
+    thumbnails: null,
   };
 }

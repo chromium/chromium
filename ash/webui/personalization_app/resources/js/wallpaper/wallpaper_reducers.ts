@@ -255,54 +255,6 @@ function loadingReducer(
           photos: false,
         },
       };
-    case SeaPenActionName.BEGIN_LOAD_RECENT_SEA_PEN_IMAGES:
-      return {
-        ...state,
-        seaPen: {
-          ...state.seaPen,
-          recentImages: true,
-        },
-      };
-    case SeaPenActionName.SET_RECENT_SEA_PEN_IMAGES:
-      const newRecentImages: FilePath[] =
-          Array.isArray(action.recentImages) ? action.recentImages : [];
-      // Only keep loading state for most recent Sea Pen images.
-      return {
-        ...state,
-        seaPen: {
-          ...state.seaPen,
-          recentImageData: newRecentImages.reduce(
-              (result, next) => {
-                const path = next.path;
-                if (state.seaPen.recentImageData.hasOwnProperty(path)) {
-                  result[path] = state.seaPen.recentImageData[path];
-                }
-                return result;
-              },
-              {} as Record<FilePath['path'], boolean>),
-          // Recent image list is done loading.
-          recentImages: false,
-        },
-      };
-    case SeaPenActionName.BEGIN_LOAD_RECENT_SEA_PEN_IMAGE_DATA:
-      return {
-        ...state,
-        seaPen: {
-          ...state.seaPen,
-          recentImageData: {...state.seaPen.recentImageData, [action.id]: true},
-        },
-      };
-    case SeaPenActionName.SET_RECENT_SEA_PEN_IMAGE_DATA:
-      return {
-        ...state,
-        seaPen: {
-          ...state.seaPen,
-          recentImageData: {
-            ...state.seaPen.recentImageData,
-            [action.id]: false,
-          },
-        },
-      };
     default:
       return state;
   }

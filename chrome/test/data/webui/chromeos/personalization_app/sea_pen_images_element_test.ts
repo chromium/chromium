@@ -49,7 +49,7 @@ suite('SeaPenImagesElementTest', function() {
   });
 
   test('displays loading thumbnail placeholders', async () => {
-    personalizationStore.data.wallpaper.seaPen.thumbnailsLoading = true;
+    personalizationStore.data.wallpaper.seaPen.loading.thumbnails = true;
     personalizationStore.data.wallpaper.seaPen.thumbnails =
         seaPenProvider.images;
 
@@ -67,7 +67,7 @@ suite('SeaPenImagesElementTest', function() {
   });
 
   test('displays image thumbnails', async () => {
-    personalizationStore.data.wallpaper.seaPen.thumbnailsLoading = false;
+    personalizationStore.data.wallpaper.seaPen.loading.thumbnails = false;
     personalizationStore.data.wallpaper.seaPen.thumbnails =
         seaPenProvider.images;
 
@@ -81,7 +81,7 @@ suite('SeaPenImagesElementTest', function() {
   });
 
   test('selects thumbnail on click', async () => {
-    personalizationStore.data.wallpaper.seaPen.thumbnailsLoading = false;
+    personalizationStore.data.wallpaper.seaPen.loading.thumbnails = false;
     personalizationStore.data.wallpaper.seaPen.thumbnails =
         seaPenProvider.images;
 

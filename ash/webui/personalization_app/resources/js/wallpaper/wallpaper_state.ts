@@ -84,10 +84,6 @@ export interface LoadingState {
     photos: boolean,
     photosByAlbumId: Record<string, boolean>,
   };
-  seaPen: {
-    recentImages: boolean,
-    recentImageData: Record<FilePath['path'], boolean>,
-  };
 }
 
 /**
@@ -148,10 +144,6 @@ export function emptyState(): WallpaperState {
         albumsShared: false,
         photos: false,
         photosByAlbumId: {},
-      },
-      seaPen: {
-        recentImages: false,
-        recentImageData: {},
       },
     },
     local: {images: null, data: {[kDefaultImageSymbol]: {url: ''}}},

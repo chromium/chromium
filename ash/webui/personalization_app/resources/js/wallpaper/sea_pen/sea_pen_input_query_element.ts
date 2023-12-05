@@ -57,7 +57,7 @@ export class SeaPenInputQueryElement extends WithPersonalizationStore {
     super.connectedCallback();
     this.watch<SeaPenInputQueryElement['thumbnailsLoading_']>(
         'thumbnailsLoading_',
-        state => state.wallpaper.seaPen.thumbnailsLoading);
+        state => state.wallpaper.seaPen.loading.thumbnails);
     this.updateFromStore();
   }
 

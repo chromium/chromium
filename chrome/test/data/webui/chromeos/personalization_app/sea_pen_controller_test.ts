@@ -51,18 +51,26 @@ suite('SeaPen reducers', () => {
         [
           {
             'wallpaper.seaPen': typeCheck<SeaPenState>({
-              recentImages: null,
+              loading: {
+                recentImageData: {},
+                recentImages: false,
+                thumbnails: true,
+              },
               recentImageData: {},
+              recentImages: null,
               thumbnails: null,
-              thumbnailsLoading: true,
             }),
           },
           {
             'wallpaper.seaPen': typeCheck<SeaPenState>({
-              recentImages: null,
+              loading: {
+                recentImageData: {},
+                recentImages: false,
+                thumbnails: false,
+              },
               recentImageData: {},
+              recentImages: null,
               thumbnails: seaPenProvider.images,
-              thumbnailsLoading: false,
             }),
           },
         ],

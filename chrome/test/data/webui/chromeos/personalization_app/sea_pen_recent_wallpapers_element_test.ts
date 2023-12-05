@@ -59,13 +59,14 @@ suite('SeaPenRecentWallpapersElementTest', function() {
         seaPenProvider.recentImages;
     personalizationStore.data.wallpaper.seaPen.recentImageData =
         seaPenProvider.recentImageData;
-    personalizationStore.data.wallpaper.loading.seaPen = {
-      recentImages: false,
+    personalizationStore.data.wallpaper.seaPen.loading = {
       recentImageData: {
         '/sea_pen/111.jpg': false,
         '/sea_pen/222.jpg': false,
         '/sea_pen/333.jpg': false,
       },
+      recentImages: false,
+      thumbnails: false,
     };
 
     // Initialize |seaPenRecentWallpapersElement|.
@@ -139,9 +140,10 @@ suite('SeaPenRecentWallpapersElementTest', function() {
             seaPenProvider.recentImageData;
 
         // No image data loaded.
-        personalizationStore.data.wallpaper.loading.seaPen = {
-          recentImages: false,
+        personalizationStore.data.wallpaper.seaPen.loading = {
           recentImageData: {},
+          recentImages: false,
+          thumbnails: false,
         };
 
         // Initialize |seaPenRecentWallpapersElement|.
@@ -159,13 +161,14 @@ suite('SeaPenRecentWallpapersElementTest', function() {
             3, loadingPlaceholders.length, 'first time 3 placeholders');
 
         // All images are loading data.
-        personalizationStore.data.wallpaper.loading.seaPen = {
-          recentImages: false,
+        personalizationStore.data.wallpaper.seaPen.loading = {
           recentImageData: {
             '/sea_pen/111.jpg': true,
             '/sea_pen/222.jpg': true,
             '/sea_pen/333.jpg': true,
           },
+          recentImages: false,
+          thumbnails: false,
         };
         personalizationStore.notifyObservers();
         await waitAfterNextRender(seaPenRecentWallpapersElement);
@@ -174,13 +177,14 @@ suite('SeaPenRecentWallpapersElementTest', function() {
         assertEquals(3, loadingPlaceholders.length, 'still 3 placeholders');
 
         // Only 3rd image is still loading data.
-        personalizationStore.data.wallpaper.loading.seaPen = {
-          recentImages: false,
+        personalizationStore.data.wallpaper.seaPen.loading = {
           recentImageData: {
             '/sea_pen/111.jpg': false,
             '/sea_pen/222.jpg': false,
             '/sea_pen/333.jpg': true,
           },
+          recentImages: false,
+          thumbnails: false,
         };
         personalizationStore.notifyObservers();
         await waitAfterNextRender(seaPenRecentWallpapersElement);
@@ -199,9 +203,10 @@ suite('SeaPenRecentWallpapersElementTest', function() {
             seaPenProvider.recentImageData;
 
         // No image data loaded.
-        personalizationStore.data.wallpaper.loading.seaPen = {
-          recentImages: false,
+        personalizationStore.data.wallpaper.seaPen.loading = {
           recentImageData: {},
+          recentImages: false,
+          thumbnails: false,
         };
 
         seaPenRecentWallpapersElement =
@@ -213,13 +218,14 @@ suite('SeaPenRecentWallpapersElementTest', function() {
         assertEquals(0, recentImages.length);
 
         // 1st image has finished loading data.
-        personalizationStore.data.wallpaper.loading.seaPen = {
-          recentImages: false,
+        personalizationStore.data.wallpaper.seaPen.loading = {
           recentImageData: {
             '/sea_pen/111.jpg': false,
             '/sea_pen/222.jpg': true,
             '/sea_pen/333.jpg': true,
           },
+          recentImages: false,
+          thumbnails: false,
         };
         personalizationStore.notifyObservers();
         await waitAfterNextRender(seaPenRecentWallpapersElement);
@@ -231,13 +237,14 @@ suite('SeaPenRecentWallpapersElementTest', function() {
             recentImages![0]!.src);
 
         // Set loading failed for second thumbnail.
-        personalizationStore.data.wallpaper.loading.seaPen = {
-          recentImages: false,
+        personalizationStore.data.wallpaper.seaPen.loading = {
           recentImageData: {
             '/sea_pen/111.jpg': false,
             '/sea_pen/222.jpg': false,
             '/sea_pen/333.jpg': true,
           },
+          recentImages: false,
+          thumbnails: false,
         };
         personalizationStore.data.wallpaper.seaPen.recentImageData = {
           '/sea_pen/111.jpg': {
@@ -263,13 +270,14 @@ suite('SeaPenRecentWallpapersElementTest', function() {
         seaPenProvider.recentImages;
     personalizationStore.data.wallpaper.seaPen.recentImageData =
         seaPenProvider.recentImageData;
-    personalizationStore.data.wallpaper.loading.seaPen = {
-      recentImages: false,
+    personalizationStore.data.wallpaper.seaPen.loading = {
       recentImageData: {
         '/sea_pen/111.jpg': false,
         '/sea_pen/222.jpg': false,
         '/sea_pen/333.jpg': false,
       },
+      recentImages: false,
+      thumbnails: false,
     };
 
     // Initialize |seaPenRecentWallpapersElement|.

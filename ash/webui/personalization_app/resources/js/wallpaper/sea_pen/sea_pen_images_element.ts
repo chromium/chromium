@@ -54,7 +54,7 @@ export class SeaPenImagesElement extends WithPersonalizationStore {
         'thumbnails_', state => state.wallpaper.seaPen.thumbnails);
     this.watch<SeaPenImagesElement['thumbnailsLoading_']>(
         'thumbnailsLoading_',
-        state => state.wallpaper.seaPen.thumbnailsLoading);
+        state => state.wallpaper.seaPen.loading.thumbnails);
     this.updateFromStore();
   }
 
