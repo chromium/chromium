@@ -44,7 +44,7 @@ BASE_FEATURE(kIOSPasswordBottomSheet,
 // local passwords in the iOS password settings.
 BASE_FEATURE(kIOSPasswordSettingsBulkUploadLocalPasswords,
              "IOSPasswordSettingsBulkUploadLocalPasswords",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // IS_IOS
 
 // Killswitch for changes regarding password issues in
