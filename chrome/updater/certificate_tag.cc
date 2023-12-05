@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <cstring>
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include "base/notreached.h"
@@ -517,9 +518,9 @@ std::optional<std::vector<uint8_t>> Binary::SetTag(
 Binary::Binary() = default;
 
 bool Binary::ParseTag() {
-  const ParseResult result = ParseTagImpl(content_info_);
-  tag_ = result.tag;
-  return result.success;
+  const auto [success, tag] = ParseTagImpl(content_info_);
+  tag_ = std::move(tag);
+  return success;
 }
 
 }  // namespace updater::tagging
