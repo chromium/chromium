@@ -61,6 +61,7 @@
 <translation id="1279024913354609713">Moenie toelaat nie</translation>
 <translation id="1281818060020671000">Bestuur data</translation>
 <translation id="1282311502488501110">Moenie aanmeld nie</translation>
+<translation id="1283039547216852943">Tik om uit te vou</translation>
 <translation id="1283524564873030414">Afgelope 24 uur</translation>
 <translation id="1285320974508926690">Moet nooit hierdie werf vertaal nie</translation>
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" />-toestemmings sal teruggestel word na af wanneer jy hierdie werf verlaat.</translation>
@@ -925,6 +926,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5955891643922670672">Bekyk tans vanlyn weergawe</translation>
 <translation id="5957613098218939406">Meer opsies</translation>
 <translation id="595769230373966252">Soek met <ph name="SEARCH_PROVIDER" /></translation>
+<translation id="5962718611393537961">Tik om in te vou</translation>
 <translation id="5963939892571022323">Kan nie skakel na die hoogtepunt skep nie.</translation>
 <translation id="5965679971710331625">Jy is aangemeld</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 boekmerk is uitgevee}other{{count} boekmerke is uitgevee}}</translation>
@@ -1107,7 +1109,6 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="6753469262000681876">Snelsluitmodus</translation>
 <translation id="6760509555861141183">Keer terug na onlangse oortjie</translation>
 <translation id="6762812039470893796">Ontkies alles</translation>
-<translation id="6771287014037609247">Spoor altyd bespeurde pakkette na</translation>
 <translation id="6780034285637185932">Poskode</translation>
 <translation id="6781260999953472352">Skakel sinkronisering aan?</translation>
 <translation id="6781405765516175232">Tik op “Kry rigtingaanwysings” vir roete-opsies.</translation>
@@ -1212,6 +1213,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7402602673739047753">{count,plural, =1{1 boekmerk is net op hierdie toestel gestoor. Stoor dit in jou Google-rekening, {email}, om dit op jou ander toestelle te gebruik.}other{{count} boekmerke word net op hierdie toestel gestoor. Stoor hulle in jou Google-rekening, {email}, om hulle op jou ander toestelle te gebruik.}}</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> ongeleesde artikels.</translation>
 <translation id="7412027924265291969">Gaan voort</translation>
+<translation id="741204030948306876">Ja, ek's in</translation>
 <translation id="7425346204213733349">Veranderinge aan jou boekmerke, geskiedenis, wagwoorde en ander instellings sal nie meer met jou Google-rekening gesinkroniseer word nie. Jou bestaande data sal egter in jou Google-rekening geberg bly.</translation>
 <translation id="7431991332293347422">Beheer hoe jou blaaigeskiedenis gebruik word om Search en meer te personaliseer</translation>
 <translation id="7435356471928173109">Afgeskakel deur jou administrateur</translation>

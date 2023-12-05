@@ -78,6 +78,7 @@
 <translation id="1060292118287751956">Одређује учесталост ажурирања екрана</translation>
 <translation id="1060570945511946595">Управљај картама</translation>
 <translation id="1061130374843955397">Добро дошли на уређај <ph name="DEVICE_TYPE" /></translation>
+<translation id="1061309251982613260">Увек блокирај контролисање и репрограмирање MIDI уређаја за <ph name="HOST" />.</translation>
 <translation id="1061373870045429865">Направи QR кôд за овај линк</translation>
 <translation id="1061904396131502319">Скоро је време за паузу</translation>
 <translation id="10619348099955377">Копирај име за приказ</translation>
@@ -277,6 +278,7 @@
 <translation id="1203559206734265703">Отклањање грешака за Protected Audiences је омогућено.</translation>
 <translation id="120368089816228251">Музичка нота</translation>
 <translation id="1203942045716040624">Дељени обрађивач: <ph name="SCRIPT_URL" /></translation>
+<translation id="1206832039833782423">Безбедносни кôд се налази на полеђини картице</translation>
 <translation id="1210678701920254279">Прегледајте или додајте штампаче и погледајте активне задатке штампања</translation>
 <translation id="1211769675100312947">Ви одређујете пречице</translation>
 <translation id="1213254615020057352">Шаљите податке о коришћењу и дијагностичке податке. Помозите нам да побољшамо Android доживљај за дете тако што ћете аутоматски слати Google-у податке о дијагностици и коришћењу уређаја и апликација. Те информације се неће користити за идентификацију детета и помоћи ће у одржавању стабилности система и апликације и другим подешавањима. Неки обједињени подаци ће такође помоћи Google апликацијама и партнерима, попут Android програмера. То подешавање примењује власник. Власник може да изабере да се подаци о дијагностици и коришћењу за овај уређај шаљу Google-у. Ако за дете укључите подешавање додатне активности на вебу и у апликацијама, ти подаци ће се можда чувати на Google налогу детета.</translation>
@@ -300,6 +302,7 @@
 <translation id="1223484782328004593"><ph name="APP_NAME" /> захтева лиценцу</translation>
 <translation id="1223853788495130632">Администратор препоручује одређену вредност за ово подешавање.</translation>
 <translation id="1225177025209879837">Обрада захтева...</translation>
+<translation id="1227107020813934021">Пронађите скенере докумената</translation>
 <translation id="1227660082540388410">Измените приступни кôд</translation>
 <translation id="1227993798763400520">Пребацивање није успело. Пробајте поново.</translation>
 <translation id="1230417814058465809">Стандардна заштита је укључена. Користите напредну заштиту да бисте се додатно заштитили.</translation>
@@ -449,6 +452,7 @@
 <translation id="1347625331607114917">Верификујте кôд на Android телефону</translation>
 <translation id="1347975661240122359">Ажурирање ће почети када ниво напуњености батерије буде <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1348966090521113558">Подешавања приступачности миша</translation>
+<translation id="1350962700620017446">Додатак <ph name="EXTENSION_NAME" /> жели да пронађе скенере докумената и да им приступа.</translation>
 <translation id="1352834119074414157">Овај пакет може да буде неисправан или угрожен. Затворите овај прозор и преузмите га поново</translation>
 <translation id="1353275871123211385">Да бисте користили родитељски надзор, попут одобрења за апликације и ограничења времена испред екрана, дете мора да има Google налог којим управља родитељ. Касније може да се дода школски налог за алатке попут Google учионице.</translation>
 <translation id="135389172849514421">Ради офлајн</translation>
@@ -623,6 +627,7 @@
 <translation id="1485015260175968628">Сада може да:</translation>
 <translation id="1485141095922496924">Верзија <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1485197926103629489">Microsoft 365 захтева да се фајлови чувају на OneDrive-у. Локални фајлови ће се преместити, а фајлови са других локација ће се копирати. Фајлове можете да пронађете у фолдеру Microsoft OneDrive у апликацији Фајлови.</translation>
+<translation id="1486012259353794050">Када постављате питања, Google помоћник пружа прилагођене одговоре на основу екрана</translation>
 <translation id="1486096554574027028">Претражите лозинке</translation>
 <translation id="1486486872607808064">Скенирајте овај QR кôд камером на уређају на ком желите да направите приступни кључ за апликацију <ph name="APP_NAME" /></translation>
 <translation id="1487335504823219454">Укључено – прилагођена подешавања</translation>
@@ -686,6 +691,7 @@
 <translation id="1541346352678737112">Није пронађена ниједна мрежа</translation>
 <translation id="154198613844929213">{0,plural, =0{Одмах се брише.}=1{Брише се за 1 секунду}one{Брише се за # секунду}few{Брише се за # секунде}other{Брише се за # секунди}}</translation>
 <translation id="1542137295869176367">Ажурирање података за пријављивање није успело</translation>
+<translation id="1542524755306892917">То омогућава Google помоћнику да пружа прилагођене одговоре када <ph name="SUPERVISED_USER_NAME" /> поставља питања.</translation>
 <translation id="1543284117603151572">Увезени из Edge-а</translation>
 <translation id="1543538514740974167">Брже отварајте ову страницу</translation>
 <translation id="1544588554445317666">Пробајте да користите краћи назив фајла или да га сачувате у другом фолдеру</translation>
@@ -912,6 +918,7 @@
 <translation id="1697150536837697295">Уметност</translation>
 <translation id="1697686431566694143">Измени датотеку</translation>
 <translation id="1698796500103229697">Начини плаћања</translation>
+<translation id="1699807488537653303">Отклоните грешку у вези са лозинком</translation>
 <translation id="1700201317341192482">Уклоните виртуелну картицу</translation>
 <translation id="1700517974991662022">Посећено</translation>
 <translation id="1703331064825191675">Никада не брините о лозинкама</translation>
@@ -1896,6 +1903,7 @@
 <translation id="2439152382014731627">Ресетујте лозинку за <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> се учитава</translation>
 <translation id="2440604414813129000">Прикажи и&amp;звор</translation>
+<translation id="2440632898584211188">Настави да дозвољаваш овом сајту да контролише и репрограмира MIDI уређаје.</translation>
 <translation id="2440823041667407902">Приступ локацији</translation>
 <translation id="2441719842399509963">Врати на подразумеване вредности</translation>
 <translation id="244231003699905658">Неважећа адреса. Проверите адресу и пробајте поново.</translation>
@@ -2136,6 +2144,7 @@
 <translation id="262154978979441594">Обучавајте гласовни модел Google помоћника</translation>
 <translation id="26224892172169984">Не дозволи ниједном сајту да рукује протоколима</translation>
 <translation id="262373406453641243">Colemak</translation>
+<translation id="2624045385113367716">Контрола и репрограмирање MIDI уређаја је дозвољено</translation>
 <translation id="2624142942574147739">Ова страница приступа камери и микрофону.</translation>
 <translation id="2626799779920242286">Пробајте поново касније.</translation>
 <translation id="2627424346328942291">Дељење није успело</translation>
@@ -2349,6 +2358,7 @@
 <translation id="2777251078198759550">Избриши овај контејнер</translation>
 <translation id="2777525873368474674">Налепите линк до слике</translation>
 <translation id="2778471504622896352">Додавање даљинских апликација у Chrome ОС покретач</translation>
+<translation id="2779728796406650689">То омогућава Google помоћнику да пружа прилагођене одговоре када постављате питања.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">Додаци су дозвољени на овом сајту</translation>
 <translation id="2782104745158847185">Грешка при инсталирању Linux апликације</translation>
@@ -2426,6 +2436,7 @@
 <translation id="2836269494620652131">Отказивање</translation>
 <translation id="283669119850230892">Да бисте користили мрежу <ph name="NETWORK_ID" />, најпре успоставите везу са интернетом у наставку.</translation>
 <translation id="2838379631617906747">Инсталира се</translation>
+<translation id="2838474726369447181">Овај сајт може да контролише и репрограмира MIDI уређаје (SysEx).</translation>
 <translation id="2839032553903800133">Обавештења су блокирана</translation>
 <translation id="2841013758207633010">Време</translation>
 <translation id="2841837950101800123">Добављач</translation>
@@ -2449,6 +2460,7 @@
 <translation id="2856776373509145513">Направите нови контејнер</translation>
 <translation id="2856907950922663165">Желите да искључите шифровање URL-ова?</translation>
 <translation id="2859741939921354763">Увезите лозинке у <ph name="BRAND" /></translation>
+<translation id="2861030231482411439">Настави да блокираш контролисање и репрограмирање MIDI уређаја за овај сајт.</translation>
 <translation id="2861301611394761800">Ажурирање система је довршено. Рестартујте систем.</translation>
 <translation id="2861402191395139055">Претплате на Passpoint</translation>
 <translation id="2861941300086904918">Менаџер безбедности за Native Client</translation>
@@ -4869,6 +4881,7 @@
 <translation id="4811212958317149293">Аутоматско скенирање тастатуре за приступ помоћу прекидача</translation>
 <translation id="4811503964269049987">Додајте изабрану картицу у групу</translation>
 <translation id="4813512666221746211">Грешка на мрежи</translation>
+<translation id="4813872509679988157">Настави да дозвољаваш овом сајту да користи MIDI уређаје.</translation>
 <translation id="4814114628197290459">Избришите IBAN</translation>
 <translation id="4814327014588285482">Прескочи и подсети ме касније</translation>
 <translation id="4814378367953456825">Унесите назив за овај отисак прста</translation>
@@ -5181,6 +5194,7 @@
 <translation id="5063480226653192405">Коришћење</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Управљајте безбедним DNS-ом у подешавањима Chrome ОС-а</translation>
+<translation id="5066891009360243320">Овом сајту је забрањено да користи MIDI уређаје.</translation>
 <translation id="5067399438976153555">Увек укључено</translation>
 <translation id="5067867186035333991">Питај ме ако <ph name="HOST" /> жели да приступи микрофону</translation>
 <translation id="5068553687099139861">прикаже лозинке</translation>
@@ -5898,6 +5912,7 @@
 <translation id="5641608986289282154">Почните да користите <ph name="DEVICE_OS" /></translation>
 <translation id="5641648607875312660">Уређивач за снимке екрана</translation>
 <translation id="5642508497713047">CRL потписник</translation>
+<translation id="5643191124441701136">Безбедносни кôд се налази на предњој страни картице</translation>
 <translation id="5643321261065707929">Мрежа са ограничењем</translation>
 <translation id="5646376287012673985">Локација</translation>
 <translation id="5646558797914161501">Бизнисмен</translation>
@@ -6174,7 +6189,7 @@
 <translation id="5869522115854928033">Сачуване лозинке</translation>
 <translation id="5870086504539785141">Затвори мени приступачности</translation>
 <translation id="5870155679953074650">Грешке у вези са хард-диском</translation>
-<translation id="5872318519182427835">Утиче на сајтове наведене овде и њихове поддомене. На пример, ако додате „google.com“, то значи да колачићи треће стране могу да буду активни и за mail.google.com јер је то део google.com.</translation>
+<translation id="5870901441418842049">Овом сајту је онемогућено да контролише и репрограмира MIDI уређаје (SysEx).</translation>
 <translation id="5875534259258494936">Дељење садржаја екрана је завршено</translation>
 <translation id="5876576639916258720">Покреће се...</translation>
 <translation id="5876851302954717356">Нова картица на десној страни</translation>
@@ -6553,6 +6568,7 @@
 <translation id="6171779718418683144">Питај при свакој посети</translation>
 <translation id="617213288191670920">Није додат ниједан језик</translation>
 <translation id="6173623053897475761">Поново унесите PIN</translation>
+<translation id="6174116123142608180">Настави да блокираш коришћење MIDI уређаја за овај сајт.</translation>
 <translation id="6175314957787328458">GUID Microsoft домена</translation>
 <translation id="6175910054050815932">Преузмите линк</translation>
 <translation id="6176701216248282552">Контекстуална помоћ је укључена. Ове функције могу да шаљу отворене странице Google-у.</translation>
@@ -7072,6 +7088,7 @@
 <translation id="6597324406048772521">Додаци нису дозвољени на овом сајту</translation>
 <translation id="6597331566371766302">Администратор је блокирао следеће додатке:</translation>
 <translation id="659894938503552850">најновије</translation>
+<translation id="6599934330666882772">Овај сајт користи MIDI уређаје.</translation>
 <translation id="6601262427770154296">Управљање корисничким речницима</translation>
 <translation id="6601612474695404578">Неки сајтови користе колачиће треће стране да би учитавали своје странице. Ако сајт не ради, можете да пробате да дозволите колачиће.</translation>
 <translation id="6602173570135186741">Аутоматско попуњавање и лозинке</translation>
@@ -7636,6 +7653,7 @@
 <translation id="7036706669646341689">За Linux се препоручује <ph name="DISK_SIZE" /> простора. Да бисте ослободили простор, избришите датотеке са уређаја.</translation>
 <translation id="7037509989619051237">Текст за преглед</translation>
 <translation id="7038632520572155338">Приступ помоћу прекидача</translation>
+<translation id="7038636380708661517">Увек блокирај коришћење MIDI уређаја за <ph name="HOST" />.</translation>
 <translation id="7038710352229712897">Додајте још један Google налог за: <ph name="USER_NAME" /></translation>
 <translation id="7039326228527141150">Приступ USB уређајима продавца <ph name="VENDOR_NAME" /></translation>
 <translation id="7039912931802252762">Microsoft пријављивање помоћу паметне картице</translation>
@@ -7790,6 +7808,7 @@
 <translation id="7180865173735832675">Прилагоди</translation>
 <translation id="7181117767881540376">Сакриј траку са обележивачима</translation>
 <translation id="7182063559013288142">Инстант хотспот</translation>
+<translation id="718240920439497409">MIDI уређаји су блокирани</translation>
 <translation id="7182791023900310535">Преместите лозинку</translation>
 <translation id="718427252411067142">Да бисте онемогућили другима да користе вашу лозинку, отворите апликацију како бисте променили лозинку</translation>
 <translation id="7186088072322679094">Задржи на траци с алаткама</translation>
@@ -7879,6 +7898,7 @@
 <translation id="7255002516883565667">Тренутно имате једну картицу која може да се користи само на овом уређају</translation>
 <translation id="7255935316994522020">Примени</translation>
 <translation id="7256069762010468647">Сајт користи камеру</translation>
+<translation id="7256265230922801769">Увек дозволи контролисање и репрограмирање MIDI уређаја за <ph name="HOST" />.</translation>
 <translation id="7256634071279256947">Задњи микрофон</translation>
 <translation id="7256710573727326513">Отвори на картици</translation>
 <translation id="7257173066616499747">WiFi мреже</translation>
@@ -8910,6 +8930,7 @@
 <translation id="8041267120753677077">да стримује апликације на телефону</translation>
 <translation id="8042142357103597104">Непрозирност текста</translation>
 <translation id="8042331986490021244">Лозинке се шифрују на уређају пре него што се сачувају у Google менаџеру лозинки</translation>
+<translation id="8044090981104134791">MIDI уређаји су дозвољени</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> не реагује.</translation>
 <translation id="8044899503464538266">Споро</translation>
 <translation id="8045253504249021590">Синхронизација је заустављена преко Google контролне табле.</translation>
@@ -9103,6 +9124,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Уређаји<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195265224453131880">Интензитет</translation>
 <translation id="8195854162863398249">Онемогући <ph name="FEATURE_NAME" /></translation>
+<translation id="8197151971904389091">Увек дозволи коришћење MIDI уређаја за <ph name="HOST" />.</translation>
 <translation id="8197673340773315084">Додајте назив или ознаку као што су Пословни или Лични</translation>
 <translation id="8198456017687137612">Пребацује се картица</translation>
 <translation id="8198457270656084773">Тражите страницу евиденције уређаја о систему? Посетите<ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
@@ -9386,6 +9408,7 @@
 <translation id="8414396119627470038">Пријавите се на <ph name="SITE_ETLD_PLUS_ONE" /> уз <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Напомене</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (футрола)</translation>
+<translation id="8417065541337558100">Преглед камере</translation>
 <translation id="8417548266957501132">Лозинка родитеља</translation>
 <translation id="8418445294933751433">&amp;Прикажи као картицу</translation>
 <translation id="8418675848396538775">Додајте <ph name="LANGUAGE_NAME" /></translation>
@@ -9882,6 +9905,7 @@
 <translation id="8811862054141704416">Приступ микрофону за Crostini</translation>
 <translation id="8811923271770626905">Овај додатак може да буде покренут у позадини</translation>
 <translation id="8812593354822910461">Обриши и податке прегледања (<ph name="URL" />). Ово ће вас одјавити са <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>
+<translation id="8813199641941291474">Контрола и репрограмирање MIDI уређаја је блокирано</translation>
 <translation id="8813698869395535039">Пријављивање на <ph name="USERNAME" /> није успело</translation>
 <translation id="8813872945700551674">Затражи од родитеља да одобри додатак <ph name="EXTENSION_NAME" /></translation>
 <translation id="8813937837706331325">Средње уштеде</translation>

@@ -253,7 +253,6 @@
 <translation id="2450083983707403292">तपाईं <ph name="FILE_NAME" /> लाई फेरि डाउनलोड गर्न चाहनुहुन्छ?</translation>
 <translation id="2453860139492968684">समाप्त</translation>
 <translation id="2461822463642141190">हालको</translation>
-<translation id="2472163211318554013">तपाईं Chrome बाट बढीभन्दा बढी फाइदा लिन चाहनुहुन्छ भने साइन इन गर्नुहोस्</translation>
 <translation id="247737702124049222">'फोटोको वर्णन गर्ने' सुविधा अन छ</translation>
 <translation id="2479148705183875116">सेटिङमा जानुहोस्</translation>
 <translation id="2482878487686419369">सूचनाहरू</translation>
@@ -643,7 +642,6 @@
 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> मा तपाईंको Google खातासँग रहेको तपाईंका अन्य Google सेवाहरूका खोज र गतिविधि जस्ता ब्राउजिङ सम्बन्धी इतिहासका अन्य ढाँचाहरू हुनसक्छन्।</translation>
 <translation id="4523326818319942067">पछिल्लो घण्टा</translation>
 <translation id="452750746583162491">आफ्नो सिंक गरिएको डेटाको समीक्षा गर्नुहोस्</translation>
-<translation id="4528638190900283934">अतिरिक्त सुविधाहरू प्राप्त गर्न साइन इन गर्नुहोस्</translation>
 <translation id="4532845899244822526">फोल्डर छान्नुहोस्</translation>
 <translation id="4543131175509360848">कुनै पनि पासकी सिट खोलिएको छैन</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ट्याब}other{<ph name="TAB_COUNT_MANY" /> वटा ट्याब, <ph name="TAB_COUNT_INCOGNITO" /> वटा इन्कोग्निटो ट्याब}}</translation>
@@ -1377,7 +1375,6 @@
 <translation id="808747664143081553">यन्त्रसँग कनेक्ट गरियो</translation>
 <translation id="8088176524274673045">वरपर रहेका मान्छेहरूसँग सेयर गर्न उनीहरूलाई यो QR कोड स्क्यान गर्न लगाउनुहोस्</translation>
 <translation id="8090732854597034573">मद्दत चाहिएका खण्डमा आफ्ना अभिभावकलाई अनुरोध गर्नुहोस्</translation>
-<translation id="8100969750121413114">Chrome आफूले चाहे जस्तो बनाउन साइन इन गर्नुहोस्</translation>
 <translation id="8101414242770404289"><ph name="TIME_PERIOD" /> मा खोलिएका कुनै पनि ट्याब बन्द गरिने छैन</translation>
 <translation id="8103578431304235997">इन्कोग्निटो ट्याब</translation>
 <translation id="8105613260829665809">तपाईंले जारी राख्नुभयो भने तपाईं <ph name="BEGIN_TOS_LINK" />सेवाका सर्तहरू<ph name="END_TOS_LINK" />मा सहमत हुनुहुन्छ भन्ने अर्थ लाग्छ।\nChrome ले Google लाई यो एपको गुणस्तर सुधार्न सघाउने प्रयोजनका लागि यो एपको प्रयोगसम्बन्धी डेटा र क्र्यास रिपोर्ट पठाउँछ। <ph name="BEGIN_UMA_LINK" />व्यवस्थापन गर्नुहोस्<ph name="END_UMA_LINK" /></translation>

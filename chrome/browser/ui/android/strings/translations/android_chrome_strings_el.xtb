@@ -253,7 +253,6 @@
 <translation id="2450083983707403292">Θέλετε να ξεκινήσετε ξανά τη λήψη του αρχείου <ph name="FILE_NAME" />;</translation>
 <translation id="2453860139492968684">Τέλος</translation>
 <translation id="2461822463642141190">Τρέχουσα</translation>
-<translation id="2472163211318554013">Συνδεθείτε για να αξιοποιήσετε πλήρως το Chrome</translation>
 <translation id="247737702124049222">Οι περιγραφές εικόνων είναι ενεργοποιημένες</translation>
 <translation id="2479148705183875116">Μετάβαση στις Ρυθμίσεις</translation>
 <translation id="2482878487686419369">Ειδοποιήσεις</translation>
@@ -644,7 +643,6 @@
 Ο Λογαριασμός σας Google μπορεί να έχει άλλες μορφές ιστορικού περιήγησης, όπως αναζητήσεις και δραστηριότητα από άλλες υπηρεσίες της Google στη διεύθυνση <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="4523326818319942067">τελευταία ώρα</translation>
 <translation id="452750746583162491">Έλεγχος συγχρονισμένων δεδομένων</translation>
-<translation id="4528638190900283934">Συνδεθείτε για πρόσθετες λειτουργίες</translation>
 <translation id="4532845899244822526">Επιλογή φακέλου</translation>
 <translation id="4543131175509360848">Δεν υπάρχουν φύλλα κλειδιών πρόσβασης</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> καρτέλα}other{<ph name="TAB_COUNT_MANY" /> καρτέλες, <ph name="TAB_COUNT_INCOGNITO" /> ανώνυμης περιήγησης}}</translation>
@@ -1378,7 +1376,6 @@
 <translation id="808747664143081553">Συνδέθηκε στη συσκευή</translation>
 <translation id="8088176524274673045">Για κοινοποίηση στα άτομα που βρίσκονται κοντά σας, επιτρέψτε τους να σαρώσουν αυτόν τον κωδικό QR.</translation>
 <translation id="8090732854597034573">Εάν χρειάζεσαι βοήθεια, ρώτησε τον γονέα σου</translation>
-<translation id="8100969750121413114">Συνδεθείτε για εξατομίκευση του Chrome</translation>
 <translation id="8101414242770404289">Δεν υπάρχουν καρτέλες από: <ph name="TIME_PERIOD" /></translation>
 <translation id="8103578431304235997">Καρτέλα ανώνυμης περιήγησης</translation>
 <translation id="8105613260829665809">Εάν συνεχίσετε, συμφωνείτε με τους <ph name="BEGIN_TOS_LINK" />Όρους Παροχής Υπηρεσιών<ph name="END_TOS_LINK" />.\nΓια να συμβάλλει στη βελτίωση της εφαρμογής, το Chrome στέλνει δεδομένα χρήσης και σφαλμάτων στην Google. <ph name="BEGIN_UMA_LINK" />Διαχείριση<ph name="END_UMA_LINK" /></translation>

@@ -4528,8 +4528,6 @@ Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için 
           Bu politikayı ayarlarsanız kullanıcılar değiştiremez veya geçersiz kılamazlar.
 
           Bu politika ayarlanmadan bırakılırsa mono ses başlangıçta devre dışıdır ancak istenildiğinde kullanıcı tarafından etkinleştirilebilir.</translation>
-<translation id="4765085790777474543">Bu politika etkinleştirildiğinde veya ayarlanmadan bırakıldığında, <ph name="PRODUCT_NAME" /> için indirme koruması <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> tarafından kontrol edilir. <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />, <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_STANDARD" /> veya <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_ENHANCED" /> değerine ayarlanırsa indirme koruması, bir dosyanın veya dağıtım mekanizmasının güvenli olup olmadığını kontrol etmek için <ph name="PRODUCT_NAME" /> hizmetinden Google'a bir karar isteği gönderir.
-Bu politika devre dışı bırakıldığında indirme koruması, karar için Google'a veri göndermez. Bu politika, indirmeler için karma tabanlı URL kontrolünü etkilemez ve öncelikli olan mevcut bağlayıcı ayarlarını geçersiz kılmaz.</translation>
 <translation id="4767059955897420757">Politika ayarlanmaz veya Etkin değerine ayarlanırsa Kimlik Bilgisi Sağlayıcı uzantısı promosyonu, kullanıcıya gösterilebilir.
 Politika, Devre Dışı değerine ayarlanırsa Kimlik Bilgisi Sağlayıcı uzantısı promosyonu, kullanıcıya gösterilmez.</translation>
 <translation id="4768446404233019970">TLS'de 3DES şifre paketlerini etkinleştir</translation>
@@ -7302,7 +7300,6 @@ Politika ayarlanırsa varsayılan değer listesine yeni yapılandırılan değer
       Bu politika false (yanlış) değerine ayarlanırsa veya ayarlanmadan bırakılırsa bilgi raporlanmaz.
       True (doğru) değerine ayarlanırsa cihazın pervane bilgileri raporlanır.</translation>
 <translation id="7096708978256135543">Siteler MIDI izni istediğinde her seferinde sor</translation>
-<translation id="7098400392308393199">Gerçek Zamanlı İndirme Koruması, <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> politikası tarafından kontrol edilir</translation>
 <translation id="710003290625031750">Geniş şema açıklaması:</translation>
 <translation id="7101550508196914704">Yer işareti çubuğunda uygulamalar kısayolunu gösterme</translation>
 <translation id="7105084505972468353">Bu politika ayarlanırsa etkinleştirilmiş olan ekran büyütecinin türünü belirler.
@@ -9231,7 +9228,6 @@ Politika ayarlanmadan bırakılırsa kayıtlı şifreler ilk çalıştırma sır
 <translation id="8713535263782304771">Güvenli Tarama'yı devre dışı bırak</translation>
 <translation id="8714556680280715750">Kullanıcıların daha fazla bilgi edinmek için ziyaret edebileceği bir URL. Ayarlanmadan bırakılırsa
 yükleyicide "daha fazla bilgi" URL'si görünmez. Görünüyorsa https şemasını kullanmalıdır.</translation>
-<translation id="8715181294371649277">Gerçek Zamanlı Güvenli Tarama İndirme Koruması'na izin ver</translation>
 <translation id="8715885991031124968">Farklı kaynaklı alt çerçevelerden tetiklenen JavaScript iletişim kutularına izin verilir.</translation>
 <translation id="8720547069538712402">Kullanıcının yazım denetimini etkinleştirmesine veya devre dışı bırakmasına izin verir</translation>
 <translation id="8726080977639508431">Bu politika, <ph name="PRODUCT_NAME" /> ürününün, Eski Tarayıcı Desteği özelliğinin site listesi/gri liste politikalarını nasıl yorumladığını kontrol eder. Şu politikaları etkiler: <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> ve <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
@@ -9279,7 +9275,6 @@ yükleyicide "daha fazla bilgi" URL'si görünmez. Görünüyorsa https şeması
 
       Varsayılan olarak tüm yerel mesajlaşma ana makinelerine izin verilir. Ancak tüm yerel mesajlaşma ana makineleri politikaya göre yasaklandıysa yönetici, bu politikayı değiştirmek için izin verilenler listesini kullanabilir.</translation>
 <translation id="877101880914876353">Cihaz ekran koruyucusu giriş ekranı resim görüntüleme aralığı.</translation>
-<translation id="8772900888819482215">Gerçek Zamanlı Güvenli Tarama İndirme Koruması'nı devre dışı bırak</translation>
 <translation id="877557628527387598">Şifreyle oturum açma</translation>
 <translation id="8777369558049831576">Harici protokol iletişim kutusunda "Her zaman aç" onay kutusu göster.</translation>
 <translation id="8778320022586618010">Cihaz grafik durumu raporlamasını etkinleştir</translation>

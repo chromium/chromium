@@ -78,6 +78,7 @@
 <translation id="1060292118287751956">Սահմանում է էկրանի թարմացման հաճախականությունը</translation>
 <translation id="1060570945511946595">Կառավարել տոմսերը</translation>
 <translation id="1061130374843955397">Բարի գալուստ <ph name="DEVICE_TYPE" /></translation>
+<translation id="1061309251982613260">Արգելել <ph name="HOST" /> կայքին ձեր MIDI սարքերի (SysEx) վերահսկումն ու վերածրագրավորումը։</translation>
 <translation id="1061373870045429865">Ստեղծել QR կոդ այս հղման համար</translation>
 <translation id="1061904396131502319">Շուտով ընդմիջման ժամն է</translation>
 <translation id="10619348099955377">Պատճենել ցուցադրվող անունը</translation>
@@ -276,6 +277,7 @@
 <translation id="1203559206734265703">Protected Audiences-ի վրիպազերծումը միացված է։</translation>
 <translation id="120368089816228251">Նոտա</translation>
 <translation id="1203942045716040624">Shared Worker՝ <ph name="SCRIPT_URL" /></translation>
+<translation id="1206832039833782423">Անվտանգության կոդը նշված է ձեր քարտի դարձերեսին</translation>
 <translation id="1210678701920254279">Դիտել կամ ավելացնել տպիչներ և տեսնել տպելու ակտիվ առաջադրանքները</translation>
 <translation id="1211769675100312947">Ձեր ընտրած դյուրանցումները</translation>
 <translation id="1213254615020057352">Օգտագործման և դիագնոստիկ տվյալների ուղարկում։ Օգնեք բարելավել Android-ի աշխատանքը՝ Google-ին ավտոմատ ուղարկելով ախտորոշիչ, ինչպես նաև սարքի ու հավելվածի օգտագործման մասին տվյալներ։ Այս տեղեկությունները չեն օգտագործվի ձեր երեխային նույնականացնելու համար և կօգնեն բարելավել համակարգի ու հավելվածի աշխատանքի կայունությունը։ Հավաքված տեղեկությունների մի մասը օգտակար կլինի մեր գործընկերների, օրինակ, Android ծրագրավորողների համար։ Այս կարգավորումը պարտադրված է սեփականատիրոջ կողմից։ Սեփականատերը կարող է թույլատրել, որ այս սարքի համար օգտագործման և դիագնոստիկ տվյալներն ուղարկվեն Google-ին։ Եթե Վեբ որոնման և հավելվածների լրացուցիչ պատմությունը միացված է, այս տվյալները կպահվեն երեխայի Google հաշվում։</translation>
@@ -299,6 +301,7 @@
 <translation id="1223484782328004593"><ph name="APP_NAME" /> հավելվածին հավաստագիր է անհրաժեշտ</translation>
 <translation id="1223853788495130632">Ադմինիստրատորը խորհուրդ է տալիս այս կարգավորման համար որոշակի արժեք ընտրել:</translation>
 <translation id="1225177025209879837">Հարցումը մշակվում է…</translation>
+<translation id="1227107020813934021">Գտեք փաստաթղթերի սկաներներ</translation>
 <translation id="1227660082540388410">Անցաբառի փոփոխում</translation>
 <translation id="1227993798763400520">Չհաջողվեց հեռարձակել։ Նորից փորձեք։</translation>
 <translation id="1230417814058465809">Սովորական պաշտպանությունը միացված է։ Հավելյալ ապահովության համար օգտագործեք բարելավված
@@ -449,6 +452,7 @@
 <translation id="1347625331607114917">Հաստատեք կոդը Android հեռախոսում</translation>
 <translation id="1347975661240122359">Թարմացումը կսկսվի, երբ մարտկոցը լիցքավորված լինի <ph name="BATTERY_LEVEL" />%:</translation>
 <translation id="1348966090521113558">Մկնիկի հատուկ գործառույթների կարգավորումներ</translation>
+<translation id="1350962700620017446">«<ph name="EXTENSION_NAME" />» ընդլայնումը ցանկանում է գտնել և օգտագործել փաստաթղթերի սկաներներ։</translation>
 <translation id="1352834119074414157">Այս փաթեթը կարող է կոտրված լինել։ Փակեք այս պատուհանը և նորից ներբեռնեք այն</translation>
 <translation id="1353275871123211385">Որպեսզի կարողանաք օգտագործել ծնողական վերահսկողության գործառույթները (օրինակ՝ հաստատել հավելվածների տեղադրումը և սահմանափակել սարքի օգտագործման ժամանակը), երեխան պետք է ունենա Google հաշիվ, որը դուք եք կառավարում։ Ավելի ուշ կարող եք ավելացնել ուսումնական հաշիվ, որը կարող է օգտագործվել այնպիսի գործիքների հետ, ինչպիսին է Google Classroom-ը։</translation>
 <translation id="135389172849514421">Աշխատում է անցանց ռեժիմում</translation>
@@ -623,6 +627,7 @@
 <translation id="1485015260175968628">Այժմ կարող է.</translation>
 <translation id="1485141095922496924">Տարբերակ <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1485197926103629489">Microsoft 365-ը պահանջում է, որ ֆայլերը պահվեն OneDrive-ում։ Սարքի ֆայլերը կտեղափոխվեն, իսկ այլ տեղերի ֆայլերը կպատճենվեն։ Ձեր ֆայլերը կարող եք գտնել «Ֆայլեր» հավելվածի Microsoft OneDrive պանակում։</translation>
+<translation id="1486012259353794050">Երբ հարցեր եք տալիս, Google Օգնականը տրամադրում է անհատականացված պատասխաններ՝ հիմնվելով ձեր էկրանի բովանդակության վրա</translation>
 <translation id="1486096554574027028">Գաղտնաբառերի որոնում</translation>
 <translation id="1486486872607808064">Սկանավորեք այս QR կոդը այն սարքի տեսախցիկի միջոցով, որում ուզում եք անցաբառ ստեղծել <ph name="APP_NAME" /> հավելվածի համար</translation>
 <translation id="1487335504823219454">Միացված է – անհատականացված կարգավորումներ</translation>
@@ -689,6 +694,7 @@
 <translation id="1541346352678737112">Ցանց չի գտնվել</translation>
 <translation id="154198613844929213">{0,plural, =0{Ջնջում է հիմա։}=1{Կջնջի 1 վայրկյանից}one{Կջնջի # վայրկյանից}other{Կջնջի # վայրկյանից}}</translation>
 <translation id="1542137295869176367">Չհաջողվեց թարմացնել ձեր մուտքի տվյալները</translation>
+<translation id="1542524755306892917">Սա թույլ է տալիս, որ Google Օգնականը <ph name="SUPERVISED_USER_NAME" />-ի հարցերին տրամադրի անհատականացված պատասխաններ։</translation>
 <translation id="1543284117603151572">Edge-ից ներմուծված</translation>
 <translation id="1543538514740974167">Արագ հասանելիություն</translation>
 <translation id="1544588554445317666">Ընտրեք ֆայլի ավելի կարճ անվանում կամ փորձեք պահել այլ պանակում</translation>
@@ -915,6 +921,7 @@
 <translation id="1697150536837697295">Արվեստ</translation>
 <translation id="1697686431566694143">Փոփոխել ֆայլը</translation>
 <translation id="1698796500103229697">&amp;Վճարման եղանակներ</translation>
+<translation id="1699807488537653303">Շտկել գաղտնաբառի հետ կապված սխալը</translation>
 <translation id="1700201317341192482">Վիրտուալ քարտի հեռացում</translation>
 <translation id="1700517974991662022">Այցելած</translation>
 <translation id="1703331064825191675">Երբեք մի՛ անհանգստացեք ձեր գաղտնաբառերի համար</translation>
@@ -1900,6 +1907,7 @@
 <translation id="2439152382014731627">Փոխել <ph name="DEVICE_TYPE" /> սարքի գաղտնաբառը</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" />-ի բեռնում</translation>
 <translation id="2440604414813129000">Դիտել ա&amp;ղբյուրը</translation>
+<translation id="2440632898584211188">Թույլատրել այս կայքին ձեր MIDI սարքերի (SysEx) վերահսկումն ու վերածրագրավորումը։</translation>
 <translation id="2440823041667407902">Իմ տեղակայումը</translation>
 <translation id="2441719842399509963">Վերականգնել կանխադրված կարգավորումները</translation>
 <translation id="244231003699905658">Հասցեն անվավեր է։ Ստուգեք հասցեն և նորից փորձեք։</translation>
@@ -2138,6 +2146,7 @@
 <translation id="262154978979441594">Ձայնագրել ձայնի մոդել Google Օգնականի համար</translation>
 <translation id="26224892172169984">Թույլ չտալ որևէ կայքի մշակել հաղորդակարգերը</translation>
 <translation id="262373406453641243">Colemak</translation>
+<translation id="2624045385113367716">MIDI սարքերի վերահսկումն ու վերածրագրավորումը թույլատրված է</translation>
 <translation id="2624142942574147739">Այս էջն օգտագործում է ձեր տեսախցիկն ու խոսափողը:</translation>
 <translation id="2626799779920242286">Կրկին փորձեք ավելի ուշ:</translation>
 <translation id="2627424346328942291">Սխալ առաջացավ</translation>
@@ -2351,6 +2360,7 @@
 <translation id="2777251078198759550">Ջնջել այս կոնտեյները</translation>
 <translation id="2777525873368474674">Տեղադրեք պատկերի հղումը</translation>
 <translation id="2778471504622896352">Ավելացնել հեռակա հավելվածներ ChromeOS-ի գործարկիչում</translation>
+<translation id="2779728796406650689">Սա թույլ է տալիս, որ Google Օգնականը ձեր հարցերին տրամադրի անհատականացված պատասխաններ։</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">Ընդլայնումները թույլատրված են այս կայքում</translation>
 <translation id="2782104745158847185">Չհաջողվեց տեղադրել Լինուքսի հավելվածը</translation>
@@ -2428,6 +2438,7 @@
 <translation id="2836269494620652131">Խափանում</translation>
 <translation id="283669119850230892"><ph name="NETWORK_ID" /> ցանցն օգտագործելու համար նախ կապակցվեք համացանցին:</translation>
 <translation id="2838379631617906747">Տեղադրվում է</translation>
+<translation id="2838474726369447181">Այս կայքը կարող է վերահսկել և վերածրագրավորել ձեր MIDI սարքերը (SysEx)։</translation>
 <translation id="2839032553903800133">Ծանուցումներն արգելափակված են</translation>
 <translation id="2841013758207633010">Ժամանակ</translation>
 <translation id="2841837950101800123">Մատակարար</translation>
@@ -2451,6 +2462,7 @@
 <translation id="2856776373509145513">Նոր կոնտեյների ստեղծում</translation>
 <translation id="2856907950922663165">Անջատե՞լ URL-ների գաղտնագրումը</translation>
 <translation id="2859741939921354763">Ներմուծել գաղտնաբառերը <ph name="BRAND" /></translation>
+<translation id="2861030231482411439">Արգելել այս կայքին ձեր MIDI սարքերի (SysEx) վերահսկումն ու վերածրագրավորումը։</translation>
 <translation id="2861301611394761800">Համակարգի թարմացումն ավարտված է: Վերագործարկեք համակարգը:</translation>
 <translation id="2861402191395139055">Passpoint-ի բաժանորդագրություններ</translation>
 <translation id="2861941300086904918">Անվտանգության կառավարիչ - Native Client</translation>
@@ -4871,6 +4883,7 @@
 <translation id="4811212958317149293">Ստեղնաշարի ավտոմատ սկանավորում Switch Access-ի միջոցով</translation>
 <translation id="4811503964269049987">Ավելացնել ընտրված ներդիրը խմբում</translation>
 <translation id="4813512666221746211">Ցանցի սխալ</translation>
+<translation id="4813872509679988157">Թույլատրել այս կայքին օգտագործել ձեր MIDI սարքերը։</translation>
 <translation id="4814114628197290459">IBAN-ի ջնջում</translation>
 <translation id="4814327014588285482">Բաց թողնել և հիշեցնել ավելի ուշ</translation>
 <translation id="4814378367953456825">Անուն տվեք այս մատնահետքին</translation>
@@ -5184,6 +5197,7 @@
 <translation id="5063480226653192405">Վիճակագրություն</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Ապահով DNS սերվերի կառավարում ChromeOS-ի կարգավորումներում</translation>
+<translation id="5066891009360243320">Այս կայքին արգելված է օգտագործել ձեր MIDI սարքերը։</translation>
 <translation id="5067399438976153555">Միշտ միացված</translation>
 <translation id="5067867186035333991">Հարցնել, երբ <ph name="HOST" />-ն ուզում է օգտագործել խոսափողը</translation>
 <translation id="5068553687099139861">ցուցադրել գաղտնաբառերը</translation>
@@ -5899,6 +5913,7 @@
 <translation id="5641608986289282154">Սկսեք օգտագործել <ph name="DEVICE_OS" />-ը</translation>
 <translation id="5641648607875312660">Սքրինշոթների խմբագրիչ</translation>
 <translation id="5642508497713047">CRL-ի ստորագրող</translation>
+<translation id="5643191124441701136">Անվտանգության կոդը նշված է ձեր քարտի դիմերեսին</translation>
 <translation id="5643321261065707929">Վճարովի ինտերնետ</translation>
 <translation id="5646376287012673985">Տեղադրություն</translation>
 <translation id="5646558797914161501">Բիզնեսմեն</translation>
@@ -6175,7 +6190,7 @@
 <translation id="5869522115854928033">Պահված գաղտնաբառեր</translation>
 <translation id="5870086504539785141">Փակել մատչելիության ցանկը</translation>
 <translation id="5870155679953074650">Սարքակազմի սխալ</translation>
-<translation id="5872318519182427835">Կարգավորումները տարածվում են ստորև թվարկված կայքերի և դրանց ենթատիրույթների վրա։ Օրինակ՝ եթե ավելացնեք «google.com», երրորդ կողմի քուքիները կթույլատրվեն նաև mail.google.com-ի համար, քանի որ այն պատկանում է google.com տիրույթին։</translation>
+<translation id="5870901441418842049">Այս կայքին արգելված է վերահսկել և վերածրագրավորել ձեր MIDI սարքերը (SysEx)։</translation>
 <translation id="5875534259258494936">Էկրանի ցուցադրումն ավարտվել է</translation>
 <translation id="5876576639916258720">Ստուգվում է…</translation>
 <translation id="5876851302954717356">Նոր ներդիր աջ կողմում</translation>
@@ -6553,6 +6568,7 @@
 <translation id="6171779718418683144">Միշտ հարցնել</translation>
 <translation id="617213288191670920">Լեզուներ չեն ավելացվել</translation>
 <translation id="6173623053897475761">Նորից մուտքագրեք PIN-ը</translation>
+<translation id="6174116123142608180">Արգելել այս կայքին օգտագործել ձեր MIDI սարքերը։</translation>
 <translation id="6175314957787328458">Microsoft տիրույթի GUID</translation>
 <translation id="6175910054050815932">Ստանալ հղում</translation>
 <translation id="6176701216248282552">Համատեքստային օգնությունը միացված է։ Այս գործառույթները կարող են բաց էջեր ուղարկել Google-ին։</translation>
@@ -7070,6 +7086,7 @@
 <translation id="6597324406048772521">Ընդլայնումներն արգելված են այս կայքում</translation>
 <translation id="6597331566371766302">Հետևյալ ընդլայնումներն արգելափակվել են ձեր ադմինիստրատորի կողմից՝</translation>
 <translation id="659894938503552850">ամենանորը</translation>
+<translation id="6599934330666882772">Այս կայքն օգտագործում է ձեր MIDI սարքերը։</translation>
 <translation id="6601262427770154296">Կառավարել օգտատիրոջ բառարանները</translation>
 <translation id="6601612474695404578">Որոշ կայքեր իրենց էջերը բեռնելու համար օգտագործում են երրորդ կողմի քուքիներ։ Եթե կայքը չի աշխատում, փորձեք թույլատրել քուքիները։</translation>
 <translation id="6602173570135186741">Ինքնալրացում և գաղտնաբառեր</translation>
@@ -7633,6 +7650,7 @@
 <translation id="7036706669646341689">Լինուքսը տեղադրելու համար խորհուրդ է տրվում ունենալ <ph name="DISK_SIZE" /> տարածք։ Տարածք ազատելու համար սարքի հիշողությունից ֆայլեր ջնջեք։</translation>
 <translation id="7037509989619051237">Տեքստի նախադիտում</translation>
 <translation id="7038632520572155338">Switch Access</translation>
+<translation id="7038636380708661517">Արգելել <ph name="HOST" /> կայքին ձեր MIDI սարքերի (SysEx) վերահսկումն ու վերածրագրավորումը։</translation>
 <translation id="7038710352229712897">Ավելացրեք ևս մեկ Google հաշիվ <ph name="USER_NAME" /> օգտատիրոջ համար</translation>
 <translation id="7039326228527141150">Մտնել <ph name="VENDOR_NAME" />-ի USB սարքեր</translation>
 <translation id="7039912931802252762">Մուտք Microsoft-ի սմարտ-քարտով</translation>
@@ -7787,6 +7805,7 @@
 <translation id="7180865173735832675">Հարմարեցնել</translation>
 <translation id="7181117767881540376">&amp;Թաքցնել էջանիշների գոտին</translation>
 <translation id="7182063559013288142">Ակնթարթային թեժ կետ</translation>
+<translation id="718240920439497409">MIDI սարքերն արգելափակված են</translation>
 <translation id="7182791023900310535">Գաղտնաբառի տեղափոխում</translation>
 <translation id="718427252411067142">Որպեսզի թույլ չտաք որևէ մեկին օգտագործել ձեր գաղտնաբառը, բացեք հավելվածը և փոխեք գաղտնաբառը</translation>
 <translation id="7186088072322679094">Պահել գործիքագոտիում</translation>
@@ -7876,6 +7895,7 @@
 <translation id="7255002516883565667">Տվյալ պահին դուք ունեք մի քարտ, որը կարող է օգտագործվել միայն այս սարքում</translation>
 <translation id="7255935316994522020">Կիրառել</translation>
 <translation id="7256069762010468647">Կայքն օգտագործում է ձեր տեսախցիկը</translation>
+<translation id="7256265230922801769">Թույլատրել <ph name="HOST" /> կայքին ձեր MIDI սարքերի (SysEx) վերահսկումն ու վերածրագրավորումը։</translation>
 <translation id="7256634071279256947">Հետևի խոսափող</translation>
 <translation id="7256710573727326513">Բացել ներդիրով</translation>
 <translation id="7257173066616499747">Wi-Fi ցանցեր</translation>
@@ -8905,6 +8925,7 @@
 <translation id="8041267120753677077">Հեռարձակել հեռախոսի հավելվածները</translation>
 <translation id="8042142357103597104">Տեքստի թափանցիկությունը</translation>
 <translation id="8042331986490021244">Գաղտնաբառերը գաղտնագրվում են ձեր սարքում, այնուհետև պահվում Google Գաղտնաբառերի կառավարիչում։</translation>
+<translation id="8044090981104134791">MIDI սարքերը թույլատրված են</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> հավելվածը չի արձագանքում</translation>
 <translation id="8044899503464538266">Դանդաղ</translation>
 <translation id="8045253504249021590">Համաժամացումը դադարեցվել է Google Dashboard-ի միջոցով:</translation>
@@ -9098,6 +9119,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ձեր սարքերը<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195265224453131880">Ինտենսիվություն</translation>
 <translation id="8195854162863398249">Անջատել «<ph name="FEATURE_NAME" />» գործառույթը</translation>
+<translation id="8197151971904389091">Թույլատրել <ph name="HOST" /> կայքին օգտագործել ձեր MIDI սարքերը։</translation>
 <translation id="8197673340773315084">Ավելացրեք անվանում կամ պիտակ, օրինակ՝ «Աշխատանքային» կամ «Անձնական»</translation>
 <translation id="8198456017687137612">Ներդիրի հեռարձակում</translation>
 <translation id="8198457270656084773">Համակարգի սարքերի մատյա՞նն եք փնտրում։ Անցեք <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />։</translation>
@@ -9381,6 +9403,7 @@
 <translation id="8414396119627470038">Մուտք գործեք <ph name="SITE_ETLD_PLUS_ONE" /> կայք <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերության տվյալներով</translation>
 <translation id="8414685983518053656">Նշումներ</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (պատյան)</translation>
+<translation id="8417065541337558100">Տեսախցիկի նախադիտում</translation>
 <translation id="8417548266957501132">Ծնողի գաղտնաբառը</translation>
 <translation id="8418445294933751433">&amp;Ցույց տալ որպես ներդիր</translation>
 <translation id="8418675848396538775">Ավելացնել <ph name="LANGUAGE_NAME" /> լեզուն</translation>
@@ -9876,6 +9899,7 @@
 <translation id="8811862054141704416">Խոսափողի օգտագործման թույլտվություն Crostini-ում</translation>
 <translation id="8811923271770626905">Այս ընդլայնումը կարող է աշխատել ֆոնային ռեժիմում</translation>
 <translation id="8812593354822910461">Ջնջել նաև այցելությունների պատմությունը (<ph name="URL" />)։ Նկատի ունեցեք, որ արդյունքում հնարավոր է դուրս գրվեք ձեր հաշվից <ph name="DOMAIN" /> կայքում։ <ph name="LEARN_MORE" /></translation>
+<translation id="8813199641941291474">MIDI սարքերի վերահսկումն ու վերածրագրավորումը արգելափակված է</translation>
 <translation id="8813698869395535039">Հնարավոր չէ մուտք գործել <ph name="USERNAME" /> հաշիվ</translation>
 <translation id="8813872945700551674">Դիմեք ձեր ծնողին՝ «<ph name="EXTENSION_NAME" />» ընդլայնումը թույլատրելու համար</translation>
 <translation id="8813937837706331325">Միջին տնտեսում</translation>
