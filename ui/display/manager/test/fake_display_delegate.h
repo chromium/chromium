@@ -98,6 +98,13 @@ class FakeDisplayDelegate : public NativeDisplayDelegate,
                     HDCPState state,
                     ContentProtectionMethod protection_method,
                     SetHDCPStateCallback callback) override;
+  void SetColorTemperatureAdjustment(
+      int64_t display_id,
+      const ColorTemperatureAdjustment& cta) override;
+  void SetColorCalibration(int64_t display_id,
+                           const ColorCalibration& calibration) override;
+  void SetGammaAdjustment(int64_t display_id,
+                          const GammaAdjustment& gamma) override;
   bool SetColorMatrix(int64_t display_id,
                       const std::vector<float>& color_matrix) override;
   bool SetGammaCorrection(int64_t display_id,

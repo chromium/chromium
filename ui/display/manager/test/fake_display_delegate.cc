@@ -191,6 +191,17 @@ void FakeDisplayDelegate::SetHDCPState(
   std::move(callback).Run(false);
 }
 
+void FakeDisplayDelegate::SetColorTemperatureAdjustment(
+    int64_t display_id,
+    const ColorTemperatureAdjustment& cta) {}
+
+void FakeDisplayDelegate::SetColorCalibration(
+    int64_t display_id,
+    const ColorCalibration& calibration) {}
+
+void FakeDisplayDelegate::SetGammaAdjustment(int64_t display_id,
+                                             const GammaAdjustment& gamma) {}
+
 bool FakeDisplayDelegate::SetColorMatrix(
     int64_t display_id,
     const std::vector<float>& color_matrix) {

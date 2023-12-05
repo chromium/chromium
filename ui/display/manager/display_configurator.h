@@ -35,6 +35,9 @@ class ManagedDisplayMode;
 class NativeDisplayDelegate;
 class UpdateDisplayConfigurationTask;
 
+struct ColorTemperatureAdjustment;
+struct ColorCalibration;
+
 namespace test {
 class DisplayManagerTestApi;
 }  // namespace test
@@ -263,6 +266,14 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
 
   // Returns true if there is at least one display on.
   bool IsDisplayOn() const;
+
+  // Sets the color temperature adjustment for the specified display.
+  void SetColorTemperatureAdjustment(int64_t display_id,
+                                     const ColorTemperatureAdjustment& cta);
+
+  // Sets the color calibration for the specified display;
+  void SetColorCalibration(int64_t display_id,
+                           const ColorCalibration& calibration);
 
   // Sets the given 3x3 |color_matrix| on the display with |display_id|.
   // This doesn't affect gamma or degamma. It returns true if the color matrix

@@ -791,6 +791,18 @@ void DisplayConfigurator::ForceInitialConfigure() {
   configuration_task_->Run();
 }
 
+void DisplayConfigurator::SetColorTemperatureAdjustment(
+    int64_t display_id,
+    const ColorTemperatureAdjustment& cta) {
+  native_display_delegate_->SetColorTemperatureAdjustment(display_id, cta);
+}
+
+void DisplayConfigurator::SetColorCalibration(
+    int64_t display_id,
+    const ColorCalibration& calibration) {
+  native_display_delegate_->SetColorCalibration(display_id, calibration);
+}
+
 bool DisplayConfigurator::SetColorMatrix(
     int64_t display_id,
     const std::vector<float>& color_matrix) {

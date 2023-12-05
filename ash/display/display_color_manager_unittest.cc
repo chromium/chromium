@@ -32,6 +32,7 @@ const char kResetGammaAction[] = "*set_gamma_correction(id=123)";
 const char kSetGammaAction[] =
     "*set_gamma_correction(id=123,gamma[0]*gamma[255]=???????????\?)";
 const char kSetFullCTMAction[] =
+    "set_color_calibration(id=123),"
     "set_color_matrix(id=123,ctm[0]*ctm[8]*),"
     "set_gamma_correction(id=123,degamma[0]*gamma[0]*)";
 const char kValidIccProfile[] =
@@ -334,6 +335,7 @@ TEST_F(DisplayColorManagerTest,
   // affected. Color matrix is applied as is.
   EXPECT_TRUE(base::MatchPattern(
       log_->GetActionsAndClear(),
+      "set_color_temperature_adjustment(id=123,cta[1.00,0.70,0.30),"
       "set_color_matrix(id=123,ctm[0]=1*ctm[4]=0.7*ctm[8]=0.3*)"));
 
   // Reconfiguring with the same displays snapshots will reapply the matrix.
@@ -390,6 +392,7 @@ TEST_F(DisplayColorManagerTest, SetDisplayColorMatrixWithMixedCTMSupport) {
   // affected. Color matrix is applied as is.
   EXPECT_TRUE(base::MatchPattern(
       log_->GetActionsAndClear(),
+      "set_color_temperature_adjustment(id=123,cta[1.00,0.70,0.30),"
       "set_color_matrix(id=123,ctm[0]=1*ctm[4]=0.7*ctm[8]=0.3*)"));
 
   // No matrix will be applied to this display.
@@ -431,6 +434,7 @@ TEST_F(DisplayColorManagerTest,
   // calibration matrix. Gamma/degamma won't be affected.
   EXPECT_TRUE(base::MatchPattern(
       log_->GetActionsAndClear(),
+      "set_color_temperature_adjustment(id=123,cta[1.00,0.70,0.30),"
       "set_color_matrix(id=123,ctm[0]=0.01*ctm[4]=0.5*ctm[8]=0.04*)"));
 
   // Reconfiguring with the same displays snapshots will reapply the same

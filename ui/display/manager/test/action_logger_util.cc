@@ -41,6 +41,29 @@ std::string GetSetHdcpKeyPropAction(int64_t display_id, bool success) {
                             display_id, success);
 }
 
+std::string SetColorCalibrationAction(
+    int64_t display_id,
+    const display::ColorCalibration& calibration) {
+  return base::StringPrintf("set_color_calibration(id=%" PRId64 ")",
+                            display_id);
+}
+
+std::string SetColorTemperatureAdjustmentAction(
+    int64_t display_id,
+    const display::ColorTemperatureAdjustment& cta) {
+  return base::StringPrintf(
+      "set_color_temperature_adjustment(id=%" PRId64 ",cta[%1.2f,%1.2f,%1.2f)",
+      display_id, cta.srgb_matrix.vals[0][0], cta.srgb_matrix.vals[1][1],
+      cta.srgb_matrix.vals[2][2]);
+}
+
+std::string SetGammaAdjustmentAction(int64_t display_id,
+                                     const display::GammaAdjustment& gamma) {
+  return base::StringPrintf("set_gamma_adjustment(id=%" PRId64 "%s)",
+                            display_id,
+                            gamma.curve.ToActionString("gamma").c_str());
+}
+
 std::string SetColorMatrixAction(int64_t display_id,
                                  const std::vector<float>& color_matrix) {
   std::string ctm;

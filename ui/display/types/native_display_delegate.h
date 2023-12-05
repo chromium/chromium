@@ -20,7 +20,10 @@ class DisplaySnapshot;
 class GammaCurve;
 class NativeDisplayObserver;
 
+struct ColorCalibration;
+struct ColorTemperatureAdjustment;
 struct DisplayConfigurationParams;
+struct GammaAdjustment;
 
 using GetDisplaysCallback =
     base::OnceCallback<void(const std::vector<DisplaySnapshot*>&)>;
@@ -77,6 +80,20 @@ class DISPLAY_TYPES_EXPORT NativeDisplayDelegate {
                             HDCPState state,
                             ContentProtectionMethod protection_method,
                             SetHDCPStateCallback callback) = 0;
+
+  // Sets the color temperature adjustment (e.g, for night light) for the
+  // specified display.
+  virtual void SetColorTemperatureAdjustment(
+      int64_t display_id,
+      const ColorTemperatureAdjustment& cta) = 0;
+
+  // Sets the color calibration for the specified display.
+  virtual void SetColorCalibration(int64_t display_id,
+                                   const ColorCalibration& calibration) = 0;
+
+  // Sets the display profile space gamma adjustment for the specified display.
+  virtual void SetGammaAdjustment(int64_t display_id,
+                                  const GammaAdjustment& gamma) = 0;
 
   // Sets the given 3x3 |color_matrix| on the display with |display_id|.
   // This doesn't affect gamma or degamma. It returns true the color matrix was
