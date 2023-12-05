@@ -31,9 +31,6 @@ class UrlLoadingBrowserAgent;
                          bundle:(NSBundle*)bundle NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 
-// Returns the vertical space taken up by the Content Suggestions.
-- (CGFloat)contentSuggestionsHeight;
-
 // Handler for the commands sent by the ContentSuggestionsViewController.
 @property(nonatomic, weak) id<ContentSuggestionsCommands>
     suggestionCommandHandler;

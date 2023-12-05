@@ -780,34 +780,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   }
 }
 
-- (CGFloat)contentSuggestionsHeight {
-  CGFloat height = 0;
-  if ([self.mostVisitedViews count] > 0 &&
-      !ShouldPutMostVisitedSitesInMagicStack()) {
-    height += MostVisitedCellSize(
-                  UIApplication.sharedApplication.preferredContentSizeCategory)
-                  .height +
-              kMostVisitedBottomMargin;
-  }
-  if (IsMagicStackEnabled()) {
-    height += _magicStackScrollView.contentSize.height;
-  } else {
-    if ([self.shortcutsViews count] > 0) {
-      height +=
-          MostVisitedCellSize(
-              UIApplication.sharedApplication.preferredContentSizeCategory)
-              .height;
-    }
-  }
-  if (self.returnToRecentTabTile) {
-    height += ReturnToRecentTabHeight();
-  }
-  if (self.setUpListView && !self.setUpListView.isHidden) {
-    height += self.setUpListView.frame.size.height;
-  }
-  return height;
-}
-
 - (void)showTabResumptionWithItem:(TabResumptionItem*)item {
   CHECK(IsTabResumptionEnabled());
   if ([self hasMagicStackLoaded]) {

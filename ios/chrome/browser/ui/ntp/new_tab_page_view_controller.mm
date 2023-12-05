@@ -1671,11 +1671,6 @@ const CGFloat kFeedContainerMinimumHeight = 1000;
   return minimumHeight;
 }
 
-// Returns the current height of the content suggestions content.
-- (CGFloat)contentSuggestionsContentHeight {
-  return [self.contentSuggestionsViewController contentSuggestionsHeight];
-}
-
 // Height of the feed header, returns 0 if it is not visible.
 - (CGFloat)feedHeaderHeight {
   return self.feedHeaderViewController
