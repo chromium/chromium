@@ -7,10 +7,16 @@
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/ui/overlays/overlay_presentation_controller.h"
 
+namespace {
+// Minimum height or width frame change that should warrant a resizing of the
+// container view in response to a relayout.
+const CGFloat kMinimumSizeChange = 0.5;
+}  // namespace
+
 @interface OverlayPresentationContextViewController ()
 // The view used to lay out the presentation context.  The presentation context
 // view is resized to match `layoutView`'s frame.
-@property(nonatomic, readonly) UIView* layoutView;
+@property(nonatomic, weak) UIView* layoutView;
 // Whether the presented view controller is presented using an
 // OverlayPresentationController whose `resizesPresentationContainer` property
 // returns YES.
@@ -20,25 +26,6 @@
 @implementation OverlayPresentationContextViewController
 
 #pragma mark - Accessors
-
-- (UIView*)layoutView {
-  // If there is no overlay UI displayed using presentation or containment, the
-  // presentation context should be laid out with an empty frame to allow
-  // touches to pass freely to the underlying browser UI.
-  UIViewController* presentedViewController = self.presentedViewController;
-  if (!presentedViewController)
-    return nil;
-
-  // If overlay UI is displayed using custom UIViewController presentation with
-  // an OverlayPresentationController that resizes the container view, the
-  // presentation context should match the presented view's container.
-  if (self.presentedViewControllerResizesContainer)
-    return self.presentedViewController.presentationController.containerView;
-
-  // For all other UIViewController presentation, the context should be laid out
-  // to match the presenter view.
-  return self.presentingViewController.view;
-}
 
 - (BOOL)presentedViewControllerResizesContainer {
   // The non-strict cast returns nil if the presented UIViewController does not
@@ -54,16 +41,28 @@
 - (void)viewDidLayoutSubviews {
   UIView* view = self.view;
   UIView* containerView = self.presentationController.containerView;
-  UIView* layoutView = self.layoutView;
-  UIWindow* window = layoutView.window;
-  CGRect layoutFrame = [window convertRect:layoutView.bounds
-                                  fromView:layoutView];
+  UIView* newLayoutView = [self currentLayoutView];
+  UIWindow* window = newLayoutView.window;
+
+  CGRect oldLayoutFrame = self.layoutView.frame;
+  CGRect newLayoutFrame = [window convertRect:newLayoutView.bounds
+                                     fromView:newLayoutView];
+
+  if (CGSizeEqualToSize(containerView.bounds.size, oldLayoutFrame.size) &&
+      std::fabs(newLayoutFrame.size.height - oldLayoutFrame.size.height) <=
+          kMinimumSizeChange &&
+      std::fabs(newLayoutFrame.size.width - oldLayoutFrame.size.width) <=
+          kMinimumSizeChange) {
+    return;
+  }
+  self.layoutView = newLayoutView;
+
   // Lay out the presentation context and its container view to match
-  // `layoutView`.
-  if (layoutView) {
-    containerView.frame = [containerView.superview convertRect:layoutFrame
+  // `layoutView`, if size has changed.
+  if (self.layoutView) {
+    containerView.frame = [containerView.superview convertRect:newLayoutFrame
                                                       fromView:window];
-    view.frame = [view.superview convertRect:layoutFrame fromView:window];
+    view.frame = [view.superview convertRect:newLayoutFrame fromView:window];
   } else {
     containerView.frame = CGRectZero;
     view.frame = CGRectZero;
@@ -72,9 +71,9 @@
   // updated by the container and presentation context layout above.  Reset the
   // frame by converting back from the window coordinates.
   if (self.presentedViewControllerResizesContainer &&
-      layoutView.translatesAutoresizingMaskIntoConstraints) {
-    layoutView.frame = [layoutView.superview convertRect:layoutFrame
-                                                fromView:window];
+      self.layoutView.translatesAutoresizingMaskIntoConstraints) {
+    self.layoutView.frame =
+        [self.layoutView.superview convertRect:newLayoutFrame fromView:window];
   }
 }
 
@@ -103,6 +102,30 @@
                                 completion();
                               [self.view setNeedsLayout];
                             }];
+}
+
+#pragma mark - Private
+
+// Returns the current layout view.
+- (UIView*)currentLayoutView {
+  // If there is no overlay UI displayed using presentation or containment, the
+  // presentation context should be laid out with an empty frame to allow
+  // touches to pass freely to the underlying browser UI.
+  UIViewController* presentedViewController = self.presentedViewController;
+  if (!presentedViewController) {
+    return nil;
+  }
+
+  // If overlay UI is displayed using custom UIViewController presentation with
+  // an OverlayPresentationController that resizes the container view, the
+  // presentation context should match the presented view's container.
+  if (self.presentedViewControllerResizesContainer) {
+    return presentedViewController.presentationController.containerView;
+  }
+
+  // For all other UIViewController presentation, the context should be laid out
+  // to match the presenter view.
+  return self.presentingViewController.view;
 }
 
 @end
