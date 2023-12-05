@@ -287,6 +287,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/store_kit/model:unit_tests",
     "//ios/chrome/browser/supervised_user/model:unit_tests",
     "//ios/chrome/browser/sync/model:unit_tests",
+    "//ios/chrome/browser/sync/model/prefs:unit_tests",
     "//ios/chrome/browser/synced_sessions/model:unit_tests",
     "//ios/chrome/browser/tab_insertion/model:unit_tests",
     "//ios/chrome/browser/tabs/model:unit_tests",

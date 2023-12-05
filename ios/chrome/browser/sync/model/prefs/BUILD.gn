@@ -36,3 +36,21 @@ source_set("eg2_tests") {
     "//net:test_support",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "ios_chrome_syncable_prefs_database_unittest.cc" ]
+  deps = [
+    ":prefs",
+    ":test_data",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
+# Copy over enums.xml for tests.
+bundle_data("test_data") {
+  testonly = true
+  sources = [ "//tools/metrics/histograms/metadata/sync/enums.xml" ]
+  outputs = [ "{{bundle_resources_dir}}/{{source_root_relative_dir}}/{{source_file_part}}" ]
+}
