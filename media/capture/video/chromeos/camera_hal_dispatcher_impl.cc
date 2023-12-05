@@ -19,6 +19,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -288,9 +289,6 @@ bool CameraHalDispatcherImpl::Start() {
     return false;
   }
 
-  // TODO(b/228238413): In VCD unittests, the endpoint of mojo service
-  // manager is not bound. Bind it and request the CrosCameraService service
-  // from it to enable real cameras.
   mojo_service_manager_observer_ = MojoServiceManagerObserver::Create(
       chromeos::mojo_services::kCrosCameraService,
       base::BindRepeating(&CameraHalDispatcherImpl::TryConnectToCameraService,
@@ -1084,6 +1082,22 @@ void CameraHalDispatcherImpl::Request(
       FROM_HERE, base::BindOnce(&CameraHalDispatcherImpl::OnPeerConnected,
                                 base::Unretained(this), std::move(receiver)));
   VLOG(1) << "New CameraHalDispatcher binding added from Mojo Service Manager.";
+}
+
+bool CameraClientObserver::WaitForCameraModuleReadyForTesting() {
+  NOTREACHED() << "This fuction is only for CameraHalDelegate to wait for "
+                  "camera module to be ready in VCD unittests.";
+  return false;
+}
+
+bool CameraHalDispatcherImpl::WaitForServiceReadyForTesting() {
+  for (CameraClientObserver* client_observer : client_observers_) {
+    if (client_observer->GetType() == cros::mojom::CameraClientType::CHROME) {
+      return client_observer->WaitForCameraModuleReadyForTesting();  // IN-TEST
+    }
+  }
+  LOG(ERROR) << "CameraHalDelegate hasn't registered yet.";
+  return false;
 }
 
 }  // namespace media

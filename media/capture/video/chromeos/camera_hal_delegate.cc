@@ -98,6 +98,11 @@ class LocalCameraClientObserver : public CameraClientObserver {
     camera_hal_delegate_->SetCameraModule(std::move(camera_module));
   }
 
+  bool WaitForCameraModuleReadyForTesting() override {
+    return camera_hal_delegate_
+        ->WaitForCameraModuleReadyForTesting();  // IN-TEST
+  }
+
  private:
   raw_ptr<CameraHalDelegate, ExperimentalAsh> camera_hal_delegate_;
 };
@@ -960,6 +965,13 @@ void CameraHalDelegate::TorchModeStatusChange(
     cros::mojom::TorchModeStatus new_status) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
   // Do nothing here as we don't care about torch mode status.
+}
+
+bool CameraHalDelegate::WaitForCameraModuleReadyForTesting() {
+  if (camera_module_has_been_set_.IsSignaled()) {
+    return true;
+  }
+  return camera_module_has_been_set_.TimedWait(base::Seconds(10));
 }
 
 }  // namespace media

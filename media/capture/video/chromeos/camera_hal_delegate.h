@@ -128,6 +128,9 @@ class CAPTURE_EXPORT CameraHalDelegate final
   // Gets camera id from device id. Returns -1 on error.
   int GetCameraIdFromDeviceId(const std::string& device_id);
 
+  // Waiting for the camera module to be ready for testing.
+  bool WaitForCameraModuleReadyForTesting();
+
  private:
   class PowerManagerClientProxy;
   class VideoCaptureDeviceDelegateMap;

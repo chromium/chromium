@@ -62,6 +62,10 @@ class CAPTURE_EXPORT CameraClientObserver {
   virtual void OnChannelCreated(
       mojo::PendingRemote<cros::mojom::CameraModule> camera_module) = 0;
 
+  // This is only for vcd unittests to make sure CameraHalDelegate get the
+  // camera module. It should not be invoked in the production code.
+  virtual bool WaitForCameraModuleReadyForTesting();
+
   cros::mojom::CameraClientType GetType() { return type_; }
   const base::UnguessableToken GetAuthToken() { return auth_token_; }
 
@@ -238,6 +242,11 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   // `CameraEffectsController`. Clients should always use
   // `CameraEffectsController` instead.
   void SetCameraEffects(cros::mojom::EffectsConfigPtr config);
+
+  // This function is only for VCD Unittests. It will return true immediately
+  // when CameraModule is ready for CameraHalDelegate or return false after 10
+  // seconds. Don't call this function on the main thread.
+  bool WaitForServiceReadyForTesting();
 
  private:
   friend struct base::DefaultSingletonTraits<CameraHalDispatcherImpl>;
