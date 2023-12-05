@@ -4956,7 +4956,7 @@
   {
     "name": "ios-password-bottom-sheet",
     "owners": ["veronguyen@chromium.org", "sugoi@chromium.org", "tmartino@chromium.org", "bling-integrations-team@google.com"],
-    "expiry_milestone": 118
+    "expiry_milestone": 135
   },
   {
     "name": "ios-password-checkup",
