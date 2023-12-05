@@ -148,8 +148,4 @@ TEST_F(ScreenAIDlcInstallerTest, UninstallSuccess) {
                               /*expected_count=*/1, /*expected_total_count=*/1);
 }
 
-// TODO(b/289009784): Write tests to check installation and uninstallation
-// triggered in `screen_ai::dlc_installer::ManageInstallation()`. For those
-// tests, need to create a temp binary to trigger uninstallation successfully.
-
 }  // namespace ash
