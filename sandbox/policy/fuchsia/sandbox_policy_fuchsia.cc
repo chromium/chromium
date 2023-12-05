@@ -165,7 +165,7 @@ const SandboxConfig* GetConfigForSandboxType(sandbox::mojom::Sandbox type) {
     case sandbox::mojom::Sandbox::kAudio:
     case sandbox::mojom::Sandbox::kCdm:
     case sandbox::mojom::Sandbox::kOnDeviceModelExecution:
-#if BUILDFLAG(ENABLE_PRINTING)
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
     case sandbox::mojom::Sandbox::kPrintBackend:
 #endif
     case sandbox::mojom::Sandbox::kPrintCompositor:

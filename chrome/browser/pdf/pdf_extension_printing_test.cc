@@ -123,16 +123,20 @@ class PDFExtensionPrintingTest : public PDFExtensionTestBase,
     printing::PrintBackend::SetPrintBackendForTesting(nullptr);
   }
   std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
     if (UseService()) {
       return {printing::features::kEnableOopPrintDrivers};
     }
+#endif
     return {};
   }
   std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
-    if (UseService()) {
-      return {};
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+    if (!UseService()) {
+      return {printing::features::kEnableOopPrintDrivers};
     }
-    return {printing::features::kEnableOopPrintDrivers};
+#endif
+    return {};
   }
 
   void SetupPrintViewManagerForJobMonitoring(content::RenderFrameHost* frame) {
@@ -322,7 +326,14 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest, PrintButton) {
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
-INSTANTIATE_TEST_SUITE_P(All, PDFExtensionPrintingTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         PDFExtensionPrintingTest,
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+                         testing::Bool()
+#else
+                         testing::Values(false)
+#endif
+);
 
 class PDFExtensionBasicPrintingTest : public PDFExtensionPrintingTest {
  public:

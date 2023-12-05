@@ -40,11 +40,10 @@ declare_args() {
                !is_fuchsia
   }
 
-  # Enables out-of-process printing. While this definition matches
-  # `enable_print_preview`, do not base this definition upon that.  This
-  # feature could still be appropriate for some build configurations which
-  # explicitly disable print preview.
-  enable_oop_printing = enable_printing && !is_android
+  # Enables out-of-process printing.  Do not have this definition just be
+  # based on `enable_print_preview`; this feature could still be appropriate
+  # for some build configurations which explicitly disable print preview.
+  enable_oop_printing = enable_printing && !is_android && !is_fuchsia
 
   # Enable snapshotting a page when printing for its content to be analyzed for
   # sensitive content by enterprise users.

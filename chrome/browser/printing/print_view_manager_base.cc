@@ -241,8 +241,10 @@ void PrintViewManagerBase::PrintForPrintPreview(
     PrinterHandler::PrintCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING) || BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
   bool show_system_dialog =
       job_settings.FindBool(kSettingShowSystemDialog).value_or(false);
+#endif
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   if (show_system_dialog && ShouldPrintJobOop()) {
