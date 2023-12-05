@@ -1,7 +1,7 @@
 {
   "$build/chromium_orchestrator": {
     "compilator": "linux-chromeos-rel-compilator",
-    "compilator_watcher_git_revision": "039b345114555dea8996630f1fc6e08319fa0422"
+    "compilator_watcher_git_revision": "e3cad57252d996ab02463019e7f49343d739b885"
   },
   "$build/chromium_tests_builder_config": {
     "builder_config": {
