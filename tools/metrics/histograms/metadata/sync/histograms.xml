@@ -1917,7 +1917,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.TrustedVaultRecoverabilityDegradedFixTrigger"
-    enum="TrustedVaultUserActionTrigger" expires_after="2024-01-15">
+    enum="TrustedVaultUserActionTrigger" expires_after="2024-07-15">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
