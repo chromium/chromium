@@ -11,23 +11,20 @@ source_set("lib") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = []
+  deps = [ "//printing" ]
 
-  public_deps = []
+  public_deps = [ "//chrome/services/printing/public/mojom" ]
 
   if (enable_print_preview) {
-    sources = [
+    sources += [
       "pdf_nup_converter.cc",
       "pdf_nup_converter.h",
       "pdf_to_pwg_raster_converter.cc",
       "pdf_to_pwg_raster_converter.h",
-      "printing_service.cc",
-      "printing_service.h",
     ]
 
     public_deps += [
       "//base",
-      "//chrome/services/printing/public/mojom",
       "//mojo/public/cpp/bindings",
     ]
 
@@ -36,7 +33,6 @@ source_set("lib") {
       "//components/crash/core/common:crash_key",
       "//components/pwg_encoder",
       "//pdf",
-      "//printing",
       "//printing/backend",
       "//printing/mojom",
     ]
@@ -83,6 +79,18 @@ source_set("lib") {
     ]
   }
 
+  if (enable_print_preview || is_win) {
+    sources += [
+      "printing_service.cc",
+      "printing_service.h",
+    ]
+
+    public_deps += [
+      "//mojo/public/cpp/bindings",
+      "//printing/buildflags",
+    ]
+  }
+
   if (enable_oop_printing) {
     sources += [
       "print_backend_service_impl.cc",
@@ -91,14 +99,12 @@ source_set("lib") {
 
     public_deps += [
       "//base",
-      "//chrome/services/printing/public/mojom",
       "//mojo/public/cpp/bindings",
     ]
 
     deps += [
       "//chrome/common/printing",
       "//components/crash/core/common",
-      "//printing:printing_base",
       "//ui/gfx",
     ]
 

@@ -8,9 +8,8 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/services/printing/pdf_nup_converter.h"
-#include "chrome/services/printing/pdf_to_pwg_raster_converter.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "printing/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/services/printing/pdf_flattener.h"
@@ -32,6 +31,11 @@
 #if BUILDFLAG(IS_WIN)
 #include "chrome/services/printing/pdf_to_emf_converter.h"
 #include "chrome/services/printing/pdf_to_emf_converter_factory.h"
+#endif
+
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#include "chrome/services/printing/pdf_nup_converter.h"
+#include "chrome/services/printing/pdf_to_pwg_raster_converter.h"
 #endif
 
 namespace printing {
@@ -56,6 +60,7 @@ PrintingService::PrintingService(
 
 PrintingService::~PrintingService() = default;
 
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 void PrintingService::BindPdfNupConverter(
     mojo::PendingReceiver<mojom::PdfNupConverter> receiver) {
   mojo::MakeSelfOwnedReceiver(std::make_unique<printing::PdfNupConverter>(),
@@ -68,6 +73,7 @@ void PrintingService::BindPdfToPwgRasterConverter(
       std::make_unique<printing::PdfToPwgRasterConverter>(),
       std::move(receiver));
 }
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 void PrintingService::BindPdfFlattener(

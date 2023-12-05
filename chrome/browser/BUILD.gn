@@ -7016,6 +7016,10 @@ static_library("browser") {
       ]
     }
     if (is_win || enable_print_preview) {
+      sources += [
+        "printing/printing_service.cc",
+        "printing/printing_service.h",
+      ]
       deps += [ "//chrome/services/printing/public/mojom" ]
     }
     if (enable_print_preview) {
@@ -7035,8 +7039,6 @@ static_library("browser") {
         "printing/print_preview_sticky_settings.h",
         "printing/print_view_manager.cc",
         "printing/print_view_manager.h",
-        "printing/printing_service.cc",
-        "printing/printing_service.h",
         "printing/pwg_raster_converter.cc",
         "printing/pwg_raster_converter.h",
         "printing/web_api/web_printing_service_binder.cc",
