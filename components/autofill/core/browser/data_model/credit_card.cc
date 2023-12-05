@@ -193,6 +193,9 @@ std::unique_ptr<CreditCard> CreditCard::CreateVirtualCardWithGuidSuffix(
 std::u16string CreditCard::GetObfuscatedStringForCardDigits(
     int obfuscation_length,
     const std::u16string& digits) {
+  if (digits.empty()) {
+    return {};
+  }
   std::u16string obfuscated_string =
       CreditCard::GetMidlineEllipsisDots(obfuscation_length);
   obfuscated_string.append(digits);
@@ -1127,33 +1130,24 @@ Suggestion::Icon CreditCard::CardIconForAutofillSuggestion() const {
 std::u16string CreditCard::NetworkAndLastFourDigits(
     int obfuscation_length) const {
   const std::u16string network = NetworkForDisplay();
-  // TODO(crbug.com/734197): truncate network.
-
-  const std::u16string digits = LastFourDigits();
-  if (digits.empty())
-    return network;
-
-  // TODO(estade): i18n?
-  const std::u16string obfuscated_string =
-      GetObfuscatedStringForCardDigits(obfuscation_length, digits);
-  return network.empty() ? obfuscated_string
-                         : network + u"  " + obfuscated_string;
+  const std::u16string obfuscated_last_four =
+      ObfuscatedNumberWithVisibleLastFourDigits(obfuscation_length);
+  return base::StrCat(
+      {network, (network.empty() || obfuscated_last_four.empty() ? u"" : u"  "),
+       obfuscated_last_four});
 }
 
 std::u16string CreditCard::CardNameAndLastFourDigits(
     std::u16string customized_nickname,
     int obfuscation_length) const {
-  std::u16string card_name = CardNameForAutofillDisplay(customized_nickname);
-  std::u16string last_four = LastFourDigits();
-
-  if (last_four.empty())
-    return card_name;
-
-  std::u16string obfuscated_last_four =
-      GetObfuscatedStringForCardDigits(obfuscation_length, last_four);
-  return card_name.empty()
-             ? obfuscated_last_four
-             : base::StrCat({card_name, u"  ", obfuscated_last_four});
+  const std::u16string card_name =
+      CardNameForAutofillDisplay(customized_nickname);
+  const std::u16string obfuscated_last_four =
+      ObfuscatedNumberWithVisibleLastFourDigits(obfuscation_length);
+  return base::StrCat(
+      {card_name,
+       (card_name.empty() || obfuscated_last_four.empty() ? u"" : u"  "),
+       obfuscated_last_four});
 }
 
 std::u16string CreditCard::CardNameForAutofillDisplay(
@@ -1308,13 +1302,13 @@ std::u16string CreditCard::NicknameAndLastFourDigits(
   // Should call HasNonEmptyValidNickname() to check valid nickname before
   // calling this.
   DCHECK(HasNonEmptyValidNickname() || !customized_nickname.empty());
-  const std::u16string digits = LastFourDigits();
-  // If digits are empty, return nickname.
-  if (digits.empty())
-    return customized_nickname.empty() ? nickname_ : customized_nickname;
-
-  return (customized_nickname.empty() ? nickname_ : customized_nickname) +
-         u"  " + GetObfuscatedStringForCardDigits(obfuscation_length, digits);
+  const std::u16string obfuscated_last_four =
+      ObfuscatedNumberWithVisibleLastFourDigits(obfuscation_length);
+  const std::u16string nickname =
+      customized_nickname.empty() ? nickname_ : customized_nickname;
+  return obfuscated_last_four.empty()
+             ? nickname
+             : base::StrCat({nickname, u"  ", obfuscated_last_four});
 }
 
 void CreditCard::SetNumber(const std::u16string& number) {
