@@ -7448,11 +7448,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "smds-support-euicc-upload",
-    "owners": ["chadduffin@chromium.org", "cros-connectivity@google.com"],
-    "expiry_milestone": 125
-  },
-  {
     "name": "smooth-scrolling",
     "owners": [ "bokan@chromium.org", "input-dev@chromium.org" ],
     // This flag is needed for debugging scrolling issues. However, it can be

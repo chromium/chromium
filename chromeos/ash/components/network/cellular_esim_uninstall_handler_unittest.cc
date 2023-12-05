@@ -148,7 +148,7 @@ class CellularESimUninstallHandlerTest : public testing::Test {
         HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
             kAddProfileWithService);
 
-    if (ash::features::IsSmdsSupportEuiccUploadEnabled()) {
+    if (ash::features::IsSmdsSupportEnabled()) {
       // Setup as a managed profile by adding eSIM metadata to device prefs.
       managed_cellular_pref_handler_->AddESimMetadata(
           kTestCellularIccid0, kTestCellularNetworkName,
@@ -225,7 +225,7 @@ class CellularESimUninstallHandlerTest : public testing::Test {
   }
 
   bool HasESimMetadata(const std::string& iccid) {
-    if (ash::features::IsSmdsSupportEuiccUploadEnabled()) {
+    if (ash::features::IsSmdsSupportEnabled()) {
       return managed_cellular_pref_handler_->GetESimMetadata(iccid) != nullptr;
     } else {
       return managed_cellular_pref_handler_->GetSmdpAddressFromIccid(iccid);
@@ -291,8 +291,7 @@ class CellularESimUninstallHandlerTest_SmdsSupportDisabled
   CellularESimUninstallHandlerTest_SmdsSupportDisabled()
       : CellularESimUninstallHandlerTest(
             /*enabled_features=*/{},
-            /*disabled_features=*/{ash::features::kSmdsSupport,
-                                   ash::features::kSmdsSupportEuiccUpload}) {}
+            /*disabled_features=*/{ash::features::kSmdsSupport}) {}
   ~CellularESimUninstallHandlerTest_SmdsSupportDisabled() override = default;
 };
 
@@ -307,8 +306,7 @@ class CellularESimUninstallHandlerTest_SmdsSupportEnabled
  protected:
   CellularESimUninstallHandlerTest_SmdsSupportEnabled()
       : CellularESimUninstallHandlerTest(
-            /*enabled_features=*/{ash::features::kSmdsSupport,
-                                  ash::features::kSmdsSupportEuiccUpload},
+            /*enabled_features=*/{ash::features::kSmdsSupport},
             /*disabled_features=*/{}) {}
   ~CellularESimUninstallHandlerTest_SmdsSupportEnabled() override = default;
 };

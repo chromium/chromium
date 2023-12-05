@@ -8614,11 +8614,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSmdsSupportDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSmdsSupport)},
 
-    {"smds-support-euicc-upload",
-     flag_descriptions::kSmdsSupportEuiccUploadName,
-     flag_descriptions::kSmdsSupportEuiccUploadDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kSmdsSupportEuiccUpload)},
-
     {"tethering-experimental-functionality",
      flag_descriptions::kTetheringExperimentalFunctionalityName,
      flag_descriptions::kTetheringExperimentalFunctionalityDescription, kOsCrOS,

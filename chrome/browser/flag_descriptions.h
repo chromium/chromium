@@ -4213,9 +4213,6 @@ extern const char kMacAddressRandomizationDescription[];
 extern const char kSmdsSupportName[];
 extern const char kSmdsSupportDescription[];
 
-extern const char kSmdsSupportEuiccUploadName[];
-extern const char kSmdsSupportEuiccUploadDescription[];
-
 extern const char kTetheringExperimentalFunctionalityName[];
 extern const char kTetheringExperimentalFunctionalityDescription[];
 

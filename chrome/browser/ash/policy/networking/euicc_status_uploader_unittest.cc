@@ -309,7 +309,7 @@ class EuiccStatusUploaderTest : public testing::Test {
 
   const base::Value& GetStoredPref() {
     return local_state_.GetValue(
-        ash::features::IsSmdsSupportEuiccUploadEnabled()
+        ash::features::IsSmdsSupportEnabled()
             ? EuiccStatusUploader::kLastUploadedEuiccStatusPref
             : EuiccStatusUploader::kLastUploadedEuiccStatusPrefLegacy);
   }
@@ -491,8 +491,7 @@ class EuiccStatusUploaderTest_SmdsSupportDisabled
   EuiccStatusUploaderTest_SmdsSupportDisabled()
       : EuiccStatusUploaderTest(
             /*enabled_features=*/{},
-            /*disabled_features=*/{ash::features::kSmdsSupport,
-                                   ash::features::kSmdsSupportEuiccUpload}) {}
+            /*disabled_features=*/{ash::features::kSmdsSupport}) {}
   ~EuiccStatusUploaderTest_SmdsSupportDisabled() override = default;
 };
 
@@ -507,8 +506,7 @@ class EuiccStatusUploaderTest_SmdsSupportEnabled
  protected:
   EuiccStatusUploaderTest_SmdsSupportEnabled()
       : EuiccStatusUploaderTest(
-            /*enabled_features=*/{ash::features::kSmdsSupport,
-                                  ash::features::kSmdsSupportEuiccUpload},
+            /*enabled_features=*/{ash::features::kSmdsSupport},
             /*disabled_features=*/{}) {}
   ~EuiccStatusUploaderTest_SmdsSupportEnabled() override = default;
 };

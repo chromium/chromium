@@ -394,7 +394,7 @@ void CellularPolicyHandler::OnConfigureESimService(
       policy_util::GetIccidFromONC(current_request->onc_config);
   DCHECK(iccid);
 
-  if (ash::features::IsSmdsSupportEuiccUploadEnabled()) {
+  if (ash::features::IsSmdsSupportEnabled()) {
     const std::string* name =
         current_request->onc_config.FindString(::onc::network_config::kName);
     DCHECK(name);
@@ -564,8 +564,8 @@ void CellularPolicyHandler::OnESimProfileInstallAttemptComplete(
   PopRequest();
 
   const bool has_error = status != HermesResponseStatus::kSuccess;
-  const bool was_installed = profile_path.has_value() &&
-                             ash::features::IsSmdsSupportEuiccUploadEnabled();
+  const bool was_installed =
+      profile_path.has_value() && ash::features::IsSmdsSupportEnabled();
 
   if (has_error && !was_installed) {
     if (!base::Contains(kHermesUserErrorCodes, status)) {
@@ -602,7 +602,7 @@ void CellularPolicyHandler::OnESimProfileInstallAttemptComplete(
   HermesProfileClient::Properties* profile_properties =
       HermesProfileClient::Get()->GetProperties(*profile_path);
 
-  if (ash::features::IsSmdsSupportEuiccUploadEnabled()) {
+  if (ash::features::IsSmdsSupportEnabled()) {
     const std::string* name =
         current_request->onc_config.FindString(::onc::network_config::kName);
     DCHECK(name);

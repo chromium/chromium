@@ -89,8 +89,7 @@ class CellularESimInstallerTest : public testing::Test {
  protected:
   CellularESimInstallerTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kSmdsSupport,
-                              ash::features::kSmdsSupportEuiccUpload},
+        /*enabled_features=*/{ash::features::kSmdsSupport},
         /*disabled_features=*/{});
   }
   ~CellularESimInstallerTest() override = default;

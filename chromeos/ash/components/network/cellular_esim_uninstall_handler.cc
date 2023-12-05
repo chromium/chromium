@@ -343,7 +343,7 @@ void CellularESimUninstallHandler::OnUninstallProfile(
 
   if (managed_cellular_pref_handler_) {
     for (const auto& iccid : removed_iccids) {
-      if (ash::features::IsSmdsSupportEuiccUploadEnabled()) {
+      if (ash::features::IsSmdsSupportEnabled()) {
         managed_cellular_pref_handler_->RemoveESimMetadata(iccid);
       } else {
         managed_cellular_pref_handler_->RemovePairWithIccid(iccid);

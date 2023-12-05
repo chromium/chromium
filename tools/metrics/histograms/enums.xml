@@ -29897,7 +29897,6 @@ from previous Chrome versions.
   <int value="-1710772665" label="disable-my-files-navigation"/>
   <int value="-1710314754"
       label="MessagesForAndroidStackingAnimation:disabled"/>
-  <int value="-1707624866" label="SmdsSupportEuiccUpload:enabled"/>
   <int value="-1706483123" label="VmStatusPage:enabled"/>
   <int value="-1704630681" label="MediaAppPdfA11yOcr:enabled"/>
   <int value="-1704472714" label="UseMessagesGoogleComDomain:disabled"/>
@@ -30957,7 +30956,6 @@ from previous Chrome versions.
   <int value="-1227660915" label="WebContentsOcclusion:disabled"/>
   <int value="-1227571965" label="SnapGroup:enabled"/>
   <int value="-1226536953" label="DeskTemplateSync:disabled"/>
-  <int value="-1226486549" label="SmdsSupportEuiccUpload:disabled"/>
   <int value="-1225861190" label="SupportTool:disabled"/>
   <int value="-1225772151" label="OfflineHome:disabled"/>
   <int value="-1225629234" label="SyncPseudoUSSFavicons:enabled"/>

@@ -148,7 +148,7 @@ EuiccStatusUploader::ConstructRequestFromStatus(const base::Value::Dict& status,
     esim_profile_info.set_iccid(*esim_profile_dict.FindString(
         kLastUploadedEuiccStatusESimProfilesIccidKey));
 
-    if (ash::features::IsSmdsSupportEuiccUploadEnabled()) {
+    if (ash::features::IsSmdsSupportEnabled()) {
       const std::string* network_name = esim_profile_dict.FindString(
           kLastUploadedEuiccStatusESimProfilesNetworkNameKey);
       if (network_name && !network_name->empty()) {
@@ -237,7 +237,7 @@ base::Value::Dict EuiccStatusUploader::GetCurrentEuiccStatus() const {
       continue;
     }
 
-    if (ash::features::IsSmdsSupportEuiccUploadEnabled()) {
+    if (ash::features::IsSmdsSupportEnabled()) {
       const base::Value::Dict* esim_metadata =
           ash::NetworkHandler::Get()
               ->managed_cellular_pref_handler()
@@ -332,7 +332,7 @@ void EuiccStatusUploader::MaybeUploadStatus() {
   }
 
   const base::Value::Dict& last_uploaded_pref =
-      ash::features::IsSmdsSupportEuiccUploadEnabled()
+      ash::features::IsSmdsSupportEnabled()
           ? local_state_->GetDict(kLastUploadedEuiccStatusPref)
           : local_state_->GetDict(kLastUploadedEuiccStatusPrefLegacy);
   auto current_state = GetCurrentEuiccStatus();
@@ -393,7 +393,7 @@ void EuiccStatusUploader::OnStatusUploaded(bool success) {
 
   VLOG(1) << "EUICC status successfully uploaded.";
 
-  if (ash::features::IsSmdsSupportEuiccUploadEnabled()) {
+  if (ash::features::IsSmdsSupportEnabled()) {
     // Remember the last uploaded status to not upload it again.
     local_state_->SetDict(kLastUploadedEuiccStatusPref,
                           std::move(attempted_upload_status_));

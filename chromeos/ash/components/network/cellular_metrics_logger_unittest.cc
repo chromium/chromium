@@ -1361,10 +1361,7 @@ TEST_F(CellularMetricsLoggerTest, CellularDisconnectionsTest) {
 TEST_F(CellularMetricsLoggerTest,
        EnterpriseESimFeatureUsageMetrics_NotEnrolled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enable_features=*/{{ash::features::kSmdsSupport,
-                            ash::features::kSmdsSupportEuiccUpload}},
-      /*disable_features=*/{{}});
+  feature_list.InitAndEnableFeature(ash::features::kSmdsSupport);
 
   TestingPrefServiceSimple device_prefs;
   CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
@@ -1379,10 +1376,7 @@ TEST_F(CellularMetricsLoggerTest,
 TEST_F(CellularMetricsLoggerTest,
        EnterpriseESimFeatureUsageMetrics_NotEligible) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enable_features=*/{{ash::features::kSmdsSupport,
-                            ash::features::kSmdsSupportEuiccUpload}},
-      /*disable_features=*/{{}});
+  feature_list.InitAndEnableFeature(ash::features::kSmdsSupport);
 
   MarkEnterpriseEnrolled();
 
@@ -1400,10 +1394,7 @@ TEST_F(CellularMetricsLoggerTest,
 
 TEST_F(CellularMetricsLoggerTest, EnterpriseESimFeatureUsageMetrics_Eligible) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enable_features=*/{{ash::features::kSmdsSupport,
-                            ash::features::kSmdsSupportEuiccUpload}},
-      /*disable_features=*/{{}});
+  feature_list.InitAndEnableFeature(ash::features::kSmdsSupport);
 
   MarkEnterpriseEnrolled();
 
@@ -1433,10 +1424,7 @@ TEST_F(CellularMetricsLoggerTest, EnterpriseESimFeatureUsageMetrics_Eligible) {
 TEST_F(CellularMetricsLoggerTest,
        EnterpriseESimFeatureUsageMetrics_Accessible) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enable_features=*/{{ash::features::kSmdsSupport,
-                            ash::features::kSmdsSupportEuiccUpload}},
-      /*disable_features=*/{{}});
+  feature_list.InitAndEnableFeature(ash::features::kSmdsSupport);
 
   MarkEnterpriseEnrolled();
 
@@ -1477,10 +1465,7 @@ TEST_F(CellularMetricsLoggerTest,
 TEST_F(CellularMetricsLoggerTest,
        EnterpriseESimFeatureUsageMetrics_EnabledAndUsage) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enable_features=*/{{ash::features::kSmdsSupport,
-                            ash::features::kSmdsSupportEuiccUpload}},
-      /*disable_features=*/{{}});
+  feature_list.InitAndEnableFeature(ash::features::kSmdsSupport);
 
   MarkEnterpriseEnrolled();
 

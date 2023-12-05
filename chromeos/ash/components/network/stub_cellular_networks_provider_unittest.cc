@@ -153,10 +153,7 @@ class StubCellularNetworksProviderTest : public testing::Test {
 TEST_F(StubCellularNetworksProviderTest,
        AddOrRemoveStubCellularNetworks_SmdsSupportDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{ash::features::kSmdsSupport,
-                             ash::features::kSmdsSupportEuiccUpload});
+  feature_list.InitAndDisableFeature(ash::features::kSmdsSupport);
 
   SetPSimSlotInfo(kTestPSimIccid);
   AddEuicc(/*euicc_num=*/1);
@@ -243,10 +240,7 @@ TEST_F(StubCellularNetworksProviderTest,
 TEST_F(StubCellularNetworksProviderTest,
        AddOrRemoveStubCellularNetworks_SmdsSupportEnabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{ash::features::kSmdsSupport,
-                            ash::features::kSmdsSupportEuiccUpload},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeature(ash::features::kSmdsSupport);
 
   SetPSimSlotInfo(kTestPSimIccid);
   AddEuicc(/*euicc_num=*/1);

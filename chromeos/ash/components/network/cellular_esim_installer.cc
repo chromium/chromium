@@ -426,7 +426,7 @@ void CellularESimInstaller::HandleNewProfileEnableFailure(
   NET_LOG(ERROR) << "Error enabling newly created profile path="
                  << profile_path.value() << ", service path=" << service_path
                  << ", error_name=" << error_name;
-  if (ash::features::IsSmdsSupportEuiccUploadEnabled()) {
+  if (ash::features::IsSmdsSupportEnabled()) {
     // Propagate |profile_path| and |service_path| so that the code that
     // initiated the installation can handle the case where the profile was
     // successfully installed, but the installation process failed for some

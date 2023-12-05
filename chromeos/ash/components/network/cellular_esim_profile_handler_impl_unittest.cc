@@ -318,8 +318,7 @@ class CellularESimProfileHandlerImplTest_SmdsSupportDisabled
   CellularESimProfileHandlerImplTest_SmdsSupportDisabled()
       : CellularESimProfileHandlerImplTest(
             /*enabled_features=*/{},
-            /*disabled_features=*/{ash::features::kSmdsSupport,
-                                   ash::features::kSmdsSupportEuiccUpload}) {}
+            /*disabled_features=*/{ash::features::kSmdsSupport}) {}
   ~CellularESimProfileHandlerImplTest_SmdsSupportDisabled() override = default;
 };
 
@@ -334,8 +333,7 @@ class CellularESimProfileHandlerImplTest_SmdsSupportEnabled
  protected:
   CellularESimProfileHandlerImplTest_SmdsSupportEnabled()
       : CellularESimProfileHandlerImplTest(
-            /*enabled_features=*/{ash::features::kSmdsSupport,
-                                  ash::features::kSmdsSupportEuiccUpload},
+            /*enabled_features=*/{ash::features::kSmdsSupport},
             /*disabled_features=*/{}) {}
   ~CellularESimProfileHandlerImplTest_SmdsSupportEnabled() override = default;
 };
@@ -354,7 +352,6 @@ class CellularESimProfileHandlerImplTest_SmdsSupportAndStorkEnabled
   CellularESimProfileHandlerImplTest_SmdsSupportAndStorkEnabled()
       : CellularESimProfileHandlerImplTest(
             /*enabled_features=*/{ash::features::kSmdsSupport,
-                                  ash::features::kSmdsSupportEuiccUpload,
                                   ash::features::kUseStorkSmdsServerAddress},
             /*disabled_features=*/{}) {}
   ~CellularESimProfileHandlerImplTest_SmdsSupportAndStorkEnabled() override =
