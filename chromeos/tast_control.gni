@@ -129,6 +129,12 @@ tast_disabled_tests_from_chrome_all = [
   "apps.LaunchHelpAppFromShortcut.stable",
   "apps.LaunchHelpAppFromShortcut.stable_guest",
 
+  # b/293976130, NaCl issues on arm64 boards
+  "nacl.Pnacl@jacuzzi",
+  "nacl.Pnacl@trogdor",
+  "terminal.SSH@jacuzzi",
+  "terminal.SSH@trogdor",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
