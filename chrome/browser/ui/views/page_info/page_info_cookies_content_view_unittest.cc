@@ -6,6 +6,7 @@
 
 #include <memory>
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -19,6 +20,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/vector_icons.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -129,6 +131,15 @@ class PageInfoCookiesContentViewBaseTestClass : public TestWithBrowserView {
     return content_view_->third_party_cookies_toggle_subtitle_;
   }
 
+  RichControlsContainerView* third_party_cookies_row() {
+    return content_view_->third_party_cookies_row_;
+  }
+
+  ui::ImageModel GetImageModel(const gfx::VectorIcon& icon) {
+    return ui::ImageModel::FromVectorIcon(
+        icon, ui::kColorIcon, GetLayoutConstant(PAGE_INFO_ICON_SIZE));
+  }
+
   virtual std::vector<base::test::FeatureRefAndParams> EnabledFeatures() {
     return {};
   }
@@ -191,7 +202,8 @@ TEST_P(PageInfoCookiesContentViewPre3pcdTest, ThirdPartyCookiesBlocked) {
               ? IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY
               : IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_DESCRIPTION_PERMANENT));
   EXPECT_TRUE(third_party_cookies_label_wrapper()->GetVisible());
-  // TODO(http://b/308988593): Verify the toggle row icon.
+  EXPECT_EQ(third_party_cookies_row()->GetIconImageModelForTesting(),
+            GetImageModel(views::kEyeCrossedIcon));
   EXPECT_TRUE(third_party_cookies_toggle()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetIsOn());
   EXPECT_FALSE(third_party_cookies_enforced_icon()->GetVisible());
@@ -227,7 +239,8 @@ TEST_P(PageInfoCookiesContentViewPre3pcdTest,
             l10n_util::GetStringUTF16(
                 IDS_PAGE_INFO_COOKIES_PERMANENT_ALLOWED_DESCRIPTION));
   EXPECT_TRUE(third_party_cookies_label_wrapper()->GetVisible());
-  // TODO(http://b/308988593): Verify the toggle row icon.
+  EXPECT_EQ(third_party_cookies_row()->GetIconImageModelForTesting(),
+            GetImageModel(views::kEyeIcon));
   EXPECT_TRUE(third_party_cookies_toggle()->GetVisible());
   EXPECT_TRUE(third_party_cookies_toggle()->GetIsOn());
   EXPECT_FALSE(third_party_cookies_enforced_icon()->GetVisible());
@@ -264,7 +277,8 @@ TEST_P(PageInfoCookiesContentViewPre3pcdTest,
             l10n_util::GetStringUTF16(
                 IDS_PAGE_INFO_COOKIES_BLOCKING_RESTART_DESCRIPTION_TODAY));
   EXPECT_TRUE(third_party_cookies_label_wrapper()->GetVisible());
-  // TODO(http://b/308988593): Verify the toggle row icon.
+  EXPECT_EQ(third_party_cookies_row()->GetIconImageModelForTesting(),
+            GetImageModel(views::kEyeIcon));
   EXPECT_TRUE(third_party_cookies_toggle()->GetVisible());
   EXPECT_TRUE(third_party_cookies_toggle()->GetIsOn());
   EXPECT_FALSE(third_party_cookies_enforced_icon()->GetVisible());
@@ -292,8 +306,8 @@ TEST_P(PageInfoCookiesContentViewPre3pcdTest,
 
   // Third-party cookies section:
   EXPECT_TRUE(third_party_cookies_container()->GetVisible());
-
-  // TODO(http://b/308988593): Verify the toggle row icon.
+  EXPECT_EQ(third_party_cookies_row()->GetIconImageModelForTesting(),
+            GetImageModel(views::kEyeCrossedIcon));
   EXPECT_FALSE(third_party_cookies_label_wrapper()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetIsOn());
@@ -329,8 +343,8 @@ TEST_P(PageInfoCookiesContentViewPre3pcdTest,
 
   // Third-party cookies section:
   EXPECT_TRUE(third_party_cookies_container()->GetVisible());
-
-  // TODO(http://b/308988593): Verify that the toggle row has correct subtitle.
+  EXPECT_EQ(third_party_cookies_row()->GetIconImageModelForTesting(),
+            GetImageModel(views::kEyeIcon));
   EXPECT_FALSE(third_party_cookies_label_wrapper()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetVisible());
   EXPECT_TRUE(third_party_cookies_toggle()->GetIsOn());
@@ -365,8 +379,8 @@ TEST_P(PageInfoCookiesContentViewPre3pcdTest,
 
   // Third-party cookies section:
   EXPECT_TRUE(third_party_cookies_container()->GetVisible());
-
-  // TODO(http://b/308988593): Verify the toggle row icon.
+  EXPECT_EQ(third_party_cookies_row()->GetIconImageModelForTesting(),
+            GetImageModel(views::kEyeCrossedIcon));
   EXPECT_FALSE(third_party_cookies_label_wrapper()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetIsOn());
@@ -402,8 +416,8 @@ TEST_P(PageInfoCookiesContentViewPre3pcdTest,
 
   // Third-party cookies section:
   EXPECT_TRUE(third_party_cookies_container()->GetVisible());
-
-  // TODO(http://b/308988593): Verify the toggle row icon.
+  EXPECT_EQ(third_party_cookies_row()->GetIconImageModelForTesting(),
+            GetImageModel(views::kEyeIcon));
   EXPECT_FALSE(third_party_cookies_label_wrapper()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetVisible());
   EXPECT_TRUE(third_party_cookies_toggle()->GetIsOn());
@@ -440,8 +454,8 @@ TEST_P(PageInfoCookiesContentViewPre3pcdTest,
 
   // Third-party cookies section:
   EXPECT_TRUE(third_party_cookies_container()->GetVisible());
-
-  // TODO(http://b/308988593): Verify the toggle row icon.
+  EXPECT_EQ(third_party_cookies_row()->GetIconImageModelForTesting(),
+            GetImageModel(views::kEyeCrossedIcon));
   EXPECT_FALSE(third_party_cookies_label_wrapper()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetIsOn());
@@ -478,8 +492,8 @@ TEST_P(PageInfoCookiesContentViewPre3pcdTest,
 
   // Third-party cookies section:
   EXPECT_TRUE(third_party_cookies_container()->GetVisible());
-
-  // TODO(http://b/308988593): Verify the toggle row icon.
+  EXPECT_EQ(third_party_cookies_row()->GetIconImageModelForTesting(),
+            GetImageModel(views::kEyeIcon));
   EXPECT_FALSE(third_party_cookies_label_wrapper()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetVisible());
   EXPECT_TRUE(third_party_cookies_toggle()->GetIsOn());
@@ -693,7 +707,8 @@ TEST_F(PageInfoCookiesContentView3pcdCookieToggleTest,
   content_view()->SetCookieInfo(cookie_info);
 
   EXPECT_TRUE(third_party_cookies_label_wrapper()->GetVisible());
-  // TODO(http://b/308988593): Verify the toggle row icon.
+  EXPECT_EQ(third_party_cookies_row()->GetIconImageModelForTesting(),
+            GetImageModel(views::kEyeCrossedIcon));
   EXPECT_TRUE(third_party_cookies_toggle()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetIsOn());
   EXPECT_FALSE(third_party_cookies_enforced_icon()->GetVisible());
@@ -711,7 +726,8 @@ TEST_F(PageInfoCookiesContentView3pcdCookieToggleTest,
   content_view()->SetCookieInfo(cookie_info);
 
   EXPECT_TRUE(third_party_cookies_label_wrapper()->GetVisible());
-  // TODO(http://b/308988593): Verify the toggle row icon.
+  EXPECT_EQ(third_party_cookies_row()->GetIconImageModelForTesting(),
+            GetImageModel(views::kEyeCrossedIcon));
   EXPECT_TRUE(third_party_cookies_toggle()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetIsOn());
   EXPECT_FALSE(third_party_cookies_enforced_icon()->GetVisible());
@@ -730,7 +746,8 @@ TEST_F(PageInfoCookiesContentView3pcdCookieToggleTest,
   content_view()->SetCookieInfo(cookie_info);
 
   EXPECT_TRUE(third_party_cookies_label_wrapper()->GetVisible());
-  // TODO(http://b/308988593): Verify the toggle row icon.
+  EXPECT_EQ(third_party_cookies_row()->GetIconImageModelForTesting(),
+            GetImageModel(views::kEyeCrossedIcon));
   EXPECT_TRUE(third_party_cookies_toggle()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetIsOn());
   EXPECT_FALSE(third_party_cookies_enforced_icon()->GetVisible());
@@ -750,7 +767,8 @@ TEST_F(PageInfoCookiesContentView3pcdCookieToggleTest,
   content_view()->SetCookieInfo(cookie_info);
 
   EXPECT_TRUE(third_party_cookies_label_wrapper()->GetVisible());
-  // TODO(http://b/308988593): Verify the toggle row icon.
+  EXPECT_EQ(third_party_cookies_row()->GetIconImageModelForTesting(),
+            GetImageModel(views::kEyeIcon));
   EXPECT_TRUE(third_party_cookies_toggle()->GetVisible());
   EXPECT_TRUE(third_party_cookies_toggle()->GetIsOn());
   EXPECT_FALSE(third_party_cookies_enforced_icon()->GetVisible());
@@ -769,7 +787,8 @@ TEST_P(PageInfoCookiesContentView3pcdCookieToggleTest,
   content_view()->SetCookieInfo(cookie_info);
 
   EXPECT_TRUE(third_party_cookies_label_wrapper()->GetVisible());
-  // TODO(http://b/308988593): Verify the toggle row icon.
+  EXPECT_EQ(third_party_cookies_row()->GetIconImageModelForTesting(),
+            GetImageModel(views::kEyeIcon));
   EXPECT_TRUE(third_party_cookies_toggle()->GetVisible());
   EXPECT_TRUE(third_party_cookies_toggle()->GetIsOn());
   EXPECT_FALSE(third_party_cookies_enforced_icon()->GetVisible());
@@ -789,7 +808,8 @@ TEST_P(PageInfoCookiesContentView3pcdCookieToggleTest,
   content_view()->SetCookieInfo(cookie_info);
 
   EXPECT_TRUE(third_party_cookies_label_wrapper()->GetVisible());
-  // TODO(http://b/308988593): Verify the toggle row icon.
+  EXPECT_EQ(third_party_cookies_row()->GetIconImageModelForTesting(),
+            GetImageModel(views::kEyeIcon));
   EXPECT_FALSE(third_party_cookies_toggle()->GetVisible());
   EXPECT_TRUE(third_party_cookies_enforced_icon()->GetVisible());
 
@@ -815,7 +835,8 @@ TEST_P(PageInfoCookiesContentView3pcdCookieToggleTest,
   content_view()->SetCookieInfo(cookie_info);
 
   EXPECT_FALSE(third_party_cookies_label_wrapper()->GetVisible());
-  // TODO(http://b/308988593): Verify the toggle row icon.
+  EXPECT_EQ(third_party_cookies_row()->GetIconImageModelForTesting(),
+            GetImageModel(views::kEyeIcon));
   EXPECT_FALSE(third_party_cookies_toggle()->GetVisible());
   EXPECT_TRUE(third_party_cookies_enforced_icon()->GetVisible());
 
@@ -834,7 +855,8 @@ TEST_P(PageInfoCookiesContentView3pcdCookieToggleTest,
   content_view()->SetCookieInfo(cookie_info);
 
   EXPECT_FALSE(third_party_cookies_label_wrapper()->GetVisible());
-  // TODO(http://b/308988593): Verify the toggle row icon.
+  EXPECT_EQ(third_party_cookies_row()->GetIconImageModelForTesting(),
+            GetImageModel(views::kEyeIcon));
   EXPECT_FALSE(third_party_cookies_toggle()->GetVisible());
   EXPECT_TRUE(third_party_cookies_enforced_icon()->GetVisible());
 

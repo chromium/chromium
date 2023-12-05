@@ -50,6 +50,7 @@ class RichControlsContainerView : public views::FlexLayoutView {
   gfx::Size CalculatePreferredSize() const override;
 
   const std::u16string& GetTitleForTesting();
+  const ui::ImageModel GetIconImageModelForTesting();
 
  private:
   virtual int GetMinBubbleWidth() const;
