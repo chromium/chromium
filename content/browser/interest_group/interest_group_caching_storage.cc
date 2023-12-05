@@ -99,6 +99,7 @@ void InterestGroupCachingStorage::GetInterestGroupsForOwner(
     scoped_refptr<StorageInterestGroups> groups =
         cached_groups_it->second.get();
     if (groups && !groups->IsExpired()) {
+      StartTimerForInterestGroupHold(owner, groups);
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), std::move(groups)));
 
@@ -377,17 +378,19 @@ void InterestGroupCachingStorage::OnLoadInterestGroupsForOwner(
     const url::Origin& owner,
     uint32_t version,
     std::vector<StorageInterestGroup> interest_groups) {
-  scoped_refptr<StorageInterestGroups> interest_groups_ptr =
-      base::MakeRefCounted<StorageInterestGroups>(std::move(interest_groups));
-
   auto outstanding_callbacks_it =
       interest_groups_sequenced_callbacks_.find(std::make_pair(owner, version));
   if (outstanding_callbacks_it == interest_groups_sequenced_callbacks_.end()) {
     return;
   }
+
+  scoped_refptr<StorageInterestGroups> interest_groups_ptr =
+      base::MakeRefCounted<StorageInterestGroups>(std::move(interest_groups));
+
   // Cache the result only if it's still valid.
   if (version == valid_interest_group_versions_[owner]) {
     cached_interest_groups_[owner] = interest_groups_ptr->GetWeakPtr();
+    StartTimerForInterestGroupHold(owner, interest_groups_ptr);
   }
 
   while (!outstanding_callbacks_it->second.empty()) {
@@ -406,10 +409,12 @@ void InterestGroupCachingStorage::InvalidateCachedInterestGroupsForOwner(
     const url::Origin& owner) {
   cached_interest_groups_.erase(owner);
   MarkOutstandingInterestGroupLoadResultOutdated(owner);
+  timed_holds_of_interest_groups_.erase(owner);
 }
 
 void InterestGroupCachingStorage::InvalidateAllCachedInterestGroups() {
   cached_interest_groups_.clear();
+  timed_holds_of_interest_groups_.clear();
   for (const auto& [owner_version, _] : interest_groups_sequenced_callbacks_) {
     MarkOutstandingInterestGroupLoadResultOutdated(owner_version.first);
   }
@@ -421,6 +426,24 @@ void InterestGroupCachingStorage::
   if (it != valid_interest_group_versions_.end()) {
     it->second = it->second + 1;
   }
+}
+
+void InterestGroupCachingStorage::StartTimerForInterestGroupHold(
+    const url::Origin& owner,
+    scoped_refptr<StorageInterestGroups> groups) {
+  // Get the existing timer if it exists or create a new one if not.
+  std::unique_ptr<base::OneShotTimer>& timer =
+      timed_holds_of_interest_groups_
+          .insert(std::make_pair(owner, std::make_unique<base::OneShotTimer>()))
+          .first->second;
+  if (timer->IsRunning()) {
+    timer->Stop();
+  }
+  timer->Start(
+      FROM_HERE, kMinimumCacheHoldTime,
+      base::BindOnce(
+          &InterestGroupCachingStorage::OnMinimumCacheHoldTimeCompleted,
+          weak_factory_.GetWeakPtr(), owner, groups));
 }
 
 }  // namespace content

@@ -754,6 +754,24 @@ TEST_F(InterestGroupCachingStorageTest, LoadGroupsCacheHitHistogram) {
   histogram_tester.ExpectUniqueSample(
       "Ads.InterestGroup.Auction.LoadGroupsCacheHit", false, 1);
 
+  task_environment_.FastForwardBy(base::Seconds(2));
+  GetInterestGroupsForOwner(caching_storage.get(), owner);
+  // Cache hit because the cache holds a reference to the object for
+  // kMinimumCacheHoldTime.
+  histogram_tester.ExpectBucketCount(
+      "Ads.InterestGroup.Auction.LoadGroupsCacheHit", true, 1);
+
+  task_environment_.FastForwardBy(
+      InterestGroupCachingStorage::kMinimumCacheHoldTime - base::Seconds(1));
+  GetInterestGroupsForOwner(caching_storage.get(), owner);
+  // More than kMinimumCacheHoldTime has passed since the database load but less
+  // than kMinimumCacheHoldTime has passed since the last access of the groups.
+  // The reference should still be in memory.
+  histogram_tester.ExpectBucketCount(
+      "Ads.InterestGroup.Auction.LoadGroupsCacheHit", true, 2);
+
+  task_environment_.FastForwardBy(
+      InterestGroupCachingStorage::kMinimumCacheHoldTime);
   absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs =
       GetInterestGroupsForOwner(caching_storage.get(), owner);
   // Not a cache hit because the previous result of GetInterestGroupsForOwner is
@@ -761,23 +779,31 @@ TEST_F(InterestGroupCachingStorageTest, LoadGroupsCacheHitHistogram) {
   histogram_tester.ExpectBucketCount(
       "Ads.InterestGroup.Auction.LoadGroupsCacheHit", false, 2);
 
+  task_environment_.FastForwardBy(
+      InterestGroupCachingStorage::kMinimumCacheHoldTime);
   GetInterestGroupsForOwner(caching_storage.get(), owner);
+  // Cache hit because we have a reference to the object in `loaded_igs`.
   histogram_tester.ExpectBucketCount(
-      "Ads.InterestGroup.Auction.LoadGroupsCacheHit", true, 1);
+      "Ads.InterestGroup.Auction.LoadGroupsCacheHit", true, 3);
 
+  task_environment_.FastForwardBy(
+      InterestGroupCachingStorage::kMinimumCacheHoldTime);
   GetInterestGroupsForOwner(caching_storage.get(), owner);
   histogram_tester.ExpectBucketCount(
-      "Ads.InterestGroup.Auction.LoadGroupsCacheHit", true, 2);
+      "Ads.InterestGroup.Auction.LoadGroupsCacheHit", true, 4);
 
   caching_storage->RecordInterestGroupWin(
       blink::InterestGroupKey(owner, "name"), "");
   loaded_igs = GetInterestGroupsForOwner(caching_storage.get(), owner);
+  // Not a cache hit because RecordInterestGroupWin wipes out the cached value.
   histogram_tester.ExpectBucketCount(
       "Ads.InterestGroup.Auction.LoadGroupsCacheHit", false, 3);
 
+  task_environment_.FastForwardBy(
+      InterestGroupCachingStorage::kMinimumCacheHoldTime);
   loaded_igs = GetInterestGroupsForOwner(caching_storage.get(), owner);
   histogram_tester.ExpectBucketCount(
-      "Ads.InterestGroup.Auction.LoadGroupsCacheHit", true, 3);
+      "Ads.InterestGroup.Auction.LoadGroupsCacheHit", true, 5);
 }
 
 TEST_F(InterestGroupCachingStorageTest, DontLoadCachedInterestGroupsIfExpired) {

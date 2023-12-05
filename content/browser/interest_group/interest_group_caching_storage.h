@@ -91,6 +91,7 @@ class CONTENT_EXPORT StorageInterestGroups
 // occurs).
 class CONTENT_EXPORT InterestGroupCachingStorage {
  public:
+  static constexpr base::TimeDelta kMinimumCacheHoldTime = base::Seconds(10);
   explicit InterestGroupCachingStorage(const base::FilePath& path,
                                        bool in_memory);
   ~InterestGroupCachingStorage();
@@ -244,12 +245,36 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
 
   void MarkOutstandingInterestGroupLoadResultOutdated(const url::Origin& owner);
 
+  // Start a timer that holds a reference to `groups` so that it stays in memory
+  // for a minimum amount of time (kMinimumCacheHoldTime). If such a timer
+  // already exists, restart it.
+  void StartTimerForInterestGroupHold(
+      const url::Origin& owner,
+      scoped_refptr<StorageInterestGroups> groups);
+
+  // Callback for the timers in `timed_holds_of_interest_groups_` in
+  // order to keep `groups` in memory for a minimum amount of time
+  // (kMinimumCacheHoldTime). When a timer in `timed_holds_of_interest_groups_`
+  // is done, make sure to delete the timer.
+  void OnMinimumCacheHoldTimeCompleted(
+      const url::Origin& owner,
+      scoped_refptr<StorageInterestGroups> groups) {
+    timed_holds_of_interest_groups_.erase(owner);
+  }
+
   base::SequenceBound<InterestGroupStorage> interest_group_storage_;
 
   // Used to retrieve interest groups that are still in memory (e.g. because
   // they're bidding in an auction).
   std::map<url::Origin, base::WeakPtr<StorageInterestGroups>>
       cached_interest_groups_;
+
+  // Holds timers that have references to StorageInterestGroups so that the
+  // StorageInterestGroups stay in memory for a minimum amount of time
+  // (kMinimumCacheHoldTime). The timers can also be cancelled early upon cache
+  // invalidation.
+  std::map<url::Origin, std::unique_ptr<base::OneShotTimer>>
+      timed_holds_of_interest_groups_;
 
   // Holds callbacks to be run once a load from the database
   // (GetInterestGroupsForOwner) is complete. Callbacks are keyed by version
