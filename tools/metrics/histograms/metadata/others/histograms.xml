@@ -3695,6 +3695,18 @@ chromium-metrics-reviews@google.com.
   <summary>Logs whether a crash uploaded succeeded or failed.</summary>
 </histogram>
 
+<histogram name="Crashpad.CrashUpload.ErrorCode" units="int"
+    expires_after="never">
+<!-- expires-never: Crashpad metrics are continually needed to diagnose issues found in the field. -->
+
+  <owner>justincohen@chromium.org</owner>
+  <owner>crashpad-dev@chromium.org</owner>
+  <summary>
+    The error codes from [NSURLConnection
+    sendSynchronousRequest:returningResponse:error:]
+  </summary>
+</histogram>
+
 <histogram name="Crashpad.CrashUpload.Skipped"
     enum="CrashpadUploadSkippedReason" expires_after="never">
 <!-- expires-never: Crashpad metrics are continually needed to diagnose issues found in the field. -->
