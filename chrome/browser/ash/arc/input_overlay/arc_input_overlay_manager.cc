@@ -726,6 +726,13 @@ ArcAppListPrefs* ArcInputOverlayManager::GetArcAppListPrefs() {
 }
 
 aura::Window* ArcInputOverlayManager::GetAnchorWindow(aura::Window* window) {
+  // TODO(b/314687082): It still needs to find a way to reproduce the crash.
+  // Right now, return `window` directly for pre-beta version to stabilize
+  // ChromeOS.
+  if (!IsBeta()) {
+    return window;
+  }
+
   if (window) {
     auto* widget = views::Widget::GetWidgetForNativeWindow(window);
     DCHECK(widget);
