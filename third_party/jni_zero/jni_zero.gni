@@ -137,9 +137,6 @@ template("generate_jni_registration") {
             [ get_label_info(java_targets_dep, "label_no_toolchain") ]
       }
     }
-    metadata = {
-      java_deps = java_target_deps
-    }
     args = [
       "generate-final",
       "--srcjar-path",
@@ -419,6 +416,10 @@ template("generate_jni") {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     metadata = {
       jni_source_files = sources
+      # This field is only used by Cronet team during the translation
+      # of the GN build targets to Soong modules. From a pure
+      # GN perspective, it is unused.
+      jni_source_files_abs = get_path_info(sources, "abspath")
     }
   }
 }
