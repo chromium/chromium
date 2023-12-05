@@ -967,8 +967,6 @@ TEST_P(SignedExchangeHandlerTest, CTRequirementsMetForPubliclyTrustedCert) {
   // EV status should be preserved.
   EXPECT_TRUE(resource_response().ssl_info->cert_status &
               net::CERT_STATUS_IS_EV);
-  EXPECT_FALSE(resource_response().ssl_info->cert_status &
-               net::CERT_STATUS_CT_COMPLIANCE_FAILED);
   EXPECT_EQ(net::ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
             resource_response().ssl_info->ct_policy_compliance);
   ExpectHistogramValues(
@@ -993,7 +991,6 @@ TEST_P(SignedExchangeHandlerTest, CTNotRequiredForLocalAnchors) {
 
   net::CertVerifyResult cert_result = CreateCertVerifyResult();
   cert_result.is_issued_by_known_root = false;  // Local anchor.
-  cert_result.cert_status = net::CERT_STATUS_IS_EV;
   SetupMockCertVerifier("prime256v1-sha256.public.pem", cert_result);
 
   // Lets the mock CT policy enforcer return CT_POLICY_NOT_ENOUGH_SCTS.
@@ -1008,11 +1005,6 @@ TEST_P(SignedExchangeHandlerTest, CTNotRequiredForLocalAnchors) {
   ASSERT_TRUE(read_header());
   EXPECT_EQ(SignedExchangeLoadResult::kSuccess, result());
   EXPECT_EQ(net::OK, error());
-  // EV status should be removed.
-  EXPECT_FALSE(resource_response().ssl_info->cert_status &
-               net::CERT_STATUS_IS_EV);
-  EXPECT_TRUE(resource_response().ssl_info->cert_status &
-              net::CERT_STATUS_CT_COMPLIANCE_FAILED);
   EXPECT_EQ(net::ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
             resource_response().ssl_info->ct_policy_compliance);
   ExpectHistogramValues(

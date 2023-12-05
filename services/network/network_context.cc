@@ -1506,17 +1506,6 @@ int NetworkContext::CheckCTComplianceForSignedExchange(
               url_request_context_->net_log(),
               net::NetLogSourceType::CERT_VERIFIER_JOB));
 
-  // TODO(https://crbug.com/803774): We should determine whether EV & SXG
-  // should be a thing (due to the online/offline signing difference)
-  if (cert_verify_result.cert_status & net::CERT_STATUS_IS_EV &&
-      cert_verify_result.policy_compliance !=
-          net::ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS &&
-      cert_verify_result.policy_compliance !=
-          net::ct::CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY) {
-    cert_verify_result.cert_status |= net::CERT_STATUS_CT_COMPLIANCE_FAILED;
-    cert_verify_result.cert_status &= ~net::CERT_STATUS_IS_EV;
-  }
-
   net::TransportSecurityState::CTRequirementsStatus ct_requirement_status =
       url_request_context_->transport_security_state()->CheckCTRequirements(
           host_port_pair, cert_verify_result.is_issued_by_known_root,

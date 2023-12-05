@@ -517,16 +517,6 @@ int ProofVerifierChromium::Job::CheckCTCompliance() {
   verify_details_->cert_verify_result.policy_compliance =
       policy_enforcer_->CheckCompliance(cert_verify_result.verified_cert.get(),
                                         verified_scts, net_log_);
-  if (verify_details_->cert_verify_result.cert_status & CERT_STATUS_IS_EV) {
-    if (verify_details_->cert_verify_result.policy_compliance !=
-            ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS &&
-        verify_details_->cert_verify_result.policy_compliance !=
-            ct::CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY) {
-      verify_details_->cert_verify_result.cert_status |=
-          CERT_STATUS_CT_COMPLIANCE_FAILED;
-      verify_details_->cert_verify_result.cert_status &= ~CERT_STATUS_IS_EV;
-    }
-  }
 
   TransportSecurityState::CTRequirementsStatus ct_requirement_status =
       transport_security_state_->CheckCTRequirements(
