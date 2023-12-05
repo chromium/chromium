@@ -17,17 +17,13 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.view.ViewCompat;
 
 import com.google.android.material.appbar.AppBarLayout;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feed.FeedStreamViewResizer;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
@@ -49,7 +45,7 @@ import org.chromium.ui.base.WindowAndroid;
 public class TasksView extends CoordinatorLayoutForPointer {
 
     private final Context mContext;
-    private FrameLayout mCarouselTabSwitcherContainer;
+    private FrameLayout mCardTabSwitcherContainer;
     private AppBarLayout mHeaderView;
     private ViewGroup mMvTilesContainerLayout;
     private SearchBoxCoordinator mSearchBoxCoordinator;
@@ -89,8 +85,7 @@ public class TasksView extends CoordinatorLayoutForPointer {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        mCarouselTabSwitcherContainer =
-                (FrameLayout) findViewById(R.id.tab_switcher_module_container);
+        mCardTabSwitcherContainer = (FrameLayout) findViewById(R.id.tab_switcher_module_container);
         mMvTilesContainerLayout = findViewById(R.id.mv_tiles_container);
         mSearchBoxCoordinator = new SearchBoxCoordinator(getContext(), this);
 
@@ -100,7 +95,6 @@ public class TasksView extends CoordinatorLayoutForPointer {
 
         mUiConfig = new UiConfig(this);
         setHeaderPadding();
-        setTabCarouselTitleStyle();
     }
 
     @Override
@@ -109,25 +103,8 @@ public class TasksView extends CoordinatorLayoutForPointer {
         mUiConfig.updateDisplayStyle();
     }
 
-    private void setTabCarouselTitleStyle() {
-        // Match the tab carousel title style with the feed header.
-        // There are many places checking FeedFeatures.isReportingUserActions, like in
-        // ExploreSurfaceCoordinator.
-        TextView titleDescription = (TextView) findViewById(R.id.tab_switcher_title_description);
-        TextView moreTabs = (TextView) findViewById(R.id.more_tabs);
-        ApiCompatibilityUtils.setTextAppearance(
-                titleDescription, R.style.TextAppearance_TextAccentMediumThick_Secondary);
-        ApiCompatibilityUtils.setTextAppearance(moreTabs, R.style.TextAppearance_Button_Text_Blue);
-        ViewCompat.setPaddingRelative(
-                titleDescription,
-                titleDescription.getPaddingStart(),
-                titleDescription.getPaddingTop(),
-                titleDescription.getPaddingEnd(),
-                titleDescription.getPaddingBottom());
-    }
-
-    public ViewGroup getCarouselTabSwitcherContainer() {
-        return mCarouselTabSwitcherContainer;
+    public ViewGroup getCardTabSwitcherContainer() {
+        return mCardTabSwitcherContainer;
     }
 
     public ViewGroup getBodyViewContainer() {
@@ -144,18 +121,11 @@ public class TasksView extends CoordinatorLayoutForPointer {
 
     /**
      * Set the visibility of the tab carousel.
+     *
      * @param isVisible Whether it's visible.
      */
-    void setTabCarouselVisibility(boolean isVisible) {
-        mCarouselTabSwitcherContainer.setVisibility(isVisible ? View.VISIBLE : View.GONE);
-    }
-
-    /**
-     * Set the visibility of the tab carousel title.
-     * @param isVisible Whether it's visible.
-     */
-    void setTabCarouselTitleVisibility(boolean isVisible) {
-        findViewById(R.id.tab_switcher_title).setVisibility(isVisible ? View.VISIBLE : View.GONE);
+    void setTabCardVisibility(boolean isVisible) {
+        mCardTabSwitcherContainer.setVisibility(isVisible ? View.VISIBLE : View.GONE);
     }
 
     /**
@@ -173,11 +143,6 @@ public class TasksView extends CoordinatorLayoutForPointer {
     /** Set the visibility of the Most Visited Tiles. */
     void setQueryTilesVisibility(int visibility) {
         findViewById(R.id.query_tiles_container).setVisibility(visibility);
-    }
-
-    /** Set the {@link android.view.View.OnClickListener} for More Tabs. */
-    void setMoreTabsOnClickListener(@Nullable View.OnClickListener listener) {
-        findViewById(R.id.more_tabs).setOnClickListener(listener);
     }
 
     /**
@@ -382,17 +347,6 @@ public class TasksView extends CoordinatorLayoutForPointer {
         MarginLayoutParams params = (MarginLayoutParams) mMvTilesContainerLayout.getLayoutParams();
         params.leftMargin = margin;
         params.rightMargin = margin;
-    }
-
-    /**
-     * Set the top margin for the tab switcher title.
-     * @param topMargin The top margin to set.
-     */
-    void setTabSwitcherTitleTopMargin(int topMargin) {
-        MarginLayoutParams params =
-                (MarginLayoutParams)
-                        mHeaderView.findViewById(R.id.tab_switcher_title).getLayoutParams();
-        params.topMargin = topMargin;
     }
 
     /**

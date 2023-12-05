@@ -2356,12 +2356,6 @@ const FeatureEntry::FeatureVariation kNewTabSearchEngineUrlAndroidVariations[] =
          std::size(kNewTabSearchEngineUrlAndroid_EeaCountryOnly), nullptr},
 };
 
-const FeatureEntry::FeatureParam kStartSurfaceAndroid_SingleSurface[] = {
-    {"open_ntp_instead_of_start", "false"},
-    {"open_start_as_homepage", "true"},
-    {"show_last_active_tab_only", "false"},
-    {"show_tabs_in_mru_order", "true"}};
-
 const FeatureEntry::FeatureParam kStartSurfaceAndroid_CandidateA[] = {
     {"open_ntp_instead_of_start", "false"},
     {"open_start_as_homepage", "true"}};
@@ -2397,8 +2391,6 @@ const FeatureEntry::FeatureVariation kStartSurfaceAndroidVariations[] = {
     {"Candidate B + Always show Incognito icon",
      kStartSurfaceAndroid_CandidateB_AlwaysShowIncognito,
      std::size(kStartSurfaceAndroid_CandidateB_AlwaysShowIncognito), nullptr},
-    {"Single Surface", kStartSurfaceAndroid_SingleSurface,
-     std::size(kStartSurfaceAndroid_SingleSurface), nullptr},
 };
 
 const FeatureEntry::FeatureParam kSurfacePolish_mvp[] = {

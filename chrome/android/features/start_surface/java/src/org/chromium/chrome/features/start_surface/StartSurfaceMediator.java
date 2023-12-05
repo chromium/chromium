@@ -20,18 +20,15 @@ import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_INCOG
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_INCOGNITO_DESCRIPTION_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_LENS_BUTTON_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_SURFACE_BODY_VISIBLE;
-import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_TAB_CAROUSEL_TITLE_VISIBLE;
-import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_TAB_CAROUSEL_VISIBLE;
+import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_TAB_CARD_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_VOICE_RECOGNITION_BUTTON_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.LENS_BUTTON_CLICK_LISTENER;
-import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MORE_TABS_CLICK_LISTENER;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_LEFT_RIGHT_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.QUERY_TILES_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.RESET_TASK_SURFACE_HEADER_SCROLL_POSITION;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.SINGLE_TAB_TOP_MARGIN;
-import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TAB_SWITCHER_TITLE_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TASKS_SURFACE_BODY_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TOP_TOOLBAR_PLACEHOLDER_HEIGHT;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.VOICE_SEARCH_BUTTON_CLICK_LISTENER;
@@ -113,7 +110,6 @@ import java.util.List;
 /** The mediator implements the logic to interact with the surfaces and caller. */
 class StartSurfaceMediator
         implements TabSwitcher.TabSwitcherViewObserver,
-                View.OnClickListener,
                 StartSurface.OnTabSelectingListener,
                 BackPressHandler,
                 LogoCoordinator.VisibilityObserver,
@@ -302,10 +298,7 @@ class StartSurfaceMediator
             assert mIsStartSurfaceEnabled;
 
             if (mTabSwitcherModule != null) {
-                boolean isTabCarousel =
-                        mController.getTabSwitcherType() == TabSwitcherType.CAROUSEL;
-                mPropertyModel.set(IS_TAB_CAROUSEL_VISIBLE, isTabCarousel);
-                mPropertyModel.set(IS_TAB_CAROUSEL_TITLE_VISIBLE, isTabCarousel);
+                mPropertyModel.set(IS_TAB_CARD_VISIBLE, false);
             }
 
             if (mTabSwitcherModule != null || mUseMagicSpace) {
@@ -338,8 +331,6 @@ class StartSurfaceMediator
             mPropertyModel.set(IS_INCOGNITO, mIsIncognito);
             updateBackgroundColor(mPropertyModel);
 
-            mPropertyModel.set(MORE_TABS_CLICK_LISTENER, this);
-
             if (!mUseMagicSpace) {
                 // Hide tab carousel, which does not exist in incognito mode, when closing all
                 // normal tabs.
@@ -351,14 +342,14 @@ class StartSurfaceMediator
                                     Tab tab, boolean animate, boolean didCloseAlone) {
                                 if (isHomepageShown()
                                         && mTabModelSelector.getModel(false).getCount() <= 1) {
-                                    setTabCarouselVisibility(false);
+                                    setTabCardVisibility(false);
                                 }
                             }
 
                             @Override
                             public void tabClosureUndone(Tab tab) {
                                 if (isHomepageShown()) {
-                                    setTabCarouselVisibility(true);
+                                    setTabCardVisibility(true);
                                 }
                             }
 
@@ -368,7 +359,7 @@ class StartSurfaceMediator
                                         && isHomepageShown())) {
                                     return;
                                 }
-                                setTabCarouselVisibility(
+                                setTabCardVisibility(
                                         mTabModelSelector.getModel(false).getCount() > 0
                                                 && !mIsIncognito);
                             }
@@ -404,7 +395,7 @@ class StartSurfaceMediator
 
                                 if (type == TabSelectionType.FROM_CLOSE
                                         && UrlUtilities.isNtpUrl(tab.getUrl())) {
-                                    setTabCarouselVisibility(false);
+                                    setTabCardVisibility(false);
                                 }
                             }
                         };
@@ -737,7 +728,7 @@ class StartSurfaceMediator
         updateBackgroundColor(mPropertyModel);
         setMVTilesVisibility(!mIsIncognito);
         setLogoVisibility(!mIsIncognito);
-        setTabCarouselVisibility(getNormalTabCount() > 0 && !mIsIncognito);
+        setTabCardVisibility(getNormalTabCount() > 0 && !mIsIncognito);
         setExploreSurfaceVisibility(!mIsIncognito && mExploreSurfaceCoordinatorFactory != null);
         // TODO(qinmin): show query tiles when flag is enabled.
         setQueryTilesVisibility(false);
@@ -918,7 +909,7 @@ class StartSurfaceMediator
             // will not show.
             setMVTilesVisibility(!mIsIncognito);
             setLogoVisibility(!mIsIncognito);
-            setTabCarouselVisibility(hasNormalTab && !mIsIncognito);
+            setTabCardVisibility(hasNormalTab && !mIsIncognito);
             setExploreSurfaceVisibility(!mIsIncognito && mExploreSurfaceCoordinatorFactory != null);
             setQueryTilesVisibility(!mIsIncognito);
             setFakeBoxVisibility(!mIsIncognito);
@@ -939,7 +930,7 @@ class StartSurfaceMediator
             if (mPreviousStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
                 mayRecordHomepageSessionEnd();
             }
-            setTabCarouselVisibility(false);
+            setTabCardVisibility(false);
             setMVTilesVisibility(false);
             setLogoVisibility(false);
             setQueryTilesVisibility(false);
@@ -1283,26 +1274,6 @@ class StartSurfaceMediator
         mPropertyModel.set(EXPLORE_SURFACE_COORDINATOR, null);
     }
 
-    // TODO(crbug.com/982018): turn into onClickMoreTabs() and hide the OnClickListener signature
-    // inside. Implements View.OnClickListener, which listens for the more tabs button.
-    @Override
-    public void onClick(View v) {
-        assert isHomepageShown();
-
-        if (mIsStartSurfaceRefactorEnabled) {
-            mTabSwitcherClickHandler.onClick(v);
-        } else {
-            if (mSecondaryTasksSurfacePropertyModel == null) {
-                TabSwitcher.Controller controller = mSecondaryTasksSurfaceInitializer.initialize();
-                assert mSecondaryTasksSurfacePropertyModel != null;
-                setSecondaryTasksSurfaceController(controller);
-            }
-
-            setStartSurfaceState(StartSurfaceState.SHOWN_TABSWITCHER);
-        }
-        RecordUserAction.record("StartSurface.SinglePane.MoreTabs");
-    }
-
     // StartSurface.OnTabSelectingListener
     @Override
     public void onTabSelecting(int tabId) {
@@ -1496,19 +1467,17 @@ class StartSurfaceMediator
                         : getTopToolbarPlaceholderHeight());
     }
 
-    private void setTabCarouselVisibility(boolean isVisible) {
+    private void setTabCardVisibility(boolean isVisible) {
         if (mUseMagicSpace) return;
 
         // If the single tab switcher is shown and the current selected tab is a new tab page, we
         // shouldn't show the tab switcher layout on Start.
-        boolean shouldShowTabCarousel =
+        boolean shouldShowTabCard =
                 isVisible && !(isSingleTabSwitcher() && isCurrentSelectedTabNtp());
 
-        if (shouldShowTabCarousel == mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE)) return;
+        if (shouldShowTabCard == mPropertyModel.get(IS_TAB_CARD_VISIBLE)) return;
 
-        mPropertyModel.set(IS_TAB_CAROUSEL_VISIBLE, shouldShowTabCarousel);
-        mPropertyModel.set(
-                IS_TAB_CAROUSEL_TITLE_VISIBLE, shouldShowTabCarousel && showTabSwitcherTitle());
+        mPropertyModel.set(IS_TAB_CARD_VISIBLE, shouldShowTabCard);
     }
 
     private void setMVTilesVisibility(boolean isVisible) {
@@ -1642,10 +1611,6 @@ class StartSurfaceMediator
         return mController != null && mController.getTabSwitcherType() == TabSwitcherType.SINGLE;
     }
 
-    private boolean showTabSwitcherTitle() {
-        return !isSingleTabSwitcher();
-    }
-
     private void notifyBackPressStateChanged() {
         mBackPressChangedSupplier.set(shouldInterceptBackPress());
     }
@@ -1769,9 +1734,6 @@ class StartSurfaceMediator
                     TASKS_SURFACE_BODY_TOP_MARGIN,
                     resources.getDimensionPixelSize(R.dimen.tasks_surface_body_top_margin));
         }
-        mPropertyModel.set(
-                TAB_SWITCHER_TITLE_TOP_MARGIN,
-                resources.getDimensionPixelSize(R.dimen.tab_switcher_title_top_margin));
 
         if (mIsSurfacePolishEnabled && !mIsFeedGoneImprovementEnabled) return;
 

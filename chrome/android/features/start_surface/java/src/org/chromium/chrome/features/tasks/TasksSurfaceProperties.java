@@ -30,9 +30,7 @@ public class TasksSurfaceProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey IS_SURFACE_BODY_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
-    public static final PropertyModel.WritableBooleanPropertyKey IS_TAB_CAROUSEL_VISIBLE =
-            new PropertyModel.WritableBooleanPropertyKey();
-    public static final PropertyModel.WritableBooleanPropertyKey IS_TAB_CAROUSEL_TITLE_VISIBLE =
+    public static final PropertyModel.WritableBooleanPropertyKey IS_TAB_CARD_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey
             IS_VOICE_RECOGNITION_BUTTON_VISIBLE = new PropertyModel.WritableBooleanPropertyKey();
@@ -58,8 +56,6 @@ public class TasksSurfaceProperties {
             FAKE_SEARCH_BOX_TEXT_WATCHER = new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
             LENS_BUTTON_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
-    public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
-            MORE_TABS_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableBooleanPropertyKey MV_TILES_VISIBLE =
             IS_CONTAINER_VISIBLE;
     public static final PropertyModel.WritableBooleanPropertyKey QUERY_TILES_VISIBLE =
@@ -71,8 +67,6 @@ public class TasksSurfaceProperties {
     public static final PropertyModel.WritableIntPropertyKey MV_TILES_CONTAINER_TOP_MARGIN =
             new PropertyModel.WritableIntPropertyKey();
     public static final PropertyModel.WritableIntPropertyKey MV_TILES_CONTAINER_LEFT_RIGHT_MARGIN =
-            new PropertyModel.WritableIntPropertyKey();
-    public static final PropertyModel.WritableIntPropertyKey TAB_SWITCHER_TITLE_TOP_MARGIN =
             new PropertyModel.WritableIntPropertyKey();
     public static final PropertyModel.WritableIntPropertyKey SINGLE_TAB_TOP_MARGIN =
             new PropertyModel.WritableIntPropertyKey();
@@ -92,8 +86,7 @@ public class TasksSurfaceProperties {
                 IS_INCOGNITO_DESCRIPTION_VISIBLE,
                 IS_LENS_BUTTON_VISIBLE,
                 IS_SURFACE_BODY_VISIBLE,
-                IS_TAB_CAROUSEL_VISIBLE,
-                IS_TAB_CAROUSEL_TITLE_VISIBLE,
+                IS_TAB_CARD_VISIBLE,
                 IS_VOICE_RECOGNITION_BUTTON_VISIBLE,
                 INCOGNITO_COOKIE_CONTROLS_ICON_CLICK_LISTENER,
                 INCOGNITO_COOKIE_CONTROLS_TOGGLE_CHECKED,
@@ -104,14 +97,12 @@ public class TasksSurfaceProperties {
                 FAKE_SEARCH_BOX_CLICK_LISTENER,
                 FAKE_SEARCH_BOX_TEXT_WATCHER,
                 LENS_BUTTON_CLICK_LISTENER,
-                MORE_TABS_CLICK_LISTENER,
                 MV_TILES_VISIBLE,
                 QUERY_TILES_VISIBLE,
                 VOICE_SEARCH_BUTTON_CLICK_LISTENER,
                 TASKS_SURFACE_BODY_TOP_MARGIN,
                 MV_TILES_CONTAINER_TOP_MARGIN,
                 MV_TILES_CONTAINER_LEFT_RIGHT_MARGIN,
-                TAB_SWITCHER_TITLE_TOP_MARGIN,
                 SINGLE_TAB_TOP_MARGIN,
                 RESET_TASK_SURFACE_HEADER_SCROLL_POSITION,
                 TOP_TOOLBAR_PLACEHOLDER_HEIGHT,

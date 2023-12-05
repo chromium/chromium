@@ -5,12 +5,10 @@
 package org.chromium.chrome.features.start_surface;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.not;
@@ -32,7 +30,6 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
-import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.UiDevice;
@@ -104,8 +101,8 @@ public class StartSurfaceTestUtils {
                     + StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS_PARAM
                     + "/0";
     public static final String START_SURFACE_TEST_SINGLE_ENABLED_PARAMS =
-            "force-fieldtrial-params=Study.Group:show_last_active_tab_only/false"
-                    + "/open_ntp_instead_of_start/false/open_start_as_homepage/true";
+            "force-fieldtrial-params=Study.Group:"
+                    + "open_ntp_instead_of_start/false/open_start_as_homepage/true";
     public static final String START_SURFACE_TEST_BASE_PARAMS =
             "force-fieldtrial-params=Study.Group:";
 
@@ -627,23 +624,6 @@ public class StartSurfaceTestUtils {
         TabUiTestHelper.verifyTabModelTabCount(cta, currentTabCount + 1, 0);
     }
 
-    /** Click the first tab in carousel tab switcher. */
-    public static void clickFirstTabInCarousel() {
-        clickTabInCarousel(0);
-    }
-
-    /**
-     * Click the tab at specific position in carousel tab switcher.
-     * @param position The position of the tab which is clicked.
-     */
-    public static void clickTabInCarousel(int position) {
-        onViewWaiting(
-                        allOf(
-                                withParent(withId(R.id.tab_switcher_module_container)),
-                                withId(R.id.tab_list_recycler_view)))
-                .perform(RecyclerViewActions.actionOnItemAtPosition(position, click()));
-    }
-
     /**
      * Click the tab switcher button to navigate to tab switcher surface.
      * @param cta The ChromeTabbedActivity under test.
@@ -652,23 +632,6 @@ public class StartSurfaceTestUtils {
         try {
             TestThreadUtils.runOnUiThreadBlocking(
                     () -> cta.findViewById(R.id.start_tab_switcher_button).performClick());
-        } catch (ExecutionException e) {
-            fail("Failed to tap 'more tabs' " + e.toString());
-        }
-    }
-
-    /**
-     * Click "more_tabs" to navigate to tab switcher surface.
-     * @param cta The ChromeTabbedActivity under test.
-     */
-    public static void clickMoreTabs(ChromeTabbedActivity cta) {
-        // Note that onView(R.id.more_tabs).perform(click()) can not be used since it requires 90
-        // percent of the view's area is displayed to the users. However, this view has negative
-        // margin which makes the percentage is less than 90.
-        // TODO(crbug.com/1186752): Investigate whether this would be a problem for real users.
-        try {
-            TestThreadUtils.runOnUiThreadBlocking(
-                    () -> cta.findViewById(R.id.more_tabs).performClick());
         } catch (ExecutionException e) {
             fail("Failed to tap 'more tabs' " + e.toString());
         }
@@ -734,12 +697,6 @@ public class StartSurfaceTestUtils {
         UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         device.pressHome();
         ChromeApplicationTestUtils.waitUntilChromeInBackground();
-    }
-
-    /** Gets the "tab_list_recycler_view" from the carousel tab switcher module on Start surface. */
-    static View getCarouselTabSwitcherTabListView(ChromeTabbedActivity cta) {
-        return cta.findViewById(R.id.tab_switcher_module_container)
-                .findViewById(R.id.tab_list_recycler_view);
     }
 
     /** Presses the back button and verifies that Chrome goes to the background. */

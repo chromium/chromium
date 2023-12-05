@@ -984,10 +984,9 @@ class TabSwitcherMediator
     @Override
     public @TabSwitcherType int getTabSwitcherType() {
         switch (mMode) {
-            case TabListMode.CAROUSEL:
-                return TabSwitcherType.CAROUSEL;
             case TabListMode.GRID:
                 return TabSwitcherType.GRID;
+            case TabListMode.CAROUSEL:
             case TabListMode.LIST:
             case TabListMode.STRIP:
             default:

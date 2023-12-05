@@ -216,10 +216,9 @@ public class StartSurfaceBackButtonTest {
         StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount= */ 1);
         StartSurfaceTestUtils.pressHomePageButton(cta);
         onViewWaiting(withId(R.id.primary_tasks_surface_view));
-        onView(allOf(withId(R.id.tab_list_recycler_view), isDisplayed()));
 
-        // Launches the new tab from the carousel tab switcher, and press back button.
-        StartSurfaceTestUtils.clickTabInCarousel(/* position= */ 1);
+        // Launches the new tab from the single tab card, and press back button.
+        onViewWaiting(withId(R.id.single_tab_view)).perform(click());
         Assert.assertEquals(
                 TabLaunchType.FROM_START_SURFACE,
                 cta.getTabModelSelector().getCurrentTab().getLaunchType());

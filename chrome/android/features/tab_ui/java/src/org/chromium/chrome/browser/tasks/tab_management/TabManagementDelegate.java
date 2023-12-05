@@ -44,14 +44,13 @@ import java.lang.annotation.RetentionPolicy;
 public interface TabManagementDelegate {
     @IntDef({
         TabSwitcherType.GRID,
-        TabSwitcherType.CAROUSEL,
         TabSwitcherType.SINGLE,
         TabSwitcherType.NONE
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface TabSwitcherType {
         int GRID = 0;
-        int CAROUSEL = 1;
+        // int CAROUSEL_DEPRECATED = 1;
         int SINGLE = 2;
         int NONE = 3;
     }
@@ -121,40 +120,6 @@ public interface TabManagementDelegate {
             @NonNull OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
             @Nullable BackPressManager backPressManager,
             @Nullable OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier);
-
-    /**
-     * Create the {@link TabSwitcher} to display Tabs in carousel.
-     * @param activity The current Android {@link Activity}.
-     * @param lifecycleDispatcher Allows observation of the activity lifecycle.
-     * @param tabModelSelector Gives access to the current set of {@TabModel}.
-     * @param tabContentManager Gives access to the tab content.
-     * @param browserControls Allows observation of the browser controls state.
-     * @param tabCreatorManager Manages creation of tabs.
-     * @param menuOrKeyboardActionController allows access to menu or keyboard actions.
-     * @param containerView The {@link ViewGroup} to add the switcher to.
-     * @param multiWindowModeStateDispatcher Gives access to the multi window mode state.
-     * @param scrimCoordinator The {@link ScrimCoordinator} to control the scrim view.
-     * @param rootView The root view of the app.
-     * @param dynamicResourceLoaderSupplier Supplies the current {@link DynamicResourceLoader}.
-     * @param snackbarManager Manages the snackbar.
-     * @param modalDialogManager Manages modal dialogs.
-     * @return The {@link TabSwitcher}.
-     */
-    TabSwitcher createCarouselTabSwitcher(
-            @NonNull Activity activity,
-            @NonNull ActivityLifecycleDispatcher lifecycleDispatcher,
-            @NonNull TabModelSelector tabModelSelector,
-            @NonNull TabContentManager tabContentManager,
-            @NonNull BrowserControlsStateProvider browserControls,
-            @NonNull TabCreatorManager tabCreatorManager,
-            @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
-            @NonNull ViewGroup containerView,
-            @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
-            @NonNull ScrimCoordinator scrimCoordinator,
-            @NonNull ViewGroup rootView,
-            @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
-            @NonNull SnackbarManager snackbarManager,
-            @NonNull ModalDialogManager modalDialogManager);
 
     /**
      * Create the {@link TabGroupUi}.

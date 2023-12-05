@@ -15,8 +15,6 @@ import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.INCOGNIT
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_FAKE_SEARCH_BOX_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_LENS_BUTTON_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_SURFACE_BODY_VISIBLE;
-import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_TAB_CAROUSEL_TITLE_VISIBLE;
-import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_TAB_CAROUSEL_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_VOICE_RECOGNITION_BUTTON_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.LENS_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.VOICE_SEARCH_BUTTON_CLICK_LISTENER;
@@ -51,11 +49,8 @@ class TasksSurfaceMediator implements TabSwitcherViewObserver {
     TasksSurfaceMediator(
             PropertyModel model,
             View.OnClickListener incognitoLearnMoreClickListener,
-            IncognitoCookieControlsManager incognitoCookieControlsManager,
-            boolean isTabCarousel) {
+            IncognitoCookieControlsManager incognitoCookieControlsManager) {
         mModel = model;
-        mModel.set(IS_TAB_CAROUSEL_VISIBLE, isTabCarousel);
-        mModel.set(IS_TAB_CAROUSEL_TITLE_VISIBLE, isTabCarousel);
 
         model.set(INCOGNITO_LEARN_MORE_CLICK_LISTENER, incognitoLearnMoreClickListener);
 

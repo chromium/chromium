@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.features.start_surface;
 
-import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.pressKey;
@@ -27,16 +26,13 @@ import static org.junit.Assert.assertTrue;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.INSTANT_START_TEST_BASE_PARAMS;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
-import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.view.KeyEvent;
-import android.view.View;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -56,11 +52,8 @@ import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Criteria;
-import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -71,7 +64,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
@@ -89,7 +81,6 @@ import org.chromium.ui.test.util.UiRestriction;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -133,16 +124,14 @@ public class InstantStartTabSwitcherTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     /**
-     * {@link ParameterProvider} used for parameterized test that provides whether it's single tab
-     * switcher or carousel tab switcher and whether last visited tab is a search result page.
+     * {@link ParameterProvider} used for parameterized test that provides whether last visited tab
+     * is a search result page.
      */
     public static class LastVisitedTabIsSRPTestParams implements ParameterProvider {
         private static final List<ParameterSet> sLVTIsSRPTestParams =
                 Arrays.asList(
-                        new ParameterSet().value(false, false).name("CarouselTab_NotSRP"),
-                        new ParameterSet().value(true, false).name("SingleTab_NotSRP"),
-                        new ParameterSet().value(false, true).name("CarouselTab_SRP"),
-                        new ParameterSet().value(true, true).name("SingleTab_SRP"));
+                        new ParameterSet().value(false).name("SingleTab_NotSRP"),
+                        new ParameterSet().value(true).name("SingleTab_SRP"));
 
         @Override
         public List<ParameterSet> getParameters() {
@@ -164,13 +153,13 @@ public class InstantStartTabSwitcherTest {
     }
 
     /**
-     * Tests that clicking the "more_tabs" button won't make Omnibox get focused when single tab is
+     * Tests that clicking the tab switcher button won't make Omnibox get focused when single tab is
      * shown on the StartSurface.
      */
     @Test
     @MediumTest
-    @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS + "/show_last_active_tab_only/true"})
-    public void startSurfaceMoreTabsButtonTest() throws IOException {
+    @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS})
+    public void startSurfaceTabSwitcherButtonTest() throws IOException {
         StartSurfaceTestUtils.createTabStatesAndMetadataFile(new int[] {0});
         StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(0, mBrowserControlsStateProvider);
         TabAttributeCache.setTitleForTesting(0, "Google");
@@ -180,7 +169,6 @@ public class InstantStartTabSwitcherTest {
         Assert.assertFalse(cta.isTablet());
         Assert.assertTrue(ChromeFeatureList.sInstantStart.isEnabled());
         Assert.assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(-1, false));
-        Assert.assertTrue(StartSurfaceConfiguration.START_SURFACE_LAST_ACTIVE_TAB_ONLY.getValue());
 
         mActivityTestRule.waitForActivityNativeInitializationComplete();
 
@@ -194,184 +182,6 @@ public class InstantStartTabSwitcherTest {
                                                 mActivityTestRule.getActivity()))),
                         withId(org.chromium.chrome.test.R.id.tab_list_recycler_view)));
         Assert.assertFalse(cta.findViewById(org.chromium.chrome.test.R.id.url_bar).isFocused());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"RenderTest"})
-    @CommandLineFlags.Add({
-        ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
-        INSTANT_START_TEST_BASE_PARAMS + "/show_last_active_tab_only/false"
-    })
-    public void renderTabSwitcher() throws IOException, InterruptedException {
-        StartSurfaceTestUtils.createTabStatesAndMetadataFile(new int[] {0, 1, 2});
-        StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(0, mBrowserControlsStateProvider);
-        StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(1, mBrowserControlsStateProvider);
-        StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(2, mBrowserControlsStateProvider);
-        TabAttributeCache.setTitleForTesting(0, "title");
-        TabAttributeCache.setTitleForTesting(1, "漢字");
-        TabAttributeCache.setTitleForTesting(2, "اَلْعَرَبِيَّةُ");
-
-        // Must be after StartSurfaceTestUtils.createTabStatesAndMetadataFile() to read these files.
-        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
-        RecyclerView recyclerView =
-                (RecyclerView) StartSurfaceTestUtils.getCarouselTabSwitcherTabListView(cta);
-        TabUiTestHelper.waitForThumbnailsToFetch(recyclerView);
-        mRenderTestRule.render(recyclerView, "tabSwitcher_3tabs");
-
-        // Resume native initialization and make sure the GTS looks the same.
-        StartSurfaceTestUtils.startAndWaitNativeInitialization(mActivityTestRule);
-
-        Assert.assertEquals(3, cta.getTabModelSelector().getCurrentModel().getCount());
-        // TODO(crbug.com/1065314): find a better way to wait for a stable rendering.
-        Thread.sleep(2000);
-        // The titles on the tab cards changes to "Google" because we use M26_GOOGLE_COM.
-        mRenderTestRule.render(recyclerView, "tabSwitcher_3tabs_postNative");
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"RenderTest"})
-    @CommandLineFlags.Add({
-        ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
-        INSTANT_START_TEST_BASE_PARAMS + "/show_last_active_tab_only/false"
-    })
-    @DisableIf.Build(
-            message = "Flaky. See https://crbug.com/1091311",
-            sdk_is_greater_than = Build.VERSION_CODES.O)
-    public void renderTabGroups() throws IOException {
-        StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(0, mBrowserControlsStateProvider);
-        StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(1, mBrowserControlsStateProvider);
-        StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(2, mBrowserControlsStateProvider);
-        StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(3, mBrowserControlsStateProvider);
-        StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(4, mBrowserControlsStateProvider);
-        TabAttributeCache.setRootIdForTesting(0, 0);
-        TabAttributeCache.setRootIdForTesting(1, 0);
-        TabAttributeCache.setRootIdForTesting(2, 0);
-        TabAttributeCache.setRootIdForTesting(3, 3);
-        TabAttributeCache.setRootIdForTesting(4, 3);
-        // StartSurfaceTestUtils.createTabStatesAndMetadataFile() has to be after
-        // setRootIdForTesting() to get root IDs.
-        StartSurfaceTestUtils.createTabStatesAndMetadataFile(new int[] {0, 1, 2, 3, 4});
-
-        // Must be after StartSurfaceTestUtils.createTabStatesAndMetadataFile() to read these files.
-        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
-        RecyclerView recyclerView =
-                (RecyclerView) StartSurfaceTestUtils.getCarouselTabSwitcherTabListView(cta);
-        TabUiTestHelper.waitForThumbnailsToFetch(recyclerView);
-        // TODO(crbug.com/1065314): Tab group cards should not have favicons.
-        mRenderTestRule.render(
-                StartSurfaceTestUtils.getCarouselTabSwitcherTabListView(cta),
-                "tabSwitcher_tabGroups_aspect_ratio_point85");
-
-        // Resume native initialization and make sure the GTS looks the same.
-        StartSurfaceTestUtils.startAndWaitNativeInitialization(mActivityTestRule);
-
-        Assert.assertEquals(5, cta.getTabModelSelector().getCurrentModel().getCount());
-        Assert.assertEquals(
-                2,
-                cta.getTabModelSelector()
-                        .getTabModelFilterProvider()
-                        .getCurrentTabModelFilter()
-                        .getCount());
-        Assert.assertEquals(
-                3,
-                getRelatedTabListSizeOnUiThread(
-                        cta.getTabModelSelector()
-                                .getTabModelFilterProvider()
-                                .getCurrentTabModelFilter()));
-        // TODO(crbug.com/1065314): fix thumbnail changing in post-native rendering and make sure
-        //  post-native GTS looks the same.
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"RenderTest"})
-    @CommandLineFlags.Add({
-        ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
-        INSTANT_START_TEST_BASE_PARAMS + "/show_last_active_tab_only/false"
-    })
-    @DisableIf.Build(
-            message = "Flaky. See https://crbug.com/1091311",
-            sdk_is_greater_than = Build.VERSION_CODES.O)
-    public void renderTabGroups_ThemeRefactor() throws IOException {
-        StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(0, mBrowserControlsStateProvider);
-        StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(1, mBrowserControlsStateProvider);
-        StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(2, mBrowserControlsStateProvider);
-        StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(3, mBrowserControlsStateProvider);
-        StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(4, mBrowserControlsStateProvider);
-        StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(5, mBrowserControlsStateProvider);
-        StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(6, mBrowserControlsStateProvider);
-        TabAttributeCache.setRootIdForTesting(0, 0);
-        TabAttributeCache.setRootIdForTesting(1, 0);
-        TabAttributeCache.setRootIdForTesting(2, 0);
-        TabAttributeCache.setRootIdForTesting(3, 0);
-        TabAttributeCache.setRootIdForTesting(4, 0);
-        TabAttributeCache.setRootIdForTesting(5, 5);
-        TabAttributeCache.setRootIdForTesting(6, 5);
-
-        // StartSurfaceTestUtils.createTabStatesAndMetadataFile() has to be after
-        // setRootIdForTesting() to get root IDs.
-        StartSurfaceTestUtils.createTabStatesAndMetadataFile(new int[] {0, 1, 2, 3, 4, 5, 6});
-
-        // Must be after StartSurfaceTestUtils.createTabStatesAndMetadataFile() to read these files.
-        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
-
-        RecyclerView recyclerView =
-                (RecyclerView) StartSurfaceTestUtils.getCarouselTabSwitcherTabListView(cta);
-        TabUiTestHelper.waitForThumbnailsToFetch(recyclerView);
-        mRenderTestRule.render(
-                StartSurfaceTestUtils.getCarouselTabSwitcherTabListView(cta),
-                "tabSwitcher_tabGroups_theme_enforcement");
-    }
-
-    @Test
-    @MediumTest
-    @CommandLineFlags.Add({
-        ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
-        INSTANT_START_TEST_BASE_PARAMS + "/show_last_active_tab_only/false"
-    })
-    public void testSingleAsHomepage_CloseTabInCarouselTabSwitcher()
-            throws IOException, ExecutionException {
-        StartSurfaceTestUtils.createTabStatesAndMetadataFile(new int[] {0});
-        StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(0, mBrowserControlsStateProvider);
-        TabAttributeCache.setTitleForTesting(0, "Google");
-
-        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
-
-        // Initializes native.
-        StartSurfaceTestUtils.startAndWaitNativeInitialization(mActivityTestRule);
-        StartSurfaceTestUtils.waitForTabModel(cta);
-        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
-        onView(
-                        allOf(
-                                withParent(
-                                        withId(
-                                                org.chromium.chrome.test.R.id
-                                                        .tab_switcher_module_container)),
-                                withId(org.chromium.chrome.test.R.id.tab_list_recycler_view)))
-                .check(matches(isDisplayed()));
-        RecyclerView tabListView =
-                (RecyclerView) StartSurfaceTestUtils.getCarouselTabSwitcherTabListView(cta);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        tabListView
-                                .getChildAt(0)
-                                .findViewById(org.chromium.chrome.test.R.id.action_button)
-                                .performClick());
-
-        TabUiTestHelper.verifyTabModelTabCount(cta, 0, 0);
-        assertEquals(
-                cta.findViewById(org.chromium.chrome.test.R.id.tab_switcher_title).getVisibility(),
-                View.GONE);
     }
 
     @Test
@@ -434,72 +244,6 @@ public class InstantStartTabSwitcherTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
-    @CommandLineFlags.Add({
-        ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
-        INSTANT_START_TEST_BASE_PARAMS
-                + "/show_last_active_tab_only/false"
-                + "/open_ntp_instead_of_start/false/open_start_as_homepage/true"
-    })
-    public void testSingleAsHomepage_Landscape_TabSize() throws IOException {
-        testSingleAsHomepage_Landscape_TabSize_impl();
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
-    @CommandLineFlags.Add({
-        ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
-        INSTANT_START_TEST_BASE_PARAMS
-                + "/show_last_active_tab_only/false"
-                + "/open_ntp_instead_of_start/false/open_start_as_homepage/true"
-    })
-    public void testSingleAsHomepage_Landscape_TabSize_RefactorEnabled() throws IOException {
-        testSingleAsHomepage_Landscape_TabSize_impl();
-    }
-
-    private void testSingleAsHomepage_Landscape_TabSize_impl() throws IOException {
-        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
-
-        // Initializes native.
-        StartSurfaceTestUtils.startAndWaitNativeInitialization(mActivityTestRule);
-        onViewWaiting(allOf(withId(R.id.feed_stream_recycler_view), isDisplayed()));
-
-        // Rotate to landscape mode.
-        ActivityTestUtils.rotateActivityToOrientation(cta, ORIENTATION_LANDSCAPE);
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            cta.getResources().getConfiguration().orientation,
-                            is(ORIENTATION_LANDSCAPE));
-                });
-
-        // Launch the first MV tile to open a tab.
-        StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount= */ 0);
-        StartSurfaceTestUtils.pressHomePageButton(cta);
-
-        // Wait for thumbnail to show.
-        StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
-        onViewWaiting(allOf(withId(org.chromium.chrome.test.R.id.tab_thumbnail), isDisplayed()));
-
-        RecyclerView recyclerView =
-                (RecyclerView) StartSurfaceTestUtils.getCarouselTabSwitcherTabListView(cta);
-        View tabThumbnail = recyclerView.findViewById(org.chromium.chrome.test.R.id.tab_thumbnail);
-        assertEquals(
-                tabThumbnail.getMeasuredHeight(),
-                (int)
-                        (tabThumbnail.getMeasuredWidth()
-                                * 1.0
-                                / TabUtils.PORTRAIT_THUMBNAIL_ASPECT_RATIO),
-                2);
-
-        ActivityTestUtils.clearActivityOrientation(cta);
-    }
-
-    @Test
-    @MediumTest
     @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS})
     public void testShowStartWhenHomepageDisabledWithImmediateReturn() throws IOException {
         Assert.assertTrue(ChromeFeatureList.sInstantStart.isEnabled());
@@ -557,9 +301,8 @@ public class InstantStartTabSwitcherTest {
         ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
         INSTANT_START_TEST_BASE_PARAMS
     })
-    public void testRecordLastVisitedTabIsSRPHistogram_Instant(
-            boolean isSingleTabSwitcher, boolean isSRP) throws IOException {
-        testRecordLastVisitedTabIsSRPHistogram(isSingleTabSwitcher, isSRP);
+    public void testRecordLastVisitedTabIsSRPHistogram_Instant(boolean isSRP) throws IOException {
+        testRecordLastVisitedTabIsSRPHistogram(isSRP);
     }
 
     @Test
@@ -570,9 +313,8 @@ public class InstantStartTabSwitcherTest {
         ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
         INSTANT_START_TEST_BASE_PARAMS
     })
-    public void testRecordLastVisitedTabIsSRPHistogram_NoInstant(
-            boolean isSingleTabSwitcher, boolean isSRP) throws IOException {
-        testRecordLastVisitedTabIsSRPHistogram(isSingleTabSwitcher, isSRP);
+    public void testRecordLastVisitedTabIsSRPHistogram_NoInstant(boolean isSRP) throws IOException {
+        testRecordLastVisitedTabIsSRPHistogram(isSRP);
     }
 
     @Test
@@ -619,10 +361,7 @@ public class InstantStartTabSwitcherTest {
                         .readBoolean(ChromePreferenceKeys.IS_LAST_VISITED_TAB_SRP, false));
     }
 
-    private void testRecordLastVisitedTabIsSRPHistogram(boolean isSingleTabSwitcher, boolean isSRP)
-            throws IOException {
-        StartSurfaceConfiguration.START_SURFACE_LAST_ACTIVE_TAB_ONLY.setForTesting(
-                isSingleTabSwitcher);
+    private void testRecordLastVisitedTabIsSRPHistogram(boolean isSRP) throws IOException {
         StartSurfaceTestUtils.createTabStatesAndMetadataFile(
                 new int[] {0, 1},
                 new String[] {"https://www.google.com/search?q=test", "https://www.google.com"},

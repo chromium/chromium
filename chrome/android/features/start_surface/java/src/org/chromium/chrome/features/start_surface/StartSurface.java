@@ -236,11 +236,11 @@ public interface StartSurface {
 
     /**
      * Returns the TabListDelegate implementation that can be used to access the Tab list of the
-     * carousel/single tab switcher when start surface is enabled; when start surface is disabled,
-     * null should be returned.
+     * single tab switcher when start surface is enabled; when start surface is disabled, null
+     * should be returned.
      */
     // TODO(crbug.com/1315676): Remove this API after the refactoring is done.
-    TabSwitcher.TabListDelegate getCarouselOrSingleTabListDelegate();
+    TabSwitcher.TabListDelegate getSingleTabListDelegate();
 
     /**
      * @return {@link Supplier} that provides dialog visibility.

@@ -102,43 +102,6 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
     }
 
     @Override
-    public TabSwitcher createCarouselTabSwitcher(
-            @NonNull Activity activity,
-            @NonNull ActivityLifecycleDispatcher lifecycleDispatcher,
-            @NonNull TabModelSelector tabModelSelector,
-            @NonNull TabContentManager tabContentManager,
-            @NonNull BrowserControlsStateProvider browserControls,
-            @NonNull TabCreatorManager tabCreatorManager,
-            @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
-            @NonNull ViewGroup containerView,
-            @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
-            @NonNull ScrimCoordinator scrimCoordinator,
-            @NonNull ViewGroup rootView,
-            @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
-            @NonNull SnackbarManager snackbarManager,
-            @NonNull ModalDialogManager modalDialogManager) {
-        return new TabSwitcherCoordinator(
-                activity,
-                lifecycleDispatcher,
-                tabModelSelector,
-                tabContentManager,
-                browserControls,
-                tabCreatorManager,
-                menuOrKeyboardActionController,
-                containerView,
-                multiWindowModeStateDispatcher,
-                scrimCoordinator,
-                TabListCoordinator.TabListMode.CAROUSEL,
-                rootView,
-                dynamicResourceLoaderSupplier,
-                snackbarManager,
-                modalDialogManager,
-                null,
-                null,
-                null);
-    }
-
-    @Override
     public TabGroupUi createTabGroupUi(
             @NonNull Activity activity,
             @NonNull ViewGroup parentView,

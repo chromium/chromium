@@ -466,7 +466,7 @@ public class StartSurfaceCoordinator implements StartSurface {
     @Override
     public void show(boolean animate) {
         if (!mUseMagicSpace) {
-            getCarouselOrSingleTabListDelegate().prepareTabSwitcherView();
+            getSingleTabListDelegate().prepareTabSwitcherView();
         }
         mStartSurfaceMediator.show(animate);
     }
@@ -731,7 +731,7 @@ public class StartSurfaceCoordinator implements StartSurface {
     }
 
     @Override
-    public TabSwitcher.TabListDelegate getCarouselOrSingleTabListDelegate() {
+    public TabSwitcher.TabListDelegate getSingleTabListDelegate() {
         if (mIsStartSurfaceEnabled) {
             if (mIsStartSurfaceRefactorEnabled) {
                 return mTabSwitcherModule.getTabListDelegate();
@@ -920,16 +920,12 @@ public class StartSurfaceCoordinator implements StartSurface {
 
         assert mIsStartSurfaceEnabled;
 
-        int tabSwitcherType =
-                StartSurfaceConfiguration.START_SURFACE_LAST_ACTIVE_TAB_ONLY.getValue()
-                        ? TabSwitcherType.SINGLE
-                        : TabSwitcherType.CAROUSEL;
         mTasksSurface =
                 createTasksSurface(
                         mActivity,
                         mScrimCoordinator,
                         mPropertyModel,
-                        tabSwitcherType,
+                        TabSwitcherType.SINGLE,
                         mParentTabSupplier,
                         true,
                         !excludeQueryTiles,
@@ -968,10 +964,7 @@ public class StartSurfaceCoordinator implements StartSurface {
 
         int tabSwitcherType = TabSwitcherType.NONE;
         if (!mUseMagicSpace) {
-            tabSwitcherType =
-                    StartSurfaceConfiguration.START_SURFACE_LAST_ACTIVE_TAB_ONLY.getValue()
-                            ? TabSwitcherType.SINGLE
-                            : TabSwitcherType.CAROUSEL;
+            tabSwitcherType = TabSwitcherType.SINGLE;
         }
 
         if (!mIsSurfacePolishEnabled) {
@@ -990,31 +983,13 @@ public class StartSurfaceCoordinator implements StartSurface {
                 mActivityLifecycleDispatcher,
                 mParentTabSupplier.hasValue() && mParentTabSupplier.get().isIncognito(),
                 mWindowAndroid);
-        if (tabSwitcherType == TabSwitcherType.CAROUSEL) {
-            mTabSwitcherModule =
-                    TabManagementDelegateProvider.getDelegate()
-                            .createCarouselTabSwitcher(
-                                    mActivity,
-                                    mActivityLifecycleDispatcher,
-                                    mTabModelSelector,
-                                    mTabContentManager,
-                                    mBrowserControlsManager,
-                                    mTabCreatorManager,
-                                    mMenuOrKeyboardActionController,
-                                    mView.getCarouselTabSwitcherContainer(),
-                                    mMultiWindowModeStateDispatcher,
-                                    mScrimCoordinator,
-                                    mView,
-                                    mDynamicResourceLoaderSupplier,
-                                    mSnackbarManager,
-                                    mModalDialogManager);
-        } else if (tabSwitcherType == TabSwitcherType.SINGLE) {
+        if (tabSwitcherType == TabSwitcherType.SINGLE) {
             // We always pass the parameter isTablet to be false here since StartSurfaceCoordinator
             // is only created on phones.
             mTabSwitcherModule =
                     new SingleTabSwitcherCoordinator(
                             mActivity,
-                            mView.getCarouselTabSwitcherContainer(),
+                            mView.getCardTabSwitcherContainer(),
                             null,
                             mTabModelSelector,
                             /* isShownOnNtp= */ false,

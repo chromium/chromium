@@ -96,8 +96,8 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
     @Nullable private final ScrimCoordinator mScrimCoordinator;
     // Always use getGridTabListDelegate() instead to make sure it's not null.
     @Nullable private TabSwitcher.TabListDelegate mGridTabListDelegate;
-    // Always use getCarouselOrSingleTabListDelegate() instead to make sure it's not null.
-    @Nullable private TabSwitcher.TabListDelegate mCarouselOrSingleTabListDelegate;
+    // Always use getSingleTabListDelegate() instead to make sure it's not null.
+    @Nullable private TabSwitcher.TabListDelegate mSingleTabListDelegate;
     private boolean mIsInitialized;
 
     private float mBackgroundAlpha;
@@ -350,7 +350,7 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
         // If start surface homepage is showing, carousel or single tab switcher is used.
         // Otherwise grid tab switcher is used.
         if (isShowingStartSurfaceHomepage) {
-            quick = getCarouselOrSingleTabListDelegate().prepareTabSwitcherView();
+            quick = getSingleTabListDelegate().prepareTabSwitcherView();
         } else {
             mStartSurface.beforeShowTabSwitcherView();
             quick = getGridTabListDelegate().prepareTabSwitcherView();
@@ -914,17 +914,17 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
 
     private Rect getThumbnailLocationOfCurrentTab() {
         if (isHidingStartSurfaceHomepage()) {
-            return getCarouselOrSingleTabListDelegate().getThumbnailLocationOfCurrentTab();
+            return getSingleTabListDelegate().getThumbnailLocationOfCurrentTab();
         } else {
             return getGridTabListDelegate().getThumbnailLocationOfCurrentTab();
         }
     }
 
-    private TabListDelegate getCarouselOrSingleTabListDelegate() {
-        if (mCarouselOrSingleTabListDelegate == null) {
-            mCarouselOrSingleTabListDelegate = mStartSurface.getCarouselOrSingleTabListDelegate();
+    private TabListDelegate getSingleTabListDelegate() {
+        if (mSingleTabListDelegate == null) {
+            mSingleTabListDelegate = mStartSurface.getSingleTabListDelegate();
         }
-        return mCarouselOrSingleTabListDelegate;
+        return mSingleTabListDelegate;
     }
 
     private TabListDelegate getGridTabListDelegate() {
@@ -938,13 +938,11 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
         // It is possible that the StartSurfaceState becomes StartSurfaceState.NOT_SHOWN when hiding
         // the overview page, thus, the last used TabListDelegate is returned.
         if (mStartSurface.getStartSurfaceState() == StartSurfaceState.NOT_SHOWN) {
-            assert mGridTabListDelegate != null || mCarouselOrSingleTabListDelegate != null;
-            return mGridTabListDelegate != null
-                    ? mGridTabListDelegate
-                    : mCarouselOrSingleTabListDelegate;
+            assert mGridTabListDelegate != null || mSingleTabListDelegate != null;
+            return mGridTabListDelegate != null ? mGridTabListDelegate : mSingleTabListDelegate;
         }
         return isShowingStartSurfaceHomepage()
-                ? getCarouselOrSingleTabListDelegate()
+                ? getSingleTabListDelegate()
                 : getGridTabListDelegate();
     }
 

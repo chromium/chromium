@@ -140,25 +140,7 @@ public class TasksSurfaceCoordinator implements TasksSurface {
         mTabContentManager = tabContentManager;
         mModalDialogManager = modalDialogManager;
         mParentTabSupplier = parentTabSupplier;
-        if (tabSwitcherType == TabSwitcherType.CAROUSEL) {
-            mTabSwitcher =
-                    TabManagementDelegateProvider.getDelegate()
-                            .createCarouselTabSwitcher(
-                                    activity,
-                                    activityLifecycleDispatcher,
-                                    tabModelSelector,
-                                    tabContentManager,
-                                    browserControlsStateProvider,
-                                    tabCreatorManager,
-                                    menuOrKeyboardActionController,
-                                    mView.getCarouselTabSwitcherContainer(),
-                                    multiWindowModeStateDispatcher,
-                                    scrimCoordinator,
-                                    rootView,
-                                    dynamicResourceLoaderSupplier,
-                                    snackbarManager,
-                                    modalDialogManager);
-        } else if (tabSwitcherType == TabSwitcherType.GRID) {
+        if (tabSwitcherType == TabSwitcherType.GRID) {
             assert incognitoReauthControllerSupplier != null
                     : "Valid Incognito re-auth controller supplier needed to create GTS.";
             mTabSwitcher =
@@ -185,7 +167,7 @@ public class TasksSurfaceCoordinator implements TasksSurface {
             mTabSwitcher =
                     new SingleTabSwitcherCoordinator(
                             activity,
-                            mView.getCarouselTabSwitcherContainer(),
+                            mView.getCardTabSwitcherContainer(),
                             null,
                             tabModelSelector,
                             /* isShownOnNtp= */ false,
@@ -220,8 +202,7 @@ public class TasksSurfaceCoordinator implements TasksSurface {
                 new TasksSurfaceMediator(
                         propertyModel,
                         incognitoLearnMoreClickListener,
-                        incognitoCookieControlsManager,
-                        tabSwitcherType == TabSwitcherType.CAROUSEL);
+                        incognitoCookieControlsManager);
 
         if (hasMVTiles) {
             boolean isScrollableMVTEnabled =
@@ -343,8 +324,7 @@ public class TasksSurfaceCoordinator implements TasksSurface {
 
     @Override
     public Supplier<Boolean> getTabGridDialogVisibilitySupplier() {
-        if (mTabSwitcherType != TabSwitcherType.CAROUSEL
-                && mTabSwitcherType != TabSwitcherType.GRID) {
+        if (mTabSwitcherType != TabSwitcherType.GRID) {
             return null;
         }
         assert mTabSwitcher != null;
