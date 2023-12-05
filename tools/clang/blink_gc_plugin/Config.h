@@ -53,9 +53,6 @@ class Config {
   }
 
  public:
-  static constexpr std::string_view kPdfiumDirectories[] = {"fpdfsdk/", "fxjs/",
-                                                            "xfa/"};
-
   static bool IsMember(llvm::StringRef name,
                        llvm::StringRef ns_name,
                        RecordInfo* info,

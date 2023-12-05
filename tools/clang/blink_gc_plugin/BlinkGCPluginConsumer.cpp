@@ -90,9 +90,9 @@ BlinkGCPluginConsumer::BlinkGCPluginConsumer(
   options_.checked_namespaces.insert("cppgc");
 
   // Add Pdfium subfolders containing GCed classes.
-  for (const auto& pdfium_dir : Config::kPdfiumDirectories) {
-    options_.checked_directories.push_back(pdfium_dir);
-  }
+  options_.checked_directories.push_back("fpdfsdk/");
+  options_.checked_directories.push_back("fxjs/");
+  options_.checked_directories.push_back("xfa/");
 
   // Ignore GC implementation files.
   options_.ignored_directories.push_back(
@@ -631,7 +631,8 @@ bool BlinkGCPluginConsumer::IsIgnoredClass(RecordInfo* info) {
   const std::string SameSizeAs = "SameSizeAs";
   if (info->name().compare(0, SameSizeAs.size(), SameSizeAs) == 0)
     return true;
-  return false;
+  return (options_.ignored_classes.find(info->name()) !=
+          options_.ignored_classes.end());
 }
 
 bool BlinkGCPluginConsumer::InIgnoredDirectory(RecordInfo* info) {

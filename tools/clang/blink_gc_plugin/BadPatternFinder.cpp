@@ -477,12 +477,7 @@ bool IsInPdfiumFolder(const clang::ASTContext& ast_context) {
   clang::StringRef filename =
       source_manager.getFileEntryForID(source_manager.getMainFileID())
           ->getName();
-  for (const auto& pdfium_dir : Config::kPdfiumDirectories) {
-    if (filename.contains(pdfium_dir)) {
-      return true;
-    }
-  }
-  return false;
+  return filename.contains("/pdfium/");
 }
 
 }  // namespace
