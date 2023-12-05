@@ -190,8 +190,8 @@ export class SearchEngineChoiceAppElement extends
   private onActionButtonClicked_() {
     if (this.needsScrollToTheBottom_()) {
       if (this.isChoiceListScrollable_()) {
-        const scrollPosition = this.$.choiceList.getBoundingClientRect().top;
-        this.$.choiceList.scrollTo({top: scrollPosition, behavior: 'smooth'});
+        const choiceList = this.$.choiceList;
+        choiceList.scrollTo({top: choiceList.scrollHeight, behavior: 'smooth'});
       } else if (this.isPageScrollable_()) {
         window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'});
       }
