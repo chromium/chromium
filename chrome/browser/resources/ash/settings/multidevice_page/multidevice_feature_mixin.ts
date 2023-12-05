@@ -11,6 +11,7 @@
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {Constructor} from '../common/types.js';
 
 import {MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, MultiDeviceSettingsMode, PhoneHubFeatureAccessStatus} from './multidevice_constants.js';
@@ -238,9 +239,13 @@ export const MultiDeviceFeatureMixin = dedupingMixin(
          * (i.e. [iron-iconset-svg name]:[SVG <g> tag id]) for a given feature.
          */
         getIconName(feature: MultiDeviceFeature): string {
+          const deviceIcon = isRevampWayfindingEnabled() ?
+              'os-settings:connected-devices-android-phone' :
+              'os-settings:multidevice-better-together-suite';
+
           switch (feature) {
             case MultiDeviceFeature.BETTER_TOGETHER_SUITE:
-              return 'os-settings:multidevice-better-together-suite';
+              return deviceIcon;
             case MultiDeviceFeature.SMART_LOCK:
               return 'os-settings:multidevice-smart-lock';
             case MultiDeviceFeature.PHONE_HUB:
@@ -248,7 +253,7 @@ export const MultiDeviceFeatureMixin = dedupingMixin(
             case MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS:
             case MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION:
             case MultiDeviceFeature.ECHE:
-              return 'os-settings:multidevice-better-together-suite';
+              return deviceIcon;
             case MultiDeviceFeature.WIFI_SYNC:
               return 'os-settings:multidevice-wifi-sync';
             default:

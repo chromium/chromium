@@ -781,7 +781,9 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kPenguin:
         return 'os-settings:crostini-mascot';
       case SearchResultIcon.kPhone:
-        return 'os-settings:multidevice-better-together-suite';
+        return isRevampEnabled ?
+            'os-settings:connected-devices-android-phone' :
+            'os-settings:multidevice-better-together-suite';
       case SearchResultIcon.kPluginVm:
         return 'os-settings:plugin-vm';
       case SearchResultIcon.kPointingStick:
