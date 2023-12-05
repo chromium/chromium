@@ -443,7 +443,6 @@ const CGFloat kIPHVerticalOffset = -5;
 #pragma mark - SecurityAlertCommands
 
 - (void)presentSecurityWarningAlertWithText:(NSString*)body {
-  [self stopChildren];
   NSString* alertTitle =
       l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_NOT_SECURE_TITLE);
   NSString* defaultActionTitle =
@@ -456,49 +455,13 @@ const CGFloat kIPHVerticalOffset = -5;
   UIAlertAction* defaultAction =
       [UIAlertAction actionWithTitle:defaultActionTitle
                                style:UIAlertActionStyleDefault
-                             handler:^(UIAlertAction* action){
-                             }];
+                             handler:nil];
   [alert addAction:defaultAction];
   UIViewController* presenter = self.baseViewController;
   while (presenter.presentedViewController) {
     presenter = presenter.presentedViewController;
   }
   [presenter presentViewController:alert animated:YES completion:nil];
-}
-
-- (void)showSetPasscodeDialog {
-  [self stopChildren];
-  UIAlertController* alertController = [UIAlertController
-      alertControllerWithTitle:l10n_util::GetNSString(
-                                   IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_TITLE)
-                       message:l10n_util::GetNSString(
-                                   IDS_IOS_AUTOFILL_SET_UP_SCREENLOCK_CONTENT)
-                preferredStyle:UIAlertControllerStyleAlert];
-
-  __weak id<ApplicationCommands> applicationCommandsHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                         ApplicationCommands);
-  OpenNewTabCommand* command =
-      [OpenNewTabCommand commandWithURLFromChrome:GURL(kPasscodeArticleURL)];
-
-  UIAlertAction* learnAction = [UIAlertAction
-      actionWithTitle:l10n_util::GetNSString(
-                          IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_LEARN_HOW)
-                style:UIAlertActionStyleDefault
-              handler:^(UIAlertAction*) {
-                [applicationCommandsHandler openURLInNewTab:command];
-              }];
-  [alertController addAction:learnAction];
-  UIAlertAction* okAction =
-      [UIAlertAction actionWithTitle:l10n_util::GetNSString(IDS_OK)
-                               style:UIAlertActionStyleDefault
-                             handler:nil];
-  [alertController addAction:okAction];
-  alertController.preferredAction = okAction;
-
-  [self.baseViewController presentViewController:alertController
-                                        animated:YES
-                                      completion:nil];
 }
 
 #pragma mark - CRWResponderInputView
