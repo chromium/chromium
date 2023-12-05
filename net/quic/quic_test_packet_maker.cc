@@ -350,6 +350,35 @@ QuicTestPacketMaker::MakeRetransmissionRstAndDataPacket(
 }
 
 std::unique_ptr<quic::QuicReceivedPacket>
+QuicTestPacketMaker::MakeRetransmissionAndRstPacket(
+    uint64_t original_packet_number,
+    uint64_t num,
+    quic::QuicStreamId rst_stream_id,
+    quic::QuicRstStreamErrorCode rst_error_code,
+    uint64_t retransmit_frame_count) {
+  DCHECK(save_packet_frames_);
+  InitializeHeader(num);
+
+  uint64_t frame_count = 0;
+  for (auto frame :
+       saved_frames_[quic::QuicPacketNumber(original_packet_number)]) {
+    frame_count++;
+    if (retransmit_frame_count == 0 || frame_count <= retransmit_frame_count) {
+      if (!MaybeCoalesceStreamFrame(frame)) {
+        frames_.push_back(frame);
+      }
+    }
+  }
+
+  if (version_.HasIetfQuicFrames()) {
+    AddQuicStopSendingFrame(rst_stream_id, rst_error_code);
+  }
+  AddQuicRstStreamFrame(rst_stream_id, rst_error_code);
+
+  return BuildPacket();
+}
+
+std::unique_ptr<quic::QuicReceivedPacket>
 QuicTestPacketMaker::MakeDataAndRstPacket(
     uint64_t num,
     quic::QuicStreamId data_stream_id,
@@ -498,8 +527,8 @@ QuicTestPacketMaker::MakeAckRstAndDataPacket(
   InitializeHeader(num);
 
   AddQuicAckFrame(largest_received, smallest_received);
-  AddQuicRstStreamFrame(stream_id, error_code);
   AddQuicStreamFrame(data_id, fin, data);
+  AddQuicRstStreamFrame(stream_id, error_code);
   return BuildPacket();
 }
 
@@ -630,6 +659,25 @@ QuicTestPacketMaker::MakeDataRstAckAndConnectionClosePacket(
   }
   AddQuicRstStreamFrame(rst_stream_id, error_code);
 
+  AddQuicAckFrame(largest_received, smallest_received);
+  AddQuicConnectionCloseFrame(quic_error, quic_error_details, frame_type);
+
+  return BuildPacket();
+}
+
+std::unique_ptr<quic::QuicReceivedPacket>
+QuicTestPacketMaker::MakeDataAckAndConnectionClosePacket(
+    uint64_t num,
+    quic::QuicStreamId data_stream_id,
+    std::string_view data,
+    uint64_t largest_received,
+    uint64_t smallest_received,
+    quic::QuicErrorCode quic_error,
+    const std::string& quic_error_details,
+    uint64_t frame_type) {
+  InitializeHeader(num);
+
+  AddQuicStreamFrame(data_stream_id, /* fin = */ false, data);
   AddQuicAckFrame(largest_received, smallest_received);
   AddQuicConnectionCloseFrame(quic_error, quic_error_details, frame_type);
 

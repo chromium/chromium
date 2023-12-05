@@ -133,6 +133,13 @@ class QuicTestPacketMaker {
       std::string_view data,
       uint64_t retransmit_frame_count = 0);
 
+  std::unique_ptr<quic::QuicReceivedPacket> MakeRetransmissionAndRstPacket(
+      uint64_t original_packet_number,
+      uint64_t num,
+      quic::QuicStreamId rst_stream_id,
+      quic::QuicRstStreamErrorCode rst_error_code,
+      uint64_t retransmit_frame_count = 0);
+
   std::unique_ptr<quic::QuicReceivedPacket> MakeDataAndRstPacket(
       uint64_t num,
       quic::QuicStreamId data_stream_id,
@@ -238,6 +245,16 @@ class QuicTestPacketMaker {
       std::string_view data,
       quic::QuicStreamId rst_stream_id,
       quic::QuicRstStreamErrorCode error_code,
+      uint64_t largest_received,
+      uint64_t smallest_received,
+      quic::QuicErrorCode quic_error,
+      const std::string& quic_error_details,
+      uint64_t frame_type);
+
+  std::unique_ptr<quic::QuicReceivedPacket> MakeDataAckAndConnectionClosePacket(
+      uint64_t num,
+      quic::QuicStreamId data_stream_id,
+      std::string_view data,
       uint64_t largest_received,
       uint64_t smallest_received,
       quic::QuicErrorCode quic_error,
