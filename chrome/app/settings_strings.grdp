@@ -4352,10 +4352,10 @@
   <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE2_SUBLABEL" desc="Toggle secondary description" translateable="false">
     Automatically creates tab groups based on your open tabs. To use this feature, right-click on a tab and click Organize similar tabs.
   </message>
-  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_LABEL" desc="Toggle primary description" translateable="false">
-    Expanded theme gallery
+  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_LABEL" desc="The primary description for the create themes with AI feature." translateable="false">
+    Create themes with AI
   </message>
-  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_SUBLABEL" desc="Toggle secondary description" translateable="false">
-    Shows more theme options in appearance customization
+  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_SUBLABEL" desc="The secondary description for the create themes with AI feature." translateable="false">
+    Creates custom themes based on the subject, mood, visual style, and color that you choose. To use this feature, open a new tab and click Customize Chrome.
   </message>
 </grit-part>
