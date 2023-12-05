@@ -518,6 +518,7 @@ ts_test_files = [
   "file_manager/foreground/js/task_controller_unittest.ts",
   "file_manager/foreground/js/metadata/dlp_metadata_provider_unittest.ts",
   "file_manager/foreground/js/providers_model_unittest.ts",
+  "file_manager/foreground/js/spinner_controller_unittest.ts",
   "file_manager/foreground/js/thumbnail_loader_unittest.ts",
 
   # 3-line header to avoid conflict.
@@ -620,7 +621,6 @@ unittest_files = [
   "file_manager/foreground/js/metadata/multi_metadata_provider_unittest.js",
   "file_manager/foreground/js/file_manager_commands_unittest.js",
   "file_manager/foreground/js/file_list_model_unittest.js",
-  "file_manager/foreground/js/spinner_controller_unittest.js",
   "file_manager/foreground/js/ui/file_manager_dialog_base_unittest.js",
   "file_manager/foreground/js/ui/actions_submenu_unittest.js",
   "file_manager/foreground/js/ui/context_menu_handler_unittest.js",
