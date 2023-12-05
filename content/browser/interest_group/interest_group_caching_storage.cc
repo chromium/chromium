@@ -4,6 +4,7 @@
 
 #include "content/browser/interest_group/interest_group_caching_storage.h"
 #include <algorithm>
+#include <cstdint>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
@@ -86,25 +87,25 @@ void InterestGroupCachingStorage::GetInterestGroupsForOwner(
     interest_group_storage_
         .AsyncCall(&InterestGroupStorage::GetInterestGroupsForOwner)
         .WithArgs(owner)
-        .Then(base::BindOnce(&InterestGroupCachingStorage::
-                                 OnLoadInterestGroupsForOwnerOneCallback,
-                             weak_factory_.GetWeakPtr(), owner,
-                             std::move(callback)));
+        .Then(base::BindOnce(
+            &InterestGroupCachingStorage::OnLoadInterestGroupsForOwnerNoCaching,
+            weak_factory_.GetWeakPtr(), owner, std::move(callback)));
     return;
   }
 
   // If there is a cache hit, use the in-memory object.
   auto cached_groups_it = cached_interest_groups_.find(owner);
-  if (cached_groups_it != cached_interest_groups_.end() &&
-      cached_groups_it->second.get() &&
-      !cached_groups_it->second->IsExpired()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  scoped_refptr<StorageInterestGroups>(
-                                      cached_groups_it->second.get())));
-    base::UmaHistogramBoolean("Ads.InterestGroup.Auction.LoadGroupsCacheHit",
-                              true);
-    return;
+  if (cached_groups_it != cached_interest_groups_.end()) {
+    scoped_refptr<StorageInterestGroups> groups =
+        cached_groups_it->second.get();
+    if (groups && !groups->IsExpired()) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), std::move(groups)));
+
+      base::UmaHistogramBoolean("Ads.InterestGroup.Auction.LoadGroupsCacheHit",
+                                true);
+      return;
+    }
   }
   base::UmaHistogramBoolean("Ads.InterestGroup.Auction.LoadGroupsCacheHit",
                             false);
@@ -114,38 +115,26 @@ void InterestGroupCachingStorage::GetInterestGroupsForOwner(
   // outstanding calls or if the cache has been invalidated since an
   // outstanding call. Otherwise, allow the callback to use the result of an
   // outstanding call.
-  auto outstanding_callbacks_it =
-      outstanding_interest_groups_for_owner_callbacks_.find(owner);
-  if (outstanding_callbacks_it ==
-      outstanding_interest_groups_for_owner_callbacks_.end()) {
-    outstanding_interest_groups_for_owner_callbacks_[owner].push(
-        std::move(callback));
+  base::queue<base::OnceCallback<void(scoped_refptr<StorageInterestGroups>)>>&
+      callback_queue = interest_groups_sequenced_callbacks_[std::make_pair(
+          owner, valid_interest_group_versions_[owner])];
+
+  if (callback_queue.empty()) {
     interest_group_storage_
         .AsyncCall(&InterestGroupStorage::GetInterestGroupsForOwner)
         .WithArgs(owner)
         .Then(base::BindOnce(
             &InterestGroupCachingStorage::OnLoadInterestGroupsForOwner,
-            weak_factory_.GetWeakPtr(), owner));
+            weak_factory_.GetWeakPtr(), owner,
+            valid_interest_group_versions_[owner]));
     base::UmaHistogramBoolean(
         "Ads.InterestGroup.Auction.LoadGroupsUseInProgressLoad", false);
-  } else if (outdated_outstanding_interest_group_loads_.contains(owner)) {
-    // We can't add the callback to the queue or it would get an outdated
-    // result. Load a fresh result.
-    interest_group_storage_
-        .AsyncCall(&InterestGroupStorage::GetInterestGroupsForOwner)
-        .WithArgs(owner)
-        .Then(base::BindOnce(&InterestGroupCachingStorage::
-                                 OnLoadInterestGroupsForOwnerOneCallback,
-                             weak_factory_.GetWeakPtr(), owner,
-                             std::move(callback)));
-    base::UmaHistogramBoolean(
-        "Ads.InterestGroup.Auction.LoadGroupsUseInProgressLoad", false);
-
   } else {
-    outstanding_callbacks_it->second.push(std::move(callback));
     base::UmaHistogramBoolean(
         "Ads.InterestGroup.Auction.LoadGroupsUseInProgressLoad", true);
   }
+
+  callback_queue.push(std::move(callback));
 }
 
 void InterestGroupCachingStorage::JoinInterestGroup(
@@ -207,10 +196,7 @@ void InterestGroupCachingStorage::RecordInterestGroupBids(
     bidding_owners.emplace(group_key.owner);
   }
   for (const url::Origin& owner : bidding_owners) {
-    if (outstanding_interest_groups_for_owner_callbacks_.find(owner) !=
-        outstanding_interest_groups_for_owner_callbacks_.end()) {
-      outdated_outstanding_interest_group_loads_.emplace(owner);
-    }
+    MarkOutstandingInterestGroupLoadResultOutdated(owner);
     auto cached_groups_it = cached_interest_groups_.find(owner);
     if (cached_groups_it == cached_interest_groups_.end() ||
         !cached_groups_it->second.get()) {
@@ -378,54 +364,62 @@ void InterestGroupCachingStorage::GetLastMaintenanceTimeForTesting(
       .Then(std::move(callback));
 }
 
-void InterestGroupCachingStorage::OnLoadInterestGroupsForOwnerOneCallback(
+void InterestGroupCachingStorage::OnLoadInterestGroupsForOwnerNoCaching(
     const url::Origin& owner,
     base::OnceCallback<void(scoped_refptr<StorageInterestGroups>)> callback,
     std::vector<StorageInterestGroup> interest_groups) {
   scoped_refptr<StorageInterestGroups> interest_groups_ptr =
       base::MakeRefCounted<StorageInterestGroups>(std::move(interest_groups));
-  if (base::FeatureList::IsEnabled(features::kFledgeUseInterestGroupCache)) {
-    cached_interest_groups_[owner] = interest_groups_ptr->GetWeakPtr();
-  }
   std::move(callback).Run(std::move(interest_groups_ptr));
 }
 
 void InterestGroupCachingStorage::OnLoadInterestGroupsForOwner(
     const url::Origin& owner,
+    uint32_t version,
     std::vector<StorageInterestGroup> interest_groups) {
   scoped_refptr<StorageInterestGroups> interest_groups_ptr =
       base::MakeRefCounted<StorageInterestGroups>(std::move(interest_groups));
-  cached_interest_groups_[owner] = interest_groups_ptr->GetWeakPtr();
 
   auto outstanding_callbacks_it =
-      outstanding_interest_groups_for_owner_callbacks_.find(owner);
-  if (outstanding_callbacks_it ==
-      outstanding_interest_groups_for_owner_callbacks_.end()) {
+      interest_groups_sequenced_callbacks_.find(std::make_pair(owner, version));
+  if (outstanding_callbacks_it == interest_groups_sequenced_callbacks_.end()) {
     return;
   }
+  // Cache the result only if it's still valid.
+  if (version == valid_interest_group_versions_[owner]) {
+    cached_interest_groups_[owner] = interest_groups_ptr->GetWeakPtr();
+  }
+
   while (!outstanding_callbacks_it->second.empty()) {
     std::move(outstanding_callbacks_it->second.front())
         .Run(interest_groups_ptr);
     outstanding_callbacks_it->second.pop();
   }
-  outstanding_interest_groups_for_owner_callbacks_.erase(owner);
-  outdated_outstanding_interest_group_loads_.erase(owner);
+  interest_groups_sequenced_callbacks_.erase(outstanding_callbacks_it);
+  if (interest_groups_sequenced_callbacks_.empty()) {
+    // Reset the versions so that we don't need to have all owners in memory.
+    valid_interest_group_versions_.clear();
+  }
 }
 
 void InterestGroupCachingStorage::InvalidateCachedInterestGroupsForOwner(
     const url::Origin& owner) {
   cached_interest_groups_.erase(owner);
-  if (outstanding_interest_groups_for_owner_callbacks_.find(owner) !=
-      outstanding_interest_groups_for_owner_callbacks_.end()) {
-    outdated_outstanding_interest_group_loads_.emplace(owner);
-  }
+  MarkOutstandingInterestGroupLoadResultOutdated(owner);
 }
 
 void InterestGroupCachingStorage::InvalidateAllCachedInterestGroups() {
   cached_interest_groups_.clear();
-  for (const auto& [owner, _] :
-       outstanding_interest_groups_for_owner_callbacks_) {
-    outdated_outstanding_interest_group_loads_.emplace(owner);
+  for (const auto& [owner_version, _] : interest_groups_sequenced_callbacks_) {
+    MarkOutstandingInterestGroupLoadResultOutdated(owner_version.first);
+  }
+}
+
+void InterestGroupCachingStorage::
+    MarkOutstandingInterestGroupLoadResultOutdated(const url::Origin& owner) {
+  auto it = valid_interest_group_versions_.find(owner);
+  if (it != valid_interest_group_versions_.end()) {
+    it->second = it->second + 1;
   }
 }
 

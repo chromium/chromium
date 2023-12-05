@@ -553,6 +553,7 @@ TEST_F(InterestGroupCachingStorageTest,
   absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs1;
   absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs2;
   absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs3;
+  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs4;
   base::RunLoop run_loop;
   caching_storage->GetInterestGroupsForOwner(
       owner, base::BindLambdaForTesting(
@@ -569,9 +570,14 @@ TEST_F(InterestGroupCachingStorageTest,
                                       base::BindLambdaForTesting([]() {}));
   caching_storage->GetInterestGroupsForOwner(
       owner, base::BindLambdaForTesting(
-                 [&loaded_igs3,
-                  &run_loop](scoped_refptr<StorageInterestGroups> groups) {
+                 [&loaded_igs3](scoped_refptr<StorageInterestGroups> groups) {
                    loaded_igs3 = std::move(groups);
+                 }));
+  caching_storage->GetInterestGroupsForOwner(
+      owner, base::BindLambdaForTesting(
+                 [&loaded_igs4,
+                  &run_loop](scoped_refptr<StorageInterestGroups> groups) {
+                   loaded_igs4 = std::move(groups);
                    run_loop.Quit();
                  }));
   run_loop.Run();
@@ -583,11 +589,139 @@ TEST_F(InterestGroupCachingStorageTest,
   ASSERT_NE(loaded_igs1->get(), loaded_igs3->get());
   ASSERT_EQ(loaded_igs3->get()->size(), 0u);
 
+  // The fourth result *should* be the same as the third, because those two
+  // calls should be collated since the invalidation occurred prior to
+  // the third load.
+  ASSERT_EQ(loaded_igs3->get(), loaded_igs4->get());
+
   // Another call to GetInterestGroupsForOwner should get the newly cached
   // value.
-  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs4 =
+  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs5 =
       GetInterestGroupsForOwner(caching_storage.get(), owner);
+  ASSERT_EQ(loaded_igs3->get(), loaded_igs5->get());
+}
+
+TEST_F(InterestGroupCachingStorageTest,
+       CacheCollatesLoadsCorrectlyWithMultipleInvalidationsInARow) {
+  std::unique_ptr<content::InterestGroupCachingStorage> caching_storage =
+      CreateCachingStorage();
+  url::Origin owner = url::Origin::Create(GURL("https://www.example.com/"));
+  auto ig = MakeInterestGroup(owner, "name");
+  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs1;
+  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs2;
+  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs3;
+  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs4;
+
+  // The join and leave and join calls are three invalidations in a row.
+  base::RunLoop run_loop;
+  caching_storage->GetInterestGroupsForOwner(
+      owner, base::BindLambdaForTesting(
+                 [&loaded_igs1](scoped_refptr<StorageInterestGroups> groups) {
+                   loaded_igs1 = std::move(groups);
+                 }));
+  caching_storage->GetInterestGroupsForOwner(
+      owner, base::BindLambdaForTesting(
+                 [&loaded_igs2](scoped_refptr<StorageInterestGroups> groups) {
+                   loaded_igs2 = std::move(groups);
+                 }));
+  caching_storage->JoinInterestGroup(ig, GURL("https://www.test.com"),
+                                     base::BindLambdaForTesting([]() {}));
+
+  caching_storage->LeaveInterestGroup(blink::InterestGroupKey(owner, "name"),
+                                      owner,
+                                      base::BindLambdaForTesting([]() {}));
+  caching_storage->JoinInterestGroup(ig, GURL("https://www.test.com"),
+                                     base::BindLambdaForTesting([]() {}));
+
+  caching_storage->GetInterestGroupsForOwner(
+      owner, base::BindLambdaForTesting(
+                 [&loaded_igs3](scoped_refptr<StorageInterestGroups> groups) {
+                   loaded_igs3 = std::move(groups);
+                 }));
+  caching_storage->GetInterestGroupsForOwner(
+      owner, base::BindLambdaForTesting(
+                 [&loaded_igs4,
+                  &run_loop](scoped_refptr<StorageInterestGroups> groups) {
+                   loaded_igs4 = std::move(groups);
+                   run_loop.Quit();
+                 }));
+  run_loop.Run();
+  // The first two results should reflect the state prior to Join/Leave/Join.
+  ASSERT_EQ(loaded_igs1->get(), loaded_igs2->get());
+  ASSERT_EQ(loaded_igs1->get()->size(), 0u);
+
+  // The third result should reflect the state after Join/Leave/Join.
+  ASSERT_NE(loaded_igs1->get(), loaded_igs3->get());
+  ASSERT_EQ(loaded_igs3->get()->size(), 1u);
+
+  // The fourth result *should* be the same as the third, because those two
+  // calls should be collated since the invalidation occurred prior to
+  // the third load.
   ASSERT_EQ(loaded_igs3->get(), loaded_igs4->get());
+}
+
+TEST_F(InterestGroupCachingStorageTest,
+       CacheCollatesLoadsCorrectlyWithInvalidationsInterwovenWithLoads) {
+  std::unique_ptr<content::InterestGroupCachingStorage> caching_storage =
+      CreateCachingStorage();
+  url::Origin owner = url::Origin::Create(GURL("https://www.example.com/"));
+  auto ig = MakeInterestGroup(owner, "name");
+  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs1;
+  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs2;
+  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs3;
+  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs4;
+  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs5;
+
+  // The join and leave are interwoven with outstanding loads.
+  base::RunLoop run_loop;
+  caching_storage->GetInterestGroupsForOwner(
+      owner, base::BindLambdaForTesting(
+                 [&loaded_igs1](scoped_refptr<StorageInterestGroups> groups) {
+                   loaded_igs1 = std::move(groups);
+                 }));
+  caching_storage->GetInterestGroupsForOwner(
+      owner, base::BindLambdaForTesting(
+                 [&loaded_igs2](scoped_refptr<StorageInterestGroups> groups) {
+                   loaded_igs2 = std::move(groups);
+                 }));
+  caching_storage->JoinInterestGroup(ig, GURL("https://www.test.com"),
+                                     base::BindLambdaForTesting([]() {}));
+
+  caching_storage->GetInterestGroupsForOwner(
+      owner, base::BindLambdaForTesting(
+                 [&loaded_igs3](scoped_refptr<StorageInterestGroups> groups) {
+                   loaded_igs3 = std::move(groups);
+                 }));
+  caching_storage->GetInterestGroupsForOwner(
+      owner, base::BindLambdaForTesting(
+                 [&loaded_igs4](scoped_refptr<StorageInterestGroups> groups) {
+                   loaded_igs4 = std::move(groups);
+                 }));
+  caching_storage->LeaveInterestGroup(blink::InterestGroupKey(owner, "name"),
+                                      owner,
+                                      base::BindLambdaForTesting([]() {}));
+
+  caching_storage->GetInterestGroupsForOwner(
+      owner, base::BindLambdaForTesting(
+                 [&loaded_igs5,
+                  &run_loop](scoped_refptr<StorageInterestGroups> groups) {
+                   loaded_igs5 = std::move(groups);
+                   run_loop.Quit();
+                 }));
+  run_loop.Run();
+  // The first two results should reflect the state prior to JoinInterestGroup.
+  ASSERT_EQ(loaded_igs1->get(), loaded_igs2->get());
+  ASSERT_EQ(loaded_igs1->get()->size(), 0u);
+
+  // The third & fourth results should reflect the state after
+  // JoinInterestGroup.
+  ASSERT_NE(loaded_igs1->get(), loaded_igs3->get());
+  ASSERT_EQ(loaded_igs3->get(), loaded_igs4->get());
+  ASSERT_EQ(loaded_igs3->get()->size(), 1u);
+
+  // The fifth result should reflect the state after LeaveInterestGroup.
+  ASSERT_NE(loaded_igs4->get(), loaded_igs5->get());
+  ASSERT_EQ(loaded_igs5->get()->size(), 0u);
 }
 
 TEST_F(InterestGroupCachingStorageTest, NoCachingWhenFeatureDisabled) {

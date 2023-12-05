@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <cstdint>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -101,7 +102,9 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
   // Gets a list of all interest groups with their bidding information
   // associated with the provided owner. If the result is cached,
   // a pointer to the in-memory StorageInterestGroups is returned. Otherwise, it
-  // is loaded fresh from the database.
+  // is loaded fresh from the database or the request is combined with an
+  // outstanding database call (if an outstanding call exists and the cache has
+  // not been invalidated since that call).
   void GetInterestGroupsForOwner(
       const url::Origin& owner,
       base::OnceCallback<void(scoped_refptr<StorageInterestGroups>)> callback);
@@ -222,14 +225,16 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
 
  private:
   // After the async call to load interest groups from storage, cache the result
-  // in a StorageInterestGroups. Also make sure to call
-  // any callbacks in outstanding_interest_group_for_owner_callbacks_ with a
-  // pointer to the just-stored result.
+  // in a StorageInterestGroups. Also call
+  // callbacks in outstanding_interest_group_for_owner_callbacks_ with a
+  // pointer to the just-stored result if the callbacks reference the same
+  // version.
   void OnLoadInterestGroupsForOwner(
       const url::Origin& owner,
+      uint32_t version,
       std::vector<StorageInterestGroup> interest_groups);
 
-  void OnLoadInterestGroupsForOwnerOneCallback(
+  void OnLoadInterestGroupsForOwnerNoCaching(
       const url::Origin& owner,
       base::OnceCallback<void(scoped_refptr<StorageInterestGroups>)> callback,
       std::vector<StorageInterestGroup> interest_groups);
@@ -237,17 +242,29 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
   void InvalidateCachedInterestGroupsForOwner(const url::Origin& owner);
   void InvalidateAllCachedInterestGroups();
 
+  void MarkOutstandingInterestGroupLoadResultOutdated(const url::Origin& owner);
+
   base::SequenceBound<InterestGroupStorage> interest_group_storage_;
 
+  // Used to retrieve interest groups that are still in memory (e.g. because
+  // they're bidding in an auction).
   std::map<url::Origin, base::WeakPtr<StorageInterestGroups>>
       cached_interest_groups_;
 
-  std::map<url::Origin,
+  // Holds callbacks to be run once a load from the database
+  // (GetInterestGroupsForOwner) is complete. Callbacks are keyed by version
+  // number in addition to owner so that OnLoadInterestGroupsForOwner does not
+  // load callbacks asking for a later version of the interest groups.
+  std::map<std::pair<url::Origin, uint32_t>,
            base::queue<
                base::OnceCallback<void(scoped_refptr<StorageInterestGroups>)>>>
-      outstanding_interest_groups_for_owner_callbacks_;
+      interest_groups_sequenced_callbacks_;
 
-  std::set<url::Origin> outdated_outstanding_interest_group_loads_;
+  // For each owner, store the current data version for interest group results.
+  // A version is incremented when an owner's interest group results are
+  // invalidated. The versions are reset when
+  // interest_groups_sequenced_callbacks_ becomes empty.
+  std::map<url::Origin, uint32_t> valid_interest_group_versions_;
 
   base::WeakPtrFactory<InterestGroupCachingStorage> weak_factory_{this};
 };
