@@ -774,7 +774,7 @@ TEST(WeakPtrTest, GetMutableWeakPtr) {
 TEST(WeakPtrDeathTest, WeakPtrCopyDoesNotChangeThreadBinding) {
   // The default style "fast" does not support multi-threaded tests
   // (introduces deadlock on Linux).
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 
   BackgroundThread background;
   background.Start();
@@ -802,7 +802,7 @@ TEST(WeakPtrDeathTest, WeakPtrCopyDoesNotChangeThreadBinding) {
 TEST(WeakPtrDeathTest, NonOwnerThreadDereferencesWeakPtrAfterReference) {
   // The default style "fast" does not support multi-threaded tests
   // (introduces deadlock on Linux).
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 
   // Main thread creates a Target object.
   Target target;
@@ -822,7 +822,7 @@ TEST(WeakPtrDeathTest, NonOwnerThreadDereferencesWeakPtrAfterReference) {
 TEST(WeakPtrDeathTest, NonOwnerThreadDeletesWeakPtrAfterReference) {
   // The default style "fast" does not support multi-threaded tests
   // (introduces deadlock on Linux).
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 
   std::unique_ptr<Target> target(new Target());
 
@@ -846,7 +846,7 @@ TEST(WeakPtrDeathTest, NonOwnerThreadDeletesWeakPtrAfterReference) {
 TEST(WeakPtrDeathTest, NonOwnerThreadDeletesObjectAfterReference) {
   // The default style "fast" does not support multi-threaded tests
   // (introduces deadlock on Linux).
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 
   std::unique_ptr<Target> target(new Target());
 
@@ -865,7 +865,7 @@ TEST(WeakPtrDeathTest, NonOwnerThreadDeletesObjectAfterReference) {
 TEST(WeakPtrDeathTest, NonOwnerThreadReferencesObjectAfterDeletion) {
   // The default style "fast" does not support multi-threaded tests
   // (introduces deadlock on Linux).
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 
   std::unique_ptr<Target> target(new Target());
 
@@ -885,7 +885,7 @@ TEST(WeakPtrDeathTest, NonOwnerThreadReferencesObjectAfterDeletion) {
 TEST(WeakPtrDeathTest, ArrowOperatorChecksOnBadDereference) {
   // The default style "fast" does not support multi-threaded tests
   // (introduces deadlock on Linux).
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 
   auto target = std::make_unique<Target>();
   WeakPtr<Target> weak = target->AsWeakPtr();
@@ -896,7 +896,7 @@ TEST(WeakPtrDeathTest, ArrowOperatorChecksOnBadDereference) {
 TEST(WeakPtrDeathTest, StarOperatorChecksOnBadDereference) {
   // The default style "fast" does not support multi-threaded tests
   // (introduces deadlock on Linux).
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 
   auto target = std::make_unique<Target>();
   WeakPtr<Target> weak = target->AsWeakPtr();

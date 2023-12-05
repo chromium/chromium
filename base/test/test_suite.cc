@@ -645,11 +645,11 @@ void TestSuite::PreInitialize() {
   // TODO(danakj): Determine if all death tests should be skipped on Android
   // (many already are, such as for DCHECK-death tests).
 #if !BUILDFLAG(IS_ANDROID)
-  testing::GTEST_FLAG(death_test_style) = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 #endif
 
 #if BUILDFLAG(IS_WIN)
-  testing::GTEST_FLAG(catch_exceptions) = false;
+  GTEST_FLAG_SET(catch_exceptions, false);
 #endif
   EnableTerminationOnHeapCorruption();
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_AURA)
