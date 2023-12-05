@@ -37,18 +37,21 @@ void SpeculationRuleLoader::NotifyFinished() {
                              base::TimeTicks::Now() - start_time_);
 
   const ResourceResponse& response = resource_->GetResponse();
-  int response_code = response.HttpStatusCode();
-
-  if (!network::IsSuccessfulStatus(response_code)) {
+  if (resource_->LoadFailedOrCanceled()) {
+    StringBuilder message;
+    message.Append("Load failed or canceled (");
+    message.Append(resource_->GetResourceError().LocalizedDescription());
+    if (int response_code = response.HttpStatusCode()) {
+      message.AppendFormat("; HTTP status %d", response_code);
+    }
+    message.Append(String(") for rule set requested from \"" +
+                          resource_->GetResourceRequest().Url().ElidedString() +
+                          "\" found in Speculation-Rules header."));
     CountSpeculationRulesLoadOutcome(
-        SpeculationRulesLoadOutcome::kInvalidStatusCode);
+        SpeculationRulesLoadOutcome::kLoadFailedOrCanceled);
     document_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
-        mojom::blink::ConsoleMessageLevel::kWarning,
-        "Received a response with unsuccessful status code (" +
-            String::Number(response_code) + ") for rule set requested from \"" +
-            resource_->GetResourceRequest().Url().ElidedString() +
-            "\" found in Speculation-Rules header."));
+        mojom::blink::ConsoleMessageLevel::kWarning, message.ToString()));
     return;
   }
 
