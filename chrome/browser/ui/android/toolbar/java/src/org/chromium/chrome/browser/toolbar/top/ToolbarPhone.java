@@ -864,6 +864,12 @@ public class ToolbarPhone extends ToolbarLayout
         updateToolbarBackground(getToolbarColorForVisualState(visualState));
     }
 
+    private @ColorInt int getToolbarColorOnNtp() {
+        return mIsSurfacePolishEnabled
+                ? mHomeSurfaceToolbarBackgroundColor
+                : ChromeColors.getDefaultThemeColor(getContext(), false);
+    }
+
     private @ColorInt int getToolbarColorForVisualState(final @VisualState int visualState) {
         switch (visualState) {
             case VisualState.NEW_TAB_NORMAL:
@@ -871,9 +877,7 @@ public class ToolbarPhone extends ToolbarLayout
                 // yet. Use the default background color, which will match what the NTP eventually
                 // draws itself.
                 if (!getToolbarDataProvider().getNewTabPageDelegate().hasCompletedFirstLayout()) {
-                    return mIsSurfacePolishEnabled
-                            ? mHomeSurfaceToolbarBackgroundColor
-                            : ChromeColors.getDefaultThemeColor(getContext(), false);
+                    return getToolbarColorOnNtp();
                 }
 
                 // During transition we cannot rely on the background to be opaque yet, so keep full
@@ -886,11 +890,7 @@ public class ToolbarPhone extends ToolbarLayout
                 // toolbar color so that the NTP content is not visible beneath the toolbar. In
                 // between the transition, we set a translucent default toolbar color based on
                 // the expansion progress of the toolbar.
-                return ColorUtils.setAlphaComponent(
-                        mIsSurfacePolishEnabled
-                                ? mHomeSurfaceToolbarBackgroundColor
-                                : ChromeColors.getDefaultThemeColor(getContext(), false),
-                        alpha);
+                return ColorUtils.setAlphaComponent(getToolbarColorOnNtp(), alpha);
             case VisualState.NORMAL:
                 return ChromeColors.getDefaultThemeColor(getContext(), false);
             case VisualState.INCOGNITO:
