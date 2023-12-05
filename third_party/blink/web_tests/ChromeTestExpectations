@@ -573,6 +573,18 @@ crbug.com/1499775 external/wpt/webusb/usbDevice-iframe.https.html [ Pass Timeout
 # `-expected.txt` cannot be used.
 crbug.com/1499775 external/wpt/long-animation-frame/tentative/loaf-desired-exec-time.html [ Failure ]
 
+# flakiness see on CI
+crbug.com/1499775 external/wpt/acid/acid2/reftest.html [ Failure Pass ]
+crbug.com/1499775 external/wpt/css/css-paint-api/geometry-background-image-001.https.html [ Failure Pass ]
+crbug.com/1499775 external/wpt/css/css-position/overlay/overlay-transition-backdrop.html [ Failure Pass ]
+crbug.com/1499775 external/wpt/css/css-sizing/aspect-ratio/replaced-element-035.html [ Failure Pass ]
+crbug.com/1499775 external/wpt/css/css-text/text-transform/text-transform-capitalize-016.html [ Failure Pass ]
+crbug.com/1499775 external/wpt/css/css-text/text-transform/text-transform-capitalize-022.html [ Failure Pass ]
+crbug.com/1499775 external/wpt/css/css-ui/appearance-button-001.html [ Failure Pass ]
+crbug.com/1499775 external/wpt/css/css-ui/appearance-menulist-button-001.html [ Failure Pass ]
+crbug.com/1499775 external/wpt/css/css-ui/outline-027.html [ Failure Pass ]
+crbug.com/1499775 external/wpt/mathml/presentation-markup/scripts/underover-stretchy-002.html [ Failure Pass ]
+
 # These tests fail when run with timeout multipler is 2
 crbug.com/1507050 external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/after-prepare-createHTMLDocument-fetch-error-external-classic.html [ Failure Pass ]
 crbug.com/1507050 external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/after-prepare-createHTMLDocument-fetch-error-external-module.html [ Failure Pass ]
