@@ -33,7 +33,6 @@ import androidx.annotation.Px;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
-import org.chromium.chrome.browser.touch_to_fill.TouchToFillComponent.UserAction;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FaviconOrFallback;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties;
@@ -343,7 +342,7 @@ class TouchToFillMediator {
 
     private void onSelectedCredential(Credential credential) {
         mModel.set(VISIBLE, false);
-        reportCredentialSelection(UserAction.SELECT_CREDENTIAL, mCredentials.indexOf(credential));
+        reportCredentialSelection(UserAction.SELECTED_CREDENTIAL, mCredentials.indexOf(credential));
         mDelegate.onCredentialSelected(credential);
     }
 
@@ -351,7 +350,7 @@ class TouchToFillMediator {
         mModel.set(VISIBLE, false);
         // The index assumes WebAuthn credentials are listed after password credentials.
         reportCredentialSelection(
-                UserAction.SELECT_WEBAUTHN_CREDENTIAL,
+                UserAction.SELECTED_PASSKEY_CREDENTIAL,
                 mCredentials.size() + mWebAuthnCredentials.indexOf(credential));
         mDelegate.onWebAuthnCredentialSelected(credential);
     }

@@ -45,7 +45,11 @@ android_library("java") {
     "//url:gurl_java",
   ]
 
-  srcjar_deps = [ ":jni" ]
+  srcjar_deps = [
+    ":jni",
+    "//chrome/browser/touch_to_fill/password_manager:java_enum_srcjar",
+  ]
+
   sources = [
     "java/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillBridge.java",
     "java/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillCoordinator.java",

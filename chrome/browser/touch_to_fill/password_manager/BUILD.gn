@@ -34,3 +34,10 @@ source_set("public") {
 
   sources = [ "touch_to_fill_view.h" ]
 }
+
+if (is_android) {
+  java_cpp_enum("java_enum_srcjar") {
+    visibility = [ "./*" ]
+    sources = [ "touch_to_fill_controller_autofill_delegate.h" ]
+  }
+}
