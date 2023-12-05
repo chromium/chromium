@@ -91,6 +91,12 @@ struct AXMovementOptions {
 
   AXBoundaryBehavior boundary_behavior;
   AXBoundaryDetection boundary_detection;
+
+  // If true, indicates that an upstream position should not be crossed when
+  // moving forward and should skip its initial check when moving backward. This
+  // primarily applies to getting a pair of positions around a line from an
+  // upstream caret.
+  bool upstream_bounded = false;
 };
 
 // Describes in further detail what type of boundary a current position is on.
@@ -3231,6 +3237,7 @@ class AXPosition {
 
   AXPositionInstance CreateNextLineStartPosition(
       AXMovementOptions options) const {
+    options.upstream_bounded = true;
     return CreateBoundaryStartPosition(
         options, ax::mojom::MoveDirection::kForward,
         base::BindRepeating(&AtStartOfLinePredicate),
@@ -3239,6 +3246,7 @@ class AXPosition {
 
   AXPositionInstance CreatePreviousLineStartPosition(
       AXMovementOptions options) const {
+    options.upstream_bounded = true;
     return CreateBoundaryStartPosition(
         options, ax::mojom::MoveDirection::kBackward,
         base::BindRepeating(&AtStartOfLinePredicate),
@@ -3437,24 +3445,41 @@ class AXPosition {
       text_position = AsLeafTextPosition();
     }
 
-    if (text_position->IsNullPosition())
+    if (text_position->IsNullPosition()) {
       return text_position;
+    }
 
-    if (options.boundary_detection ==
-        AXBoundaryDetection::kDontCheckInitialPosition) {
+    // If true, we should not move the position any further.
+    bool forward_upstream =
+        options.upstream_bounded &&
+        move_direction == ax::mojom::MoveDirection::kForward &&
+        affinity() == ax::mojom::TextAffinity::kUpstream;
+
+    // If true, we should skip the initial position and move at least once.
+    bool backward_upstream =
+        options.upstream_bounded &&
+        move_direction == ax::mojom::MoveDirection::kBackward &&
+        affinity() == ax::mojom::TextAffinity::kUpstream;
+
+    if (backward_upstream ||
+        (options.boundary_detection ==
+             AXBoundaryDetection::kDontCheckInitialPosition &&
+         !forward_upstream)) {
       text_position =
           text_position->CreateAdjacentLeafTextPosition(move_direction);
       if (text_position->IsNullPosition()) {
         // There is no adjacent position to move to; in such case, CrossBoundary
         // behavior shall return a null position, while any other behavior shall
         // fallback to return the initial position.
-        if (options.boundary_behavior == AXBoundaryBehavior::kCrossBoundary)
+        if (options.boundary_behavior == AXBoundaryBehavior::kCrossBoundary) {
           return text_position;
+        }
+
         return Clone();
       }
     }
 
-    if (!at_start_condition.Run(text_position)) {
+    if (!forward_upstream && !at_start_condition.Run(text_position)) {
       text_position = text_position->CreatePositionAtNextOffsetBoundary(
           move_direction, get_start_offsets);
 
@@ -3540,21 +3565,29 @@ class AXPosition {
           NOTREACHED();
           return CreateNullPosition();
         case ax::mojom::MoveDirection::kBackward:
-          return CreatePositionAtStartOfAnchor()->AsUnignoredPosition(
+          text_position = CreatePositionAtStartOfAnchor()->AsUnignoredPosition(
               AXPositionAdjustmentBehavior::kMoveBackward);
+          break;
         case ax::mojom::MoveDirection::kForward:
-          return CreatePositionAtEndOfAnchor()->AsUnignoredPosition(
+          text_position = CreatePositionAtEndOfAnchor()->AsUnignoredPosition(
               AXPositionAdjustmentBehavior::kMoveForward);
       }
+
+      // Preserve affinity for forward upstream positions.
+      if (forward_upstream) {
+        text_position->affinity_ = ax::mojom::TextAffinity::kUpstream;
+      }
+
+      return text_position;
     }
 
-    // Affinity is only upstream at the end of a line, and so a start boundary
-    // will never have an upstream affinity.
-    text_position->affinity_ = ax::mojom::TextAffinity::kDownstream;
-    if (IsTreePosition())
+    if (IsTreePosition()) {
       text_position = text_position->AsTreePosition();
+    }
+
     AXPositionInstance unignored_position = text_position->AsUnignoredPosition(
         AXPositionAdjustmentBehavior::kMoveForward);
+
     // If there are no unignored positions then `text_position` is anchored in
     // ignored content at the end of the whole content. For
     // `kStopAtLastAnchorBoundary`, try to adjust in the opposite direction to
@@ -3566,6 +3599,11 @@ class AXPosition {
       unignored_position = text_position->AsUnignoredPosition(
           AXPositionAdjustmentBehavior::kMoveBackward);
     }
+
+    unignored_position->affinity_ = forward_upstream
+                                        ? ax::mojom::TextAffinity::kUpstream
+                                        : ax::mojom::TextAffinity::kDownstream;
+
     return unignored_position;
   }
 
