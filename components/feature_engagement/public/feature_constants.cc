@@ -566,6 +566,9 @@ BASE_FEATURE(kIPHiOSReplaceSyncPromosWithSignInPromos,
 BASE_FEATURE(kIPHiOSBlueDotPromoEnhancedSafeBrowsingFeature,
              "IPH_iOSBlueDotPromoEnhancedSafeBrowsing",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSInlinePromoEnhancedSafeBrowsingFeature,
+             "IPH_iOSInlinePromoEnhancedSafeBrowsing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Non-FET feature.
 BASE_FEATURE(kDefaultBrowserEligibilitySlidingWindow,

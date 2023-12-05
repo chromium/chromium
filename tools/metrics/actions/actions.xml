@@ -40250,6 +40250,8 @@ should be able to be added at any place in this file.
       label="For iOSDefaultBrowserVideoPromoTrigger feature"/>
   <suffix name="iOSHistoryOnOverflowMenuFeature"
       label="For iOSHistoryOnOverflowMenuFeature feature"/>
+  <suffix name="iOSInlinePromoEnhancedSafeBrowsing"
+      label="For iOSInlinePromoEnhancedSafeBrowsing feature"/>
   <suffix name="iOSNewTabToolbarItemFeature"
       label="For iOSNewTabToolbarItemFeature feature"/>
   <suffix name="iOSOmniboxPositionFeature"

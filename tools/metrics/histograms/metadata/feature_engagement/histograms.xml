@@ -213,6 +213,8 @@ chromium-metrics-reviews@google.com.
                video promo have been met."/>
   <variant name="IPH_iOSHistoryOnOverflowMenuFeature"
       summary="history item on the overflow menu on iOS"/>
+  <variant name="IPH_iOSInlinePromoEnhancedSafeBrowsing"
+      summary="showing the Enhanced Safe Browsing Inline Promo on iOS"/>
   <variant name="IPH_iOSNewTabToolbarItemFeature"
       summary="the new tab tool bar item (bottom on iPhone, top on iPad)"/>
   <variant name="IPH_iOSOmniboxPositionFeature"
