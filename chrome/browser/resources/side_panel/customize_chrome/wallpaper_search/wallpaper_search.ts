@@ -38,8 +38,33 @@ import {CustomizeChromeCombobox} from './combobox/customize_chrome_combobox.js';
 import {getTemplate} from './wallpaper_search.html.js';
 import {WallpaperSearchProxy} from './wallpaper_search_proxy.js';
 
-export const DESCRIPTOR_D_VALUE =
-    ['#ef4837', '#0984e3', '#f9cc18', '#23cc6a', '#474747'];
+export const DESCRIPTOR_D_VALUE: ColorDescriptor[] = [
+  {
+    hex: '#ef4837',
+    name: 'colorRed',
+  },
+  {
+    hex: '#0984e3',
+    name: 'colorBlue',
+  },
+  {
+    hex: '#f9cc18',
+    name: 'colorYellow',
+  },
+  {
+    hex: '#23cc6a',
+    name: 'colorGreen',
+  },
+  {
+    hex: '#474747',
+    name: 'colorBlack',
+  },
+];
+
+interface ColorDescriptor {
+  hex: string;
+  name: string;
+}
 
 /* Saved descriptors for a set of results. */
 interface ResultsDescriptors {
@@ -97,7 +122,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       },
       descriptorD_: {
         type: Array,
-        value: DESCRIPTOR_D_VALUE,
+        value: DESCRIPTOR_D_VALUE.map((value) => value.hex),
       },
       errorState_: {
         type: Object,
@@ -326,6 +351,20 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private getCategoryIcon_(categoryIndex: number): string {
     return this.expandedCategories_[categoryIndex] ? 'cr:expand-less' :
                                                      'cr:expand-more';
+  }
+
+  private getColorCheckedStatus_(defaultColor: string): string {
+    return this.isColorSelected_(defaultColor) ? 'true' : 'false';
+  }
+
+  private getColorLabel_(defaultColor: string): string {
+    const descriptor =
+        DESCRIPTOR_D_VALUE.find((color) => color.hex === defaultColor);
+    return descriptor ? loadTimeData.getString(descriptor.name) : '';
+  }
+
+  private getCustomColorCheckedStatus_(): string {
+    return this.selectedHue_ !== undefined ? 'true' : 'false';
   }
 
   private getHistoryTileTitle_(index: number): string {

@@ -7906,6 +7906,21 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WALLPAPER_SEARCH_OPTIONAL_DETAILS_LABEL" desc="The label for optional details.">
         Add optional details
       </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_COLOR_RED_LABEL" desc="The label for selecting the red color in the wallpaper search prompt">
+        Red
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_COLOR_BLUE_LABEL" desc="The label for selecting the blue color in the wallpaper search prompt">
+        Blue
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_COLOR_YELLOW_LABEL" desc="The label for selecting the yellow color in the wallpaper search prompt">
+        Yellow
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_COLOR_GREEN_LABEL" desc="The label for selecting the green color in the wallpaper search prompt">
+        Green
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_COLOR_BLACK_LABEL" desc="The label for selecting the black color in the wallpaper search prompt">
+        Black
+      </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_REQUEST_THROTTLED_DESCRIPTION" desc="The description of the message displayed when a wallpaper search request is throttled.">
         Please try again tomorrow.
       </message>

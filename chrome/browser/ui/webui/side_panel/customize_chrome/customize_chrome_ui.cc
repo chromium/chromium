@@ -141,6 +141,11 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"darkMode", IDS_NTP_CUSTOMIZE_CHROME_COLOR_SCHEME_MODE_DARK_LABEL},
       {"systemMode", IDS_NTP_CUSTOMIZE_CHROME_COLOR_SCHEME_MODE_SYSTEM_LABEL},
       // Wallpaper search strings.
+      {"colorRed", IDS_NTP_WALLPAPER_SEARCH_COLOR_RED_LABEL},
+      {"colorBlue", IDS_NTP_WALLPAPER_SEARCH_COLOR_BLUE_LABEL},
+      {"colorYellow", IDS_NTP_WALLPAPER_SEARCH_COLOR_YELLOW_LABEL},
+      {"colorGreen", IDS_NTP_WALLPAPER_SEARCH_COLOR_GREEN_LABEL},
+      {"colorBlack", IDS_NTP_WALLPAPER_SEARCH_COLOR_BLACK_LABEL},
       {"genericErrorDescription",
        IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_DESCRIPTION},
       {"genericErrorDescriptionWithHistory",

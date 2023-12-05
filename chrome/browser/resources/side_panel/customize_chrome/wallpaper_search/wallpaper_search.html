@@ -145,8 +145,9 @@
   }
 
   #descriptorMenuD {
-    display: flex;
-    justify-content: space-between;
+    --cr-column-width: 1fr;
+    --cr-grid-gap: 6.5px;
+    --cr-grid-width: 100%;
     margin-top: 8px;
     width: 100%;
   }
@@ -330,9 +331,11 @@
           </div>
         </template>
       </customize-chrome-combobox>
-      <div id="descriptorMenuD">
+      <cr-grid columns="6" id="descriptorMenuD">
         <template is="dom-repeat" items="[[descriptorD_]]">
-          <cr-button class="default-color" on-click="onDefaultColorClick_">
+          <cr-button class="default-color" on-click="onDefaultColorClick_"
+              aria-current$="[[getColorCheckedStatus_(item, selectedDefaultColor_)]]"
+              title$="[[getColorLabel_(item)]]">
             <customize-chrome-check-mark-wrapper class="color-check-mark"
                 checked="[[isColorSelected_(item, selectedDefaultColor_)]]"
                 checkmark-border-hidden>
@@ -341,7 +344,9 @@
             </customize-chrome-check-mark-wrapper>
           </cr-button>
         </template>
-        <cr-button id="customColorContainer" on-click="onCustomColorClick_">
+        <cr-button id="customColorContainer" on-click="onCustomColorClick_"
+            aria-current$="[[getCustomColorCheckedStatus_(selectedHue_)]]"
+            title="$i18n{colorPickerLabel}">
           <customize-chrome-check-mark-wrapper class="color-check-mark"
               checked="[[selectedHue_]]" checkmark-border-hidden>
             <div class="descriptor-d"
@@ -351,7 +356,7 @@
           </customize-chrome-check-mark-wrapper>
         </cr-button>
       </div>
-    </div>
+    </cr-grid>
     <cr-theme-hue-slider-dialog id="hueSlider"
         on-selected-hue-changed="onSelectedHueChanged_">
     </cr-theme-hue-slider-dialog>

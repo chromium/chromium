@@ -199,6 +199,10 @@ suite('WallpaperSearchTest', () => {
       assertEquals(
           checkedMarkedColors[0],
           $$(wallpaperSearchElement, '.default-color .color-check-mark'));
+      assertEquals(checkedMarkedColors[0]!.parentElement!.title, 'Red');
+      assertEquals(
+          checkedMarkedColors[0]!.parentElement!.getAttribute('aria-current'),
+          'true');
 
       wallpaperSearchElement.$.hueSlider.dispatchEvent(
           new Event('selected-hue-changed'));
@@ -209,6 +213,11 @@ suite('WallpaperSearchTest', () => {
       assertEquals(
           checkedMarkedColors[0],
           $$(wallpaperSearchElement, '#customColorContainer [checked]'));
+      assertEquals(
+          checkedMarkedColors[0]!.parentElement!.title, 'Custom color');
+      assertEquals(
+          checkedMarkedColors[0]!.parentElement!.getAttribute('aria-current'),
+          'true');
     });
   });
 
@@ -254,7 +263,7 @@ suite('WallpaperSearchTest', () => {
       assertEquals('bar', handler.getArgs('getWallpaperSearchResults')[0][0]);
       assertEquals('foo', handler.getArgs('getWallpaperSearchResults')[0][1]);
       assertEquals('baz', handler.getArgs('getWallpaperSearchResults')[0][2]);
-      const skColor = hexColorToSkColor(DESCRIPTOR_D_VALUE[0]!);
+      const skColor = hexColorToSkColor(DESCRIPTOR_D_VALUE[0]!.hex);
       assertNotEquals(skColor, {value: 0});
       assertDeepEquals(
           {color: skColor}, handler.getArgs('getWallpaperSearchResults')[0][3]);
