@@ -602,7 +602,7 @@ IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest,
 
   // Minimize the browser.
   browser()->window()->Minimize();
-  EXPECT_TRUE(browser()->window()->IsMinimized());
+  ASSERT_TRUE(ui_test_utils::WaitForMinimized(browser()));
 
   download::DownloadItem* item = DownloadNormalTestFile(browser());
 

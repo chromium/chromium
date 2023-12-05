@@ -79,6 +79,7 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/widget/widget_interactive_uitest_utils.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -469,6 +470,14 @@ void WaitForAutocompleteDone(Browser* browser) {
                          ->autocomplete_controller();
   while (!controller->done())
     AutocompleteChangeObserver(browser->profile()).Wait();
+}
+
+bool WaitForMinimized(Browser* browser) {
+  views::test::PropertyWaiter minimize_waiter(
+      base::BindRepeating(&BrowserWindow::IsMinimized,
+                          base::Unretained(browser->window())),
+      true);
+  return minimize_waiter.Wait();
 }
 
 void SendToOmniboxAndSubmit(Browser* browser,

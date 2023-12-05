@@ -247,7 +247,19 @@ void WaylandToplevelWindow::Minimize() {
   //
   // TODO(crbug.com/1293740): find a solution to this workaround.
   if (IsSurfaceConfigured()) {
-    SetWindowState(PlatformWindowState::kMinimized, display::kInvalidDisplayId);
+    fullscreen_display_id_ = display::kInvalidDisplayId;
+    shell_toplevel_->SetMinimized();
+    if (!SupportsConfigureMinimizedState()) {
+      // Wayland standard does not have API to notify client apps about
+      // window minimized, while exo has an extension (in
+      // zaura_shell::configure) for it.
+      // In the former case we update the window state here synchronously,
+      // while in the latter case update the window state in the handler of
+      // configure (HandleAuraToplevelConfigure) asynchronously.
+      previous_state_ = state_;
+      state_ = PlatformWindowState::kMinimized;
+      delegate()->OnWindowStateChanged(previous_state_, state_);
+    }
   } else {
     SetWindowState(PlatformWindowState::kNormal, display::kInvalidDisplayId);
   }
@@ -1047,7 +1059,7 @@ void WaylandToplevelWindow::TriggerStateChanges() {
   // UnSetMaximized may result in wrong restored window position that clients
   // are not allowed to know about.
   if (state_ == PlatformWindowState::kMinimized) {
-    shell_toplevel_->SetMinimized();
+    LOG(FATAL) << "Should not be called with kMinimized state";
   } else if (state_ == PlatformWindowState::kFullScreen) {
     shell_toplevel_->SetFullscreen(
         GetWaylandOutputForDisplayId(fullscreen_display_id_));
@@ -1065,6 +1077,8 @@ void WaylandToplevelWindow::TriggerStateChanges() {
 
 void WaylandToplevelWindow::SetWindowState(PlatformWindowState state,
                                            int64_t target_display_id) {
+  CHECK_NE(state, PlatformWindowState::kMinimized);
+
   if (ShouldTriggerStateChange(state, target_display_id)) {
     // We don't want to update the previous state, for cases like fullscreening
     // to a different output while already in fullscreen, so we can still

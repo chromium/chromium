@@ -190,6 +190,10 @@ void DownloadURL(Browser* browser, const GURL& download_url);
 // Waits until the autocomplete controller reaches its done state.
 void WaitForAutocompleteDone(Browser* browser);
 
+// Waits until the window gets minimized.
+// Returns success or not.
+bool WaitForMinimized(Browser* browser);
+
 // Send the given text to the omnibox and wait until it's updated.
 void SendToOmniboxAndSubmit(
     Browser* browser,
