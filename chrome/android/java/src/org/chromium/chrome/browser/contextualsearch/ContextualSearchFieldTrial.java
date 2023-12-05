@@ -23,9 +23,7 @@ public class ContextualSearchFieldTrial {
     // ==========================================================================================
     // Params used elsewhere but gathered here since they may be present in FieldTrial configs.
     // A comma-separated list of lower-case ISO 639 language codes.
-    static final String RELATED_SEARCHES_LANGUAGE_ALLOWLIST_PARAM_NAME = "language_allowlist";
     static final String RELATED_SEARCHES_LANGUAGE_DEFAULT_ALLOWLIST = "en";
-    static final String RELATED_SEARCHES_CONFIG_STAMP_PARAM_NAME = "stamp";
     private static final String RELATED_SEARCHES_CONFIG_DEFAULT_STAMP = "1Rs";
     private static final String RELATED_SEARCHES_ALL_LANGUAGE_CONFIG_DEFAULT_STAMP = "1Rsa";
 
@@ -51,14 +49,9 @@ public class ContextualSearchFieldTrial {
      *         string is returned.
      */
     static String getRelatedSearchesExperimentConfigurationStamp() {
-        String stamp = getRelatedSearchesParam(RELATED_SEARCHES_CONFIG_STAMP_PARAM_NAME);
-        if (TextUtils.isEmpty(stamp)) {
-            stamp =
-                    ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES_ALL_LANGUAGE)
-                            ? RELATED_SEARCHES_ALL_LANGUAGE_CONFIG_DEFAULT_STAMP
-                            : RELATED_SEARCHES_CONFIG_DEFAULT_STAMP;
-        }
-        return stamp;
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES_ALL_LANGUAGE)
+                ? RELATED_SEARCHES_ALL_LANGUAGE_CONFIG_DEFAULT_STAMP
+                : RELATED_SEARCHES_CONFIG_DEFAULT_STAMP;
     }
 
     /**

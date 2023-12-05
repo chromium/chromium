@@ -42,7 +42,6 @@ class RelatedSearchesStamp {
                     + RELATED_SEARCHES_NO_EXPERIMENT;
 
     private final ContextualSearchPolicy mPolicy;
-    private boolean mDisableDefaultAllowedLanguagesForTesting;
 
     /**
      * Creates a Related Searches Stamp handling instance that works with the given {@code
@@ -196,18 +195,7 @@ class RelatedSearchesStamp {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES_ALL_LANGUAGE)) {
             return "";
         }
-        String allowedLanguages =
-                ContextualSearchFieldTrial.getRelatedSearchesParam(
-                        ContextualSearchFieldTrial.RELATED_SEARCHES_LANGUAGE_ALLOWLIST_PARAM_NAME);
-        // If there is no language found, we use default language list.
-        if (TextUtils.isEmpty(allowedLanguages) && !mDisableDefaultAllowedLanguagesForTesting) {
-            allowedLanguages =
-                    ContextualSearchFieldTrial.RELATED_SEARCHES_LANGUAGE_DEFAULT_ALLOWLIST;
-        }
-        return allowedLanguages;
-    }
 
-    void disableDefaultAllowedLanguagesForTesting(boolean disableDefaultAllowedLanguages) {
-        mDisableDefaultAllowedLanguagesForTesting = disableDefaultAllowedLanguages;
+        return ContextualSearchFieldTrial.RELATED_SEARCHES_LANGUAGE_DEFAULT_ALLOWLIST;
     }
 }
