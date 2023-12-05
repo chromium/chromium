@@ -66,7 +66,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "pdf/buildflags.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
-#include "ui/base/ozone_buildflags.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -961,7 +960,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, MAYBE_AcceptState) {
 // wayland since our current fix only applies to X11.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Must be checked inside IS_LINUX to compile on windows/mac.
-#if BUILDFLAG(IS_OZONE_X11)
+#if BUILDFLAG(OZONE_PLATFORM_X11)
   // DesktopWindowTreeHostX11::IsMinimized() relies on an asynchronous update
   // from the window server
   views::test::PropertyWaiter minimize_waiter(
@@ -969,7 +968,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, MAYBE_AcceptState) {
                           base::Unretained(new_window->window())),
       true);
   EXPECT_TRUE(minimize_waiter.Wait());
-#elif BUILDFLAG(IS_OZONE_WAYLAND)
+#elif BUILDFLAG(OZONE_PLATFORM_WAYLAND)
   // TODO(crbug.com/1406188): Find a fix/workaround for wayland and add
   // verification of IsMinimized() for as well.
 #endif

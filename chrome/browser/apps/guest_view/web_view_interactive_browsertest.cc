@@ -59,7 +59,6 @@
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/ime_text_span.h"
 #include "ui/base/ime/text_input_client.h"
-#include "ui/base/ozone_buildflags.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rect.h"
@@ -70,6 +69,10 @@
 #include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ui/ozone/buildflags.h"
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+
 using extensions::AppWindow;
 using extensions::ExtensionsAPIClient;
 using guest_view::GuestViewBase;
@@ -77,7 +80,15 @@ using guest_view::GuestViewManager;
 using guest_view::TestGuestViewManager;
 using guest_view::TestGuestViewManagerFactory;
 
-#if !defined(IS_OZONE_WAYLAND)
+// The build flag OZONE_PLATFORM_WAYLAND is only available on
+// Linux or ChromeOS, so this simplifies the next set of ifdefs.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(OZONE_PLATFORM_WAYLAND)
+#define OZONE_PLATFORM_WAYLAND
+#endif  // BUILDFLAG(OZONE_PLATFORM_WAYLAND)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if !defined(OZONE_PLATFORM_WAYLAND)
 // Some test helpers, like ui_test_utils::SendMouseMoveSync, don't work properly
 // on some platforms. Tests that require these helpers need to be skipped for
 // these cases.

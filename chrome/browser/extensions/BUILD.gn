@@ -971,7 +971,6 @@ static_library("extensions") {
     "//third_party/zlib/google:zip",
     "//ui/accessibility:ax_enums_mojo",
     "//ui/base",
-    "//ui/base:ozone_buildflags",
     "//ui/base/clipboard",
     "//ui/base/dragdrop/mojom:mojom_shared",
     "//ui/base/idle",
