@@ -240,7 +240,7 @@ TEST_F(PasswordStoreProxyBackendBaseTest,
 }
 
 TEST_F(PasswordStoreProxyBackendBaseTest,
-       ProfileLocalSupportCallRemoteChangesOnlyFromAndroidBackendd) {
+       ProfileLocalSupportCallRemoteChangesOnlyFromAndroidBackend) {
   base::test::ScopedFeatureList scoped_feature_list{
       password_manager::features::
           kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration};
