@@ -5,6 +5,7 @@
 #include "ash/glanceables/tasks/glanceables_tasks_view.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/api/tasks/tasks_client.h"
@@ -41,6 +42,7 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -51,9 +53,11 @@
 namespace ash {
 namespace {
 
-constexpr int kMaximumTasks = 5;
-constexpr int kInteriorGlanceableBubbleMargin = 16;
 constexpr auto kHeaderIconButtonMargins = gfx::Insets::TLBR(0, 0, 0, 4);
+constexpr int kInteriorGlanceableBubbleMargin = 16;
+constexpr int kListViewBetweenChildSpacing = 2;
+constexpr int kMaximumTasks = 100;
+constexpr int kScrollViewMaxHeight = 300;
 
 constexpr char kTasksManagementPage[] =
     "https://calendar.google.com/calendar/u/0/r/week?opentasks=1";
@@ -76,8 +80,6 @@ std::unique_ptr<views::LabelButton> CreateAddNewTaskButton(
   add_new_task_button->SetBorder(
       views::CreateEmptyBorder(gfx::Insets::VH(13, 18)));
   add_new_task_button->SetEnabledTextColorIds(cros_tokens::kFocusRingColor);
-  add_new_task_button->SetProperty(views::kMarginsKey,
-                                   gfx::Insets::TLBR(0, 0, 2, 0));
   return add_new_task_button;
 }
 
@@ -113,12 +115,19 @@ GlanceablesTasksView::GlanceablesTasksView(
   progress_bar_ = AddChildView(std::make_unique<GlanceablesProgressBarView>());
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
 
-  auto* const list_view = AddChildView(std::make_unique<views::View>());
+  auto* const scroll_view = AddChildView(std::make_unique<views::ScrollView>());
+  scroll_view->ClipHeightTo(0, kScrollViewMaxHeight);
+  scroll_view->SetBackgroundColor(std::nullopt);
+  scroll_view->SetDrawOverflowIndicator(false);
+
+  auto* const list_view =
+      scroll_view->SetContents(std::make_unique<views::View>());
   list_view->SetPaintToLayer();
   list_view->layer()->SetFillsBoundsOpaquely(false);
   list_view->layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(16));
   list_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
+      views::BoxLayout::Orientation::kVertical,
+      /*inside_border_insets=*/gfx::Insets(), kListViewBetweenChildSpacing));
 
   add_new_task_button_ = list_view->AddChildView(CreateAddNewTaskButton(
       base::BindRepeating(&GlanceablesTasksView::AddNewTaskButtonPressed,
@@ -127,14 +136,13 @@ GlanceablesTasksView::GlanceablesTasksView(
   task_items_container_view_ =
       list_view->AddChildView(std::make_unique<views::View>());
   task_items_container_view_->SetAccessibleRole(ax::mojom::Role::kList);
-
   task_items_container_view_->SetID(
       base::to_underlying(GlanceablesViewId::kTasksBubbleListContainer));
-  auto* task_items_container_view_layout =
-      task_items_container_view_->SetLayoutManager(
-          std::make_unique<views::BoxLayout>(
-              views::BoxLayout::Orientation::kVertical));
-  task_items_container_view_layout->set_between_child_spacing(2);
+  task_items_container_view_->SetLayoutManager(
+      std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical,
+          /*inside_border_insets=*/gfx::Insets(),
+          kListViewBetweenChildSpacing));
 
   auto* const header_icon =
       tasks_header_view_->AddChildView(std::make_unique<IconButton>(
@@ -266,24 +274,25 @@ void GlanceablesTasksView::UpdateTasksList(
 
   task_items_container_view_->RemoveAllChildViews();
 
-  num_tasks_shown_ = 0;
-  num_tasks_ = 0;
+  size_t num_tasks_shown = 0;
+  size_t num_tasks = 0;
+
   for (const auto& task : *tasks) {
     if (task->completed) {
       continue;
     }
 
-    if (num_tasks_shown_ < kMaximumTasks) {
+    if (num_tasks_shown < kMaximumTasks) {
       task_items_container_view_->AddChildView(
           CreateTaskView(task_list_id, task.get()));
-      ++num_tasks_shown_;
+      ++num_tasks_shown;
     }
-    ++num_tasks_;
+    ++num_tasks;
   }
-  task_items_container_view_->SetVisible(num_tasks_shown_ > 0);
+  task_items_container_view_->SetVisible(num_tasks_shown > 0);
 
-  list_footer_view_->UpdateItemsCount(num_tasks_shown_, num_tasks_);
-  list_footer_view_->SetVisible(num_tasks_shown_ > 0);
+  list_footer_view_->UpdateItemsCount(num_tasks_shown, num_tasks);
+  list_footer_view_->SetVisible(num_tasks_shown > 0);
 
   task_items_container_view_->SetAccessibleName(l10n_util::GetStringFUTF16(
       IDS_GLANCEABLES_TASKS_SELECTED_LIST_ACCESSIBLE_NAME,

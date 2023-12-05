@@ -112,10 +112,6 @@ class ASH_EXPORT GlanceablesTasksView : public GlanceablesTasksViewBase,
   // Model for the combobox used to change the active task list.
   std::unique_ptr<TasksComboboxModel> tasks_combobox_model_;
 
-  // Tracks the number of tasks show. Used for sizing.
-  int num_tasks_shown_ = 0;
-  int num_tasks_ = 0;
-
   // The number of times that the tasks list has been changed during the
   // lifetime of this view.
   int tasks_list_change_count_ = 0;
