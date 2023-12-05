@@ -741,7 +741,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return isRevampEnabled ? 'os-settings:google-drive-revamp' :
                                  'os-settings:google-drive';
       case SearchResultIcon.kGooglePlay:
-        return 'os-settings:google-play';
+        return isRevampEnabled ? 'os-settings:google-play-revamp' :
+                                 'os-settings:google-play';
       case SearchResultIcon.kHelp:
         return 'os-settings:about-help';
       case SearchResultIcon.kHotspot:
@@ -770,6 +771,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         }
         // </if>
         return 'os-settings:nearby-share';
+      case SearchResultIcon.kNotifications:
+        return 'os-settings:apps-notifications';
       case SearchResultIcon.kOnScreenKeyboard:
         return 'os-settings:on-screen-keyboard';
       case SearchResultIcon.kPaintbrush:

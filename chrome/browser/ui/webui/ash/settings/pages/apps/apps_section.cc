@@ -79,7 +79,9 @@ const std::vector<SearchConcept>& GetAppNotificationsSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_APP_NOTIFICATIONS,
        mojom::kAppNotificationsSubpagePath,
-       mojom::SearchResultIcon::kAppsGrid,
+       ash::features::IsOsSettingsRevampWayfindingEnabled()
+           ? mojom::SearchResultIcon::kNotifications
+           : mojom::SearchResultIcon::kAppsGrid,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kAppNotifications}},
@@ -91,7 +93,9 @@ const std::vector<SearchConcept>& GetAppNotificationsManagerSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_APP_NOTIFICATIONS_MANAGER,
        mojom::kAppNotificationsManagerSubpagePath,
-       mojom::SearchResultIcon::kAppsGrid,
+       ash::features::IsOsSettingsRevampWayfindingEnabled()
+           ? mojom::SearchResultIcon::kNotifications
+           : mojom::SearchResultIcon::kAppsGrid,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kAppNotificationsManager}},
@@ -103,7 +107,9 @@ const std::vector<SearchConcept>& GetAppBadgingSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags(
       {{IDS_OS_SETTINGS_TAG_APP_BADGING,
         mojom::kAppNotificationsSubpagePath,
-        mojom::SearchResultIcon::kAppsGrid,
+        ash::features::IsOsSettingsRevampWayfindingEnabled()
+            ? mojom::SearchResultIcon::kNotifications
+            : mojom::SearchResultIcon::kAppsGrid,
         mojom::SearchResultDefaultRank::kMedium,
         mojom::SearchResultType::kSetting,
         {.setting = mojom::Setting::kAppBadgingOnOff}}});
@@ -114,7 +120,9 @@ const std::vector<SearchConcept>& GetTurnOffAppNotificationSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags(
       {{IDS_OS_SETTINGS_TAG_DO_NOT_DISTURB_TURN_OFF,
         mojom::kAppNotificationsSubpagePath,
-        mojom::SearchResultIcon::kAppsGrid,
+        ash::features::IsOsSettingsRevampWayfindingEnabled()
+            ? mojom::SearchResultIcon::kNotifications
+            : mojom::SearchResultIcon::kAppsGrid,
         mojom::SearchResultDefaultRank::kMedium,
         mojom::SearchResultType::kSetting,
         {.setting = mojom::Setting::kDoNotDisturbOnOff},
@@ -127,7 +135,9 @@ const std::vector<SearchConcept>& GetTurnOnAppNotificationSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags(
       {{IDS_OS_SETTINGS_TAG_DO_NOT_DISTURB_TURN_ON,
         mojom::kAppNotificationsSubpagePath,
-        mojom::SearchResultIcon::kAppsGrid,
+        ash::features::IsOsSettingsRevampWayfindingEnabled()
+            ? mojom::SearchResultIcon::kNotifications
+            : mojom::SearchResultIcon::kAppsGrid,
         mojom::SearchResultDefaultRank::kMedium,
         mojom::SearchResultType::kSetting,
         {.setting = mojom::Setting::kDoNotDisturbOnOff},

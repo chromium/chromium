@@ -206,7 +206,7 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
             return {
               manageApps: 'os-settings:apps',
               notifications: 'os-settings:apps-notifications',
-              googlePlayPreferences: 'os-settings:apps-google-play-preferences',
+              googlePlayPreferences: 'os-settings:google-play-revamp',
               androidSettings: 'os-settings:apps-android-settings',
               manageIsolatedWebApps:
                   'os-settings:apps-manage-isolated-web-apps',

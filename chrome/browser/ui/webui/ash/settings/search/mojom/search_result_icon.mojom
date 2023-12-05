@@ -47,6 +47,7 @@ enum SearchResultIcon {
   kMicrophone,
   kMouse,
   kNearbyShare,
+  kNotifications,
   kOnScreenKeyboard,
   kPaintbrush,
   kPenguin,
