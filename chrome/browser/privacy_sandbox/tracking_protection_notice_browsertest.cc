@@ -219,7 +219,7 @@ class TrackingProtectionBaseNoticeBrowserTest : public InProcessBrowserTest {
   }
 
   virtual std::vector<base::test::FeatureRef> EnabledFeatures() = 0;
-  virtual std::vector<base::test::FeatureRef> DisabledFeatures() { return {}; }
+  virtual std::vector<base::test::FeatureRef> DisabledFeatures() = 0;
 
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   base::HistogramTester histogram_tester_;
@@ -241,7 +241,8 @@ class TrackingProtectionOnboardingNoticeBrowserTest
   }
 
   std::vector<base::test::FeatureRef> DisabledFeatures() override {
-    return {privacy_sandbox::kTrackingProtectionOnboardingRollback};
+    return {privacy_sandbox::kTrackingProtectionOnboardingRollback,
+            features::kCookieDeprecationFacilitatedTesting};
   }
 
   bool IsOnboardingPromoActive(Browser* browser) {
