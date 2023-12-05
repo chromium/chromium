@@ -1,3 +1,7 @@
+**This document is deprecated. See
+[vaapi.md](https://source.chromium.org/chromium/chromium/src/+/main:docs/gpu/vaapi.md)
+instead.**
+
 # Enabling hardware <video> decode codepaths on linux
 
 Hardware acceleration of video decode on Linux is
