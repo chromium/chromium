@@ -150,6 +150,9 @@ class CreditCardRiskBasedAuthenticator {
   std::unique_ptr<payments::PaymentsNetworkInterface::UnmaskRequestDetails>
       unmask_request_details_;
 
+  // The timestamp when the unmask request is sent. Used for logging.
+  absl::optional<base::TimeTicks> unmask_card_request_timestamp_;
+
   base::WeakPtrFactory<CreditCardRiskBasedAuthenticator> weak_ptr_factory_{
       this};
 };

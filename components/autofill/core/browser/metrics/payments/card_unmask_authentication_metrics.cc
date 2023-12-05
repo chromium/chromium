@@ -133,4 +133,13 @@ void LogRiskBasedAuthResult(CreditCard::RecordType card_type,
       event);
 }
 
+void LogRiskBasedAuthLatency(base::TimeDelta duration,
+                             CreditCard::RecordType card_type) {
+  base::UmaHistogramLongTimes(
+      "Autofill.RiskBasedAuth" +
+          AutofillMetrics::GetHistogramStringForCardType(card_type) +
+          ".Latency",
+      duration);
+}
+
 }  // namespace autofill::autofill_metrics

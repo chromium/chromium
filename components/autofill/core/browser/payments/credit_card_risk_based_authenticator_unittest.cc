@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/payments/test_authentication_requester.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/autofill/core/browser/test_autofill_tick_clock.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -91,6 +92,26 @@ TEST_F(CreditCardRiskBasedAuthenticatorTest,
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.RiskBasedAuth.ServerCard.Attempt", true, 1);
+}
+
+// Ensures the ServerCard authentication latency is logged correctly.
+TEST_F(CreditCardRiskBasedAuthenticatorTest,
+       AuthServerCardLatencyLoggedCorrectly) {
+  base::HistogramTester histogram_tester;
+  TestAutofillTickClock tick_clock{AutofillTickClock::NowTicks()};
+  authenticator_->Authenticate(card_, requester_->GetWeakPtr());
+
+  // Mock server response with valid masked server card information.
+  payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
+  response.card_type = AutofillClient::PaymentsRpcCardType::kServerCard;
+  response.real_pan = kTestNumber;
+
+  tick_clock.Advance(base::Minutes(1));
+  authenticator_->OnUnmaskResponseReceivedForTesting(
+      AutofillClient::PaymentsRpcResult::kSuccess, response);
+
+  histogram_tester.ExpectTimeBucketCount(
+      "Autofill.RiskBasedAuth.ServerCard.Latency", base::Minutes(1), 1);
 }
 
 // Test that risk-based authentication returns the full PAN upon success.

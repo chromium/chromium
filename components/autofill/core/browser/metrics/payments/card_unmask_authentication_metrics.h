@@ -189,6 +189,11 @@ void LogRiskBasedAuthAttempt(CreditCard::RecordType card_type);
 void LogRiskBasedAuthResult(CreditCard::RecordType card_type,
                             RiskBasedAuthEvent event);
 
+// Logs the roundtrip latency for UnmaskCardRequest sent by risk-based
+// authentication.
+void LogRiskBasedAuthLatency(base::TimeDelta duration,
+                             CreditCard::RecordType card_type);
+
 }  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_CARD_UNMASK_AUTHENTICATION_METRICS_H_
