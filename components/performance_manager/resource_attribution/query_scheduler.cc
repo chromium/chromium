@@ -4,14 +4,12 @@
 
 #include "components/performance_manager/resource_attribution/query_scheduler.h"
 
-#include <bitset>
 #include <set>
 #include <utility>
 #include <vector>
 
 #include "base/barrier_callback.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/enum_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -169,17 +167,13 @@ void QueryScheduler::RequestResults(
     const QueryParams& query_params,
     base::OnceCallback<void(const QueryResultMap&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Make a copy of QueryParams so that it doesn't go out of scope while the
-  // requests are in flight.
-  QueryParams params = query_params;
-
   // Send out a measurement request for each resource type. The BarrierCallback
   // will invoke OnResultsReceived when all have responded.
   const size_t num_requests = query_params.resource_types.Size();
   auto barrier_callback = base::BarrierCallback<SingleQueryResultMap>(
       num_requests, base::BindOnce(&QueryScheduler::OnResultsReceived,
                                    weak_factory_.GetWeakPtr(),
-                                   std::move(params), std::move(callback)));
+                                   query_params.contexts, std::move(callback)));
 
   size_t requests_sent = 0;
   for (ResourceType resource_type : query_params.resource_types) {
@@ -287,16 +281,14 @@ void QueryScheduler::RemoveMemoryQuery() {
 }
 
 void QueryScheduler::OnResultsReceived(
-    const internal::QueryParams& query_params,
+    const internal::ContextCollection& contexts,
     base::OnceCallback<void(const QueryResultMap&)> callback,
     const std::vector<SingleQueryResultMap>& results) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   QueryResultMap merged_results;
   for (const auto& result_map : results) {
     for (auto& [context, result] : result_map) {
-      // index() gets context's type index in the ResourceContext variant.
-      if (query_params.all_context_types.test(context.index()) ||
-          base::Contains(query_params.resource_contexts, context)) {
+      if (contexts.ContainsContext(context)) {
         merged_results[context].push_back(std::move(result));
       }
     }

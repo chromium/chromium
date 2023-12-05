@@ -108,6 +108,29 @@ TEST_F(ResourceAttrResourceContextsTest, ResourceContextConverters) {
   EXPECT_EQ(AsOptionalContext<ProcessContext>(page_context), absl::nullopt);
 }
 
+TEST_F(ResourceAttrResourceContextsTest, ResourceContextTypeId) {
+  using ResourceContextTypeId = internal::ResourceContextTypeId;
+
+  MockMultiplePagesAndWorkersWithMultipleProcessesGraph mock_graph(graph());
+
+  const ResourceContext process_context =
+      mock_graph.process->GetResourceContext();
+  const ResourceContext page_context = mock_graph.page->GetResourceContext();
+
+  EXPECT_EQ(ResourceContextTypeId(process_context),
+            ResourceContextTypeId::ForType<ProcessContext>());
+  EXPECT_EQ(ResourceContextTypeId(page_context),
+            ResourceContextTypeId::ForType<PageContext>());
+
+  // Different types get different id's.
+  EXPECT_NE(ResourceContextTypeId(process_context),
+            ResourceContextTypeId(page_context));
+
+  // Different instances of the same type get the same id.
+  EXPECT_EQ(ResourceContextTypeId(page_context),
+            ResourceContextTypeId(mock_graph.other_page->GetResourceContext()));
+}
+
 TEST_F(ResourceAttrResourceContextsDeathTest, FailedResourceContextConverters) {
   MockMultiplePagesAndWorkersWithMultipleProcessesGraph mock_graph(graph());
   const ResourceContext page_context = mock_graph.page->GetResourceContext();

@@ -14,7 +14,6 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/pass_key.h"
-#include "base/types/variant_util.h"
 #include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/public/resource_attribution/resource_types.h"
@@ -143,8 +142,8 @@ class QueryBuilder {
             internal::EnableIfIsVariantAlternative<ContextType,
                                                    ResourceContext> = true>
   QueryBuilder& AddAllContextsOfType() {
-    return AddAllContextsWithTypeIndex(
-        base::VariantIndexOfType<ResourceContext, ContextType>());
+    return AddAllContextsWithTypeId(
+        internal::ResourceContextTypeId::ForType<ContextType>());
   }
 
   // Add `type` to the lists of resources to query.
@@ -177,7 +176,8 @@ class QueryBuilder {
   explicit QueryBuilder(std::unique_ptr<internal::QueryParams> params);
 
   // Implementation of AddAllContextsOfType().
-  QueryBuilder& AddAllContextsWithTypeIndex(size_t index);
+  QueryBuilder& AddAllContextsWithTypeId(
+      internal::ResourceContextTypeId type_id);
 
   // Asserts all members needed for QueryOnce() or CreateScopedQuery() are set.
   void ValidateQuery() const;

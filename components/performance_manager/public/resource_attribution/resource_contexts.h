@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_RESOURCE_CONTEXTS_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_RESOURCE_CONTEXTS_H_
 
+#include "base/types/strong_alias.h"
+#include "base/types/variant_util.h"
 #include "components/performance_manager/public/resource_attribution/frame_context.h"
 #include "components/performance_manager/public/resource_attribution/page_context.h"
 #include "components/performance_manager/public/resource_attribution/process_context.h"
@@ -70,6 +72,32 @@ template <typename T,
 constexpr absl::optional<T> AsOptionalContext(const ResourceContext& context) {
   return internal::GetAsOptional<T>(context);
 }
+
+namespace internal {
+
+// A strongly-typed identifier for a resource context type, generated based on
+// its index in the ResourceContext variant. This is used in the implementation
+// of QueryBuilder but must be public so that it can be referenced in templated
+// functions defined in a public header.
+class ResourceContextTypeId
+    : public base::StrongAlias<class ResourceContextTypeIdTag, size_t> {
+  using Super = base::StrongAlias<class ResourceContextTypeIdTag, size_t>;
+
+ public:
+  using Super::Super;
+
+  constexpr explicit ResourceContextTypeId(const ResourceContext& context)
+      : Super(context.index()) {}
+
+  template <typename T,
+            internal::EnableIfIsVariantAlternative<T, ResourceContext> = true>
+  static constexpr ResourceContextTypeId ForType() {
+    return ResourceContextTypeId(
+        base::VariantIndexOfType<ResourceContext, T>());
+  }
+};
+
+}  // namespace internal
 
 }  // namespace performance_manager::resource_attribution
 

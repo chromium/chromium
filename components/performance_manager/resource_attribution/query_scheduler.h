@@ -26,6 +26,7 @@
 namespace performance_manager::resource_attribution {
 
 namespace internal {
+class ContextCollection;
 struct QueryParams;
 }
 
@@ -97,7 +98,7 @@ class QueryScheduler : public GraphRegisteredImpl<QueryScheduler>,
   // Invoked from RequestResults when all results are received. `results` will
   // contain a separate result map for each ResourceType that was requested.
   void OnResultsReceived(
-      const internal::QueryParams& query_params,
+      const internal::ContextCollection& contexts,
       base::OnceCallback<void(const QueryResultMap&)> callback,
       const std::vector<SingleQueryResultMap>& results);
 

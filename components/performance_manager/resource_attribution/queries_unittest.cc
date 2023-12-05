@@ -4,12 +4,9 @@
 
 #include "components/performance_manager/public/resource_attribution/queries.h"
 
-#include <bitset>
 #include <map>
 #include <set>
-#include <type_traits>
 #include <utility>
-#include <vector>
 
 #include "base/barrier_closure.h"
 #include "base/containers/enum_set.h"
@@ -44,7 +41,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 namespace performance_manager::resource_attribution {
@@ -54,23 +50,12 @@ namespace {
 using ::testing::_;
 using ::testing::ElementsAre;
 using QueryParams = internal::QueryParams;
+using ResourceContextTypeId = internal::ResourceContextTypeId;
 
-// Bits for QueryParams::ContextTypeSet.
-constexpr size_t kFrameContextBit = 0;
-constexpr size_t kWorkerContextBit = 3;
-
-static_assert(
-    std::is_same_v<
-        absl::variant_alternative_t<kFrameContextBit, ResourceContext>,
-        FrameContext>,
-    "FrameContext is no longer index 0 in the ResourceContext variant, "
-    "please update the test.");
-static_assert(
-    std::is_same_v<
-        absl::variant_alternative_t<kWorkerContextBit, ResourceContext>,
-        WorkerContext>,
-    "WorkerContext is no longer index 3 in the ResourceContext variant, "
-    "please update the test.");
+constexpr auto kFrameContextTypeId =
+    ResourceContextTypeId::ForType<FrameContext>();
+constexpr auto kWorkerContextTypeId =
+    ResourceContextTypeId::ForType<WorkerContext>();
 
 // Fake memory results.
 constexpr uint64_t kFakeResidentSetSize = 123;
@@ -158,15 +143,13 @@ class ResourceAttrQueriesPMTest : public PerformanceManagerTestHarness {
 };
 
 QueryParams CreateQueryParams(
-    const ResourceTypeSet& resource_types = {},
-    const std::set<ResourceContext>& resource_contexts = {},
-    const std::vector<size_t>& all_context_types = {}) {
+    ResourceTypeSet resource_types = {},
+    std::set<ResourceContext> resource_contexts = {},
+    std::set<ResourceContextTypeId> all_context_types = {}) {
   QueryParams params;
-  params.resource_types = resource_types;
-  params.resource_contexts = resource_contexts;
-  for (const auto& context_type : all_context_types) {
-    params.all_context_types.set(context_type);
-  }
+  params.resource_types = std::move(resource_types);
+  params.contexts = internal::ContextCollection::CreateForTesting(
+      std::move(resource_contexts), std::move(all_context_types));
   return params;
 }
 
@@ -204,7 +187,7 @@ TEST_F(ResourceAttrQueriesTest, QueryBuilder_Params) {
       CreateQueryParams({ResourceType::kCPUTime},
                         {mock_graph.page->GetResourceContext(),
                          mock_graph.process->GetResourceContext()},
-                        {kFrameContextBit, kWorkerContextBit});
+                        {kFrameContextTypeId, kWorkerContextTypeId});
   EXPECT_EQ(*builder.GetParamsForTesting(), expected_params);
 
   // Creating a ScopedQuery invalidates the builder.
@@ -236,13 +219,13 @@ TEST_F(ResourceAttrQueriesTest, QueryBuilder_Clone) {
             CreateQueryParams({ResourceType::kCPUTime},
                               {mock_graph.page->GetResourceContext(),
                                mock_graph.process->GetResourceContext()},
-                              {kFrameContextBit}));
+                              {kFrameContextTypeId}));
   EXPECT_EQ(
       *cloned_builder.GetParamsForTesting(),
       CreateQueryParams({ResourceType::kCPUTime, ResourceType::kMemorySummary},
                         {mock_graph.page->GetResourceContext(),
                          mock_graph.frame->GetResourceContext()},
-                        {kFrameContextBit}));
+                        {kFrameContextTypeId}));
 }
 
 TEST_F(ResourceAttrQueriesPMTest, QueryBuilder_QueryOnce_CPU) {
@@ -450,6 +433,7 @@ TEST_F(ResourceAttrQueriesPMTest, Observers) {
 
   // Safely do nothing when no observers are registered.
   scoped_query.QueryOnce();
+
   // Post an empty task to the graph sequence to give time for the query to run
   // there. Nothing should happen.
   RunInGraph([] {});

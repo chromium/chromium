@@ -4,8 +4,6 @@
 
 #include "components/performance_manager/public/resource_attribution/queries.h"
 
-#include <bitset>
-#include <set>
 #include <utility>
 
 #include "base/check.h"
@@ -121,7 +119,7 @@ QueryBuilder& QueryBuilder::operator=(QueryBuilder&&) = default;
 QueryBuilder& QueryBuilder::AddResourceContext(const ResourceContext& context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(params_);
-  params_->resource_contexts.insert(context);
+  params_->contexts.AddResourceContext(context);
   return *this;
 }
 
@@ -170,18 +168,18 @@ QueryParams* QueryBuilder::GetParamsForTesting() const {
 QueryBuilder::QueryBuilder(std::unique_ptr<QueryParams> params)
     : params_(std::move(params)) {}
 
-QueryBuilder& QueryBuilder::AddAllContextsWithTypeIndex(size_t index) {
+QueryBuilder& QueryBuilder::AddAllContextsWithTypeId(
+    internal::ResourceContextTypeId type_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(params_);
-  params_->all_context_types.set(index);
+  params_->contexts.AddAllContextsOfType(type_id);
   return *this;
 }
 
 void QueryBuilder::ValidateQuery() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(params_);
-  CHECK(!params_->resource_contexts.empty() ||
-        !params_->all_context_types.none());
+  CHECK(!params_->contexts.IsEmpty());
   CHECK(!params_->resource_types.Empty());
 }
 
