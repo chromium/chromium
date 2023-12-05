@@ -45,7 +45,6 @@ static_js_files = [
   "file_manager/foreground/js/app_state_controller.js",
   "file_manager/foreground/js/constants.js",
   "file_manager/foreground/js/crostini_controller.js",
-  "file_manager/foreground/js/deferred_elements.js",
   "file_manager/foreground/js/directory_tree_naming_controller.js",
   "file_manager/foreground/js/elements_importer.js",
   "file_manager/foreground/js/fake_android_app_list_model.js",
@@ -211,6 +210,7 @@ ts_files = [
   # These lines will be removed at the end of the TS migration.
   # Foreground UI.
   "file_manager/foreground/js/ui/command.ts",
+  "file_manager/foreground/js/deferred_elements.ts",
   "file_manager/foreground/js/ui/file_grid.ts",
   "file_manager/foreground/js/ui/file_list_selection_model.ts",
   "file_manager/foreground/js/ui/file_table.ts",
