@@ -272,7 +272,6 @@ class BLINK_PLATFORM_EXPORT WebURLResponse {
   void SetEncodedBodyLength(uint64_t);
 
   void SetIsSignedExchangeInnerResponse(bool);
-  void SetIsWebBundleInnerResponse(bool);
   void SetWasInPrefetchCache(bool);
   void SetWasCookieInRequest(bool);
   void SetRecursivePrefetchToken(const absl::optional<base::UnguessableToken>&);
@@ -284,6 +283,9 @@ class BLINK_PLATFORM_EXPORT WebURLResponse {
   // expected to be in reverse, from canonical name (i.e. address record name)
   // through to query name.
   void SetDnsAliases(const WebVector<WebString>&);
+
+  WebURL WebBundleURL() const;
+  void SetWebBundleURL(const WebURL&);
 
   void SetAuthChallengeInfo(const absl::optional<net::AuthChallengeInfo>&);
   const absl::optional<net::AuthChallengeInfo>& AuthChallengeInfo() const;
