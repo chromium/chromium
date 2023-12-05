@@ -8,9 +8,13 @@
 #import "ios/chrome/browser/ui/overlays/overlay_presentation_controller.h"
 
 namespace {
-// Minimum height or width frame change that should warrant a resizing of the
-// container view in response to a relayout.
-const CGFloat kMinimumSizeChange = 0.5;
+// Returns YES if `size1` and `size2` are less than 0.5 different in both width
+// and height.
+BOOL CGSizeAlmostEqualToSize(CGSize size1, CGSize size2) {
+  const CGFloat kMinimumSizeChange = 0.5;
+  return std::fabs(size1.height - size2.height) <= kMinimumSizeChange &&
+         std::fabs(size1.width - size2.width) <= kMinimumSizeChange;
+}
 }  // namespace
 
 @interface OverlayPresentationContextViewController ()
@@ -47,12 +51,8 @@ const CGFloat kMinimumSizeChange = 0.5;
   CGRect oldLayoutFrame = self.layoutView.frame;
   CGRect newLayoutFrame = [window convertRect:newLayoutView.bounds
                                      fromView:newLayoutView];
-
-  if (CGSizeEqualToSize(containerView.bounds.size, oldLayoutFrame.size) &&
-      std::fabs(newLayoutFrame.size.height - oldLayoutFrame.size.height) <=
-          kMinimumSizeChange &&
-      std::fabs(newLayoutFrame.size.width - oldLayoutFrame.size.width) <=
-          kMinimumSizeChange) {
+  if (CGSizeAlmostEqualToSize(containerView.bounds.size, oldLayoutFrame.size) &&
+      CGSizeAlmostEqualToSize(newLayoutFrame.size, oldLayoutFrame.size)) {
     return;
   }
   self.layoutView = newLayoutView;
