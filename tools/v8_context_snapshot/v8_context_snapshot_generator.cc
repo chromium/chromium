@@ -54,8 +54,8 @@ int main(int argc, char** argv) {
   SnapshotPlatform platform;
   mojo::BinderMap binders;
   blink::CreateMainThreadAndInitialize(&platform, &binders);
-  v8::StartupData blob =
-      blink::WebV8ContextSnapshot::TakeSnapshot(blink::MainThreadIsolate());
+  auto* isolate = blink::CreateMainThreadIsolate();
+  v8::StartupData blob = blink::WebV8ContextSnapshot::TakeSnapshot(isolate);
 
   // Save the snapshot as a file. Filename is given in a command line option.
   base::FilePath file_path =

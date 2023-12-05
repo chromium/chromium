@@ -185,7 +185,6 @@ void CreateMainThreadAndInitialize(Platform* platform,
   DCHECK(binders);
   Platform::CreateMainThreadAndInitialize(platform);
   InitializeCommon(platform, binders);
-  V8Initializer::InitializeMainThread();
 }
 
 void InitializeWithoutIsolateForTesting(

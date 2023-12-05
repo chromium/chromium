@@ -62,7 +62,9 @@ BLINK_EXPORT void Initialize(
 // The same as above, but this only supports simple single-threaded execution
 // environment. The main thread WebThread object is owned by Platform when this
 // version is used. This version is mainly for tests and other components
-// requiring only the simple environment.
+// requiring only the simple environment. This does not create the
+// `v8::Isolate`, callers should call `CreateMainThreadIsolate` after calling
+// this method.
 //
 // When this version is used, your Platform implementation needs to follow
 // a certain convention on CurrentThread(); see the comments at
