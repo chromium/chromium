@@ -156,7 +156,8 @@ enum class OfficeTaskResult {
   kCancelledAtFallback = 8,
   kCancelledAtSetup = 9,
   kLocalFileTask = 10,
-  kMaxValue = kLocalFileTask,
+  kFileAlreadyBeingUploaded = 11,
+  kMaxValue = kFileAlreadyBeingUploaded,
 };
 
 // The result of the "Upload to cloud" workflow for Office files.

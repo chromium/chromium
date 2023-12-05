@@ -507,6 +507,41 @@ TEST_F(
   ASSERT_EQ(1, CloudOpenMetricsTest::number_of_dump_calls());
 }
 
+// Tests that the UploadResult companion metric is set correctly when
+// TransferRequired is logged as kCopy and TaskResult is
+// kFileAlreadyBeingUploaded and it is logged consistently.
+TEST_F(
+    CloudOpenMetricsTest,
+    MetricsConsistentWhenTransferRequiredIsCopyAndTaskResultIsFileAlreadyBeingUploaded) {
+  {
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kOneDrive,
+                                        /*file_count=*/1);
+    cloud_open_metrics.LogTransferRequired(OfficeFilesTransferRequired::kCopy);
+    cloud_open_metrics.LogTaskResult(
+        OfficeTaskResult::kFileAlreadyBeingUploaded);
+  }
+  histogram_.ExpectUniqueSample(kOneDriveUploadResultMetricStateMetricName,
+                                MetricState::kCorrectlyNotLogged, 1);
+}
+
+// Tests that the UploadResult companion metric is set correctly when
+// TransferRequired is logged as kCopy and TaskResult is
+// kFileAlreadyBeingUploaded and it is logged inconsistently.
+TEST_F(
+    CloudOpenMetricsTest,
+    MetricsInconsistentWhenTransferRequiredIsCopyAndTaskResultIsFileAlreadyBeingUploaded) {
+  {
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kOneDrive,
+                                        /*file_count=*/1);
+    cloud_open_metrics.LogTransferRequired(OfficeFilesTransferRequired::kCopy);
+    cloud_open_metrics.LogTaskResult(
+        OfficeTaskResult::kFileAlreadyBeingUploaded);
+    cloud_open_metrics.LogUploadResult(OfficeFilesUploadResult::kSuccess);
+  }
+  histogram_.ExpectUniqueSample(kOneDriveUploadResultMetricStateMetricName,
+                                MetricState::kIncorrectlyLogged, 1);
+}
+
 // Tests that the CopyError companion metric is set correctly when UploadResult
 // is logged as kCopyOperationError and CopyError is logged consistently.
 TEST_F(CloudOpenMetricsTest,

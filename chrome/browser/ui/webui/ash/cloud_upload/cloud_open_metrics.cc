@@ -454,10 +454,16 @@ void CloudOpenMetrics::CheckForInconsistencies(
       }
     } else {
       // TransferRequired was kCopy or kMove.
-      if (task_result.logged() &&
-          task_result.value != OfficeTaskResult::kCancelledAtConfirmation) {
-        // The cloud upload flow was not exited at the Move Confirmation Dialog.
-        ExpectLogged(upload_result);
+      if (task_result.logged()) {
+        if (task_result.value == OfficeTaskResult::kCancelledAtConfirmation ||
+            task_result.value == OfficeTaskResult::kFileAlreadyBeingUploaded) {
+          // The cloud upload flow was exited at the Move Confirmation Dialog or
+          // the upload was abandoned.
+          ExpectNotLogged(upload_result);
+        } else {
+          // The upload should have succeeded or failed.
+          ExpectLogged(upload_result);
+        }
       }
       // SourceVolume should not match the CloudProvider.
       if (google_drive) {
@@ -525,7 +531,6 @@ void CloudOpenMetrics::CheckForInconsistencies(
       ExpectNotLogged(move_error);
       // TaskResult should be kFailedToUpload.
       ExpectLogged(task_result);
-      // UploadHandler tests don't log TaskResult.
       if (task_result.logged()) {
         switch (task_result.value) {
           case OfficeTaskResult::kFailedToUpload:
@@ -540,6 +545,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
           case OfficeTaskResult::kCancelledAtFallback:
           case OfficeTaskResult::kCancelledAtSetup:
           case OfficeTaskResult::kLocalFileTask:
+          case OfficeTaskResult::kFileAlreadyBeingUploaded:
             SetWrongValueLogged(task_result);
             break;
         }
