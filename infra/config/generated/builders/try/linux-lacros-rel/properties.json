@@ -14,7 +14,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "linux-lacros-builder-rel",
-              "project": "chromium"
+              "project": "chromium-m121"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-chromiumos-archive",
@@ -41,7 +41,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "linux-lacros-tester-rel",
-              "project": "chromium"
+              "project": "chromium-m121"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-chromiumos-archive",
@@ -66,7 +66,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "linux-lacros-builder-rel",
-                "project": "chromium"
+                "project": "chromium-m121"
               }
             }
           }
@@ -76,14 +76,14 @@
         {
           "bucket": "ci",
           "builder": "linux-lacros-builder-rel",
-          "project": "chromium"
+          "project": "chromium-m121"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "linux-lacros-tester-rel",
-          "project": "chromium"
+          "project": "chromium-m121"
         }
       ]
     }

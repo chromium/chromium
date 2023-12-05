@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "fuchsia-official",
-              "project": "chromium"
+              "project": "chromium-m121"
             },
             "builder_spec": {
               "builder_group": "chromium",
@@ -38,7 +38,7 @@
         {
           "bucket": "ci",
           "builder": "fuchsia-official",
-          "project": "chromium"
+          "project": "chromium-m121"
         }
       ]
     }

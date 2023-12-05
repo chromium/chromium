@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Cast Linux Debug",
-              "project": "chromium"
+              "project": "chromium-m121"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-linux-archive",
@@ -35,7 +35,7 @@
         {
           "bucket": "ci",
           "builder": "Cast Linux Debug",
-          "project": "chromium"
+          "project": "chromium-m121"
         }
       ],
       "mirroring_builder_group_and_names": [
@@ -62,6 +62,6 @@
   "builder_group": "chromium.linux",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ]
 }
