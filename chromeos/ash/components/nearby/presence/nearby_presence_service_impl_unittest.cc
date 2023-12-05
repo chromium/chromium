@@ -46,17 +46,17 @@ class FakeScanDelegate : public NearbyPresenceService::ScanDelegate {
   ~FakeScanDelegate() override = default;
 
   void OnPresenceDeviceFound(
-      const NearbyPresenceService::PresenceDevice& presence_device) override {
+      NearbyPresenceService::PresenceDevice presence_device) override {
     found_called = true;
     std::move(next_scan_delegate_callback_).Run();
   }
   void OnPresenceDeviceChanged(
-      const NearbyPresenceService::PresenceDevice& presence_device) override {
+      NearbyPresenceService::PresenceDevice presence_device) override {
     changed_called = true;
     std::move(next_scan_delegate_callback_).Run();
   }
   void OnPresenceDeviceLost(
-      const NearbyPresenceService::PresenceDevice& presence_device) override {
+      NearbyPresenceService::PresenceDevice presence_device) override {
     lost_called = true;
     std::move(next_scan_delegate_callback_).Run();
   }

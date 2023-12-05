@@ -36,6 +36,11 @@ NearbyPresenceService::PresenceDevice::PresenceDevice(
       actions_(actions),
       rssi_(rssi) {}
 
+NearbyPresenceService::PresenceDevice::PresenceDevice(
+    const PresenceDevice& presence_device) = default;
+NearbyPresenceService::PresenceDevice&
+NearbyPresenceService::PresenceDevice::operator=(
+    const PresenceDevice& presence_device) = default;
 NearbyPresenceService::PresenceDevice::~PresenceDevice() = default;
 
 NearbyPresenceService::ScanSession::ScanSession(

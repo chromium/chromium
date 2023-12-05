@@ -81,8 +81,8 @@ class NearbyPresenceService {
                    std::vector<Action> actions,
                    int rssi);
 
-    PresenceDevice(const PresenceDevice&) = delete;
-    PresenceDevice& operator=(const PresenceDevice&) = delete;
+    PresenceDevice(const PresenceDevice&);
+    PresenceDevice& operator=(const PresenceDevice&);
     ~PresenceDevice();
 
     ::nearby::internal::DeviceType GetType() const {
@@ -119,12 +119,9 @@ class NearbyPresenceService {
     ScanDelegate();
     virtual ~ScanDelegate();
 
-    virtual void OnPresenceDeviceFound(
-        const PresenceDevice& presence_device) = 0;
-    virtual void OnPresenceDeviceChanged(
-        const PresenceDevice& presence_device) = 0;
-    virtual void OnPresenceDeviceLost(
-        const PresenceDevice& presence_device) = 0;
+    virtual void OnPresenceDeviceFound(PresenceDevice presence_device) = 0;
+    virtual void OnPresenceDeviceChanged(PresenceDevice presence_device) = 0;
+    virtual void OnPresenceDeviceLost(PresenceDevice presence_device) = 0;
     virtual void OnScanSessionInvalidated() = 0;
   };
 
