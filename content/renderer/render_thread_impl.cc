@@ -851,20 +851,12 @@ void RenderThreadImpl::InitializeWebKit(mojo::BinderMap* binders) {
   blink::Initialize(blink_platform_impl_.get(), binders,
                     main_thread_scheduler_.get());
 
-  v8::Isolate* isolate = blink::MainThreadIsolate();
-
   if (!command_line.HasSwitch(switches::kDisableThreadedCompositing))
     InitializeCompositorThread();
 
   RenderThreadImpl::RegisterSchemes();
 
   RenderMediaClient::Initialize();
-
-  if (!GetContentClient()->renderer()->RunIdleHandlerWhenWidgetsHidden()) {
-    // If we do not track widget visibility, then assume conservatively that
-    // the isolate is in background. This reduces memory usage.
-    isolate->IsolateInBackgroundNotification();
-  }
 
   // Hook up blink's codecs so skia can call them. Since only the renderer
   // processes should be doing image decoding, this is not done in the common

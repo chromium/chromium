@@ -297,6 +297,10 @@ class BLINK_PLATFORM_EXPORT Platform {
     return nullptr;
   }
 
+  // Whether or not newly created Isolates are indicated to be in the background
+  // or not.
+  virtual bool IsolateStartsInBackground() { return false; }
+
   // Resources -----------------------------------------------------------
 
   // Returns a localized string resource (with substitution parameters).

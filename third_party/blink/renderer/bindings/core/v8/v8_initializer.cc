@@ -933,6 +933,12 @@ v8::Isolate* V8Initializer::InitializeMainThread() {
   isolate->SetHostCreateShadowRealmContextCallback(
       OnCreateShadowRealmV8Context);
 
+  if (Platform::Current()->IsolateStartsInBackground()) {
+    // If we do not track widget visibility, then assume conservatively that
+    // the isolate is in background. This reduces memory usage.
+    isolate->IsolateInBackgroundNotification();
+  }
+
   return isolate;
 }
 
