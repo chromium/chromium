@@ -17689,7 +17689,7 @@
                 {
                     "name": "EnabledContextualLensPanel_20231129",
                     "params": {
-                        "open-companion-for-image-search": "false",
+                        "open-companion-for-image-search": "true",
                         "open-companion-for-web-search": "false",
                         "open-contextual-lens-panel": "true",
                         "open-links-in-current-tab": "false"
