@@ -35,6 +35,53 @@ using pc_preserved_file_test =
     private_computing::PrivateComputingClientRegressionTestData;
 namespace ash::report::device_metrics {
 
+TEST(ReportControllerTest, UnknownDeviceMode) {
+  ASSERT_EQ(MARKET_SEGMENT_UNKNOWN, ReportController::GetMarketSegment(
+                                        policy::DeviceMode::DEVICE_MODE_PENDING,
+                                        policy::MarketSegment::UNKNOWN));
+}
+
+TEST(ReportControllerTest, ConsumerDeviceMode) {
+  ASSERT_EQ(MARKET_SEGMENT_CONSUMER,
+            ReportController::GetMarketSegment(
+                policy::DeviceMode::DEVICE_MODE_CONSUMER,
+                policy::MarketSegment::UNKNOWN));
+}
+
+TEST(ReportControllerTest, DemoEnterpriseDeviceMode) {
+  ASSERT_EQ(
+      MARKET_SEGMENT_ENTERPRISE_DEMO,
+      ReportController::GetMarketSegment(policy::DeviceMode::DEVICE_MODE_DEMO,
+                                         policy::MarketSegment::ENTERPRISE));
+}
+
+TEST(ReportControllerTest, EnterpriseDeviceModeEnterpriseSegment) {
+  ASSERT_EQ(MARKET_SEGMENT_ENTERPRISE,
+            ReportController::GetMarketSegment(
+                policy::DeviceMode::DEVICE_MODE_ENTERPRISE,
+                policy::MarketSegment::ENTERPRISE));
+}
+
+TEST(ReportControllerTest, EnterpriseDeviceModeEducationSegment) {
+  ASSERT_EQ(MARKET_SEGMENT_EDUCATION,
+            ReportController::GetMarketSegment(
+                policy::DeviceMode::DEVICE_MODE_ENTERPRISE,
+                policy::MarketSegment::EDUCATION));
+}
+
+TEST(ReportControllerTest, EnterpriseDeviceModeUnknownSegment) {
+  ASSERT_EQ(MARKET_SEGMENT_ENTERPRISE_ENROLLED_BUT_UNKNOWN,
+            ReportController::GetMarketSegment(
+                policy::DeviceMode::DEVICE_MODE_ENTERPRISE,
+                policy::MarketSegment::UNKNOWN));
+}
+
+TEST(ReportControllerTest, UnknownDeviceModeAndSegment) {
+  ASSERT_EQ(MARKET_SEGMENT_UNKNOWN, ReportController::GetMarketSegment(
+                                        policy::DeviceMode::DEVICE_MODE_NOT_SET,
+                                        policy::MarketSegment::UNKNOWN));
+}
+
 class ReportControllerTestBase : public testing::Test {
  public:
   static private_computing::PrivateComputingClientRegressionTestData*

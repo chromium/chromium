@@ -161,7 +161,10 @@ MarketSegment ReportController::GetMarketSegment(
 
   // Policy device modes that should be classified as enterprise devices.
   const std::unordered_set<policy::DeviceMode> kDeviceModeEnterprise{
-      policy::DeviceMode::DEVICE_MODE_ENTERPRISE,
+      policy::DeviceMode::DEVICE_MODE_ENTERPRISE};
+
+  // Policy device modes that should be classified as demo devices.
+  const std::unordered_set<policy::DeviceMode> kDeviceModeDemoEnterprise{
       policy::DeviceMode::DEVICE_MODE_DEMO};
 
   // Determine Fresnel market segment using the retrieved device policy
@@ -172,6 +175,10 @@ MarketSegment ReportController::GetMarketSegment(
 
   if (kDeviceModeConsumer.count(device_mode)) {
     return MARKET_SEGMENT_CONSUMER;
+  }
+
+  if (kDeviceModeDemoEnterprise.count(device_mode)) {
+    return MARKET_SEGMENT_ENTERPRISE_DEMO;
   }
 
   if (kDeviceModeEnterprise.count(device_mode)) {

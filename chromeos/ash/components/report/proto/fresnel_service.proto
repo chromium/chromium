@@ -33,9 +33,13 @@ enum MarketSegment {
   // Device is enterprise enrolled but does not have enterprise market segment.
   MARKET_SEGMENT_ENTERPRISE_ENROLLED_BUT_UNKNOWN = 3;
   // Device is enterprise enrolled and has enterprise market segment.
+  // Does not count demo devices. Demo devices are only counted in
+  // MARKET_SEGMENT_ENTERPRISE_DEMO.
   MARKET_SEGMENT_ENTERPRISE = 4;
   // Device is enterprise enrolled and has education market segment.
   MARKET_SEGMENT_EDUCATION = 5;
+  // Device is enterprise enrolled as a demo device.
+  MARKET_SEGMENT_ENTERPRISE_DEMO = 6;
 };
 
 // The Chrome OS device metadata which is sent in PSM import requests.
