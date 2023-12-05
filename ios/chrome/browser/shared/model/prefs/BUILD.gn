@@ -114,8 +114,8 @@ source_set("browser_prefs") {
     "//ios/chrome/browser/ui/ntp/metrics:constants",
     "//ios/chrome/browser/ui/reading_list:reading_list_constants",
     "//ios/chrome/browser/voice/model:prefs",
-    "//ios/chrome/browser/web",
-    "//ios/chrome/browser/web/font_size",
+    "//ios/chrome/browser/web/model",
+    "//ios/chrome/browser/web/model/font_size",
     "//ios/web/common:features",
     "//ui/base",
   ]

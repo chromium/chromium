@@ -1,6 +1,6 @@
 include_rules = [
   "+ios/chrome/browser/tabs/model",
-  "+ios/chrome/browser/web",
+  "+ios/chrome/browser/web/model",
   "+ios/chrome/browser/web_state_list/model",
   "+ios/chrome/browser/snapshots/model",
   "+third_party/protobuf",

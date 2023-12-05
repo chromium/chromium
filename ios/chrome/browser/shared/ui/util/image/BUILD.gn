@@ -28,7 +28,7 @@ source_set("web") {
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/web/image_fetch",
+    "//ios/chrome/browser/web/model/image_fetch",
     "//ios/web",
     "//ui/base",
   ]

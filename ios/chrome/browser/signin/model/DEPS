@@ -11,7 +11,7 @@ include_rules = [
   "+ios/chrome/browser/policy",
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/web_state_list/model",
-  "+ios/chrome/browser/web",
+  "+ios/chrome/browser/web/model",
   "+ios/chrome/browser/webdata_services/model",
 ]
 

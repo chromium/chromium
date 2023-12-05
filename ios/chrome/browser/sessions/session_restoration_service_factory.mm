@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/tabs/model/features.h"
-#import "ios/chrome/browser/web/session_state/web_session_state_cache_factory.h"
+#import "ios/chrome/browser/web/model/session_state/web_session_state_cache_factory.h"
 
 // To get access to web::features::kEnableSessionSerializationOptimizations.
 // TODO(crbug.com/1383087): remove once the feature is fully launched.
