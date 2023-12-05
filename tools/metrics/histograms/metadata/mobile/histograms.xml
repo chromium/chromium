@@ -134,7 +134,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.ContextMenu.LensWebImageProcessTime" units="ms"
-    expires_after="2024-03-31">
+    expires_after="2024-06-02">
   <owner>hujasonx@google.com</owner>
   <owner>lens-in-bling-team@google.com</owner>
   <summary>
@@ -165,7 +165,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.ContextMenu.{EntryPoint}.Actions" enum="IOSMenuAction"
-    expires_after="2024-04-01">
+    expires_after="2024-06-02">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@chromium.org</owner>
   <summary>
@@ -1123,7 +1123,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileSignInPromo.ReadingList.ImpressionsTilSigninButtons"
-    units="impressions" expires_after="2024-04-01">
+    units="impressions" expires_after="2024-06-02">
   <owner>myuu@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -1136,7 +1136,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileSignInPromo.ReadingList.ImpressionsTilXButton"
-    units="impressions" expires_after="2024-04-01">
+    units="impressions" expires_after="2024-06-02">
   <owner>myuu@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>

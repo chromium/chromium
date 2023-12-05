@@ -1104,13 +1104,15 @@ chromium-metrics-reviews@google.com.
   <summary>Reason an incremental marking was started in V8.</summary>
 </histogram>
 
-<histogram name="V8.GCIncrementalMarkingStart" units="ms" expires_after="M124">
+<histogram name="V8.GCIncrementalMarkingStart" units="ms"
+    expires_after="2024-06-02">
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>Time spent in starting incremental marking.</summary>
 </histogram>
 
-<histogram name="V8.GCIncrementalMarkingSum" units="ms" expires_after="M124">
+<histogram name="V8.GCIncrementalMarkingSum" units="ms"
+    expires_after="2024-06-02">
   <owner>mlippautz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>

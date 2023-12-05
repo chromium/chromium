@@ -776,7 +776,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.Autocomplete.SingleEntryRemovalMethod"
     enum="AutofillAutocompleteSingleEntryRemovalMethod"
-    expires_after="2024-03-31">
+    expires_after="2024-06-02">
   <owner>jkeitel@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
@@ -2430,7 +2430,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.LabelInference.InferredLabelSource.AtSubmission2"
-    enum="InferredLabelSource" expires_after="2024-03-31">
+    enum="InferredLabelSource" expires_after="2024-06-02">
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
@@ -2687,7 +2687,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.NewerStreetAddressWithSameStatusIsChosen"
-    enum="Boolean" expires_after="2024-03-30">
+    enum="Boolean" expires_after="2024-06-02">
   <owner>jihadghanna@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2912,7 +2912,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.OfferNotificationBubbleOffer.{BubbleType}"
-    enum="BooleanPreviouslyShown" expires_after="2024-04-01">
+    enum="BooleanPreviouslyShown" expires_after="2024-06-02">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -3394,7 +3394,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.ProfileImport.InaccessibleFieldsRemoved.ByFieldType"
-    enum="AutofillSettingsVisibleTypes" expires_after="2024-04-01">
+    enum="AutofillSettingsVisibleTypes" expires_after="2024-06-02">
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
@@ -3404,7 +3404,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.ProfileImport.InaccessibleFieldsRemoved.Total"
-    enum="Boolean" expires_after="2024-04-01">
+    enum="Boolean" expires_after="2024-06-02">
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
@@ -5704,7 +5704,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.{PrecedenceType}Precedence.OverAutocompleteForStructuredAddressFields.{FieldType}.AutocompleteIs.{AutocompleteStatus}"
-    enum="AutofilledFieldUserEditingStatus" expires_after="2024-03-30">
+    enum="AutofilledFieldUserEditingStatus" expires_after="2024-06-02">
   <owner>jihadghanna@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
