@@ -215,8 +215,8 @@
       dark:  '$cros.ref.neutral8',
     },
     'base-highlight': {
-      light: 'blend(rgba($cros.ref.primary70.rgb, 0.36), $cros.ref.neutral100)',
-      dark: 'blend(rgba($cros.ref.primary70.rgb, 0.32), $cros.ref.neutral15)',
+      light: 'blend(rgba($cros.ref.primary70.rgb, 0.24), $cros.ref.neutral100)',
+      dark: 'blend(rgba($cros.ref.primary70.rgb, 0.28), $cros.ref.neutral15)',
     },
     'on-base-highlight': {
       light: 'rgba($cros.ref.primary60.rgb, 0.30)',
