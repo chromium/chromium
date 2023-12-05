@@ -132,10 +132,13 @@ class FlashDeviceTest(unittest.TestCase):
                                 'check',
                                 None,
                                 should_pave=False)
-            # Regular boot is to check the versions.
-            mock_boot.assert_called_once_with(mock.ANY,
-                                              boot_device.BootMode.REGULAR,
-                                              None)
+            mock_boot.assert_has_calls([
+                mock.call(mock.ANY, boot_device.BootMode.REGULAR, None),
+                mock.call(mock.ANY,
+                          boot_device.BootMode.REGULAR,
+                          None,
+                          must_boot=True)
+            ])
             self.assertEqual(self._ffx_mock.call_count, 1)
 
             # get_system_info should not even be called due to early exit.
@@ -156,10 +159,13 @@ class FlashDeviceTest(unittest.TestCase):
                                 'check',
                                 None,
                                 should_pave=False)
-            # Regular boot is to check the versions.
-            mock_boot.assert_called_once_with(mock.ANY,
-                                              boot_device.BootMode.REGULAR,
-                                              None)
+            mock_boot.assert_has_calls([
+                mock.call(mock.ANY, boot_device.BootMode.REGULAR, None),
+                mock.call(mock.ANY,
+                          boot_device.BootMode.REGULAR,
+                          None,
+                          must_boot=True)
+            ])
             self.assertEqual(self._ffx_mock.call_count, 2)
 
     def test_incorrect_target_info(self) -> None:
@@ -184,9 +190,14 @@ class FlashDeviceTest(unittest.TestCase):
                                 None,
                                 'test_serial',
                                 should_pave=False)
-            mock_boot.assert_called_once_with(mock.ANY,
-                                              boot_device.BootMode.BOOTLOADER,
-                                              'test_serial')
+            mock_boot.assert_has_calls([
+                mock.call(mock.ANY, boot_device.BootMode.BOOTLOADER,
+                          'test_serial'),
+                mock.call(mock.ANY,
+                          boot_device.BootMode.REGULAR,
+                          'test_serial',
+                          must_boot=True)
+            ])
         self.assertEqual(self._ffx_mock.call_count, 2)
 
     def test_reboot_failure(self) -> None:
@@ -214,10 +225,14 @@ class FlashDeviceTest(unittest.TestCase):
                                 'update',
                                 'some-target-id',
                                 should_pave=True)
-
-            mock_boot.assert_called_once_with('some-target-id',
-                                              boot_device.BootMode.RECOVERY,
-                                              None)
+            mock_boot.assert_has_calls([
+                mock.call('some-target-id', boot_device.BootMode.RECOVERY,
+                          None),
+                mock.call('some-target-id',
+                          boot_device.BootMode.REGULAR,
+                          None,
+                          must_boot=True)
+            ])
             mock_pave.assert_called_once_with(_TEST_IMAGE_DIR,
                                               'some-target-id')
 
@@ -250,9 +265,14 @@ class FlashDeviceTest(unittest.TestCase):
                                 None,
                                 'test_serial',
                                 should_pave=False)
-            mock_boot.assert_called_once_with(mock.ANY,
-                                              boot_device.BootMode.BOOTLOADER,
-                                              'test_serial')
+            mock_boot.assert_has_calls([
+                mock.call(mock.ANY, boot_device.BootMode.BOOTLOADER,
+                          'test_serial'),
+                mock.call(mock.ANY,
+                          boot_device.BootMode.REGULAR,
+                          'test_serial',
+                          must_boot=True)
+            ])
         self.assertEqual(self._ffx_mock.call_count, 2)
 
     # pylint: disable=no-self-use
