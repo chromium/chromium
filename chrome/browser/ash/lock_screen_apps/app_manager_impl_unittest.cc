@@ -29,6 +29,9 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/traits_bag.h"
 #include "base/values.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/lock_screen_apps/fake_lock_screen_profile_creator.h"
@@ -195,6 +198,11 @@ class LockScreenAppManagerImplTest
     profile_ = CreatePrimaryProfile();
 
     InitExtensionSystem(profile());
+
+    // Wait for AppServiceProxy to be ready - NoteTakingHelper depends on
+    // AppService.
+    WaitForAppServiceProxyReady(
+        apps::AppServiceProxyFactory::GetForProfile(profile_));
 
     // Initialize arc session manager - NoteTakingHelper expects it to be set.
     arc_session_manager_ = arc::CreateTestArcSessionManager(
