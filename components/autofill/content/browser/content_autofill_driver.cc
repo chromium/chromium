@@ -235,9 +235,11 @@ std::vector<FieldGlobalId> ContentAutofillDriver::ApplyFormAction(
       this, action_type, action_persistence, form, triggered_origin,
       field_type_map,
       [](autofill::AutofillDriver* target, mojom::ActionType action_type,
-         mojom::ActionPersistence action_persistence, const FormData& form) {
+         mojom::ActionPersistence action_persistence,
+         FormRendererId form_renderer_id,
+         const std::vector<FormFieldData>& fields) {
         cast(target)->GetAutofillAgent()->ApplyFormAction(
-            action_type, action_persistence, form);
+            action_type, action_persistence, form_renderer_id, fields);
       });
 }
 

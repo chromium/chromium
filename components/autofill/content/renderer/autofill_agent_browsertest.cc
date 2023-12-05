@@ -491,7 +491,8 @@ TEST_F(AutofillAgentTest, UndoAutofillSetsLastQueriedElement) {
 
   ASSERT_TRUE(autofill_agent_->focused_element().IsNull());
   autofill_agent_->ApplyFormAction(mojom::ActionType::kUndo,
-                                   mojom::ActionPersistence::kFill, form);
+                                   mojom::ActionPersistence::kFill,
+                                   form.unique_renderer_id, form.fields);
   EXPECT_FALSE(autofill_agent_->focused_element().IsNull());
 }
 

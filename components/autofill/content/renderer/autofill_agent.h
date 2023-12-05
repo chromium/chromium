@@ -110,7 +110,8 @@ class AutofillAgent : public content::RenderFrameObserver,
       base::OnceCallback<void(bool)> callback) override;
   void ApplyFormAction(mojom::ActionType action_type,
                        mojom::ActionPersistence action_persistence,
-                       const FormData& form) override;
+                       FormRendererId form_renderer_id,
+                       const std::vector<FormFieldData>& fields) override;
   void ApplyFieldAction(mojom::ActionPersistence action_persistence,
                         mojom::TextReplacement text_replacement,
                         FieldRendererId field_id,
