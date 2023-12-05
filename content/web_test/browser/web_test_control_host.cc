@@ -266,7 +266,18 @@ void ApplyWebTestDefaultPreferences(blink::web_pref::WebPreferences* prefs) {
   prefs->accelerated_2d_canvas_enabled =
       command_line.HasSwitch(switches::kEnableAccelerated2DCanvas);
   prefs->smart_insert_delete_enabled = true;
+  // On iOS platform, kEnableViewport is enabled by default (see
+  // content_main.cc::RunContentProcess). When the viewport is enabled,
+  // the visual viewport always provides its own scrollbars even if
+  // the test includes <body style=overflow:hidden>.
+  // To ensure the testing expectations are consistent with MacPort
+  // and to avoid this scrollbar behavior in web-platform-tests,
+  // set viewport_enabled to false for iOS.
+#if BUILDFLAG(IS_IOS)
+  prefs->viewport_enabled = false;
+#else
   prefs->viewport_enabled = command_line.HasSwitch(switches::kEnableViewport);
+#endif
   prefs->default_minimum_page_scale_factor = 1.f;
   prefs->default_maximum_page_scale_factor = 4.f;
   prefs->presentation_receiver =
@@ -299,20 +310,6 @@ void ApplyWebTestDefaultPreferences(blink::web_pref::WebPreferences* prefs) {
 #endif
   prefs->sans_serif_font_family_map[blink::web_pref::kCommonScript] =
       u"Helvetica";
-
-#if BUILDFLAG(IS_IOS)
-  // For web platform tests, the viewport should be set to 800x600.
-  // However, most of web platform tests do not include <meta
-  // name="viewport"..>, which leads to a scrollbar appearing with an 800x600
-  // size due to ViewportStyle::kMobile. To address this, the viewport style is
-  // changed to kDefault.
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kPreventResizingContentsForTesting)) {
-    if (prefs->viewport_enabled) {
-      prefs->viewport_style = blink::mojom::ViewportStyle::kDefault;
-    }
-  }
-#endif
 }
 
 }  // namespace
