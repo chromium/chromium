@@ -6,9 +6,9 @@
 
 #include <string.h>
 
+#include <bit>
 #include <vector>
 
-#include "base/bits.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
@@ -148,7 +148,7 @@ bool CTLogVerifier::VerifyConsistencyProof(
   // "consistency_path" array.
   base::StringPiece first_proof_node = old_tree_hash;
   auto iter = proof.nodes.begin();
-  if (!base::bits::IsPowerOfTwo(proof.first_tree_size)) {
+  if (!std::has_single_bit(proof.first_tree_size)) {
     if (iter == proof.nodes.end())
       return false;
     first_proof_node = *iter;
