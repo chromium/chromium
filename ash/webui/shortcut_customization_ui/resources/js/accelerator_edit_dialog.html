@@ -114,9 +114,13 @@
             on-edit-action-completed="onEditActionCompleted">
         </accelerator-edit-view>
       </template>
+      <!-- Using 'restamp' ensures the correct display of the separator line,
+           as it can remove 'pendingAccelerator' from the DOM rather than just
+           hiding it, preventing it from affecting the separator line
+           placement. -->
       <template id="newAccelerator" is="dom-if"
           if="[[showNewAccelerator(pendingNewAcceleratorState,
-                                   acceleratorInfos)]]">
+                                   acceleratorInfos)]]" restamp>
         <accelerator-edit-view id="pendingAccelerator"
             view-state="{{pendingNewAcceleratorState}}"
             action="[[action]]"
