@@ -14,6 +14,7 @@
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "content/public/browser/browser_context.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 #include "url/url_constants.h"
 
 namespace policy {
@@ -24,6 +25,8 @@ GURL GeneralizeURL(const GURL& url, const download::DownloadItem& item) {
   // url as source.
   if (url.SchemeIs(url::kDataScheme)) {
     return item.GetTabUrl();
+  } else if (url.SchemeIs(url::kBlobScheme)) {
+    return url::Origin::Create(url).GetURL();
   }
   return url;
 }
