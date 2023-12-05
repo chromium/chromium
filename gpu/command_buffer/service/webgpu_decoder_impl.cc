@@ -1703,6 +1703,9 @@ wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
     // The adapter must be able to import external images, or it must be a
     // SwiftShader adapter. For SwiftShader, we will perform a manual
     // upload/readback to/from shared images.
+    // TODO(crbug.com/1493854): Switch this check to be on the
+    // availability of SharedTextureMemory on Mac once we switch Mac to using
+    // SharedTextureMemory rather than WrapIOSurface().
     if (!(adapter.SupportsExternalImages() || is_swiftshader)) {
       return false;
     }
