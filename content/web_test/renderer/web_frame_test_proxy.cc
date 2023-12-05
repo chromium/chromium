@@ -547,6 +547,61 @@ void WebFrameTestProxy::BeginNavigation(
 }
 
 void WebFrameTestProxy::PostAccessibilityEvent(const ui::AXEvent& event) {
+  HandleWebAccessibilityEventForTest(event);
+  RenderFrameImpl::PostAccessibilityEvent(event);
+}
+
+void WebFrameTestProxy::NotifyWebAXObjectMarkedDirty(
+    const blink::WebAXObject& object) {
+  HandleWebAccessibilityEventForTest(object, "MarkDirty",
+                                     std::vector<ui::AXEventIntent>());
+
+  // Guard against the case where |this| was deleted as a result of an
+  // accessibility listener detaching a frame. If that occurs, the
+  // WebAXObject will be detached.
+  if (object.IsDetached()) {
+    return;  // |this| is invalid.
+  }
+
+  RenderFrameImpl::NotifyWebAXObjectMarkedDirty(object);
+}
+
+void WebFrameTestProxy::HandleWebAccessibilityEventForTest(
+    const blink::WebAXObject& object,
+    const char* event_name,
+    const std::vector<ui::AXEventIntent>& event_intents) {
+  // Only hook the accessibility events that occurred during the test run.
+  // This check prevents false positives in BlinkLeakDetector.
+  // The pending tasks in browser/renderer message queue may trigger
+  // accessibility events,
+  // and AccessibilityController will hold on to their target nodes if we don't
+  // ignore them here.
+  if (!test_runner()->TestIsRunning()) {
+    return;
+  }
+
+  accessibility_controller_.NotificationReceived(GetWebFrame(), object,
+                                                 event_name, event_intents);
+
+  if (accessibility_controller_.ShouldLogAccessibilityEvents()) {
+    std::string message("AccessibilityNotification - ");
+    message += event_name;
+
+    blink::WebNode node = object.GetNode();
+    if (!node.IsNull() && node.IsElementNode()) {
+      blink::WebElement element = node.To<blink::WebElement>();
+      if (element.HasAttribute("id")) {
+        message += " - id:";
+        message += element.GetAttribute("id").Utf8().data();
+      }
+    }
+
+    test_runner()->PrintMessage(message + "\n");
+  }
+}
+
+void WebFrameTestProxy::HandleWebAccessibilityEventForTest(
+    const ui::AXEvent& event) {
   const char* event_name = nullptr;
   switch (event.event_type) {
     case ax::mojom::Event::kActiveDescendantChanged:
@@ -667,57 +722,8 @@ void WebFrameTestProxy::PostAccessibilityEvent(const ui::AXEvent& event) {
 
   blink::WebDocument document = GetWebFrame()->GetDocument();
   auto object = blink::WebAXObject::FromWebDocumentByID(document, event.id);
-  HandleWebAccessibilityEvent(std::move(object), event_name,
-                              event.event_intents);
-
-  RenderFrameImpl::PostAccessibilityEvent(event);
-}
-
-void WebFrameTestProxy::NotifyWebAXObjectMarkedDirty(
-    const blink::WebAXObject& object) {
-  HandleWebAccessibilityEvent(object, "MarkDirty",
-                              std::vector<ui::AXEventIntent>());
-
-  // Guard against the case where |this| was deleted as a result of an
-  // accessibility listener detaching a frame. If that occurs, the
-  // WebAXObject will be detached.
-  if (object.IsDetached())
-    return;  // |this| is invalid.
-
-  RenderFrameImpl::NotifyWebAXObjectMarkedDirty(object);
-}
-
-void WebFrameTestProxy::HandleWebAccessibilityEvent(
-    const blink::WebAXObject& object,
-    const char* event_name,
-    const std::vector<ui::AXEventIntent>& event_intents) {
-  // Only hook the accessibility events that occurred during the test run.
-  // This check prevents false positives in BlinkLeakDetector.
-  // The pending tasks in browser/renderer message queue may trigger
-  // accessibility events,
-  // and AccessibilityController will hold on to their target nodes if we don't
-  // ignore them here.
-  if (!test_runner()->TestIsRunning())
-    return;
-
-  accessibility_controller_.NotificationReceived(GetWebFrame(), object,
-                                                 event_name, event_intents);
-
-  if (accessibility_controller_.ShouldLogAccessibilityEvents()) {
-    std::string message("AccessibilityNotification - ");
-    message += event_name;
-
-    blink::WebNode node = object.GetNode();
-    if (!node.IsNull() && node.IsElementNode()) {
-      blink::WebElement element = node.To<blink::WebElement>();
-      if (element.HasAttribute("id")) {
-        message += " - id:";
-        message += element.GetAttribute("id").Utf8().data();
-      }
-    }
-
-    test_runner()->PrintMessage(message + "\n");
-  }
+  HandleWebAccessibilityEventForTest(std::move(object), event_name,
+                                     event.event_intents);
 }
 
 void WebFrameTestProxy::CheckIfAudioSinkExistsAndIsAuthorized(

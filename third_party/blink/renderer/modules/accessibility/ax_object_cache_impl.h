@@ -130,6 +130,19 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   AXObject* FocusedObject();
 
+  // This stores the last time a serialization was ACK'ed after being sent to
+  // the browser, so that serializations can be skipped if the time since the
+  // last serialization is less than GetDeferredEventsDelay(). Setting to
+  // "beginning of time" causes the upcoming serialization to occur at the next
+  // available opportunity.  Batching is used to reduce the number of
+  // serializations, in order to provide overall faster content updates while
+  // using less CPU, because nodes that change multiple times in a short time
+  // period only need to be serialized once, e.g. during page loads or
+  // animations.
+  static constexpr base::Time kSerializeAtNextOpportunity =
+      base::Time::UnixEpoch();
+  base::Time last_serialization_timestamp_ = kSerializeAtNextOpportunity;
+
   const ui::AXMode& GetAXMode() override;
   void SetAXMode(const ui::AXMode&) override;
 
@@ -289,6 +302,11 @@ class MODULES_EXPORT AXObjectCacheImpl
                              const PhysicalRect&) override;
 
   void InlineTextBoxesUpdated(LayoutObject*) override;
+
+  // Get the amount of time, in ms, that event processing should be deferred
+  // in order to more efficiently batch changes.
+  int GetDeferredEventsDelay() const;
+
   // Called during the accessibility lifecycle to refresh the AX tree.
   void ProcessDeferredAccessibilityEvents(Document&, bool force) override;
   // Remove AXObject subtrees (once flat tree traversal is safe).
@@ -518,7 +536,8 @@ class MODULES_EXPORT AXObjectCacheImpl
       ui::AXTreeUpdate*,
       std::set<ui::AXSerializationErrorFlag>* out_error = nullptr) override;
 
-  void MarkAXObjectDirtyWithDetails(
+  // Marks an object as dirty to be serialized in the next serialization.
+  void AddDirtyObjectToSerializationQueue(
       AXObject* obj,
       bool subtree,
       ax::mojom::blink::EventFrom event_from,
@@ -588,7 +607,33 @@ class MODULES_EXPORT AXObjectCacheImpl
     return whitespace_ignored_map_;
   }
 
+  // Adds an event to the list of pending_events_ and mark the object as dirty
+  // via AXObjectCache::AddDirtyObjectToSerializationQueue. If
+  // immediate_serialization is set, it schedules a serialization to be done at
+  // the next available time without delays.
+  void AddEventToSerializationQueue(const ui::AXEvent& event,
+                                    bool immediate_serialization) override;
+
+  // Called from browser to RAI and then to AXCache to notify that a
+  // serialization has arrived to Browser.
+  void OnSerializationReceived() override;
+
+  // Used by outside classes to determine if a serialization is in the process
+  // or not.
+  bool IsSerializationInFlight() const override;
+
+  // Used by outside classes, mainly RenderAccessibilityImpl, to inform
+  // AXObjectCacheImpl that a serialization was cancelled.
+  void OnSerializationCancelled() override;
+
+  // Used by outside classes, mainly RenderAccessibilityImpl, to inform
+  // AXObjectCacheImpl that a serialization was sent.
+  void OnSerializationStartSend() override;
+
  protected:
+  bool IsImmediateProcessingRequiredForEvent(const ui::AXEvent& event) const;
+  void ScheduleImmediateSerialization() override;
+
   void PostPlatformNotification(
       AXObject* obj,
       ax::mojom::blink::Event event_type,
@@ -1032,6 +1077,16 @@ class MODULES_EXPORT AXObjectCacheImpl
   wtf_size_t max_pending_updates_ = 1UL << 16;
   bool tree_updates_paused_ = false;
 
+  // This will flip to true when we initiate the process of sending AX data to
+  // the browser, and will flip back to false once we receive back an ACK.
+  bool serialization_in_flight_ = false;
+
+  // This flips to true if a request for an immediate update was not honored
+  // because serialization_in_flight_ was true. It flips back to false once
+  // serialization_in_flight_ has flipped to false and an immediate update has
+  // been requested.
+  bool serialize_immediately_after_current_serialization_ = false;
+
   // Maps ids to their object's autofill suggestion availability.
   HashMap<AXID, WebAXAutofillSuggestionAvailability>
       autofill_suggestion_availability_map_;
@@ -1090,6 +1145,11 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, PauseUpdatesAfterMaxNumberQueued);
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, RemoveReferencesToAXID);
+
+  // So we can ensure the serialization pipeline never stalls with dirty objects
+  // remaining to be serialized.
+  base::WeakPtrFactory<AXObjectCacheImpl>
+      weak_factory_for_serialization_pipeline_{this};
 };
 
 // This is the only subclass of AXObjectCache.

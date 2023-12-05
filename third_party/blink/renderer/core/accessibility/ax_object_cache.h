@@ -238,9 +238,9 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   // page occurs, such as an inertness change or a fullscreen toggle.
   // This keeps the existing nodes, but recomputes all of their properties and
   // reserializes everything.
-  // Compared with ResetSerializer() and MarkAXObjectDirtyWithDetails() with
-  // subtree = true, this does more work, because it recomputes the entire tree
-  // structure and properties of each node.
+  // Compared with ResetSerializer() and AddDirtyObjectToSerializationQueue()
+  // with subtree = true, this does more work, because it recomputes the entire
+  // tree structure and properties of each node.
   virtual void MarkDocumentDirty() = 0;
 
   // Compared with MarkDocumentDirty(), this does less work, because it assumes
@@ -256,7 +256,7 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   // |event_from| and |event_from_action| annotate this node change with info
   // about the event which caused the change. For example, an event from a user
   // or an event from a focus action.
-  virtual void MarkAXObjectDirtyWithDetails(
+  virtual void AddDirtyObjectToSerializationQueue(
       AXObject* obj,
       bool subtree,
       ax::mojom::blink::EventFrom event_from,
@@ -287,6 +287,28 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
 
   // Ensure that a call to ProcessDeferredAccessibilityEvents() will occur soon.
   virtual void ScheduleAXUpdate() const = 0;
+
+  // Ensure that a call to RenderAccessibilityImpl::AXReadyCallback() will occur
+  // as soon as possible.
+  virtual void ScheduleImmediateSerialization() = 0;
+
+  // Add an event to the queue of events to be processed as well as mark as
+  // dirty if needed.
+  virtual void AddEventToSerializationQueue(const ui::AXEvent& event,
+                                            bool immediate_serialization) = 0;
+
+  // Called from browser to RAI and then to AXCache to notify that a
+  // serialization has arrived to Browser.
+  virtual void OnSerializationReceived() = 0;
+
+  // Inform AXObjectCacheImpl that a serialization was cancelled.
+  virtual void OnSerializationCancelled() = 0;
+
+  // Inform AXObjectCacheImpl that a serialization was sent.
+  virtual void OnSerializationStartSend() = 0;
+
+  // Determine if a serialization is in the process or not.
+  virtual bool IsSerializationInFlight() const = 0;
 
  protected:
   friend class ScopedBlinkAXEventIntent;

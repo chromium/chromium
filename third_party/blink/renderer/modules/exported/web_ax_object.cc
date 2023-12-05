@@ -214,14 +214,14 @@ void WebAXObject::MarkSerializerSubtreeDirty() const {
   private_->AXObjectCache().MarkSerializerSubtreeDirty(*private_);
 }
 
-void WebAXObject::MarkAXObjectDirtyWithDetails(
+void WebAXObject::AddDirtyObjectToSerializationQueue(
     bool subtree,
     ax::mojom::blink::EventFrom event_from,
     ax::mojom::blink::Action event_from_action,
     std::vector<ui::AXEventIntent> event_intents) const {
   if (IsDetached())
     return;
-  private_->AXObjectCache().MarkAXObjectDirtyWithDetails(
+  private_->AXObjectCache().AddDirtyObjectToSerializationQueue(
       private_.Get(), subtree, event_from, event_from_action, event_intents);
 }
 

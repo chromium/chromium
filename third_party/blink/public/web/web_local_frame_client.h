@@ -823,6 +823,21 @@ class BLINK_EXPORT WebLocalFrameClient {
   // a window.print() call.
   virtual void ScriptedPrint() {}
 
+  // This method is ONLY for web tests and is not supposed to be overridden in
+  // classes other than web_frame_test_proxy. It's called from accessibility and
+  // is used as a way to tunnel events to the accessibility_controller in web
+  // tests.
+  virtual void HandleWebAccessibilityEventForTest(
+      const blink::WebAXObject& object,
+      const char* event_name,
+      const std::vector<ui::AXEventIntent>& event_intents) {}
+
+  // This method is ONLY for web tests and is not supposed to be overridden in
+  // classes other than web_frame_test_proxy. It's called from accessibility and
+  // is used as a way to tunnel events to the accessibility_controller in web
+  // tests.
+  virtual void HandleWebAccessibilityEventForTest(const ui::AXEvent& event) {}
+
   // Create a new related WebView.  This method must clone its session storage
   // so any subsequent calls to createSessionStorageNamespace conform to the
   // WebStorage specification.
