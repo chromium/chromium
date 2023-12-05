@@ -4,6 +4,7 @@
 
 import {recordDirectoryListLoadWithTolerance, startInterval} from '../../common/js/metrics.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
+import type {Store} from '../../externs/ts/store.js';
 import {updateDirectoryContent} from '../../state/ducks/current_directory.js';
 import {getStore} from '../../state/store.js';
 
@@ -16,47 +17,24 @@ import {ListContainer} from './ui/list_container.js';
  * Handler for scan related events of DirectoryModel.
  */
 export class ScanController {
+  private readonly store_: Store;
   /**
-   * @param {!DirectoryModel} directoryModel
-   * @param {!ListContainer} listContainer
-   * @param {!SpinnerController} spinnerController
-   * @param {!FileSelectionHandler} selectionHandler
+   * Whether a scan is in progress.
    */
+  private scanInProgress_: boolean = false;
+  /**
+   * Timer ID to delay UI refresh after a scan is updated.
+   */
+  private scanUpdatedTimer_: number = 0;
+
+  private spinnerHideCallback_: VoidCallback|null = null;
+
   constructor(
-      directoryModel, listContainer, spinnerController, selectionHandler) {
-    /** @private @const @type {!DirectoryModel} */
-    this.directoryModel_ = directoryModel;
-
-    /** @private @const @type {!ListContainer} */
-    this.listContainer_ = listContainer;
-
-    /** @private @const @type {!SpinnerController} */
-    this.spinnerController_ = spinnerController;
-
-    /** @private @const @type {!FileSelectionHandler} */
-    this.selectionHandler_ = selectionHandler;
-
-    // @ts-ignore: error TS2304: Cannot find name 'Store'.
-    /** @private @const @type {!Store} */
+      private readonly directoryModel_: DirectoryModel,
+      private readonly listContainer_: ListContainer,
+      private readonly spinnerController_: SpinnerController,
+      private readonly selectionHandler_: FileSelectionHandler) {
     this.store_ = getStore();
-
-    /**
-     * Whether a scan is in progress.
-     * @private @type {boolean}
-     */
-    this.scanInProgress_ = false;
-
-    /**
-     * Timer ID to delay UI refresh after a scan is updated.
-     * @private @type {number}
-     */
-    this.scanUpdatedTimer_ = 0;
-
-    /**
-     * @private @type {?function():void}
-     */
-    this.spinnerHideCallback_ = null;
-
     this.directoryModel_.addEventListener(
         'scan-started', this.onScanStarted_.bind(this));
     this.directoryModel_.addEventListener(
@@ -71,10 +49,7 @@ export class ScanController {
         'rescan-completed', this.onRescanCompleted_.bind(this));
   }
 
-  /**
-   * @private
-   */
-  onScanStarted_() {
+  private onScanStarted_() {
     if (this.scanInProgress_) {
       this.listContainer_.endBatchUpdates();
     }
@@ -105,10 +80,7 @@ export class ScanController {
         500, this.onSpinnerShown_.bind(this));
   }
 
-  /**
-   * @private
-   */
-  onScanCompleted_() {
+  private onScanCompleted_() {
     if (!this.scanInProgress_) {
       console.warn('Scan-completed event received. But scan is not started.');
       return;
@@ -150,27 +122,24 @@ export class ScanController {
 
   /**
    * Sends the scanned directory content to the Store.
-   * @private
    */
-  updateStore_() {
-    const entries = /** @type {!Array<!Entry>} */ (
-        this.directoryModel_.getFileList().slice());
+  private updateStore_() {
+    const entries: Entry[] = this.directoryModel_.getFileList().slice();
     this.store_.dispatch(updateDirectoryContent({entries}));
   }
 
   /**
-   * @private
    */
-  onScanUpdated_() {
+  private onScanUpdated_() {
     if (!this.scanInProgress_) {
       console.warn('Scan-updated event received. But scan is not started.');
       return;
     }
 
-      // Call this immediately (instead of debouncing it with
-      // `scanUpdatedTimer_`) so the current directory entries don't get
-      // accidentally removed from the store by `clearCachedEntries` in
-      // `state/reducers/all_entries.ts`.
+    // Call this immediately (instead of debouncing it with
+    // `scanUpdatedTimer_`) so the current directory entries don't get
+    // accidentally removed from the store by `clearCachedEntries` in
+    // `state/reducers/all_entries.ts`.
     this.updateStore_();
 
     if (this.scanUpdatedTimer_) {
@@ -192,9 +161,8 @@ export class ScanController {
   }
 
   /**
-   * @private
    */
-  onScanCancelled_() {
+  private onScanCancelled_() {
     if (!this.scanInProgress_) {
       console.warn('Scan-cancelled event received. But scan is not started.');
       return;
@@ -213,9 +181,8 @@ export class ScanController {
 
   /**
    * Handle the 'rescan-completed' from the DirectoryModel.
-   * @private
    */
-  onRescanCompleted_() {
+  private onRescanCompleted_() {
     this.updateStore_();
     this.selectionHandler_.onFileSelectionChanged();
   }
@@ -223,9 +190,8 @@ export class ScanController {
   /**
    * When a spinner is shown, updates the UI to remove items in the previous
    * directory.
-   * @private
    */
-  onSpinnerShown_() {
+  private onSpinnerShown_() {
     if (this.scanInProgress_) {
       this.listContainer_.endBatchUpdates();
       this.listContainer_.startBatchUpdates();
@@ -234,9 +200,8 @@ export class ScanController {
 
   /**
    * Hides the spinner if it's shown or scheduled to be shown.
-   * @private
    */
-  hideSpinner_() {
+  private hideSpinner_() {
     if (this.spinnerHideCallback_) {
       this.spinnerHideCallback_();
       this.spinnerHideCallback_ = null;
