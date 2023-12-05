@@ -345,9 +345,10 @@ suite('TabOrganizationPageTest', () => {
     const failure = tabOrganizationPage.shadowRoot!.querySelector(
         'tab-organization-failure');
     assertTrue(!!failure);
-    const tipAction = failure.shadowRoot!.querySelector<HTMLElement>(
+    const links = failure.shadowRoot!.querySelectorAll<HTMLElement>(
         '.tab-organization-link');
-    assertTrue(!!tipAction);
+    assertEquals(2, links.length);
+    const tipAction = links[1]!;
     tipAction.click();
     await flushTasks();
 
