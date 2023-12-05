@@ -590,8 +590,7 @@ TEST_F(TetherServiceTest, TestShutdown) {
   VerifyLastShutdownReason(TetherComponent::ShutdownReason::USER_LOGGED_OUT);
 }
 
-// TODO(https://crbug.com/893878): Fix disabled test.
-TEST_F(TetherServiceTest, DISABLED_TestAsyncTetherShutdown) {
+TEST_F(TetherServiceTest, TestAsyncTetherShutdown) {
   CreateTetherService();
 
   // Tether should be ENABLED, and there should be no AsyncShutdownTask.
@@ -607,6 +606,7 @@ TEST_F(TetherServiceTest, DISABLED_TestAsyncTetherShutdown) {
   // Disable the Tether preference. This should trigger the asynchrnous
   // shutdown.
   SetTetherTechnologyStateEnabled(false);
+  SetTetherUserPrefState(false);
 
   // Tether should be active, but shutting down.
   VerifyTetherActiveStatus(true /* expected_active */);
@@ -1066,8 +1066,7 @@ TEST_F(TetherServiceTest, TestIsBluetoothPowered) {
   VerifyLastShutdownReason(TetherComponent::ShutdownReason::BLUETOOTH_DISABLED);
 }
 
-// TODO(https://crbug.com/893878): Fix disabled test.
-TEST_F(TetherServiceTest, DISABLED_TestCellularIsUnavailable) {
+TEST_F(TetherServiceTest, TestCellularIsUnavailable) {
   manager_test()->RemoveTechnology(shill::kTypeCellular);
   ASSERT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
             network_state_handler()->GetTechnologyState(
@@ -1076,6 +1075,7 @@ TEST_F(TetherServiceTest, DISABLED_TestCellularIsUnavailable) {
   CreateTetherService();
 
   SetTetherTechnologyStateEnabled(false);
+  SetTetherUserPrefState(false);
   EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_AVAILABLE,
             network_state_handler()->GetTechnologyState(
                 NetworkTypePattern::Tether()));
@@ -1083,6 +1083,7 @@ TEST_F(TetherServiceTest, DISABLED_TestCellularIsUnavailable) {
   VerifyLastShutdownReason(TetherComponent::ShutdownReason::PREF_DISABLED);
 
   SetTetherTechnologyStateEnabled(true);
+  SetTetherUserPrefState(true);
   EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
             network_state_handler()->GetTechnologyState(
                 NetworkTypePattern::Tether()));
@@ -1240,8 +1241,7 @@ TEST_F(TetherServiceTest, DISABLED_TestDisabled) {
       1 /* expected_count */);
 }
 
-// TODO(https://crbug.com/893878): Fix disabled test.
-TEST_F(TetherServiceTest, DISABLED_TestEnabled) {
+TEST_F(TetherServiceTest, TestEnabled) {
   CreateTetherService();
 
   EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
@@ -1250,6 +1250,7 @@ TEST_F(TetherServiceTest, DISABLED_TestEnabled) {
   VerifyTetherActiveStatus(true /* expected_active */);
 
   SetTetherTechnologyStateEnabled(false);
+  SetTetherUserPrefState(false);
   EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_AVAILABLE,
             network_state_handler()->GetTechnologyState(
                 NetworkTypePattern::Tether()));
@@ -1261,6 +1262,7 @@ TEST_F(TetherServiceTest, DISABLED_TestEnabled) {
       1u /* expected_count */);
 
   SetTetherTechnologyStateEnabled(true);
+  SetTetherUserPrefState(true);
   EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
             network_state_handler()->GetTechnologyState(
                 NetworkTypePattern::Tether()));
@@ -1369,12 +1371,11 @@ TEST_F(TetherServiceTest, TestUserPrefChangesViaTechnologyStateChange) {
   VerifyLastShutdownReason(TetherComponent::ShutdownReason::PREF_DISABLED);
 }
 
-// TODO(https://crbug.com/893878): Fix disabled test.
 // Test against a past defect that made TetherService and NetworkStateHandler
 // repeatly update technology state after the other did so. TetherService should
 // only update technology state if NetworkStateHandler has provided a different
 // state than the user preference.
-TEST_F(TetherServiceTest, DISABLED_TestEnabledMultipleChanges) {
+TEST_F(TetherServiceTest, TestEnabledMultipleChanges) {
   CreateTetherService();
 
   // CreateTetherService calls RunUntilIdle() so UpdateTetherTechnologyState()
@@ -1385,6 +1386,7 @@ TEST_F(TetherServiceTest, DISABLED_TestEnabledMultipleChanges) {
   SetTetherTechnologyStateEnabled(false);
   SetTetherTechnologyStateEnabled(false);
   SetTetherTechnologyStateEnabled(false);
+  SetTetherUserPrefState(false);
 
   updated_technology_state_count++;
   EXPECT_EQ(updated_technology_state_count,
@@ -1393,6 +1395,7 @@ TEST_F(TetherServiceTest, DISABLED_TestEnabledMultipleChanges) {
   SetTetherTechnologyStateEnabled(true);
   SetTetherTechnologyStateEnabled(true);
   SetTetherTechnologyStateEnabled(true);
+  SetTetherUserPrefState(true);
 
   updated_technology_state_count++;
   EXPECT_EQ(updated_technology_state_count,
