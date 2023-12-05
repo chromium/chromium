@@ -28,6 +28,9 @@ fuzzer_test("ini_parser_fuzzer") {
     "//base",
     "//chrome/common:ini_parser",
   ]
+
+  # Large ini files can cause test cases to timeout
+  libfuzzer_options = [ "max_len=100000" ]
 }
 grit("resources") {
   source = "common_resources.grd"
