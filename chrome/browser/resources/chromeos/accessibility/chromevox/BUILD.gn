@@ -25,6 +25,8 @@ chromevox_modules = [
   "third_party/tamachiyomi/ja_phonetic_data.js",
 ]
 
+tsc_common_out_dir = "$target_gen_dir/../common/tsc"
+
 # ES6 modules.
 chromevox_es6_modules = [
   "../common/automation_predicate.js",
@@ -37,7 +39,7 @@ chromevox_es6_modules = [
   "../common/cursors/recovery_strategy.js",
   "../common/event_generator.js",
   "../common/flags.js",
-  "../common/instance_checker.js",
+  "$tsc_common_out_dir/instance_checker.js",
   "../common/key_code.js",
   "../common/local_storage.js",
   "../common/rect_util.js",
@@ -214,6 +216,7 @@ generate_message_formatting_data("i18n_data") {
 run_jsbundler("chromevox_copied_files") {
   mode = "copy"
   dest_dir = chromevox_out_dir
+  deps = [ "../common:ts_build" ]
   sources = [
     "background/background.html",
     "earcons/chromevox_loaded.ogg",
@@ -242,6 +245,7 @@ run_jsbundler("chromevox_copied_files") {
   ]
   sources += chromevox_es6_modules
   rewrite_rules = [
+    rebase_path(tsc_common_out_dir, root_build_dir) + ":",
     rebase_path(".", root_build_dir) + ":",
     rebase_path(closure_library_dir, root_build_dir) + ":closure",
   ]

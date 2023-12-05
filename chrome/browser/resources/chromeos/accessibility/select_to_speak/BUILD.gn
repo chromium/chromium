@@ -34,10 +34,7 @@ ts_modules = [
 ]
 
 # JS files required for ts build.
-js_files = [
-  "common/instance_checker.js",
-  "select_to_speak/select_to_speak.js",
-]
+js_files = [ "select_to_speak/select_to_speak.js" ]
 
 # Root dir must be the parent directory so it can reach common.
 ts_library("ts_build") {
@@ -49,22 +46,33 @@ ts_library("ts_build") {
     "../definitions/tts.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
     "../definitions/automation.d.ts",
+    "../definitions/extensions.d.ts",
+    "../definitions/runtime.d.ts",
     "../definitions/i18n.d.ts",
+    "../definitions/tabs.d.ts",
+    "../definitions/extension_types.d.ts",
+    "//tools/typescript/definitions/windows.d.ts",
   ]
 
   tsconfig_base = "../tsconfig.base.json"
 }
+
+tsc_common_out_dir = "$target_gen_dir/../common/tsc"
 
 # Instead of setting up one copy target for each subdirectory, use a script
 # to copy all files.
 run_jsbundler("select_to_speak_copied_files") {
   mode = "copy"
   dest_dir = select_to_speak_out_dir
-  deps = [ ":ts_build" ]
+  deps = [
+    ":ts_build",
+    "../common:ts_build",
+  ]
   sources = [
     "$select_to_speak_tsc_out_dir/metrics_utils.js",
     "$select_to_speak_tsc_out_dir/select_to_speak_constants.js",
     "$select_to_speak_tsc_out_dir/select_to_speak_main.js",
+    "$tsc_common_out_dir/instance_checker.js",
     "background.html",
     "checked.png",
     "earcons/null_selection.ogg",

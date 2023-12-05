@@ -28,20 +28,23 @@ tsc_out_dir = "$target_gen_dir/tsc"
 # Add typescript files to compile here.
 ts_modules = [
   "array_util.ts",
+  "instance_checker.ts",
   "paragraph_utils.ts",
 ]
 
-# JS files required for ts build.
-js_files = [ "instance_checker.js" ]
-
 # Root dir must be the parent directory so it can reach common.
 ts_library("ts_build") {
-  in_files = js_files + ts_modules
+  in_files = ts_modules
   out_dir = tsc_out_dir
   definitions = [
     "../definitions/tts.d.ts",
     "../definitions/automation.d.ts",
+    "../definitions/extensions.d.ts",
+    "../definitions/runtime.d.ts",
     "../definitions/i18n.d.ts",
+    "../definitions/tabs.d.ts",
+    "../definitions/extension_types.d.ts",
+    "//tools/typescript/definitions/windows.d.ts",
   ]
 
   tsconfig_base = "../tsconfig.base.json"
@@ -53,6 +56,7 @@ run_jsbundler("accessibility_common_copied_files") {
   deps = [ ":ts_build" ]
   sources = [
     "$tsc_out_dir/array_util.js",
+    "$tsc_out_dir/instance_checker.js",
     "$tsc_out_dir/paragraph_utils.js",
     "async_util.js",
     "automation_predicate.js",
@@ -67,7 +71,6 @@ run_jsbundler("accessibility_common_copied_files") {
     "event_handler.js",
     "flags.js",
     "gdocs_script.js",
-    "instance_checker.js",
     "key_code.js",
     "local_storage.js",
     "node_navigation_utils.js",
