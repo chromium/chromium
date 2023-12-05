@@ -65,7 +65,7 @@ class OptionsMenuSheetContent extends MenuSheetContent {
 
         mMenu.addItem(
                 Item.VOICE,
-                R.drawable.graphic_eq_24,
+                R.drawable.voice_selection_24,
                 res.getString(R.string.readaloud_voice_menu_title),
                 MenuItem.Action.EXPAND,
                 res.getString(R.string.readaloud_voice_menu_title));
