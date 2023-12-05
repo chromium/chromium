@@ -639,26 +639,6 @@ void AutofillAgent::UserGestureObserved() {
   password_autofill_agent_->UserGestureObserved();
 }
 
-void AutofillAgent::TriggerRefillIfNeeded(const FormData& form) {
-  if (!unsafe_render_frame()) {
-    return;
-  }
-  WebFormElement updated_form_element = form_util::FindFormByRendererId(
-      unsafe_render_frame()->GetWebFrame()->GetDocument(),
-      form.unique_renderer_id);
-  std::optional<FormData> updated_form_data =
-      updated_form_element.IsNull()
-          ? CollectFormlessElements()
-          : form_util::ExtractFormData(updated_form_element,
-                                       field_data_manager());
-  // Deep-compare forms, but don't take into account the fields' values.
-  if (auto* autofill_driver = unsafe_autofill_driver();
-      autofill_driver && updated_form_data &&
-      !FormData::DeepEqual(form, *updated_form_data)) {
-    autofill_driver->FormsSeen({*updated_form_data}, {});
-  }
-}
-
 // mojom::AutofillAgent:
 void AutofillAgent::ApplyFormAction(mojom::ActionType action_type,
                                     mojom::ActionPersistence action_persistence,
@@ -721,15 +701,24 @@ void AutofillAgent::ApplyFormAction(mojom::ActionType action_type,
       formless_elements_were_autofilled_ |= filled_some_fields;
     }
 
-    // TODO(crbug.com/1198811): Inform the BrowserAutofillManager about the
-    // fields that were actually filled. It's possible that the form has changed
-    // since the time filling was triggered.
+    WebFormElement updated_form_element = form_util::FindFormByRendererId(
+        unsafe_render_frame()->GetWebFrame()->GetDocument(),
+        form.unique_renderer_id);
+    std::optional<FormData> updated_form_data =
+        updated_form_element.IsNull()
+            ? CollectFormlessElements()
+            : form_util::ExtractFormData(updated_form_element,
+                                         field_data_manager());
+
     if (auto* autofill_driver = unsafe_autofill_driver()) {
       autofill_driver->DidFillAutofillFormData(form,
                                                AutofillTickClock::NowTicks());
     }
-    if (action_type == mojom::ActionType::kFill) {
-      TriggerRefillIfNeeded(form);
+    if (auto* autofill_driver = unsafe_autofill_driver();
+        autofill_driver && updated_form_data) {
+      CHECK_EQ(action_persistence, mojom::ActionPersistence::kFill);
+      autofill_driver->FormsSeen({std::move(*updated_form_data)},
+                                 /*removed_forms=*/{});
     }
     SendPotentiallySubmittedFormToBrowser();
   }

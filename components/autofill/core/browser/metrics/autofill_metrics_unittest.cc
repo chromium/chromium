@@ -34,8 +34,10 @@
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
@@ -6916,16 +6918,22 @@ TEST_F(AutofillMetricsTest, DynamicFormMetrics) {
 
   // Simulate checking whether to fill a dynamic form before the form was filled
   // initially.
-  FormStructure form_structure(form);
-  test_api(autofill_manager()).ShouldTriggerRefill(form_structure);
+  test_api(autofill_manager())
+      .ShouldTriggerRefill(FormStructure(form),
+                           RefillTriggerReason::kFormChanged);
   histogram_tester.ExpectTotalCount("Autofill.FormEvents.Address", 0);
 
   // Simulate filling the form.
   FillTestProfile(form);
 
+  // Dynamically change the form.
+  form.fields.pop_back();
+
   // Simulate checking whether to fill a dynamic form after the form was filled
   // initially.
-  test_api(autofill_manager()).ShouldTriggerRefill(form_structure);
+  test_api(autofill_manager())
+      .ShouldTriggerRefill(FormStructure(form),
+                           RefillTriggerReason::kFormChanged);
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.Address"),
       BucketsInclude(Bucket(FORM_EVENT_DID_SEE_FILLABLE_DYNAMIC_FORM, 1),
@@ -6941,8 +6949,12 @@ TEST_F(AutofillMetricsTest, DynamicFormMetrics) {
                      Bucket(FORM_EVENT_DID_DYNAMIC_REFILL, 1),
                      Bucket(FORM_EVENT_DYNAMIC_CHANGE_AFTER_REFILL, 0)));
 
-  // Trigger a check to see whether a refill should happen. The
-  test_api(autofill_manager()).ShouldTriggerRefill(form_structure);
+  // Dynamically change the form again.
+  form.fields.pop_back();
+  // Trigger a check to see whether a refill should happen.
+  test_api(autofill_manager())
+      .ShouldTriggerRefill(FormStructure(form),
+                           RefillTriggerReason::kFormChanged);
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.Address"),
       BucketsInclude(Bucket(FORM_EVENT_DID_SEE_FILLABLE_DYNAMIC_FORM, 2),

@@ -47,8 +47,9 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
     return manager_->external_delegate_.get();
   }
 
-  bool ShouldTriggerRefill(const FormStructure& form_structure) {
-    return manager_->ShouldTriggerRefill(form_structure);
+  bool ShouldTriggerRefill(const FormStructure& form_structure,
+                           RefillTriggerReason refill_trigger_reason) {
+    return manager_->ShouldTriggerRefill(form_structure, refill_trigger_reason);
   }
 
   void TriggerRefill(const FormData& form,

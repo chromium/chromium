@@ -1434,6 +1434,11 @@ void BrowserAutofillManager::UndoAutofill(
     }
   }
 
+  // Do not attempt a refill after an Undo operation.
+  if (FillingContext* filling_context = GetFillingContext(form.global_id())) {
+    SetFillingContext(form.global_id(), nullptr);
+  }
+
   // Since Undo only affects fields that were already filled, and only sets
   // values to fields to something that already existed in it prior to the
   // filling, it is okay to bypass the filling security checks and hence passing
@@ -1708,9 +1713,11 @@ void BrowserAutofillManager::OnSelectOrSelectListFieldOptionsDidChangeImpl(
 
   driver().SendAutofillTypePredictionsToRenderer({form_structure});
 
-  if (ShouldTriggerRefill(*form_structure))
+  if (ShouldTriggerRefill(*form_structure,
+                          RefillTriggerReason::kSelectOptionsChanged)) {
     TriggerRefill(
         form, {.trigger_source = AutofillTriggerSource::kSelectOptionsChanged});
+  }
 }
 
 void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
@@ -1804,7 +1811,9 @@ void BrowserAutofillManager::MaybeTriggerRefillForExpirationDate(
   refill_value[refill_value.size() - 2] = '0' + ((old_year % 100) / 10);
 
   FormStructure* form_structure = FindCachedFormById(form.global_id());
-  if (form_structure && ShouldTriggerRefill(*form_structure)) {
+  if (form_structure &&
+      ShouldTriggerRefill(*form_structure,
+                          RefillTriggerReason::kExpirationDateFormatted)) {
     FillingContext* filling_context =
         GetFillingContext(form_structure->global_id());
     DCHECK(filling_context);  // This is enforced by ShouldTriggerRefill.
@@ -2302,7 +2311,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
 
   if (action_persistence == mojom::ActionPersistence::kFill && !is_refill) {
     SetFillingContext(
-        *form_structure,
+        form_structure->global_id(),
         std::make_unique<FillingContext>(*autofill_trigger_field,
                                          profile_or_credit_card, optional_cvc));
   }
@@ -2459,6 +2468,9 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     if (!autofill_field->IsFocusable() && result.fields[i].is_autofilled) {
       AutofillMetrics::LogHiddenOrPresentationalSelectFieldsFilled();
     }
+  }
+  if (could_attempt_refill) {
+    filling_context->filled_form = result;
   }
 
   autofilled_form_signatures_.push_front(form_structure->FormSignatureAsStr());
@@ -2875,12 +2887,12 @@ void BrowserAutofillManager::OnFormProcessed(
     autofill_optimization_guide->OnDidParseForm(
         form_structure, client().GetPersonalDataManager());
   }
-
-  // If a form with the same name was previously filled, and there has not
-  // been a refill attempt on that form yet, start the process of triggering a
-  // refill.
-  if (ShouldTriggerRefill(form_structure))
+  // If a form with the same FormGlobalId was previously filled, the structure
+  // of the form changed, and there has not been a refill attempt on that form
+  // yet, start the process of triggering a refill.
+  if (ShouldTriggerRefill(form_structure, RefillTriggerReason::kFormChanged)) {
     ScheduleRefill(form, {.trigger_source = AutofillTriggerSource::kFormsSeen});
+  }
 }
 
 void BrowserAutofillManager::OnAfterProcessParsedForms(
@@ -3216,9 +3228,9 @@ bool BrowserAutofillManager::FillFieldWithValue(
 }
 
 void BrowserAutofillManager::SetFillingContext(
-    const FormStructure& form,
+    FormGlobalId form_id,
     std::unique_ptr<FillingContext> context) {
-  filling_context_[form.global_id()] = std::move(context);
+  filling_context_[form_id] = std::move(context);
 }
 
 BrowserAutofillManager::FillingContext*
@@ -3228,13 +3240,25 @@ BrowserAutofillManager::GetFillingContext(FormGlobalId form_id) {
 }
 
 bool BrowserAutofillManager::ShouldTriggerRefill(
-    const FormStructure& form_structure) {
+    const FormStructure& form_structure,
+    RefillTriggerReason refill_trigger_reason) {
   // Should not refill if a form with the same FormGlobalId that has not been
   // filled before.
   FillingContext* filling_context =
       GetFillingContext(form_structure.global_id());
-  if (filling_context == nullptr)
+  if (filling_context == nullptr) {
     return false;
+  }
+
+  // Confirm that the form changed by running a DeepEqual check on the filled
+  // form and the received form. Other trigger reasons do not need this check
+  // since they do not depend on the form changing.
+  if (refill_trigger_reason == RefillTriggerReason::kFormChanged &&
+      filling_context->filled_form &&
+      FormData::DeepEqual(form_structure.ToFormData(),
+                          *filling_context->filled_form)) {
+    return false;
+  }
 
   address_form_event_logger_->OnDidSeeFillableDynamicForm(
       signin_state_for_metrics_, form_structure);
