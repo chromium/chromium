@@ -704,12 +704,12 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'os-settings:about-update-complete';
       case SearchResultIcon.kChrome:
         return 'os-settings:chrome';
-      case SearchResultIcon.kChromeVox:
-        return 'os-settings:chromevox';
       case SearchResultIcon.kClock:
         return 'os-settings:clock';
       case SearchResultIcon.kContrast:
         return 'os-settings:contrast';
+      case SearchResultIcon.kCursorClick:
+        return 'os-settings:cursor-click';
       case SearchResultIcon.kDetailedBuild:
         return 'os-settings:about-additional-details';
       case SearchResultIcon.kDeveloperTags:
@@ -743,6 +743,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kGooglePlay:
         return isRevampEnabled ? 'os-settings:google-play-revamp' :
                                  'os-settings:google-play';
+      case SearchResultIcon.kHearing:
+        return 'os-settings:a11y-hearing';
       case SearchResultIcon.kHelp:
         return 'os-settings:about-help';
       case SearchResultIcon.kHotspot:
@@ -820,12 +822,16 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return isRevampEnabled ? 'os-settings:sync-revamp' : 'os-settings:sync';
       case SearchResultIcon.kSystemPreferences:
         return 'os-settings:system-preferences';
+      case SearchResultIcon.kTextToSpeech:
+        return 'os-settings:text-to-speech';
       case SearchResultIcon.kTouchpad:
         return 'os-settings:device-touchpad';
       case SearchResultIcon.kWallpaper:
         return 'os-settings:wallpaper';
       case SearchResultIcon.kWifi:
         return 'os-settings:network-wifi';
+      case SearchResultIcon.kZoomIn:
+        return 'os-settings:zoom-in';
       default:
         return 'os-settings:settings-general';
     }

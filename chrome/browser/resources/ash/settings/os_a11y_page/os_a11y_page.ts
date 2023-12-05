@@ -119,12 +119,11 @@ export class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
             return {
               imageDescription: 'os-settings:a11y-image-description',
               showInQuickSettings: 'os-settings:accessibility-revamp',
-              textToSpeech: 'os-settings:a11y-text-to-speech',
-              displayAndMagnification:
-                  'os-settings:a11y-display-and-magnification',
+              textToSpeech: 'os-settings:text-to-speech',
+              displayAndMagnification: 'os-settings:zoom-in',
               keyboardAndTextInput: 'os-settings:a11y-keyboard-and-text-input',
-              cursorAndTouchpad: 'os-settings:a11y-cursor-and-touchpad',
-              audioAndCaptions: 'os-settings:a11y-audio-and-captions',
+              cursorAndTouchpad: 'os-settings:cursor-click',
+              audioAndCaptions: 'os-settings:a11y-hearing',
               findMore: 'os-settings:a11y-find-more',
             };
           }
