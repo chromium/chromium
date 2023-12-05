@@ -159,7 +159,9 @@ bool AutoSnapController::AutoSnapWindowIfNeeded(aura::Window* window) {
   // If `window` is floated on top of 2 already snapped windows (this can
   // happen after floating a window, starting split view, and activating
   // an unfloated window from overview), don't snap.
-  if (window_state->IsFloated() && split_view_controller->BothSnapped()) {
+  if (window_state->IsFloated() &&
+      split_view_controller->state() ==
+          SplitViewController::State::kBothSnapped) {
     return false;
   }
 

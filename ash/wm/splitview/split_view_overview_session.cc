@@ -222,15 +222,16 @@ void SplitViewOverviewSession::OnWindowBoundsChanged(
   }
 
   if (IsSnapGroupEnabledInClamshellMode() &&
-      split_view_controller->BothSnapped()) {
+      split_view_controller->state() ==
+          SplitViewController::State::kBothSnapped) {
     // When the second window is snapped in a snap group, we *don't* want to
     // override `divider_position_` with `new_bounds` below, which don't take
     // into account the divider width.
     return;
   }
 
-  WindowState* window_state = WindowState::Get(window);
-  if (window_state->is_dragged()) {
+  if (WindowState* window_state = WindowState::Get(window);
+      window_state->is_dragged()) {
     CHECK_NE(WindowResizer::kBoundsChange_None,
              window_state->drag_details()->bounds_change);
     if (window_state->drag_details()->bounds_change ==

@@ -588,10 +588,6 @@ bool SplitViewController::InSplitViewMode() const {
   return state_ != State::kNoSnap;
 }
 
-bool SplitViewController::BothSnapped() const {
-  return state_ == State::kBothSnapped;
-}
-
 bool SplitViewController::InClamshellSplitViewMode() const {
   return InSplitViewMode() && split_view_type_ == SplitViewType::kClamshellType;
 }
@@ -2350,7 +2346,7 @@ void SplitViewController::OnWindowSnapped(
   // but instead snap that window to the opposite side.
   if (previous_state &&
       *previous_state == chromeos::WindowStateType::kFloated &&
-      IsInTabletMode() && !BothSnapped()) {
+      IsInTabletMode() && state_ != State::kBothSnapped) {
     for (aura::Window* mru_window :
          Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(
              kActiveDesk)) {

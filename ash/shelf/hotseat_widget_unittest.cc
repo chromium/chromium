@@ -901,7 +901,8 @@ TEST_P(HotseatWidgetTest, SwipeUpOnShelfShowsHotseatInSplitView) {
       window.get(), SplitViewController::SnapPosition::kPrimary);
   split_view_controller->SnapWindow(
       window2.get(), SplitViewController::SnapPosition::kSecondary);
-  EXPECT_TRUE(split_view_controller->BothSnapped());
+  EXPECT_EQ(split_view_controller->state(),
+            SplitViewController::State::kBothSnapped);
 
   // We should still be able to drag up the hotseat.
   SwipeUpOnShelf();

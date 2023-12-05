@@ -218,7 +218,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // to see the difference between tablet mode and clamshell mode splitview
   // mode.
   bool InSplitViewMode() const;
-  bool BothSnapped() const;
   bool InClamshellSplitViewMode() const;
   bool InTabletSplitViewMode() const;
 
