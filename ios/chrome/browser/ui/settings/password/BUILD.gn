@@ -6,7 +6,7 @@ source_set("password") {
   sources = [
     "passwords_coordinator.h",
     "passwords_coordinator.mm",
-    "passwords_mediator+private.h",
+    "passwords_mediator+Testing.h",
     "passwords_mediator.h",
     "passwords_mediator.mm",
   ]
@@ -74,7 +74,7 @@ source_set("password_ui") {
   sources = [
     "password_exporter.h",
     "password_exporter.mm",
-    "password_manager_view_controller+private.h",
+    "password_manager_view_controller+Testing.h",
     "password_manager_view_controller.h",
     "password_manager_view_controller.mm",
     "password_manager_view_controller_delegate.h",

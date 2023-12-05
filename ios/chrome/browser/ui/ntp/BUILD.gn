@@ -75,7 +75,7 @@ source_set("component_factory") {
 
 source_set("coordinator") {
   sources = [
-    "new_tab_page_coordinator+private.h",
+    "new_tab_page_coordinator+Testing.h",
     "new_tab_page_coordinator.h",
     "new_tab_page_coordinator.mm",
   ]

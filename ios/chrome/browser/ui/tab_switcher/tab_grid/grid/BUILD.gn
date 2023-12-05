@@ -75,7 +75,7 @@ source_set("grid_ui_constants") {
 
 source_set("grid_ui") {
   sources = [
-    "base_grid_view_controller+private.h",
+    "base_grid_view_controller+Testing.h",
     "base_grid_view_controller+subclassing.h",
     "base_grid_view_controller.h",
     "base_grid_view_controller.mm",

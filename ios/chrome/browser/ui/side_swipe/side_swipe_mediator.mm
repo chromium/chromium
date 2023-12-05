@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_mediator.h"
-#import "ios/chrome/browser/ui/side_swipe/side_swipe_mediator+private.h"
+#import "ios/chrome/browser/ui/side_swipe/side_swipe_mediator+Testing.h"
 
 #import <memory>
 
@@ -102,8 +102,15 @@ const NSUInteger kIpadGreySwipeTabCount = 8;
 
 // The current active WebState.
 @property(nonatomic, readonly) web::WebState* activeWebState;
+
 // The webStateList owned by the current browser.
 @property(nonatomic, readonly) WebStateList* webStateList;
+
+// Whether to allow navigating from the leading edge.
+@property(nonatomic, assign) BOOL leadingEdgeNavigationEnabled;
+
+// Whether to allow navigating from the trailing edge.
+@property(nonatomic, assign) BOOL trailingEdgeNavigationEnabled;
 
 // Load grey snapshots for the next `kIpadGreySwipeTabCount` tabs in
 // `direction`.

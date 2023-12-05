@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_OMNIBOX_POPUP_MEDIATOR_PRIVATE_H_
-#define IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_OMNIBOX_POPUP_MEDIATOR_PRIVATE_H_
+#ifndef IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_OMNIBOX_POPUP_MEDIATOR_TESTING_H_
+#define IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_OMNIBOX_POPUP_MEDIATOR_TESTING_H_
 
-// Extension exposing private methods of OmniboxPopupMediator for testing.
-@interface OmniboxPopupMediator ()
+// Testing category exposing private methods of OmniboxPopupMediator for tests.
+@interface OmniboxPopupMediator (Testing)
 
 /// Groups `currentResult` suggestions from index `begin` (included) to `end`
 /// (excluded) with `GroupSuggestionsBySearchVsURL`.
@@ -17,4 +17,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_OMNIBOX_POPUP_MEDIATOR_PRIVATE_H_
+#endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_OMNIBOX_POPUP_MEDIATOR_TESTING_H_

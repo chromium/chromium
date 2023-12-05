@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SIDE_SWIPE_SIDE_SWIPE_MEDIATOR_PRIVATE_H_
-#define IOS_CHROME_BROWSER_UI_SIDE_SWIPE_SIDE_SWIPE_MEDIATOR_PRIVATE_H_
+#ifndef IOS_CHROME_BROWSER_UI_SIDE_SWIPE_SIDE_SWIPE_MEDIATOR_TESTING_H_
+#define IOS_CHROME_BROWSER_UI_SIDE_SWIPE_SIDE_SWIPE_MEDIATOR_TESTING_H_
 
 namespace web {
 class WebState;
 }  // namespace web
 
-// Class extension exposing private methods of SideSwipeMediator
-// for testing.
-@interface SideSwipeMediator ()
+// Testing category to expose private methods of SideSwipeMediator
+// for tests.
+@interface SideSwipeMediator (Testing)
 
 // Whether to allow navigating from the leading edge.
 @property(nonatomic, assign) BOOL leadingEdgeNavigationEnabled;
@@ -23,4 +23,4 @@ class WebState;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_SIDE_SWIPE_SIDE_SWIPE_MEDIATOR_PRIVATE_H_
+#endif  // IOS_CHROME_BROWSER_UI_SIDE_SWIPE_SIDE_SWIPE_MEDIATOR_TESTING_H_
