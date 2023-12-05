@@ -88,12 +88,10 @@ class KioskCrashRestoreTest : public MixinBasedInProcessBrowserTest,
     CHECK(device_policy_.payload().SerializeToString(
         policy_data.mutable_policy_value()));
     const std::string policy_data_string = policy_data.SerializeAsString();
-    std::string encoded;
-    base::Base64Encode(policy_data_string, &encoded);
 
     // Store policy data and existing device local accounts in local state.
     g_browser_process->local_state()->SetString(prefs::kDeviceSettingsCache,
-                                                encoded);
+                                               base::Base64Encode(policy_data_string));
 
     base::Value::List accounts;
     accounts.Append(GetTestAppUserId());
