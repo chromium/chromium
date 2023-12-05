@@ -2221,7 +2221,7 @@ public class StripLayoutHelperTest {
         MockTabModel tabModel = new MockTabModel(mProfile, null);
         tabModel.addTab(expectedActiveTabId);
         tabModel.setIndex(0, TabSelectionType.FROM_NEW, true);
-        tabModel.setAsActiveModelForTesting();
+        tabModel.setActive(true);
         mStripLayoutHelper.setTabModel(tabModel, null, false);
 
         // Verify that the real and placeholder strip tabs were generated in the correct indices.
@@ -2246,7 +2246,7 @@ public class StripLayoutHelperTest {
         MockTabModel tabModel = new MockTabModel(mProfile, null);
         tabModel.addTab(expectedActiveTabId);
         tabModel.setIndex(0, TabSelectionType.FROM_NEW, true);
-        tabModel.setAsActiveModelForTesting();
+        tabModel.setActive(true);
         mStripLayoutHelper = createStripLayoutHelper(false, false);
         mStripLayoutHelper.setTabModel(tabModel, null, false);
 
@@ -2285,7 +2285,7 @@ public class StripLayoutHelperTest {
         MockTabModel tabModel = new MockTabModel(mProfile, null);
         tabModel.addTab(expectedActiveTabId);
         tabModel.setIndex(0, TabSelectionType.FROM_NEW, true);
-        tabModel.setAsActiveModelForTesting();
+        tabModel.setActive(true);
         mStripLayoutHelper.setTabModel(tabModel, null, false);
 
         // Mark that a tab was restored.
@@ -2327,7 +2327,7 @@ public class StripLayoutHelperTest {
 
         // Mock a tab model and set it in the StripLayoutHelper.
         MockTabModel tabModel = new MockTabModel(mProfile, null);
-        tabModel.setAsActiveModelForTesting();
+        tabModel.setActive(true);
         mStripLayoutHelper.setTabModel(tabModel, null, false);
 
         // Verify there are placeholders.
@@ -2371,7 +2371,7 @@ public class StripLayoutHelperTest {
 
         // Mock a tab model and set it in the StripLayoutHelper.
         MockTabModel tabModel = new MockTabModel(mProfile, null);
-        tabModel.setAsActiveModelForTesting();
+        tabModel.setActive(true);
         mStripLayoutHelper.setTabModel(tabModel, null, false);
         assertEquals("Offset should be 0.", 0, mStripLayoutHelper.getScrollOffset(), EPSILON);
 
@@ -2394,7 +2394,7 @@ public class StripLayoutHelperTest {
         MockTabModel tabModel = new MockTabModel(mProfile, null);
         tabModel.addTab(expectedCreatedTabId);
         tabModel.setIndex(0, TabSelectionType.FROM_NEW, true);
-        tabModel.setAsActiveModelForTesting();
+        tabModel.setActive(true);
         mStripLayoutHelper.setTabModel(tabModel, null, false);
 
         // Verify that the fifth (tab created from "intent") is real.

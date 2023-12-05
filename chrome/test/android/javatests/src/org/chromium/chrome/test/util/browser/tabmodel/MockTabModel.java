@@ -167,11 +167,12 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
     public void removeIncognitoObserver(IncognitoTabModelObserver observer) {}
 
     @Override
-    public boolean isActiveModel() {
-        return mIsActiveModel;
+    public void setActive(boolean active) {
+        mIsActiveModel = active;
     }
 
-    public void setAsActiveModelForTesting() {
-        mIsActiveModel = true;
+    @Override
+    public boolean isActiveModel() {
+        return mIsActiveModel;
     }
 }

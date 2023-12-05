@@ -93,8 +93,7 @@ public abstract class TabModelSelectorBase
         mIncognitoTabModel = incognitoModel;
         int activeModelIndex = getModelIndex(mStartIncognito);
         assert activeModelIndex != MODEL_NOT_FOUND;
-        mTabModelFilterProvider.init(mTabModelFilterFactory, mTabModels);
-        addObserver(mTabModelFilterProvider);
+        mTabModelFilterProvider.init(mTabModelFilterFactory, this, mTabModels);
 
         TabModelObserver tabModelObserver =
                 new TabModelObserver() {
@@ -344,7 +343,6 @@ public abstract class TabModelSelectorBase
     @Override
     public void destroy() {
         mTabModelSupplier.removeObserver(mIncognitoReauthDialogDelegateCallback);
-        removeObserver(mTabModelFilterProvider);
         mTabModelFilterProvider.destroy();
 
         if (mIncognitoTabModel != null) {

@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabCreatorManager;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.ui.base.WindowAndroid;
@@ -62,7 +63,6 @@ public class TabModelSelectorImplTest {
     // Any type other than ActivityType.TABBED works.
     private static final @ActivityType int NO_RESTORE_TYPE = ActivityType.CUSTOM_TAB;
 
-    @Mock private TabModelFilterFactory mMockTabModelFilterFactory;
     @Mock private TabContentManager mMockTabContentManager;
     @Mock private TabDelegateFactory mTabDelegateFactory;
     @Mock private NextTabPolicySupplier mNextTabPolicySupplier;
@@ -88,9 +88,6 @@ public class TabModelSelectorImplTest {
         MockitoAnnotations.initMocks(this);
 
         doReturn(true).when(mIncognitoProfile).isOffTheRecord();
-        doReturn(mock(TabModelFilter.class))
-                .when(mMockTabModelFilterFactory)
-                .createTabModelFilter(any());
         mTabCreatorManager = new MockTabCreatorManager();
 
         AsyncTabParamsManager realAsyncTabParamsManager =
@@ -101,7 +98,7 @@ public class TabModelSelectorImplTest {
                 new TabModelSelectorImpl(
                         profileProviderSupplier,
                         mTabCreatorManager,
-                        mMockTabModelFilterFactory,
+                        (tabModel) -> new TabGroupModelFilter(tabModel),
                         mNextTabPolicySupplier,
                         realAsyncTabParamsManager,
                         /* supportUndo= */ false,
@@ -109,6 +106,7 @@ public class TabModelSelectorImplTest {
                         /* startIncognito= */ false);
         assertTrue(currentTabModelSupplierHasObservers());
         assertNull(mTabModelSelector.getCurrentTabModelSupplier().get());
+        assertNull(mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter());
 
         mTabCreatorManager.initialize(mTabModelSelector);
         mTabModelSelector.onNativeLibraryReadyInternal(
@@ -122,6 +120,12 @@ public class TabModelSelectorImplTest {
         assertEquals(
                 mTabModelSelector.getCurrentModel(),
                 mTabModelSelector.getCurrentTabModelSupplier().get());
+        assertEquals(
+                mTabModelSelector.getCurrentModel(),
+                mTabModelSelector
+                        .getTabModelFilterProvider()
+                        .getCurrentTabModelFilter()
+                        .getTabModel());
     }
 
     @After
@@ -148,6 +152,12 @@ public class TabModelSelectorImplTest {
                 .setIndex(0, TabSelectionType.FROM_USER, /* skipLoadingTab= */ true);
         assertEquals(normalTab, mTabModelSelector.getModel(false).getCurrentTabSupplier().get());
         assertEquals(normalTab, mTabModelSelector.getCurrentTabSupplier().get());
+        assertEquals(
+                mTabModelSelector.getModel(false),
+                mTabModelSelector
+                        .getTabModelFilterProvider()
+                        .getCurrentTabModelFilter()
+                        .getTabModel());
         ShadowLooper.runUiThreadTasks();
         verify(mTabSupplierObserverMock).onResult(eq(normalTab));
 
@@ -163,14 +173,32 @@ public class TabModelSelectorImplTest {
                 .getModel(true)
                 .setIndex(0, TabSelectionType.FROM_USER, /* skipLoadingTab= */ true);
         assertEquals(normalTab, mTabModelSelector.getCurrentTabSupplier().get());
+        assertEquals(
+                mTabModelSelector.getModel(false),
+                mTabModelSelector
+                        .getTabModelFilterProvider()
+                        .getCurrentTabModelFilter()
+                        .getTabModel());
 
         mTabModelSelector.selectModel(true);
         assertEquals(incognitoTab, mTabModelSelector.getCurrentTabSupplier().get());
+        assertEquals(
+                mTabModelSelector.getModel(true),
+                mTabModelSelector
+                        .getTabModelFilterProvider()
+                        .getCurrentTabModelFilter()
+                        .getTabModel());
         ShadowLooper.runUiThreadTasks();
         verify(mTabSupplierObserverMock).onResult(eq(incognitoTab));
 
         mTabModelSelector.selectModel(false);
         assertEquals(normalTab, mTabModelSelector.getCurrentTabSupplier().get());
+        assertEquals(
+                mTabModelSelector.getModel(false),
+                mTabModelSelector
+                        .getTabModelFilterProvider()
+                        .getCurrentTabModelFilter()
+                        .getTabModel());
         ShadowLooper.runUiThreadTasks();
         verify(mTabSupplierObserverMock, times(2)).onResult(eq(normalTab));
 

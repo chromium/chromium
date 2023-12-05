@@ -14,6 +14,8 @@ import android.graphics.Color;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 
+import androidx.annotation.NonNull;
+
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.rules.TestRule;
@@ -70,7 +72,7 @@ import org.chromium.chrome.test.util.browser.offlinepages.FakeOfflinePageBridge;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabCreatorManager;
-import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
+import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
@@ -109,18 +111,25 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
     private static class MockTabModelFilterProvider extends TabModelFilterProvider {
         public MockTabModelFilterProvider(Activity activity) {
             List<TabModel> tabModels = new ArrayList<>();
-            tabModels.add(new MockTabModel(Profile.getLastUsedRegularProfile(), null));
-            MockTabModel incognitoTabModel =
-                    new MockTabModel(
-                            Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(true), null);
-            incognitoTabModel.setAsActiveModelForTesting();
-            tabModels.add(incognitoTabModel);
+            MockTabModelSelector selector =
+                    new MockTabModelSelector(
+                            Profile.getLastUsedRegularProfile(),
+                            Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(true),
+                            0,
+                            0,
+                            null);
+            tabModels.add(selector.getModel(false));
+            tabModels.add(selector.getModel(true));
+            selector.selectModel(true);
 
-            init(new ChromeTabModelFilterFactory(activity), tabModels);
+            init(new ChromeTabModelFilterFactory(activity), selector, tabModels);
         }
 
         @Override
-        public void init(TabModelFilterFactory tabModelFilterFactory, List<TabModel> tabModels) {
+        public void init(
+                @NonNull TabModelFilterFactory tabModelFilterFactory,
+                @NonNull TabModelSelector tabModelSelector,
+                @NonNull List<TabModel> tabModels) {
             assert mTabModelFilterList.isEmpty();
             assert tabModels.size() > 0;
 
