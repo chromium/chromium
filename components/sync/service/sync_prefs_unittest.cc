@@ -377,7 +377,7 @@ TEST_F(SyncPrefsTest, PasswordsSelectedByDefault_UnoEnabled) {
   // Based on the feature flags set above, Passwords is supported
   // and enabled by default.
   EXPECT_TRUE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_)
-                  .Has(UserSelectableType::kPayments));
+                  .Has(UserSelectableType::kPasswords));
 }
 
 TEST_F(SyncPrefsTest, SetSelectedTypesForAccountInTransportMode) {
