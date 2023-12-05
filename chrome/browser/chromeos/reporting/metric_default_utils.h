@@ -47,6 +47,14 @@ constexpr base::TimeDelta kDefaultReportUploadFrequency = base::Hours(3);
 constexpr base::TimeDelta kDefaultReportUploadFrequencyForTesting =
     base::Minutes(5);
 
+// Default record upload frequency for KioskHeartbeats.
+constexpr base::TimeDelta kDefaultKioskHeartbeatUploadFrequency =
+    base::Minutes(2);
+
+// Default record upload frequency for KioskHeartbeats.
+constexpr base::TimeDelta kDefaultKioskHeartbeatUploadFrequencyForTesting =
+    base::Minutes(1);
+
 // Default website telemetry collection rate.
 constexpr base::TimeDelta kDefaultWebsiteTelemetryCollectionRate =
     base::Minutes(15);
@@ -117,6 +125,10 @@ constexpr bool kReportWebsiteActivityEnabledDefaultValue = false;
 
 // Returns the default report upload frequency for the current environment.
 const base::TimeDelta GetDefaultReportUploadFrequency();
+
+// Returns the default event checking rate for KioskHeartbeats and the current
+// environment
+const base::TimeDelta GetDefaultKioskHeartbeatUploadFrequency();
 
 // Returns the default metric collection rate for the current environment.
 const base::TimeDelta GetDefaultCollectionRate(base::TimeDelta default_rate);

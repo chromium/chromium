@@ -312,6 +312,7 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
   std::unique_ptr<MetricReportQueue> website_event_report_queue_;
   std::unique_ptr<MetricReportQueue>
       user_peripheral_events_and_telemetry_report_queue_;
+  std::unique_ptr<MetricReportQueue> kiosk_heartbeat_telemetry_report_queue_;
 
   base::ScopedObservation<policy::ManagedSessionService,
                           policy::ManagedSessionService::Observer>

@@ -57,6 +57,7 @@
 #include "chrome/browser/chromeos/reporting/websites/website_usage_telemetry_sampler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/metrics/collector_base.h"
 #include "components/reporting/metrics/delayed_sampler.h"
@@ -187,6 +188,17 @@ void MetricReportingManager::OnLogin(Profile* profile) {
       delegate_->CreateMetricReportQueue(
           EventType::kUser, Destination::PERIPHERAL_EVENTS, Priority::SECURITY,
           /*rate_limiter=*/nullptr, std::move(source_info));
+
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kKioskHeartbeatsViaERP)) {
+    kiosk_heartbeat_telemetry_report_queue_ =
+        delegate_->CreatePeriodicUploadReportQueue(
+            EventType::kUser, Destination::KIOSK_HEARTBEAT_EVENTS,
+            Priority::IMMEDIATE, &reporting_settings_,
+            ::ash::kHeartbeatFrequency,
+            metrics::GetDefaultKioskHeartbeatUploadFrequency(),
+            /*rate_limit_to_ms=*/1, std::move(source_info));
+  }
 
   CHECK(profile);
   user_reporting_settings_ =
