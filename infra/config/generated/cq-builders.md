@@ -543,6 +543,11 @@ builder.
   * [`//tools/clang/scripts/update.py`](https://cs.chromium.org/search?q=+file:tools/clang/scripts/update.py)
   * [`//DEPS`](https://cs.chromium.org/chromium/src/DEPS)
 
+* [targets-config-verifier](https://ci.chromium.org/p/chromium/builders/try/targets-config-verifier) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""targets-config-verifier""))
+
+  Location filters:
+  * [`//infra/config/generated/builders/[^/]+/[^/]+/targets/.+\.json`](https://cs.chromium.org/search?q=+file:infra/config/generated/builders/[^/]+/[^/]+/targets/.+\.json)
+
 * [win-updater-try-builder-dbg](https://ci.chromium.org/p/chromium/builders/try/win-updater-try-builder-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win-updater-try-builder-dbg""))
 
   Location filters:
