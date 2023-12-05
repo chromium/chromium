@@ -12,8 +12,11 @@
 
 TabOrganizationResponse::Organization::Organization(
     std::u16string label_,
-    std::vector<TabData::TabID> tab_ids_)
-    : label(label_), tab_ids(std::move(tab_ids_)) {}
+    std::vector<TabData::TabID> tab_ids_,
+    absl::optional<TabOrganization::ID> organization_id_)
+    : label(label_),
+      tab_ids(std::move(tab_ids_)),
+      organization_id(organization_id_) {}
 
 TabOrganizationResponse::Organization::Organization(
     const Organization& organization) = default;
