@@ -80,10 +80,9 @@ bool IsSupportedHdrMetadata(const VideoType& type) {
       return type.color_space.transfer ==
              VideoColorSpace::TransferID::SMPTEST2084;
 
+    // 2094-10 SEI metadata is not the same as Dolby Vision RPU metadata, Dolby
+    // Vision decoders on each platform only support Dolby Vision RPU metadata.
     case gfx::HdrMetadataType::kSmpteSt2094_10:
-#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
-      return type.codec == VideoCodec::kDolbyVision;
-#endif
     case gfx::HdrMetadataType::kSmpteSt2094_40:
       return false;
   }

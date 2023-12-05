@@ -1507,6 +1507,24 @@ HEVC video stream with 8-bit main profile, generated with
 ffmpeg -i bear-1280x720.mp4 -vf "scale=3840:2160,setpts=4*PTS" -c:v libx265 -crf 28 -c:a copy bear-3840x2160-hevc.mp4
 ```
 
+### MP4 file with Dolby Vision
+
+#### glass-blowing2-dolby-vision-profile-5-frag.mp4
+Original sample from `https://media.developer.dolby.com/DolbyVision_Atmos/mp4/iOS_P5_GlassBlowing2_1920x1080%4059.94fps_15200kbps.mp4`. Dolby Vision profile 5 video stream generated using FFmpeg/mp4mux/mp4fragment with the following commands:
+```
+ffmpeg -ss 0:00:11 -i iOS_P5_GlassBlowing2_1920x1080@59.94fps_15200kbps.mp4 -t 1 -vcodec copy -an glass-blowing2-dolby-vision-profile-5.hevc
+mp4mux --track h265:glass-blowing2-dolby-vision-profile-5.hevc#dv_profile=5,dv_bc=0,format="dvh1",frame_rate=60,video glass-blowing2-dolby-vision-profile-5.mp4
+mp4fragment glass-blowing2-dolby-vision-profile-5.mp4 glass-blowing2-dolby-vision-profile-5-frag.mp4
+```
+
+#### glass-blowing2-dolby-vision-profile-8-1-frag.mp4
+Original sample from `https://media.developer.dolby.com/DolbyVision_Atmos/mp4/P81_GlassBlowing2_1920x1080%4059.94fps_15200kbps_fmp4.mp4`. Dolby Vision profile 8.1 video stream generated using FFmpeg/mp4mux/mp4fragment with the following commands:
+```
+ffmpeg -ss 0:00:11 -i P81_GlassBlowing2_1920x1080@59.94fps_15200kbps_fmp4.mp4 -t 1 -vcodec copy -an glass-blowing2-dolby-vision-profile-8-1.hevc
+mp4mux --track h265:glass-blowing2-dolby-vision-profile-8-1.hevc#dv_profile=8,dv_bc=1,format="hvc1",frame_rate=60,video glass-blowing2-dolby-vision-profile-8-1.mp4
+mp4fragment glass-blowing2-dolby-vision-profile-8-1.mp4 glass-blowing2-dolby-vision-profile-8-1-frag.mp4
+```
+
 ### Multi-track MP4 file
 
 (c) copyright 2008, Blender Foundation / www.bigbuckbunny.org

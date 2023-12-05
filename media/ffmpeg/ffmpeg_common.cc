@@ -762,7 +762,7 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
         type.codec = VideoCodec::kDolbyVision;
         type.level = dovi->dv_level;
         type.color_space = color_space;
-        type.hdr_metadata_type = gfx::HdrMetadataType::kSmpteSt2094_10;
+        type.hdr_metadata_type = gfx::HdrMetadataType::kNone;
         switch (dovi->dv_profile) {
           case 0:
             type.profile = VideoCodecProfile::DOLBYVISION_PROFILE0;
@@ -796,8 +796,8 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
         break;
       }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
-        default:
-          break;
+      default:
+        break;
     }
   }
 

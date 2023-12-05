@@ -346,12 +346,13 @@ struct MEDIA_EXPORT VideoSampleEntry : Box {
   ProtectionSchemeInfo sinf;
 
   VideoDecoderConfig::AlphaMode alpha_mode;
-
-  VideoCodec video_codec;
-  VideoCodecProfile video_codec_profile;
-  VideoCodecLevel video_codec_level;
   VideoColorSpace video_color_space;
+  CodecProfileLevel video_info;
 
+  // When set and found on a Dolby Vision source buffer, `dv_info`
+  // will be used to upgrade `video_info` from its backwards
+  // compatible codec (e.g., H.264, H.265) to a Dolby Vision codec.
+  absl::optional<CodecProfileLevel> dv_info;
   absl::optional<gfx::HDRMetadata> hdr_metadata;
 
   bool IsFormatValid() const;

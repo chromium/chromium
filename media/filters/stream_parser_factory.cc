@@ -374,6 +374,7 @@ static StreamParser* BuildMP4Parser(base::span<const std::string> codecs,
                                     MediaLog* media_log) {
   std::set<int> audio_object_types;
   bool has_sbr = false;
+  bool has_dv = false;
 
   // The draft version 0.0.4 FLAC-in-ISO spec
   // (https://github.com/xiph/flac/blob/master/doc/isoflac.txt) does not define
@@ -401,6 +402,18 @@ static StreamParser* BuildMP4Parser(base::span<const std::string> codecs,
         has_sbr = true;
         break;
       }
+#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+    } else if (base::MatchPattern(codec_id,
+                                  kDolbyVisionAVCCodecInfo1.pattern) ||
+               base::MatchPattern(codec_id, kDolbyVisionAVCCodecInfo2.pattern)
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+               || base::MatchPattern(codec_id,
+                                     kDolbyVisionHEVCCodecInfo1.pattern) ||
+               base::MatchPattern(codec_id, kDolbyVisionHEVCCodecInfo2.pattern)
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+    ) {
+      has_dv = true;
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
     } else if (base::MatchPattern(codec_id, kAC3CodecInfo1.pattern) ||
                base::MatchPattern(codec_id, kAC3CodecInfo2.pattern) ||
@@ -438,7 +451,8 @@ static StreamParser* BuildMP4Parser(base::span<const std::string> codecs,
     }
   }
 
-  return new mp4::MP4StreamParser(audio_object_types, has_sbr, has_flac);
+  return new mp4::MP4StreamParser(audio_object_types, has_sbr, has_flac,
+                                  has_dv);
 }
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 static const CodecInfo kADTSCodecInfo = {nullptr, CodecInfo::AUDIO, nullptr,

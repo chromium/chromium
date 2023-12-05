@@ -345,18 +345,10 @@ TEST(SupportedTypesTest, IsSupportedVideoTypeWithHdrMetadataBasics) {
       IsSupportedVideoType({VideoCodec::kVP8, VP8PROFILE_ANY, kUnspecifiedLevel,
                             color_space, gfx::HdrMetadataType::kSmpteSt2086}));
 
-  // Dolby vision metadata is not supported if the codec is not dolby vision.
-  EXPECT_FALSE(IsSupportedVideoType({VideoCodec::kVP8, VP8PROFILE_ANY,
-                                     kUnspecifiedLevel, color_space,
-                                     gfx::HdrMetadataType::kSmpteSt2094_10}));
-
-#if !BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
-  // Dolby vision metadata maybe is supported if buildflag is enabled and
-  // platform declare it's support.
+  // ST2094-10 metadata is not supported even if the codec is dolby vision.
   EXPECT_FALSE(IsSupportedVideoType(
       {VideoCodec::kDolbyVision, DOLBYVISION_PROFILE5, kUnspecifiedLevel,
        color_space, gfx::HdrMetadataType::kSmpteSt2094_10}));
-#endif  // !BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
 
   EXPECT_FALSE(IsSupportedVideoType({VideoCodec::kVP8, VP8PROFILE_ANY,
                                      kUnspecifiedLevel, color_space,

@@ -97,6 +97,8 @@ source_set("formats") {
       "mp4/aac.h",
       "mp4/avc.cc",
       "mp4/avc.h",
+      "mp4/dolby_vision.cc",
+      "mp4/dolby_vision.h",
       "mp4/h264_annex_b_to_avc_bitstream_converter.cc",
       "mp4/h264_annex_b_to_avc_bitstream_converter.h",
       "mp4/mp4_status.h",
@@ -126,13 +128,6 @@ source_set("formats") {
         "mp4/h265_annex_b_to_hevc_bitstream_converter.h",
       ]
     }
-  }
-
-  if (proprietary_codecs && enable_platform_dolby_vision) {
-    sources += [
-      "mp4/dolby_vision.cc",
-      "mp4/dolby_vision.h",
-    ]
   }
 
   if (enable_platform_dts_audio) {
@@ -313,6 +308,7 @@ source_set("unit_tests") {
       "mp4/aac_unittest.cc",
       "mp4/avc_unittest.cc",
       "mp4/box_reader_unittest.cc",
+      "mp4/dolby_vision_unittest.cc",
       "mp4/es_descriptor_unittest.cc",
       "mp4/h264_annex_b_to_avc_bitstream_converter_unittest.cc",
       "mp4/mp4_stream_parser_unittest.cc",
@@ -351,10 +347,6 @@ source_set("unit_tests") {
         "mp2t/mp2t_stream_parser_unittest.cc",
         "mp2t/timestamp_unroller_unittest.cc",
       ]
-    }
-
-    if (enable_platform_dolby_vision) {
-      sources += [ "mp4/dolby_vision_unittest.cc" ]
     }
 
     if (enable_platform_hevc) {

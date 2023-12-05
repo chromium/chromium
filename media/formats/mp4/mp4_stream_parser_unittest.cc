@@ -63,6 +63,10 @@ MATCHER(SampleEncryptionInfoUnavailableLog, "") {
   return CONTAINS_STRING(arg, "Sample encryption info is not available.");
 }
 
+MATCHER_P(InfoLog, error_string, "") {
+  return CONTAINS_STRING(arg, error_string) && CONTAINS_STRING(arg, "info");
+}
+
 MATCHER_P(ErrorLog, error_string, "") {
   return CONTAINS_STRING(arg, error_string) && CONTAINS_STRING(arg, "error");
 }
@@ -79,7 +83,7 @@ class MP4StreamParserTest : public testing::Test {
         verifying_keyframeness_sequence_(false) {
     std::set<int> audio_object_types;
     audio_object_types.insert(kISO_14496_3);
-    parser_.reset(new MP4StreamParser(audio_object_types, false, false));
+    parser_.reset(new MP4StreamParser(audio_object_types, false, false, false));
   }
 
  protected:
@@ -398,7 +402,7 @@ TEST_F(MP4StreamParserTest, MPEG2_AAC_LC) {
   InSequence s;
   std::set<int> audio_object_types;
   audio_object_types.insert(kISO_13818_7_AAC_LC);
-  parser_.reset(new MP4StreamParser(audio_object_types, false, false));
+  parser_.reset(new MP4StreamParser(audio_object_types, false, false, false));
   auto params = GetDefaultInitParametersExpectations();
   params.detected_video_track_count = 0;
   InitializeParserWithInitParametersExpectations(params);
@@ -410,7 +414,7 @@ TEST_F(MP4StreamParserTest, MPEG4_XHE_AAC) {
   InSequence s;  // The keyframeness sequence matters for this test.
   std::set<int> audio_object_types;
   audio_object_types.insert(kISO_14496_3);
-  parser_.reset(new MP4StreamParser(audio_object_types, false, false));
+  parser_.reset(new MP4StreamParser(audio_object_types, false, false, false));
   auto params = GetDefaultInitParametersExpectations();
   params.detected_video_track_count = 0;
 
@@ -616,10 +620,122 @@ TEST_F(MP4StreamParserTest, NaturalSizeWithPASP) {
   EXPECT_EQ(gfx::Size(639, 360), video_decoder_config_.natural_size());
 }
 
+TEST_F(MP4StreamParserTest, DemuxingDVProfile5WithDVMimeTypeSourceBuffer) {
+  std::set<int> audio_object_types;
+  parser_.reset(new MP4StreamParser(audio_object_types, false, false, true));
+
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+  bool expect_success = true;
+#else
+  bool expect_success = false;
+  EXPECT_MEDIA_LOG(ErrorLog("Unsupported VisualSampleEntry type dvh1"));
+#endif
+
+  auto params = GetDefaultInitParametersExpectations();
+  params.duration = base::Microseconds(2000000);
+  params.liveness = StreamLiveness::kRecorded;
+  params.detected_audio_track_count = 0;
+  InitializeParserWithInitParametersExpectations(params);
+
+  scoped_refptr<DecoderBuffer> buffer =
+      ReadTestDataFile("glass-blowing2-dolby-vision-profile-5-frag.mp4");
+  EXPECT_EQ(expect_success, AppendAllDataThenParseInPieces(
+                                buffer->data(), buffer->data_size(), 512));
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+  EXPECT_EQ(VideoCodec::kDolbyVision, video_decoder_config_.codec());
+  EXPECT_EQ(DOLBYVISION_PROFILE5, video_decoder_config_.profile());
+#endif
+}
+
+TEST_F(MP4StreamParserTest, DemuxingDVProfile5WithHEVCMimeTypeSourceBuffer) {
+  std::set<int> audio_object_types;
+  parser_.reset(new MP4StreamParser(audio_object_types, false, false, false));
+
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+  bool expect_success = true;
+#else
+  bool expect_success = false;
+  EXPECT_MEDIA_LOG(ErrorLog("Unsupported VisualSampleEntry type dvh1"));
+#endif
+
+  auto params = GetDefaultInitParametersExpectations();
+  params.duration = base::Microseconds(2000000);
+  params.liveness = StreamLiveness::kRecorded;
+  params.detected_audio_track_count = 0;
+  InitializeParserWithInitParametersExpectations(params);
+
+  scoped_refptr<DecoderBuffer> buffer =
+      ReadTestDataFile("glass-blowing2-dolby-vision-profile-5-frag.mp4");
+  EXPECT_EQ(expect_success, AppendAllDataThenParseInPieces(
+                                buffer->data(), buffer->data_size(), 512));
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+  EXPECT_EQ(VideoCodec::kDolbyVision, video_decoder_config_.codec());
+  EXPECT_EQ(DOLBYVISION_PROFILE5, video_decoder_config_.profile());
+#endif
+}
+
+TEST_F(MP4StreamParserTest, DemuxingDVProfile8WithDVMimeTypeSourceBuffer) {
+  std::set<int> audio_object_types;
+  parser_.reset(new MP4StreamParser(audio_object_types, false, false, true));
+
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+  bool expect_success = true;
+#else
+  bool expect_success = false;
+  EXPECT_MEDIA_LOG(ErrorLog("Unsupported VisualSampleEntry type hvc1"));
+#endif
+
+  auto params = GetDefaultInitParametersExpectations();
+  params.duration = base::Microseconds(2000000);
+  params.liveness = StreamLiveness::kRecorded;
+  params.detected_audio_track_count = 0;
+  InitializeParserWithInitParametersExpectations(params);
+
+  scoped_refptr<DecoderBuffer> buffer =
+      ReadTestDataFile("glass-blowing2-dolby-vision-profile-8-1-frag.mp4");
+  EXPECT_EQ(expect_success, AppendAllDataThenParseInPieces(
+                                buffer->data(), buffer->data_size(), 512));
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+  EXPECT_EQ(VideoCodec::kDolbyVision, video_decoder_config_.codec());
+  EXPECT_EQ(DOLBYVISION_PROFILE8, video_decoder_config_.profile());
+#endif
+}
+
+TEST_F(MP4StreamParserTest, DemuxingDVProfile8WithHEVCMimeTypeSourceBuffer) {
+  std::set<int> audio_object_types;
+  parser_.reset(new MP4StreamParser(audio_object_types, false, false, false));
+
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+  bool expect_success = true;
+  EXPECT_MEDIA_LOG(InfoLog(
+      "Dolby Vision video track with track_id=1 has been downgraded to "
+      "use hevc. To prevent this, where Dolby Vision is supported, use a "
+      "Dolby Vision codec string when constructing the SourceBuffer."));
+#else
+  bool expect_success = false;
+  EXPECT_MEDIA_LOG(ErrorLog("Unsupported VisualSampleEntry type hvc1"));
+#endif
+
+  auto params = GetDefaultInitParametersExpectations();
+  params.duration = base::Microseconds(2000000);
+  params.liveness = StreamLiveness::kRecorded;
+  params.detected_audio_track_count = 0;
+  InitializeParserWithInitParametersExpectations(params);
+
+  scoped_refptr<DecoderBuffer> buffer =
+      ReadTestDataFile("glass-blowing2-dolby-vision-profile-8-1-frag.mp4");
+  EXPECT_EQ(expect_success, AppendAllDataThenParseInPieces(
+                                buffer->data(), buffer->data_size(), 512));
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+  EXPECT_EQ(VideoCodec::kHEVC, video_decoder_config_.codec());
+  EXPECT_EQ(HEVCPROFILE_MAIN10, video_decoder_config_.profile());
+#endif
+}
+
 TEST_F(MP4StreamParserTest, DemuxingAC3) {
   std::set<int> audio_object_types;
   audio_object_types.insert(kAC3);
-  parser_.reset(new MP4StreamParser(audio_object_types, false, false));
+  parser_.reset(new MP4StreamParser(audio_object_types, false, false, false));
 
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
   bool expect_success = true;
@@ -643,7 +759,7 @@ TEST_F(MP4StreamParserTest, DemuxingAC3) {
 TEST_F(MP4StreamParserTest, DemuxingEAC3) {
   std::set<int> audio_object_types;
   audio_object_types.insert(kEAC3);
-  parser_.reset(new MP4StreamParser(audio_object_types, false, false));
+  parser_.reset(new MP4StreamParser(audio_object_types, false, false, false));
 
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
   bool expect_success = true;
@@ -667,7 +783,7 @@ TEST_F(MP4StreamParserTest, DemuxingEAC3) {
 TEST_F(MP4StreamParserTest, DemuxingAc4Ims) {
   std::set<int> audio_object_types;
   audio_object_types.insert(kAC4);
-  parser_.reset(new MP4StreamParser(audio_object_types, false, false));
+  parser_.reset(new MP4StreamParser(audio_object_types, false, false, false));
 
 #if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
   constexpr bool kExpectSuccess = true;
@@ -691,7 +807,7 @@ TEST_F(MP4StreamParserTest, DemuxingAc4Ims) {
 TEST_F(MP4StreamParserTest, DemuxingAc4AJoc) {
   std::set<int> audio_object_types;
   audio_object_types.insert(kAC4);
-  parser_.reset(new MP4StreamParser(audio_object_types, false, false));
+  parser_.reset(new MP4StreamParser(audio_object_types, false, false, false));
 
 #if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
   constexpr bool kExpectSuccess = true;
@@ -715,7 +831,7 @@ TEST_F(MP4StreamParserTest, DemuxingAc4AJoc) {
 TEST_F(MP4StreamParserTest, DemuxingAc4ChannelBasedCoding) {
   std::set<int> audio_object_types;
   audio_object_types.insert(kAC4);
-  parser_.reset(new MP4StreamParser(audio_object_types, false, false));
+  parser_.reset(new MP4StreamParser(audio_object_types, false, false, false));
 
 #if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
   constexpr bool kExpectSuccess = true;
@@ -739,7 +855,7 @@ TEST_F(MP4StreamParserTest, DemuxingAc4ChannelBasedCoding) {
 TEST_F(MP4StreamParserTest, DemuxingDTS) {
   std::set<int> audio_object_types;
   audio_object_types.insert(kDTS);
-  parser_.reset(new MP4StreamParser(audio_object_types, false, false));
+  parser_.reset(new MP4StreamParser(audio_object_types, false, false, false));
 
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
   bool expect_success = true;
@@ -762,7 +878,7 @@ TEST_F(MP4StreamParserTest, DemuxingDTS) {
 TEST_F(MP4StreamParserTest, DemuxingDTSE) {
   std::set<int> audio_object_types;
   audio_object_types.insert(kDTSE);
-  parser_.reset(new MP4StreamParser(audio_object_types, false, false));
+  parser_.reset(new MP4StreamParser(audio_object_types, false, false, false));
 
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
   bool expect_success = true;
@@ -785,7 +901,7 @@ TEST_F(MP4StreamParserTest, DemuxingDTSE) {
 TEST_F(MP4StreamParserTest, DemuxingDTSX) {
   std::set<int> audio_object_types;
   audio_object_types.insert(kDTSX);
-  parser_.reset(new MP4StreamParser(audio_object_types, false, false));
+  parser_.reset(new MP4StreamParser(audio_object_types, false, false, false));
 
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
   bool expect_success = true;
@@ -806,7 +922,7 @@ TEST_F(MP4StreamParserTest, DemuxingDTSX) {
 }
 
 TEST_F(MP4StreamParserTest, Flac) {
-  parser_.reset(new MP4StreamParser(std::set<int>(), false, true));
+  parser_.reset(new MP4StreamParser(std::set<int>(), false, true, false));
 
   auto params = GetDefaultInitParametersExpectations();
   params.detected_video_track_count = 0;
@@ -818,7 +934,7 @@ TEST_F(MP4StreamParserTest, Flac) {
 }
 
 TEST_F(MP4StreamParserTest, Flac192kHz) {
-  parser_.reset(new MP4StreamParser(std::set<int>(), false, true));
+  parser_.reset(new MP4StreamParser(std::set<int>(), false, true, false));
 
   auto params = GetDefaultInitParametersExpectations();
   params.detected_video_track_count = 0;
@@ -969,7 +1085,7 @@ class MP4StreamParserRotationMatrixEvaluatorTest
   MP4StreamParserRotationMatrixEvaluatorTest() {
     std::set<int> audio_object_types;
     audio_object_types.insert(kISO_14496_3);
-    parser_.reset(new MP4StreamParser(audio_object_types, false, false));
+    parser_.reset(new MP4StreamParser(audio_object_types, false, false, false));
   }
 
  protected:
