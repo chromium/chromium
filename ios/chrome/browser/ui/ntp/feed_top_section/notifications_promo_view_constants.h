@@ -14,6 +14,5 @@ typedef NS_ENUM(NSInteger, NotificationsExperimentType) {
 };
 
 extern NSString* const kNotificationsPromoCloseButtonId;
-extern NSString* const kNotificationsPromoPrimaryButtonId;
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_FEED_TOP_SECTION_NOTIFICATIONS_PROMO_VIEW_CONSTANTS_H_

@@ -11,6 +11,8 @@
 
 @interface NotificationsPromoView : UIView
 
+@property(nonatomic, strong, readonly) UIButton* closeButton;
+
 // Designated initializer.
 - (instancetype)initWithFrame:(CGRect)frame NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;

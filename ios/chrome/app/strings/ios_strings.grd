@@ -2372,9 +2372,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_CONTENT_NOTIFICATIONS_PROMO_TEXT" desc="Text for the Notifications promo.">
           Would you like notifications for news, sports, and more based on your interests?
       </message>
-      <message name="IDS_IOS_CONTENT_NOTIFICATIONS_PROMO_PRIMARY_BUTTON" desc="Text for the Notifications promo primary button.">
-          Yes, I'm in
-      </message>
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_CHIP" desc="Acessibility label to describe the UI which displays a product's price in the Price Tracking Item UI.">
           Price
       </message>
