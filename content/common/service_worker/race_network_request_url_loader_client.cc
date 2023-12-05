@@ -587,6 +587,10 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteWriteData(
                           base::SysInfo::AmountOfAvailablePhysicalMemory());
   SCOPED_CRASH_KEY_NUMBER("SWRace", "is_lowend_device",
                           base::SysInfo::IsLowEndDevice());
+  SCOPED_CRASH_KEY_NUMBER("SWRace", "data_pipe_buffer_size",
+                          data_pipe_buffer_size_);
+  SCOPED_CRASH_KEY_NUMBER("SWRace", "num_bytes_to_consume",
+                          num_bytes_to_consume);
   CHECK_GE(data_pipe_buffer_size_, num_bytes_to_consume);
   memcpy(write_buffer, read_buffer, num_bytes_to_consume);
   MojoResult result =
