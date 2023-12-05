@@ -11314,11 +11314,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          content_settings::features::kContentSettingsPartitioning)},
 
-// NOTE: Adding a new flag requires adding a corresponding entry to enum
-// "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
-// Histograms" in tools/metrics/histograms/README.md (run the
-// AboutFlagsHistogramTest unit test to verify this process).
-
 #if BUILDFLAG(IS_ANDROID)
     {"enable-vertical-automotive-back-button-toolbar",
      flag_descriptions::kVerticalAutomotiveBackButtonToolbarName,
@@ -11326,6 +11321,17 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kVerticalAutomotiveBackButtonToolbar)},
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+    {"remove-upm-unenrollment", flag_descriptions::kRemoveUPMUnenrollmentName,
+     flag_descriptions::kRemoveUPMUnenrollmentDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(password_manager::features::kRemoveUPMUnenrollment)},
+#endif
+
+    // NOTE: Adding a new flag requires adding a corresponding entry to enum
+    // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
+    // Histograms" in tools/metrics/histograms/README.md (run the
+    // AboutFlagsHistogramTest unit test to verify this process).
 };
 
 class FlagsStateSingleton : public flags_ui::FlagsState::Delegate {
