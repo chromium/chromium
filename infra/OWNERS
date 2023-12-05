@@ -3,7 +3,6 @@
 
 set noparent
 
-# Troopers
 bpastene@chromium.org
 estaab@chromium.org
 gatong@chromium.org
@@ -16,12 +15,16 @@ morawand@google.com
 sshrimp@google.com
 svenzheng@chromium.org
 
-# Other folks who understand the infrastructure well.
+# For GPU bot related changes.
 bsheedy@chromium.org
+ynovikov@chromium.org
+
+# For Clang ToT bot related changes.
 hans@chromium.org
 thakis@chromium.org
+
+# For goma/reclient/siso bot related changes.
 tikuta@chromium.org
-ynovikov@chromium.org
 
 # Specific OWNERS to review changes to the non-inclusive terms PRESUBMIT checks
 per-file inclusive_language_presubmit_exempt_dirs.txt=*
