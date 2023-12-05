@@ -167,6 +167,20 @@ TEST(ContentSettingsUtilsTest, CanBeAutoRevoked) {
 
   EXPECT_FALSE(CanBeAutoRevoked(ContentSettingsType::ADS,
                                 ContentSetting::CONTENT_SETTING_ALLOW));
+
+  // Chooser permissions that are allowlisted should be auto-revoked.
+  EXPECT_TRUE(
+      CanBeAutoRevoked(ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA,
+                       base::Value("foo")));
+
+  // Chooser permissions that are allowlisted but without any value
+  // should not be auto-revoked.
+  EXPECT_FALSE(CanBeAutoRevoked(
+      ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA, base::Value()));
+
+  // Chooser permissions that are not allowlisted should not be auto-revoked.
+  EXPECT_FALSE(CanBeAutoRevoked(ContentSettingsType::USB_CHOOSER_DATA,
+                                base::Value("foo")));
 }
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 

@@ -102,6 +102,13 @@ BASE_FEATURE(kBlockNotificationPromptsIfDisabledOnAppLevel,
 
 #else
 
+// When enabled, chooser permissions grants will have a last visited timestamp
+// date set. The timestamp will be later used to auto-revoke the permission,
+// if eligible.
+BASE_FEATURE(kRecordChooserPermissionLastVisitedTimestamps,
+             "RecordChooserPermissionLastVisitedTimestamps",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Kill switch for the mitigation for https://crbug.com/1462709
 BASE_FEATURE(kMitigateUnpartitionedWebviewPermissions,
              "MitigateUnpartitionedWebviewPermissions",
