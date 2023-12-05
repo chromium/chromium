@@ -369,9 +369,6 @@ TEST_F(AudioDeviceSelectionTest, SystemBootsHistogramMetrics) {
 }
 
 TEST_F(AudioDeviceSelectionTest, DevicePrefEviction) {
-  base::test::ScopedFeatureList features(
-      ash::features::kRobustAudioDeviceSelectLogic);
-
   std::vector<AudioNode> nodes;
   for (int i = 0; i < 101; i++) {
     nodes.push_back(NewInputNode("USB"));

@@ -5808,12 +5808,6 @@ const char kBluetoothFlossCoredumpDescription[] =
     "coredumps are only collected when hardware exceptions occur and are "
     "used for debugging such exceptions.";
 
-const char kRobustAudioDeviceSelectLogicName[] =
-    "Robust Audio Device Select Logic";
-const char kRobustAudioDeviceSelectLogicDescription[] =
-    "A more robust logic for automatic audio device selection which is more "
-    "capable of remembering the user's preferences of audio devices.";
-
 const char kBluetoothUseFlossName[] = "Use Floss instead of BlueZ";
 const char kBluetoothUseFlossDescription[] =
     "Enables using Floss (also known as Fluoride, Android's Bluetooth stack) "

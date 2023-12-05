@@ -300,10 +300,6 @@ BASE_FEATURE(kBluetoothQualityReport,
              "BluetoothQualityReport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kRobustAudioDeviceSelectLogic,
-             "RobustAudioDeviceSelectLogic",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kCameraAppAutoQRDetection,
              "CameraAppAutoQRDetection",
              base::FEATURE_DISABLED_BY_DEFAULT);
