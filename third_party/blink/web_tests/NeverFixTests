@@ -2112,6 +2112,9 @@ crbug.com/1499775 [ Chrome ] wpt_internal/webmidi/loopback-receive.https.html [ 
 crbug.com/1499775 [ Chrome ] wpt_internal/webmidi/loopback-with-timestamp.https.html [ Skip ]
 crbug.com/1499775 [ Chrome ] wpt_internal/webmidi/requestmidiaccess-upgrade.https.html [ Skip ]
 
+# Skip one flaky test
+crbug.com/1508175 [ Chrome ] external/wpt/soft-navigation-heuristics/image-lcp-before-detection.tentative.html [ Skip ]
+
 # WebNN GPU backend is supported on Win11 by default.
 crbug.com/1500120 [ Win10.20h2 ] virtual/webnn-service-enabled/external/wpt/webnn/gpu/* [ Skip ]
 
