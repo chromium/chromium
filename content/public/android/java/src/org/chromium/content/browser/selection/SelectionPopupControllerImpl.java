@@ -32,6 +32,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.content_public.common.ContentFeatures;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
@@ -69,6 +70,7 @@ import org.chromium.content_public.browser.SelectionMenuGroup;
 import org.chromium.content_public.browser.SelectionMenuItem;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -232,6 +234,9 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     private SelectionClient.Result mClassificationResult;
 
     private boolean mPreserveSelectionOnNextLossOfFocus;
+
+    // Used to customize selection menu.
+    @Nullable private SelectionActionMenuDelegate mSelectionActionMenuDelegate;
 
     private MagnifierAnimator mMagnifierAnimator;
 
@@ -413,6 +418,11 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     @Override
     public void setActionModeCallback(ActionModeCallback callback) {
         mCallback = callback;
+    }
+
+    @Override
+    public void setSelectionActionMenuDelegate(@Nullable SelectionActionMenuDelegate delegate) {
+        mSelectionActionMenuDelegate = delegate;
     }
 
     @Override
@@ -712,7 +722,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         if (windowContext == null) return;
         mPastePopupMenu =
                 new FloatingPastePopupMenu(
-                        windowContext, mView, delegate, mNonSelectionAdditionalItemProvider);
+                        windowContext, mView, delegate, mNonSelectionAdditionalItemProvider,
+                        mSelectionActionMenuDelegate);
         showPastePopup();
     }
 
@@ -743,7 +754,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
             } else {
                 allItemGroups =
                         getNonSelectionMenuItems(
-                                mContext, this, mNonSelectionAdditionalItemProvider);
+                                mContext, this, mNonSelectionAdditionalItemProvider,
+                                mSelectionActionMenuDelegate);
             }
 
             int groupIndex = 0;
@@ -1043,15 +1055,17 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                 mClassificationResult,
                 isSelectionPassword(),
                 !isFocusedNodeEditable(),
-                textProcessingIntentHandler);
+                textProcessingIntentHandler,
+                mSelectionActionMenuDelegate);
     }
 
     private static SortedSet<SelectionMenuGroup> getNonSelectionMenuItems(
             @Nullable Context context,
             SelectActionMenuDelegate delegate,
-            @Nullable AdditionalSelectionMenuItemProvider nonSelectionAdditionalItemProvider) {
+            @Nullable AdditionalSelectionMenuItemProvider nonSelectionAdditionalItemProvider,
+            @Nullable SelectionActionMenuDelegate selectionActionMenuDelegate) {
         return SelectActionMenuHelper.getNonSelectionMenuItems(
-                context, delegate, nonSelectionAdditionalItemProvider);
+                context, delegate, nonSelectionAdditionalItemProvider, selectionActionMenuDelegate);
     }
 
     /**
@@ -1068,7 +1082,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
             Map<MenuItem, View.OnClickListener> customMenuItemClickListeners,
             @Nullable MenuItem.OnMenuItemClickListener additionalMenuItemClickListener) {
         boolean isSelectionMenuOrderCorrectionEnabled =
-                ContentFeatureMap.isEnabled(ContentFeatureList.SELECTION_MENU_ORDER_CORRECTION);
+                ContentFeatureMap.isEnabled(ContentFeatures.SELECTION_MENU_ITEM_MODIFICATION);
         for (SelectionMenuGroup group : menuGroups) {
             addMenuItemsToActionMenu(
                     context,
@@ -1205,7 +1219,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                         mContext, false, false, this::processText);
         if (textProcessingItems != null) {
             boolean isSelectionMenuOrderCorrectionEnabled =
-                    ContentFeatureMap.isEnabled(ContentFeatureList.SELECTION_MENU_ORDER_CORRECTION);
+                    ContentFeatureMap.isEnabled(
+                            ContentFeatures.SELECTION_MENU_ITEM_MODIFICATION);
             addMenuItemsToActionMenu(
                     mContext, textProcessingItems, menu, mCustomActionMenuItemClickListeners, null,
                     isSelectionMenuOrderCorrectionEnabled);

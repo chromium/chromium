@@ -39,7 +39,6 @@ public class ContentFeatureList {
     public static final String REQUEST_DESKTOP_SITE_WINDOW_SETTING =
             "RequestDesktopSiteWindowSetting";
 
-    public static final String SELECTION_MENU_ORDER_CORRECTION = "SelectionMenuOrderCorrection";
     public static final String SMART_ZOOM = "SmartZoom";
 
     public static final String WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND =

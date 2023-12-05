@@ -104,7 +104,7 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
     public static class Builder {
         private final @StringRes int mTitleRes;
         private final @Nullable CharSequence mTitle;
-        private @IdRes int mId;
+        public @IdRes int mId;
         private @AttrRes int mIconAttr;
         private @Nullable Drawable mIcon;
         private @Nullable Character mAlphabeticShortcut;

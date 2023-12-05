@@ -5670,6 +5670,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.TextSelectionMenuOrdering"
+    enum="AndroidWebViewTextSelectionMenuOrdering" expires_after="2024-12-31">
+  <owner>peconn@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Counts the number of times Samsung specific text selection menu item
+    ordering is used. Recorded when a WebView is initialized.
+  </summary>
+</histogram>
+
 <histogram
     name="Android.WebView.UniversalAccess.OriginUrlMismatchInHistoryUtil"
     enum="BooleanAllowed" expires_after="2024-04-28">

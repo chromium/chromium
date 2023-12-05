@@ -72,6 +72,7 @@ import org.chromium.android_webview.metrics.AwSiteVisitLogger;
 import org.chromium.android_webview.permission.AwGeolocationCallback;
 import org.chromium.android_webview.permission.AwPermissionRequest;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
+import org.chromium.android_webview.selection.SamsungSelectionActionMenuDelegate;
 import org.chromium.base.BaseFeatures;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
@@ -1336,6 +1337,7 @@ public class AwContents implements SmartClipProvider {
         SelectionPopupController controller = SelectionPopupController.fromWebContents(webContents);
         controller.setActionModeCallback(new AwActionModeCallback(mContext, this, webContents));
         controller.setSelectionClient(SelectionClient.createSmartSelectionClient(webContents));
+        SamsungSelectionActionMenuDelegate.maybeAttachActionMenuDelegate(controller);
 
         // Listen for dpad events from IMEs (e.g. Samsung Cursor Control) so we know to enable
         // spatial navigation mode to allow these events to move focus out of the WebView.
