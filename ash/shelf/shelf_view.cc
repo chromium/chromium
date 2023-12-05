@@ -1624,15 +1624,13 @@ void ShelfView::PrepareForDrag(Pointer pointer, const ui::LocatedEvent& event) {
     gfx::Point screen_location = event.root_location();
     ::wm::ConvertPointToScreen(root_window, &screen_location);
 
-    // Scale up the icon only if the button is not considered as dragged and
-    // scaled up in ShelfAppButton.
-    float scale_factor = (drag_view_->state() & ShelfAppButton::STATE_DRAGGING)
-                             ? 1.0f
-                             : kDragAndDropProxyScale;
+    const gfx::ImageSkia icon_image =
+        drag_view_->GetIconImage(kDragAndDropProxyScale);
     drag_icon_proxy_ = std::make_unique<AppDragIconProxy>(
-        root_window, drag_view_->GetIconImage(), screen_location,
-        gfx::Vector2d(), scale_factor, /*is_folder_icon=*/false,
-        drag_view_->GetIconImage().size());
+        root_window, icon_image,
+        drag_view_->GetBadgeIconImage(kDragAndDropProxyScale), screen_location,
+        gfx::Vector2d(), /*scale_factor=*/1.0f,
+        /*is_folder_icon=*/false, icon_image.size());
 
     if (pointer == MOUSE) {
       chromeos::haptics_util::PlayHapticTouchpadEffect(
@@ -1772,11 +1770,15 @@ void ShelfView::HandleRipOffDrag(const ui::LocatedEvent& event) {
     // the item back into the shelf.
     if (GetBoundsForDragInsertInScreen().Contains(screen_location)) {
       if (!is_active_drag_and_drop_host_) {
+        const gfx::ImageSkia icon_image =
+            drag_view_->GetIconImage(kDragAndDropProxyScale);
         drag_icon_proxy_ = std::make_unique<AppDragIconProxy>(
-            root_window, drag_view_->GetIconImage(), screen_location,
+            root_window, icon_image,
+            drag_view_->GetBadgeIconImage(kDragAndDropProxyScale),
+            screen_location,
             /*cursor_offset_from_center=*/gfx::Vector2d(),
             /*scale_factor=*/1.0f,
-            /*is_folder_icon=*/false, drag_view_->GetIconImage().size());
+            /*is_folder_icon=*/false, icon_image.size());
       }
 
       // Re-insert the item and return simply false since the caller will handle
@@ -1808,10 +1810,13 @@ void ShelfView::HandleRipOffDrag(const ui::LocatedEvent& event) {
       // shelf - keep cursor position consistent with the  host provided icon.
       const gfx::Point center = drag_view_->GetLocalBounds().CenterPoint();
       const gfx::Vector2d cursor_offset_from_center = drag_origin_ - center;
+      const gfx::ImageSkia icon_image =
+          drag_view_->GetIconImage(kDragAndDropProxyScale);
       drag_icon_proxy_ = std::make_unique<AppDragIconProxy>(
-          root_window, drag_view_->GetIconImage(), screen_location,
-          cursor_offset_from_center, /*scale_factor=*/1.0f,
-          /*is_folder_icon=*/false, drag_view_->GetIconImage().size());
+          root_window, icon_image,
+          drag_view_->GetBadgeIconImage(kDragAndDropProxyScale),
+          screen_location, cursor_offset_from_center, /*scale_factor=*/1.0f,
+          /*is_folder_icon=*/false, icon_image.size());
       delegate_->CancelScrollForItemDrag();
     }
 

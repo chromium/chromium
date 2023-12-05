@@ -2726,7 +2726,7 @@ void AppsGridView::StartDragAndDropHostDrag() {
                                     : drag_view_->GetDragImage().size();
   drag_icon_proxy_ = std::make_unique<AppDragIconProxy>(
       GetWidget()->GetNativeWindow()->GetRootWindow(),
-      drag_view_->GetDragImage(), location_in_screen,
+      drag_view_->GetDragImage(), gfx::ImageSkia(), location_in_screen,
       location_in_screen - icon_location_in_screen,
       is_folder ? kDragAndDropProxyScale : 1.0f, is_folder, shadow_size);
   drag_view_hider_ = std::make_unique<DragViewHider>(drag_view_);
