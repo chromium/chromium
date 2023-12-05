@@ -172,6 +172,41 @@ void ReadScanDataAdapter(
       mojom::ReadScanDataResponse::From(response_in.value()));
 }
 
+void SetOptionsAdapter(
+    const std::string& scanner_handle,
+    std::vector<std::string> option_names,
+    DocumentScanAsh::SetOptionsCallback callback,
+    const absl::optional<lorgnette::SetOptionsResponse>& response_in) {
+  if (!response_in) {
+    auto response = mojom::SetOptionsResponse::New();
+    response->scanner_handle = scanner_handle;
+    for (const std::string& option_name : option_names) {
+      auto result = mojom::SetOptionResult::New();
+      result->name = option_name;
+      result->result = mojom::ScannerOperationResult::kInternalError;
+      response->results.emplace_back(std::move(result));
+    }
+    std::move(callback).Run(std::move(response));
+    return;
+  }
+  std::move(callback).Run(mojom::SetOptionsResponse::From(response_in.value()));
+}
+
+void GetOptionGroupsAdapter(
+    const std::string& scanner_handle,
+    DocumentScanAsh::GetOptionGroupsCallback callback,
+    const absl::optional<lorgnette::GetCurrentConfigResponse>& response_in) {
+  if (!response_in) {
+    auto response = mojom::GetOptionGroupsResponse::New();
+    response->result = mojom::ScannerOperationResult::kInternalError;
+    response->scanner_handle = scanner_handle;
+    std::move(callback).Run(std::move(response));
+    return;
+  }
+  std::move(callback).Run(
+      mojom::GetOptionGroupsResponse::From(response_in.value()));
+}
+
 }  // namespace
 
 DocumentScanAsh::DocumentScanAsh() = default;
@@ -301,6 +336,56 @@ void DocumentScanAsh::ReadScanData(const std::string& job_handle,
   ash::LorgnetteScannerManagerFactory::GetForBrowserContext(GetProfile())
       ->ReadScanData(request, base::BindOnce(&ReadScanDataAdapter, job_handle,
                                              std::move(callback)));
+}
+
+void DocumentScanAsh::SetOptions(const std::string& scanner_handle,
+                                 std::vector<mojom::OptionSettingPtr> options,
+                                 SetOptionsCallback callback) {
+  if (!ash::features::IsAdvancedDocumentScanAPIEnabled()) {
+    auto response = mojom::SetOptionsResponse::New();
+    response->scanner_handle = scanner_handle;
+    for (const mojom::OptionSettingPtr& option : options) {
+      auto result = mojom::SetOptionResult::New();
+      result->name = option->name;
+      result->result = mojom::ScannerOperationResult::kUnsupported;
+      response->results.emplace_back(std::move(result));
+    }
+    std::move(callback).Run(std::move(response));
+    return;
+  }
+
+  lorgnette::SetOptionsRequest request;
+  request.mutable_scanner()->set_token(scanner_handle);
+  // Keep track of the option names so we can bind to our adapter below.
+  std::vector<std::string> option_names;
+  for (const mojom::OptionSettingPtr& option_request : options) {
+    option_names.emplace_back(option_request->name);
+
+    *request.add_options() = option_request.To<lorgnette::ScannerOption>();
+  }
+
+  ash::LorgnetteScannerManagerFactory::GetForBrowserContext(GetProfile())
+      ->SetOptions(request, base::BindOnce(&SetOptionsAdapter, scanner_handle,
+                                           option_names, std::move(callback)));
+}
+
+void DocumentScanAsh::GetOptionGroups(const std::string& scanner_handle,
+                                      GetOptionGroupsCallback callback) {
+  if (!ash::features::IsAdvancedDocumentScanAPIEnabled()) {
+    auto response = mojom::GetOptionGroupsResponse::New();
+    response->result = mojom::ScannerOperationResult::kUnsupported;
+    response->scanner_handle = scanner_handle;
+    std::move(callback).Run(std::move(response));
+    return;
+  }
+
+  lorgnette::GetCurrentConfigRequest request;
+  request.mutable_scanner()->set_token(scanner_handle);
+
+  ash::LorgnetteScannerManagerFactory::GetForBrowserContext(GetProfile())
+      ->GetCurrentConfig(request,
+                         base::BindOnce(&GetOptionGroupsAdapter, scanner_handle,
+                                        std::move(callback)));
 }
 
 }  // namespace crosapi

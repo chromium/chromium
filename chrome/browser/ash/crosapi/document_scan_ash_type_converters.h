@@ -53,6 +53,27 @@ struct TypeConverter<crosapi::mojom::ReadScanDataResponsePtr,
       const lorgnette::ReadScanDataResponse& input);
 };
 
+template <>
+struct TypeConverter<lorgnette::ScannerOption,
+                     crosapi::mojom::OptionSettingPtr> {
+  static lorgnette::ScannerOption Convert(
+      const crosapi::mojom::OptionSettingPtr& input);
+};
+
+template <>
+struct TypeConverter<crosapi::mojom::SetOptionsResponsePtr,
+                     lorgnette::SetOptionsResponse> {
+  static crosapi::mojom::SetOptionsResponsePtr Convert(
+      const lorgnette::SetOptionsResponse& input);
+};
+
+template <>
+struct TypeConverter<crosapi::mojom::GetOptionGroupsResponsePtr,
+                     lorgnette::GetCurrentConfigResponse> {
+  static crosapi::mojom::GetOptionGroupsResponsePtr Convert(
+      const lorgnette::GetCurrentConfigResponse& input);
+};
+
 // Types that don't need to be converted directly, but are easier to test in
 // isolation.
 crosapi::mojom::OptionType ConvertForTesting(lorgnette::OptionType input);

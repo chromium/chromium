@@ -118,6 +118,20 @@ void FakeDocumentScanAsh::ReadScanData(const std::string& job_handle,
   NOTIMPLEMENTED();
 }
 
+void FakeDocumentScanAsh::SetOptions(
+    const std::string& scanner_handle,
+    std::vector<crosapi::mojom::OptionSettingPtr> options,
+    SetOptionsCallback callback) {
+  // TODO(b/299489633): Implement this when adding the extension handler.
+  NOTIMPLEMENTED();
+}
+
+void FakeDocumentScanAsh::GetOptionGroups(const std::string& scanner_handle,
+                                          GetOptionGroupsCallback callback) {
+  // TODO(b/313730106): Implement this when adding the extension handler.
+  NOTIMPLEMENTED();
+}
+
 void FakeDocumentScanAsh::SetGetScannerNamesResponse(
     std::vector<std::string> scanner_names) {
   scanner_names_ = std::move(scanner_names);

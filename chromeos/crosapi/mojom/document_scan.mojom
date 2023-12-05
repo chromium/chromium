@@ -403,9 +403,70 @@ struct ReadScanDataResponse {
   uint32? estimated_completion@3;
 };
 
+// Used to set an option from `ScannerOption`.
+[Stable]
+struct OptionSetting {
+  // The name of the option.
+  string name@0;
+
+  // The type of the option.
+  OptionType type@1;
+
+  // Value to set.  Leave unset to request automatic setting for options that
+  // support it.
+  OptionValue? value@2;
+};
+
+// A group containing a list of option names.
+[Stable]
+struct OptionGroup {
+  // Printable title, e.g. "Geometry options".
+  string title@0;
+
+  // Names of contained options.
+  array<string> members@1;
+};
+
+
+// The result from setting an option.
+[Stable]
+struct SetOptionResult {
+  // The name of the option that was set.
+  string name@0;
+
+  // The backend's result from setting that option.
+  ScannerOperationResult result@1;
+};
+
+// The response from calling `SetOptions()`.
+[Stable]
+struct SetOptionsResponse {
+  // The same scanner handle that was passed to `SetOptions()`.
+  string scanner_handle@0;
+
+  // One result for each passed-in `OptionSetting`.
+  array<SetOptionResult> results@1;
+
+  // An updated mapping from option name to option value.
+  map<string, ScannerOption>? options@2;
+};
+
+// The response from calling `GetOptionGroups`.
+[Stable]
+struct GetOptionGroupsResponse {
+  // The same scanner handle that was passed to `GetOptionGroups()`.
+  string scanner_handle@0;
+
+  // The backend's get option groups result.
+  ScannerOperationResult result@1;
+
+  // If result is kSuccess, a list of the option groups.
+  array<OptionGroup>? options@2;
+};
+
 // This interface is used to access scanners.
-// Next version: 4
-// Next method id: 7
+// Next version: 5
+// Next method id: 9
 [Stable, Uuid="f0c77c02-b5c1-4919-8218-3076ecad58db"]
 interface DocumentScan {
   // Returns the names of all available, de-duplicated scanners.
@@ -451,4 +512,14 @@ interface DocumentScan {
   // Reads the next chunk of scan data for a specific scan job.
   [MinVersion=3]
   ReadScanData@6(string job_handle) => (ReadScanDataResponse response);
+
+  // Sets the options for a scanner opened by `OpenScanner()`.
+  [MinVersion=4]
+  SetOptions@7(string scanner_handle, array<OptionSetting> options)
+      => (SetOptionsResponse response);
+
+  // Get the option groups for a scanner opened by `OpenScanner()`.
+  [MinVersion=4]
+  GetOptionGroups@8(string scanner_handle)
+      => (GetOptionGroupsResponse response);
 };

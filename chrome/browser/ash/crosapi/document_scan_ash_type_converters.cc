@@ -84,6 +84,28 @@ crosapi::mojom::OptionType ConvertForTesting(lorgnette::OptionType input) {
 }
 
 template <>
+struct TypeConverter<lorgnette::OptionType, crosapi::mojom::OptionType> {
+  static lorgnette::OptionType Convert(crosapi::mojom::OptionType input) {
+    switch (input) {
+      case crosapi::mojom::OptionType::kUnknown:
+        return lorgnette::TYPE_UNKNOWN;
+      case crosapi::mojom::OptionType::kBool:
+        return lorgnette::TYPE_BOOL;
+      case crosapi::mojom::OptionType::kInt:
+        return lorgnette::TYPE_INT;
+      case crosapi::mojom::OptionType::kFixed:
+        return lorgnette::TYPE_FIXED;
+      case crosapi::mojom::OptionType::kString:
+        return lorgnette::TYPE_STRING;
+      case crosapi::mojom::OptionType::kButton:
+        return lorgnette::TYPE_BUTTON;
+      case crosapi::mojom::OptionType::kGroup:
+        return lorgnette::TYPE_GROUP;
+    }
+  }
+};
+
+template <>
 struct TypeConverter<crosapi::mojom::OptionUnit, lorgnette::OptionUnit> {
   static crosapi::mojom::OptionUnit Convert(lorgnette::OptionUnit input) {
     switch (input) {
@@ -353,6 +375,53 @@ crosapi::mojom::ScannerOptionPtr ConvertForTesting(  // IN-TEST
   return crosapi::mojom::ScannerOption::From(input);
 }
 
+lorgnette::ScannerOption
+TypeConverter<lorgnette::ScannerOption, crosapi::mojom::OptionSettingPtr>::
+    Convert(const crosapi::mojom::OptionSettingPtr& input) {
+  lorgnette::ScannerOption output;
+  output.set_name(input->name);
+  output.set_option_type(ConvertTo<lorgnette::OptionType>(input->type));
+
+  if (input->value) {
+    switch (input->type) {
+      case (crosapi::mojom::OptionType::kBool):
+        output.set_bool_value(input->value->get_bool_value());
+        break;
+      case (crosapi::mojom::OptionType::kInt):
+        // This can represent a single int value or a list.  Check for both.
+        if (input->value->is_int_value()) {
+          output.mutable_int_value()->add_value(input->value->get_int_value());
+        } else if (input->value->is_int_list()) {
+          for (auto& value : input->value->get_int_list()) {
+            output.mutable_int_value()->add_value(value);
+          }
+        }
+        break;
+      case (crosapi::mojom::OptionType::kFixed):
+        // This can represent a single fixed value or a list.  Check for both.
+        if (input->value->is_fixed_value()) {
+          output.mutable_fixed_value()->add_value(
+              input->value->get_fixed_value());
+        } else if (input->value->is_fixed_list()) {
+          for (auto& value : input->value->get_fixed_list()) {
+            output.mutable_fixed_value()->add_value(value);
+          }
+        }
+        break;
+      case (crosapi::mojom::OptionType::kString):
+        output.set_string_value(input->value->get_string_value());
+        break;
+      case (crosapi::mojom::OptionType::kUnknown):
+      case (crosapi::mojom::OptionType::kButton):
+      case (crosapi::mojom::OptionType::kGroup):
+        // kButton and kGroup don't need to set a value.
+        break;
+    }
+  }
+
+  return output;
+}
+
 crosapi::mojom::ScannerOperationResult TypeConverter<
     crosapi::mojom::ScannerOperationResult,
     lorgnette::OperationResult>::Convert(lorgnette::OperationResult input) {
@@ -474,6 +543,57 @@ TypeConverter<crosapi::mojom::ReadScanDataResponsePtr,
   if (input.has_estimated_completion()) {
     output->estimated_completion = input.estimated_completion();
   }
+  return output;
+}
+
+crosapi::mojom::SetOptionsResponsePtr TypeConverter<
+    crosapi::mojom::SetOptionsResponsePtr,
+    lorgnette::SetOptionsResponse>::Convert(const lorgnette::SetOptionsResponse&
+                                                input) {
+  auto output = crosapi::mojom::SetOptionsResponse::New();
+  output->scanner_handle = input.scanner().token();
+  // Populate output.results.
+  for (const auto& [input_name, input_result] : input.results()) {
+    auto this_result = crosapi::mojom::SetOptionResult::New();
+    this_result->name = input_name;
+    this_result->result =
+        ConvertTo<crosapi::mojom::ScannerOperationResult>(input_result);
+    output->results.emplace_back(std::move(this_result));
+  }
+  // Populate output.options.
+  const lorgnette::ScannerConfig& config = input.config();
+  output->options.emplace();
+  output->options->reserve(config.options().size());
+  for (const auto& [name, option] : config.options()) {
+    output->options->try_emplace(name,
+                                 crosapi::mojom::ScannerOption::From(option));
+  }
+
+  return output;
+}
+
+crosapi::mojom::GetOptionGroupsResponsePtr
+TypeConverter<crosapi::mojom::GetOptionGroupsResponsePtr,
+              lorgnette::GetCurrentConfigResponse>::
+    Convert(const lorgnette::GetCurrentConfigResponse& input) {
+  auto output = crosapi::mojom::GetOptionGroupsResponse::New();
+  output->scanner_handle = input.scanner().token();
+  output->result =
+      ConvertTo<crosapi::mojom::ScannerOperationResult>(input.result());
+
+  if (output->result == crosapi::mojom::ScannerOperationResult::kSuccess) {
+    output->options.emplace();
+    output->options->reserve(input.config().option_groups_size());
+    // Grab the OptionGroup from the ScannerConfig.
+    for (const lorgnette::OptionGroup& group : input.config().option_groups()) {
+      auto output_group = crosapi::mojom::OptionGroup::New();
+      output_group->title = group.title();
+      output_group->members = std::vector<std::string>(group.members().begin(),
+                                                       group.members().end());
+      output->options->emplace_back(std::move(output_group));
+    }
+  }
+
   return output;
 }
 
