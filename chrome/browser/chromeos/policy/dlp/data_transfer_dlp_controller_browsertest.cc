@@ -79,7 +79,7 @@ class FakeClipboardNotifier : public DlpClipboardNotifier {
 
   void ProceedPressed(std::unique_ptr<ui::ClipboardData> data,
                       const ui::DataTransferEndpoint& data_dst,
-                      base::RepeatingCallback<void()> reporting_cb) {
+                      base::OnceClosure reporting_cb) {
     DlpClipboardNotifier::ProceedPressed(std::move(data), data_dst,
                                          std::move(reporting_cb), GetWidget());
   }
@@ -117,7 +117,7 @@ class FakeDlpController : public DataTransferDlpController,
 
   void WarnOnPaste(base::optional_ref<const ui::DataTransferEndpoint> data_src,
                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
-                   base::RepeatingCallback<void()> reporting_cb) override {
+                   base::OnceClosure reporting_cb) override {
     helper_->WarnOnPaste(data_src, data_dst, std::move(reporting_cb));
   }
 
@@ -429,10 +429,10 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_WarnDestination) {
     ui::DataTransferEndpoint default_endpoint(ui::EndpointType::kDefault);
     auto data_src =
         std::make_unique<ui::DataTransferEndpoint>((GURL(kMailUrl)));
-    auto reporting_cb = base::BindRepeating(
-        &FakeDlpController::ReportWarningProceededEvent,
-        base::Unretained(dlp_controller_.get()), data_src.get(),
-        &default_endpoint, kMailUrl, "*", kRuleMetadata1, true);
+    auto reporting_cb =
+        base::BindOnce(&FakeDlpController::ReportWarningProceededEvent,
+                       base::Unretained(dlp_controller_.get()), data_src.get(),
+                       &default_endpoint, kMailUrl, "*", kRuleMetadata1, true);
     auto data = std::make_unique<ui::ClipboardData>();
     data->set_text(base::UTF16ToUTF8(std::u16string(kClipboardText116)));
     helper_.ProceedPressed(std::move(data), default_endpoint,

@@ -80,7 +80,7 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
   virtual void WarnOnPaste(
       base::optional_ref<const ui::DataTransferEndpoint> data_src,
       base::optional_ref<const ui::DataTransferEndpoint> data_dst,
-      base::RepeatingCallback<void()> reporting_cb);
+      base::OnceClosure reporting_cb);
 
   virtual void WarnOnBlinkPaste(
       base::optional_ref<const ui::DataTransferEndpoint> data_src,

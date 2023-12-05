@@ -52,7 +52,7 @@ class ClipboardBlockBubble : public ClipboardBubbleView {
   // ClipboardBubbleView::
   gfx::Size GetBubbleSize() const override;
 
-  void SetDismissCallback(base::RepeatingCallback<void()> cb);
+  void SetDismissCallback(base::OnceClosure cb);
 
  private:
   raw_ptr<views::LabelButton> button_ = nullptr;
@@ -68,9 +68,9 @@ class ClipboardWarnBubble : public ClipboardBubbleView {
   // ClipboardBubbleView::
   gfx::Size GetBubbleSize() const override;
 
-  void SetDismissCallback(base::RepeatingCallback<void()> cb);
+  void SetDismissCallback(base::OnceClosure cb);
 
-  void SetProceedCallback(base::RepeatingCallback<void()> cb);
+  void SetProceedCallback(base::OnceClosure cb);
 
   void set_paste_cb(base::OnceCallback<void(bool)> paste_cb) {
     paste_cb_ = std::move(paste_cb);

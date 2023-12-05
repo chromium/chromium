@@ -101,7 +101,7 @@ class FakeDlpController : public DataTransferDlpController,
 
   void WarnOnPaste(base::optional_ref<const ui::DataTransferEndpoint> data_src,
                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
-                   base::RepeatingCallback<void()> reporting_cb) override {
+                   base::OnceClosure reporting_cb) override {
     helper_->WarnOnPaste(data_src, data_dst, std::move(reporting_cb));
   }
 

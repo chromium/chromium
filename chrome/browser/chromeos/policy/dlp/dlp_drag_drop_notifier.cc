@@ -41,10 +41,10 @@ void DlpDragDropNotifier::WarnOnDrop(
   const std::u16string host_name =
       base::UTF8ToUTF16(data_src->GetURL()->host());
 
-  auto proceed_cb = base::BindRepeating(&DlpDragDropNotifier::ProceedPressed,
-                                        base::Unretained(this));
-  auto cancel_cb = base::BindRepeating(&DlpDragDropNotifier::CancelPressed,
-                                       base::Unretained(this));
+  auto proceed_cb = base::BindOnce(&DlpDragDropNotifier::ProceedPressed,
+                                   base::Unretained(this));
+  auto cancel_cb = base::BindOnce(&DlpDragDropNotifier::CancelPressed,
+                                  base::Unretained(this));
 
   ShowWarningBubble(l10n_util::GetStringFUTF16(
                         IDS_POLICY_DLP_CLIPBOARD_WARN_ON_PASTE, host_name),

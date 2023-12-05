@@ -130,7 +130,7 @@ void DlpDataTransferNotifier::ShowBlockBubble(const std::u16string& text) {
   InitWidget();
   ClipboardBlockBubble* bubble =
       widget_->SetContentsView(std::make_unique<ClipboardBlockBubble>(text));
-  bubble->SetDismissCallback(base::BindRepeating(
+  bubble->SetDismissCallback(base::BindOnce(
       &DlpDataTransferNotifier::CloseWidget, base::Unretained(this),
       // This is safe. CloseWidget() has sufficient checks to test its validity.
       base::UnsafeDangling(widget_.get()),
@@ -140,15 +140,15 @@ void DlpDataTransferNotifier::ShowBlockBubble(const std::u16string& text) {
 
 void DlpDataTransferNotifier::ShowWarningBubble(
     const std::u16string& text,
-    base::RepeatingCallback<void(views::Widget*)> proceed_cb,
-    base::RepeatingCallback<void(views::Widget*)> cancel_cb) {
+    base::OnceCallback<void(views::Widget*)> proceed_cb,
+    base::OnceCallback<void(views::Widget*)> cancel_cb) {
   InitWidget();
   ClipboardWarnBubble* bubble =
       widget_->SetContentsView(std::make_unique<ClipboardWarnBubble>(text));
   bubble->SetProceedCallback(
-      base::BindRepeating(std::move(proceed_cb), widget_.get()));
+      base::BindOnce(std::move(proceed_cb), widget_.get()));
   bubble->SetDismissCallback(
-      base::BindRepeating(std::move(cancel_cb), widget_.get()));
+      base::BindOnce(std::move(cancel_cb), widget_.get()));
   ResizeAndShowWidget(bubble->GetBubbleSize(), kClipboardDlpWarnDurationMs);
 }
 

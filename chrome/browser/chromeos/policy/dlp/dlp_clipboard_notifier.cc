@@ -169,7 +169,7 @@ void DlpClipboardNotifier::NotifyBlockedAction(
 void DlpClipboardNotifier::WarnOnPaste(
     base::optional_ref<const ui::DataTransferEndpoint> data_src,
     base::optional_ref<const ui::DataTransferEndpoint> data_dst,
-    base::RepeatingCallback<void()> reporting_cb) {
+    base::OnceCallback<void()> reporting_cb) {
   DCHECK(data_src.has_value());
   DCHECK(data_src->GetURL());
 
@@ -217,14 +217,13 @@ void DlpClipboardNotifier::WarnOnPaste(
   }
 #endif
 
-  auto proceed_cb = base::BindRepeating(
-      &DlpClipboardNotifier::ProceedPressed, base::Unretained(this),
-      // The proceed callback is run once only, base::Passed is safe here.
-      base::Passed(std::move(warned_clipboard_data)), CloneEndpoint(data_dst),
-      std::move(reporting_cb));
+  auto proceed_cb =
+      base::BindOnce(&DlpClipboardNotifier::ProceedPressed,
+                     base::Unretained(this), std::move(warned_clipboard_data),
+                     CloneEndpoint(data_dst), std::move(reporting_cb));
   auto cancel_cb =
-      base::BindRepeating(&DlpClipboardNotifier::CancelWarningPressed,
-                          base::Unretained(this), CloneEndpoint(data_dst));
+      base::BindOnce(&DlpClipboardNotifier::CancelWarningPressed,
+                     base::Unretained(this), CloneEndpoint(data_dst));
 
   ShowWarningBubble(l10n_util::GetStringFUTF16(
                         IDS_POLICY_DLP_CLIPBOARD_WARN_ON_PASTE, host_name),
@@ -245,11 +244,11 @@ void DlpClipboardNotifier::WarnOnBlinkPaste(
       base::UTF8ToUTF16(data_src->GetURL()->host());
 
   auto proceed_cb =
-      base::BindRepeating(&DlpClipboardNotifier::BlinkProceedPressed,
-                          base::Unretained(this), CloneEndpoint(data_dst));
+      base::BindOnce(&DlpClipboardNotifier::BlinkProceedPressed,
+                     base::Unretained(this), CloneEndpoint(data_dst));
   auto cancel_cb =
-      base::BindRepeating(&DlpClipboardNotifier::CancelWarningPressed,
-                          base::Unretained(this), CloneEndpoint(data_dst));
+      base::BindOnce(&DlpClipboardNotifier::CancelWarningPressed,
+                     base::Unretained(this), CloneEndpoint(data_dst));
 
   ShowWarningBubble(l10n_util::GetStringFUTF16(
                         IDS_POLICY_DLP_CLIPBOARD_WARN_ON_PASTE, host_name),
@@ -271,7 +270,7 @@ bool DlpClipboardNotifier::DidUserCancelDst(
 void DlpClipboardNotifier::ProceedPressed(
     std::unique_ptr<ui::ClipboardData> data,
     const ui::DataTransferEndpoint& data_dst,
-    base::RepeatingCallback<void()> reporting_cb,
+    base::OnceCallback<void()> reporting_cb,
     views::Widget* widget) {
   CloseWidget(widget, views::Widget::ClosedReason::kAcceptButtonClicked);
   approved_dsts_.push_back(data_dst);

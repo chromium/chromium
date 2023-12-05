@@ -74,8 +74,8 @@ class MockDlpClipboardNotifier : public DlpClipboardNotifier {
   MOCK_METHOD1(ShowBlockBubble, void(const std::u16string& text));
   MOCK_METHOD3(ShowWarningBubble,
                void(const std::u16string& text,
-                    base::RepeatingCallback<void(views::Widget*)> proceed_cb,
-                    base::RepeatingCallback<void(views::Widget*)> cancel_cb));
+                    base::OnceCallback<void(views::Widget*)> proceed_cb,
+                    base::OnceCallback<void(views::Widget*)> cancel_cb));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   MOCK_CONST_METHOD3(ShowToast,
                      void(const std::string& id,
@@ -145,8 +145,7 @@ TEST_P(ClipboardBubbleTestWithParam, WarnBubble) {
                                     views::Widget::ClosedReason::kUnspecified));
   EXPECT_CALL(notifier, ShowWarningBubble);
 
-  notifier.WarnOnPaste(&data_src, base::OptionalToPtr(data_dst),
-                       base::DoNothing());
+  notifier.WarnOnPaste(data_src, data_dst, base::DoNothing());
 }
 
 INSTANTIATE_TEST_SUITE_P(DlpClipboardNotifierTest,
@@ -425,7 +424,7 @@ TEST_P(ToastTestWithParam, WarnToast) {
 
   EXPECT_CALL(notifier, CloseWidget(testing::_,
                                     views::Widget::ClosedReason::kUnspecified));
-  notifier.WarnOnPaste(&data_src, &data_dst, base::DoNothing());
+  notifier.WarnOnPaste(data_src, data_dst, base::DoNothing());
 }
 
 INSTANTIATE_TEST_SUITE_P(

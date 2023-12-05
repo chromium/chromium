@@ -268,14 +268,13 @@ bool DataTransferDlpController::IsClipboardReadAllowed(
                       dst_pattern, DlpRulesManager::Level::kWarn,
                       /*is_clipboard_event=*/true, rule_metadata);
 
-          auto reporting_cb = base::BindRepeating(
+          auto reporting_cb = base::BindOnce(
               &DataTransferDlpController::ReportWarningProceededEvent,
               weak_ptr_factory_.GetWeakPtr(), data_src.CopyAsOptional(),
               data_dst.CopyAsOptional(), src_pattern, dst_pattern,
               /*is_clipboard_event=*/true, rule_metadata);
 
-          WarnOnPaste(data_src.as_ptr(), data_dst.as_ptr(),
-                      std::move(reporting_cb));
+          WarnOnPaste(data_src, data_dst, std::move(reporting_cb));
         }
       } else if (ShouldCancelOnWarn(data_dst.as_ptr())) {
         is_read_allowed = false;
@@ -286,14 +285,13 @@ bool DataTransferDlpController::IsClipboardReadAllowed(
                     dst_pattern, DlpRulesManager::Level::kWarn,
                     /*is_clipboard_event=*/true, rule_metadata);
 
-        auto reporting_cb = base::BindRepeating(
+        auto reporting_cb = base::BindOnce(
             &DataTransferDlpController::ReportWarningProceededEvent,
             weak_ptr_factory_.GetWeakPtr(), data_src.CopyAsOptional(),
             data_dst.CopyAsOptional(), src_pattern, dst_pattern,
             /*is_clipboard_event=*/true, rule_metadata);
 
-        WarnOnPaste(data_src.as_ptr(), data_dst.as_ptr(),
-                    std::move(reporting_cb));
+        WarnOnPaste(data_src, data_dst, std::move(reporting_cb));
         is_read_allowed = false;
       }
       break;
@@ -419,7 +417,7 @@ void DataTransferDlpController::NotifyBlockedPaste(
 void DataTransferDlpController::WarnOnPaste(
     base::optional_ref<const ui::DataTransferEndpoint> data_src,
     base::optional_ref<const ui::DataTransferEndpoint> data_dst,
-    base::RepeatingCallback<void()> reporting_cb) {
+    base::OnceClosure reporting_cb) {
   DCHECK(!(data_dst.has_value() && data_dst->IsUrlType()));
   clipboard_notifier_.WarnOnPaste(data_src, data_dst, std::move(reporting_cb));
 }
