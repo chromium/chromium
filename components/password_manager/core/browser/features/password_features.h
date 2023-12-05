@@ -90,6 +90,14 @@ BASE_DECLARE_FEATURE(kUseGMSCoreForBrandingInfo);
 
 // All features parameters in alphabetical order.
 
+#if BUILDFLAG(IS_ANDROID)
+// Minimum GMSCore version required to remove unenrollment. Setting version
+// lower than the default one will have no effect.
+inline constexpr base::FeatureParam<int>
+    kMinimumGMSCoreVersionToRemoveUnenrollment{
+        &kRemoveUPMUnenrollment, "min_gms_core_version", 225012000};
+#endif
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 // This enum supports enabling specific arms of the
 // `kPasswordGenerationExperiment` (go/strong-passwords-desktop).
