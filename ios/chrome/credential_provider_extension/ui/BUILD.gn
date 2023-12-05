@@ -26,6 +26,7 @@ source_set("ui") {
     "credential_response_handler.h",
     "empty_credentials_view_controller.h",
     "empty_credentials_view_controller.mm",
+    "new_password_coordinator+Testing.h",
     "new_password_coordinator.h",
     "new_password_coordinator.mm",
     "new_password_footer_view.h",
@@ -112,7 +113,10 @@ source_set("utils") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "new_password_mediator_unittest.mm" ]
+  sources = [
+    "new_password_coordinator_unittest.mm",
+    "new_password_mediator_unittest.mm",
+  ]
   deps = [
     ":ui",
     "//base",
