@@ -178,6 +178,10 @@ class DefaultBindingsDelegate : public DevToolsUIBindings::Delegate {
   infobars::ContentInfoBarManager* GetInfoBarManager() override;
   void RenderProcessGone(bool crashed) override {}
   void ShowCertificateViewer(const std::string& cert_chain) override {}
+
+  int GetDockStateForLogging() override { return 0; }
+  int GetOpenedByForLogging() override { return 0; }
+  int GetClosedByForLogging() override { return 0; }
   content::WebContents* web_contents_;
 };
 
@@ -669,8 +673,7 @@ DevToolsUIBindings::DevToolsUIBindings(content::WebContents* web_contents)
       delegate_(new DefaultBindingsDelegate(web_contents_)),
       devices_updates_enabled_(false),
       frontend_loaded_(false),
-      settings_(profile_),
-      last_action_time_(base::TimeTicks::Now()) {
+      settings_(profile_) {
   DevToolsUIBindings::GetDevToolsUIBindings().push_back(this);
   frontend_contents_observer_ =
       std::make_unique<FrontendWebContentsObserver>(this);
@@ -685,6 +688,16 @@ DevToolsUIBindings::DevToolsUIBindings(content::WebContents* web_contents)
 }
 
 DevToolsUIBindings::~DevToolsUIBindings() {
+  if (base::FeatureList::IsEnabled(::features::kDevToolsVeLogging) &&
+      !session_id_for_logging_.is_empty()) {
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+    metrics::structured::events::v2::dev_tools::SessionEnd()
+        .SetTrigger(delegate_->GetClosedByForLogging())
+        .SetTimeSinceLastAction(GetTimeSinceLastAction().InMilliseconds())
+        .SetSessionId(session_id_for_logging_.GetLowForSerialization())
+        .Record();
+#endif
+  }
   if (agent_host_.get())
     agent_host_->DetachClient(this);
 
@@ -1423,6 +1436,24 @@ void DevToolsUIBindings::RecordUserMetricsAction(const std::string& name) {
   base::RecordComputedAction(name);
 }
 
+bool DevToolsUIBindings::MaybeStartLogging() {
+  if (!base::FeatureList::IsEnabled(::features::kDevToolsVeLogging)) {
+    return false;
+  }
+  if (session_id_for_logging_.is_empty()) {
+    session_id_for_logging_ = base::UnguessableToken::Create();
+    last_action_time_ = base::TimeTicks::Now();
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+    metrics::structured::events::v2::dev_tools::SessionStart()
+        .SetTrigger(delegate_->GetOpenedByForLogging())
+        .SetDockSide(delegate_->GetDockStateForLogging())
+        .SetSessionId(session_id_for_logging_.GetLowForSerialization())
+        .Record();
+#endif
+  }
+  return true;
+}
+
 base::TimeDelta DevToolsUIBindings::GetTimeSinceLastAction() {
   base::TimeTicks now = base::TimeTicks::Now();
   base::TimeDelta time_since_last_action = (now - last_action_time_);
@@ -1431,7 +1462,7 @@ base::TimeDelta DevToolsUIBindings::GetTimeSinceLastAction() {
 }
 
 void DevToolsUIBindings::RecordImpression(const ImpressionEvent& event) {
-  if (!base::FeatureList::IsEnabled(::features::kDevToolsVeLogging)) {
+  if (!MaybeStartLogging()) {
     return;
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -1442,13 +1473,14 @@ void DevToolsUIBindings::RecordImpression(const ImpressionEvent& event) {
         .SetVeParent(ve.parent)
         .SetVeContext(ve.context)
         .SetTimeSinceLastAction(GetTimeSinceLastAction().InMilliseconds())
+        .SetSessionId(session_id_for_logging_.GetLowForSerialization())
         .Record();
   }
 #endif
 }
 
 void DevToolsUIBindings::RecordClick(const ClickEvent& event) {
-  if (!base::FeatureList::IsEnabled(::features::kDevToolsVeLogging)) {
+  if (!MaybeStartLogging()) {
     return;
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -1457,12 +1489,13 @@ void DevToolsUIBindings::RecordClick(const ClickEvent& event) {
       .SetMouseButton(event.mouse_button)
       .SetContext(event.context)
       .SetTimeSinceLastAction(GetTimeSinceLastAction().InMilliseconds())
+      .SetSessionId(session_id_for_logging_.GetLowForSerialization())
       .Record();
 #endif
 }
 
 void DevToolsUIBindings::RecordHover(const HoverEvent& event) {
-  if (!base::FeatureList::IsEnabled(::features::kDevToolsVeLogging)) {
+  if (!MaybeStartLogging()) {
     return;
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -1471,12 +1504,13 @@ void DevToolsUIBindings::RecordHover(const HoverEvent& event) {
       .SetTime(event.time)
       .SetContext(event.context)
       .SetTimeSinceLastAction(GetTimeSinceLastAction().InMilliseconds())
+      .SetSessionId(session_id_for_logging_.GetLowForSerialization())
       .Record();
 #endif
 }
 
 void DevToolsUIBindings::RecordDrag(const DragEvent& event) {
-  if (!base::FeatureList::IsEnabled(::features::kDevToolsVeLogging)) {
+  if (!MaybeStartLogging()) {
     return;
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -1485,12 +1519,13 @@ void DevToolsUIBindings::RecordDrag(const DragEvent& event) {
       .SetDistance(event.distance)
       .SetContext(event.context)
       .SetTimeSinceLastAction(GetTimeSinceLastAction().InMilliseconds())
+      .SetSessionId(session_id_for_logging_.GetLowForSerialization())
       .Record();
 #endif
 }
 
 void DevToolsUIBindings::RecordChange(const ChangeEvent& event) {
-  if (!base::FeatureList::IsEnabled(::features::kDevToolsVeLogging)) {
+  if (!MaybeStartLogging()) {
     return;
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -1498,12 +1533,13 @@ void DevToolsUIBindings::RecordChange(const ChangeEvent& event) {
       .SetVeId(event.veid)
       .SetContext(event.context)
       .SetTimeSinceLastAction(GetTimeSinceLastAction().InMilliseconds())
+      .SetSessionId(session_id_for_logging_.GetLowForSerialization())
       .Record();
 #endif
 }
 
 void DevToolsUIBindings::RecordKeyDown(const KeyDownEvent& event) {
-  if (!base::FeatureList::IsEnabled(::features::kDevToolsVeLogging)) {
+  if (!MaybeStartLogging()) {
     return;
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -1511,6 +1547,7 @@ void DevToolsUIBindings::RecordKeyDown(const KeyDownEvent& event) {
       .SetVeId(event.veid)
       .SetContext(event.context)
       .SetTimeSinceLastAction(GetTimeSinceLastAction().InMilliseconds())
+      .SetSessionId(session_id_for_logging_.GetLowForSerialization())
       .Record();
 #endif
 }

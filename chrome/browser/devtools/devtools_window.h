@@ -34,7 +34,7 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
-// Values that represent different actions to open DevTools window.
+// Values that represent different actions to open and close DevTools window.
 // These values are written to logs. New enum values can be added, but existing
 // enums must never be renumbered or deleted and reused.
 enum class DevToolsOpenedByAction {
@@ -61,6 +61,18 @@ enum class DevToolsOpenedByAction {
   // Add values above this line with a corresponding label in
   // tools/metrics/histograms/enums.xml
   kMaxValue = kOpenForNodeFromAnotherTarget,
+};
+
+enum class DevToolsClosedByAction {
+  kUnknown = 0,
+  // Main menu -> More Tools -> Developer Tools
+  // or Ctrl+Shift+I shortcut
+  kMainMenuOrMainShortcut = 1,
+  // Toggle-open via F12
+  kToggleShortcut = 2,
+  kCloseButton = 3,
+  kTargetDetach = 4,
+  kMaxValue = kTargetDetach,
 };
 
 class DevToolsWindow : public DevToolsUIBindings::Delegate,
@@ -398,6 +410,7 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
                       const blink::mojom::FileChooserParams& params) override;
   bool PreHandleGestureEvent(content::WebContents* source,
                              const blink::WebGestureEvent& event) override;
+  void Close(DevToolsClosedByAction closed_by);
 
   // content::DevToolsUIBindings::Delegate overrides
   void ActivateWindow() override;
@@ -418,6 +431,9 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   infobars::ContentInfoBarManager* GetInfoBarManager() override;
   void RenderProcessGone(bool crashed) override;
   void ShowCertificateViewer(const std::string& cert_viewer) override;
+  int GetDockStateForLogging() override;
+  int GetOpenedByForLogging() override;
+  int GetClosedByForLogging() override;
 
   void ColorPickedInEyeDropper(int r, int g, int b, int a);
 
@@ -490,6 +506,9 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   std::unique_ptr<DevToolsEyeDropper> eye_dropper_;
 
   const DevToolsOpenedByAction opened_by_;
+  DevToolsClosedByAction closed_by_;
+  const base::UnguessableToken session_id_for_logging_;
+
   class Throttle;
   Throttle* throttle_ = nullptr;
   bool open_new_window_for_popups_ = false;
