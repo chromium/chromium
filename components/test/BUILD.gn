@@ -87,6 +87,10 @@ if (is_ios) {
     testonly = true
     filelist_name = "data/language/unit_tests_bundle_data.filelist"
   }
+  bundle_data_from_filelist("offline_pages_test_bundle_data") {
+    testonly = true
+    filelist_name = "data/offline_pages/unit_tests_bundle_data.filelist"
+  }
   bundle_data_from_filelist("paint_preview_test_bundle_data") {
     testonly = true
     filelist_name = "data/paint_preview/unit_tests_bundle_data.filelist"
