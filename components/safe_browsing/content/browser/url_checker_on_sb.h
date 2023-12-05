@@ -39,11 +39,38 @@ class PingManager;
 // UI thread.
 class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
  public:
-  using OnCompleteCheckCallback = base::RepeatingCallback<void(
-      bool /* slow_check */,
-      bool /* proceed */,
-      bool /* showed_interstitial */,
-      SafeBrowsingUrlCheckerImpl::PerformedCheck /* performed_check */)>;
+  struct StartParams {
+    StartParams(const net::HttpRequestHeaders& headers,
+                int load_flags,
+                network::mojom::RequestDestination request_destination,
+                bool has_user_gesture,
+                const GURL& url,
+                const std::string& method);
+    const raw_ref<const net::HttpRequestHeaders> headers;
+    int load_flags;
+    network::mojom::RequestDestination request_destination;
+    bool has_user_gesture;
+    const raw_ref<const GURL> url;
+    const raw_ref<const std::string> method;
+  };
+
+  struct OnCompleteCheckResult {
+    OnCompleteCheckResult(
+        bool slow_check,
+        bool proceed,
+        bool showed_interstitial,
+        SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check);
+    // |slow_check| indicates whether it reports the result of a slow check.
+    // (Please see comments of OnCheckUrlResult() for what slow
+    // check means).
+    bool slow_check;
+    bool proceed;
+    bool showed_interstitial;
+    SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check;
+  };
+
+  using OnCompleteCheckCallback =
+      base::RepeatingCallback<void(OnCompleteCheckResult)>;
 
   using OnNotifySlowCheckCallback = base::RepeatingCallback<void()>;
 
@@ -75,12 +102,7 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
   ~UrlCheckerOnSB();
 
   // Starts the initial safe browsing check.
-  void Start(const net::HttpRequestHeaders& headers,
-             int load_flags,
-             network::mojom::RequestDestination request_destination,
-             bool has_user_gesture,
-             const GURL& url,
-             const std::string& method);
+  void Start(const StartParams& params);
 
   // Checks the specified |url| using |url_checker_|.
   void CheckUrl(const GURL& url, const std::string& method);
@@ -89,6 +111,8 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
 
   void SetUrlCheckerForTesting(
       std::unique_ptr<SafeBrowsingUrlCheckerImpl> checker);
+
+  bool IsRealTimeCheckForTesting();
 
  private:
   // If |slow_check_notifier| is non-null, it indicates that a "slow check" is

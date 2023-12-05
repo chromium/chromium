@@ -100,6 +100,7 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   const char* NameForLoggingWillProcessResponse() override;
 
   UrlCheckerOnSB* GetSyncSBCheckerForTesting();
+  UrlCheckerOnSB* GetAsyncSBCheckerForTesting();
 
  private:
   // |web_contents_getter| is used for displaying SafeBrowsing UI when
@@ -127,14 +128,8 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
                                         const std::string& method,
                                         bool should_skip);
 
-  // |slow_check| indicates whether it reports the result of a slow check.
-  // (Please see comments of UrlCheckerOnSB::OnCheckUrlResult() for what slow
-  // check means).
-  void OnCompleteSyncCheck(
-      bool slow_check,
-      bool proceed,
-      bool showed_interstitial,
-      SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check);
+  void OnCompleteSyncCheck(UrlCheckerOnSB::OnCompleteCheckResult result);
+  void OnCompleteAsyncCheck(UrlCheckerOnSB::OnCompleteCheckResult result);
 
   // Called to skip future safe browsing checks and resume the request if
   // necessary.
@@ -148,11 +143,19 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   std::string GetUrlCheckTypeForLogging(
       SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check);
 
+  // Called when the URL is identified as dangerous.
+  void BlockUrlLoader(bool showed_interstitial);
+
   // Destroys all checkers on the IO thread, or UI thread if
   // kSafeBrowsingOnUIThread is enabled.
   void DeleteUrlCheckerOnSB();
 
+  // If |sync_sb_checker_| has completed, but |async_sb_checker_| has not,
+  // transfer the ownership of |async_sb_checker_| to |async_check_tracker_|.
+  void MaybeTransferAsyncChecker();
+
   size_t pending_sync_checks_ = 0;
+  size_t pending_async_checks_ = 0;
 
   // How many slow checks that haven't received results.
   size_t pending_sync_slow_checks_ = 0;
@@ -175,7 +178,13 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   // The total delay caused by SafeBrowsing deferring the resource load.
   base::TimeDelta total_delay_;
 
+  // Checkers used to perform Safe Browsing checks. |sync_sb_checker_| may defer
+  // the URL loader. |async_sb_checker_| doesn't defer the URL loader and may
+  // be transferred to |skip_check_checker_| if it is not completed.
+  // |async_sb_checker_| may be null when this loader is not eligible for async
+  // check.
   std::unique_ptr<UrlCheckerOnSB> sync_sb_checker_;
+  std::unique_ptr<UrlCheckerOnSB> async_sb_checker_;
 
   // Used to decide whether the check can be skipped on the SB thread.
   std::unique_ptr<SkipCheckCheckerOnSB> skip_check_checker_;

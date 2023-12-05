@@ -5,7 +5,10 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_ASYNC_CHECK_TRACKER_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_ASYNC_CHECK_TRACKER_H_
 
+#include <memory>
+
 #include "base/memory/weak_ptr.h"
+#include "components/safe_browsing/content/browser/url_checker_on_sb.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -37,16 +40,26 @@ class AsyncCheckTracker
 
   ~AsyncCheckTracker() override;
 
+  // Takes ownership of `checker`.
+  void TransferUrlChecker(std::unique_ptr<UrlCheckerOnSB> checker);
+
+  bool HasPendingCheckerForTesting();
+
   base::WeakPtr<AsyncCheckTracker> GetWeakPtr();
 
  private:
   friend class content::WebContentsUserData<AsyncCheckTracker>;
+  friend class SBBrowserUrlLoaderThrottleTestBase;
 
   AsyncCheckTracker(content::WebContents* web_contents,
                     scoped_refptr<BaseUIManager> ui_manager);
 
   // Used to display a warning.
   scoped_refptr<BaseUIManager> ui_manager_;
+
+  // Pending Safe Browsing checks on the current page.
+  // TODO(crbug.com/1501194): Support holding multiple checkers.
+  std::unique_ptr<UrlCheckerOnSB> pending_checker_;
 
   base::WeakPtrFactory<AsyncCheckTracker> weak_factory_{this};
 
