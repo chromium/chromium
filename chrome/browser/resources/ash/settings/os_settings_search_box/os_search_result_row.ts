@@ -683,7 +683,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kAssistant:
         return 'os-settings:assistant';
       case SearchResultIcon.kAudio:
-        return 'os-settings:audio';
+        return isRevampEnabled ? 'os-settings:device-audio' :
+                                 'os-settings:audio';
       case SearchResultIcon.kAuthKey:
         return 'os-settings:auth-key';
       case SearchResultIcon.kAutoclick:
@@ -718,7 +719,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kDictation:
         return 'os-settings:dictation';
       case SearchResultIcon.kDisplay:
-        return 'os-settings:display';
+        return isRevampEnabled ? 'os-settings:device-display' :
+                                 'os-settings:display';
       case SearchResultIcon.kDockedMagnifier:
         return 'os-settings:docked-magnifier';
       case SearchResultIcon.kEthernet:
@@ -747,7 +749,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kInstantTethering:
         return 'os-settings:magic-tethering';
       case SearchResultIcon.kKeyboard:
-        return 'os-settings:keyboard';
+        return isRevampEnabled ? 'os-settings:device-keyboard' :
+                                 'os-settings:keyboard';
       case SearchResultIcon.kLanguage:
         return isRevampEnabled ? 'os-settings:language-revamp' :
                                  'os-settings:language';
@@ -758,7 +761,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kMicrophone:
         return 'os-settings:microphone';
       case SearchResultIcon.kMouse:
-        return 'os-settings:mouse';
+        return isRevampEnabled ? 'os-settings:device-mouse' :
+                                 'os-settings:mouse';
       case SearchResultIcon.kNearbyShare:
         // <if expr="_google_chrome">
         if (loadTimeData.getBoolean('isNameEnabled')) {
@@ -777,10 +781,13 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'os-settings:multidevice-better-together-suite';
       case SearchResultIcon.kPluginVm:
         return 'os-settings:plugin-vm';
+      case SearchResultIcon.kPointingStick:
+        return 'os-settings:device-pointing-stick';
       case SearchResultIcon.kPower:
         return 'os-settings:power';
       case SearchResultIcon.kPrinter:
-        return 'os-settings:print';
+        return isRevampEnabled ? 'os-settings:device-print' :
+                                 'os-settings:print';
       case SearchResultIcon.kPrivacyControls:
         return 'os-settings:privacy-controls';
       case SearchResultIcon.kReleaseNotes:
@@ -790,6 +797,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kRestore:
         return isRevampEnabled ? 'os-settings:restore-revamp' :
                                  'os-settings:startup';
+      case SearchResultIcon.kScanner:
+        return 'os-settings:device-scan';
       case SearchResultIcon.kSearch:
         return isRevampEnabled ? 'os-settings:explore' : 'cr:search';
       case SearchResultIcon.kSelectToSpeak:
@@ -800,11 +809,14 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return isRevampEnabled ? 'os-settings:storage' :
                                  'os-settings:hard-drive';
       case SearchResultIcon.kStylus:
-        return 'os-settings:stylus';
+        return isRevampEnabled ? 'os-settings:device-stylus' :
+                                 'os-settings:stylus';
       case SearchResultIcon.kSync:
         return isRevampEnabled ? 'os-settings:sync-revamp' : 'os-settings:sync';
       case SearchResultIcon.kSystemPreferences:
         return 'os-settings:system-preferences';
+      case SearchResultIcon.kTouchpad:
+        return 'os-settings:device-touchpad';
       case SearchResultIcon.kWallpaper:
         return 'os-settings:wallpaper';
       case SearchResultIcon.kWifi:
