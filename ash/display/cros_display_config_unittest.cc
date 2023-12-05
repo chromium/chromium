@@ -323,10 +323,6 @@ TEST_F(CrosDisplayConfigTest, SetLayoutUnified) {
   // Restore extended mode.
   cros_display_config()->SetUnifiedDesktopEnabled(false);
   EXPECT_FALSE(display_manager()->IsInUnifiedMode());
-
-  // Flush pending events now to ensure the Screen instance is still valid
-  // during event processing.
-  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(CrosDisplayConfigTest, FailToSetLayoutMirroredDefaultWithOneDisplay) {

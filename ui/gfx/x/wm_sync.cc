@@ -68,9 +68,8 @@ WmSync::~WmSync() {
 
 void WmSync::OnEvent(const Event& xevent) {
   if (GetWindowForEvent(xevent) == window_) {
-    Cleanup();
     std::move(on_synced_).Run();
-    // `this` may be deleted.
+    Cleanup();
   }
 }
 

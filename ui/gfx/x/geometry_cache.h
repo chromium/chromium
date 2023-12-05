@@ -20,8 +20,7 @@ namespace x11 {
 // Keeps track of the geometry of a window relative to the root window.
 class COMPONENT_EXPORT(X11) GeometryCache final : public EventObserver {
  public:
-  using BoundsChangedCallback =
-      base::RepeatingCallback<void(const gfx::Rect&, const gfx::Rect&)>;
+  using BoundsChangedCallback = base::RepeatingCallback<void(const gfx::Rect&)>;
 
   GeometryCache(Connection* connection,
                 Window window,
@@ -43,8 +42,7 @@ class COMPONENT_EXPORT(X11) GeometryCache final : public EventObserver {
 
   bool Ready() const;
 
-  void OnParentGeometryChanged(const gfx::Rect& old_parent_bounds,
-                               const gfx::Rect& new_parent_bounds);
+  void OnParentGeometryChanged(const gfx::Rect& parent_bounds);
 
   // EventObserver:
   void OnEvent(const Event& xevent) override;
