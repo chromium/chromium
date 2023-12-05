@@ -2269,6 +2269,22 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Secagentd.AuthFactor.{EventType}"
+    enum="SecagentdAuthFactor" expires_after="2024-03-01">
+  <owner>rborzello@google.com</owner>
+  <owner>cros-enterprise-security@google.com</owner>
+  <summary>
+    Records which auth factor was used when a user attempts to access a device.
+    Emits the auth factor which is a password, pin, fingerprint, etc. It is
+    recorded whenever a {EventType} event occurs when accessing the device.
+  </summary>
+  <token key="EventType">
+    <variant name="Failure" summary="User enters incorrect credentials"/>
+    <variant name="Login" summary="User logs into the device"/>
+    <variant name="Unlock" summary="User unlocks the device"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.Secagentd.Bootmode.Cros" enum="SecagentdBootmodeCros"
     expires_after="2024-05-05">
   <owner>rborzello@google.com</owner>

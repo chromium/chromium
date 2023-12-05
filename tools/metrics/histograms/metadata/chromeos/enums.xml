@@ -1410,6 +1410,21 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="8" label="API error: no sync token in Get response."/>
 </enum>
 
+<enum name="SecagentdAuthFactor">
+<!--
+Enum values follow AuthFactor in secagentd proto.
+https://chromium.googlesource.com/chromiumos/platform2/+/main/secagentd/proto/security_xdr_events.proto#282
+-->
+
+  <int value="0" label="Unknown auth factor"/>
+  <int value="1" label="Password"/>
+  <int value="2" label="Pin"/>
+  <int value="3" label="Online Recovery"/>
+  <int value="4" label="Kiosk"/>
+  <int value="5" label="Smart Card"/>
+  <int value="6" label="Fingerprint"/>
+</enum>
+
 <enum name="SecagentdBootmodeCros">
   <int value="0" label="Bootmode successfully retrieved"/>
   <int value="1" label="Bootmode manager did not respond"/>
