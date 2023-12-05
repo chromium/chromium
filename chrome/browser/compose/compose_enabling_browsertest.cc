@@ -23,12 +23,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_ComposeEnablingBrowserTest DISABLED_ComposeEnablingBrowserTest
-#else
-#define MAYBE_ComposeEnablingBrowserTest ComposeEnablingBrowserTest
-#endif
-class MAYBE_ComposeEnablingBrowserTest : public InProcessBrowserTest {
+class ComposeEnablingBrowserTest : public InProcessBrowserTest {
  public:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
@@ -58,7 +53,7 @@ class MAYBE_ComposeEnablingBrowserTest : public InProcessBrowserTest {
 };
 
 // PRE_ step simulates a browser restart.
-IN_PROC_BROWSER_TEST_F(MAYBE_ComposeEnablingBrowserTest,
+IN_PROC_BROWSER_TEST_F(ComposeEnablingBrowserTest,
                        PRE_EnableComposeViaSettings) {
   // Sign-in.
   signin::MakePrimaryAccountAvailable(
@@ -87,8 +82,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_ComposeEnablingBrowserTest,
 }
 
 // Checks that after the browser restarts required features are enabled.
-IN_PROC_BROWSER_TEST_F(MAYBE_ComposeEnablingBrowserTest,
-                       EnableComposeViaSettings) {
+IN_PROC_BROWSER_TEST_F(ComposeEnablingBrowserTest, EnableComposeViaSettings) {
   // Confirm that the required feature flags are enabled.
   EXPECT_TRUE(base::FeatureList::IsEnabled(compose::features::kEnableCompose));
   EXPECT_TRUE(base::FeatureList::IsEnabled(
