@@ -52,10 +52,9 @@ struct BlinkGCPluginOptions {
   // Enables checks for WeakPtr and WeakPtrFactory with GCed types.
   bool enable_weak_ptrs_check = false;
 
-  std::set<std::string> ignored_classes;
-  std::set<std::string> checked_namespaces;
-  std::vector<std::string> checked_directories;
-  std::vector<std::string> ignored_directories;
+  std::set<std::string_view> checked_namespaces;
+  std::vector<std::string_view> checked_directories;
+  std::vector<std::string_view> ignored_directories;
 };
 
 #endif  // TOOLS_BLINK_GC_PLUGIN_BLINK_GC_PLUGIN_OPTIONS_H_
