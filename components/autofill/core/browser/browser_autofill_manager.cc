@@ -698,7 +698,11 @@ void BrowserAutofillManager::OnUserAcceptedCardsFromAccountOption() {
 
 void BrowserAutofillManager::RefetchCardsAndUpdatePopup(
     const FormData& form,
-    const FormFieldData& field_data) {
+    const FormFieldData& field_data,
+    const gfx::RectF& element_bounds) {
+  external_delegate_->OnQuery(
+      form, field_data, element_bounds,
+      AutofillSuggestionTriggerSource::kShowCardsFromAccount);
   AutofillField* autofill_field = GetAutofillField(form, field_data);
   ServerFieldType field_type = autofill_field
                                    ? autofill_field->Type().GetStorableType()
@@ -1116,7 +1120,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   }
 
   external_delegate_->SetCurrentDataListValues(field.datalist_options);
-  external_delegate_->OnQuery(form, field, transformed_box);
+  external_delegate_->OnQuery(form, field, transformed_box, trigger_source);
 
   std::vector<Suggestion> suggestions;
   SuggestionsContext context;

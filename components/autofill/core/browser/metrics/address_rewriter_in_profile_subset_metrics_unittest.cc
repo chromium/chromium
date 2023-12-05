@@ -60,7 +60,9 @@ TEST_F(AddressRewriterInProfileSubsetMetricsTest, PreviouslyHiddenSuggestion) {
 
   FormData form = test::CreateTestAddressFormData();
   autofill_manager().OnFormsSeen({form}, {});
-  external_delegate().OnQuery(form, form.fields.front(), gfx::RectF());
+  external_delegate().OnQuery(
+      form, form.fields.front(), gfx::RectF(),
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
 
   base::HistogramTester histogram_tester;
   AutofillSuggestionGenerator suggestion_generator(autofill_client_.get(),

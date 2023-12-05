@@ -1824,7 +1824,9 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
   // Simulate selecting a credit card suggestions.
   {
     base::UserActionTester user_action_tester;
-    external_delegate().OnQuery(form, form.fields.front(), gfx::RectF());
+    external_delegate().OnQuery(
+        form, form.fields.front(), gfx::RectF(),
+        AutofillSuggestionTriggerSource::kFormControlElementClicked);
 
     external_delegate().DidAcceptSuggestion(
         test::CreateAutofillSuggestion(PopupItemId::kCreditCardEntry, u"Test",
@@ -1850,7 +1852,9 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitAndDisableFeature(features::kAutofillUndo);
     base::UserActionTester user_action_tester;
-    external_delegate().OnQuery(form, form.fields.front(), gfx::RectF());
+    external_delegate().OnQuery(
+        form, form.fields.front(), gfx::RectF(),
+        AutofillSuggestionTriggerSource::kFormControlElementClicked);
 
     external_delegate().DidAcceptSuggestion(
         Suggestion(PopupItemId::kClearForm),
@@ -1864,7 +1868,9 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
   {
     base::test::ScopedFeatureList scoped_feature_list{features::kAutofillUndo};
     base::UserActionTester user_action_tester;
-    external_delegate().OnQuery(form, form.fields.front(), gfx::RectF());
+    external_delegate().OnQuery(
+        form, form.fields.front(), gfx::RectF(),
+        AutofillSuggestionTriggerSource::kFormControlElementClicked);
 
     external_delegate().DidAcceptSuggestion(
         Suggestion(PopupItemId::kClearForm),
@@ -1886,7 +1892,9 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
   // Simulate selecting a credit card suggestions.
   {
     base::UserActionTester user_action_tester;
-    external_delegate().OnQuery(form, form.fields.front(), gfx::RectF());
+    external_delegate().OnQuery(
+        form, form.fields.front(), gfx::RectF(),
+        AutofillSuggestionTriggerSource::kFormControlElementClicked);
 
     external_delegate().DidAcceptSuggestion(
         test::CreateAutofillSuggestion(PopupItemId::kCreditCardEntry, u"Test",
@@ -2039,7 +2047,9 @@ TEST_F(AutofillMetricsTest, ProfileCheckoutFlowUserActions) {
   // Simulate selecting a profile suggestions.
   {
     base::UserActionTester user_action_tester;
-    external_delegate().OnQuery(form, form.fields.front(), gfx::RectF());
+    external_delegate().OnQuery(
+        form, form.fields.front(), gfx::RectF(),
+        AutofillSuggestionTriggerSource::kFormControlElementClicked);
 
     external_delegate().DidAcceptSuggestion(
         test::CreateAutofillSuggestion(PopupItemId::kCreditCardEntry, u"Test",

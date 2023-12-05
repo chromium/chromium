@@ -29,7 +29,8 @@ class TestAutofillExternalDelegate : public AutofillExternalDelegate {
   void OnPopupHidden() override;
   void OnQuery(const FormData& form,
                const FormFieldData& field,
-               const gfx::RectF& bounds) override;
+               const gfx::RectF& bounds,
+               AutofillSuggestionTriggerSource trigger_source) override;
   void OnSuggestionsReturned(FieldGlobalId field_id,
                              const std::vector<Suggestion>& suggestions,
                              AutofillSuggestionTriggerSource trigger_source,

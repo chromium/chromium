@@ -211,12 +211,15 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
   }
 }
 
-void AutofillExternalDelegate::OnQuery(const FormData& form,
-                                       const FormFieldData& field,
-                                       const gfx::RectF& element_bounds) {
+void AutofillExternalDelegate::OnQuery(
+    const FormData& form,
+    const FormFieldData& field,
+    const gfx::RectF& element_bounds,
+    AutofillSuggestionTriggerSource trigger_source) {
   query_form_ = form;
   query_field_ = field;
   element_bounds_ = element_bounds;
+  trigger_source_ = trigger_source;
   should_show_scan_credit_card_ =
       manager_->ShouldShowScanCreditCard(query_form_, query_field_);
   popup_type_ = GetPopupTypeForField(*manager_, query_form_, query_field_);
@@ -233,6 +236,7 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
     const std::vector<Suggestion>& input_suggestions,
     AutofillSuggestionTriggerSource trigger_source,
     bool is_all_server_suggestions) {
+  CHECK_EQ(trigger_source, trigger_source_);
   // Only include "Autofill Options" special menu item if we have Autofill
   // suggestions.
   bool has_autofill_suggestions = base::ranges::any_of(
@@ -242,7 +246,7 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
   if (field_id != query_field_.global_id()) {
     return;
   }
-  if (trigger_source ==
+  if (trigger_source_ ==
           AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed &&
       !has_autofill_suggestions) {
     // User changed or delete the only Autofill profile shown in the popup,
@@ -296,7 +300,7 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
   if (query_field_.is_focusable && manager_->driver().CanShowAutofillUi()) {
     AutofillClient::PopupOpenArgs open_args(element_bounds_,
                                             query_field_.text_direction,
-                                            suggestions, trigger_source);
+                                            suggestions, trigger_source_);
 
     shown_suggestions_types_.clear();
     for (const Suggestion& suggestion : input_suggestions) {
@@ -729,7 +733,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
 
   if (suggestion.popup_item_id == PopupItemId::kShowAccountCards) {
     should_show_cards_from_account_option_ = false;
-    manager_->RefetchCardsAndUpdatePopup(query_form_, query_field_);
+    manager_->RefetchCardsAndUpdatePopup(query_form_, query_field_,
+                                         element_bounds_);
   } else {
     manager_->client().HideAutofillPopup(PopupHidingReason::kAcceptSuggestion);
   }

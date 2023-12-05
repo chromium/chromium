@@ -89,10 +89,12 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   // breaks the cache.
   virtual void OnQuery(const FormData& form,
                        const FormFieldData& field,
-                       const gfx::RectF& element_bounds);
+                       const gfx::RectF& element_bounds,
+                       AutofillSuggestionTriggerSource trigger_source);
 
   // Records query results and correctly formats them before sending them off
-  // to be displayed.  Called when an Autofill query result is available.
+  // to be displayed. Called when an Autofill query result is available.
+  // TODO(crbug.com/1493361): `trigger_source` is unused, remove.
   virtual void OnSuggestionsReturned(
       FieldGlobalId field_id,
       const std::vector<Suggestion>& suggestions,
@@ -237,15 +239,16 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   // The current form and field selected by Autofill.
   FormData query_form_;
   FormFieldData query_field_;
+  // The bounds of the form field that the user is interacting with.
+  gfx::RectF element_bounds_;
+  // The method how suggestions were triggered on the current form.
+  AutofillSuggestionTriggerSource trigger_source_;
 
   // Stores the last `AutofillTriggerDetails::field_types_to_fill`.
   // We key this information by form section to guarantee granular filling
   // side effects are specific are not "leaked" to other forms.
   base::flat_map<Section, ServerFieldTypeSet>
       last_field_types_to_fill_for_address_form_section_;
-
-  // The bounds of the form field that user is interacting with.
-  gfx::RectF element_bounds_;
 
   bool should_show_scan_credit_card_ = false;
   PopupType popup_type_ = PopupType::kUnspecified;

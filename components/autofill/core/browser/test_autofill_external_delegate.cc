@@ -31,16 +31,19 @@ void TestAutofillExternalDelegate::OnPopupHidden() {
   run_loop_.Quit();
 }
 
-void TestAutofillExternalDelegate::OnQuery(const FormData& form,
-                                           const FormFieldData& field,
-                                           const gfx::RectF& bounds) {
+void TestAutofillExternalDelegate::OnQuery(
+    const FormData& form,
+    const FormFieldData& field,
+    const gfx::RectF& bounds,
+    AutofillSuggestionTriggerSource trigger_source) {
   on_query_seen_ = true;
   on_suggestions_returned_seen_ = false;
+  trigger_source_ = trigger_source;
 
   // If necessary, call the superclass's OnQuery to set up its other fields
   // properly.
   if (call_parent_methods_)
-    AutofillExternalDelegate::OnQuery(form, field, bounds);
+    AutofillExternalDelegate::OnQuery(form, field, bounds, trigger_source);
 }
 
 void TestAutofillExternalDelegate::OnSuggestionsReturned(
@@ -51,14 +54,13 @@ void TestAutofillExternalDelegate::OnSuggestionsReturned(
   on_suggestions_returned_seen_ = true;
   field_id_ = field_id;
   suggestions_ = suggestions;
-  trigger_source_ = trigger_source;
   is_all_server_suggestions_ = is_all_server_suggestions;
 
   // If necessary, call the superclass's OnSuggestionsReturned in order to
   // execute logic relating to showing the popup or not.
   if (call_parent_methods_)
     AutofillExternalDelegate::OnSuggestionsReturned(
-        field_id, suggestions, trigger_source, is_all_server_suggestions);
+        field_id, suggestions, trigger_source_, is_all_server_suggestions);
 }
 
 bool TestAutofillExternalDelegate::HasActiveScreenReader() const {

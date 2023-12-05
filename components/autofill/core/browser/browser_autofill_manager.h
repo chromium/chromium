@@ -123,7 +123,8 @@ class BrowserAutofillManager : public AutofillManager {
                                                 const FormFieldData& field);
   virtual void OnUserAcceptedCardsFromAccountOption();
   virtual void RefetchCardsAndUpdatePopup(const FormData& form,
-                                          const FormFieldData& field_data);
+                                          const FormFieldData& field_data,
+                                          const gfx::RectF& element_bounds);
 
   virtual void FillCreditCardForm(
       const FormData& form,
