@@ -878,7 +878,7 @@ void WebBundleURLLoaderFactory::SendResponseToLoader(
     return;
   }
 
-  response_head->web_bundle_url = bundle_url_;
+  response_head->is_web_bundle_inner_response = true;
 
   response_head->load_timing = loader->load_timing();
   loader->SetBodyLength(payload_length);

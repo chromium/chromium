@@ -49,9 +49,6 @@ struct URLResponseHead {
   // response's mime type.  This may be a derived value.
   string charset;
 
-  // The resource's compliance with the Certificate Transparency policy.
-  CTPolicyCompliance ct_policy_compliance;
-
   // Content length if available. -1 if not available
   int64 content_length = -1;
 
@@ -198,6 +195,9 @@ struct URLResponseHead {
   // True if the response is an inner response of a signed exchange.
   bool is_signed_exchange_inner_response = false;
 
+  // True if the response is an inner response of a WebBundle.
+  bool is_web_bundle_inner_response = false;
+
   // True if this resource is served from the prefetch cache.
   bool was_in_prefetch_cache = false;
 
@@ -240,10 +240,6 @@ struct URLResponseHead {
   // Includes all known aliases, e.g. from A, AAAA, or HTTPS, not just from the
   // address used for the connection, in no particular order.
   array<string> dns_aliases;
-
-  // The URL of WebBundle this response was loaded from. This value is only
-  // populated for resources loaded from a WebBundle.
-  url.mojom.Url web_bundle_url;
 
   // True when there is an "authorization" header on the request and it is
   // covered by the wildcard in the preflight response.

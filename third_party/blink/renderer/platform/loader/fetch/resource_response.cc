@@ -104,7 +104,7 @@ bool ResourceResponse::IsHTTP() const {
 }
 
 bool ResourceResponse::ShouldPopulateResourceTiming() const {
-  return IsHTTP() || WebBundleURL().IsValid();
+  return IsHTTP() || is_web_bundle_inner_response_;
 }
 
 const KURL& ResourceResponse::CurrentRequestUrl() const {
