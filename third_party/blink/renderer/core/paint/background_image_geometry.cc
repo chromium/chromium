@@ -77,24 +77,26 @@ LayoutUnit ResolveXPosition(const FillLayer& fill_layer,
                             LayoutUnit available_width,
                             LayoutUnit offset) {
   const LayoutUnit edge_relative_position =
-      MinimumValueForLength(fill_layer.PositionX(), available_width) - offset;
+      MinimumValueForLength(fill_layer.PositionX(), available_width);
   // Convert from edge-relative form to absolute.
-  if (fill_layer.BackgroundXOrigin() == BackgroundEdgeOrigin::kRight) {
-    return available_width - edge_relative_position;
-  }
-  return edge_relative_position;
+  const LayoutUnit absolute_position =
+      fill_layer.BackgroundXOrigin() == BackgroundEdgeOrigin::kRight
+          ? available_width - edge_relative_position
+          : edge_relative_position;
+  return absolute_position - offset;
 }
 
 LayoutUnit ResolveYPosition(const FillLayer& fill_layer,
                             LayoutUnit available_height,
                             LayoutUnit offset) {
   const LayoutUnit edge_relative_position =
-      MinimumValueForLength(fill_layer.PositionY(), available_height) - offset;
+      MinimumValueForLength(fill_layer.PositionY(), available_height);
   // Convert from edge-relative form to absolute.
-  if (fill_layer.BackgroundYOrigin() == BackgroundEdgeOrigin::kBottom) {
-    return available_height - edge_relative_position;
-  }
-  return edge_relative_position;
+  const LayoutUnit absolute_position =
+      fill_layer.BackgroundYOrigin() == BackgroundEdgeOrigin::kBottom
+          ? available_height - edge_relative_position
+          : edge_relative_position;
+  return absolute_position - offset;
 }
 
 }  // anonymous namespace
