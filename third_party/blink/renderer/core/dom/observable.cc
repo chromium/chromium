@@ -29,7 +29,17 @@ Observable::Observable(ExecutionContext* execution_context,
                        V8SubscribeCallback* subscribe_callback)
     : ExecutionContextClient(execution_context),
       subscribe_callback_(subscribe_callback) {
-  DCHECK(subscribe_callback);
+  DCHECK(subscribe_callback_);
+  DCHECK(!subscribe_delegate_);
+  DCHECK(RuntimeEnabledFeatures::ObservableAPIEnabled(execution_context));
+}
+
+Observable::Observable(ExecutionContext* execution_context,
+                       SubscribeDelegate* subscribe_delegate)
+    : ExecutionContextClient(execution_context),
+      subscribe_delegate_(subscribe_delegate) {
+  DCHECK(!subscribe_callback_);
+  DCHECK(subscribe_delegate_);
   DCHECK(RuntimeEnabledFeatures::ObservableAPIEnabled(execution_context));
 }
 
@@ -93,6 +103,7 @@ void Observable::subscribe(ScriptState* script_state,
 
 void Observable::Trace(Visitor* visitor) const {
   visitor->Trace(subscribe_callback_);
+  visitor->Trace(subscribe_delegate_);
 
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
