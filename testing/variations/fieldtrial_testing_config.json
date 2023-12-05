@@ -350,21 +350,6 @@
             ]
         }
     ],
-    "AndroidImprovedBookmarks": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidImprovedBookmarks"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidMediaPickerAdoption": [
         {
             "platforms": [
