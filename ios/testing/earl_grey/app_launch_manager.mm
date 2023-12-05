@@ -262,6 +262,18 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
     [arguments addObject:base::SysUTF8ToNSString(arg)];
   }
 
+  // For the app to use the same language as the test module. This workaround
+  // the fact that EarlGrey tests depends on localizable strings (unfortunate)
+  // even though the test module does not have access to the system locale. To
+  // make this work, we force the app to use the same locale as used by the
+  // test module (which is the first item in -preferredLocalizations).
+  NSArray<NSString*>* languages = [NSBundle mainBundle].preferredLocalizations;
+  if (languages.count != 0) {
+    NSString* language = [languages firstObject];
+    [arguments addObject:@"-AppleLanguages"];
+    [arguments addObject:[NSString stringWithFormat:@"(%@)", language]];
+  }
+
   [self ensureAppLaunchedWithArgs:arguments
                    relaunchPolicy:configuration.relaunch_policy];
 
