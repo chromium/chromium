@@ -58,6 +58,8 @@ def __use_large_b289968566(ctx, step_config):
         r["name"] += "/b289968566/exit-137"
         r["action_outs"] = exit137_list
         r["platform_ref"] = "large"
+        if r.get("handler") == "rewrite_rewrapper":
+            r["handler"] = "rewrite_rewrapper_large"
         new_rules.append(r)
         new_rules.append(rule)
     step_config["rules"] = new_rules
