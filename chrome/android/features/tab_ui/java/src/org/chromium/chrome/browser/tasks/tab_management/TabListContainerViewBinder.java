@@ -32,7 +32,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.theme.ThemeUtils;
-import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -148,15 +147,6 @@ class TabListContainerViewBinder {
                     TabUtils.deriveGridCardHeight(
                             cardWidth, view.getContext(), browserControlsStateProvider);
             return Math.max(0, height / 2 - cardHeight / 2);
-        }
-        if (mode == TabListCoordinator.TabListMode.CAROUSEL) {
-            return Math.max(
-                    0,
-                    width / 2
-                            - view.getContext()
-                                            .getResources()
-                                            .getDimensionPixelSize(R.dimen.tab_carousel_card_width)
-                                    / 2);
         }
         if (mode == TabListCoordinator.TabListMode.LIST) {
             // Avoid divide by 0 when there are no tabs.

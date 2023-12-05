@@ -114,7 +114,6 @@ public class ChromeCachedFlags {
                         StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS,
                         StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS,
                         StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_USE_MODEL,
-                        StartSurfaceConfiguration.SHOW_TABS_IN_MRU_ORDER,
                         StartSurfaceConfiguration.SIGNIN_PROMO_NTP_COUNT_LIMIT,
                         StartSurfaceConfiguration
                                 .SIGNIN_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS,

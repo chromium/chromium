@@ -60,17 +60,14 @@ public class TabListCoordinator
     /**
      * Modes of showing the list of tabs.
      *
-     * NOTE: CAROUSEL mode currently uses a fixed height and card width set in dimens.xml with names
-     *  tab_carousel_height and tab_carousel_card_width.
-     *
-     *  STRIP, LIST, and GRID modes will have height equal to that of the container view.
-     * */
-    @IntDef({TabListMode.GRID, TabListMode.STRIP, TabListMode.CAROUSEL, TabListMode.LIST})
+     * <p>NOTE: STRIP, LIST, and GRID modes will have height equal to that of the container view.
+     */
+    @IntDef({TabListMode.GRID, TabListMode.STRIP, TabListMode.LIST})
     @Retention(RetentionPolicy.SOURCE)
     public @interface TabListMode {
         int GRID = 0;
         int STRIP = 1;
-        int CAROUSEL = 2;
+        // int CAROUSEL_DEPRECATED = 2;
         int LIST = 3;
         int NUM_ENTRIES = 4;
     }
@@ -212,7 +209,7 @@ public class TabListCoordinator
         mRootView = rootView;
 
         RecyclerView.RecyclerListener recyclerListener = null;
-        if (mMode == TabListMode.GRID || mMode == TabListMode.CAROUSEL) {
+        if (mMode == TabListMode.GRID) {
             mAdapter.registerType(
                     UiType.SELECTABLE,
                     parent -> {
@@ -359,19 +356,6 @@ public class TabListCoordinator
                 parentView.addView(mRecyclerView);
             }
 
-            if (mode == TabListMode.CAROUSEL) {
-                ViewGroup.LayoutParams layoutParams = mRecyclerView.getLayoutParams();
-                layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                mRecyclerView.setLayoutParams(layoutParams);
-                final int cardWidthPx =
-                        context.getResources()
-                                .getDimensionPixelSize(R.dimen.tab_carousel_card_width);
-                final int cardHeightPx =
-                        TabUtils.deriveGridCardHeight(
-                                cardWidthPx, mContext, mBrowserControlsStateProvider);
-                mMediator.setDefaultGridCardSize(new Size(cardWidthPx, cardHeightPx));
-            }
-
             mRecyclerView.setAdapter(mAdapter);
             mRecyclerView.setHasFixedSize(true);
             if (recyclerListener != null) mRecyclerView.setRecyclerListener(recyclerListener);
@@ -391,7 +375,6 @@ public class TabListCoordinator
                         .getWindowVisibleDisplayFrame(frame);
                 updateGridCardLayout(frame.width());
             } else if (mMode == TabListMode.STRIP
-                    || mMode == TabListMode.CAROUSEL
                     || mMode == TabListMode.LIST) {
                 mRecyclerView.setLayoutManager(
                         new LinearLayoutManager(
@@ -638,15 +621,14 @@ public class TabListCoordinator
     }
 
     /**
-     * @see TabListMediator#resetWithListOfTabs(List, boolean, boolean)
+     * @see TabListMediator#resetWithListOfTabs(List, boolean)
      */
-    boolean resetWithListOfTabs(
-            @Nullable List<PseudoTab> tabs, boolean quickMode, boolean mruMode) {
-        return mMediator.resetWithListOfTabs(tabs, quickMode, mruMode);
+    boolean resetWithListOfTabs(@Nullable List<PseudoTab> tabs, boolean quickMode) {
+        return mMediator.resetWithListOfTabs(tabs, quickMode);
     }
 
     boolean resetWithListOfTabs(@Nullable List<Tab> tabs) {
-        return resetWithListOfTabs(PseudoTab.getListOfPseudoTab(tabs), false, false);
+        return resetWithListOfTabs(PseudoTab.getListOfPseudoTab(tabs), false);
     }
 
     int indexOfTab(int tabId) {

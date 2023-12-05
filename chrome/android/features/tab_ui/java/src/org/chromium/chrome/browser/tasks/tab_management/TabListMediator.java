@@ -89,8 +89,6 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -104,10 +102,6 @@ import java.util.Set;
  * TODO(yusufo): Move some of the logic here to a parent component to make the above true.
  */
 class TabListMediator {
-    // Comparator to sort Tabs in descending order of the last shown time.
-    private static final Comparator<PseudoTab> LAST_SHOWN_COMPARATOR =
-            (a, b) -> (Long.compare(b.getTimestampMillis(), a.getTimestampMillis()));
-
     // The |mVisible| relies on whether the tab list is null when the last time
     // resetWithListOfTabs() was called, but not whether the RecyclerView is actually showing on the
     // screen.
@@ -545,9 +539,7 @@ class TabListMediator {
                     TabModel tabModel = mTabModelSelector.getCurrentModel();
 
                     // For the tab switcher update the tab card correctly.
-                    if (mActionsOnAllRelatedTabs
-                            && mThumbnailProvider != null
-                            && !isShowingTabsInMRUOrder()) {
+                    if (mActionsOnAllRelatedTabs && mThumbnailProvider != null) {
                         int indexInModel = getIndexForTabWithRelatedTabs(movedTab);
                         if (indexInModel == TabModel.INVALID_TAB_INDEX) return;
 
@@ -600,62 +592,24 @@ class TabListMediator {
                         if (isUngroupingLastTabInGroup) return;
 
                         final int currentSelectedTabId = mTabModelSelector.getCurrentTabId();
-                        if (isShowingTabsInMRUOrder()) {
-                            int groupTabIndex = mModel.indexFromId(groupTab.getId());
-                            if (groupTabIndex == TabModel.INVALID_TAB_INDEX) {
-                                // It is possible that the movedTab is the Tab for its group in
-                                // the model.
-                                groupTabIndex = mModel.indexFromId(movedTab.getId());
-                            }
-                            if (!isValidMovePosition(groupTabIndex)) return;
-                            boolean isSelected = currentSelectedTabId == groupTab.getId();
-                            // We may need to adjust the group's index after removing the
-                            // movedTab from the group.
-                            int newGroupTabIndexMRU =
-                                    mModel.getNewPositionInMruOrderList(groupTab.getId());
-
-                            updateTab(
-                                    groupTabIndex,
-                                    PseudoTab.fromTab(groupTab),
-                                    isSelected,
-                                    true,
-                                    false);
-                            if (groupTabIndex != newGroupTabIndexMRU) {
-                                // The move API will first remove the item at groupTabIndex.
-                                // Thus, we need to decrease newGroupTabIndexMRU if an item
-                                // has been removed before it.
-                                mModel.move(
-                                        groupTabIndex,
-                                        groupTabIndex < newGroupTabIndexMRU
-                                                ? newGroupTabIndexMRU - 1
-                                                : newGroupTabIndexMRU);
-                            }
-
-                            int modelIndex = mModel.getNewPositionInMruOrderList(movedTab.getId());
+                        // Only add a tab to the model if it represents a new card (new group or new
+                        // singular tab). However, always update the previous group to clean up old
+                        // state. The addition of the new tab to an existing group is handled in
+                        // didMergeTabToGroup().
+                        if (!filter.hasOtherRelatedTabs(movedTab)) {
+                            int filterIndex = filter.indexOf(movedTab);
                             addTabInfoToModel(
                                     PseudoTab.fromTab(movedTab),
-                                    modelIndex,
+                                    mModel.indexOfNthTabCard(filterIndex),
                                     currentSelectedTabId == movedTab.getId());
-                        } else {
-                            // Only add a tab to the model if it represents a new card (new
-                            // group or new singular tab). However, always update the previous
-                            // group to clean up old state. The addition of the new tab to an
-                            // existing group is handled in didMergeTabToGroup().
-                            if (!filter.hasOtherRelatedTabs(movedTab)) {
-                                int filterIndex = filter.indexOf(movedTab);
-                                addTabInfoToModel(
-                                        PseudoTab.fromTab(movedTab),
-                                        mModel.indexOfNthTabCard(filterIndex),
-                                        currentSelectedTabId == movedTab.getId());
-                            }
-                            boolean isSelected = currentSelectedTabId == groupTab.getId();
-                            updateTab(
-                                    mModel.indexOfNthTabCard(prevFilterIndex),
-                                    PseudoTab.fromTab(groupTab),
-                                    isSelected,
-                                    true,
-                                    false);
                         }
+                        boolean isSelected = currentSelectedTabId == groupTab.getId();
+                        updateTab(
+                                mModel.indexOfNthTabCard(prevFilterIndex),
+                                PseudoTab.fromTab(groupTab),
+                                isSelected,
+                                true,
+                                false);
                     } else {
                         int curTabListModelIndex = mModel.indexFromId(movedTab.getId());
                         if (!isValidMovePosition(curTabListModelIndex)) return;
@@ -708,24 +662,6 @@ class TabListMediator {
                     if (!isValidMovePosition(srcIndex) || !isValidMovePosition(desIndex)) return;
 
                     Tab newSelectedTabInMergedGroup = null;
-                    boolean isMRU = isShowingTabsInMRUOrder();
-                    if (isMRU) {
-                        // We need to choose the Tab that represents the new group. It should be
-                        // the last selected tab for the new formed group.
-                        Tab oldSelectedTabInMergedGroup =
-                                mTabModelSelector.getTabById(
-                                        mModel.get(desIndex).model.get(TabProperties.TAB_ID));
-                        int mergedGroupIndex =
-                                mTabModelSelector
-                                        .getTabModelFilterProvider()
-                                        .getCurrentTabModelFilter()
-                                        .indexOf(oldSelectedTabInMergedGroup);
-                        newSelectedTabInMergedGroup =
-                                mTabModelSelector
-                                        .getTabModelFilterProvider()
-                                        .getCurrentTabModelFilter()
-                                        .getTabAt(mergedGroupIndex);
-                    }
                     mModel.removeAt(srcIndex);
                     if (getRelatedTabsForId(movedTab.getId()).size() == 2) {
                         // When users use drop-to-merge to create a group.
@@ -734,13 +670,11 @@ class TabListMediator {
                         RecordUserAction.record("TabGrid.Drag.DropToMerge");
                     }
                     desIndex = srcIndex > desIndex ? desIndex : mModel.getTabIndexBefore(desIndex);
-                    if (!isMRU) {
-                        newSelectedTabInMergedGroup =
-                                mTabModelSelector
-                                        .getTabModelFilterProvider()
-                                        .getCurrentTabModelFilter()
-                                        .getTabAt(mModel.getTabCardCountsBefore(desIndex));
-                    }
+                    newSelectedTabInMergedGroup =
+                            mTabModelSelector
+                                    .getTabModelFilterProvider()
+                                    .getCurrentTabModelFilter()
+                                    .getTabAt(mModel.getTabCardCountsBefore(desIndex));
 
                     boolean isSelected =
                             mTabModelSelector.getCurrentTab() == newSelectedTabInMergedGroup;
@@ -750,11 +684,6 @@ class TabListMediator {
                             isSelected,
                             true,
                             false);
-                    if (isSelected && isMRU && desIndex != 0) {
-                        // In MRU order, always moves the new group which contains the current
-                        // selected Tab to the position 0.
-                        mModel.move(desIndex, 0);
-                    }
                 }
 
                 @Override
@@ -1346,19 +1275,13 @@ class TabListMediator {
 
     /**
      * Initialize the component with a list of tabs to show in a grid.
+     *
      * @param tabs The list of tabs to be shown.
      * @param quickMode Whether to skip capturing the selected live tab for the thumbnail.
-     * @param mruMode Whether to sort the Tabs in MRU order.
      * @return Whether the {@link TabListRecyclerView} can be shown quickly.
      */
-    boolean resetWithListOfTabs(
-            @Nullable List<PseudoTab> tabs, boolean quickMode, boolean mruMode) {
+    boolean resetWithListOfTabs(@Nullable List<PseudoTab> tabs, boolean quickMode) {
         List<PseudoTab> tabsList = tabs;
-        if (tabs != null && mruMode) {
-            // Make a copy to sort since the input may be unmodifiable.
-            tabsList = new ArrayList<>(tabs);
-            Collections.sort(tabsList, LAST_SHOWN_COMPARATOR);
-        }
         mVisible = tabsList != null;
         if (tabs != null) {
             recordPriceAnnotationsEnabledMetrics();
@@ -2193,10 +2116,6 @@ class TabListMediator {
 
     View.AccessibilityDelegate getAccessibilityDelegateForTesting() {
         return mAccessibilityDelegate;
-    }
-
-    private boolean isShowingTabsInMRUOrder() {
-        return TabSwitcherCoordinator.isShowingTabsInMRUOrder(mMode);
     }
 
     @VisibleForTesting

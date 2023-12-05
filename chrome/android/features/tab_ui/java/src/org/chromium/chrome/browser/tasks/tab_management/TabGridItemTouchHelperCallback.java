@@ -125,19 +125,11 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
         mSwipeToDismissThreshold = swipeToDismissThreshold;
         mMergeThreshold = mergeThreshold;
         mUngroupThreshold = ungroupThreshold;
-        boolean isMRUEnabledInTabSwitcher =
-                TabSwitcherCoordinator.isShowingTabsInMRUOrder(mMode) && mActionsOnAllRelatedTabs;
-        // Disable drag for MRU-order tab switcher in start surface.
-        // TODO(crbug.com/1005931): Figure out how drag-to-reorder lives in StartSurface MRU
-        // ordering scenario.
-        boolean isDragEnabled = !isMRUEnabledInTabSwitcher;
         mDragFlags =
-                isDragEnabled
-                        ? ItemTouchHelper.START
-                                | ItemTouchHelper.END
-                                | ItemTouchHelper.UP
-                                | ItemTouchHelper.DOWN
-                        : 0;
+                ItemTouchHelper.START
+                        | ItemTouchHelper.END
+                        | ItemTouchHelper.UP
+                        | ItemTouchHelper.DOWN;
     }
 
     @Override

@@ -393,7 +393,7 @@ public class TabSwitcherMediatorUnitTest {
         verify(mHandler).postDelayed(eq(mMediator.mClearTabListRunnable), eq(30_000L));
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mResetHandler).softCleanup();
-        verify(mResetHandler).resetWithTabList(eq(null), eq(false), eq(false));
+        verify(mResetHandler).resetWithTabList(eq(null), eq(false));
     }
 
     @Test
@@ -403,7 +403,7 @@ public class TabSwitcherMediatorUnitTest {
 
         doReturn(true).when(mTabModelFilter).isIncognito();
         mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(mTabModel, null);
-        verify(mResetHandler).resetWithTabList(eq(mTabModelFilter), eq(false), eq(false));
+        verify(mResetHandler).resetWithTabList(eq(mTabModelFilter), eq(false));
         verify(mTabGridDialogController).hideDialog(eq(false));
         assertThat(mModel.get(TabListContainerProperties.IS_INCOGNITO), equalTo(true));
 
@@ -418,7 +418,7 @@ public class TabSwitcherMediatorUnitTest {
 
         doReturn(true).when(mTabModelFilter).isIncognito();
         mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(mTabModel, null);
-        verify(mResetHandler, never()).resetWithTabList(any(), anyBoolean(), anyBoolean());
+        verify(mResetHandler, never()).resetWithTabList(any(), anyBoolean());
         verify(mTabGridDialogController).hideDialog(eq(false));
         assertThat(mModel.get(TabListContainerProperties.IS_INCOGNITO), equalTo(true));
 
@@ -533,7 +533,7 @@ public class TabSwitcherMediatorUnitTest {
         mTabModelObserverCaptor.getValue().restoreCompleted();
 
         // MRU will be false unless the start surface is enabled.
-        verify(mResetHandler).resetWithTabList(mTabModelFilter, false, false);
+        verify(mResetHandler).resetWithTabList(mTabModelFilter, false);
     }
 
     @Test
@@ -642,7 +642,7 @@ public class TabSwitcherMediatorUnitTest {
         mMediator.showTabSwitcherView(true);
 
         // MRU will be false unless the start surface is enabled.
-        verify(mResetHandler, never()).resetWithTabList(mTabModelFilter, true, false);
+        verify(mResetHandler, never()).resetWithTabList(mTabModelFilter, true);
     }
 
     @Test
@@ -652,7 +652,7 @@ public class TabSwitcherMediatorUnitTest {
         mMediator.prepareTabSwitcherView();
 
         // MRU will be false unless the start surface is enabled.
-        verify(mResetHandler, never()).resetWithTabList(mTabModelFilter, false, false);
+        verify(mResetHandler, never()).resetWithTabList(mTabModelFilter, false);
     }
 
     @Test
@@ -663,7 +663,7 @@ public class TabSwitcherMediatorUnitTest {
         mMediator.showTabSwitcherView(true);
 
         // MRU will be false unless the start surface is enabled.
-        verify(mResetHandler).resetWithTabList(mTabModelFilter, true, false);
+        verify(mResetHandler).resetWithTabList(mTabModelFilter, true);
     }
 
     @Test
@@ -674,7 +674,7 @@ public class TabSwitcherMediatorUnitTest {
         mMediator.prepareTabSwitcherView();
 
         // MRU will be false unless the start surface is enabled.
-        verify(mResetHandler).resetWithTabList(mTabModelFilter, false, false);
+        verify(mResetHandler).resetWithTabList(mTabModelFilter, false);
     }
 
     @Test
@@ -1134,14 +1134,14 @@ public class TabSwitcherMediatorUnitTest {
         doReturn(true).when(mTabModel).isIncognito();
 
         mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(mTabModel, null);
-        verify(mResetHandler, times(1)).resetWithTabList(eq(null), eq(false), eq(false));
+        verify(mResetHandler, times(1)).resetWithTabList(eq(null), eq(false));
     }
 
     @Test
     public void testAddingCustomView_ClearsTabList_Requested_ClearsTabList() {
         initAndAssertAllProperties();
         mMediator.addCustomView(mCustomViewMock, null, /* clearTabList= */ true);
-        verify(mResetHandler, times(1)).resetWithTabList(eq(null), eq(false), eq(false));
+        verify(mResetHandler, times(1)).resetWithTabList(eq(null), eq(false));
     }
 
     @Test
@@ -1155,10 +1155,10 @@ public class TabSwitcherMediatorUnitTest {
     public void testRemoveCustomView_ResetTabList() {
         initAndAssertAllProperties();
         mMediator.addCustomView(mCustomViewMock, null, /* clearTabList= */ true);
-        verify(mResetHandler, times(1)).resetWithTabList(eq(null), eq(false), eq(false));
+        verify(mResetHandler, times(1)).resetWithTabList(eq(null), eq(false));
 
         mMediator.removeCustomView(mCustomViewMock);
-        verify(mResetHandler, times(1)).resetWithTabList(eq(mTabModelFilter), eq(false), eq(false));
+        verify(mResetHandler, times(1)).resetWithTabList(eq(mTabModelFilter), eq(false));
     }
 
     @Test
@@ -1172,14 +1172,14 @@ public class TabSwitcherMediatorUnitTest {
         doReturn(true).when(mTabModel).isIncognito();
 
         mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(mTabModel, null);
-        verify(mResetHandler, times(1)).resetWithTabList(eq(null), eq(false), eq(false));
+        verify(mResetHandler, times(1)).resetWithTabList(eq(null), eq(false));
 
         // Mock that the re-auth was successful.
         doReturn(false).when(mIncognitoReauthController).isIncognitoReauthPending();
         mIncognitoReauthCallbackArgumentCaptor.getValue().onIncognitoReauthSuccess();
 
         // Verify we reset the tab-list with the current tab model filter.
-        verify(mResetHandler, times(1)).resetWithTabList(eq(mTabModelFilter), eq(false), eq(false));
+        verify(mResetHandler, times(1)).resetWithTabList(eq(mTabModelFilter), eq(false));
 
         // Check we don't call reset handler on other cases
         mIncognitoReauthCallbackArgumentCaptor.getValue().onIncognitoReauthNotPossible();

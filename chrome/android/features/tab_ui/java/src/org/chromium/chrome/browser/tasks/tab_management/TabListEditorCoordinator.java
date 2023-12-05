@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.tasks.tab_management.TabListEditorProperties.IS_VISIBLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.OTHERS;
-import static org.chromium.chrome.browser.tasks.tab_management.TabListEditorProperties.IS_VISIBLE;
 
 import android.app.Activity;
 import android.content.Context;
@@ -313,8 +313,7 @@ class TabListEditorCoordinator {
      * @param quickMode whether to use quick mode.
      */
     void resetWithListOfTabs(@Nullable List<Tab> tabs, int preSelectedCount, boolean quickMode) {
-        mTabListCoordinator.resetWithListOfTabs(
-                PseudoTab.getListOfPseudoTab(tabs), quickMode, /* mruMode= */ false);
+        mTabListCoordinator.resetWithListOfTabs(PseudoTab.getListOfPseudoTab(tabs), quickMode);
 
         if (tabs != null && preSelectedCount > 0 && preSelectedCount < tabs.size()) {
             mTabListCoordinator.addSpecialListItem(

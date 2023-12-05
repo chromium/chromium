@@ -143,8 +143,7 @@ class TabSwitcherMediator
                             mTabModelSelector
                                     .getTabModelFilterProvider()
                                     .getCurrentTabModelFilter(),
-                            false,
-                            mShowTabsInMruOrder);
+                            false);
                     setInitialScrollIndexOffset();
                     requestAccessibilityFocusOnCurrentTab();
                 }
@@ -185,8 +184,6 @@ class TabSwitcherMediator
     private int mIndexInNewModelWhenSwitched;
     private boolean mIsSelectingInTabSwitcher;
 
-    private boolean mShowTabsInMruOrder;
-
     private @TabListCoordinator.TabListMode int mMode;
     private Context mContext;
     private SnackbarManager mSnackbarManager;
@@ -203,21 +200,21 @@ class TabSwitcherMediator
     interface ResetHandler {
         /**
          * Reset the tab grid with the given {@link TabList}, which can be null.
+         *
          * @param tabList The {@link TabList} to show the tabs for in the grid.
          * @param quickMode Whether to skip capturing the selected live tab for the thumbnail.
-         * @param mruMode Whether order the Tabs by MRU.
          * @return Whether the {@link TabListRecyclerView} can be shown quickly.
          */
-        boolean resetWithTabList(@Nullable TabList tabList, boolean quickMode, boolean mruMode);
+        boolean resetWithTabList(@Nullable TabList tabList, boolean quickMode);
 
         /**
          * Reset the tab grid with the given {@link List<PseudoTab>}, which can be null.
+         *
          * @param tabs The {@link List<PseudoTab>} to show the tabs for in the grid.
          * @param quickMode Whether to skip capturing the selected live tab for the thumbnail.
-         * @param mruMode Whether order the Tabs by MRU.
          * @return Whether the {@link TabListRecyclerView} can be shown quickly.
          */
-        boolean resetWithTabs(@Nullable List<PseudoTab> tabs, boolean quickMode, boolean mruMode);
+        boolean resetWithTabs(@Nullable List<PseudoTab> tabs, boolean quickMode);
 
         /** Release the thumbnail {@link Bitmap} but keep the {@link TabGridView}. */
         void softCleanup();
@@ -372,8 +369,7 @@ class TabSwitcherMediator
                         if (!mContainerViewModel.get(IS_VISIBLE)) return;
 
                         if (clearIncognitoTabListForReauth()) return;
-                        mResetHandler.resetWithTabList(
-                                currentTabModelFilter, false, mShowTabsInMruOrder);
+                        mResetHandler.resetWithTabList(currentTabModelFilter, false);
                         setInitialScrollIndexOffset();
                         requestAccessibilityFocusOnCurrentTab();
                     }
@@ -431,8 +427,7 @@ class TabSwitcherMediator
                                 mTabModelSelector
                                         .getTabModelFilterProvider()
                                         .getCurrentTabModelFilter(),
-                                false,
-                                mShowTabsInMruOrder);
+                                false);
                         setInitialScrollIndexOffset();
                     }
 
@@ -500,16 +495,12 @@ class TabSwitcherMediator
                             int bottomOffset,
                             int bottomControlsMinHeightOffset,
                             boolean needsAnimate) {
-                        if (mMode == TabListCoordinator.TabListMode.CAROUSEL) return;
-
                         updateTopControlsProperties();
                     }
 
                     @Override
                     public void onTopControlsHeightChanged(
                             int topControlsHeight, int topControlsMinHeight) {
-                        if (mMode == TabListCoordinator.TabListMode.CAROUSEL) return;
-
                         updateTopControlsProperties();
                     }
 
@@ -556,12 +547,9 @@ class TabSwitcherMediator
                 IS_INCOGNITO, tabModelFilter == null ? false : tabModelFilter.isIncognito());
         mContainerViewModel.set(ANIMATE_VISIBILITY_CHANGES, true);
 
-        // Container view takes care of padding and margin in start surface.
-        if (mMode != TabListCoordinator.TabListMode.CAROUSEL) {
-            updateTopControlsProperties();
-            mContainerViewModel.set(
-                    BOTTOM_CONTROLS_HEIGHT, browserControlsStateProvider.getBottomControlsHeight());
-        }
+        updateTopControlsProperties();
+        mContainerViewModel.set(
+                BOTTOM_CONTROLS_HEIGHT, browserControlsStateProvider.getBottomControlsHeight());
 
         if (mMode == TabListMode.GRID) {
             mContainerViewModel.set(
@@ -580,11 +568,9 @@ class TabSwitcherMediator
         mClearTabListRunnable =
                 () -> {
                     mResetHandler.hardCleanup();
-                    mResetHandler.resetWithTabList(null, false, mShowTabsInMruOrder);
+                    mResetHandler.resetWithTabList(null, false);
                 };
         mTabContentManager = tabContentManager;
-
-        mShowTabsInMruOrder = TabSwitcherCoordinator.isShowingTabsInMRUOrder(mMode);
 
         mMultiWindowModeObserver =
                 isInMultiWindowMode -> {
@@ -672,9 +658,7 @@ class TabSwitcherMediator
         assert fromTab != null;
         if (mIncognitoStateWhenShown == mTabModelSelector.isIncognitoSelected()) {
             if (tab.getId() == mTabIdWhenShown) {
-                if (mMode == TabListCoordinator.TabListMode.CAROUSEL) {
-                    RecordUserAction.record("MobileTabReturnedToCurrentTab.TabCarousel");
-                } else if (mMode == TabListCoordinator.TabListMode.GRID) {
+                if (mMode == TabListCoordinator.TabListMode.GRID) {
                     RecordUserAction.record("MobileTabReturnedToCurrentTab.TabGrid");
                 } else {
                     // TODO(crbug.com/1085246): Differentiate others.
@@ -791,8 +775,7 @@ class TabSwitcherMediator
                             mTabModelSelector
                                     .getTabModelFilterProvider()
                                     .getCurrentTabModelFilter(),
-                            false,
-                            mShowTabsInMruOrder);
+                            false);
         }
         setInitialScrollIndexOffset();
 
@@ -803,8 +786,6 @@ class TabSwitcherMediator
         int initialPosition =
                 mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter().index();
 
-        // In MRU order, selected Tab is always at the first position.
-        if (mShowTabsInMruOrder) initialPosition = 0;
         mContainerViewModel.set(INITIAL_SCROLL_INDEX, initialPosition);
     }
 
@@ -829,8 +810,7 @@ class TabSwitcherMediator
             if (mTabModelSelector.isTabStateInitialized()) {
                 mResetHandler.resetWithTabList(
                         mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter(),
-                        TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mContext),
-                        mShowTabsInMruOrder);
+                        TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mContext));
                 // When |mTabModelSelector.isTabStateInitialized| is false and INSTANT_START is
                 // enabled, the scrolling request is already processed in
                 // TabModelObserver#restoreCompleted. Therefore, we only need to handle the case
@@ -842,9 +822,7 @@ class TabSwitcherMediator
                     allTabs = PseudoTab.getAllPseudoTabsFromStateFile(mContext);
                 }
                 mResetHandler.resetWithTabs(
-                        allTabs,
-                        TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mContext),
-                        mShowTabsInMruOrder);
+                        allTabs, TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mContext));
             }
         }
 
@@ -930,9 +908,6 @@ class TabSwitcherMediator
             return true;
         }
 
-        // When the Start surface is showing, we no longer need to call onTabSelecting().
-        if (mMode == TabListCoordinator.TabListMode.CAROUSEL) return false;
-
         if (mTabModelSelector.getCurrentTab() == null) {
             assert !BackPressManager.isEnabled() : "No tab: Backpress must be handled";
             return false;
@@ -986,7 +961,6 @@ class TabSwitcherMediator
         switch (mMode) {
             case TabListMode.GRID:
                 return TabSwitcherType.GRID;
-            case TabListMode.CAROUSEL:
             case TabListMode.LIST:
             case TabListMode.STRIP:
             default:
@@ -1028,7 +1002,7 @@ class TabSwitcherMediator
         }
 
         if (clearTabList) {
-            mResetHandler.resetWithTabList(null, false, mShowTabsInMruOrder);
+            mResetHandler.resetWithTabList(null, false);
         }
 
         // The grid tab switcher for tablets translates up over top of the browser controls, causing
@@ -1066,8 +1040,7 @@ class TabSwitcherMediator
         notifyBackPressStateChangedInternal();
         mResetHandler.resetWithTabList(
                 mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter(),
-                /* quickMode= */ false,
-                mShowTabsInMruOrder);
+                /* quickMode= */ false);
     }
 
     /**
@@ -1170,13 +1143,10 @@ class TabSwitcherMediator
 
     @Override
     public void onTabSelecting(int tabId, boolean fromActionButton) {
-        if (fromActionButton && (mMode == TabListMode.CAROUSEL || mMode == TabListMode.GRID)) {
+        if (fromActionButton && mMode == TabListMode.GRID) {
             Tab newlySelectedTab =
                     TabModelUtils.getTabById(mTabModelSelector.getCurrentModel(), tabId);
             StartSurfaceUserData.setKeepTab(newlySelectedTab, true);
-            if (mMode == TabListMode.CAROUSEL) {
-                StartSurfaceUserData.setOpenedFromStart(newlySelectedTab);
-            }
         }
         mIsSelectingInTabSwitcher = true;
         if (mOnTabSelectingListener != null) {
@@ -1233,9 +1203,6 @@ class TabSwitcherMediator
 
         if (!mContainerViewModel.get(IS_VISIBLE)) return false;
 
-        // When the Start surface is showing, we no longer need to call onTabSelecting().
-        if (mMode == TabListCoordinator.TabListMode.CAROUSEL) return false;
-
         if (mTabModelSelector.getCurrentTab() == null) return false;
 
         // Going back to the Start surface isn't handled by the TabSwitcherMediator any more, but in
@@ -1258,7 +1225,7 @@ class TabSwitcherMediator
 
         if (mIncognitoReauthController != null
                 && mIncognitoReauthController.isIncognitoReauthPending()) {
-            mResetHandler.resetWithTabList(null, false, mShowTabsInMruOrder);
+            mResetHandler.resetWithTabList(null, false);
             return true;
         }
 

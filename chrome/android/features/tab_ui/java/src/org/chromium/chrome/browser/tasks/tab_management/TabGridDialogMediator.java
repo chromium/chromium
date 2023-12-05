@@ -423,7 +423,6 @@ public class TabGridDialogMediator
         if (!isVisible() || mTabSwitcherResetHandler == null) return;
         mTabSwitcherResetHandler.resetWithTabList(
                 mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter(),
-                false,
                 false);
     }
 
