@@ -2213,16 +2213,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.ProxyScriptFetcher.SuccessDuration" units="ms"
-    expires_after="2023-11-19">
-  <owner>dschinazi@chromium.org</owner>
-  <summary>
-    The time taken to successfully fetch a PAC script. This does not include
-    time spent doing proxy auto-discovery, or failed attempts at retrieving PAC
-    scripts.
-  </summary>
-</histogram>
-
 <histogram name="Net.PublicKeyPinReportSendingFailure2" enum="NetErrorCodes"
     expires_after="M77">
   <owner>estark@chromium.org</owner>

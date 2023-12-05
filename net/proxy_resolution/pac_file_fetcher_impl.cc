@@ -375,8 +375,6 @@ void PacFileFetcherImpl::FetchCompleted() {
     // Calculate duration of time for PAC file fetch to complete.
     DCHECK(!fetch_start_time_.is_null());
     DCHECK(!fetch_time_to_first_byte_.is_null());
-    UMA_HISTOGRAM_MEDIUM_TIMES("Net.ProxyScriptFetcher.SuccessDuration",
-                               base::TimeTicks::Now() - fetch_start_time_);
     UMA_HISTOGRAM_MEDIUM_TIMES("Net.ProxyScriptFetcher.FirstByteDuration",
                                fetch_time_to_first_byte_ - fetch_start_time_);
 
