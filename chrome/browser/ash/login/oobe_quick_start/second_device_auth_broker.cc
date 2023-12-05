@@ -266,6 +266,14 @@ void HandleAttestationNotAvailableError(
       SecondDeviceAuthBroker::AttestationErrorType::kPermanentError));
 }
 
+void HandleAttestationUnknownError(
+    SecondDeviceAuthBroker::AttestationCertificateCallback callback,
+    const SecondDeviceAuthBroker::AttestationErrorType& error_type) {
+  QuickStartMetrics::RecordAttestationCertificateRequestEnded(
+      QuickStartMetrics::AttestationCertificateRequestErrorCode::kUnknownError);
+  std::move(callback).Run(base::unexpected(error_type));
+}
+
 void RunAttestationCertificateCallback(
     SecondDeviceAuthBroker::AttestationCertificateCallback callback,
     attestation::AttestationStatus status,
@@ -276,8 +284,9 @@ void RunAttestationCertificateCallback(
         QS_LOG(ERROR)
             << "Got an empty certificate chain with a success response "
                "from attestation server";
-        std::move(callback).Run(base::unexpected(
-            SecondDeviceAuthBroker::AttestationErrorType::kPermanentError));
+        HandleAttestationUnknownError(
+            std::move(callback),
+            SecondDeviceAuthBroker::AttestationErrorType::kPermanentError);
         return;
       }
       QuickStartMetrics::RecordAttestationCertificateRequestEnded(
@@ -285,8 +294,9 @@ void RunAttestationCertificateCallback(
       std::move(callback).Run(PEMCertChain(pem_certificate_chain));
       return;
     case attestation::ATTESTATION_UNSPECIFIED_FAILURE:
-      std::move(callback).Run(base::unexpected(
-          SecondDeviceAuthBroker::AttestationErrorType::kTransientError));
+      HandleAttestationUnknownError(
+          std::move(callback),
+          SecondDeviceAuthBroker::AttestationErrorType::kTransientError);
       return;
     case attestation::ATTESTATION_SERVER_BAD_REQUEST_FAILURE:
       QuickStartMetrics::RecordAttestationCertificateRequestEnded(
@@ -697,9 +707,9 @@ void SecondDeviceAuthBroker::FetchAttestationCertificateInternal(
     const attestation::AttestationFeatures* attestation_features) {
   if (!attestation_features) {
     QS_LOG(ERROR) << "Failed to get AttestationFeatures";
-    std::move(certificate_callback)
-        .Run(base::unexpected(
-            SecondDeviceAuthBroker::AttestationErrorType::kPermanentError));
+    HandleAttestationUnknownError(
+        std::move(certificate_callback),
+        SecondDeviceAuthBroker::AttestationErrorType::kPermanentError);
     return;
   }
 

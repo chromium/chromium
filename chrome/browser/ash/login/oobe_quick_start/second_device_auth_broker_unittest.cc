@@ -297,6 +297,28 @@ class SecondDeviceAuthBrokerTest : public ::testing::Test {
             })));
   }
 
+  // Set an `EXPECT`ation that expects a remote attestation request, and
+  // responds with an "unknown" error.
+  void SetUnknownAttestationErrorExpectation() {
+    EXPECT_CALL(
+        mock_attestation_flow(),
+        GetCertificate(
+            /*certificate_profile=*/attestation::AttestationCertificateProfile::
+                PROFILE_DEVICE_SETUP_CERTIFICATE,
+            /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
+            /*force_new_key=*/_, /*key_crypto_type=*/_,
+            /*key_name=*/attestation::kDeviceSetupKey,
+            /*profile_specific_data=*/_, /*callback=*/_))
+        .WillOnce(WithArg<7>(Invoke(
+            [](attestation::AttestationFlow::CertificateCallback callback)
+                -> void {
+              std::move(callback).Run(
+                  /*status=*/ash::attestation::AttestationStatus::
+                      ATTESTATION_UNSPECIFIED_FAILURE,
+                  /*pem_certificate_chain=*/std::string());
+            })));
+  }
+
   void MakeAttestationUnavailable() {
     attestation_features_.Get()->set_is_available(false);
   }
@@ -441,23 +463,7 @@ TEST_F(SecondDeviceAuthBrokerTest, FetchChallengeBytesReturnsChallengeBytes) {
 TEST_F(
     SecondDeviceAuthBrokerTest,
     FetchAttestationCertificateReturnsATransientErrorForUnspecifiedFailures) {
-  EXPECT_CALL(
-      mock_attestation_flow(),
-      GetCertificate(
-          /*certificate_profile=*/attestation::AttestationCertificateProfile::
-              PROFILE_DEVICE_SETUP_CERTIFICATE,
-          /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
-          /*force_new_key=*/_, /*key_crypto_type=*/_,
-          /*key_name=*/attestation::kDeviceSetupKey,
-          /*profile_specific_data=*/_, /*callback=*/_))
-      .WillOnce(WithArg<7>(
-          Invoke([](attestation::AttestationFlow::CertificateCallback callback)
-                     -> void {
-            std::move(callback).Run(
-                /*status=*/ash::attestation::AttestationStatus::
-                    ATTESTATION_UNSPECIFIED_FAILURE,
-                /*pem_certificate_chain=*/std::string());
-          })));
+  SetUnknownAttestationErrorExpectation();
 
   EXPECT_THAT(
       FetchAttestationCertificate(fido_credential_id()),
@@ -608,6 +614,18 @@ TEST_F(SecondDeviceAuthBrokerTest,
   histogram_tester.ExpectBucketCount(
       "QuickStart.AttestationCertificate.FailureReason",
       QuickStartMetrics::AttestationCertificateRequestErrorCode::kBadRequest,
+      1);
+}
+
+TEST_F(SecondDeviceAuthBrokerTest,
+       FetchAttestationCertificateLogsMetricsForUnknownErrors) {
+  SetUnknownAttestationErrorExpectation();
+
+  base::HistogramTester histogram_tester;
+  auto certificate = FetchAttestationCertificate(fido_credential_id());
+  histogram_tester.ExpectBucketCount(
+      "QuickStart.AttestationCertificate.FailureReason",
+      QuickStartMetrics::AttestationCertificateRequestErrorCode::kUnknownError,
       1);
 }
 
