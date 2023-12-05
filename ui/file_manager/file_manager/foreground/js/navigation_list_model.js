@@ -347,7 +347,9 @@ export class NavigationListModel extends EventTarget {
 
     this.androidAppList_ = [];
     for (let i = 0; i < this.androidAppListModel_.length(); i++) {
-      this.androidAppList_.push(this.androidAppListModel_.item(i));
+      this.androidAppList_.push(
+          /** @type {chrome.fileManagerPrivate.AndroidApp} */ (
+              this.androidAppListModel_.item(i)));
     }
 
     // Reorder volumes, shortcuts, and optional items for initial display.
