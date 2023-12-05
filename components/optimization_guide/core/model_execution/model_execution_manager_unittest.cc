@@ -134,17 +134,14 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithUserSignIn) {
             auto response =
                 ParsedAnyMetadata<proto::ComposeResponse>(result.value());
             EXPECT_EQ("foo response", response->output());
-            EXPECT_NE(log_entry.get(), nullptr);
-            EXPECT_TRUE(log_entry.get()
-                            ->log_ai_data_request()
+            EXPECT_NE(log_entry, nullptr);
+            EXPECT_TRUE(log_entry->log_ai_data_request()
                             ->mutable_compose()
                             ->has_request_data());
-            EXPECT_TRUE(log_entry.get()
-                            ->log_ai_data_request()
+            EXPECT_TRUE(log_entry->log_ai_data_request()
                             ->mutable_compose()
                             ->has_response_data());
-            EXPECT_EQ(log_entry.get()
-                          ->log_ai_data_request()
+            EXPECT_EQ(log_entry->log_ai_data_request()
                           ->mutable_model_execution_info()
                           ->server_execution_id(),
                       "test_id");
@@ -178,13 +175,11 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithPassthroughSession) {
                                    result->response)
                                    ->output());
                      EXPECT_TRUE(result->is_complete);
-                     EXPECT_NE(log_entry.get(), nullptr);
-                     EXPECT_TRUE(log_entry.get()
-                                     ->log_ai_data_request()
+                     EXPECT_NE(log_entry, nullptr);
+                     EXPECT_TRUE(log_entry->log_ai_data_request()
                                      ->mutable_compose()
                                      ->has_request_data());
-                     EXPECT_TRUE(log_entry.get()
-                                     ->log_ai_data_request()
+                     EXPECT_TRUE(log_entry->log_ai_data_request()
                                      ->mutable_compose()
                                      ->has_response_data());
                      run_loop->Quit();

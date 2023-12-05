@@ -17,6 +17,8 @@
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "url/gurl.h"
 
+class PrefService;
+
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
@@ -25,8 +27,9 @@ namespace optimization_guide {
 
 class ModelQualityLogsUploaderService {
  public:
-  explicit ModelQualityLogsUploaderService(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  ModelQualityLogsUploaderService(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      PrefService* pref_service);
 
   ModelQualityLogsUploaderService(const ModelQualityLogsUploaderService&) =
       delete;
@@ -45,6 +48,9 @@ class ModelQualityLogsUploaderService {
 
   // The URL for the remote model quality logs uploader service.
   const GURL model_quality_logs_uploader_service_url_;
+
+  // A weak pointer to the PrefService used to read and write preferences.
+  raw_ptr<PrefService> pref_service_;
 
   // Used for creating an active_url_loader when needed for request.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

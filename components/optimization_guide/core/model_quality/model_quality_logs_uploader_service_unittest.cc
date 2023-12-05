@@ -18,9 +18,11 @@
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "net/base/url_util.h"
@@ -68,9 +70,10 @@ class ModelQualityLogsUploaderServiceTest : public testing::Test {
         shared_url_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {
+    prefs::RegisterProfilePrefs(pref_service_.registry());
     model_quality_logs_uploader_service_ =
         std::make_unique<ModelQualityLogsUploaderService>(
-            shared_url_loader_factory_);
+            shared_url_loader_factory_, &pref_service_);
     // Enable compose logging.
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kModelQualityLogging,
@@ -147,7 +150,7 @@ class ModelQualityLogsUploaderServiceTest : public testing::Test {
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   base::HistogramTester histogram_tester_;
-
+  TestingPrefServiceSimple pref_service_;
   absl::optional<proto::LogAiDataRequest> last_ai_data_request_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

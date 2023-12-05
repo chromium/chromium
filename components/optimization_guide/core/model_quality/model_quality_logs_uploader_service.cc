@@ -13,6 +13,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
@@ -83,12 +84,14 @@ void OnURLLoadComplete(
 }  // namespace
 
 ModelQualityLogsUploaderService::ModelQualityLogsUploaderService(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    PrefService* pref_service)
     : model_quality_logs_uploader_service_url_(
           net::AppendOrReplaceQueryParameter(
               GetModelQualityLogsUploaderServiceURL(),
               "key",
               switches::GetModelQualityServiceAPIKey())),
+      pref_service_(pref_service),
       url_loader_factory_(url_loader_factory) {
   CHECK(model_quality_logs_uploader_service_url_.SchemeIs(url::kHttpsScheme));
 }
@@ -109,15 +112,23 @@ void ModelQualityLogsUploaderService::UploadModelQualityLogs(
     return;
   }
 
+  proto::ModelExecutionFeature feature =
+      GetModelExecutionFeature(log_ai_data_request->feature_case());
+
   // Don't do anything if logging is disabled for the feature. Nothing to
   // upload.
-  if (!features::IsModelQualityLoggingEnabledForFeature(
-          GetModelExecutionFeature(log_ai_data_request->feature_case()))) {
+  if (!features::IsModelQualityLoggingEnabledForFeature(feature)) {
     return;
   }
 
   // TODO(b/301301447): Set LoggingMetadata fields during upload.
+  // Set the client id for logging if non-zero.
   proto::LoggingMetadata logging_metadata;
+  int64_t client_id = GetOrCreateModelQualityClientId(feature, pref_service_);
+  if (client_id != 0) {
+    logging_metadata.set_client_id(client_id);
+  }
+
   *(log_ai_data_request->mutable_logging_metadata()) = logging_metadata;
 
   std::string serialized_logs;
