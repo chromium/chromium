@@ -224,6 +224,18 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     OnAXTreeDistilled(tree_id_, content_node_ids);
   }
 
+  void InitAXPosition(const ui::AXNodeID id) {
+    controller_->InitAXPositionWithNode(id);
+  }
+
+  ui::AXNodePosition::AXPositionInstance GetNextNodePosition() {
+    return controller_->GetNextValidPositionFromCurrentPosition();
+  }
+
+  std::vector<std::vector<int>> GetNextText() {
+    return controller_->GetNextText(160);
+  }
+
   void OnAXTreeDistilled(const ui::AXTreeID& tree_id,
                          const std::vector<ui::AXNodeID>& content_node_ids) {
     controller_->OnAXTreeDistilled(tree_id, content_node_ids);
@@ -1880,4 +1892,304 @@ TEST_F(ReadAnythingAppControllerTest, AccessibilityEventReceived_PDFHandling) {
               EnablePDFContentAccessibility(pdf_web_contents_tree_id))
       .Times(1);
   Mock::VerifyAndClearExpectations(distiller_);
+}
+
+TEST_F(ReadAnythingAppControllerTest, GetNextValidPosition) {
+  std::u16string sentence1 = u"This is a sentence.";
+  std::u16string sentence2 = u"This is another sentence.";
+  std::u16string sentence3 = u"And this is yet another sentence.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  // TODO(crbug.com/1474951): Update the rest of the tests to use this
+  // formatting
+  //  instead of update.nodes.resize where possible to improve readability.
+  ui::AXNodeData staticText1;
+  staticText1.id = 2;
+  staticText1.role = ax::mojom::Role::kStaticText;
+  staticText1.SetNameChecked(sentence1);
+
+  ui::AXNodeData staticText2;
+  staticText2.id = 3;
+  staticText2.role = ax::mojom::Role::kStaticText;
+  staticText2.SetNameChecked(sentence2);
+
+  ui::AXNodeData staticText3;
+  staticText3.id = 4;
+  staticText3.role = ax::mojom::Role::kStaticText;
+  staticText3.SetNameChecked(sentence3);
+  update.nodes = {staticText1, staticText2, staticText3};
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({staticText1.id, staticText2.id, staticText3.id});
+  InitAXPosition(update.nodes[0].id);
+  ui::AXNodePosition::AXPositionInstance new_position = GetNextNodePosition();
+  EXPECT_EQ(new_position->anchor_id(), staticText2.id);
+  EXPECT_EQ(new_position->GetText(), sentence2);
+
+  // Getting the next node position shouldn't update the current AXPosition.
+  new_position = GetNextNodePosition();
+  EXPECT_EQ(new_position->anchor_id(), staticText2.id);
+  EXPECT_EQ(new_position->GetText(), sentence2);
+}
+
+TEST_F(ReadAnythingAppControllerTest, GetNextValidPosition_SkipsNonTextNode) {
+  std::u16string sentence1 = u"This is a sentence.";
+  std::u16string sentence2 = u"This is another sentence.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData staticText1;
+  staticText1.id = 2;
+  staticText1.role = ax::mojom::Role::kStaticText;
+  staticText1.SetNameChecked(sentence1);
+
+  ui::AXNodeData emptyNode;
+  emptyNode.id = 3;
+
+  ui::AXNodeData staticText2;
+  staticText2.id = 4;
+  staticText2.role = ax::mojom::Role::kStaticText;
+  staticText2.SetNameChecked(sentence2);
+  update.nodes = {staticText1, emptyNode, staticText2};
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({staticText1.id, emptyNode.id, staticText2.id});
+  InitAXPosition(update.nodes[0].id);
+  ui::AXNodePosition::AXPositionInstance new_position = GetNextNodePosition();
+  EXPECT_EQ(new_position->anchor_id(), staticText2.id);
+  EXPECT_EQ(new_position->GetText(), sentence2);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       GetNextValidPosition_SkipsNonDistilledNode) {
+  std::u16string sentence1 = u"This is a sentence.";
+  std::u16string sentence2 = u"This is another sentence.";
+  std::u16string sentence3 = u"And this is yet another sentence.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData staticText1;
+  staticText1.id = 2;
+  staticText1.role = ax::mojom::Role::kStaticText;
+  staticText1.SetNameChecked(sentence1);
+
+  ui::AXNodeData staticText2;
+  staticText2.id = 3;
+  staticText2.role = ax::mojom::Role::kStaticText;
+  staticText2.SetNameChecked(sentence2);
+
+  ui::AXNodeData staticText3;
+  staticText3.id = 4;
+  staticText3.role = ax::mojom::Role::kStaticText;
+  staticText3.SetName(sentence3);
+  update.nodes = {staticText1, staticText2, staticText3};
+  AccessibilityEventReceived({update});
+  // Don't distill the node with id 3.
+  OnAXTreeDistilled({staticText1.id, staticText3.id});
+  InitAXPosition(update.nodes[0].id);
+  ui::AXNodePosition::AXPositionInstance new_position = GetNextNodePosition();
+  EXPECT_EQ(new_position->anchor_id(), staticText3.id);
+  EXPECT_EQ(new_position->GetText(), sentence3);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       GetNextValidPosition_SkipsNodeWithHTMLTag) {
+  std::u16string sentence1 = u"This is a sentence.";
+  std::u16string sentence2 = u"This is another sentence.";
+  std::u16string sentence3 = u"And this is yet another sentence.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData staticText1;
+  staticText1.id = 2;
+  staticText1.role = ax::mojom::Role::kStaticText;
+  staticText1.SetNameChecked(sentence1);
+
+  ui::AXNodeData staticText2;
+  staticText2.id = 3;
+  staticText2.role = ax::mojom::Role::kStaticText;
+  staticText2.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "h1");
+  staticText2.SetNameChecked(sentence2);
+
+  ui::AXNodeData staticText3;
+  staticText3.id = 4;
+  staticText3.role = ax::mojom::Role::kStaticText;
+  staticText3.SetNameChecked(sentence3);
+  update.nodes = {staticText1, staticText2, staticText3};
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({staticText1.id, staticText2.id, staticText3.id});
+  InitAXPosition(update.nodes[0].id);
+  ui::AXNodePosition::AXPositionInstance new_position = GetNextNodePosition();
+  EXPECT_EQ(new_position->anchor_id(), staticText3.id);
+  EXPECT_EQ(new_position->GetText(), sentence3);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       GetNextValidPosition_ReturnsNullPositionAtEndOfTree) {
+  std::u16string sentence1 = u"This is a sentence.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData staticText;
+  staticText.id = 2;
+  staticText.role = ax::mojom::Role::kStaticText;
+  staticText.SetNameChecked(sentence1);
+  ui::AXNodeData emptyNode1;
+  emptyNode1.id = 3;
+  ui::AXNodeData emptyNode2;
+  emptyNode2.id = 4;
+  update.nodes = {staticText, emptyNode1, emptyNode2};
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({staticText.id, emptyNode1.id, emptyNode2.id});
+  InitAXPosition(update.nodes[0].id);
+  ui::AXNodePosition::AXPositionInstance new_position = GetNextNodePosition();
+  EXPECT_TRUE(new_position->IsNullPosition());
+}
+
+TEST_F(ReadAnythingAppControllerTest, GetNextText_ReturnsExpectedNodes) {
+  std::u16string sentence1 = u"This is a sentence.";
+  std::u16string sentence2 = u"This is another sentence.";
+  std::u16string sentence3 = u"And this is yet another sentence.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData staticText1;
+  staticText1.id = 2;
+  staticText1.role = ax::mojom::Role::kStaticText;
+  staticText1.SetNameChecked(sentence1);
+
+  ui::AXNodeData staticText2;
+  staticText2.id = 3;
+  staticText2.role = ax::mojom::Role::kStaticText;
+  staticText2.SetNameChecked(sentence2);
+
+  ui::AXNodeData staticText3;
+  staticText3.id = 4;
+  staticText3.role = ax::mojom::Role::kStaticText;
+  staticText3.SetNameChecked(sentence3);
+  update.nodes = {staticText1, staticText2, staticText3};
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({staticText1.id, staticText2.id, staticText3.id});
+  InitAXPosition(update.nodes[0].id);
+
+  std::vector<std::vector<int>> next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ((int)next_node_ids[0].size(), 3);
+  // The returned id should be the next node id, 2
+  EXPECT_EQ(next_node_ids[0][0], staticText1.id);
+  // The returned int should be the beginning of the node's text.
+  EXPECT_EQ(next_node_ids[0][1], 0);
+  // The returned int should be equivalent to the text in the node.
+  EXPECT_EQ(next_node_ids[0][2], (int)sentence1.length());
+
+  // Move to the next node
+  next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ((int)next_node_ids[0].size(), 3);
+  EXPECT_EQ(next_node_ids[0][0], staticText2.id);
+  EXPECT_EQ(next_node_ids[0][1], 0);
+  EXPECT_EQ(next_node_ids[0][2], (int)sentence2.length());
+
+  // Move to the last node
+  next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ((int)next_node_ids[0].size(), 3);
+  EXPECT_EQ(next_node_ids[0][0], staticText3.id);
+  EXPECT_EQ(next_node_ids[0][1], 0);
+  EXPECT_EQ(next_node_ids[0][2], (int)sentence3.length());
+
+  // Attempt to move to another node.
+  next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 0);
+}
+
+TEST_F(ReadAnythingAppControllerTest, GetNextText_AfterAXTreeRefresh) {
+  std::u16string sentence1 = u"This is a sentence.";
+  std::u16string sentence2 = u"This is another sentence.";
+  std::u16string sentence3 = u"And this is yet another sentence.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData staticText1;
+  staticText1.id = 2;
+  staticText1.role = ax::mojom::Role::kStaticText;
+  staticText1.SetNameChecked(sentence1);
+
+  ui::AXNodeData staticText2;
+  staticText2.id = 3;
+  staticText2.role = ax::mojom::Role::kStaticText;
+  staticText2.SetNameChecked(sentence2);
+
+  ui::AXNodeData staticText3;
+  staticText3.id = 4;
+  staticText3.role = ax::mojom::Role::kStaticText;
+  staticText3.SetNameChecked(sentence3);
+  update.nodes = {staticText1, staticText2, staticText3};
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({staticText1.id, staticText2.id, staticText3.id});
+  InitAXPosition(update.nodes[0].id);
+
+  std::vector<std::vector<int>> next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ((int)next_node_ids[0].size(), 3);
+  EXPECT_EQ(next_node_ids[0][0], staticText1.id);
+  EXPECT_EQ(next_node_ids[0][1], 0);
+  EXPECT_EQ(next_node_ids[0][2], (int)sentence1.length());
+
+  // Simulate updating the page text.
+  std::u16string new_sentence_1 =
+      u"And so I read a book or maybe two or three.";
+  std::u16string new_sentence_2 =
+      u"I will add a few new paitings to my gallery.";
+  std::u16string new_sentence_3 =
+      u"I will play guitar and knit and cook and basically wonder when will my "
+      u"life begin.";
+  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
+  ui::AXTreeUpdate update2;
+  SetUpdateTreeID(&update2, id_1);
+  ui::AXNodeData root;
+  root.id = 1;
+
+  ui::AXNodeData newStaticText1;
+  newStaticText1.id = 10;
+  newStaticText1.role = ax::mojom::Role::kStaticText;
+  newStaticText1.SetNameChecked(new_sentence_1);
+
+  ui::AXNodeData newStaticText2;
+  newStaticText2.id = 12;
+  newStaticText2.role = ax::mojom::Role::kStaticText;
+  newStaticText2.SetNameChecked(new_sentence_2);
+
+  ui::AXNodeData newStaticText3;
+  newStaticText3.id = 16;
+  newStaticText3.role = ax::mojom::Role::kStaticText;
+  newStaticText3.SetNameChecked(new_sentence_3);
+
+  root.child_ids = {newStaticText1.id, newStaticText2.id, newStaticText3.id};
+  update2.root_id = root.id;
+  update2.nodes = {root, newStaticText1, newStaticText2, newStaticText3};
+  OnActiveAXTreeIDChanged(id_1);
+  OnAXTreeDistilled({});
+  AccessibilityEventReceived({update2});
+  OnAXTreeDistilled(id_1,
+                    {newStaticText1.id, newStaticText2.id, newStaticText3.id});
+  InitAXPosition(update2.nodes[1].id);
+
+  // The nodes from the new tree are used.
+  next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ((int)next_node_ids[0].size(), 3);
+  EXPECT_EQ(next_node_ids[0][0], update2.nodes[1].id);
+  EXPECT_EQ(next_node_ids[0][1], 0);
+  EXPECT_EQ(next_node_ids[0][2], (int)new_sentence_1.length());
+
+  next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ((int)next_node_ids[0].size(), 3);
+  EXPECT_EQ(next_node_ids[0][0], update2.nodes[2].id);
+  EXPECT_EQ(next_node_ids[0][1], 0);
+  EXPECT_EQ(next_node_ids[0][2], (int)new_sentence_2.length());
+
+  next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ((int)next_node_ids[0].size(), 3);
+  EXPECT_EQ(next_node_ids[0][0], update2.nodes[3].id);
+  EXPECT_EQ(next_node_ids[0][1], 0);
+  EXPECT_EQ(next_node_ids[0][2], (int)new_sentence_3.length());
+
+  // Nodes are empty at the end of the new tree.
+  next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 0);
 }

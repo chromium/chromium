@@ -66,76 +66,40 @@
 
   // Speech doesn't actually run in tests, so manually call start
   readAnythingApp.playSpeech();
-  utterances = readAnythingApp.getUtterancesToSpeak();
-  assertEquals(utterances.length, 4);
 
   // First sentence is highlighted and nothing is before it
-  let utterance = utterances[0];
-  assertEquals(utterance.text, sentence1);
-  utterance.onstart();
   assertEquals(
       container.querySelector('.current-read-highlight').textContent,
       sentence1);
   assertEquals(
       container.querySelectorAll('.previous-read-highlight').length, 0);
-  utterance.onend();
+  readAnythingApp.resetPreviousHighlight();
 
-  // Third sentence is highlighted and first is before it
+  // Second sentence is highlighted and first is before it
   readAnythingApp.playNextGranularity();
-  utterance = readAnythingApp.getCurrentUtterance();
-  assertEquals(utterance.text, sentence3);
-  utterance.onstart();
   assertEquals(
       container.querySelector('.current-read-highlight').textContent,
-      sentence3);
+      sentence2);
+  readAnythingApp.resetPreviousHighlight();
 
   // TODO(crbug.com/1474951): Add tests for the previous highlight and for the
   //  the highlight when calling playPreviousGranularity.
 
-  // Fourth sentence is next.
+  // Third sentence is next.
   readAnythingApp.playNextGranularity();
-  utterance = readAnythingApp.getCurrentUtterance();
-  assertEquals(utterance.text, sentence4);
-
-  // Third sentence is now the current utterance.
-  readAnythingApp.playPreviousGranularity();
-  utterance = readAnythingApp.getCurrentUtterance();
-  assertEquals(utterance.text, sentence3);
-
-  // Fourth sentence is now the current utterance again.
-  readAnythingApp.playNextGranularity();
-  utterance = readAnythingApp.getCurrentUtterance();
-  assertEquals(utterance.text, sentence4);
-  utterance.onstart();
   assertEquals(
       container.querySelector('.current-read-highlight').textContent,
-      sentence4);
-
-  // Attempt to speak the previous granularity before the beginning of the text.
-  for (let i = 0; i < utterances.length + 1; i++) {
-    readAnythingApp.playPreviousGranularity();
-  }
-
-  // Even though call playPreviousGranularity more than the number of
-  // utterances, the next utterance is stopped at the first sentence.
-  utterance = readAnythingApp.getCurrentUtterance();
-  assertEquals(utterance.text, sentence1);
+      sentence3);
 
   // Attempt to speak more utterance than are left.
-  for (let i = 0; i < utterances.length + 1; i++) {
-    readAnythingApp.playNextGranularity();
-  }
-
-  // When all text has been cycled through, speech is stopped.
-  utterances = readAnythingApp.getUtterancesToSpeak();
-  assertEquals(utterances.length, 0);
+  readAnythingApp.playNextGranularity();
+  readAnythingApp.playNextGranularity();
+  readAnythingApp.playNextGranularity();
 
   // After speech is stopped, playing the next / previous granularity cause no
   // crashes, and don't change utterances.
   readAnythingApp.playNextGranularity();
   readAnythingApp.playPreviousGranularity();
-  utterances = readAnythingApp.getUtterancesToSpeak();
-  assertEquals(utterances.length, 0);
 
   return result;
 })();

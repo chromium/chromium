@@ -236,12 +236,20 @@ declare namespace chrome {
     // preferences and can be used to set up the page.
     function restoreSettingsFromPrefs(): void;
 
-    // Returns the index of the next sentence of the given text, such that the
-    // next sentence is equivalent to text.substr(0, <returned_index>).
-    // If the sentence exceeds the maximum text length, the sentence will be
-    // cropped to the nearest word boundary that doesn't exceed the maximum
-    // text length.
-    function getNextSentence(value: string, maxTextLength: number): number;
+    // Inits the AXPosition instance in ReadAnythingAppController with the
+    // starting node. Currently needed to orient the AXPosition to the correct
+    // position, but we should be able to remove this in the future.
+    function initAXPositionWithNode(startingNodeId: number): void;
+
+    // Gets the next text that should be spoken and highlighted. Returns a list
+    // of triples, represented as a double array, where each triple contains an
+    // AXNodeId, the starting text index, and the ending text index.
+    function getNextText(maxTextLength: number): number[][];
+
+    // Gets the previous text that should be spoken and highlighted. Returns a
+    // list of triples, represented as a double array, where each triple
+    // contains an XNodeId, the starting text index, and the ending text index.
+    function getPreviousText(maxTextLength: number): number[][];
 
     // Signal that the supported fonts should be updated i.e. that the brower's
     // preferred language has changed.

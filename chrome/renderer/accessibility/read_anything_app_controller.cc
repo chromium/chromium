@@ -526,6 +526,11 @@ void ReadAnythingAppController::Distill() {
 void ReadAnythingAppController::OnAXTreeDistilled(
     const ui::AXTreeID& tree_id,
     const std::vector<ui::AXNodeID>& content_node_ids) {
+  // Update Read Aloud state.
+  ax_position_ = ui::AXNodePosition::AXPosition::CreateNullPosition();
+  previously_spoken_ids_.clear();
+  current_text_index_ = 0;
+
   // Reset state, including the current side panel selection so we can update
   // it based on the new main panel selection in PostProcessSelection below.
   model_.Reset(content_node_ids);
@@ -738,8 +743,11 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::SetThemeForTesting)
       .SetMethod("setLanguageForTesting",
                  &ReadAnythingAppController::SetLanguageForTesting)
-      .SetMethod("getNextSentence",
-                 &ReadAnythingAppController::GetNextSentence);
+      .SetMethod("initAXPositionWithNode",
+                 &ReadAnythingAppController::InitAXPositionWithNode)
+      .SetMethod("getNextText", &ReadAnythingAppController::GetNextText)
+      .SetMethod("getPreviousText",
+                 &ReadAnythingAppController::GetPreviousText);
 }
 
 ui::AXNodeID ReadAnythingAppController::RootId() const {
@@ -1326,6 +1334,151 @@ void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
 
 void ReadAnythingAppController::OnCollapseSelection() const {
   page_handler_->OnCollapseSelection();
+}
+void ReadAnythingAppController::InitAXPositionWithNode(
+    const ui::AXNodeID starting_node_id) {
+  ui::AXNode* ax_node = model_.GetAXNode(starting_node_id);
+
+  // If instance is Null or Empty, create the next AxPosition
+  if (ax_node != nullptr && (!ax_position_ || ax_position_->IsNullPosition())) {
+    ax_position_ =
+        ui::AXNodePosition::CreateTreePositionAtStartOfAnchor(*ax_node);
+    previously_spoken_ids_.clear();
+    current_text_index_ = 0;
+  }
+}
+
+// TODO(crbug.com/1474951): Update to use AXRange to better handle multiple
+// nodes. This may require updating GetText in ax_range.h to return AXNodeIds.
+// AXRangeType#ExpandToEnclosingTextBoundary may also be useful.
+std::vector<std::vector<int>> ReadAnythingAppController::GetNextText(
+    int max_text_length) {
+  std::vector<std::vector<int>> next_nodes;
+
+  // Make sure we're adequately returning at the end of content.
+  if (!ax_position_ || ax_position_->AtEndOfAXTree() ||
+      ax_position_->IsNullPosition()) {
+    return next_nodes;
+  }
+
+  // Look at the current node and the text position within it. If we're at
+  // the end of the node, move to the next node.
+  ui::AXNode* anchor_node = GetNodeFromCurrentPosition();
+
+  std::u16string text = anchor_node->GetTextContentUTF16();
+  int prev_index = current_text_index_;
+
+  std::u16string text_substr = text.substr(current_text_index_);
+  int nextSentenceIndex =
+      GetNextSentence(text_substr, max_text_length) + prev_index;
+
+  // If the current text index is greater than the current size or the
+  // remaining text in the node, move to the next node.
+  if (((size_t)current_text_index_ >= text.size()) ||
+      (current_text_index_ == nextSentenceIndex)) {
+    ax_position_ = GetNextValidPositionFromCurrentPosition();
+    if (ax_position_->IsNullPosition()) {
+      return next_nodes;
+    }
+
+    // Since we've updated the position, update our state in order to calculate
+    // the next sentence.
+    current_text_index_ = 0;
+    anchor_node = GetNodeFromCurrentPosition();
+    text = anchor_node->GetTextContentUTF16();
+    prev_index = current_text_index_;
+    text_substr = text.substr(current_text_index_);
+  }
+
+  int new_current_text_index =
+      GetNextSentence(text_substr, max_text_length) + prev_index;
+  current_text_index_ = new_current_text_index;
+  next_nodes.push_back({anchor_node->id(), prev_index, current_text_index_});
+  previously_spoken_ids_.push_back(anchor_node->id());
+
+  return next_nodes;
+}
+
+std::vector<std::vector<int>> ReadAnythingAppController::GetPreviousText(
+    int max_text_length) {
+  // TODO(crbug.com/1474951): Reset AXPosition to the previous position before
+  // getting the next spoken text. Use MoveDirection to move backwards in the
+  // tree.
+  // If the current text index is 0, go back to the previous node and return
+  // the last sentence in that node.
+  // Otherwise, return the previous sentence.
+  return GetNextText(max_text_length);
+}
+
+// Returns either the node or the lowest platform ancestor of the node, if it's
+// a leaf.
+ui::AXNode* ReadAnythingAppController::GetNodeFromCurrentPosition() {
+  if (ax_position_->GetAnchor()->IsChildOfLeaf()) {
+    return ax_position_->GetAnchor()->GetLowestPlatformAncestor();
+  }
+
+  return ax_position_->GetAnchor();
+}
+
+// Gets the next valid position from our current position within AXPosition
+// AXPosition returns nodes that aren't supported by Reading Mode, so we
+// need to have a bit of extra logic to ensure we're only passing along valid
+// nodes.
+// Some of the checks here right now are probably unneeded.
+ui::AXNodePosition::AXPositionInstance
+ReadAnythingAppController::GetNextValidPositionFromCurrentPosition() {
+  ui::AXNodePosition::AXPositionInstance new_position =
+      ui::AXNodePosition::CreateNullPosition();
+
+  ui::AXMovementOptions movement_options(
+      ui::AXBoundaryBehavior::kCrossBoundary,
+      ui::AXBoundaryDetection::kDontCheckInitialPosition);
+
+  new_position = ax_position_->CreatePositionAtTextBoundary(
+      ax::mojom::TextBoundary::kSentenceStart,
+      ax::mojom::MoveDirection::kForward, movement_options);
+
+  if (new_position->IsNullPosition() || new_position->AtEndOfAXTree() ||
+      !new_position->GetAnchor()) {
+    return new_position;
+  }
+
+  bool is_leaf = new_position->GetAnchor()->IsChildOfLeaf();
+  // If the node is a leaf, use the parent node instead.
+  ui::AXNode* anchor_node =
+      is_leaf ? new_position->GetAnchor()->GetLowestPlatformAncestor()
+              : new_position->GetAnchor();
+  bool was_previously_spoken =
+      base::Contains(previously_spoken_ids_, anchor_node->id());
+  // TODO(crbug.com/1474951): Can this be updated to IsText() instead?
+  bool is_text_node = (GetHtmlTag((anchor_node->id())).length() == 0);
+  const std::set<ui::AXNodeID>* node_ids = model_.selection_node_ids().empty()
+                                               ? &model_.display_node_ids()
+                                               : &model_.selection_node_ids();
+  bool contains_node = base::Contains(*node_ids, anchor_node->id());
+
+  while (was_previously_spoken || !is_text_node || !contains_node) {
+    ui::AXNodePosition::AXPositionInstance possible_new_position =
+        new_position->CreateNextSentenceStartPosition(movement_options);
+    anchor_node = possible_new_position->GetAnchor();
+    if (!anchor_node) {
+      return new_position;
+    }
+
+    new_position =
+        new_position->CreateNextSentenceStartPosition(movement_options);
+
+    is_leaf = anchor_node->IsChildOfLeaf();
+    if (is_leaf) {
+      anchor_node = anchor_node->GetLowestPlatformAncestor();
+    }
+    was_previously_spoken =
+        base::Contains(previously_spoken_ids_, anchor_node->id());
+    is_text_node = (GetHtmlTag((anchor_node->id())).length() == 0);
+    contains_node = base::Contains(*node_ids, anchor_node->id());
+  }
+
+  return new_position;
 }
 
 int ReadAnythingAppController::GetNextSentence(const std::u16string& text,

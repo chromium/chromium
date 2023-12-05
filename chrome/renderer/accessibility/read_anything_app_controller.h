@@ -22,6 +22,8 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_node_id_forward.h"
+#include "ui/accessibility/ax_node_position.h"
+#include "ui/accessibility/ax_position.h"
 #include "ui/accessibility/ax_tree_update_forward.h"
 #include "url/gurl.h"
 
@@ -108,6 +110,16 @@ class ReadAnythingAppController
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void ScreenAIServiceReady() override;
 #endif
+
+  // Read Aloud Helper methods.
+
+  // Returns the next valid AXNodePosition.
+  ui::AXNodePosition::AXPositionInstance
+  GetNextValidPositionFromCurrentPosition();
+
+  // Uses the current AXNodePosition to return the next node that should be
+  // spoken by Read Aloud.
+  ui::AXNode* GetNodeFromCurrentPosition();
 
   // gin templates:
   ui::AXNodeID RootId() const;
@@ -207,6 +219,23 @@ class ReadAnythingAppController
 
   void PostProcessSelection();
 
+  // Inits the AXPosition with a starting node.
+  // TODO(crbug.com/1474951): We should be able to use AXPosition in a way
+  // where this isn't needed.
+  void InitAXPositionWithNode(const ui::AXNodeID starting_node_id);
+
+  // Returns a list of triples representing the next nodes that should be
+  // spoken and highlighted with Read Aloud. Each triple contains three numbers:
+  // the AXNodeID, the starting text index, and the ending text index. This
+  // list of triples is represented as a double array.
+  std::vector<std::vector<int>> GetNextText(int max_text_length);
+
+  // Returns a list of triples representing the previous nodes that should be
+  // spoken and highlighted with Read Aloud. Each triple contains three numbers:
+  // the AXNodeID, the starting text index, and the ending text index. This
+  // list of triples is represented as a double array.
+  std::vector<std::vector<int>> GetPreviousText(int max_text_length);
+
   // Returns the index of the next sentence of the given text, such that the
   // next sentence is equivalent to text.substr(0, <returned_index>).
   // If the sentence exceeds the maximum text length, the sentence will be
@@ -253,6 +282,15 @@ class ReadAnythingAppController
       page_handler_factory_;
   mojo::Remote<read_anything::mojom::UntrustedPageHandler> page_handler_;
   mojo::Receiver<read_anything::mojom::UntrustedPage> receiver_{this};
+
+  // Read Aloud state
+  ui::AXNodePosition::AXPositionInstance ax_position_;
+  // The current text index within the given node.
+  int current_text_index_ = 0;
+
+  // TODO(b/1474951): There should be a way to navigate text without needing
+  //  to store spoken ids.
+  std::vector<ui::AXNodeID> previously_spoken_ids_;
 
   // Model that holds state for this controller.
   ReadAnythingAppModel model_;

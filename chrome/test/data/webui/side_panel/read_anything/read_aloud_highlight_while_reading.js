@@ -53,29 +53,24 @@
 
   // Speech doesn't actually run in tests, so manually call start
   readAnythingApp.playSpeech();
-  const utterances = readAnythingApp.getUtterancesToSpeak();
-  assertEquals(utterances.length, 2);
 
   // First sentence is highlighted and nothing is before it
-  let utterance = utterances[0];
-  utterance.onstart();
   assertEquals(
       container.querySelector('.current-read-highlight').textContent,
       sentence1);
   assertEquals(
       container.querySelectorAll('.previous-read-highlight').length, 0);
-  utterance.onend();
+  readAnythingApp.resetPreviousHighlight();
 
   // Second sentence is highlighted and first is before it
-  utterance = utterances[1];
-  utterance.onstart();
+  readAnythingApp.playNextMessage();
   assertEquals(
       container.querySelector('.current-read-highlight').textContent,
       sentence2);
   assertEquals(
       container.querySelector('.previous-read-highlight').textContent,
       sentence1);
-  utterance.onend();
+  readAnythingApp.resetPreviousHighlight();
 
   // All text is read so no current highlight - everything is "previous" now
   assertEquals(container.querySelectorAll('.current-read-highlight').length, 0);

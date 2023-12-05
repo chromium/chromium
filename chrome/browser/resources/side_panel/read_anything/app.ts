@@ -182,9 +182,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private emptyStateHeading_: string;
   private emptyStateSubheading_: string;
 
-  private utterancesToSpeak_: SpeechSynthesisUtterance[] = [];
-  private currentUtteranceIndex_: number = 0;
-  private previousHighlight_: HTMLElement|null;
+  private previousHighlight_: HTMLElement[] = [];
   private currentColorSuffix_: string;
 
   private chromeRefresh2023Enabled_ =
@@ -439,14 +437,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     startElement.scrollIntoViewIfNeeded();
   }
 
-  getUtterancesToSpeak() {
-    return this.utterancesToSpeak_;
-  }
-
-  getCurrentUtterance() {
-    return this.utterancesToSpeak_[this.currentUtteranceIndex_];
-  }
-
   onSpeechRateChange(rate: number) {
     this.rate = rate;
   }
@@ -536,43 +526,17 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   playNextGranularity() {
-    if (this.utterancesToSpeak_.length === 0) {
-      // In reality this should never happen because the granularity buttons
-      // should be hidden when there is nothing to speak, but returning early
-      // helps prevent crashes.
-      return;
-    }
-
     this.synth.cancel();
-    // TODO(crbug.com/1474951): Handle cases where something can be "skipped"
-    // when navigating quickly between sentences. This should be less of an
-    // issue once we fix the choppiness issue with links.
-    if (this.currentUtteranceIndex_ >= this.utterancesToSpeak_.length - 1) {
-      // TODO(crbug.com/1474951): Ensure highlight goes back to original
-      // formatting, even if the last sentence is skipped.
+    if (!this.playNextMessage()) {
       this.onSpeechStopped();
-      return;
     }
-    this.currentUtteranceIndex_ = this.currentUtteranceIndex_ + 1;
-    this.playCurrentMessage();
   }
 
   // TODO(crbug.com/1474951): Ensure the highlight is shown after playing the
   //  previous granularity.
   playPreviousGranularity() {
-    if (this.utterancesToSpeak_.length === 0) {
-      // In reality this should never happen because the granularity buttons
-      // should be hidden when there is nothing to speak, but returning early
-      // helps prevent crashes.
-      return;
-    }
-
     this.synth.cancel();
-    this.currentUtteranceIndex_ = Math.max(this.currentUtteranceIndex_ - 1, 0);
-    if (this.previousHighlight_) {
-      this.previousHighlight_.className = '';
-    }
-    this.playCurrentMessage();
+    this.playPreviousMessage();
   }
 
   playSpeech() {
@@ -600,91 +564,115 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       assert(treeRoot);
       const treeWalker =
           document.createTreeWalker(treeRoot, NodeFilter.SHOW_TEXT);
-      while (treeWalker.nextNode()) {
-        this.createMessages_(treeWalker.currentNode);
+      treeWalker.nextNode();
+      const axNode = this.domNodeToAxNodeIdMap_.get(treeWalker.currentNode);
+      // TODO(crbug.com/1474951): There should be a way to use AXPosition so
+      // that this step can be skipped.
+      if (axNode) {
+        chrome.readingMode.initAXPositionWithNode(axNode);
+        this.playNextMessage();
       }
-
-      // Start by playing the first message.
-      this.playCurrentMessage();
     }
   }
 
-  private createMessages_(node: Node) {
-    const text = node.textContent;
-    if (!text) {
-      return;
+  playNextMessage(): boolean {
+    const maxTextLength = this.maxSpeechLength;
+
+    // getNextText returns a list of triples of AXNodeIds and start / end text
+    // indices, represented as a double array.
+    const nextTextIds: number[][] =
+        chrome.readingMode.getNextText(maxTextLength);
+    return this.playCurrentMessage(nextTextIds);
+  }
+
+  playPreviousMessage(): boolean {
+    const maxTextLength = this.maxSpeechLength;
+    const previousTextIds: number[][] =
+        chrome.readingMode.getPreviousText(maxTextLength);
+    return this.playCurrentMessage(previousTextIds);
+  }
+
+  // TODO (crbug.com/1474951): Investigate using AXRange.GetText to get text
+  // between start node / end nodes and their offsets.
+  playCurrentMessage(nextTextIds: number[][]): boolean {
+    if (nextTextIds.length === 0) {
+      return false;
     }
-    // TODO(crbug.com/1474951): 175 characters is set to avoid the issue on
-    // Linux where the speech apis are blocked for too-long speech and we don't
-    // get too-long text errors. We should investigate a more robust solution.
-    let maxTextLength = this.maxSpeechLength;
-    if (text.length < maxTextLength) {
-      maxTextLength = text.length;
+    let utterance: string = '';
+    for (let i = 0; i < nextTextIds.length; i++) {
+      assert(nextTextIds[i].length === 3);
+      const node = nextTextIds[i][0];
+      const startIndex = nextTextIds[i][1];
+      const index = nextTextIds[i][2];
+      const element = this.domNodeToAxNodeIdMap_.keyFrom(node);
+      if (!element) {
+        continue;
+      }
+      const content =
+          chrome.readingMode.getTextContent(node).substring(startIndex, index);
+      if (content) {
+        // Add all of the text from the current nodes into a single utterance.
+        utterance += ' ' + content;
+      }
     }
 
-    // Split this node into sentences to help with speech cadence, to reduce
-    // too-long errors, and to highlight speech by sentence.
-    let remainingText = text;
-    let sentenceStart = 0;
-    let nodeToHighlight = node;
-    while (remainingText.length > 0) {
-      // Taking the substring of the text isn't strictly necessary before
-      // sending the text to getNextSentence, but since blocks of text can be
-      // very long and we have a maximum sentence length, taking the substring
-      // before processing the sentence boundaries helps keep things more
-      // efficient. Send a string with a slightly longer length than
-      // maxTextLength (if possible) so indices can be compared to prevent
-      // unnecessarily shortening a complete sentence.
-      const nextSentenceEndIndex = chrome.readingMode.getNextSentence(
-          remainingText.substring(0, maxTextLength + 50), maxTextLength);
-      const sentence = remainingText.substring(0, nextSentenceEndIndex);
-      remainingText = remainingText.substring(nextSentenceEndIndex);
+    // Return if the utterance is empty or null.
+    if (!utterance) {
+      return false;
+    }
 
-      const message = new SpeechSynthesisUtterance(sentence);
+    const message = new SpeechSynthesisUtterance(utterance);
 
-      message.onerror = (error) => {
-        // TODO(crbug.com/1474951): Add more sophisticated error handling.
-        if (error.error === 'interrupted') {
-          // SpeechSynthesis.cancel() was called, therefore, do nothing.
-          return;
-        }
-        this.synth.cancel();
-      };
+    message.onerror = (error) => {
+      // TODO(crbug.com/1474951): Add more sophisticated error handling.
+      if (error.error === 'interrupted') {
+        // SpeechSynthesis.cancel() was called, therefore, do nothing.
+        return;
+      }
+      this.synth.cancel();
+    };
 
-      message.onstart = () => {
-        // TODO(crbug.com/1474951): Add toggle to turn off highlight.
-        // TODO(crbug.com/1474951): Handle already selected text.
-        if (this.previousHighlight_) {
-          this.previousHighlight_.className = previousReadHighlightClass;
-        }
-        nodeToHighlight = this.highlightCurrentText_(
-            sentenceStart, sentenceStart + nextSentenceEndIndex,
-            nodeToHighlight);
-        sentenceStart += nextSentenceEndIndex;
-      };
+    message.onend = () => {
+      // TODO(crbug.com/1474951): Add toggle to turn off highlight.
+      // TODO(crbug.com/1474951): Handle already selected text.
+      // TODO(crbug.com/1474951): Return text to its original style once
+      // the document has finished.
+      this.resetPreviousHighlight();
 
-      message.onend = () => {
-        // TODO(crbug.com/1474951): Return text to its original style once
-        // the document has finished.
-        this.currentUtteranceIndex_++;
-        if (this.currentUtteranceIndex_ >= this.utterancesToSpeak_.length) {
-          if (this.previousHighlight_) {
-            this.previousHighlight_.className = previousReadHighlightClass;
-          }
-          this.onSpeechStopped();
-        } else {
-          // Continue speaking with the next block of text.
-          this.playCurrentMessage();
-        }
-      };
+      // Continue speaking with the next block of text.
+      if (!this.playNextMessage()) {
+        this.onSpeechStopped();
+      }
+    };
 
-      this.utterancesToSpeak_.push(message);
+    // TODO(crbug.com/1474951): Add word callbacks for word highlighting.
+
+    this.highlightNodes(nextTextIds);
+    this.speakMessage(message);
+    return true;
+  }
+
+  // TODO(crbug.com/1474951): Handle previous highlighting.
+  highlightNodes(nextTextIds: number[][]) {
+    // implementation based off of #highlightCurrentText below
+    assert(nextTextIds.length > 0);
+    for (let i = 0; i < nextTextIds.length; i++) {
+      const element = this.domNodeToAxNodeIdMap_.keyFrom(nextTextIds[i][0]);
+      if (!element) {
+        continue;
+      }
+      const start = nextTextIds[i][1];
+      const end = nextTextIds[i][2];
+      let text = element.textContent;
+      if (text) {
+        text = text.substring(start, end);
+      }
+      const newElement: Node = this.highlightCurrentText_(start, end, element);
+      this.domNodeToAxNodeIdMap_.set(newElement, nextTextIds[i][0]);
     }
   }
 
-  playCurrentMessage() {
-    const message = this.utterancesToSpeak_[this.currentUtteranceIndex_];
-
+  speakMessage(message: SpeechSynthesisUtterance) {
     const voice = this.getSpeechSynthesisVoice();
     if (!voice) {
       // TODO(crbug.com/1474951): Handle when no voices are available.
@@ -761,7 +749,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     // Replace the current node in the tree with the split up version of the
     // node.
-    this.previousHighlight_ = readingHighlight;
+    this.previousHighlight_.push(readingHighlight);
     if (currentNode.parentNode) {
       currentNode.parentNode.replaceChild(parentOfHighlight, currentNode);
     }
@@ -773,9 +761,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   private onSpeechStopped() {
     this.speechStarted = false;
-    this.currentUtteranceIndex_ = 0;
-    this.utterancesToSpeak_ = [];
-    this.previousHighlight_ = null;
+    this.previousHighlight_ = [];
     this.$.toolbar.updateUiForPausing();
   }
 
@@ -828,6 +814,14 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       default:
         return defaultSelectionColor;
     }
+  }
+
+  private resetPreviousHighlight() {
+    this.previousHighlight_.forEach((element) => {
+      if (element) {
+        element.className = previousReadHighlightClass;
+      }
+    });
   }
 
   restoreSettingsFromPrefs() {

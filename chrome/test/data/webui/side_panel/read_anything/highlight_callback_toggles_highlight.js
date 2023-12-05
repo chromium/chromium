@@ -65,15 +65,11 @@
   assertEquals(
       highlightButton.getAttribute('iron-icon'), 'read-anything:highlight-on');
 
-  // Speech doesn't actually run in tests, so manually call start
+  // Speech doesn't actually run in tests, so manually call
+  // resetPreviousHighlight and playNextMessage.
   readAnythingApp.playSpeech();
-  const utterances = readAnythingApp.getUtterancesToSpeak();
-  assertEquals(utterances.length, 2);
-  let utterance = utterances[0];
-  utterance.onstart();
-  utterance.onend();
-  utterance = utterances[1];
-  utterance.onstart();
+  readAnythingApp.resetPreviousHighlight();
+  readAnythingApp.playNextMessage();
 
   // Color should start visible, and the previous highlight should be there
   const highlights = container.querySelectorAll('.current-read-highlight');
