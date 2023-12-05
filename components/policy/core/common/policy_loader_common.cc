@@ -70,8 +70,6 @@ const char* kSensitivePolicies[] = {
     key::kMetricsReportingEnabled,
 #endif
 #if BUILDFLAG(IS_WIN)
-    key::kChromeCleanupEnabled,
-    key::kChromeCleanupReportingEnabled,
     key::kSafeBrowsingForTrustedSourcesEnabled,
 #endif
 };
