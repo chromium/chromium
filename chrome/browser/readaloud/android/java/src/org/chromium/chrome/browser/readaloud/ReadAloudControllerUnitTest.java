@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
@@ -136,6 +137,7 @@ public class ReadAloudControllerUnitTest {
         mJniMocker.mock(ReadAloudPrefsJni.TEST_HOOKS, mReadAloudPrefsNatives);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNatives);
         doReturn(mPrefService).when(mUserPrefsNatives).get(any());
+        when(mPrefService.getBoolean(Pref.LISTEN_TO_THIS_PAGE_ENABLED)).thenReturn(true);
         mTabModelSelector =
                 new MockTabModelSelector(
                         mMockProfile,
@@ -178,8 +180,12 @@ public class ReadAloudControllerUnitTest {
 
     @Test
     public void testIsAvailable() {
-        // test set up: non incognito profile + MSBB Accepted
+        // test set up: non incognito profile + MSBB Accepted + policy pref returns true
         assertTrue(mController.isAvailable());
+
+        // test returns false when policy pref is false
+        when(mPrefService.getBoolean("readaloud.listen_to_this_page_enabled")).thenReturn(false);
+        assertFalse(mController.isAvailable());
     }
 
     @Test

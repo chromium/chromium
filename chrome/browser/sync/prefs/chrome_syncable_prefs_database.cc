@@ -303,6 +303,7 @@ enum {
   kHttpsFirstModeIncognito = 100245,
   kAccessibilityReadAnythingOmniboxIconLabelShownCount = 100246,
   kApplicationLocale = 100247,
+  kListenToThisPageEnabled = 100248,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -351,6 +352,10 @@ const auto& SyncablePreferences() {
         sync_preferences::MergeBehavior::kNone}},
       {prefs::kReadAloudHighlightingEnabled,
        {syncable_prefs_ids::kReadAloudHighlightingEnabled, syncer::PREFERENCES,
+        sync_preferences::PrefSensitivity::kNone,
+        sync_preferences::MergeBehavior::kNone}},
+      {prefs::kListenToThisPageEnabled,
+       {syncable_prefs_ids::kListenToThisPageEnabled, syncer::PREFERENCES,
         sync_preferences::PrefSensitivity::kNone,
         sync_preferences::MergeBehavior::kNone}},
 #else

@@ -3971,6 +3971,11 @@ inline constexpr char kReadAloudSpeed[] = "readaloud.speed";
 // playback and scrolls the page to match the playback position.
 inline constexpr char kReadAloudHighlightingEnabled[] =
     "readaloud.highlighting_enabled";
+
+// Boolean that specifies whether the ListenToThisPageEnabled policy is true or
+// not.
+inline constexpr char kListenToThisPageEnabled[] =
+    "readaloud.listen_to_this_page_enabled";
 #endif  // BUILDFLAG(IS_ANDROID)
 }  // namespace prefs
 

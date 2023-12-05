@@ -402,6 +402,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kWebXRImmersiveArEnabled,
     prefs::kWebXRImmersiveArEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kListenToThisPageEnabled,
+    prefs::kListenToThisPageEnabled,
+    base::Value::Type::BOOLEAN },
 #else // !BUILDFLAG(IS_ANDROID)
   { key::kAbusiveExperienceInterventionEnforce,
     blocked_content::prefs::kAbusiveExperienceInterventionEnforce,

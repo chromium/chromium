@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.readaloud;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
+import org.chromium.components.user_prefs.UserPrefs;
 
 /** Functions for getting the values of ReadAloud feature params. */
 public final class ReadAloudFeatures {
@@ -16,16 +18,18 @@ public final class ReadAloudFeatures {
     private static final String VOICES_OVERRIDE_PARAM_NAME = "voices_override";
 
     /**
-     * Returns true if Read Aloud is allowed. All must be true: - Feature flag enabled - Not
-     * incognito mode - User opted into "Make search and browsing better"
+     * Returns true if Read Aloud is allowed. All must be true: - Policy is enabled - Feature flag
+     * enabled - Not incognito mode - User opted into "Make search and browsing better"
      */
     public static boolean isAllowed(Profile profile) {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD) //
-                && profile != null //
-                && !profile.isOffTheRecord() //
+        return profile != null
+                && !profile.isOffTheRecord()
+                // Check whether the policy is enabled
+                && UserPrefs.get(profile).getBoolean(Pref.LISTEN_TO_THIS_PAGE_ENABLED)
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD)
                 // Check whether the user has enabled anonymous URL-keyed data collection.
-                // This is surfaced on the relatively new "Make searches and browsing better"
-                // user setting.
+                // This is surfaced on the relatively new "Make searches and browsing
+                // better" user setting.
                 && UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(profile);
     }
 

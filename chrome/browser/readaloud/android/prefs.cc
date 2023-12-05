@@ -32,6 +32,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kReadAloudHighlightingEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kListenToThisPageEnabled, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
 void JNI_ReadAloudPrefs_GetVoices(JNIEnv* env,

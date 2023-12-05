@@ -60,8 +60,12 @@ android_library("features_java") {
   ]
   deps = [
     "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/signin/services/android:java",
+    "//components/prefs/android:java",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }
@@ -165,6 +169,7 @@ robolectric_library("junit") {
     "//chrome/browser/language/android:base_module_java",
     "//chrome/browser/language/android:java",
     "//chrome/browser/language/android:junit",
+    "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/tab:java",
