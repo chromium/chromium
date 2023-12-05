@@ -35,6 +35,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="QuickStart.AttestationCertificate.FetchResult"
+    enum="BooleanSuccess" expires_after="2024-12-01">
+  <owner>sinhak@chromium.org</owner>
+  <owner>hansenmichael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the overall success / failure result of fetching a Remote
+    Attestation certificate. Recorded when we receive a response from ChromeOS
+    platform (e.g. when the device itself cannot support attestation) or
+    Google's Privacy CA.
+  </summary>
+</histogram>
+
 <histogram name="QuickStart.FastPairAdvertisementEnded.AdvertisingMethod"
     enum="QuickStartAdvertisingMethod" expires_after="2024-12-01">
   <owner>bhartmire@google.com</owner>

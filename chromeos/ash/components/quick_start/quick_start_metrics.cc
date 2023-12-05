@@ -14,6 +14,8 @@ namespace {
 
 constexpr const char kAttestationCertificateFailureReasonHistogramName[] =
     "QuickStart.AttestationCertificate.FailureReason";
+constexpr const char kAttestationCertificateFetchResultHistogramName[] =
+    "QuickStart.AttestationCertificate.FetchResult";
 constexpr const char kWifiTransferResultHistogramName[] =
     "QuickStart.WifiTransferResult";
 constexpr const char kWifiTransferResultFailureReasonHistogramName[] =
@@ -157,6 +159,11 @@ void QuickStartMetrics::RecordAttestationCertificateRequestEnded(
   if (error_code) {
     base::UmaHistogramEnumeration(
         kAttestationCertificateFailureReasonHistogramName, error_code.value());
+    base::UmaHistogramBoolean(kAttestationCertificateFetchResultHistogramName,
+                              false);
+  } else {
+    base::UmaHistogramBoolean(kAttestationCertificateFetchResultHistogramName,
+                              true);
   }
 }
 
