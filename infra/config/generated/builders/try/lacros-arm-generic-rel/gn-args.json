@@ -7,7 +7,6 @@
     "is_debug": false,
     "ozone_platform_headless": true,
     "target_os": "chromeos",
-    "use_dummy_lastchange": true,
     "use_remoteexec": true
   }
 }

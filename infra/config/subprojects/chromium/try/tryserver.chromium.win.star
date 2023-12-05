@@ -82,7 +82,6 @@ try_.builder(
             "ci/win-archive-rel",
             "no_symbols",
             "dcheck_always_on",
-            "use_dummy_lastchange",
         ],
     ),
 )
@@ -209,7 +208,6 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/Win Builder (dbg)",
-            "use_dummy_lastchange",
         ],
     ),
     main_list_view = "try",

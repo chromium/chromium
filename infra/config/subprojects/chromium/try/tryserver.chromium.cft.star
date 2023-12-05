@@ -52,7 +52,6 @@ try_.builder(
             "release_try_builder",
             "reclient",
             "no_symbols",
-            "use_dummy_lastchange",
             "devtools_do_typecheck",
             "chrome_for_testing",
         ],

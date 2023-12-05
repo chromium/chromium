@@ -186,7 +186,6 @@ swangle_windows_builder(
         configs = [
             "ci/win-swangle-tot-swiftshader-x86",
             "no_symbols",
-            "use_dummy_lastchange",
         ],
     ),
 )
@@ -218,7 +217,6 @@ swangle_windows_builder(
         configs = [
             "ci/win-swangle-x86",
             "no_symbols",
-            "use_dummy_lastchange",
         ],
     ),
 )

@@ -6,7 +6,6 @@
     "is_official_build": true,
     "target_cpu": "arm64",
     "target_os": "fuchsia",
-    "use_dummy_lastchange": true,
     "use_remoteexec": true
   }
 }

@@ -8,7 +8,6 @@
     "symbol_level": 0,
     "target_cpu": "arm64",
     "target_os": "android",
-    "use_dummy_lastchange": true,
     "use_remoteexec": true
   }
 }

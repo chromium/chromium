@@ -8,7 +8,6 @@
     "target_cpu": "arm64",
     "target_os": "fuchsia",
     "test_host_cpu": "arm64",
-    "use_dummy_lastchange": true,
     "use_remoteexec": true
   }
 }

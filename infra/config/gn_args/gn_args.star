@@ -436,7 +436,6 @@ gn_args.config(
     "debug_try_builder",
     configs = [
         "debug_builder",
-        "use_dummy_lastchange",
     ],
 )
 
@@ -1101,7 +1100,6 @@ gn_args.config(
     configs = [
         "dcheck_always_on",
         "minimal_symbols",
-        "use_dummy_lastchange",
     ],
 )
 
@@ -1181,13 +1179,6 @@ gn_args.config(
     "use_cups",
     args = {
         "use_cups": True,
-    },
-)
-
-gn_args.config(
-    "use_dummy_lastchange",
-    args = {
-        "use_dummy_lastchange": True,
     },
 )
 

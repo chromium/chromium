@@ -271,7 +271,6 @@ try_.builder(
             "official_optimize",
             "stable_channel",
             "v8_release_branch",
-            "use_dummy_lastchange",
         ],
     ),
     main_list_view = "try",
@@ -551,7 +550,7 @@ try_.builder(
     ],
     contact_team_email = "cronet-team@google.com",
     gn_args = gn_args.config(
-        configs = ["ci/android-cronet-x86-dbg", "use_dummy_lastchange"],
+        configs = ["ci/android-cronet-x86-dbg"],
     ),
     main_list_view = "try",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
@@ -609,7 +608,7 @@ try_.builder(
     ],
     contact_team_email = "cronet-team@google.com",
     gn_args = gn_args.config(
-        configs = ["ci/android-cronet-x86-dbg", "use_dummy_lastchange"],
+        configs = ["ci/android-cronet-x86-dbg"],
     ),
     main_list_view = "try",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
@@ -996,7 +995,6 @@ try_.builder(
         configs = [
             "ci/Cast Android (dbg)",
             "compile_only",
-            "use_dummy_lastchange",
         ],
     ),
     main_list_view = "try",

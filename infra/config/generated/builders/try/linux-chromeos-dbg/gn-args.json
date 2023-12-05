@@ -7,7 +7,6 @@
     "symbol_level": 1,
     "target_os": "chromeos",
     "use_cups": true,
-    "use_dummy_lastchange": true,
     "use_remoteexec": true
   }
 }

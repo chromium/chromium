@@ -1146,7 +1146,6 @@ ci.builder(
             "dcheck_always_on",
             "static",
             "reclient",
-            "use_dummy_lastchange",
         ],
     ),
 )

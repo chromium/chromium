@@ -107,7 +107,6 @@ try_.builder(
             "fuchsia",
             "arm64",
             "cast_receiver_size_optimized",
-            "use_dummy_lastchange",
         ],
     ),
     properties = {
@@ -163,7 +162,6 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/fuchsia-x64-dbg",
-            "use_dummy_lastchange",
         ],
     ),
     tryjob = try_.job(

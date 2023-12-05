@@ -445,7 +445,6 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/Mac Builder (dbg)",
-            "use_dummy_lastchange",
         ],
     ),
     main_list_view = "try",
@@ -593,7 +592,6 @@ try_.orchestrator_builder(
             "ci/ios-simulator",
             "use_clang_coverage",
             "partial_code_coverage_instrumentation",
-            "use_dummy_lastchange",
         ],
     ),
     main_list_view = "try",
@@ -662,7 +660,6 @@ ios_builder(
             "ci/ios-simulator-full-configs",
             "use_clang_coverage",
             "partial_code_coverage_instrumentation",
-            "use_dummy_lastchange",
         ],
     ),
     main_list_view = "try",
@@ -691,7 +688,6 @@ ios_builder(
     gn_args = gn_args.config(
         configs = [
             "ci/ios-simulator-noncq",
-            "use_dummy_lastchange",
         ],
     ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,

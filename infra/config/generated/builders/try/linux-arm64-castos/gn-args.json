@@ -7,7 +7,6 @@
     "is_debug": false,
     "symbol_level": 1,
     "target_cpu": "arm64",
-    "use_dummy_lastchange": true,
     "use_remoteexec": true
   }
 }

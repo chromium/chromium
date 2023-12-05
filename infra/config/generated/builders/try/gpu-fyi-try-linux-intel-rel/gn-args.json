@@ -7,7 +7,6 @@
     "is_debug": false,
     "proprietary_codecs": true,
     "symbol_level": 1,
-    "use_dummy_lastchange": true,
     "use_remoteexec": true
   }
 }

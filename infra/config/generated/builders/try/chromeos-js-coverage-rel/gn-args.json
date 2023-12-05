@@ -7,7 +7,6 @@
     "optimize_webui": false,
     "proprietary_codecs": true,
     "target_os": "chromeos",
-    "use_dummy_lastchange": true,
     "use_javascript_coverage": true,
     "use_remoteexec": true
   }

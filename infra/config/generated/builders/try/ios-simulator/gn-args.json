@@ -9,7 +9,6 @@
     "target_environment": "simulator",
     "target_os": "ios",
     "use_clang_coverage": true,
-    "use_dummy_lastchange": true,
     "use_remoteexec": true
   }
 }

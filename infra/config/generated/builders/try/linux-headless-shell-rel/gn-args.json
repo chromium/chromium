@@ -8,7 +8,6 @@
     "media_use_ffmpeg": false,
     "media_use_libvpx": false,
     "proprietary_codecs": false,
-    "use_dummy_lastchange": true,
     "use_remoteexec": true
   }
 }

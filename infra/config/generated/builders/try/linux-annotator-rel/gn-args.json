@@ -4,7 +4,6 @@
     "is_component_build": false,
     "is_debug": false,
     "symbol_level": 0,
-    "use_dummy_lastchange": true,
     "use_remoteexec": true
   }
 }

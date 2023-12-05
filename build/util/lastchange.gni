@@ -6,7 +6,7 @@
 # reproducible binaries.
 
 declare_args() {
-  use_dummy_lastchange = false
+  use_dummy_lastchange = !is_official_build
 }
 
 if (use_dummy_lastchange) {

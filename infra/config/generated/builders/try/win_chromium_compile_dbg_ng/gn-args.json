@@ -6,7 +6,6 @@
     "proprietary_codecs": true,
     "symbol_level": 0,
     "target_cpu": "x86",
-    "use_dummy_lastchange": true,
     "use_remoteexec": true
   }
 }

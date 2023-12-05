@@ -14,7 +14,6 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
-      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -31,7 +30,6 @@
       "pdf_enable_xfa": true,
       "proprietary_codecs": true,
       "symbol_level": 0,
-      "use_dummy_lastchange": true,
       "use_libfuzzer": true,
       "use_remoteexec": true
     }
@@ -49,7 +47,6 @@
       "proprietary_codecs": true,
       "symbol_level": 0,
       "use_clang_coverage": true,
-      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -59,7 +56,6 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
-      "use_dummy_lastchange": true,
       "use_goma": true
     }
   },
@@ -71,7 +67,6 @@
       "proprietary_codecs": true,
       "symbol_level": 0,
       "target_cpu": "x86",
-      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -84,7 +79,6 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },

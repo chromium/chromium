@@ -21,7 +21,6 @@
     "target_cpu": "arm",
     "target_os": "android",
     "use_crash_key_stubs": true,
-    "use_dummy_lastchange": true,
     "use_hashed_jni_names": true,
     "use_partition_alloc": false,
     "use_platform_icu_alternatives": true,

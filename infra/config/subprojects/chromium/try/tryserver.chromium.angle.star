@@ -58,7 +58,6 @@ try_.builder(
         configs = [
             "ci/fuchsia-angle-builder",
             "no_symbols",
-            "use_dummy_lastchange",
         ],
     ),
 )

@@ -43,7 +43,6 @@ try_.builder(
         configs = [
             "ci/android-official",
             "dcheck_always_on",
-            "use_dummy_lastchange",
         ],
     ),
 )
@@ -60,7 +59,6 @@ try_.builder(
             "ci/fuchsia-official",
             "minimal_symbols",
             "dcheck_always_on",
-            "use_dummy_lastchange",
         ],
     ),
 )
@@ -95,7 +93,6 @@ try_.builder(
             "ci/mac-official",
             "minimal_symbols",
             "dcheck_always_on",
-            "use_dummy_lastchange",
         ],
     ),
 )
@@ -112,7 +109,6 @@ try_.builder(
         configs = [
             "ci/win-official",
             "dcheck_always_on",
-            "use_dummy_lastchange",
         ],
     ),
 )
@@ -130,7 +126,6 @@ try_.builder(
             "ci/win32-official",
             "minimal_symbols",
             "dcheck_always_on",
-            "use_dummy_lastchange",
         ],
     ),
 )

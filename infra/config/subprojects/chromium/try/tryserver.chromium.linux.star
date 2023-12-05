@@ -83,7 +83,6 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/Cast Linux ARM64",
-            "use_dummy_lastchange",
         ],
     ),
     main_list_view = "try",
@@ -138,7 +137,6 @@ try_.builder(
             "reclient",
             "no_symbols",
             "dcheck_always_on",
-            "use_dummy_lastchange",
         ],
     ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
@@ -212,7 +210,6 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/linux-headless-shell-rel",
-            "use_dummy_lastchange",
         ],
     ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
@@ -521,7 +518,6 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/Cast Linux Debug",
-            "use_dummy_lastchange",
         ],
     ),
     main_list_view = "try",
@@ -615,7 +611,6 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/Linux CFI",
-            "use_dummy_lastchange",
         ],
     ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
@@ -1007,7 +1002,6 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/linux-js-code-coverage",
-            "use_dummy_lastchange",
         ],
     ),
     main_list_view = "try",
@@ -1030,7 +1024,6 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/chromeos-js-code-coverage",
-            "use_dummy_lastchange",
         ],
     ),
     main_list_view = "try",

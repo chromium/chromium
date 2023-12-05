@@ -55,7 +55,6 @@
       "target_cpu": "arm64",
       "target_os": "android",
       "use_crash_key_stubs": true,
-      "use_dummy_lastchange": true,
       "use_goma": true,
       "use_hashed_jni_names": true,
       "use_partition_alloc": false,
@@ -84,7 +83,6 @@
       "strip_debug_info": true,
       "symbol_level": 0,
       "target_os": "android",
-      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -103,7 +101,6 @@
       "system_webview_shell_package_name": "org.chromium.my_webview_shell",
       "target_cpu": "x86",
       "target_os": "android",
-      "use_dummy_lastchange": true,
       "use_goma": true
     }
   },
@@ -119,7 +116,6 @@
       "symbol_level": 0,
       "target_cpu": "x64",
       "target_os": "android",
-      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -133,7 +129,6 @@
       "strip_debug_info": true,
       "symbol_level": 1,
       "target_os": "android",
-      "use_dummy_lastchange": true,
       "use_goma": true,
       "use_jacoco_coverage": true
     }
@@ -148,7 +143,6 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -162,7 +156,6 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_os": "android",
-      "use_dummy_lastchange": true,
       "use_remoteexec": true,
       "use_static_angle": true
     }
@@ -178,7 +171,6 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_dummy_lastchange": true,
       "use_remoteexec": true,
       "use_static_angle": true
     }
@@ -194,7 +186,6 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_dummy_lastchange": true,
       "use_remoteexec": true,
       "use_static_angle": true
     }

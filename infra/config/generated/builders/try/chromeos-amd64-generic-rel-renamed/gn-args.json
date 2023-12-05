@@ -5,7 +5,6 @@
     "dcheck_always_on": true,
     "is_chromeos_device": true,
     "ozone_platform_headless": true,
-    "use_dummy_lastchange": true,
     "use_real_dbus_clients": false,
     "use_remoteexec": true
   }

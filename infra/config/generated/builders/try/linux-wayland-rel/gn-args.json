@@ -13,7 +13,6 @@
     "symbol_level": 0,
     "use_bundled_weston": true,
     "use_clang_coverage": true,
-    "use_dummy_lastchange": true,
     "use_remoteexec": true
   }
 }

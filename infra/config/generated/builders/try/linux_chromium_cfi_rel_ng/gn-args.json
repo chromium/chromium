@@ -7,7 +7,6 @@
     "use_cfi_cast": true,
     "use_cfi_diag": true,
     "use_cfi_icall": true,
-    "use_dummy_lastchange": true,
     "use_remoteexec": true,
     "use_thin_lto": true
   }

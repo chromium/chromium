@@ -47,7 +47,6 @@ updater_linux_builder(
     gn_args = gn_args.config(
         configs = [
             "ci/linux-updater-builder-dbg",
-            "use_dummy_lastchange",
         ],
     ),
     main_list_view = "try",
@@ -87,7 +86,6 @@ updater_mac_builder(
     gn_args = gn_args.config(
         configs = [
             "ci/mac-updater-builder-dbg",
-            "use_dummy_lastchange",
         ],
     ),
     main_list_view = "try",
@@ -127,7 +125,6 @@ updater_windows_builder(
     gn_args = gn_args.config(
         configs = [
             "ci/win-updater-builder-dbg",
-            "use_dummy_lastchange",
         ],
     ),
     main_list_view = "try",

@@ -9,7 +9,6 @@
     "proprietary_codecs": true,
     "symbol_level": 1,
     "use_bundled_weston": true,
-    "use_dummy_lastchange": true,
     "use_ozone": true,
     "use_remoteexec": true
   }
