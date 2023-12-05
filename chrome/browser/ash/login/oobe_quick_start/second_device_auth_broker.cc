@@ -289,6 +289,9 @@ void RunAttestationCertificateCallback(
           SecondDeviceAuthBroker::AttestationErrorType::kTransientError));
       return;
     case attestation::ATTESTATION_SERVER_BAD_REQUEST_FAILURE:
+      QuickStartMetrics::RecordAttestationCertificateRequestEnded(
+          QuickStartMetrics::AttestationCertificateRequestErrorCode::
+              kBadRequest);
       std::move(callback).Run(base::unexpected(
           SecondDeviceAuthBroker::AttestationErrorType::kPermanentError));
       return;

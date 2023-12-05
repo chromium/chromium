@@ -275,6 +275,28 @@ class SecondDeviceAuthBrokerTest : public ::testing::Test {
         net::HTTP_BAD_REQUEST);
   }
 
+  // Set an `EXPECT`ation that expects a remote attestation request, and
+  // responds with a bad request error.
+  void SetBadAttestationRequestExpectation() {
+    EXPECT_CALL(
+        mock_attestation_flow(),
+        GetCertificate(
+            /*certificate_profile=*/attestation::AttestationCertificateProfile::
+                PROFILE_DEVICE_SETUP_CERTIFICATE,
+            /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
+            /*force_new_key=*/_, /*key_crypto_type=*/_,
+            /*key_name=*/attestation::kDeviceSetupKey,
+            /*profile_specific_data=*/_, /*callback=*/_))
+        .WillOnce(WithArg<7>(Invoke(
+            [](attestation::AttestationFlow::CertificateCallback callback)
+                -> void {
+              std::move(callback).Run(
+                  /*status=*/ash::attestation::AttestationStatus::
+                      ATTESTATION_SERVER_BAD_REQUEST_FAILURE,
+                  /*pem_certificate_chain=*/std::string());
+            })));
+  }
+
   void MakeAttestationUnavailable() {
     attestation_features_.Get()->set_is_available(false);
   }
@@ -445,23 +467,7 @@ TEST_F(
 
 TEST_F(SecondDeviceAuthBrokerTest,
        FetchAttestationCertificateReturnsAPermanentErrorForBadRequests) {
-  EXPECT_CALL(
-      mock_attestation_flow(),
-      GetCertificate(
-          /*certificate_profile=*/attestation::AttestationCertificateProfile::
-              PROFILE_DEVICE_SETUP_CERTIFICATE,
-          /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
-          /*force_new_key=*/_, /*key_crypto_type=*/_,
-          /*key_name=*/attestation::kDeviceSetupKey,
-          /*profile_specific_data=*/_, /*callback=*/_))
-      .WillOnce(WithArg<7>(
-          Invoke([](attestation::AttestationFlow::CertificateCallback callback)
-                     -> void {
-            std::move(callback).Run(
-                /*status=*/ash::attestation::AttestationStatus::
-                    ATTESTATION_SERVER_BAD_REQUEST_FAILURE,
-                /*pem_certificate_chain=*/std::string());
-          })));
+  SetBadAttestationRequestExpectation();
 
   EXPECT_THAT(
       FetchAttestationCertificate(fido_credential_id()),
@@ -590,6 +596,18 @@ TEST_F(SecondDeviceAuthBrokerTest,
       "QuickStart.AttestationCertificate.FailureReason",
       QuickStartMetrics::AttestationCertificateRequestErrorCode::
           kAttestationNotSupportedOnDevice,
+      1);
+}
+
+TEST_F(SecondDeviceAuthBrokerTest,
+       FetchAttestationCertificateLogsMetricsForBadRequests) {
+  SetBadAttestationRequestExpectation();
+
+  base::HistogramTester histogram_tester;
+  auto certificate = FetchAttestationCertificate(fido_credential_id());
+  histogram_tester.ExpectBucketCount(
+      "QuickStart.AttestationCertificate.FailureReason",
+      QuickStartMetrics::AttestationCertificateRequestErrorCode::kBadRequest,
       1);
 }
 
