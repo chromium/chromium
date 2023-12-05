@@ -259,18 +259,19 @@ void RemoveKey(int profile, const AutocompleteKey& key) {
 }
 
 void RemoveKeys(int profile) {
-  std::set<AutocompleteEntry> keys = GetAllKeys(profile);
-  for (const AutocompleteEntry& entry : keys) {
-    RemoveKeyDontBlockForSync(profile, entry.key());
+  for (const AutocompleteKey& key : GetAllKeys(profile)) {
+    RemoveKeyDontBlockForSync(profile, key);
   }
   WaitForCurrentTasksToComplete(GetWebDataService(profile)->GetDBTaskRunner());
 }
 
-std::set<AutocompleteEntry> GetAllKeys(int profile) {
+std::set<AutocompleteKey> GetAllKeys(int profile) {
   scoped_refptr<AutofillWebDataService> wds = GetWebDataService(profile);
-  std::vector<AutocompleteEntry> all_entries =
-      GetAllAutocompleteEntries(wds.get());
-  return std::set<AutocompleteEntry>(all_entries.begin(), all_entries.end());
+  std::set<AutocompleteKey> result;
+  for (const AutocompleteEntry& entry : GetAllAutocompleteEntries(wds.get())) {
+    result.insert(entry.key());
+  }
+  return result;
 }
 
 bool KeysMatch(int profile_a, int profile_b) {
