@@ -5,140 +5,66 @@
 // This is a "No Compile Test" suite.
 // http://dev.chromium.org/developers/testing/no-compile-tests
 
+#include <utility>
+
 #include "base/functional/callback.h"
 
 namespace base {
 
-class Parent {
-};
-
-class Child : Parent {
-};
-
-#if defined(NCTEST_EQUALS_REQUIRES_SAMETYPE)  // [r"invalid operands to binary expression \('RepeatingCallback<void \(\)>' and 'RepeatingCallback<int \(\)>'\)"]
-
-// Attempting to call comparison function on two callbacks of different type.
-//
-// This should be a compile time failure because each callback type should be
-// considered distinct.
-void WontCompile() {
+void ComparingDifferentCallbackTypes() {
+  // Comparing callbacks requires that they be the same type.
   RepeatingCallback<void()> c1;
   RepeatingCallback<int()> c2;
-  c1 == c2;
+  c1 == c2;  // expected-error {{invalid operands to binary expression ('RepeatingCallback<void ()>' and 'RepeatingCallback<int ()>')}}
 }
 
-#elif defined(NCTEST_CONSTRUCTION_FROM_SUBTYPE)  // [r"no viable conversion from 'RepeatingCallback<Parent \(\)>' to 'RepeatingCallback<Child \(\)>'"]
-
-// Construction of RepeatingCallback<A> from RepeatingCallback<B> if A is
-// supertype of B.
-//
-// While this is technically safe, most people aren't used to it when coding
-// C++ so if this is happening, it is almost certainly an error.
-void WontCompile() {
-  RepeatingCallback<Parent()> cb_a;
-  RepeatingCallback<Child()> cb_b = cb_a;
+void ConvertingSuperclassReturn() {
+  // A callback that returns a `Derived` should not be implicitly converted to a
+  // callback that returns a `Base`. This is technically safe, but it surprises
+  // users and generally means the author is doing something other than what
+  // they intended.
+  struct Base {};
+  struct Derived : public Base {};
+  RepeatingCallback<Derived()> cb_derived;
+  RepeatingCallback<Base()> cb_base = cb_derived;  // expected-error {{no viable conversion from 'RepeatingCallback<Derived ()>' to 'RepeatingCallback<Base ()>'}}
+  cb_base = cb_derived;                            // expected-error {{no viable overloaded '='}}
 }
 
-#elif defined(NCTEST_ASSIGNMENT_FROM_SUBTYPE)  // [r"fatal error: no viable overloaded '='"]
+void ChainingWithTypeMismatch() {
+  // Calling `.Then()` requires that the return type of the first callback be
+  // convertible to the arg type of the second callback.
 
-// Assignment of RepeatingCallback<A> from RepeatingCallback<B> if A is
-// supertype of B. See explanation for NCTEST_CONSTRUCTION_FROM_SUBTYPE.
-void WontCompile() {
-  RepeatingCallback<Parent()> cb_a;
-  RepeatingCallback<Child()> cb_b;
-  cb_a = cb_b;
+  // non-void -> incompatible non-void
+  OnceCallback<int*()> returns_ptr_int_once;
+  OnceCallback<void(float*)> takes_ptr_float_once;
+  RepeatingCallback<int*()> returns_ptr_int_repeating;
+  // Using distinct return types causes distinct `RepeatingCallback` template
+  // instantiations, so we get assertion failures below where we expect.
+  RepeatingCallback<void(float*)> takes_ptr_float_repeating1;
+  RepeatingCallback<int(float*)> takes_ptr_float_repeating2;
+  std::move(returns_ptr_int_once).Then(std::move(takes_ptr_float_once));             // expected-error@*:* {{|then| callback's parameter must be constructible from return type of |this|.}}
+  returns_ptr_int_repeating.Then(takes_ptr_float_repeating1);                        // expected-error@*:* {{|then| callback's parameter must be constructible from return type of |this|.}}
+  std::move(returns_ptr_int_repeating).Then(std::move(takes_ptr_float_repeating2));  // expected-error@*:* {{|then| callback's parameter must be constructible from return type of |this|.}}
+
+  // void -> non-void
+  OnceCallback<void()> returns_void_once;
+  OnceCallback<void(float)> takes_float_once;
+  RepeatingCallback<void()> returns_void_repeating;
+  RepeatingCallback<void(float)> takes_float_repeating1;
+  RepeatingCallback<int(float)> takes_float_repeating2;
+  std::move(returns_void_once).Then(std::move(takes_float_once));             // expected-error@*:* {{|then| callback cannot accept parameters if |this| has a void return type.}}
+  returns_void_repeating.Then(takes_float_repeating1);                        // expected-error@*:* {{|then| callback cannot accept parameters if |this| has a void return type.}}
+  std::move(returns_void_repeating).Then(std::move(takes_float_repeating2));  // expected-error@*:* {{|then| callback cannot accept parameters if |this| has a void return type.}}
+
+  // non-void -> void
+  OnceCallback<int()> returns_int_once;
+  OnceCallback<void()> takes_void_once;
+  RepeatingCallback<int()> returns_int_repeating;
+  RepeatingCallback<void()> takes_void_repeating1;
+  RepeatingCallback<int()> takes_void_repeating2;
+  std::move(returns_int_once).Then(std::move(takes_void_once));             // expected-error@*:* {{|then| callback must accept exactly one parameter if |this| has a non-void return type.}}
+  returns_int_repeating.Then(takes_void_repeating1);                        // expected-error@*:* {{|then| callback must accept exactly one parameter if |this| has a non-void return type.}}
+  std::move(returns_int_repeating).Then(std::move(takes_void_repeating2));  // expected-error@*:* {{|then| callback must accept exactly one parameter if |this| has a non-void return type.}}
 }
-
-#elif defined(NCTEST_ONCE_THEN_MISMATCH)  // [r"\|then\| callback's parameter must be constructible from return type of \|this\|\."]
-
-// Calling Then() with a callback that can't receive the original
-// callback's return type. Here we would pass `int*` to `float*`.
-void WontCompile() {
-  OnceCallback<int*()> original;
-  OnceCallback<void(float*)> then;
-  std::move(original).Then(std::move(then));
-}
-
-#elif defined(NCTEST_ONCE_THEN_MISMATCH_VOID_RESULT)  // [r"\|then\| callback cannot accept parameters if \|this\| has a void return type\."]
-
-// Calling Then() with a callback that can't receive the original
-// callback's return type. Here we would pass `void` to `float`.
-void WontCompile() {
-  OnceCallback<void()> original;
-  OnceCallback<void(float)> then;
-  std::move(original).Then(std::move(then));
-}
-
-#elif defined(NCTEST_ONCE_THEN_MISMATCH_VOID_PARAM)  // [r"\|then\| callback must accept exactly one parameter if \|this\| has a non-void return type\."]
-
-// Calling Then() with a callback that can't receive the original
-// callback's return type. Here we would pass `int` to `void`.
-void WontCompile() {
-  OnceCallback<int()> original;
-  OnceCallback<void()> then;
-  std::move(original).Then(std::move(then));
-}
-
-#elif defined(NCTEST_REPEATINGRVALUE_THEN_MISMATCH)  // [r"\|then\| callback's parameter must be constructible from return type of \|this\|\."]
-
-// Calling Then() with a callback that can't receive the original
-// callback's return type.  Here we would pass `int*` to `float*`.
-void WontCompile() {
-  RepeatingCallback<int*()> original;
-  RepeatingCallback<void(float*)> then;
-  std::move(original).Then(std::move(then));
-}
-
-#elif defined(NCTEST_REPEATINGRVALUE_THEN_MISMATCH_VOID_RESULT)  // [r"\|then\| callback cannot accept parameters if \|this\| has a void return type\."]
-
-// Calling Then() with a callback that can't receive the original
-// callback's return type. Here we would pass `void` to `float`.
-void WontCompile() {
-  RepeatingCallback<void()> original;
-  RepeatingCallback<void(float)> then;
-  std::move(original).Then(std::move(then));
-}
-
-#elif defined(NCTEST_REPEATINGRVALUE_THEN_MISMATCH_VOID_PARAM)  // [r"\|then\| callback must accept exactly one parameter if \|this\| has a non-void return type\."]
-
-// Calling Then() with a callback that can't receive the original
-// callback's return type. Here we would pass `int` to `void`.
-void WontCompile() {
-  RepeatingCallback<int()> original;
-  RepeatingCallback<void()> then;
-  std::move(original).Then(std::move(then));
-}
-
-#elif defined(NCTEST_REPEATINGLVALUE_THEN_MISMATCH)  // [r"\|then\| callback's parameter must be constructible from return type of \|this\|\."]
-
-// Calling Then() with a callback that can't receive the original
-// callback's return type.  Here we would pass `int*` to `float*`.
-void WontCompile() {
-  RepeatingCallback<int*()> original;
-  RepeatingCallback<void(float*)> then;
-  original.Then(then);
-}
-
-#elif defined(NCTEST_REPEATINGLVALUE_THEN_MISMATCH_VOID_RESULT)  // [r"\|then\| callback cannot accept parameters if \|this\| has a void return type\."]
-
-// Calling Then() with a callback that can't receive the original
-// callback's return type. Here we would pass `void` to `float`.
-void WontCompile() {
-  RepeatingCallback<void()> original;
-  RepeatingCallback<void(float)> then;
-  original.Then(then);
-}
-
-#elif defined(NCTEST_REPEATINGLVALUE_THEN_MISMATCH_VOID_PARAM)  // [r"\|then\| callback must accept exactly one parameter if \|this\| has a non-void return type\."]
-
-// Calling Then() with a callback that can't receive the original
-// callback's return type. Here we would pass `int` to `void`.
-void WontCompile() {
-  RepeatingCallback<int()> original;
-  RepeatingCallback<void()> then;
-  original.Then(then);
-}
-
-#endif
 
 }  // namespace base

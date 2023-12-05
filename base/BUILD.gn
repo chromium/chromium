@@ -4093,7 +4093,7 @@ test("base_unittests") {
   }
 
   if (enable_nocompile_tests_new) {
-    deps += [ ":base_nocompile_tests_new" ]
+    deps += [ ":base_nocompile_tests" ]
   }
 }
 
@@ -4122,7 +4122,7 @@ action("build_date") {
 }
 
 if (enable_nocompile_tests_new) {
-  nocompile_source_set("base_nocompile_tests_new") {
+  nocompile_source_set("base_nocompile_tests") {
     sources = [
       "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/thread_annotations_pa_nocompile.nc",
       "allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr_nocompile.nc",
@@ -4134,6 +4134,10 @@ if (enable_nocompile_tests_new) {
       "containers/enum_set_nocompile.nc",
       "containers/span_nocompile.nc",
       "debug/crash_logging_nocompile.nc",
+      "functional/bind_nocompile.nc",
+      "functional/callback_nocompile.nc",
+      "functional/function_ref_nocompile.nc",
+      "functional/overloaded_nocompile.nc",
       "memory/ref_counted_nocompile.nc",
       "memory/weak_ptr_nocompile.nc",
       "metrics/field_trial_params_nocompile.nc",
@@ -4145,6 +4149,7 @@ if (enable_nocompile_tests_new) {
       "strings/stringprintf_nocompile.nc",
       "task/bind_post_task_nocompile.nc",
       "task/task_traits_nocompile.nc",
+      "test/bind_test_nocompile.nc",
       "thread_annotations_nocompile.nc",
       "traits_bag_nocompile.nc",
       "types/pass_key_nocompile.nc",
@@ -4152,32 +4157,6 @@ if (enable_nocompile_tests_new) {
       "values_nocompile.nc",
     ]
     deps = [ ":base" ]
-  }
-}
-
-if (enable_nocompile_tests) {
-  nocompile_test("base_nocompile_tests") {
-    sources = [
-      "functional/bind_nocompile.nc",
-      "functional/callback_nocompile.nc",
-      "functional/function_ref_nocompile.nc",
-      "functional/overloaded_nocompile.nc",
-    ]
-
-    deps = [
-      ":base",
-      "//base/test:run_all_unittests",
-      "//testing/gtest",
-    ]
-
-    # Since the nocompile test is not able to inspect the contents of
-    # include_dirs, we need to specify the Abseil and PartitionAlloc include dir
-    # manually.
-    include_dirs = [
-      "${root_gen_dir}/base/allocator/partition_allocator/src",
-      "//base/allocator/partition_allocator/src",
-      "//third_party/abseil-cpp",
-    ]
   }
 }
 
