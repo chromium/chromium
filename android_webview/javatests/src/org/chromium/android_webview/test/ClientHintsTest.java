@@ -29,7 +29,6 @@ import org.chromium.android_webview.test.util.CookieUtils;
 import org.chromium.android_webview.test.util.JSUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.common.ContentSwitches;
@@ -394,7 +393,7 @@ public class ClientHintsTest extends AwParameterizedTest {
         url =
                 server.getURL(
                         "/critical-client-hints-header?accept-ch=sec-ch-device-memory,device-memory&"
-                                + "critical-ch=sec-ch-device-memory");
+                            + "critical-ch=sec-ch-device-memory");
         loadUrlSync(contents, contentsClient.getOnPageFinishedHelper(), url);
         validateHeadersFromJSON(contents, contentsClient, "sec-ch-device-memory", true);
         validateHeadersFromJSON(contents, contentsClient, "device-memory", false);
@@ -704,7 +703,6 @@ public class ClientHintsTest extends AwParameterizedTest {
         "enable-features=UserAgentClientHint",
         ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
     })
-    @DisabledTest(message = "crbug.com/1508304")
     public void testOverrideUserAgentMetadataClearOverrideWithCustomUA() throws Throwable {
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
         final AwContents contents =
@@ -1399,7 +1397,9 @@ public class ClientHintsTest extends AwParameterizedTest {
         String[] hintPairs = text.split(",\"");
         int userAgentClientHintsCount = 0;
         for (String hintPair : hintPairs) {
-            String[] hints = hintPair.split(":");
+            // Make sure we only split into two parts at the first occurrence for `:` in order to
+            // handle correctly for cases when the brand value can contains special char `:`.
+            String[] hints = hintPair.split(":", 2);
             if (hints.length < 2) {
                 continue;
             }
