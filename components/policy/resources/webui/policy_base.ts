@@ -50,6 +50,14 @@ export class Page {
    * Main initialization function. Called by the browser on page load.
    */
   initialize() {
+    // The default path is loaded when one path is not supported, so simple
+    // redirect to the home path
+    if (!loadTimeData.getString('acceptedPaths')
+             .split('|')
+             .includes(window.location.pathname)) {
+      window.history.replaceState({}, '', '/');
+    }
+
     FocusOutlineManager.forDocument(document);
 
     this.mainSection = getRequiredElement('main-section');

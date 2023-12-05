@@ -170,8 +170,17 @@ IN_PROC_BROWSER_TEST_P(PolicyTestPageVisibilityTest,
   policy::ScopedManagementServiceOverrideForTesting browser_management(
       policy::ManagementServiceFactory::GetForProfile(GetProfile()),
       GetProfileManagement());
-  ASSERT_TRUE(content::NavigateToURL(web_contents(),
-                                     GURL(chrome::kChromeUIPolicyTestURL)));
+  const bool show_test_page = GetExpectedValue();
+  EXPECT_EQ(show_test_page,
+            content::NavigateToURL(web_contents(),
+                                   GURL(chrome::kChromeUIPolicyTestURL)));
+  if (show_test_page) {
+    EXPECT_EQ(web_contents()->GetVisibleURL(),
+              GURL(chrome::kChromeUIPolicyTestURL));
+  } else {
+    EXPECT_EQ(web_contents()->GetVisibleURL(),
+              GURL(chrome::kChromeUIPolicyURL));
+  }
   VerifyTestPageVisibility(GetExpectedValue());
 }
 

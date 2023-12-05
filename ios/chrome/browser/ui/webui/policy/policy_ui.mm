@@ -136,10 +136,12 @@ web::WebUIIOSDataSource* CreatePolicyUIHtmlSource(
       {"viewLogs", IDS_VIEW_POLICY_LOGS},
   };
   source->AddLocalizedStrings(kStrings);
+
+  const bool allow_policy_test_page = policy::utils::IsPolicyTestingEnabled(
+      chrome_browser_state->GetPrefs(), GetChannel());
   // Test page should only load if testing is enabled and the profile is not
   // managed by cloud.
-  if (policy::utils::IsPolicyTestingEnabled(chrome_browser_state->GetPrefs(),
-                                            GetChannel())) {
+  if (allow_policy_test_page) {
     // Localized strings for chrome://policy/test.
     static constexpr webui::LocalizedString kPolicyTestStrings[] = {
         {"testTitle", IDS_POLICY_TEST_TITLE},
@@ -202,6 +204,8 @@ web::WebUIIOSDataSource* CreatePolicyUIHtmlSource(
     source->AddLocalizedStrings(kPolicyTestTypes);
   }
 
+  source->AddString("acceptedPaths",
+                    allow_policy_test_page ? "/|/test|/logs" : "/|/logs");
   // Localized strings for chrome://policy/logs.
   static constexpr webui::LocalizedString kPolicyLogsStrings[] = {
       {"browserName", IDS_IOS_PRODUCT_NAME},
