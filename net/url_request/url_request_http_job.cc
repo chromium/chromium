@@ -1739,15 +1739,6 @@ void URLRequestHttpJob::RecordCompletionHistograms(CompletionCause reason) {
                                   prefilter_bytes_read(), 1, 50000000, 50);
     } else {
       UMA_HISTOGRAM_TIMES("Net.HttpJob.TotalTimeNotCached", total_time);
-      if (response_info_->was_mdl_match) {
-        UMA_HISTOGRAM_CUSTOM_COUNTS(
-            "Net.HttpJob.IpProtection.AllowListMatch.BytesSent",
-            GetTotalSentBytes(), 1, 50000000, 50);
-
-        UMA_HISTOGRAM_CUSTOM_COUNTS(
-            "Net.HttpJob.IpProtection.AllowListMatch.PrefilterBytesRead.Net",
-            prefilter_bytes_read(), 1, 50000000, 50);
-      }
       if (response_info_->was_ip_protected) {
         UMA_HISTOGRAM_TIMES("Net.HttpJob.IpProtection.TotalTimeNotCached",
                             total_time);

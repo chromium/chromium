@@ -126,12 +126,6 @@ class NET_EXPORT HttpResponseInfo {
   // `InitFromPickle()`.
   bool was_ip_protected = false;
 
-  // Whether this request was eligible for IP Protection based on the request
-  // being a match to the masked domain list, if available.
-  // This field is not persisted by `Persist()` and not restored by
-  // `InitFromPickle()`.
-  bool was_mdl_match = false;
-
   // Whether the request use http proxy or server authentication.
   bool did_use_http_auth = false;
 
