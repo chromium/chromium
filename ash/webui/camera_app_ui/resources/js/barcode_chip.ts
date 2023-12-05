@@ -178,12 +178,11 @@ function showUrl(url: string) {
   };
   chip.focus();
 
-  const hostname = new URL(url).hostname;
+  const copyButton =
+      createCopyButton(container, url, I18nString.SNACKBAR_LINK_COPIED);
   const label =
-      loadTimeData.getI18nMessage(I18nString.BARCODE_LINK_DETECTED, hostname);
-  chip.setAttribute('aria-label', label);
-
-  createCopyButton(container, url, I18nString.SNACKBAR_LINK_COPIED);
+      loadTimeData.getI18nMessage(I18nString.BARCODE_COPY_LINK_BUTTON, url);
+  copyButton.setAttribute('aria-label', label);
 }
 
 /**
@@ -208,6 +207,9 @@ function showText(text: string) {
 
   const copyButton =
       createCopyButton(container, text, I18nString.SNACKBAR_TEXT_COPIED);
+  const label =
+      loadTimeData.getI18nMessage(I18nString.BARCODE_COPY_TEXT_BUTTON, text);
+  copyButton.setAttribute('aria-label', label);
 
   // TODO(b/172879638): There is a race in ChromeVox which will speak the
   // focused element twice.
@@ -227,7 +229,7 @@ function showWifi(wifiConfig: WifiConfig) {
 
   const textEl = dom.get('#barcode-chip-wifi-content', HTMLSpanElement);
   const label = loadTimeData.getI18nMessage(
-      I18nString.BARCODE_WIFI_DETECTED, wifiConfig.ssid);
+      I18nString.BARCODE_WIFI_CHIPTEXT, wifiConfig.ssid);
   textEl.textContent = label;
 
   const chip = dom.get('#barcode-chip-wifi', HTMLDivElement);
