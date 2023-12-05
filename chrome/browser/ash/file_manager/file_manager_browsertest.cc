@@ -367,21 +367,26 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("fileDisplayUnmountLastPartition").NewDirectoryTree(),
         // Section end - browser tests for new directory tree
         TestCase("fileDisplayDownloads")
-            .FeatureIds({"screenplay-ade01078-3b79-41d2-953e-e22a544a28b3"}),
+            .FeatureIds({"screenplay-ade01078-3b79-41d2-953e-e22a544a28b3",
+                         "screenplay-4c745151-7307-4658-aa58-1bb97592b4a6"}),
         TestCase("fileDisplayDownloads")
             .InGuestMode()
-            .FeatureIds({"screenplay-ade01078-3b79-41d2-953e-e22a544a28b3"}),
+            .FeatureIds({"screenplay-ade01078-3b79-41d2-953e-e22a544a28b3",
+                         "screenplay-4c745151-7307-4658-aa58-1bb97592b4a6"}),
         TestCase("fileDisplayDownloads")
             .TabletMode()
-            .FeatureIds({"screenplay-ade01078-3b79-41d2-953e-e22a544a28b3"}),
+            .FeatureIds({"screenplay-ade01078-3b79-41d2-953e-e22a544a28b3",
+                         "screenplay-4c745151-7307-4658-aa58-1bb97592b4a6"}),
         TestCase("fileDisplayLaunchOnDrive").DontObserveFileTasks(),
         TestCase("fileDisplayLaunchOnLocalFolder").DontObserveFileTasks(),
         TestCase("fileDisplayLaunchOnLocalFile").DontObserveFileTasks(),
         TestCase("fileDisplayDrive")
             .TabletMode()
-            .FeatureIds({"screenplay-ade01078-3b79-41d2-953e-e22a544a28b3"}),
+            .FeatureIds({"screenplay-ade01078-3b79-41d2-953e-e22a544a28b3",
+                         "screenplay-4c745151-7307-4658-aa58-1bb97592b4a6"}),
         TestCase("fileDisplayDrive")
-            .FeatureIds({"screenplay-ade01078-3b79-41d2-953e-e22a544a28b3"}),
+            .FeatureIds({"screenplay-ade01078-3b79-41d2-953e-e22a544a28b3",
+                         "screenplay-4c745151-7307-4658-aa58-1bb97592b4a6"}),
         TestCase("fileDisplayDriveOffline").Offline(),
         TestCase("fileDisplayDriveOnline"),
         TestCase("fileDisplayDriveOnlineNewWindow").DontObserveFileTasks(),
@@ -1822,12 +1827,15 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("fileListAriaAttributes")
             .FeatureIds({"screenplay-af443ca0-6d9f-4cb3-af8f-0939c37833db"}),
         TestCase("fileListFocusFirstItem"),
-        TestCase("fileListSelectLastFocusedItem"),
+        TestCase("fileListSelectLastFocusedItem")
+            .FeatureIds({"screenplay-2bf9ed18-db1b-4587-9aae-195121f2acae"}),
         TestCase("fileListSortWithKeyboard"),
         TestCase("fileListKeyboardSelectionA11y")
-            .FeatureIds({"screenplay-af443ca0-6d9f-4cb3-af8f-0939c37833db"}),
+            .FeatureIds({"screenplay-af443ca0-6d9f-4cb3-af8f-0939c37833db",
+                         "screenplay-2bf9ed18-db1b-4587-9aae-195121f2acae"}),
         TestCase("fileListMouseSelectionA11y")
-            .FeatureIds({"screenplay-af443ca0-6d9f-4cb3-af8f-0939c37833db"}),
+            .FeatureIds({"screenplay-af443ca0-6d9f-4cb3-af8f-0939c37833db",
+                         "screenplay-2bf9ed18-db1b-4587-9aae-195121f2acae"}),
         TestCase("fileListDeleteMultipleFiles"),
         TestCase("fileListRenameSelectedItem"),
         TestCase("fileListRenameFromSelectAll")));
