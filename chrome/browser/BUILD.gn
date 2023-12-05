@@ -2239,6 +2239,7 @@ static_library("browser") {
     "//components/query_tiles",
     "//components/reading_list/core",
     "//components/reading_list/features:flags",
+    "//components/record_replay/services/auth_token:lib",
     "//components/reduce_accept_language/browser:browser",
     "//components/renderer_context_menu",
     "//components/reporting/client:report_queue",
