@@ -275,9 +275,10 @@ std::function y = std::bind(foo, args);
 
 **Notes:**
 *** promo
-Use `base::{Once,Repeating}Callback` instead. Compared to `std::function`,
-`base::{Once,Repeating}Callback` directly supports Chromium's refcounting
-classes and weak pointers and deals with additional thread safety concerns.
+Use `base::{Once,Repeating}Callback` or `base::FunctionRef` instead. Compared
+to `std::function`, `base::{Once,Repeating}Callback` directly supports
+Chromium's refcounting classes and weak pointers and deals with additional
+thread safety concerns.
 
 [Discussion thread](https://groups.google.com/a/chromium.org/forum/#!topic/cxx/SoEj7oIDNuA)
 ***
