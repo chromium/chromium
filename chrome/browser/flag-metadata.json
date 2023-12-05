@@ -3239,8 +3239,8 @@
   },
   {
     "name": "enable-pip-double-tap-to-resize",
-    "owners": [ "bpnguyen@chromium.org", "jorgegil@chromium.org" ],
-    "expiry_milestone": 120
+    "owners": [ "takise@chromium.org", "jorgegil@chromium.org" ],
+    "expiry_milestone": 130
   },
   {
     "name": "enable-pip-pinch-to-resize",
