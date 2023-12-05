@@ -105,28 +105,6 @@ public class MathUtils {
     }
 
     /**
-     * Scales the provided dimension such that it is just large enough to fit
-     * the target width and height.
-     *
-     * @param dimensions The dimensions to scale
-     * @param targetWidth The target width
-     * @param targetHeight The target height
-     * @return The scale factor applied to dimensions
-     */
-    public static float scaleToFitTargetSize(int[] dimensions, int targetWidth, int targetHeight) {
-        if (dimensions.length < 2 || dimensions[0] <= 0 || dimensions[1] <= 0) {
-            throw new IllegalArgumentException(
-                    "Expected dimensions to have length >= 2 && dimensions[0] > 0 && "
-                            + "dimensions[1] > 0");
-        }
-        float scale =
-                Math.max((float) targetWidth / dimensions[0], (float) targetHeight / dimensions[1]);
-        dimensions[0] = (int) (dimensions[0] * scale);
-        dimensions[1] = (int) (dimensions[1] * scale);
-        return scale;
-    }
-
-    /**
      * Flips {@code value} iff {@code flipSign} is {@code true}.
      * @param value    The value to flip.
      * @param flipSign Whether or not to flip the value.
