@@ -5372,6 +5372,9 @@ targets.legacy_basic_suite(
             mixins = [
                 "has_native_resultdb_integration",
             ],
+            args = [
+                "--out_dir=.",
+            ],
         ),
     },
 )

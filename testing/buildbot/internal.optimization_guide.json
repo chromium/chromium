@@ -154,6 +154,9 @@
     ],
     "isolated_scripts": [
       {
+        "args": [
+          "--out_dir=."
+        ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -175,6 +178,7 @@
       },
       {
         "args": [
+          "--out_dir=.",
           "--chromedriver",
           "chromedriver",
           "--binary",
@@ -260,6 +264,9 @@
     ],
     "isolated_scripts": [
       {
+        "args": [
+          "--out_dir=."
+        ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -282,6 +289,7 @@
       },
       {
         "args": [
+          "--out_dir=.",
           "--chromedriver",
           "chromedriver",
           "--binary",
@@ -368,6 +376,9 @@
     ],
     "isolated_scripts": [
       {
+        "args": [
+          "--out_dir=."
+        ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -390,6 +401,7 @@
       },
       {
         "args": [
+          "--out_dir=.",
           "--chromedriver",
           "chromedriver",
           "--binary",
@@ -474,6 +486,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "--out_dir=.",
           "--target-platform=win32"
         ],
         "merge": {
@@ -497,6 +510,7 @@
       },
       {
         "args": [
+          "--out_dir=.",
           "--chromedriver",
           "chromedriver.exe",
           "--binary",
@@ -579,6 +593,9 @@
     ],
     "isolated_scripts": [
       {
+        "args": [
+          "--out_dir=."
+        ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -600,6 +617,7 @@
       },
       {
         "args": [
+          "--out_dir=.",
           "--chromedriver",
           "chromedriver.exe",
           "--binary",
