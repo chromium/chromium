@@ -13,6 +13,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/bind_post_task.h"
 #import "components/crash/core/common/crash_key.h"
 #import "components/handoff/handoff_utility.h"
 #import "components/prefs/pref_service.h"
@@ -112,6 +113,7 @@ UserActivityBrowserAgent::~UserActivityBrowserAgent() {}
 BOOL UserActivityBrowserAgent::ContinueUserActivity(
     NSUserActivity* user_activity,
     BOOL application_is_active) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NSURL* webpage_url = user_activity.webpageURL;
 
   if ([user_activity.activityType
@@ -150,19 +152,14 @@ BOOL UserActivityBrowserAgent::ContinueUserActivity(
       }
       [connection_information_ setStartupParameters:startup_params];
     } else if (!webpage_url) {
-      spotlight::GetURLForSpotlightItemID(item_id, ^(NSURL* content_url) {
-        if (!content_url) {
-          return;
-        }
-        dispatch_async(dispatch_get_main_queue(), ^{
-          // Update the isActive flag as it may have changed during the async
-          // calls.
-          BOOL is_active = [[UIApplication sharedApplication]
-                               applicationState] == UIApplicationStateActive;
-          ContinueUserActivityURL(content_url, is_active,
-                                  (domain == spotlight::DOMAIN_OPEN_TABS));
-        });
-      });
+      spotlight::GetURLForSpotlightItemID(
+          item_id,
+          base::CallbackToBlock(base::BindPostTask(
+              base::SequencedTaskRunner::GetCurrentDefault(),
+              base::BindOnce(
+                  &UserActivityBrowserAgent::OverloadContinueUserActivityURL,
+                  weak_ptr_factory_.GetWeakPtr(),
+                  domain == spotlight::DOMAIN_OPEN_TABS))));
       return YES;
     }
   } else if ([user_activity.activityType
@@ -471,16 +468,18 @@ BOOL UserActivityBrowserAgent::ContinueUserActivity(
 
 BOOL UserActivityBrowserAgent::Handle3DTouchApplicationShortcuts(
     UIApplicationShortcutItem* shortcut_item) {
-  BOOL handledShortcutItem = HandleShortcutItem(shortcut_item);
-  BOOL isActive = [[UIApplication sharedApplication] applicationState] ==
-                  UIApplicationStateActive;
-  if (handledShortcutItem && isActive) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const BOOL handled_shortcut_item = HandleShortcutItem(shortcut_item);
+  const BOOL is_active = [[UIApplication sharedApplication] applicationState] ==
+                         UIApplicationStateActive;
+  if (handled_shortcut_item && is_active) {
     RouteToCorrectTab();
   }
-  return handledShortcutItem;
+  return handled_shortcut_item;
 }
 
 void UserActivityBrowserAgent::RouteToCorrectTab() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   InitStage init_stage = browser_->GetSceneState().appState.initStage;
   // Do not load the external URL if the user has not accepted the terms of
   // service. This corresponds to the case when the user installed Chrome,
@@ -583,6 +582,7 @@ void UserActivityBrowserAgent::RouteToCorrectTab() {
 
 BOOL UserActivityBrowserAgent::ProceedWithUserActivity(
     NSUserActivity* user_activity) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NSArray* array = CompatibleModeForActivityType(user_activity.activityType);
   PrefService* pref_service = browser_state_->GetPrefs();
   if (IsIncognitoModeDisabled(pref_service)) {
@@ -600,6 +600,7 @@ BOOL UserActivityBrowserAgent::ProceedWithUserActivity(
 AppStartupParameters*
 UserActivityBrowserAgent::StartupParametersForOpeningNewTab(
     TabOpeningPostOpeningAction action) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   AppStartupParameters* startup_params = [[AppStartupParameters alloc]
       initWithExternalURL:GURL(kChromeUINewTabURL)
               completeURL:GURL(kChromeUINewTabURL)
@@ -611,6 +612,7 @@ UserActivityBrowserAgent::StartupParametersForOpeningNewTab(
 
 BOOL UserActivityBrowserAgent::HandleShortcutItem(
     UIApplicationShortcutItem* shortcut_item) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SceneState* scene_state = browser_->GetSceneState();
   InitStage init_stage = scene_state.appState.initStage;
   if (init_stage <= InitStageFirstRun) {
@@ -688,6 +690,7 @@ void UserActivityBrowserAgent::OpenRequestedURLs(
     const std::vector<GURL>& webpage_urls,
     BOOL application_is_active,
     BOOL incognito) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ApplicationModeForTabOpening application_mode;
   if (incognito) {
     application_mode = ApplicationModeForTabOpening::INCOGNITO;
@@ -724,6 +727,7 @@ BOOL UserActivityBrowserAgent::ContinueUserActivityURL(
     NSURL* webpage_url,
     BOOL application_is_active,
     BOOL open_existing_tab) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!webpage_url) {
     return NO;
   }
@@ -780,6 +784,7 @@ BOOL UserActivityBrowserAgent::ContinueUserActivityURL(
 }
 
 void UserActivityBrowserAgent::OpenMultipleTabs() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BOOL incognito_mode =
       connection_information_.startupParameters.applicationMode ==
       ApplicationModeForTabOpening::INCOGNITO;
@@ -809,6 +814,7 @@ void UserActivityBrowserAgent::OpenMultipleTabs() {
 
 GURL UserActivityBrowserAgent::GenerateResultGURLFromSearchQuery(
     NSString* search_query) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TemplateURLService* template_url_Service =
       ios::TemplateURLServiceFactory::GetForBrowserState(browser_state_);
 
@@ -825,4 +831,13 @@ GURL UserActivityBrowserAgent::GenerateResultGURLFromSearchQuery(
       search_args, template_url_Service->search_terms_data()));
 
   return result;
+}
+
+void UserActivityBrowserAgent::OverloadContinueUserActivityURL(
+    BOOL open_existing_tab,
+    NSURL* webpage_url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  BOOL is_active = [[UIApplication sharedApplication] applicationState] ==
+                   UIApplicationStateActive;
+  ContinueUserActivityURL(webpage_url, is_active, open_existing_tab);
 }

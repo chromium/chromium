@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/scoped_observation.h"
+#import "base/sequence_checker.h"
 #import "ios/chrome/app/app_startup_parameters.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
@@ -80,6 +81,13 @@ class UserActivityBrowserAgent
   // Returns the GURL coming from the search query.
   GURL GenerateResultGURLFromSearchQuery(NSString* search_query);
 
+  // Overload of `ContinueUserActivityURL(...)` that computes `is_active` from
+  // `UIApplication`.
+  void OverloadContinueUserActivityURL(BOOL open_existing_tab,
+                                       NSURL* webpage_url);
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
   // The browser associated with this agent.
   raw_ptr<Browser> browser_ = nullptr;
 
@@ -94,6 +102,9 @@ class UserActivityBrowserAgent
 
   // Tab opener to be used to open a new tab.
   __weak id<TabOpening> tab_opener_;
+
+  // Weak pointer factory.
+  base::WeakPtrFactory<UserActivityBrowserAgent> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_INTENTS_USER_ACTIVITY_BROWSER_AGENT_H_
