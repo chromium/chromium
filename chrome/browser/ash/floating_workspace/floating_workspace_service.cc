@@ -396,6 +396,7 @@ FloatingWorkspaceService::GetOpenTabsUIDelegate() {
 }
 
 void FloatingWorkspaceService::StartCaptureAndUploadActiveDesk() {
+  CaptureAndUploadActiveDesk();
   if (!timer_.IsRunning()) {
     timer_.Start(
         FROM_HERE,
@@ -494,11 +495,11 @@ void FloatingWorkspaceService::CaptureAndUploadActiveDeskForTest(
 void FloatingWorkspaceService::StopProgressBarAndRestoreFloatingWorkspace() {
   StopProgressBarNotification();
   RestoreFloatingWorkspaceTemplate(GetLatestFloatingWorkspaceTemplate());
+  StartCaptureAndUploadActiveDesk();
 }
 
 void FloatingWorkspaceService::RestoreFloatingWorkspaceTemplate(
     const DeskTemplate* desk_template) {
-  StartCaptureAndUploadActiveDesk();
   if (desk_template == nullptr) {
     LOG(WARNING) << "No floating workspace entry found. Won't "
                     "restore. This is only possible if this is the first time "
@@ -672,9 +673,8 @@ void FloatingWorkspaceService::OnTemplateCaptured(
   } else {
     floating_workspace_uuid_ = desk_template->uuid();
   }
-
-  // If successfully captured desk, remove old entry and record new uuid only if
-  // the user was active from when the sync cycle is finished to now.
+  // If it successfully captured desk, remove old entry and record new uuid only
+  // if the user was active from when the sync cycle is finished to now.
   if (!IsCurrentDeskSameAsPrevious(desk_template.get()) &&
       (first_uptodate_download_timeticks_.has_value() &&
        first_uptodate_download_timeticks_.value() <=

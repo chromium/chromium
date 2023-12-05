@@ -121,7 +121,10 @@ class MockDesksClient : public DesksClient {
 
   void CaptureActiveDesk(CaptureActiveDeskAndSaveTemplateCallback callback,
                          ash::DeskTemplateType template_type) override {
-    std::move(callback).Run(absl::nullopt, captured_desk_template_->Clone());
+    std::move(callback).Run(absl::nullopt,
+                            captured_desk_template_ != nullptr
+                                ? captured_desk_template_->Clone()
+                                : nullptr);
   }
 
   void SetCapturedDeskTemplate(
@@ -1480,6 +1483,53 @@ TEST_F(FloatingWorkspaceServiceTest,
   EXPECT_TRUE(
       test_floating_workspace_service_v2.GetLatestFloatingWorkspaceTemplate()
           ->template_name() != base::UTF8ToUTF16(template_name2));
+  scoped_feature_list().Reset();
+}
+
+TEST_F(FloatingWorkspaceServiceTest, CaptureImmediatelyAfterRestore) {
+  scoped_feature_list().InitWithFeatures(
+      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
+  PopulateAppsCache();
+  const std::string template_name = "floating_workspace_template";
+  base::RunLoop loop;
+  fake_desk_sync_service()->GetDeskModel()->AddOrUpdateEntry(
+      MakeTestFloatingWorkspaceDeskTemplate(template_name, base::Time::Now()),
+      base::BindLambdaForTesting(
+          [&](desks_storage::DeskModel::AddOrUpdateEntryStatus status,
+              std::unique_ptr<ash::DeskTemplate> new_entry) {
+            EXPECT_EQ(desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk,
+                      status);
+            loop.Quit();
+          }));
+  loop.Run();
+
+  TestFloatingWorkSpaceService test_floating_workspace_service_v2(
+      profile(), fake_desk_sync_service(), test_sync_service(),
+      floating_workspace_util::FloatingWorkspaceVersion::
+          kFloatingWorkspaceV2Enabled);
+  const base::Time creation_time = base::Time::Now();
+  std::unique_ptr<DeskTemplate> floating_workspace_template =
+      MakeTestFloatingWorkspaceDeskTemplate(template_name, creation_time);
+  mock_desks_client()->SetCapturedDeskTemplate(
+      std::move(floating_workspace_template));
+  test_sync_service()->SetDownloadStatusFor(
+      {syncer::ModelType::WORKSPACE_DESK},
+      syncer::SyncService::ModelTypeDownloadStatus::kUpToDate);
+  test_sync_service()->FireStateChanged();
+  user_activity_detector()->set_last_activity_time_for_test(
+      base::TimeTicks::Now() + base::Milliseconds(1));
+  ASSERT_TRUE(test_floating_workspace_service_v2
+                  .GetRestoredFloatingWorkspaceTemplate());
+  EXPECT_EQ(
+      test_floating_workspace_service_v2.GetRestoredFloatingWorkspaceTemplate()
+          ->template_name(),
+      base::UTF8ToUTF16(template_name));
+  ASSERT_TRUE(
+      test_floating_workspace_service_v2.GetLatestFloatingWorkspaceTemplate());
+  EXPECT_EQ(
+      test_floating_workspace_service_v2.GetLatestFloatingWorkspaceTemplate()
+          ->created_time(),
+      creation_time);
   scoped_feature_list().Reset();
 }
 
