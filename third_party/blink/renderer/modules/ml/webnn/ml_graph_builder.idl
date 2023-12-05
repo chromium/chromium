@@ -162,6 +162,9 @@ dictionary MLSplitOptions {
   [RaisesException] MLOperand max(MLOperand a, MLOperand b);
   [RaisesException] MLOperand min(MLOperand a, MLOperand b);
   [RaisesException] MLOperand pow(MLOperand a, MLOperand b);
+  [RaisesException] MLOperand equal(MLOperand a, MLOperand b);
+  [RaisesException] MLOperand greater(MLOperand a, MLOperand b);
+  [RaisesException] MLOperand lesser(MLOperand a, MLOperand b);
 
   // Element-wise unary operations
   [RaisesException] MLOperand abs(MLOperand x);

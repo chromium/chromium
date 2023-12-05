@@ -32,6 +32,18 @@ String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
       return "mul";
     case MLOperator::OperatorKind::kDiv:
       return "div";
+    case MLOperator::OperatorKind::kMin:
+      return "min";
+    case MLOperator::OperatorKind::kMax:
+      return "max";
+    case MLOperator::OperatorKind::kPow:
+      return "pow";
+    case MLOperator::OperatorKind::kEqual:
+      return "equal";
+    case MLOperator::OperatorKind::kGreater:
+      return "greater";
+    case MLOperator::OperatorKind::kLesser:
+      return "lesser";
     case MLOperator::OperatorKind::kAbs:
       return "abs";
     case MLOperator::OperatorKind::kCeil:
@@ -64,10 +76,6 @@ String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
       return "layerNormalization";
     case MLOperator::OperatorKind::kLeakyRelu:
       return "leakyRelu";
-    case MLOperator::OperatorKind::kMax:
-      return "max";
-    case MLOperator::OperatorKind::kMin:
-      return "min";
     case MLOperator::OperatorKind::kElu:
       return "elu";
     case MLOperator::OperatorKind::kExpand:
@@ -86,8 +94,6 @@ String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
       return "matmul";
     case MLOperator::OperatorKind::kPad:
       return "pad";
-    case MLOperator::OperatorKind::kPow:
-      return "pow";
     case MLOperator::OperatorKind::kPRelu:
       return "prelu";
     case MLOperator::OperatorKind::kReduceL1:

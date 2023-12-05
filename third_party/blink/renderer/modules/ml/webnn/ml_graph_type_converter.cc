@@ -487,6 +487,15 @@ OperationPtr CreateElementWiseBinaryOperator(
     case MLOperator::OperatorKind::kPow:
       operator_mojo->kind = ElementWiseBinary::Kind::kPow;
       break;
+    case MLOperator::OperatorKind::kEqual:
+      operator_mojo->kind = ElementWiseBinary::Kind::kEqual;
+      break;
+    case MLOperator::OperatorKind::kGreater:
+      operator_mojo->kind = ElementWiseBinary::Kind::kGreater;
+      break;
+    case MLOperator::OperatorKind::kLesser:
+      operator_mojo->kind = ElementWiseBinary::Kind::kLesser;
+      break;
     default:
       NOTREACHED();
   }
@@ -961,6 +970,12 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
     case MLOperator::OperatorKind::kMax:
       [[fallthrough]];
     case MLOperator::OperatorKind::kPow:
+      [[fallthrough]];
+    case MLOperator::OperatorKind::kEqual:
+      [[fallthrough]];
+    case MLOperator::OperatorKind::kGreater:
+      [[fallthrough]];
+    case MLOperator::OperatorKind::kLesser:
       return CreateElementWiseBinaryOperator(operand_to_id_map, op);
     case MLOperator::OperatorKind::kAbs:
       [[fallthrough]];

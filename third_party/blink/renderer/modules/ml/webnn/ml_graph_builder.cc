@@ -407,6 +407,12 @@ absl::optional<Vector<uint32_t>> BroadcastShapes(
   return Vector<uint32_t>(output_shape.value());
 }
 
+constexpr bool IsLogicalBinaryOperator(MLOperator::OperatorKind kind) {
+  return kind == MLOperator::OperatorKind::kEqual ||
+         kind == MLOperator::OperatorKind::kGreater ||
+         kind == MLOperator::OperatorKind::kLesser;
+}
+
 MLOperand* BuildElementWiseBinary(MLGraphBuilder* builder,
                                   MLOperator::OperatorKind kind,
                                   const MLOperand* a,
@@ -426,8 +432,15 @@ MLOperand* BuildElementWiseBinary(MLGraphBuilder* builder,
         "The input shapes are not broadcastable.");
     return nullptr;
   }
+
+  // Logical operator outputs are bools, otherwise output operators are the same
+  // type as input operators.
+  V8MLOperandDataType::Enum data_type = IsLogicalBinaryOperator(kind)
+                                            ? V8MLOperandDataType::Enum::kUint8
+                                            : a->DataType();
+
   auto* binary = MakeGarbageCollected<MLOperator>(builder, kind);
-  auto output = MLOperand::ValidateAndCreateOutput(builder, a->DataType(),
+  auto output = MLOperand::ValidateAndCreateOutput(builder, data_type,
                                                    dims_output.value(), binary);
   if (!output.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
@@ -784,6 +797,9 @@ BUILD_ELEMENTWISE_BINARY_OP(div, kDiv)
 BUILD_ELEMENTWISE_BINARY_OP(min, kMin)
 BUILD_ELEMENTWISE_BINARY_OP(max, kMax)
 BUILD_ELEMENTWISE_BINARY_OP(pow, kPow)
+BUILD_ELEMENTWISE_BINARY_OP(equal, kEqual)
+BUILD_ELEMENTWISE_BINARY_OP(greater, kGreater)
+BUILD_ELEMENTWISE_BINARY_OP(lesser, kLesser)
 
 #define BUILD_ELEMENTWISE_UNARY_OP(op, op_kind, data_type_constraint) \
   MLOperand* MLGraphBuilder::op(const MLOperand* input,               \
