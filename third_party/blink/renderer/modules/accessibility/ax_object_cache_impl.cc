@@ -2959,6 +2959,40 @@ void AXObjectCacheImpl::CheckTreeIsUpdated() {
         << "\n* Included parent: " << included_parent->ToString(true);
     count++;
   }
+
+  // Second loop checks that all dirty bits to update properties or children
+  // have been cleared.
+  for (const auto& entry : objects_) {
+    const AXObject* object = entry.value;
+    if (object->HasDirtyDescendants()) {
+      // This an error: log the top ancestor that still has dirty descendants.
+      const AXObject* ancestor = object;
+      while (ancestor && ancestor->ParentObjectIncludedInTree() &&
+             ancestor->ParentObjectIncludedInTree()->HasDirtyDescendants()) {
+        ancestor = ancestor->ParentObjectIncludedInTree();
+      }
+      AXObject* included_parent = ancestor->ParentObjectIncludedInTree();
+      if (!included_parent) {
+        included_parent = Root();
+      }
+      DCHECK(!ancestor->HasDirtyDescendants())
+          << "No subtrees should be flagged as needing updates at this point:"
+          << "\n* Object: " << ancestor->ToString(true)
+          << "\n* Included parent: " << included_parent->GetAXTreeForThis();
+    }
+    AXObject* included_parent = object->ParentObjectIncludedInTree();
+    if (!included_parent) {
+      included_parent = Root();
+    }
+    DCHECK(!object->NeedsToUpdateChildren())
+        << "No children in the tree should require an update at this point: "
+        << "\n* Object: " << object->ToString(true)
+        << "\n* Included parent: " << included_parent->ToString(true);
+    DCHECK(!object->NeedsToUpdateCachedValues())
+        << "No cached values should require an update at this point: "
+        << "\n* Object: " << object->ToString(true)
+        << "\n* Included parent: " << included_parent->ToString(true);
+  }
 #endif
 }
 
@@ -3293,10 +3327,18 @@ void AXObjectCacheImpl::ScheduleAXUpdate() const {
 AXObject* AXObjectCacheImpl::TreeUpdateObjectIfRelevant(
     Document& document,
     TreeUpdateParams* tree_update) {
+  // When the entire document is marked dirty, individual updates within
+  // the document are irrelevant. Only updates on the document, such as load
+  // start/complete, are relevant.
+  if (mark_all_dirty_) {
+    return tree_update->node == document_ ? Root() : nullptr;
+  }
+
   if (Node* node = tree_update->node) {
     if (node->GetDocument() != document || !node->isConnected()) {
       return nullptr;
     }
+
     AXObject* ax_object = GetOrCreate(node);
     if (!ax_object || ax_object->IsDetached()) {
       return nullptr;
@@ -3332,6 +3374,9 @@ AXObject* AXObjectCacheImpl::TreeUpdateObjectIfRelevant(
   // TODO(accessibility) Try to get rid of repair situations by addressing
   // partial subtrees and mid-tree object removal directly when they occur.
   if (ax_object->IsMissingParent()) {
+    // TODO(accessibility) This should become a CHECK once we resolve all
+    // remaining situations.
+    DCHECK(false) << "Missing parent on: " << ax_object->ToString(true, true);
     if (!ax_object->GetNode()) {
       RemoveIncludedSubtree(ax_object, /* remove_root */ true);
       return nullptr;
