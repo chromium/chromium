@@ -59,10 +59,8 @@ NSString* const kChromeSettingsKeypath = @"IDS_CHROME_SETTINGS";
     if (base::i18n::IsRTL()) {
       _animationViewWrapper =
           [self createAnimation:kDefaultBrowserAnimationRtl];
-      ;
       _animationViewWrapperDarkMode =
           [self createAnimation:kDefaultBrowserAnimationRtlDarkmode];
-      ;
     } else {
       _animationViewWrapper = [self createAnimation:kDefaultBrowserAnimation];
       _animationViewWrapperDarkMode =
