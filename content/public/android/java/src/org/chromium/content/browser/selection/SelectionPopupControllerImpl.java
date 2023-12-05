@@ -741,7 +741,9 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
             if (hasSelection()) {
                 allItemGroups = getSelectionMenuItems();
             } else {
-                allItemGroups = getNonSelectionMenuItems(this, mNonSelectionAdditionalItemProvider);
+                allItemGroups =
+                        getNonSelectionMenuItems(
+                                mContext, this, mNonSelectionAdditionalItemProvider);
             }
 
             int groupIndex = 0;
@@ -1045,10 +1047,11 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     }
 
     private static SortedSet<SelectionMenuGroup> getNonSelectionMenuItems(
+            @Nullable Context context,
             SelectActionMenuDelegate delegate,
             @Nullable AdditionalSelectionMenuItemProvider nonSelectionAdditionalItemProvider) {
         return SelectActionMenuHelper.getNonSelectionMenuItems(
-                delegate, nonSelectionAdditionalItemProvider);
+                context, delegate, nonSelectionAdditionalItemProvider);
     }
 
     /**
