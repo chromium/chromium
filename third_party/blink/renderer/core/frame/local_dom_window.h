@@ -556,10 +556,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
  private:
   class NetworkStateObserver;
 
-  // Intentionally private to prevent redundant checks when the type is
-  // already LocalDOMWindow.
+  // Intentionally private to prevent redundant checks.
   bool IsLocalDOMWindow() const override { return true; }
-  bool IsRemoteDOMWindow() const override { return false; }
 
   bool HasInsecureContextInAncestors() const override;
 

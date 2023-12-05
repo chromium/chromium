@@ -70,7 +70,6 @@ class CORE_EXPORT DOMWindow : public WindowProperties {
   void Trace(Visitor*) const override;
 
   virtual bool IsLocalDOMWindow() const = 0;
-  virtual bool IsRemoteDOMWindow() const = 0;
 
   // ScriptWrappable overrides:
   v8::MaybeLocal<v8::Value> Wrap(ScriptState*) final;
