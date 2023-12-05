@@ -145,6 +145,7 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
   ~ManagedDisplayInfo();
 
   int64_t id() const { return id_; }
+  void set_display_id(int64_t id) { id_ = id; }
 
   int64_t port_display_id() const { return port_display_id_; }
   void set_port_display_id(int64_t id) { port_display_id_ = id; }

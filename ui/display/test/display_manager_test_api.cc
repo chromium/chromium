@@ -88,17 +88,25 @@ void DisplayManagerTestApi::UpdateDisplay(const std::string& display_specs,
                                           bool from_native_platform) {
   DisplayInfoList display_info_list =
       CreateDisplayInfoListFromString(display_specs, display_manager_);
+  UpdateDisplayWithDisplayInfoList(display_info_list, from_native_platform);
+}
+
+void DisplayManagerTestApi::UpdateDisplayWithDisplayInfoList(
+    const std::vector<ManagedDisplayInfo>& display_info_list,
+    bool from_native_platform) {
+  std::vector<ManagedDisplayInfo> display_list_copy = display_info_list;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (display_info_list.size() > maximum_support_display_) {
+  if (display_list_copy.size() > maximum_support_display_) {
     display_manager_->configurator()->has_unassociated_display_ = true;
-    while (display_info_list.size() > maximum_support_display_)
-      display_info_list.pop_back();
+    while (display_list_copy.size() > maximum_support_display_) {
+      display_list_copy.pop_back();
+    }
   } else {
     display_manager_->configurator()->has_unassociated_display_ = false;
   }
 #endif
   bool is_host_origin_set = false;
-  for (const ManagedDisplayInfo& display_info : display_info_list) {
+  for (const ManagedDisplayInfo& display_info : display_list_copy) {
     if (display_info.bounds_in_native().origin() != gfx::Point(0, 0)) {
       is_host_origin_set = true;
       break;
@@ -108,7 +116,7 @@ void DisplayManagerTestApi::UpdateDisplay(const std::string& display_specs,
   // Start from (1,1) so that windows won't overlap with native mouse cursor.
   // See |AshTestBase::SetUp()|.
   int next_y = 1;
-  for (auto& info : display_info_list) {
+  for (auto& info : display_list_copy) {
     // On non-testing environment, when a secondary display is connected, a new
     // native (i.e. X) window for the display is always created below the
     // previous one for GPU performance reasons. Try to emulate the behavior
@@ -135,7 +143,7 @@ void DisplayManagerTestApi::UpdateDisplay(const std::string& display_specs,
     }
   }
 
-  display_manager_->OnNativeDisplaysChanged(display_info_list);
+  display_manager_->OnNativeDisplaysChanged(display_list_copy);
   display_manager_->UpdateInternalManagedDisplayModeListForTest();
   display_manager_->RunPendingTasksForTest();
 }
