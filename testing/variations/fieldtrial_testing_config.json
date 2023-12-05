@@ -21200,7 +21200,8 @@
                 {
                     "name": "EnabledAllUsers",
                     "params": {
-                        "IOSHideFeedWithSearchChoiceTargeted": "true"
+                        "IOSHideFeedWithSearchChoiceTargeted": "true",
+                        "for_tagged_profiles_only": "false"
                     },
                     "enable_features": [
                         "IOSHideFeedWithSearchChoice",
