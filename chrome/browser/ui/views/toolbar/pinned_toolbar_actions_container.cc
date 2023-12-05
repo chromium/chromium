@@ -129,17 +129,35 @@ bool PinnedToolbarActionsContainer::PinnedActionToolbarButton::
   return invoking_action_;
 }
 
+void PinnedToolbarActionsContainer::PinnedActionToolbarButton::
+    GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  ToolbarButton::GetAccessibleNodeData(node_data);
+  // TODO(shibalik): Revisit since all pinned actions should not be toggle
+  // buttons.
+  node_data->role = ax::mojom::Role::kToggleButton;
+  node_data->SetCheckedState(IsActive() ? ax::mojom::CheckedState::kTrue
+                                        : ax::mojom::CheckedState::kFalse);
+}
+
 bool PinnedToolbarActionsContainer::PinnedActionToolbarButton::IsActive() {
   return anchor_higlight_.has_value();
 }
 
 void PinnedToolbarActionsContainer::PinnedActionToolbarButton::AddHighlight() {
   anchor_higlight_ = AddAnchorHighlight();
+  if (pinned_) {
+    NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged,
+                             /*send_native_event=*/true);
+  }
 }
 
 void PinnedToolbarActionsContainer::PinnedActionToolbarButton::
     ResetHighlight() {
   anchor_higlight_.reset();
+  if (pinned_) {
+    NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged,
+                             /*send_native_event=*/true);
+  }
 }
 
 void PinnedToolbarActionsContainer::PinnedActionToolbarButton::
@@ -157,6 +175,10 @@ void PinnedToolbarActionsContainer::PinnedActionToolbarButton::
 
 void PinnedToolbarActionsContainer::PinnedActionToolbarButton::SetPinned(
     bool pinned) {
+  if (pinned_ == pinned) {
+    return;
+  }
+
   pinned_ = pinned;
   ActionItemChanged();
 }
