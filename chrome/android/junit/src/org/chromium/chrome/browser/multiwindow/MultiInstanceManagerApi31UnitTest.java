@@ -18,7 +18,6 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Pair;
@@ -287,16 +286,6 @@ public class MultiInstanceManagerApi31UnitTest {
         @Override
         void beginReparenting(
                 Tab tab, Intent intent, Bundle startActivityOptions, Runnable finalizeCallback) {}
-    }
-
-    private void setIsMultiInstanceApi31EnabledMock() {
-        try {
-            MultiWindowTestUtils.enableMultiInstance();
-        } catch (NameNotFoundException nameNotFoundException) {
-            assertTrue(
-                    "setIsMultiInstanceApi31EnabledMock failed - NameNotFoundException thrown .",
-                    false);
-        }
     }
 
     @Before
@@ -958,8 +947,7 @@ public class MultiInstanceManagerApi31UnitTest {
     @UiThreadTest
     @Config(sdk = 31)
     @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
-    public void testTabMove_MoveTabToNewWindow_calledWithDesiredParameters()
-            throws NameNotFoundException {
+    public void testTabMove_MoveTabToNewWindow_calledWithDesiredParameters() {
         mMultiInstanceManager.mTestBuildInstancesList = true;
         MultiWindowTestUtils.enableMultiInstance();
         // Allocate and create two instances.
@@ -1011,8 +999,7 @@ public class MultiInstanceManagerApi31UnitTest {
     @UiThreadTest
     @Config(sdk = 31)
     @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
-    public void testTabMove_MoveTabToNewWindow_BeyondMaxWindows_CallsOnly_OpenNewWindow()
-            throws NameNotFoundException {
+    public void testTabMove_MoveTabToNewWindow_BeyondMaxWindows_CallsOnly_OpenNewWindow() {
         mMultiInstanceManager.mTestBuildInstancesList = true;
         MultiWindowTestUtils.enableMultiInstance();
         // Create max instances first before asking to move a tab from one to another.
@@ -1042,8 +1029,7 @@ public class MultiInstanceManagerApi31UnitTest {
     @UiThreadTest
     @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     @Config(sdk = 31)
-    public void testTabMove_MoveTabToCurrentWindow_calledWithDesiredParameters()
-            throws NameNotFoundException {
+    public void testTabMove_MoveTabToCurrentWindow_calledWithDesiredParameters() {
         int tabAtIndex = 0;
         mMultiInstanceManager.mTestBuildInstancesList = true;
         MultiWindowTestUtils.enableMultiInstance();
@@ -1117,7 +1103,7 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(
                 INSTANCE_ID_2, allocInstanceIndex(INSTANCE_ID_2, mTabbedActivityTask63, false));
         assertEquals(2, mMultiInstanceManager.getInstanceInfo().size());
-        setIsMultiInstanceApi31EnabledMock();
+        MultiWindowTestUtils.enableMultiInstance();
         Mockito.doAnswer(
                         invocation -> {
                             // Change the last parameter to false to bypass calling

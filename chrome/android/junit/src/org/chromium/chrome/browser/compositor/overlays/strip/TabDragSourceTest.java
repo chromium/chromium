@@ -24,7 +24,6 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipData.Item;
 import android.content.ClipDescription;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.os.Build.VERSION_CODES;
@@ -110,7 +109,7 @@ public class TabDragSourceTest {
 
     /** Resets the environment before each test. */
     @Before
-    public void beforeTest() throws NameNotFoundException {
+    public void beforeTest() {
         mActivity = Robolectric.setupActivity(Activity.class);
         mActivity.setTheme(org.chromium.chrome.R.style.Theme_BrowserUI);
         mTabStripHeight = mActivity.getResources().getDimensionPixelSize(R.dimen.tab_strip_height);

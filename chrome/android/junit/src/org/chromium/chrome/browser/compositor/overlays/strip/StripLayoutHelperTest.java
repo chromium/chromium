@@ -29,7 +29,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PointF;
@@ -2605,12 +2604,7 @@ public class StripLayoutHelperTest {
 
     private void setTabDragSourceMock() {
         when(mTabDragSource.startTabDragAction(any(), any(), any())).thenReturn(true);
-
-        try {
-            MultiWindowTestUtils.enableMultiInstance();
-        } catch (NameNotFoundException nameNotFoundException) {
-            assertTrue("setTabDragSourceMock failed - NameNotFoundException thrown .", false);
-        }
+        MultiWindowTestUtils.enableMultiInstance();
     }
 
     @Test

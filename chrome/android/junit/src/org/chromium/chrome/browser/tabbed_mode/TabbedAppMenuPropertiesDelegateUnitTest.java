@@ -303,7 +303,9 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Test
     public void testPageMenuItems_instanceSwitcher_newWindow() {
         setUpMocksForPageMenu();
-        doReturn(true).when(mTabbedAppMenuPropertiesDelegate).instanceSwitcherEnabled();
+        doReturn(true)
+                .when(mTabbedAppMenuPropertiesDelegate)
+                .instanceSwitcherWithMultiInstanceEnabled();
 
         createInstance(0, "https://url0");
 
@@ -337,7 +339,9 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Test
     public void testPageMenuItems_instanceSwitcher_moveTabToOtherWindow() {
         setUpMocksForPageMenu();
-        doReturn(true).when(mTabbedAppMenuPropertiesDelegate).instanceSwitcherEnabled();
+        doReturn(true)
+                .when(mTabbedAppMenuPropertiesDelegate)
+                .instanceSwitcherWithMultiInstanceEnabled();
         mIsMoveToOtherWindowSupported = true;
 
         Menu menu = createMenuForMultiWindow();
@@ -347,7 +351,9 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Test
     public void testPageMenuItems_instanceSwitcher_manageAllWindow() {
         setUpMocksForPageMenu();
-        doReturn(true).when(mTabbedAppMenuPropertiesDelegate).instanceSwitcherEnabled();
+        doReturn(true)
+                .when(mTabbedAppMenuPropertiesDelegate)
+                .instanceSwitcherWithMultiInstanceEnabled();
 
         createInstance(0, "https://url0");
 

@@ -16,7 +16,6 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils.enableMultiInstance;
 
 import android.content.Context;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.RectF;
 import android.os.Build.VERSION_CODES;
 import android.view.ContextThemeWrapper;
@@ -480,7 +479,7 @@ public class StripLayoutHelperManagerTest {
     @Test
     @Config(sdk = VERSION_CODES.R)
     @EnableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
-    public void testDragDropInstances_Success() throws NameNotFoundException {
+    public void testDragDropInstances_Success() {
         enableMultiInstance();
         initializeTest();
         assertNotNull(
@@ -491,9 +490,7 @@ public class StripLayoutHelperManagerTest {
     @Test
     @Config(sdk = VERSION_CODES.Q)
     @EnableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
-    public void testDragDropInstances_MultiInstanceNotEnabled_ReturnsNull()
-            throws NameNotFoundException {
-        enableMultiInstance();
+    public void testDragDropInstances_MultiInstanceNotEnabled_ReturnsNull() {
         initializeTest();
         assertNull(
                 "Tab drag source should not be set.",
@@ -505,7 +502,7 @@ public class StripLayoutHelperManagerTest {
         ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID,
         ChromeFeatureList.TAB_DRAG_DROP_ANDROID
     })
-    public void testDragDropInstances_FlagsDisabled_ReturnsNull() throws NameNotFoundException {
+    public void testDragDropInstances_FlagsDisabled_ReturnsNull() {
         enableMultiInstance();
         initializeTest();
         assertNull(
@@ -516,7 +513,7 @@ public class StripLayoutHelperManagerTest {
     @Test
     @Config(sdk = VERSION_CODES.S)
     @EnableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
-    public void testGetDragListener() throws NameNotFoundException {
+    public void testGetDragListener() {
         enableMultiInstance();
         initializeTest();
         assertNotNull("DragListener should be set.", mStripLayoutHelperManager.getDragListener());

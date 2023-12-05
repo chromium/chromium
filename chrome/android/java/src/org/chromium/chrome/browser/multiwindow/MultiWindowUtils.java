@@ -70,6 +70,7 @@ public class MultiWindowUtils implements ActivityStateListener {
     private static Integer sMaxInstancesForTesting;
 
     private final boolean mMultiInstanceApi31Enabled;
+    private static Boolean sMultiInstanceApi31EnabledForTesting;
 
     // Used to keep track of whether ChromeTabbedActivity2 is running. A tri-state Boolean is
     // used in case both activities die in the background and MultiWindowUtils is recreated.
@@ -134,6 +135,9 @@ public class MultiWindowUtils implements ActivityStateListener {
      *         multiple instantiation of Chrome instance.
      */
     public static boolean isMultiInstanceApi31Enabled() {
+        if (sMultiInstanceApi31EnabledForTesting != null) {
+            return sMultiInstanceApi31EnabledForTesting;
+        }
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return false;
         Context context = ContextUtils.getApplicationContext();
         String packageName = context.getPackageName();
@@ -209,7 +213,7 @@ public class MultiWindowUtils implements ActivityStateListener {
                 PartnerBrowserCustomizations.getInstance().isHomepageProviderAvailableAndEnabled();
         // Do not allow move for last tab when partner homepage enabled.
         if (hasAtMostOneTab && partnerHomepageEnabled) return false;
-        if (instanceSwitcherEnabled()) {
+        if (instanceSwitcherEnabled() && isMultiInstanceApi31Enabled()) {
             // Moving tabs should be possible to any other instance.
             return getInstanceCount() > 1;
         } else {
@@ -818,9 +822,11 @@ public class MultiWindowUtils implements ActivityStateListener {
 
     public static void setMaxInstancesForTesting(int maxInstances) {
         sMaxInstancesForTesting = maxInstances;
-        ResettersForTesting.register(
-                () -> {
-                    sMaxInstancesForTesting = null;
-                });
+        ResettersForTesting.register(() -> sMaxInstancesForTesting = null);
+    }
+
+    public static void setMultiInstanceApi31EnabledForTesting(boolean value) {
+        sMultiInstanceApi31EnabledForTesting = value;
+        ResettersForTesting.register(() -> sMultiInstanceApi31EnabledForTesting = null);
     }
 }

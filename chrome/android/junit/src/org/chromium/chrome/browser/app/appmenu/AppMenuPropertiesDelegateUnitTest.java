@@ -1344,7 +1344,7 @@ public class AppMenuPropertiesDelegateUnitTest {
         mShadowPackageManager.setSystemFeature(PackageManager.FEATURE_AUTOMOTIVE, isAutomotive);
         doReturn(isInstanceSwitcherEnabled)
                 .when(mAppMenuPropertiesDelegate)
-                .instanceSwitcherEnabled();
+                .instanceSwitcherWithMultiInstanceEnabled();
         doReturn(currentWindowInstances).when(mAppMenuPropertiesDelegate).getInstanceCount();
         doReturn(isTabletSizeScreen).when(mAppMenuPropertiesDelegate).isTabletSizeScreen();
         doReturn(canEnterMultiWindowMode)
@@ -1375,7 +1375,7 @@ public class AppMenuPropertiesDelegateUnitTest {
             boolean isMoveToOtherWindowSupported) {
         doReturn(isInstanceSwitcherEnabled)
                 .when(mAppMenuPropertiesDelegate)
-                .instanceSwitcherEnabled();
+                .instanceSwitcherWithMultiInstanceEnabled();
         doReturn(currentWindowInstances).when(mAppMenuPropertiesDelegate).getInstanceCount();
         doReturn(isTabletSizeScreen).when(mAppMenuPropertiesDelegate).isTabletSizeScreen();
         doReturn(canEnterMultiWindowMode)

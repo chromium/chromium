@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager.NameNotFoundException;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -39,7 +38,7 @@ public class DragAndDropLauncherActivityUnitTest {
     private String mLinkUrl;
 
     @Before
-    public void setup() throws NameNotFoundException {
+    public void setup() {
         MultiWindowTestUtils.enableMultiInstance();
         mContext = ContextUtils.getApplicationContext();
         mLinkUrl = JUnitTestGURLs.HTTP_URL.getSpec();

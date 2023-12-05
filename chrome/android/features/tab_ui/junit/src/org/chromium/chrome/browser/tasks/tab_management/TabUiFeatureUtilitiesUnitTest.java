@@ -8,7 +8,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build.VERSION_CODES;
 
 import org.junit.After;
@@ -97,7 +96,7 @@ public class TabUiFeatureUtilitiesUnitTest {
     @Test
     @Config(sdk = VERSION_CODES.S)
     @EnableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
-    public void testIsTabDragDropEnabled() throws NameNotFoundException {
+    public void testIsTabDragDropEnabled() {
         MultiWindowTestUtils.enableMultiInstance();
         assertTrue(TabUiFeatureUtilities.isTabDragEnabled());
     }
@@ -108,7 +107,7 @@ public class TabUiFeatureUtilitiesUnitTest {
         ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID,
         ChromeFeatureList.TAB_DRAG_DROP_ANDROID
     })
-    public void testIsTabDragDropEnabled_bothFlagsEnabled() throws NameNotFoundException {
+    public void testIsTabDragDropEnabled_bothFlagsEnabled() {
         MultiWindowTestUtils.enableMultiInstance();
         assertThrows(AssertionError.class, () -> TabUiFeatureUtilities.isTabDragEnabled());
     }
