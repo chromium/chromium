@@ -45,10 +45,12 @@ const MediaStreamDevice* GetDeviceByIdOrFirstAvailable(
 MediaAccessPermissionRequest::MediaAccessPermissionRequest(
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback,
-    AwPermissionManager& permission_manager)
+    AwPermissionManager& permission_manager,
+    bool can_cache_file_url_permissions)
     : request_(request),
       callback_(std::move(callback)),
-      permission_manager_(permission_manager) {}
+      permission_manager_(permission_manager),
+      can_cache_file_url_permissions_(can_cache_file_url_permissions) {}
 
 MediaAccessPermissionRequest::~MediaAccessPermissionRequest() {}
 
@@ -56,7 +58,7 @@ void MediaAccessPermissionRequest::NotifyRequestResult(bool allowed) {
   std::unique_ptr<content::MediaStreamUI> ui;
   if (!allowed) {
     permission_manager_->ClearEnumerateDevicesCachedPermission(
-        request_.security_origin,
+        request_.url_origin,
         /* remove_audio */ request_.audio_type ==
             blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
         /* remove_video */ request_.video_type ==
@@ -82,9 +84,11 @@ void MediaAccessPermissionRequest::NotifyRequestResult(bool allowed) {
         audio_devices, request_.requested_audio_device_id);
     if (device)
       devices.audio_device = *device;
-    if (base::FeatureList::IsEnabled(features::kWebViewEnumerateDevicesCache)) {
+    if (base::FeatureList::IsEnabled(features::kWebViewEnumerateDevicesCache) &&
+        (request_.url_origin.scheme() != url::kFileScheme ||
+         can_cache_file_url_permissions_)) {
       permission_manager_->SetOriginCanReadEnumerateDevicesAudioLabels(
-          request_.security_origin, true);
+          request_.url_origin, true);
     }
   }
 
@@ -98,9 +102,11 @@ void MediaAccessPermissionRequest::NotifyRequestResult(bool allowed) {
         video_devices, request_.requested_video_device_id);
     if (device)
       devices.video_device = *device;
-    if (base::FeatureList::IsEnabled(features::kWebViewEnumerateDevicesCache)) {
+    if (base::FeatureList::IsEnabled(features::kWebViewEnumerateDevicesCache) &&
+        (request_.url_origin.scheme() != url::kFileScheme ||
+         can_cache_file_url_permissions_)) {
       permission_manager_->SetOriginCanReadEnumerateDevicesVideoLabels(
-          request_.security_origin, true);
+          request_.url_origin, true);
     }
   }
 
