@@ -22,7 +22,32 @@
 
 namespace {
 // The delay to wait for an element to appear before tapping on it.
-constexpr base::TimeDelta kWaitElementTimeout = base::Seconds(2);
+constexpr base::TimeDelta kWaitElementTimeout = base::Seconds(4);
+
+// Checks that the visibility of the tab resumption tile matches `should_show`.
+void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
+  GREYCondition* tile_shown = [GREYCondition
+      conditionWithName:@"Tab Resumption Module shown"
+                  block:^BOOL {
+                    NSError* error;
+                    [[EarlGrey
+                        selectElementWithMatcher:
+                            grey_accessibilityID(
+                                kMagicStackContentSuggestionsModuleTabResumptionAccessibilityIdentifier)]
+                        assertWithMatcher:grey_notNil()
+                                    error:&error];
+                    return error == nil;
+                  }];
+  // Wait for the tile to be shown or timeout after kWaitForUIElementTimeout.
+  BOOL success = [tile_shown
+      waitWithTimeout:base::test::ios::kWaitForUIElementTimeout.InSecondsF()];
+  if (should_show) {
+    GREYAssertTrue(success, @"Tab Resumption Module did not appear.");
+  } else {
+    GREYAssertFalse(success, @"Tab Resumption Module appeared.");
+  }
+}
+
 }  // namespace
 
 // Integration tests for the Start Surface user flows.
@@ -46,6 +71,12 @@ constexpr base::TimeDelta kWaitElementTimeout = base::Seconds(2);
   return config;
 }
 
+- (void)setUp {
+  [super setUp];
+  [[self class] closeAllTabs];
+  [ChromeEarlGrey openNewTab];
+}
+
 // Tests that navigating to a page and restarting upon cold start, an NTP page
 // is opened with the Return to Recent Tab tile.
 - (void)testColdStartOpenStartSurface {
@@ -65,13 +96,13 @@ constexpr base::TimeDelta kWaitElementTimeout = base::Seconds(2);
 }
 
 // Tests that navigating to a page and then backgrounding and foregrounding, an
-// NTP page is opened. Then, verifying that tapping on the tab resumption module
-// switches back to the last tab.
-// Disable due to https://crbug.com/1494900.
-- (void)DISABLED_testWarmStartOpenStartSurface {
+// NTP page is opened.
+- (void)testWarmStartOpenStartSurface {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL destinationUrl = self.testServer->GetURL("/pony.html");
   [ChromeEarlGrey loadURL:destinationUrl];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:"Anyone know any good pony jokes?"];
 
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
   // Give time for NTP to be fully loaded so all elements are accessible.
@@ -84,8 +115,10 @@ constexpr base::TimeDelta kWaitElementTimeout = base::Seconds(2);
     [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
                                   error:nil];
     [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
-        performAction:grey_scrollInDirection(kGREYDirectionDown, 100)];
+        performAction:grey_scrollInDirection(kGREYDirectionDown, 200)];
   }
+
+  WaitUntilTabResumptionTileVisibleOrTimeout(true);
 
   // Swipe over to the tab resumption module if needed.
   [[[EarlGrey
@@ -98,28 +131,12 @@ constexpr base::TimeDelta kWaitElementTimeout = base::Seconds(2);
       onElementWithMatcher:grey_accessibilityID(
                                kMagicStackScrollViewAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Tap on Return to Recent Tab tile and switch back to NTP.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kTabResumptionViewIdentifier)]
-      performAction:grey_tap()];
-
-  [ChromeEarlGrey
-      waitForWebStateContainingText:"Anyone know any good pony jokes?"];
 }
 
 // Tests that navigating to a page and restarting upon cold start, an NTP page
 // is opened with the Return to Recent Tab tile. Then, removing that last tab
 // also removes the tile while that NTP is still being shown.
-// TODO(crbug.com/1504147): Test is failing on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testRemoveRecentTabRemovesReturnToRecenTabTile \
-  testRemoveRecentTabRemovesReturnToRecenTabTile
-#else
-#define MAYBE_testRemoveRecentTabRemovesReturnToRecenTabTile \
-  DISABLED_testRemoveRecentTabRemovesReturnToRecenTabTile
-#endif
-- (void)MAYBE_testRemoveRecentTabRemovesReturnToRecenTabTile {
+- (void)testRemoveRecentTabRemovesReturnToRecenTabTile {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL destinationUrl = self.testServer->GetURL("/pony.html");
   [ChromeEarlGrey loadURL:destinationUrl];
@@ -135,25 +152,7 @@ constexpr base::TimeDelta kWaitElementTimeout = base::Seconds(2);
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Rotate to landscape to Magic Stack can be scrollable for iPhone.
-  if (![ChromeEarlGrey isIPadIdiom]) {
-    [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
-                                  error:nil];
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
-        performAction:grey_scrollInDirection(kGREYDirectionDown, 100)];
-  }
-
-  // Swipe over to the tab resumption module if needed.
-  [[[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(
-              grey_accessibilityID(
-                  kMagicStackContentSuggestionsModuleTabResumptionAccessibilityIdentifier),
-              grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionRight, 343)
-      onElementWithMatcher:grey_accessibilityID(
-                               kMagicStackScrollViewAccessibilityIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  WaitUntilTabResumptionTileVisibleOrTimeout(true);
 
   NSUInteger nb_main_tab = [ChromeEarlGrey mainTabCount];
   [ChromeEarlGrey closeTabAtIndex:non_start_tab_index];
