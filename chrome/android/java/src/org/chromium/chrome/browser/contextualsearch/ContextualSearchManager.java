@@ -165,6 +165,7 @@ public class ContextualSearchManager
     private long mNativeContextualSearchManagerPtr;
 
     private ViewGroup mParentView;
+    private Profile mProfile;
     private RedirectHandler mRedirectHandler;
     private TabModelSelectorTabModelObserver mTabModelObserver;
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
@@ -341,11 +342,12 @@ public class ContextualSearchManager
             @NonNull ToolbarManager toolbarManager,
             @ActivityType int activityType,
             @NonNull IntentRequestTracker intentRequestTracker) {
-        mNativeContextualSearchManagerPtr = ContextualSearchManagerJni.get().init(this);
+        mNativeContextualSearchManagerPtr = ContextualSearchManagerJni.get().init(this, profile);
 
         mParentView = parentView;
         mParentView.getViewTreeObserver().addOnGlobalFocusChangeListener(mOnFocusChangeListener);
 
+        mProfile = profile;
         mLayoutManager = layoutManager;
 
         ContextualSearchPanelInterface panel;
@@ -571,7 +573,7 @@ public class ContextualSearchManager
         } else if (!TextUtils.isEmpty(selection)) {
             // Build the literal search request for the selection.
             boolean shouldPrefetch = mPolicy.shouldPrefetchSearchResult();
-            mSearchRequest = new ContextualSearchRequest(selection, shouldPrefetch);
+            mSearchRequest = new ContextualSearchRequest(mProfile, selection, shouldPrefetch);
             mTranslateController.forceAutoDetectTranslateUnlessDisabled(mSearchRequest);
             mDidStartLoadingResolvedSearchRequest = false;
             mSearchPanel.setSearchTerm(selection);
@@ -921,6 +923,7 @@ public class ContextualSearchManager
             boolean shouldPreload = !doPreventPreload && mPolicy.shouldPrefetchSearchResult();
             mSearchRequest =
                     new ContextualSearchRequest(
+                            mProfile,
                             searchTerm,
                             alternateTerm,
                             resolvedSearchTerm.mid(),
@@ -1164,7 +1167,8 @@ public class ContextualSearchManager
                         && mPolicy.shouldCreateVerbatimRequest()
                         && !TextUtils.isEmpty(mSelectionController.getSelectedText())) {
                     mSearchRequest =
-                            new ContextualSearchRequest(mSelectionController.getSelectedText());
+                            new ContextualSearchRequest(
+                                    mProfile, mSelectionController.getSelectedText());
                     mDidStartLoadingResolvedSearchRequest = false;
                 }
                 if (mSearchRequest != null
@@ -1411,6 +1415,7 @@ public class ContextualSearchManager
             // Click on the default query
             mSearchRequest =
                     new ContextualSearchRequest(
+                            mProfile,
                             mResolvedSearchTerm.searchTerm(),
                             mResolvedSearchTerm.alternateTerm(),
                             mResolvedSearchTerm.mid(),
@@ -1425,9 +1430,9 @@ public class ContextualSearchManager
             Uri searchUri =
                     mRelatedSearches.getSearchUri(suggestionIndex - defaultSearchAdjustment);
             if (searchUri != null) {
-                mSearchRequest = new ContextualSearchRequest(searchUri);
+                mSearchRequest = new ContextualSearchRequest(mProfile, searchUri);
             } else {
-                mSearchRequest = new ContextualSearchRequest(searchQuery);
+                mSearchRequest = new ContextualSearchRequest(mProfile, searchQuery);
             }
             mSearchPanel.setSearchTerm(searchQuery);
             mIsRelatedSearchesSerp = true;
@@ -1643,7 +1648,7 @@ public class ContextualSearchManager
                 if (mSearchRequest != null) {
                     mSearchRequest =
                             new ContextualSearchRequest(
-                                    selection, mPolicy.shouldPrefetchSearchResult());
+                                    mProfile, selection, mPolicy.shouldPrefetchSearchResult());
                 }
                 mIsRelatedSearchesSerp = false;
             } else {
@@ -2074,7 +2079,7 @@ public class ContextualSearchManager
 
     @NativeMethods
     interface Natives {
-        long init(ContextualSearchManager caller);
+        long init(ContextualSearchManager caller, Profile profile);
 
         void destroy(long nativeContextualSearchManager, ContextualSearchManager caller);
 
