@@ -5,6 +5,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/lib/multiplex_router.h"

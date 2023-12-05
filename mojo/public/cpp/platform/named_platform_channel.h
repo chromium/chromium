@@ -6,10 +6,10 @@
 #define MOJO_PUBLIC_CPP_PLATFORM_NAMED_PLATFORM_CHANNEL_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/component_export.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"

@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -16,7 +17,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/lib/sync_method_traits.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"

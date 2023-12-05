@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <string_view>
+
 #include "base/containers/flat_map.h"
 #include "base/synchronization/lock.h"
 #include "mojo/core/dispatcher.h"

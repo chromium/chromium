@@ -7,11 +7,11 @@
 
 #include <cstdint>
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/process/process_handle.h"
-#include "base/strings/string_piece.h"
 #include "mojo/public/c/system/invitation.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"

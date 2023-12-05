@@ -5,11 +5,11 @@
 #include "mojo/core/core_ipcz.h"
 
 #include <cstring>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/waitable_event.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"

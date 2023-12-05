@@ -10,6 +10,7 @@
 
 #include <limits>
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/check_op.h"
@@ -19,7 +20,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "mojo/public/cpp/bindings/connection_group.h"
 #include "mojo/public/cpp/bindings/lib/buffer.h"
 #include "mojo/public/cpp/bindings/lib/message_internal.h"

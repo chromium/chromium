@@ -8,6 +8,8 @@
 #include <stddef.h>
 #include <string.h>
 
+#include <string_view>
+
 #include "base/strings/string_util.h"
 #include "mojo/public/cpp/bindings/lib/array_internal.h"
 #include "mojo/public/cpp/bindings/lib/message_fragment.h"

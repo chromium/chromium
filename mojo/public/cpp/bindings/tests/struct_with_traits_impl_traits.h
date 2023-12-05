@@ -8,9 +8,9 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/bindings/tests/struct_with_traits_impl.h"
 #include "mojo/public/interfaces/bindings/tests/struct_with_traits.mojom.h"

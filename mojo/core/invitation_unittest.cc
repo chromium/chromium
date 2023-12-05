@@ -4,9 +4,10 @@
 
 #include <cstdint>
 #include <cstring>
-#include <string>
-
 #include <optional>
+#include <string>
+#include <string_view>
+
 #include "base/base_paths.h"
 #include "base/base_switches.h"
 #include "base/check_op.h"
@@ -23,7 +24,6 @@
 #include "base/path_service.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"

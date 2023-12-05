@@ -4,7 +4,7 @@
 
 #include "mojo/public/cpp/base/generic_pending_associated_receiver_mojom_traits.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
 
 namespace mojo {
 

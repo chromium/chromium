@@ -10,9 +10,9 @@
 #include <map>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "mojo/public/cpp/system/handle.h"
 
 namespace mojo {

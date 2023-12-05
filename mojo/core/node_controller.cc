@@ -5,9 +5,7 @@
 #include "mojo/core/node_controller.h"
 
 #include <limits>
-#include <vector>
 
-#include <optional>
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
@@ -16,7 +14,6 @@
 #include "base/process/process_handle.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"

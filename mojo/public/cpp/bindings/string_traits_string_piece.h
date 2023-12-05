@@ -5,7 +5,8 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_STRING_TRAITS_STRING_PIECE_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_STRING_TRAITS_STRING_PIECE_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "mojo/public/cpp/bindings/string_traits.h"
 
 namespace mojo {

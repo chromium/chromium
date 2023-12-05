@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 

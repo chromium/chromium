@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include <cmath>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "mojo/public/interfaces/bindings/tests/test_constants.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

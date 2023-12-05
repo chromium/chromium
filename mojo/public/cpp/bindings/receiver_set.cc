@@ -5,6 +5,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"

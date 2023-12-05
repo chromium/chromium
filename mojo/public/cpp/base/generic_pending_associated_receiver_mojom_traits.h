@@ -5,8 +5,9 @@
 #ifndef MOJO_PUBLIC_CPP_BASE_GENERIC_PENDING_ASSOCIATED_RECEIVER_MOJOM_TRAITS_H_
 #define MOJO_PUBLIC_CPP_BASE_GENERIC_PENDING_ASSOCIATED_RECEIVER_MOJOM_TRAITS_H_
 
+#include <string_view>
+
 #include "base/component_export.h"
-#include "base/strings/string_piece.h"
 #include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"

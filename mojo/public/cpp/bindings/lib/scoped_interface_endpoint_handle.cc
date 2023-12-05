@@ -5,6 +5,7 @@
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/functional/bind.h"

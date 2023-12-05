@@ -5,6 +5,8 @@
 #ifndef MOJO_PUBLIC_CPP_PLATFORM_PLATFORM_CHANNEL_H_
 #define MOJO_PUBLIC_CPP_PLATFORM_PLATFORM_CHANNEL_H_
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/component_export.h"
 #include "base/process/launch.h"

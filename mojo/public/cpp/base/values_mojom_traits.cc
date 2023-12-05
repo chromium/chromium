@@ -7,8 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/strings/string_piece.h"
-
 namespace mojo {
 
 bool StructTraits<

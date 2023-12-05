@@ -5,11 +5,11 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_GENERIC_PENDING_ASSOCIATED_RECEIVER_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_GENERIC_PENDING_ASSOCIATED_RECEIVER_H_
 
-#include <string>
-
 #include <optional>
+#include <string>
+#include <string_view>
+
 #include "base/component_export.h"
-#include "base/strings/string_piece.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/runtime_features.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"

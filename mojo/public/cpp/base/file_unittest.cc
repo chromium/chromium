@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/files/scoped_temp_dir.h"
 #include "base/sync_socket.h"
 #include "build/build_config.h"

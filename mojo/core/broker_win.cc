@@ -11,7 +11,6 @@
 #include "base/logging.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_piece.h"
 #include "mojo/core/broker.h"
 #include "mojo/core/broker_messages.h"
 #include "mojo/core/channel.h"

@@ -9,6 +9,7 @@
 #include <stdlib.h>
 
 #include <atomic>
+#include <string_view>
 #include <tuple>
 #include <utility>
 

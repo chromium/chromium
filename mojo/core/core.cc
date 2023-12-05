@@ -17,7 +17,6 @@
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"

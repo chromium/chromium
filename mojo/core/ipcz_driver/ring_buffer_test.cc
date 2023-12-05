@@ -6,15 +6,15 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
-#include <optional>
 #include "base/containers/span.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "mojo/core/ipcz_driver/shared_buffer.h"
 #include "mojo/core/ipcz_driver/shared_buffer_mapping.h"
 #include "testing/gtest/include/gtest/gtest.h"

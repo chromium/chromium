@@ -4,10 +4,10 @@
 
 #include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
-#include "base/strings/string_piece.h"
 
 namespace mojo {
 

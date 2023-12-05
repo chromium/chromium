@@ -6,11 +6,11 @@
 #include <list>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/system/data_pipe.h"

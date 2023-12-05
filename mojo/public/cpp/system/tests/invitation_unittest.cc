@@ -4,9 +4,10 @@
 
 #include "mojo/public/cpp/system/invitation.h"
 
+#include <optional>
+#include <string_view>
 #include <utility>
 
-#include <optional>
 #include "base/base_paths.h"
 #include "base/base_switches.h"
 #include "base/check.h"
@@ -18,7 +19,6 @@
 #include "base/functional/callback.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"

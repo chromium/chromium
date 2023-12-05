@@ -4,7 +4,6 @@
 
 #include "mojo/core/invitation_dispatcher.h"
 
-#include "base/strings/string_piece.h"
 #include "mojo/core/core.h"
 
 namespace mojo {

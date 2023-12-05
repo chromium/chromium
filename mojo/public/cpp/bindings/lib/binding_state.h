@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -17,7 +18,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/async_flusher.h"
 #include "mojo/public/cpp/bindings/connection_error_callback.h"
