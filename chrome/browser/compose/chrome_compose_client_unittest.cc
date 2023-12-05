@@ -121,14 +121,6 @@ class MockComposeDialog : public compose::mojom::ComposeDialog {
 
 }  // namespace
 
-// TODO(b/314325398): Better handle the fact that ChromeOS is unsupported.
-// Note: keeping the macro name the same as the class name to avoid having to
-// rename occurrences of the test suite name with a MAYBE_ prefix.
-#if BUILDFLAG(IS_CHROMEOS)
-#define ChromeComposeClientTest DISABLED_ChromeComposeClientTest
-#else
-#define ChromeComposeClientTest ChromeComposeClientTest
-#endif
 class ChromeComposeClientTest : public BrowserWithTestWindowTest {
  public:
   void SetUp() override {

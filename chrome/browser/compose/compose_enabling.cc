@@ -40,8 +40,6 @@ ComposeEnabling::ComposeEnabling(
   DCHECK(profile_);
   translate_language_provider_ = translate_language_provider;
   opt_guide_ = OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
-#if !BUILDFLAG(IS_CHROMEOS)
-  // TODO(b/314325398): Better handle the fact that ChromeOS is unsupported.
   if (opt_guide_) {
     // TODO(b/314199871): Add test when this call becomes mock-able.
     opt_guide_->AddModelExecutionSettingsEnabledObserver(this);
@@ -49,16 +47,12 @@ ComposeEnabling::ComposeEnabling(
     LOG(WARNING) << "ComposeEnabling not monitoring for settings change. This "
                     "is expected when running unrelated tests.";
   }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 ComposeEnabling::~ComposeEnabling() {
-#if !BUILDFLAG(IS_CHROMEOS)
-  // TODO(b/314325398): Better handle the fact that ChromeOS is unsupported.
   if (opt_guide_) {
     opt_guide_->RemoveModelExecutionSettingsEnabledObserver(this);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void ComposeEnabling::SetEnabledForTesting() {

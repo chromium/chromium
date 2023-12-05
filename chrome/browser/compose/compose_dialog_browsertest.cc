@@ -76,9 +76,6 @@ IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest,
                                                    TabCloseTypes::CLOSE_NONE);
 }
 
-// The feedback dialog on CrOS & LaCrOS happens at the system level which
-// cannot be tested in a browser test.
-#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest, OpenFeedbackPage) {
   ASSERT_TRUE(embedded_test_server()->Start());
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
@@ -103,7 +100,6 @@ IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest, OpenFeedbackPage) {
   RunTestSequence(
       InAnyContext(WaitForShow(FeedbackDialog::kFeedbackDialogForTesting)));
 }
-#endif  // !IS_CHROMEOS
 
 // Start ClientPrefsBrowserTest methods.
 IN_PROC_BROWSER_TEST_F(ComposeClientPrefsBrowserTest,

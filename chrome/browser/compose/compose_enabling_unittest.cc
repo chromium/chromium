@@ -107,14 +107,6 @@ void RegisterMockOptimizationGuideKeyedServiceFactory(
 
 }  // namespace
 
-// TODO(b/314325398): Better handle the fact that ChromeOS is unsupported.
-// Note: keeping the macro name the same as the class name to avoid having to
-// rename occurrences of the test suite name with a MAYBE_ prefix.
-#if BUILDFLAG(IS_CHROMEOS)
-#define ComposeEnablingTest DISABLED_ComposeEnablingTest
-#else
-#define ComposeEnablingTest ComposeEnablingTest
-#endif
 class ComposeEnablingTest : public BrowserWithTestWindowTest {
  public:
   ComposeEnablingTest() {
