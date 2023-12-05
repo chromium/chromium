@@ -886,7 +886,7 @@ public class ToolbarPhone extends ToolbarLayout
                 // toolbar color so that the NTP content is not visible beneath the toolbar. In
                 // between the transition, we set a translucent default toolbar color based on
                 // the expansion progress of the toolbar.
-                return androidx.core.graphics.ColorUtils.setAlphaComponent(
+                return ColorUtils.setAlphaComponent(
                         mIsSurfacePolishEnabled
                                 ? mHomeSurfaceToolbarBackgroundColor
                                 : ChromeColors.getDefaultThemeColor(getContext(), false),

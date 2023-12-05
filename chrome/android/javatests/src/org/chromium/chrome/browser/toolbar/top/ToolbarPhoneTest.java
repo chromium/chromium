@@ -31,6 +31,7 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
@@ -999,7 +1000,7 @@ public class ToolbarPhoneTest {
     public void testToolbarBackgroundChanged() {
         ColorDrawable toolbarBackgroundDrawable = mToolbar.getBackgroundDrawable();
         int expectColor =
-                androidx.core.graphics.ColorUtils.setAlphaComponent(
+                ColorUtils.setAlphaComponent(
                         ChromeColors.getSurfaceColor(
                                 mToolbar.getContext(),
                                 R.dimen.home_surface_background_color_elevation),

@@ -472,7 +472,7 @@ public class StripLayoutTab implements VirtualView {
             // with a specified tint in the CC layer (instead retaining the alpha of the original
             // image). Instead, this is reflected by setting the opacity of the divider itself.
             // See https://crbug.com/1373634.
-            return androidx.core.graphics.ColorUtils.setAlphaComponent(
+            return ColorUtils.setAlphaComponent(
                     SemanticColorUtils.getDefaultIconColorAccent1(mContext),
                     (int) (DIVIDER_FOLIO_LIGHT_OPACITY * 255));
         }

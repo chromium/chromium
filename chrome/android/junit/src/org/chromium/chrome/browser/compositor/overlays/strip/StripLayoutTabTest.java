@@ -160,7 +160,7 @@ public class StripLayoutTabTest {
 
         // Normal.
         expectedColor =
-                androidx.core.graphics.ColorUtils.setAlphaComponent(
+                ColorUtils.setAlphaComponent(
                         SemanticColorUtils.getDefaultIconColorAccent1(mContext),
                         (int) (StripLayoutTab.DIVIDER_FOLIO_LIGHT_OPACITY * 255));
         assertEquals(
