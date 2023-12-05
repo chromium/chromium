@@ -35,10 +35,6 @@ namespace {
 const char kPhoneBluetoothAddress[] = "23:45:67:89:AB:CD";
 constexpr auto kTestTime = base::Time::FromSecondsSinceUnixEpoch(100000);
 
-std::string kPhoneHubNudgeFeatureParam = "use_nudge";
-std::string kPhoneHubNudgeFeatureUseNudgeTrue = "true";
-std::string kPhoneHubNudgeFeatureUseNudgeFalse = "false";
-
 }  // namespace
 
 class OnboardingNudgeControllerTest : public AshTestBase {
@@ -51,7 +47,6 @@ class OnboardingNudgeControllerTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    InitFeaturesWithParam(kPhoneHubNudgeFeatureUseNudgeTrue);
     AshTestBase::SetUp();
     test_clock_ = std::make_unique<base::SimpleTestClock>();
     widget_ = CreateFramelessTestWidget();
@@ -95,14 +90,6 @@ class OnboardingNudgeControllerTest : public AshTestBase {
     return Shell::Get()->session_controller()->GetActivePrefService();
   }
 
-  void InitFeaturesWithParam(std::string use_nudge) {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{features::kPhoneHubOnboardingNotifierRevamp,
-          {{kPhoneHubNudgeFeatureParam, use_nudge}}},
-         {features::kSystemNudgeV2, {}}},
-        {});
-  }
-
   base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
 
@@ -115,35 +102,6 @@ class OnboardingNudgeControllerTest : public AshTestBase {
 TEST_F(OnboardingNudgeControllerTest, OnboardingNudgeControllerExists) {
   OnboardingNudgeController* controller = GetController();
   ASSERT_TRUE(controller);
-}
-
-TEST_F(OnboardingNudgeControllerTest, NotInNudgeExperimentGroup) {
-  feature_list_.Reset();
-  InitFeaturesWithParam(kPhoneHubNudgeFeatureUseNudgeFalse);
-  GetController()->ShowNudgeIfNeeded();
-  EXPECT_EQ(pref_service()->GetInteger(
-                OnboardingNudgeController::kPhoneHubNudgeTotalAppearances),
-            0);
-  EXPECT_TRUE(
-      pref_service()
-          ->GetTime(OnboardingNudgeController::kPhoneHubNudgeLastShownTime)
-          .is_null());
-
-  GetController()->OnNudgeHoverStateChanged(true);
-  EXPECT_TRUE(
-      pref_service()
-          ->GetTime(OnboardingNudgeController::kPhoneHubNudgeLastActionTime)
-          .is_null());
-
-  GetController()->OnNudgeClicked();
-  EXPECT_TRUE(
-      pref_service()
-          ->GetTime(OnboardingNudgeController::kPhoneHubNudgeLastActionTime)
-          .is_null());
-  EXPECT_TRUE(
-      pref_service()
-          ->GetTime(OnboardingNudgeController::kPhoneHubNudgeLastClickTime)
-          .is_null());
 }
 
 TEST_F(OnboardingNudgeControllerTest, ShowNudge) {

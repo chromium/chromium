@@ -2125,7 +2125,7 @@ BASE_FEATURE(kPhoneHubMonochromeNotificationIcons,
 // onboarding to Phone Hub.
 BASE_FEATURE(kPhoneHubOnboardingNotifierRevamp,
              "PhoneHubOnboardingNotifierRevamp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Should we show nudge or notification to the user.
 const base::FeatureParam<bool> kPhoneHubOnboardingNotifierUseNudge{
@@ -2139,7 +2139,7 @@ const base::FeatureParam<
 // What text should we show to the user.
 const base::FeatureParam<PhoneHubNotifierTextGroup> kPhoneHubNotifierTextGroup{
     &kPhoneHubOnboardingNotifierRevamp, "notifier_text_group",
-    PhoneHubNotifierTextGroup::kNotifierTextGroupA,
+    PhoneHubNotifierTextGroup::kNotifierTextGroupB,
     &phone_hub_notifier_text_groups};
 
 // The length of time passing till we display nudge to users again

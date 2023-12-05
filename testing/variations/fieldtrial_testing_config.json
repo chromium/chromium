@@ -13280,63 +13280,6 @@
             ]
         }
     ],
-    "PhoneHubOnboardingNotifiersStudy": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "enabled_with_nudge_text_group_A",
-                    "params": {
-                        "notifier_text_group": "notifier_with_text_A",
-                        "use_nudge": "true"
-                    },
-                    "enable_features": [
-                        "PhoneHubOnboardingNotifierRevamp",
-                        "SystemNudgeV2"
-                    ]
-                },
-                {
-                    "name": "enabled_with_nudge_text_group_B",
-                    "params": {
-                        "notifier_text_group": "notifier_with_text_B",
-                        "use_nudge": "true"
-                    },
-                    "enable_features": [
-                        "PhoneHubOnboardingNotifierRevamp",
-                        "SystemNudgeV2"
-                    ]
-                },
-                {
-                    "name": "enabled_with_notification_text_group_A",
-                    "params": {
-                        "notifier_text_group": "notifier_with_text_A",
-                        "use_nudge": "false"
-                    },
-                    "enable_features": [
-                        "PhoneHubOnboardingNotifierRevamp"
-                    ],
-                    "disable_features": [
-                        "SystemNudgeV2"
-                    ]
-                },
-                {
-                    "name": "enabled_with_notification_text_group_B",
-                    "params": {
-                        "notifier_text_group": "notifier_with_text_B",
-                        "use_nudge": "false"
-                    },
-                    "enable_features": [
-                        "PhoneHubOnboardingNotifierRevamp"
-                    ],
-                    "disable_features": [
-                        "SystemNudgeV2"
-                    ]
-                }
-            ]
-        }
-    ],
     "PlusAddressExperiment": [
         {
             "platforms": [

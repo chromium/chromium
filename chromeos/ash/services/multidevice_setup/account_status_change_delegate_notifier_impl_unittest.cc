@@ -31,18 +31,12 @@ namespace multidevice_setup {
 namespace {
 
 const int64_t kTestTimeMillis = 1500000000000;
-const int64_t kTestFastForwardTenMinutesMillis = 10 * 60 * 1000;
-const int64_t kTestFastForwardFourMinutesMillis = 4 * 60 * 1000;
 const char kFakePhoneKey[] = "fake-phone-key";
 const char kFakePhoneName[] = "Phony Phone";
 const char kFakePhoneKeyA[] = "fake-phone-key-A";
 const char kFakePhoneNameA[] = "Phony Phone A";
 const char kFakePhoneKeyB[] = "fake-phone-key-B";
 const char kFakePhoneNameB[] = "Phony Phone B";
-
-std::string kPhoneHubNudgeFeatureParam = "use_nudge";
-std::string kPhoneHubNudgeFeatureUseNudgeTrue = "true";
-std::string kPhoneHubNudgeFeatureUseNudgeFalse = "false";
 
 const multidevice::RemoteDeviceRef kFakePhone =
     multidevice::RemoteDeviceRefBuilder()
@@ -214,14 +208,6 @@ class MultiDeviceSetupAccountStatusChangeDelegateNotifierTest
     }
   }
 
-  void InitFeaturesWithParam(std::string use_nudge) {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{features::kPhoneHubOnboardingNotifierRevamp,
-          {{kPhoneHubNudgeFeatureParam, use_nudge}}},
-         {features::kSystemNudgeV2, {}}},
-        {});
-  }
-
   FakeAccountStatusChangeDelegate* fake_delegate() {
     return fake_delegate_.get();
   }
@@ -252,8 +238,9 @@ TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
 
   SetHostWithStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
                     absl::nullopt /* host_device */);
-  EXPECT_EQ(1u, fake_delegate()->num_new_user_potential_host_events_handled());
-  EXPECT_EQ(kTestTimeMillis, GetNewUserPotentialHostExistsTimestamp());
+  // We are now showing nudge instead of notification.
+  EXPECT_EQ(0u, fake_delegate()->num_new_user_potential_host_events_handled());
+  EXPECT_EQ(0u, GetNewUserPotentialHostExistsTimestamp());
 }
 
 TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
@@ -268,8 +255,9 @@ TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
 
   SetHostWithStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
                     absl::nullopt /* host_device */);
-  EXPECT_EQ(1u, fake_delegate()->num_new_user_potential_host_events_handled());
-  EXPECT_EQ(kTestTimeMillis, GetNewUserPotentialHostExistsTimestamp());
+  // We are now showing nudge instead of notification.
+  EXPECT_EQ(0u, fake_delegate()->num_new_user_potential_host_events_handled());
+  EXPECT_EQ(0u, GetNewUserPotentialHostExistsTimestamp());
 }
 
 TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
@@ -344,13 +332,13 @@ TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
   SetAccountStatusChangeDelegateRemote();
   SetHostWithStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
                     absl::nullopt /* host_device */);
-  EXPECT_EQ(1u, fake_delegate()->num_new_user_potential_host_events_handled());
+  EXPECT_EQ(0u, fake_delegate()->num_new_user_potential_host_events_handled());
   EXPECT_EQ(0u, fake_delegate()->num_no_longer_new_user_events_handled());
 
   // All potential hosts are lost from the account.
   SetHostWithStatus(mojom::HostStatus::kNoEligibleHosts,
                     absl::nullopt /* host_device */);
-  EXPECT_EQ(1u, fake_delegate()->num_new_user_potential_host_events_handled());
+  EXPECT_EQ(0u, fake_delegate()->num_new_user_potential_host_events_handled());
   EXPECT_EQ(1u, fake_delegate()->num_no_longer_new_user_events_handled());
 }
 
@@ -360,14 +348,14 @@ TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
   SetAccountStatusChangeDelegateRemote();
   SetHostWithStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
                     absl::nullopt /* host_device */);
-  EXPECT_EQ(1u, fake_delegate()->num_new_user_potential_host_events_handled());
+  EXPECT_EQ(0u, fake_delegate()->num_new_user_potential_host_events_handled());
   EXPECT_EQ(0u, fake_delegate()->num_no_longer_new_user_events_handled());
 
   // A potential host was set.
   SetHostWithStatus(
       mojom::HostStatus::kHostSetLocallyButWaitingForBackendConfirmation,
       BuildFakePhone(kFakePhoneKey, kFakePhoneName));
-  EXPECT_EQ(1u, fake_delegate()->num_new_user_potential_host_events_handled());
+  EXPECT_EQ(0u, fake_delegate()->num_new_user_potential_host_events_handled());
   EXPECT_EQ(1u, fake_delegate()->num_no_longer_new_user_events_handled());
 }
 
@@ -399,7 +387,7 @@ TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
   CompleteOobeSetupFlow();
   EXPECT_EQ(kTestTimeMillis, GetOobeSetupFlowTimestamp());
 
-  EXPECT_EQ(1u, fake_delegate()->num_new_user_potential_host_events_handled());
+  EXPECT_EQ(0u, fake_delegate()->num_new_user_potential_host_events_handled());
   EXPECT_EQ(1u, fake_delegate()->num_no_longer_new_user_events_handled());
 }
 
@@ -735,77 +723,6 @@ TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
 
   ForgetHost();
   EXPECT_EQ(GetMostRecentVerifiedHostDeviceIdPref(), "");
-}
-
-TEST_F(
-    MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
-    CompletingOobeSetupFlowDoNotBlockNewUserEventIfInPhoneHubNotificationExperiment) {
-  InitFeaturesWithParam(/*use_nudge=*/kPhoneHubNudgeFeatureUseNudgeFalse);
-  BuildAccountStatusChangeDelegateNotifier();
-
-  // Complete OOBE MultiDevice setup flow before delegate is set.
-  EXPECT_EQ(0u, GetOobeSetupFlowTimestamp());
-  CompleteOobeSetupFlow();
-  EXPECT_EQ(kTestTimeMillis, GetOobeSetupFlowTimestamp());
-
-  SetAccountStatusChangeDelegateRemote();
-
-  EXPECT_EQ(1u, fake_delegate()->num_new_user_potential_host_events_handled());
-  EXPECT_EQ(kTestTimeMillis, GetNewUserPotentialHostExistsTimestamp());
-}
-
-TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
-       NoNewUserEventIfInPhoneHubNudgeExperimentGroup) {
-  InitFeaturesWithParam(/*use_nudge=*/kPhoneHubNudgeFeatureUseNudgeTrue);
-  BuildAccountStatusChangeDelegateNotifier();
-  SetAccountStatusChangeDelegateRemote();
-  SetHostWithStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
-                    absl::nullopt /* host_device */);
-
-  EXPECT_EQ(0u, fake_delegate()->num_new_user_potential_host_events_handled());
-  EXPECT_EQ(0u, GetNewUserPotentialHostExistsTimestamp());
-}
-
-TEST_F(
-    MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
-    NoNewUserEventIfFiveMinutesAfterLoginInPhoneHubNotificationExperimentGroup) {
-  InitFeaturesWithParam(/*use_nudge=*/kPhoneHubNudgeFeatureUseNudgeFalse);
-  BuildAccountStatusChangeDelegateNotifier();
-  SetAccountStatusChangeDelegateRemote();
-  SetSeeionState(session_manager::SessionState::ACTIVE);
-  FastForward(kTestFastForwardTenMinutesMillis);
-  SetHostWithStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
-                    absl::nullopt /* host_device */);
-
-  EXPECT_EQ(0u, fake_delegate()->num_new_user_potential_host_events_handled());
-  EXPECT_EQ(0u, GetNewUserPotentialHostExistsTimestamp());
-
-  SetSeeionState(session_manager::SessionState::LOCKED);
-
-  EXPECT_EQ(0u, fake_delegate()->num_new_user_potential_host_events_handled());
-  EXPECT_EQ(0u, GetNewUserPotentialHostExistsTimestamp());
-
-  SetSeeionState(session_manager::SessionState::ACTIVE);
-
-  EXPECT_EQ(1u, fake_delegate()->num_new_user_potential_host_events_handled());
-  EXPECT_EQ(kTestTimeMillis + kTestFastForwardTenMinutesMillis,
-            GetNewUserPotentialHostExistsTimestamp());
-}
-
-TEST_F(
-    MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
-    NewUserEventIfWithinFiveMinutesOfLoginInPhoneHubNotificationExperimentGroup) {
-  InitFeaturesWithParam(/*use_nudge=*/kPhoneHubNudgeFeatureUseNudgeFalse);
-  BuildAccountStatusChangeDelegateNotifier();
-  SetAccountStatusChangeDelegateRemote();
-  SetSeeionState(session_manager::SessionState::ACTIVE);
-  FastForward(kTestFastForwardFourMinutesMillis);
-  SetHostWithStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
-                    absl::nullopt /* host_device */);
-
-  EXPECT_EQ(1u, fake_delegate()->num_new_user_potential_host_events_handled());
-  EXPECT_EQ(kTestTimeMillis + kTestFastForwardFourMinutesMillis,
-            GetNewUserPotentialHostExistsTimestamp());
 }
 
 }  // namespace multidevice_setup

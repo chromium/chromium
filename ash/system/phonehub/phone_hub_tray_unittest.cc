@@ -74,9 +74,7 @@ class PhoneHubTrayTest : public AshTestBase {
         /*enabled_features=*/{features::kPhoneHub,
                               features::kPhoneHubCameraRoll,
                               features::kEcheLauncher, features::kEcheSWA,
-                              features::kPhoneHubOnboardingNotifierRevamp,
-                              features::kEcheNetworkConnectionState,
-                              features::kSystemNudgeV2},
+                              features::kEcheNetworkConnectionState},
         /*disabled_features=*/{});
     auto delegate = std::make_unique<MockNewWindowDelegate>();
     new_window_delegate_ = delegate.get();
