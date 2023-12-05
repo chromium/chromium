@@ -20,8 +20,6 @@ import org.chromium.ui.util.ColorUtils;
  */
 public class TabUiThemeUtil {
     private static final float MAX_TAB_STRIP_TAB_WIDTH_DP = 265.f;
-    private static final float DETACHED_TAB_OVERLAY_ALPHA = 0.85f;
-    private static final float DETACHED_TAB_OVERLAY_ALPHA_EDIT_MODE = 0.2f;
 
     /**
      * Returns the color for the tab strip background.
@@ -104,21 +102,6 @@ public class TabUiThemeUtil {
         }
 
         return ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_0);
-    }
-
-    /**
-     * Returns the value that corresponds to Surface-5 based on incognito status.
-     *
-     * @param context {@link Context} used to retrieve color.
-     * @param isIncognito Whether the color is used for incognito mode.
-     * @return The value that corresponds to Surface-5.
-     */
-    private static @ColorInt int getSurfaceColorElev5(Context context, boolean isIncognito) {
-        if (isIncognito) {
-            return context.getColor(R.color.default_bg_color_dark_elev_5_baseline);
-        }
-
-        return ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_5);
     }
 
     public static @DrawableRes int getTabResource() {
