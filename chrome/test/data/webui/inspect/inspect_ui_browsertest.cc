@@ -148,7 +148,6 @@ class InspectUISharedStorageTest : public InspectUITest {
   InspectUISharedStorageTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kSharedStorageAPI,
-                              privacy_sandbox::kPrivacySandboxSettings4,
                               features::kPrivacySandboxAdsAPIsOverride,
                               privacy_sandbox::
                                   kOverridePrivacySandboxSettingsLocalTesting},

@@ -336,7 +336,6 @@ class BrowsingTopicsDisabledInternalsBrowserTest
             blink::features::kBrowsingTopics,
             blink::features::kBrowsingTopicsParameters,
             features::kPrivacySandboxAdsAPIsOverride,
-            privacy_sandbox::kPrivacySandboxSettings4,
         });
   }
 
