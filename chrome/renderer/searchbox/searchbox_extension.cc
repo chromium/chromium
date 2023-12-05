@@ -94,14 +94,14 @@ void Dispatch(blink::WebLocalFrame* frame, const blink::WebString& script) {
 v8::Local<v8::Object> GenerateMostVisitedItem(
     v8::Isolate* isolate,
     float device_pixel_ratio,
-    int render_frame_id,
+    const blink::LocalFrameToken& frame_token,
     InstantRestrictedID restricted_id) {
   return gin::DataObjectBuilder(isolate)
       .Set("rid", restricted_id)
       .Set("faviconUrl",
-           base::StringPrintf("chrome-search://favicon/size/16@%fx/%d/%d",
-                              device_pixel_ratio, render_frame_id,
-                              restricted_id))
+           base::StringPrintf("chrome-search://favicon/size/16@%fx/%s/%d",
+                              device_pixel_ratio,
+                              frame_token.ToString().c_str(), restricted_id))
       .Build();
 }
 
@@ -112,7 +112,6 @@ v8::Local<v8::Object> GenerateMostVisitedItem(
 // to most-visited iframes via getMostVisitedItemData.
 v8::Local<v8::Object> GenerateMostVisitedItemData(
     v8::Isolate* isolate,
-    int render_view_id,
     InstantRestrictedID restricted_id,
     const InstantMostVisitedItem& mv_item) {
   // We set the "dir" attribute of the title, so that in RTL locales, a LTR
@@ -535,7 +534,7 @@ v8::Local<v8::Value> NewTabPageBindings::GetMostVisited(v8::Isolate* isolate) {
       blink::PageZoomLevelToZoomFactor(render_frame->GetWebView()->ZoomLevel());
   float device_pixel_ratio = render_frame->GetDeviceScaleFactor() * zoom_factor;
 
-  int render_frame_id = render_frame->GetRoutingID();
+  auto frame_token = render_frame->GetWebFrame()->GetLocalFrameToken();
 
   std::vector<InstantMostVisitedItemIDPair> instant_mv_items;
   search_box->GetMostVisitedItems(&instant_mv_items);
@@ -545,10 +544,9 @@ v8::Local<v8::Value> NewTabPageBindings::GetMostVisited(v8::Isolate* isolate) {
   for (size_t i = 0; i < instant_mv_items.size(); ++i) {
     InstantRestrictedID rid = instant_mv_items[i].first;
     v8_mv_items
-        ->CreateDataProperty(
-            context, i,
-            GenerateMostVisitedItem(isolate, device_pixel_ratio,
-                                    render_frame_id, rid))
+        ->CreateDataProperty(context, i,
+                             GenerateMostVisitedItem(
+                                 isolate, device_pixel_ratio, frame_token, rid))
         .Check();
   }
   return v8_mv_items;
@@ -623,8 +621,7 @@ v8::Local<v8::Value> NewTabPageBindings::GetMostVisitedItemData(
   if (!search_box->GetMostVisitedItemWithID(rid, &item))
     return v8::Null(isolate);
 
-  int render_frame_id = GetMainRenderFrameForCurrentContext()->GetRoutingID();
-  return GenerateMostVisitedItemData(isolate, render_frame_id, rid, item);
+  return GenerateMostVisitedItemData(isolate, rid, item);
 }
 
 }  // namespace

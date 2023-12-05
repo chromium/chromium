@@ -35,7 +35,7 @@ class SearchBox : public content::RenderFrameObserver,
     IconURLHelper();
     virtual ~IconURLHelper();
     // Returns main frame id for validating icon URL.
-    virtual int GetMainFrameID() const = 0;
+    virtual std::string GetMainFrameToken() const = 0;
     // Returns the page URL string for |rid|, or empty string for invalid |rid|.
     virtual std::string GetURLStringFromRestrictedID(InstantRestrictedID rid)
         const = 0;
