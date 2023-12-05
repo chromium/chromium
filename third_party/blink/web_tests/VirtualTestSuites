@@ -317,7 +317,7 @@
     "args": ["--use-gpu-in-tests",
              "--enable-features=MediaFoundationClearPlayback,MediaFoundationClearRendering:strategy/direct-composition",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "expires": "Dec 1, 2024"
   },
   {
     "prefix": "media-foundation-for-clear-frameserver",
@@ -328,7 +328,7 @@
              "--force-mfmediaengine-renderer",
              "--enable-features=MediaFoundationClearRendering:strategy/frame-server",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "expires": "Dec 1, 2024"
   },
   {
     "prefix": "media-gpu-accelerated",
@@ -337,7 +337,7 @@
               "media"],
     "args": ["--use-gpu-in-tests",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "expires": "Dec 1, 2024"
   },
   {
     "prefix": "shared_array_buffer_on_desktop",
