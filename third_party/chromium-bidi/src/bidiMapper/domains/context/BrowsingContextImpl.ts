@@ -1024,7 +1024,7 @@ function getImageFormatParameters(
       } as const;
     }
   }
-  throw new UnsupportedOperationException(
+  throw new InvalidArgumentException(
     `Image format '${type}' is not a supported format`
   );
 }
