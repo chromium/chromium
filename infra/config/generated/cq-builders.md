@@ -227,7 +227,7 @@ builder.
 * [builder-config-verifier](https://ci.chromium.org/p/chromium/builders/try/builder-config-verifier) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""builder-config-verifier""))
 
   Location filters:
-  * [`//infra/config/generated/builders/.*`](https://cs.chromium.org/search?q=+file:infra/config/generated/builders/.*)
+  * [`//infra/config/generated/builders[^/]+/[^/]+/properties\.json`](https://cs.chromium.org/search?q=+file:infra/config/generated/builders[^/]+/[^/]+/properties\.json)
 
 * [chromeos-amd64-generic-dbg](https://ci.chromium.org/p/chromium/builders/try/chromeos-amd64-generic-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""chromeos-amd64-generic-dbg""))
 
