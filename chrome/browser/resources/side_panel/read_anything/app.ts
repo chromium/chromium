@@ -933,6 +933,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.updateStyles({
       '--background-color': this.getBackgroundColorVar(colorSuffix),
       '--foreground-color': this.getForegroundColorVar(colorSuffix),
+      '--selection-color': this.getSelectionColorVar(colorSuffix),
       '--current-highlight-bg-color':
           this.getCurrentHighlightColorVar(colorSuffix),
       '--previous-highlight-color':
@@ -940,12 +941,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       '--sp-empty-state-heading-color':
           `var(--color-read-anything-foreground${colorSuffix})`,
       '--sp-empty-state-body-color': emptyStateBodyColor,
-      '--selection-color':
-          `var(--color-read-anything-text-selection${colorSuffix})`,
       '--link-color': `var(--color-read-anything-link-default${colorSuffix})`,
       '--visited-link-color':
           `var(--color-read-anything-link-visited${colorSuffix})`,
     });
+    document.documentElement.style.setProperty(
+        '--selection-color', this.getSelectionColorVar(colorSuffix));
   }
 
   getCurrentHighlightColorVar(colorSuffix: string) {
@@ -968,6 +969,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       return 'var(--color-sys-on-surface)';
     }
     return `var(--color-read-anything-foreground${colorSuffix})`;
+  }
+
+  getSelectionColorVar(colorSuffix: string) {
+    // TODO(crbug.com/1465029): Use color token when in the default theme.
+    return `var(--color-read-anything-text-selection${colorSuffix})`;
   }
 
   updateTheme() {
