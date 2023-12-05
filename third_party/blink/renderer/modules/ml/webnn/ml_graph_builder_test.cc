@@ -4036,8 +4036,7 @@ TEST_F(MLGraphBuilderTest, ReduceTest) {
       EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
                 DOMExceptionCode::kDataError);
       EXPECT_EQ(scope.GetExceptionState().Message(),
-                "The values in axes must be within the range from 0 "
-                "to (3).");
+                "The values in axes must be in the range [0, 4).");
     }
     {
       // Test throwing exception when the two values are same in axes sequence.
@@ -4526,7 +4525,7 @@ TEST_F(MLGraphBuilderTest, TransposeTest) {
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
-              "The values in axes must be within the range from 0 to (3).");
+              "The values in axes must be in the range [0, 4).");
   }
 }
 
@@ -4903,6 +4902,200 @@ TEST_F(MLGraphBuilderTest, GatherTest) {
     EXPECT_EQ(
         scope.GetExceptionState().Message(),
         "The indices type must be one of the int32,uint32,int64,uint64 types.");
+  }
+}
+
+MLOperand* BuildLayerNormalization(V8TestingScope& scope,
+                                   MLGraphBuilder* builder,
+                                   const MLOperand* input,
+                                   const MLLayerNormalizationOptions* options) {
+  auto* output =
+      builder->layerNormalization(input, options, scope.GetExceptionState());
+  EXPECT_NE(output, nullptr);
+  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->DataType(), input->DataType());
+  EXPECT_EQ(output->Dimensions(), input->Dimensions());
+  auto* layer_normalization = output->Operator();
+  EXPECT_NE(layer_normalization, nullptr);
+  EXPECT_EQ(layer_normalization->Kind(),
+            MLOperator::OperatorKind::kLayerNormalization);
+  EXPECT_TRUE(layer_normalization->IsConnected());
+  EXPECT_NE(layer_normalization->Options(), nullptr);
+  return output;
+}
+
+TEST_F(MLGraphBuilderTest, LayerNormalizationTest) {
+  V8TestingScope scope;
+  MLGraphBuilder* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
+  {
+    // Test building layerNormalization with default options for scalar input.
+    auto* input =
+        BuildInput(builder, "input", {}, V8MLOperandDataType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    BuildLayerNormalization(scope, builder, input);
+  }
+  {
+    // Test building layerNormalization with given axes.
+    auto* input = BuildInput(builder, "input", {1, 2, 3, 4},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* options = MLLayerNormalizationOptions::Create();
+    options->setAxes({3});
+    BuildLayerNormalization(scope, builder, input, options);
+  }
+  {
+    // Test building layerNormalization with given scale.
+    auto* input = BuildInput(builder, "input", {1, 2, 3, 4},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* options = MLLayerNormalizationOptions::Create();
+    auto* scale = BuildInput(builder, "scale", {2, 3, 4},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    options->setScale(scale);
+    BuildLayerNormalization(scope, builder, input, options);
+  }
+  {
+    // Test building layerNormalization with given axes, scale and bias.
+    auto* input = BuildInput(builder, "input", {1, 2, 3, 4},
+                             V8MLOperandDataType::Enum::kFloat16,
+                             scope.GetExceptionState());
+    auto* options = MLLayerNormalizationOptions::Create();
+    auto* scale = BuildInput(builder, "scale", {3, 4},
+                             V8MLOperandDataType::Enum::kFloat16,
+                             scope.GetExceptionState());
+    auto* bias =
+        BuildInput(builder, "bias", {3, 4}, V8MLOperandDataType::Enum::kFloat16,
+                   scope.GetExceptionState());
+    options->setScale(scale);
+    options->setBias(bias);
+    options->setAxes({2, 3});
+    BuildLayerNormalization(scope, builder, input, options);
+  }
+  {
+    // Test building layerNormalization with inconsecutive axes.
+    auto* input = BuildInput(builder, "input", {1, 2, 3, 4, 5, 6},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* options = MLLayerNormalizationOptions::Create();
+    auto* scale = BuildInput(builder, "scale", {2, 4, 6},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* bias = BuildInput(builder, "bias", {2, 4, 6},
+                            V8MLOperandDataType::Enum::kFloat32,
+                            scope.GetExceptionState());
+    options->setScale(scale);
+    options->setBias(bias);
+    options->setAxes({1, 3, 5});
+    BuildLayerNormalization(scope, builder, input, options);
+  }
+  {
+    // Test building layerNormalization with axes in descending order.
+    auto* input = BuildInput(builder, "input", {1, 2, 3, 4, 5, 6},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* options = MLLayerNormalizationOptions::Create();
+    auto* scale = BuildInput(builder, "scale", {6, 5, 4, 3, 2},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* bias = BuildInput(builder, "bias", {6, 5, 4, 3, 2},
+                            V8MLOperandDataType::Enum::kFloat32,
+                            scope.GetExceptionState());
+    options->setScale(scale);
+    options->setBias(bias);
+    options->setAxes({5, 4, 3, 2, 1});
+    BuildLayerNormalization(scope, builder, input, options);
+  }
+  {
+    // Test throwing error when the input data type is uint32.
+    auto* input = BuildInput(builder, "input", {1, 2, 3, 4},
+                             V8MLOperandDataType::Enum::kUint32,
+                             scope.GetExceptionState());
+    auto* options = MLLayerNormalizationOptions::Create();
+    auto* output =
+        builder->layerNormalization(input, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The input type must be one of the floating point types.");
+  }
+  {
+    // Test throwing error when the axis is greater than the input rank.
+    auto* input = BuildInput(builder, "input", {1, 2, 3, 4},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* options = MLLayerNormalizationOptions::Create();
+    options->setAxes({1, 2, 4});
+    auto* output =
+        builder->layerNormalization(input, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The values in axes must be in the range [0, 4).");
+  }
+  {
+    // Test throwing error when the axes have duplications.
+    auto* input = BuildInput(builder, "input", {1, 2, 3, 4},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* options = MLLayerNormalizationOptions::Create();
+    options->setAxes({3, 3});
+    auto* output =
+        builder->layerNormalization(input, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "Two or more values are same in the axes sequence.");
+  }
+  {
+    // Test throwing error when the scale data type doesn't match input data
+    // type.
+    auto* input = BuildInput(builder, "input", {1, 2, 3, 4},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* options = MLLayerNormalizationOptions::Create();
+    auto* scale = BuildInput(builder, "scale", {3, 4},
+                             V8MLOperandDataType::Enum::kFloat16,
+                             scope.GetExceptionState());
+    auto* bias =
+        BuildInput(builder, "bias", {3, 4}, V8MLOperandDataType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    options->setScale(scale);
+    options->setBias(bias);
+    options->setAxes({2, 3});
+    auto* output =
+        builder->layerNormalization(input, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(
+        scope.GetExceptionState().Message(),
+        "For scale operand: the data type doesn't match the input data type.");
+  }
+  {
+    // Test throwing error when the bias dimensions doesn't match axis
+    // dimensions.
+    auto* input = BuildInput(builder, "input", {1, 2, 3, 4},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* options = MLLayerNormalizationOptions::Create();
+    auto* bias = BuildInput(builder, "bias", {3, 3, 4},
+                            V8MLOperandDataType::Enum::kFloat32,
+                            scope.GetExceptionState());
+    options->setBias(bias);
+    auto* output =
+        builder->layerNormalization(input, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "For bias operand: the shape doesn't match the axis dimensions "
+              "of the input.");
   }
 }
 

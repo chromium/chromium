@@ -14,6 +14,8 @@ String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
   switch (kind) {
     case MLOperator::OperatorKind::kBatchNormalization:
       return "batchNormalization";
+    case MLOperator::OperatorKind::kCast:
+      return "cast";
     case MLOperator::OperatorKind::kClamp:
       return "clamp";
     case MLOperator::OperatorKind::kConcat:
@@ -58,8 +60,8 @@ String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
       return "reciprocal";
     case MLOperator::OperatorKind::kSqrt:
       return "sqrt";
-    case MLOperator::OperatorKind::kCast:
-      return "cast";
+    case MLOperator::OperatorKind::kLayerNormalization:
+      return "layerNormalization";
     case MLOperator::OperatorKind::kLeakyRelu:
       return "leakyRelu";
     case MLOperator::OperatorKind::kMax:

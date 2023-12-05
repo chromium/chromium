@@ -33,6 +33,7 @@ class MLEluOptions;
 class MLGatherOptions;
 class MLGemmOptions;
 class MLGraph;
+class MLLayerNormalizationOptions;
 class MLLeakyReluOptions;
 class MLPadOptions;
 class MLPool2dOptions;
@@ -170,6 +171,10 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
 
   MLOperand* hardSwish(const MLOperand* input, ExceptionState& exception_state);
   MLActivation* hardSwish(ExceptionState& exception_state);
+
+  MLOperand* layerNormalization(const MLOperand* input,
+                                const MLLayerNormalizationOptions* options,
+                                ExceptionState& exception_state);
 
   MLOperand* leakyRelu(const MLOperand* input,
                        const MLLeakyReluOptions* options,

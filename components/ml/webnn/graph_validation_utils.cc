@@ -1177,6 +1177,92 @@ base::expected<Operand, std::string> ValidateGemmAndInferOutput(
   return Operand(a.data_type, std::move(output_shape));
 }
 
+LayerNormalizationAttributes::LayerNormalizationAttributes() = default;
+LayerNormalizationAttributes::~LayerNormalizationAttributes() = default;
+
+LayerNormalizationAttributes::LayerNormalizationAttributes(
+    LayerNormalizationAttributes&& other) = default;
+LayerNormalizationAttributes& LayerNormalizationAttributes::operator=(
+    LayerNormalizationAttributes&& other) = default;
+
+base::expected<Operand, std::string> ValidateLayerNormalizationAndInferOutput(
+    const Operand& input,
+    const LayerNormalizationAttributes& attributes) {
+  // Validate the input operand.
+  if (!IsFloatingPointType(input.data_type)) {
+    return base::unexpected(
+        "The input type must be one of the floating point types.");
+  }
+
+  const auto& input_dimensions = input.dimensions;
+  const size_t input_rank = input_dimensions.size();
+
+  // Get the dimensions for layerNormalization to reduce along.
+  //
+  // TODO(crbug.com/1273291): Figure out whether the `axes` should be required,
+  // tracked by issue: https://github.com/webmachinelearning/webnn/issues/487
+  std::vector<uint32_t> reduction_dimensions;
+  if (attributes.axes.has_value()) {
+    // When `axes` is provided, the reduction dimensions are extracted from the
+    // input dimensions indexed by `axes`.
+
+    // Ensure that the axes are all less than the input rank and have no
+    // duplication.
+    const auto& axes = attributes.axes.value();
+    const auto axes_validation_result = ValidateAxes(axes, input_rank);
+    if (!axes_validation_result.has_value()) {
+      return base::unexpected(axes_validation_result.error());
+    }
+
+    reduction_dimensions.reserve(axes.size());
+    base::ranges::transform(
+        axes, std::back_inserter(reduction_dimensions),
+        [input_dimensions](uint32_t axis) { return input_dimensions[axis]; });
+  } else {
+    // When `axes` isn't provided, use the default specified in
+    // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-layernorm.
+    if (input_rank > 1) {
+      // Default to `input_dimensions[1, ... , N-1]` where N is the input rank.
+      reduction_dimensions.assign(input_dimensions.begin() + 1,
+                                  input_dimensions.end());
+    } else {
+      // Input is a scalar or 1-D tensor. In this case `reduction_dimensions`
+      // defaults to empty vector.
+    }
+  }
+
+  // Validate the scale operand.
+  if (attributes.scale.has_value()) {
+    const auto& scale = attributes.scale.value();
+    if (scale.data_type != input.data_type) {
+      return base::unexpected(
+          "For scale operand: the data type doesn't match the input data "
+          "type.");
+    }
+    if (scale.dimensions != reduction_dimensions) {
+      return base::unexpected(
+          "For scale operand: the shape doesn't match the axis dimensions of "
+          "the input.");
+    }
+  }
+
+  // Validate the bias operand.
+  if (attributes.bias.has_value()) {
+    const auto& bias = attributes.bias.value();
+    if (bias.data_type != input.data_type) {
+      return base::unexpected(
+          "For bias operand: the data type doesn't match the input data type.");
+    }
+    if (bias.dimensions != reduction_dimensions) {
+      return base::unexpected(
+          "For bias operand: the shape doesn't match the axis dimensions of "
+          "the input.");
+    }
+  }
+
+  return Operand(input.data_type, std::move(input.dimensions));
+}
+
 base::expected<Operand, std::string> ValidateConcatAndInferOutput(
     const std::vector<Operand>& inputs,
     const uint32_t axis) {
@@ -1444,13 +1530,12 @@ base::expected<size_t, std::string> ValidateAndCalculateByteLength(
 }
 
 base::expected<void, std::string> ValidateAxes(base::span<const uint32_t> axes,
-                                               uint32_t rank) {
+                                               const size_t rank) {
   if (base::ranges::any_of(axes, [rank](uint32_t axis) {
         return base::MakeStrictNum(axis) >= rank;
       })) {
     return base::unexpected(base::StringPrintf(
-        "The values in axes must be within the range from 0 to (%u).",
-        rank - 1));
+        "The values in axes must be in the range [0, %zu).", rank));
   }
 
   if (axes.size() != std::set<uint32_t>(axes.begin(), axes.end()).size()) {

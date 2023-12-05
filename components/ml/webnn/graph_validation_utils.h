@@ -265,6 +265,26 @@ struct GemmAttributes {
   bool b_transpose = false;
 };
 
+// Contains the attributes of layerNormalization operator.
+struct LayerNormalizationAttributes {
+  LayerNormalizationAttributes();
+  ~LayerNormalizationAttributes();
+
+  LayerNormalizationAttributes(LayerNormalizationAttributes&& other);
+  LayerNormalizationAttributes& operator=(LayerNormalizationAttributes&& other);
+
+  LayerNormalizationAttributes(const LayerNormalizationAttributes&) = delete;
+  LayerNormalizationAttributes& operator=(const LayerNormalizationAttributes&) =
+      delete;
+
+  // The scale operand.
+  absl::optional<Operand> scale;
+  // The bias operand.
+  absl::optional<Operand> bias;
+  // The indices to the input dimensions to normalize along.
+  absl::optional<std::vector<uint32_t>> axes;
+};
+
 struct SliceAttributes {
   SliceAttributes();
   ~SliceAttributes();
@@ -371,6 +391,12 @@ base::expected<Operand, std::string> ValidateGemmAndInferOutput(
     const Operand& b,
     const GemmAttributes& attributes);
 
+// Validate and infer output information of layerNormalization operator defined
+// in WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-layernorm.
+base::expected<Operand, std::string> ValidateLayerNormalizationAndInferOutput(
+    const Operand& input,
+    const LayerNormalizationAttributes& attributes);
+
 // Validate concat operator defined in WebIDL here
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-concat
 base::expected<Operand, std::string> ValidateConcatAndInferOutput(
@@ -421,7 +447,7 @@ base::expected<size_t, std::string> ValidateAndCalculateByteLength(
 // Validate that the axes are within the range of [0, rank - 1] without
 // duplication.
 base::expected<void, std::string> ValidateAxes(base::span<const uint32_t> axes,
-                                               uint32_t rank);
+                                               const size_t rank);
 
 // Broadcast the input shapes and return the output shape.
 // If bidirectional is true, its behavior follows the numpy-broadcasting-rule:

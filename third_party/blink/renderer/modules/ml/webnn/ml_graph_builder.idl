@@ -64,6 +64,13 @@ dictionary MLGemmOptions {
   boolean bTranspose = false;
 };
 
+dictionary MLLayerNormalizationOptions {
+  MLOperand scale;
+  MLOperand bias;
+  sequence<[EnforceRange] unsigned long> axes;
+  float epsilon = 1e-5;
+};
+
 dictionary MLLeakyReluOptions {
   float alpha = 0.01;
 };
@@ -187,6 +194,8 @@ dictionary MLSplitOptions {
   [RaisesException] MLActivation hardSwish();
 
   [RaisesException] MLOperand matmul(MLOperand a, MLOperand b);
+
+  [RaisesException] MLOperand layerNormalization(MLOperand input, optional MLLayerNormalizationOptions options = {});
 
   [RaisesException] MLOperand leakyRelu(MLOperand x, optional MLLeakyReluOptions options = {});
   [RaisesException] MLActivation leakyRelu(optional MLLeakyReluOptions options = {});

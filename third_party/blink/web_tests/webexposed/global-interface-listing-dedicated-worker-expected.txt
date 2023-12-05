@@ -1198,6 +1198,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method hardSwish
 [Worker]     method identity
 [Worker]     method input
+[Worker]     method layerNormalization
 [Worker]     method leakyRelu
 [Worker]     method log
 [Worker]     method logicalNot

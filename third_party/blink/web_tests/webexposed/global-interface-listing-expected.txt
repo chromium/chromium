@@ -5644,6 +5644,7 @@ interface MLGraphBuilder
     method hardSwish
     method identity
     method input
+    method layerNormalization
     method leakyRelu
     method log
     method logicalNot
