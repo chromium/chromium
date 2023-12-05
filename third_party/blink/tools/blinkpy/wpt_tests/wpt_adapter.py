@@ -325,13 +325,13 @@ class WPTAdapter:
         if self.options.enable_leak_detection:
             runner_options.binary_args.append('--enable-leak-detection')
 
-        if self.options.timeout_multiplier:
-            runner_options.timeout_multiplier = self.options.timeout_multiplier
-        elif (self.options.enable_sanitizer
-              or self.options.configuration == 'Debug'):
+        if (self.options.enable_sanitizer
+                or self.options.configuration == 'Debug'):
             runner_options.timeout_multiplier = 5
             logger.info('Defaulting to 5x timeout multiplier because '
                         'the build is debug or sanitized')
+        elif self.options.timeout_multiplier:
+            runner_options.timeout_multiplier = self.options.timeout_multiplier
 
         if self.using_upstream_wpt:
             # when running with upstream, the goal is to get wpt report that can
