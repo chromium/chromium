@@ -2563,6 +2563,7 @@ static_library("browser") {
     "//ui/accessibility",
     "//ui/actions",
     "//ui/base",
+    "//ui/base:ozone_buildflags",
     "//ui/base/clipboard",
     "//ui/base/emoji",
     "//ui/base/idle",

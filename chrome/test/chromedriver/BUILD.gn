@@ -367,6 +367,7 @@ source_set("lib") {
     "//third_party/zlib",
     "//third_party/zlib/google:zip",
     "//ui/base",
+    "//ui/base:ozone_buildflags",
     "//ui/events:dom_keycode_converter",
     "//ui/events:events_base",
     "//ui/gfx",
@@ -375,10 +376,7 @@ source_set("lib") {
 
   if (use_ozone) {
     sources += [ "keycode_text_conversion_ozone.cc" ]
-    deps += [
-      "//ui/events/ozone/layout",
-      "//ui/ozone:buildflags",
-    ]
+    deps += [ "//ui/events/ozone/layout" ]
 
     # TODO(1239521): clean up usages of ozone_platform_x11.
     # Ozone/X11 implementation provides a stub KeyboardLayoutEngine. Thus,

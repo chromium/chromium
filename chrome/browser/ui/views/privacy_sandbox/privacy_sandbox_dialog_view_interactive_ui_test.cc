@@ -20,12 +20,9 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ui/ozone/buildflags.h"
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
 
 class PrivacySandboxDialogViewInteractiveUiTest : public InProcessBrowserTest {
  public:
@@ -42,18 +39,10 @@ class PrivacySandboxDialogViewInteractiveUiTest : public InProcessBrowserTest {
   raw_ptr<MockPrivacySandboxService, DanglingUntriaged> mock_service_;
 };
 
-// The build flag OZONE_PLATFORM_WAYLAND is only available on
-// Linux or ChromeOS, so this simplifies the next set of ifdefs.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(OZONE_PLATFORM_WAYLAND)
-#define OZONE_PLATFORM_WAYLAND
-#endif  // BUILDFLAG(OZONE_PLATFORM_WAYLAND)
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
-
 // TODO(crbug.com/1315979): Flaky on most release builds.
 // TODO(crbug.com/1430490): Broken on macOS
 #if defined(NDEBUG) || BUILDFLAG(IS_CHROMEOS_ASH) || \
-    defined(OZONE_PLATFORM_WAYLAND) || BUILDFLAG(IS_MAC)
+    BUILDFLAG(IS_OZONE_WAYLAND) || BUILDFLAG(IS_MAC)
 #define MAYBE_EscapeClosesNotice DISABLED_EscapeClosesNotice
 #else
 #define MAYBE_EscapeClosesNotice EscapeClosesNotice

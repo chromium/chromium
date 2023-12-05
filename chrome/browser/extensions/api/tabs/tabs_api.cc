@@ -117,6 +117,7 @@
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/models/list_selection_model.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
@@ -861,16 +862,12 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
 // ui::SHOW_STATE_MINIMIZED above, on Linux the window is not created as
 // minimized.
 // TODO(crbug.com/1410400): Remove this workaround when linux is fixed.
-#if BUILDFLAG(IS_LINUX)
 // TODO(crbug.com/1410400): Find a fix for wayland as well.
-
-// Must be defined inside IS_LINUX to compile on windows/mac.
-#if BUILDFLAG(OZONE_PLATFORM_X11)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_X11)
   if (new_window->initial_show_state() == ui::SHOW_STATE_MINIMIZED) {
     new_window->window()->Minimize();
   }
-#endif  // BUILDFLAG(OZONE_PLATFORM_X11)
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_X11)
 
   // Lock the window fullscreen only after the new tab has been created
   // (otherwise the tabstrip is empty), and window()->show() has been called
