@@ -26,28 +26,32 @@ HeuristicSource GetActiveHeuristicSource() {
   }
   const std::string& source =
       features::kAutofillParsingPatternActiveSource.Get();
-  CHECK(source == "default" || source == "experimental" ||
-        source == "nextgen" || source == "legacy");
+  CHECK(source == "default" || source == "experimental" || source == "nextgen");
   return source == "default"        ? HeuristicSource::kDefault
          : source == "experimental" ? HeuristicSource::kExperimental
-         : source == "nextgen"      ? HeuristicSource::kNextGen
-         : source == "legacy"       ? HeuristicSource::kLegacy
-                                    : HeuristicSource::kDefault;
+                                    : HeuristicSource::kNextGen;
 #endif
 }
 
 DenseSet<HeuristicSource> GetNonActiveHeuristicSources() {
-  DenseSet<HeuristicSource> sources{HeuristicSource::kLegacy};
+  // Collect all used `HeuristicSource`-es depending on build flags and feature
+  // states.
+  DenseSet<HeuristicSource> sources;
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   if (base::FeatureList::IsEnabled(features::kAutofillParsingPatternProvider)) {
     sources.insert_all({HeuristicSource::kDefault,
                         HeuristicSource::kExperimental,
                         HeuristicSource::kNextGen});
+  } else {
+    sources.insert(HeuristicSource::kLegacy);
   }
+#else
+  sources.insert(HeuristicSource::kLegacy);
 #endif
   if (base::FeatureList::IsEnabled(features::kAutofillModelPredictions)) {
     sources.insert(HeuristicSource::kMachineLearning);
   }
+  // Erase the active heuristic source, to get the non-active ones.
   sources.erase(GetActiveHeuristicSource());
   return sources;
 }

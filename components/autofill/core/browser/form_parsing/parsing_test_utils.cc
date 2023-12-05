@@ -11,11 +11,15 @@ namespace autofill {
 std::vector<PatternProviderFeatureState> PatternProviderFeatureState::All() {
   return {
     {.enable = false, .active_source = nullptr},
-        {.enable = true, .active_source = "legacy"},
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
         {.enable = true, .active_source = "default"},
         {.enable = true, .active_source = "experimental"},
         {.enable = true, .active_source = "nextgen"},
+#else
+        // Builds without Autofill internal patterns default to the legacy
+        // patterns. The `active_source` feature parameter is in fact not read
+        // in this case.
+        {.enable = true, .active_source = "legacy"},
 #endif
   };
 }
