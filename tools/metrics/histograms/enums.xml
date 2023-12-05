@@ -16715,6 +16715,7 @@ Called by update_extension_histograms.py.-->
   <int value="1851" label="OS_MANAGEMENT_SETAUDIOGAIN"/>
   <int value="1852" label="DOCUMENTSCAN_OPENSCANNER"/>
   <int value="1853" label="DOCUMENTSCAN_CLOSESCANNER"/>
+  <int value="1854" label="ACCESSIBILITY_PRIVATE_GETDISPLAYBOUNDS"/>
 </enum>
 
 <enum name="ExtensionInProgressRequestState">

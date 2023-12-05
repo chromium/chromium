@@ -948,6 +948,24 @@
         }
       },
       {
+        "name": "getDisplayBounds",
+        "type": "function",
+        "description": "Returns the bounds of the displays in density-independent pixels in screen coordinates.",
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "description": "A callback that is run when the result is returned.",
+          "parameters": [
+            {
+              "type": "array",
+              "items": { "$ref": "ScreenRect" },
+              "name": "rects",
+              "description": "Array of rects represeting the display bounds in screen coordinates for all displays."
+            }
+          ]
+        }
+      },
+      {
         "name": "isLacrosPrimary",
         "type": "function",
         "description": "Gets whether new browser windows and tabs should be in Lacros browser.",

@@ -286,6 +286,34 @@ var availableTests = [
   function testSetCursorPosition() {
     chrome.accessibilityPrivate.setCursorPosition({x: 450, y: 350});
     chrome.test.succeed();
+  },
+
+  function testGetDisplayBoundsSimple() {
+    chrome.accessibilityPrivate.getDisplayBounds(bounds => {
+      chrome.test.assertEq(
+          '[{"height":600,"left":0,"top":0,"width":800}]',
+          JSON.stringify(bounds));
+      chrome.test.succeed();
+    });
+  },
+
+  function testGetDisplayBoundsHighDPI() {
+    chrome.accessibilityPrivate.getDisplayBounds(bounds => {
+      chrome.test.assertEq(
+          '[{"height":400,"left":0,"top":0,"width":500}]',
+          JSON.stringify(bounds));
+      chrome.test.succeed();
+    });
+  },
+
+  function testGetDisplayBoundsMultipleDisplays() {
+    chrome.accessibilityPrivate.getDisplayBounds(bounds => {
+      chrome.test.assertEq(
+          '[{"height":300,"left":0,"top":0,"width":400},' +
+          '{"height":300,"left":400,"top":0,"width":400}]',
+          JSON.stringify(bounds));
+      chrome.test.succeed();
+    });
   }
 ];
 

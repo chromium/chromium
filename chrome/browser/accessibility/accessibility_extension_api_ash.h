@@ -51,6 +51,14 @@ class AccessibilityPrivateSetCursorPositionFunction : public ExtensionFunction {
                              ACCESSIBILITY_PRIVATE_SETCURSORPOSITION)
 };
 
+// API function that gets the bounds of the displays in absolute coordinates.
+class AccessibilityPrivateGetDisplayBoundsFunction : public ExtensionFunction {
+  ~AccessibilityPrivateGetDisplayBoundsFunction() override {}
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.getDisplayBounds",
+                             ACCESSIBILITY_PRIVATE_GETDISPLAYBOUNDS)
+};
+
 // API function that requests that key events be forwarded to the Switch
 // Access extension.
 class AccessibilityPrivateForwardKeyEventsToSwitchAccessFunction

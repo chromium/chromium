@@ -692,6 +692,14 @@ chrome.accessibilityPrivate.getDlcContents = function(dlc, callback) {};
 chrome.accessibilityPrivate.getTtsDlcContents = function(dlc, variant, callback) {};
 
 /**
+ * Returns the bounds of the displays in density-independent pixels in screen
+ * coordinates.
+ * @param {function(!Array<!chrome.accessibilityPrivate.ScreenRect>): void}
+ *     callback A callback that is run when the result is returned.
+ */
+chrome.accessibilityPrivate.getDisplayBounds = function(callback) {};
+
+/**
  * Gets whether new browser windows and tabs should be in Lacros browser.
  * @param {function(boolean): void} callback A callback that is run when the
  *     result is returned.

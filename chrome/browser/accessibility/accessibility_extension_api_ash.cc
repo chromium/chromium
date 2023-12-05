@@ -163,6 +163,23 @@ AccessibilityPrivateSetCursorPositionFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction
+AccessibilityPrivateGetDisplayBoundsFunction::Run() {
+  const std::vector<display::Display>& displays =
+      display::Screen::GetScreen()->GetAllDisplays();
+  base::Value::List result;
+  for (auto& display : displays) {
+    const gfx::Rect& bounds = display.bounds();
+    auto screen_rect = accessibility_private::ScreenRect();
+    screen_rect.left = bounds.x();
+    screen_rect.top = bounds.y();
+    screen_rect.width = bounds.width();
+    screen_rect.height = bounds.height();
+    result.Append(screen_rect.ToValue());
+  }
+  return RespondNow(WithArguments(std::move(result)));
+}
+
+ExtensionFunction::ResponseAction
 AccessibilityPrivateForwardKeyEventsToSwitchAccessFunction::Run() {
   absl::optional<accessibility_private::ForwardKeyEventsToSwitchAccess::Params>
       params =

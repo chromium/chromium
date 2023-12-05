@@ -416,6 +416,34 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, SetCursorPosition) {
   }
 }
 
+IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, GetDisplayBoundsSimple) {
+  display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
+      .UpdateDisplay("800x600");
+  ScreenOrientationControllerTestApi(
+      Shell::Get()->screen_orientation_controller())
+      .UpdateNaturalOrientation();
+  ASSERT_TRUE(RunSubtest("testGetDisplayBoundsSimple")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, GetDisplayBoundsHighDPI) {
+  display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
+      .UpdateDisplay("1000x800*2.0");
+  ScreenOrientationControllerTestApi(
+      Shell::Get()->screen_orientation_controller())
+      .UpdateNaturalOrientation();
+  ASSERT_TRUE(RunSubtest("testGetDisplayBoundsHighDPI")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest,
+                       GetDisplayBoundsMultipleDisplays) {
+  display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
+      .UpdateDisplay("801+0-400x300,1+0-800x600*2.0");
+  ScreenOrientationControllerTestApi(
+      Shell::Get()->screen_orientation_controller())
+      .UpdateNaturalOrientation();
+  ASSERT_TRUE(RunSubtest("testGetDisplayBoundsMultipleDisplays")) << message_;
+}
+
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          AccessibilityPrivateApiTest,
                          ::testing::Values(ContextType::kPersistentBackground));
