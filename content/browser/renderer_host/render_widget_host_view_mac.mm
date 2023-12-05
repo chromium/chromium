@@ -1040,6 +1040,10 @@ void RenderWidgetHostViewMac::CopyFromSurface(
     popup_frame_host = popup_child_host_view_->BrowserCompositor()
                            ->GetDelegatedFrameHost()
                            ->GetWeakPtr();
+    // TODO(crbug.com/1505552): Remove these logs when debugging is done.
+    DLOG(WARNING) << "CopyFromSurface has popup.";
+  } else {
+    DLOG(WARNING) << "CopyFromSurface has no popup.";
   }
   // TODO(crbug.com/1169321): Resolve potential differences between display info
   // caches in RenderWidgetHostViewMac and BrowserCompositorMac.
