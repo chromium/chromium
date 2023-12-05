@@ -402,6 +402,8 @@ enum ArcKeyMintError {
   kUnimplemented = 6,
 };
 
+// This interface is implemented in ash by ArcMetricsService. It is called by
+// ARC side.
 // Deprecated method IDs: 25
 // Next method ID: 36
 interface MetricsHost {
