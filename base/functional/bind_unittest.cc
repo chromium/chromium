@@ -1485,6 +1485,17 @@ TEST_F(BindTest, ArgumentCopiesAndMoves) {
   EXPECT_EQ(0, move_assigns);
 }
 
+TEST_F(BindTest, RepeatingWithoutPassed) {
+  // It should be possible to use a move-only type with `BindRepeating` without
+  // `Passed` if running the callback does not require copying the instance.
+  struct S {
+    S() = default;
+    S(S&&) = default;
+    S& operator=(S&&) = default;
+  } s;
+  BindRepeating([](const S&) {}, std::move(s));
+}
+
 TEST_F(BindTest, CapturelessLambda) {
   EXPECT_FALSE(internal::IsCallableObject<void>::value);
   EXPECT_FALSE(internal::IsCallableObject<int>::value);

@@ -11,15 +11,13 @@
 
 namespace base {
 
-#if defined(TEST_LAMDA_MISSING_FOR_A_VARIANT_OPTION)  // [r"error: no type named 'type' in 'absl::type_traits_internal::result_of<base::Overloaded<\(lambda at *\)> \(PackageB &\)>'"]
-  struct PackageA {};
-  struct PackageB {};
-
-  absl::variant<PackageA, PackageB> var = PackageA();
-  absl::visit(
-      Overloaded{[](PackageA& pack) { return "PackageA"; }},
-      var);
-
-#endif
+void LambdaMissingForVariantElement() {
+  // `absl::visit()` may only be called on an `Overloaded` that can actually
+  // handle all potential input variant types.
+  struct A {};
+  struct B {};
+  absl::variant<A, B> var = A{};
+  absl::visit(Overloaded{[](A& pack) { return "A"; }}, var);  // expected-error-re@*:* {{no type named 'type' in 'absl::type_traits_internal::result_of<base::Overloaded<(lambda at {{.*}})> (B &)>'}}
+}
 
 }  // namespace base
