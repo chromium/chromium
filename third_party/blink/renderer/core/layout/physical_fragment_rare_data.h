@@ -154,7 +154,7 @@ class PhysicalFragmentRareData
   }
 
   Vector<RareField> field_list_;
-  RareBitFieldType bit_field_;
+  RareBitFieldType bit_field_ = 0u;
   // A garbage-collected field is not stored in the Vector in order to avoid
   // troublesome conditional tracing.
   Member<const TableBorders> table_collapsed_borders_;
