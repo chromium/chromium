@@ -4347,10 +4347,10 @@
     Helps you write short-form content for common things on the web, like product reviews and social media posts. Suggested content is based on your prompts and the content of the web page. To use this feature, right-click on a text box.
   </message>
   <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE2_LABEL" desc="Toggle primary description" translateable="false">
-    Context menu tab group
+    Tab Organizer
   </message>
   <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE2_SUBLABEL" desc="Toggle secondary description" translateable="false">
-    Show tab group controls in the context menu
+    Automatically creates tab groups based on your open tabs. To use this feature, right-click on a tab and click Organize similar tabs.
   </message>
   <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_LABEL" desc="Toggle primary description" translateable="false">
     Expanded theme gallery

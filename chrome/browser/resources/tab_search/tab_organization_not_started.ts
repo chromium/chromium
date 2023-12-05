@@ -94,9 +94,11 @@ export class TabOrganizationNotStartedElement extends
   private getBody_(): string {
     switch (this.getSyncState_()) {
       case SyncState.SIGNED_OUT:
+        return loadTimeData.getString('notStartedBodySignedOut');
       case SyncState.UNSYNCED:
-      case SyncState.SYNC_PAUSED:
         return loadTimeData.getString('notStartedBodyUnsynced');
+      case SyncState.SYNC_PAUSED:
+        return loadTimeData.getString('notStartedBodySyncPaused');
       case SyncState.UNSYNCED_HISTORY:
         return loadTimeData.getString('notStartedBodyUnsyncedHistory');
       case SyncState.SYNCED: {
@@ -130,7 +132,11 @@ export class TabOrganizationNotStartedElement extends
       case SyncState.UNSYNCED_HISTORY:
         return loadTimeData.getString('notStartedButtonUnsyncedHistory');
       case SyncState.SYNCED:
-        return loadTimeData.getString('notStartedButton');
+        if (this.showFre) {
+          return loadTimeData.getString('notStartedButtonFRE');
+        } else {
+          return loadTimeData.getString('notStartedButton');
+        }
     }
   }
 
