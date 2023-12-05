@@ -178,12 +178,6 @@ absl::optional<RTCVideoDecoderFallbackReason> NeedSoftwareFallback(
 }
 }  // namespace
 
-namespace features {
-BASE_FEATURE(kWebRtcDecoderAdapterSyncDecode,
-             "WebRtcDecoderAdapterSyncDecode",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-}
-
 // This class is created in the webrtc decoder thread and destroyed on the media
 // thread. All the functions except constructor are executed on the media thread
 // too.
@@ -753,43 +747,19 @@ RTCVideoDecoderAdapter::DecodeInternal(const webrtc::EncodedImage& input_image,
     return absl::nullopt;
   }
 
-  if (base::FeatureList::IsEnabled(features::kWebRtcDecoderAdapterSyncDecode)) {
-    base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
-    absl::optional<RTCVideoDecoderAdapter::DecodeResult> result;
-    base::WaitableEvent waiter(base::WaitableEvent::ResetPolicy::MANUAL,
-                               base::WaitableEvent::InitialState::NOT_SIGNALED);
-    if (!PostCrossThreadTask(
-            *media_task_runner_.get(), FROM_HERE,
-            CrossThreadBindOnce(&RTCVideoDecoderAdapter::Impl::Decode,
-                                weak_impl_, std::move(buffer),
-                                CrossThreadUnretained(&waiter),
-                                CrossThreadUnretained(&result)))) {
-      // TODO(b/246460597): Add rtc video decoder fallback reason about
-      // PostCrossThreadTask failure.
-      return absl::nullopt;
-    }
-    waiter.Wait();
-    if (!result) {
-      ChangeStatus(Status::kError);
-    } else if (*result == DecodeResult::kErrorRequestKeyFrame) {
-      ChangeStatus(Status::kNeedKeyFrame);
-    }
-    return result;
-  } else {
-    absl::optional<RTCVideoDecoderAdapter::DecodeResult>* null_result = nullptr;
-    base::WaitableEvent* null_waiter = nullptr;
-    if (!PostCrossThreadTask(
-            *media_task_runner_.get(), FROM_HERE,
-            CrossThreadBindOnce(&RTCVideoDecoderAdapter::Impl::Decode,
-                                weak_impl_, std::move(buffer),
-                                CrossThreadUnretained(null_waiter),
-                                CrossThreadUnretained(null_result)))) {
-      // TODO(b/246460597): Add rtc video decoder fallback reason about
-      // PostCrossThreadTask failure.
-      return absl::nullopt;
-    }
-    return DecodeResult::kOk;
+  absl::optional<RTCVideoDecoderAdapter::DecodeResult>* null_result = nullptr;
+  base::WaitableEvent* null_waiter = nullptr;
+  if (!PostCrossThreadTask(
+          *media_task_runner_.get(), FROM_HERE,
+          CrossThreadBindOnce(&RTCVideoDecoderAdapter::Impl::Decode, weak_impl_,
+                              std::move(buffer),
+                              CrossThreadUnretained(null_waiter),
+                              CrossThreadUnretained(null_result)))) {
+    // TODO(b/246460597): Add rtc video decoder fallback reason about
+    // PostCrossThreadTask failure.
+    return absl::nullopt;
   }
+  return DecodeResult::kOk;
 }
 
 int32_t RTCVideoDecoderAdapter::RegisterDecodeCompleteCallback(
