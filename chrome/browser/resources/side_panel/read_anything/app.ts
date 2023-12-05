@@ -947,13 +947,21 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     });
     document.documentElement.style.setProperty(
         '--selection-color', this.getSelectionColorVar(colorSuffix));
+    document.documentElement.style.setProperty(
+        '--selection-text-color', this.getSelectionTextColorVar(colorSuffix));
   }
 
   getCurrentHighlightColorVar(colorSuffix: string) {
+    if (this.chromeRefresh2023Enabled_ && (colorSuffix === '')) {
+      return 'var(--color-sys-state-hover-on-subtle)';
+    }
     return `var(--color-current-read-aloud-highlight${colorSuffix})`;
   }
 
   getPreviousHighlightColorVar(colorSuffix: string) {
+    if (this.chromeRefresh2023Enabled_ && (colorSuffix === '')) {
+      return 'var(--color-sys-on-surface-secondary)';
+    }
     return `var(--color-previous-read-aloud-highlight${colorSuffix})`;
   }
 
@@ -972,8 +980,22 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   getSelectionColorVar(colorSuffix: string) {
-    // TODO(crbug.com/1465029): Use color token when in the default theme.
+    if (this.chromeRefresh2023Enabled_ && (colorSuffix === '')) {
+      return 'var(--color-text-selection-background)';
+    }
     return `var(--color-read-anything-text-selection${colorSuffix})`;
+  }
+
+  getSelectionTextColorVar(colorSuffix: string) {
+    if (this.chromeRefresh2023Enabled_ && (colorSuffix === '')) {
+      return 'var(--color-text-selection-foreground)';
+    }
+
+    if (window.matchMedia('(prefers-color-schme: dark)').matches) {
+      return `var(--google-grey-900)`;
+    }
+
+    return `var(--google-grey-800)`;
   }
 
   updateTheme() {
@@ -983,8 +1005,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         SkColor = {value: chrome.readingMode.backgroundColor};
     const linkColor = this.getLinkColor_(backgroundColor);
 
-    // TODO(crbug.com/1465029): Use color tokens for previous highlight and
-    // selection.
     this.updateStyles({
       '--background-color': skColorToRgba(backgroundColor),
       '--font-family': this.validatedFontName_(),
