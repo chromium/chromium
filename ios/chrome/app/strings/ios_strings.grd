@@ -2330,6 +2330,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_SELECT_PASSWORD" desc="This message is mentioned right after the title when the Password Bottom Sheet opens. For example, in English, it would say: 'Google Password Manager. Select a password to fill.'. This is spoken by VoiceOver. [iOS only]">
         Select a password to fill.
       </message>
+      <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_MORE_PASSWORDS" desc="This message is mentioned on the first password suggestion of the Password Bottom Sheet if there are more than one suggestion available and all other suggestions are hidden, which is the case initially, until the user expands the list by double tapping on this suggestion. This is spoken by VoiceOver. [iOS only]">
+        Double tap for more passwords.
+      </message>
       <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_SUBTITLE" desc="Shown on the password bottom sheet to inform users that, upon accepting the prompt, their username and password will be shared with the given website. [iOS only]" meaning="A string under the title logo of the password bottom sheet.">
         You'll sign in to <ph name="URL">$1<ex>chromium.org</ex></ph>
       </message>

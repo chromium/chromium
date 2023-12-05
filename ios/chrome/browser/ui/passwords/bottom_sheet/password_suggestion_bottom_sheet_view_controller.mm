@@ -542,6 +542,10 @@ CGFloat const kSpacingAfterTitle = 4;
         initWithImage:DefaultSymbolTemplateWithPointSize(
                           kChevronDownSymbol, kSymbolAccessoryPointSize)];
     cell.accessoryView.tintColor = [UIColor colorNamed:kTextQuaternaryColor];
+    cell.accessibilityLabel = [NSString
+        stringWithFormat:@"%@. %@", cell.accessibilityLabel,
+                         l10n_util::GetNSString(
+                             IDS_IOS_PASSWORD_BOTTOM_SHEET_MORE_PASSWORDS)];
   }
   [self loadFaviconAtIndexPath:indexPath forCell:cell];
   return cell;
