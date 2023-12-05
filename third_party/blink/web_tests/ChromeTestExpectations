@@ -56,6 +56,7 @@ crbug.com/1499775 external/wpt/credential-management/fedcm-endpoint-redirects.ht
 crbug.com/1499775 external/wpt/credential-management/fedcm-no-login-url.https.html [ Crash Timeout ]
 crbug.com/1499775 wpt_internal/credential-management/fedcm-reauth-with-signin-status.https.html [ Crash Timeout ]
 crbug.com/1499775 external/wpt/css/css-properties-values-api/animation/custom-property-animation-used-in-shorthand.html [ Failure Pass ]
+crbug.com/1499775 external/wpt/html/browsers/the-window-object/open-close/open-features-is-popup-condition.html?single-1 [ Pass Timeout ]
 crbug.com/1499775 external/wpt/html/browsers/the-window-object/open-close/open-features-is-popup-condition.html?single-2 [ Pass Timeout ]
 crbug.com/1499775 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-enter-seeking.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/pointerevents/pointerevent_touch-action-modified_touch.html [ Failure ]
