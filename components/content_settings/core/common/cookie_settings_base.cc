@@ -9,7 +9,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/types/optional_util.h"
-#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
@@ -21,10 +20,6 @@
 #include "net/cookies/site_for_cookies.h"
 #include "net/cookies/static_cookie_policy.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(USE_BLINK)
-#include "components/privacy_sandbox/privacy_sandbox_features.h"
-#endif
 
 namespace content_settings {
 
@@ -38,16 +33,7 @@ void CookieSettingsBase::
 
 CookieSettingsBase::CookieSettingsBase()
     : is_storage_partitioned_(base::FeatureList::IsEnabled(
-          net::features::kThirdPartyStoragePartitioning)),
-      is_privacy_sandbox_v4_enabled_(
-#if !BUILDFLAG(USE_BLINK)
-          false
-#else
-          base::FeatureList::IsEnabled(
-              privacy_sandbox::kPrivacySandboxSettings4)
-#endif
-      ) {
-}
+          net::features::kThirdPartyStoragePartitioning)) {}
 
 CookieSettingsBase::CookieSettingWithMetadata::CookieSettingWithMetadata(
     ContentSetting cookie_setting,
@@ -115,8 +101,7 @@ bool CookieSettingsBase::ShouldDeleteCookieOnExit(
   // don't want to match against (*, exception) pattern.
   // No overrides are given since existing ones only pertain to 3P checks.
   ContentSetting setting =
-      GetCookieSettingInternal(origin,
-                               is_privacy_sandbox_v4_enabled_ ? GURL() : origin,
+      GetCookieSettingInternal(origin, GURL(),
                                /*is_third_party_request=*/false,
                                net::CookieSettingOverrides(), nullptr)
           .cookie_setting();
@@ -200,8 +185,7 @@ bool CookieSettingsBase::IsCookieSessionOnly(const GURL& origin) const {
   // don't want to match against (*, exception) pattern.
   // No overrides are given since existing ones only pertain to 3P checks.
   ContentSetting setting =
-      GetCookieSettingInternal(origin,
-                               is_privacy_sandbox_v4_enabled_ ? GURL() : origin,
+      GetCookieSettingInternal(origin, GURL(),
                                /*is_third_party_request=*/false,
                                net::CookieSettingOverrides(), nullptr)
           .cookie_setting();

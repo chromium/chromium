@@ -559,45 +559,35 @@ TEST_F(SiteSettingsHelperTest, CookieExceptions) {
         kContentTypeCookies, test_case.initial_setting);
   }
 
-  for (const auto feature_state : std::vector<bool>{true, false}) {
-    base::test::ScopedFeatureList feature_list_;
-    feature_list_.InitWithFeatureState(
-        privacy_sandbox::kPrivacySandboxSettings4, feature_state);
+  base::Value::List exceptions;
+  site_settings::GetExceptionsForContentType(kContentTypeCookies, &profile,
+                                             /*web_ui=*/nullptr,
+                                             /*incognito=*/false, &exceptions);
 
-    base::Value::List exceptions;
-    site_settings::GetExceptionsForContentType(kContentTypeCookies, &profile,
-                                               /*web_ui=*/nullptr,
-                                               /*incognito=*/false,
-                                               &exceptions);
+  // Convert the test cases, and the returned dictionary, into tuples for
+  // unordered comparison, as the order of exception is not relevant.
+  std::vector<std::tuple<std::string, std::string, std::string>> expected =
+      base::test::ToVector(test_cases, [&](const auto& test_case) {
+        // make_tuple as we've some temporary rvalues.
+        return std::make_tuple(
+            test_case.primary_pattern,
+            test_case.secondary_pattern ==
+                    ContentSettingsPattern::Wildcard().ToString()
+                ? ""
+                : test_case.secondary_pattern,
+            content_settings::ContentSettingToString(
+                test_case.updated_setting));
+      });
 
-    // Convert the test cases, and the returned dictionary, into tuples for
-    // unordered comparison, as the order of exception is not relevant.
-    std::vector<std::tuple<std::string, std::string, std::string>> expected =
-        base::test::ToVector(test_cases, [&](const auto& test_case) {
-          // make_tuple as we've some temporary rvalues.
-          return std::make_tuple(
-              test_case.primary_pattern,
-              test_case.secondary_pattern ==
-                      ContentSettingsPattern::Wildcard().ToString()
-                  ? ""
-                  : test_case.secondary_pattern,
-              content_settings::ContentSettingToString(
-                  feature_state ? test_case.updated_setting
-                                : test_case.initial_setting));
-        });
+  std::vector<std::tuple<std::string, std::string, std::string>> actual =
+      base::test::ToVector(exceptions, [](const auto& exception) {
+        const base::Value::Dict& dict = exception.GetDict();
+        return std::make_tuple(*dict.FindString(kOrigin),
+                               *dict.FindString(kEmbeddingOrigin),
+                               *dict.FindString(kSetting));
+      });
 
-    std::vector<std::tuple<std::string, std::string, std::string>> actual =
-        base::test::ToVector(exceptions, [](const auto& exception) {
-          const base::Value::Dict& dict = exception.GetDict();
-          return std::make_tuple(*dict.FindString(kOrigin),
-                                 *dict.FindString(kEmbeddingOrigin),
-                                 *dict.FindString(kSetting));
-        });
-
-    EXPECT_THAT(actual, testing::UnorderedElementsAreArray(expected))
-        << "Privacy Sandbox Settings 4 "
-        << (feature_state ? "enabled" : "disabled");
-  }
+  EXPECT_THAT(actual, testing::UnorderedElementsAreArray(expected));
 }
 
 TEST_F(SiteSettingsHelperTest, GetExpirationDescription) {

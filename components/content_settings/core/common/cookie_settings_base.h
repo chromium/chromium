@@ -345,7 +345,6 @@ class CookieSettingsBase {
 
   static bool storage_access_api_grants_unpartitioned_storage_;
   const bool is_storage_partitioned_;
-  const bool is_privacy_sandbox_v4_enabled_;
 };
 
 }  // namespace content_settings
