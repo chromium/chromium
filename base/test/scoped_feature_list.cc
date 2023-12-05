@@ -24,14 +24,6 @@
 
 namespace base {
 namespace test {
-namespace {
-
-// A monotonically increasing id, passed to `FeatureList`s as they are created
-// to invalidate the cache member of `base::Feature` objects that were queried
-// with a different `FeatureList` installed.
-uint16_t g_current_caching_context = 1;
-
-}  // namespace
 
 // A struct describes ParsedEnableFeatures()' result.
 struct ScopedFeatureList::FeatureWithStudyGroup {
@@ -393,7 +385,6 @@ void ScopedFeatureList::InitWithFeatureList(
       "ScopedFeatureList must be Init from the test main thread");
 
   original_feature_list_ = FeatureList::ClearInstanceForTesting();
-  feature_list->SetCachingContextForTesting(++g_current_caching_context);
   FeatureList::SetInstance(std::move(feature_list));
   init_called_ = true;
 }

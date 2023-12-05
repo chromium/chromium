@@ -491,8 +491,6 @@ class BASE_EXPORT FeatureList {
   // processes that never register a FeatureList.
   static void FailOnFeatureAccessWithoutFeatureList();
 
-  void SetCachingContextForTesting(uint16_t caching_context);
-
   // Returns the first feature that was accessed before a FeatureList was
   // registered that allows accessing the feature.
   static const Feature* GetEarlyAccessedFeatureForTesting();
@@ -641,7 +639,7 @@ class BASE_EXPORT FeatureList {
   // Used when querying `base::Feature` state to determine if the cached value
   // in the `Feature` object is populated and valid. See the comment on
   // `base::Feature::cached_value` for more details.
-  uint16_t caching_context_ = 1;
+  const uint16_t caching_context_;
 
   // If this instance was set with SetEarlyAccessInstance(), this set contains
   // the names of the features whose state is allowed to be checked. Attempting

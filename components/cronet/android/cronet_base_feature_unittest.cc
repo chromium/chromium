@@ -17,36 +17,6 @@ using ::testing::IsEmpty;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 
-// base::Feature uses a caching mechanism where repeated
-// `base::FeatureList::IsEnabled()` calls do not actually check the overrides
-// list and instead return the previously returned value according to the cache
-// state in the base::Feature itself. See `base::Feature::cached_value` and
-// `base::FeatureList::caching_context_`.
-//
-// This caching mechanism breaks isolation between our unit tests, so we need
-// to flush the cache between tests. We can do that by making sure that the
-// feature list caching context (basically, a cache generation counter) is set
-// to a value that is different from the one it had in the last
-// base::FeatureList::IsEnabled() call. This will cause a cache miss on the next
-// base::FeatureList::IsEnabled() call. If we don't do anything this won't be
-// the case, as the code under test always installs a base::FeatureList with a
-// caching context value of 1 (which is the default).
-//
-// base::test::ScopedFeatureList uses the exact same approach internally, but we
-// can't piggy-back on that because we need to change the caching context of the
-// base::FeatureList that is instantiated by the code under test, not the one
-// that base::test::ScopedFeatureList installs.
-void FlushBaseFeatureCache() {
-  auto* const feature_list = base::FeatureList::GetInstance();
-  if (feature_list == nullptr) {
-    return;
-  }
-  // Start at 32768 to avoid collisions with ScopedFeatureList's own
-  // `g_current_caching_context` (which starts at 1).
-  static uint16_t g_feature_list_caching_context = 32768;
-  feature_list->SetCachingContextForTesting(g_feature_list_caching_context++);
-}
-
 constexpr char kTestFeatureDisabledByDefaultName[] =
     "CronetBaseFeatureTestFeatureDisabledByDefault";
 BASE_FEATURE(kTestFeatureDisabledByDefault,
@@ -73,7 +43,6 @@ TEST(ApplyBaseFeatureOverrides, NoOpOnEmptyOverrides) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithNullFeatureAndFieldTrialLists();
   ApplyBaseFeatureOverrides(BaseFeatureOverrides());
-  FlushBaseFeatureCache();
   EXPECT_FALSE(base::FeatureList::IsEnabled(kTestFeatureDisabledByDefault));
   EXPECT_TRUE(base::FeatureList::IsEnabled(kTestFeatureEnabledByDefault));
 }
@@ -85,7 +54,6 @@ TEST(ApplyBaseFeatureOverrides, OverridesFeatureToEnabled) {
   (*overrides.mutable_feature_states())[kTestFeatureDisabledByDefaultName]
       .set_enabled(true);
   ApplyBaseFeatureOverrides(overrides);
-  FlushBaseFeatureCache();
   EXPECT_TRUE(base::FeatureList::IsEnabled(kTestFeatureDisabledByDefault));
 }
 
@@ -96,7 +64,6 @@ TEST(ApplyBaseFeatureOverrides, OverridesFeatureToDisabled) {
   (*overrides.mutable_feature_states())[kTestFeatureEnabledByDefaultName]
       .set_enabled(false);
   ApplyBaseFeatureOverrides(overrides);
-  FlushBaseFeatureCache();
   EXPECT_FALSE(base::FeatureList::IsEnabled(kTestFeatureEnabledByDefault));
 }
 
@@ -106,7 +73,6 @@ TEST(ApplyBaseFeatureOverrides, DoesNotOverrideFeature) {
   BaseFeatureOverrides overrides;
   (*overrides.mutable_feature_states())[kTestFeatureEnabledByDefaultName];
   ApplyBaseFeatureOverrides(overrides);
-  FlushBaseFeatureCache();
   EXPECT_TRUE(base::FeatureList::IsEnabled(kTestFeatureEnabledByDefault));
 }
 
@@ -117,7 +83,6 @@ TEST(ApplyBaseFeatureOverrides, NoOpIfBaseFeatureAlreadyInitialized) {
   (*overrides.mutable_feature_states())[kTestFeatureDisabledByDefaultName]
       .set_enabled(true);
   ApplyBaseFeatureOverrides(overrides);
-  FlushBaseFeatureCache();
   EXPECT_FALSE(base::FeatureList::IsEnabled(kTestFeatureDisabledByDefault));
 }
 
@@ -129,7 +94,6 @@ TEST(ApplyBaseFeatureOverrides,
   (*overrides.mutable_feature_states())[kTestFeatureWithParamsName].set_enabled(
       true);
   ApplyBaseFeatureOverrides(overrides);
-  FlushBaseFeatureCache();
   base::FieldTrialParams params;
   EXPECT_FALSE(
       base::GetFieldTrialParamsByFeature(kTestFeatureWithParams, &params));
@@ -147,7 +111,6 @@ TEST(ApplyBaseFeatureOverrides, AssociatesFeatureParams) {
   feature_state.set_enabled(true);
   (*feature_state.mutable_params())[kTestParamName] = kParamValue;
   ApplyBaseFeatureOverrides(overrides);
-  FlushBaseFeatureCache();
   base::FieldTrialParams params;
   EXPECT_TRUE(
       base::GetFieldTrialParamsByFeature(kTestFeatureWithParams, &params));

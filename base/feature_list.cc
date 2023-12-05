@@ -245,6 +245,11 @@ uint32_t PackFeatureCache(FeatureList::OverrideState override_state,
          (caching_context & 0xFFFF);
 }
 
+// A monotonically increasing id, passed to `FeatureList`s as they are created
+// to invalidate the cache member of `base::Feature` objects that were queried
+// with a different `FeatureList` installed.
+uint16_t g_current_caching_context = 1;
+
 }  // namespace
 
 #if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
@@ -253,7 +258,7 @@ BASE_FEATURE(kDCheckIsFatalFeature,
              FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
-FeatureList::FeatureList() = default;
+FeatureList::FeatureList() : caching_context_(g_current_caching_context++) {}
 
 FeatureList::~FeatureList() = default;
 
@@ -562,12 +567,10 @@ FeatureList* FeatureList::GetInstance() {
 void FeatureList::SetInstance(std::unique_ptr<FeatureList> instance) {
   DCHECK(!g_feature_list_instance ||
          g_feature_list_instance->IsEarlyAccessInstance());
-  // If there is an existing early-access instance, release it after
-  // updating the caching context sequence.
+  // If there is an existing early-access instance, release it.
   if (g_feature_list_instance) {
     std::unique_ptr<FeatureList> old_instance =
         WrapUnique(g_feature_list_instance);
-    instance->caching_context_ = old_instance->caching_context_ + 1;
     g_feature_list_instance = nullptr;
   }
   instance->FinalizeInitialization();
@@ -639,10 +642,6 @@ void FeatureList::RestoreInstanceForTesting(
 void FeatureList::FailOnFeatureAccessWithoutFeatureList() {
   EarlyFeatureAccessTracker::GetInstance()
       ->FailOnFeatureAccessWithoutFeatureList();
-}
-
-void FeatureList::SetCachingContextForTesting(uint16_t caching_context) {
-  caching_context_ = caching_context;
 }
 
 // static

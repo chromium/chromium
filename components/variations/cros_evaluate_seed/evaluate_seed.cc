@@ -137,15 +137,6 @@ bool DetermineTrialState(std::unique_ptr<PrefService> local_state,
   // b/297870545 will address us replacing the below code with something more
   // permanent, which will not request specific state for individual
   // base::Feature objects, so the caching logic won't be necessary.
-
-  // Since |kTestFeature| is static, the same instance will be reused across the
-  // tests. We need to make sure that the cached value for the feature's enabled
-  // state is not reused, so we invalidate the cache.
-  // TODO(b/297870545): remove this once we're not checking for specific
-  // features manually.
-  static uint16_t caching_context = 1;
-  base::FeatureList::GetInstance()->SetCachingContextForTesting(  // IN-TEST
-      caching_context++);
   featured::FeatureOverride* feature = computed_state->add_overrides();
   feature->set_name(kTestFeatureName);
   feature->set_enabled(base::FeatureList::IsEnabled(kTestFeature));

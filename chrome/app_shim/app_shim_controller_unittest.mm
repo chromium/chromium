@@ -34,41 +34,6 @@ BASE_FEATURE(kFeatureOffByDefault,
              kFeatureOffByDefaultName,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// base::Feature uses a caching mechanism where repeated
-// `base::FeatureList::IsEnabled()` calls do not actually check the overrides
-// list and instead return the previously returned value according to the cache
-// state in the base::Feature itself. See `base::Feature::cached_value` and
-// `base::FeatureList::caching_context_`.
-//
-// This caching mechanism breaks isolation between our unit tests, so we need
-// to flush the cache between tests. We can do that by making sure that the
-// feature list caching context (basically, a cache generation counter) is set
-// to a value that is different from the one it had in the last
-// base::FeatureList::IsEnabled() call. This will cause a cache miss on the next
-// base::FeatureList::IsEnabled() call. If we don't do anything this won't be
-// the case, as the code under test always installs a base::FeatureList with a
-// caching context value of 1 (which is the default).
-//
-// base::test::ScopedFeatureList uses the exact same approach internally, but we
-// can't piggy-back on that because we need to change the caching context of the
-// base::FeatureList that is instantiated by the code under test, not the one
-// that base::test::ScopedFeatureList installs.
-// TODO(mek): Refactor feature list caching to have just a single place for
-// logic like this.
-void FlushBaseFeatureCache() {
-  auto* const feature_list = base::FeatureList::GetInstance();
-  if (feature_list == nullptr) {
-    return;
-  }
-  // Start at 49152 to avoid collisions with ScopedFeatureList's own
-  // `g_current_caching_context` (which starts at 1). Also increment by 2 as the
-  // code under test sometimes creates a FeatureList with a caching_context_
-  // that is one higher than the existing caching context.
-  static uint16_t g_feature_list_caching_context = 49152;
-  feature_list->SetCachingContextForTesting(g_feature_list_caching_context);
-  g_feature_list_caching_context += 2;
-}
-
 void PersistFeatureState(
     const variations::VariationsCommandLine& feature_state) {
   feature_state.WriteToFile(base::PathService::CheckedGet(chrome::DIR_USER_DATA)
@@ -88,7 +53,6 @@ TEST_F(AppShimControllerTest, EarlyAccessFeatureAllowList) {
 
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   AppShimController::PreInitFeatureState(command_line);
-  FlushBaseFeatureCache();
 
   // Reset crash-on-early-access flag.
   base::FeatureList::ResetEarlyFeatureAccessTrackerForTesting();
@@ -112,7 +76,6 @@ TEST_F(AppShimControllerTest, FeatureStateFromCommandLine) {
   command_line.AppendSwitchASCII(switches::kDisableFeatures,
                                  kFeatureOnByDefaultName);
   AppShimController::PreInitFeatureState(command_line);
-  FlushBaseFeatureCache();
 
   base::FeatureList::GetInstance()->AddEarlyAllowedFeatureForTesting(
       kFeatureOnByDefaultName);
@@ -134,7 +97,6 @@ TEST_F(AppShimControllerTest, FeatureStateFromFeatureFile) {
 
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   AppShimController::PreInitFeatureState(command_line);
-  FlushBaseFeatureCache();
 
   base::FeatureList::GetInstance()->AddEarlyAllowedFeatureForTesting(
       kFeatureOnByDefaultName);
@@ -158,7 +120,6 @@ TEST_F(AppShimControllerTest, FeatureStateFromFeatureFileAndCommandLine) {
   command_line.AppendSwitchASCII(switches::kDisableFeatures,
                                  kFeatureOffByDefaultName);
   AppShimController::PreInitFeatureState(command_line);
-  FlushBaseFeatureCache();
 
   base::FeatureList::GetInstance()->AddEarlyAllowedFeatureForTesting(
       kFeatureOnByDefaultName);
@@ -181,7 +142,6 @@ TEST_F(AppShimControllerTest,
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitch(app_mode::kLaunchedByChromeProcessId);
   AppShimController::PreInitFeatureState(command_line);
-  FlushBaseFeatureCache();
 
   base::FeatureList::GetInstance()->AddEarlyAllowedFeatureForTesting(
       kFeatureOffByDefaultName);
@@ -202,7 +162,6 @@ TEST_F(AppShimControllerTest, FinalizeFeatureState) {
   command_line.AppendSwitchASCII(switches::kEnableFeatures,
                                  kFeatureOffByDefaultName);
   AppShimController::PreInitFeatureState(command_line);
-  FlushBaseFeatureCache();
 
   base::FeatureList::GetInstance()->AddEarlyAllowedFeatureForTesting(
       kFeatureOffByDefaultName);
@@ -262,7 +221,6 @@ TEST_F(AppShimControllerTest, FinalizeFeatureStateWithFieldTrials) {
       base::StringPrintf("%s.%s:%s/42", kTrialName, kTrialGroup1Name,
                          kParam2Name));
   AppShimController::PreInitFeatureState(command_line);
-  FlushBaseFeatureCache();
 
   base::FeatureList::GetInstance()->AddEarlyAllowedFeatureForTesting(
       kFeatureOffByDefaultName);
