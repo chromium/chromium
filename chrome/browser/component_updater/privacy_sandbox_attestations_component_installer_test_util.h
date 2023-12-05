@@ -32,6 +32,15 @@ bool InstallPrivacySandboxAttestationsComponentForTesting(
     const privacy_sandbox::PrivacySandboxAttestationsProto& proto,
     const base::Version& version);
 
+// Install attestations component under DIR_COMPONENT_USER directory.
+bool InstallPrivacySandboxAttestationsComponentForTesting(
+    std::string_view contents,
+    const base::Version& version);
+
+// Returns attestations component installation directory.
+base::FilePath GetPrivacySandboxAtteststionsComponentInstallDir(
+    const base::Version& version);
+
 }  // namespace component_updater
 
 #endif  // CHROME_BROWSER_COMPONENT_UPDATER_PRIVACY_SANDBOX_ATTESTATIONS_COMPONENT_INSTALLER_TEST_UTIL_H_

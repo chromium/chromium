@@ -35,40 +35,51 @@ bool InstallPrivacySandboxAttestationsComponentForTesting(
   std::string serialized_proto;
   proto.SerializeToString(&serialized_proto);
 
+  return InstallPrivacySandboxAttestationsComponentForTesting(serialized_proto,
+                                                              version);
+}
+
+bool InstallPrivacySandboxAttestationsComponentForTesting(
+    std::string_view contents,
+    const base::Version& version) {
   // Allow blocking for file IO.
   base::ScopedAllowBlockingForTesting allow_blocking;
 
+  // Write the serialized proto to the attestation list file.
+  base::FilePath install_dir =
+      GetPrivacySandboxAtteststionsComponentInstallDir(version);
+  if (!base::CreateDirectory(install_dir)) {
+    return false;
+  }
+
+  if (!WritePrivacySandboxAttestationsFileForTesting(install_dir, contents)) {
+    return false;
+  }
+
+  // Write a manifest file. This is needed for component updater to detect any
+  // existing component on disk.
+  return base::WriteFile(
+      install_dir.Append(FILE_PATH_LITERAL("manifest.json")),
+      base::ReplaceStringPlaceholders(
+          R"({
+               "manifest_version": 1,
+               "name": "Privacy Sandbox Attestations",
+               "version": "$1"
+              })",
+          /*subst=*/{version.GetString()}, /*offsets=*/nullptr));
+}
+
+base::FilePath GetPrivacySandboxAtteststionsComponentInstallDir(
+    const base::Version& version) {
   // Get component updater directory that contains user-wide components.
   base::FilePath component_updater_dir;
   base::PathService::Get(DIR_COMPONENT_USER, &component_updater_dir);
 
   CHECK(!component_updater_dir.empty());
 
-  std::string version_str = version.GetString();
-
   // Write the serialized proto to the attestation list file.
-  base::FilePath install_dir =
-      Installer::GetInstalledDirectory(component_updater_dir)
-          .AppendASCII(version_str);
-  if (!base::CreateDirectory(install_dir)) {
-    return false;
-  }
-
-  if (!WritePrivacySandboxAttestationsFileForTesting(install_dir,
-                                                     serialized_proto)) {
-    return false;
-  }
-
-  // Write a manifest file. This is needed for component updater to detect any
-  // existing component on disk.
-  return base::WriteFile(install_dir.Append(FILE_PATH_LITERAL("manifest.json")),
-                         base::ReplaceStringPlaceholders(
-                             R"({
-                                  "manifest_version": 1,
-                                  "name": "Privacy Sandbox Attestations",
-                                  "version": "$1"
-                             })",
-                             /*subst=*/{version_str}, /*offsets=*/nullptr));
+  return Installer::GetInstalledDirectory(component_updater_dir)
+      .AppendASCII(version.GetString());
 }
 
 }  // namespace component_updater
