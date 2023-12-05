@@ -5003,6 +5003,13 @@
        {}
       ]
      ],
+     "change-input-type-of-focused-text-control-and-make-it-editing-host.html": [
+      "fec4ff13e8cbb45b6faa2a0872b47558003a58b7",
+      [
+       null,
+       {}
+      ]
+     ],
      "contenteditable-will-be-blurred-by-focus-event-listener.html": [
       "a887b1de90e63e0da24a3872b32727282690b896",
       [
@@ -387104,8 +387111,12 @@
        "c57eff55ebc0c54973903af5f72bac72762cf4f4",
        []
       ],
+      "opaque-origin-sandbox.html": [
+       "4a1ac39fdf6fd6bbc712dca414e54d2bbd5c1064",
+       []
+      ],
       "util.js": [
-       "425303ce2c9c0a490468c3a002609abcad75ad5f",
+       "5fff4894442a214f6035956128fe95f4a955791a",
        []
       ]
      }
@@ -393793,7 +393804,7 @@
      []
     ],
     "elementwise_logical.https.any-expected.txt": [
-     "b7b5d9c55a9a7f2b69f7a1036d3aa3f07697451d",
+     "a95cfaec61809696e7dda2a5abafe6159a22af4d",
      []
     ],
     "elementwise_unary.https.any-expected.txt": [
@@ -471880,7 +471891,7 @@
        ]
       ],
       "has-sibling-insertion-removal.html": [
-       "1331a22ad5528b753727535ac3df4ba9e17c1445",
+       "3c05a0f495a6d30a99165a59c1018563be029581",
        [
         null,
         {}
@@ -478819,6 +478830,30 @@
       ],
       [
        "editing/other/indent-preserving-selection.tentative.html?styleWithCSS=true",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ]
+     ],
+     "input-in-text-control-which-is-also-editing-host.tentative.html": [
+      "1ca22b6730c3300fd14e752346b920e4f6ad3469",
+      [
+       "editing/other/input-in-text-control-which-is-also-editing-host.tentative.html?textcontrol=password",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/input-in-text-control-which-is-also-editing-host.tentative.html?textcontrol=text",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/input-in-text-control-which-is-also-editing-host.tentative.html?textcontrol=textarea",
        {
         "testdriver": true,
         "timeout": "long"
@@ -507947,7 +507982,7 @@
       ]
      ],
      "freshness.any.js": [
-      "6b97c8244f647c9dcbb95ccd2a9e06796e70444a",
+      "86c2620aa663658e1f723c1a01c6b7613fd44d24",
       [
        "fetch/http-cache/freshness.any.html",
        {
@@ -512074,7 +512109,7 @@
       ]
      ],
      "auction-config.https.window.js": [
-      "efb05fc14dad026170041bcc87f50c19b39c5170",
+      "2319b99f79868572049494e7c67ac3119622d285",
       [
        "fledge/tentative/auction-config.https.window.html?1-5",
        {
@@ -512121,7 +512156,15 @@
          ],
          [
           "variant",
-          "?26-last"
+          "?26-30"
+         ],
+         [
+          "variant",
+          "?31-35"
+         ],
+         [
+          "variant",
+          "?36-last"
          ]
         ],
         "timeout": "long"
@@ -512173,7 +512216,15 @@
          ],
          [
           "variant",
-          "?26-last"
+          "?26-30"
+         ],
+         [
+          "variant",
+          "?31-35"
+         ],
+         [
+          "variant",
+          "?36-last"
          ]
         ],
         "timeout": "long"
@@ -512225,7 +512276,15 @@
          ],
          [
           "variant",
-          "?26-last"
+          "?26-30"
+         ],
+         [
+          "variant",
+          "?31-35"
+         ],
+         [
+          "variant",
+          "?36-last"
          ]
         ],
         "timeout": "long"
@@ -512277,14 +512336,22 @@
          ],
          [
           "variant",
-          "?26-last"
+          "?26-30"
+         ],
+         [
+          "variant",
+          "?31-35"
+         ],
+         [
+          "variant",
+          "?36-last"
          ]
         ],
         "timeout": "long"
        }
       ],
       [
-       "fledge/tentative/auction-config.https.window.html?26-last",
+       "fledge/tentative/auction-config.https.window.html?26-30",
        {
         "script_metadata": [
          [
@@ -512329,7 +512396,135 @@
          ],
          [
           "variant",
-          "?26-last"
+          "?26-30"
+         ],
+         [
+          "variant",
+          "?31-35"
+         ],
+         [
+          "variant",
+          "?36-last"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/auction-config.https.window.html?31-35",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-5"
+         ],
+         [
+          "variant",
+          "?6-10"
+         ],
+         [
+          "variant",
+          "?11-15"
+         ],
+         [
+          "variant",
+          "?16-20"
+         ],
+         [
+          "variant",
+          "?21-25"
+         ],
+         [
+          "variant",
+          "?26-30"
+         ],
+         [
+          "variant",
+          "?31-35"
+         ],
+         [
+          "variant",
+          "?36-last"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/auction-config.https.window.html?36-last",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-5"
+         ],
+         [
+          "variant",
+          "?6-10"
+         ],
+         [
+          "variant",
+          "?11-15"
+         ],
+         [
+          "variant",
+          "?16-20"
+         ],
+         [
+          "variant",
+          "?21-25"
+         ],
+         [
+          "variant",
+          "?26-30"
+         ],
+         [
+          "variant",
+          "?31-35"
+         ],
+         [
+          "variant",
+          "?36-last"
          ]
         ],
         "timeout": "long"
@@ -512381,7 +512576,15 @@
          ],
          [
           "variant",
-          "?26-last"
+          "?26-30"
+         ],
+         [
+          "variant",
+          "?31-35"
+         ],
+         [
+          "variant",
+          "?36-last"
          ]
         ],
         "timeout": "long"
@@ -582126,16 +582329,6 @@
        }
       ]
      ],
-     "loaf-desired-exec-time.html": [
-      "656c58d0c24c7738e9dc3c7fcdfb5c05d2a69506",
-      [
-       null,
-       {
-        "testdriver": true,
-        "timeout": "long"
-       }
-      ]
-     ],
      "loaf-event-blocking-duration.html": [
       "daa5f64c39e3aa186b0ff26cb74847fa26dcfe10",
       [
@@ -582156,7 +582349,7 @@
       ]
      ],
      "loaf-first-ui-event.html": [
-      "857ccd0a182ef0f061f9acff3ee42a12e47d89d2",
+      "807c9cfe017444bda4e67b0bef645c21bf5fc538",
       [
        null,
        {
@@ -590236,7 +590429,7 @@
       ]
      ],
      "after-transition-intercept-handler-modifies.html": [
-      "78d1692104d3a069dd0b30f61d0c7324693d54cc",
+      "baff6fe542bbf0263b27c270981978ebf468e9b2",
       [
        null,
        {}
@@ -624485,7 +624678,7 @@
    "storage": {
     "buckets": {
      "bucket-quota-indexeddb.tentative.https.any.js": [
-      "e03aaa802d0869fbab732fc133c613f88837f3b5",
+      "ee9202777e7ec55faee0b89f4c656f7a76c05e83",
       [
        "storage/buckets/bucket-quota-indexeddb.tentative.https.any.html",
        {
@@ -624587,6 +624780,414 @@
          [
           "script",
           "/storage/buckets/resources/util.js"
+         ],
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ]
+     ],
+     "bucket_names.tentative.https.any.js": [
+      "e0f122dc47d86aedced40ad7e41e5c6c192ef573",
+      [
+       "storage/buckets/bucket_names.tentative.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Buckets API: Basic tests for bucket names."
+         ],
+         [
+          "script",
+          "resources/util.js"
+         ],
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ],
+      [
+       "storage/buckets/bucket_names.tentative.https.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Buckets API: Basic tests for bucket names."
+         ],
+         [
+          "script",
+          "resources/util.js"
+         ],
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ],
+      [
+       "storage/buckets/bucket_names.tentative.https.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Buckets API: Basic tests for bucket names."
+         ],
+         [
+          "script",
+          "resources/util.js"
+         ],
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ],
+      [
+       "storage/buckets/bucket_names.tentative.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Buckets API: Basic tests for bucket names."
+         ],
+         [
+          "script",
+          "resources/util.js"
+         ],
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ]
+     ],
+     "buckets_basic.tentative.https.any.js": [
+      "20ff227bac1ec1b8a2b4d36c9ba4488a6c13c827",
+      [
+       "storage/buckets/buckets_basic.tentative.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Buckets API: Basic tests for open(), keys(), delete()."
+         ],
+         [
+          "script",
+          "resources/util.js"
+         ],
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ],
+      [
+       "storage/buckets/buckets_basic.tentative.https.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Buckets API: Basic tests for open(), keys(), delete()."
+         ],
+         [
+          "script",
+          "resources/util.js"
+         ],
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ],
+      [
+       "storage/buckets/buckets_basic.tentative.https.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Buckets API: Basic tests for open(), keys(), delete()."
+         ],
+         [
+          "script",
+          "resources/util.js"
+         ],
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ],
+      [
+       "storage/buckets/buckets_basic.tentative.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Buckets API: Basic tests for open(), keys(), delete()."
+         ],
+         [
+          "script",
+          "resources/util.js"
+         ],
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ]
+     ],
+     "buckets_storage_policy.tentative.https.any.js": [
+      "918364d731527ffe4b1e40896a15d3c3cce08f90",
+      [
+       "storage/buckets/buckets_storage_policy.tentative.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Buckets API: Tests for bucket storage policies."
+         ],
+         [
+          "script",
+          "resources/util.js"
+         ],
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ],
+      [
+       "storage/buckets/buckets_storage_policy.tentative.https.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Buckets API: Tests for bucket storage policies."
+         ],
+         [
+          "script",
+          "resources/util.js"
+         ],
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ],
+      [
+       "storage/buckets/buckets_storage_policy.tentative.https.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Buckets API: Tests for bucket storage policies."
+         ],
+         [
+          "script",
+          "resources/util.js"
+         ],
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ],
+      [
+       "storage/buckets/buckets_storage_policy.tentative.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Buckets API: Tests for bucket storage policies."
+         ],
+         [
+          "script",
+          "resources/util.js"
+         ],
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ]
+     ],
+     "detached-iframe.https.html": [
+      "a67c89efa3e89bf640d2b561a31067c3a9bd8051",
+      [
+       null,
+       {}
+      ]
+     ],
+     "idlharness-worker.https.any.js": [
+      "9a1a3f80b9bc8d58f934921c877fd605d70292e3",
+      [
+       "storage/buckets/idlharness-worker.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "/resources/WebIDLParser.js"
+         ],
+         [
+          "script",
+          "/resources/idlharness.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "storage/buckets/idlharness-worker.https.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "/resources/WebIDLParser.js"
+         ],
+         [
+          "script",
+          "/resources/idlharness.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "storage/buckets/idlharness-worker.https.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "/resources/WebIDLParser.js"
+         ],
+         [
+          "script",
+          "/resources/idlharness.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "storage/buckets/idlharness-worker.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "/resources/WebIDLParser.js"
+         ],
+         [
+          "script",
+          "/resources/idlharness.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "opaque-origin.https.window.js": [
+      "c91d3faa67a3b8041a0cc2605b0d3416e2fcb119",
+      [
+       "storage/buckets/opaque-origin.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Storage Buckets API: Interface is not exposed in opaque origins."
+         ],
+         [
+          "script",
+          "resources/util.js"
+         ],
+         [
+          "global",
+          "window"
+         ]
+        ]
+       }
+      ]
+     ],
+     "storage_bucket_object.tentative.https.any.js": [
+      "52f1693ccb22a3966d47ac90d6627818de4d9a65",
+      [
+       "storage/buckets/storage_bucket_object.tentative.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Buckets API: Tests for the StorageBucket object."
+         ],
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ],
+      [
+       "storage/buckets/storage_bucket_object.tentative.https.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Buckets API: Tests for the StorageBucket object."
+         ],
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ],
+      [
+       "storage/buckets/storage_bucket_object.tentative.https.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Buckets API: Tests for the StorageBucket object."
+         ],
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ],
+      [
+       "storage/buckets/storage_bucket_object.tentative.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Buckets API: Tests for the StorageBucket object."
          ],
          [
           "global",
