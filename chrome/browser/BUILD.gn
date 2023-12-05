@@ -4815,7 +4815,7 @@ static_library("browser") {
     # On Windows, the hashes are embedded in //chrome:chrome_initial rather
     # than here in :chrome_dll.
     if (!is_win) {
-      deps += [ "//chrome:packed_resources_integrity" ]
+      deps += [ "//chrome:packed_resources_integrity_header" ]
       sources += [ "certificate_viewer_stub.cc" ]
     }
 

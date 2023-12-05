@@ -7187,7 +7187,7 @@ test("unit_tests") {
 
     deps += [
       "//chrome:other_version",
-      "//chrome:packed_resources_integrity",
+      "//chrome:packed_resources_integrity_header",
       "//chrome//services/util_win:unit_tests",
       "//chrome/app:chrome_dll_resources",
       "//chrome/app:win_unit_tests",
@@ -8237,7 +8237,7 @@ test("unit_tests") {
     }
 
     deps += [
-      "//chrome:packed_resources_integrity_hash",
+      "//chrome:packed_resources_integrity_header",
       "//chrome/browser/apps:icon_standardizer",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service:app_registry_cache_waiter",
