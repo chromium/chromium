@@ -119,7 +119,8 @@ absl::optional<PreloadingTriggeringOutcome> TriggeringOutcomeFromStatus(
     case PrefetchStatus::kPrefetchFailedInvalidRedirect:
     case PrefetchStatus::kPrefetchFailedIneligibleRedirect:
     case PrefetchStatus::kPrefetchFailedPerPageLimitExceeded:
-    case PrefetchStatus::kPrefetchEvicted:
+    case PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved:
+    case PrefetchStatus::kPrefetchEvictedForNewerPrefetch:
     case PrefetchStatus::kPrefetchIneligibleUserHasServiceWorker:
     case PrefetchStatus::kPrefetchIneligibleSchemeIsNotHttps:
     case PrefetchStatus::kPrefetchIneligibleNonDefaultStoragePartition:
@@ -160,7 +161,10 @@ void SetTriggeringOutcomeAndFailureReasonFromStatus(
   }
 
   if (old_prefetch_status &&
-      new_prefetch_status == PrefetchStatus::kPrefetchEvicted) {
+      (new_prefetch_status ==
+           PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved ||
+       new_prefetch_status ==
+           PrefetchStatus::kPrefetchEvictedForNewerPrefetch)) {
     // Skip this update if the triggering outcome has already been updated to
     // kFailure.
     if (TriggeringOutcomeFromStatus(old_prefetch_status.value()) ==
@@ -207,7 +211,8 @@ void SetTriggeringOutcomeAndFailureReasonFromStatus(
       // TODO(adithyas): This would report 'eviction' as a failure even though
       // the initial prefetch succeeded, consider introducing a different
       // PreloadingTriggerOutcome for eviction.
-      case PrefetchStatus::kPrefetchEvicted:
+      case PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved:
+      case PrefetchStatus::kPrefetchEvictedForNewerPrefetch:
         attempt->SetFailureReason(
             ToPreloadingFailureReason(new_prefetch_status));
         break;

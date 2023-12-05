@@ -217,7 +217,8 @@ void PrefetchDocumentManager::ProcessCandidates(
         case PrefetchContainer::LoadState::kFailedHeldback:
           break;
         case PrefetchContainer::LoadState::kStarted:
-          prefetch->SetPrefetchStatus(PrefetchStatus::kPrefetchEvicted);
+          prefetch->SetPrefetchStatus(
+              PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved);
           break;
       }
       GetPrefetchService()->ResetPrefetch(prefetch);
@@ -353,7 +354,8 @@ bool PrefetchDocumentManager::IsPrefetchAttemptFailedOrDiscarded(
     case PrefetchStatus::kPrefetchFailedPerPageLimitExceeded:
     case PrefetchStatus::
         kPrefetchIneligibleSameSiteCrossOriginPrefetchRequiredProxy:
-    case PrefetchStatus::kPrefetchEvicted:
+    case PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved:
+    case PrefetchStatus::kPrefetchEvictedForNewerPrefetch:
       return true;
   }
 }

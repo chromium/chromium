@@ -4741,7 +4741,7 @@ TEST_F(PrefetchServiceNewLimitsTest, NonEagerPrefetchEvictedAtLimit) {
              PreloadingHoldbackStatus::kAllowed,
              PreloadingTriggeringOutcome::kFailure,
              ToPreloadingFailureReason(
-                 content::PrefetchStatus::kPrefetchEvicted),
+                 content::PrefetchStatus::kPrefetchEvictedForNewerPrefetch),
              /*accurate=*/false,
              /*ready_time=*/
              base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
@@ -4752,7 +4752,7 @@ TEST_F(PrefetchServiceNewLimitsTest, NonEagerPrefetchEvictedAtLimit) {
              PreloadingHoldbackStatus::kAllowed,
              PreloadingTriggeringOutcome::kFailure,
              ToPreloadingFailureReason(
-                 content::PrefetchStatus::kPrefetchEvicted),
+                 content::PrefetchStatus::kPrefetchEvictedForNewerPrefetch),
              /*accurate=*/false,
              /*ready_time=*/
              base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
@@ -5185,7 +5185,8 @@ TEST_F(PrefetchServiceNewLimitsTest, EagerPrefetchLimitIsDynamic) {
              PreloadingHoldbackStatus::kAllowed,
              PreloadingTriggeringOutcome::kFailure,
              ToPreloadingFailureReason(
-                 content::PrefetchStatus::kPrefetchEvicted),
+                 content::PrefetchStatus::
+                     kPrefetchEvictedAfterCandidateRemoved),
              /*accurate=*/false,
              /*ready_time=*/
              base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
@@ -5197,7 +5198,8 @@ TEST_F(PrefetchServiceNewLimitsTest, EagerPrefetchLimitIsDynamic) {
              PreloadingHoldbackStatus::kAllowed,
              PreloadingTriggeringOutcome::kFailure,
              ToPreloadingFailureReason(
-                 content::PrefetchStatus::kPrefetchEvicted),
+                 content::PrefetchStatus::
+                     kPrefetchEvictedAfterCandidateRemoved),
              /*accurate=*/false,
              /*ready_time=*/
              base::ScopedMockElapsedTimersForTest::kMockElapsedTime,

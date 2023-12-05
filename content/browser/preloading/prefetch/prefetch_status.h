@@ -208,10 +208,12 @@ enum class PrefetchStatus {
 
   // The prefetch was evicted to make room for a newer prefetch. This currently
   // only happens when |kPrefetchNewLimits| is enabled.
-  kPrefetchEvicted = 49,
+  // kPrefetchEvicted = 49, DEPRECATED
+  kPrefetchEvictedAfterCandidateRemoved = 50,
+  kPrefetchEvictedForNewerPrefetch = 51,
 
   // The max value of the PrefetchStatus. Update this when new enums are added.
-  kMaxValue = kPrefetchEvicted,
+  kMaxValue = kPrefetchEvictedForNewerPrefetch,
 };
 
 // Mapping from `PrefetchStatus` to `PreloadingFailureReason`.

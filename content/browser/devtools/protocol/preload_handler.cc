@@ -266,8 +266,10 @@ Preload::PrefetchStatus PrefetchStatusToProtocol(PrefetchStatus status) {
         kPrefetchIneligibleSameSiteCrossOriginPrefetchRequiredProxy:
       return Preload::PrefetchStatusEnum::
           PrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy;
-    case PrefetchStatus::kPrefetchEvicted:
-      return Preload::PrefetchStatusEnum::PrefetchEvicted;
+    case PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved:
+      return Preload::PrefetchStatusEnum::PrefetchEvictedAfterCandidateRemoved;
+    case PrefetchStatus::kPrefetchEvictedForNewerPrefetch:
+      return Preload::PrefetchStatusEnum::PrefetchEvictedForNewerPrefetch;
   }
 }
 

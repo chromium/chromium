@@ -1012,7 +1012,8 @@ void PrefetchService::StartSinglePrefetch(
 
   if (prefetch_to_evict) {
     DCHECK(PrefetchNewLimitsEnabled());
-    prefetch_to_evict->SetPrefetchStatus(PrefetchStatus::kPrefetchEvicted);
+    prefetch_to_evict->SetPrefetchStatus(
+        PrefetchStatus::kPrefetchEvictedForNewerPrefetch);
     ResetPrefetch(prefetch_to_evict);
   }
 
