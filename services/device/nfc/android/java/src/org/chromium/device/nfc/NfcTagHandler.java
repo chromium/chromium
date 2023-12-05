@@ -34,7 +34,6 @@ public class NfcTagHandler {
 
         Ndef ndef = Ndef.get(tag);
         if (ndef != null) {
-            String type = ndef.getType();
             return new NfcTagHandler(ndef, new NdefHandler(ndef), tag.getId());
         }
 
@@ -79,6 +78,7 @@ public class NfcTagHandler {
         public void write(NdefMessage message)
                 throws IOException, TagLostException, FormatException, IllegalStateException {
             mNdef.writeNdefMessage(message);
+            mNdef.close();
         }
 
         @Override
