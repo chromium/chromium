@@ -478,6 +478,7 @@ try_.builder(
         "ci/chromeos-jacuzzi-rel-skylab-fyi",
     ],
     contact_team_email = "chromeos-velocity@google.com",
+    gn_args = "ci/chromeos-jacuzzi-rel-skylab-fyi",
     main_list_view = "try",
 )
 

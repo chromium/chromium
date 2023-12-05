@@ -615,6 +615,7 @@
     "chromeos-arm-generic-rel": "try/chromeos-arm-generic-rel/gn-args.json",
     "chromeos-arm64-generic-rel": "try/chromeos-arm64-generic-rel/gn-args.json",
     "chromeos-jacuzzi-rel": "try/chromeos-jacuzzi-rel/gn-args.json",
+    "chromeos-jacuzzi-rel-skylab": "try/chromeos-jacuzzi-rel-skylab/gn-args.json",
     "chromeos-octopus-rel": "try/chromeos-octopus-rel/gn-args.json",
     "chromeos-octopus-rel-skylab": "try/chromeos-octopus-rel-skylab/gn-args.json",
     "gpu-fyi-try-chromeos-amd64-generic": "try/gpu-fyi-try-chromeos-amd64-generic/gn-args.json",
