@@ -10,16 +10,11 @@
 namespace views {
 class Button;
 class FocusManager;
-class View;
 }
 
 // The views-specific methods necessary for a ToolbarActionViewDelegate.
 class ToolbarActionViewDelegateViews : public ToolbarActionViewDelegate {
  public:
-  // Returns |this| as a view. We need this because our subclasses implement
-  // different kinds of views, and inheriting View here is a really bad idea.
-  virtual views::View* GetAsView() = 0;
-
   // Returns the FocusManager to use when registering accelerators.
   virtual views::FocusManager* GetFocusManagerForAccelerator() = 0;
 

@@ -41,10 +41,6 @@ void ExtensionsMenuButton::AddedToWidget() {
 }
 
 // ToolbarActionViewDelegateViews:
-views::View* ExtensionsMenuButton::GetAsView() {
-  return this;
-}
-
 views::FocusManager* ExtensionsMenuButton::GetFocusManagerForAccelerator() {
   return GetFocusManager();
 }
