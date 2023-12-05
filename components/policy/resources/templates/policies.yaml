@@ -1186,6 +1186,7 @@ policies:
   1185: DeviceHardwareVideoDecodingEnabled
   1186: TabOrganizationAllowed
   1187: ComposeAllowed
+  1188: WallpaperSearchAllowed
 atomic_groups:
   1: Homepage
   2: RemoteAccess

@@ -1992,6 +1992,7 @@ chromium-metrics-reviews@google.com.
   <int value="1185" label="DeviceHardwareVideoDecodingEnabled"/>
   <int value="1186" label="TabOrganizationAllowed"/>
   <int value="1187" label="ComposeAllowed"/>
+  <int value="1188" label="WallpaperSearchAllowed"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
