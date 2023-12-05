@@ -432,6 +432,7 @@ static_library("ui") {
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
     "//chrome/browser/media/router/discovery/access_code:discovery_resources_proto",
+    "//chrome/browser/permissions",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiling_host",
@@ -702,6 +703,8 @@ static_library("ui") {
     "//chrome/browser/favicon",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/profiling_host",
+
+    "//chrome/browser/permissions",
   ]
 
   if (enable_vr && is_win) {

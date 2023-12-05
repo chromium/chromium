@@ -1117,44 +1117,6 @@ static_library("browser") {
     "performance_monitor/chrome_browser_main_extra_parts_performance_monitor.h",
     "performance_monitor/system_monitor.cc",
     "performance_monitor/system_monitor.h",
-    "permissions/adaptive_quiet_notification_permission_ui_enabler.cc",
-    "permissions/adaptive_quiet_notification_permission_ui_enabler.h",
-    "permissions/chrome_permissions_client.cc",
-    "permissions/chrome_permissions_client.h",
-    "permissions/contextual_notification_permission_ui_selector.cc",
-    "permissions/contextual_notification_permission_ui_selector.h",
-    "permissions/crowd_deny_preload_data.cc",
-    "permissions/crowd_deny_preload_data.h",
-    "permissions/crowd_deny_safe_browsing_request.cc",
-    "permissions/crowd_deny_safe_browsing_request.h",
-    "permissions/notifications_engagement_service_factory.cc",
-    "permissions/notifications_engagement_service_factory.h",
-    "permissions/notifications_permission_revocation_config.cc",
-    "permissions/notifications_permission_revocation_config.h",
-    "permissions/origin_keyed_permission_action_service_factory.cc",
-    "permissions/origin_keyed_permission_action_service_factory.h",
-    "permissions/permission_actions_history_factory.cc",
-    "permissions/permission_actions_history_factory.h",
-    "permissions/permission_auditing_service_factory.cc",
-    "permissions/permission_auditing_service_factory.h",
-    "permissions/permission_decision_auto_blocker_factory.cc",
-    "permissions/permission_decision_auto_blocker_factory.h",
-    "permissions/permission_manager_factory.cc",
-    "permissions/permission_manager_factory.h",
-    "permissions/permission_revocation_request.cc",
-    "permissions/permission_revocation_request.h",
-    "permissions/prediction_based_permission_ui_selector.cc",
-    "permissions/prediction_based_permission_ui_selector.h",
-    "permissions/prediction_service_factory.cc",
-    "permissions/prediction_service_factory.h",
-    "permissions/prediction_service_request.cc",
-    "permissions/prediction_service_request.h",
-    "permissions/pref_based_quiet_permission_ui_selector.cc",
-    "permissions/pref_based_quiet_permission_ui_selector.h",
-    "permissions/quiet_notification_permission_ui_config.cc",
-    "permissions/quiet_notification_permission_ui_config.h",
-    "permissions/quiet_notification_permission_ui_state.cc",
-    "permissions/quiet_notification_permission_ui_state.h",
     "picture_in_picture/picture_in_picture_bounds_cache.cc",
     "picture_in_picture/picture_in_picture_bounds_cache.h",
     "picture_in_picture/picture_in_picture_window_manager.cc",
@@ -1980,6 +1942,8 @@ static_library("browser") {
 
     # TODO(crbug.com/1030821): Eliminate usages of browser.h from Media Router.
     "//chrome/browser/media/router",
+
+    "//chrome/browser/permissions",
   ]
 
   if (!is_chromeos_lacros) {
@@ -2032,7 +1996,6 @@ static_library("browser") {
     ":k_anonymity_storage_proto",
     ":lcp_critical_path_predictor_proto",
     ":ntp_background_proto",
-    ":permissions_proto",
     ":resource_prefetch_predictor_proto",
     ":unexpire_flags",
     "//base",
@@ -2080,6 +2043,7 @@ static_library("browser") {
     "//chrome/browser/notifications/scheduler:factory",
     "//chrome/browser/notifications/scheduler/public",
     "//chrome/browser/password_manager",
+    "//chrome/browser/permissions",
     "//chrome/browser/persisted_state_db:persisted_state_db",
     "//chrome/browser/policy:path_parser",
     "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
@@ -3286,22 +3250,6 @@ static_library("browser") {
       "password_manager/android/shared_preferences_delegate_android.cc",
       "password_manager/android/shared_preferences_delegate_android.h",
       "payments/android/service_worker_payment_app_bridge.cc",
-      "permissions/notification_blocked_dialog_controller_android.cc",
-      "permissions/notification_blocked_dialog_controller_android.h",
-      "permissions/notification_blocked_message_delegate_android.cc",
-      "permissions/notification_blocked_message_delegate_android.h",
-      "permissions/permission_infobar_delegate_android.cc",
-      "permissions/permission_infobar_delegate_android.h",
-      "permissions/permission_update_infobar_delegate_android.cc",
-      "permissions/permission_update_infobar_delegate_android.h",
-      "permissions/permission_update_message_controller_android.cc",
-      "permissions/permission_update_message_controller_android.h",
-      "permissions/permission_update_message_delegate_android.cc",
-      "permissions/permission_update_message_delegate_android.h",
-      "permissions/permission_update_requester_android.cc",
-      "permissions/permission_update_requester_android.h",
-      "permissions/quiet_permission_prompt_model_android.cc",
-      "permissions/quiet_permission_prompt_model_android.h",
       "platform_util_android.cc",
       "plugins/plugin_observer_android.cc",
       "plugins/plugin_observer_android.h",
@@ -4198,13 +4146,6 @@ static_library("browser") {
       "performance_manager/user_tuning/user_performance_tuning_manager.cc",
       "performance_manager/user_tuning/user_performance_tuning_notifier.cc",
       "performance_manager/user_tuning/user_performance_tuning_notifier.h",
-      "permissions/one_time_permissions_tracker.cc",
-      "permissions/one_time_permissions_tracker.h",
-      "permissions/one_time_permissions_tracker_factory.cc",
-      "permissions/one_time_permissions_tracker_factory.h",
-      "permissions/one_time_permissions_tracker_helper.cc",
-      "permissions/one_time_permissions_tracker_helper.h",
-      "permissions/one_time_permissions_tracker_observer.h",
       "picture_in_picture/auto_picture_in_picture_tab_helper.cc",
       "picture_in_picture/auto_picture_in_picture_tab_helper.h",
       "picture_in_picture/auto_picture_in_picture_tab_strip_observer_helper.cc",
@@ -8017,8 +7958,6 @@ static_library("browser") {
       "navigation_predictor/preloading_model_executor.h",
       "navigation_predictor/preloading_model_handler.cc",
       "navigation_predictor/preloading_model_handler.h",
-      "permissions/prediction_model_handler_provider_factory.cc",
-      "permissions/prediction_model_handler_provider_factory.h",
     ]
     if (!is_android) {
       sources += [
@@ -8171,10 +8110,6 @@ proto_library("lcp_critical_path_predictor_proto") {
 
 proto_library("get_proxy_config_proto") {
   sources = [ "ip_protection/get_proxy_config.proto" ]
-}
-
-proto_library("permissions_proto") {
-  sources = [ "permissions/crowd_deny.proto" ]
 }
 
 if (enable_bound_session_credentials) {
