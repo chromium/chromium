@@ -91,7 +91,7 @@ bool SidePanelRegistry::Deregister(const SidePanelEntry::Key& key) {
     return false;
   }
 
-  base::AutoReset<absl::optional<SidePanelEntryKey>> deregistering_entry_key(
+  base::AutoReset<std::optional<SidePanelEntryKey>> deregistering_entry_key(
       &deregistering_entry_key_, key);
   DeregisterAndReturnEntry(key);
   return true;

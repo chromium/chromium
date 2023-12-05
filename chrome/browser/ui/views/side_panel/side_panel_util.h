@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UTIL_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UTIL_H_
 
+#include <optional>
 #include <type_traits>
 
 #include "base/time/time.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/actions/actions.h"
 
 class Browser;
@@ -48,9 +48,9 @@ class SidePanelUtil {
   CreateToggleSidePanelActionCallback(SidePanelEntryKey key, Browser* browser);
 
   static void RecordNewTabButtonClicked(SidePanelEntry::Id id);
-  static void RecordSidePanelOpen(absl::optional<SidePanelOpenTrigger> trigger);
+  static void RecordSidePanelOpen(std::optional<SidePanelOpenTrigger> trigger);
   static void RecordSidePanelShowOrChangeEntryTrigger(
-      absl::optional<SidePanelOpenTrigger> trigger);
+      std::optional<SidePanelOpenTrigger> trigger);
   static void RecordSidePanelClosed(base::TimeTicks opened_timestamp);
   static void RecordSidePanelResizeMetrics(SidePanelEntry::Id id,
                                            int side_panel_contents_width,
@@ -62,7 +62,7 @@ class SidePanelUtil {
   static void RecordEntryShowTriggeredMetrics(
       Browser* browser,
       SidePanelEntry::Id id,
-      absl::optional<SidePanelOpenTrigger> trigger);
+      std::optional<SidePanelOpenTrigger> trigger);
   static void RecordComboboxShown();
   static void RecordPinnedButtonClicked(SidePanelEntry::Id id, bool is_pinned);
 };

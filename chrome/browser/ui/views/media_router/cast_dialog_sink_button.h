@@ -61,7 +61,7 @@ class CastDialogSinkButton : public HoverButton {
   void UpdateTitleTextStyle();
 
   const UIMediaSink sink_;
-  absl::optional<std::u16string> saved_status_text_;
+  std::optional<std::u16string> saved_status_text_;
   base::CallbackListSubscription enabled_changed_subscription_ =
       AddEnabledChangedCallback(
           base::BindRepeating(&CastDialogSinkButton::OnEnabledChanged,

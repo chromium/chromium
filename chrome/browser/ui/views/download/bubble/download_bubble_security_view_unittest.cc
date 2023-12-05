@@ -68,13 +68,13 @@ class MockDownloadBubbleNavigationHandler
   }
 
   bool was_closed() const { return was_closed_; }
-  absl::optional<DownloadBubbleContentsView::Page> last_opened_page() const {
+  std::optional<DownloadBubbleContentsView::Page> last_opened_page() const {
     return last_opened_page_;
   }
 
  private:
-  absl::optional<DownloadBubbleContentsView::Page> last_opened_page_ =
-      absl::nullopt;
+  std::optional<DownloadBubbleContentsView::Page> last_opened_page_ =
+      std::nullopt;
   bool was_closed_ = false;
   base::WeakPtrFactory<MockDownloadBubbleNavigationHandler> weak_factory_{this};
 };

@@ -429,7 +429,7 @@ class PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest
   MultiStep NavigateAndOpenDialog(Browser* iwa_browser,
                                   ui::ElementIdentifier section_id) {
     return Steps(InstrumentTab(kWebContentsElementId,
-                               /*tab_index=*/absl::nullopt, iwa_browser),
+                               /*tab_index=*/std::nullopt, iwa_browser),
                  PressButton(kToolbarAppMenuButtonElementId),
                  WithView(kToolbarAppMenuButtonElementId,
                           base::BindOnce([](AppMenuButton* button) {

@@ -93,7 +93,7 @@ class CookieControlsBubbleViewController
       controller_observation_{this};
 
   // Testing override for GetSubjectUrlName().
-  absl::optional<std::u16string> subject_url_name_for_testing_;
+  std::optional<std::u16string> subject_url_name_for_testing_;
 
   base::WeakPtrFactory<CookieControlsBubbleViewController> weak_factory_{this};
 };

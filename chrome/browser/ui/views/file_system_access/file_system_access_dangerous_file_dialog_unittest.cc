@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ui/views/file_system_access/file_system_access_dangerous_file_dialog.h"
 
+#include <optional>
+
 #include "base/test/bind.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "content/public/browser/file_system_access_permission_context.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/test/test_dialog_model_host.h"
 #include "url/origin.h"
 
@@ -42,7 +43,7 @@ class TestFileSystemAccessDangerousFileDialog {
   const base::FilePath kTestPath = base::FilePath(FILE_PATH_LITERAL("bar.swf"));
 
   bool callback_called_ = false;
-  absl::optional<DangerousFileResult> result_ = absl::nullopt;
+  std::optional<DangerousFileResult> result_ = std::nullopt;
 };
 
 TEST_F(FileSystemAccessDangerousFileDialogTest, Accept) {

@@ -377,7 +377,7 @@ void TaskManagerView::InitAlwaysOnTopState() {
 }
 
 void TaskManagerView::ActivateSelectedTab() {
-  const absl::optional<size_t> active_row =
+  const std::optional<size_t> active_row =
       tab_table_->selection_model().active();
   if (active_row.has_value())
     table_model_->ActivateTask(active_row.value());

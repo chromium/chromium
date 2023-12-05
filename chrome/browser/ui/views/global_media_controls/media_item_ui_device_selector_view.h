@@ -65,8 +65,8 @@ class MediaItemUIDeviceSelectorView
       global_media_controls::GlobalMediaControlsEntryPoint entry_point,
       bool show_expand_button = true,
       bool show_devices = false,
-      absl::optional<media_message_center::MediaColorTheme> media_color_theme =
-          absl::nullopt);
+      std::optional<media_message_center::MediaColorTheme> media_color_theme =
+          std::nullopt);
   ~MediaItemUIDeviceSelectorView() override;
 
   // Called when audio output devices are discovered.
@@ -139,7 +139,7 @@ class MediaItemUIDeviceSelectorView
   SkColor foreground_color_ = global_media_controls::kDefaultForegroundColor;
   SkColor background_color_ = global_media_controls::kDefaultBackgroundColor;
   global_media_controls::GlobalMediaControlsEntryPoint const entry_point_;
-  absl::optional<media_message_center::MediaColorTheme> media_color_theme_;
+  std::optional<media_message_center::MediaColorTheme> media_color_theme_;
 
   // Child views
   raw_ptr<AudioDeviceEntryView, DanglingUntriaged>

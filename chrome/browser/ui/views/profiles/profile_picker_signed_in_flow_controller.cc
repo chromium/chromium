@@ -29,7 +29,7 @@ ProfilePickerSignedInFlowController::ProfilePickerSignedInFlowController(
     const CoreAccountInfo& account_info,
     std::unique_ptr<content::WebContents> contents,
     signin_metrics::AccessPoint signin_access_point,
-    absl::optional<SkColor> profile_color)
+    std::optional<SkColor> profile_color)
     : host_(host),
       profile_(profile),
       account_info_(account_info),
@@ -125,7 +125,7 @@ void ProfilePickerSignedInFlowController::SwitchToProfileSwitch(
       GURL(chrome::kChromeUIProfilePickerUrl).Resolve("profile-switch"));
 }
 
-absl::optional<SkColor> ProfilePickerSignedInFlowController::GetProfileColor()
+std::optional<SkColor> ProfilePickerSignedInFlowController::GetProfileColor()
     const {
   // The new profile theme may be overridden by an existing policy theme. This
   // check ensures the correct theme is applied to the sync confirmation window.

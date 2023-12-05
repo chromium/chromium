@@ -14,10 +14,10 @@ class MockSelectionDelegate : public PopupRowView::SelectionDelegate {
   MockSelectionDelegate();
   ~MockSelectionDelegate() override;
 
-  MOCK_METHOD(absl::optional<CellIndex>, GetSelectedCell, (), (const override));
+  MOCK_METHOD(std::optional<CellIndex>, GetSelectedCell, (), (const override));
   MOCK_METHOD(void,
               SetSelectedCell,
-              (absl::optional<CellIndex>, PopupCellSelectionSource),
+              (std::optional<CellIndex>, PopupCellSelectionSource),
               (override));
 };
 }  // namespace autofill

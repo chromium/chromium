@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DOWNLOAD_BUBBLE_DOWNLOAD_TOOLBAR_BUTTON_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_DOWNLOAD_BUBBLE_DOWNLOAD_TOOLBAR_BUTTON_VIEW_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -15,7 +17,6 @@
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "components/offline_items_collection/core/offline_item.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_observer.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -200,7 +201,7 @@ class DownloadToolbarButtonView : public ToolbarButton,
   // Opens primary dialog and shows the item with given id, if found. Returns
   // pointer to the row if found, or nullptr if not found.
   DownloadBubbleRowView* ShowPrimaryDialogRow(
-      absl::optional<offline_items_collection::ContentId> content_id);
+      std::optional<offline_items_collection::ContentId> content_id);
 
   // Callback invoked when the partial view is closed.
   void OnPartialViewClosed();

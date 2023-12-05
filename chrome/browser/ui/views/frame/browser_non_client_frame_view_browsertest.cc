@@ -82,8 +82,7 @@ class BrowserNonClientFrameViewBrowserTest
   // app in a test.
   // TODO: Add tests for non-bookmark hosted apps, as bookmark apps will no
   // longer be hosted apps when BMO ships.
-  void InstallAndLaunchBookmarkApp(
-      absl::optional<GURL> app_url = absl::nullopt) {
+  void InstallAndLaunchBookmarkApp(std::optional<GURL> app_url = std::nullopt) {
     blink::mojom::Manifest manifest;
     manifest.start_url = app_url.value_or(GetAppURL());
     manifest.scope = manifest.start_url.GetWithoutFilename();

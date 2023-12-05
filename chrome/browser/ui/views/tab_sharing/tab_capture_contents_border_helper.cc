@@ -99,7 +99,7 @@ void TabCaptureContentsBorderHelper::OnCapturerAdded(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!base::Contains(session_to_bounds_, capture_session_id));
 
-  session_to_bounds_[capture_session_id] = absl::nullopt;
+  session_to_bounds_[capture_session_id] = std::nullopt;
 
   Update();
 }
@@ -123,7 +123,7 @@ void TabCaptureContentsBorderHelper::VisibilityUpdated() {
 
 void TabCaptureContentsBorderHelper::OnRegionCaptureRectChanged(
     CaptureSessionId capture_session_id,
-    const absl::optional<gfx::Rect>& region_capture_rect) {
+    const std::optional<gfx::Rect>& region_capture_rect) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(base::Contains(session_to_bounds_, capture_session_id));
 
@@ -132,7 +132,7 @@ void TabCaptureContentsBorderHelper::OnRegionCaptureRectChanged(
       region_capture_rect->height() >= kMinContentsBorderHeight) {
     session_to_bounds_[capture_session_id] = region_capture_rect;
   } else {
-    session_to_bounds_[capture_session_id] = absl::nullopt;
+    session_to_bounds_[capture_session_id] = std::nullopt;
   }
 
   UpdateBlueBorderLocation();
@@ -206,8 +206,8 @@ void TabCaptureContentsBorderHelper::UpdateBlueBorderLocation() {
   browser_view->SetContentBorderBounds(GetBlueBorderLocation());
 }
 
-absl::optional<gfx::Rect>
-TabCaptureContentsBorderHelper::GetBlueBorderLocation() const {
+std::optional<gfx::Rect> TabCaptureContentsBorderHelper::GetBlueBorderLocation()
+    const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!session_to_bounds_.empty()) << "No blue border should be shown.";
 
@@ -215,7 +215,7 @@ TabCaptureContentsBorderHelper::GetBlueBorderLocation() const {
   // one capture session. If there are more, fall back on drawing the border
   // around the entire tab.
   return (session_to_bounds_.size() == 1u) ? session_to_bounds_.begin()->second
-                                           : absl::nullopt;
+                                           : std::nullopt;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(TabCaptureContentsBorderHelper);

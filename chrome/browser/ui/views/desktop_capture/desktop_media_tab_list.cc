@@ -383,11 +383,11 @@ void DesktopMediaTabList::OnThemeChanged() {
   }
 }
 
-absl::optional<content::DesktopMediaID> DesktopMediaTabList::GetSelection() {
+std::optional<content::DesktopMediaID> DesktopMediaTabList::GetSelection() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  absl::optional<size_t> row = table_->GetFirstSelectedRow();
+  std::optional<size_t> row = table_->GetFirstSelectedRow();
   if (!row.has_value())
-    return absl::nullopt;
+    return std::nullopt;
   return controller_->GetSource(row.value()).id;
 }
 
@@ -400,7 +400,7 @@ DesktopMediaTabList::GetSourceListListener() {
 void DesktopMediaTabList::ClearSelection() {
   // Changing the selection in the list will ensure that all appropriate change
   // events are fired.
-  table_->Select(absl::nullopt);
+  table_->Select(std::nullopt);
 }
 
 void DesktopMediaTabList::ClearPreview() {
@@ -414,10 +414,10 @@ void DesktopMediaTabList::ClearPreview() {
 void DesktopMediaTabList::OnSelectionChanged() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  absl::optional<size_t> row = table_->GetFirstSelectedRow();
+  std::optional<size_t> row = table_->GetFirstSelectedRow();
   if (!row.has_value()) {
     ClearPreview();
-    controller_->SetPreviewedSource(absl::nullopt);
+    controller_->SetPreviewedSource(std::nullopt);
     return;
   }
   const DesktopMediaList::Source& source = controller_->GetSource(row.value());

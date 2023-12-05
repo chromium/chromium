@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
 
+#include <optional>
+
 #include "base/callback_list.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -31,7 +33,6 @@
 #include "components/user_education/common/help_bubble_factory_registry.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event.h"
 #include "ui/events/event_observer.h"
 #include "ui/events/types/event_type.h"
@@ -48,12 +49,12 @@ constexpr base::TimeDelta kMemoryPressureCaptureDelay = base::Milliseconds(500);
 // Provides the ability to simulate memory pressure other than the current
 // pressure on the system for testing purposes via an [undocumented]
 // command-line switch.
-absl::optional<base::MemoryPressureListener::MemoryPressureLevel>
+std::optional<base::MemoryPressureListener::MemoryPressureLevel>
 GetMemoryPressureOverride() {
   constexpr char kHoverCardMemoryPressureSwitch[] =
       "hover-card-memory-pressure";
 
-  absl::optional<base::MemoryPressureListener::MemoryPressureLevel> value;
+  std::optional<base::MemoryPressureListener::MemoryPressureLevel> value;
   const base::CommandLine* const command_line =
       base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(kHoverCardMemoryPressureSwitch)) {

@@ -45,7 +45,7 @@ class CookieControlsBubbleCoordinator : public views::ViewObserver {
 
   // Testing override that's passed to CookieControlsBubbleViewController during
   // construction.
-  absl::optional<std::u16string> display_name_for_testing_;
+  std::optional<std::u16string> display_name_for_testing_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_COOKIE_CONTROLS_BUBBLE_COORDINATOR_H_

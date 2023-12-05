@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -49,7 +50,6 @@
 #include "content/public/test/browser_test.h"
 #include "media/base/media_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 #include "ui/base/pointer/touch_ui_controller.h"
@@ -162,7 +162,7 @@ class FeaturePromoDialogTest : public DialogBrowserTest {
 
   raw_ptr<const base::Feature> feature_ = nullptr;
   feature_engagement::test::ScopedIphFeatureList scoped_feature_list_;
-  base::AutoReset<absl::optional<web_app::AppIdentityUpdate>>
+  base::AutoReset<std::optional<web_app::AppIdentityUpdate>>
       update_dialog_scope_;
 
   static void RegisterMockTracker(content::BrowserContext* context) {

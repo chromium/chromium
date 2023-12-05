@@ -131,7 +131,7 @@ AuthenticatorRequestSheetView::CreateIllustrationWithOverlays() {
     constexpr int kActivityIndicatorHeight = 4;
     auto activity_indicator = std::make_unique<views::ProgressBar>();
     activity_indicator->SetPreferredHeight(kActivityIndicatorHeight);
-    activity_indicator->SetPreferredCornerRadii(absl::nullopt);
+    activity_indicator->SetPreferredCornerRadii(std::nullopt);
     activity_indicator->SetValue(-1 /* infinite animation */);
     activity_indicator->SetBackgroundColor(SK_ColorTRANSPARENT);
     activity_indicator->SetPreferredSize(
@@ -246,7 +246,7 @@ void AuthenticatorRequestSheetView::UpdateIconImageFromModel() {
             gfx::kPlaceholderColor));
   } else if (child_views_.step_illustration_animation_) {
     const int lottie_id = model()->lottie_illustrations()->get(is_dark);
-    absl::optional<std::vector<uint8_t>> lottie_bytes =
+    std::optional<std::vector<uint8_t>> lottie_bytes =
         ui::ResourceBundle::GetSharedInstance().GetLottieData(lottie_id);
     scoped_refptr<cc::SkottieWrapper> skottie =
         cc::SkottieWrapper::CreateSerializable(std::move(*lottie_bytes));

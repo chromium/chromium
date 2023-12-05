@@ -41,7 +41,7 @@ OfferNotificationIconView::OfferNotificationIconView(
   SetUpForInOutAnimation();
   SetProperty(views::kElementIdentifierKey, kOfferNotificationChipElementId);
   SetAccessibilityProperties(
-      /*role*/ absl::nullopt,
+      /*role*/ std::nullopt,
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT));
 }
@@ -91,7 +91,7 @@ void OfferNotificationIconView::MaybeShowPageActionLabel() {
   AnimateIn(IDS_DISCOUNT_ICON_EXPANDED_TEXT);
   controller->OnIconExpanded();
   SetAccessibilityProperties(
-      /*role*/ absl::nullopt,
+      /*role*/ std::nullopt,
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT));
 }

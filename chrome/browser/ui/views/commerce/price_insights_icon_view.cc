@@ -41,7 +41,7 @@ PriceInsightsIconView::PriceInsightsIconView(
   SetUpForInOutAnimation();
   SetProperty(views::kElementIdentifierKey, kPriceInsightsChipElementId);
   SetAccessibilityProperties(
-      /*role*/ absl::nullopt,
+      /*role*/ std::nullopt,
       l10n_util::GetStringUTF16(IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT));
 }
 PriceInsightsIconView::~PriceInsightsIconView() = default;
@@ -88,7 +88,7 @@ void PriceInsightsIconView::MaybeShowPageActionLabel() {
   should_extend_label_shown_duration_ = true;
   UpdatePriceInsightsIconLabel();
 
-  AnimateIn(absl::nullopt);
+  AnimateIn(std::nullopt);
 }
 
 PriceInsightsIconView::PriceInsightsIconLabelType

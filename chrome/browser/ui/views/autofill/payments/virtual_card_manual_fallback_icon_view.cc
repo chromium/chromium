@@ -29,7 +29,7 @@ VirtualCardManualFallbackIconView::VirtualCardManualFallbackIconView(
                          delegate,
                          "VirtualCardManualFallback") {
   SetAccessibilityProperties(
-      /*role*/ absl::nullopt,
+      /*role*/ std::nullopt,
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_ICON_TOOLTIP));
 }

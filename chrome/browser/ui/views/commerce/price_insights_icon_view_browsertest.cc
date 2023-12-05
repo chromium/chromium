@@ -99,7 +99,7 @@ class PriceInsightsIconViewBrowserTest : public UiBrowserTest {
   }
 
  protected:
-  absl::optional<commerce::PriceInsightsInfo> price_insights_info_;
+  std::optional<commerce::PriceInsightsInfo> price_insights_info_;
 
   PriceInsightsIconView* GetChip() {
     const ui::ElementContext context =

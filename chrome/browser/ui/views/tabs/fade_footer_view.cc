@@ -129,7 +129,7 @@ template class FooterRow<PerformanceRowData>;
 // -----------------------------------------------------------------------
 
 void FadeAlertFooterRow::SetData(const AlertFooterRowData& data) {
-  absl::optional<TabAlertState> alert_state = data.alert_state;
+  std::optional<TabAlertState> alert_state = data.alert_state;
   if (alert_state.has_value()) {
     SetContent(AlertIndicatorButton::GetTabAlertIndicatorImageForHoverCard(
                    alert_state.value()),

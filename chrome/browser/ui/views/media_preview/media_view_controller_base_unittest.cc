@@ -51,7 +51,7 @@ TEST_F(MediaViewControllerBaseTest, UpdateComboboxEnabledStateTest) {
 
   EXPECT_CALL(source_change_callback_, Run(testing::_))
       .WillOnce(
-          [](absl::optional<size_t> index) { EXPECT_EQ(std::nullopt, index); });
+          [](std::optional<size_t> index) { EXPECT_EQ(std::nullopt, index); });
   controller_->AdjustComboboxEnabledState(/*has_devices=*/true);
 
   EXPECT_FALSE(IsNoDeviceLabelVisible());

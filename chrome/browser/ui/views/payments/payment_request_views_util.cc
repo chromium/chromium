@@ -77,7 +77,7 @@ class ThemeTrackingLabel : public views::Label {
   }
 
  private:
-  absl::optional<ui::ColorId> enabled_color_id_;
+  std::optional<ui::ColorId> enabled_color_id_;
 };
 
 BEGIN_METADATA(ThemeTrackingLabel, views::Label)

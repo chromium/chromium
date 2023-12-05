@@ -6,11 +6,11 @@
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_INSTALLER_VIEW_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
 
@@ -44,7 +44,7 @@ class IsolatedWebAppInstallerView : public views::BoxLayoutView {
   // Configures the buttons of the given DialogDelegate.
   static void SetDialogButtons(views::DialogDelegate* dialog_delegate,
                                int close_button_label_id,
-                               absl::optional<int> accept_button_label_id);
+                               std::optional<int> accept_button_label_id);
 
   class Delegate {
    public:

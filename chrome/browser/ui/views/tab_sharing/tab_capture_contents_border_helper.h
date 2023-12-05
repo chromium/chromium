@@ -31,7 +31,7 @@ class TabCaptureContentsBorderHelper
 
   void OnRegionCaptureRectChanged(
       CaptureSessionId capture_session_id,
-      const absl::optional<gfx::Rect>& region_capture_rect);
+      const std::optional<gfx::Rect>& region_capture_rect);
 
  private:
   friend WebContentsUserData;
@@ -51,7 +51,7 @@ class TabCaptureContentsBorderHelper
   //    is dynamically drawn around the captured area of that one capture.
   //    That is, around the entire tab's contents if no cropping is used,
   //    and aroun  the cropped area if cropping is used.
-  absl::optional<gfx::Rect> GetBlueBorderLocation() const;
+  std::optional<gfx::Rect> GetBlueBorderLocation() const;
 
   // Each capture session has a unique |uint32_t| ID, and is mapped to
   // an optional<Rect>, whose value is as follows:
@@ -59,7 +59,7 @@ class TabCaptureContentsBorderHelper
   // * Otherwise, the crop-target's position in the last observed frame.
   //   Note that this could be an empty Rect, which is the case when the
   //   capture-target consisted of zero pixels within the viewport.
-  std::map<CaptureSessionId, absl::optional<gfx::Rect>> session_to_bounds_;
+  std::map<CaptureSessionId, std::optional<gfx::Rect>> session_to_bounds_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

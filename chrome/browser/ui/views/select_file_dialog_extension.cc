@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -45,7 +46,6 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/native_app_window.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/base/base_window.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -546,7 +546,7 @@ bool SelectFileDialogExtension::IsResizeable() const {
 }
 
 void SelectFileDialogExtension::ApplyPolicyAndNotifyListener(
-    absl::optional<policy::DlpFileDestination> dialog_caller) {
+    std::optional<policy::DlpFileDestination> dialog_caller) {
   if (!listener_)
     return;
 

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_SECURITY_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_SECURITY_VIEW_H_
 
+#include <optional>
+
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -13,7 +15,6 @@
 #include "chrome/browser/download/download_ui_model.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/offline_items_collection/core/offline_item.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/view.h"
@@ -204,7 +205,7 @@ class DownloadBubbleSecurityView : public views::View,
 
   // Records the last time this was shown or updated for a new download. Used
   // for metrics.
-  absl::optional<base::Time> warning_time_;
+  std::optional<base::Time> warning_time_;
   // Tracks whether metrics were logged for this impression, to avoid
   // double-logging.
   bool did_log_action_ = false;

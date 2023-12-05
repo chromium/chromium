@@ -51,7 +51,7 @@ class TabSearchBubbleHost : public views::WidgetObserver,
   WebUIBubbleManager* webui_bubble_manager_for_testing() {
     return &webui_bubble_manager_;
   }
-  const absl::optional<base::TimeTicks>& bubble_created_time_for_testing()
+  const std::optional<base::TimeTicks>& bubble_created_time_for_testing()
       const {
     return bubble_created_time_;
   }
@@ -73,7 +73,7 @@ class TabSearchBubbleHost : public views::WidgetObserver,
   views::WidgetOpenTimer widget_open_timer_;
 
   // Timestamp for when the current bubble was created.
-  absl::optional<base::TimeTicks> bubble_created_time_;
+  std::optional<base::TimeTicks> bubble_created_time_;
 
   raw_ptr<views::MenuButtonController> menu_button_controller_ = nullptr;
 

@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_DRAG_CONTEXT_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/gfx/geometry/rect.h"
@@ -61,7 +61,7 @@ class TabDragContext : public TabDragContextBase {
   ~TabDragContext() override = default;
 
   virtual Tab* GetTabAt(int index) const = 0;
-  virtual absl::optional<int> GetIndexOf(const TabSlotView* view) const = 0;
+  virtual std::optional<int> GetIndexOf(const TabSlotView* view) const = 0;
   virtual int GetTabCount() const = 0;
   virtual bool IsTabPinned(const Tab* tab) const = 0;
   virtual int GetPinnedTabCount() const = 0;
@@ -121,7 +121,7 @@ class TabDragContext : public TabDragContextBase {
       const gfx::Rect& dragged_bounds,
       std::vector<TabSlotView*> dragged_views,
       int num_dragged_tabs,
-      absl::optional<tab_groups::TabGroupId> group) const = 0;
+      std::optional<tab_groups::TabGroupId> group) const = 0;
 
   // Returns the bounds needed for each of the views, relative to a leading
   // coordinate of 0 for the left edge of the first view's bounds.

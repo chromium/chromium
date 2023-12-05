@@ -187,7 +187,7 @@ class IbanBubbleViewFullFormBrowserTest
   }
 
   // Should be called for autofill_iban_form.html.
-  void FillForm(absl::optional<std::string> iban_value = absl::nullopt) {
+  void FillForm(std::optional<std::string> iban_value = std::nullopt) {
     NavigateToAndWaitForForm(kIbanForm);
     content::WebContents* web_contents = GetActiveWebContents();
     const std::string click_fill_button_js =

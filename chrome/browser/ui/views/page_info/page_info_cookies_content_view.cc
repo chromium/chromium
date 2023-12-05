@@ -522,7 +522,7 @@ void PageInfoCookiesContentView::OnToggleButtonPressed() {
 }
 
 void PageInfoCookiesContentView::SetFpsCookiesInfo(
-    absl::optional<CookiesFpsInfo> fps_info,
+    std::optional<CookiesFpsInfo> fps_info,
     bool is_fps_allowed) {
   if (is_fps_allowed) {
     InitFpsButton(fps_info->is_managed);
@@ -562,9 +562,9 @@ void PageInfoCookiesContentView::InitFpsButton(bool is_managed) {
           l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES), std::u16string(),
           l10n_util::GetStringUTF16(IDS_PAGE_INFO_FPS_BUTTON_TOOLTIP),
           /*secondary_text=*/u" ", PageInfoViewFactory::GetLaunchIcon(),
-          is_managed ? absl::optional<ui::ImageModel>(
+          is_managed ? std::optional<ui::ImageModel>(
                            PageInfoViewFactory::GetEnforcedByPolicyIcon())
-                     : absl::nullopt));
+                     : std::nullopt));
   fps_button_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_FPS_SETTINGS);
 }

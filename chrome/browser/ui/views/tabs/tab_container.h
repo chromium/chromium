@@ -46,8 +46,8 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
   virtual void RemoveTab(int index, bool was_active) = 0;
   virtual void SetTabPinned(int model_index, TabPinned pinned) = 0;
   // Changes the active tab from |prev_active_index| to |new_active_index|.
-  virtual void SetActiveTab(absl::optional<size_t> prev_active_index,
-                            absl::optional<size_t> new_active_index) = 0;
+  virtual void SetActiveTab(std::optional<size_t> prev_active_index,
+                            std::optional<size_t> new_active_index) = 0;
 
   // Removes the tab at `model_index` from the TabContainer's data structures so
   // it can be reparented elsewhere. Unlike RemoveTab, it does not animate the
@@ -90,14 +90,14 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
   virtual void NotifyTabGroupEditorBubbleOpened() = 0;
   virtual void NotifyTabGroupEditorBubbleClosed() = 0;
 
-  virtual absl::optional<int> GetModelIndexOf(
+  virtual std::optional<int> GetModelIndexOf(
       const TabSlotView* slot_view) const = 0;
   virtual Tab* GetTabAtModelIndex(int index) const = 0;
   virtual int GetTabCount() const = 0;
 
   // Returns the model index of the first tab after (or including) `tab` which
   // is not closing.
-  virtual absl::optional<int> GetModelIndexOfFirstNonClosingTab(
+  virtual std::optional<int> GetModelIndexOfFirstNonClosingTab(
       Tab* tab) const = 0;
 
   virtual void UpdateHoverCard(
@@ -108,9 +108,9 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
 
   virtual bool IsRectInContentArea(const gfx::Rect& rect) = 0;
 
-  virtual absl::optional<ZOrderableTabContainerElement>
+  virtual std::optional<ZOrderableTabContainerElement>
   GetLeadingElementForZOrdering() const = 0;
-  virtual absl::optional<ZOrderableTabContainerElement>
+  virtual std::optional<ZOrderableTabContainerElement>
   GetTrailingElementForZOrdering() const = 0;
 
   // Animation stuff. Will be public until fully moved down into TabContainer.
@@ -147,7 +147,7 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
   // See |in_tab_close_| for details on tab closing mode. |source| is the input
   // method used to enter tab closing mode, which determines how it is exited
   // due to user inactivity.
-  virtual void EnterTabClosingMode(absl::optional<int> override_width,
+  virtual void EnterTabClosingMode(std::optional<int> override_width,
                                    CloseTabSource source) = 0;
   virtual void ExitTabClosingMode() = 0;
 

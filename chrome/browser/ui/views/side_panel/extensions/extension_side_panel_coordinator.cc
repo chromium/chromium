@@ -52,7 +52,7 @@ bool IsSidePanelEnabled(const api::side_panel::PanelOptions& options) {
 bool HasGlobalSidePanel(content::BrowserContext* context,
                         const Extension& extension) {
   auto options = SidePanelService::Get(context)->GetOptions(
-      extension, /*tab_id=*/absl::nullopt);
+      extension, /*tab_id=*/std::nullopt);
   return IsSidePanelEnabled(options);
 }
 
@@ -93,7 +93,7 @@ ExtensionSidePanelCoordinator::ExtensionSidePanelCoordinator(
 
     auto options =
         IsGlobalCoordinator()
-            ? service->GetOptions(*extension, /*tab_id=*/absl::nullopt)
+            ? service->GetOptions(*extension, /*tab_id=*/std::nullopt)
             : service->GetSpecificOptionsForTab(
                   *extension, ExtensionTabUtil::GetTabId(web_contents));
     if (IsSidePanelEnabled(options)) {
@@ -180,10 +180,10 @@ void ExtensionSidePanelCoordinator::OnPanelOptionsChanged(
   }
 
   // Ignore changes that don't pertain to this tab id.
-  absl::optional<int> tab_id =
+  std::optional<int> tab_id =
       IsGlobalCoordinator()
-          ? absl::nullopt
-          : absl::make_optional(ExtensionTabUtil::GetTabId(web_contents_));
+          ? std::nullopt
+          : std::make_optional(ExtensionTabUtil::GetTabId(web_contents_));
   if (tab_id != updated_options.tab_id) {
     return;
   }
@@ -380,7 +380,7 @@ void ExtensionSidePanelCoordinator::LoadExtensionIcon() {
 
 void ExtensionSidePanelCoordinator::UpdateActionItemIcon() {
   CHECK(IsGlobalCoordinator());
-  absl::optional<actions::ActionId> extension_action_id =
+  std::optional<actions::ActionId> extension_action_id =
       actions::ActionIdMap::StringToActionId(GetEntryKey().ToString());
   CHECK(extension_action_id.has_value());
   BrowserActions* browser_actions = BrowserActions::FromBrowser(browser_);

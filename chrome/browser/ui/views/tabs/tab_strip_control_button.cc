@@ -224,9 +224,8 @@ void TabStripControlButton::UpdateBackground() {
     return;
   }
 
-  const absl::optional<int> bg_id =
-      tab_strip_controller_->GetCustomBackgroundId(
-          BrowserFrameActiveState::kUseCurrent);
+  const std::optional<int> bg_id = tab_strip_controller_->GetCustomBackgroundId(
+      BrowserFrameActiveState::kUseCurrent);
 
   // Paint the background as transparent for image based themes.
   if (bg_id.has_value() && paint_transparent_for_custom_image_theme_) {

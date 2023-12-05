@@ -96,8 +96,8 @@ class PermissionChipKombuchaTest : public InteractiveBrowserTest {
   using QuietUiReason = permissions::PermissionUiSelector::QuietUiReason;
   using WarningReason = permissions::PermissionUiSelector::WarningReason;
 
-  void SetCannedUiDecision(absl::optional<QuietUiReason> quiet_ui_reason,
-                           absl::optional<WarningReason> warning_reason) {
+  void SetCannedUiDecision(std::optional<QuietUiReason> quiet_ui_reason,
+                           std::optional<WarningReason> warning_reason) {
     test_api_->manager()->set_permission_ui_selector_for_testing(
         std::make_unique<TestQuietNotificationPermissionUiSelector>(
             permissions::PermissionUiSelector::Decision(quiet_ui_reason,
@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(PermissionChipKombuchaTest, PermissionChipClickTest) {
 // request will be dismissed and the chip will be hidden.
 IN_PROC_BROWSER_TEST_F(PermissionChipKombuchaTest,
                        QuietPermissionChipClickTest) {
-  SetCannedUiDecision(QuietUiReason::kEnabledInPrefs, absl::nullopt);
+  SetCannedUiDecision(QuietUiReason::kEnabledInPrefs, std::nullopt);
 
   RunTestSequence(
       InstrumentTab(kWebContentsElementId),
@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(PermissionChipKombuchaTest,
 IN_PROC_BROWSER_TEST_F(PermissionChipKombuchaTest,
                        QuietestPermissionChipClickTest) {
   SetCannedUiDecision(QuietUiReason::kTriggeredDueToAbusiveContent,
-                      absl::nullopt);
+                      std::nullopt);
 
   RunTestSequence(
       InstrumentTab(kWebContentsElementId),

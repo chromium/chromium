@@ -6,9 +6,9 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_types.h"
@@ -17,12 +17,12 @@
 
 namespace {
 
-absl::optional<gfx::Size> GetSizeFromFlexRule(const views::View* view,
-                                              const views::SizeBounds& bounds) {
+std::optional<gfx::Size> GetSizeFromFlexRule(const views::View* view,
+                                             const views::SizeBounds& bounds) {
   const views::FlexSpecification* const spec =
       view->GetProperty(views::kFlexBehaviorKey);
-  return spec ? absl::make_optional(spec->rule().Run(view, bounds))
-              : absl::nullopt;
+  return spec ? std::make_optional(spec->rule().Run(view, bounds))
+              : std::nullopt;
 }
 
 gfx::Size GetSizeFromFlexRuleOrDefault(const views::View* view,

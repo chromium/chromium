@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -41,7 +42,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_scroll_view_container.h"
@@ -81,7 +81,7 @@ class AppMenuBrowserTest : public UiBrowserTest {
 
  private:
   raw_ptr<Browser> browser_ = nullptr;
-  absl::optional<int> command_id_;
+  std::optional<int> command_id_;
 };
 
 void AppMenuBrowserTest::ShowUi(const std::string& name) {

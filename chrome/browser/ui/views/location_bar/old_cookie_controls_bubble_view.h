@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_OLD_COOKIE_CONTROLS_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_OLD_COOKIE_CONTROLS_BUBBLE_VIEW_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/cookie_controls/cookie_controls_service.h"
@@ -14,7 +16,6 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "components/content_settings/core/common/cookie_controls_status.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/bubble/tooltip_icon.h"
 #include "ui/views/controls/button/button.h"
 
@@ -99,8 +100,8 @@ class OldCookieControlsBubbleView
 
   IntermediateStep intermediate_step_ = IntermediateStep::kNone;
 
-  absl::optional<int> blocked_cookies_;
-  absl::optional<int> stateful_bounces_;
+  std::optional<int> blocked_cookies_;
+  std::optional<int> stateful_bounces_;
 
   raw_ptr<views::ImageView> header_view_ = nullptr;
   raw_ptr<views::Label> text_ = nullptr;

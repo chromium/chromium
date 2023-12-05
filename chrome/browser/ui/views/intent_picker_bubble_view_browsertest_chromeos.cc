@@ -293,7 +293,7 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest,
     browser()->window()->ShowIntentPickerBubble(
         std::move(app_info), /*show_stay_in_chrome=*/true,
         /*show_remember_selection=*/true,
-        IntentPickerBubbleView::BubbleType::kLinkCapturing, absl::nullopt,
+        IntentPickerBubbleView::BubbleType::kLinkCapturing, std::nullopt,
         base::BindOnce(
             &IntentPickerBubbleViewBrowserTestChromeOS::OnBubbleClosed,
             base::Unretained(this)));

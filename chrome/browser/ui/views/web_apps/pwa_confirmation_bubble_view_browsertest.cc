@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
                                       ->GetBrowserContext())
           ->GetPrefs();
   webapps::AppId app_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
+      GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
 
   EXPECT_EQ(GetIntWebAppPref(pref_service, app_id,
                              kIphPrefNames.not_accepted_count_name)
@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
   auto app_info = GetAppInfo();
   GURL start_url = app_info->start_url;
   webapps::AppId app_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
+      GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
   PrefService* pref_service =
       Profile::FromBrowserContext(browser()
                                       ->tab_strip_model()
@@ -221,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
                        CancelFromNavigation) {
-  absl::optional<bool> dialog_accepted_ = absl::nullopt;
+  std::optional<bool> dialog_accepted_ = std::nullopt;
 
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
       GetInstallTracker(browser());

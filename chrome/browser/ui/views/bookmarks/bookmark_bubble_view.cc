@@ -388,7 +388,7 @@ void BookmarkBubbleView::ShowBubble(
       std::move(delegate), browser, url, show_simplified_flow);
   BookmarkBubbleDelegate* bubble_delegate = bubble_delegate_unique.get();
 
-  absl::optional<commerce::ProductInfo> product_info = absl::nullopt;
+  std::optional<commerce::ProductInfo> product_info = std::nullopt;
   gfx::Image product_image;
   if (shopping_service->IsShoppingListEligible()) {
     product_info = shopping_service->GetAvailableProductInfoForUrl(url);

@@ -165,7 +165,7 @@ SkColor BrowserFrameHeaderChromeOS::GetCurrentFrameColor() const {
 
 void BrowserFrameHeaderChromeOS::UpdateFrameColors() {
   SetPaintAsActive(target_widget()->ShouldPaintAsActive());
-  absl::optional<ui::ColorId> button_colors;
+  std::optional<ui::ColorId> button_colors;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (features::IsChromeRefresh2023()) {

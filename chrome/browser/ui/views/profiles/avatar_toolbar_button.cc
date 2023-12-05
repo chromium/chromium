@@ -145,7 +145,7 @@ void AvatarToolbarButton::Layout() {
 }
 
 void AvatarToolbarButton::UpdateText() {
-  absl::optional<SkColor> color;
+  std::optional<SkColor> color;
   std::u16string text;
 
   const auto* const color_provider = GetColorProvider();
@@ -240,9 +240,9 @@ void AvatarToolbarButton::UpdateText() {
   InvalidateLayout();
 }
 
-absl::optional<SkColor> AvatarToolbarButton::GetHighlightTextColor() const {
+std::optional<SkColor> AvatarToolbarButton::GetHighlightTextColor() const {
   if (features::IsChromeRefresh2023()) {
-    absl::optional<SkColor> color;
+    std::optional<SkColor> color;
     const auto* const color_provider = GetColorProvider();
     CHECK(color_provider);
 
@@ -279,17 +279,17 @@ absl::optional<SkColor> AvatarToolbarButton::GetHighlightTextColor() const {
     return color;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<SkColor> AvatarToolbarButton::GetHighlightBorderColor() const {
+std::optional<SkColor> AvatarToolbarButton::GetHighlightBorderColor() const {
   if (features::IsChromeRefresh2023()) {
     const auto* const color_provider = GetColorProvider();
     CHECK(color_provider);
     return color_provider->GetColor(kColorToolbarButtonBorder);
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void AvatarToolbarButton::UpdateInkdrop() {
@@ -488,7 +488,7 @@ std::u16string AvatarToolbarButton::GetAvatarTooltipText() const {
     // still use GetAvatarSyncErrorDescription() as tooltip.
     case State::kSyncError:
     case State::kSyncPaused: {
-      absl::optional<AvatarSyncErrorType> error =
+      std::optional<AvatarSyncErrorType> error =
           delegate_->GetAvatarSyncErrorType();
       DCHECK(error);
       return l10n_util::GetStringFUTF16(
@@ -514,7 +514,7 @@ SkColor AvatarToolbarButton::GetForegroundColor(ButtonState state) const {
   // the color would be same as the label color.
   if (features::IsChromeRefresh2023() && !has_custom_theme &&
       IsLabelPresentAndVisible()) {
-    const absl::optional<SkColor> foreground_color = GetHighlightTextColor();
+    const std::optional<SkColor> foreground_color = GetHighlightTextColor();
     const auto* const color_provider = GetColorProvider();
     return foreground_color.has_value()
                ? foreground_color.value()

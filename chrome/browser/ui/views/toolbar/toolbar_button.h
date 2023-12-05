@@ -6,11 +6,11 @@
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_BUTTON_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/chrome_views_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
@@ -69,7 +69,7 @@ class ToolbarButton : public views::LabelButton,
   // highlight directly without any animation. To clear the previous highlight
   // (also using an animation), call this function with both parameters empty.
   void SetHighlight(const std::u16string& highlight_text,
-                    absl::optional<SkColor> highlight_color);
+                    std::optional<SkColor> highlight_color);
 
   // Sets the leading margin when the browser is maximized and updates layout to
   // make the focus rectangle centered.
@@ -102,8 +102,8 @@ class ToolbarButton : public views::LabelButton,
   virtual void UpdateIcon();
 
   // Gets/Sets |layout_insets_|, see comment there.
-  absl::optional<gfx::Insets> GetLayoutInsets() const;
-  void SetLayoutInsets(const absl::optional<gfx::Insets>& insets);
+  std::optional<gfx::Insets> GetLayoutInsets() const;
+  void SetLayoutInsets(const std::optional<gfx::Insets>& insets);
 
   // views::LabelButton:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
@@ -173,11 +173,11 @@ class ToolbarButton : public views::LabelButton,
 
   // Virtual method to explicitly set the highlighted text color instead of the
   // default behavior of the HighlightColorAnimation.
-  virtual absl::optional<SkColor> GetHighlightTextColor() const;
+  virtual std::optional<SkColor> GetHighlightTextColor() const;
 
   // Virtual method to explicitly set the highlighted border color instead of
   // the default behavior of the HighlightColorAnimation.
-  virtual absl::optional<SkColor> GetHighlightBorderColor() const;
+  virtual std::optional<SkColor> GetHighlightBorderColor() const;
 
   // Updates the images using the given icons and specific colors.
   void UpdateIconsWithColors(const gfx::VectorIcon& icon,
@@ -202,7 +202,7 @@ class ToolbarButton : public views::LabelButton,
 
     // Starts a fade-in animation using the provided |highlight color| or using
     // a default color if not set.
-    void Show(absl::optional<SkColor> highlight_color);
+    void Show(std::optional<SkColor> highlight_color);
 
     // Starts a fade-out animation. A no-op if the fade-out animation is
     // currently in progress or not shown.
@@ -213,10 +213,10 @@ class ToolbarButton : public views::LabelButton,
     // influences the alpha channel). Returns no value if there is no such color
     // and we should use the default text color / paint no border / paint no
     // background / use the default ink-drop base color.
-    absl::optional<SkColor> GetTextColor() const;
-    absl::optional<SkColor> GetBorderColor() const;
-    absl::optional<SkColor> GetBackgroundColor() const;
-    absl::optional<SkColor> GetInkDropBaseColor() const;
+    std::optional<SkColor> GetTextColor() const;
+    std::optional<SkColor> GetBorderColor() const;
+    std::optional<SkColor> GetBackgroundColor() const;
+    std::optional<SkColor> GetInkDropBaseColor() const;
 
     void AnimationEnded(const gfx::Animation* animation) override;
     void AnimationProgressed(const gfx::Animation* animation) override;
@@ -235,7 +235,7 @@ class ToolbarButton : public views::LabelButton,
     // A highlight color is used to signal special states. When set this color
     // is used as a base for background, text, border and ink drops. When not
     // set, uses the default ToolbarButton ink drop.
-    absl::optional<SkColor> highlight_color_;
+    std::optional<SkColor> highlight_color_;
 
     // Animation for showing the highlight color (in border, text, and
     // background) when it becomes non-empty and hiding it when it becomes empty
@@ -306,17 +306,17 @@ class ToolbarButton : public views::LabelButton,
   ui::ElementIdentifier menu_identifier_;
 
   // Used to ensure the button remains highlighted while the menu is active.
-  absl::optional<Button::ScopedAnchorHighlight> menu_anchor_higlight_;
+  std::optional<Button::ScopedAnchorHighlight> menu_anchor_higlight_;
 
   // Vector icons for the ToolbarButton. The icon is chosen based on touch-ui.
   // Reacts to theme changes using default colors.
-  absl::optional<VectorIcons> vector_icons_;
+  std::optional<VectorIcons> vector_icons_;
 
   // Layout insets to use. This is used when the ToolbarButton is not actually
   // hosted inside the toolbar. If not supplied,
   // |GetLayoutInsets(TOOLBAR_BUTTON)| is used instead which is not appropriate
   // outside the toolbar.
-  absl::optional<gfx::Insets> layout_insets_;
+  std::optional<gfx::Insets> layout_insets_;
 
   // Delta from regular toolbar-button insets. This is necessary for buttons
   // that use smaller or larger icons than regular ToolbarButton instances.
@@ -331,7 +331,7 @@ class ToolbarButton : public views::LabelButton,
   // If either |last_border_color_| or |last_paint_insets_| have changed since
   // the last update to |border_| it must be recalculated  to match current
   // values.
-  absl::optional<SkColor> last_border_color_;
+  std::optional<SkColor> last_border_color_;
   gfx::Insets last_paint_insets_;
 
   base::CallbackListSubscription subscription_ =
@@ -344,7 +344,7 @@ class ToolbarButton : public views::LabelButton,
 };
 
 BEGIN_VIEW_BUILDER(CHROME_VIEWS_EXPORT, ToolbarButton, views::LabelButton)
-VIEW_BUILDER_PROPERTY(absl::optional<gfx::Insets>, LayoutInsets)
+VIEW_BUILDER_PROPERTY(std::optional<gfx::Insets>, LayoutInsets)
 END_VIEW_BUILDER
 
 DEFINE_VIEW_BUILDER(CHROME_VIEWS_EXPORT, ToolbarButton)

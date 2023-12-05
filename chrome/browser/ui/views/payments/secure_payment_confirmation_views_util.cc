@@ -88,7 +88,7 @@ std::unique_ptr<views::ProgressBar>
 CreateSecurePaymentConfirmationProgressBarView() {
   auto progress_bar = std::make_unique<views::ProgressBar>();
   progress_bar->SetPreferredHeight(kProgressBarHeight);
-  progress_bar->SetPreferredCornerRadii(absl::nullopt);
+  progress_bar->SetPreferredCornerRadii(std::nullopt);
   progress_bar->SetValue(-1);  // infinite animation.
   progress_bar->SetBackgroundColor(SK_ColorTRANSPARENT);
   progress_bar->SetPreferredSize(
@@ -161,8 +161,8 @@ CreateSecurePaymentConfirmationInstrumentIconView(const gfx::ImageSkia& image) {
 }
 
 std::u16string FormatMerchantLabel(
-    const absl::optional<std::u16string>& merchant_name,
-    const absl::optional<std::u16string>& merchant_origin) {
+    const std::optional<std::u16string>& merchant_name,
+    const std::optional<std::u16string>& merchant_origin) {
   DCHECK(merchant_name.has_value() || merchant_origin.has_value());
 
   if (merchant_name.has_value() && merchant_origin.has_value()) {

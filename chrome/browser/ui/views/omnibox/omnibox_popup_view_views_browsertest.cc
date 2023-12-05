@@ -77,10 +77,10 @@ class ClickTrackingOverlayView : public views::View {
     last_click_ = event->location();
   }
 
-  absl::optional<gfx::Point> last_click() const { return last_click_; }
+  std::optional<gfx::Point> last_click() const { return last_click_; }
 
  private:
-  absl::optional<gfx::Point> last_click_;
+  std::optional<gfx::Point> last_click_;
 };
 
 BEGIN_METADATA(ClickTrackingOverlayView)

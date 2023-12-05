@@ -59,7 +59,7 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
 
     // Pop out button when `observed_identifier` is shown. End pop out when it's
     // hidden.
-    absl::optional<ui::ElementIdentifier> observed_identifier;
+    std::optional<ui::ElementIdentifier> observed_identifier;
   };
 
   ToolbarController(
@@ -108,7 +108,7 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
     ~PopOutState();
 
     // The original FlexSpecification.
-    absl::optional<views::FlexSpecification> original_spec;
+    std::optional<views::FlexSpecification> original_spec;
 
     // The responsive FlexSpecification modified by ToolbarController.
     views::FlexSpecification responsive_spec;

@@ -1214,7 +1214,7 @@ class PageInfoBubbleViewBrowserTestCookiesSubpage
   }
 
   void OpenPageInfoAndGoToCookiesSubpage(
-      absl::optional<std::u16string> fps_owner) {
+      std::optional<std::u16string> fps_owner) {
     EXPECT_FALSE(prefs_->GetBoolean(prefs::kInContextCookieControlsOpened));
     EXPECT_CALL(*mock_service(), GetFirstPartySetOwnerForDisplay(testing::_))
         .WillRepeatedly(testing::Return(fps_owner));

@@ -106,7 +106,7 @@ CookieControlsIconView::CookieControlsIconView(
   SetUpForInOutAnimation(/*duration=*/base::Seconds(12));
   SetPaintLabelOverSolidBackground(true);
   SetAccessibilityProperties(
-      /*role*/ absl::nullopt,
+      /*role*/ std::nullopt,
       l10n_util::GetStringUTF16(IDS_COOKIE_CONTROLS_TOOLTIP));
   SetProperty(views::kElementIdentifierKey, kCookieControlsIconElementId);
 
@@ -240,7 +240,7 @@ void CookieControlsIconView::UpdateVisibilityAndAnimate(
   }
 }
 
-absl::optional<int> CookieControlsIconView::GetLabelForStatus() const {
+std::optional<int> CookieControlsIconView::GetLabelForStatus() const {
   switch (status_) {
     case CookieControlsStatus::kDisabledForSite:
       ABSL_FALLTHROUGH_INTENDED;
@@ -254,7 +254,7 @@ absl::optional<int> CookieControlsIconView::GetLabelForStatus() const {
       }
     case CookieControlsStatus::kUninitialized:
       DLOG(ERROR) << "CookieControl status is not initialized";
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 

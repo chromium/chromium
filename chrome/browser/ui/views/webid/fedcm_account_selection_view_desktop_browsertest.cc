@@ -34,7 +34,7 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
          /*domain_hints=*/std::vector<std::string>()}};
     account_selection_view()->Show(
         "top-frame-example.com",
-        absl::make_optional<std::string>("iframe-example.com"),
+        std::make_optional<std::string>("iframe-example.com"),
         {{"idp-example.com", accounts, content::IdentityProviderMetadata(),
           content::ClientMetadata(GURL::EmptyGURL(), GURL::EmptyGURL()),
           blink::mojom::RpContext::kSignIn, /*request_permission=*/true}},

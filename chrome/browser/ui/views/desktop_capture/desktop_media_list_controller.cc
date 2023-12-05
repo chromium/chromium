@@ -135,9 +135,9 @@ void DesktopMediaListController::OnReselectRequested() {
   SetCanReselect(false);
 }
 
-absl::optional<content::DesktopMediaID>
+std::optional<content::DesktopMediaID>
 DesktopMediaListController::GetSelection() const {
-  return view_ ? view_->GetSelection() : absl::nullopt;
+  return view_ ? view_->GetSelection() : std::nullopt;
 }
 
 void DesktopMediaListController::ClearSelection() {
@@ -181,7 +181,7 @@ void DesktopMediaListController::SetThumbnailSize(const gfx::Size& size) {
 }
 
 void DesktopMediaListController::SetPreviewedSource(
-    const absl::optional<content::DesktopMediaID>& id) {
+    const std::optional<content::DesktopMediaID>& id) {
   media_list_->SetPreviewedSource(id);
 }
 

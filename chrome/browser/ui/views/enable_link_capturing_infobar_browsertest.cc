@@ -336,7 +336,7 @@ IN_PROC_BROWSER_TEST_P(EnableLinkCapturingInfobarBrowserTest,
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "LinkCapturingCancelledFromInfoBar"));
 
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             provider().registrar_unsafe().FindAppThatCapturesLinksInScope(
                 in_scope_url));
 }
@@ -371,7 +371,7 @@ IN_PROC_BROWSER_TEST_P(EnableLinkCapturingInfobarBrowserTest,
   EXPECT_EQ(
       1, user_action_tester.GetActionCount("LinkCapturingIgnoredFromInfoBar"));
 
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             provider().registrar_unsafe().FindAppThatCapturesLinksInScope(
                 in_scope_url));
 }
@@ -492,7 +492,7 @@ IN_PROC_BROWSER_TEST_P(EnableLinkCapturingInfobarBrowserTest,
     EXPECT_EQ(1, user_action_tester.GetActionCount(
                      "LinkCapturingCancelledFromInfoBar"));
 
-    EXPECT_EQ(absl::nullopt,
+    EXPECT_EQ(std::nullopt,
               provider().registrar_unsafe().FindAppThatCapturesLinksInScope(
                   in_scope_url));
     CloseBrowserSynchronously(app_browser);

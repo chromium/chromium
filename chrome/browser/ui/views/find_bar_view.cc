@@ -127,7 +127,7 @@ class FindBarMatchCountLabel : public views::Label {
   }
 
  private:
-  absl::optional<find_in_page::FindNotificationDetails> last_result_;
+  std::optional<find_in_page::FindNotificationDetails> last_result_;
 };
 
 BEGIN_VIEW_BUILDER(/* No Export */, FindBarMatchCountLabel, views::Label)

@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -50,7 +51,6 @@
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -230,7 +230,7 @@ class BrowserView : public BrowserWindow,
     return GetBrowserViewLayout()->contents_border_widget();
   }
   void SetContentBorderBounds(
-      const absl::optional<gfx::Rect>& region_capture_rect) {
+      const std::optional<gfx::Rect>& region_capture_rect) {
     GetBrowserViewLayout()->SetContentBorderBounds(region_capture_rect);
   }
 
@@ -339,7 +339,7 @@ class BrowserView : public BrowserWindow,
 
   // Returns the document picture in picture options from |browser_|'s
   // CreateParams.
-  absl::optional<blink::mojom::PictureInPictureWindowOptions>
+  std::optional<blink::mojom::PictureInPictureWindowOptions>
   GetDocumentPictureInPictureOptions() const;
 
   // Returns the lock_aspect_ratio parameter from |browser_|'s CreateParams.
@@ -452,7 +452,7 @@ class BrowserView : public BrowserWindow,
   void UpdateWebAppStatusIconsVisiblity();
 
   // Getter for the `window.setResizable(bool)` state.
-  absl::optional<bool> GetCanResizeFromWebAPI() const;
+  std::optional<bool> GetCanResizeFromWebAPI() const;
 
   // BrowserWindow:
   void Show() override;
@@ -559,7 +559,7 @@ class BrowserView : public BrowserWindow,
       bool show_stay_in_chrome,
       bool show_remember_selection,
       apps::IntentPickerBubbleType bubble_type,
-      const absl::optional<url::Origin>& initiating_origin,
+      const std::optional<url::Origin>& initiating_origin,
       IntentPickerResponse callback) override;
   void ShowBookmarkBubble(const GURL& url, bool already_bookmarked) override;
   sharing_hub::ScreenshotCapturedBubble* ShowScreenshotCapturedBubble(
@@ -1216,7 +1216,7 @@ class BrowserView : public BrowserWindow,
   // is true, OnWidgetActivationChanged will call RestoreFocus. This is set
   // to true when not set in Show() so that RestoreFocus on activation only
   // happens for very first Show() calls.
-  absl::optional<bool> restore_focus_on_activation_;
+  std::optional<bool> restore_focus_on_activation_;
 
   // This is non-null on Chrome OS only.
   std::unique_ptr<TopControlsSlideController> top_controls_slide_controller_;
@@ -1274,19 +1274,19 @@ class BrowserView : public BrowserWindow,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // |loading_animation_tracker_| is used to measure animation smoothness for
   // tab loading animation.
-  absl::optional<ui::ThroughputTracker> loading_animation_tracker_;
+  std::optional<ui::ThroughputTracker> loading_animation_tracker_;
 #endif
 
   bool window_controls_overlay_enabled_ = false;
   bool should_show_window_controls_overlay_toggle_ = false;
   bool borderless_mode_enabled_ = false;
   bool window_management_permission_granted_ = false;
-  absl::optional<content::PermissionController::SubscriptionId>
+  std::optional<content::PermissionController::SubscriptionId>
       window_management_subscription_id_;
 
   // Caching the last value of `PageData::can_resize_` that has been notified to
   // the WidgetObservers to avoid notifying them when nothing has changed.
-  absl::optional<bool> cached_can_resize_from_web_api_;
+  std::optional<bool> cached_can_resize_from_web_api_;
 
   base::CallbackListSubscription paint_as_active_subscription_;
 

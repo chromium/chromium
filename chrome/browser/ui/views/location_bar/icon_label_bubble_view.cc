@@ -559,7 +559,7 @@ void IconLabelBubbleView::SetUpForInOutAnimation(base::TimeDelta duration) {
                          duration.InMilliseconds();
 }
 
-void IconLabelBubbleView::AnimateIn(absl::optional<int> string_id) {
+void IconLabelBubbleView::AnimateIn(std::optional<int> string_id) {
   if (!label()->GetVisible()) {
     // Start animation from the current width, otherwise the icon will also be
     // included if visible.

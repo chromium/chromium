@@ -49,7 +49,7 @@ AccountInfo SignInWithAccount(
     signin::IdentityTestEnvironment& identity_test_env,
     AccountManagementStatus management_status =
         AccountManagementStatus::kNonManaged,
-    absl::optional<signin::ConsentLevel> consent_level =
+    std::optional<signin::ConsentLevel> consent_level =
         signin::ConsentLevel::kSignin);
 
 // Sets up the parameters that are passed to the command line. For example,
@@ -92,7 +92,7 @@ class ProfilesPixelTestBaseT : public SigninBrowserTestBaseT<T> {
   AccountInfo SignInWithAccount(
       AccountManagementStatus management_status =
           AccountManagementStatus::kNonManaged,
-      absl::optional<signin::ConsentLevel> consent_level =
+      std::optional<signin::ConsentLevel> consent_level =
           signin::ConsentLevel::kSignin) {
     return ::SignInWithAccount(*this->identity_test_env(), management_status,
                                consent_level);

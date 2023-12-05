@@ -74,7 +74,7 @@ class TestQuietNotificationPermissionUiSelector
   void SelectUiToUse(permissions::PermissionRequest* request,
                      DecisionMadeCallback callback) override {
     std::move(callback).Run(
-        Decision(simulated_reason_for_quiet_ui_, absl::nullopt));
+        Decision(simulated_reason_for_quiet_ui_, std::nullopt));
   }
 
   bool IsPermissionRequestSupported(
@@ -141,7 +141,7 @@ class ContentSettingBubbleDialogTest
   base::AutoReset<ChromeContentBrowserClient::PopupNavigationDelegateFactory>
       resetter_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  absl::optional<permissions::MockPermissionRequest>
+  std::optional<permissions::MockPermissionRequest>
       notification_permission_request_;
 };
 

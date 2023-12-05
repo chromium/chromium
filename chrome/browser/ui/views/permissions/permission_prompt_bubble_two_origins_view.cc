@@ -39,7 +39,7 @@ std::u16string GetWindowTitleTwoOrigin(
   }
 }
 
-absl::optional<std::u16string> GetExtraTextTwoOrigin(
+std::optional<std::u16string> GetExtraTextTwoOrigin(
     permissions::PermissionPrompt::Delegate& delegate) {
   CHECK_GT(delegate.Requests().size(), 0u);
   switch (delegate.Requests()[0]->request_type()) {
@@ -53,7 +53,7 @@ absl::optional<std::u16string> GetExtraTextTwoOrigin(
               delegate.GetEmbeddingOrigin(),
               url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -222,7 +222,7 @@ void PermissionPromptBubbleTwoOriginsView::OnRequestingOriginFaviconLoaded(
 void PermissionPromptBubbleTwoOriginsView::MaybeAddLink() {
   gfx::Range link_range;
   views::StyledLabel::RangeStyleInfo link_style;
-  absl::optional<std::u16string> link = GetLink(link_range, link_style);
+  std::optional<std::u16string> link = GetLink(link_range, link_style);
   if (link.has_value()) {
     size_t index = HasExtraText(*GetDelegate()) ? 1 : 0;
     auto* link_label =
@@ -236,7 +236,7 @@ void PermissionPromptBubbleTwoOriginsView::MaybeAddLink() {
   }
 }
 
-absl::optional<std::u16string> PermissionPromptBubbleTwoOriginsView::GetLink(
+std::optional<std::u16string> PermissionPromptBubbleTwoOriginsView::GetLink(
     gfx::Range& link_range,
     views::StyledLabel::RangeStyleInfo& link_style) {
   auto delegate = GetDelegate();
@@ -245,7 +245,7 @@ absl::optional<std::u16string> PermissionPromptBubbleTwoOriginsView::GetLink(
     case permissions::RequestType::kStorageAccess:
       return GetLinkStorageAccess(link_range, link_style);
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 

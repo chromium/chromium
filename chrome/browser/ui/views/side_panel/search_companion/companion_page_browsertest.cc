@@ -152,21 +152,21 @@ struct CompanionScriptBuilder {
 
   // The rest of the arguments are optional. If the value is set, will be added
   // to the postmessage.
-  absl::optional<PromoType> promo_type;
-  absl::optional<PromoAction> promo_action;
-  absl::optional<PhFeedback> ph_feedback;
-  absl::optional<bool> is_exps_opted_in;
-  absl::optional<std::string> url_for_open_in_new_tab;
-  absl::optional<std::string> url_to_open;
-  absl::optional<bool> use_new_tab;
-  absl::optional<UiSurface> ui_surface;
-  absl::optional<int> ui_surface_position;
-  absl::optional<int> child_element_available_count;
-  absl::optional<int> child_element_shown_count;
-  absl::optional<std::string> text_directive;
-  absl::optional<std::vector<std::string>> cq_text_directives;
-  absl::optional<int> click_position;
-  absl::optional<LoadingState> loading_state;
+  std::optional<PromoType> promo_type;
+  std::optional<PromoAction> promo_action;
+  std::optional<PhFeedback> ph_feedback;
+  std::optional<bool> is_exps_opted_in;
+  std::optional<std::string> url_for_open_in_new_tab;
+  std::optional<std::string> url_to_open;
+  std::optional<bool> use_new_tab;
+  std::optional<UiSurface> ui_surface;
+  std::optional<int> ui_surface_position;
+  std::optional<int> child_element_available_count;
+  std::optional<int> child_element_shown_count;
+  std::optional<std::string> text_directive;
+  std::optional<std::vector<std::string>> cq_text_directives;
+  std::optional<int> click_position;
+  std::optional<LoadingState> loading_state;
 
   // Useful in case chrome sends a postmessage in response. Companion waits for
   // the message in response and resolves the promise that was sent back to
@@ -460,10 +460,10 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
     return nullptr;
   }
 
-  absl::optional<companion::proto::CompanionUrlParams>
+  std::optional<companion::proto::CompanionUrlParams>
   GetLastCompanionProtoFromUrlLoad() {
     auto proto_copy = last_proto_from_url_load_;
-    last_proto_from_url_load_ = absl::nullopt;
+    last_proto_from_url_load_ = std::nullopt;
     return proto_copy;
   }
 
@@ -503,13 +503,13 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
     return proto;
   }
 
-  absl::optional<companion::proto::CompanionUrlParams>
+  std::optional<companion::proto::CompanionUrlParams>
   GetLastCompanionProtoFromPostMessage() {
     companion::proto::CompanionUrlParams proto;
     content::EvalJsResult eval_js_result =
         EvalJs("getLastReceivedCompanionProto()");
     if (!eval_js_result.error.empty() || !eval_js_result.value.is_string()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     std::string companion_proto_encoded = eval_js_result.ExtractString();
@@ -517,20 +517,20 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
     return proto;
   }
 
-  absl::optional<GURL> GetLastLinkOpenedUrlFromPostMessage() {
+  std::optional<GURL> GetLastLinkOpenedUrlFromPostMessage() {
     content::EvalJsResult eval_js_result =
         EvalJs("getLastReceivedLinkOpenedUrl()");
     if (!eval_js_result.error.empty() || !eval_js_result.value.is_string()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return GURL(eval_js_result.ExtractString());
   }
 
-  absl::optional<std::string> GetLastLinkOpenedMetadataFromPostMessage() {
+  std::optional<std::string> GetLastLinkOpenedMetadataFromPostMessage() {
     content::EvalJsResult eval_js_result =
         EvalJs("getLastReceivedLinkOpenedMetadata()");
     if (!eval_js_result.error.empty() || !eval_js_result.value.is_string()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return eval_js_result.ExtractString();
   }
@@ -700,8 +700,7 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
   net::EmbeddedTestServer companion_server_{net::EmbeddedTestServer::TYPE_HTTP};
   net::EmbeddedTestServer vqs_url_server_{net::EmbeddedTestServer::TYPE_HTTP};
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-  absl::optional<companion::proto::CompanionUrlParams>
-      last_proto_from_url_load_;
+  std::optional<companion::proto::CompanionUrlParams> last_proto_from_url_load_;
   size_t requests_received_on_server_ = 0;
   std::string last_sourcelang_;
   std::string last_targetlang_;
@@ -987,7 +986,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageSameTabBrowserTest,
   // Load a page on the active tab.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   // Open companion companion via toolbar entry point.
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
@@ -1012,7 +1011,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageSameTabBrowserTest,
   // Load a page on the active tab.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   // Open companion companion via toolbar entry point.
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
@@ -1038,7 +1037,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageSameTabBrowserTest,
   // Load a page on the active tab.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   // Open companion companion via toolbar entry point.
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
@@ -1119,7 +1118,7 @@ IN_PROC_BROWSER_TEST_F(
   // Load a page on the active tab.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   // Open companion companion via toolbar entry point.
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
@@ -1329,7 +1328,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   // Load a page on the active tab.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   // Open companion companion via toolbar entry point.
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
@@ -1393,7 +1392,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   // Load a page on the active tab.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   // Open companion companion via toolbar entry point.
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
@@ -1441,7 +1440,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, PostMessageForPromoEvents) {
   // Load a page on the active tab.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   // Open companion companion via toolbar entry point.
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
@@ -1473,7 +1472,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, OpenUrlInBrowser) {
   // Load a page on the active tab.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
@@ -1505,7 +1504,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, SigninLoadsInNewTab) {
   // Load a page on the active tab.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
@@ -1537,7 +1536,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, RegionSearch) {
   // Load a page on the active tab.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   // Open companion companion via toolbar entry point.
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
@@ -1569,7 +1568,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, OnExpsOptInStatusAvailable) {
   // Load a page on the active tab.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   // Open companion companion via toolbar entry point.
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
@@ -1597,7 +1596,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, OpenInNewTabButtonClicked) {
   // Load a page on the active tab.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   // Open companion companion via toolbar entry point.
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
@@ -1644,7 +1643,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, PhFeedbackWithReportContent) {
   // Load a page on the active tab.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
@@ -1678,7 +1677,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   // Load a page on the active tab.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   // Open companion companion via toolbar entry point.
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
@@ -1703,7 +1702,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   // Load a page on the active tab.
   GURL url = page_url_server_.GetURL(kHost, kRelativeUrl1);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   // Open companion companion via toolbar entry point.
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
@@ -1858,7 +1857,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, OpenedFromEntryPoint) {
   // Load a page on the active tab.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   // Open companion from entry point via dropdown.
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion,
@@ -1884,7 +1883,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   // Load a page on the active tab.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   // Open companion from pinned entry point.
   side_panel_coordinator()->Show(

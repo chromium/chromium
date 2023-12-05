@@ -23,7 +23,7 @@ using ::content::BluetoothDelegate;
 void ShowBluetoothDevicePairConfirmDialog(
     content::WebContents* web_contents,
     const std::u16string& device_identifier,
-    const absl::optional<std::u16string>& pin,
+    const std::optional<std::u16string>& pin,
     BluetoothDelegate::PairPromptCallback close_callback) {
   // This dialog owns itself. DialogDelegateView will delete |dialog| instance.
   auto* dialog = new BluetoothDevicePairConfirmView(device_identifier, pin,
@@ -33,7 +33,7 @@ void ShowBluetoothDevicePairConfirmDialog(
 
 BluetoothDevicePairConfirmView::BluetoothDevicePairConfirmView(
     const std::u16string& device_identifier,
-    const absl::optional<std::u16string>& pin,
+    const std::optional<std::u16string>& pin,
     BluetoothDelegate::PairPromptCallback close_callback)
     : close_callback_(std::move(close_callback)),
       display_pin_(pin.has_value()) {
@@ -58,7 +58,7 @@ BluetoothDevicePairConfirmView::~BluetoothDevicePairConfirmView() = default;
 
 void BluetoothDevicePairConfirmView::InitControls(
     const std::u16string& device_identifier,
-    const absl::optional<std::u16string>& pin) {
+    const std::optional<std::u16string>& pin) {
   //
   // Create the following layout:
   //

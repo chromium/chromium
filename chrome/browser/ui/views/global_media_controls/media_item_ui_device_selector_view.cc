@@ -155,7 +155,7 @@ MediaItemUIDeviceSelectorView::MediaItemUIDeviceSelectorView(
     global_media_controls::GlobalMediaControlsEntryPoint entry_point,
     bool show_expand_button,
     bool show_devices,
-    absl::optional<media_message_center::MediaColorTheme> media_color_theme)
+    std::optional<media_message_center::MediaColorTheme> media_color_theme)
     : item_id_(item_id),
       delegate_(delegate),
       entry_point_(entry_point),

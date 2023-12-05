@@ -43,9 +43,9 @@ void PlusAddressCreationControllerDesktop::OfferCreation(
     // missing email case below.
     return;
   }
-  absl::optional<std::string> maybe_email =
+  std::optional<std::string> maybe_email =
       plus_address_service->GetPrimaryEmail();
-  if (maybe_email == absl::nullopt) {
+  if (maybe_email == std::nullopt) {
     // TODO(b/295075403): Validate that early return is desired behavior for
     // the optional not-present case.
     return;
@@ -113,7 +113,7 @@ void PlusAddressCreationControllerDesktop::set_suppress_ui_for_testing(
   suppress_ui_for_testing_ = should_suppress;
 }
 
-absl::optional<PlusProfile>
+std::optional<PlusProfile>
 PlusAddressCreationControllerDesktop::get_plus_profile_for_testing() {
   return plus_profile_;
 }

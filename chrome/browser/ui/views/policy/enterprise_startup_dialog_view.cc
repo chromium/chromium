@@ -126,7 +126,7 @@ class HeadlessEnterpriseStartupDialogImpl : public EnterpriseStartupDialog {
 
   void DisplayErrorMessage(
       const std::u16string& error_message,
-      const absl::optional<std::u16string>& accept_button) override {
+      const std::optional<std::u16string>& accept_button) override {
     if (callback_) {
       // In headless mode the dialog is invisible, therefore there is
       // no one to accept or dismiss it. So just dismiss the dialog
@@ -201,7 +201,7 @@ void EnterpriseStartupDialogView::DisplayLaunchingInformationWithThrobber(
 
 void EnterpriseStartupDialogView::DisplayErrorMessage(
     const std::u16string& error_message,
-    const absl::optional<std::u16string>& accept_button) {
+    const std::optional<std::u16string>& accept_button) {
   ResetDialog(accept_button.has_value());
   std::unique_ptr<views::Label> text = CreateText(error_message);
   auto error_icon =
@@ -312,7 +312,7 @@ void EnterpriseStartupDialogImpl::DisplayLaunchingInformationWithThrobber(
 
 void EnterpriseStartupDialogImpl::DisplayErrorMessage(
     const std::u16string& error_message,
-    const absl::optional<std::u16string>& accept_button) {
+    const std::optional<std::u16string>& accept_button) {
   if (dialog_view_)
     dialog_view_->DisplayErrorMessage(error_message, accept_button);
 }

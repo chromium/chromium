@@ -233,7 +233,7 @@ bool NewTabButton::GetHitTestMask(SkPath* mask) const {
 void NewTabButton::PaintFill(gfx::Canvas* canvas) const {
   gfx::ScopedCanvas scoped_canvas(canvas);
 
-  const absl::optional<int> bg_id =
+  const std::optional<int> bg_id =
       tab_strip_->GetCustomBackgroundId(BrowserFrameActiveState::kUseCurrent);
   if (bg_id.has_value()) {
     // The shape and location of the background texture is defined by a clip

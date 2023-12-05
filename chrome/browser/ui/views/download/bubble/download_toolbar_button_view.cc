@@ -523,11 +523,11 @@ DownloadToolbarButtonView::GetPrimaryViewModels() {
 }
 
 void DownloadToolbarButtonView::OpenPrimaryDialog() {
-  ShowPrimaryDialogRow(absl::nullopt);
+  ShowPrimaryDialogRow(std::nullopt);
 }
 
 DownloadBubbleRowView* DownloadToolbarButtonView::ShowPrimaryDialogRow(
-    absl::optional<ContentId> content_id) {
+    std::optional<ContentId> content_id) {
   if (!bubble_delegate_) {
     return nullptr;
   }

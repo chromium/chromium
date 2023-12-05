@@ -76,7 +76,7 @@ const gfx::VectorIcon* GetVectorIcon(
 // foreground_color_id is only set for CastDeviceEntryViewAsh.
 std::unique_ptr<views::ImageView> CreateIconView(
     const gfx::VectorIcon* icon,
-    absl::optional<ui::ColorId> foreground_color_id = absl::nullopt) {
+    std::optional<ui::ColorId> foreground_color_id = std::nullopt) {
   auto icon_view = std::make_unique<views::ImageView>();
   if (foreground_color_id.has_value()) {
     icon_view->SetImage(ui::ImageModel::FromVectorIcon(
@@ -92,7 +92,7 @@ std::unique_ptr<views::ImageView> CreateIconView(
 // foreground_color_id is only set for CastDeviceEntryViewAsh.
 std::unique_ptr<views::View> CreateIconView(
     global_media_controls::mojom::IconType icon,
-    absl::optional<ui::ColorId> foreground_color_id = absl::nullopt) {
+    std::optional<ui::ColorId> foreground_color_id = std::nullopt) {
   if (icon == global_media_controls::mojom::IconType::kThrobber) {
     return media_router::CreateThrobber();
   }

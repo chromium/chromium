@@ -226,7 +226,7 @@ bool ChromeLabsViewController::ShouldLabShowNewBadge(Profile* profile,
 #endif
 
   base::Value::Dict& new_badge_prefs = update.Get();
-  absl::optional<int> start_day = new_badge_prefs.FindInt(lab.internal_name);
+  std::optional<int> start_day = new_badge_prefs.FindInt(lab.internal_name);
   DCHECK(start_day);
   uint32_t current_day = GetCurrentDay();
   if (*start_day == chrome_labs_prefs::kChromeLabsNewExperimentPrefValue) {

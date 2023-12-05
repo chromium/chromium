@@ -6,6 +6,7 @@
 
 #include <codecvt>
 #include <map>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <utility>
@@ -136,7 +137,6 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
@@ -272,7 +272,7 @@ void FlushShortcutTasks() {
 struct SiteConfig {
   std::string relative_url;
   std::string relative_manifest_id;
-  absl::optional<std::string> parent_manifest_id;
+  std::optional<std::string> parent_manifest_id;
   std::string app_name;
   std::u16string wco_not_enabled_title;
   SkColor icon_color;
@@ -633,54 +633,54 @@ class UninstallCompleteWaiter final : public BrowserListObserver,
       observation_{this};
 };
 
-absl::optional<ProfileState> GetStateForProfile(StateSnapshot* state_snapshot,
-                                                Profile* profile) {
+std::optional<ProfileState> GetStateForProfile(StateSnapshot* state_snapshot,
+                                               Profile* profile) {
   CHECK(state_snapshot);
   CHECK(profile);
   auto it = state_snapshot->profiles.find(profile);
   return it == state_snapshot->profiles.end()
-             ? absl::nullopt
-             : absl::make_optional<ProfileState>(it->second);
+             ? std::nullopt
+             : std::make_optional<ProfileState>(it->second);
 }
 
-absl::optional<BrowserState> GetStateForBrowser(StateSnapshot* state_snapshot,
-                                                Profile* profile,
-                                                Browser* browser) {
-  absl::optional<ProfileState> profile_state =
+std::optional<BrowserState> GetStateForBrowser(StateSnapshot* state_snapshot,
+                                               Profile* profile,
+                                               Browser* browser) {
+  std::optional<ProfileState> profile_state =
       GetStateForProfile(state_snapshot, profile);
   if (!profile_state) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto it = profile_state->browsers.find(browser);
   return it == profile_state->browsers.end()
-             ? absl::nullopt
-             : absl::make_optional<BrowserState>(it->second);
+             ? std::nullopt
+             : std::make_optional<BrowserState>(it->second);
 }
 
-absl::optional<TabState> GetStateForActiveTab(BrowserState browser_state) {
+std::optional<TabState> GetStateForActiveTab(BrowserState browser_state) {
   if (!browser_state.active_tab) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto it = browser_state.tabs.find(browser_state.active_tab);
   CHECK(it != browser_state.tabs.end());
-  return absl::make_optional<TabState>(it->second);
+  return std::make_optional<TabState>(it->second);
 }
 
-absl::optional<AppState> GetStateForAppId(StateSnapshot* state_snapshot,
-                                          Profile* profile,
-                                          const webapps::AppId& id) {
-  absl::optional<ProfileState> profile_state =
+std::optional<AppState> GetStateForAppId(StateSnapshot* state_snapshot,
+                                         Profile* profile,
+                                         const webapps::AppId& id) {
+  std::optional<ProfileState> profile_state =
       GetStateForProfile(state_snapshot, profile);
   if (!profile_state) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto it = profile_state->apps.find(id);
   return it == profile_state->apps.end()
-             ? absl::nullopt
-             : absl::make_optional<AppState>(it->second);
+             ? std::nullopt
+             : std::make_optional<AppState>(it->second);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -763,7 +763,7 @@ AppState::AppState(webapps::AppId app_id,
                    GURL app_scope,
                    apps::RunOnOsLoginMode run_on_os_login_mode,
                    blink::mojom::DisplayMode effective_display_mode,
-                   absl::optional<mojom::UserDisplayMode> user_display_mode,
+                   std::optional<mojom::UserDisplayMode> user_display_mode,
                    std::string manifest_launcher_icon_filename,
                    bool installed_locally,
                    bool shortcut_created)
@@ -964,7 +964,7 @@ void WebAppIntegrationTestDriver::HandleAppIdentityUpdateDialogResponse(
   // Resetting the global test state for app identity update dialogs so that
   // tests can accept/cancel the app identity update dialog.
   update_dialog_scope_ =
-      web_app::SetIdentityUpdateDialogActionForTesting(absl::nullopt);
+      web_app::SetIdentityUpdateDialogActionForTesting(std::nullopt);
   views::Widget* manifest_update_widget =
       app_id_update_dialog_waiter_->WaitIfNeededAndGet();
   ASSERT_TRUE(manifest_update_widget != nullptr);
@@ -2621,7 +2621,7 @@ void WebAppIntegrationTestDriver::CheckAppListEmpty() {
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
-  absl::optional<ProfileState> state =
+  std::optional<ProfileState> state =
       GetStateForProfile(after_state_change_action_state_.get(), profile());
   ASSERT_TRUE(state.has_value());
   EXPECT_TRUE(state->apps.empty());
@@ -2697,7 +2697,7 @@ void WebAppIntegrationTestDriver::CheckAppInListNotLocallyInstalled(Site site) {
     return;
   }
   // Note: This is a partially supported action.
-  absl::optional<AppState> app_state =
+  std::optional<AppState> app_state =
       GetAppBySiteMode(after_state_change_action_state_.get(), profile(), site);
   ASSERT_TRUE(app_state.has_value());
   EXPECT_FALSE(app_state->is_installed_locally);
@@ -2723,7 +2723,7 @@ void WebAppIntegrationTestDriver::CheckAppInListWindowed(Site site) {
     return;
   }
   // Note: This is a partially supported action.
-  absl::optional<AppState> app_state =
+  std::optional<AppState> app_state =
       GetAppBySiteMode(after_state_change_action_state_.get(), profile(), site);
   ASSERT_TRUE(app_state.has_value());
   EXPECT_EQ(app_state->user_display_mode, mojom::UserDisplayMode::kStandalone);
@@ -2749,7 +2749,7 @@ void WebAppIntegrationTestDriver::CheckAppInListTabbed(Site site) {
     return;
   }
   // Note: This is a partially supported action.
-  absl::optional<AppState> app_state =
+  std::optional<AppState> app_state =
       GetAppBySiteMode(after_state_change_action_state_.get(), profile(), site);
   ASSERT_TRUE(app_state.has_value());
   EXPECT_EQ(app_state->user_display_mode, mojom::UserDisplayMode::kBrowser);
@@ -2814,9 +2814,9 @@ void WebAppIntegrationTestDriver::CheckAppTabCreated() {
     return;
   }
   CHECK(before_state_change_action_state_);
-  absl::optional<BrowserState> most_recent_browser_state = GetStateForBrowser(
+  std::optional<BrowserState> most_recent_browser_state = GetStateForBrowser(
       after_state_change_action_state_.get(), profile(), app_browser());
-  absl::optional<BrowserState> previous_browser_state = GetStateForBrowser(
+  std::optional<BrowserState> previous_browser_state = GetStateForBrowser(
       before_state_change_action_state_.get(), profile(), app_browser());
   ASSERT_TRUE(most_recent_browser_state.has_value());
 
@@ -2870,7 +2870,7 @@ void WebAppIntegrationTestDriver::CheckAppNotInList(Site site) {
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
-  absl::optional<AppState> app_state =
+  std::optional<AppState> app_state =
       GetAppBySiteMode(after_state_change_action_state_.get(), profile(), site);
   EXPECT_FALSE(app_state.has_value());
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -2894,7 +2894,7 @@ void WebAppIntegrationTestDriver::CheckPlatformShortcutAndIcon(Site site) {
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
-  absl::optional<AppState> app_state =
+  std::optional<AppState> app_state =
       GetAppBySiteMode(after_state_change_action_state_.get(), profile(), site);
   ASSERT_TRUE(app_state);
   EXPECT_TRUE(app_state->is_shortcut_created);
@@ -2910,7 +2910,7 @@ void WebAppIntegrationTestDriver::CheckPlatformShortcutNotExists(Site site) {
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
-  absl::optional<AppState> app_state =
+  std::optional<AppState> app_state =
       GetAppBySiteMode(after_state_change_action_state_.get(), profile(), site);
   if (!app_state) {
     app_state = GetAppBySiteMode(before_state_change_action_state_.get(),
@@ -2934,7 +2934,7 @@ void WebAppIntegrationTestDriver::CheckAppIcon(Site site, Color color) {
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
-  absl::optional<AppState> app_state =
+  std::optional<AppState> app_state =
       GetAppBySiteMode(after_state_change_action_state_.get(), profile(), site);
   ASSERT_TRUE(app_state);
   std::string color_str;
@@ -2993,7 +2993,7 @@ void WebAppIntegrationTestDriver::CheckAppTitle(Site site, Title title) {
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
-  absl::optional<AppState> app_state =
+  std::optional<AppState> app_state =
       GetAppBySiteMode(after_state_change_action_state_.get(), profile(), site);
   ASSERT_TRUE(app_state);
   std::string expected;
@@ -3133,7 +3133,7 @@ void WebAppIntegrationTestDriver::CheckLaunchIconShown() {
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
-  absl::optional<BrowserState> browser_state = GetStateForBrowser(
+  std::optional<BrowserState> browser_state = GetStateForBrowser(
       after_state_change_action_state_.get(), profile(), browser());
   ASSERT_TRUE(browser_state.has_value());
   EXPECT_TRUE(browser_state->launch_icon_shown);
@@ -3144,7 +3144,7 @@ void WebAppIntegrationTestDriver::CheckLaunchIconNotShown() {
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
-  absl::optional<BrowserState> browser_state = GetStateForBrowser(
+  std::optional<BrowserState> browser_state = GetStateForBrowser(
       after_state_change_action_state_.get(), profile(), browser());
   ASSERT_TRUE(browser_state.has_value());
   EXPECT_FALSE(browser_state->launch_icon_shown);
@@ -3156,9 +3156,9 @@ void WebAppIntegrationTestDriver::CheckTabCreated(Number number) {
     return;
   }
   CHECK(before_state_change_action_state_);
-  absl::optional<BrowserState> most_recent_browser_state = GetStateForBrowser(
+  std::optional<BrowserState> most_recent_browser_state = GetStateForBrowser(
       after_state_change_action_state_.get(), profile(), browser());
-  absl::optional<BrowserState> previous_browser_state = GetStateForBrowser(
+  std::optional<BrowserState> previous_browser_state = GetStateForBrowser(
       before_state_change_action_state_.get(), profile(), browser());
   ASSERT_TRUE(most_recent_browser_state.has_value());
 #if BUILDFLAG(IS_MAC)
@@ -3177,7 +3177,7 @@ void WebAppIntegrationTestDriver::CheckTabCreated(Number number) {
   }
 #endif
 
-  absl::optional<TabState> active_tab =
+  std::optional<TabState> active_tab =
       GetStateForActiveTab(most_recent_browser_state.value());
   ASSERT_TRUE(active_tab.has_value());
   AfterStateCheckAction();
@@ -3188,9 +3188,9 @@ void WebAppIntegrationTestDriver::CheckTabNotCreated() {
     return;
   }
   CHECK(before_state_change_action_state_);
-  absl::optional<BrowserState> most_recent_browser_state = GetStateForBrowser(
+  std::optional<BrowserState> most_recent_browser_state = GetStateForBrowser(
       after_state_change_action_state_.get(), profile(), browser());
-  absl::optional<BrowserState> previous_browser_state = GetStateForBrowser(
+  std::optional<BrowserState> previous_browser_state = GetStateForBrowser(
       before_state_change_action_state_.get(), profile(), browser());
   ASSERT_TRUE(most_recent_browser_state.has_value());
   ASSERT_TRUE(previous_browser_state.has_value());
@@ -3228,7 +3228,7 @@ void WebAppIntegrationTestDriver::CheckRunOnOsLoginEnabled(Site site) {
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
-  absl::optional<AppState> app_state =
+  std::optional<AppState> app_state =
       GetAppBySiteMode(after_state_change_action_state_.get(), profile(), site);
   ASSERT_TRUE(app_state);
   EXPECT_EQ(app_state->run_on_os_login_mode, apps::RunOnOsLoginMode::kWindowed);
@@ -3237,7 +3237,7 @@ void WebAppIntegrationTestDriver::CheckRunOnOsLoginEnabled(Site site) {
   ASSERT_TRUE(override_registration_->test_override->IsRunOnOsLoginEnabled(
       profile(), app_state->id, app_state->name));
   SiteConfig site_config = GetSiteConfigurationFromAppName(app_state->name);
-  absl::optional<SkColor> icon_color =
+  std::optional<SkColor> icon_color =
       override_registration_->test_override->GetShortcutIconTopLeftColor(
           profile(), override_registration_->test_override->startup(),
           app_state->id, app_state->name);
@@ -3254,7 +3254,7 @@ void WebAppIntegrationTestDriver::CheckRunOnOsLoginDisabled(Site site) {
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
-  absl::optional<AppState> app_state =
+  std::optional<AppState> app_state =
       GetAppBySiteMode(after_state_change_action_state_.get(), profile(), site);
   ASSERT_TRUE(app_state);
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -3305,7 +3305,7 @@ void WebAppIntegrationTestDriver::CheckUserCannotSetRunOnOsLoginAppSettings(
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
-  absl::optional<AppState> app_state =
+  std::optional<AppState> app_state =
       GetAppBySiteMode(after_state_change_action_state_.get(), profile(), site);
   ASSERT_TRUE(app_state);
   auto app_management_page_handler = CreateAppManagementPageHandler(profile());
@@ -3338,7 +3338,7 @@ void WebAppIntegrationTestDriver::CheckUserCannotSetRunOnOsLoginAppHome(
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
-  absl::optional<AppState> app_state =
+  std::optional<AppState> app_state =
       GetAppBySiteMode(after_state_change_action_state_.get(), profile(), site);
   ASSERT_TRUE(app_state);
   content::TestWebUI test_web_ui;
@@ -3373,7 +3373,7 @@ void WebAppIntegrationTestDriver::CheckUserDisplayModeInternal(
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
-  absl::optional<AppState> app_state = GetStateForAppId(
+  std::optional<AppState> app_state = GetStateForAppId(
       after_state_change_action_state_.get(), profile(), active_app_id_);
   ASSERT_TRUE(app_state.has_value());
   EXPECT_EQ(user_display_mode, app_state->user_display_mode);
@@ -3385,9 +3385,9 @@ void WebAppIntegrationTestDriver::CheckWindowClosed() {
     return;
   }
   CHECK(before_state_change_action_state_);
-  absl::optional<ProfileState> after_action_profile =
+  std::optional<ProfileState> after_action_profile =
       GetStateForProfile(after_state_change_action_state_.get(), profile());
-  absl::optional<ProfileState> before_action_profile =
+  std::optional<ProfileState> before_action_profile =
       GetStateForProfile(before_state_change_action_state_.get(), profile());
   ASSERT_TRUE(after_action_profile.has_value());
   ASSERT_TRUE(before_action_profile.has_value());
@@ -3401,9 +3401,9 @@ void WebAppIntegrationTestDriver::CheckWindowCreated() {
     return;
   }
   CHECK(before_state_change_action_state_);
-  absl::optional<ProfileState> after_action_profile =
+  std::optional<ProfileState> after_action_profile =
       GetStateForProfile(after_state_change_action_state_.get(), profile());
-  absl::optional<ProfileState> before_action_profile =
+  std::optional<ProfileState> before_action_profile =
       GetStateForProfile(before_state_change_action_state_.get(), profile());
   ASSERT_TRUE(after_action_profile.has_value());
   ASSERT_TRUE(before_action_profile.has_value());
@@ -3428,9 +3428,9 @@ void WebAppIntegrationTestDriver::CheckPwaWindowCreatedImpl(Profile* profile,
                                                             Site site,
                                                             Number number) {
   CHECK(before_state_change_action_state_);
-  absl::optional<ProfileState> after_action_profile =
+  std::optional<ProfileState> after_action_profile =
       GetStateForProfile(after_state_change_action_state_.get(), profile);
-  absl::optional<ProfileState> before_action_profile =
+  std::optional<ProfileState> before_action_profile =
       GetStateForProfile(before_state_change_action_state_.get(), profile);
   ASSERT_TRUE(after_action_profile.has_value());
   ASSERT_TRUE(before_action_profile.has_value());
@@ -3470,9 +3470,9 @@ void WebAppIntegrationTestDriver::CheckWindowNotCreated() {
     return;
   }
   CHECK(before_state_change_action_state_);
-  absl::optional<ProfileState> after_action_profile =
+  std::optional<ProfileState> after_action_profile =
       GetStateForProfile(after_state_change_action_state_.get(), profile());
-  absl::optional<ProfileState> before_action_profile =
+  std::optional<ProfileState> before_action_profile =
       GetStateForProfile(before_state_change_action_state_.get(), profile());
   ASSERT_TRUE(after_action_profile.has_value());
   ASSERT_TRUE(before_action_profile.has_value());
@@ -3549,7 +3549,7 @@ void WebAppIntegrationTestDriver::CheckWindowDisplayMinimal() {
   web_app::AppBrowserController* app_controller =
       app_browser()->app_controller();
   ASSERT_TRUE(app_controller->AsWebAppBrowserController());
-  absl::optional<AppState> app_state = GetStateForAppId(
+  std::optional<AppState> app_state = GetStateForAppId(
       after_state_change_action_state_.get(), profile(), active_app_id_);
   ASSERT_TRUE(app_state.has_value());
 
@@ -3577,7 +3577,7 @@ void WebAppIntegrationTestDriver::CheckWindowDisplayTabbed() {
   web_app::AppBrowserController* app_controller =
       app_browser()->app_controller();
   ASSERT_TRUE(app_controller->AsWebAppBrowserController());
-  absl::optional<AppState> app_state = GetStateForAppId(
+  std::optional<AppState> app_state = GetStateForAppId(
       after_state_change_action_state_.get(), profile(), active_app_id_);
   ASSERT_TRUE(app_state.has_value());
 
@@ -3605,7 +3605,7 @@ void WebAppIntegrationTestDriver::CheckWindowDisplayStandalone() {
   web_app::AppBrowserController* app_controller =
       app_browser()->app_controller();
   ASSERT_TRUE(app_controller->AsWebAppBrowserController());
-  absl::optional<AppState> app_state = GetStateForAppId(
+  std::optional<AppState> app_state = GetStateForAppId(
       after_state_change_action_state_.get(), profile(), active_app_id_);
   ASSERT_TRUE(app_state.has_value());
 
@@ -3731,7 +3731,7 @@ void WebAppIntegrationTestDriver::OnWebAppManifestUpdated(
   if (waiting_for_update_id_ == app_id) {
     CHECK(waiting_for_update_run_loop_);
     waiting_for_update_run_loop_->Quit();
-    waiting_for_update_id_ = absl::nullopt;
+    waiting_for_update_id_ = std::nullopt;
     // The `BeforeState*Action()` methods check that the
     // `after_state_change_action_state_` has not changed from the current
     // state. This is great, except for the manifest update edge case, which can
@@ -3753,7 +3753,7 @@ void WebAppIntegrationTestDriver::OnWebAppUninstalled(
   if (waiting_for_update_id_.value() == app_id &&
       waiting_for_update_run_loop_ != nullptr) {
     waiting_for_update_run_loop_->Quit();
-    waiting_for_update_id_ = absl::nullopt;
+    waiting_for_update_id_ = std::nullopt;
     // The `BeforeState*Action()` methods check that the
     // `after_state_change_action_state_` has not changed from the current
     // state. This is great, except for the manifest update edge case, which can
@@ -3941,21 +3941,21 @@ GURL WebAppIntegrationTestDriver::GetUrlForSite(Site site) {
   return GetTestServerForSiteMode(site).GetURL(relative_url_path);
 }
 
-absl::optional<AppState> WebAppIntegrationTestDriver::GetAppBySiteMode(
+std::optional<AppState> WebAppIntegrationTestDriver::GetAppBySiteMode(
     StateSnapshot* state_snapshot,
     Profile* profile,
     Site site) {
-  absl::optional<ProfileState> profile_state =
+  std::optional<ProfileState> profile_state =
       GetStateForProfile(state_snapshot, profile);
   if (!profile_state) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   webapps::AppId app_id = GetAppIdBySiteMode(site);
   auto it = profile_state->apps.find(app_id);
   return it == profile_state->apps.end()
-             ? absl::nullopt
-             : absl::make_optional<AppState>(it->second);
+             ? std::nullopt
+             : std::make_optional<AppState>(it->second);
 }
 
 WebAppProvider* WebAppIntegrationTestDriver::GetProviderForProfile(
@@ -4239,7 +4239,7 @@ Browser* WebAppIntegrationTestDriver::GetAppBrowserForSite(
                              ? after_state_change_action_state_.get()
                              : before_state_change_action_state_.get();
   CHECK(state);
-  absl::optional<AppState> app_state = GetAppBySiteMode(state, profile(), site);
+  std::optional<AppState> app_state = GetAppBySiteMode(state, profile(), site);
   EXPECT_TRUE(app_state) << "Could not find installed app for site "
                          << static_cast<int>(site);
   if (!app_state) {
@@ -4290,10 +4290,10 @@ bool WebAppIntegrationTestDriver::DoIconColorsMatch(Profile* profile,
 #if BUILDFLAG(IS_WIN)
   SkColor expected_icon_pixel_color =
       GetSiteConfigurationFromAppName(name).icon_color;
-  absl::optional<SkColor> shortcut_pixel_color_desktop =
+  std::optional<SkColor> shortcut_pixel_color_desktop =
       override_registration_->test_override->GetShortcutIconTopLeftColor(
           profile, override_registration_->test_override->desktop(), id, name);
-  absl::optional<SkColor> shortcut_pixel_color_application_menu =
+  std::optional<SkColor> shortcut_pixel_color_application_menu =
       override_registration_->test_override->GetShortcutIconTopLeftColor(
           profile, override_registration_->test_override->application_menu(),
           id, name);
@@ -4307,7 +4307,7 @@ bool WebAppIntegrationTestDriver::DoIconColorsMatch(Profile* profile,
 #elif BUILDFLAG(IS_MAC)
   SkColor expected_icon_pixel_color =
       GetSiteConfigurationFromAppName(name).icon_color;
-  absl::optional<SkColor> shortcut_pixel_color_apps_folder =
+  std::optional<SkColor> shortcut_pixel_color_apps_folder =
       override_registration_->test_override->GetShortcutIconTopLeftColor(
           profile, override_registration_->test_override->chrome_apps_folder(),
           id, name);
@@ -4318,11 +4318,11 @@ bool WebAppIntegrationTestDriver::DoIconColorsMatch(Profile* profile,
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   SkColor expected_icon_pixel_color =
       GetSiteConfigurationFromAppName(name).icon_color;
-  absl::optional<SkColor> actual_color_install_icon_size =
+  std::optional<SkColor> actual_color_install_icon_size =
       override_registration_->test_override->GetShortcutIconTopLeftColor(
           profile, base::FilePath(), id, name, kInstallIconSize);
 
-  absl::optional<SkColor> actual_color_launcher_icon_size =
+  std::optional<SkColor> actual_color_launcher_icon_size =
       override_registration_->test_override->GetShortcutIconTopLeftColor(
           profile, base::FilePath(), id, name, kLauncherIconSize);
   if (actual_color_install_icon_size.has_value() &&
@@ -4458,7 +4458,7 @@ class AppShimLaunchWaiter : public apps::AppShimManager::AppShimObserver {
 
   base::RunLoop loop_;
   std::set<base::ProcessId> launched_shims_;
-  absl::optional<base::ProcessId> expected_pid_;
+  std::optional<base::ProcessId> expected_pid_;
   bool did_launch_ = false;
   base::WeakPtrFactory<AppShimLaunchWaiter> weak_factory_{this};
 };

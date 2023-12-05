@@ -335,7 +335,7 @@ class FirstRunPostSignInAdapter : public ProfilePickerSignedInFlowController {
                                             account_info,
                                             std::move(contents),
                                             kAccessPoint,
-                                            /*profile_color=*/absl::nullopt),
+                                            /*profile_color=*/std::nullopt),
         step_completed_callback_(std::move(step_completed_callback)) {
     DCHECK(step_completed_callback_);
   }

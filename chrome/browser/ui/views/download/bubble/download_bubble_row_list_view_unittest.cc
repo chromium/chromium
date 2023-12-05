@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_list_view.h"
 
+#include <optional>
+
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/download_item_model.h"
@@ -19,7 +21,6 @@
 #include "content/public/browser/download_item_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/test/views_test_utils.h"
 
 namespace {

@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_BOOKMARKS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_DRAG_DATA_H_
 #define CHROME_BROWSER_UI_VIEWS_BOOKMARKS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_DRAG_DATA_H_
 
+#include <optional>
+
 #include "base/uuid.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -23,7 +24,7 @@ class SavedTabGroupDragData {
 
   static const ui::ClipboardFormatType& GetFormatType();
 
-  static absl::optional<SavedTabGroupDragData> ReadFromOSExchangeData(
+  static std::optional<SavedTabGroupDragData> ReadFromOSExchangeData(
       const ui::OSExchangeData* data);
 
   static void WriteToOSExchangeData(SavedTabGroupButton* button,
@@ -31,13 +32,13 @@ class SavedTabGroupDragData {
                                     const ui::ThemeProvider* theme_provider,
                                     ui::OSExchangeData* data);
 
-  const absl::optional<size_t>& insertion_index() { return insertion_index_; }
-  void SetInsertionIndex(absl::optional<size_t> insertion_index) {
+  const std::optional<size_t>& insertion_index() { return insertion_index_; }
+  void SetInsertionIndex(std::optional<size_t> insertion_index) {
     insertion_index_ = insertion_index;
   }
 
-  const absl::optional<gfx::Point>& location() { return location_; }
-  void SetLocation(absl::optional<gfx::Point> new_location) {
+  const std::optional<gfx::Point>& location() { return location_; }
+  void SetLocation(std::optional<gfx::Point> new_location) {
     location_ = new_location;
   }
 
@@ -45,10 +46,10 @@ class SavedTabGroupDragData {
 
  private:
   // Insertion index if the drop is finished
-  absl::optional<size_t> insertion_index_;
+  std::optional<size_t> insertion_index_;
 
   // Local coordinates of the drag.
-  absl::optional<gfx::Point> location_;
+  std::optional<gfx::Point> location_;
 
   // A copy of the group being dragged.
   const base::Uuid guid_;

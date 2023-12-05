@@ -236,7 +236,7 @@ class DownloadBubbleRowView : public views::View,
   // Whether we are dragging the download bubble row.
   bool dragging_ = false;
   // Position that a possible drag started at.
-  absl::optional<gfx::Point> drag_start_point_;
+  std::optional<gfx::Point> drag_start_point_;
   // A CloseOnDeactivate pin that prevents the download bubble from closing on
   // deactivating, for the duration of its lifetime. This is used to prevent
   // the dialog from closing when the row is being dragged.

@@ -50,7 +50,7 @@ END_METADATA
 WebUIBubbleDialogView::WebUIBubbleDialogView(
     views::View* anchor_view,
     BubbleContentsWrapper* contents_wrapper,
-    const absl::optional<gfx::Rect>& anchor_rect,
+    const std::optional<gfx::Rect>& anchor_rect,
     views::BubbleBorder::Arrow arrow)
     : BubbleDialogDelegateView(anchor_view, arrow),
       contents_wrapper_(contents_wrapper),

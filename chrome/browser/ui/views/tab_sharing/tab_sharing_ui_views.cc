@@ -313,7 +313,7 @@ void TabSharingUIViews::WebContentsDestroyed() {
 }
 
 void TabSharingUIViews::OnRegionCaptureRectChanged(
-    const absl::optional<gfx::Rect>& region_capture_rect) {
+    const std::optional<gfx::Rect>& region_capture_rect) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!shared_tab_) {
@@ -417,7 +417,7 @@ void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
                             base::Unretained(this)));
   }
 
-  absl::optional<TabSharingInfoBarDelegate::FocusTarget> focus_target;
+  std::optional<TabSharingInfoBarDelegate::FocusTarget> focus_target;
   if (can_focus_capturer_) {
     // Self-capture -> no switch-to button.
     // Capturer -> switch-to-captured.
@@ -533,7 +533,7 @@ void TabSharingUIViews::RefreshFavicons() {
 
 void TabSharingUIViews::MaybeUpdateFavicon(
     WebContents* focus_target,
-    absl::optional<uint32_t>* current_hash,
+    std::optional<uint32_t>* current_hash,
     WebContents* infobar_owner) {
   const ui::ImageModel favicon = TabFavicon(focus_target);
   const uint32_t hash = GetHash(favicon);

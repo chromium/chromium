@@ -189,8 +189,8 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
   // Calls chrome.sidePanel.setOptions() for the given `extension`, `path` and
   // `enabled` and returns when the API call is complete.
   void RunSetOptions(const Extension& extension,
-                     absl::optional<int> tab_id,
-                     absl::optional<std::string> path,
+                     std::optional<int> tab_id,
+                     std::optional<std::string> path,
                      bool enabled) {
     auto function = base::MakeRefCounted<SidePanelSetOptionsFunction>();
     function->set_extension(&extension);
@@ -224,7 +224,7 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
   // Disables the extension's side panel for the current tab.
   void DisableForCurrentTab(const Extension& extension) {
     ExtensionSidePanelRegistryWaiter waiter(global_registry(), extension.id());
-    RunSetOptions(extension, GetCurrentTabId(), /*path=*/absl::nullopt,
+    RunSetOptions(extension, GetCurrentTabId(), /*path=*/std::nullopt,
                   /*enabled=*/false);
     waiter.WaitForDeregistration();
     EXPECT_FALSE(global_registry()->GetEntryForKey(GetKey(extension.id())));
@@ -256,7 +256,7 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
   actions::ActionItem* GetActionItemForExtension(
       const extensions::Extension* extension,
       BrowserActions* browser_actions) {
-    absl::optional<actions::ActionId> extension_action_id =
+    std::optional<actions::ActionId> extension_action_id =
         actions::ActionIdMap::StringToActionId(
             GetKey(extension->id()).ToString());
     EXPECT_TRUE(extension_action_id.has_value());
@@ -358,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
             base::UTF8ToUTF16(side_panel_extension->short_name()));
   EXPECT_FALSE(action_item->GetImage().IsEmpty());
 
-  absl::optional<actions::ActionId> no_side_panel_extension_action_id =
+  std::optional<actions::ActionId> no_side_panel_extension_action_id =
       actions::ActionIdMap::StringToActionId(
           GetKey(no_side_panel_extension->id()).ToString());
 
@@ -545,7 +545,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, SetOptions_Enabled) {
     // Call setOptions({enabled: true}) and wait for the extension's
     // SidePanelEntry to be registered.
     ExtensionSidePanelRegistryWaiter waiter(global_registry(), extension->id());
-    RunSetOptions(*extension, /*tab_id=*/absl::nullopt, "panel_1.html",
+    RunSetOptions(*extension, /*tab_id=*/std::nullopt, "panel_1.html",
                   /*enabled=*/true);
     waiter.WaitForRegistration();
   }
@@ -556,7 +556,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, SetOptions_Enabled) {
     // Call setOptions({enabled: false}) and wait for the extension's
     // SidePanelEntry to be deregistered.
     ExtensionSidePanelRegistryWaiter waiter(global_registry(), extension->id());
-    RunSetOptions(*extension, /*tab_id=*/absl::nullopt, /*path=*/absl::nullopt,
+    RunSetOptions(*extension, /*tab_id=*/std::nullopt, /*path=*/std::nullopt,
                   /*enabled=*/false);
     waiter.WaitForDeregistration();
   }
@@ -567,7 +567,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, SetOptions_Enabled) {
     // Sanity check that re-enabling the side panel will register the entry
     // again and a view with the new side panel path can be shown.
     ExtensionSidePanelRegistryWaiter waiter(global_registry(), extension->id());
-    RunSetOptions(*extension, /*tab_id=*/absl::nullopt, "panel_2.html",
+    RunSetOptions(*extension, /*tab_id=*/std::nullopt, "panel_2.html",
                   /*enabled=*/true);
     waiter.WaitForRegistration();
   }
@@ -584,7 +584,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, SetOptions_Enabled) {
     // Calling setOptions({enabled: false}) when the extension's SidePanelEntry
     // is shown should close the side panel.
     ExtensionSidePanelRegistryWaiter waiter(global_registry(), extension->id());
-    RunSetOptions(*extension, /*tab_id=*/absl::nullopt, /*path=*/absl::nullopt,
+    RunSetOptions(*extension, /*tab_id=*/std::nullopt, /*path=*/std::nullopt,
                   /*enabled=*/false);
     waiter.WaitForDeregistration();
   }
@@ -611,7 +611,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, SetOptions_Path) {
 
   // Check that the extension's side panel view shows the most recently set
   // path.
-  RunSetOptions(*extension, /*tab_id=*/absl::nullopt, "panel_1.html",
+  RunSetOptions(*extension, /*tab_id=*/std::nullopt, "panel_1.html",
                 /*enabled=*/true);
   side_panel_coordinator()->Show(extension_key);
   ASSERT_TRUE(panel_1_listener.WaitUntilSatisfied());
@@ -620,7 +620,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, SetOptions_Path) {
 
   // Check that changing the path while the view is active will cause the view
   // to navigate to the new path.
-  RunSetOptions(*extension, /*tab_id=*/absl::nullopt, "default_path.html",
+  RunSetOptions(*extension, /*tab_id=*/std::nullopt, "default_path.html",
                 /*enabled=*/true);
   ASSERT_TRUE(default_path_listener.WaitUntilSatisfied());
   EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
@@ -639,7 +639,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, SetOptions_Path) {
   // Test calling setOptions with a different path when the extension's view is
   // cached. The cached view should then be invalidated and its web contents are
   // destroyed.
-  RunSetOptions(*extension, /*tab_id=*/absl::nullopt, "panel_1.html",
+  RunSetOptions(*extension, /*tab_id=*/std::nullopt, "panel_1.html",
                 /*enabled=*/true);
   destroyed_watcher.Wait();
 
@@ -820,7 +820,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, HideGlobalPanelForTab) {
   // re-register the entry.
   {
     ExtensionSidePanelRegistryWaiter waiter(global_registry(), extension->id());
-    RunSetOptions(*extension, GetCurrentTabId(), /*path=*/absl::nullopt,
+    RunSetOptions(*extension, GetCurrentTabId(), /*path=*/std::nullopt,
                   /*enabled=*/true);
     waiter.WaitForRegistration();
     EXPECT_TRUE(global_registry()->GetEntryForKey(extension_key));
@@ -888,7 +888,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   // Disable the extension's side panel for the current tab.
   {
     ExtensionSidePanelRegistryWaiter waiter(global_registry(), extension->id());
-    RunSetOptions(*extension, GetCurrentTabId(), /*path=*/absl::nullopt,
+    RunSetOptions(*extension, GetCurrentTabId(), /*path=*/std::nullopt,
                   /*enabled=*/false);
     waiter.WaitForDeregistration();
     EXPECT_FALSE(global_registry()->GetEntryForKey(extension_key));
@@ -902,13 +902,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
 
   // Calling setOptions({enabled: false}) for all tabs should destroy the
   // contents.
-  RunSetOptions(*extension, /*tab_id=*/absl::nullopt, /*path=*/absl::nullopt,
+  RunSetOptions(*extension, /*tab_id=*/std::nullopt, /*path=*/std::nullopt,
                 /*enabled=*/false);
   destroyed_watcher.Wait();
 
   // Sanity check that calling setOptions({enabled: true}) for all tabs while on
   // a tab where the panel is disabled should be a no-op.
-  RunSetOptions(*extension, /*tab_id=*/absl::nullopt, "default_path.html",
+  RunSetOptions(*extension, /*tab_id=*/std::nullopt, "default_path.html",
                 /*enabled=*/true);
   EXPECT_FALSE(global_registry()->GetEntryForKey(extension_key));
 
@@ -953,7 +953,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, ReEnabledPanelNotShown) {
 
   // Disable the extension's side panel for the second tab, which shouldn't do
   // anything here since we're on the first tab.
-  RunSetOptions(*extension, second_tab_id, /*path=*/absl::nullopt,
+  RunSetOptions(*extension, second_tab_id, /*path=*/std::nullopt,
                 /*enabled=*/false);
   EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
 
@@ -1406,18 +1406,18 @@ class ExtensionOpenSidePanelBrowserTest : public ExtensionSidePanelBrowserTest {
   }
 
   void RunOpenPanelForTab(const Extension& extension, int tab_id) {
-    RunOpenPanel(extension, tab_id, /*window_id=*/absl::nullopt);
+    RunOpenPanel(extension, tab_id, /*window_id=*/std::nullopt);
   }
   void RunOpenPanelForWindow(const Extension& extension, int window_id) {
-    RunOpenPanel(extension, /*tab_id=*/absl::nullopt, window_id);
+    RunOpenPanel(extension, /*tab_id=*/std::nullopt, window_id);
   }
 
   int GetCurrentWindowId() { return ExtensionTabUtil::GetWindowId(browser()); }
 
  private:
   void RunOpenPanel(const Extension& extension,
-                    absl::optional<int> tab_id,
-                    absl::optional<int> window_id) {
+                    std::optional<int> tab_id,
+                    std::optional<int> window_id) {
     auto function = base::MakeRefCounted<SidePanelOpenFunction>();
     function->set_extension(&extension);
 
@@ -1447,7 +1447,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
   const Extension* extension = LoadSidePanelExtension();
   ASSERT_TRUE(extension);
   // Register a global side panel.
-  RunSetOptions(*extension, /*tab_id=*/absl::nullopt, "panel.html",
+  RunSetOptions(*extension, /*tab_id=*/std::nullopt, "panel.html",
                 /*enabled=*/true);
 
   EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
@@ -1465,7 +1465,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
   const Extension* extension = LoadSidePanelExtension();
   ASSERT_TRUE(extension);
   // Register a global side panel.
-  RunSetOptions(*extension, /*tab_id=*/absl::nullopt, "panel.html",
+  RunSetOptions(*extension, /*tab_id=*/std::nullopt, "panel.html",
                 /*enabled=*/true);
 
   int tab_id = GetCurrentTabId();
@@ -1493,7 +1493,7 @@ IN_PROC_BROWSER_TEST_F(
   const Extension* extension = LoadSidePanelExtension();
   ASSERT_TRUE(extension);
   // Register a global side panel.
-  RunSetOptions(*extension, /*tab_id=*/absl::nullopt, "panel.html",
+  RunSetOptions(*extension, /*tab_id=*/std::nullopt, "panel.html",
                 /*enabled=*/true);
 
   // Open a different global side panel (reading list).
@@ -1519,7 +1519,7 @@ IN_PROC_BROWSER_TEST_F(
   const Extension* extension = LoadSidePanelExtension();
   ASSERT_TRUE(extension);
   // Register a global side panel.
-  RunSetOptions(*extension, /*tab_id=*/absl::nullopt, "panel.html",
+  RunSetOptions(*extension, /*tab_id=*/std::nullopt, "panel.html",
                 /*enabled=*/true);
 
   int first_tab_id = GetCurrentTabId();
@@ -1595,7 +1595,7 @@ IN_PROC_BROWSER_TEST_F(
   int third_tab_id = GetCurrentTabId();
 
   // Register a global side panel in the first extension.
-  RunSetOptions(*extension1, /*tab_id=*/absl::nullopt, "panel.html",
+  RunSetOptions(*extension1, /*tab_id=*/std::nullopt, "panel.html",
                 /*enabled=*/true);
   // Register a contextual side panel in the second extension.
   RunSetOptions(*extension2, third_tab_id, "panel.html", /*enabled=*/true);
@@ -1640,7 +1640,7 @@ IN_PROC_BROWSER_TEST_F(
   OpenNewForegroundTab();
 
   // Register a global side panel in the first extension.
-  RunSetOptions(*extension1, /*tab_id=*/absl::nullopt, "panel.html",
+  RunSetOptions(*extension1, /*tab_id=*/std::nullopt, "panel.html",
                 /*enabled=*/true);
   // Register a contextual side panel in the second extension.
   RunSetOptions(*extension2, first_tab_id, "panel.html", /*enabled=*/true);
@@ -1684,7 +1684,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
   int current_tab_id = GetCurrentTabId();
 
   // Register a global side panel in the first extension.
-  RunSetOptions(*extension1, /*tab_id=*/absl::nullopt, "panel.html",
+  RunSetOptions(*extension1, /*tab_id=*/std::nullopt, "panel.html",
                 /*enabled=*/true);
   // Register a contextual side panel in the second extension.
   RunSetOptions(*extension2, current_tab_id, "panel.html", /*enabled=*/true);
@@ -1740,7 +1740,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
   const Extension* extension = LoadSidePanelExtension();
   ASSERT_TRUE(extension);
   // Register a global side panel.
-  RunSetOptions(*extension, /*tab_id=*/absl::nullopt, "panel.html",
+  RunSetOptions(*extension, /*tab_id=*/std::nullopt, "panel.html",
                 /*enabled=*/true);
 
   EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
@@ -1757,7 +1757,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
   const Extension* extension = LoadSidePanelExtension();
   ASSERT_TRUE(extension);
   // Register a global side panel.
-  RunSetOptions(*extension, /*tab_id=*/absl::nullopt, "panel.html",
+  RunSetOptions(*extension, /*tab_id=*/std::nullopt, "panel.html",
                 /*enabled=*/true);
 
   // Open a different global side panel (reading list).
@@ -1789,7 +1789,7 @@ IN_PROC_BROWSER_TEST_F(
   int second_tab_id = GetCurrentTabId();
 
   // Register a global side panel in the first extension.
-  RunSetOptions(*extension1, /*tab_id=*/absl::nullopt, "panel.html",
+  RunSetOptions(*extension1, /*tab_id=*/std::nullopt, "panel.html",
                 /*enabled=*/true);
   // Register a contextual side panel in the second extension.
   RunSetOptions(*extension2, second_tab_id, "panel.html", /*enabled=*/true);
@@ -1830,7 +1830,7 @@ IN_PROC_BROWSER_TEST_F(
   OpenNewForegroundTab();
 
   // Register a global side panel in the first extension.
-  RunSetOptions(*extension1, /*tab_id=*/absl::nullopt, "panel.html",
+  RunSetOptions(*extension1, /*tab_id=*/std::nullopt, "panel.html",
                 /*enabled=*/true);
   // Register a contextual side panel in the second extension.
   RunSetOptions(*extension2, first_tab_id, "panel.html", /*enabled=*/true);
@@ -1895,7 +1895,7 @@ IN_PROC_BROWSER_TEST_F(
   {
     // Verify the "Open side panel" entry is present if the extension has the
     // side panel permission and sets a global panel.
-    RunSetOptions(*side_panel_extension, /*tab_id=*/absl::nullopt,
+    RunSetOptions(*side_panel_extension, /*tab_id=*/std::nullopt,
                   /*path=*/"panel_1.html",
                   /*enabled=*/true);
     auto* menu = GetContextMenuForExtension(side_panel_extension->id());

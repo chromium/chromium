@@ -79,13 +79,13 @@ SkPath TabGroupStyle::GetUnderlinePath(const gfx::Rect local_bounds) const {
 
 gfx::Rect TabGroupStyle::GetEmptyTitleChipBounds(
     const TabGroupHeader* const header) const {
-  return gfx::Rect(GetTitleChipOffset(absl::nullopt).x(),
-                   GetTitleChipOffset(absl::nullopt).y(), GetEmptyChipSize(),
+  return gfx::Rect(GetTitleChipOffset(std::nullopt).x(),
+                   GetTitleChipOffset(std::nullopt).y(), GetEmptyChipSize(),
                    GetEmptyChipSize());
 }
 
 gfx::Point TabGroupStyle::GetTitleChipOffset(
-    absl::optional<int> text_height) const {
+    std::optional<int> text_height) const {
   if (text_height.has_value()) {
     return gfx::Point(
         TabGroupUnderline::GetStrokeInset(),
@@ -182,13 +182,13 @@ SkPath ChromeRefresh2023TabGroupStyle::GetUnderlinePath(
 
 gfx::Rect ChromeRefresh2023TabGroupStyle::GetEmptyTitleChipBounds(
     const TabGroupHeader* const header) const {
-  return gfx::Rect(GetTitleChipOffset(absl::nullopt).x(),
-                   GetTitleChipOffset(absl::nullopt).y(), GetEmptyChipSize(),
+  return gfx::Rect(GetTitleChipOffset(std::nullopt).x(),
+                   GetTitleChipOffset(std::nullopt).y(), GetEmptyChipSize(),
                    GetEmptyChipSize());
 }
 
 gfx::Point ChromeRefresh2023TabGroupStyle::GetTitleChipOffset(
-    absl::optional<int> text_height) const {
+    std::optional<int> text_height) const {
   const int total_space = GetLayoutConstant(TAB_STRIP_HEIGHT) -
                           GetEmptyChipSize() -
                           GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);

@@ -82,7 +82,7 @@ void ExtensionsRequestAccessButton::Update(
   // TODO(crbug.com/1239772): Set the label and background color without borders
   // separately to match the mocks. For now, using SetHighlight to display that
   // adds a border and highlight color in addition to the label.
-  absl::optional<SkColor> color;
+  std::optional<SkColor> color;
   SetHighlight(
       l10n_util::GetStringFUTF16Int(IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON,
                                     static_cast<int>(extension_ids_.size())),
@@ -105,7 +105,7 @@ void ExtensionsRequestAccessButton::MaybeShowHoverCard() {
 
 void ExtensionsRequestAccessButton::ResetConfirmation() {
   SetVisible(false);
-  confirmation_origin_ = absl::nullopt;
+  confirmation_origin_ = std::nullopt;
   collapse_timer_.AbandonAndStop();
 }
 
@@ -187,7 +187,7 @@ void ExtensionsRequestAccessButton::OnButtonPressed() {
   action_runner->GrantTabPermissions(extensions_to_run);
 
   // Show confirmation message, and disable the button, for a specific duration.
-  absl::optional<SkColor> color;
+  std::optional<SkColor> color;
   SetHighlight(l10n_util::GetStringUTF16(
                    IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_DISMISSED_TEXT),
                color);

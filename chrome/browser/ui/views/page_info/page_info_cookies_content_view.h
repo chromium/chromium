@@ -88,7 +88,7 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
 
   //  Checks if |fps_button_| should be initiated and if so does it and sets its
   //  info.
-  void SetFpsCookiesInfo(absl::optional<CookiesFpsInfo> fps_info,
+  void SetFpsCookiesInfo(std::optional<CookiesFpsInfo> fps_info,
                          bool is_fps_allowed);
 
   // Ensures the first-party sets information UI is present, with

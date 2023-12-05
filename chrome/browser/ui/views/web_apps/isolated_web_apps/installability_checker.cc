@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/installability_checker.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
@@ -87,7 +87,7 @@ void InstallabilityChecker::OnLoadedMetadata(
 void InstallabilityChecker::OnInstallabilityChecked(
     SignedWebBundleMetadata metadata,
     InstallabilityCheckResult installability_check_result,
-    absl::optional<base::Version> installed_version) {
+    std::optional<base::Version> installed_version) {
   switch (installability_check_result) {
     case InstallabilityCheckResult::kInstallable:
       std::move(callback_).Run(BundleInstallable{metadata});

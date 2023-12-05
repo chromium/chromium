@@ -32,7 +32,7 @@ class PopupViewViewsTestApi {
     return view_->HandleKeyPressEvent(event);
   }
 
-  absl::optional<PopupViewViews::CellIndex> GetOpenSubPopupCell() const&& {
+  std::optional<PopupViewViews::CellIndex> GetOpenSubPopupCell() const&& {
     return view_->open_sub_popup_cell_;
   }
 

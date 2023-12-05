@@ -56,7 +56,7 @@ class AppMenu : public views::MenuDelegate,
 
   // views::MenuDelegate:
   const gfx::FontList* GetLabelFontList(int command_id) const override;
-  absl::optional<SkColor> GetLabelColor(int command_id) const override;
+  std::optional<SkColor> GetLabelColor(int command_id) const override;
   std::u16string GetTooltipText(int command_id,
                                 const gfx::Point& p) const override;
   bool IsTriggerableEvent(views::MenuItemView* menu,

@@ -82,8 +82,8 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   METADATA_HEADER(AccountSelectionBubbleView);
   AccountSelectionBubbleView(
       const std::u16string& top_frame_for_display,
-      const absl::optional<std::u16string>& iframe_for_display,
-      const absl::optional<std::u16string>& idp_title,
+      const std::optional<std::u16string>& iframe_for_display,
+      const std::optional<std::u16string>& idp_title,
       blink::mojom::RpContext rp_context,
       bool show_auto_reauthn_checkbox,
       views::View* anchor_view,
@@ -100,28 +100,28 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
 
   void ShowSingleAccountConfirmDialog(
       const std::u16string& top_frame_for_display,
-      const absl::optional<std::u16string>& iframe_for_display,
+      const std::optional<std::u16string>& iframe_for_display,
       const content::IdentityRequestAccount& account,
       const IdentityProviderDisplayData& idp_display_data,
       bool show_back_button) override;
 
   void ShowFailureDialog(
       const std::u16string& top_frame_for_display,
-      const absl::optional<std::u16string>& iframe_for_display,
+      const std::optional<std::u16string>& iframe_for_display,
       const std::u16string& idp_for_display,
       const content::IdentityProviderMetadata& idp_metadata) override;
 
   void ShowErrorDialog(const std::u16string& top_frame_for_display,
-                       const absl::optional<std::u16string>& iframe_for_display,
+                       const std::optional<std::u16string>& iframe_for_display,
                        const std::u16string& idp_for_display,
                        const content::IdentityProviderMetadata& idp_metadata,
-                       const absl::optional<TokenError>& error) override;
+                       const std::optional<TokenError>& error) override;
 
   // Populates `idp_images` when an IDP image has been fetched.
   void AddIdpImage(const GURL& image_url, gfx::ImageSkia idp_image);
 
   std::string GetDialogTitle() const override;
-  absl::optional<std::string> GetDialogSubtitle() const override;
+  std::optional<std::string> GetDialogSubtitle() const override;
 
  private:
   gfx::Rect GetBubbleBounds() override;

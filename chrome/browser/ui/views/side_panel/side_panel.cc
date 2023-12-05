@@ -372,7 +372,7 @@ void SidePanel::OnResize(int resize_amount, bool done_resizing) {
 
 void SidePanel::RecordMetricsIfResized() {
   if (did_resize_) {
-    absl::optional<SidePanelEntry::Id> id =
+    std::optional<SidePanelEntry::Id> id =
         SidePanelUI::GetSidePanelUIForBrowser(browser_view_->browser())
             ->GetCurrentEntryId();
     CHECK(id.has_value());

@@ -632,8 +632,8 @@ void PictureInPictureBrowserFrameView::OnBrowserViewInitViewsComplete() {
     return;
   }
 
-  const absl::optional<blink::mojom::PictureInPictureWindowOptions>
-      pip_options = browser_view()->GetDocumentPictureInPictureOptions();
+  const std::optional<blink::mojom::PictureInPictureWindowOptions> pip_options =
+      browser_view()->GetDocumentPictureInPictureOptions();
 
   if (!pip_options.has_value()) {
     return;
@@ -958,7 +958,7 @@ ui::ImageModel PictureInPictureBrowserFrameView::GetLocationIcon(
                                         kWindowIconImageSize);
 }
 
-absl::optional<ui::ColorId>
+std::optional<ui::ColorId>
 PictureInPictureBrowserFrameView::GetLocationIconBackgroundColorOverride()
     const {
   return kColorPipWindowTopBarBackground;
@@ -1031,7 +1031,7 @@ void PictureInPictureBrowserFrameView::OnWidgetBoundsChanged(
 void PictureInPictureBrowserFrameView::AnimationEnded(
     const gfx::Animation* animation) {
   if (animation == &top_bar_color_animation_) {
-    current_foreground_color_ = absl::nullopt;
+    current_foreground_color_ = std::nullopt;
     location_icon_view_->Update(/*suppress_animations=*/false);
   }
 }

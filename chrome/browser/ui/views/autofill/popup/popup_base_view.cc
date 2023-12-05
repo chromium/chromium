@@ -190,7 +190,7 @@ class PopupBaseView::Widget : public views::Widget {
   }
 
  private:
-  absl::optional<gfx::Point> last_synthesized_parent_mouse_move_position_;
+  std::optional<gfx::Point> last_synthesized_parent_mouse_move_position_;
 };
 
 PopupBaseView::PopupBaseView(

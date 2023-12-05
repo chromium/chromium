@@ -212,7 +212,7 @@ void PopupViewViews::Hide() {
   DoHide();
 }
 
-absl::optional<PopupViewViews::CellIndex> PopupViewViews::GetSelectedCell()
+std::optional<PopupViewViews::CellIndex> PopupViewViews::GetSelectedCell()
     const {
   // If the suggestions were updated, the cell index may no longer be
   // up-to-date, but it cannot simply be reset, because we would lose the
@@ -220,25 +220,25 @@ absl::optional<PopupViewViews::CellIndex> PopupViewViews::GetSelectedCell()
   // here.
   if (!row_with_selected_cell_ ||
       !HasPopupRowViewAt(*row_with_selected_cell_)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  if (absl::optional<PopupRowView::CellType> cell_type =
+  if (std::optional<PopupRowView::CellType> cell_type =
           GetPopupRowViewAt(*row_with_selected_cell_).GetSelectedCell()) {
     return CellIndex{*row_with_selected_cell_, *cell_type};
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-void PopupViewViews::SetSelectedCell(absl::optional<CellIndex> cell_index,
+void PopupViewViews::SetSelectedCell(std::optional<CellIndex> cell_index,
                                      PopupCellSelectionSource source) {
-  absl::optional<CellIndex> old_index = GetSelectedCell();
+  std::optional<CellIndex> old_index = GetSelectedCell();
   if (old_index == cell_index) {
     return;
   }
 
   if (old_index) {
-    GetPopupRowViewAt(old_index->first).SetSelectedCell(absl::nullopt);
+    GetPopupRowViewAt(old_index->first).SetSelectedCell(std::nullopt);
   }
 
   if (open_sub_popup_timer_.IsRunning()) {
@@ -254,8 +254,8 @@ void PopupViewViews::SetSelectedCell(absl::optional<CellIndex> cell_index,
     bool can_open_sub_popup =
         cell_index->second == PopupRowView::CellType::kControl &&
         !controller_->GetSuggestionAt(cell_index->first).children.empty();
-    absl::optional<CellIndex> open_sub_popup_cell =
-        can_open_sub_popup ? cell_index : absl::nullopt;
+    std::optional<CellIndex> open_sub_popup_cell =
+        can_open_sub_popup ? cell_index : std::nullopt;
     base::TimeDelta delay = source == PopupCellSelectionSource::kMouse
                                 ? kMouseOpenSubPopupDelay
                                 : kNonMouseOpenSubPopupDelay;
@@ -265,7 +265,7 @@ void PopupViewViews::SetSelectedCell(absl::optional<CellIndex> cell_index,
                        weak_ptr_factory_.GetWeakPtr(), open_sub_popup_cell,
                        source));
   } else {
-    row_with_selected_cell_ = absl::nullopt;
+    row_with_selected_cell_ = std::nullopt;
   }
 }
 
@@ -273,7 +273,7 @@ bool PopupViewViews::HandleKeyPressEvent(
     const content::NativeWebKeyboardEvent& event) {
   // If the row can handle the event itself (e.g. switching between cells in the
   // same row), we let it.
-  if (absl::optional<CellIndex> selected_cell = GetSelectedCell()) {
+  if (std::optional<CellIndex> selected_cell = GetSelectedCell()) {
     if (GetPopupRowViewAt(selected_cell->first).HandleKeyPressEvent(event)) {
       return true;
     }
@@ -329,11 +329,11 @@ bool PopupViewViews::HandleKeyPressEvent(
     case ui::VKEY_PRIOR:  // Page up.
       // Set no line and then select the next line in case the first line is not
       // selectable.
-      SetSelectedCell(absl::nullopt, PopupCellSelectionSource::kKeyboard);
+      SetSelectedCell(std::nullopt, PopupCellSelectionSource::kKeyboard);
       SelectNextRow();
       return true;
     case ui::VKEY_NEXT:  // Page down.
-      SetSelectedCell(absl::nullopt, PopupCellSelectionSource::kKeyboard);
+      SetSelectedCell(std::nullopt, PopupCellSelectionSource::kKeyboard);
       SelectPreviousRow();
       return true;
     case ui::VKEY_DELETE:
@@ -366,7 +366,7 @@ bool PopupViewViews::HandleKeyPressEvent(
 
 void PopupViewViews::SelectPreviousRow() {
   DCHECK(!rows_.empty());
-  absl::optional<CellIndex> old_index = GetSelectedCell();
+  std::optional<CellIndex> old_index = GetSelectedCell();
   const PopupRowView::CellType kNewCellType =
       old_index ? old_index->second : PopupRowView::CellType::kContent;
 
@@ -385,7 +385,7 @@ void PopupViewViews::SelectPreviousRow() {
 
 void PopupViewViews::SelectNextRow() {
   DCHECK(!rows_.empty());
-  absl::optional<CellIndex> old_index = GetSelectedCell();
+  std::optional<CellIndex> old_index = GetSelectedCell();
   const PopupRowView::CellType kNewCellType =
       old_index ? old_index->second : PopupRowView::CellType::kContent;
 
@@ -402,7 +402,7 @@ void PopupViewViews::SelectNextRow() {
 }
 
 bool PopupViewViews::SelectNextHorizontalCell() {
-  absl::optional<CellIndex> selected_cell = GetSelectedCell();
+  std::optional<CellIndex> selected_cell = GetSelectedCell();
   if (selected_cell && HasPopupRowViewAt(selected_cell->first)) {
     PopupRowView& row = GetPopupRowViewAt(selected_cell->first);
     if (selected_cell->second == PopupRowView::CellType::kContent &&
@@ -417,7 +417,7 @@ bool PopupViewViews::SelectNextHorizontalCell() {
 }
 
 bool PopupViewViews::SelectPreviousHorizontalCell() {
-  absl::optional<CellIndex> selected_cell = GetSelectedCell();
+  std::optional<CellIndex> selected_cell = GetSelectedCell();
   if (selected_cell && HasPopupRowViewAt(selected_cell->first)) {
     if (selected_cell->second == PopupRowView::CellType::kControl) {
       SetSelectedCell(
@@ -431,7 +431,7 @@ bool PopupViewViews::SelectPreviousHorizontalCell() {
 
 bool PopupViewViews::AcceptSelectedContentOrCreditCardCell(
     base::TimeTicks event_time) {
-  absl::optional<CellIndex> index = GetSelectedCell();
+  std::optional<CellIndex> index = GetSelectedCell();
   if (!controller_ || !index) {
     return false;
   }
@@ -452,7 +452,7 @@ bool PopupViewViews::AcceptSelectedContentOrCreditCardCell(
 }
 
 bool PopupViewViews::RemoveSelectedCell() {
-  absl::optional<CellIndex> index = GetSelectedCell();
+  std::optional<CellIndex> index = GetSelectedCell();
 
   // Only content cells can be removed.
   if (!index || index->second != PopupRowView::CellType::kContent ||
@@ -480,7 +480,7 @@ void PopupViewViews::OnSuggestionsChanged() {
   if (open_sub_popup_timer_.IsRunning()) {
     open_sub_popup_timer_.Stop();
   }
-  SetCellWithOpenSubPopup(absl::nullopt,
+  SetCellWithOpenSubPopup(std::nullopt,
                           PopupCellSelectionSource::kNonUserInput);
 
   CreateChildViews();
@@ -491,8 +491,8 @@ bool PopupViewViews::OverlapsWithPictureInPictureWindow() const {
   return BoundsOverlapWithPictureInPictureWindow(GetBoundsInScreen());
 }
 
-absl::optional<int32_t> PopupViewViews::GetAxUniqueId() {
-  return absl::optional<int32_t>(
+std::optional<int32_t> PopupViewViews::GetAxUniqueId() {
+  return std::optional<int32_t>(
       PopupBaseView::GetViewAccessibility().GetUniqueId());
 }
 
@@ -874,7 +874,7 @@ void PopupViewViews::OnMouseExitedInChildren() {
   no_selection_sub_popup_close_timer_.Start(
       FROM_HERE, kNoSelectionHideSubPopupDelay,
       base::BindRepeating(&PopupViewViews::SetCellWithOpenSubPopup,
-                          weak_ptr_factory_.GetWeakPtr(), absl::nullopt,
+                          weak_ptr_factory_.GetWeakPtr(), std::nullopt,
                           PopupCellSelectionSource::kNonUserInput));
 }
 
@@ -897,7 +897,7 @@ bool PopupViewViews::CanShowDropdownInBounds(const gfx::Rect& bounds) const {
 }
 
 void PopupViewViews::SetCellWithOpenSubPopup(
-    absl::optional<CellIndex> cell_index,
+    std::optional<CellIndex> cell_index,
     PopupCellSelectionSource selection_source) {
   if (open_sub_popup_cell_ == cell_index) {
     return;
@@ -908,7 +908,7 @@ void PopupViewViews::SetCellWithOpenSubPopup(
     controller_->HideSubPopup();
     GetPopupRowViewAt(open_sub_popup_cell_->first)
         .SetChildSuggestionsDisplayed(false);
-    open_sub_popup_cell_ = absl::nullopt;
+    open_sub_popup_cell_ = std::nullopt;
   }
 
   // Open a sub-popup on the new cell if provided.
@@ -927,7 +927,7 @@ void PopupViewViews::SetCellWithOpenSubPopup(
       row.SetChildSuggestionsDisplayed(true);
       open_sub_popup_cell_ = cell_index;
       if (selection_source == PopupCellSelectionSource::kKeyboard) {
-        row.SetSelectedCell(absl::nullopt);
+        row.SetSelectedCell(std::nullopt);
       }
     }
   }

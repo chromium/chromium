@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_VIEW_VIEWS_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -18,7 +19,6 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "components/autofill/core/common/aliases.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -83,9 +83,9 @@ class PopupViewViews : public PopupBaseView,
 
   base::WeakPtr<AutofillPopupController> controller() { return controller_; }
   // Gets and sets the currently selected cell. If an invalid `cell_index` is
-  // passed, `GetSelectedCell()` will return `absl::nullopt` afterwards.
-  absl::optional<CellIndex> GetSelectedCell() const override;
-  void SetSelectedCell(absl::optional<CellIndex> cell_index,
+  // passed, `GetSelectedCell()` will return `std::nullopt` afterwards.
+  std::optional<CellIndex> GetSelectedCell() const override;
+  void SetSelectedCell(std::optional<CellIndex> cell_index,
                        PopupCellSelectionSource source) override;
 
   // views::View:
@@ -97,7 +97,7 @@ class PopupViewViews : public PopupBaseView,
   bool Show(AutoselectFirstSuggestion autoselect_first_suggestion) override;
   void Hide() override;
   bool OverlapsWithPictureInPictureWindow() const override;
-  absl::optional<int32_t> GetAxUniqueId() override;
+  std::optional<int32_t> GetAxUniqueId() override;
   void AxAnnounce(const std::u16string& text) override;
   base::WeakPtr<AutofillPopupView> CreateSubPopupView(
       base::WeakPtr<AutofillPopupController> controller) override;
@@ -180,22 +180,22 @@ class PopupViewViews : public PopupBaseView,
   bool CanShowDropdownInBounds(const gfx::Rect& bounds) const;
 
   // Opens a sub-popup on a new cell (and closes the open one if any), or just
-  // closes the existing if `absl::nullopt` is passed.
-  void SetCellWithOpenSubPopup(absl::optional<CellIndex> cell_index,
+  // closes the existing if `std::nullopt` is passed.
+  void SetCellWithOpenSubPopup(std::optional<CellIndex> cell_index,
                                PopupCellSelectionSource selection_source);
 
   // Controller for this view.
   base::WeakPtr<AutofillPopupController> controller_ = nullptr;
 
   // Parent's popup view. Present in sub-popups (non-root) only.
-  absl::optional<base::WeakPtr<ExpandablePopupParentView>> parent_;
+  std::optional<base::WeakPtr<ExpandablePopupParentView>> parent_;
 
   // The index of the row with a selected cell.
-  absl::optional<size_t> row_with_selected_cell_;
+  std::optional<size_t> row_with_selected_cell_;
 
   // The latest cell which was set as having a sub-popup open. Storing it
   // is required to maintain the invariant of at most one such a cell.
-  absl::optional<CellIndex> open_sub_popup_cell_;
+  std::optional<CellIndex> open_sub_popup_cell_;
 
   std::vector<RowPointer> rows_;
   raw_ptr<views::ScrollView> scroll_view_ = nullptr;

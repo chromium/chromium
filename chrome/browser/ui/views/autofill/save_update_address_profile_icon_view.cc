@@ -26,7 +26,7 @@ SaveUpdateAddressProfileIconView::SaveUpdateAddressProfileIconView(
                          icon_label_bubble_delegate,
                          page_action_icon_delegate,
                          "SaveAutofillAddress") {
-  SetAccessibilityProperties(/*role*/ absl::nullopt,
+  SetAccessibilityProperties(/*role*/ std::nullopt,
                              GetTextForTooltipAndAccessibleName());
 }
 

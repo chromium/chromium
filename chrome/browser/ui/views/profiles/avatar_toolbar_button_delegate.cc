@@ -189,7 +189,7 @@ AvatarToolbarButton::State AvatarToolbarButtonDelegate::GetState() const {
   return AvatarToolbarButton::State::kSyncError;
 }
 
-absl::optional<AvatarSyncErrorType>
+std::optional<AvatarSyncErrorType>
 AvatarToolbarButtonDelegate::GetAvatarSyncErrorType() const {
   return last_avatar_error_;
 }
@@ -339,7 +339,7 @@ void AvatarToolbarButtonDelegate::OnIdentityManagerShutdown(
 }
 
 void AvatarToolbarButtonDelegate::OnStateChanged(syncer::SyncService*) {
-  const absl::optional<AvatarSyncErrorType> error =
+  const std::optional<AvatarSyncErrorType> error =
       ::GetAvatarSyncErrorType(profile_);
   if (last_avatar_error_ == error)
     return;

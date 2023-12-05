@@ -133,7 +133,7 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
 
   // Mark the start of a fullscreen session. Applies to both immersive and
   // standard fullscreen.
-  absl::optional<base::TimeTicks> fullscreen_session_start_;
+  std::optional<base::TimeTicks> fullscreen_session_start_;
 
   // Fires after 24 hours to emit the duration of the current fullscreen
   // session, if any.

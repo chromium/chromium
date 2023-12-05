@@ -1827,7 +1827,7 @@ views::View::DropCallback OmniboxViewViews::CreateDropCallback(
 void OmniboxViewViews::UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {
   MaybeAddSendTabToSelfItem(menu_contents);
 
-  absl::optional<size_t> paste_position =
+  std::optional<size_t> paste_position =
       menu_contents->GetIndexOfCommandId(Textfield::kPaste);
   DCHECK(paste_position.has_value());
   menu_contents->InsertItemWithStringIdAt(paste_position.value() + 1,

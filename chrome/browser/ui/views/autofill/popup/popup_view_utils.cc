@@ -317,7 +317,7 @@ bool BoundsOverlapWithOpenPermissionsPrompt(
 }
 
 bool BoundsOverlapWithPictureInPictureWindow(const gfx::Rect& screen_bounds) {
-  absl::optional<gfx::Rect> pip_window_bounds =
+  std::optional<gfx::Rect> pip_window_bounds =
       PictureInPictureWindowManager::GetInstance()
           ->GetPictureInPictureWindowBounds();
   return pip_window_bounds && pip_window_bounds->Intersects(screen_bounds);

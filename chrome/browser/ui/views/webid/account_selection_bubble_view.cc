@@ -141,7 +141,7 @@ class LetterCircleCroppedImageSkiaSource : public gfx::CanvasImageSource {
 class CircleCroppedImageSkiaSource : public gfx::CanvasImageSource {
  public:
   CircleCroppedImageSkiaSource(gfx::ImageSkia avatar,
-                               absl::optional<int> pre_resize_avatar_crop_size,
+                               std::optional<int> pre_resize_avatar_crop_size,
                                int canvas_edge_size)
       : gfx::CanvasImageSource(gfx::Size(canvas_edge_size, canvas_edge_size)) {
     int scaled_width = canvas_edge_size;
@@ -224,8 +224,8 @@ class ContinueButton : public views::MdTextButton {
     if (color_utils::GetContrastRatio(dialog_background_color,
                                       *brand_background_color_) <
         color_utils::kMinimumVisibleContrastRatio) {
-      SetBgColorOverride(absl::nullopt);
-      SetEnabledTextColors(absl::nullopt);
+      SetBgColorOverride(std::nullopt);
+      SetEnabledTextColors(std::nullopt);
       return;
     }
 
@@ -245,8 +245,8 @@ class ContinueButton : public views::MdTextButton {
 
  private:
   raw_ptr<AccountSelectionBubbleView> bubble_view_;
-  absl::optional<SkColor> brand_background_color_;
-  absl::optional<SkColor> brand_text_color_;
+  std::optional<SkColor> brand_background_color_;
+  std::optional<SkColor> brand_text_color_;
 };
 
 BEGIN_METADATA(ContinueButton, views::MdTextButton)
@@ -291,7 +291,7 @@ class AccountImageView : public views::ImageView {
     } else {
       avatar =
           gfx::CanvasImageSource::MakeImageSkia<CircleCroppedImageSkiaSource>(
-              image.AsImageSkia(), absl::nullopt, kDesiredAvatarSize);
+              image.AsImageSkia(), std::nullopt, kDesiredAvatarSize);
     }
     SetImage(ui::ImageModel::FromImageSkia(avatar));
   }
@@ -404,11 +404,10 @@ void SetTitleHeaderProperties(views::Label* label) {
 
 // Returns the title to be shown in the dialog. This does not include the
 // subtitle. For screen reader purposes, GetAccessibleTitle() is used instead.
-std::u16string GetTitle(
-    const std::u16string& top_frame_for_display,
-    const absl::optional<std::u16string>& iframe_for_display,
-    const absl::optional<std::u16string>& idp_title,
-    blink::mojom::RpContext rp_context) {
+std::u16string GetTitle(const std::u16string& top_frame_for_display,
+                        const std::optional<std::u16string>& iframe_for_display,
+                        const std::optional<std::u16string>& idp_title,
+                        blink::mojom::RpContext rp_context) {
   std::u16string frame_in_title = iframe_for_display.has_value()
                                       ? iframe_for_display.value()
                                       : top_frame_for_display;
@@ -429,8 +428,8 @@ std::u16string GetSubtitle(const std::u16string& top_frame_for_display) {
 // Returns the title combined with the subtitle for screen reader purposes.
 std::u16string GetAccessibleTitle(
     const std::u16string& top_frame_for_display,
-    const absl::optional<std::u16string>& iframe_for_display,
-    const absl::optional<std::u16string>& idp_title,
+    const std::optional<std::u16string>& iframe_for_display,
+    const std::optional<std::u16string>& idp_title,
     blink::mojom::RpContext rp_context) {
   std::u16string title = GetTitle(top_frame_for_display, iframe_for_display,
                                   idp_title, rp_context);
@@ -440,7 +439,7 @@ std::u16string GetAccessibleTitle(
 }
 
 std::pair<std::u16string, std::u16string> GetErrorDialogText(
-    const absl::optional<TokenError>& error,
+    const std::optional<TokenError>& error,
     const std::u16string& top_frame_for_display,
     const std::u16string& idp_for_display) {
   std::string code = error ? error->code : "";
@@ -510,8 +509,8 @@ std::pair<std::u16string, std::u16string> GetErrorDialogText(
 
 AccountSelectionBubbleView::AccountSelectionBubbleView(
     const std::u16string& top_frame_for_display,
-    const absl::optional<std::u16string>& iframe_for_display,
-    const absl::optional<std::u16string>& idp_title,
+    const std::optional<std::u16string>& iframe_for_display,
+    const std::optional<std::u16string>& idp_title,
     blink::mojom::RpContext rp_context,
     bool show_auto_reauthn_checkbox,
 
@@ -539,7 +538,7 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
   SetShowCloseButton(false);
   set_close_on_deactivate(false);
 
-  // If `idp_title` is absl::nullopt, we are going to show multi-IDP UI. DCHECK
+  // If `idp_title` is std::nullopt, we are going to show multi-IDP UI. DCHECK
   // that we do not get to this when the flag is disabled.
   DCHECK(
       idp_title.has_value() ||
@@ -623,7 +622,7 @@ void AccountSelectionBubbleView::ShowVerifyingSheet(
 
 void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
     const std::u16string& top_frame_for_display,
-    const absl::optional<std::u16string>& iframe_for_display,
+    const std::optional<std::u16string>& iframe_for_display,
     const content::IdentityRequestAccount& account,
     const IdentityProviderDisplayData& idp_display_data,
     bool show_back_button) {
@@ -652,7 +651,7 @@ void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
 
 void AccountSelectionBubbleView::ShowFailureDialog(
     const std::u16string& top_frame_for_display,
-    const absl::optional<std::u16string>& iframe_for_display,
+    const std::optional<std::u16string>& iframe_for_display,
     const std::u16string& idp_for_display,
     const content::IdentityProviderMetadata& idp_metadata) {
   std::u16string title = GetTitle(top_frame_for_display, iframe_for_display,
@@ -700,10 +699,10 @@ void AccountSelectionBubbleView::ShowFailureDialog(
 
 void AccountSelectionBubbleView::ShowErrorDialog(
     const std::u16string& top_frame_for_display,
-    const absl::optional<std::u16string>& iframe_for_display,
+    const std::optional<std::u16string>& iframe_for_display,
     const std::u16string& idp_for_display,
     const content::IdentityProviderMetadata& idp_metadata,
-    const absl::optional<TokenError>& error) {
+    const std::optional<TokenError>& error) {
   std::u16string title = GetTitle(top_frame_for_display, iframe_for_display,
                                   idp_for_display, rp_context_);
   UpdateHeader(idp_metadata, title, subtitle_,
@@ -786,10 +785,10 @@ std::string AccountSelectionBubbleView::GetDialogTitle() const {
   return base::UTF16ToUTF8(title_label_->GetText());
 }
 
-absl::optional<std::string> AccountSelectionBubbleView::GetDialogSubtitle()
+std::optional<std::string> AccountSelectionBubbleView::GetDialogSubtitle()
     const {
   if (!subtitle_label_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return base::UTF16ToUTF8(subtitle_label_->GetText());

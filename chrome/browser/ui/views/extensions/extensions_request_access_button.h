@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_REQUEST_ACCESS_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_REQUEST_ACCESS_BUTTON_H_
 
+#include <optional>
+
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "extensions/common/extension_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "url/origin.h"
 
@@ -85,7 +86,7 @@ class ExtensionsRequestAccessButton : public ToolbarButton {
 
   // The origin for which the button is displaying a confirmation message, if
   // any.
-  absl::optional<url::Origin> confirmation_origin_;
+  std::optional<url::Origin> confirmation_origin_;
 
   // A timer used to collapse the button after showing a confirmation message.
   base::OneShotTimer collapse_timer_;

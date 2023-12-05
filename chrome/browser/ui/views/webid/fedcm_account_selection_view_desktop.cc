@@ -58,7 +58,7 @@ FedCmAccountSelectionView::~FedCmAccountSelectionView() {
 
 void FedCmAccountSelectionView::Show(
     const std::string& top_frame_etld_plus_one,
-    const absl::optional<std::string>& iframe_etld_plus_one,
+    const std::optional<std::string>& iframe_etld_plus_one,
     const std::vector<content::IdentityProviderData>&
         identity_provider_data_list,
     Account::SignInMode sign_in_mode,
@@ -94,16 +94,16 @@ void FedCmAccountSelectionView::Show(
     accounts_size += identity_provider.accounts.size();
   }
 
-  absl::optional<std::u16string> idp_title =
+  std::optional<std::u16string> idp_title =
       idp_display_data_list_.size() == 1u
-          ? absl::make_optional<std::u16string>(
+          ? std::make_optional<std::u16string>(
                 idp_display_data_list_[0].idp_etld_plus_one)
-          : absl::nullopt;
+          : std::nullopt;
   top_frame_for_display_ = base::UTF8ToUTF16(top_frame_etld_plus_one);
   iframe_for_display_ = iframe_etld_plus_one
-                            ? absl::make_optional<std::u16string>(
+                            ? std::make_optional<std::u16string>(
                                   base::UTF8ToUTF16(*iframe_etld_plus_one))
-                            : absl::nullopt;
+                            : std::nullopt;
 
   bool create_bubble = !bubble_widget_;
   if (create_bubble) {
@@ -170,15 +170,15 @@ void FedCmAccountSelectionView::Show(
 
 void FedCmAccountSelectionView::ShowFailureDialog(
     const std::string& top_frame_etld_plus_one,
-    const absl::optional<std::string>& iframe_etld_plus_one,
+    const std::optional<std::string>& iframe_etld_plus_one,
     const std::string& idp_etld_plus_one,
     const blink::mojom::RpContext& rp_context,
     const content::IdentityProviderMetadata& idp_metadata) {
   state_ = State::IDP_SIGNIN_STATUS_MISMATCH;
-  absl::optional<std::u16string> iframe_etld_plus_one_u16 =
-      iframe_etld_plus_one ? absl::make_optional<std::u16string>(
+  std::optional<std::u16string> iframe_etld_plus_one_u16 =
+      iframe_etld_plus_one ? std::make_optional<std::u16string>(
                                  base::UTF8ToUTF16(*iframe_etld_plus_one))
-                           : absl::nullopt;
+                           : std::nullopt;
 
   bool create_bubble = !bubble_widget_;
   if (create_bubble) {
@@ -219,17 +219,17 @@ void FedCmAccountSelectionView::ShowFailureDialog(
 
 void FedCmAccountSelectionView::ShowErrorDialog(
     const std::string& top_frame_etld_plus_one,
-    const absl::optional<std::string>& iframe_etld_plus_one,
+    const std::optional<std::string>& iframe_etld_plus_one,
     const std::string& idp_etld_plus_one,
     const blink::mojom::RpContext& rp_context,
     const content::IdentityProviderMetadata& idp_metadata,
-    const absl::optional<TokenError>& error) {
+    const std::optional<TokenError>& error) {
   state_ = State::SIGN_IN_ERROR;
   notify_delegate_of_dismiss_ = true;
-  absl::optional<std::u16string> iframe_etld_plus_one_u16 =
-      iframe_etld_plus_one ? absl::make_optional<std::u16string>(
+  std::optional<std::u16string> iframe_etld_plus_one_u16 =
+      iframe_etld_plus_one ? std::make_optional<std::u16string>(
                                  base::UTF8ToUTF16(*iframe_etld_plus_one))
-                           : absl::nullopt;
+                           : std::nullopt;
 
   bool create_bubble = !bubble_widget_;
   if (create_bubble) {
@@ -269,7 +269,7 @@ std::string FedCmAccountSelectionView::GetTitle() const {
   return GetBubbleView()->GetDialogTitle();
 }
 
-absl::optional<std::string> FedCmAccountSelectionView::GetSubtitle() const {
+std::optional<std::string> FedCmAccountSelectionView::GetSubtitle() const {
   return GetBubbleView()->GetDialogSubtitle();
 }
 
@@ -331,8 +331,8 @@ void FedCmAccountSelectionView::SetIdpSigninPopupWindowForTesting(
 
 views::Widget* FedCmAccountSelectionView::CreateBubbleWithAccessibleTitle(
     const std::u16string& top_frame_etld_plus_one,
-    const absl::optional<std::u16string>& iframe_etld_plus_one,
-    const absl::optional<std::u16string>& idp_title,
+    const std::optional<std::u16string>& iframe_etld_plus_one,
+    const std::optional<std::u16string>& idp_title,
     blink::mojom::RpContext rp_context,
     bool show_auto_reauthn_checkbox) {
   Browser* browser = chrome::FindBrowserWithTab(delegate_->GetWebContents());

@@ -31,14 +31,14 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
       : TestDelegate(origin,
                      request_types,
                      with_gesture,
-                     absl::nullopt,
+                     std::nullopt,
                      web_contents) {}
 
   explicit TestDelegate(
       const GURL& origin,
       const std::vector<permissions::RequestType> request_types,
       bool with_gesture,
-      absl::optional<permissions::PermissionUiSelector::QuietUiReason>
+      std::optional<permissions::PermissionUiSelector::QuietUiReason>
           quiet_ui_reason,
       content::WebContents* web_contents)
       : quiet_ui_reason_(quiet_ui_reason), web_contents_(web_contents) {
@@ -91,7 +91,7 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
   bool ShouldCurrentRequestUseQuietUI() const override {
     return quiet_ui_reason_.has_value();
   }
-  absl::optional<permissions::PermissionUiSelector::QuietUiReason>
+  std::optional<permissions::PermissionUiSelector::QuietUiReason>
   ReasonForUsingQuietUi() const override {
     return quiet_ui_reason_;
   }
@@ -115,7 +115,7 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
   std::vector<std::unique_ptr<permissions::PermissionRequest>> requests_;
   std::vector<permissions::PermissionRequest*> raw_requests_;
   bool was_current_request_already_displayed_ = false;
-  absl::optional<permissions::PermissionUiSelector::QuietUiReason>
+  std::optional<permissions::PermissionUiSelector::QuietUiReason>
       quiet_ui_reason_;
   raw_ptr<content::WebContents> web_contents_;
   base::WeakPtrFactory<TestDelegate> weak_factory_{this};

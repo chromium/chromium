@@ -34,7 +34,7 @@ class WebUIBubbleDialogView : public views::WidgetObserver,
   WebUIBubbleDialogView(
       views::View* anchor_view,
       BubbleContentsWrapper* contents_wrapper,
-      const absl::optional<gfx::Rect>& anchor_rect = absl::nullopt,
+      const std::optional<gfx::Rect>& anchor_rect = std::nullopt,
       views::BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_RIGHT);
   WebUIBubbleDialogView(const WebUIBubbleDialogView&) = delete;
   WebUIBubbleDialogView& operator=(const WebUIBubbleDialogView&) = delete;
@@ -83,7 +83,7 @@ class WebUIBubbleDialogView : public views::WidgetObserver,
 
   raw_ptr<BubbleContentsWrapper> contents_wrapper_;
   raw_ptr<views::WebView> web_view_;
-  absl::optional<gfx::Rect> bubble_anchor_;
+  std::optional<gfx::Rect> bubble_anchor_;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       bubble_widget_observation_{this};

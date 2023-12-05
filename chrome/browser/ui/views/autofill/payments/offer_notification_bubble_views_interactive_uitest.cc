@@ -54,7 +54,7 @@ namespace autofill {
 struct OfferNotificationBubbleViewsInteractiveUiTestData {
   std::string name;
   AutofillOfferData::OfferType offer_type;
-  absl::optional<std::vector<base::test::FeatureRefAndParams>> enabled_features;
+  std::optional<std::vector<base::test::FeatureRefAndParams>> enabled_features;
 };
 
 std::string GetTestName(
@@ -216,12 +216,12 @@ INSTANTIATE_TEST_SUITE_P(
         OfferNotificationBubbleViewsInteractiveUiTestData{
             "FreeListingCoupon_on_navigation",
             AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER,
-            absl::make_optional<std::vector<base::test::FeatureRefAndParams>>(
+            std::make_optional<std::vector<base::test::FeatureRefAndParams>>(
                 {{commerce::kShowDiscountOnNavigation, {}}})},
         OfferNotificationBubbleViewsInteractiveUiTestData{
             "FreeListingCoupon_on_navigation_chrome_refresh_style",
             AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER,
-            absl::make_optional<std::vector<base::test::FeatureRefAndParams>>(
+            std::make_optional<std::vector<base::test::FeatureRefAndParams>>(
                 {{commerce::kShowDiscountOnNavigation, {}},
                  {::features::kChromeRefresh2023, {}}})}),
     GetTestName);
@@ -1047,12 +1047,12 @@ INSTANTIATE_TEST_SUITE_P(
         OfferNotificationBubbleViewsInteractiveUiTestData{
             "FreeListingCoupon_on_history_cluster",
             AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER,
-            absl::make_optional<std::vector<base::test::FeatureRefAndParams>>(
+            std::make_optional<std::vector<base::test::FeatureRefAndParams>>(
                 {{ntp_features::kNtpHistoryClustersModuleDiscounts, {}}})},
         OfferNotificationBubbleViewsInteractiveUiTestData{
             "FreeListingCoupon_on_history_cluster_chrome_refresh_style",
             AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER,
-            absl::make_optional<std::vector<base::test::FeatureRefAndParams>>(
+            std::make_optional<std::vector<base::test::FeatureRefAndParams>>(
                 {{ntp_features::kNtpHistoryClustersModuleDiscounts, {}},
                  {::features::kChromeRefresh2023, {}}})}),
     GetTestName);

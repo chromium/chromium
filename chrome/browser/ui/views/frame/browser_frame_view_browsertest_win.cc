@@ -179,7 +179,7 @@ class WebAppBrowserFrameViewWinTest : public InProcessBrowserTest {
     DCHECK(web_app_frame_toolbar_->GetVisible());
   }
 
-  absl::optional<SkColor> theme_color_ = SK_ColorBLUE;
+  std::optional<SkColor> theme_color_ = SK_ColorBLUE;
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> app_browser_ = nullptr;
   raw_ptr<BrowserView, AcrossTasksDanglingUntriaged> browser_view_ = nullptr;
   raw_ptr<BrowserFrameViewWin, AcrossTasksDanglingUntriaged> frame_view_ =
@@ -195,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinTest, ThemeColor) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinTest, NoThemeColor) {
-  theme_color_ = absl::nullopt;
+  theme_color_ = std::nullopt;
   InstallAndLaunchWebApp();
 
   EXPECT_EQ(

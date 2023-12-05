@@ -154,9 +154,9 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyLoaded) {
   {
     const base::Value::Dict& pref_data =
         browser()->profile()->GetPrefs()->GetDict(prefs::kHatsSurveyMetadata);
-    absl::optional<base::Time> last_survey_started_time =
+    std::optional<base::Time> last_survey_started_time =
         base::ValueToTime(pref_data.FindByDottedPath(kLastSurveyStartedTime));
-    absl::optional<int> last_major_version =
+    std::optional<int> last_major_version =
         pref_data.FindIntByDottedPath(kLastMajorVersion);
     ASSERT_FALSE(last_survey_started_time.has_value());
     ASSERT_FALSE(last_major_version.has_value());
@@ -179,9 +179,9 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyLoaded) {
   {
     const base::Value::Dict& pref_data =
         browser()->profile()->GetPrefs()->GetDict(prefs::kHatsSurveyMetadata);
-    absl::optional<base::Time> last_survey_started_time =
+    std::optional<base::Time> last_survey_started_time =
         base::ValueToTime(pref_data.FindByDottedPath(kLastSurveyStartedTime));
-    absl::optional<int> last_major_version =
+    std::optional<int> last_major_version =
         pref_data.FindIntByDottedPath(kLastMajorVersion);
     ASSERT_TRUE(last_survey_started_time.has_value());
     ASSERT_TRUE(last_major_version.has_value());

@@ -215,7 +215,7 @@ TEST_F(BookmarkBubbleViewTest, PriceTrackingViewIsHidden) {
   commerce::MockShoppingService* mock_shopping_service =
       static_cast<commerce::MockShoppingService*>(
           commerce::ShoppingServiceFactory::GetForBrowserContext(profile()));
-  mock_shopping_service->SetResponseForGetProductInfoForUrl(absl::nullopt);
+  mock_shopping_service->SetResponseForGetProductInfoForUrl(std::nullopt);
 
   CreateBubbleView();
   auto* price_tracking_view = GetPriceTrackingView();

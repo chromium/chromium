@@ -64,7 +64,7 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
   // Sets own bounds within the available_space.
   void LayoutForWindowControlsOverlay(gfx::Rect available_space);
 
-  absl::optional<SkColor> active_color_for_testing() const {
+  std::optional<SkColor> active_color_for_testing() const {
     return active_foreground_color_;
   }
 
@@ -129,10 +129,10 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
 
   // Button and text colors.
   bool paint_as_active_ = true;
-  absl::optional<SkColor> active_background_color_;
-  absl::optional<SkColor> active_foreground_color_;
-  absl::optional<SkColor> inactive_background_color_;
-  absl::optional<SkColor> inactive_foreground_color_;
+  std::optional<SkColor> active_background_color_;
+  std::optional<SkColor> active_foreground_color_;
+  std::optional<SkColor> inactive_background_color_;
+  std::optional<SkColor> inactive_foreground_color_;
 
   // All remaining members are owned by the views hierarchy.
 

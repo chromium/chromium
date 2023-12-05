@@ -244,7 +244,7 @@ void HoverButton::SetTitleText(const std::u16string& text) {
 
 void HoverButton::SetTitleTextStyle(views::style::TextStyle text_style,
                                     SkColor background_color,
-                                    absl::optional<ui::ColorId> color_id) {
+                                    std::optional<ui::ColorId> color_id) {
   if (!title()) {
     return;
   }

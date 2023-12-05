@@ -246,7 +246,7 @@ gfx::Size BrowserViewLayout::GetMinimumSize(const views::View* host) const {
 }
 
 void BrowserViewLayout::SetContentBorderBounds(
-    const absl::optional<gfx::Rect>& region_capture_rect) {
+    const std::optional<gfx::Rect>& region_capture_rect) {
   dynamic_content_border_bounds_ = region_capture_rect;
   LayoutContentBorder();
 }

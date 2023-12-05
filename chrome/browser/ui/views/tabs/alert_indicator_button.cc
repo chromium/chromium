@@ -154,11 +154,11 @@ AlertIndicatorButton::AlertIndicatorButton(Tab* parent_tab)
 AlertIndicatorButton::~AlertIndicatorButton() = default;
 
 void AlertIndicatorButton::TransitionToAlertState(
-    absl::optional<TabAlertState> next_state) {
+    std::optional<TabAlertState> next_state) {
   if (next_state == alert_state_)
     return;
 
-  absl::optional<TabAlertState> previous_alert_showing_state =
+  std::optional<TabAlertState> previous_alert_showing_state =
       showing_alert_state_;
 
   if (next_state)
@@ -305,7 +305,7 @@ gfx::ImageSkia AlertIndicatorButton::GetImageToPaint() {
 
 std::unique_ptr<gfx::Animation>
 AlertIndicatorButton::CreateTabAlertIndicatorFadeAnimation(
-    absl::optional<TabAlertState> alert_state) {
+    std::optional<TabAlertState> alert_state) {
   if (alert_state == TabAlertState::MEDIA_RECORDING ||
       alert_state == TabAlertState::TAB_CAPTURING ||
       alert_state == TabAlertState::DESKTOP_CAPTURING) {

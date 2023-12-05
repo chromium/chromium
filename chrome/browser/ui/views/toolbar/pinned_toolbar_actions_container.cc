@@ -282,7 +282,7 @@ void PinnedToolbarActionsContainer::PinnedActionToolbarButton::
   actions::ActionId action_id = action_item_->GetActionId().value();
 
   const bool updated_pin_state = !container_->IsActionPinned(action_id);
-  const absl::optional<std::string> metrics_name =
+  const std::optional<std::string> metrics_name =
       actions::ActionIdMap::ActionIdToString(action_id);
   CHECK(metrics_name.has_value());
   base::RecordComputedAction(

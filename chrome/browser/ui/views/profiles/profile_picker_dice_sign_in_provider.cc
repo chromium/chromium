@@ -58,7 +58,7 @@ bool IsExternalURL(const GURL& url) {
 ProfilePickerDiceSignInProvider::ProfilePickerDiceSignInProvider(
     ProfilePickerWebContentsHost* host,
     signin_metrics::AccessPoint signin_access_point,
-    absl::optional<base::FilePath> profile_path)
+    std::optional<base::FilePath> profile_path)
     : host_(host),
       signin_access_point_(signin_access_point),
       profile_path_(profile_path) {

@@ -318,8 +318,8 @@ TEST_F(TabTest, HitTestTopPixel) {
 }
 
 TEST_F(TabTest, LayoutAndVisibilityOfElements) {
-  static const absl::optional<TabAlertState> kAlertStatesToTest[] = {
-      absl::nullopt,
+  static const std::optional<TabAlertState> kAlertStatesToTest[] = {
+      std::nullopt,
       TabAlertState::TAB_CAPTURING,
       TabAlertState::AUDIO_PLAYING,
       TabAlertState::AUDIO_MUTING,
@@ -340,7 +340,7 @@ TEST_F(TabTest, LayoutAndVisibilityOfElements) {
   // results.
   for (bool is_pinned_tab : {false, true}) {
     for (bool is_active_tab : {false, true}) {
-      for (absl::optional<TabAlertState> alert_state : kAlertStatesToTest) {
+      for (std::optional<TabAlertState> alert_state : kAlertStatesToTest) {
         SCOPED_TRACE(
             ::testing::Message()
             << (is_active_tab ? "Active " : "Inactive ")

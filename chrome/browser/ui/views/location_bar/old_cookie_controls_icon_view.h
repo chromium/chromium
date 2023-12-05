@@ -56,7 +56,7 @@ class OldCookieControlsIconView
   // Set confidence_changed = true to animate if the confidence level changed
   // even if the icon is already visible.
   void UpdateIconView(bool confidence_changed = false);
-  absl::optional<int> GetLabelForStatus() const;
+  std::optional<int> GetLabelForStatus() const;
 
   CookieControlsStatus status_ = CookieControlsStatus::kUninitialized;
   bool has_blocked_cookies_ = false;

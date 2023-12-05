@@ -186,7 +186,7 @@ std::unique_ptr<views::Label> CreateTitle() {
 
 using PopulateSidePanelCallback = base::OnceCallback<void(
     SidePanelEntry* entry,
-    absl::optional<std::unique_ptr<views::View>> content_view)>;
+    std::optional<std::unique_ptr<views::View>> content_view)>;
 
 // SidePanelContentSwappingContainer is used as the content wrapper for views
 // hosted in the side panel. This uses the SidePanelContentProxy to check if or
@@ -251,7 +251,7 @@ class SidePanelContentSwappingContainer : public views::View {
     DCHECK(!loaded_callback_.is_null());
     SidePanelEntry* entry = loading_entry_;
     loading_entry_ = nullptr;
-    std::move(loaded_callback_).Run(entry, absl::nullopt);
+    std::move(loaded_callback_).Run(entry, std::nullopt);
   }
 
   // When true, don't delay switching panels.
@@ -320,7 +320,7 @@ actions::ActionItem* SidePanelCoordinator::GetActionItem(
   BrowserActions* const browser_actions =
       BrowserActions::FromBrowser(browser_view_->browser());
   if (entry_key.id() == SidePanelEntryId::kExtension) {
-    absl::optional<actions::ActionId> extension_action_id =
+    std::optional<actions::ActionId> extension_action_id =
         actions::ActionIdMap::StringToActionId(entry_key.ToString());
     CHECK(extension_action_id.has_value());
     actions::ActionItem* const action_item =
@@ -330,7 +330,7 @@ actions::ActionItem* SidePanelCoordinator::GetActionItem(
     return action_item;
   }
 
-  absl::optional<actions::ActionId> action_id =
+  std::optional<actions::ActionId> action_id =
       SidePanelEntryIdToActionId(entry_key.id());
   CHECK(action_id.has_value());
   return actions::ActionManager::Get().FindAction(
@@ -338,8 +338,8 @@ actions::ActionItem* SidePanelCoordinator::GetActionItem(
 }
 
 void SidePanelCoordinator::Show(
-    absl::optional<SidePanelEntry::Id> entry_id,
-    absl::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger) {
+    std::optional<SidePanelEntry::Id> entry_id,
+    std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger) {
   if (entry_id.has_value()) {
     Show(SidePanelEntry::Key(entry_id.value()), open_trigger);
   } else {
@@ -351,7 +351,7 @@ void SidePanelCoordinator::Show(
 
 void SidePanelCoordinator::Show(
     SidePanelEntry::Key entry_key,
-    absl::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger) {
+    std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger) {
   Show(GetEntryForKey(entry_key), open_trigger);
 }
 
@@ -439,10 +439,10 @@ void SidePanelCoordinator::Toggle() {
   if (IsSidePanelShowing()) {
     Close();
   } else {
-    absl::optional<SidePanelEntry::Id> entry_id = absl::nullopt;
+    std::optional<SidePanelEntry::Id> entry_id = std::nullopt;
     if (browser_view_->browser()->window()->IsFeaturePromoActive(
             feature_engagement::kIPHPowerBookmarksSidePanelFeature)) {
-      entry_id = absl::make_optional(SidePanelEntry::Id::kBookmarks);
+      entry_id = std::make_optional(SidePanelEntry::Id::kBookmarks);
     }
     Show(entry_id, SidePanelUtil::SidePanelOpenTrigger::kToolbarButton);
   }
@@ -514,7 +514,7 @@ void SidePanelCoordinator::UpdatePinState() {
     return;
   }
 
-  absl::optional<actions::ActionId> action_id =
+  std::optional<actions::ActionId> action_id =
       GetActionItem(current_entry_->key())->GetActionId();
   CHECK(action_id.has_value());
 
@@ -522,7 +522,7 @@ void SidePanelCoordinator::UpdatePinState() {
 
   // TODO(b/310910098): Clean condition up once/if ToolbarActionModel and
   // PinnedToolbarActionModel are merged together.
-  if (const absl::optional<extensions::ExtensionId> extension_id =
+  if (const std::optional<extensions::ExtensionId> extension_id =
           current_entry_->key().extension_id();
       extension_id.has_value()) {
     ToolbarActionsModel* const actions_model =
@@ -545,11 +545,11 @@ void SidePanelCoordinator::UpdatePinState() {
                                                   : IDS_SIDE_PANEL_UNPINNED));
 }
 
-absl::optional<SidePanelEntry::Id> SidePanelCoordinator::GetCurrentEntryId()
+std::optional<SidePanelEntry::Id> SidePanelCoordinator::GetCurrentEntryId()
     const {
   return current_entry_
-             ? absl::optional<SidePanelEntry::Id>(current_entry_->key().id())
-             : absl::nullopt;
+             ? std::optional<SidePanelEntry::Id>(current_entry_->key().id())
+             : std::nullopt;
 }
 
 bool SidePanelCoordinator::IsSidePanelShowing() const {
@@ -595,7 +595,7 @@ bool SidePanelCoordinator::IsSidePanelEntryShowing(
 
 void SidePanelCoordinator::Show(
     SidePanelEntry* entry,
-    absl::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger) {
+    std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger) {
   // Side panel is not supported for non-normal browsers.
   if (!browser_view_->browser()->is_type_normal()) {
     return;
@@ -735,7 +735,7 @@ void SidePanelCoordinator::InitializeSidePanel() {
 
 void SidePanelCoordinator::PopulateSidePanel(
     SidePanelEntry* entry,
-    absl::optional<std::unique_ptr<views::View>> content_view) {
+    std::optional<std::unique_ptr<views::View>> content_view) {
   if (!header_combobox_) {
     actions::ActionItem* const action_item = GetActionItem(entry->key());
     UpdatePanelIconAndTitle(action_item->GetImage(), action_item->GetText());
@@ -814,8 +814,8 @@ void SidePanelCoordinator::ClearCachedEntryViews() {
   }
 }
 
-absl::optional<SidePanelEntry::Key>
-SidePanelCoordinator::GetLastActiveEntryKey() const {
+std::optional<SidePanelEntry::Key> SidePanelCoordinator::GetLastActiveEntryKey()
+    const {
   // In order of preference, return the active contextual entry, the active
   // global entry, the last active contextual entry, the last active global
   // entry, or nullopt.
@@ -838,14 +838,14 @@ SidePanelCoordinator::GetLastActiveEntryKey() const {
     return global_registry_->last_active_entry().value()->key();
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<SidePanelEntry::Key> SidePanelCoordinator::GetSelectedKey()
+std::optional<SidePanelEntry::Key> SidePanelCoordinator::GetSelectedKey()
     const {
   // If the side panel is not shown then return nullopt.
   if (!header_combobox_ || !IsSidePanelShowing() || !combobox_model_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // If we are waiting on content swapping delays we want to return the id for
@@ -1078,7 +1078,7 @@ void SidePanelCoordinator::NotifyPinnedContainerOfActiveStateChange(
     browser_view_->toolbar()->extensions_container()->UpdateSidePanelState(
         is_active);
   } else {
-    absl::optional<actions::ActionId> action_id =
+    std::optional<actions::ActionId> action_id =
         SidePanelEntryIdToActionId(key.id());
     CHECK(action_id.has_value());
     toolbar_container->UpdateActionState(*action_id, is_active);
@@ -1105,7 +1105,7 @@ void SidePanelCoordinator::OnEntryRegistered(SidePanelRegistry* registry,
 
 void SidePanelCoordinator::OnEntryWillDeregister(SidePanelRegistry* registry,
                                                  SidePanelEntry* entry) {
-  absl::optional<SidePanelEntry::Key> selected_key = GetSelectedKey();
+  std::optional<SidePanelEntry::Key> selected_key = GetSelectedKey();
   if (ShouldRemoveFromComboboxOnDeregister(registry, entry->key())) {
     combobox_model_->RemoveItem(entry->key());
     if (GetContentContainerView()) {
@@ -1268,14 +1268,14 @@ void SidePanelCoordinator::UpdateHeaderPinButtonState() {
   }
 
   actions::ActionItem* const action_item = GetActionItem(current_entry_->key());
-  absl::optional<actions::ActionId> action_id = action_item->GetActionId();
+  std::optional<actions::ActionId> action_id = action_item->GetActionId();
   CHECK(action_id.has_value());
 
   bool current_pinned_state = false;
 
   // TODO(b/310910098): Clean condition up once/if ToolbarActionModel and
   // PinnedToolbarActionModel are merged together.
-  if (const absl::optional<extensions::ExtensionId> extension_id =
+  if (const std::optional<extensions::ExtensionId> extension_id =
           current_entry_->key().extension_id();
       extension_id.has_value()) {
     ToolbarActionsModel* const actions_model =

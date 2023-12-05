@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/media_router/cast_dialog_view.h"
 
+#include <optional>
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -35,7 +37,6 @@
 #include "components/media_router/common/mojom/media_route_provider_id.mojom-shared.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rect.h"
@@ -328,7 +329,7 @@ void CastDialogView::SinkPressed(size_t index) {
   if (sink.issue) {
     controller_->ClearIssue(sink.issue->id());
   } else {
-    absl::optional<MediaCastMode> cast_mode = GetCastModeToUse(sink);
+    std::optional<MediaCastMode> cast_mode = GetCastModeToUse(sink);
     if (cast_mode) {
       controller_->StartCasting(sink.id, cast_mode.value());
     }
@@ -390,23 +391,23 @@ void CastDialogView::MaybeSizeToContents() {
     SizeToContents();
 }
 
-absl::optional<MediaCastMode> CastDialogView::GetCastModeToUse(
+std::optional<MediaCastMode> CastDialogView::GetCastModeToUse(
     const UIMediaSink& sink) const {
   // Go through cast modes in the order of preference to find one that is
   // supported and selected.
   switch (selected_source_) {
     case SourceType::kTab:
       if (base::Contains(sink.cast_modes, PRESENTATION))
-        return absl::make_optional<MediaCastMode>(PRESENTATION);
+        return std::make_optional<MediaCastMode>(PRESENTATION);
       if (base::Contains(sink.cast_modes, TAB_MIRROR))
-        return absl::make_optional<MediaCastMode>(TAB_MIRROR);
+        return std::make_optional<MediaCastMode>(TAB_MIRROR);
       break;
     case SourceType::kDesktop:
       if (base::Contains(sink.cast_modes, DESKTOP_MIRROR))
-        return absl::make_optional<MediaCastMode>(DESKTOP_MIRROR);
+        return std::make_optional<MediaCastMode>(DESKTOP_MIRROR);
       break;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void CastDialogView::DisableUnsupportedSinks() {

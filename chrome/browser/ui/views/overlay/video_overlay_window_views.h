@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OVERLAY_VIDEO_OVERLAY_WINDOW_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_OVERLAY_VIDEO_OVERLAY_WINDOW_VIEWS_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "build/chromeos_buildflags.h"
@@ -12,7 +14,6 @@
 #include "chromeos/ui/frame/highlight_border_overlay.h"
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/video_picture_in_picture_window_controller.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/size.h"
@@ -303,7 +304,7 @@ class VideoOverlayWindowViews
   // to prevent the rapid changes between states.
   base::RetainingOneShotTimer enable_controls_after_move_timer_;
   bool is_moving_ = false;
-  absl::optional<bool> queued_controls_visibility_status_;
+  std::optional<bool> queued_controls_visibility_status_;
 
   // Timer used to update controls bounds.
   std::unique_ptr<base::OneShotTimer> update_controls_bounds_timer_;
@@ -311,7 +312,7 @@ class VideoOverlayWindowViews
   // If set, controls will always either be shown or hidden, instead of showing
   // and hiding automatically. Only used for testing via
   // ForceControlsVisibleForTesting().
-  absl::optional<bool> force_controls_visible_;
+  std::optional<bool> force_controls_visible_;
 
   // Views to be shown. The views are first temporarily owned by view_holder_,
   // then passed to this widget's ContentsView which takes ownership.

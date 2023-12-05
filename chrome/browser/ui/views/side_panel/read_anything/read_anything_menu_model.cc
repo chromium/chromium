@@ -36,17 +36,17 @@ bool ReadAnythingMenuModel::IsValidIndex(size_t index) {
   return false;
 }
 
-absl::optional<ui::ColorId> ReadAnythingMenuModel::GetForegroundColorId(
+std::optional<ui::ColorId> ReadAnythingMenuModel::GetForegroundColorId(
     size_t index) {
   return foreground_color_id_;
 }
 
-absl::optional<ui::ColorId> ReadAnythingMenuModel::GetSubmenuBackgroundColorId(
+std::optional<ui::ColorId> ReadAnythingMenuModel::GetSubmenuBackgroundColorId(
     size_t index) {
   return submenu_background_color_id_;
 }
 
-absl::optional<ui::ColorId> ReadAnythingMenuModel::GetSelectedBackgroundColorId(
+std::optional<ui::ColorId> ReadAnythingMenuModel::GetSelectedBackgroundColorId(
     size_t index) {
   return selected_color_id_;
 }

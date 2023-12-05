@@ -28,7 +28,7 @@ class MockSaveUpdateAddressProfileBubbleController
     : public SaveUpdateAddressProfileBubbleController {
  public:
   MOCK_METHOD(std::u16string, GetWindowTitle, (), (const, override));
-  MOCK_METHOD(absl::optional<HeaderImages>,
+  MOCK_METHOD(std::optional<HeaderImages>,
               GetHeaderImages,
               (),
               (const, override));

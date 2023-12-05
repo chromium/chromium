@@ -64,7 +64,7 @@ class DownloadBubbleContentsView : public views::View,
   // returns a pointer to that row. Returns nullptr if the row was not found,
   // or if no id was supplied.
   DownloadBubbleRowView* ShowPrimaryPage(
-      absl::optional<offline_items_collection::ContentId> id = absl::nullopt);
+      std::optional<offline_items_collection::ContentId> id = std::nullopt);
 
   // Initializes security page for the download with the given id, and switches
   // to it. `id` must refer to a valid download with a row in the primary view.

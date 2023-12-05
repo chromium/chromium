@@ -358,8 +358,8 @@ class PageInfoBubbleViewTestApi {
   gfx::NativeWindow parent_;
   raw_ptr<content::WebContents> web_contents_;
   base::RunLoop run_loop_;
-  absl::optional<bool> reload_prompt_;
-  absl::optional<views::Widget::ClosedReason> closed_reason_;
+  std::optional<bool> reload_prompt_;
+  std::optional<views::Widget::ClosedReason> closed_reason_;
 };
 
 }  // namespace test

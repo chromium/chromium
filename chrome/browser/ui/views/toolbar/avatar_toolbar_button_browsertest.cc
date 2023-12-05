@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AvatarToolbarButtonBrowserTest : public InProcessBrowserTest {
  public:
@@ -24,12 +25,12 @@ class AvatarToolbarButtonBrowserTest : public InProcessBrowserTest {
   }
 
   // Returns the window count in avatar button text, if it exists.
-  absl::optional<int> GetWindowCountInAvatarButtonText(Browser* browser) {
+  std::optional<int> GetWindowCountInAvatarButtonText(Browser* browser) {
     std::u16string button_text = GetAvatarToolbarButton(browser)->GetText();
 
     size_t before_number = button_text.find('(');
     if (before_number == std::string::npos)
-      return absl::optional<int>();
+      return std::optional<int>();
 
     size_t after_number = button_text.find(')');
     EXPECT_NE(std::string::npos, after_number);
@@ -38,8 +39,8 @@ class AvatarToolbarButtonBrowserTest : public InProcessBrowserTest {
         button_text.substr(before_number + 1, after_number - before_number - 1);
     int window_count;
     return base::StringToInt(number_text, &window_count)
-               ? absl::optional<int>(window_count)
-               : absl::optional<int>();
+               ? std::optional<int>(window_count)
+               : std::optional<int>();
   }
 };
 

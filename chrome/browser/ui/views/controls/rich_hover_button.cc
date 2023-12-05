@@ -43,8 +43,8 @@ RichHoverButton::RichHoverButton(
     const std::u16string& secondary_text,
     const std::u16string& tooltip_text,
     const std::u16string& subtitle_text,
-    absl::optional<ui::ImageModel> action_image_icon,
-    absl::optional<ui::ImageModel> state_icon)
+    std::optional<ui::ImageModel> action_image_icon,
+    std::optional<ui::ImageModel> state_icon)
     : HoverButton(std::move(callback), std::u16string()) {
   label()->SetHandlesTooltips(false);
 

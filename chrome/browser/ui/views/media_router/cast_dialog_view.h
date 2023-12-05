@@ -138,7 +138,7 @@ class CastDialogView : public views::BubbleDialogDelegateView,
 
   // Returns the cast mode that is selected in the sources menu and supported by
   // |sink|. Returns nullopt if no such cast mode exists.
-  absl::optional<MediaCastMode> GetCastModeToUse(const UIMediaSink& sink) const;
+  std::optional<MediaCastMode> GetCastModeToUse(const UIMediaSink& sink) const;
 
   // Disables sink buttons for sinks that do not support the currently selected
   // source.
@@ -195,7 +195,7 @@ class CastDialogView : public views::BubbleDialogDelegateView,
 
   // The sink that the user has selected to cast to. If the user is using
   // multiple sinks at the same time, the last activated sink is used.
-  absl::optional<size_t> selected_sink_index_;
+  std::optional<size_t> selected_sink_index_;
 
   base::ObserverList<Observer> observers_;
 

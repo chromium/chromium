@@ -126,7 +126,7 @@ class BookmarkBarNavigationTest : public InProcessBrowserTest,
 
     // All bookmark navigations should have a null initiator, as there's no
     // web origin from which the navigation is triggered.
-    ASSERT_EQ(absl::nullopt, observer.last_initiator_origin());
+    ASSERT_EQ(std::nullopt, observer.last_initiator_origin());
   }
 
   void DidFinishNavigation(
@@ -290,7 +290,7 @@ class FakeProtocolHandlerDelegate : public ExternalProtocolHandler::Delegate {
       content::WebContents* web_contents,
       ui::PageTransition page_transition,
       bool has_user_gesture,
-      const absl::optional<url::Origin>& initiating_origin,
+      const std::optional<url::Origin>& initiating_origin,
       const std::u16string& program_name) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

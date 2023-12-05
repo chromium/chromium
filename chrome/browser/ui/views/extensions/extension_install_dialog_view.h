@@ -7,6 +7,8 @@
 
 #include <vector>
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
@@ -15,7 +17,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/uninstall_reason.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -112,7 +113,7 @@ class ExtensionInstallDialogView : public views::BubbleDialogDelegateView,
 
   // Used to record time between dialog creation and acceptance, cancellation,
   // or dismissal.
-  absl::optional<base::ElapsedTimer> install_result_timer_;
+  std::optional<base::ElapsedTimer> install_result_timer_;
 
   // Used to delay the activation of the install button.
   base::OneShotTimer enable_install_timer_;

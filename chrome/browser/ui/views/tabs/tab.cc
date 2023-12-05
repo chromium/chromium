@@ -778,9 +778,9 @@ void Tab::SetClosing(bool closing) {
   }
 }
 
-absl::optional<SkColor> Tab::GetGroupColor() const {
+std::optional<SkColor> Tab::GetGroupColor() const {
   if (closing_ || !group().has_value())
-    return absl::nullopt;
+    return std::nullopt;
 
   return controller_->GetPaintedGroupColor(
       controller_->GetGroupColorId(group().value()));
@@ -941,7 +941,7 @@ void Tab::ReleaseFreezingVoteToken() {
 
 // static
 std::u16string Tab::GetTooltipText(const std::u16string& title,
-                                   absl::optional<TabAlertState> alert_state) {
+                                   std::optional<TabAlertState> alert_state) {
   if (!alert_state)
     return title;
 
@@ -953,10 +953,10 @@ std::u16string Tab::GetTooltipText(const std::u16string& title,
 }
 
 // static
-absl::optional<TabAlertState> Tab::GetAlertStateToShow(
+std::optional<TabAlertState> Tab::GetAlertStateToShow(
     const std::vector<TabAlertState>& alert_states) {
   if (alert_states.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   return alert_states[0];
 }

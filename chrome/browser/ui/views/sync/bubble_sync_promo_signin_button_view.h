@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SYNC_BUBBLE_SYNC_PROMO_SIGNIN_BUTTON_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_SYNC_BUBBLE_SYNC_PROMO_SIGNIN_BUTTON_VIEW_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/metadata/view_factory.h"
@@ -40,10 +41,10 @@ class BubbleSyncPromoSigninButtonView : public views::View {
       const BubbleSyncPromoSigninButtonView&) = delete;
   ~BubbleSyncPromoSigninButtonView() override;
 
-  absl::optional<AccountInfo> account() const { return account_; }
+  std::optional<AccountInfo> account() const { return account_; }
 
  private:
-  const absl::optional<AccountInfo> account_;
+  const std::optional<AccountInfo> account_;
 };
 
 BEGIN_VIEW_BUILDER(, BubbleSyncPromoSigninButtonView, views::View)

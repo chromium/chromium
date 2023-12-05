@@ -189,7 +189,7 @@ base::FilePath ProfilePicker::GetSwitchProfilePath() {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // static
 void ProfilePicker::SwitchToDiceSignIn(
-    absl::optional<SkColor> profile_color,
+    std::optional<SkColor> profile_color,
     base::OnceCallback<void(bool)> switch_finished_callback) {
   if (g_profile_picker_view) {
     g_profile_picker_view->SwitchToDiceSignIn(
@@ -210,7 +210,7 @@ void ProfilePicker::SwitchToReauth(
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // static
-void ProfilePicker::SwitchToSignedInFlow(absl::optional<SkColor> profile_color,
+void ProfilePicker::SwitchToSignedInFlow(std::optional<SkColor> profile_color,
                                          Profile* signed_in_profile) {
   if (g_profile_picker_view) {
     g_profile_picker_view->SwitchToSignedInFlow(
@@ -718,7 +718,7 @@ ProfilePickerView::CreateFlowController(Profile* picker_profile,
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void ProfilePickerView::SwitchToDiceSignIn(
-    absl::optional<SkColor> profile_color,
+    std::optional<SkColor> profile_color,
     base::OnceCallback<void(bool)> switch_finished_callback) {
   // TODO(crbug.com/1360774): Consider having forced signin as separate step
   // controller for `Step::kAccountSelection`.
@@ -770,7 +770,7 @@ void ProfilePickerView::SwitchToReauth(
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void ProfilePickerView::SwitchToSignedInFlow(
     Profile* signed_in_profile,
-    absl::optional<SkColor> profile_color,
+    std::optional<SkColor> profile_color,
     std::unique_ptr<content::WebContents> contents) {
   DCHECK(!signin_util::IsForceSigninEnabled());
   GetProfilePickerFlowController()->SwitchToPostSignIn(

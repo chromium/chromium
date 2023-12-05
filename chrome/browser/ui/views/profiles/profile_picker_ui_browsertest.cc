@@ -98,8 +98,8 @@ class ProfilePickerUIPixelTest
             }));
     profile_picker_view_->ShowAndWait(
         GetParam().pixel_test_param.use_small_window
-            ? absl::optional<gfx::Size>(gfx::Size(750, 590))
-            : absl::nullopt);
+            ? std::optional<gfx::Size>(gfx::Size(750, 590))
+            : std::nullopt);
     observer.Wait();
   }
 

@@ -647,7 +647,7 @@ void ProfileMenuViewBase::BuildProfileBackgroundContainer(
 void ProfileMenuViewBase::SetProfileIdentityInfo(
     const std::u16string& profile_name,
     SkColor profile_background_color,
-    absl::optional<EditButtonParams> edit_button_params,
+    std::optional<EditButtonParams> edit_button_params,
     const ui::ImageModel& image_model,
     const std::u16string& title,
     const std::u16string& subtitle,

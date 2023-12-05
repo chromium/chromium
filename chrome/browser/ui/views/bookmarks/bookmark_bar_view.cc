@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -93,7 +94,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -528,8 +528,8 @@ class BookmarkButton : public BookmarkButtonBase {
   base::WeakPtr<content::WebContents> prerender_web_contents_;
 
   // Information for metrics.
-  absl::optional<base::TimeTicks> mouse_entered_time_;
-  absl::optional<base::TimeTicks> mouse_move_time_;
+  std::optional<base::TimeTicks> mouse_entered_time_;
+  std::optional<base::TimeTicks> mouse_move_time_;
   bool hover_duration_recorded_ = false;
   bool mouse_has_been_pressed_ = false;
 };
@@ -659,7 +659,7 @@ struct BookmarkBarView::DropLocation {
   }
 
   // Index into the model the drop is over. This is relative to the root node.
-  absl::optional<size_t> index;
+  std::optional<size_t> index;
 
   // Drop constants.
   DragOperation operation = DragOperation::kNone;
@@ -911,7 +911,7 @@ MenuButton* BookmarkBarView::GetMenuButtonForNode(const BookmarkNode* node) {
   }
   // TODO: add logic to handle saved groups node(crbug.com/1223929 and
   // crbug.com/1223919)
-  absl::optional<size_t> index =
+  std::optional<size_t> index =
       bookmark_model_->bookmark_bar_node()->GetIndexOf(node);
   if (!index.has_value() || !node->is_folder()) {
     return nullptr;

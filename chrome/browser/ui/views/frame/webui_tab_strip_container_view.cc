@@ -167,13 +167,13 @@ WebUITabStripDragDirection DragDirectionFromDelta(float delta) {
 
 // Converts a swipe gesture to a drag direction, or none if the swipe is neither
 // up nor down.
-absl::optional<WebUITabStripDragDirection> DragDirectionFromSwipe(
+std::optional<WebUITabStripDragDirection> DragDirectionFromSwipe(
     const ui::GestureEvent* event) {
   if (event->details().swipe_down())
     return WebUITabStripDragDirection::kDown;
   if (event->details().swipe_up())
     return WebUITabStripDragDirection::kUp;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool EventTypeCanCloseTabStrip(const ui::EventType& type) {
@@ -512,13 +512,13 @@ bool WebUITabStripContainerView::IsDraggedTab(const ui::OSExchangeData& data) {
   base::Pickle pickle;
   if (data.GetPickledData(ui::ClipboardFormatType::WebCustomDataType(),
                           &pickle)) {
-    if (absl::optional<std::u16string> result =
+    if (std::optional<std::u16string> result =
             ui::ReadCustomDataForType(pickle, kWebUITabIdDataType);
         result && !result->empty()) {
       return true;
     }
 
-    if (absl::optional<std::u16string> result =
+    if (std::optional<std::u16string> result =
             ui::ReadCustomDataForType(pickle, kWebUITabGroupIdDataType);
         result && !result->empty()) {
       return true;
@@ -606,12 +606,12 @@ void WebUITabStripContainerView::UpdateHeightForDragToOpen(float height_delta) {
 }
 
 void WebUITabStripContainerView::EndDragToOpen(
-    absl::optional<WebUITabStripDragDirection> fling_direction) {
+    std::optional<WebUITabStripDragDirection> fling_direction) {
   if (!current_drag_height_)
     return;
 
   const int final_drag_height = *current_drag_height_;
-  current_drag_height_ = absl::nullopt;
+  current_drag_height_ = std::nullopt;
 
   // If this wasn't a fling, determine whether to open or close based on
   // final height.
@@ -699,7 +699,7 @@ void WebUITabStripContainerView::SetContainerTargetVisibility(
     if (time_at_open_) {
       RecordTabStripUIOpenDurationHistogram(base::TimeTicks::Now() -
                                             time_at_open_.value());
-      time_at_open_ = absl::nullopt;
+      time_at_open_ = std::nullopt;
     }
 
     const double current_value = animation_.GetCurrentValue();

@@ -127,7 +127,7 @@ class PriceTrackingIconViewInteractiveTest : public InteractiveBrowserTest {
   raw_ptr<commerce::CommerceUiTabHelper, AcrossTasksDanglingUntriaged>
       tab_helper_;
   std::unique_ptr<image_fetcher::MockImageFetcher> image_fetcher_;
-  absl::optional<commerce::ProductInfo> product_info_;
+  std::optional<commerce::ProductInfo> product_info_;
   base::CallbackListSubscription create_services_subscription_;
   bool is_browser_context_services_created{false};
 

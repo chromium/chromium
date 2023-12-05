@@ -412,7 +412,7 @@ ToolbarActionViewController* ExtensionsToolbarContainer::GetActionForId(
   return nullptr;
 }
 
-absl::optional<extensions::ExtensionId>
+std::optional<extensions::ExtensionId>
 ExtensionsToolbarContainer::GetPoppedOutActionId() const {
   return popped_out_action_;
 }
@@ -446,7 +446,7 @@ bool ExtensionsToolbarContainer::IsActionVisibleOnToolbar(
 void ExtensionsToolbarContainer::UndoPopOut() {
   DCHECK(popped_out_action_);
   const extensions::ExtensionId popped_out_action = popped_out_action_.value();
-  popped_out_action_ = absl::nullopt;
+  popped_out_action_ = std::nullopt;
   UpdateIconVisibility(popped_out_action);
   UpdateContainerVisibilityAfterAnimation();
 }

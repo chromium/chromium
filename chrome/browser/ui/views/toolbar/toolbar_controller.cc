@@ -120,7 +120,7 @@ ToolbarController::ToolbarController(
       auto state = std::make_unique<PopOutState>();
       if (original_spec) {
         state->original_spec =
-            absl::optional<views::FlexSpecification>(*original_spec);
+            std::optional<views::FlexSpecification>(*original_spec);
       }
       state->responsive_spec = flex_spec;
       state->handler = std::make_unique<PopOutHandler>(

@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_ITEM_UI_HELPER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
 #include "components/global_media_controls/public/constants.h"
 #include "components/media_message_center/notification_theme.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class MediaItemUIDeviceSelectorDelegate;
 class MediaItemUIDeviceSelectorView;
@@ -45,7 +45,7 @@ bool HasRemotePlaybackRoute(
     base::WeakPtr<media_message_center::MediaNotificationItem> item);
 
 // Returns the MediaRoute associated with `item`, if one exists.
-absl::optional<media_router::MediaRoute> GetSessionRoute(
+std::optional<media_router::MediaRoute> GetSessionRoute(
     const std::string& item_id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item,
     content::BrowserContext* context);
@@ -59,8 +59,8 @@ std::unique_ptr<MediaItemUIDeviceSelectorView> BuildDeviceSelector(
     Profile* profile,
     global_media_controls::GlobalMediaControlsEntryPoint entry_point,
     bool show_devices = false,
-    absl::optional<media_message_center::MediaColorTheme> media_color_theme =
-        absl::nullopt);
+    std::optional<media_message_center::MediaColorTheme> media_color_theme =
+        std::nullopt);
 
 // Returns the MediaItemUIFooter for Cast items or Media Session items with
 // associated Media Routes.
@@ -68,7 +68,7 @@ std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooter(
     const std::string& id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item,
     Profile* profile,
-    absl::optional<media_message_center::MediaColorTheme> media_color_theme =
-        absl::nullopt);
+    std::optional<media_message_center::MediaColorTheme> media_color_theme =
+        std::nullopt);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_ITEM_UI_HELPER_H_

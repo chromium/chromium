@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -18,7 +19,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/render_text.h"
 
@@ -88,7 +88,7 @@ class PopupViewViewsBrowsertestBase
 
  private:
   // The index of the selected cell. No cell is selected by default.
-  absl::optional<CellIndex> selected_cell_;
+  std::optional<CellIndex> selected_cell_;
 };
 
 class PopupViewViewsBrowsertest : public PopupViewViewsBrowsertestBase {

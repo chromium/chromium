@@ -199,12 +199,12 @@ void TabContainerImpl::SetTabPinned(int model_index, TabPinned pinned) {
   }
 }
 
-void TabContainerImpl::SetActiveTab(absl::optional<size_t> prev_active_index,
-                                    absl::optional<size_t> new_active_index) {
-  auto maybe_update_group_visuals = [this](absl::optional<size_t> tab_index) {
+void TabContainerImpl::SetActiveTab(std::optional<size_t> prev_active_index,
+                                    std::optional<size_t> new_active_index) {
+  auto maybe_update_group_visuals = [this](std::optional<size_t> tab_index) {
     if (!tab_index.has_value())
       return;
-    absl::optional<tab_groups::TabGroupId> group =
+    std::optional<tab_groups::TabGroupId> group =
         GetTabAtModelIndex(tab_index.value())->group();
     if (group.has_value())
       UpdateTabGroupVisuals(group.value());
@@ -295,7 +295,7 @@ void TabContainerImpl::ReturnTabSlotView(TabSlotView* view) {
 }
 
 void TabContainerImpl::ScrollTabToVisible(int model_index) {
-  absl::optional<gfx::Rect> visible_content_rect = GetVisibleContentRect();
+  std::optional<gfx::Rect> visible_content_rect = GetVisibleContentRect();
 
   if (!visible_content_rect.has_value())
     return;
@@ -334,7 +334,7 @@ void TabContainerImpl::ScrollTabToVisible(int model_index) {
 }
 
 void TabContainerImpl::ScrollTabContainerByOffset(int offset) {
-  absl::optional<gfx::Rect> visible_content_rect = GetVisibleContentRect();
+  std::optional<gfx::Rect> visible_content_rect = GetVisibleContentRect();
   if (!visible_content_rect.has_value() || offset == 0)
     return;
 
@@ -390,7 +390,7 @@ void TabContainerImpl::OnGroupVisualsChanged(
   AnimateToIdealBounds();
 
   // The active tab may need to repaint its group stroke if it's in `group`.
-  const absl::optional<int> active_index = controller_->GetActiveIndex();
+  const std::optional<int> active_index = controller_->GetActiveIndex();
   if (active_index.has_value())
     GetTabAtModelIndex(active_index.value())->SchedulePaint();
 }
@@ -458,7 +458,7 @@ void TabContainerImpl::NotifyTabGroupEditorBubbleClosed() {
 }
 
 // TODO(tbergquist): This should really return an optional<size_t>.
-absl::optional<int> TabContainerImpl::GetModelIndexOf(
+std::optional<int> TabContainerImpl::GetModelIndexOf(
     const TabSlotView* slot_view) const {
   return tabs_view_model_.GetIndexOfView(slot_view);
 }
@@ -472,7 +472,7 @@ int TabContainerImpl::GetTabCount() const {
 }
 
 // TODO(tbergquist): This should really return an optional<size_t>.
-absl::optional<int> TabContainerImpl::GetModelIndexOfFirstNonClosingTab(
+std::optional<int> TabContainerImpl::GetModelIndexOfFirstNonClosingTab(
     Tab* tab) const {
   if (tab->closing()) {
     // If the tab is already closing, close the next tab. We do this so that the
@@ -485,7 +485,7 @@ absl::optional<int> TabContainerImpl::GetModelIndexOfFirstNonClosingTab(
     }
 
     if (it == all_tabs.end())
-      return absl::nullopt;
+      return std::nullopt;
     tab = *it;
   }
 
@@ -537,7 +537,7 @@ bool TabContainerImpl::IsRectInContentArea(const gfx::Rect& rect) {
 
     // A hit on an inactive tab is in the content area unless it is in the thin
     // strip mentioned above.
-    const absl::optional<size_t> tab_index = tabs_view_model_.GetIndexOfView(v);
+    const std::optional<size_t> tab_index = tabs_view_model_.GetIndexOfView(v);
     if (tab_index.has_value() && IsValidModelIndex(tab_index.value())) {
       Tab* tab = GetTabAtModelIndex(tab_index.value());
       gfx::Rect tab_drag_handle = tab->GetMirroredBounds();
@@ -551,12 +551,12 @@ bool TabContainerImpl::IsRectInContentArea(const gfx::Rect& rect) {
   return true;
 }
 
-absl::optional<ZOrderableTabContainerElement>
+std::optional<ZOrderableTabContainerElement>
 TabContainerImpl::GetLeadingElementForZOrdering() const {
   // Use `tabs_view_model_` instead of `layout_helper_` to ignore closing tabs
   // to prevent discontinuous z-order flips when tab close animations end.
   if (GetTabCount() == 0)
-    return absl::nullopt;
+    return std::nullopt;
   Tab* const leading_tab = tabs_view_model_.view_at(0);
 
   // If `leading_tab` is grouped, it's preceded by its group header.
@@ -568,12 +568,12 @@ TabContainerImpl::GetLeadingElementForZOrdering() const {
   return ZOrderableTabContainerElement(leading_tab);
 }
 
-absl::optional<ZOrderableTabContainerElement>
+std::optional<ZOrderableTabContainerElement>
 TabContainerImpl::GetTrailingElementForZOrdering() const {
   // Use `tabs_view_model_` instead of `layout_helper_` to ignore closing tabs
   // to prevent discontinuous z-order flips when tab close animations end.
   if (GetTabCount() == 0)
-    return absl::nullopt;
+    return std::nullopt;
 
   Tab* const trailing_tab =
       tabs_view_model_.view_at(tabs_view_model_.view_size() - 1);
@@ -657,7 +657,7 @@ int TabContainerImpl::GetAvailableWidthForTabContainer() const {
              : parent()->GetAvailableSize(this).width().value();
 }
 
-void TabContainerImpl::EnterTabClosingMode(absl::optional<int> override_width,
+void TabContainerImpl::EnterTabClosingMode(std::optional<int> override_width,
                                            CloseTabSource source) {
   in_tab_close_ = true;
   if (override_width.has_value())
@@ -683,10 +683,10 @@ void TabContainerImpl::ExitTabClosingMode() {
 void TabContainerImpl::SetTabSlotVisibility() {
   std::set<tab_groups::TabGroupId> visibility_changed_groups;
   bool last_tab_visible = false;
-  absl::optional<tab_groups::TabGroupId> last_tab_group = absl::nullopt;
+  std::optional<tab_groups::TabGroupId> last_tab_group = std::nullopt;
   std::vector<Tab*> tabs = layout_helper_->GetTabs();
   for (Tab* tab : base::Reversed(tabs)) {
-    absl::optional<tab_groups::TabGroupId> current_group = tab->group();
+    std::optional<tab_groups::TabGroupId> current_group = tab->group();
     if (current_group != last_tab_group && last_tab_group.has_value()) {
       TabGroupViews* group_view = group_views_.at(last_tab_group.value()).get();
 
@@ -702,7 +702,7 @@ void TabContainerImpl::SetTabSlotVisibility() {
         group_view->underline()->MaybeSetVisible(last_tab_visible);
     }
     last_tab_visible = ShouldTabBeVisible(tab);
-    last_tab_group = tab->closing() ? absl::nullopt : current_group;
+    last_tab_group = tab->closing() ? std::nullopt : current_group;
 
     // Collapsed tabs disappear once they've reached their minimum size. This
     // is different than very small non-collapsed tabs, because in that case
@@ -801,7 +801,7 @@ void TabContainerImpl::PaintChildren(const views::PaintInfo& paint_info) {
 gfx::Size TabContainerImpl::GetMinimumSize() const {
   // During animations, our minimum width tightly hugs the current bounds of our
   // children.
-  absl::optional<int> minimum_width = GetMidAnimationTrailingX();
+  std::optional<int> minimum_width = GetMidAnimationTrailingX();
   if (!minimum_width.has_value()) {
     // Otherwise, the tabstrip is in a steady state, so we want to use the width
     // that would be spanned by our children after animations complete. This
@@ -816,7 +816,7 @@ gfx::Size TabContainerImpl::GetMinimumSize() const {
 gfx::Size TabContainerImpl::CalculatePreferredSize() const {
   // During animations, our preferred width tightly hugs the current bounds of
   // our children.
-  absl::optional<int> preferred_width = GetMidAnimationTrailingX();
+  std::optional<int> preferred_width = GetMidAnimationTrailingX();
   if (!preferred_width.has_value()) {
     // Otherwise, the tabstrip is in a steady state, so we want to use the width
     // that would be spanned by our children after animations complete. This
@@ -930,7 +930,7 @@ BrowserRootView::DropTarget* TabContainerImpl::GetDropTarget(
 }
 
 void TabContainerImpl::HandleDragUpdate(
-    const absl::optional<BrowserRootView::DropIndex>& index) {
+    const std::optional<BrowserRootView::DropIndex>& index) {
   SetDropArrow(index);
 }
 
@@ -1038,11 +1038,11 @@ views::ViewModelT<Tab>* TabContainerImpl::GetTabsViewModel() {
   return &tabs_view_model_;
 }
 
-absl::optional<gfx::Rect> TabContainerImpl::GetVisibleContentRect() {
+std::optional<gfx::Rect> TabContainerImpl::GetVisibleContentRect() {
   views::ScrollView* scroll_container =
       views::ScrollView::GetScrollViewForContents(scroll_contents_view_);
   if (!scroll_container)
-    return absl::nullopt;
+    return std::nullopt;
 
   return scroll_container->GetVisibleRect();
 }
@@ -1224,10 +1224,10 @@ int TabContainerImpl::GetIdealTrailingX() const {
              : 0;
 }
 
-absl::optional<int> TabContainerImpl::GetMidAnimationTrailingX() const {
+std::optional<int> TabContainerImpl::GetMidAnimationTrailingX() const {
   if (!controller_->IsAnimatingInTabStrip() || IsDragSessionActive() ||
       IsDragSessionEnding()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // During animations not related to a drag session, we want to tightly hug
@@ -1297,7 +1297,7 @@ void TabContainerImpl::UpdateClosingModeOnRemovedTab(int model_index,
   if (was_active && !tab_being_removed->data().pinned &&
       layout_helper_->active_tab_width() >
           layout_helper_->inactive_tab_width()) {
-    const absl::optional<int> next_active_viewmodel_index =
+    const std::optional<int> next_active_viewmodel_index =
         controller_->GetActiveIndex();
     // The next active tab may not be in this TabContainer.
     if (next_active_viewmodel_index.has_value()) {
@@ -1581,9 +1581,9 @@ gfx::Rect TabContainerImpl::GetDropBounds(int drop_index,
 }
 
 void TabContainerImpl::SetDropArrow(
-    const absl::optional<BrowserRootView::DropIndex>& index) {
+    const std::optional<BrowserRootView::DropIndex>& index) {
   if (!index) {
-    controller_->OnDropIndexUpdate(absl::nullopt, false);
+    controller_->OnDropIndexUpdate(std::nullopt, false);
     drop_arrow_.reset();
     return;
   }

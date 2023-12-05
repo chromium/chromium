@@ -74,7 +74,7 @@ class AboutThisSideSidePanelCoordinator
 
   // Stores the OpenURLParams that were last registered and the URL of the
   // site that these params belong to.
-  absl::optional<URLInfo> last_url_info_;
+  std::optional<URLInfo> last_url_info_;
 
   // Stores whether a SidePanel entry has been shown yet or is just registered
   // at pageload. Used to differentiate SidePanels previously opened or opened

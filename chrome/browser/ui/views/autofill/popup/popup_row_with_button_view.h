@@ -72,7 +72,7 @@ class PopupRowWithButtonView : public PopupRowView, public ButtonDelegate {
   views::View* GetButtonContainer();
 
   // PopupRowView:
-  void SetSelectedCell(absl::optional<CellType> cell) override;
+  void SetSelectedCell(std::optional<CellType> cell) override;
   // Handles key press events coming from the parent class. Returns false if
   // the parent should handle it.
   bool HandleKeyPressEvent(
@@ -93,7 +93,7 @@ class PopupRowWithButtonView : public PopupRowView, public ButtonDelegate {
   // Sets the `focused_part_` property and calls `SelectSuggestion()` on
   // the controller according to the focused part.
   void UpdateFocusedPartAndSelectedSuggestion(
-      absl::optional<RowWithButtonPart> part);
+      std::optional<RowWithButtonPart> part);
   void HandleKeyPressEventFocusOnButton();
   void HandleKeyPressEventFocusOnContent();
 
@@ -105,7 +105,7 @@ class PopupRowWithButtonView : public PopupRowView, public ButtonDelegate {
 
   // Defines the part of the row that is currently highlighted and accepts
   // user input.
-  absl::optional<RowWithButtonPart> focused_part_;
+  std::optional<RowWithButtonPart> focused_part_;
 
   ButtonBehavior button_behavior_ = ButtonBehavior::kShowOnHoverOrSelect;
 };

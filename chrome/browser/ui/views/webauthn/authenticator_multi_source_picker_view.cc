@@ -25,7 +25,7 @@
 namespace {
 
 std::pair<std::unique_ptr<views::View>, HoverListView*> CreatePasskeyList(
-    const absl::optional<std::u16string>& title,
+    const std::optional<std::u16string>& title,
     const std::vector<int>& passkey_indices,
     const base::span<const AuthenticatorRequestDialogModel::Mechanism> mechs) {
   auto container = std::make_unique<views::BoxLayoutView>();
@@ -60,7 +60,7 @@ AuthenticatorMultiSourcePickerView::AuthenticatorMultiSourcePickerView(
   layout->set_between_child_spacing(kPaddingInBetweenPasskeyLists);
   SetLayoutManager(std::move(layout));
 
-  absl::optional<std::u16string> secondary_passkeys_label;
+  std::optional<std::u16string> secondary_passkeys_label;
   if (!model->primary_passkey_indices().empty()) {
     secondary_passkeys_label =
         l10n_util::GetStringUTF16(IDS_WEBAUTHN_OTHER_DEVICES_LABEL);

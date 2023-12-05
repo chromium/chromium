@@ -1285,19 +1285,19 @@ bool BrowserView::GetIsPictureInPictureType() const {
 }
 
 float BrowserView::GetInitialAspectRatio() const {
-  const absl::optional<blink::mojom::PictureInPictureWindowOptions>
-      pip_options = browser_->create_params().pip_options;
+  const std::optional<blink::mojom::PictureInPictureWindowOptions> pip_options =
+      browser_->create_params().pip_options;
   return pip_options.has_value() ? pip_options->initial_aspect_ratio : 1.0;
 }
 
-absl::optional<blink::mojom::PictureInPictureWindowOptions>
+std::optional<blink::mojom::PictureInPictureWindowOptions>
 BrowserView::GetDocumentPictureInPictureOptions() const {
   return browser_->create_params().pip_options;
 }
 
 bool BrowserView::GetLockAspectRatio() const {
-  const absl::optional<blink::mojom::PictureInPictureWindowOptions>
-      pip_options = browser_->create_params().pip_options;
+  const std::optional<blink::mojom::PictureInPictureWindowOptions> pip_options =
+      browser_->create_params().pip_options;
   return pip_options.has_value() ? pip_options->lock_aspect_ratio : false;
 }
 
@@ -1436,7 +1436,7 @@ bool BrowserView::IsOnCurrentWorkspace() const {
   return chromeos::DesksHelper::Get(native_win)
       ->BelongsToActiveDesk(native_win);
 #elif BUILDFLAG(IS_WIN)
-  absl::optional<bool> on_current_workspace =
+  std::optional<bool> on_current_workspace =
       native_win->GetHost()->on_current_workspace();
   if (on_current_workspace.has_value())
     return on_current_workspace.value();
@@ -2527,10 +2527,10 @@ void BrowserView::OnWidgetVisibilityChanged(views::Widget* widget,
   }
 }
 
-absl::optional<bool> BrowserView::GetCanResizeFromWebAPI() const {
+std::optional<bool> BrowserView::GetCanResizeFromWebAPI() const {
   // TODO(laurila, crbug.com/1493617): Support multi-tab apps.
   if (browser()->tab_strip_model()->count() > 1) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // The value can only be set in web apps, where there currently can only be 1
@@ -2538,7 +2538,7 @@ absl::optional<bool> BrowserView::GetCanResizeFromWebAPI() const {
   // value set by the active WebContents' primary page.
   content::WebContents* web_contents = GetActiveWebContents();
   if (!web_contents || !web_contents->GetPrimaryMainFrame()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return web_contents->GetPrimaryPage().GetResizable();
@@ -2577,7 +2577,7 @@ void BrowserView::OnCanResizeFromWebAPIChanged() {
     return;
   }
 
-  // Setting it to absl::nullopt should never be blocked.
+  // Setting it to std::nullopt should never be blocked.
   if (can_resize.has_value() && browser()->tab_strip_model()->count() > 1) {
     // This adds a warning to the active tab, even when another tab makes the
     // call, which also needs to be fixed as part of the multi-apps support.
@@ -2726,7 +2726,7 @@ void BrowserView::ShowIntentPickerBubble(
     bool show_stay_in_chrome,
     bool show_remember_selection,
     apps::IntentPickerBubbleType bubble_type,
-    const absl::optional<url::Origin>& initiating_origin,
+    const std::optional<url::Origin>& initiating_origin,
     IntentPickerResponse callback) {
   toolbar_->ShowIntentPickerBubble(std::move(app_info), show_stay_in_chrome,
                                    show_remember_selection, bubble_type,
@@ -3473,7 +3473,7 @@ std::u16string BrowserView::GetAccessibleTabLabel(int index,
                                                   bool is_for_tab) const {
   std::u16string title = browser_->GetWindowTitleForTab(index);
 
-  absl::optional<tab_groups::TabGroupId> group =
+  std::optional<tab_groups::TabGroupId> group =
       tabstrip_->tab_at(index)->group();
   if (group.has_value()) {
     std::u16string group_title = tabstrip_->GetGroupTitle(group.value());
@@ -3511,7 +3511,7 @@ std::u16string BrowserView::GetAccessibleTabLabel(int index,
   }
 
   // Alert tab states.
-  absl::optional<TabAlertState> alert = tabstrip_->GetTabAlertState(index);
+  std::optional<TabAlertState> alert = tabstrip_->GetTabAlertState(index);
   if (alert.has_value()) {
     switch (alert.value()) {
       case TabAlertState::AUDIO_PLAYING:

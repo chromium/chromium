@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view_controller.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "chrome/browser/profiles/profile.h"
@@ -18,7 +19,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
@@ -195,9 +195,9 @@ bool IsolatedWebAppInstallerViewController::OnAccept() {
       web_app_provider_->scheduler().LaunchApp(
           app_id, *base::CommandLine::ForCurrentProcess(),
           /*current_directory=*/base::FilePath(),
-          /*url_handler_launch_url=*/absl::nullopt,
-          /*protocol_handler_launch_url=*/absl::nullopt,
-          /*file_launch_url=*/absl::nullopt, /*launch_files=*/{},
+          /*url_handler_launch_url=*/std::nullopt,
+          /*protocol_handler_launch_url=*/std::nullopt,
+          /*file_launch_url=*/std::nullopt, /*launch_files=*/{},
           base::DoNothing());
 #endif  // BUILDFLAG(IS_CHROMEOS)
       return true;
@@ -235,8 +235,7 @@ void IsolatedWebAppInstallerViewController::OnInstallComplete(
     model_->SetDialogContent(IsolatedWebAppInstallerModel::DialogContent(
         /*is_error=*/true, IDS_IWA_INSTALLER_INSTALL_FAILED_TITLE,
         IDS_IWA_INSTALLER_INSTALL_FAILED_SUBTITLE,
-        /*details_link=*/absl::nullopt,
-        IDS_IWA_INSTALLER_INSTALL_FAILED_RETRY));
+        /*details_link=*/std::nullopt, IDS_IWA_INSTALLER_INSTALL_FAILED_RETRY));
   }
   OnModelChanged();
 }
@@ -277,7 +276,7 @@ void IsolatedWebAppInstallerViewController::OnChildDialogAccepted() {
   switch (model_->step()) {
     case IsolatedWebAppInstallerModel::Step::kShowMetadata: {
       model_->SetStep(IsolatedWebAppInstallerModel::Step::kInstall);
-      model_->SetDialogContent(absl::nullopt);
+      model_->SetDialogContent(std::nullopt);
       OnModelChanged();
 
       const SignedWebBundleMetadata& metadata = model_->bundle_metadata();
@@ -294,7 +293,7 @@ void IsolatedWebAppInstallerViewController::OnChildDialogAccepted() {
     case IsolatedWebAppInstallerModel::Step::kInstall:
       // A child dialog on the install screen means the installation failed.
       // Accepting the dialog corresponds to the Retry button.
-      model_->SetDialogContent(absl::nullopt);
+      model_->SetDialogContent(std::nullopt);
       Start();
       break;
 
@@ -312,14 +311,14 @@ void IsolatedWebAppInstallerViewController::OnModelChanged() {
     case IsolatedWebAppInstallerModel::Step::kDisabled:
       IsolatedWebAppInstallerView::SetDialogButtons(
           dialog_delegate_, IDS_APP_CLOSE,
-          /*accept_button_label_id=*/absl::nullopt);
+          /*accept_button_label_id=*/std::nullopt);
       view_->ShowDisabledScreen();
       break;
 
     case IsolatedWebAppInstallerModel::Step::kGetMetadata:
       IsolatedWebAppInstallerView::SetDialogButtons(
           dialog_delegate_, IDS_APP_CANCEL,
-          /*accept_button_label_id=*/absl::nullopt);
+          /*accept_button_label_id=*/std::nullopt);
       view_->ShowGetMetadataScreen();
       break;
 
@@ -332,7 +331,7 @@ void IsolatedWebAppInstallerViewController::OnModelChanged() {
     case IsolatedWebAppInstallerModel::Step::kInstall:
       IsolatedWebAppInstallerView::SetDialogButtons(
           dialog_delegate_, IDS_APP_CANCEL,
-          /*accept_button_label_id=*/absl::nullopt);
+          /*accept_button_label_id=*/std::nullopt);
       view_->ShowInstallScreen(model_->bundle_metadata());
       break;
 

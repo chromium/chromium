@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_EDITOR_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_EDITOR_BUBBLE_VIEW_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "components/tab_groups/tab_group_color.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/label_button.h"
@@ -53,7 +53,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
       const Browser* browser,
       const tab_groups::TabGroupId& group,
       TabGroupHeader* header_view,
-      absl::optional<gfx::Rect> anchor_rect = absl::nullopt,
+      std::optional<gfx::Rect> anchor_rect = std::nullopt,
       // If not provided, will be set to |header_view|.
       views::View* anchor_view = nullptr,
       bool stop_context_menu_propagation = false);
@@ -69,7 +69,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
   TabGroupEditorBubbleView(const Browser* browser,
                            const tab_groups::TabGroupId& group,
                            views::View* anchor_view,
-                           absl::optional<gfx::Rect> anchor_rect,
+                           std::optional<gfx::Rect> anchor_rect,
                            TabGroupHeader* header_view,
                            bool stop_context_menu_propagation);
   ~TabGroupEditorBubbleView() override;

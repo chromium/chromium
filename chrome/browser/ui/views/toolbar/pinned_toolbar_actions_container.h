@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_PINNED_TOOLBAR_ACTIONS_CONTAINER_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -72,7 +72,7 @@ class PinnedToolbarActionsContainer
     raw_ptr<actions::ActionItem> action_item_ = nullptr;
     base::CallbackListSubscription action_changed_subscription_;
     // Used to ensure the button remains highlighted while active.
-    absl::optional<Button::ScopedAnchorHighlight> anchor_higlight_;
+    std::optional<Button::ScopedAnchorHighlight> anchor_higlight_;
     bool pinned_ = false;
     bool invoking_action_ = false;
     raw_ptr<PinnedToolbarActionsContainer> container_;

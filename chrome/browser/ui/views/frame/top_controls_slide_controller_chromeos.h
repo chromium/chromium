@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_TOP_CONTROLS_SLIDE_CONTROLLER_CHROMEOS_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/top_controls_slide_controller.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display_observer.h"
 #include "ui/views/view_observer.h"
 
@@ -99,7 +99,7 @@ class TopControlsSlideControllerChromeOS : public TopControlsSlideController,
   // BrowserView informs us with fullscreen state changes before they happen
   // (See OnBrowserFullscreenStateWillChange()) so that we can disable the
   // sliding behavior *before* immersive mode is entered.
-  bool CanEnable(absl::optional<bool> fullscreen_state) const;
+  bool CanEnable(std::optional<bool> fullscreen_state) const;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Called back from the ash::AccessibilityManager so that we're updated by the

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/bruschetta/bruschetta_installer_view.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
@@ -20,7 +21,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -219,7 +219,7 @@ bool BruschettaInstallerView::Accept() {
          state_ == State::kFailedCleanup);
 
   if (state_ == State::kConfirmInstall) {
-    absl::optional<std::string> selected_config;
+    std::optional<std::string> selected_config;
     for (const auto& it : radio_buttons_) {
       if (it.second->GetChecked()) {
         selected_config = it.first;

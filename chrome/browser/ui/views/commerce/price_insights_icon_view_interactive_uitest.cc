@@ -91,8 +91,8 @@ class PriceInsightsIconViewInteractiveTest : public InteractiveBrowserTest {
  protected:
   raw_ptr<commerce::MockShoppingService, AcrossTasksDanglingUntriaged>
       mock_shopping_service_;
-  absl::optional<commerce::PriceInsightsInfo> price_insights_info_;
-  absl::optional<commerce::ProductInfo> product_info_;
+  std::optional<commerce::PriceInsightsInfo> price_insights_info_;
+  std::optional<commerce::ProductInfo> product_info_;
   base::CallbackListSubscription create_services_subscription_;
   bool is_browser_context_services_created{false};
 
@@ -134,7 +134,7 @@ class PriceInsightsIconViewInteractiveTest : public InteractiveBrowserTest {
   }
 
   void MockGetPriceInsightsInfoForUrlResponse() {
-    absl::optional<commerce::PriceInsightsInfo> price_insights_info =
+    std::optional<commerce::PriceInsightsInfo> price_insights_info =
         commerce::CreateValidPriceInsightsInfo(
             true, true, commerce::PriceBucket::kLowPrice);
     mock_shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(
@@ -212,9 +212,9 @@ class PriceInsightsIconViewEngagementTest
   }
 
   void NavigateToANonShoppingPage() {
-    mock_shopping_service_->SetResponseForGetProductInfoForUrl(absl::nullopt);
+    mock_shopping_service_->SetResponseForGetProductInfoForUrl(std::nullopt);
     mock_shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(
-        absl::nullopt);
+        std::nullopt);
     RunTestSequence(
         NavigateWebContents(kShoppingTab,
                             embedded_test_server()->GetURL(kNonShoppingURL)),

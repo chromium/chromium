@@ -149,7 +149,7 @@ class TabDragController : public views::WidgetObserver,
   // Returns the tab group being dragged, if any. Will only return a value if
   // the user is dragging a tab group header, not an individual tab or tabs from
   // a group.
-  const absl::optional<tab_groups::TabGroupId>& group() const { return group_; }
+  const std::optional<tab_groups::TabGroupId>& group() const { return group_; }
 
   bool IsRemovingLastTabForRevert() const {
     return is_removing_last_tab_for_revert_;
@@ -280,7 +280,7 @@ class TabDragController : public views::WidgetObserver,
     // This is the index of the tab in |source_context_| when the drag
     // began. This is used to restore the previous state if the drag is aborted.
     // Nullopt if this is a group header.
-    absl::optional<int> source_model_index;
+    std::optional<int> source_model_index;
 
     // If attached this is the view in |attached_context_|.
     raw_ptr<TabSlotView, DanglingUntriaged> attached_view;
@@ -296,7 +296,7 @@ class TabDragController : public views::WidgetObserver,
 
     // Stores the information of the group the tab is in, or nullopt if tab is
     // not grouped.
-    absl::optional<TabGroupData> tab_group_data;
+    std::optional<TabGroupData> tab_group_data;
   };
 
   typedef std::vector<TabDragData> DragData;
@@ -579,10 +579,10 @@ class TabDragController : public views::WidgetObserver,
   void UpdateGroupForDraggedTabs();
 
   // Helper method for TabDragController::UpdateGroupForDraggedTabs to decide if
-  // a dragged tab should stay in the tab group. Returns absl::nullopt if the
+  // a dragged tab should stay in the tab group. Returns std::nullopt if the
   // tab should not be in a group. Otherwise returns tab_groups::TabGroupId of
   // the group the selected tabs should join.
-  absl::optional<tab_groups::TabGroupId> GetTabGroupForTargetIndex(
+  std::optional<tab_groups::TabGroupId> GetTabGroupForTargetIndex(
       const std::vector<int>& selected);
 
   // Helper method for OnSystemDragAndDropExited() to calculate a y-coordinate
@@ -661,11 +661,11 @@ class TabDragController : public views::WidgetObserver,
 
   // The group that is being dragged. Only set if the drag originated from a
   // group header, indicating that the entire group is being dragged together.
-  absl::optional<tab_groups::TabGroupId> group_;
+  std::optional<tab_groups::TabGroupId> group_;
 
   // The GUID of the saved tab group whose tracking is paused between paired
   // Detach() and Attach() calls, if dragging a saved tab group between windows.
-  absl::optional<base::Uuid> paused_saved_group_id_;
+  std::optional<base::Uuid> paused_saved_group_id_;
 
   // True until MoveAttached() is first invoked.
   bool initial_move_;

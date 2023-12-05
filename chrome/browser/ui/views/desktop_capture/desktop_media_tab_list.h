@@ -45,7 +45,7 @@ class DesktopMediaTabList : public DesktopMediaListController::ListView {
   void OnThemeChanged() override;
 
   // DesktopMediaListController::ListView:
-  absl::optional<content::DesktopMediaID> GetSelection() override;
+  std::optional<content::DesktopMediaID> GetSelection() override;
   DesktopMediaListController::SourceListListener* GetSourceListListener()
       override;
   void ClearSelection() override;

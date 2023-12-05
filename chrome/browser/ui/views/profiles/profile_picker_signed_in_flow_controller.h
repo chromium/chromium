@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_SIGNED_IN_FLOW_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_SIGNED_IN_FLOW_CONTROLLER_H_
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -16,7 +18,6 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/web_contents_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 class Profile;
@@ -45,7 +46,7 @@ class ProfilePickerSignedInFlowController
       const CoreAccountInfo& account_info,
       std::unique_ptr<content::WebContents> contents,
       signin_metrics::AccessPoint signin_access_point,
-      absl::optional<SkColor> profile_color);
+      std::optional<SkColor> profile_color);
   ~ProfilePickerSignedInFlowController() override;
   ProfilePickerSignedInFlowController(
       const ProfilePickerSignedInFlowController&) = delete;
@@ -99,7 +100,7 @@ class ProfilePickerSignedInFlowController
 
  protected:
   // Returns the profile color, taking into account current policies.
-  absl::optional<SkColor> GetProfileColor() const;
+  std::optional<SkColor> GetProfileColor() const;
 
   // Returns the URL for sync confirmation screen (or for the "is-loading"
   // version of it, if `loading` is true).
@@ -148,8 +149,8 @@ class ProfilePickerSignedInFlowController
 
   // Set for the profile at the very end to avoid coloring the simple toolbar
   // for GAIA sign-in (that uses the ThemeProvider of the current profile).
-  // absl::nullopt if the profile should use the default theme.
-  absl::optional<SkColor> profile_color_;
+  // std::nullopt if the profile should use the default theme.
+  std::optional<SkColor> profile_color_;
 
   // Email of the signed-in account. It is set after the user finishes the
   // sign-in flow on GAIA and Chrome receives the account info.

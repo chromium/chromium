@@ -143,7 +143,7 @@ SidePanelCoordinator* SidePanelUtil::GetSidePanelCoordinatorForBrowser(
 }
 
 void SidePanelUtil::RecordSidePanelOpen(
-    absl::optional<SidePanelUtil::SidePanelOpenTrigger> trigger) {
+    std::optional<SidePanelUtil::SidePanelOpenTrigger> trigger) {
   base::RecordAction(base::UserMetricsAction("SidePanel.Show"));
 
   if (trigger.has_value()) {
@@ -152,7 +152,7 @@ void SidePanelUtil::RecordSidePanelOpen(
 }
 
 void SidePanelUtil::RecordSidePanelShowOrChangeEntryTrigger(
-    absl::optional<SidePanelUtil::SidePanelOpenTrigger> trigger) {
+    std::optional<SidePanelUtil::SidePanelOpenTrigger> trigger) {
   if (trigger.has_value()) {
     base::UmaHistogramEnumeration("SidePanel.OpenOrChangeEntryTrigger",
                                   trigger.value());
@@ -218,7 +218,7 @@ void SidePanelUtil::RecordEntryHiddenMetrics(SidePanelEntry::Id id,
 void SidePanelUtil::RecordEntryShowTriggeredMetrics(
     Browser* browser,
     SidePanelEntry::Id id,
-    absl::optional<SidePanelUtil::SidePanelOpenTrigger> trigger) {
+    std::optional<SidePanelUtil::SidePanelOpenTrigger> trigger) {
   if (trigger.has_value()) {
     base::UmaHistogramEnumeration(
         base::StrCat({"SidePanel.", SidePanelEntryIdToHistogramName(id),

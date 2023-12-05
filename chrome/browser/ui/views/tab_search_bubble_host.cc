@@ -143,7 +143,7 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
         feature_engagement::kIPHTabSearchFeature,
         user_education::EndFeaturePromoReason::kFeatureEngaged);
 
-  absl::optional<gfx::Rect> anchor;
+  std::optional<gfx::Rect> anchor;
   if (button_->GetWidget()->IsFullscreen() && !button_->IsDrawn()) {
     // Use a screen-coordinate anchor rect when the tabstrip's search button is
     // not drawn, and potentially positioned offscreen, in fullscreen mode.

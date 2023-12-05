@@ -52,7 +52,7 @@ class FakeTabContainerController final : public TabContainerController {
     return tab_strip_controller_->IsValidIndex(index);
   }
 
-  absl::optional<int> GetActiveIndex() const override {
+  std::optional<int> GetActiveIndex() const override {
     return tab_strip_controller_->GetActiveIndex();
   }
 
@@ -67,7 +67,7 @@ class FakeTabContainerController final : public TabContainerController {
     return tab_strip_controller_->GetCount();
   }
 
-  void OnDropIndexUpdate(absl::optional<int> index, bool drop_before) override {
+  void OnDropIndexUpdate(std::optional<int> index, bool drop_before) override {
     tab_strip_controller_->OnDropIndexUpdate(index, drop_before);
   }
 
@@ -75,7 +75,7 @@ class FakeTabContainerController final : public TabContainerController {
     return tab_strip_controller_->IsGroupCollapsed(group);
   }
 
-  absl::optional<int> GetFirstTabInGroup(
+  std::optional<int> GetFirstTabInGroup(
       const tab_groups::TabGroupId& group) const override {
     return tab_strip_controller_->GetFirstTabInGroup(group);
   }
@@ -169,7 +169,7 @@ class CompoundTabContainerTest : public ChromeViewsTestBase {
  protected:
   Tab* AddTab(int model_index,
               TabPinned pinned,
-              absl::optional<tab_groups::TabGroupId> group = absl::nullopt,
+              std::optional<tab_groups::TabGroupId> group = std::nullopt,
               TabActive active = TabActive::kInactive) {
     Tab* tab = tab_container_->AddTab(
         std::make_unique<Tab>(tab_slot_controller_.get()), model_index, pinned);
@@ -391,15 +391,15 @@ TEST_F(CompoundTabContainerTest, GetIndexOfFirstNonClosingTab) {
   // There is no next tab, and this one is unpinned.
   RemoveTab(0);
   EXPECT_EQ(tab_container_->GetModelIndexOfFirstNonClosingTab(first_unpinned),
-            absl::nullopt);
+            std::nullopt);
 
   // There is no next tab, and this one is pinned.
   EXPECT_EQ(tab_container_->GetModelIndexOfFirstNonClosingTab(first_pinned),
-            absl::nullopt);
+            std::nullopt);
 }
 
 TEST_F(CompoundTabContainerTest, ExitsClosingModeAtStandardWidth) {
-  AddTab(0, TabPinned::kUnpinned, absl::nullopt, TabActive::kActive);
+  AddTab(0, TabPinned::kUnpinned, std::nullopt, TabActive::kActive);
 
   // Create just enough tabs so tabs are not full size.
   const int standard_width = TabStyle::Get()->GetStandardWidth();
@@ -413,7 +413,7 @@ TEST_F(CompoundTabContainerTest, ExitsClosingModeAtStandardWidth) {
 
   // Enter tab closing mode manually; this would normally happen as the result
   // of a mouse/touch-based tab closure action.
-  tab_container_->EnterTabClosingMode(absl::nullopt,
+  tab_container_->EnterTabClosingMode(std::nullopt,
                                       CloseTabSource::CLOSE_TAB_FROM_MOUSE);
 
   // Close the second-to-last tab; tab closing mode should remain active,
@@ -434,13 +434,13 @@ TEST_F(CompoundTabContainerTest, ClosingPinnedTabsEngagesClosingMode) {
   // pinned tab.
 
   // Add two unpinned tabs to be governed by closing mode.
-  AddTab(0, TabPinned::kUnpinned, absl::nullopt, TabActive::kActive);
-  AddTab(1, TabPinned::kUnpinned, absl::nullopt, TabActive::kInactive);
+  AddTab(0, TabPinned::kUnpinned, std::nullopt, TabActive::kActive);
+  AddTab(1, TabPinned::kUnpinned, std::nullopt, TabActive::kInactive);
 
   // Create just enough (pinned) tabs so the active tab is not full size.
   const int standard_width = TabStyle::Get()->GetStandardWidth();
   while (tab_container_->GetActiveTabWidth() == standard_width) {
-    AddTab(0, TabPinned::kPinned, absl::nullopt, TabActive::kInactive);
+    AddTab(0, TabPinned::kPinned, std::nullopt, TabActive::kInactive);
     tab_container_->CompleteAnimationAndLayout();
   }
 
@@ -449,7 +449,7 @@ TEST_F(CompoundTabContainerTest, ClosingPinnedTabsEngagesClosingMode) {
 
   // Enter tab closing mode manually; this would normally happen as the result
   // of a mouse/touch-based tab closure action.
-  tab_container_->EnterTabClosingMode(absl::nullopt,
+  tab_container_->EnterTabClosingMode(std::nullopt,
                                       CloseTabSource::CLOSE_TAB_FROM_MOUSE);
 
   // Close the third-to-last tab, which is the last pinned tab; tab closing mode
@@ -467,8 +467,8 @@ TEST_F(CompoundTabContainerTest, ClosingPinnedTabsEngagesClosingMode) {
 
 TEST_F(CompoundTabContainerTest, ExitsClosingModeWhenClosingLastUnpinnedTab) {
   // Add two unpinned tabs to be governed by closing mode.
-  AddTab(0, TabPinned::kUnpinned, absl::nullopt, TabActive::kInactive);
-  AddTab(1, TabPinned::kUnpinned, absl::nullopt, TabActive::kActive);
+  AddTab(0, TabPinned::kUnpinned, std::nullopt, TabActive::kInactive);
+  AddTab(1, TabPinned::kUnpinned, std::nullopt, TabActive::kActive);
 
   // Create just enough (pinned) tabs so the active tab is not full size.
   const int standard_width = TabStyle::Get()->GetStandardWidth();
@@ -482,7 +482,7 @@ TEST_F(CompoundTabContainerTest, ExitsClosingModeWhenClosingLastUnpinnedTab) {
 
   // Enter tab closing mode manually; this would normally happen as the result
   // of a mouse/touch-based tab closure action.
-  tab_container_->EnterTabClosingMode(absl::nullopt,
+  tab_container_->EnterTabClosingMode(std::nullopt,
                                       CloseTabSource::CLOSE_TAB_FROM_MOUSE);
 
   // Close the second-to-last tab, which is the inactive unpinned tab; tab
@@ -653,7 +653,7 @@ ui::DropTargetEvent MakeEventForDragLocation(const gfx::Point& p) {
 TEST_F(CompoundTabContainerTest, DropIndexForDragLocationIsCorrect) {
   auto group = tab_groups::TabGroupId::GenerateNew();
   const Tab* const tab1 =
-      AddTab(0, TabPinned::kPinned, absl::nullopt, TabActive::kActive);
+      AddTab(0, TabPinned::kPinned, std::nullopt, TabActive::kActive);
   const Tab* const tab2 = AddTab(1, TabPinned::kUnpinned, group);
   const Tab* const tab3 = AddTab(2, TabPinned::kUnpinned, group);
   tab_container_->CompleteAnimationAndLayout();

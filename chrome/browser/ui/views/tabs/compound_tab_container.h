@@ -41,8 +41,8 @@ class CompoundTabContainer : public TabContainer,
   void MoveTab(int from_model_index, int to_model_index) override;
   void RemoveTab(int index, bool was_active) override;
   void SetTabPinned(int model_index, TabPinned pinned) override;
-  void SetActiveTab(absl::optional<size_t> prev_active_index,
-                    absl::optional<size_t> new_active_index) override;
+  void SetActiveTab(std::optional<size_t> prev_active_index,
+                    std::optional<size_t> new_active_index) override;
   Tab* RemoveTabFromViewModel(int model_index) override;
   Tab* AddTabToViewModel(Tab* tab, int model_index, TabPinned pinned) override;
   void ReturnTabSlotView(TabSlotView* view) override;
@@ -63,20 +63,19 @@ class CompoundTabContainer : public TabContainer,
   void UpdateTabGroupVisuals(tab_groups::TabGroupId group_id) override;
   void NotifyTabGroupEditorBubbleOpened() override;
   void NotifyTabGroupEditorBubbleClosed() override;
-  absl::optional<int> GetModelIndexOf(
+  std::optional<int> GetModelIndexOf(
       const TabSlotView* slot_view) const override;
   Tab* GetTabAtModelIndex(int index) const override;
   int GetTabCount() const override;
-  absl::optional<int> GetModelIndexOfFirstNonClosingTab(
-      Tab* tab) const override;
+  std::optional<int> GetModelIndexOfFirstNonClosingTab(Tab* tab) const override;
   void UpdateHoverCard(
       Tab* tab,
       TabSlotController::HoverCardUpdateType update_type) override;
   void HandleLongTap(ui::GestureEvent* event) override;
   bool IsRectInContentArea(const gfx::Rect& rect) override;
-  absl::optional<ZOrderableTabContainerElement> GetLeadingElementForZOrdering()
+  std::optional<ZOrderableTabContainerElement> GetLeadingElementForZOrdering()
       const override;
-  absl::optional<ZOrderableTabContainerElement> GetTrailingElementForZOrdering()
+  std::optional<ZOrderableTabContainerElement> GetTrailingElementForZOrdering()
       const override;
   void OnTabSlotAnimationProgressed(TabSlotView* view) override;
   void OnTabCloseAnimationCompleted(Tab* tab) override;
@@ -86,7 +85,7 @@ class CompoundTabContainer : public TabContainer,
   void CancelAnimation() override;
   void CompleteAnimationAndLayout() override;
   int GetAvailableWidthForTabContainer() const override;
-  void EnterTabClosingMode(absl::optional<int> override_width,
+  void EnterTabClosingMode(std::optional<int> override_width,
                            CloseTabSource source) override;
   void ExitTabClosingMode() override;
   void SetTabSlotVisibility() override;
@@ -115,7 +114,7 @@ class CompoundTabContainer : public TabContainer,
       gfx::Point loc_in_local_coords) override;
   views::View* GetViewForDrop() override;
   void HandleDragUpdate(
-      const absl::optional<BrowserRootView::DropIndex>& index) override;
+      const std::optional<BrowserRootView::DropIndex>& index) override;
   void HandleDragExited() override;
 
   // views::ViewTargeterDelegate:
@@ -178,7 +177,7 @@ class CompoundTabContainer : public TabContainer,
                                                 gfx::Size unpinned_size) const;
 
   // Private getter to retrieve the visible rect of the scroll container.
-  absl::optional<gfx::Rect> GetVisibleContentRect() const;
+  std::optional<gfx::Rect> GetVisibleContentRect() const;
 
   // Animates and scrolls the tab container from the start_edge to the
   // target_edge. If the target_edge is beyond the tab strip it will be clamped

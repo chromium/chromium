@@ -264,7 +264,7 @@ void PlusAddressCreationDialogDelegate::ShowConfirmResult(
   CHECK(GetBubbleFrameView());
 
   // Stop indicating loading now that we have the server response.
-  GetBubbleFrameView()->SetProgress(absl::nullopt);
+  GetBubbleFrameView()->SetProgress(std::nullopt);
 
   if (maybe_plus_profile.has_value()) {
     GetWidget()->CloseWithReason(

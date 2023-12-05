@@ -62,9 +62,9 @@ ReadAnythingMenuModel* ReadAnythingMenuButton::GetMenuModel() const {
   return menu_model_;
 }
 
-absl::optional<size_t> ReadAnythingMenuButton::GetSelectedIndex() const {
+std::optional<size_t> ReadAnythingMenuButton::GetSelectedIndex() const {
   if (!menu_model_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return menu_model_->GetSelectedIndex();
 }

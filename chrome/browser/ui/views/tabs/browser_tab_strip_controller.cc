@@ -222,7 +222,7 @@ void BrowserTabStripController::InitFromModel(TabStrip* tabstrip) {
 bool BrowserTabStripController::IsCommandEnabledForTab(
     TabStripModel::ContextMenuCommand command_id,
     Tab* tab) const {
-  const absl::optional<int> model_index = tabstrip_->GetModelIndexOf(tab);
+  const std::optional<int> model_index = tabstrip_->GetModelIndexOf(tab);
   return model_index.has_value() ? model_->IsContextMenuCommandEnabled(
                                        model_index.value(), command_id)
                                  : false;
@@ -231,7 +231,7 @@ bool BrowserTabStripController::IsCommandEnabledForTab(
 void BrowserTabStripController::ExecuteCommandForTab(
     TabStripModel::ContextMenuCommand command_id,
     Tab* tab) {
-  const absl::optional<int> model_index = tabstrip_->GetModelIndexOf(tab);
+  const std::optional<int> model_index = tabstrip_->GetModelIndexOf(tab);
   if (model_index.has_value())
     model_->ExecuteContextMenuCommand(model_index.value(), command_id);
 }
@@ -257,11 +257,11 @@ bool BrowserTabStripController::IsActiveTab(int model_index) const {
   return GetActiveIndex() == model_index;
 }
 
-absl::optional<int> BrowserTabStripController::GetActiveIndex() const {
+std::optional<int> BrowserTabStripController::GetActiveIndex() const {
   const int active_index = model_->active_index();
   if (IsValidIndex(active_index))
     return active_index;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool BrowserTabStripController::IsTabSelected(int model_index) const {
@@ -400,7 +400,7 @@ void BrowserTabStripController::ToggleTabGroupCollapsedState(
         // active tab should switch to the next available tab. If there are no
         // available tabs for the active tab to switch to, a new tab will
         // be created.
-        const absl::optional<int> next_active =
+        const std::optional<int> next_active =
             model_->GetNextExpandedActiveTab(active_index, group);
         if (next_active.has_value()) {
           model_->ActivateTabAt(
@@ -452,7 +452,7 @@ int BrowserTabStripController::HasAvailableDragActions() const {
 }
 
 void BrowserTabStripController::OnDropIndexUpdate(
-    const absl::optional<int> index,
+    const std::optional<int> index,
     const bool drop_before) {
   // Perform a delayed tab transition if hovering directly over a tab.
   // Otherwise, cancel the pending one.
@@ -512,7 +512,7 @@ void BrowserTabStripController::OnStoppedDragging() {
 }
 
 void BrowserTabStripController::OnKeyboardFocusedTabChanged(
-    absl::optional<int> index) {
+    std::optional<int> index) {
   browser_view_->browser()->command_controller()->TabKeyboardFocusChangedTo(
       index);
 }
@@ -547,7 +547,7 @@ void BrowserTabStripController::SetVisualDataForGroup(
   model_->group_model()->GetTabGroup(group)->SetVisualData(visual_data);
 }
 
-absl::optional<int> BrowserTabStripController::GetFirstTabInGroup(
+std::optional<int> BrowserTabStripController::GetFirstTabInGroup(
     const tab_groups::TabGroupId& group) const {
   return model_->group_model()->GetTabGroup(group)->GetFirstTab();
 }
@@ -579,7 +579,7 @@ SkColor BrowserTabStripController::GetFrameColor(
   return GetFrameView()->GetFrameColor(active_state);
 }
 
-absl::optional<int> BrowserTabStripController::GetCustomBackgroundId(
+std::optional<int> BrowserTabStripController::GetCustomBackgroundId(
     BrowserFrameActiveState active_state) const {
   return GetFrameView()->GetCustomBackgroundId(active_state);
 }
@@ -648,7 +648,7 @@ void BrowserTabStripController::OnTabStripModelChanged(
     // It's possible for |new_contents| to be null when the final tab in a tab
     // strip is closed.
     content::WebContents* new_contents = selection.new_contents;
-    absl::optional<size_t> index = selection.new_model.active();
+    std::optional<size_t> index = selection.new_model.active();
     if (new_contents && index.has_value()) {
       TabUIHelper::FromWebContents(new_contents)
           ->set_was_active_at_least_once();
@@ -748,7 +748,7 @@ void BrowserTabStripController::TabBlockedStateChanged(WebContents* contents,
 }
 
 void BrowserTabStripController::TabGroupedStateChanged(
-    absl::optional<tab_groups::TabGroupId> group,
+    std::optional<tab_groups::TabGroupId> group,
     content::WebContents* contents,
     int index) {
   tabstrip_->AddTabToGroup(std::move(group), index);

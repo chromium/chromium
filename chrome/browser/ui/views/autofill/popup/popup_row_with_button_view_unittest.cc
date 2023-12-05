@@ -123,7 +123,7 @@ TEST_F(PopupRowWithButtonViewTest, ShowsOrHideButtonOnSelected) {
   EXPECT_TRUE(button->GetVisible());
 
   // The button is hidden if the row is not selected.
-  view().SetSelectedCell(absl::nullopt);
+  view().SetSelectedCell(std::nullopt);
   EXPECT_FALSE(button->GetVisible());
 }
 
@@ -137,7 +137,7 @@ TEST_F(PopupRowWithButtonViewTest, DoNotHideButtonForShowAlwaysBehavior) {
   view().SetSelectedCell(PopupRowView::CellType::kContent);
   EXPECT_TRUE(button->GetVisible());
 
-  view().SetSelectedCell(absl::nullopt);
+  view().SetSelectedCell(std::nullopt);
   EXPECT_TRUE(button->GetVisible());
 }
 
@@ -152,12 +152,12 @@ TEST_F(PopupRowWithButtonViewTest,
   button->parent()->SetBoundsRect(gfx::Rect(0, 0, 30, 30));
 
   // The button becomes focused if it is hovered.
-  EXPECT_CALL(controller(), SelectSuggestion(absl::optional<size_t>()));
+  EXPECT_CALL(controller(), SelectSuggestion(std::optional<size_t>()));
   generator().MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
   EXPECT_TRUE(view().GetButtonFocusedForTest());
 
   // Selected is true if hovering the label when the button state changes.
-  EXPECT_CALL(controller(), SelectSuggestion(absl::optional<size_t>(0)));
+  EXPECT_CALL(controller(), SelectSuggestion(std::optional<size_t>(0)));
   generator().MoveMouseTo(label->GetBoundsInScreen().CenterPoint());
   EXPECT_FALSE(view().GetButtonFocusedForTest());
 }
@@ -205,7 +205,7 @@ TEST_F(PopupRowWithButtonViewTest, CursorVerticalNavigationAlwaysHidesButton) {
   // Pressing down to indicate vertical navigation.
   SimulateKeyPress(ui::VKEY_DOWN);
   // Set selected as false to simulate another row was selected.
-  view().SetSelectedCell(absl::nullopt);
+  view().SetSelectedCell(std::nullopt);
 
   ASSERT_FALSE(button->GetVisible());
 }

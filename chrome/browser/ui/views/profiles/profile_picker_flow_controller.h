@@ -26,7 +26,7 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
 
   void Init(StepSwitchFinishedCallback step_switch_finished_callback) override;
 
-  void SwitchToDiceSignIn(absl::optional<SkColor> profile_color,
+  void SwitchToDiceSignIn(std::optional<SkColor> profile_color,
                           StepSwitchFinishedCallback switch_finished_callback);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -37,7 +37,7 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void SwitchToPostSignIn(Profile* signed_in_profile,
                           const CoreAccountInfo& account_info,
-                          absl::optional<SkColor> profile_color,
+                          std::optional<SkColor> profile_color,
                           std::unique_ptr<content::WebContents> contents);
 #endif
 
@@ -85,7 +85,7 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
   // profile type choice screen, which is the one picking the color). It will
   // also be passed to the finishing steps of the profile creation, as a default
   // color choice that the user would be able to override.
-  absl::optional<SkColor> suggested_profile_color_;
+  std::optional<SkColor> suggested_profile_color_;
 
   // TODO(crbug.com/1359352): To be refactored out.
   // This is used for `ProfilePicker::GetSwitchProfilePath()`. The information

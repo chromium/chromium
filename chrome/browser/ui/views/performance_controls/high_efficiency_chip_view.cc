@@ -115,7 +115,7 @@ void HighEfficiencyChipView::UpdateImpl() {
             l10n_util::GetStringFUTF16(
                 IDS_HIGH_EFFICIENCY_CHIP_WITH_SAVINGS_ACCNAME,
                 {memory_savings_string}));
-        AnimateIn(absl::nullopt);
+        AnimateIn(std::nullopt);
         RecordHighEfficiencyChipState(
             HighEfficiencyChipState::kExpandedWithSavings);
         break;

@@ -62,7 +62,7 @@ class BrowserAppMenuButton : public AppMenuButton {
   void UpdateTextAndHighlightColor();
 
   bool ShouldPaintBorder() const override;
-  absl::optional<SkColor> GetHighlightTextColor() const override;
+  std::optional<SkColor> GetHighlightTextColor() const override;
 
   SkColor GetForegroundColor(ButtonState state) const override;
   void SetHasInProductHelpPromo(bool has_in_product_help_promo);

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/profiles/profile_picker_turn_sync_on_delegate.h"
 
+#include <optional>
+
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -20,11 +22,10 @@
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/webui_url_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
-absl::optional<ProfileMetrics::ProfileSignedInFlowOutcome> GetSyncOutcome(
+std::optional<ProfileMetrics::ProfileSignedInFlowOutcome> GetSyncOutcome(
     bool enterprise_account,
     bool sync_disabled,
     LoginUIService::SyncConfirmationUIClosedResult result) {
@@ -50,7 +51,7 @@ absl::optional<ProfileMetrics::ProfileSignedInFlowOutcome> GetSyncOutcome(
                                       kConsumerSigninOnly;
     case LoginUIService::UI_CLOSED:
       // The metric is recorded elsewhere.
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -223,7 +224,7 @@ void ProfilePickerTurnSyncOnDelegate::OnSyncConfirmationUIClosed(
     return;
   }
 
-  absl::optional<ProfileMetrics::ProfileSignedInFlowOutcome> outcome =
+  std::optional<ProfileMetrics::ProfileSignedInFlowOutcome> outcome =
       GetSyncOutcome(enterprise_account_, sync_disabled_, result);
   if (outcome) {
     LogOutcome(*outcome);

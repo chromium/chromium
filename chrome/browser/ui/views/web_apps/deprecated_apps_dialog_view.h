@@ -94,9 +94,9 @@ class DeprecatedAppsDialogView : public views::DialogDelegateView {
 
   raw_ptr<views::Label> info_label_;
 
-  absl::optional<std::u16string> launched_extension_name_;
+  std::optional<std::u16string> launched_extension_name_;
   std::set<extensions::ExtensionId> deprecated_app_ids_;
-  absl::optional<std::u16string> single_app_name_;
+  std::optional<std::u16string> single_app_name_;
   base::OnceClosure launch_anyways_;
 
   raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_;

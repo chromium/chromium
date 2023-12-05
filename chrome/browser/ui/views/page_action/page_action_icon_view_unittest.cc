@@ -72,7 +72,7 @@ class TestPageActionIconView : public PageActionIconView {
                            true,
                            font_list) {
     SetUpForInOutAnimation();
-    SetAccessibilityProperties(/*role*/ absl::nullopt, u"TestTooltip");
+    SetAccessibilityProperties(/*role*/ std::nullopt, u"TestTooltip");
   }
 
   views::BubbleDialogDelegate* GetBubble() const override { return nullptr; }
@@ -146,7 +146,7 @@ class PageActionIconViewTest : public ChromeViewsTestBase {
 };
 
 TEST_F(PageActionIconViewTest, ShouldResetSlideAnimationWhenHideIcons) {
-  view()->AnimateIn(absl::nullopt);
+  view()->AnimateIn(std::nullopt);
   EXPECT_TRUE(view()->IsLabelVisible());
   EXPECT_TRUE(view()->is_animating_label());
 
@@ -159,7 +159,7 @@ TEST_F(PageActionIconViewTest, ShouldResetSlideAnimationWhenHideIcons) {
 
 TEST_F(PageActionIconViewTest, ShouldNotResetSlideAnimationWhenShowIcons) {
   delegate()->set_should_hide_page_action_icons(true);
-  view()->AnimateIn(absl::nullopt);
+  view()->AnimateIn(std::nullopt);
   EXPECT_TRUE(view()->IsLabelVisible());
   EXPECT_TRUE(view()->is_animating_label());
 

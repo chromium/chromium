@@ -217,7 +217,7 @@ class ProfileMenuViewPixelTest
       }
       case SigninStatusPixelTestParam::kWebSignedIn: {
         AccountInfo signed_out_info = SignInWithAccount(
-            AccountManagementStatus::kNonManaged, absl::nullopt);
+            AccountManagementStatus::kNonManaged, std::nullopt);
         break;
       }
       case SigninStatusPixelTestParam::kSignedInNoSync: {

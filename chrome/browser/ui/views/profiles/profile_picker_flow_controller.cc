@@ -90,7 +90,7 @@ GURL GetInitialURL(ProfilePicker::EntryPoint entry_point) {
 // color is enforced by policy or downloaded through Sync or the default theme
 // should be used. An IPH is shown after the bubble, or right away if the bubble
 // cannot be shown.
-void ShowCustomizationBubble(absl::optional<SkColor> new_profile_color,
+void ShowCustomizationBubble(std::optional<SkColor> new_profile_color,
                              Browser* browser) {
   DCHECK(browser);
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
@@ -143,7 +143,7 @@ class ProfileCreationSignedInFlowController
       Profile* profile,
       const CoreAccountInfo& account_info,
       std::unique_ptr<content::WebContents> contents,
-      absl::optional<SkColor> profile_color,
+      std::optional<SkColor> profile_color,
       base::OnceCallback<void(PostHostClearedCallback, bool)>
           step_completed_callback)
       : ProfilePickerSignedInFlowController(host,
@@ -343,7 +343,7 @@ void ProfilePickerFlowController::Init(
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void ProfilePickerFlowController::SwitchToDiceSignIn(
-    absl::optional<SkColor> profile_color,
+    std::optional<SkColor> profile_color,
     StepSwitchFinishedCallback switch_finished_callback) {
   DCHECK_EQ(Step::kProfilePicker, current_step());
 
@@ -419,7 +419,7 @@ void ProfilePickerFlowController::OnProfilePickerStepShownReauthError(
 void ProfilePickerFlowController::SwitchToPostSignIn(
     Profile* signed_in_profile,
     const CoreAccountInfo& account_info,
-    absl::optional<SkColor> profile_color,
+    std::optional<SkColor> profile_color,
     std::unique_ptr<content::WebContents> contents) {
   DCHECK_EQ(Step::kProfilePicker, current_step());
   suggested_profile_color_ = profile_color;

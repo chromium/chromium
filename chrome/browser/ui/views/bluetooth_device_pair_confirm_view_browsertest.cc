@@ -37,8 +37,8 @@ class BluetoothDevicePairConfirmViewBrowserTest
   bool DisplayPasskey() { return GetParam(); }
 
   void ShowUi(const std::string& name) override {
-    auto passkey = DisplayPasskey() ? absl::optional<std::u16string>(kPasskey)
-                                    : absl::nullopt;
+    auto passkey = DisplayPasskey() ? std::optional<std::u16string>(kPasskey)
+                                    : std::nullopt;
 
     ShowBluetoothDevicePairConfirmDialog(
         browser()->tab_strip_model()->GetActiveWebContents(), kDeviceIdentifier,

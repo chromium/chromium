@@ -114,7 +114,7 @@ std::vector<permissions::PermissionRequest*> GetVisibleRequests(
 }
 
 // Get extra information to display for the permission, if any.
-absl::optional<std::u16string> GetExtraText(
+std::optional<std::u16string> GetExtraText(
     permissions::PermissionPrompt::Delegate& delegate) {
   switch (delegate.Requests()[0]->request_type()) {
     case permissions::RequestType::kStorageAccess:
@@ -127,7 +127,7 @@ absl::optional<std::u16string> GetExtraText(
               delegate.GetEmbeddingOrigin(),
               url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 

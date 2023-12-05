@@ -155,7 +155,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   //   a configuration of the picker.
   // * Returns 0 if such sources were supposed to be offered to the user,
   //   but no such sources were available.
-  absl::optional<int> CountSourcesOfType(DesktopMediaList::Type type);
+  std::optional<int> CountSourcesOfType(DesktopMediaList::Type type);
 
   const raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged>
       web_contents_;
@@ -179,7 +179,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
 
   DialogType dialog_type_;
 
-  absl::optional<content::DesktopMediaID> accepted_source_;
+  std::optional<content::DesktopMediaID> accepted_source_;
 
   // For recording dialog-duration UMA histograms.
   const base::TimeTicks dialog_open_time_;

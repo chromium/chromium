@@ -15,7 +15,7 @@
 #include "ui/views/layout/flex_layout.h"
 
 struct AlertFooterRowData {
-  absl::optional<TabAlertState> alert_state;
+  std::optional<TabAlertState> alert_state;
   int footer_row_width = 0;
 };
 

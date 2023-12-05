@@ -168,7 +168,7 @@ void SearchCompanionSidePanelCoordinator::SetAccessibleNameForToolbarButton(
 }
 
 void SearchCompanionSidePanelCoordinator::NotifyCompanionOfSidePanelOpenTrigger(
-    absl::optional<SidePanelOpenTrigger> side_panel_open_trigger) {
+    std::optional<SidePanelOpenTrigger> side_panel_open_trigger) {
   auto* companion_tab_helper = companion::CompanionTabHelper::FromWebContents(
       browser_->tab_strip_model()->GetActiveWebContents());
   companion_tab_helper->SetMostRecentSidePanelOpenTrigger(

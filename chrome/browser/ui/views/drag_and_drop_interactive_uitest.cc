@@ -351,7 +351,7 @@ class DragStartWaiter : public aura::client::DragDropClient {
   // parameters with data that would have been passed to the OS). If the caller
   // is not interested in this data, then the corresponding argument can be
   // null.
-  void WaitUntilDragStart(absl::optional<url::Origin>* source_origin,
+  void WaitUntilDragStart(std::optional<url::Origin>* source_origin,
                           std::string* text,
                           std::string* html,
                           int* operation,
@@ -460,7 +460,7 @@ class DragStartWaiter : public aura::client::DragDropClient {
 
   // Data captured during the first intercepted StartDragAndDrop call.
   bool drag_started_;
-  absl::optional<url::Origin> source_origin_;
+  std::optional<url::Origin> source_origin_;
   std::string text_;
   std::string html_;
   int operation_;
@@ -1289,7 +1289,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DragStartInFrame) {
 
   // Verify data being passed to the OS.
   {
-    absl::optional<url::Origin> source_origin;
+    std::optional<url::Origin> source_origin;
     std::string text;
     std::string html;
     int operation = 0;

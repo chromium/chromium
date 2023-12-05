@@ -48,8 +48,8 @@ class AvatarToolbarButton : public ToolbarButton {
   ~AvatarToolbarButton() override;
 
   void UpdateText();
-  absl::optional<SkColor> GetHighlightTextColor() const override;
-  absl::optional<SkColor> GetHighlightBorderColor() const override;
+  std::optional<SkColor> GetHighlightTextColor() const override;
+  std::optional<SkColor> GetHighlightBorderColor() const override;
   bool ShouldPaintBorder() const override;
   bool ShouldBlendHighlightColor() const override;
 

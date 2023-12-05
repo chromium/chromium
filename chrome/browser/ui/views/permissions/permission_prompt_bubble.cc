@@ -80,12 +80,11 @@ void PermissionPromptBubble::OnWidgetActivationChanged(views::Widget* widget,
       GetPromptBubble()->GetWidget()->GetPrimaryWindowWidget()->IsVisible();
 }
 
-absl::optional<gfx::Rect> PermissionPromptBubble::GetViewBoundsInScreen()
-    const {
+std::optional<gfx::Rect> PermissionPromptBubble::GetViewBoundsInScreen() const {
   return GetPromptBubble()
-             ? absl::make_optional<gfx::Rect>(
+             ? std::make_optional<gfx::Rect>(
                    GetPromptBubble()->GetWidget()->GetWindowBoundsInScreen())
-             : absl::nullopt;
+             : std::nullopt;
 }
 
 bool PermissionPromptBubble::UpdateAnchor() {

@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_INSTALLER_COORDINATOR_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -29,11 +29,11 @@ class IsolatedWebAppInstallerCoordinator {
 
   ~IsolatedWebAppInstallerCoordinator();
 
-  void Show(base::OnceCallback<void(absl::optional<webapps::AppId>)> callback);
+  void Show(base::OnceCallback<void(std::optional<webapps::AppId>)> callback);
 
  private:
   void OnDialogClosed(
-      base::OnceCallback<void(absl::optional<webapps::AppId>)> callback);
+      base::OnceCallback<void(std::optional<webapps::AppId>)> callback);
 
   std::unique_ptr<IsolatedWebAppInstallerModel> model_;
   std::unique_ptr<IsolatedWebAppInstallerViewController> controller_;

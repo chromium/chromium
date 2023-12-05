@@ -952,7 +952,7 @@ bool DesktopMediaPickerDialogView::IsAudioSharingApprovedByUser() const {
 void DesktopMediaPickerDialogView::RecordSourceCountsUma() {
   // Note that tabs are counted up to 1000, and windows/screens up to 100.
 
-  const absl::optional<int> tab_count =
+  const std::optional<int> tab_count =
       CountSourcesOfType(DesktopMediaList::Type::kWebContents);
   if (tab_count.has_value()) {
     base::UmaHistogramCounts1000(
@@ -960,7 +960,7 @@ void DesktopMediaPickerDialogView::RecordSourceCountsUma() {
         tab_count.value());
   }
 
-  const absl::optional<int> window_count =
+  const std::optional<int> window_count =
       CountSourcesOfType(DesktopMediaList::Type::kWindow);
   if (window_count.has_value()) {
     base::UmaHistogramCounts100(
@@ -968,7 +968,7 @@ void DesktopMediaPickerDialogView::RecordSourceCountsUma() {
         window_count.value());
   }
 
-  const absl::optional<int> screen_count =
+  const std::optional<int> screen_count =
       CountSourcesOfType(DesktopMediaList::Type::kScreen);
   if (screen_count.has_value()) {
     base::UmaHistogramCounts100(
@@ -1003,9 +1003,9 @@ void DesktopMediaPickerDialogView::RecordTabDiscardedStatusUma(
       "Media.Ui.GetDisplayMedia.BasicFlow.SelectedTabDiscardStatus", status);
 }
 
-absl::optional<int> DesktopMediaPickerDialogView::CountSourcesOfType(
+std::optional<int> DesktopMediaPickerDialogView::CountSourcesOfType(
     DesktopMediaList::Type type) {
-  absl::optional<int> count;
+  std::optional<int> count;
 
   for (const DisplaySurfaceCategory& category : categories_) {
     if (category.type != type) {
@@ -1072,7 +1072,7 @@ bool DesktopMediaPickerDialogView::Accept() {
   DCHECK(IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
 
   // Ok button should only be enabled when a source is selected.
-  absl::optional<DesktopMediaID> source_optional =
+  std::optional<DesktopMediaID> source_optional =
       accepted_source_.has_value() ? accepted_source_
                                    : GetSelectedController()->GetSelection();
   DesktopMediaID source = source_optional.value();
@@ -1123,7 +1123,7 @@ void DesktopMediaPickerDialogView::AcceptSource() {
 
 void DesktopMediaPickerDialogView::AcceptSpecificSource(
     const DesktopMediaID& source) {
-  accepted_source_ = absl::optional<DesktopMediaID>(source);
+  accepted_source_ = std::optional<DesktopMediaID>(source);
   AcceptSource();
 }
 

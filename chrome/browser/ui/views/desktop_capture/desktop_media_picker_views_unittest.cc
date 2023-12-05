@@ -229,12 +229,12 @@ class DesktopMediaPickerViewsTestBase : public testing::Test {
     run_loop_.Quit();
   }
 
-  absl::optional<content::DesktopMediaID> WaitForPickerDone() {
+  std::optional<content::DesktopMediaID> WaitForPickerDone() {
     run_loop_.Run();
     return picked_id_;
   }
 
-  absl::optional<content::DesktopMediaID> picked_id() const {
+  std::optional<content::DesktopMediaID> picked_id() const {
     return picked_id_;
   }
 
@@ -254,7 +254,7 @@ class DesktopMediaPickerViewsTestBase : public testing::Test {
   std::vector<DesktopMediaList::Type> delegated_source_types_;
 
   base::RunLoop run_loop_;
-  absl::optional<content::DesktopMediaID> picked_id_;
+  std::optional<content::DesktopMediaID> picked_id_;
   std::unique_ptr<views::test::WidgetDestroyedWaiter> widget_destroyed_waiter_;
 };
 
@@ -719,7 +719,7 @@ TEST_F(DesktopMediaPickerViewsSingleTabPaneTest,
   AddTabSource();
 
   test_api_.FocusSourceAtIndex(0, false);
-  EXPECT_EQ(absl::nullopt, test_api_.GetSelectedSourceId());
+  EXPECT_EQ(std::nullopt, test_api_.GetSelectedSourceId());
   EXPECT_FALSE(
       GetPickerDialogView()->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
 

@@ -232,7 +232,7 @@ ProfileManagementStepTestView::ProfileManagementStepTestView(
 ProfileManagementStepTestView::~ProfileManagementStepTestView() = default;
 
 void ProfileManagementStepTestView::ShowAndWait(
-    absl::optional<gfx::Size> view_size) {
+    std::optional<gfx::Size> view_size) {
   Display();
 
   // waits for the view to be shown to return. If we don't wait enough

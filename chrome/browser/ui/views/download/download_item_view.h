@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -22,7 +23,6 @@
 #include "chrome/browser/icon_loader.h"
 #include "chrome/browser/ui/download/download_item_mode.h"
 #include "chrome/browser/ui/views/download/download_shelf_context_menu_view.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -247,7 +247,7 @@ class DownloadItemView : public views::View,
   bool dragging_ = false;
 
   // Position that a possible drag started at.
-  absl::optional<gfx::Point> drag_start_point_;
+  std::optional<gfx::Point> drag_start_point_;
 
   gfx::ImageSkia file_icon_;
 

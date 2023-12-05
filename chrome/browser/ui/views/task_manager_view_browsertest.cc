@@ -109,7 +109,7 @@ class TaskManagerViewTest : public InProcessBrowserTest {
 
   // Returns the current TaskManagerTableModel index for a particular tab. Don't
   // cache this value, since it can change whenever the message loop runs.
-  absl::optional<size_t> FindRowForTab(content::WebContents* tab) {
+  std::optional<size_t> FindRowForTab(content::WebContents* tab) {
     SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab);
     std::unique_ptr<TaskManagerTester> tester =
         TaskManagerTester::Create(base::RepeatingClosure());
@@ -117,7 +117,7 @@ class TaskManagerViewTest : public InProcessBrowserTest {
       if (tester->GetTabId(i) == tab_id)
         return i;
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   void HideTaskManagerSync() {

@@ -5,6 +5,7 @@
 #include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/ui/views/profiles/dice_web_signin_interception_bubble_view.h"
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_helpers.h"
@@ -36,7 +37,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
@@ -350,7 +350,7 @@ class DiceWebSigninInterceptionBubbleBrowserTest : public InProcessBrowserTest {
     return bubble_parameters;
   }
 
-  absl::optional<SigninInterceptionResult> callback_result_;
+  std::optional<SigninInterceptionResult> callback_result_;
   std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> bubble_handle_;
 };
 

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/web_apps/force_installed_preinstalled_deprecated_app_dialog_view.h"
 
+#include <optional>
+
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -22,7 +24,6 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
@@ -39,9 +40,9 @@
 
 namespace {
 
-absl::optional<ForceInstalledPreinstalledDeprecatedAppDialogView::LinkConfig>&
+std::optional<ForceInstalledPreinstalledDeprecatedAppDialogView::LinkConfig>&
 GetLinkConfigForTesting() {
-  static base::NoDestructor<absl::optional<
+  static base::NoDestructor<std::optional<
       ForceInstalledPreinstalledDeprecatedAppDialogView::LinkConfig>>
       g_testing_link_config;
   return *g_testing_link_config;
@@ -130,13 +131,13 @@ void ForceInstalledPreinstalledDeprecatedAppDialogView::CreateAndShowDialog(
 }
 
 // static
-base::AutoReset<absl::optional<
+base::AutoReset<std::optional<
     ForceInstalledPreinstalledDeprecatedAppDialogView::LinkConfig>>
 ForceInstalledPreinstalledDeprecatedAppDialogView::
     SetOverrideLinkConfigForTesting(
         const ForceInstalledPreinstalledDeprecatedAppDialogView::LinkConfig&
             link_config) {
-  return base::AutoReset<absl::optional<
+  return base::AutoReset<std::optional<
       ForceInstalledPreinstalledDeprecatedAppDialogView::LinkConfig>>(
       &GetLinkConfigForTesting(), link_config);  // IN-TEST
 }

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <cmath>
+#include <optional>
 #include <string_view>
 #include <tuple>
 
@@ -82,7 +83,6 @@
 #include "content/public/test/theme_change_waiter.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/hit_test.h"
@@ -1756,7 +1756,7 @@ IN_PROC_BROWSER_TEST_F(
   auto* web_contents = helper()->browser_view()->GetActiveWebContents();
 
   auto CheckCanResize = [&](bool browser_view_can_resize_expected,
-                            absl::optional<bool> web_api_can_resize_expected) {
+                            std::optional<bool> web_api_can_resize_expected) {
     EXPECT_EQ(helper()->browser_view()->CanResize(),
               browser_view_can_resize_expected);
     EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(),
@@ -1773,8 +1773,8 @@ IN_PROC_BROWSER_TEST_F(
   // This will be the default value.
   helper()->browser_view()->SetCanResize(true);
 
-  // Defaults to `absl::nullopt` -> Returns "fallback".
-  CheckCanResize(true, absl::nullopt);
+  // Defaults to `std::nullopt` -> Returns "fallback".
+  CheckCanResize(true, std::nullopt);
 
   // Explicitly set to false -> Returns false.
   SetResizableAndWait(web_contents, /*resizable=*/false, /*expected=*/false);
@@ -1788,8 +1788,8 @@ IN_PROC_BROWSER_TEST_F(
   // `BrowserView` which `can_resize` is true. Otherwise it cannot be overridden
   // by the web API.
   helper()->browser_view()->SetCanResize(false);
-  web_contents->GetPrimaryPage().SetResizableForTesting(absl::nullopt);
-  CheckCanResize(false, absl::nullopt);
+  web_contents->GetPrimaryPage().SetResizableForTesting(std::nullopt);
+  CheckCanResize(false, std::nullopt);
 
   SetResizableAndWait(web_contents, /*resizable=*/false, /*expected=*/false);
   CheckCanResize(false, false);
@@ -1806,13 +1806,13 @@ IN_PROC_BROWSER_TEST_F(
 
   auto* web_contents = helper()->browser_view()->GetActiveWebContents();
   content::WaitForLoadStop(web_contents);
-  EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), absl::nullopt);
+  EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), std::nullopt);
 
   // Navigates to the second page of the app.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(helper()->app_browser(), second_page_url()));
   content::WaitForLoadStop(web_contents);
-  EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), absl::nullopt);
+  EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), std::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1830,7 +1830,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(helper()->app_browser(), second_page_url()));
   content::WaitForLoadStop(web_contents);
-  EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), absl::nullopt);
+  EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), std::nullopt);
 
   // Sets the resizability true for the second page.
   SetResizableAndWait(web_contents, /*resizable=*/true, /*expected=*/true);
@@ -1843,8 +1843,7 @@ IN_PROC_BROWSER_TEST_F(
   if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
     EXPECT_FALSE(helper()->browser_view()->GetCanResizeFromWebAPI().value());
   } else {
-    EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(),
-              absl::nullopt);
+    EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), std::nullopt);
   }
 
   // Navigates forward to the already visited second page.
@@ -1854,8 +1853,7 @@ IN_PROC_BROWSER_TEST_F(
   if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
     EXPECT_TRUE(helper()->browser_view()->GetCanResizeFromWebAPI().value());
   } else {
-    EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(),
-              absl::nullopt);
+    EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), std::nullopt);
   }
 }
 
@@ -1876,7 +1874,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(helper()->app_browser(),
                                            GURL("http://www.google.com/")));
   content::WaitForLoadStop(web_contents);
-  EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), absl::nullopt);
+  EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), std::nullopt);
 
   // Returning to the original URL then reads the resizability from the BFCache
   // if it's enabled.
@@ -1885,8 +1883,7 @@ IN_PROC_BROWSER_TEST_F(
   if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
     EXPECT_TRUE(helper()->browser_view()->GetCanResizeFromWebAPI().value());
   } else {
-    EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(),
-              absl::nullopt);
+    EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), std::nullopt);
   }
 }
 

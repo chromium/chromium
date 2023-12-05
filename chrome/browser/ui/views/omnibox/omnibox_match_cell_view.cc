@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_match_cell_view.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "base/metrics/field_trial_params.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -23,7 +24,6 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/common/color_parser.h"
 #include "skia/ext/image_operations.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

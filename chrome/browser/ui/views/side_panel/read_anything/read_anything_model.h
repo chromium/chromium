@@ -46,11 +46,11 @@ class ReadAnythingFontModel : public ui::ComboboxModel {
   void SetSelectedIndex(size_t index);
   size_t GetSelectedIndex() { return selected_index_; }
 
-  absl::optional<ui::ColorId> GetDropdownForegroundColorIdAt(
+  std::optional<ui::ColorId> GetDropdownForegroundColorIdAt(
       size_t index) const override;
-  absl::optional<ui::ColorId> GetDropdownBackgroundColorIdAt(
+  std::optional<ui::ColorId> GetDropdownBackgroundColorIdAt(
       size_t index) const override;
-  absl::optional<ui::ColorId> GetDropdownSelectedBackgroundColorIdAt(
+  std::optional<ui::ColorId> GetDropdownSelectedBackgroundColorIdAt(
       size_t index) const override;
 
   void SetForegroundColorId(ui::ColorId foreground_color) {
@@ -66,11 +66,11 @@ class ReadAnythingFontModel : public ui::ComboboxModel {
   }
 
   // Used by tests only.
-  absl::optional<size_t> GetDefaultIndexForTesting();
+  std::optional<size_t> GetDefaultIndexForTesting();
 
  protected:
   // ui::Combobox implementation:
-  absl::optional<size_t> GetDefaultIndex() const override;
+  std::optional<size_t> GetDefaultIndex() const override;
   size_t GetItemCount() const override;
   std::u16string GetItemAt(size_t index) const override;
   std::u16string GetDropDownTextAt(size_t index) const override;
@@ -81,9 +81,9 @@ class ReadAnythingFontModel : public ui::ComboboxModel {
 
   size_t selected_index_ = 0;
 
-  absl::optional<ui::ColorId> foreground_color_id_;
-  absl::optional<ui::ColorId> background_color_id_;
-  absl::optional<ui::ColorId> selected_color_id_;
+  std::optional<ui::ColorId> foreground_color_id_;
+  std::optional<ui::ColorId> background_color_id_;
+  std::optional<ui::ColorId> selected_color_id_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_dice_reauth_provider.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 
+#include <optional>
 #include <set>
 
 #include "base/barrier_closure.h"
@@ -110,7 +111,6 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/test/test_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/ui_base_features.h"
@@ -2768,7 +2768,7 @@ class ProfilePickerLacrosFirstRunBrowserTestBase
   // Helper to walk through the FRE. Performs a few assertions, and performs the
   // specified choices when prompted.
   void GoThroughFirstRunFlow(bool quit_on_welcome,
-                             absl::optional<bool> quit_on_sync) {
+                             std::optional<bool> quit_on_sync) {
     Profile* profile = GetPrimaryProfile();
     EXPECT_TRUE(ShouldOpenFirstRun(profile));
 
@@ -2839,7 +2839,7 @@ class ProfilePickerLacrosFirstRunBrowserTestBase
   // TODO(https://crbug.com/1324886): Find a better way to safely work around
   // the sync service stalling issue.
   testing::ScopedSyncStartupTimeoutOverride sync_startup_timeout_{
-      absl::optional<base::TimeDelta>()};
+      std::optional<base::TimeDelta>()};
 };
 
 class ProfilePickerLacrosFirstRunBrowserTest
@@ -2860,7 +2860,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest,
 IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest, PRE_QuitEarly) {
   GoThroughFirstRunFlow(
       /*quit_on_welcome=*/true,
-      /*quit_on_sync=*/absl::nullopt);
+      /*quit_on_sync=*/std::nullopt);
 
   // No browser window should open because we closed the FRE UI early.
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
@@ -2995,7 +2995,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosManagedFirstRunBrowserTest,
 
   GoThroughFirstRunFlow(
       /*quit_on_welcome=*/true,
-      /*quit_on_sync=*/absl::nullopt);
+      /*quit_on_sync=*/std::nullopt);
 
   // No browser window should open because we closed the FRE UI early.
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
@@ -3023,7 +3023,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosManagedFirstRunBrowserTest,
   // reopen it.
   GoThroughFirstRunFlow(
       /*quit_on_welcome=*/true,
-      /*quit_on_sync=*/absl::nullopt);
+      /*quit_on_sync=*/std::nullopt);
 }
 
 // Overall sequence for QuitAtEnd:

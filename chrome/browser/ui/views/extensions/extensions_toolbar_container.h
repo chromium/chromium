@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -22,7 +23,6 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
 #include "extensions/common/extension.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/compositor/layer_tree_owner.h"
@@ -118,7 +118,7 @@ class ExtensionsToolbarContainer
   views::Widget* GetAnchoredWidgetForExtensionForTesting(
       const std::string& extension_id);
 
-  absl::optional<extensions::ExtensionId>
+  std::optional<extensions::ExtensionId>
   GetExtensionWithOpenContextMenuForTesting() {
     return extension_with_open_context_menu_id_;
   }
@@ -157,7 +157,7 @@ class ExtensionsToolbarContainer
   // ExtensionsContainer:
   ToolbarActionViewController* GetActionForId(
       const std::string& action_id) override;
-  absl::optional<extensions::ExtensionId> GetPoppedOutActionId() const override;
+  std::optional<extensions::ExtensionId> GetPoppedOutActionId() const override;
   void OnContextMenuShownFromToolbar(const std::string& action_id) override;
   void OnContextMenuClosedFromToolbar() override;
   bool IsActionVisibleOnToolbar(const std::string& action_id) const override;
@@ -357,15 +357,15 @@ class ExtensionsToolbarContainer
   // View for every action, does not imply pinned or currently shown.
   ToolbarIcons icons_;
   // Popped-out extension, if any.
-  absl::optional<extensions::ExtensionId> popped_out_action_;
+  std::optional<extensions::ExtensionId> popped_out_action_;
   // The action that triggered the current popup, if any.
   raw_ptr<ToolbarActionViewController> popup_owner_ = nullptr;
   // Extension with an open context menu, if any.
-  absl::optional<extensions::ExtensionId> extension_with_open_context_menu_id_;
+  std::optional<extensions::ExtensionId> extension_with_open_context_menu_id_;
   // View for closing the extension side panel.
   raw_ptr<ToolbarButton> close_side_panel_button_ = nullptr;
   // Used to ensure the button remains highlighted while active.
-  absl::optional<views::Button::ScopedAnchorHighlight>
+  std::optional<views::Button::ScopedAnchorHighlight>
       close_side_panel_button_anchor_higlight_;
 
   // The widgets currently popped out and, for each, the extension it is

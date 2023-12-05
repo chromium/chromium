@@ -61,7 +61,7 @@ class SearchCompanionSidePanelCoordinator
 
   // For metrics only. Notifies the companion of the side panel open trigger.
   void NotifyCompanionOfSidePanelOpenTrigger(
-      absl::optional<SidePanelOpenTrigger> side_panel_open_trigger);
+      std::optional<SidePanelOpenTrigger> side_panel_open_trigger);
 
  private:
   friend class BrowserUserData<SearchCompanionSidePanelCoordinator>;

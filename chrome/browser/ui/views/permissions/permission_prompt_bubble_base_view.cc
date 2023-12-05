@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -24,7 +25,6 @@
 #include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
 #include "components/strings/grit/components_strings.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
@@ -51,7 +51,7 @@ PermissionPromptBubbleBaseView::PermissionPromptBubbleBaseView(
     PermissionPromptStyle prompt_style,
     std::u16string window_title,
     std::u16string accessible_window_title,
-    absl::optional<std::u16string> extra_text)
+    std::optional<std::u16string> extra_text)
     : PermissionPromptBaseView(browser, delegate),
       browser_(browser),
       delegate_(delegate),

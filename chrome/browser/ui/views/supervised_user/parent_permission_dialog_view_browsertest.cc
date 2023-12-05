@@ -194,7 +194,7 @@ class ParentPermissionDialogViewHarness
   std::unique_ptr<ParentPermissionDialog> dialog_;
 
   // Optional result, if dialog was interacted.
-  absl::optional<ParentPermissionDialog::Result> result_;
+  std::optional<ParentPermissionDialog::Result> result_;
 };
 
 // End to end test of ParentPermissionDialog that exercises the dialog's

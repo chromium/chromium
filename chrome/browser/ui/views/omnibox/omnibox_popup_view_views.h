@@ -122,7 +122,7 @@ class OmniboxPopupViewViews : public views::View,
   base::WeakPtr<AutocompletePopupWidget> popup_;
 
   // Timestamp for when the current omnibox popup creation started.
-  absl::optional<base::TimeTicks> popup_create_start_time_;
+  std::optional<base::TimeTicks> popup_create_start_time_;
 
   // The edit view that invokes us. May be nullptr in tests.
   raw_ptr<OmniboxViewViews> omnibox_view_;

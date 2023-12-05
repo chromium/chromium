@@ -32,7 +32,7 @@ OldCookieControlsIconView::OldCookieControlsIconView(
                          "CookieControls") {
   SetVisible(false);
   SetAccessibilityProperties(
-      /*role*/ absl::nullopt,
+      /*role*/ std::nullopt,
       l10n_util::GetStringUTF16(IDS_COOKIE_CONTROLS_TOOLTIP));
   SetProperty(views::kElementIdentifierKey, kCookieControlsIconElementId);
 }

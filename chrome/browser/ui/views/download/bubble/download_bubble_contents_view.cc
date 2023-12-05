@@ -87,7 +87,7 @@ DownloadBubbleRowView* DownloadBubbleContentsView::GetPrimaryViewRowForTesting(
 }
 
 DownloadBubbleRowView* DownloadBubbleContentsView::ShowPrimaryPage(
-    absl::optional<offline_items_collection::ContentId> id) {
+    std::optional<offline_items_collection::ContentId> id) {
   CHECK(!id || *id != ContentId());
   security_view_->SetVisible(false);
   security_view_->Reset();

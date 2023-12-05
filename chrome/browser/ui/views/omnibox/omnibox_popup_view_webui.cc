@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <numeric>
+#include <optional>
 
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
@@ -27,7 +28,6 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/closure_animation_observer.h"

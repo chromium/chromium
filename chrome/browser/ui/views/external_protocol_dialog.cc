@@ -37,7 +37,7 @@ using content::WebContents;
 namespace {
 
 std::u16string GetMessageTextForOrigin(
-    const absl::optional<url::Origin>& origin) {
+    const std::optional<url::Origin>& origin) {
   if (!origin || origin->opaque())
     return l10n_util::GetStringUTF16(IDS_EXTERNAL_PROTOCOL_MESSAGE);
   return l10n_util::GetStringFUTF16(
@@ -55,7 +55,7 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
     ui::PageTransition ignored_page_transition,
     bool ignored_has_user_gesture,
     bool ignored_is_in_fenced_frame_tree,
-    const absl::optional<url::Origin>& initiating_origin,
+    const std::optional<url::Origin>& initiating_origin,
     content::WeakDocumentPtr initiator_document,
     const std::u16string& program_name) {
   DCHECK(web_contents);
@@ -75,7 +75,7 @@ ExternalProtocolDialog::ExternalProtocolDialog(
     WebContents* web_contents,
     const GURL& url,
     const std::u16string& program_name,
-    const absl::optional<url::Origin>& initiating_origin,
+    const std::optional<url::Origin>& initiating_origin,
     content::WeakDocumentPtr initiator_document)
     : web_contents_(web_contents->GetWeakPtr()),
       url_(url),

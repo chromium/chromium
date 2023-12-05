@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -19,7 +20,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -59,7 +59,7 @@ void ConfigureBoxLayoutView(views::BoxLayoutView* view) {
 std::unique_ptr<views::StyledLabel> CreateLabelWithContextAndStyle(
     views::style::TextContext text_context,
     views::style::TextStyle text_style,
-    absl::optional<std::u16string> text = absl::nullopt) {
+    std::optional<std::u16string> text = std::nullopt) {
   auto label = std::make_unique<views::StyledLabel>();
   label->SetTextContext(text_context);
   label->SetDefaultTextStyle(text_style);
@@ -140,13 +140,12 @@ class InstallerDialogView : public views::BoxLayoutView {
  public:
   METADATA_HEADER(InstallerDialogView);
 
-  InstallerDialogView(
-      const ui::ImageModel& icon_model,
-      const ToU16String& title,
-      int subtitle_id,
-      absl::optional<ToU16String> subtitle_param = absl::nullopt,
-      absl::optional<base::RepeatingClosure> subtitle_link_callback =
-          absl::nullopt) {
+  InstallerDialogView(const ui::ImageModel& icon_model,
+                      const ToU16String& title,
+                      int subtitle_id,
+                      std::optional<ToU16String> subtitle_param = std::nullopt,
+                      std::optional<base::RepeatingClosure>
+                          subtitle_link_callback = std::nullopt) {
     ConfigureBoxLayoutView(this);
 
     auto* icon = AddChildView(std::make_unique<NonAccessibleImageView>());
@@ -189,7 +188,7 @@ END_METADATA
 void IsolatedWebAppInstallerView::SetDialogButtons(
     views::DialogDelegate* dialog_delegate,
     int close_button_label_id,
-    absl::optional<int> accept_button_label_id) {
+    std::optional<int> accept_button_label_id) {
   if (!dialog_delegate) {
     return;
   }

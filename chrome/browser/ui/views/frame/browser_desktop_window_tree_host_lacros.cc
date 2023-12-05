@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host_lacros.h"
 
+#include <optional>
+
 #include "base/check.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
@@ -14,7 +16,6 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/frame_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -26,13 +27,13 @@
 namespace {
 
 // Returns the event source for the active tab drag session.
-absl::optional<ui::mojom::DragEventSource> GetCurrentTabDragEventSource() {
+std::optional<ui::mojom::DragEventSource> GetCurrentTabDragEventSource() {
   if (auto* source_context = TabDragController::GetSourceContext()) {
     if (auto* drag_controller = source_context->GetDragController()) {
       return drag_controller->event_source();
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace

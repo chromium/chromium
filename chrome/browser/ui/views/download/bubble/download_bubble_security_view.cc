@@ -749,7 +749,7 @@ void DownloadBubbleSecurityView::Reset() {
   ui_info_ = DownloadUIModel::BubbleUIInfo();
   title_text_ = std::u16string();
   download_item_observation_.Reset();
-  warning_time_ = absl::nullopt;
+  warning_time_ = std::nullopt;
 }
 
 void DownloadBubbleSecurityView::OnDownloadUpdated(
@@ -891,7 +891,7 @@ int DownloadBubbleSecurityView::GetMinimumLabelWidth() const {
 }
 
 bool DownloadBubbleSecurityView::ProcessDeepScanClick() {
-  absl::optional<std::string> password;
+  std::optional<std::string> password;
   if (!IsInitialized()) {
     return true;
   }

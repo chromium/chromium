@@ -291,7 +291,7 @@ bool BrowserNonClientFrameViewChromeOS::CanUserExitFullscreen() const {
 SkColor BrowserNonClientFrameViewChromeOS::GetCaptionColor(
     BrowserFrameActiveState active_state) const {
   // Web apps apply a theme color if specified by the extension/manifest.
-  absl::optional<SkColor> frame_theme_color =
+  std::optional<SkColor> frame_theme_color =
       browser_view()->browser()->app_controller()->GetThemeColor();
   const SkColor frame_color =
       frame_theme_color.value_or(GetFrameColor(active_state));
@@ -312,7 +312,7 @@ SkColor BrowserNonClientFrameViewChromeOS::GetFrameColor(
   if (!UsePackagedAppHeaderStyle(browser_view()->browser()))
     return BrowserNonClientFrameView::GetFrameColor(active_state);
 
-  absl::optional<SkColor> color;
+  std::optional<SkColor> color;
   if (browser_view()->GetIsWebAppType())
     color = browser_view()->browser()->app_controller()->GetThemeColor();
 

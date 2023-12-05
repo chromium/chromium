@@ -381,7 +381,7 @@ CookieControlsBubbleViewController::InitReloadingView(
 
   auto progress_bar = std::make_unique<views::ProgressBar>();
   progress_bar->SetPreferredHeight(kProgressBarHeight);
-  progress_bar->SetPreferredCornerRadii(absl::nullopt);
+  progress_bar->SetPreferredCornerRadii(std::nullopt);
   progress_bar->SetValue(-1);
 
   auto reloading_content = std::make_unique<views::View>();

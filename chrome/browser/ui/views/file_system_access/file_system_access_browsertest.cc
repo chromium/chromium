@@ -1039,7 +1039,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheFileSystemAccessBrowserTest,
       content::FileSystemAccessPermissionContext::HandleType::kFile,
       content::FileSystemAccessPermissionContext::UserAction::kOpen);
 
-  absl::optional<
+  std::optional<
       content::FileSystemAccessPermissionGrant::PermissionRequestOutcome>
       result;
 
@@ -1049,8 +1049,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheFileSystemAccessBrowserTest,
       initial_rfh->GetGlobalId(),
       content::FileSystemAccessPermissionGrant::UserActivationState::kRequired,
       base::BindOnce(
-          [](absl::optional<content::FileSystemAccessPermissionGrant::
-                                PermissionRequestOutcome>* result_out,
+          [](std::optional<content::FileSystemAccessPermissionGrant::
+                               PermissionRequestOutcome>* result_out,
              content::FileSystemAccessPermissionGrant::PermissionRequestOutcome
                  result) { *result_out = result; },
           base::Unretained(&result)));
@@ -1117,7 +1117,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderFileSystemAccessBrowserTest,
       content::FileSystemAccessPermissionContext::HandleType::kFile,
       content::FileSystemAccessPermissionContext::UserAction::kOpen);
 
-  absl::optional<
+  std::optional<
       content::FileSystemAccessPermissionGrant::PermissionRequestOutcome>
       result;
 
@@ -1126,8 +1126,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderFileSystemAccessBrowserTest,
       prerender_frame->GetGlobalId(),
       content::FileSystemAccessPermissionGrant::UserActivationState::kRequired,
       base::BindOnce(
-          [](absl::optional<content::FileSystemAccessPermissionGrant::
-                                PermissionRequestOutcome>* result_out,
+          [](std::optional<content::FileSystemAccessPermissionGrant::
+                               PermissionRequestOutcome>* result_out,
              content::FileSystemAccessPermissionGrant::PermissionRequestOutcome
                  result) { *result_out = result; },
           base::Unretained(&result)));

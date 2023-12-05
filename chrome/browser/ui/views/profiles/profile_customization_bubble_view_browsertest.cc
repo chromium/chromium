@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/profiles/profile_customization_bubble_view.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -30,7 +31,6 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/user_education/test/feature_promo_test_util.h"
 #include "content/public/test/browser_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace {

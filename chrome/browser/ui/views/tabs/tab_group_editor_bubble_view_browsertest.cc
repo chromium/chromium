@@ -27,7 +27,7 @@
 class TabGroupEditorBubbleViewDialogBrowserTest : public DialogBrowserTest {
  protected:
   void ShowUi(const std::string& name) override {
-    absl::optional<tab_groups::TabGroupId> group =
+    std::optional<tab_groups::TabGroupId> group =
         browser()->tab_strip_model()->AddToNewGroup({0});
     browser()->tab_strip_model()->OpenTabGroupEditor(group.value());
 
@@ -206,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(
 
   TabStripModel* tsm = browser()->tab_strip_model();
   ASSERT_EQ(3, tsm->count());
-  absl::optional<tab_groups::TabGroupId> group = tsm->AddToNewGroup({0, 1});
+  std::optional<tab_groups::TabGroupId> group = tsm->AddToNewGroup({0, 1});
 
   ASSERT_FALSE(browser_view->tabstrip()->tab_at(0)->HasFreezingVoteToken());
   ASSERT_FALSE(browser_view->tabstrip()->tab_at(1)->HasFreezingVoteToken());

@@ -303,7 +303,7 @@ class TabDragController::DraggedTabsClosedTracker
 
 TabDragController::TabDragData::TabDragData()
     : contents(nullptr),
-      source_model_index(absl::nullopt),
+      source_model_index(std::nullopt),
       attached_view(nullptr),
       pinned(false) {}
 
@@ -730,7 +730,7 @@ void TabDragController::SetDragLoopDoneCallbackForTesting(
 void TabDragController::InitDragData(TabSlotView* view,
                                      TabDragData* drag_data) {
   TRACE_EVENT0("views", "TabDragController::InitDragData");
-  const absl::optional<int> source_model_index =
+  const std::optional<int> source_model_index =
       source_context_->GetIndexOf(view);
   drag_data->source_model_index = source_model_index;
   if (source_model_index.has_value()) {
@@ -738,7 +738,7 @@ void TabDragController::InitDragData(TabSlotView* view,
         drag_data->source_model_index.value());
     drag_data->pinned = source_context_->IsTabPinned(static_cast<Tab*>(view));
   }
-  absl::optional<tab_groups::TabGroupId> tab_group_id = view->group();
+  std::optional<tab_groups::TabGroupId> tab_group_id = view->group();
   if (tab_group_id.has_value()) {
     drag_data->tab_group_data = TabDragData::TabGroupData{
         tab_group_id.value(), *source_context_->GetTabStripModel()
@@ -1417,7 +1417,7 @@ void TabDragController::Attach(TabDragContext* attached_context,
           SavedTabGroupServiceFactory::GetForProfile(browser->profile());
       saved_tab_group_service->ResumeTrackingLocalTabGroup(
           paused_saved_group_id_.value(), group_.value());
-      paused_saved_group_id_ = absl::nullopt;
+      paused_saved_group_id_ = std::nullopt;
     }
   }
   DCHECK_EQ(views.size(), drag_data_.size());
@@ -2038,14 +2038,14 @@ void TabDragController::RevertDragAt(size_t drag_index) {
   source_model->UpdateGroupForDragRevert(
       source_model->GetIndexOfWebContents(data->contents),
       data->tab_group_data.has_value()
-          ? absl::optional<tab_groups::TabGroupId>{data->tab_group_data.value()
-                                                       .group_id}
-          : absl::nullopt,
+          ? std::optional<tab_groups::TabGroupId>{data->tab_group_data.value()
+                                                      .group_id}
+          : std::nullopt,
       data->tab_group_data.has_value()
-          ? absl::optional<
+          ? std::optional<
                 tab_groups::TabGroupVisualData>{data->tab_group_data.value()
                                                     .group_visual_data}
-          : absl::nullopt);
+          : std::nullopt);
 }
 
 void TabDragController::CompleteDrag() {
@@ -2237,9 +2237,9 @@ views::Widget* TabDragController::GetAttachedBrowserWidget() {
 
 bool TabDragController::AreTabsConsecutive() {
   for (size_t i = 1; i < drag_data_.size(); ++i) {
-    const absl::optional<int> previous_source_index =
+    const std::optional<int> previous_source_index =
         drag_data_[i - 1].source_model_index;
-    const absl::optional<int> source_index = drag_data_[i].source_model_index;
+    const std::optional<int> source_index = drag_data_[i].source_model_index;
     if (previous_source_index.has_value() && source_index.has_value() &&
         previous_source_index.value() + 1 != source_index.value()) {
       return false;
@@ -2549,14 +2549,14 @@ void TabDragController::UpdateGroupForDraggedTabs() {
   if (selected_unpinned.empty())
     return;
 
-  const absl::optional<tab_groups::TabGroupId> updated_group =
+  const std::optional<tab_groups::TabGroupId> updated_group =
       GetTabGroupForTargetIndex(selected_unpinned);
 
   attached_model->MoveTabsAndSetGroup(selected_unpinned, selected_unpinned[0],
                                       updated_group);
 }
 
-absl::optional<tab_groups::TabGroupId>
+std::optional<tab_groups::TabGroupId>
 TabDragController::GetTabGroupForTargetIndex(const std::vector<int>& selected) {
   // Indices in {selected} are always ordered in ascending order and should all
   // be consecutive.
@@ -2566,11 +2566,11 @@ TabDragController::GetTabGroupForTargetIndex(const std::vector<int>& selected) {
 
   const int left_tab_index = selected.front() - 1;
 
-  const absl::optional<tab_groups::TabGroupId> left_group =
+  const std::optional<tab_groups::TabGroupId> left_group =
       attached_model->GetTabGroupForTab(left_tab_index);
-  const absl::optional<tab_groups::TabGroupId> right_group =
+  const std::optional<tab_groups::TabGroupId> right_group =
       attached_model->GetTabGroupForTab(selected.back() + 1);
-  const absl::optional<tab_groups::TabGroupId> current_group =
+  const std::optional<tab_groups::TabGroupId> current_group =
       attached_model->GetTabGroupForTab(selected[0]);
 
   if (left_group == right_group)
@@ -2632,7 +2632,7 @@ TabDragController::GetTabGroupForTargetIndex(const std::vector<int>& selected) {
     // dragging near the end of the tabstrip is cleaner.
     if (tab_bounds_in_drag_context_coords(selected.back()).right() >=
         attached_context_->TabDragAreaEndX()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     if (left_most_selected_x_position <= left_edge - buffer)
@@ -2643,7 +2643,7 @@ TabDragController::GetTabGroupForTargetIndex(const std::vector<int>& selected) {
       !attached_model->IsGroupCollapsed(right_group.value())) {
     return right_group;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool TabDragController::CanAttachTo(gfx::NativeWindow window) {
@@ -2739,7 +2739,7 @@ void TabDragController::NotifyEventIfTabAddedToGroup() {
       continue;
 
     // Get the tab group from the source model.
-    absl::optional<tab_groups::TabGroupId> group_id =
+    std::optional<tab_groups::TabGroupId> group_id =
         source_model->GetTabGroupForTab(
             source_model->GetIndexOfWebContents(drag_data_[i].contents));
 

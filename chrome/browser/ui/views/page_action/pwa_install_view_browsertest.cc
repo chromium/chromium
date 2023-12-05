@@ -285,7 +285,7 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
 
     UninstallWebApp(app_id);
 
-    web_app::SetInstallBounceMetricTimeForTesting(absl::nullopt);
+    web_app::SetInstallBounceMetricTimeForTesting(std::nullopt);
 
     std::vector<base::Bucket> expected_buckets;
     if (expected_count > 0) {
@@ -781,7 +781,7 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, PwaIntallIphIgnored) {
   // Manually set IPH ignored here, because the IPH demo mode only let IPH be
   // shown once in an user session.
   web_app::WebAppPrefGuardrails::GetForDesktopInstallIph(profile()->GetPrefs())
-      .RecordIgnore(web_app::GenerateAppId(/*manifest_id_path=*/absl::nullopt,
+      .RecordIgnore(web_app::GenerateAppId(/*manifest_id_path=*/std::nullopt,
                                            GetInstallableAppURL()),
                     base::Time::Now());
   bool installable = OpenTab(app_url).installable;

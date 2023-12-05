@@ -358,7 +358,7 @@ void OpaqueBrowserFrameViewLayout::LayoutTitleBar() {
   bool should_show_icon = delegate_->ShouldShowWindowIcon() && window_icon_;
   bool should_show_title = delegate_->ShouldShowWindowTitle() && window_title_;
   bool should_show_toolbar = delegate_->WebAppButtonHeight() > 0;
-  absl::optional<int> icon_spacing;
+  std::optional<int> icon_spacing;
 
   if (should_show_icon || should_show_title || should_show_toolbar) {
     use_hidden_icon_location = false;

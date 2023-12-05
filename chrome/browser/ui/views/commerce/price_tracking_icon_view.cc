@@ -87,7 +87,7 @@ PriceTrackingIconView::PriceTrackingIconView(
   SetUpForInOutAnimation();
   SetProperty(views::kElementIdentifierKey, kPriceTrackingChipElementId);
   SetAccessibilityProperties(
-      /*role*/ absl::nullopt,
+      /*role*/ std::nullopt,
       l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE));
 
   SetUseTonalColorsWhenExpanded(
@@ -322,7 +322,7 @@ void PriceTrackingIconView::MaybeShowPageActionLabel() {
   }
 
   should_extend_label_shown_duration_ = true;
-  AnimateIn(absl::nullopt);
+  AnimateIn(std::nullopt);
 }
 
 void PriceTrackingIconView::HidePageActionLabel() {

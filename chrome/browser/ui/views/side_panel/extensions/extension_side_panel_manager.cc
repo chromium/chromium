@@ -172,7 +172,7 @@ void ExtensionSidePanelManager::MaybeRemoveActionItemForExtension(
       extension->permissions_data()->HasAPIPermission(
           mojom::APIPermissionID::kSidePanel)) {
     BrowserActions* browser_actions = BrowserActions::FromBrowser(browser_);
-    absl::optional<actions::ActionId> extension_action_id =
+    std::optional<actions::ActionId> extension_action_id =
         actions::ActionIdMap::StringToActionId(
             SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension->id())
                 .ToString());
