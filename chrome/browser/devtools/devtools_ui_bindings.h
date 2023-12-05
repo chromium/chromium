@@ -166,8 +166,6 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
       bool network_discovery_enabled,
       const std::string& network_discovery_config) override;
   void SetDevicesUpdatesEnabled(bool enabled) override;
-  void PerformActionOnRemotePage(const std::string& page_id,
-                                 const std::string& action) override;
   void OpenRemotePage(const std::string& browser_id,
                       const std::string& url) override;
   void OpenNodeFrontend() override;

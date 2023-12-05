@@ -80,8 +80,6 @@ class DevToolsEmbedderMessageDispatcher {
         const std::string& port_forwarding_config,
         bool network_discovery_enabled,
         const std::string& network_discovery_config) = 0;
-    virtual void PerformActionOnRemotePage(const std::string& page_id,
-                                           const std::string& action) = 0;
     virtual void OpenRemotePage(const std::string& browser_id,
                                 const std::string& url) = 0;
     virtual void OpenNodeFrontend() = 0;

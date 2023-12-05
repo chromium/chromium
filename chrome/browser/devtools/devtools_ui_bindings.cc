@@ -115,11 +115,6 @@ const char kFrontendHostMethod[] = "method";
 const char kFrontendHostParams[] = "params";
 const char kTitleFormat[] = "DevTools - %s";
 
-const char kRemotePageActionInspect[] = "inspect";
-const char kRemotePageActionReload[] = "reload";
-const char kRemotePageActionActivate[] = "activate";
-const char kRemotePageActionClose[] = "close";
-
 const char kConfigDiscoverUsbDevices[] = "discoverUsbDevices";
 const char kConfigPortForwardingEnabled[] = "portForwardingEnabled";
 const char kConfigPortForwardingConfig[] = "portForwardingConfig";
@@ -1233,24 +1228,6 @@ void DevToolsUIBindings::SetDevicesUpdatesEnabled(bool enabled) {
     pref_change_registrar_.RemoveAll();
     SendPortForwardingStatus(base::Value());
   }
-}
-
-void DevToolsUIBindings::PerformActionOnRemotePage(const std::string& page_id,
-                                                   const std::string& action) {
-  if (!remote_targets_handler_)
-    return;
-  scoped_refptr<content::DevToolsAgentHost> host =
-      remote_targets_handler_->GetTarget(page_id);
-  if (!host)
-    return;
-  if (action == kRemotePageActionInspect)
-    delegate_->Inspect(host);
-  else if (action == kRemotePageActionReload)
-    host->Reload();
-  else if (action == kRemotePageActionActivate)
-    host->Activate();
-  else if (action == kRemotePageActionClose)
-    host->Close();
 }
 
 void DevToolsUIBindings::OpenRemotePage(const std::string& browser_id,
