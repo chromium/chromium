@@ -31,7 +31,7 @@
 // the 'static_spki_hashes' and 'bad_static_spki_hashes' fields in 'pinsets'
 // refer to, and the timestamp at which the pins list was last updated.
 //
-// Last updated: 2023-11-27 12:54 UTC
+// Last updated: 2023-12-05 12:55 UTC
 //
 {
   "pinsets": [
@@ -46,12 +46,11 @@
       "name": "google",
       "static_spki_hashes": [
         "GoogleBackup2048",
-        "GTSCA1O1",
         "GTSRootR1",
         "GTSRootR2",
         "GTSRootR3",
         "GTSRootR4",
-        "GlobalSignRootCA_R2"
+        "GlobalSignR4_owned_by_Google"
       ],
       "bad_static_spki_hashes": [
         "GlobalSignExtendedValidationCA",
