@@ -6209,6 +6209,14 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="ClearBrowsingData_SignOut">
+  <owner>gabolvr@google.com</owner>
+  <owner>droger@chromium.org</owner>
+  <description>
+    User signed out from the Clear Browsing Data footer.
+  </description>
+</action>
+
 <action name="ClearBrowsingData_SiteUsageData">
   <owner>steimel@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>

@@ -85,6 +85,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
@@ -482,50 +483,54 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
 void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,
                                  Profile* profile) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-    {"clearTimeRange", IDS_SETTINGS_CLEAR_PERIOD_TITLE},
-    {"clearBrowsingDataWithSync", IDS_SETTINGS_CLEAR_BROWSING_DATA_WITH_SYNC},
-    {"clearBrowsingDataWithSyncError",
-     IDS_SETTINGS_CLEAR_BROWSING_DATA_WITH_SYNC_ERROR},
-    {"clearBrowsingDataWithSyncPassphraseError",
-     IDS_SETTINGS_CLEAR_BROWSING_DATA_WITH_SYNC_PASSPHRASE_ERROR},
-    {"clearBrowsingDataWithSyncPaused",
-     IDS_SETTINGS_CLEAR_BROWSING_DATA_WITH_SYNC_PAUSED},
-    {"clearBrowsingHistory", IDS_SETTINGS_CLEAR_BROWSING_HISTORY},
-    {"clearBrowsingHistorySummary",
-     IDS_SETTINGS_CLEAR_BROWSING_HISTORY_SUMMARY},
-    {"clearBrowsingHistorySummarySignedInNoLink",
-     IDS_SETTINGS_CLEAR_BROWSING_HISTORY_SUMMARY_SIGNED_IN_NO_LINK},
-    {"clearDownloadHistory", IDS_SETTINGS_CLEAR_DOWNLOAD_HISTORY},
-    {"clearCache", IDS_SETTINGS_CLEAR_CACHE},
-    {"clearCookies", IDS_SETTINGS_CLEAR_COOKIES},
-    {"clearCookiesSummary",
-     IDS_SETTINGS_CLEAR_COOKIES_AND_SITE_DATA_SUMMARY_BASIC},
-    {"clearCookiesSummarySignedIn",
-     IDS_SETTINGS_CLEAR_COOKIES_AND_SITE_DATA_SUMMARY_BASIC_WITH_EXCEPTION},
+      {"clearTimeRange", IDS_SETTINGS_CLEAR_PERIOD_TITLE},
+      {"clearBrowsingDataSignedIn", IDS_SETTINGS_CLEAR_BROWSING_DATA_SIGNED_IN},
+      {"clearBrowsingDataWithSync", IDS_SETTINGS_CLEAR_BROWSING_DATA_WITH_SYNC},
+      {"clearBrowsingDataWithSyncError",
+       IDS_SETTINGS_CLEAR_BROWSING_DATA_WITH_SYNC_ERROR},
+      {"clearBrowsingDataWithSyncPassphraseError",
+       IDS_SETTINGS_CLEAR_BROWSING_DATA_WITH_SYNC_PASSPHRASE_ERROR},
+      {"clearBrowsingDataWithSyncPaused",
+       IDS_SETTINGS_CLEAR_BROWSING_DATA_WITH_SYNC_PAUSED},
+      {"clearBrowsingHistory", IDS_SETTINGS_CLEAR_BROWSING_HISTORY},
+      {"clearBrowsingHistorySummary",
+       IDS_SETTINGS_CLEAR_BROWSING_HISTORY_SUMMARY},
+      {"clearBrowsingHistorySummarySignedInNoLink",
+       IDS_SETTINGS_CLEAR_BROWSING_HISTORY_SUMMARY_SIGNED_IN_NO_LINK},
+      {"clearDownloadHistory", IDS_SETTINGS_CLEAR_DOWNLOAD_HISTORY},
+      {"clearCache", IDS_SETTINGS_CLEAR_CACHE},
+      {"clearCookies", IDS_SETTINGS_CLEAR_COOKIES},
+      {"clearCookiesSummary",
+       IDS_SETTINGS_CLEAR_COOKIES_AND_SITE_DATA_SUMMARY_BASIC},
+      {"clearCookiesSummarySignedIn",
+       IDS_SETTINGS_CLEAR_COOKIES_AND_SITE_DATA_SUMMARY_BASIC_SIGNED_IN_PROFILE},
+      {"clearCookiesSummarySyncing",
+       IDS_SETTINGS_CLEAR_COOKIES_AND_SITE_DATA_SUMMARY_BASIC_WITH_EXCEPTION},
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    {"clearCookiesSummarySignedInMainProfile",
-     IDS_SETTINGS_CLEAR_COOKIES_AND_SITE_DATA_SUMMARY_BASIC_MAIN_PROFILE},
+      {"clearCookiesSummarySignedInMainProfile",
+       IDS_SETTINGS_CLEAR_COOKIES_AND_SITE_DATA_SUMMARY_BASIC_MAIN_PROFILE},
 #endif
-    {"clearCookiesSummarySignedInSupervisedProfile",
-     IDS_SETTINGS_CLEAR_COOKIES_AND_SITE_DATA_SUMMARY_BASIC_SUPERVISED_PROFILE},
-    {"clearCookiesCounter", IDS_DEL_COOKIES_COUNTER},
-    {"clearPasswords", IDS_SETTINGS_CLEAR_PASSWORDS},
-    {"clearFormData", IDS_SETTINGS_CLEAR_FORM_DATA},
-    {"clearHostedAppData", IDS_SETTINGS_CLEAR_HOSTED_APP_DATA},
-    {"clearPeriodHour", IDS_SETTINGS_CLEAR_PERIOD_HOUR},
-    {"clearPeriod24Hours", IDS_SETTINGS_CLEAR_PERIOD_24_HOURS},
-    {"clearPeriod7Days", IDS_SETTINGS_CLEAR_PERIOD_7_DAYS},
-    {"clearPeriod4Weeks", IDS_SETTINGS_CLEAR_PERIOD_FOUR_WEEKS},
-    {"clearPeriodEverything", IDS_SETTINGS_CLEAR_PERIOD_EVERYTHING},
-    {"clearPeriod15Minutes", IDS_SETTINGS_CLEAR_PERIOD_15_MINUTES},
-    {"clearPeriodNotSelected", IDS_SETTINGS_CLEAR_PERIOD_NOT_SELECTED},
-    {"historyDeletionDialogTitle",
-     IDS_CLEAR_BROWSING_DATA_HISTORY_NOTICE_TITLE},
-    {"historyDeletionDialogOK", IDS_CLEAR_BROWSING_DATA_HISTORY_NOTICE_OK},
-    {"passwordsDeletionDialogTitle",
-     IDS_CLEAR_BROWSING_DATA_PASSWORDS_NOTICE_TITLE},
-    {"passwordsDeletionDialogOK", IDS_CLEAR_BROWSING_DATA_PASSWORDS_NOTICE_OK},
-    {"notificationWarning", IDS_SETTINGS_NOTIFICATION_WARNING},
+      {"clearCookiesSummarySignedInSupervisedProfile",
+       IDS_SETTINGS_CLEAR_COOKIES_AND_SITE_DATA_SUMMARY_BASIC_SUPERVISED_PROFILE},
+      {"clearCookiesCounter", IDS_DEL_COOKIES_COUNTER},
+      {"clearPasswords", IDS_SETTINGS_CLEAR_PASSWORDS},
+      {"clearFormData", IDS_SETTINGS_CLEAR_FORM_DATA},
+      {"clearHostedAppData", IDS_SETTINGS_CLEAR_HOSTED_APP_DATA},
+      {"clearPeriodHour", IDS_SETTINGS_CLEAR_PERIOD_HOUR},
+      {"clearPeriod24Hours", IDS_SETTINGS_CLEAR_PERIOD_24_HOURS},
+      {"clearPeriod7Days", IDS_SETTINGS_CLEAR_PERIOD_7_DAYS},
+      {"clearPeriod4Weeks", IDS_SETTINGS_CLEAR_PERIOD_FOUR_WEEKS},
+      {"clearPeriodEverything", IDS_SETTINGS_CLEAR_PERIOD_EVERYTHING},
+      {"clearPeriod15Minutes", IDS_SETTINGS_CLEAR_PERIOD_15_MINUTES},
+      {"clearPeriodNotSelected", IDS_SETTINGS_CLEAR_PERIOD_NOT_SELECTED},
+      {"historyDeletionDialogTitle",
+       IDS_CLEAR_BROWSING_DATA_HISTORY_NOTICE_TITLE},
+      {"historyDeletionDialogOK", IDS_CLEAR_BROWSING_DATA_HISTORY_NOTICE_OK},
+      {"passwordsDeletionDialogTitle",
+       IDS_CLEAR_BROWSING_DATA_PASSWORDS_NOTICE_TITLE},
+      {"passwordsDeletionDialogOK",
+       IDS_CLEAR_BROWSING_DATA_PASSWORDS_NOTICE_OK},
+      {"notificationWarning", IDS_SETTINGS_NOTIFICATION_WARNING},
   };
 
   html_source->AddString(
@@ -550,6 +555,9 @@ void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,
       l10n_util::GetStringFUTF16(
           IDS_CLEAR_BROWSING_DATA_PASSWORDS_NOTICE,
           l10n_util::GetStringUTF16(IDS_PASSWORDS_WEB_LINK)));
+
+  html_source->AddBoolean("unoDesktopEnabled",
+                          base::FeatureList::IsEnabled(switches::kUnoDesktop));
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
@@ -1334,19 +1342,21 @@ void AddSignOutDialogStrings(content::WebUIDataSource* html_source,
 
 void AddSyncAccountControlStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-    {"syncingTo", IDS_SETTINGS_PEOPLE_SYNCING_TO_ACCOUNT},
-    {"peopleSignIn", IDS_PROFILES_DICE_SIGNIN_BUTTON},
-    {"syncPaused", IDS_SETTINGS_PEOPLE_SYNC_PAUSED},
-    {"turnOffSync", IDS_SETTINGS_PEOPLE_SYNC_TURN_OFF},
-    {"settingsCheckboxLabel", IDS_SETTINGS_SETTINGS_CHECKBOX_LABEL},
-    {"syncNotWorking", IDS_SETTINGS_PEOPLE_SYNC_NOT_WORKING},
-    {"syncDisabled", IDS_PROFILES_DICE_SYNC_DISABLED_TITLE},
-    {"syncPasswordsNotWorking", IDS_SETTINGS_PEOPLE_SYNC_PASSWORDS_NOT_WORKING},
-    {"peopleSignOut", IDS_SETTINGS_PEOPLE_SIGN_OUT},
-    {"useAnotherAccount", IDS_SETTINGS_PEOPLE_SYNC_ANOTHER_ACCOUNT},
+      {"signedInTo", IDS_SETTINGS_PEOPLE_SIGNED_IN_TO_ACCOUNT},
+      {"syncingTo", IDS_SETTINGS_PEOPLE_SYNCING_TO_ACCOUNT},
+      {"peopleSignIn", IDS_PROFILES_DICE_SIGNIN_BUTTON},
+      {"syncPaused", IDS_SETTINGS_PEOPLE_SYNC_PAUSED},
+      {"turnOffSync", IDS_SETTINGS_PEOPLE_SYNC_TURN_OFF},
+      {"settingsCheckboxLabel", IDS_SETTINGS_SETTINGS_CHECKBOX_LABEL},
+      {"syncNotWorking", IDS_SETTINGS_PEOPLE_SYNC_NOT_WORKING},
+      {"syncDisabled", IDS_PROFILES_DICE_SYNC_DISABLED_TITLE},
+      {"syncPasswordsNotWorking",
+       IDS_SETTINGS_PEOPLE_SYNC_PASSWORDS_NOT_WORKING},
+      {"peopleSignOut", IDS_SETTINGS_PEOPLE_SIGN_OUT},
+      {"useAnotherAccount", IDS_SETTINGS_PEOPLE_SYNC_ANOTHER_ACCOUNT},
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
-    {"syncAdvancedPageTitle", IDS_SETTINGS_NEW_SYNC_ADVANCED_PAGE_TITLE},
+      {"syncAdvancedPageTitle", IDS_SETTINGS_NEW_SYNC_ADVANCED_PAGE_TITLE},
 #endif
 
   };

@@ -46,6 +46,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -177,12 +178,19 @@ std::string GetSyncErrorAction(SyncStatusActionType action_type) {
 
 // Returns the base::Value associated with the account, to use in the stored
 // accounts list.
-base::Value::Dict GetAccountValue(const AccountInfo& account) {
+base::Value::Dict GetAccountValue(signin::IdentityManager* identity_manager,
+                                  const AccountInfo& account) {
   DCHECK(!account.IsEmpty());
-  auto dict = base::Value::Dict()
-                  .Set("email", account.email)
-                  .Set("fullName", account.full_name)
-                  .Set("givenName", account.given_name);
+  auto dict =
+      base::Value::Dict()
+          .Set("email", account.email)
+          .Set("fullName", account.full_name)
+          .Set("givenName", account.given_name)
+          .Set("isPrimaryAccount",
+               account.account_id ==
+                   identity_manager
+                       ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                       .account_id);
   if (!account.account_image.IsEmpty()) {
     dict.Set("avatarImage",
              webui::GetBitmapDataUrl(account.account_image.AsBitmap()));
@@ -458,7 +466,7 @@ base::Value::List PeopleHandler::GetStoredAccountsList() {
     for (const auto& account : signin_ui_util::GetOrderedAccountsForDisplay(
              identity_manager,
              /*restrict_to_accounts_eligible_for_sync=*/true)) {
-      accounts.Append(GetAccountValue(account));
+      accounts.Append(GetAccountValue(identity_manager, account));
     }
     return accounts;
   }
@@ -473,7 +481,7 @@ base::Value::List PeopleHandler::GetStoredAccountsList() {
   AccountInfo primary_account_info = identity_manager->FindExtendedAccountInfo(
       identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSignin));
   if (!primary_account_info.IsEmpty())
-    accounts.Append(GetAccountValue(primary_account_info));
+    accounts.Append(GetAccountValue(identity_manager, primary_account_info));
   return accounts;
 }
 
@@ -658,7 +666,8 @@ void PeopleHandler::HandleSignout(const base::Value::List& args) {
 
   bool is_clear_primary_account_allowed =
       signin_client->IsClearPrimaryAccountAllowed(is_syncing);
-  if (!is_syncing && !is_clear_primary_account_allowed) {
+  if (!is_syncing && !is_clear_primary_account_allowed &&
+      !base::FeatureList::IsEnabled(switches::kUnoDesktop)) {
     // 'Signout' should not be offered in the UI if clear primary account is not
     // allowed.
     NOTREACHED()

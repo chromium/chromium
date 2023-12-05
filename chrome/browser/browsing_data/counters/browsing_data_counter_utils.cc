@@ -18,6 +18,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -151,9 +152,12 @@ std::u16string GetChromeCounterTextFromResult(
 #endif
 
     // Determines whether or not to show the count with exception message.
+    auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
     int del_cookie_counter_msg_id =
-        ShouldShowCookieException(profile)
-            ? IDS_DEL_COOKIES_COUNTER_ADVANCED_WITH_EXCEPTION
+        (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
+         base::FeatureList::IsEnabled(switches::kUnoDesktop)) ||
+                ShouldShowCookieException(profile)
+            ? IDS_DEL_COOKIES_COUNTER_ADVANCED_WITH_SIGNED_IN_EXCEPTION
             : IDS_DEL_COOKIES_COUNTER_ADVANCED;
 
     return l10n_util::GetPluralStringFUTF16(del_cookie_counter_msg_id, origins);
