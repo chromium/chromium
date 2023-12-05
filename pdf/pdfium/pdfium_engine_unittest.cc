@@ -992,7 +992,7 @@ INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineTest, testing::Bool());
 using PDFiumEngineDeathTest = PDFiumEngineTest;
 
 TEST_P(PDFiumEngineDeathTest, RequestThumbnailRedundant) {
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kPdfIncrementalLoading);
 
