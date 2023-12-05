@@ -740,11 +740,6 @@ class PrivacyBudgetBrowserTestActiveSampling : public PlatformBrowserTest {
 
     expected_keys_ = {
         blink::IdentifiableSurface::FromTypeAndToken(
-            blink::IdentifiableSurface::Type::
-                kNavigatorUAData_GetHighEntropyValues,
-            blink::IdentifiableToken("model"))
-            .ToUkmMetricHash(),
-        blink::IdentifiableSurface::FromTypeAndToken(
             blink::IdentifiableSurface::Type::kFontFamilyAvailable,
             blink::IdentifiableToken("arial"))
             .ToUkmMetricHash(),
