@@ -998,6 +998,14 @@ TEST_F(
 // returns that we should not show the promo if the user already opted in.
 TEST_F(PersonalDataManagerTest,
        ShouldShowPaymentMethodsMandatoryReauthPromo_UserOptedInAlready) {
+#if BUILDFLAG(IS_ANDROID)
+  // Opt-in prompts are not shown on automotive as mandatory reauth is always
+  // enabled.
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       features::kAutofillEnablePaymentsMandatoryReauth);

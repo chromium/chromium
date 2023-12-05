@@ -352,6 +352,14 @@ TEST_F(MandatoryReauthManagerTest, StartOptInFlow) {
 // Test that the MandatoryReauthManager correctly handles the case where the
 // user accepts the re-auth prompt.
 TEST_F(MandatoryReauthManagerTest, OnUserAcceptedOptInPrompt) {
+#if BUILDFLAG(IS_ANDROID)
+  // Opt-in prompts are not shown on automotive as mandatory reauth is always
+  // enabled.
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   ON_CALL(*autofill_client_->GetDeviceAuthenticatorPtr(),
           AuthenticateWithMessage)
       .WillByDefault(testing::WithArg<1>(
