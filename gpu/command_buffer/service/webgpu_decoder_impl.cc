@@ -430,8 +430,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   std::unique_ptr<DawnInstance> dawn_instance_;
   std::unique_ptr<DawnServiceMemoryTransferService> memory_transfer_service_;
 
-  bool enable_unsafe_webgpu_ = false;
-  bool enable_webgpu_developer_features_ = false;
+  webgpu::SafetyLevel safety_level_ = webgpu::SafetyLevel::kSafe;
   WebGPUAdapterName use_webgpu_adapter_ = WebGPUAdapterName::kDefault;
   WebGPUPowerPreference use_webgpu_power_preference_ =
       WebGPUPowerPreference::kNone;
@@ -440,7 +439,6 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   std::vector<std::string> require_enabled_toggles_;
   std::vector<std::string> require_disabled_toggles_;
   base::flat_set<std::string> runtime_unsafe_features_;
-  bool allow_unsafe_apis_;
   bool tiered_adapter_limits_;
 
   // Isolation key that is necessary for device requests. Optional to
@@ -1091,14 +1089,18 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
               ? std::move(dawn_caching_interface)
               : nullptr,
           /*uma_prefix=*/"GPU.WebGPU.")),
-      dawn_instance_(
-          DawnInstance::Create(dawn_platform_.get(), gpu_preferences)),
       memory_transfer_service_(new DawnServiceMemoryTransferService(this)),
       wire_serializer_(new DawnServiceSerializer(client)),
       isolation_key_provider_(isolation_key_provider) {
-  enable_unsafe_webgpu_ = gpu_preferences.enable_unsafe_webgpu;
-  enable_webgpu_developer_features_ =
-      gpu_preferences.enable_webgpu_developer_features;
+  if (gpu_preferences.enable_webgpu_developer_features) {
+    safety_level_ = webgpu::SafetyLevel::kSafeExperimental;
+  }
+  if (gpu_preferences.enable_unsafe_webgpu) {
+    safety_level_ = webgpu::SafetyLevel::kUnsafe;
+  }
+  dawn_instance_ = DawnInstance::Create(dawn_platform_.get(), gpu_preferences,
+                                        safety_level_);
+
   use_webgpu_adapter_ = gpu_preferences.use_webgpu_adapter;
   use_webgpu_power_preference_ = gpu_preferences.use_webgpu_power_preference;
   force_webgpu_compat_ = gpu_preferences.force_webgpu_compat;
@@ -1109,11 +1111,6 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
                          base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
     runtime_unsafe_features_.insert(std::move(f));
   }
-
-  // Only allow unsafe APIs if the allow_unsafe_apis toggle is explicitly
-  // enabled.
-  allow_unsafe_apis_ =
-      base::Contains(require_enabled_toggles_, "allow_unsafe_apis");
 
   // Force adapters to report their limits in predetermined tiers unless the
   // adapter_limit_tiers toggle is explicitly disabled.
@@ -1204,9 +1201,10 @@ bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
     case wgpu::FeatureName::ChromiumExperimentalTimestampQueryInsidePasses:
     case wgpu::FeatureName::ChromiumExperimentalSubgroups:
     case wgpu::FeatureName::ChromiumExperimentalSubgroupUniformControlFlow:
-      return allow_unsafe_apis_;
+      return safety_level_ == webgpu::SafetyLevel::kUnsafe;
     case wgpu::FeatureName::AdapterPropertiesMemoryHeaps:
-      return enable_webgpu_developer_features_;
+      return safety_level_ == webgpu::SafetyLevel::kUnsafe ||
+             safety_level_ == webgpu::SafetyLevel::kSafeExperimental;
     case wgpu::FeatureName::DepthClipControl:
     case wgpu::FeatureName::Depth32FloatStencil8:
     case wgpu::FeatureName::TimestampQuery:
@@ -1219,17 +1217,19 @@ bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
     case wgpu::FeatureName::BGRA8UnormStorage:
     case wgpu::FeatureName::Float32Filterable:
     case wgpu::FeatureName::DawnMultiPlanarFormats: {
-      if (runtime_unsafe_features_.empty()) {
-        // Likely case when no features are blocked.
+      // Likely case when no features are blocked.
+      if (runtime_unsafe_features_.empty() ||
+          safety_level_ == webgpu::SafetyLevel::kUnsafe) {
         return true;
       }
 
       auto* info =
           dawn_instance_->GetFeatureInfo(static_cast<WGPUFeatureName>(feature));
-      if (info == nullptr || runtime_unsafe_features_.contains(info->name)) {
-        return allow_unsafe_apis_;
+      if (info == nullptr) {
+        return false;
       }
-      return true;
+
+      return !runtime_unsafe_features_.contains(info->name);
     }
     default:
       return false;
@@ -1394,12 +1394,12 @@ void WebGPUDecoderImpl::RequestDeviceImpl(
 
   // Disallows usage of SPIR-V by default for security (we only ensure that WGSL
   // is secure), unless --enable-unsafe-webgpu is used.
-  if (!enable_unsafe_webgpu_) {
+  if (safety_level_ != webgpu::SafetyLevel::kUnsafe) {
     require_device_enabled_toggles.push_back("disallow_spirv");
   }
   // Enable timestamp quantization by default for privacy, unless
   // --enable-webgpu-developer-features is used.
-  if (!enable_webgpu_developer_features_) {
+  if (safety_level_ == webgpu::SafetyLevel::kSafe) {
     require_device_enabled_toggles.push_back("timestamp_quantization");
   } else {
     require_device_disabled_toggles.push_back("timestamp_quantization");
@@ -1547,7 +1547,7 @@ WebGPUDecoderImpl::CreateQueuedRequestDeviceCallback(
 bool WebGPUDecoderImpl::use_blocklist() const {
   // Enable the blocklist unless --enable-unsafe-webgpu or
   // --disable-dawn-features=adapter_blocklist
-  return !(enable_unsafe_webgpu_ ||
+  return !(safety_level_ == webgpu::SafetyLevel::kUnsafe ||
            base::Contains(require_disabled_toggles_, "adapter_blocklist"));
 }
 

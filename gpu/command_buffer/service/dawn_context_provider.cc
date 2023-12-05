@@ -230,7 +230,11 @@ bool DawnContextProvider::Initialize(
 
   platform_ = std::make_unique<Platform>(std::move(caching_interface),
                                          /*uma_prefix=*/"GPU.GraphiteDawn.");
-  instance_ = webgpu::DawnInstance::Create(platform_.get(), gpu_preferences);
+
+  // Make Dawn experimental API and WGSL features available since access to this
+  // instance doesn't exit the GPU process.
+  instance_ = webgpu::DawnInstance::Create(platform_.get(), gpu_preferences,
+                                           webgpu::SafetyLevel::kUnsafe);
 
   // If a new toggle is added here, ForceDawnTogglesForSkia() which collects
   // info for about:gpu should be updated as well.
@@ -252,13 +256,7 @@ bool DawnContextProvider::Initialize(
   }
   enabled_toggles.push_back("disable_robustness");
 #endif
-
   enabled_toggles.push_back("disable_lazy_clear_for_mapped_at_creation_buffer");
-
-  // Make Dawn Experimental features available. We need to use
-  // MultiPlanarFormatExtendedUsages and DualSourceBlending, which are still in
-  // experimental state.
-  enabled_toggles.push_back("allow_unsafe_apis");
 
   wgpu::DawnTogglesDescriptor toggles_desc;
   toggles_desc.enabledToggles = enabled_toggles.data();

@@ -22,7 +22,8 @@ namespace gpu::webgpu {
 // static
 std::unique_ptr<DawnInstance> DawnInstance::Create(
     dawn::platform::Platform* platform,
-    const GpuPreferences& gpu_preferences) {
+    const GpuPreferences& gpu_preferences,
+    SafetyLevel safety) {
   std::string dawn_search_path;
   base::FilePath module_path;
 #if BUILDFLAG(IS_MAC)
@@ -47,6 +48,13 @@ std::unique_ptr<DawnInstance> DawnInstance::Create(
 
   std::vector<const char*> require_instance_enabled_toggles;
   std::vector<const char*> require_instance_disabled_toggles;
+
+  if (safety == SafetyLevel::kSafeExperimental) {
+    require_instance_enabled_toggles.push_back(
+        "expose_wgsl_experimental_features");
+  } else if (safety == SafetyLevel::kUnsafe) {
+    require_instance_enabled_toggles.push_back("allow_unsafe_apis");
+  }
 
   // Create instance with all user-required toggles, those which are not
   // instance toggles will be ignored by Dawn.
