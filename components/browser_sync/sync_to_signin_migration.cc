@@ -267,8 +267,15 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
   NOTIMPLEMENTED();
 #endif  // BUILDFLAG(IS_IOS)
 
-  // TODO(crbug.com/1486420): Add migration logic for ReadingList.
-  NOTIMPLEMENTED();
+  // Reading list: Set migration pref. The ModelTypeStoreServiceImpl will read
+  // it, and instruct the ModelTypeStoreBackend to actually migrate the data.
+  // Note that ModelTypeStoreServiceImpl (a KeyedService) can't have been
+  // constructed yet, so no risk of race conditions.
+  if (reading_list_decision ==
+      SyncToSigninMigrationDataTypeDecision::kMigrate) {
+    pref_service->SetBoolean(
+        syncer::prefs::internal::kMigrateReadingListFromLocalToAccount, true);
+  }
 }
 
 }  // namespace browser_sync

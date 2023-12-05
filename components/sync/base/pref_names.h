@@ -124,6 +124,9 @@ inline constexpr char kSyncFeatureStatusForSyncToSigninMigration[] =
 inline constexpr char kSyncDataTypeStatusForSyncToSigninMigrationPrefix[] =
     "sync.data_type_status_for_sync_to_signin";
 
+inline constexpr char kMigrateReadingListFromLocalToAccount[] =
+    "sync.migrate_reading_list_from_local_to_account";
+
 }  // namespace internal
 }  // namespace syncer::prefs
 
