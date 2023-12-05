@@ -9,12 +9,14 @@
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../components/dialogs/oobe_loading_dialog.js';
 
-import {afterNextRender, dom, flush, html, mixinBehaviors, Polymer, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
+
+import {getTemplate} from './auto_enrollment_check.html.js';
 
 
 /**
@@ -36,7 +38,7 @@ class AutoEnrollmentCheckElement extends AutoEnrollmentCheckElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

@@ -11,16 +11,18 @@ import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/dialogs/oobe_loading_dialog.js';
 import '../../components/quick_start_pin.js';
 
-import { assert } from '//resources/ash/common/assert.js';
-import {afterNextRender, dom, flush, html, mixinBehaviors, Polymer, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from '//resources/ash/common/assert.js';
+import {flush, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 import {OobeTypes} from '../../components/oobe_types.js';
-import { OobeI18nBehavior, OobeI18nBehaviorInterface } from '../../components/behaviors/oobe_i18n_behavior.js';
-import { loadTimeData } from '../../i18n_setup.js';
-import { QrCodeCanvas } from '../../components/qr_code_canvas.js';
+import {QrCodeCanvas} from '../../components/qr_code_canvas.js';
+import {loadTimeData} from '../../i18n_setup.js';
+
+import {getTemplate} from './quick_start.html.js';
 
 
 /**
@@ -55,7 +57,7 @@ class QuickStartScreen extends QuickStartScreenBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

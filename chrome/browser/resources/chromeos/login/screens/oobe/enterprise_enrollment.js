@@ -19,7 +19,7 @@ import '../../components/dialogs/oobe_loading_dialog.js';
 
 import {assert} from '//resources/ash/common/assert.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
-import {html, mixinBehaviors, Polymer, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Authenticator, AuthFlow, AuthMode, AuthParams, SUPPORTED_PARAMS} from '../../../../gaia_auth_host/authenticator.js';
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
@@ -37,6 +37,8 @@ import {Oobe} from '../../cr_ui.js';
 import * as OobeDebugger from '../../debug/debug.js';
 import {DisplayManager, invokePolymerMethod} from '../../display_manager.js';
 import {ActiveDirectoryErrorState, ADLoginStep, JoinConfigType} from '../common/offline_ad_login.js';
+
+import {getTemplate} from './enterprise_enrollment.html.js';
 
 /**
  * @constructor
@@ -84,7 +86,7 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
