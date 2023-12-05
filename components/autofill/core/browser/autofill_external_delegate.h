@@ -186,8 +186,10 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   // Determines the correct data type (`AutofillProfile` or `CreditCard`) to be
   // filled and fills the corresponding `PopupItemId::kFieldByFieldFilling`
   // suggestion.
-  void FillFieldByFieldFillingSuggestion(const Suggestion& suggestion,
-                                         const SuggestionPosition& position);
+  void FillFieldByFieldFillingSuggestion(
+      const Suggestion& suggestion,
+      const SuggestionPosition& position,
+      AutofillSuggestionTriggerSource trigger_source);
 
   // Previews the value from `profile` specified in the `suggestion`.
   void PreviewAddressFieldByFieldFillingSuggestion(
@@ -204,7 +206,8 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   void FillAddressFieldByFieldFillingSuggestion(
       const AutofillProfile& profile,
       const Suggestion& suggestion,
-      const SuggestionPosition& position);
+      const SuggestionPosition& position,
+      AutofillSuggestionTriggerSource trigger_source);
 
   // Fills the main text from the `suggestion`.
   void FillCreditCardFieldByFieldFillingSuggestion(

@@ -1157,6 +1157,22 @@ TEST_P(FillingMethodMetricsUnitTest, RecordFillingMethodForPopupType) {
   external_delegate().DidAcceptSuggestion(
       suggestion, SuggestionPosition{.row = 0}, kDefaultTriggerSource);
 
+  if (params.target_metric ==
+      autofill_metrics::AutofillFillingMethodMetric::kFieldByFieldFilling) {
+    // An unclassified field should not produce this metric.
+    histogram_tester.ExpectUniqueSample("Autofill.FillingMethodUsed",
+                                        params.target_metric, 0);
+
+    FieldPrediction prediction;
+    prediction.set_type(ServerFieldType::NAME_FIRST);
+    get_triggering_autofill_field()->set_server_predictions({prediction});
+
+    // Now the field is classified as an address field and should produce the
+    // metric.
+    external_delegate().DidAcceptSuggestion(
+        suggestion, SuggestionPosition{.row = 0}, kDefaultTriggerSource);
+  }
+
   histogram_tester.ExpectUniqueSample("Autofill.FillingMethodUsed",
                                       params.target_metric, 1);
 }

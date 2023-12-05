@@ -30,6 +30,7 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/field_filling_address_util.h"
+#include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/metrics/address_rewriter_in_profile_subset_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/granular_filling_metrics.h"
@@ -513,7 +514,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           query_field_.global_id(), suggestion.main_text.value);
       break;
     case PopupItemId::kFieldByFieldFilling:
-      FillFieldByFieldFillingSuggestion(suggestion, position);
+      FillFieldByFieldFillingSuggestion(suggestion, position, trigger_source);
       break;
     case PopupItemId::kIbanEntry:
       // User selected an IBAN suggestion, and we should fill the unmasked IBAN
@@ -887,13 +888,15 @@ void AutofillExternalDelegate::PreviewFieldByFieldFillingSuggestion(
 
 void AutofillExternalDelegate::FillFieldByFieldFillingSuggestion(
     const Suggestion& suggestion,
-    const SuggestionPosition& position) {
+    const SuggestionPosition& position,
+    AutofillSuggestionTriggerSource trigger_source) {
   CHECK_EQ(suggestion.popup_item_id, PopupItemId::kFieldByFieldFilling);
   CHECK(suggestion.field_by_field_filling_type_used);
   const auto guid = suggestion.GetBackendId<Suggestion::Guid>().value();
   if (const AutofillProfile* profile =
           manager_->client().GetPersonalDataManager()->GetProfileByGUID(guid)) {
-    FillAddressFieldByFieldFillingSuggestion(*profile, suggestion, position);
+    FillAddressFieldByFieldFillingSuggestion(*profile, suggestion, position,
+                                             trigger_source);
   } else if (manager_->client().GetPersonalDataManager()->GetCreditCardByGUID(
                  guid)) {
     FillCreditCardFieldByFieldFillingSuggestion(suggestion);
@@ -916,14 +919,27 @@ void AutofillExternalDelegate::PreviewAddressFieldByFieldFillingSuggestion(
 void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
     const AutofillProfile& profile,
     const Suggestion& suggestion,
-    const SuggestionPosition& position) {
+    const SuggestionPosition& position,
+    AutofillSuggestionTriggerSource trigger_source) {
   const AutofillField* autofill_trigger_field;
   if (autofill_trigger_field = GetQueriedAutofillField();
       !autofill_trigger_field) {
     return;
   }
-  autofill_metrics::LogFillingMethodUsed(
-      autofill_metrics::AutofillFillingMethodMetric::kFieldByFieldFilling);
+
+  // Record the metric ONLY if field-by-field filling is triggered by the
+  // granular filling feature.
+  // The only other scenario when field-by-field filling can be triggered here
+  // is when the user triggers autofill from the context menu for a field which
+  // is unclassified or which is classified as a field that does not match the
+  // user intent (for example, the user triggers address manual fallback on a
+  // credit card field).
+  // So the metric needs to be recorded only if the field is classified as an
+  // address.
+  if (IsAddressType(AutofillType(autofill_trigger_field->server_type()))) {
+    autofill_metrics::LogFillingMethodUsed(
+        autofill_metrics::AutofillFillingMethodMetric::kFieldByFieldFilling);
+  }
   // Only log the field-by-field filling type used if it was accepted from
   // a suggestion in a subpopup. The root popup can have field-by-field
   // suggestions after a field-by-field suggestion was accepted from a
