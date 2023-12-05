@@ -50,7 +50,7 @@ source_set("model") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/supervised_user/model",
     "//ios/chrome/browser/tabs/model",
-    "//ios/chrome/browser/web",
+    "//ios/chrome/browser/web/model",
     "//ui/base",
     "//url",
   ]

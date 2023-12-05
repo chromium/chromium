@@ -121,7 +121,7 @@
 #import "ios/chrome/browser/ui/main/browser_view_wrangler.h"
 #import "ios/chrome/browser/ui/webui/chrome_web_ui_ios_controller_factory.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
-#import "ios/chrome/browser/web/certificate_policy_app_agent.h"
+#import "ios/chrome/browser/web/model/certificate_policy_app_agent.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/app_group/app_group_field_trial_version.h"
 #import "ios/chrome/common/app_group/app_group_utils.h"

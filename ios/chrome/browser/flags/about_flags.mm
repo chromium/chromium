@@ -97,7 +97,7 @@
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
-#import "ios/chrome/browser/web/features.h"
+#import "ios/chrome/browser/web/model/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/components/security_interstitials/https_only_mode/feature.h"
 #import "ios/public/provider/chrome/browser/app_utils/app_utils_api.h"

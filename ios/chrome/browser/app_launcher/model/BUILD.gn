@@ -82,7 +82,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/web:web_internal",
+    "//ios/chrome/browser/web/model:web_internal",
     "//ios/web/common:features",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",

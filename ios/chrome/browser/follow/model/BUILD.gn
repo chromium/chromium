@@ -157,7 +157,7 @@ source_set("unit_tests") {
     ":utils",
     "//base/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
-    "//ios/chrome/browser/web:web_internal",
+    "//ios/chrome/browser/web/model:web_internal",
     "//ios/web/public/test",
     "//testing/gtest",
   ]

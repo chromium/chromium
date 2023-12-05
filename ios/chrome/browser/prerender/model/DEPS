@@ -10,7 +10,7 @@ include_rules = [
   "+ios/chrome/browser/tabs/model",
   "+ios/chrome/browser/ntp/model",
   "+ios/chrome/browser/sessions",
-  "+ios/chrome/browser/web",
+  "+ios/chrome/browser/web/model",
 ]
 
 specific_include_rules = {

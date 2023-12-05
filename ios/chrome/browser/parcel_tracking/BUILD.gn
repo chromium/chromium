@@ -34,7 +34,7 @@ source_set("infobar_delegate") {
     "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/web/annotations",
+    "//ios/chrome/browser/web/model/annotations",
     "//ios/web/public",
     "//ios/web/public/annotations:custom_text_check_result",
   ]

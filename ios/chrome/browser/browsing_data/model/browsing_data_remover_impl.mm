@@ -58,7 +58,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
-#import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
+#import "ios/chrome/browser/web/model/font_size/font_size_tab_helper.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service.h"

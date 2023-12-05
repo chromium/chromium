@@ -16,7 +16,7 @@ include_rules = [
   "+ios/chrome/browser/search_engines/model",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/snapshots/model",
-  "+ios/chrome/browser/web/font_size",
+  "+ios/chrome/browser/web/model/font_size",
 ]
 
 specific_include_rules = {

@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web/load_timing_tab_helper.h"
+#import "ios/chrome/browser/web/model/load_timing_tab_helper.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
