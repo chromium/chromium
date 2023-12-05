@@ -6807,30 +6807,6 @@
             ]
         }
     ],
-    "EventTimingMatchPresentationIndex": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows",
-                "android_webview",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "MatchPresentationIndexAndReportOnRealPaint_V2",
-                    "enable_features": [
-                        "EventTimingMatchPresentationIndex",
-                        "EventTimingReportAllEarlyEntriesOnPaintedPresentation"
-                    ]
-                }
-            ]
-        }
-    ],
     "EvictSubtree": [
         {
             "platforms": [

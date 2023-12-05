@@ -717,7 +717,7 @@ BASE_FEATURE(kEstablishGpuChannelAsync,
 // Enables reporting Event Timing with matching presentation promise index only.
 BASE_FEATURE(kEventTimingMatchPresentationIndex,
              "EventTimingMatchPresentationIndex",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables reporting Event Timing entries with a smaller presentation index on
 // resolved painted presentation.
