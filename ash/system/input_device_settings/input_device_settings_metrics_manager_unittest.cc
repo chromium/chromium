@@ -44,6 +44,7 @@ constexpr char kExternalMouseId[] = "test:mouse";
 constexpr char kPointingStickId[] = "test:pointingstick";
 constexpr char kExternalTouchpadId[] = "test:touchpad-external";
 constexpr char kGraphicsTabletId[] = "test:graphics-tablet";
+constexpr char kAlternativeGraphicsTabletId[] = "test:graphics-tablet-2";
 constexpr int kSampleMinSensitivity = 1;
 constexpr int kSampleSensitivity = 3;
 constexpr int kSampleMaxSensitivity = 5;
@@ -753,6 +754,40 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordGraphicsTabletSettings) {
       "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping."
       "StaticShortcutAction.Initial",
       /*expected_count=*/2u);
+
+  // Call RecordGraphicsTabletInitialMetrics with the same user but
+  // graphics tablet, with default button remappings, ExpectTotalCount
+  // for the metric will increase.
+  mojom::GraphicsTablet default_graphics_tablet;
+  default_graphics_tablet.device_key = kAlternativeGraphicsTabletId;
+  default_graphics_tablet.settings = mojom::GraphicsTabletSettings::New();
+  default_graphics_tablet.settings->tablet_button_remappings.push_back(
+      mojom::ButtonRemapping::New("tablet-vkey",
+                                  mojom::Button::NewVkey(ui::VKEY_B), nullptr));
+
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping."
+      "DefaultRemapping.Vkey",
+      /*expected_count=*/0);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping."
+      "DefaultRemapping.Vkey",
+      /*sample for enum value of VKEY_B=*/66,
+      /*expected_count=*/0);
+
+  manager_.get()->RecordGraphicsTabletInitialMetrics(default_graphics_tablet);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping."
+      "DefaultRemapping.Vkey",
+      /*expected_count=*/1u);
+
+  // Verify that the button VKEY_B which is 66 is recorded because it has a
+  // default button action.
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping."
+      "DefaultRemapping.Vkey",
+      /*sample=*/66,
+      /*expected_count=*/1u);
 
   // Call record changed settings metrics.
   auto old_setting = graphics_tablet.settings->Clone();

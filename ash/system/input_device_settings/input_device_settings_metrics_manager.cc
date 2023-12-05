@@ -241,6 +241,18 @@ bool ShouldRecordFkeyMetrics(const mojom::Keyboard& keyboard) {
           keyboard.settings->f12.has_value());
 }
 
+void RecordButtonMetrics(const mojom::Button& button,
+                         const std::string* metric_name_prefix) {
+  if (button.is_customizable_button()) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({*metric_name_prefix, "CustomizableButton"}),
+        button.get_customizable_button());
+  } else if (button.is_vkey()) {
+    base::UmaHistogramSparse(base::StrCat({*metric_name_prefix, "Vkey"}),
+                             button.get_vkey());
+  }
+}
+
 void RecordButtonRemappingNameIfChanged(
     const mojom::ButtonRemappingPtr& original_remapping,
     const mojom::ButtonRemappingPtr& new_remapping,
@@ -249,14 +261,7 @@ void RecordButtonRemappingNameIfChanged(
       base::StrCat({"ChromeOS.Settings.Device.", peripheral_kind,
                     ".ButtonRemapping.Name.Changed."});
   if (original_remapping->name != new_remapping->name) {
-    if (original_remapping->button->is_customizable_button()) {
-      base::UmaHistogramEnumeration(
-          base::StrCat({metric_name_prefix, "CustomizableButton"}),
-          original_remapping->button->get_customizable_button());
-    } else if (original_remapping->button->is_vkey()) {
-      base::UmaHistogramSparse(base::StrCat({metric_name_prefix, "Vkey"}),
-                               original_remapping->button->get_vkey());
-    }
+    RecordButtonMetrics(*(original_remapping->button), &metric_name_prefix);
   }
 }
 
@@ -401,10 +406,15 @@ void RecordInitialButtonRemappingAction(
     const mojom::ButtonRemappingPtr& button_remapping,
     const char* peripheral_kind) {
   if (!button_remapping->remapping_action) {
-    // TODO(b/241965717): Add metric for recording default button remapping.
+    // Add metrics for recording default button remapping.
+    const std::string metric_name_prefix =
+        base::StrCat({"ChromeOS.Settings.Device.", peripheral_kind,
+                      ".ButtonRemapping.DefaultRemapping."});
+    RecordButtonMetrics(*(button_remapping->button), &metric_name_prefix);
     return;
   }
 
+  // Add metrics for recording remapping actions.
   RecordButtonRemappingAction(*(button_remapping->remapping_action),
                               peripheral_kind, "Initial");
 }
@@ -1006,14 +1016,7 @@ void InputDeviceSettingsMetricsManager::RecordNewButtonRegisteredMetrics(
   const std::string metric_name_prefix =
       base::StrCat({"ChromeOS.Settings.Device.", peripheral_kind,
                     ".ButtonRemapping.Registered."});
-  if (button.is_customizable_button()) {
-    base::UmaHistogramEnumeration(
-        base::StrCat({metric_name_prefix, "CustomizableButton"}),
-        button.get_customizable_button());
-  } else if (button.is_vkey()) {
-    base::UmaHistogramSparse(base::StrCat({metric_name_prefix, "Vkey"}),
-                             button.get_vkey());
-  }
+  RecordButtonMetrics(button, &metric_name_prefix);
 }
 
 }  // namespace ash
