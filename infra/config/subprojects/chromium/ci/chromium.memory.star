@@ -278,8 +278,6 @@ linux_memory_builder(
     # //docs/linux/instrumented_libraries.md.
     os = os.LINUX_FOCAL,
     ssd = True,
-    # TODO(crbug.com/1505350): Re-enable tree-closing if/when it's fixed.
-    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "cros|msan",
         short_name = "bld",
