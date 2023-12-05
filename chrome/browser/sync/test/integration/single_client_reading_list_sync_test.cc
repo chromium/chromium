@@ -190,6 +190,19 @@ class SingleClientReadingListSyncTest : public SyncTest {
     return true;
   }
 
+  void SignInAndWaitForReadingListActive() {
+    ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+    // Note: Depending on the state of feature flags (specifically
+    // kReplaceSyncPromosWithSignInPromos), ReadingList may or may not be
+    // considered selected by default.
+    GetSyncService(0)->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kReadingList, true);
+    ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+    ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+    ASSERT_TRUE(
+        GetSyncService(0)->GetActiveDataTypes().Has(syncer::READING_LIST));
+  }
+
   raw_ptr<ReadingListModel> model() {
     return ReadingListModelFactory::GetForBrowserContext(GetProfile(0));
   }
@@ -207,11 +220,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
 
   ASSERT_THAT(model()->size(), Eq(0ul));
 
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
-  EXPECT_TRUE(
-      GetSyncService(0)->GetActiveDataTypes().Has(syncer::READING_LIST));
+  SignInAndWaitForReadingListActive();
 
   EXPECT_THAT(model()->size(), Eq(1ul));
   EXPECT_FALSE(model()->NeedsExplicitUploadToSyncServer(kUrl));
@@ -229,10 +238,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
 
   ASSERT_THAT(model()->size(), Eq(1ul));
 
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-  ASSERT_TRUE(
-      GetSyncService(0)->GetActiveDataTypes().Has(syncer::READING_LIST));
+  SignInAndWaitForReadingListActive();
   ASSERT_THAT(model()->size(), Eq(1ul));
 
   const GURL kAccountUrl("http://account_url.com/");
@@ -258,11 +264,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
 
   ASSERT_THAT(model()->size(), Eq(0ul));
 
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
-  ASSERT_TRUE(
-      GetSyncService(0)->GetActiveDataTypes().Has(syncer::READING_LIST));
+  SignInAndWaitForReadingListActive();
 
   ASSERT_THAT(model()->size(), Eq(1ul));
 
@@ -284,11 +286,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
 
   ASSERT_THAT(model()->size(), Eq(0ul));
 
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
-  ASSERT_TRUE(
-      GetSyncService(0)->GetActiveDataTypes().Has(syncer::READING_LIST));
+  SignInAndWaitForReadingListActive();
 
   ASSERT_THAT(model()->size(), Eq(1ul));
 
@@ -318,11 +316,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
 
   ASSERT_THAT(model()->size(), Eq(2ul));
 
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
-  ASSERT_TRUE(
-      GetSyncService(0)->GetActiveDataTypes().Has(syncer::READING_LIST));
+  SignInAndWaitForReadingListActive();
 
   ASSERT_THAT(model()->size(), Eq(3ul));
   ASSERT_TRUE(model()->NeedsExplicitUploadToSyncServer(kLocalUrl));
@@ -381,11 +375,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
 
   ASSERT_THAT(model()->size(), Eq(2ul));
 
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
-  ASSERT_TRUE(
-      GetSyncService(0)->GetActiveDataTypes().Has(syncer::READING_LIST));
+  SignInAndWaitForReadingListActive();
 
   ASSERT_THAT(model()->size(), Eq(2ul));
   ASSERT_TRUE(ServerReadingListURLsEqualityChecker({}).Wait());
@@ -406,11 +396,7 @@ IN_PROC_BROWSER_TEST_F(
 
   ASSERT_THAT(model()->size(), Eq(0ul));
 
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
-  EXPECT_TRUE(
-      GetSyncService(0)->GetActiveDataTypes().Has(syncer::READING_LIST));
+  SignInAndWaitForReadingListActive();
 
   ASSERT_THAT(model()->size(), Eq(0ul));
 
@@ -442,11 +428,7 @@ IN_PROC_BROWSER_TEST_F(
 
   ASSERT_THAT(model()->size(), Eq(0ul));
 
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
-  EXPECT_TRUE(
-      GetSyncService(0)->GetActiveDataTypes().Has(syncer::READING_LIST));
+  SignInAndWaitForReadingListActive();
 
   ASSERT_THAT(model()->size(), Eq(0ul));
 
@@ -476,11 +458,7 @@ IN_PROC_BROWSER_TEST_F(
 
   ASSERT_THAT(model()->size(), Eq(0ul));
 
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
-  EXPECT_TRUE(
-      GetSyncService(0)->GetActiveDataTypes().Has(syncer::READING_LIST));
+  SignInAndWaitForReadingListActive();
 
   ASSERT_THAT(model()->size(), Eq(0ul));
 
@@ -513,11 +491,7 @@ IN_PROC_BROWSER_TEST_F(
 
   ASSERT_THAT(model()->size(), Eq(0ul));
 
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
-  EXPECT_TRUE(
-      GetSyncService(0)->GetActiveDataTypes().Has(syncer::READING_LIST));
+  SignInAndWaitForReadingListActive();
 
   ASSERT_THAT(model()->size(), Eq(0ul));
 
@@ -554,11 +528,7 @@ IN_PROC_BROWSER_TEST_F(
   fake_server_->InjectEntity(CreateTestReadingListEntity(
       kEntryWithCorruptRemoteUpdateId, "entry_title"));
 
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
-  EXPECT_TRUE(
-      GetSyncService(0)->GetActiveDataTypes().Has(syncer::READING_LIST));
+  SignInAndWaitForReadingListActive();
 
   ASSERT_THAT(model()->size(), Eq(1ul));
 
@@ -599,11 +569,7 @@ IN_PROC_BROWSER_TEST_F(
   fake_server_->InjectEntity(CreateTestReadingListEntity(
       kEntryWithCorruptRemoteUpdateUrl, "entry_title"));
 
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
-  EXPECT_TRUE(
-      GetSyncService(0)->GetActiveDataTypes().Has(syncer::READING_LIST));
+  SignInAndWaitForReadingListActive();
 
   ASSERT_THAT(model()->size(), Eq(1ul));
 
@@ -642,11 +608,7 @@ IN_PROC_BROWSER_TEST_F(
   fake_server_->InjectEntity(CreateTestReadingListEntity(
       kEntryWithCorruptRemoteUpdateId, "entry_title"));
 
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
-  EXPECT_TRUE(
-      GetSyncService(0)->GetActiveDataTypes().Has(syncer::READING_LIST));
+  SignInAndWaitForReadingListActive();
 
   ASSERT_THAT(model()->size(), Eq(1ul));
 
@@ -688,11 +650,7 @@ IN_PROC_BROWSER_TEST_F(
   fake_server_->InjectEntity(CreateTestReadingListEntity(
       kEntryWithCorruptRemoteUpdateUrl, "entry_title"));
 
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
-  EXPECT_TRUE(
-      GetSyncService(0)->GetActiveDataTypes().Has(syncer::READING_LIST));
+  SignInAndWaitForReadingListActive();
 
   ASSERT_THAT(model()->size(), Eq(1ul));
 

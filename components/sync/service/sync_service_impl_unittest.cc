@@ -1939,24 +1939,14 @@ TEST_F(SyncServiceImplTest, ShouldReturnErrorOnSyncPaused) {
 TEST_F(
     SyncServiceImplTest,
     GetTypesWithPendingDownloadForInitialSyncDuringFirstSyncInTransportMode) {
-  base::test::ScopedFeatureList feature_list(kEnableBookmarksAccountStorage);
-
   component_factory()->AllowFakeEngineInitCompletion(false);
   InitializeService(
       /*registered_types_and_transport_mode_support=*/
       {
-          {BOOKMARKS, true},
+          {AUTOFILL_WALLET_DATA, true},
           {DEVICE_INFO, true},
       });
   base::RunLoop().RunUntilIdle();
-
-#if BUILDFLAG(IS_IOS)
-  // Outside iOS, transport mode considers all types as enabled by default. On
-  // iOS, for BOOKMARKS to be listed as preferred, an explicit API call is
-  // needed.
-  service()->GetUserSettings()->SetBookmarksAndReadingListAccountStorageOptIn(
-      true);
-#endif  // BUILDFLAG(IS_IOS)
 
   SignInWithoutSyncConsent();
 
@@ -1974,8 +1964,8 @@ TEST_F(
             service()->GetTransportState());
 
   // During first-sync INITIALIZING, all preferred datatypes are listed, which
-  // in this test fixture means NIGORI, BOOKMARKS and DEVICE_INFO.
-  EXPECT_EQ(ModelTypeSet({NIGORI, BOOKMARKS, DEVICE_INFO}),
+  // in this test fixture means NIGORI, AUTOFILL_WALLET_DATA and DEVICE_INFO.
+  EXPECT_EQ(ModelTypeSet({NIGORI, AUTOFILL_WALLET_DATA, DEVICE_INFO}),
             service()->GetTypesWithPendingDownloadForInitialSync());
 
   // Once fully initialized, it is delegated to DataTypeManager.
