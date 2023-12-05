@@ -881,7 +881,6 @@ if (skia_support_gpu) {
   skia_source_set("skia_graphite_private") {
     sources = skia_graphite_sources
     if (skia_use_dawn) {
-      sources += skia_shared_dawn_sources
       sources += skia_graphite_dawn_sources
     }
     if (skia_use_metal) {
