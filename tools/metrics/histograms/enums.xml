@@ -9214,6 +9214,26 @@ Called by update_net_error_codes.py.-->
   <int value="9" label="Source data missing - aggregatable report"/>
   <int value="10" label="Source data found - null aggregatable report"/>
   <int value="11" label="Metadata could not be deserialized"/>
+  <int value="12" label="Corresponding source not found"/>
+  <int value="13" label="Corresponding source - invalid source origin"/>
+  <int value="14" label="Corresponding source - invalid reporting origin"/>
+  <int value="15" label="Corresponding source - invalid source type"/>
+  <int value="16" label="Corresponding source - invalid attribution logic"/>
+  <int value="17" label="Corresponding source - invalid number of conversions"/>
+  <int value="18"
+      label="Corresponding source - invalid number of aggregatable reports"/>
+  <int value="19" label="Corresponding source - invalid aggregation keys"/>
+  <int value="20" label="Corresponding source - invalid filter data"/>
+  <int value="21" label="Corresponding source - invalid active state"/>
+  <int value="22" label="Corresponding source - invalid read only source data"/>
+  <int value="23" label="Corresponding source - invalid event report windows"/>
+  <int value="24"
+      label="Corresponding source - invalid max event level reports"/>
+  <int value="25" label="Corresponding source - invalid event level epsilon"/>
+  <int value="26"
+      label="Corresponding source - destination sites query failed"/>
+  <int value="27" label="Corresponding source - invalid destination sites"/>
+  <int value="28" label="Corresponding source - construction failed"/>
 </enum>
 
 <enum name="ConversionCreateAggregatableReportStatus">

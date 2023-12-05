@@ -98,7 +98,24 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
     kSourceDataMissingAggregatable = 9,
     kSourceDataFoundNullAggregatable = 10,
     kInvalidMetadata = 11,
-    kMaxValue = kInvalidMetadata,
+    kSourceNotFound = 12,
+    kSourceInvalidSourceOrigin = 13,
+    kSourceInvalidReportingOrigin = 14,
+    kSourceInvalidSourceType = 15,
+    kSourceInvalidAttributionLogic = 16,
+    kSourceInvalidNumConversions = 17,
+    kSourceInvalidNumAggregatableReports = 18,
+    kSourceInvalidAggregationKeys = 19,
+    kSourceInvalidFilterData = 20,
+    kSourceInvalidActiveState = 21,
+    kSourceInvalidReadOnlySourceData = 22,
+    kSourceInvalidEventReportWindows = 23,
+    kSourceInvalidMaxEventLevelReports = 24,
+    kSourceInvalidEventLevelEpsilon = 25,
+    kSourceDestinationSitesQueryFailed = 25,
+    kSourceInvalidDestinationSites = 26,
+    kStoredSourceConstructionFailed = 27,
+    kMaxValue = kStoredSourceConstructionFailed,
   };
 
  private:
@@ -239,7 +256,8 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   ReadReportFromStatement(sql::Statement&)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  absl::optional<StoredSourceData> ReadSourceFromStatement(sql::Statement&)
+  base::expected<StoredSourceData, ReportCorruptionStatusSet>
+  ReadSourceFromStatement(sql::Statement&)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   absl::optional<StoredSourceData> ReadSourceToAttribute(

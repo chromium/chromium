@@ -2810,7 +2810,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.CorruptReportsInDatabase2"
+<histogram name="Conversions.CorruptReportsInDatabase3"
     enum="ConversionCorruptReportStatus" expires_after="2024-05-05">
   <owner>tquintanilla@chromium.org</owner>
   <owner>apaseltiner@chromium.org</owner>

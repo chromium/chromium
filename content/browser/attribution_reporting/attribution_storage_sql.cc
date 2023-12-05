@@ -236,14 +236,16 @@ struct AttributionStorageSql::StoredSourceData {
 
 // Helper to deserialize source rows. See `GetActiveSources()` for the
 // expected ordering of columns used for the input to this function.
-absl::optional<AttributionStorageSql::StoredSourceData>
+base::expected<AttributionStorageSql::StoredSourceData,
+               AttributionStorageSql::ReportCorruptionStatusSet>
 AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
   DCHECK_GE(statement.ColumnCount(), kSourceColumnCount);
 
   int col = 0;
 
   if (statement.GetColumnType(col) == sql::ColumnType::kNull) {
-    return absl::nullopt;
+    return base::unexpected(
+        ReportCorruptionStatusSet{ReportCorruptionStatus::kSourceNotFound});
   }
 
   StoredSource::Id source_id(statement.ColumnInt64(col++));
@@ -267,16 +269,44 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
   absl::optional<attribution_reporting::AggregationKeys> aggregation_keys =
       DeserializeAggregationKeys(statement, col++);
 
-  if (!source_origin || !reporting_origin || !source_type.has_value() ||
-      !attribution_logic.has_value() || num_conversions < 0 ||
-      num_aggregatable_reports < 0 || !aggregation_keys.has_value()) {
-    return absl::nullopt;
+  ReportCorruptionStatusSet corruption_causes;
+
+  if (!source_origin) {
+    corruption_causes.Put(ReportCorruptionStatus::kSourceInvalidSourceOrigin);
+  }
+
+  if (!reporting_origin) {
+    corruption_causes.Put(
+        ReportCorruptionStatus::kSourceInvalidReportingOrigin);
+  }
+
+  if (!source_type.has_value()) {
+    corruption_causes.Put(ReportCorruptionStatus::kSourceInvalidSourceType);
+  }
+
+  if (!attribution_logic.has_value()) {
+    corruption_causes.Put(
+        ReportCorruptionStatus::kSourceInvalidAttributionLogic);
+  }
+
+  if (num_conversions < 0) {
+    corruption_causes.Put(ReportCorruptionStatus::kSourceInvalidNumConversions);
+  }
+
+  if (num_aggregatable_reports < 0) {
+    corruption_causes.Put(
+        ReportCorruptionStatus::kSourceInvalidNumAggregatableReports);
+  }
+
+  if (!aggregation_keys.has_value()) {
+    corruption_causes.Put(
+        ReportCorruptionStatus::kSourceInvalidAggregationKeys);
   }
 
   absl::optional<attribution_reporting::FilterData> filter_data =
       DeserializeFilterData(statement, col++);
   if (!filter_data) {
-    return absl::nullopt;
+    corruption_causes.Put(ReportCorruptionStatus::kSourceInvalidFilterData);
   }
 
   bool event_level_active = statement.ColumnBool(col++);
@@ -284,49 +314,40 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
   absl::optional<StoredSource::ActiveState> active_state =
       GetSourceActiveState(event_level_active, aggregatable_active);
   if (!active_state.has_value()) {
-    return absl::nullopt;
+    corruption_causes.Put(ReportCorruptionStatus::kSourceInvalidActiveState);
   }
+
+  attribution_reporting::MaxEventLevelReports max_event_level_reports;
+  absl::optional<EventReportWindows> event_report_windows;
+  attribution_reporting::EventLevelEpsilon event_level_epsilon;
 
   absl::optional<proto::AttributionReadOnlySourceData>
       read_only_source_data_msg =
           DeserializeReadOnlySourceDataAsProto(statement, col++);
   if (!read_only_source_data_msg.has_value()) {
-    return absl::nullopt;
+    corruption_causes.Put(
+        ReportCorruptionStatus::kSourceInvalidReadOnlySourceData);
+  } else {
+    if (!max_event_level_reports.SetIfValid(
+            read_only_source_data_msg->max_event_level_reports())) {
+      corruption_causes.Put(
+          ReportCorruptionStatus::kSourceInvalidMaxEventLevelReports);
+    }
+
+    event_report_windows =
+        DeserializeEventReportWindows(*read_only_source_data_msg);
+    if (!event_report_windows.has_value()) {
+      corruption_causes.Put(
+          ReportCorruptionStatus::kSourceInvalidEventReportWindows);
+    }
+
+    if (read_only_source_data_msg->has_event_level_epsilon() &&
+        !event_level_epsilon.SetIfValid(
+            read_only_source_data_msg->event_level_epsilon())) {
+      corruption_causes.Put(
+          ReportCorruptionStatus::kSourceInvalidEventLevelEpsilon);
+    }
   }
-
-  attribution_reporting::MaxEventLevelReports max_event_level_reports;
-  if (!max_event_level_reports.SetIfValid(
-          read_only_source_data_msg->max_event_level_reports())) {
-    return absl::nullopt;
-  }
-
-  absl::optional<EventReportWindows> event_report_windows =
-      DeserializeEventReportWindows(*read_only_source_data_msg);
-  if (!event_report_windows.has_value()) {
-    return absl::nullopt;
-  }
-
-  auto trigger_specs = attribution_reporting::TriggerSpecs::Default(
-      *source_type, std::move(*event_report_windows));
-
-  attribution_reporting::EventLevelEpsilon event_level_epsilon;
-  if (read_only_source_data_msg->has_event_level_epsilon() &&
-      !event_level_epsilon.SetIfValid(
-          read_only_source_data_msg->event_level_epsilon())) {
-    return absl::nullopt;
-  }
-
-  double randomized_response_rate =
-      read_only_source_data_msg->has_randomized_response_rate()
-          ? read_only_source_data_msg->randomized_response_rate()
-          : delegate_->GetRandomizedResponseRate(
-                trigger_specs, max_event_level_reports, event_level_epsilon);
-
-  // If "debug_cookie_set" field was not set in earlier versions, set the value
-  // to whether the debug key was set for the source.
-  bool debug_cookie_set = read_only_source_data_msg->has_debug_cookie_set()
-                              ? read_only_source_data_msg->debug_cookie_set()
-                              : debug_key.has_value();
 
   static constexpr char kDestinationSitesSql[] =
       "SELECT destination_site "
@@ -343,13 +364,19 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
     destination_sites.push_back(std::move(destination_site));
   }
   if (!destination_sites_statement.Succeeded()) {
-    return absl::nullopt;
+    corruption_causes.Put(
+        ReportCorruptionStatus::kSourceDestinationSitesQueryFailed);
   }
 
   auto destination_set = attribution_reporting::DestinationSet::Create(
       std::move(destination_sites));
   if (!destination_set.has_value()) {
-    return absl::nullopt;
+    corruption_causes.Put(
+        ReportCorruptionStatus::kSourceInvalidDestinationSites);
+  }
+
+  if (!corruption_causes.Empty()) {
+    return base::unexpected(std::move(corruption_causes));
   }
 
   TriggerDataMatching trigger_data_matching;
@@ -361,6 +388,20 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
       trigger_data_matching = TriggerDataMatching::kModulus;
       break;
   }
+  // If "debug_cookie_set" field was not set in earlier versions, set the
+  // value to whether the debug key was set for the source.
+  bool debug_cookie_set = read_only_source_data_msg->has_debug_cookie_set()
+                              ? read_only_source_data_msg->debug_cookie_set()
+                              : debug_key.has_value();
+
+  auto trigger_specs = attribution_reporting::TriggerSpecs::Default(
+      *source_type, std::move(*event_report_windows));
+
+  double randomized_response_rate =
+      read_only_source_data_msg->has_randomized_response_rate()
+          ? read_only_source_data_msg->randomized_response_rate()
+          : delegate_->GetRandomizedResponseRate(
+                trigger_specs, max_event_level_reports, event_level_epsilon);
 
   absl::optional<StoredSource> stored_source = StoredSource::Create(
       CommonSourceInfo(std::move(*source_origin), std::move(*reporting_origin),
@@ -372,7 +413,9 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
       source_id, aggregatable_budget_consumed, randomized_response_rate,
       trigger_data_matching, event_level_epsilon, debug_cookie_set);
   if (!stored_source.has_value()) {
-    return absl::nullopt;
+    // TODO(crbug.com/1498497): Consider enumerating errors from StoredSource.
+    return base::unexpected(ReportCorruptionStatusSet{
+        ReportCorruptionStatus::kStoredSourceConstructionFailed});
   }
 
   return StoredSourceData{.source = std::move(*stored_source),
@@ -389,7 +432,9 @@ AttributionStorageSql::ReadSourceToAttribute(StoredSource::Id source_id) {
     return absl::nullopt;
   }
 
-  return ReadSourceFromStatement(statement);
+  auto source = ReadSourceFromStatement(statement);
+  return source.has_value() ? absl::make_optional(std::move(*source))
+                            : absl::nullopt;
 }
 
 namespace {
@@ -1441,9 +1486,6 @@ base::expected<AttributionReport,
 AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
   DCHECK_EQ(statement.ColumnCount(), kSourceColumnCount + 11);
 
-  absl::optional<StoredSourceData> source_data =
-      ReadSourceFromStatement(statement);
-
   int col = kSourceColumnCount;
   int64_t report_id = statement.ColumnInt64(col++);
   base::Time trigger_time = statement.ColumnTime(col++);
@@ -1461,7 +1503,13 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
   absl::optional<AttributionReport::Type> report_type =
       DeserializeReportType(statement.ColumnInt(col++));
 
+  base::expected<StoredSourceData, ReportCorruptionStatusSet> source_data =
+      ReadSourceFromStatement(statement);
+
   ReportCorruptionStatusSet corruption_causes;
+  if (!source_data.has_value()) {
+    corruption_causes = source_data.error();
+  }
 
   // Ensure data is valid before continuing. This could happen if there is
   // database corruption.
@@ -1488,7 +1536,7 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
 
   if (!reporting_origin.has_value()) {
     corruption_causes.Put(ReportCorruptionStatus::kInvalidReportingOrigin);
-  } else if (source_data &&
+  } else if (source_data.has_value() &&
              *source_data->source.common_info().reporting_origin() !=
                  *reporting_origin) {
     corruption_causes.Put(ReportCorruptionStatus::kReportingOriginMismatch);
@@ -1502,7 +1550,7 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
   absl::optional<AttributionReport::Data> data;
   switch (*report_type) {
     case AttributionReport::Type::kEventLevel: {
-      if (!source_data) {
+      if (!source_data.has_value()) {
         corruption_causes.Put(
             ReportCorruptionStatus::kSourceDataMissingEventLevel);
         break;
@@ -1519,7 +1567,7 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
       break;
     }
     case AttributionReport::Type::kAggregatableAttribution: {
-      if (!source_data) {
+      if (!source_data.has_value()) {
         corruption_causes.Put(
             ReportCorruptionStatus::kSourceDataMissingAggregatable);
         break;
@@ -1536,10 +1584,11 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
       break;
     }
     case AttributionReport::Type::kNullAggregatable:
-      if (source_data) {
+      if (corruption_causes.Has(ReportCorruptionStatus::kSourceNotFound)) {
+        corruption_causes.Remove(ReportCorruptionStatus::kSourceNotFound);
+      } else {
         corruption_causes.Put(
             ReportCorruptionStatus::kSourceDataFoundNullAggregatable);
-        break;
       }
       if (reporting_origin.has_value()) {
         data = AttributionReport::NullAggregatableData(
@@ -2009,7 +2058,7 @@ std::vector<StoredSource> AttributionStorageSql::GetActiveSources(int limit) {
 
   std::vector<StoredSource> sources;
   while (statement.Step()) {
-    absl::optional<StoredSourceData> source_data =
+    base::expected<StoredSourceData, ReportCorruptionStatusSet> source_data =
         ReadSourceFromStatement(statement);
     if (source_data.has_value()) {
       sources.push_back(std::move(source_data->source));
@@ -2184,7 +2233,7 @@ void AttributionStorageSql::RecordValidReports() {
       valid_reports++;
     } else {
       for (auto corruption_cause : report.error()) {
-        base::UmaHistogramEnumeration("Conversions.CorruptReportsInDatabase2",
+        base::UmaHistogramEnumeration("Conversions.CorruptReportsInDatabase3",
                                       corruption_cause);
       }
     }
