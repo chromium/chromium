@@ -131,6 +131,10 @@ std::string TemplateIdToString(
       return "flower";
     case ash::personalization_app::mojom::SeaPenTemplateId::kMineral:
       return "mineral";
+    case ash::personalization_app::mojom::SeaPenTemplateId::kLandscape:
+      return "landscape";
+    case ash::personalization_app::mojom::SeaPenTemplateId::kScifi:
+      return "scifi";
   }
 }
 
@@ -145,6 +149,15 @@ std::string TemplateChipToString(
       return "<mineral_name>";
     case ash::personalization_app::mojom::SeaPenTemplateChip::kMineralColor:
       return "<mineral_color>";
+    case ash::personalization_app::mojom::SeaPenTemplateChip::kLandscapeBiome:
+      return "<landscape_biome>";
+    case ash::personalization_app::mojom::SeaPenTemplateChip::
+        kLandscapeLighting:
+      return "<landscape_lighting>";
+    case ash::personalization_app::mojom::SeaPenTemplateChip::kScifiFeature:
+      return "<scifi_feature>";
+    case ash::personalization_app::mojom::SeaPenTemplateChip::kScifiColor:
+      return "<scifi_color>";
   }
 }
 
@@ -233,6 +246,111 @@ std::string TemplateOptionToString(
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kMineralColorLavender:
       return "lavender";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kLandscapeBiomeTaiga:
+      return "taiga";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kLandscapeBiomeDesert:
+      return "desert";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kLandscapeBiomeRainforest:
+      return "rainforest";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kLandscapeBiomeTundra:
+      return "tundra";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kLandscapeBiomeBeach:
+      return "beach";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kLandscapeBiomeIcebergs:
+      return "icebergs";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kLandscapeBiomeSwamp:
+      return "swamp";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kLandscapeBiomeGrassland:
+      return "grassland";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kLandscapeBiomeForest:
+      return "forest";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kLandscapeLightingDiffuse:
+      return "diffuse";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kLandscapeLightingNorthernLights:
+      return "northern_lights";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kLandscapeLightingSunRays:
+      return "sun_rays";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kLandscapeLightingGoldenHour:
+      return "golden_hour";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kLandscapeLightingEarlyMorning:
+      return "early_morning";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kLandscapeLightingBlueHour:
+      return "blue_hour";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kLandscapeLightingMidday:
+      return "midday";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kScifiFeatureStreet:
+      return "street";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kScifiFeatureSkyline:
+      return "skyline";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kScifiFeatureSwamp:
+      return "swamp";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kScifiFeatureTransport:
+      return "transport";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kScifiFeatureBusStop:
+      return "bus_stop";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kScifiFeatureDesert:
+      return "desert";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kScifiFeatureBeach:
+      return "beach";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kScifiFeatureMountains:
+      return "mountains";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kScifiFeaturePark:
+      return "park";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kScifiFeatureForest:
+      return "forest";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kScifiFeatureSmallTown:
+      return "small_town";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kScifiFeatureFarm:
+      return "farm";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kScifiFeatureUnderwater:
+      return "underwater";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kScifiColorEarthy:
+      return "earthy";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kScifiColorVibrant:
+      return "vibrant";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kScifiColorSilver:
+      return "silver";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kScifiColorEerie:
+      return "eerie";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kScifiColorComplementary:
+      return "complementary";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kScifiColorNeutral:
+      return "neutral";
   }
 }
 
@@ -277,6 +395,48 @@ bool IsValidTemplateQuery(
                                    SeaPenTemplateOption::kMineralColorWhite &&
               mineral_color <= ash::personalization_app::mojom::
                                    SeaPenTemplateOption::kMineralColorLavender);
+    }
+    case ash::personalization_app::mojom::SeaPenTemplateId::kLandscape: {
+      auto landscape_biome = options
+                                 .find(ash::personalization_app::mojom::
+                                           SeaPenTemplateChip::kLandscapeBiome)
+                                 ->second;
+      auto landscape_lighting =
+          options
+              .find(ash::personalization_app::mojom::SeaPenTemplateChip::
+                        kLandscapeLighting)
+              ->second;
+      return (landscape_biome >=
+                  ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kLandscapeBiomeTaiga &&
+              landscape_biome <=
+                  ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kLandscapeBiomeIcebergs &&
+              landscape_lighting >=
+                  ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kLandscapeLightingDiffuse &&
+              landscape_lighting <=
+                  ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kLandscapeLightingMidday);
+    }
+    case ash::personalization_app::mojom::SeaPenTemplateId::kScifi: {
+      auto scifi_feature = options
+                               .find(ash::personalization_app::mojom::
+                                         SeaPenTemplateChip::kScifiFeature)
+                               ->second;
+      auto scifi_color = options
+                             .find(ash::personalization_app::mojom::
+                                       SeaPenTemplateChip::kScifiColor)
+                             ->second;
+      return (scifi_feature >= ash::personalization_app::mojom::
+                                   SeaPenTemplateOption::kScifiFeatureStreet &&
+              scifi_feature <=
+                  ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kScifiFeatureUnderwater &&
+              scifi_color >= ash::personalization_app::mojom::
+                                 SeaPenTemplateOption::kScifiColorEarthy &&
+              scifi_color <= ash::personalization_app::mojom::
+                                 SeaPenTemplateOption::kScifiColorNeutral);
     }
   }
   return true;

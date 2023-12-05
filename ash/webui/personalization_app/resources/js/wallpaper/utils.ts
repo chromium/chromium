@@ -392,6 +392,188 @@ export function getSampleSeaPenTemplates(): SeaPenTemplate[] {
         ],
       ]),
     },
+    {
+      id: SeaPenTemplateId.kLandscape.toString(),
+      title: 'Landscape',
+      text: `A <${SeaPenTemplateChip.kLandscapeBiome}> landscape with <${
+          SeaPenTemplateChip.kLandscapeLighting}> lighting`,
+      preview: [{
+        url: 'chrome://personalization/images/sea_pen_tile.svg',
+      }],
+      options: new Map([
+        [
+          SeaPenTemplateChip.kLandscapeBiome,
+          [
+            {
+              value: SeaPenTemplateOption.kLandscapeBiomeTaiga,
+              translation: 'taiga',
+            },
+            {
+              value: SeaPenTemplateOption.kLandscapeBiomeDesert,
+              translation: 'desert',
+            },
+            {
+              value: SeaPenTemplateOption.kLandscapeBiomeRainforest,
+              translation: 'rainforest',
+            },
+            {
+              value: SeaPenTemplateOption.kLandscapeBiomeTundra,
+              translation: 'tundra',
+            },
+            {
+              value: SeaPenTemplateOption.kLandscapeBiomeBeach,
+              translation: 'beach',
+            },
+            {
+              value: SeaPenTemplateOption.kLandscapeBiomeIcebergs,
+              translation: 'icebergs',
+            },
+            {
+              value: SeaPenTemplateOption.kLandscapeBiomeSwamp,
+              translation: 'swamp',
+            },
+            {
+              value: SeaPenTemplateOption.kLandscapeBiomeGrassland,
+              translation: 'grassland',
+            },
+            {
+              value: SeaPenTemplateOption.kLandscapeBiomeForest,
+              translation: 'forest',
+            },
+          ],
+        ],
+        [
+          SeaPenTemplateChip.kLandscapeLighting,
+          [
+            {
+              value: SeaPenTemplateOption.kLandscapeLightingDiffuse,
+              translation: 'diffuse',
+            },
+            {
+              value: SeaPenTemplateOption.kLandscapeLightingNorthernLights,
+              translation: 'northern lights',
+            },
+            {
+              value: SeaPenTemplateOption.kLandscapeLightingSunRays,
+              translation: 'sun rays',
+            },
+            {
+              value: SeaPenTemplateOption.kLandscapeLightingGoldenHour,
+              translation: 'golden hour',
+            },
+            {
+              value: SeaPenTemplateOption.kLandscapeLightingEarlyMorning,
+              translation: 'early morning',
+            },
+            {
+              value: SeaPenTemplateOption.kLandscapeLightingBlueHour,
+              translation: 'blue hour',
+            },
+            {
+              value: SeaPenTemplateOption.kLandscapeLightingMidday,
+              translation: 'midday',
+            },
+          ],
+        ],
+      ]),
+    },
+    {
+      id: SeaPenTemplateId.kScifi.toString(),
+      title: 'Sci-fi',
+      text: `Otherworldly <${SeaPenTemplateChip.kScifiFeature}> in <${
+          SeaPenTemplateChip.kScifiColor}> colors`,
+      preview: [{
+        url: 'chrome://personalization/images/sea_pen_tile.svg',
+      }],
+      options: new Map([
+        [
+          SeaPenTemplateChip.kScifiFeature,
+          [
+            {
+              value: SeaPenTemplateOption.kScifiFeatureStreet,
+              translation: 'street',
+            },
+            {
+              value: SeaPenTemplateOption.kScifiFeatureSkyline,
+              translation: 'skyline',
+            },
+            {
+              value: SeaPenTemplateOption.kScifiFeatureSwamp,
+              translation: 'swamp',
+            },
+            {
+              value: SeaPenTemplateOption.kScifiFeatureTransport,
+              translation: 'transport hub',
+            },
+            {
+              value: SeaPenTemplateOption.kScifiFeatureBusStop,
+              translation: 'bus stop',
+            },
+            {
+              value: SeaPenTemplateOption.kScifiFeatureDesert,
+              translation: 'desert',
+            },
+            {
+              value: SeaPenTemplateOption.kScifiFeatureBeach,
+              translation: 'beach',
+            },
+            {
+              value: SeaPenTemplateOption.kScifiFeatureMountains,
+              translation: 'mountains',
+            },
+            {
+              value: SeaPenTemplateOption.kScifiFeaturePark,
+              translation: 'park',
+            },
+            {
+              value: SeaPenTemplateOption.kScifiFeatureForest,
+              translation: 'forest',
+            },
+            {
+              value: SeaPenTemplateOption.kScifiFeatureSmallTown,
+              translation: 'small town',
+            },
+            {
+              value: SeaPenTemplateOption.kScifiFeatureFarm,
+              translation: 'farm',
+            },
+            {
+              value: SeaPenTemplateOption.kScifiFeatureUnderwater,
+              translation: 'underwater',
+            },
+          ],
+        ],
+        [
+          SeaPenTemplateChip.kScifiColor,
+          [
+            {
+              value: SeaPenTemplateOption.kScifiColorEarthy,
+              translation: 'earthy',
+            },
+            {
+              value: SeaPenTemplateOption.kScifiColorVibrant,
+              translation: 'vibrant',
+            },
+            {
+              value: SeaPenTemplateOption.kScifiColorSilver,
+              translation: 'silver',
+            },
+            {
+              value: SeaPenTemplateOption.kScifiColorEerie,
+              translation: 'eerie',
+            },
+            {
+              value: SeaPenTemplateOption.kScifiColorComplementary,
+              translation: 'complementary',
+            },
+            {
+              value: SeaPenTemplateOption.kScifiColorNeutral,
+              translation: 'neutral',
+            },
+          ],
+        ],
+      ]),
+    },
   ];
   if (isSeaPenTextInputEnabled()) {
     templates.push({

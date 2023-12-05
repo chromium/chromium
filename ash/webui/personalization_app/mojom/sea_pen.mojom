@@ -11,6 +11,8 @@ import "url/mojom/url.mojom";
 enum SeaPenTemplateId {
   kFlower = 0,
   kMineral,
+  kLandscape,
+  kScifi,
 };
 
 // A variable in the template text that can be mapped to multiple option values.
@@ -19,11 +21,15 @@ enum SeaPenTemplateChip {
   kFlowerColor,
   kMineralName,
   kMineralColor,
+  kLandscapeBiome,
+  kLandscapeLighting,
+  kScifiFeature,
+  kScifiColor,
 };
 
 // The valid option values of each chip.
 enum SeaPenTemplateOption {
-  // <flower_type> options
+  // Flower Type
   kFlowerTypeRose = 0,
   kFlowerTypeCallaLily,
   kFlowerTypeWindflower,
@@ -34,7 +40,7 @@ enum SeaPenTemplateOption {
   kFlowerTypeRanunculus,
   kFlowerTypeDaisy,
   kFlowerTypeHydrangeas,
-  // <flower_color> options
+  // Flower Color
   kFlowerColorPink,
   kFlowerColorPurple,
   kFlowerColorBlue,
@@ -43,18 +49,57 @@ enum SeaPenTemplateOption {
   kFlowerColorYellow,
   kFlowerColorGreen,
   kFlowerColorRed,
-  // <mineral_name> options
+  // Mineral Name
   kMineralNameWhiteQuartz,
   kMineralNameAmethyst,
   kMineralNameBlueSapphire,
   kMineralNameAmberCarnelian,
   kMineralNameEmerald,
   kMineralNameRuby,
-  // <mineral_color> options
+  // Mineral Color
   kMineralColorWhite,
   kMineralColorPeriwinkle,
   kMineralColorPink,
   kMineralColorLavender,
+  // Landscape Biome
+  kLandscapeBiomeTaiga,
+  kLandscapeBiomeDesert,
+  kLandscapeBiomeRainforest,
+  kLandscapeBiomeTundra,
+  kLandscapeBiomeBeach,
+  kLandscapeBiomeIcebergs,
+  kLandscapeBiomeSwamp,
+  kLandscapeBiomeGrassland,
+  kLandscapeBiomeForest,
+  // Landscape Lighting
+  kLandscapeLightingDiffuse,
+  kLandscapeLightingNorthernLights,
+  kLandscapeLightingSunRays,
+  kLandscapeLightingGoldenHour,
+  kLandscapeLightingEarlyMorning,
+  kLandscapeLightingBlueHour,
+  kLandscapeLightingMidday,
+  // Scifi Feature
+  kScifiFeatureStreet,
+  kScifiFeatureSkyline,
+  kScifiFeatureSwamp,
+  kScifiFeatureTransport,
+  kScifiFeatureBusStop,
+  kScifiFeatureDesert,
+  kScifiFeatureBeach,
+  kScifiFeatureMountains,
+  kScifiFeaturePark,
+  kScifiFeatureForest,
+  kScifiFeatureSmallTown,
+  kScifiFeatureFarm,
+  kScifiFeatureUnderwater,
+  // Scifi Color
+  kScifiColorEarthy,
+  kScifiColorVibrant,
+  kScifiColorSilver,
+  kScifiColorEerie,
+  kScifiColorComplementary,
+  kScifiColorNeutral,
 };
 
 // Encapsulates metadata for a thumbnail image, which can be displayed as an
