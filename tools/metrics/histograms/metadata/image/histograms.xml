@@ -78,6 +78,9 @@ chromium-metrics-reviews@google.com.
   <variant name=".PasswordBottomSheet"
       summary="Profile image fetcher for Password Manager sign-in bottom
                sheet."/>
+  <variant name=".PasswordSharing"
+      summary="Profile image fetcher of potential password recipients in the
+               Password Sharing flow."/>
   <variant name=".PriceDropNotification"
       summary="Images fetched for the icon of price drop notification."/>
   <variant name=".QueryTiles" summary="Showing Query tiles images."/>
