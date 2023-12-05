@@ -16,10 +16,24 @@ mojom("mojom_js_api") {
   generate_legacy_js_bindings = true
 }
 
+# Contains files used only in unit tests.
+copy("js_unit_test_support_copied_files") {
+  sources = [ "module_import.js" ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+}
+
 group("test_support_data") {
   testonly = true
-  data = [ "$target_gen_dir/mojom_test_support.js" ]
-  deps = [ ":test_support_js" ]
+  data = [
+    "$root_gen_dir/mojo/public/js/bindings.js",
+    "$target_gen_dir/test_api.test-mojom.m.js",
+    "$target_gen_dir/mojom_test_support.js",
+    "$target_gen_dir/module_import.js",
+  ]
+  deps = [
+    ":js_unit_test_support_copied_files",
+    ":test_support_js",
+  ]
 }
 
 # Based on mojo/public/js/build.gn, this concatinates Javascript files.

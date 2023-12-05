@@ -6,8 +6,12 @@
 #define SERVICES_ACCESSIBILITY_FEATURES_V8_MANAGER_H_
 
 #include <memory>
+#include <queue>
 #include <vector>
 
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -23,6 +27,8 @@
 #include "services/accessibility/public/mojom/automation.mojom-forward.h"
 #include "services/accessibility/public/mojom/file_loader.mojom-forward.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
+#include "v8-persistent-handle.h"
+#include "v8-script.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-local-handle.h"
 
@@ -58,6 +64,8 @@ class V8Environment : public BindingsIsolateHolder {
   // system.
   static const int kDefaultContextId = 1;
 
+  using OnFileLoadedCallback = base::OnceCallback<void(base::File)>;
+
   // Creates a new V8Environment with its own isolate and context.
   static base::SequenceBound<V8Environment> Create(
       base::WeakPtr<V8Manager> manager);
@@ -85,6 +93,8 @@ class V8Environment : public BindingsIsolateHolder {
   void ExecuteScript(const std::string& script,
                      base::OnceCallback<void()> on_complete);
 
+  void ExecuteModule(base::FilePath file_path, base::OnceClosure on_complete);
+
   // BindingsIsolateHolder overrides:
   v8::Isolate* GetIsolate() const override;
   v8::Local<v8::Context> GetContext() const override;
@@ -97,8 +107,33 @@ class V8Environment : public BindingsIsolateHolder {
   void BindInterface(const std::string& interface_name,
                      mojo::GenericPendingReceiver pending_receiver);
 
+  // `specifier` that represents a module. For now, this is the name of the file
+  // only.
+  // TODO(b:313692879): module identifiers here are the file name, but should be
+  // a normalized relative path.
+  v8::MaybeLocal<v8::Module> GetModuleFromSpecifier(
+      const std::string& specifier);
+
  private:
   void CreateIsolate();
+
+  // Loads the file contents of the module referenced by `file_pat`, invoking
+  // `OnFileLoaded()` when the operation is done.
+  // `file_path` must be a relative path and for now accepts only files in the
+  // current directory.
+  void RequestModuleContents(base::FilePath file_path);
+
+  // Callback function invoked when the file contents of the module identified
+  // by `module_identifier` is finished loading.
+  void OnFileLoaded(std::string module_identifier, base::File file);
+
+  // Evaluates the module identified by `root_module_identifier_` if all module
+  // dependencies have been loaded and compiled into modules.
+  void EvaluateModule();
+
+  // Resets module evaluation to not in progress and handles the error thrown by
+  // the v8 isolate or by the environment.
+  void HandleModuleError(const std::string& message);
 
   // Thread runner for communicating with object which constructed this
   // class using V8Environment::Create. This may be the main service thread,
@@ -118,6 +153,25 @@ class V8Environment : public BindingsIsolateHolder {
   // Holders for isolate and context.
   std::unique_ptr<gin::IsolateHolder> isolate_holder_;
   std::unique_ptr<gin::ContextHolder> context_holder_;
+
+  // Whether a module is being evaluated by this object.
+  bool module_evaluation_in_progress_ = false;
+
+  // If a module is being evaluated, contains the identifier of the root module.
+  std::optional<std::string> root_module_identifier_;
+
+  // Callback to be invoked when the module is finished evaluating.
+  base::OnceClosure on_complete_;
+
+  // Number of modules that have not been compiled into a v8::Module object.
+  // Once there are not remaining modules to be loaded, the root module can be
+  // evaluated since all its dependencies are compiled and ready to be consumed.
+  unsigned int num_unloaded_modules_ = 0;
+
+  // Module identifier to Module object.
+  // TODO(b:313692879): module identifiers here are the file name, but should be
+  // a normalized relative path.
+  std::map<std::string, v8::Global<v8::Module>> module_map_;
 
   std::unique_ptr<OSDevToolsAgent> devtools_agent_;
 };
@@ -161,10 +215,29 @@ class V8Manager {
   void BindInterface(const std::string& interface_name,
                      mojo::GenericPendingReceiver pending_receiver);
 
+  // Executes the module at |file_path|, invoking |callback| when the operation
+  // is done.
+  void ExecuteModule(base::FilePath file_path, base::OnceClosure on_complete);
+
+  // Loads the file at |path|, and invokes |callback| once that is done. Note
+  // that |callback| is wrapped with a base::SequenceBoundCallback, which causes
+  // the callback to be invoked in the sequence in which the
+  // base::SequenceBoundCallback was constructed.
+  // Caller is responsible for checking if the resulting base::File is valid.
+  void LoadFile(base::FilePath path,
+                base::SequenceBound<V8Environment::OnFileLoadedCallback>
+                    sequence_bound_callback);
+
   // Allow tests to expose additional Mojo interfaces to JS.
   void AddInterfaceForTest(std::unique_ptr<InterfaceBinder> interface_binder);
   void RunScriptForTest(const std::string& script,
                         base::OnceClosure on_complete);
+
+  // The files added here will be returned in fifo order in response to calls to
+  // |LoadFile()|.
+  void AddFileForTest(base::File file) {
+    files_for_test_.push(std::move(file));
+  }
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
@@ -176,6 +249,8 @@ class V8Manager {
 
   // Interface used to load files.
   raw_ptr<mojo::Remote<mojom::AccessibilityFileLoader>> file_loader_remote_;
+
+  std::queue<base::File> files_for_test_;
 
   base::WeakPtrFactory<V8Manager> weak_factory_{this};
 };

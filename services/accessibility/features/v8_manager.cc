@@ -6,6 +6,12 @@
 
 #include <utility>
 
+#include "base/check.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -13,7 +19,9 @@
 #include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/sequence_bound.h"
 #include "gin/converter.h"
+#include "gin/function_template.h"
 #include "gin/public/context_holder.h"
 #include "gin/public/isolate_holder.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
@@ -30,19 +38,56 @@
 #include "services/accessibility/features/user_interface_interface_binder.h"
 #include "services/accessibility/features/v8_bindings_utils.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom-forward.h"
+#include "services/accessibility/public/mojom/file_loader.mojom.h"
+#include "v8-data.h"
+#include "v8-exception.h"
+#include "v8-local-handle.h"
+#include "v8-message.h"
+#include "v8-microtask-queue.h"
+#include "v8-persistent-handle.h"
+#include "v8-platform.h"
+#include "v8-primitive.h"
+#include "v8-promise.h"
+#include "v8-script.h"
+#include "v8-value.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-function.h"
 #include "v8/include/v8-object.h"
 #include "v8/include/v8-template.h"
 
 namespace ax {
-
 namespace {
+
+using v8::Context;
+using v8::Local;
+using v8::MaybeLocal;
+using v8::Module;
+using v8::ModuleRequest;
 
 // The index into the global template's internal fields that
 // stores a pointer to this V8Environment. This allows any class with
 // a v8::Context to access this V8Environment.
+
 static const int kV8ContextWrapperIndex = 0;
+
+std::string ToSTLString(v8::Isolate* isolate, Local<v8::String> v8_str) {
+  v8::String::Utf8Value utf8(isolate, v8_str);
+  CHECK(*utf8);
+  return *utf8;
+}
+
+// Callback used during module instantiation. Please see
+// v8::Module::Instantiate.
+MaybeLocal<Module> ResolveModuleCallback(
+    Local<Context> context,
+    Local<v8::String> specifier,
+    Local<v8::FixedArray> import_assertions,
+    Local<v8::Module> referrer) {
+  V8Environment* v8_env = V8Environment::GetFromContext(context);
+  CHECK(v8_env);
+  return v8_env->GetModuleFromSpecifier(
+      ToSTLString(context->GetIsolate(), specifier));
+}
 
 }  // namespace
 
@@ -66,6 +111,7 @@ base::SequenceBound<V8Environment> V8Environment::Create(
       base::SingleThreadTaskRunnerThreadMode::DEDICATED);
   // Get a reference to the current SequencedTaskRunner for posting tasks back
   // to the constructor and current thread.
+  CHECK(base::SequencedTaskRunner::HasCurrentDefault());
   auto main_runner = base::SequencedTaskRunner::GetCurrentDefault();
   base::SequenceBound<V8Environment> result(
       std::move(v8_runner), std::move(main_runner), std::move(manager));
@@ -73,8 +119,8 @@ base::SequenceBound<V8Environment> V8Environment::Create(
 }
 
 // static
-V8Environment* V8Environment::GetFromContext(v8::Local<v8::Context> context) {
-  v8::Local<v8::Object> global_proxy = context->Global();
+V8Environment* V8Environment::GetFromContext(Local<Context> context) {
+  Local<v8::Object> global_proxy = context->Global();
   CHECK_LT(kV8ContextWrapperIndex, global_proxy->InternalFieldCount());
   V8Environment* v8_env = reinterpret_cast<V8Environment*>(
       global_proxy->GetAlignedPointerFromInternalField(kV8ContextWrapperIndex));
@@ -90,14 +136,16 @@ V8Environment::V8Environment(
 }
 
 V8Environment::~V8Environment() {
-  if (!isolate_holder_)
+  if (!isolate_holder_) {
     return;
+  }
 
   NotifyIsolateWillDestroy();
   isolate_holder_->isolate()->TerminateExecution();
 
-  // Devtools agent must be destroyed before context and isolate.
+  // Devtools agent and module map must be destroyed before context and isolate.
   devtools_agent_.reset();
+  module_map_.clear();
 
   context_holder_.reset();
   isolate_holder_.reset();
@@ -123,11 +171,185 @@ void V8Environment::ExecuteScript(const std::string& script,
   std::move(on_complete).Run();
 }
 
+void V8Environment::ExecuteModule(base::FilePath file_path,
+                                  base::OnceClosure on_complete) {
+  CHECK(!module_evaluation_in_progress_)
+      << "A module is already being evaluated by this instance.";
+  module_evaluation_in_progress_ = true;
+  on_complete_ = std::move(on_complete);
+  CHECK(num_unloaded_modules_ == 0);
+  num_unloaded_modules_++;  // Root module is still unloaded.
+  root_module_identifier_ = file_path.MaybeAsASCII();
+  CHECK(!root_module_identifier_->empty());
+  RequestModuleContents(file_path);
+}
+
+void V8Environment::RequestModuleContents(base::FilePath file_path) {
+  std::string module_identifier = file_path.MaybeAsASCII();
+  CHECK(!module_identifier.empty());
+
+  // This callback will be wrapped with a base::SequenceBound so that it can be
+  // invoked by the manager sequence, but will run in this sequence.
+  OnFileLoadedCallback callback =
+      base::BindOnce(&V8Environment::OnFileLoaded, base::Unretained(this),
+                     std::move(module_identifier));
+  main_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&V8Manager::LoadFile, manager_, file_path,
+                     base::SequenceBound<OnFileLoadedCallback>(
+                         base::SingleThreadTaskRunner::GetCurrentDefault(),
+                         std::move(callback))));
+}
+
+void V8Environment::OnFileLoaded(std::string module_identifier,
+                                 base::File file) {
+  v8::HandleScope handle_scope(GetIsolate());
+  Local<Context> context = GetContext();
+  Context::Scope context_scope(context);
+  v8::TryCatch trycatch(GetIsolate());
+
+  if (!file.IsValid()) {
+    // TODO(b:314185597): Handle modules that fail to be evaluated.
+    return HandleModuleError("file is not valid.");
+  }
+
+  std::string data;
+  data.resize(file.GetLength());
+  int bytes_read = file.Read(0, data.data(), file.GetLength());
+  if (bytes_read != file.GetLength()) {
+    // TODO(b:314185597): Handle modules that fail to be evaluated.
+    return HandleModuleError("Error reading file.");
+  }
+
+  Local<v8::String> source_text =
+      v8::String::NewFromUtf8(GetIsolate(), data.c_str(),
+                              v8::NewStringType::kNormal, data.size())
+          .ToLocalChecked();
+
+  Local<v8::String> resource_name =
+      v8::String::NewFromUtf8(GetIsolate(), module_identifier.c_str())
+          .ToLocalChecked();
+
+  v8::ScriptOrigin origin(
+      GetIsolate(), resource_name, /*resource_line_offset =*/0,
+      /*resource_column_offset=*/0, /*resource_is_shared_cross_origin=*/false,
+      /*script_id=*/-1,
+      /*source_map_url=*/Local<v8::Value>(), /*resource_is_opaque=*/false,
+      /*is_wasm=*/false, /*is_module=*/true);
+  v8::ScriptCompiler::Source source(source_text, origin);
+  Local<Module> module;
+  if (!v8::ScriptCompiler::CompileModule(GetIsolate(), &source)
+           .ToLocal(&module)) {
+    CHECK(trycatch.HasCaught());
+    // TODO(b:314185597): Handle modules that fail to be evaluated.
+    return HandleModuleError(ExceptionToString(trycatch));
+  }
+  num_unloaded_modules_--;
+
+  CHECK(module_map_
+            .insert(std::make_pair(std::move(module_identifier),
+                                   v8::Global<Module>(GetIsolate(), module)))
+            .second);
+
+  Local<v8::FixedArray> module_requests = module->GetModuleRequests();
+  for (int i = 0, length = module_requests->Length(); i < length; ++i) {
+    Local<ModuleRequest> module_request =
+        module_requests->Get(context, i).As<ModuleRequest>();
+    Local<v8::String> v8_specifier = module_request->GetSpecifier();
+    std::string specifier = ToSTLString(GetIsolate(), v8_specifier);
+
+    // TODO(b:313692879): we need to normalize the specifier here since they can
+    // contain ../ or other types of paths.
+    auto it = module_map_.find(specifier);
+    if (it == module_map_.end()) {
+      num_unloaded_modules_++;
+      RequestModuleContents(base::FilePath(specifier));
+    }
+  }
+
+  if (num_unloaded_modules_ == 0) {
+    EvaluateModule();
+  }
+}
+
+void V8Environment::EvaluateModule() {
+  CHECK(module_evaluation_in_progress_ && num_unloaded_modules_ == 0);
+  v8::HandleScope handle_scope(GetIsolate());
+  Local<Context> context = GetContext();
+  Context::Scope context_scope(context);
+  v8::TryCatch trycatch(GetIsolate());
+
+  auto root_module_it = module_map_.find(*root_module_identifier_);
+  CHECK(root_module_it != module_map_.end());
+  Local<Module> root_module = root_module_it->second.Get(GetIsolate());
+
+  MaybeLocal<v8::Value> maybe_result;
+  if (root_module->InstantiateModule(context, ResolveModuleCallback)
+          .FromMaybe(false)) {
+    CHECK_EQ(v8::Module::kInstantiated, root_module->GetStatus());
+    maybe_result = root_module->Evaluate(context);
+    CHECK(!maybe_result.IsEmpty());
+  } else {
+    CHECK(trycatch.HasCaught());
+    // TODO(b:314185597): Handle modules that fail to be evaluated.
+    return HandleModuleError(ExceptionToString(trycatch));
+  }
+  Local<v8::Value> value;
+  Local<v8::Promise> promise;
+  if (maybe_result.ToLocal(&value)) {
+    promise = value.As<v8::Promise>();
+  } else {
+    CHECK(trycatch.HasCaught());
+    // TODO(b:314185597): Handle modules that fail to be evaluated.
+    return HandleModuleError(ExceptionToString(trycatch));
+  }
+
+  // TODO(b:314187876): check for background tasks and run them.
+  while (promise->State() == v8::Promise::kPending) {
+    context->GetMicrotaskQueue()->PerformCheckpoint(GetIsolate());
+  }
+
+  // TODO(b:314185597): Handle modules that fail to be evaluated or promises
+  // that are rejected.
+  CHECK_EQ(v8::Module::kEvaluated, root_module->GetStatus());
+
+  if (promise->State() == v8::Promise::kFulfilled) {
+    module_evaluation_in_progress_ = false;
+    root_module_identifier_ = std::nullopt;
+    main_runner_->PostTask(FROM_HERE, std::move(on_complete_));
+  } else {
+    // TODO(b:314185597): Handle modules that fail to be evaluated.
+    return HandleModuleError(
+        "Promise is still not fullfilled after module evaluation.");
+  }
+}
+
+void V8Environment::HandleModuleError(const std::string& message) {
+  module_evaluation_in_progress_ = false;
+  num_unloaded_modules_ = 0;
+  root_module_identifier_ = std::nullopt;
+  HandleError(message);
+}
+
+MaybeLocal<Module> V8Environment::GetModuleFromSpecifier(
+    const std::string& specifier) {
+  auto it = module_map_.find(specifier);
+  if (it != module_map_.end()) {
+    return it->second.Get(GetIsolate());
+  }
+
+  // This function is used in the callback to obtain an imported module once a
+  // module is being instantiated. Returning an empty `MaybeLocal` indicates
+  // that an error occurred, but allows the `Instantiate` function to finish, at
+  // the same time throwing the appropriate js error.
+  return MaybeLocal<Module>();
+}
+
 v8::Isolate* V8Environment::GetIsolate() const {
   return isolate_holder_ ? isolate_holder_->isolate() : nullptr;
 }
 
-v8::Local<v8::Context> V8Environment::GetContext() const {
+Local<Context> V8Environment::GetContext() const {
   return context_holder_->context();
 }
 
@@ -149,7 +371,7 @@ void V8Environment::CreateIsolate() {
 }
 
 void V8Environment::AddV8Bindings() {
-  DCHECK(isolate_holder_) << "V8 has not been started, cannot bind.";
+  CHECK(isolate_holder_) << "V8 has not been started, cannot bind.";
 
   v8::Isolate* isolate = isolate_holder_->isolate();
 
@@ -164,24 +386,22 @@ void V8Environment::AddV8Bindings() {
 
   // Create a template for the global object where we set the
   // built-in global functions.
-  v8::Local<v8::ObjectTemplate> global_template =
-      v8::ObjectTemplate::New(isolate);
+  Local<v8::ObjectTemplate> global_template = v8::ObjectTemplate::New(isolate);
   global_template->SetInternalFieldCount(kV8ContextWrapperIndex + 1);
 
   // Create a template for the global "chrome" object.
   // We add this because APIs are found in the chrome namespace in JS,
   // like chrome.automation, etc.
-  v8::Local<v8::ObjectTemplate> chrome_template =
-      v8::ObjectTemplate::New(isolate);
+  Local<v8::ObjectTemplate> chrome_template = v8::ObjectTemplate::New(isolate);
   global_template->Set(isolate, "chrome", chrome_template);
 
   // Add automation bindings if needed.
   if (automation_bindings_) {
-    v8::Local<v8::ObjectTemplate> automation_template =
+    Local<v8::ObjectTemplate> automation_template =
         v8::ObjectTemplate::New(isolate);
     automation_bindings_->AddAutomationRoutesToTemplate(&automation_template);
     chrome_template->Set(isolate, "automation", automation_template);
-    v8::Local<v8::ObjectTemplate> automation_internal_template =
+    Local<v8::ObjectTemplate> automation_internal_template =
         v8::ObjectTemplate::New(isolate);
     automation_bindings_->AddAutomationInternalRoutesToTemplate(
         &automation_internal_template);
@@ -209,7 +429,7 @@ void V8Environment::AddV8Bindings() {
 
   // TODO(crbug.com/1355633): Add other API bindings to the global template.
   if (os_state_needed_) {
-    v8::Local<v8::ObjectTemplate> sync_os_state_template =
+    Local<v8::ObjectTemplate> sync_os_state_template =
         v8::ObjectTemplate::New(isolate);
     sync_os_state_template->Set(
         GetIsolate(), "getDisplayNameForLocale",
@@ -219,23 +439,28 @@ void V8Environment::AddV8Bindings() {
   }
 
   // Add the global template to the current context.
-  v8::Local<v8::Context> context =
-      v8::Context::New(isolate, /*extensions=*/nullptr, global_template);
+  Local<Context> context =
+      Context::New(isolate, /*extensions=*/nullptr, global_template);
   context_holder_ = std::make_unique<gin::ContextHolder>(isolate);
   context_holder_->SetContext(context);
 
   // Make a pointer to `this` in the current context.
   // This allows Mojo to use the context to find `this` and bind interfaces
   // on it.
-  v8::Local<v8::Object> global_proxy = context->Global();
+  Local<v8::Object> global_proxy = context->Global();
   DCHECK_EQ(kV8ContextWrapperIndex + 1, global_proxy->InternalFieldCount());
 
   global_proxy->SetAlignedPointerInInternalField(kV8ContextWrapperIndex, this);
 
   // Create a template for the "Mojo" object in the context scope.
-  v8::Context::Scope context_scope(context);
+  Context::Scope context_scope(context);
   gin::Handle<Mojo> mojo = Mojo::Create(context);
   global_proxy->Set(context, gin::StringToV8(isolate, "Mojo"), mojo.ToV8())
+      .Check();
+
+  // Initialize self as the global template. This will allow mojo to work with
+  // modules without a shim.
+  global_proxy->Set(context, gin::StringToV8(isolate, "self"), global_proxy)
       .Check();
 
   // TODO(crbug.com/1355633): At this point we could load in API Javascript
@@ -356,6 +581,42 @@ void V8Manager::RunScriptForTest(const std::string& script,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   v8_env_.AsyncCall(&V8Environment::ExecuteScript)
       .WithArgs(script, std::move(on_complete));
+}
+
+void V8Manager::ExecuteModule(base::FilePath file_path,
+                              base::OnceClosure on_complete) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  v8_env_.AsyncCall(&V8Environment::ExecuteModule)
+      .WithArgs(file_path, std::move(on_complete));
+}
+
+void V8Manager::LoadFile(
+    base::FilePath path,
+    base::SequenceBound<V8Environment::OnFileLoadedCallback>
+        sequence_bound_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Note: the callback will be invoked in the sequence of the V8Environment,
+  // due to the base::SequenceBoundCallback.
+  ax::mojom::AccessibilityFileLoader::LoadCallback callback = base::BindOnce(
+      [](base::SequenceBound<V8Environment::OnFileLoadedCallback>
+             sequence_bound_callback,
+         base::File file) {
+        sequence_bound_callback.PostTaskWithThisObject(base::BindOnce(
+            [](base::File file, V8Environment::OnFileLoadedCallback* callback) {
+              std::move(*callback).Run(std::move(file));
+            },
+            std::move(file)));
+      },
+      std::move(sequence_bound_callback));
+  if (!files_for_test_.empty()) {
+    base::File file = std::move(files_for_test_.front());
+    files_for_test_.pop();
+    std::move(callback).Run(std::move(file));
+    return;
+  }
+
+  (*file_loader_remote_)->Load(path, std::move(callback));
 }
 
 }  // namespace ax
