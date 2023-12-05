@@ -66,7 +66,6 @@ static_js_files = [
   "file_manager/foreground/js/navigation_uma.js",
   "file_manager/foreground/js/scan_controller.js",
   "file_manager/foreground/js/selection_menu_controller.js",
-  "file_manager/foreground/js/spinner_controller.js",
   "file_manager/foreground/js/task_history.js",
 
   # Metadata:
@@ -315,6 +314,7 @@ ts_files = [
   "file_manager/foreground/js/quick_view_model.ts",
   "file_manager/foreground/js/quick_view_uma.ts",
   "file_manager/foreground/js/sort_menu_controller.ts",
+  "file_manager/foreground/js/spinner_controller.ts",
   "file_manager/foreground/js/task_controller.ts",
   "file_manager/foreground/js/thumbnail_loader.ts",
   "file_manager/foreground/js/toolbar_controller.ts",
