@@ -2987,6 +2987,9 @@
           'gtest_tests': 'fuchsia_web_engine_non_graphical_gtests',
           'isolated_scripts': 'fuchsia_arm64_isolated_scripts',
         },
+        'additional_compile_targets': [
+          'cast_test_lists',
+        ],
         'mixins': [
           'arm64',
           'docker',
@@ -3024,6 +3027,9 @@
           'gtest_tests': 'fuchsia_gtests',
           'isolated_scripts': 'fuchsia_isolated_scripts',
         },
+        'additional_compile_targets': [
+          'cast_test_lists',
+        ],
       },
       'fuchsia-x64-dbg': {
         'additional_compile_targets': [
