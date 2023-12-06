@@ -7,7 +7,9 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -16,6 +18,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/wm/desks/desks_util.h"
 #include "base/base_switches.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
@@ -730,7 +733,8 @@ void BrowserManager::NewWindow(bool incognito,
   int64_t target_display_id =
       display::Screen::GetScreen()->GetDisplayForNewWindows().id();
   PerformOrEnqueue(BrowserAction::NewWindow(
-      incognito, should_trigger_session_restore, target_display_id));
+      incognito, should_trigger_session_restore, target_display_id,
+      ash::desks_util::GetActiveDeskLacrosProfileId()));
 }
 
 void BrowserManager::OpenForFullRestore(bool skip_crash_restore) {
@@ -766,7 +770,8 @@ void BrowserManager::NewTab() {
 void BrowserManager::Launch() {
   int64_t target_display_id =
       display::Screen::GetScreen()->GetDisplayForNewWindows().id();
-  PerformOrEnqueue(BrowserAction::Launch(target_display_id));
+  PerformOrEnqueue(BrowserAction::Launch(
+      target_display_id, ash::desks_util::GetActiveDeskLacrosProfileId()));
 }
 
 void BrowserManager::OpenUrl(

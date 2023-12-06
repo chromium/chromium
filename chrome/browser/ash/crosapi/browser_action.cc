@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/crosapi/browser_action.h"
-#include <cstdint>
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
@@ -394,9 +393,10 @@ class OpenProfileManagerAction final : public BrowserAction {
 std::unique_ptr<BrowserAction> BrowserAction::NewWindow(
     bool incognito,
     bool should_trigger_session_restore,
-    int64_t target_display_id) {
+    int64_t target_display_id,
+    std::optional<uint64_t> profile_id) {
   return std::make_unique<NewWindowAction>(
-      incognito, should_trigger_session_restore, target_display_id);
+      incognito, should_trigger_session_restore, target_display_id, profile_id);
 }
 
 // static
@@ -406,8 +406,9 @@ std::unique_ptr<BrowserAction> BrowserAction::NewTab() {
 
 // static
 std::unique_ptr<BrowserAction> BrowserAction::Launch(
-    int64_t target_display_id) {
-  return std::make_unique<LaunchAction>(target_display_id);
+    int64_t target_display_id,
+    std::optional<uint64_t> profile_id) {
+  return std::make_unique<LaunchAction>(target_display_id, profile_id);
 }
 
 // static

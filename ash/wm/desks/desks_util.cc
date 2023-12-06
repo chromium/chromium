@@ -5,6 +5,7 @@
 #include "ash/wm/desks/desks_util.h"
 
 #include <array>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
@@ -18,6 +19,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/containers/adapters.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
@@ -139,6 +141,15 @@ ASH_EXPORT bool BelongsToActiveDesk(aura::Window* window) {
   const int active_desk_id = GetActiveDeskContainerId();
   aura::Window* desk_container = GetDeskContainerForContext(window);
   return desk_container && desk_container->GetId() == active_desk_id;
+}
+
+std::optional<uint64_t> GetActiveDeskLacrosProfileId() {
+  std::optional<uint64_t> id;
+  if (auto* desk_controller = DesksController::Get();
+      desk_controller && chromeos::features::IsDeskProfilesEnabled()) {
+    id = desk_controller->active_desk()->lacros_profile_id();
+  }
+  return id;
 }
 
 aura::Window* GetDeskContainerForContext(aura::Window* context) {
