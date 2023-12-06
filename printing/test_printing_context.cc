@@ -155,6 +155,7 @@ mojom::ResultCode TestPrintingContext::UpdatePrinterSettings(
   DVLOG(1) << "Updating context settings for device `" << device_name << "`";
   std::unique_ptr<PrintSettings> existing_settings = std::move(settings_);
   settings_ = std::make_unique<PrintSettings>(*found->second);
+  settings_->set_copies(existing_settings->copies());
   settings_->set_dpi(existing_settings->dpi());
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   for (const auto& item : existing_settings->advanced_settings())

@@ -25,10 +25,46 @@ namespace {
 constexpr char kId[] = "id";
 constexpr char kName[] = "name";
 
+constexpr std::string_view kPrintScriptWithJobStatePlaceholder = R"(
+    (async () => {
+      const pdf = `%PDF-1.0
+1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj 2 0 ` +
+`obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj 3 0 ` +
+`obj<</Type/Page/MediaBox[0 0 3 3]>>endobj
+xref
+0 4
+0000000000 65535 f
+0000000010 00000 n
+0000000053 00000 n
+0000000102 00000 n
+trailer<</Size 4/Root 1 0 R>>
+startxref
+149
+%EOF`;
+
+    const pdfBlob = new Blob([pdf], {type: 'application/pdf'});
+    const printers = await navigator.printing.getPrinters();
+
+    const printJob = await printers[0].printJob("Title", { data: pdfBlob }, {});
+    const printJobComplete = new Promise((resolve, reject) => {
+      printJob.onjobstatechange = () => {
+        if (printJob.attributes().jobState === $1) {
+          resolve();
+          return;
+        }
+      };
+    });
+    await printJobComplete;
+   })();
+  )";
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 using testing::_;
+using testing::DoAll;
 using testing::InSequence;
 using testing::NiceMock;
+using testing::WithArg;
+using testing::WithArgs;
 #endif
 
 }  // namespace
@@ -87,6 +123,10 @@ class WebPrintingBrowserTest : public WebPrintingBrowserTestBase {
                                  std::move(caps));
   }
 
+  extensions::PrintingBackendInfrastructureHelper& printing_infra_helper() {
+    return helper_->printing_infra_helper();
+  }
+
  private:
   std::unique_ptr<extensions::PrintingTestHelper> helper_;
 };
@@ -104,10 +144,23 @@ class WebPrintingBrowserTest : public WebPrintingBrowserTestBase {
     WebPrintingBrowserTestBase::CreatedBrowserMainParts(browser_main_parts);
     chromeos::LacrosService::Get()->InjectRemoteForTesting(
         local_printer_receiver_.BindNewPipeAndPassRemote());
+
+    // When WebPrintingServiceChromeOS is created, it attempts to bind the
+    // observer for print jobs.
+    EXPECT_CALL(local_printer(), AddPrintJobObserver(_, _, _))
+        .WillOnce(WithArgs<0, 2>(
+            [&](mojo::PendingRemote<crosapi::mojom::PrintJobObserver> remote,
+                MockLocalPrinter::AddPrintJobObserverCallback callback) {
+              observer_remote_.Bind(std::move(remote));
+              std::move(callback).Run();
+            }));
   }
 
  protected:
   NiceMock<MockLocalPrinter>& local_printer() { return local_printer_; }
+  crosapi::mojom::PrintJobObserver* observer_remote() {
+    return observer_remote_.get();
+  }
   extensions::PrintingBackendInfrastructureHelper& printing_infra_helper() {
     return *printing_infra_helper_;
   }
@@ -116,6 +169,8 @@ class WebPrintingBrowserTest : public WebPrintingBrowserTestBase {
   NiceMock<MockLocalPrinter> local_printer_;
   mojo::Receiver<crosapi::mojom::LocalPrinter> local_printer_receiver_{
       &local_printer_};
+  mojo::Remote<crosapi::mojom::PrintJobObserver> observer_remote_;
+
   std::unique_ptr<extensions::PrintingBackendInfrastructureHelper>
       printing_infra_helper_;
 };
@@ -218,40 +273,59 @@ IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest, Print) {
               chromeos::Printer(kId),
               *extensions::ConstructPrinterCapabilities())));
 
-  // Acknowledge print job creation so that the mojo callback doesn't hang.
+  // Pretends to acknowledge the incoming Lacros print job creation request and
+  // responds with PrintJobStatus::kStarted event.
+  // The callback is ignored by the implementation -- for this reason the
+  // invocation order doesn't really matter here (however, dropping it would
+  // yield a mojo error).
   EXPECT_CALL(local_printer(), CreatePrintJob(_, _))
-      .WillOnce(base::test::RunOnceCallback<1>());
+      .WillOnce(DoAll(
+          WithArg<0>([&](const auto& job) {
+            observer_remote()->OnPrintJobUpdate(
+                kId, job->job_id, crosapi::mojom::PrintJobStatus::kStarted);
+            observer_remote()->OnPrintJobUpdate(
+                kId, job->job_id, crosapi::mojom::PrintJobStatus::kDone);
+          }),
+          base::test::RunOnceCallback<1>()));
 
   printing_infra_helper()
       .test_printing_context_factory()
       .SetPrinterNameForSubsequentContexts(kId);
 #endif
 
-  constexpr std::string_view kPrintScript = R"(
-    (async () => {
-      const pdf = `%PDF-1.0
-1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj 2 0 ` +
-`obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj 3 0 ` +
-`obj<</Type/Page/MediaBox[0 0 3 3]>>endobj
-xref
-0 4
-0000000000 65535 f
-0000000010 00000 n
-0000000053 00000 n
-0000000102 00000 n
-trailer<</Size 4/Root 1 0 R>>
-startxref
-149
-%EOF`;
+  const auto script = content::JsReplace(kPrintScriptWithJobStatePlaceholder,
+                                         /*job_state=*/"completed");
+  ASSERT_THAT(EvalJs(app_frame(), script), content::EvalJsResult::IsOk());
+}
 
-    const pdfBlob = new Blob([pdf], {type: 'application/pdf'});
-    const printers = await navigator.printing.getPrinters();
+IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest, PrintFailure) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  AddPrinterWithSemanticCaps(kId, kName,
+                             extensions::ConstructPrinterCapabilities());
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  InSequence s;
 
-    const printJob = await printers[0].printJob("Title", { data: pdfBlob }, {});
-   })();
-  )";
+  EXPECT_CALL(local_printer(), GetPrinters(_))
+      .WillOnce(base::test::RunOnceCallback<0>(
+          extensions::ConstructGetPrintersResponse(kId, kName)));
 
-  ASSERT_THAT(EvalJs(app_frame(), kPrintScript), content::EvalJsResult::IsOk());
+  EXPECT_CALL(local_printer(), GetCapability(kId, _))
+      .WillOnce(base::test::RunOnceCallback<1>(
+          printing::PrinterWithCapabilitiesToMojom(
+              chromeos::Printer(kId),
+              *extensions::ConstructPrinterCapabilities())));
+
+  printing_infra_helper()
+      .test_printing_context_factory()
+      .SetPrinterNameForSubsequentContexts(kId);
+#endif
+  printing_infra_helper()
+      .test_printing_context_factory()
+      .SetFailedErrorOnNewDocument(/*cause_errors=*/true);
+
+  const auto script = content::JsReplace(kPrintScriptWithJobStatePlaceholder,
+                                         /*job_state=*/"aborted");
+  ASSERT_THAT(EvalJs(app_frame(), script), content::EvalJsResult::IsOk());
 }
 
 }  // namespace printing

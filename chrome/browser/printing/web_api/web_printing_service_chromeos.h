@@ -10,9 +10,11 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
+#include "chrome/browser/printing/web_api/in_progress_jobs_storage_chromeos.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/printing/web_printing.mojom.h"
 
@@ -64,14 +66,16 @@ class WebPrintingServiceChromeOS
   void OnPdfReadAndFlattened(std::unique_ptr<PrintSettings> settings,
                              PrintCallback callback,
                              std::unique_ptr<MetafileSkia> flattened_pdf);
-
-  void OnPrintJobCreated(std::optional<PrintJobCreatedInfo> creation_info);
+  void OnPrintJobCreated(
+      mojo::PendingRemote<blink::mojom::WebPrintJobStateObserver> observer,
+      std::optional<PrintJobCreatedInfo> creation_info);
 
   // Stores browser-side endpoints for blink-side Printer objects.
   mojo::ReceiverSet<blink::mojom::WebPrinter, PrinterId> printers_;
 
   std::unique_ptr<PdfBlobDataFlattener> pdf_flattener_;
   std::unique_ptr<PrintJobController> print_job_controller_;
+  InProgressJobsStorageChromeOS in_progress_jobs_storage_;
 
   base::WeakPtrFactory<WebPrintingServiceChromeOS> weak_factory_{this};
 };

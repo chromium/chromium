@@ -170,6 +170,7 @@
     "install",
     "interfacerequest",
     "invalid",
+    "jobstatechange",
     "keydown",
     "keypress",
     "keystatuseschange",

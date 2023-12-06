@@ -21,6 +21,10 @@ using MojomSides = blink::mojom::blink::WebPrintingSides;
 using V8MultipleDocumentHandling = blink::V8WebPrintingMultipleDocumentHandling;
 using MojomMultipleDocumentHandling =
     blink::mojom::blink::WebPrintingMultipleDocumentHandling;
+
+// state:
+using V8JobState = blink::V8WebPrintJobState;
+using MojomJobState = blink::mojom::blink::WebPrintJobState;
 }  // namespace
 
 namespace mojo {
@@ -181,6 +185,22 @@ TypeConverter<blink::mojom::blink::WebPrintJobTemplateAttributesPtr,
   blink::ProcessSides(*pjt_attributes, attributes.get());
 
   return attributes;
+}
+
+V8JobState::Enum TypeConverter<V8JobState::Enum, MojomJobState>::Convert(
+    const MojomJobState& state) {
+  switch (state) {
+    case MojomJobState::kPending:
+      return V8JobState::Enum::kPending;
+    case MojomJobState::kProcessing:
+      return V8JobState::Enum::kProcessing;
+    case MojomJobState::kCompleted:
+      return V8JobState::Enum::kCompleted;
+    case MojomJobState::kCanceled:
+      return V8JobState::Enum::kCanceled;
+    case MojomJobState::kAborted:
+      return V8JobState::Enum::kAborted;
+  }
 }
 
 }  // namespace mojo

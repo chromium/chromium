@@ -6993,6 +6993,8 @@ static_library("browser") {
         ]
         if (use_cups) {
           sources += [
+            "printing/web_api/in_progress_jobs_storage_chromeos.cc",
+            "printing/web_api/in_progress_jobs_storage_chromeos.h",
             "printing/web_api/web_printing_service_chromeos.cc",
             "printing/web_api/web_printing_service_chromeos.h",
             "printing/web_api/web_printing_type_converters.cc",

@@ -147,18 +147,10 @@ void WebPrintingServiceChromeOS::OnPdfReadAndFlattened(
     return;
   }
 
+  mojo::PendingRemote<blink::mojom::WebPrintJobStateObserver> observer;
   auto job_info = blink::mojom::WebPrintJobInfo::New();
   job_info->job_name = base::UTF16ToUTF8(settings->title());
-
-  // TODO(b/302505962): Run this callback directly after calling
-  // CreatePrintJob() on the controller without waiting for its own callback.
-  // At the moment there's no signal that could allow us to keep the browser
-  // test running until the printing pipeline completes; for this reason the
-  // callback is currently invoked after CreatePrintJob()'s own callback to
-  // account for this.
-  auto cb = base::BindOnce(
-      std::move(callback),
-      blink::mojom::WebPrintResult::NewPrintJobInfo(std::move(job_info)));
+  job_info->observer = observer.InitWithNewPipeAndPassReceiver();
 
   // TODO(b/302505962): Figure out the correct value to pass as `source_id`.
   print_job_controller_->CreatePrintJob(
@@ -166,16 +158,26 @@ void WebPrintingServiceChromeOS::OnPdfReadAndFlattened(
       /*source=*/crosapi::mojom::PrintJob::Source::kIsolatedWebApp,
       /*source_id=*/"",
       base::BindOnce(&WebPrintingServiceChromeOS::OnPrintJobCreated,
-                     weak_factory_.GetWeakPtr())
-          .Then(std::move(cb)));
+                     weak_factory_.GetWeakPtr(), std::move(observer)));
+
+  std::move(callback).Run(
+      blink::mojom::WebPrintResult::NewPrintJobInfo(std::move(job_info)));
 }
 
 void WebPrintingServiceChromeOS::OnPrintJobCreated(
+    mojo::PendingRemote<blink::mojom::WebPrintJobStateObserver> observer,
     std::optional<PrintJobCreatedInfo> creation_info) {
   if (!creation_info) {
-    // TODO(b/302505962): Propagate error via remote.
+    // Dispatches a notification and deletes itself.
+    mojo::Remote<blink::mojom::WebPrintJobStateObserver>(std::move(observer))
+        ->OnWebPrintJobStateChanged(blink::mojom::WebPrintJobState::kAborted);
     return;
   }
+
+  std::string printer_id =
+      base::UTF16ToUTF8(creation_info->document->settings().device_name());
+  in_progress_jobs_storage_.PrintJobAcknowledgedByThePrintSystem(
+      printer_id, creation_info->job_id, std::move(observer));
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // TODO(b/302505962): Figure out the correct value to pass as `source_id`.

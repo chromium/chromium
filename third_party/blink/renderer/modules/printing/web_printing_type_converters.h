@@ -7,6 +7,7 @@
 
 #include "mojo/public/cpp/bindings/type_converter.h"
 #include "third_party/blink/public/mojom/printing/web_printing.mojom-blink-forward.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_print_job_state.h"
 
 namespace blink {
 class WebPrinterAttributes;
@@ -27,6 +28,13 @@ struct TypeConverter<blink::mojom::blink::WebPrintJobTemplateAttributesPtr,
                      blink::WebPrintJobTemplateAttributes*> {
   static blink::mojom::blink::WebPrintJobTemplateAttributesPtr Convert(
       const blink::WebPrintJobTemplateAttributes*);
+};
+
+template <>
+struct TypeConverter<blink::V8WebPrintJobState::Enum,
+                     blink::mojom::blink::WebPrintJobState> {
+  static blink::V8WebPrintJobState::Enum Convert(
+      const blink::mojom::blink::WebPrintJobState&);
 };
 
 }  // namespace mojo

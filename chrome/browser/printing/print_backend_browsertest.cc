@@ -675,6 +675,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, UpdatePrintSettings) {
   PrintSettings print_settings;
   print_settings.set_device_name(kDefaultPrinterName16);
   print_settings.set_dpi(kPrintSettingsOverrideDpi);
+  print_settings.set_copies(kPrintSettingsCopies);
 
   mojom::PrintSettingsResultPtr settings =
       UpdatePrintSettingsAndWait(context_id, print_settings);

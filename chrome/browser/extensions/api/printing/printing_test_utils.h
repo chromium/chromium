@@ -98,6 +98,10 @@ class PrintingTestHelper {
       const std::string& printer_display_name,
       std::unique_ptr<printing::PrinterSemanticCapsAndDefaults> capabilities);
 
+  PrintingBackendInfrastructureHelper& printing_infra_helper() {
+    return *printing_infra_helper_;
+  }
+
  private:
   // Creates test factories for ash::TestCupsPrintJobManager and
   // ash::FakeCupsPrintersManager.

@@ -48,8 +48,23 @@ struct WebPrintJobTemplateAttributes {
   WebPrintingSides? sides;
 };
 
+enum WebPrintJobState {
+  kPending,
+  kProcessing,
+  kCompleted,
+  kCanceled,
+  kAborted,
+};
+
+// Informs the renderer of changes to a particular print job.
+interface WebPrintJobStateObserver {
+  // Dispatches a state change notification.
+  OnWebPrintJobStateChanged(WebPrintJobState state);
+};
+
 struct WebPrintJobInfo {
   string job_name;
+  pending_receiver<WebPrintJobStateObserver> observer;
 };
 
 enum WebPrintError {
