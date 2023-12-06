@@ -635,8 +635,8 @@ float ShapeResult::PositionForOffset(
   float x = 0;
 
   // The absolute_offset argument represents the offset for the entire
-  // ShapeResult while offset is continuously updated to be relative to the
-  // current run.
+  // ShapeResult while offset counts down the remaining offset as runs are
+  // processed.
   unsigned offset = absolute_offset;
 
   if (IsRtl()) {

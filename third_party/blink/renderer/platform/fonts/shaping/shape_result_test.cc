@@ -18,19 +18,31 @@
 namespace blink {
 
 class ShapeResultTest : public FontTestBase {
+ public:
+  enum FontType {
+    kLatinFont = 0,
+    kArabicFont = 1,
+    kCJKFont = 2,
+  };
+
  protected:
   void SetUp() override {
     FontDescription::VariantLigatures ligatures;
-    font = blink::test::CreateTestFont(
+    fonts[0] = blink::test::CreateTestFont(
         AtomicString("Roboto"),
         blink::test::PlatformTestDataPath(
             "third_party/Roboto/roboto-regular.woff2"),
         12.0, &ligatures);
 
-    arabic_font = blink::test::CreateTestFont(
+    fonts[1] = blink::test::CreateTestFont(
         AtomicString("Noto"),
         blink::test::PlatformTestDataPath(
             "third_party/Noto/NotoNaskhArabic-regular.woff2"),
+        12.0, &ligatures);
+
+    fonts[2] = blink::test::CreateTestFont(
+        AtomicString("M PLUS 1p"),
+        blink::test::BlinkWebTestsFontsTestDataPath("mplus-1p-regular.woff"),
         12.0, &ligatures);
   }
 
@@ -56,15 +68,19 @@ class ShapeResultTest : public FontTestBase {
   }
 
   ShapeResult* CreateShapeResult(TextDirection direction) const {
-    return new ShapeResult(
-        direction == TextDirection::kLtr ? &font : &arabic_font, 0, 0,
-        direction);
+    return new ShapeResult(direction == TextDirection::kLtr
+                               ? GetFont(kLatinFont)
+                               : GetFont(kArabicFont),
+                           0, 0, direction);
+  }
+
+  const Font* GetFont(FontType type) const {
+    return fonts + static_cast<size_t>(type);
   }
 
   FontCachePurgePreventer font_cache_purge_preventer;
   FontDescription font_description;
-  Font font;
-  Font arabic_font;
+  Font fonts[3];
 };
 
 void ShapeResultTest::TestCopyRangesLatin(const ShapeResult* result) const {
@@ -146,7 +162,8 @@ TEST_F(ShapeResultTest, CopyRangeLatin) {
   TextDirection direction = TextDirection::kLtr;
 
   HarfBuzzShaper shaper(string);
-  scoped_refptr<ShapeResult> result = shaper.Shape(&font, direction);
+  scoped_refptr<ShapeResult> result =
+      shaper.Shape(GetFont(kLatinFont), direction);
   TestCopyRangesLatin(result.get());
 }
 
@@ -164,11 +181,15 @@ TEST_F(ShapeResultTest, CopyRangeLatinMultiRun) {
   // Combine four separate results into a single one to ensure we have a result
   // with multiple runs.
   scoped_refptr<ShapeResult> result =
-      ShapeResult::Create(&font, 0, 0, direction);
-  shaper_a.Shape(&font, direction)->CopyRange(0u, 5u, result.get());
-  shaper_b.Shape(&font, direction)->CopyRange(0u, 2u, result.get());
-  shaper_c.Shape(&font, direction)->CopyRange(0u, 25u, result.get());
-  shaper_d.Shape(&font, direction)->CopyRange(0u, 6u, result.get());
+      ShapeResult::Create(GetFont(kLatinFont), 0, 0, direction);
+  shaper_a.Shape(GetFont(kLatinFont), direction)
+      ->CopyRange(0u, 5u, result.get());
+  shaper_b.Shape(GetFont(kLatinFont), direction)
+      ->CopyRange(0u, 2u, result.get());
+  shaper_c.Shape(GetFont(kLatinFont), direction)
+      ->CopyRange(0u, 25u, result.get());
+  shaper_d.Shape(GetFont(kLatinFont), direction)
+      ->CopyRange(0u, 6u, result.get());
   TestCopyRangesLatin(result.get());
 }
 
@@ -181,11 +202,15 @@ TEST_F(ShapeResultTest, CopyRangeLatinMultiRunWithHoles) {
   HarfBuzzShaper shaper_d(string.Substring(32, 34));
 
   scoped_refptr<ShapeResult> result =
-      ShapeResult::Create(&font, 0, 0, direction);
-  shaper_a.Shape(&font, direction)->CopyRange(0u, 5u, result.get());
-  shaper_b.Shape(&font, direction)->CopyRange(0u, 2u, result.get());
-  shaper_c.Shape(&font, direction)->CopyRange(0u, 25u, result.get());
-  shaper_d.Shape(&font, direction)->CopyRange(0u, 2u, result.get());
+      ShapeResult::Create(GetFont(kLatinFont), 0, 0, direction);
+  shaper_a.Shape(GetFont(kLatinFont), direction)
+      ->CopyRange(0u, 5u, result.get());
+  shaper_b.Shape(GetFont(kLatinFont), direction)
+      ->CopyRange(0u, 2u, result.get());
+  shaper_c.Shape(GetFont(kLatinFont), direction)
+      ->CopyRange(0u, 25u, result.get());
+  shaper_d.Shape(GetFont(kLatinFont), direction)
+      ->CopyRange(0u, 2u, result.get());
 
   ShapeResult::ShapeRange ranges[] = {
       {4, 17, CreateShapeResult(TextDirection::kLtr)},
@@ -226,7 +251,8 @@ TEST_F(ShapeResultTest, CopyRangeArabic) {
   TextDirection direction = TextDirection::kRtl;
 
   HarfBuzzShaper shaper(string);
-  scoped_refptr<ShapeResult> result = shaper.Shape(&arabic_font, direction);
+  scoped_refptr<ShapeResult> result =
+      shaper.Shape(GetFont(kArabicFont), direction);
   TestCopyRangesArabic(result.get());
 }
 
@@ -247,10 +273,13 @@ TEST_F(ShapeResultTest, CopyRangeArabicMultiRun) {
   // Combine three separate results into a single one to ensure we have a result
   // with multiple runs.
   scoped_refptr<ShapeResult> result =
-      ShapeResult::Create(&arabic_font, 0, 0, direction);
-  shaper_a.Shape(&arabic_font, direction)->CopyRange(0u, 2u, result.get());
-  shaper_b.Shape(&arabic_font, direction)->CopyRange(0u, 7u, result.get());
-  shaper_c.Shape(&arabic_font, direction)->CopyRange(0u, 8u, result.get());
+      ShapeResult::Create(GetFont(kArabicFont), 0, 0, direction);
+  shaper_a.Shape(GetFont(kArabicFont), direction)
+      ->CopyRange(0u, 2u, result.get());
+  shaper_b.Shape(GetFont(kArabicFont), direction)
+      ->CopyRange(0u, 7u, result.get());
+  shaper_c.Shape(GetFont(kArabicFont), direction)
+      ->CopyRange(0u, 8u, result.get());
 
   TestCopyRangesArabic(result.get());
 }
@@ -290,7 +319,8 @@ TEST_P(IsStartSafeToBreakDataTest, IsStartSafeToBreakData) {
   const IsStartSafeToBreakData data = GetParam();
   String string(data.text);
   HarfBuzzShaper shaper(string);
-  scoped_refptr<ShapeResult> result = shaper.Shape(&font, data.direction);
+  scoped_refptr<ShapeResult> result =
+      shaper.Shape(GetFont(kLatinFont), data.direction);
   if (data.end_offset)
     result = result->SubRange(data.start_offset, data.end_offset);
   EXPECT_EQ(result->IsStartSafeToBreak(), data.expected);
@@ -299,7 +329,7 @@ TEST_P(IsStartSafeToBreakDataTest, IsStartSafeToBreakData) {
 TEST_F(ShapeResultTest, ComputeInkBoundsWithZeroOffset) {
   String string(u"abc");
   HarfBuzzShaper shaper(string);
-  auto result = shaper.Shape(&font, TextDirection::kLtr);
+  auto result = shaper.Shape(GetFont(kLatinFont), TextDirection::kLtr);
   EXPECT_FALSE(HasNonZeroGlyphOffsets(*result));
   EXPECT_FALSE(result->ComputeInkBounds().IsEmpty());
 }
@@ -351,7 +381,8 @@ TEST_P(TextAutoSpaceResultText, AddAutoSpacingToIdeograph) {
   const auto& test_data = GetParam();
   String string(test_data.string);
   HarfBuzzShaper shaper(string);
-  scoped_refptr<ShapeResult> result = shaper.Shape(&font, TextDirection::kLtr);
+  scoped_refptr<ShapeResult> result =
+      shaper.Shape(GetFont(kLatinFont), TextDirection::kLtr);
 
   // Record the position before applying text-autospace, and fill the spacing
   // widths with different values.
@@ -378,7 +409,7 @@ TEST_F(ShapeResultTest, DISABLED_ComputeInkBoundsWithNonZeroOffset) {
   // U+0A81 has non-zero glyph offset
   String string(u"xy\u0A81z");
   HarfBuzzShaper shaper(string);
-  auto result = shaper.Shape(&font, TextDirection::kLtr);
+  auto result = shaper.Shape(GetFont(kLatinFont), TextDirection::kLtr);
   ASSERT_TRUE(HasNonZeroGlyphOffsets(*result));
   EXPECT_FALSE(result->ComputeInkBounds().IsEmpty());
 }
@@ -393,8 +424,8 @@ struct CaretPositionForOffsetTextData {
   std::vector<wtf_size_t> offsets;
   // Expected positions. The width is 240.
   std::vector<float> positions;
-  // True to use latin font, otherwise arabic
-  bool is_latin;
+  // The font to use
+  ShapeResultTest::FontType font;
   // Adjust mid cluster value
   AdjustMidCluster adjust_mid_cluster;
 } caret_position_for_offset_test_data[] = {
@@ -407,7 +438,7 @@ struct CaretPositionForOffsetTextData {
 #else
      {0, 7, 28, 35, 84, 126, 210, 0},
 #endif
-     true,
+     ShapeResultTest::kLatinFont,
      AdjustMidCluster::kToStart},
 
     // 1
@@ -419,7 +450,7 @@ struct CaretPositionForOffsetTextData {
 #else
      {210, 203, 182, 175, 126, 84, 0, 0},
 #endif
-     true,
+     ShapeResultTest::kLatinFont,
      AdjustMidCluster::kToStart},
 
     // 2
@@ -431,7 +462,7 @@ struct CaretPositionForOffsetTextData {
 #else
      {0, 7, 22, 26, 63, 93, 228, 0},
 #endif
-     true,
+     ShapeResultTest::kLatinFont,
      AdjustMidCluster::kToStart},
 
     // 3
@@ -443,7 +474,7 @@ struct CaretPositionForOffsetTextData {
 #else
      {228, 221, 206, 202, 165, 135, 0, 0},
 #endif
-     true,
+     ShapeResultTest::kLatinFont,
      AdjustMidCluster::kToStart},
 
     // 4
@@ -458,7 +489,7 @@ struct CaretPositionForOffsetTextData {
 #else
      {0, 0, 6, 13, 13, 20, 40, 58, 70, 105, 156},
 #endif
-     false,
+     ShapeResultTest::kArabicFont,
      AdjustMidCluster::kToStart},
 
     // 5
@@ -473,7 +504,7 @@ struct CaretPositionForOffsetTextData {
 #else
      {0, 6, 6, 13, 20, 20, 40, 58, 75, 105, 156},
 #endif
-     false,
+     ShapeResultTest::kArabicFont,
      AdjustMidCluster::kToEnd},
 
     // 6
@@ -488,7 +519,7 @@ struct CaretPositionForOffsetTextData {
 #else
      {156, 156, 150, 143, 143, 137, 117, 98, 87, 52, 0},
 #endif
-     false,
+     ShapeResultTest::kArabicFont,
      AdjustMidCluster::kToStart},
 
     // 7
@@ -503,7 +534,103 @@ struct CaretPositionForOffsetTextData {
 #else
      {156, 150, 150, 143, 137, 137, 117, 98, 82, 52, 0},
 #endif
-     false,
+     ShapeResultTest::kArabicFont,
+     AdjustMidCluster::kToEnd},
+
+    // 8
+    {u"あ1あمَ2あمَあ3あمَあمَ4あمَあمَあ5",
+     TextDirection::kLtr,
+     {0, 1, 2, 3, 4, 5, 10, 15, 20, 25, 26},
+#if BUILDFLAG(IS_APPLE)
+     {0, 12, 18.86, 30.86, 30.86, 36.73, 73.45, 110.18, 134.91, 170.64, 177.5},
+#else
+     {0, 12, 19, 31, 31, 37, 74, 111, 136, 172, 179},
+#endif
+     ShapeResultTest::kArabicFont,
+     AdjustMidCluster::kToStart},
+
+    // 9
+    {u"あ1あمَ2あمَあ3あمَあمَ4あمَあمَあ5",
+     TextDirection::kLtr,
+     {0, 1, 2, 3, 4, 5, 10, 15, 20, 26},
+#if BUILDFLAG(IS_APPLE)
+     {0, 12, 18.86, 30.86, 36.73, 36.73, 73.45, 110.18, 140.77, 177.5},
+#else
+     {0, 12, 19, 31, 37, 37, 74, 111, 142, 179},
+#endif
+     ShapeResultTest::kArabicFont,
+     AdjustMidCluster::kToEnd},
+
+    // 10
+    {u"あ1あمَ2あمَあ3あمَあمَ4あمَあمَあ5",
+     TextDirection::kRtl,
+     {0, 1, 2, 3, 4, 5, 10, 15, 20, 26},
+#if BUILDFLAG(IS_APPLE)
+     {177.5, 165.5, 158.64, 146.64, 146.64, 140.77, 104.04, 67.32, 42.59, 0},
+#else
+     {179, 167, 160, 148, 148, 142, 105, 68, 43, 0},
+#endif
+     ShapeResultTest::kArabicFont,
+     AdjustMidCluster::kToStart},
+
+    // 11
+    {u"あ1あمَ2あمَあ3あمَあمَ4あمَあمَあ5",
+     TextDirection::kRtl,
+     {0, 1, 2, 3, 4, 5, 10, 15, 20, 26},
+#if BUILDFLAG(IS_APPLE)
+     {177.5, 165.5, 158.64, 146.64, 140.77, 140.77, 104.04, 67.32, 36.73, 0},
+#else
+     {179, 167, 160, 148, 142, 142, 105, 68, 37, 0},
+#endif
+     ShapeResultTest::kArabicFont,
+     AdjustMidCluster::kToEnd},
+
+    // 12
+    {u"楽しいドライブ、012345楽しいドライブ、",
+     TextDirection::kLtr,
+     {0, 1, 2, 3, 4, 5, 10, 15, 20, 22},
+#if BUILDFLAG(IS_APPLE)
+     {0, 12, 24, 36, 48, 60, 110.88, 152.64, 212.63, 236.64},
+#else
+     {0, 12, 24, 36, 48, 60, 110, 150, 210, 234},
+#endif
+     ShapeResultTest::kCJKFont,
+     AdjustMidCluster::kToStart},
+
+    // 13
+    {u"楽しいドライブ、012345楽しいドライブ、",
+     TextDirection::kLtr,
+     {0, 1, 2, 3, 4, 5, 10, 15, 20, 22},
+#if BUILDFLAG(IS_APPLE)
+     {0, 12, 24, 36, 48, 60, 110.88, 152.64, 212.63, 236.64},
+#else
+     {0, 12, 24, 36, 48, 60, 110, 150, 210, 234},
+#endif
+     ShapeResultTest::kCJKFont,
+     AdjustMidCluster::kToEnd},
+
+    // 14
+    {u"楽しいドライブ、012345楽しいドライブ、",
+     TextDirection::kRtl,
+     {0, 1, 2, 3, 4, 5, 10, 15, 20, 22},
+#if BUILDFLAG(IS_APPLE)
+     {236.64, 224.64, 212.64, 200.64, 188.64, 176.64, 125.76, 84, 24, 0},
+#else
+     {234, 222, 210, 198, 186, 174, 124, 84, 24, 0},
+#endif
+     ShapeResultTest::kCJKFont,
+     AdjustMidCluster::kToStart},
+
+    // 15
+    {u"楽しいドライブ、012345楽しいドライブ、",
+     TextDirection::kRtl,
+     {0, 1, 2, 3, 4, 5, 10, 15, 20, 22},
+#if BUILDFLAG(IS_APPLE)
+     {236.64, 224.64, 212.64, 200.64, 188.64, 176.64, 125.76, 84, 24, 0},
+#else
+     {234, 222, 210, 198, 186, 174, 124, 84, 24, 0},
+#endif
+     ShapeResultTest::kCJKFont,
      AdjustMidCluster::kToEnd},
 };
 class CaretPositionForOffsetText
@@ -518,8 +645,8 @@ TEST_P(CaretPositionForOffsetText, CaretPositionForOffsets) {
   const auto& test_data = GetParam();
   String text_string(test_data.string);
   HarfBuzzShaper shaper(text_string);
-  scoped_refptr<ShapeResult> result = shaper.Shape(
-      test_data.is_latin ? &font : &arabic_font, test_data.direction);
+  scoped_refptr<ShapeResult> result =
+      shaper.Shape(GetFont(test_data.font), test_data.direction);
   StringView text_view(text_string);
 
   for (wtf_size_t i = 0; i < test_data.offsets.size(); ++i) {
