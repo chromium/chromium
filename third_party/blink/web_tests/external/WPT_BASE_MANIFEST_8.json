@@ -288446,7 +288446,7 @@
       []
      ],
      "support-promises.js": [
-      "1a5b8270842cd80234b3f7028d8683620904ec71",
+      "f64b73adc903287b58c62bac8b17475d32f753ae",
       []
      ],
      "support.js": [
@@ -352297,7 +352297,7 @@
        []
       ],
       "direct-from-seller-signals.py": [
-       "0f9e29dd57254db7dbb81cfce4ef85892834423c",
+       "e94b9c5b47c271559db9d458f7f5faa14312fd76",
        []
       ],
       "empty.html": [
@@ -386655,7 +386655,7 @@
        []
       ],
       "sw.js": [
-       "db774f9d5b80dc00cfc3beff20deaa311faca415",
+       "dd8a9631b4e8d25e0f3a4258806b909b07e682d7",
        []
       ],
       "utils.sub.js": [
@@ -402903,7 +402903,7 @@
      ]
     ],
     "idbindex_reverse_cursor.any.js": [
-     "88c367466df7dfd94be4ca022686007839c253af",
+     "1297b44d6ec023e18d68ea57bd77b8f6ff95b56f",
      [
       "IndexedDB/idbindex_reverse_cursor.any.html",
       {
@@ -404813,7 +404813,7 @@
      ]
     ],
     "structured-clone.any.js": [
-     "15ab0359e230b7cf99c2a8859c01d6efee5a3721",
+     "687b028e90c3dc1141bc4de7d454ab291b2ac944",
      [
       "IndexedDB/structured-clone.any.html?1-20",
       {
@@ -513855,7 +513855,7 @@
       ]
      ],
      "direct-from-seller-signals.https.window.js": [
-      "016c20c2b723a110b55eece55193aa1a954b4ffc",
+      "0ae1efd8d3780efe9ff1a0886e6f79d4c17c2558",
       [
        "fledge/tentative/direct-from-seller-signals.https.window.html?1-5",
        {
@@ -582391,8 +582391,26 @@
        }
       ]
      ],
-     "loaf-iframe.html": [
-      "2885d4fbae9c88850478265fe6872a2f7c88c157",
+     "loaf-iframe-crossorigin.html": [
+      "16ecfd70176957c7b3150595a22aeec92dc6ff86",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "loaf-iframe-same-origin.html": [
+      "65dc89f29abc60dc2d0c76ca0c9bf5d31fca02b7",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "loaf-iframe-self.html": [
+      "7511ff1072ab41c0f28851c0ffb443df15ffed62",
       [
        null,
        {
@@ -622856,7 +622874,7 @@
       ]
      ],
      "duplicate-urls.https.html": [
-      "c6d6fb7878d61f677285515e723cd5b82de83590",
+      "f9e46a6a384a5d1c15e9314a64b610186d63b11e",
       [
        null,
        {}
@@ -698092,7 +698110,7 @@
          ]
         ],
         "pointer_mouse_multiclick.py": [
-         "87c29027b3aedc512cceb1897a3c1dcc11643b07",
+         "35381053413fac6baf0c6291a797ffa080372ee2",
          [
           null,
           {}
@@ -700054,7 +700072,7 @@
         ]
        ],
        "pointer_dblclick.py": [
-        "659e27bd5c8883db62333cb451c8e40ace6701ee",
+        "de83e77d36ad26b7393b5c1cebf34a55c2edb9db",
         [
          null,
          {}
