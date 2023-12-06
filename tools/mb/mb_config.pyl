@@ -1021,11 +1021,11 @@
     ],
 
     'ios_device_release_compile_only_reclient': [
-        'compile_only', 'ios', 'ios_device', 'ios_cpu_arm64', 'ios_google_cert', 'ios_disable_code_signing', 'release_bot_reclient',
+        'compile_only', 'ios', 'ios_device', 'ios_cpu_arm64', 'ios_google_cert', 'ios_disable_code_signing', 'release_bot_reclient', 'ios_build_chrome_false',
     ],
 
     'ios_simulator_debug_static_bot_xctest_reclient': [
-        'debug_static_bot_reclient', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest',
+        'debug_static_bot_reclient', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest', 'ios_build_chrome_false',
     ],
 
     'lacros_on_linux_release_trybot_reclient': [
@@ -1699,6 +1699,10 @@
 
     'ios': {
       'gn_args': 'target_os="ios"',
+    },
+
+    'ios_build_chrome_false': {
+      'gn_args': 'ios_build_chrome=false',
     },
 
     'ios_cpu_arm64': {
