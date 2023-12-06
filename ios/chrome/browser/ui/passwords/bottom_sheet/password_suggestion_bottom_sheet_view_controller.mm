@@ -203,10 +203,6 @@ CGFloat const kSpacingAfterTitle = 4;
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  base::UmaHistogramBoolean(
-      "IOS.PasswordBottomSheet.UsernameTapped.MinimizedState",
-      _tableViewIsMinimized);
-
   if (_suggestions.count <= 1) {
     return;
   }
@@ -230,6 +226,22 @@ CGFloat const kSpacingAfterTitle = 4;
   }
 
   [super tableView:tableView didSelectRowAtIndexPath:indexPath];
+}
+
+- (NSIndexPath*)tableView:(UITableView*)tableView
+    willSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  BOOL singleSuggestion = (_suggestions.count <= 1);
+  if (singleSuggestion ||
+      (!_tableViewIsMinimized && (indexPath.row == [self selectedRow]))) {
+    // Record how many useless taps users do.
+    // If we have a single suggestion, tapping on it does nothing.
+    // If we have multiple suggestions currently visible, tapping on the already
+    // selected one also does nothing.
+    base::UmaHistogramBoolean(
+        "IOS.PasswordBottomSheet.UsernameTapped.MinimizedState",
+        singleSuggestion);
+  }
+  return indexPath;
 }
 
 // Long press open context menu.
