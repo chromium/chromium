@@ -189,39 +189,19 @@ void BackgroundImageGeometry::SetNoRepeatY(const FillLayer& fill_layer,
   SetSpaceSize(PhysicalSize(SpaceSize().width, LayoutUnit()));
 }
 
-void BackgroundImageGeometry::SetRepeatX(const FillLayer& fill_layer,
-                                         LayoutUnit available_width,
-                                         LayoutUnit extra_offset) {
+void BackgroundImageGeometry::SetRepeatX(LayoutUnit x_offset) {
   // All values are unsnapped to accurately set phase in the presence of
   // zoom and large values. That is, accurately render the
   // background-position value.
-  if (tile_size_.width) {
-    // Recompute computed position because here we need to resolve against
-    // unsnapped widths to correctly set the phase.
-    const LayoutUnit x_offset = ResolveXPosition(
-        fill_layer, available_width, OffsetInBackground(fill_layer).left);
-    SetPhaseX(ComputeTilePhase(x_offset + extra_offset, tile_size_.width));
-  } else {
-    SetPhaseX(LayoutUnit());
-  }
+  SetPhaseX(ComputeTilePhase(x_offset, tile_size_.width));
   SetSpaceSize(PhysicalSize(LayoutUnit(), SpaceSize().height));
 }
 
-void BackgroundImageGeometry::SetRepeatY(const FillLayer& fill_layer,
-                                         LayoutUnit available_height,
-                                         LayoutUnit extra_offset) {
+void BackgroundImageGeometry::SetRepeatY(LayoutUnit y_offset) {
   // All values are unsnapped to accurately set phase in the presence of
   // zoom and large values. That is, accurately render the
   // background-position value.
-  if (tile_size_.height) {
-    // Recompute computed position because here we need to resolve against
-    // unsnapped widths to correctly set the phase.
-    const LayoutUnit y_offset = ResolveYPosition(
-        fill_layer, available_height, OffsetInBackground(fill_layer).top);
-    SetPhaseY(ComputeTilePhase(y_offset + extra_offset, tile_size_.height));
-  } else {
-    SetPhaseY(LayoutUnit());
-  }
+  SetPhaseY(ComputeTilePhase(y_offset, tile_size_.height));
   SetSpaceSize(PhysicalSize(SpaceSize().width, LayoutUnit()));
 }
 
@@ -815,6 +795,7 @@ void BackgroundImageGeometry::CalculateFillTileSize(
 
 void BackgroundImageGeometry::CalculateRepeatAndPosition(
     const FillLayer& fill_layer,
+    const PhysicalOffset& offset_in_background,
     const PhysicalSize& unsnapped_positioning_area_size,
     const PhysicalSize& snapped_positioning_area_size,
     const PhysicalOffset& unsnapped_box_offset,
@@ -833,8 +814,6 @@ void BackgroundImageGeometry::CalculateRepeatAndPosition(
       snapped_positioning_area_size.width - tile_size_.width;
   const LayoutUnit snapped_available_height =
       snapped_positioning_area_size.height - tile_size_.height;
-
-  const PhysicalOffset offset_in_background = OffsetInBackground(fill_layer);
 
   if (background_repeat_x == EFillRepeat::kRoundFill &&
       snapped_positioning_area_size.width > LayoutUnit() &&
@@ -878,8 +857,11 @@ void BackgroundImageGeometry::CalculateRepeatAndPosition(
 
   if (background_repeat_x == EFillRepeat::kRepeatFill) {
     // Repeat must set the phase accurately, so use unsnapped values.
-    SetRepeatX(fill_layer, unsnapped_available_width,
-               unsnapped_box_offset.left);
+    // Recompute computed position because here we need to resolve against
+    // unsnapped widths to correctly set the phase.
+    const LayoutUnit x_offset = ResolveXPosition(
+        fill_layer, unsnapped_available_width, offset_in_background.left);
+    SetRepeatX(unsnapped_box_offset.left + x_offset);
   } else if (background_repeat_x == EFillRepeat::kSpaceFill &&
              tile_size_.width > LayoutUnit()) {
     // SpaceFill uses snapped values to fill the painted area.
@@ -903,8 +885,11 @@ void BackgroundImageGeometry::CalculateRepeatAndPosition(
 
   if (background_repeat_y == EFillRepeat::kRepeatFill) {
     // Repeat must set the phase accurately, so use unsnapped values.
-    SetRepeatY(fill_layer, unsnapped_available_height,
-               unsnapped_box_offset.top);
+    // Recompute computed position because here we need to resolve against
+    // unsnapped widths to correctly set the phase.
+    const LayoutUnit y_offset = ResolveYPosition(
+        fill_layer, unsnapped_available_height, offset_in_background.top);
+    SetRepeatY(unsnapped_box_offset.top + y_offset);
   } else if (background_repeat_y == EFillRepeat::kSpaceFill &&
              tile_size_.height > LayoutUnit()) {
     // SpaceFill uses snapped values to fill the painted area.
@@ -958,9 +943,10 @@ void BackgroundImageGeometry::Calculate(const PaintInfo& paint_info,
                         snapped_positioning_area.size);
 
   // Applies *-repeat and *-position.
-  CalculateRepeatAndPosition(fill_layer, unsnapped_positioning_area.size,
-                             snapped_positioning_area.size,
-                             unsnapped_box_offset, snapped_box_offset);
+  const PhysicalOffset offset_in_background = OffsetInBackground(fill_layer);
+  CalculateRepeatAndPosition(
+      fill_layer, offset_in_background, unsnapped_positioning_area.size,
+      snapped_positioning_area.size, unsnapped_box_offset, snapped_box_offset);
 
   if (ShouldUseFixedAttachment(fill_layer))
     UseFixedAttachment(paint_rect.offset);

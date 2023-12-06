@@ -124,12 +124,8 @@ class BackgroundImageGeometry {
   void SetNoRepeatY(const FillLayer&,
                     LayoutUnit y_offset,
                     LayoutUnit snapped_y_offset);
-  void SetRepeatX(const FillLayer&,
-                  LayoutUnit available_width,
-                  LayoutUnit extra_offset);
-  void SetRepeatY(const FillLayer&,
-                  LayoutUnit available_height,
-                  LayoutUnit extra_offset);
+  void SetRepeatX(LayoutUnit x_offset);
+  void SetRepeatY(LayoutUnit y_offset);
   void SetSpaceX(LayoutUnit space, LayoutUnit extra_offset);
   void SetSpaceY(LayoutUnit space, LayoutUnit extra_offset);
 
@@ -165,6 +161,7 @@ class BackgroundImageGeometry {
                              const PhysicalSize&);
   void CalculateRepeatAndPosition(
       const FillLayer&,
+      const PhysicalOffset& offset_in_background,
       const PhysicalSize& unsnapped_positioning_area_size,
       const PhysicalSize& snapped_positioning_area_size,
       const PhysicalOffset& unsnapped_box_offset,
