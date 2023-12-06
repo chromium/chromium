@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/picker/views/picker_search_field_view.h"
+#include "ash/picker/views/picker_user_education_view.h"
 #include "ash/public/cpp/ash_web_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
@@ -75,6 +76,9 @@ PickerView::PickerView(std::unique_ptr<Delegate> delegate,
   SetInitiallyFocusedView(search_field_view_);
 
   web_view_ = AddChildView(CreateWebView(*delegate));
+
+  user_education_view_ =
+      AddChildView(std::make_unique<PickerUserEducationView>());
 }
 
 PickerView::~PickerView() = default;

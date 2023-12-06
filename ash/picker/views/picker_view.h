@@ -21,6 +21,7 @@ class NonClientFrameView;
 namespace ash {
 
 class PickerSearchFieldView;
+class PickerUserEducationView;
 
 // View for the Picker widget.
 class ASH_EXPORT PickerView : public views::WidgetDelegateView {
@@ -58,6 +59,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   PickerSessionMetrics session_metrics_;
   raw_ptr<PickerSearchFieldView> search_field_view_ = nullptr;
   raw_ptr<AshWebView> web_view_ = nullptr;
+  raw_ptr<PickerUserEducationView> user_education_view_ = nullptr;
 };
 
 }  // namespace ash
