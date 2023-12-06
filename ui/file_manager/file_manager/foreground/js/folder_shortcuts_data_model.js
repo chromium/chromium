@@ -2,26 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
+
 import {getPreferences} from '../../common/js/api.js';
 import {AsyncQueue, Group} from '../../common/js/async_util.js';
 import {comparePath, isSameEntry} from '../../common/js/entry_utils.js';
-import {CustomEventMap, FilesEventTarget} from '../../common/js/files_event_target.js';
 import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.js';
 import {recordSmallCount, recordUserAction} from '../../common/js/metrics.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
-import type {ArrayDataModelPermutationEvent} from '../../definitions/array_data_model_events.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {addFolderShortcut, refreshFolderShortcut, removeFolderShortcut} from '../../state/ducks/folder_shortcuts.js';
 import {getStore} from '../../state/store.js';
 
 /**
  * The drive mount path used in the persisted storage. It must be '/drive'.
+ * @type {string}
  */
 const STORED_DRIVE_MOUNT_PATH = '/drive';
-
-interface FolderShortcutsDataModelEventMap extends CustomEventMap {
-  'permuted': ArrayDataModelPermutationEvent;
-}
 
 /**
  * Model for the folder shortcuts. This object is ArrayDataModel-like
@@ -29,23 +26,23 @@ interface FolderShortcutsDataModelEventMap extends CustomEventMap {
  *
  * Items are always sorted by URL.
  */
-export class FolderShortcutsDataModel extends
-    FilesEventTarget<FolderShortcutsDataModelEventMap> {
-  private array_: Array<Entry|FilesAppEntry> = [];
-  private pendingPaths_ = new Set<string>();  // Hash map for easier deleting.
-  private unresolvablePaths_ = new Set<string>();
-  private lastDriveRootURL_: string|null = null;
-
-  private store_ = getStore();
-  private queue_ = new AsyncQueue();
-
+export class FolderShortcutsDataModel extends EventTarget {
   /**
-   * @param volumeManager Volume manager instance.
+   * @param {!FilteredVolumeManager} volumeManager Volume manager instance.
    */
-  constructor(private volumeManager_: FilteredVolumeManager) {
+  constructor(volumeManager) {
     super();
 
+    this.volumeManager_ = volumeManager;
+    // @ts-ignore: error TS7008: Member 'array_' implicitly has an 'any[]' type.
+    this.array_ = [];
+    this.pendingPaths_ = {};  // Hash map for easier deleting.
+    this.unresolvablePaths_ = {};
+    this.lastDriveRootURL_ = null;
+    this.store_ = getStore();
+
     // Queue to serialize resolving entries.
+    this.queue_ = new AsyncQueue();
     this.queue_.run(
         this.volumeManager_.ensureInitialized.bind(this.volumeManager_));
 
@@ -66,17 +63,18 @@ export class FolderShortcutsDataModel extends
   }
 
   /**
-   * @return Number of elements in the array.
+   * @return {number} Number of elements in the array.
    */
-  get length(): number {
+  get length() {
     return this.array_.length;
   }
 
   /**
    * Remembers the Drive volume's root URL used for conversions between virtual
    * paths and URLs.
+   * @private
    */
-  private rememberLastDriveUrl_() {
+  rememberLastDriveURL_() {
     if (this.lastDriveRootURL_) {
       return;
     }
@@ -89,14 +87,17 @@ export class FolderShortcutsDataModel extends
 
   /**
    * Resolves Entries from a list of stored virtual paths. Runs within a queue.
-   * @param list List of virtual paths.
+   * @param {Array<string>} list List of virtual paths.
+   * @private
    */
-  private processEntries_(list: string[]) {
+  processEntries_(list) {
     this.queue_.run(callback => {
-      this.pendingPaths_ = new Set<string>();
-      this.unresolvablePaths_ = new Set<string>();
-      list.forEach(path => {
-        this.pendingPaths_.add(path);
+      this.pendingPaths_ = {};
+      this.unresolvablePaths_ = {};
+      list.forEach(function(path) {
+        // @ts-ignore: error TS2683: 'this' implicitly has type 'any' because it
+        // does not have a type annotation.
+        this.pendingPaths_[path] = true;
       }, this);
       callback();
     });
@@ -105,32 +106,43 @@ export class FolderShortcutsDataModel extends
       const volumeInfo =
           this.volumeManager_.getCurrentProfileVolumeInfo(VolumeType.DRIVE);
       let changed = false;
-      const resolvedURLs = new Set<string>();
-      this.rememberLastDriveUrl_();  // Required for conversions.
+      const resolvedURLs = {};
+      this.rememberLastDriveURL_();  // Required for conversions.
 
-      const onResolveSuccess = (path: string, entry: Entry) => {
-        if (this.pendingPaths_.has(path)) {
-          this.pendingPaths_.delete(path);
+      // @ts-ignore: error TS7006: Parameter 'entry' implicitly has an 'any'
+      // type.
+      const onResolveSuccess = (path, entry) => {
+        if (path in this.pendingPaths_) {
+          // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+          // because expression of type 'any' can't be used to index type '{}'.
+          delete this.pendingPaths_[path];
         }
-        if (this.unresolvablePaths_.has(path)) {
+        if (path in this.unresolvablePaths_) {
           changed = true;
-          this.unresolvablePaths_.delete(path);
+          // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+          // because expression of type 'any' can't be used to index type '{}'.
+          delete this.unresolvablePaths_[path];
         }
         if (!this.exists(entry)) {
           changed = true;
           this.addInternal_(entry);
         }
-        resolvedURLs.add(entry.toURL());
+        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+        // because expression of type 'any' can't be used to index type '{}'.
+        resolvedURLs[entry.toURL()] = true;
       };
 
-      const onResolveFailure = (path: string, url: string|null) => {
-        if (this.pendingPaths_.has(path)) {
-          this.pendingPaths_.delete(path);
+      // @ts-ignore: error TS7006: Parameter 'url' implicitly has an 'any' type.
+      const onResolveFailure = (path, url) => {
+        if (path in this.pendingPaths_) {
+          // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+          // because expression of type 'any' can't be used to index type '{}'.
+          delete this.pendingPaths_[path];
         }
-        const existingIndex = this.getIndexByUrl_(url || '');
+        const existingIndex = this.getIndexByURL_(url);
         if (existingIndex !== -1) {
           changed = true;
-          this.removeInternal_(this.item(existingIndex)!);
+          this.removeInternal_(this.item(existingIndex));
         }
         // Remove the shortcut on error, only if Drive is fully online.
         // Only then we can be sure, that the error means that the directory
@@ -138,9 +150,14 @@ export class FolderShortcutsDataModel extends
         if (!volumeInfo ||
             this.volumeManager_.getDriveConnectionState().type !==
                 chrome.fileManagerPrivate.DriveConnectionStateType.ONLINE) {
-          if (!this.unresolvablePaths_.has(path)) {
+          // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+          // because expression of type 'any' can't be used to index type '{}'.
+          if (!this.unresolvablePaths_[path]) {
             changed = true;
-            this.unresolvablePaths_.add(path);
+            // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+            // because expression of type 'any' can't be used to index type
+            // '{}'.
+            this.unresolvablePaths_[path] = true;
           }
         }
         // Not adding to the model nor to the |unresolvablePaths_| means
@@ -150,35 +167,44 @@ export class FolderShortcutsDataModel extends
 
       // Resolve the items all at once, in parallel.
       const group = new Group();
-      list.forEach(path => {
-        group.add((callback) => {
-          const url =
-              this.lastDriveRootURL_ && this.convertStoredPathToUrl_(path);
-          if (url && volumeInfo) {
-            window.webkitResolveLocalFileSystemURL(
-                url,
-                entry => {
-                  onResolveSuccess(path, entry);
-                  callback();
-                },
-                () => {
-                  onResolveFailure(path, url);
-                  callback();
-                });
-          } else {
-            onResolveFailure(path, url);
-            callback();
-          }
-        });
-      });
+      list.forEach(function(path) {
+        // @ts-ignore: error TS7006: Parameter 'callback' implicitly has an
+        // 'any' type.
+        group.add(((path, callback) => {
+                    // @ts-ignore: error TS2683: 'this' implicitly has type
+                    // 'any' because it does not have a type annotation.
+                    const url = this.lastDriveRootURL_ &&
+                        // @ts-ignore: error TS2683: 'this' implicitly has type
+                        // 'any' because it does not have a type annotation.
+                        this.convertStoredPathToUrl_(path);
+                    if (url && volumeInfo) {
+                      window.webkitResolveLocalFileSystemURL(
+                          url,
+                          entry => {
+                            onResolveSuccess(path, entry);
+                            callback();
+                          },
+                          () => {
+                            onResolveFailure(path, url);
+                            callback();
+                          });
+                    } else {
+                      onResolveFailure(path, url);
+                      callback();
+                    }
+                  }).bind(null, path));
+      }, this);
 
       // Save the model after finishing.
       group.run(() => {
         // Remove all of those old entries, which were resolved by this method.
         let index = 0;
         while (index < this.length) {
-          const entry = this.item(index)!;
-          if (!resolvedURLs.has(entry.toURL())) {
+          const entry = this.item(index);
+          // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+          // because expression of type 'string' can't be used to index type
+          // '{}'.
+          if (!resolvedURLs[entry.toURL()]) {
             this.removeInternal_(entry);
             changed = true;
           } else {
@@ -197,8 +223,9 @@ export class FolderShortcutsDataModel extends
 
   /**
    * Initializes the model and loads the shortcuts.
+   * @private
    */
-  private async load_() {
+  async load_() {
     this.queue_.run(async (callback) => {
       try {
         const shortcutPaths = await this.getPersistedShortcutPaths_();
@@ -217,8 +244,10 @@ export class FolderShortcutsDataModel extends
    * Fetches the shortcut paths from the persistent storage (preferences) it
    * migrates from the legacy storage.chrome.sync if needed.
    *
+   * @return {!Promise<!Array<string>>}
+   * @private
    */
-  private async getPersistedShortcutPaths_(): Promise<string[]> {
+  async getPersistedShortcutPaths_() {
     const prefs = await getPreferences();
     if (prefs.folderShortcuts && prefs.folderShortcuts.length) {
       return prefs.folderShortcuts;
@@ -229,8 +258,9 @@ export class FolderShortcutsDataModel extends
 
   /**
    * Reloads the model and loads the shortcuts.
+   * @private
    */
-  private reload_() {
+  reload_() {
     this.queue_.run(async (callback) => {
       try {
         const shortcutPaths = await this.getPersistedShortcutPaths_();
@@ -245,30 +275,31 @@ export class FolderShortcutsDataModel extends
    * Returns the entries in the given range as a new array instance. The
    * arguments and return value are compatible with Array.slice().
    *
-   * @param begin Where to start the selection.
-   * @param end Where to end the selection.
-   * @return Entries in the selected range.
+   * @param {number} begin Where to start the selection.
+   * @param {number=} opt_end Where to end the selection.
+   * @return {Array<Entry>} Entries in the selected range.
    */
-  slice(begin: number, end?: number): Array<Entry|FilesAppEntry> {
-    return this.array_.slice(begin, end);
+  slice(begin, opt_end) {
+    return this.array_.slice(begin, opt_end);
   }
 
   /**
-   * @param index Index of the element to be retrieved.
-   * @return The value of the |index|-th element.
+   * @param {number} index Index of the element to be retrieved.
+   * @return {Entry} The value of the |index|-th element.
    */
-  item(index: number): Entry|FilesAppEntry|undefined {
+  item(index) {
     return this.array_[index];
   }
 
   /**
-   * @param value URL of the entry to be found.
-   * @return Index of the element with the specified |value|.
+   * @param {string} value URL of the entry to be found.
+   * @return {number} Index of the element with the specified |value|.
+   * @private
    */
-  private getIndexByUrl_(value: string): number {
+  getIndexByURL_(value) {
     for (let i = 0; i < this.length; i++) {
       // Same item check: must be exact match.
-      if (this.array_[i]!.toURL() === value) {
+      if (this.array_[i].toURL() === value) {
         return i;
       }
     }
@@ -276,10 +307,10 @@ export class FolderShortcutsDataModel extends
   }
 
   /**
-   * @param value Value of the element to be retrieved.
-   * @return Index of the element with the specified |value|.
+   * @param {Entry|FilesAppEntry} value Value of the element to be retrieved.
+   * @return {number} Index of the element with the specified |value|.
    */
-  getIndex(value: Entry|FilesAppEntry): number {
+  getIndex(value) {
     for (let i = 0; i < this.length; i++) {
       // Same item check: must be exact match.
       if (isSameEntry(this.array_[i], value)) {
@@ -293,12 +324,12 @@ export class FolderShortcutsDataModel extends
    * Compares 2 entries and returns a number indicating one entry comes before
    * or after or is the same as the other entry in sort order.
    *
-   * @param a First entry.
-   * @param b Second entry.
-   * @return Returns -1, if |a| < |b|. Returns 0, if |a| === |b|.
+   * @param {Entry|FilesAppEntry} a First entry.
+   * @param {Entry|FilesAppEntry} b Second entry.
+   * @return {number} Returns -1, if |a| < |b|. Returns 0, if |a| === |b|.
    *     Otherwise, returns 1.
    */
-  compare(a: Entry|FilesAppEntry, b: Entry|FilesAppEntry): number {
+  compare(a, b) {
     return comparePath(a, b);
   }
 
@@ -307,11 +338,14 @@ export class FolderShortcutsDataModel extends
    * list, return the index of the existing item without adding a duplicate
    * item.
    *
-   * @param value Value to be added into the array.
-   * @return Index in the list which the element added to.
+   * @param {Entry|FilesAppEntry} value Value to be added into the array.
+   * @return {number} Index in the list which the element added to.
    */
-  add(value: Entry|FilesAppEntry): number {
+  add(value) {
     const result = this.addInternal_(value);
+    // @ts-ignore: error TS2739: Type 'FileSystemEntry' is missing the following
+    // properties from type 'FileSystemDirectoryEntry': createReader,
+    // getDirectory, getFile, removeRecursively
     this.store_.dispatch(addFolderShortcut({entry: value}));
     recordUserAction('FolderShortcut.Add');
     this.save_();
@@ -323,11 +357,12 @@ export class FolderShortcutsDataModel extends
    * list, return the index of the existing item without adding a duplicate
    * item.
    *
-   * @param value Value to be added into the array.
-   * @return Index in the list which the element added to.
+   * @param {Entry|FilesAppEntry} value Value to be added into the array.
+   * @return {number} Index in the list which the element added to.
+   * @private
    */
-  private addInternal_(value: Entry|FilesAppEntry): number {
-    this.rememberLastDriveUrl_();  // Required for saving.
+  addInternal_(value) {
+    this.rememberLastDriveURL_();  // Required for saving.
 
     const oldArray = this.array_.slice(0);  // Shallow copy.
     let addedIndex = -1;
@@ -339,7 +374,7 @@ export class FolderShortcutsDataModel extends
 
       // Since the array is sorted, new item will be added just before the first
       // larger item.
-      if (this.compare(this.array_[i]!, value) >= 0) {
+      if (this.compare(this.array_[i], value) >= 0) {
         this.array_.splice(i, 0, value);
         addedIndex = i;
         break;
@@ -357,10 +392,10 @@ export class FolderShortcutsDataModel extends
 
   /**
    * Removes the given item from the array.
-   * @param value Value to be removed from the array.
-   * @return Index in the list which the element removed from.
+   * @param {Entry|FilesAppEntry} value Value to be removed from the array.
+   * @return {number} Index in the list which the element removed from.
    */
-  remove(value: Entry|FilesAppEntry): number {
+  remove(value) {
     const result = this.removeInternal_(value);
     if (result !== -1) {
       this.store_.dispatch(removeFolderShortcut({key: value.toURL()}));
@@ -373,10 +408,11 @@ export class FolderShortcutsDataModel extends
   /**
    * Removes the given item from the array.
    *
-   * @param value Value to be removed from the array.
-   * @return Index in the list which the element removed from.
+   * @param {Entry|FilesAppEntry} value Value to be removed from the array.
+   * @return {number} Index in the list which the element removed from.
+   * @private
    */
-  private removeInternal_(value: Entry|FilesAppEntry): number {
+  removeInternal_(value) {
     let removedIndex = -1;
     const oldArray = this.array_.slice(0);  // Shallow copy.
     for (let i = 0; i < this.length; i++) {
@@ -399,19 +435,21 @@ export class FolderShortcutsDataModel extends
   }
 
   /**
-   * @param entry Entry to be checked.
-   * @return True if the given |entry| exists in the array. False otherwise.
+   * @param {Entry|FilesAppEntry} entry Entry to be checked.
+   * @return {boolean} True if the given |entry| exists in the array. False
+   *     otherwise.
    */
-  exists(entry: Entry|FilesAppEntry): boolean {
+  exists(entry) {
     const index = this.getIndex(entry);
     return (index >= 0);
   }
 
   /**
    * Saves the current array to the persistent storage (Chrome prefs).
+   * @private
    */
-  private save_() {
-    this.rememberLastDriveUrl_();
+  save_() {
+    this.rememberLastDriveURL_();
     if (!this.lastDriveRootURL_) {
       return;
     }
@@ -422,11 +460,13 @@ export class FolderShortcutsDataModel extends
                         return entry.toURL();
                       })
                       .map(this.convertUrlToStoredPath_.bind(this))
-                      .filter((path): path is string => !!path)
-                      .concat(...this.pendingPaths_)
-                      .concat(...this.unresolvablePaths_);
+                      .concat(Object.keys(this.pendingPaths_))
+                      .concat(Object.keys(this.unresolvablePaths_));
 
     const prefs = {folderShortcuts: paths};
+    // @ts-ignore: error TS2345: Argument of type '{ folderShortcuts: (string |
+    // null)[]; }' is not assignable to parameter of type
+    // 'Partial<PreferencesChange>'.
     chrome.fileManagerPrivate.setPreferences(prefs);
   }
 
@@ -434,13 +474,12 @@ export class FolderShortcutsDataModel extends
    * Creates a permutation array for 'permuted' event, which is compatible with
    * a permutation array used in cr/ui/array_data_model.js.
    *
-   * @param oldArray Previous array before changing.
-   * @param newArray New array after changing.
-   * @return Created permutation array.
+   * @param {Array<Entry>} oldArray Previous array before changing.
+   * @param {Array<Entry>} newArray New array after changing.
+   * @return {Array<number>} Created permutation array.
+   * @private
    */
-  private calculatePermutation_(
-      oldArray: Array<Entry|FilesAppEntry>,
-      newArray: Array<Entry|FilesAppEntry>): number[] {
+  calculatePermutation_(oldArray, newArray) {
     let oldIndex = 0;  // Index of oldArray.
     let newIndex = 0;  // Index of newArray.
 
@@ -456,6 +495,9 @@ export class FolderShortcutsDataModel extends
       while (newIndex < newArray.length) {
         // Unchanged item, which exists in both new and old array. But the
         // index may be changed.
+        // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry |
+        // undefined' is not assignable to parameter of type 'FileSystemEntry |
+        // FilesAppEntry'.
         if (isSameEntry(oldArray[oldIndex], newArray[newIndex])) {
           permutation[oldIndex] = newIndex;
           newIndex++;
@@ -463,7 +505,9 @@ export class FolderShortcutsDataModel extends
         }
 
         // oldArray[oldIndex] is deleted, which is not in the new array.
-        if (this.compare(oldArray[oldIndex]!, newArray[newIndex]!) < 0) {
+        // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry |
+        // undefined' is not assignable to parameter of type 'FileSystemEntry'.
+        if (this.compare(oldArray[oldIndex], newArray[newIndex]) < 0) {
           permutation[oldIndex] = -1;
           break;
         }
@@ -478,13 +522,11 @@ export class FolderShortcutsDataModel extends
 
   /**
    * Fires a 'permuted' event, which is compatible with ArrayDataModel.
-   * @param permutation Permutation array.
+   * @param {Array<number>} permutation Permutation array.
    */
-  private firePermutedEvent_(permutation: number[]) {
-    const permutedEvent =
-        new CustomEvent(
-            'permuted', {detail: {newLength: this.length, permutation}}) as
-        ArrayDataModelPermutationEvent;
+  firePermutedEvent_(permutation) {
+    const permutedEvent = new CustomEvent(
+        'permuted', {detail: {newLength: this.length, permutation}});
     this.dispatchEvent(permutedEvent);
 
     // Note: This model only fires 'permuted' event, because:
@@ -497,18 +539,17 @@ export class FolderShortcutsDataModel extends
 
   /**
    * Called externally when one of the items is not found on the filesystem.
-   * @param entry The entry which is not found.
+   * @param {Entry} entry The entry which is not found.
    */
-  onItemNotFoundError(entry: Entry) {
+  onItemNotFoundError(entry) {
     // If Drive is online, then delete the shortcut permanently. Otherwise,
     // delete from model and add to |unresolvablePaths_|.
     if (this.volumeManager_.getDriveConnectionState().type !==
         chrome.fileManagerPrivate.DriveConnectionStateType.ONLINE) {
       const path = this.convertUrlToStoredPath_(entry.toURL());
       // TODO(mtomasz): Add support for multi-profile.
-      if (path) {
-        this.unresolvablePaths_.add(path);
-      }
+      // @ts-ignore: error TS2538: Type 'null' cannot be used as an index type.
+      this.unresolvablePaths_[path] = true;
     }
     this.removeInternal_(entry);
     this.save_();
@@ -521,10 +562,13 @@ export class FolderShortcutsDataModel extends
    * stored-formatted mount paths for compatibility. See http://crbug.com/336155
    * for detail.
    *
-   * @param path Path in Drive with the stored drive mount path.
-   * @return URL of the given path.
+   * @param {string} path Path in Drive with the stored drive mount path.
+   * @return {?string} URL of the given path.
+   * @private
    */
-  private convertStoredPathToUrl_(path: string): string|null {
+  // @ts-ignore: error TS6133: 'convertStoredPathToUrl_' is declared but its
+  // value is never read.
+  convertStoredPathToUrl_(path) {
     if (path.indexOf(STORED_DRIVE_MOUNT_PATH + '/') !== 0) {
       console.warn(path + ' is neither a drive mount path nor a stored path.');
       return null;
@@ -538,17 +582,21 @@ export class FolderShortcutsDataModel extends
    *
    * See the comment of convertStoredPathToUrl_() for further information.
    *
-   * @param url URL of the directory in Drive.
-   * @return Path with the stored drive mount path.
+   * @param {string} url URL of the directory in Drive.
+   * @return {?string} Path with the stored drive mount path.
+   * @private
    */
-  private convertUrlToStoredPath_(url: string): null|string {
+  convertUrlToStoredPath_(url) {
     // Root URLs contain a trailing slash.
-    if (!this.lastDriveRootURL_ || url.indexOf(this.lastDriveRootURL_) !== 0) {
+    // @ts-ignore: error TS2345: Argument of type 'string | null' is not
+    // assignable to parameter of type 'string'.
+    if (url.indexOf(this.lastDriveRootURL_) !== 0) {
       console.warn(url + ' is not a drive URL.');
       return null;
     }
 
     return STORED_DRIVE_MOUNT_PATH + '/' +
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         decodeURIComponent(url.substr(this.lastDriveRootURL_.length));
   }
 }
