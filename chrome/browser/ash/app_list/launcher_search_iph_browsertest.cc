@@ -22,6 +22,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/test/app_list_test_api.h"
 #include "ash/shell.h"
+#include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
@@ -29,6 +30,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_tags.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
@@ -42,6 +44,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/styled_label.h"
@@ -109,15 +112,6 @@ bool IsLauncherSearchIphViewVisible() {
   return launcher_search_iph_view->GetVisible();
 }
 
-void Click(views::View* view) {
-  ASSERT_TRUE(view);
-
-  ui::test::EventGenerator event_generator(
-      view->GetWidget()->GetNativeWindow()->GetRootWindow());
-  event_generator.MoveMouseToInHost(view->GetBoundsInScreen().CenterPoint());
-  event_generator.ClickLeftButton();
-}
-
 std::string GenerateTestSuffix(const testing::TestParamInfo<bool>& info) {
   return info.param ? "tablet" : "clamshell";
 }
@@ -131,10 +125,11 @@ class AppListIphBrowserTest : public MixinBasedInProcessBrowserTest,
     ash::Shell::Get()->tablet_mode_controller()->SetEnabledForTest(GetParam());
     ash::Shell::Get()->assistant_controller()->SetAssistant(&test_service_);
     test_api_impl_.EnableAssistantAndWait();
+    event_generator_ = std::make_unique<ui::test::EventGenerator>(
+        ash::Shell::GetPrimaryRootWindow());
 
     app_list_client_impl_ = AppListClientImpl::GetInstance();
     app_list_client_impl_->UpdateProfile();
-
     base::AddTagToTestResult(kScreenPlayTagName, kScreenPlayTagValue);
 
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
@@ -269,9 +264,25 @@ class AppListIphBrowserTest : public MixinBasedInProcessBrowserTest,
 
   ash::SearchBoxView* search_box_view() { return ash::GetSearchBoxView(); }
 
+  void Click(views::View* view) {
+    ASSERT_TRUE(view);
+
+    event_generator_->MoveMouseToInHost(
+        view->GetBoundsInScreen().CenterPoint());
+    event_generator_->ClickLeftButton();
+  }
+
+  void PressAndReleaseKey(ui::KeyboardCode key_code, int flags = ui::EF_NONE) {
+    event_generator_->PressAndReleaseKey(key_code, flags);
+  }
+
+  base::HistogramTester* histogram_tester() { return &histogram_tester_; }
+
  private:
   ash::TestAssistantService test_service_;
   ash::AssistantTestApiImpl test_api_impl_;
+  std::unique_ptr<ui::test::EventGenerator> event_generator_;
+  base::HistogramTester histogram_tester_;
 
   raw_ptr<AppListClientImpl> app_list_client_impl_ = nullptr;
 };
@@ -443,6 +454,23 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig,
 }
 
 IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig,
+                       ExpectEntryExitPoints) {
+  OpenAppListAndWaitForIphView();
+
+  EXPECT_TRUE(IsLauncherSearchIphViewVisible());
+
+  views::View* assistant_button = search_box_view()->GetViewByID(
+      ash::LauncherSearchIphView::ViewId::kAssistant);
+  ASSERT_TRUE(assistant_button);
+  Click(assistant_button);
+
+  EXPECT_TRUE(IsAssistantPageActive());
+  histogram_tester()->ExpectTotalCount("Assistant.EntryPoint", 1);
+  histogram_tester()->ExpectBucketCount("Assistant.EntryPoint",
+                                        /*kLauncherSearchIphChip=*/13, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig,
                        NoIphWithoutAssistant) {
   // `AssistantTestApiImpl::SetAssistantEnabled` asserts that the value has
   // taken effect, i.e. we are sure that Assistant gets disabled after this
@@ -542,6 +570,85 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestAssistantZeroState,
   EXPECT_EQ(text, app_list_client_impl()->search_controller()->get_query());
   EXPECT_TRUE(IsSearchPageActive());
   EXPECT_FALSE(IsAssistantPageActive());
+}
+
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestAssistantZeroState,
+                       ExpectEntryExitPoints) {
+  auto duration_mode = std::make_unique<ui::ScopedAnimationDurationScaleMode>(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  OpenAppList();
+
+  views::ImageButton* assistant_button = search_box_view()->assistant_button();
+  ASSERT_TRUE(assistant_button);
+  Click(assistant_button);
+  histogram_tester()->ExpectTotalCount("Assistant.EntryPoint", 1);
+  histogram_tester()->ExpectBucketCount("Assistant.EntryPoint",
+                                        /*kLauncherSearchBoxIcon=*/9, 1);
+
+  ash::LauncherSearchIphView* launcher_search_iph =
+      GetAssistantLauncherSearchIph();
+  EXPECT_TRUE(launcher_search_iph->GetVisible());
+  EXPECT_TRUE(launcher_search_iph->IsDrawn());
+
+  // Chip click will redirect to the search page with query of the chip's text.
+  auto* chip = static_cast<ash::ChipView*>(launcher_search_iph->GetViewByID(
+      ash::LauncherSearchIphView::ViewId::kChipStart));
+  ASSERT_TRUE(chip);
+  Click(chip);
+  histogram_tester()->ExpectTotalCount("Assistant.ExitPoint", 1);
+  histogram_tester()->ExpectBucketCount("Assistant.ExitPoint",
+                                        /*kLauncherSearchIphChip=*/13, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestAssistantZeroState,
+                       CanOpenAssistantPageAfterClickChip) {
+  auto duration_mode = std::make_unique<ui::ScopedAnimationDurationScaleMode>(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  OpenAppList();
+
+  views::ImageButton* assistant_button = search_box_view()->assistant_button();
+  ASSERT_TRUE(assistant_button);
+  Click(assistant_button);
+
+  // The LauncherSearchIphView is shown in the zero state view.
+  ASSERT_TRUE(IsAssistantPageActive());
+  ASSERT_TRUE(GetAssistantZeroStateView()->GetVisible());
+
+  ash::LauncherSearchIphView* launcher_search_iph =
+      GetAssistantLauncherSearchIph();
+  EXPECT_TRUE(launcher_search_iph->GetVisible());
+  EXPECT_TRUE(launcher_search_iph->IsDrawn());
+
+  // Chip click will redirect to the search page with query of the chip's text.
+  auto* chip = static_cast<ash::ChipView*>(launcher_search_iph->GetViewByID(
+      ash::LauncherSearchIphView::ViewId::kChipStart));
+  ASSERT_TRUE(chip);
+  auto text = chip->GetText();
+  Click(chip);
+
+  EXPECT_EQ(text, app_list_client_impl()->search_controller()->get_query());
+  EXPECT_TRUE(IsSearchPageActive());
+  EXPECT_FALSE(IsAssistantPageActive());
+
+  // Press ESC key to trigger back action of Launcher.
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
+  EXPECT_EQ(u"", app_list_client_impl()->search_controller()->get_query());
+  EXPECT_FALSE(IsSearchPageActive());
+  EXPECT_FALSE(IsAssistantPageActive());
+
+  // Allow the `test_assistant_service` to finish StopActiveInteraction() call.
+  base::RunLoop().RunUntilIdle();
+
+  // Test after the back action, click the Assistant button will show the
+  // `assistant_page`. (b/309551206)
+  assistant_button = search_box_view()->assistant_button();
+  ASSERT_TRUE(assistant_button);
+  Click(assistant_button);
+
+  EXPECT_TRUE(IsAssistantPageActive());
+  EXPECT_FALSE(IsSearchPageActive());
 }
 
 INSTANTIATE_TEST_SUITE_P(LauncherSearchIph,

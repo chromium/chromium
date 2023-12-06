@@ -79,7 +79,8 @@ enum class AssistantEntryPoint {
   // kLauncherChip = 11,
   // Deprecated, please do not reuse
   // kBloom = 12,
-  kMaxValue = kLauncherSearchBoxIcon,
+  kLauncherSearchIphChip = 13,
+  kMaxValue = kLauncherSearchIphChip
 };
 
 // Enumeration of Assistant exit points. These values are persisted to logs.
@@ -102,7 +103,8 @@ enum class AssistantExitPoint {
   kLauncherOpen = 10,
   kScreenshot = 11,
   kOverviewMode = 12,
-  kMaxValue = kOverviewMode,
+  kLauncherSearchIphChip = 13,
+  kMaxValue = kLauncherSearchIphChip,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

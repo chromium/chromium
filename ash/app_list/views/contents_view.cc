@@ -22,6 +22,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -471,6 +472,8 @@ bool ContentsView::Back() {
       ShowSearchResults(false);
       break;
     case AppListState::kStateEmbeddedAssistant:
+      GetAppListMainView()->view_delegate()->EndAssistant(
+          assistant::AssistantExitPoint::kBackInLauncher);
       ShowEmbeddedAssistantUI(false);
       break;
     case AppListState::kStateStart_DEPRECATED:

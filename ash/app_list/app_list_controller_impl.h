@@ -39,6 +39,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/types/display_constants.h"
@@ -156,7 +157,8 @@ class ASH_EXPORT AppListControllerImpl
   AppListNotifier* GetNotifier() override;
   std::unique_ptr<ash::ScopedIphSession> CreateLauncherSearchIphSession()
       override;
-  void StartAssistant() override;
+  void StartAssistant(assistant::AssistantEntryPoint entry_point) override;
+  void EndAssistant(assistant::AssistantExitPoint exit_point) override;
   std::vector<AppListSearchControlCategory> GetToggleableCategories()
       const override;
   void StartSearch(const std::u16string& raw_query) override;

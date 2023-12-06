@@ -43,6 +43,7 @@ bool IsVoiceEntryPoint(AssistantEntryPoint entry_point, bool prefer_voice) {
     case AssistantEntryPoint::kLauncherSearchResult:
     case AssistantEntryPoint::kSetup:
     case AssistantEntryPoint::kStylus:
+    case AssistantEntryPoint::kLauncherSearchIphChip:
       return false;
   }
 }

@@ -261,6 +261,17 @@ void MaybeLogWelcomeTourInteraction(AppListShowSource show_source) {
   }
 }
 
+bool IsAssistantExitPointScreenshot(
+    std::optional<assistant::AssistantExitPoint> exit_point) {
+  return exit_point == AssistantExitPoint::kScreenshot;
+}
+
+bool IsAssistantExitPointInsideLauncher(
+    std::optional<assistant::AssistantExitPoint> exit_point) {
+  return exit_point == AssistantExitPoint::kBackInLauncher ||
+         exit_point == AssistantExitPoint::kLauncherSearchIphChip;
+}
+
 }  // namespace
 
 AppListControllerImpl::AppListControllerImpl()
@@ -602,8 +613,13 @@ bool AppListControllerImpl::GoHome(int64_t display_id) {
 
   DCHECK(IsInTabletMode());
 
-  if (fullscreen_presenter_->IsShowingEmbeddedAssistantUI())
+  if (fullscreen_presenter_->IsShowingEmbeddedAssistantUI()) {
+    // OnHomeLauncherAnimationComplete() may not be called if the
+    // `foreground_windows` is empty. Call AssistantUiController::CloseUi() here
+    // directly.
+    AssistantUiController::Get()->CloseUi(AssistantExitPoint::kLauncherClose);
     fullscreen_presenter_->ShowEmbeddedAssistantUI(false);
+  }
 
   SplitViewController* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
@@ -1023,7 +1039,7 @@ void AppListControllerImpl::OnUiVisibilityChanged(
         // |SetActiveStateInternal|, which are called from
         // |ShowEmbeddedAssistantUI(false)| and
         // |ClearSearchAndDeactivateSearchBox()|.
-        if (exit_point == AssistantExitPoint::kScreenshot) {
+        if (IsAssistantExitPointScreenshot(exit_point)) {
           set_active_state_animation_disabler.emplace(
               fullscreen_presenter_->GetView()
                   ->app_list_main_view()
@@ -1032,18 +1048,18 @@ void AppListControllerImpl::OnUiVisibilityChanged(
 
         fullscreen_presenter_->ShowEmbeddedAssistantUI(false);
 
-        if (exit_point != AssistantExitPoint::kBackInLauncher) {
+        if (!IsAssistantExitPointInsideLauncher(exit_point)) {
           fullscreen_presenter_->GetView()
               ->search_box_view()
               ->ClearSearchAndDeactivateSearchBox();
         }
-      } else if (exit_point != AssistantExitPoint::kBackInLauncher) {
+      } else if (!IsAssistantExitPointInsideLauncher(exit_point)) {
         // Similarly, when taking a screenshot by Assistant in clamshell mode,
         // we do not want to dismiss launcher with animation. Otherwise the
         // screenshot may have transient state during the animation.
         base::AutoReset<bool> auto_reset(
             &should_dismiss_immediately_,
-            exit_point == AssistantExitPoint::kScreenshot);
+            IsAssistantExitPointScreenshot(exit_point));
         DismissAppList();
       }
       break;
@@ -1167,9 +1183,14 @@ void AppListControllerImpl::RecordShelfAppLaunched() {
 ////////////////////////////////////////////////////////////////////////////////
 // Methods of |client_|:
 
-void AppListControllerImpl::StartAssistant() {
-  AssistantUiController::Get()->ShowUi(
-      AssistantEntryPoint::kLauncherSearchBoxIcon);
+void AppListControllerImpl::StartAssistant(
+    assistant::AssistantEntryPoint entry_point) {
+  AssistantUiController::Get()->ShowUi(entry_point);
+}
+
+void AppListControllerImpl::EndAssistant(
+    assistant::AssistantExitPoint exit_point) {
+  AssistantUiController::Get()->CloseUi(exit_point);
 }
 
 std::vector<AppListSearchControlCategory>

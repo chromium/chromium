@@ -47,6 +47,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
@@ -823,10 +824,13 @@ void SearchBoxView::RunLauncherSearchQuery(const std::u16string& query) {
 }
 
 void SearchBoxView::OpenAssistantPage() {
-  delegate_->AssistantButtonPressed();
+  view_delegate_->StartAssistant(
+      assistant::AssistantEntryPoint::kLauncherSearchIphChip);
 }
 
 void SearchBoxView::OnLauncherSearchChipPressed(const std::u16string& query) {
+  view_delegate_->EndAssistant(
+      assistant::AssistantExitPoint::kLauncherSearchIphChip);
   UpdateQuery(query);
 }
 

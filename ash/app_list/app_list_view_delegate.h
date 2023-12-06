@@ -17,6 +17,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -50,7 +51,10 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   CreateLauncherSearchIphSession() = 0;
 
   // Invoked to start a new Google Assistant session.
-  virtual void StartAssistant() = 0;
+  virtual void StartAssistant(assistant::AssistantEntryPoint entry_point) = 0;
+
+  // Invoked to end a Google Assistant session.
+  virtual void EndAssistant(assistant::AssistantExitPoint exit_point) = 0;
 
   // Returns the search categories that are available for users to choose if
   // they want to have the results in the categories displayed in launcher

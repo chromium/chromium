@@ -21,6 +21,7 @@
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/functional/callback_forward.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "ui/base/models/simple_menu_model.h"
 
 namespace ash {
@@ -60,7 +61,8 @@ class AppListTestViewDelegate : public AppListViewDelegate,
 
   // AppListViewDelegate overrides:
   bool KeyboardTraversalEngaged() override;
-  void StartAssistant() override {}
+  void StartAssistant(assistant::AssistantEntryPoint entry_point) override {}
+  void EndAssistant(assistant::AssistantExitPoint exit_point) override {}
   std::vector<AppListSearchControlCategory> GetToggleableCategories()
       const override;
   void StartSearch(const std::u16string& raw_query) override {}
