@@ -421,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest_Shortstand,
   {
     apps::AppLaunchParams launch_params = CreateLaunchParams(
         web_shortcut_id, apps::LaunchContainer::kLaunchContainerWindow,
-        WindowOpenDisposition::CURRENT_TAB,
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
         apps::LaunchSource::kFromCommandLine, {}, absl::nullopt, absl::nullopt);
 
     auto [launch_browser, web_contents, launch_container] =

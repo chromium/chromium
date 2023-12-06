@@ -745,7 +745,6 @@ void LaunchWebApp(apps::AppLaunchParams params,
       case DisplayMode::kFullscreen:
       case DisplayMode::kBrowser:
         params.container = apps::LaunchContainer::kLaunchContainerTab;
-        params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
         break;
       case DisplayMode::kMinimalUi:
       case DisplayMode::kWindowControlsOverlay:
@@ -753,7 +752,6 @@ void LaunchWebApp(apps::AppLaunchParams params,
       case DisplayMode::kBorderless:
       case DisplayMode::kStandalone:
         params.container = apps::LaunchContainer::kLaunchContainerWindow;
-        params.disposition = WindowOpenDisposition::NEW_WINDOW;
         break;
     }
   }
@@ -764,19 +762,14 @@ void LaunchWebApp(apps::AppLaunchParams params,
   // window.
   if (chromeos::features::IsCrosShortstandEnabled()) {
     bool is_shortcut_app = lock.registrar().IsShortcutApp(params.app_id);
-    if (is_shortcut_app) {
-      params.container = apps::LaunchContainer::kLaunchContainerTab;
-      params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-    } else {
-      params.container = apps::LaunchContainer::kLaunchContainerWindow;
-      params.disposition = WindowOpenDisposition::NEW_WINDOW;
-    }
+    params.container = is_shortcut_app
+                           ? apps::LaunchContainer::kLaunchContainerTab
+                           : apps::LaunchContainer::kLaunchContainerWindow;
     debug_value.Set("is_shortcut", is_shortcut_app);
   }
 #endif
 
   DCHECK_NE(params.container, apps::LaunchContainer::kLaunchContainerNone);
-  DCHECK_NE(params.disposition, WindowOpenDisposition::UNKNOWN);
 
   apps::LaunchContainer container;
   Browser* browser = nullptr;
