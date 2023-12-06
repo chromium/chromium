@@ -42,8 +42,8 @@
   <message name="IDS_COMPOSE_DIALOG_TITLE" desc="Compose input dialog title.">
     Help me write
   </message>
-  <message name="IDS_COMPOSE_INPUT_PLACEHOLDER" desc="A placeholder text used in the input textfield.">
-    You can enter things like: a few words that sum up your thoughts, a first draft, requests like "write a 5-star review for this restaurant"
+  <message name="IDS_COMPOSE_INPUT_PLACEHOLDER" desc="A placeholder text used in the input textfield." translateable="false">
+    You can enter things like:\n &#8226; 3 or more words that sum up your thoughts\n &#8226; a first draft\n &#8226; requests like "write a 5-star review for this restaurant"
   </message>
   <message name="IDS_COMPOSE_INPUT_FOOTER" desc="Privacy disclaimer in the input dialog." translateable="false">
     Page content and your text are sent to Google, and may be used to improve or develop products.
