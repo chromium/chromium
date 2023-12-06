@@ -696,6 +696,7 @@ static_library("browser") {
     "//components/prefs",
     "//components/profile_metrics",
     "//components/search:search",
+    "//components/security_interstitials/core:insecure_form_util",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/strings",

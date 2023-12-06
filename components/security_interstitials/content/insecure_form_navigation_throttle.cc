@@ -7,11 +7,11 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/insecure_form_blocking_page.h"
 #include "components/security_interstitials/content/insecure_form_tab_storage.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
+#include "components/security_interstitials/core/insecure_form_util.h"
 #include "components/security_interstitials/core/pref_names.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -120,7 +120,7 @@ InsecureFormNavigationThrottle::GetThrottleResultForMixedForm(
 
   url::Origin form_originating_origin =
       handle->GetInitiatorOrigin().value_or(url::Origin());
-  if (!autofill::IsInsecureFormAction(handle->GetURL()) ||
+  if (!security_interstitials::IsInsecureFormAction(handle->GetURL()) ||
       !(form_originating_origin.scheme() == url::kHttpsScheme)) {
     // Currently we only warn for insecure forms in secure pages.
     return content::NavigationThrottle::PROCEED;
