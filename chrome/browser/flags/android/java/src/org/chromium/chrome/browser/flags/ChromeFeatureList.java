@@ -746,7 +746,7 @@ public abstract class ChromeFeatureList {
     // MutableFlagWithSafeDefault instances
     /* Alphabetical: */
     public static final MutableFlagWithSafeDefault sAdvancedPeripheralsSupportTabStrip =
-            newMutableFlagWithSafeDefault(ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP, false);
+            newMutableFlagWithSafeDefault(ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP, true);
     public static final MutableFlagWithSafeDefault sAndroidImprovedBookmarks =
             newMutableFlagWithSafeDefault(ANDROID_IMPROVED_BOOKMARKS, false);
     public static final MutableFlagWithSafeDefault sAvoidRelayoutDuringFocusAnimation =
@@ -795,7 +795,7 @@ public abstract class ChromeFeatureList {
     public static final MutableFlagWithSafeDefault sSuppressionToolbarCaptures =
             newMutableFlagWithSafeDefault(SUPPRESS_TOOLBAR_CAPTURES, false);
     public static final MutableFlagWithSafeDefault sThumbnailPlaceholder =
-            newMutableFlagWithSafeDefault(THUMBNAIL_PLACEHOLDER, false);
+            newMutableFlagWithSafeDefault(THUMBNAIL_PLACEHOLDER, true);
     public static final MutableFlagWithSafeDefault sToolbarScrollAblation =
             newMutableFlagWithSafeDefault(TOOLBAR_SCROLL_ABLATION_ANDROID, false);
     public static final MutableFlagWithSafeDefault sTouchDownTriggerForPrefetch =

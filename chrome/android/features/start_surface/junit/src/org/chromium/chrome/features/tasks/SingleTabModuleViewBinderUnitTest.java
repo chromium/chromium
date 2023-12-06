@@ -154,7 +154,6 @@ public class SingleTabModuleViewBinderUnitTest {
         mSingleTabModuleView.layout(0, 0, 100, 100);
 
         ImageView thumbnail = mSingleTabModuleView.findViewById(R.id.tab_thumbnail);
-        assertNull(thumbnail.getDrawable());
 
         Bitmap bitmap = Bitmap.createBitmap(300, 400, Bitmap.Config.ALPHA_8);
         mPropertyModel.set(TAB_THUMBNAIL, bitmap);
@@ -167,7 +166,6 @@ public class SingleTabModuleViewBinderUnitTest {
     @SmallTest
     public void testSetTabThumbnailUpdateMatrixOnResize() {
         ImageView thumbnail = mSingleTabModuleView.findViewById(R.id.tab_thumbnail);
-        assertNull(thumbnail.getDrawable());
 
         Bitmap bitmap = Bitmap.createBitmap(300, 400, Bitmap.Config.ALPHA_8);
         mPropertyModel.set(TAB_THUMBNAIL, bitmap);
