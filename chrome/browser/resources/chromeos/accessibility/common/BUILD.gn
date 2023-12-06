@@ -15,6 +15,7 @@ assert(is_chromeos_ash)
 
 accessibility_common_out_dir =
     "$root_out_dir/resources/chromeos/accessibility/common"
+tsc_out_dir = "$target_gen_dir/tsc"
 
 group("build") {
   deps = [
@@ -22,8 +23,6 @@ group("build") {
     "tutorial:build",
   ]
 }
-
-tsc_out_dir = "$target_gen_dir/tsc"
 
 # Add typescript files to compile here.
 ts_modules = [
@@ -56,10 +55,6 @@ run_jsbundler("accessibility_common_copied_files") {
   dest_dir = accessibility_common_out_dir
   deps = [ ":ts_build" ]
   sources = [
-    "$tsc_out_dir/array_util.js",
-    "$tsc_out_dir/instance_checker.js",
-    "$tsc_out_dir/paragraph_utils.js",
-    "$tsc_out_dir/word_utils.js",
     "async_util.js",
     "automation_predicate.js",
     "automation_util.js",
@@ -87,6 +82,12 @@ run_jsbundler("accessibility_common_copied_files") {
     "testing/test_node_generator.js",
     "tree_walker.js",
   ]
+
+  foreach(_ts_file, ts_modules) {
+    sources += [ "$tsc_out_dir/" + get_path_info(_ts_file, "dir") + "/" +
+                 get_path_info(_ts_file, "name") + ".js" ]
+  }
+
   rewrite_rules = [
     rebase_path(tsc_out_dir, root_build_dir) + ":",
     rebase_path(".", root_build_dir) + ":",
