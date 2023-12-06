@@ -132,7 +132,6 @@ void SoftNavigationHeuristics::ResetHeuristic() {
   did_commit_previous_paints_ = false;
   soft_navigation_conditions_met_ = false;
   pending_interaction_timestamp_ = base::TimeTicks();
-  paint_conditions_met_ = false;
 }
 
 void SoftNavigationHeuristics::InteractionCallbackCalled(
@@ -226,7 +225,7 @@ SoftNavigationHeuristics::SetFlagIfDescendantAndCheck(ScriptState* script_state,
     return absl::nullopt;
   }
   data->flag_set.Put(type);
-  CheckSoftNavigationConditions(*data, script_state);
+  CheckSoftNavigationConditions(*data);
   return result;
 }
 
@@ -252,7 +251,7 @@ void SoftNavigationHeuristics::SameDocumentNavigationCommitted(
   // This is overriding the URL, which is required to support history
   // modifications inside a popstate event.
   data->url = url;
-  CheckSoftNavigationConditions(*data, script_state);
+  CheckSoftNavigationConditions(*data);
   TRACE_EVENT1("scheduler",
                "SoftNavigationHeuristics::SameDocumentNavigationCommitted",
                "url", url);
@@ -268,8 +267,7 @@ bool SoftNavigationHeuristics::ModifiedDOM(ScriptState* script_state) {
 }
 
 void SoftNavigationHeuristics::CheckSoftNavigationConditions(
-    const SoftNavigationHeuristics::PerInteractionData& data,
-    ScriptState* script_state) {
+    const SoftNavigationHeuristics::PerInteractionData& data) {
   if (data.flag_set != FlagTypeSet::All()) {
     return;
   }
@@ -283,18 +281,6 @@ void SoftNavigationHeuristics::CheckSoftNavigationConditions(
   soft_navigation_conditions_met_ = true;
 
   soft_navigation_interaction_data_ = &data;
-
-  if (data.user_interaction_timestamp.is_null()) {
-    return;
-  }
-
-  if (paint_conditions_met_) {
-    v8::HandleScope handle_scope(script_state->GetIsolate());
-    LocalFrame* frame = ToLocalFrameIfNotDetached(script_state->GetContext());
-    if (frame && frame->IsOutermostMainFrame()) {
-      EmitSoftNavigationEntry(frame);
-    }
-  }
 }
 
 void SoftNavigationHeuristics::EmitSoftNavigationEntry(LocalFrame* frame) {
@@ -353,11 +339,9 @@ void SoftNavigationHeuristics::RecordPaint(
     uint64_t considered_area = std::min(initial_painted_area_, viewport_area_);
     uint64_t paint_threshold =
         considered_area * SOFT_NAVIGATION_PAINT_AREA_PRECENTAGE;
-    if (((softnav_painted_area_ * HUNDRED_PERCENT) > paint_threshold)) {
-      paint_conditions_met_ = true;
-      if (soft_navigation_conditions_met_) {
-        EmitSoftNavigationEntry(frame);
-      }
+    if (soft_navigation_conditions_met_ &&
+        ((softnav_painted_area_ * HUNDRED_PERCENT) > paint_threshold)) {
+      EmitSoftNavigationEntry(frame);
     }
   } else if (!initial_interaction_encountered_) {
     initial_painted_area_ += painted_area;
@@ -393,8 +377,7 @@ bool SoftNavigationHeuristics::PopNestedEventParametersIfNeeded() {
   return true;
 }
 
-void SoftNavigationHeuristics::SetCurrentTimeAsStartTime(
-    ScriptState* script_state) {
+void SoftNavigationHeuristics::SetCurrentTimeAsStartTime() {
   CHECK(current_event_parameters_);
   if (!last_interaction_task_id_.value() ||
       !current_event_parameters_->is_new_interaction) {
@@ -408,13 +391,6 @@ void SoftNavigationHeuristics::SetCurrentTimeAsStartTime(
     // Don't set the timestamp if it was already set (e.g. in the case of a
     // nested event scope).
     data->user_interaction_timestamp = base::TimeTicks::Now();
-  }
-  if (soft_navigation_conditions_met_ && paint_conditions_met_) {
-    v8::HandleScope handle_scope(script_state->GetIsolate());
-    LocalFrame* frame = ToLocalFrameIfNotDetached(script_state->GetContext());
-    if (frame && frame->IsOutermostMainFrame()) {
-      EmitSoftNavigationEntry(frame);
-    }
   }
 }
 
@@ -600,7 +576,7 @@ SoftNavigationEventScope::~SoftNavigationEventScope() {
   // Set the start time to the end of event processing. In case of nested event
   // scopes, we want this to be the end of the nested `navigate()` event
   // handler.
-  heuristics_->SetCurrentTimeAsStartTime(script_state_);
+  heuristics_->SetCurrentTimeAsStartTime();
 
   // Only the top level EventScope should unregister the observer.
   if (!nested) {
