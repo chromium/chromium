@@ -1151,8 +1151,10 @@ class TabListMediator {
                         mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(true))
                 .addTabGroupObserver(mTabGroupObserver);
 
+        var currentTabModelFilterSupplier =
+                mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilterSupplier();
         mTabGroupTitleEditor =
-                new TabGroupTitleEditor(mContext, mTabModelSelector) {
+                new TabGroupTitleEditor(mContext, currentTabModelFilterSupplier) {
                     @Override
                     protected void updateTabGroupTitle(Tab tab, String title) {
                         // Only update title in PropertyModel for tab switcher.

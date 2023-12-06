@@ -1078,9 +1078,8 @@ public class TabListMediatorUnitTest {
                         UiType.CLOSABLE);
         mMediator.initWithNative();
 
-        // mTabModelObserverCaptor captures on every initWithNative call and in the constructor
-        // for the TabGroupTitle. There is one pair of calls in the setup already.
-        verify(mTabModelFilterProvider, times(4))
+        // mTabModelObserverCaptor captures on every initWithNative call.
+        verify(mTabModelFilterProvider, times(2))
                 .addTabModelFilterObserver(mTabModelObserverCaptor.capture());
         initAndAssertAllProperties();
 
@@ -3247,10 +3246,10 @@ public class TabListMediatorUnitTest {
         mMediator.initWithNative();
 
         assertThat(
-                mTabModelObserverCaptor.getAllValues().size(), equalTo(tabModelObserverCount + 2));
+                mTabModelObserverCaptor.getAllValues().size(), equalTo(tabModelObserverCount + 1));
         assertThat(
                 mTabGroupModelFilterObserverCaptor.getAllValues().size(),
-                equalTo(tabGroupModelFilterObserverCount + 4));
+                equalTo(tabGroupModelFilterObserverCount + 3));
 
         mMediatorTabModelObserver =
                 mTabModelObserverCaptor.getAllValues().get(tabModelObserverCount);
