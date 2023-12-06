@@ -748,7 +748,7 @@ void PrintPreviewUI::AddPdfPageForNupConversion(
 
 // static
 bool PrintPreviewUI::ShouldCancelRequest(
-    const absl::optional<int32_t>& preview_ui_id,
+    const std::optional<int32_t>& preview_ui_id,
     int request_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -760,7 +760,7 @@ bool PrintPreviewUI::ShouldCancelRequest(
   return it == map.end() || request_id != it->second;
 }
 
-absl::optional<int32_t> PrintPreviewUI::GetIDForPrintPreviewUI() const {
+std::optional<int32_t> PrintPreviewUI::GetIDForPrintPreviewUI() const {
   return id_;
 }
 

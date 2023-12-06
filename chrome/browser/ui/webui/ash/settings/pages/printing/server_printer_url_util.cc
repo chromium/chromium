@@ -34,16 +34,16 @@ bool HasValidServerPrinterScheme(const GURL& gurl) {
          gurl.SchemeIs("ipps");
 }
 
-absl::optional<GURL> GenerateServerPrinterUrlWithValidScheme(
+std::optional<GURL> GenerateServerPrinterUrlWithValidScheme(
     const std::string& url) {
-  absl::optional<GURL> gurl = absl::make_optional(GURL(url));
+  std::optional<GURL> gurl = std::make_optional(GURL(url));
   if (!HasValidServerPrinterScheme(*gurl)) {
     // If we're missing a valid scheme, try querying with IPPS first.
     gurl = GURL("ipps://" + url);
   }
 
   if (!gurl->is_valid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Replaces IPP/IPPS by HTTP/HTTPS. IPP standard describes protocol built
@@ -68,7 +68,7 @@ absl::optional<GURL> GenerateServerPrinterUrlWithValidScheme(
   }
 
   // Check validation of the URL address and return |gurl| if valid.
-  return gurl->IsStandard() ? gurl : absl::nullopt;
+  return gurl->IsStandard() ? gurl : std::nullopt;
 }
 
 }  // namespace ash::settings

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "gif_tenor_api_fetcher.h"
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -114,7 +115,7 @@ TEST_F(GifTenorApiFetcherTest, FetchCategories) {
             emoji_picker::mojom::Status::kHttpError);
   ASSERT_EQ(create_future_http_error.Get<1>(), std::vector<std::string>{});
 
-  response_.error_type = absl::make_optional(FetchErrorType::kNetError);
+  response_.error_type = std::make_optional(FetchErrorType::kNetError);
   base::test::TestFuture<emoji_picker::mojom::Status,
                          const std::vector<std::string>&>
       create_future_net_error;
@@ -150,7 +151,7 @@ TEST_F(GifTenorApiFetcherTest, FetchFeaturedGifs) {
             emoji_picker::mojom::TenorGifResponse::New(
                 "", std::vector<emoji_picker::mojom::GifResponsePtr>{}));
 
-  response_.error_type = absl::make_optional(FetchErrorType::kNetError);
+  response_.error_type = std::make_optional(FetchErrorType::kNetError);
   base::test::TestFuture<emoji_picker::mojom::Status,
                          emoji_picker::mojom::TenorGifResponsePtr>
       create_future_net_error;
@@ -188,7 +189,7 @@ TEST_F(GifTenorApiFetcherTest, FetchGifSearch) {
             emoji_picker::mojom::TenorGifResponse::New(
                 "", std::vector<emoji_picker::mojom::GifResponsePtr>{}));
 
-  response_.error_type = absl::make_optional(FetchErrorType::kNetError);
+  response_.error_type = std::make_optional(FetchErrorType::kNetError);
   base::test::TestFuture<emoji_picker::mojom::Status,
                          emoji_picker::mojom::TenorGifResponsePtr>
       create_future_net_error;
@@ -226,7 +227,7 @@ TEST_F(GifTenorApiFetcherTest, FetchGifsByIds) {
   ASSERT_EQ(create_future_http_error.Get<1>(),
             std::vector<emoji_picker::mojom::GifResponsePtr>{});
 
-  response_.error_type = absl::make_optional(FetchErrorType::kNetError);
+  response_.error_type = std::make_optional(FetchErrorType::kNetError);
   base::test::TestFuture<emoji_picker::mojom::Status,
                          std::vector<emoji_picker::mojom::GifResponsePtr>>
       create_future_net_error;

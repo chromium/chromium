@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_BLUETOOTH_PAIRING_DIALOG_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_BLUETOOTH_PAIRING_DIALOG_H_
 
+#include <optional>
 #include <string>
 
 #include "base/strings/string_piece.h"
@@ -14,7 +15,6 @@
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
@@ -36,14 +36,14 @@ class BluetoothPairingDialog : public SystemWebDialogDelegate {
   // manages its own lifetime, for more information see
   // chrome/browser/ui/webui/ash/system_web_dialog_delegate.h.
   static SystemWebDialogDelegate* ShowDialog(
-      absl::optional<base::StringPiece> device_address = absl::nullopt);
+      std::optional<base::StringPiece> device_address = std::nullopt);
 
   ~BluetoothPairingDialog() override;
 
  protected:
   BluetoothPairingDialog(
       const std::string& dialog_id,
-      absl::optional<base::StringPiece> canonical_device_address);
+      std::optional<base::StringPiece> canonical_device_address);
 
  private:
   // SystemWebDialogDelegate

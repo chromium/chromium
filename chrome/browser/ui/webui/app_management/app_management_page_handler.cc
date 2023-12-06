@@ -226,7 +226,7 @@ std::vector<std::string> GetSupportedLinksForPWAs(
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-absl::optional<std::string> MaybeFormatBytes(absl::optional<uint64_t> bytes) {
+std::optional<std::string> MaybeFormatBytes(std::optional<uint64_t> bytes) {
   if (bytes.has_value()) {
     // ui::FormatBytes requires a non-negative signed integer. In general, we
     // expect that converting from unsigned to signed int here should always
@@ -238,12 +238,12 @@ absl::optional<std::string> MaybeFormatBytes(absl::optional<uint64_t> bytes) {
       // sizes.
       LOG(ERROR) << "Invalid app size: " << signed_bytes;
       base::debug::DumpWithoutCrashing();
-      return absl::nullopt;
+      return std::nullopt;
     }
     return base::UTF16ToUTF8(ui::FormatBytes(signed_bytes));
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 #if !BUILDFLAG(IS_CHROMEOS)
 std::string GetFormattedOrigin(const webapps::AppId& app_id,
@@ -747,7 +747,7 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
                 "LINK", "#"));
       }
 
-      absl::optional<GURL> learn_more_url;
+      std::optional<GURL> learn_more_url;
       if (!CanShowDefaultAppAssociationsUi()) {
         learn_more_url = GURL(kFileHandlingLearnMore);
       }

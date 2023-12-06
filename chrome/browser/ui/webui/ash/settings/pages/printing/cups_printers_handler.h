@@ -197,7 +197,7 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
   void OnRetrieveCupsPrinterPpd(
       const std::string& printer_name,
       const std::string& eula,
-      absl::optional<printscanmgr::CupsRetrievePpdResponse> response);
+      std::optional<printscanmgr::CupsRetrievePpdResponse> response);
 
   void OnRetrievePpdError(const std::string& printer_name);
   void WriteAndDisplayPpdFile(const std::string& printer_name,

@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_ARC_VM_DATA_MIGRATION_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_ARC_VM_DATA_MIGRATION_SCREEN_HANDLER_H_
 
+#include <optional>
+
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 

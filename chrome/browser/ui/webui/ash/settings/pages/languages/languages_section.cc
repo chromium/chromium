@@ -141,10 +141,10 @@ LanguagesSection::LanguagesSection(Profile* profile,
     : OsSettingsSection(profile, search_tag_registry),
       inputs_subsection_(
           !ash::features::IsOsSettingsRevampWayfindingEnabled()
-              ? absl::make_optional<InputsSection>(profile,
-                                                   search_tag_registry,
-                                                   pref_service)
-              : absl::nullopt) {
+              ? std::make_optional<InputsSection>(profile,
+                                                  search_tag_registry,
+                                                  pref_service)
+              : std::nullopt) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetLanguagesPageSearchConceptsV2());
 }

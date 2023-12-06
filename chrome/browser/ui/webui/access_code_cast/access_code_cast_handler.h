@@ -94,7 +94,7 @@ class AccessCodeCastHandler : public access_code_cast::mojom::PageHandler,
 
   void OnSinkAddedResult(
       access_code_cast::mojom::AddSinkResultCode add_sink_result,
-      absl::optional<MediaSink::Id> sink_id);
+      std::optional<MediaSink::Id> sink_id);
 
   // MediaSinkWithCastModesObserver:
   void OnSinksUpdated(
@@ -146,10 +146,10 @@ class AccessCodeCastHandler : public access_code_cast::mojom::PageHandler,
   int access_code_not_found_count_ = 0;
 
   // The id of the media sink discovered from the access code;
-  absl::optional<MediaSink::Id> sink_id_;
+  std::optional<MediaSink::Id> sink_id_;
 
   // This contains a value only when tracking a pending route request.
-  absl::optional<RouteRequest> current_route_request_;
+  std::optional<RouteRequest> current_route_request_;
 
   // The time that the AddSink() function was last called. Used for metrics.
   base::Time add_sink_request_time_;

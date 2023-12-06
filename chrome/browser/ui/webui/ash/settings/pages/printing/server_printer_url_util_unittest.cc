@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/printing/server_printer_url_util.h"
 
+#include <optional>
 #include <string>
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash::settings {
@@ -43,7 +43,7 @@ TEST_F(ServerPrinterUrlUtilTest, IsValidScheme) {
 TEST_F(ServerPrinterUrlUtilTest, ConvertToGURL) {
   // Test that a GURL is created with |gurl1| as its source.
   std::string url1("http://123.123.11.11:631");
-  absl::optional<GURL> gurl1 = GenerateServerPrinterUrlWithValidScheme(url1);
+  std::optional<GURL> gurl1 = GenerateServerPrinterUrlWithValidScheme(url1);
   DCHECK(gurl1);
   ASSERT_EQ("http://123.123.11.11:631/", gurl1->spec());
   ASSERT_EQ("http", gurl1->scheme());
@@ -51,7 +51,7 @@ TEST_F(ServerPrinterUrlUtilTest, ConvertToGURL) {
 
   // Test that HTTPS is the default scheme if a scheme is not provided.
   std::string url2("123.123.11.11:631");
-  absl::optional<GURL> gurl2 = GenerateServerPrinterUrlWithValidScheme(url2);
+  std::optional<GURL> gurl2 = GenerateServerPrinterUrlWithValidScheme(url2);
   DCHECK(gurl2);
   ASSERT_EQ("https", gurl2->scheme());
   ASSERT_EQ("https://123.123.11.11:631/", gurl2->spec());
@@ -59,7 +59,7 @@ TEST_F(ServerPrinterUrlUtilTest, ConvertToGURL) {
   // Test that if a URL has IPP as its scheme, it will create a new GURL with
   // HTTP as its scheme and 631 as its port.
   std::string url3("ipp://123.123.11.11");
-  absl::optional<GURL> gurl3 = GenerateServerPrinterUrlWithValidScheme(url3);
+  std::optional<GURL> gurl3 = GenerateServerPrinterUrlWithValidScheme(url3);
   DCHECK(gurl3);
   ASSERT_EQ("http", gurl3->scheme());
   ASSERT_EQ("631", gurl3->port());
@@ -68,7 +68,7 @@ TEST_F(ServerPrinterUrlUtilTest, ConvertToGURL) {
   // Test that if a URL has IPP as its scheme and a specified port, it will
   // create a new GURL with HTTP as the scheme and keeps the same port.
   std::string url4("ipp://123.123.11.11:321");
-  absl::optional<GURL> gurl4 = GenerateServerPrinterUrlWithValidScheme(url4);
+  std::optional<GURL> gurl4 = GenerateServerPrinterUrlWithValidScheme(url4);
   DCHECK(gurl4);
   ASSERT_EQ("http", gurl4->scheme());
   ASSERT_EQ("321", gurl4->port());
@@ -77,7 +77,7 @@ TEST_F(ServerPrinterUrlUtilTest, ConvertToGURL) {
   // Test that if a URL has IPPS as its scheme and a specified port, a new GURL
   // is created with the scheme as HTTPS and keeps the same port.
   std::string url5("ipps://123.123.11.11:555");
-  absl::optional<GURL> gurl5 = GenerateServerPrinterUrlWithValidScheme(url5);
+  std::optional<GURL> gurl5 = GenerateServerPrinterUrlWithValidScheme(url5);
   DCHECK(gurl5);
   ASSERT_EQ("https", gurl5->scheme());
   ASSERT_EQ("555", gurl5->port());

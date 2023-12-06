@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_WEB_UI_TEST_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_WEB_UI_TEST_HANDLER_H_
 
+#include <optional>
 #include <string>
 
 #include "content/public/browser/web_ui_message_handler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Value;
@@ -47,7 +47,7 @@ class WebUITestHandler {
 
   // Handles the result of a test. If |error_message| has no value, the test has
   // succeeded.
-  void TestComplete(const absl::optional<std::string>& error_message);
+  void TestComplete(const std::optional<std::string>& error_message);
 
   // Quits the currently running RunLoop.
   void RunQuitClosure();

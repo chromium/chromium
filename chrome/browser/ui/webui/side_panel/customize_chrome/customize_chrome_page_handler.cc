@@ -224,7 +224,7 @@ void CustomizeChromePageHandler::UpdateTheme() {
   auto custom_background =
       ntp_custom_background_service_
           ? ntp_custom_background_service_->GetCustomBackground()
-          : absl::nullopt;
+          : std::nullopt;
   auto background_image = side_panel::mojom::BackgroundImage::New();
   if (custom_background.has_value()) {
     background_image->url = custom_background->custom_background_url;

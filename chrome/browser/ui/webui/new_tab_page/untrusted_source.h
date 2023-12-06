@@ -87,7 +87,7 @@ class UntrustedSource : public content::URLDataSource,
   raw_ptr<OneGoogleBarService, FlakyDanglingUntriaged> one_google_bar_service_;
   base::ScopedObservation<OneGoogleBarService, OneGoogleBarServiceObserver>
       one_google_bar_service_observation_{this};
-  absl::optional<base::TimeTicks> one_google_bar_load_start_time_;
+  std::optional<base::TimeTicks> one_google_bar_load_start_time_;
   raw_ptr<Profile, FlakyDanglingUntriaged> profile_;
 };
 

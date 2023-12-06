@@ -395,9 +395,8 @@ AppsSection::AppsSection(Profile* profile,
     : OsSettingsSection(profile, search_tag_registry),
       startup_subsection_(
           !ash::features::IsOsSettingsRevampWayfindingEnabled()
-              ? absl::make_optional<StartupSection>(profile,
-                                                    search_tag_registry)
-              : absl::nullopt),
+              ? std::make_optional<StartupSection>(profile, search_tag_registry)
+              : std::nullopt),
       pref_service_(pref_service),
       arc_app_list_prefs_(arc_app_list_prefs),
       app_service_proxy_(app_service_proxy) {

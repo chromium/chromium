@@ -12,8 +12,9 @@
 #include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include <optional>
+
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/update_engine/dbus-constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -57,7 +58,7 @@ class VersionUpdater {
   using EolInfoCallback =
       base::OnceCallback<void(ash::UpdateEngineClient::EolInfo eol_info)>;
   using IsFeatureEnabledCallback =
-      base::OnceCallback<void(absl::optional<bool>)>;
+      base::OnceCallback<void(std::optional<bool>)>;
 #endif
 
   // Used to update the client of status changes.

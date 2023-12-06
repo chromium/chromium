@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 
+#include <optional>
+
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -25,7 +27,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -175,7 +176,7 @@ void RequestODFSMount(Profile* profile,
   service->RequestMount(provider_id, std::move(logging_callback));
 }
 
-absl::optional<ProvidedFileSystemInfo> GetODFSInfo(Profile* profile) {
+std::optional<ProvidedFileSystemInfo> GetODFSInfo(Profile* profile) {
   Service* service = Service::Get(profile);
   ProviderId provider_id =
       ProviderId::CreateFromExtensionId(extension_misc::kODFSExtensionId);
@@ -183,12 +184,12 @@ absl::optional<ProvidedFileSystemInfo> GetODFSInfo(Profile* profile) {
 
   if (odfs_infos.size() == 0) {
     LOG(ERROR) << "ODFS is not mounted";
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (odfs_infos.size() > 1u) {
     LOG(ERROR) << "One and only one filesystem should be mounted for the ODFS "
                   "extension";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return odfs_infos[0];
@@ -310,7 +311,7 @@ void GetODFSEntryMetadata(
       {path}, base::BindOnce(&OnGetODFSEntryActions, std::move(callback)));
 }
 
-absl::optional<base::File::Error> GetFirstTaskError(
+std::optional<base::File::Error> GetFirstTaskError(
     const ::file_manager::io_task::ProgressStatus& status) {
   for (const auto* entries : {&status.sources, &status.outputs}) {
     for (const ::file_manager::io_task::EntryStatus& entry : *entries) {
@@ -319,14 +320,14 @@ absl::optional<base::File::Error> GetFirstTaskError(
       }
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<gfx::Rect> CalculateAuthWindowBounds(Profile* profile) {
+std::optional<gfx::Rect> CalculateAuthWindowBounds(Profile* profile) {
   Browser* browser =
       FindSystemWebAppBrowser(profile, ash::SystemWebAppType::FILE_MANAGER);
   if (!browser) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   gfx::Rect files_app_bounds = browser->window()->GetBounds();

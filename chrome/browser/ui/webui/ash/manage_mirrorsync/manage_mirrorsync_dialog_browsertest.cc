@@ -60,7 +60,7 @@ MATCHER_P(MojoFilePaths, matcher, "") {
 // the "error" key. The value of this is cast into a `GetSyncPathError` to
 // compare.
 MATCHER_P(SyncPathError, matcher, "") {
-  absl::optional<int> error = arg.FindInt("error");
+  std::optional<int> error = arg.FindInt("error");
   EXPECT_TRUE(error.has_value());
   auto get_sync_path_error =
       static_cast<manage_mirrorsync::mojom::PageHandler::GetSyncPathError>(

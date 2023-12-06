@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_ABOUT_ABOUT_SECTION_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_ABOUT_ABOUT_SECTION_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
@@ -12,7 +14,6 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/user_manager/user_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebUIDataSource;
@@ -46,7 +47,7 @@ class AboutSection : public OsSettingsSection {
   bool ShouldShowAUToggle(user_manager::User* active_user);
 
   raw_ptr<PrefService, ExperimentalAsh> pref_service_;
-  absl::optional<CrostiniSection> crostini_subsection_;
+  std::optional<CrostiniSection> crostini_subsection_;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   void UpdateReportIssueSearchTags();

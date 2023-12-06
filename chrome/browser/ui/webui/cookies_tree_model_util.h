@@ -8,11 +8,11 @@
 #include <stdint.h>
 
 #include <map>
+#include <optional>
 #include <string>
 
 #include "base/containers/id_map.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class CookieTreeNode;
 
@@ -52,7 +52,7 @@ class CookiesTreeModelUtil {
   // Returns a Value::Dict populated with cookie tree node properties. `id_map`
   // maps a CookieTreeNode to an ID and creates a new ID if `node` is not in the
   // maps. Returns nullopt if the `node` does not need to be shown.
-  absl::optional<base::Value::Dict> GetCookieTreeNodeDictionary(
+  std::optional<base::Value::Dict> GetCookieTreeNodeDictionary(
       const CookieTreeNode& node);
 
   // IDMap to create unique ID and look up the object for an ID.

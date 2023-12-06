@@ -77,7 +77,7 @@ void MetricsConsentHandler::HandleUpdateMetricsConsent(
   CHECK_EQ(args[1].type(), base::Value::Type::DICT);
 
   const base::Value& callback_id = args[0];
-  absl::optional<bool> metrics_consent = args[1].GetDict().FindBool("consent");
+  std::optional<bool> metrics_consent = args[1].GetDict().FindBool("consent");
   CHECK(metrics_consent);
 
   if (!ShouldUseUserConsent()) {
@@ -92,7 +92,7 @@ void MetricsConsentHandler::HandleUpdateMetricsConsent(
   }
 
   metrics_service_->UpdateCurrentUserMetricsConsent(*metrics_consent);
-  absl::optional<bool> user_metrics_consent =
+  std::optional<bool> user_metrics_consent =
       metrics_service_->GetCurrentUserMetricsConsent();
   CHECK(user_metrics_consent.has_value());
   ResolveJavascriptCallback(callback_id, base::Value(*user_metrics_consent));

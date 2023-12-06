@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_SSH_CONFIGURED_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_SSH_CONFIGURED_HANDLER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/ash/login/base_webui_handler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -34,7 +34,7 @@ class SshConfiguredHandler : public BaseWebUIHandler {
   void OnGetDebuggingFeatures(bool succeeded, int feature_mask);
   void ResolveCallbacks();
 
-  absl::optional<bool> is_ssh_configured_;
+  std::optional<bool> is_ssh_configured_;
   std::vector<std::string> callback_ids_;
 
   base::WeakPtrFactory<SshConfiguredHandler> weak_factory_{this};

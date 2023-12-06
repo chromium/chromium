@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -120,7 +121,6 @@
 #include "net/cert/x509_certificate.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -150,15 +150,15 @@ bool HasLeadingOrTrailingWhitespaces(const std::string& str) {
          RE2::FullMatch(str, kTrailingWhitespaceRegex);
 }
 
-absl::optional<SyncTrustedVaultKeys> GetSyncTrustedVaultKeysForUserContext(
+std::optional<SyncTrustedVaultKeys> GetSyncTrustedVaultKeysForUserContext(
     const base::Value::Dict& js_object,
     const std::string& gaia_id) {
   SyncTrustedVaultKeys parsed_keys = SyncTrustedVaultKeys::FromJs(js_object);
   if (parsed_keys.gaia_id() != gaia_id) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  return absl::make_optional(std::move(parsed_keys));
+  return std::make_optional(std::move(parsed_keys));
 }
 
 // Must be kept consistent with ChromeOSSamlApiUsed in enums.xml
@@ -233,7 +233,7 @@ void UpdateAuthParams(base::Value::Dict& params) {
 // Make this function fallible when version_loader::GetVersion()
 // returns an optional that is empty
 void GetVersionAndConsent(std::string* out_version, bool* out_consent) {
-  absl::optional<std::string> version = chromeos::version_loader::GetVersion(
+  std::optional<std::string> version = chromeos::version_loader::GetVersion(
       chromeos::version_loader::VERSION_SHORT);
   *out_version = version.value_or("0.0.0.0");
   *out_consent = GoogleUpdateSettings::GetCollectStatsConsent();
@@ -1133,7 +1133,7 @@ void GaiaScreenHandler::DoCompleteLogin(const std::string& gaia_id,
 
   // Retrieve ChallengeResponseKey from client certificates. Show signin fatal
   // error if there is an issue retrieving.
-  absl::optional<ChallengeResponseKey> challenge_response_key;
+  std::optional<ChallengeResponseKey> challenge_response_key;
   if (using_saml && ClientCertificatesWereUsed()) {
     auto challenge_response_key_or_error = login::ExtractClientCertificates(
         *extension_provided_client_cert_usage_observer_);
@@ -1151,7 +1151,7 @@ void GaiaScreenHandler::DoCompleteLogin(const std::string& gaia_id,
       user ? user->GetType() : CalculateUserType(account_id),
       login::GetAccountId(typed_email, gaia_id, AccountType::GOOGLE),
       using_saml, using_saml_api_, password, SamlPasswordAttributes(),
-      /*sync_trusted_vault_keys=*/absl::nullopt, challenge_response_key,
+      /*sync_trusted_vault_keys=*/std::nullopt, challenge_response_key,
       &user_context);
 
   LoginDisplayHost::default_host()->CompleteLogin(user_context);
@@ -1332,7 +1332,7 @@ void GaiaScreenHandler::ShowSecurityTokenPinDialog(
     bool enable_user_input,
     chromeos::security_token_pin::ErrorLabel error_label,
     int attempts_left,
-    const absl::optional<AccountId>& /*authenticating_user_account_id*/,
+    const std::optional<AccountId>& /*authenticating_user_account_id*/,
     SecurityTokenPinEnteredCallback pin_entered_callback,
     SecurityTokenPinDialogClosedCallback pin_dialog_closed_callback) {
   DCHECK(is_security_token_pin_enabled_);
@@ -1714,7 +1714,7 @@ void GaiaScreenHandler::CheckIfAllowlisted(const std::string& user_email) {
       !LoginDisplayHost::default_host()->IsUserAllowlisted(
           known_user.GetAccountId(user_email, std::string() /* id */,
                                   AccountType::UNKNOWN),
-          absl::nullopt)) {
+          std::nullopt)) {
     LoginDisplayHost::default_host()->ShowAllowlistCheckFailedError();
   }
 }

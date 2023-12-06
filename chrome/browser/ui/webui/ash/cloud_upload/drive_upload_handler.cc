@@ -45,7 +45,7 @@ const int kAlternateUrlPollInterval = 200;
 void OnUploadDone(scoped_refptr<DriveUploadHandler> drive_upload_handler,
                   DriveUploadHandler::UploadCallback callback,
                   OfficeTaskResult task_result,
-                  absl::optional<GURL> hosted_url,
+                  std::optional<GURL> hosted_url,
                   int64_t upload_size) {
   std::move(callback).Run(task_result, std::move(hosted_url), upload_size);
 }
@@ -282,7 +282,7 @@ void DriveUploadHandler::OnFailedUpload(OfficeFilesUploadResult result_metric,
     notification_manager_->ShowUploadError(error_message);
   }
   if (callback_) {
-    std::move(callback_).Run(OfficeTaskResult::kFailedToUpload, absl::nullopt,
+    std::move(callback_).Run(OfficeTaskResult::kFailedToUpload, std::nullopt,
                              0);
   }
 }

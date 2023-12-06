@@ -75,16 +75,16 @@ class DnsLookupClient : public network::mojom::ResolveHostClient {
     receiver_.set_disconnect_handler(base::BindOnce(
         &DnsLookupClient::OnComplete, base::Unretained(this),
         net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
-        /*resolved_addresses=*/absl::nullopt,
-        /*endpoint_results_with_metadata=*/absl::nullopt));
+        /*resolved_addresses=*/std::nullopt,
+        /*endpoint_results_with_metadata=*/std::nullopt));
   }
   ~DnsLookupClient() override {}
 
   // network::mojom::ResolveHostClient:
   void OnComplete(int32_t error,
                   const net::ResolveErrorInfo& resolve_error_info,
-                  const absl::optional<net::AddressList>& resolved_addresses,
-                  const absl::optional<net::HostResolverEndpointResults>&
+                  const std::optional<net::AddressList>& resolved_addresses,
+                  const std::optional<net::HostResolverEndpointResults>&
                       endpoint_results_with_metadata) override {
     std::string result;
     if (error == net::OK) {
@@ -130,8 +130,8 @@ class NetworkContextForTesting : public network::TestNetworkContext {
       response_client->OnComplete(
           net::ERR_NAME_NOT_RESOLVED,
           net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED),
-          /*resolved_addresses=*/absl::nullopt,
-          /*endpoint_results_with_metadata=*/absl::nullopt);
+          /*resolved_addresses=*/std::nullopt,
+          /*endpoint_results_with_metadata=*/std::nullopt);
     }
 
     const net::IPAddress first_localhost{127, 0, 0, 1};
@@ -159,7 +159,7 @@ class NetworkContextForTesting : public network::TestNetworkContext {
       response_client->OnComplete(
           0, net::ResolveErrorInfo(net::OK),
           net::AddressList(first_ip_endpoint),
-          /*endpoint_results_with_metadata=*/absl::nullopt);
+          /*endpoint_results_with_metadata=*/std::nullopt);
     }
 
     if (hostname == "multihost.com") {

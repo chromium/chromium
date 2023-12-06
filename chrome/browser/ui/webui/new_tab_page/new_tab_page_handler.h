@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_NEW_TAB_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_NEW_TAB_PAGE_HANDLER_H_
 
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -32,7 +33,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -135,18 +135,18 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   void OnAppRendered(double time) override;
   void OnOneGoogleBarRendered(double time) override;
   void OnPromoRendered(double time,
-                       const absl::optional<GURL>& log_url) override;
+                       const std::optional<GURL>& log_url) override;
   void OnCustomizeDialogAction(
       new_tab_page::mojom::CustomizeDialogAction action) override;
   void OnDoodleImageClicked(new_tab_page::mojom::DoodleImageType type,
-                            const absl::optional<GURL>& log_url) override;
+                            const std::optional<GURL>& log_url) override;
   void OnDoodleImageRendered(new_tab_page::mojom::DoodleImageType type,
                              double time,
                              const GURL& log_url,
                              OnDoodleImageRenderedCallback callback) override;
   void OnDoodleShared(new_tab_page::mojom::DoodleShareChannel channel,
                       const std::string& doodle_id,
-                      const absl::optional<std::string>& share_id) override;
+                      const std::optional<std::string>& share_id) override;
   void OnPromoLinkClicked() override;
   void OnModulesUsed() override;
 
@@ -180,7 +180,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   void OnLogoAvailable(
       GetDoodleCallback callback,
       search_provider_logos::LogoCallbackReason type,
-      const absl::optional<search_provider_logos::EncodedLogo>& logo);
+      const std::optional<search_provider_logos::EncodedLogo>& logo);
 
   void LogEvent(NTPLoggingEventType event);
 
@@ -212,7 +212,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   std::string images_request_collection_id_;
   GetBackgroundImagesCallback background_images_callback_;
   base::TimeTicks background_images_request_start_time_;
-  absl::optional<base::TimeTicks> one_google_bar_load_start_time_;
+  std::optional<base::TimeTicks> one_google_bar_load_start_time_;
   raw_ptr<Profile> profile_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   raw_ptr<content::WebContents> web_contents_;
@@ -234,7 +234,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
       ntp_custom_background_service_observation_{this};
   base::ScopedObservation<PromoService, PromoServiceObserver>
       promo_service_observation_{this};
-  absl::optional<base::TimeTicks> promo_load_start_time_;
+  std::optional<base::TimeTicks> promo_load_start_time_;
 
   // These are located at the end of the list of member variables to ensure the
   // WebUI page is disconnected before other members are destroyed.

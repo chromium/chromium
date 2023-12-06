@@ -87,7 +87,7 @@ class FakeSearchQuery : public drivefs::mojom::SearchQuery {
 
   void GetNextPage(GetNextPageCallback callback) override {
     ASSERT_LT(page_counter_, pages_.size()) << "Another page was expected";
-    absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items(
+    std::optional<std::vector<drivefs::mojom::QueryItemPtr>> items(
         std::move(pages_.at(page_counter_++)));
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), drive::FILE_ERROR_OK,

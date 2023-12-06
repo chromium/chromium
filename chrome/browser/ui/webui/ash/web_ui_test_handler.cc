@@ -51,7 +51,7 @@ content::RenderFrameHost* WebUITestHandler::GetRenderFrameHostForTest() {
 }
 
 void WebUITestHandler::TestComplete(
-    const absl::optional<std::string>& error_message) {
+    const std::optional<std::string>& error_message) {
   // To ensure this gets done, do this before ASSERT* calls.
   RunQuitClosure();
   SCOPED_TRACE("WebUITestHandler::TestComplete");

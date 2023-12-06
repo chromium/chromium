@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/site_settings_handler.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -124,7 +125,6 @@
 #include "services/device/public/mojom/serial.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -404,14 +404,14 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     const base::Value* event_data = data.arg2();
     ASSERT_TRUE(event_data->is_dict());
 
-    absl::optional<bool> enabled = event_data->GetDict().FindBool("enabled");
+    std::optional<bool> enabled = event_data->GetDict().FindBool("enabled");
     ASSERT_TRUE(enabled.has_value());
     EXPECT_EQ(expected_enabled, *enabled);
 
     const base::Value::Dict* pref_data = event_data->GetDict().FindDict("pref");
     ASSERT_TRUE(pref_data);
 
-    absl::optional<bool> value = pref_data->FindBool("value");
+    std::optional<bool> value = pref_data->FindBool("value");
     ASSERT_TRUE(value.has_value());
     EXPECT_EQ(expected_value, *value);
   }
@@ -566,7 +566,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     // exceptions.
     const auto* description = exception.FindString(site_settings::kDescription);
     ASSERT_FALSE(description);
-    absl::optional<bool> incognito =
+    std::optional<bool> incognito =
         exception.FindBool(site_settings::kIncognito);
     ASSERT_FALSE(incognito.has_value());
 
@@ -616,7 +616,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     ASSERT_EQ(expected_embedding_exception.embedding_display_name,
               *embedding_display_name);
 
-    absl::optional<bool> incognito =
+    std::optional<bool> incognito =
         embedding_exception.FindBool(site_settings::kIncognito);
     ASSERT_TRUE(incognito.has_value());
     EXPECT_EQ(expected_embedding_exception.incognito, *incognito);
@@ -681,7 +681,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     ASSERT_EQ(content_settings::ContentSettingToString(expected_setting),
               *setting);
 
-    absl::optional<bool> incognito =
+    std::optional<bool> incognito =
         exception.FindBool(site_settings::kIncognito);
     ASSERT_TRUE(incognito.has_value());
     EXPECT_EQ(expected_incognito, *incognito);
@@ -726,7 +726,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     const base::Value* result = data.arg3();
     ASSERT_TRUE(result->is_dict());
 
-    absl::optional<bool> valid = result->GetDict().FindBool("isValid");
+    std::optional<bool> valid = result->GetDict().FindBool("isValid");
     ASSERT_TRUE(valid.has_value());
     EXPECT_EQ(expected_validity, *valid);
 
@@ -971,13 +971,13 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
   void SetupDefaultFirstPartySets(MockPrivacySandboxService* mock_service) {
     EXPECT_CALL(*mock_service, GetFirstPartySetOwner(_))
         .WillRepeatedly(
-            [&](const GURL& url) -> absl::optional<net::SchemefulSite> {
+            [&](const GURL& url) -> std::optional<net::SchemefulSite> {
               auto first_party_sets = GetTestFirstPartySets();
               if (first_party_sets.count(net::SchemefulSite(url))) {
                 return first_party_sets[net::SchemefulSite(url)];
               }
 
-              return absl::nullopt;
+              return std::nullopt;
             });
   }
 
@@ -1771,7 +1771,7 @@ TEST_F(SiteSettingsHandlerTest, InstalledApps) {
   GURL start_url("http://abc.example.com/path");
   RegisterWebApp(
       profile(),
-      MakeApp(web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, start_url),
+      MakeApp(web_app::GenerateAppId(/*manifest_id=*/std::nullopt, start_url),
               apps::AppType::kWeb, start_url.spec(), apps::Readiness::kReady,
               apps::InstallReason::kSync));
 

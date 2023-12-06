@@ -269,7 +269,7 @@ void InsertOriginIntoGroup(
     SiteSettingsHandler::AllSitesMap* site_group_map,
     const url::Origin& origin,
     bool is_origin_with_cookies = false,
-    absl::optional<GroupingKey> partition_grouping_key = absl::nullopt) {
+    std::optional<GroupingKey> partition_grouping_key = std::nullopt) {
   const url::Origin& placeholder_origin = GetPlaceholderOrigin();
   bool is_partitioned = partition_grouping_key.has_value();
   GroupingKey grouping_key = partition_grouping_key.has_value()
@@ -379,7 +379,7 @@ void UpdateDataFromModel(
     std::map<url::Origin, int64_t>* origin_size_map,
     const url::Origin& origin,
     int64_t size,
-    absl::optional<GroupingKey> partition_grouping_key = absl::nullopt) {
+    std::optional<GroupingKey> partition_grouping_key = std::nullopt) {
   UpdateDataForOrigin(origin, size, origin_size_map);
   InsertOriginIntoGroup(all_sites_map, origin,
                         /*is_origin_with_cookies=*/false,
@@ -398,11 +398,11 @@ void LogAllSitesAction(AllSitesAction2 action) {
 // removed. If both |origin| and |grouping_key| are set, then only storage for
 // |origin| partitioned by |grouping_key| is removed.
 void RemoveMatchingNodes(CookiesTreeModel* model,
-                         absl::optional<url::Origin> origin,
-                         absl::optional<GroupingKey> grouping_key) {
+                         std::optional<url::Origin> origin,
+                         std::optional<GroupingKey> grouping_key) {
   DCHECK(origin || grouping_key);
-  absl::optional<std::string> group_etld_plus1 =
-      grouping_key.has_value() ? grouping_key->GetEtldPlusOne() : absl::nullopt;
+  std::optional<std::string> group_etld_plus1 =
+      grouping_key.has_value() ? grouping_key->GetEtldPlusOne() : std::nullopt;
   std::vector<CookieTreeNode*> nodes_to_delete;
 
   for (const auto& host_node : model->GetRoot()->children()) {
@@ -553,8 +553,8 @@ void ConvertSiteGroupMapToList(
     site_group.Set(kGroupingKey, grouping_key.Serialize());
 
     // eTLD+1 is the effective top level domain + 1.
-    absl::optional<std::string> etld_plus1 = grouping_key.GetEtldPlusOne();
-    absl::optional<url::Origin> group_origin = grouping_key.GetOrigin();
+    std::optional<std::string> etld_plus1 = grouping_key.GetEtldPlusOne();
+    std::optional<url::Origin> group_origin = grouping_key.GetOrigin();
     CHECK(etld_plus1 || group_origin);
     site_group.Set(site_settings::kDisplayName,
                    etld_plus1.has_value()
@@ -669,18 +669,18 @@ std::string GroupingKey::Serialize() const {
                      value_);
 }
 
-absl::optional<std::string> GroupingKey::GetEtldPlusOne() const {
+std::optional<std::string> GroupingKey::GetEtldPlusOne() const {
   if (absl::holds_alternative<std::string>(value_)) {
     return absl::get<std::string>(value_);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<url::Origin> GroupingKey::GetOrigin() const {
+std::optional<url::Origin> GroupingKey::GetOrigin() const {
   if (absl::holds_alternative<url::Origin>(value_)) {
     return absl::get<url::Origin>(value_);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 url::Origin GroupingKey::ToOrigin() const {
@@ -1022,7 +1022,7 @@ void SiteSettingsHandler::OnProfileWillBeDestroyed(Profile* profile) {
 }
 
 void SiteSettingsHandler::OnObjectPermissionChanged(
-    absl::optional<ContentSettingsType> guard_content_settings_type,
+    std::optional<ContentSettingsType> guard_content_settings_type,
     ContentSettingsType data_content_settings_type) {
   if (!guard_content_settings_type ||
       !site_settings::HasRegisteredGroupName(*guard_content_settings_type) ||
@@ -1077,7 +1077,7 @@ void SiteSettingsHandler::HandleClearUnpartitionedUsage(
     return;
   AllowJavascript();
   DCHECK(cookies_tree_model_);
-  RemoveMatchingNodes(cookies_tree_model_.get(), origin, absl::nullopt);
+  RemoveMatchingNodes(cookies_tree_model_.get(), origin, std::nullopt);
 
   // TODO(crbug.com/1368048) - Permission info loading before storage info
   // can result in an interleaving of actions that means this pointer is
@@ -1111,7 +1111,7 @@ void SiteSettingsHandler::HandleClearUnpartitionedUsage(
     // avoid confusion when cookies already exist when refreshing clear site
     // data page. Notes: this also means HTTPS sites cookie will be cleared when
     // user clear HTTP scheme Cookie.
-    RemoveMatchingNodes(cookies_tree_model_.get(), https_origin, absl::nullopt);
+    RemoveMatchingNodes(cookies_tree_model_.get(), https_origin, std::nullopt);
     affected_origins.emplace_back(https_origin);
   }
 
@@ -1125,7 +1125,7 @@ void SiteSettingsHandler::HandleClearPartitionedUsage(
   auto grouping_key = GroupingKey::Deserialize(args[1].GetString());
 
   RemoveMatchingNodes(cookies_tree_model_.get(), origin, grouping_key);
-  absl::optional<std::string> group_etld_plus1 = grouping_key.GetEtldPlusOne();
+  std::optional<std::string> group_etld_plus1 = grouping_key.GetEtldPlusOne();
 
   // The group key should always be an eTLD+1 because there aren't any
   // partitioned entries for IWAs (which have a non-eTLD+1 grouping key).
@@ -1354,7 +1354,7 @@ void SiteSettingsHandler::HandleGetRecentSitePermissions(
 base::Value::List SiteSettingsHandler::PopulateCookiesAndUsageData(
     Profile* profile) {
   std::map<url::Origin, int64_t> origin_size_map;
-  std::map<std::pair<std::string, absl::optional<std::string>>, int>
+  std::map<std::pair<std::string, std::optional<std::string>>, int>
       host_cookie_map;
   base::Value::List list_value;
 
@@ -1371,10 +1371,10 @@ base::Value::List SiteSettingsHandler::PopulateCookiesAndUsageData(
     auto grouping_key =
         GroupingKey::Deserialize(*site_group.FindString(kGroupingKey));
     // Add the number of eTLD+1 scoped cookies.
-    absl::optional<std::string> etld_plus1 = grouping_key.GetEtldPlusOne();
+    std::optional<std::string> etld_plus1 = grouping_key.GetEtldPlusOne();
     if (etld_plus1.has_value()) {
       const auto& etld_plus1_cookie_num_it =
-          std::as_const(host_cookie_map).find({*etld_plus1, absl::nullopt});
+          std::as_const(host_cookie_map).find({*etld_plus1, std::nullopt});
       if (etld_plus1_cookie_num_it != host_cookie_map.end()) {
         cookie_num += etld_plus1_cookie_num_it->second;
       }
@@ -1394,7 +1394,7 @@ base::Value::List SiteSettingsHandler::PopulateCookiesAndUsageData(
       }
 
       const auto& host_cookie_num_it = host_cookie_map.find(
-          {origin.host(), (is_partitioned ? etld_plus1 : absl::nullopt)});
+          {origin.host(), (is_partitioned ? etld_plus1 : std::nullopt)});
       if (host_cookie_num_it != host_cookie_map.end()) {
         origin_info.Set(kNumCookies, host_cookie_num_it->second);
         // Add cookies numbers for origins that aren't an eTLD+1.
@@ -2273,7 +2273,7 @@ void SiteSettingsHandler::GetOriginStorage(
     // If the storage is partitioned on a third party we need to ensure the
     // grouping key matches the top-site and doesn't default to the origin
     // in the UI.
-    absl::optional<GroupingKey> partition_grouping_key = absl::nullopt;
+    std::optional<GroupingKey> partition_grouping_key = std::nullopt;
     auto third_party_partitioning_site = entry.GetThirdPartyPartitioningSite();
     if (third_party_partitioning_site) {
       partition_grouping_key = GroupingKey::Create(url::Origin::Create(
@@ -2287,7 +2287,7 @@ void SiteSettingsHandler::GetOriginStorage(
 
 void SiteSettingsHandler::GetHostCookies(
     AllSitesMap* all_sites_map,
-    std::map<std::pair<std::string, absl::optional<std::string>>, int>*
+    std::map<std::pair<std::string, std::optional<std::string>>, int>*
         host_cookie_map) {
   CHECK(cookies_tree_model_.get());
   // Get sites that don't have data but have cookies.
@@ -2314,8 +2314,8 @@ void SiteSettingsHandler::GetHostCookies(
                CookieTreeNode::DetailedInfo::TYPE_COOKIE);
         DCHECK(detailed_info.cookie);
 
-        absl::optional<std::string> partition_etld_plus1 = absl::nullopt;
-        absl::optional<GroupingKey> partition_grouping_key = absl::nullopt;
+        std::optional<std::string> partition_etld_plus1 = std::nullopt;
+        std::optional<GroupingKey> partition_grouping_key = std::nullopt;
         if (detailed_info.cookie->IsPartitioned()) {
           partition_etld_plus1 =
               detailed_info.cookie->PartitionKey()->site().GetURL().host();
@@ -2337,19 +2337,19 @@ void SiteSettingsHandler::HandleClearSiteGroupDataAndCookies(
   auto grouping_key = GroupingKey::Deserialize(args[0].GetString());
   net::SchemefulSite https_top_level_site;
   net::SchemefulSite http_top_level_site;
-  if (absl::optional<std::string> etld_plus_one =
+  if (std::optional<std::string> etld_plus_one =
           grouping_key.GetEtldPlusOne()) {
     https_top_level_site =
         net::SchemefulSite(ConvertEtldToOrigin(*etld_plus_one, true));
     http_top_level_site =
         net::SchemefulSite(ConvertEtldToOrigin(*etld_plus_one, false));
-  } else if (absl::optional<url::Origin> origin = grouping_key.GetOrigin()) {
+  } else if (std::optional<url::Origin> origin = grouping_key.GetOrigin()) {
     https_top_level_site = net::SchemefulSite(*origin);
     http_top_level_site = net::SchemefulSite(*origin);
   }
 
   AllowJavascript();
-  RemoveMatchingNodes(cookies_tree_model_.get(), absl::nullopt, grouping_key);
+  RemoveMatchingNodes(cookies_tree_model_.get(), std::nullopt, grouping_key);
 
   // Retrieve all of the origin entries grouped under this group.
   std::vector<url::Origin> affected_origins;

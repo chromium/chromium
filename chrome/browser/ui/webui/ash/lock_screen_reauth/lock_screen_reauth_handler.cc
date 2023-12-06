@@ -305,7 +305,7 @@ void LockScreenReauthHandler::HandleCompleteAuthentication(
   DCHECK(!gaia_id.empty());
 
   // Retrieve ChallengeResponseKey from client certificates.
-  absl::optional<ChallengeResponseKey> challenge_response_key;
+  std::optional<ChallengeResponseKey> challenge_response_key;
   if (using_saml && extension_provided_client_cert_usage_observer_ &&
       extension_provided_client_cert_usage_observer_->ClientCertsWereUsed()) {
     auto challenge_response_key_or_error = login::ExtractClientCertificates(
@@ -324,7 +324,7 @@ void LockScreenReauthHandler::HandleCompleteAuthentication(
       AccountId::FromUserEmailGaiaId(gaia::CanonicalizeEmail(email), gaia_id),
       using_saml, false /* using_saml_api */, password,
       SamlPasswordAttributes::FromJs(password_attributes),
-      /*sync_trusted_vault_keys=*/absl::nullopt, challenge_response_key,
+      /*sync_trusted_vault_keys=*/std::nullopt, challenge_response_key,
       user_context_.get());
 
   // Create GaiaCookiesRetriever

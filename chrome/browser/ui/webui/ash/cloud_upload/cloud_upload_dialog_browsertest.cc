@@ -159,14 +159,14 @@ void SetUpCommandLineForNonManagedUser(base::CommandLine* command_line) {
   command_line->AppendSwitchASCII(switches::kLoginProfile, "user");
 }
 
-// A matcher to verify that absl::optional<TaskDescriptor> corresponds to a Web
+// A matcher to verify that std::optional<TaskDescriptor> corresponds to a Web
 // Drive Office Task.
 auto IsWebDriveOfficeTask() {
   return testing::Optional(testing::ResultOf(
       &file_manager::file_tasks::IsWebDriveOfficeTask, testing::Eq(true)));
 }
 
-// A matcher to verify that absl::optional<TaskDescriptor> corresponds to an
+// A matcher to verify that std::optional<TaskDescriptor> corresponds to an
 // Open in Office Task.
 auto IsOpenInOfficeTask() {
   return testing::Optional(testing::ResultOf(

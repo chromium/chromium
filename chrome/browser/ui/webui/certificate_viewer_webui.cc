@@ -69,7 +69,7 @@ class CertNodeBuilder {
 
   // Similar to Child, but if the argument is null, then this does not add
   // anything.
-  CertNodeBuilder& ChildIfNotNullopt(absl::optional<base::Value::Dict> child);
+  CertNodeBuilder& ChildIfNotNullopt(std::optional<base::Value::Dict> child);
 
   // Creates a base::Value::Dict representation of the collected information.
   // Only call this once.
@@ -102,7 +102,7 @@ CertNodeBuilder& CertNodeBuilder::Child(base::Value::Dict child) {
 }
 
 CertNodeBuilder& CertNodeBuilder::ChildIfNotNullopt(
-    absl::optional<base::Value::Dict> child) {
+    std::optional<base::Value::Dict> child) {
   if (child)
     return Child(std::move(*child));
   return *this;
@@ -398,7 +398,7 @@ void CertificateViewerDialogHandler::HandleRequestCertificateFields(
             l10n_util::GetStringUTF8(IDS_CERT_EXTENSION_CRITICAL),
             l10n_util::GetStringUTF8(IDS_CERT_EXTENSION_NON_CRITICAL));
 
-    absl::optional<base::Value::Dict> details_extensions;
+    std::optional<base::Value::Dict> details_extensions;
     if (!extensions.empty()) {
       CertNodeBuilder details_extensions_builder(IDS_CERT_DETAILS_EXTENSIONS);
       for (const x509_certificate_model::Extension& extension : extensions) {

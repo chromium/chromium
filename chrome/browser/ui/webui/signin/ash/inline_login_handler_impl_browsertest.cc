@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/signin/ash/inline_login_handler_impl.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -49,7 +51,6 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::Eq;
 using testing::IsEmpty;
@@ -243,8 +244,8 @@ class InlineLoginHandlerTest
     auto url = GaiaUrls::GetInstance()->gaia_url();
     auto cookie_obj = net::CanonicalCookie::Create(
         url, std::string("oauth_code=") + kSecondaryAccountOAuthCode,
-        base::Time::Now(), absl::nullopt /* server_time */,
-        absl::nullopt /* cookie_partition_key */);
+        base::Time::Now(), std::nullopt /* server_time */,
+        std::nullopt /* cookie_partition_key */);
     content::StoragePartition* partition =
         signin::GetSigninPartition(web_contents()->GetBrowserContext());
     base::test::TestFuture<net::CookieAccessResult> future;
@@ -569,7 +570,7 @@ class InlineLoginHandlerTestWithArcRestrictions
     return ValuesListGetAccount(values, email).has_value();
   }
 
-  absl::optional<base::Value> ValuesListGetAccount(
+  std::optional<base::Value> ValuesListGetAccount(
       const base::Value::List& values,
       const std::string& email) {
     for (const base::Value& value : values) {
@@ -578,7 +579,7 @@ class InlineLoginHandlerTestWithArcRestrictions
       if (*email_val == email)
         return value.Clone();
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const base::Value::List& CallGetAccountsNotAvailableInArc() {

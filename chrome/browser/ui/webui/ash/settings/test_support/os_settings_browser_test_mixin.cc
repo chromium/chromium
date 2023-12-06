@@ -5,10 +5,9 @@
 #include "chrome/browser/ui/webui/ash/settings/test_support/os_settings_browser_test_mixin.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "base/path_service.h"
 #include "base/test/scoped_run_loop_timeout.h"
@@ -45,7 +44,7 @@ OSSettingsBrowserTestMixin::BrowserProcessServer::ReleaseOSSettingsDriver() {
   CHECK(os_settings_driver_.value().get());
 
   auto result = std::move(*os_settings_driver_);
-  os_settings_driver_ = absl::nullopt;
+  os_settings_driver_ = std::nullopt;
   return result;
 }
 

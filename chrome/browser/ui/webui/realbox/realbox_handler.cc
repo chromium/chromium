@@ -237,14 +237,14 @@ CreateSuggestionGroupsMap(
   return result_map;
 }
 
-absl::optional<std::u16string> GetAdditionalText(
+std::optional<std::u16string> GetAdditionalText(
     const SuggestionAnswer::ImageLine& line) {
   if (line.additional_text()) {
     const auto additional_text = line.additional_text()->text();
     if (!additional_text.empty())
       return additional_text;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::u16string ImageLineToString16(const SuggestionAnswer::ImageLine& line) {

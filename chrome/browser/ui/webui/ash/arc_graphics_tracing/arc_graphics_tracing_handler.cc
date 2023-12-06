@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/arc_graphics_tracing/arc_graphics_tracing_handler.h"
 
 #include <map>
+#include <optional>
 #include <vector>
 
 #include "ash/components/arc/arc_features.h"
@@ -41,7 +42,6 @@
 #include "content/public/browser/tracing_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -68,8 +68,8 @@ struct ArcGraphicsTracingHandler::ActiveTrace {
   base::Time timestamp;
 
   // This must be destructed on the UI thread, so make it manually-destructable
-  // with absl::optional.
-  absl::optional<base::OneShotTimer> stop_timer;
+  // with std::optional.
+  std::optional<base::OneShotTimer> stop_timer;
 
   arc::PresentFramesTracer present_frames;
 };

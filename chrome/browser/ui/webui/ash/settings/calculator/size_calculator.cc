@@ -131,7 +131,7 @@ void TotalDiskSpaceCalculator::GetRootDeviceSize() {
 }
 
 void TotalDiskSpaceCalculator::OnGetRootDeviceSize(
-    absl::optional<int64_t> reply) {
+    std::optional<int64_t> reply) {
   if (reply.has_value()) {
     if (reply.value() < 0) {
       LOG(DFATAL) << "Negative root device size (" << reply.value() << ")";
@@ -191,7 +191,7 @@ void FreeDiskSpaceCalculator::GetUserFreeDiskSpace() {
 }
 
 void FreeDiskSpaceCalculator::OnGetUserFreeDiskSpace(
-    absl::optional<int64_t> reply) {
+    std::optional<int64_t> reply) {
   if (reply.has_value()) {
     if (reply.value() < 0) {
       LOG(DFATAL) << "Negative user free disk space (" << reply.value() << ")";
@@ -466,7 +466,7 @@ void AppsSizeCalculator::UpdateBorealisAppsSize() {
 }
 
 void AppsSizeCalculator::OnGetBorealisAppsSize(
-    absl::optional<vm_tools::concierge::ListVmDisksResponse> response) {
+    std::optional<vm_tools::concierge::ListVmDisksResponse> response) {
   if (!response) {
     LOG(ERROR) << "Failed to get response from concierge";
     has_borealis_apps_size_ = true;
@@ -525,7 +525,7 @@ void CrostiniSizeCalculator::PerformCalculation() {
 }
 
 void CrostiniSizeCalculator::OnGetCrostiniSize(
-    absl::optional<vm_tools::concierge::ListVmDisksResponse> response) {
+    std::optional<vm_tools::concierge::ListVmDisksResponse> response) {
   if (!response) {
     LOG(ERROR) << "Failed to get list of VM disks. Empty response.";
     UpdateSize(
@@ -593,7 +593,7 @@ void OtherUsersSizeCalculator::PerformCalculation() {
 }
 
 void OtherUsersSizeCalculator::OnGetOtherUserSize(
-    absl::optional<user_data_auth::GetAccountDiskUsageReply> reply) {
+    std::optional<user_data_auth::GetAccountDiskUsageReply> reply) {
   user_sizes_.push_back(
       user_data_auth::AccountDiskUsageReplyToUsageSize(reply));
   if (user_sizes_.size() != other_users_.size()) {

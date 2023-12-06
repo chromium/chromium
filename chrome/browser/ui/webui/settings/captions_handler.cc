@@ -183,7 +183,7 @@ base::Value::List CaptionsHandler::GetInstalledLanguagePacks() {
   for (const auto& language : g_browser_process->local_state()->GetList(
            prefs::kSodaRegisteredLanguagePacks)) {
     base::Value::Dict installed_language_pack;
-    const absl::optional<speech::SodaLanguagePackComponentConfig> config =
+    const std::optional<speech::SodaLanguagePackComponentConfig> config =
         speech::GetLanguageComponentConfig(language.GetString());
     if (config && config->language_code != speech::LanguageCode::kNone) {
       installed_language_pack.Set(kCodeKey, language.GetString());

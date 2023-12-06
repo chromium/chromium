@@ -246,7 +246,7 @@ void PolicyUITest::VerifyPolicies(
       "JSON.stringify(policies);";
   std::string json =
       content::EvalJs(web_contents(), javascript).ExtractString();
-  absl::optional<base::Value> value_ptr = base::JSONReader::Read(json);
+  std::optional<base::Value> value_ptr = base::JSONReader::Read(json);
   ASSERT_TRUE(value_ptr);
   ASSERT_TRUE(value_ptr->is_list());
   const base::Value::List& actual_policies = value_ptr->GetList();
@@ -351,7 +351,7 @@ bool PolicyUIStatusTest::ReadStatusFor(
   content::WebContents* contents =
       chrome_test_utils::GetActiveWebContents(this);
   std::string json = content::EvalJs(contents, javascript).ExtractString();
-  absl::optional<base::Value> statuses = base::JSONReader::Read(json);
+  std::optional<base::Value> statuses = base::JSONReader::Read(json);
   if (!statuses.has_value() || !statuses->is_dict())
     return false;
   const base::Value::Dict& status_dict = statuses->GetDict();

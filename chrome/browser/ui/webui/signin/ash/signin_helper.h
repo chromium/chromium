@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_SIGNIN_HELPER_H_
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_SIGNIN_HELPER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/signin/ash/user_cloud_signin_restriction_policy_fetcher.h"
 #include "components/account_manager_core/account.h"
@@ -14,7 +16,6 @@
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -83,7 +84,7 @@ class SigninHelper : public GaiaAuthConsumer {
   // Receives the callback for `GetSecondaryGoogleAccountUsage()`.
   void OnGetSecondaryGoogleAccountUsage(
       UserCloudSigninRestrictionPolicyFetcher::Status status,
-      absl::optional<std::string> policy_result,
+      std::optional<std::string> policy_result,
       const std::string& hosted_domain);
 
   // Shows account sign-in blocked UI.

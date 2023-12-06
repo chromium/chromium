@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/support_tool/support_tool_ui_utils.h"
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -23,7 +24,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/feedback/redaction_tool/pii_types.h"
 #include "net/base/url_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -268,7 +268,7 @@ std::set<redaction::PIIType> GetPIITypesToKeep(
   for (const auto& item : *pii_items) {
     const base::Value::Dict* item_as_dict = item.GetIfDict();
     DCHECK(item_as_dict);
-    absl::optional<bool> keep =
+    std::optional<bool> keep =
         item_as_dict->FindBool(support_tool_ui::kPiiItemKeepKey);
     if (keep && keep.value()) {
       pii_to_keep.insert(static_cast<redaction::PIIType>(
@@ -319,7 +319,7 @@ std::set<support_tool::DataCollectorType> GetIncludedDataCollectorTypes(
   for (const auto& item : *data_collector_items) {
     const base::Value::Dict* item_as_dict = item.GetIfDict();
     DCHECK(item_as_dict);
-    absl::optional<bool> isIncluded = item_as_dict->FindBool("isIncluded");
+    std::optional<bool> isIncluded = item_as_dict->FindBool("isIncluded");
     if (isIncluded && isIncluded.value()) {
       included_data_collectors.insert(
           static_cast<support_tool::DataCollectorType>(

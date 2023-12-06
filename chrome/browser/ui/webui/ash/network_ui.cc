@@ -133,35 +133,35 @@ bool IsGuestModeActive() {
          user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession();
 }
 
-// Get the euicc path for reset euicc operation. Return absl::nullopt if the
+// Get the euicc path for reset euicc operation. Return std::nullopt if the
 // reset euicc is not allowed, i.e: the user is in guest mode, admin enables
 // restrict cellular network policy or a managed eSIM profile already installed.
-absl::optional<dbus::ObjectPath> GetEuiccResetPath() {
+std::optional<dbus::ObjectPath> GetEuiccResetPath() {
   if (IsGuestModeActive()) {
     NET_LOG(ERROR) << "Couldn't reset EUICC in guest mode.";
-    return absl::nullopt;
+    return std::nullopt;
   }
-  absl::optional<dbus::ObjectPath> euicc_path =
+  std::optional<dbus::ObjectPath> euicc_path =
       cellular_utils::GetCurrentEuiccPath();
   if (!euicc_path) {
     NET_LOG(ERROR) << "No current EUICC. Unable to reset EUICC";
-    return absl::nullopt;
+    return std::nullopt;
   }
   const ManagedNetworkConfigurationHandler*
       managed_network_configuration_handler =
           NetworkHandler::Get()->managed_network_configuration_handler();
   if (!managed_network_configuration_handler)
-    return absl::nullopt;
+    return std::nullopt;
   if (managed_network_configuration_handler
           ->AllowOnlyPolicyCellularNetworks()) {
     NET_LOG(ERROR)
         << "Couldn't reset EUICC if admin restricts cellular networks.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   NetworkStateHandler* network_state_handler =
       NetworkHandler::Get()->network_state_handler();
   if (!network_state_handler)
-    return absl::nullopt;
+    return std::nullopt;
   NetworkStateHandler::NetworkStateList state_list;
   network_state_handler->GetNetworkListByType(NetworkTypePattern::Cellular(),
                                               /*configured_only=*/false,
@@ -175,7 +175,7 @@ absl::optional<dbus::ObjectPath> GetEuiccResetPath() {
     if (network->eid() == eid && network->IsManagedByPolicy()) {
       NET_LOG(ERROR)
           << "Couldn't reset EUICC if a managed eSIM profile is installed.";
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
@@ -339,7 +339,7 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   void OnGetShillNetworkProperties(const std::string& callback_id,
                                    const std::string& guid,
                                    const std::string& service_path,
-                                   absl::optional<base::Value::Dict> result) {
+                                   std::optional<base::Value::Dict> result) {
     if (!result) {
       RunErrorCallback(callback_id, guid, kGetNetworkProperties, "Error.DBus");
       return;
@@ -434,7 +434,7 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   }
 
   void ResetEuicc(const base::Value::List& arg_list) {
-    absl::optional<dbus::ObjectPath> euicc_path = GetEuiccResetPath();
+    std::optional<dbus::ObjectPath> euicc_path = GetEuiccResetPath();
     if (!euicc_path)
       return;
 
@@ -493,7 +493,7 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   void OnGetShillDeviceProperties(const std::string& callback_id,
                                   const std::string& type,
                                   const std::string& device_path,
-                                  absl::optional<base::Value::Dict> result) {
+                                  std::optional<base::Value::Dict> result) {
     if (!result) {
       RunErrorCallback(callback_id, type, kGetDeviceProperties,
                        "GetDeviceProperties failed");
@@ -662,8 +662,7 @@ class HotspotConfigMessageHandler : public content::WebUIMessageHandler {
     CHECK_EQ(2u, arg_list.size());
     std::string callback_id = arg_list[0].GetString();
     std::string tethering_config = arg_list[1].GetString();
-    absl::optional<base::Value> value =
-        base::JSONReader::Read(tethering_config);
+    std::optional<base::Value> value = base::JSONReader::Read(tethering_config);
 
     if (!value || !value->is_dict()) {
       NET_LOG(ERROR) << "Invalid tethering configuration: " << tethering_config;
@@ -693,7 +692,7 @@ class HotspotConfigMessageHandler : public content::WebUIMessageHandler {
   void OnGetShillManagerDictPropertiesByKey(
       const std::string& callback_id,
       const std::string& dict_key,
-      absl::optional<base::Value::Dict> properties) {
+      std::optional<base::Value::Dict> properties) {
     if (!properties) {
       NET_LOG(ERROR) << "Error getting Shill manager properties.";
       Respond(callback_id,

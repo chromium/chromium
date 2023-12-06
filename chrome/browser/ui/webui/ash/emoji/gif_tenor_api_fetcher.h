@@ -43,14 +43,14 @@ class GifTenorApiFetcher {
   void FetchFeaturedGifs(
       TenorGifsApiCallback callback,
       const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const absl::optional<std::string>& pos);
+      const std::optional<std::string>& pos);
 
   // Fetch tenor API Search endpoint
   void FetchGifSearch(
       TenorGifsApiCallback callback,
       const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& query,
-      const absl::optional<std::string>& pos);
+      const std::optional<std::string>& pos);
 
   // Fetch tenor API Posts endpoint
   void FetchGifsByIds(

@@ -1012,27 +1012,26 @@ DeviceSection::DeviceSection(Profile* profile,
     : OsSettingsSection(profile, search_tag_registry),
       inputs_subsection_(
           ash::features::IsOsSettingsRevampWayfindingEnabled()
-              ? absl::make_optional<InputsSection>(profile,
-                                                   search_tag_registry,
-                                                   pref_service)
-              : absl::nullopt),
-      power_subsection_(
-          !ash::features::IsOsSettingsRevampWayfindingEnabled()
-              ? absl::make_optional<PowerSection>(profile,
+              ? std::make_optional<InputsSection>(profile,
                                                   search_tag_registry,
                                                   pref_service)
-              : absl::nullopt),
+              : std::nullopt),
+      power_subsection_(
+          !ash::features::IsOsSettingsRevampWayfindingEnabled()
+              ? std::make_optional<PowerSection>(profile,
+                                                 search_tag_registry,
+                                                 pref_service)
+              : std::nullopt),
       printing_subsection_(
           ash::features::IsOsSettingsRevampWayfindingEnabled()
-              ? absl::make_optional<PrintingSection>(profile,
-                                                     search_tag_registry,
-                                                     printers_manager)
-              : absl::nullopt),
+              ? std::make_optional<PrintingSection>(profile,
+                                                    search_tag_registry,
+                                                    printers_manager)
+              : std::nullopt),
       storage_subsection_(
           !ash::features::IsOsSettingsRevampWayfindingEnabled()
-              ? absl::make_optional<StorageSection>(profile,
-                                                    search_tag_registry)
-              : absl::nullopt) {
+              ? std::make_optional<StorageSection>(profile, search_tag_registry)
+              : std::nullopt) {
   CHECK(profile);
   CHECK(search_tag_registry);
   CHECK(pref_service);

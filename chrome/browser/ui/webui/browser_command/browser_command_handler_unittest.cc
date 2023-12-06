@@ -152,12 +152,12 @@ class TestTutorialService : public user_education::TutorialService {
   }
 
   bool IsRunningTutorial(
-      absl::optional<user_education::TutorialIdentifier> id) const override {
+      std::optional<user_education::TutorialIdentifier> id) const override {
     return id.has_value() ? id == running_id_ : running_id_.has_value();
   }
 
  private:
-  absl::optional<user_education::TutorialIdentifier> running_id_;
+  std::optional<user_education::TutorialIdentifier> running_id_;
 };
 
 class MockTutorialService : public TestTutorialService {
@@ -178,7 +178,7 @@ class MockTutorialService : public TestTutorialService {
               LogStartedFromWhatsNewPage,
               (user_education::TutorialIdentifier, bool));
   MOCK_CONST_METHOD1(IsRunningTutorial,
-                     bool(absl::optional<user_education::TutorialIdentifier>));
+                     bool(std::optional<user_education::TutorialIdentifier>));
 };
 
 class MockCommandHandler : public TestCommandHandler {

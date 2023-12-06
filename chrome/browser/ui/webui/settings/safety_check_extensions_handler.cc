@@ -60,7 +60,7 @@ bool SafetyCheckExtensionsHandler::CheckExtensionForTrigger(
   if (warning_acked || !is_extension) {
     return false;
   }
-  absl::optional<extensions::CWSInfoService::CWSInfo> extension_info =
+  std::optional<extensions::CWSInfoService::CWSInfo> extension_info =
       cws_info_service_->GetCWSInfo(extension);
   if (extension_info.has_value() && extension_info->is_present) {
     switch (extension_info->violation_type) {

@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -27,7 +28,6 @@
 #include "components/prefs/pref_store.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/origin.h"
 
@@ -61,11 +61,11 @@ class SiteSettingsHandler
 
     // Returns the eTLD+1 that this GroupingKey represents, or nullopt if it
     // doesn't represent an eTLD+1.
-    absl::optional<std::string> GetEtldPlusOne() const;
+    std::optional<std::string> GetEtldPlusOne() const;
 
     // Returns the origin that this GroupingKey represents, or nullopt if it
     // doesn't represent an origin.
-    absl::optional<url::Origin> GetOrigin() const;
+    std::optional<url::Origin> GetOrigin() const;
 
     bool operator<(const GroupingKey& other) const;
 
@@ -115,7 +115,7 @@ class SiteSettingsHandler
 
   // ObjectPermissionContextBase::PermissionObserver implementation:
   void OnObjectPermissionChanged(
-      absl::optional<ContentSettingsType> guard_content_settings_type,
+      std::optional<ContentSettingsType> guard_content_settings_type,
       ContentSettingsType data_content_settings_type) override;
 
   void OnZoomLevelChanged(const content::HostZoomMap::ZoomLevelChange& change);
@@ -252,7 +252,7 @@ class SiteSettingsHandler
   // stores the information in the |all_sites_map| and |host_cookie_map|.
   void GetHostCookies(
       AllSitesMap* all_sites_map,
-      std::map<std::pair<std::string, absl::optional<std::string>>, int>*
+      std::map<std::pair<std::string, std::optional<std::string>>, int>*
           host_cookie_map);
 
   // Returns a list of content settings types that are controlled via a standard

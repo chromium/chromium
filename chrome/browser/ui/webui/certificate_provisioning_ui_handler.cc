@@ -146,7 +146,7 @@ std::u16string StateToText(CertProvisioningProcessState state) {
 std::u16string MakeStatusMessage(
     bool did_fail,
     CertProvisioningProcessState state,
-    const absl::optional<std::string>& failure_message) {
+    const std::optional<std::string>& failure_message) {
   if (!did_fail) {
     return StateToText(state);
   }

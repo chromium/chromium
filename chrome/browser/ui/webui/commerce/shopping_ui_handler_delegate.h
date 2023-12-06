@@ -28,7 +28,7 @@ class ShoppingUiHandlerDelegate : public ShoppingListHandler::Delegate {
       delete;
   ~ShoppingUiHandlerDelegate() override;
 
-  absl::optional<GURL> GetCurrentTabUrl() override;
+  std::optional<GURL> GetCurrentTabUrl() override;
 
   void ShowInsightsSidePanelUI() override;
 

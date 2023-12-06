@@ -337,8 +337,8 @@ PrivacySection::PrivacySection(Profile* profile,
     : OsSettingsSection(profile, search_tag_registry),
       sync_subsection_(
           ash::features::IsOsSettingsRevampWayfindingEnabled()
-              ? absl::make_optional<SyncSection>(profile, search_tag_registry)
-              : absl::nullopt),
+              ? std::make_optional<SyncSection>(profile, search_tag_registry)
+              : std::nullopt),
       pref_service_(pref_service),
       auth_performer_(UserDataAuthClient::Get()),
       fp_engine_(&auth_performer_) {

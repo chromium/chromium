@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_SEARCH_SEARCH_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_SEARCH_SEARCH_HANDLER_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
@@ -18,7 +19,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::settings {
 
@@ -74,7 +74,7 @@ class SearchHandler : public mojom::SearchHandler,
       uint32_t max_num_results,
       mojom::ParentResultBehavior parent_result_behavior,
       local_search_service::ResponseStatus response_status,
-      const absl::optional<std::vector<local_search_service::Result>>&
+      const std::optional<std::vector<local_search_service::Result>>&
           local_search_service_results);
 
   void AddParentResults(

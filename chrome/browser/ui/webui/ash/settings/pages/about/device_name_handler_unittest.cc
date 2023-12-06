@@ -74,7 +74,7 @@ class DeviceNameHandlerTest : public testing::Test {
     ASSERT_TRUE(device_name);
     EXPECT_EQ(expected_device_name, *device_name);
 
-    absl::optional<int> device_name_state =
+    std::optional<int> device_name_state =
         returned_data.FindInt("deviceNameState");
     ASSERT_TRUE(device_name_state);
     EXPECT_EQ(static_cast<int>(expected_device_name_state), *device_name_state);

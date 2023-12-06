@@ -29,7 +29,7 @@ namespace {
 class TestUserMetricsServiceClient
     : public ::metrics::TestMetricsServiceClient {
  public:
-  absl::optional<bool> GetCurrentUserMetricsConsent() const override {
+  std::optional<bool> GetCurrentUserMetricsConsent() const override {
     return current_user_metrics_consent_;
   }
 

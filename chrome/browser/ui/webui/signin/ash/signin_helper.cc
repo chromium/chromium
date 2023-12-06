@@ -156,7 +156,7 @@ void SigninHelper::Exit() {
 // show an error page.
 void SigninHelper::OnGetSecondaryGoogleAccountUsage(
     SigninRestrictionPolicyFetcher::Status status,
-    absl::optional<std::string> policy_result,
+    std::optional<std::string> policy_result,
     const std::string& hosted_domain) {
   base::UmaHistogramEnumeration(kSecondaryGoogleAccountUsageHistogramName,
                                 status);

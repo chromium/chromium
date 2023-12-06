@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -25,7 +26,6 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::UnorderedElementsAre;
 
@@ -42,14 +42,14 @@ class Delegate : public TurnSyncOnHelper::Delegate {
   };
 
   struct Choices {
-    absl::optional<signin::SigninChoice> merge_data_choice =
+    std::optional<signin::SigninChoice> merge_data_choice =
         signin::SIGNIN_CHOICE_CONTINUE;
-    absl::optional<signin::SigninChoice> enterprise_management_choice =
+    std::optional<signin::SigninChoice> enterprise_management_choice =
         signin::SIGNIN_CHOICE_CONTINUE;
-    absl::optional<LoginUIService::SyncConfirmationUIClosedResult>
+    std::optional<LoginUIService::SyncConfirmationUIClosedResult>
         sync_optin_choice = LoginUIService::SYNC_WITH_DEFAULT_SETTINGS;
-    absl::optional<LoginUIService::SyncConfirmationUIClosedResult>
-        sync_disabled_choice = absl::nullopt;
+    std::optional<LoginUIService::SyncConfirmationUIClosedResult>
+        sync_disabled_choice = std::nullopt;
   };
 
   using SyncConfirmationCallback =
@@ -229,7 +229,7 @@ IN_PROC_BROWSER_TEST_P(TurnSyncOnHelperBrowserTestWithParam,
                                   signin::ConsentLevel::kSignin));
 
   base::RunLoop run_loop;
-  Delegate::Choices choices = {.sync_optin_choice = absl::nullopt};
+  Delegate::Choices choices = {.sync_optin_choice = std::nullopt};
   auto owned_delegate = std::make_unique<Delegate>(choices);
   base::WeakPtr<Delegate> delegate = owned_delegate->GetWeakPtr();
   new TurnSyncOnHelper(
@@ -350,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(TurnSyncOnHelperBrowserTest, UndoSyncRemoveAccount) {
                             signin::ConsentLevel::kSignin));
 
   base::RunLoop run_loop;
-  Delegate::Choices choices = {.sync_optin_choice = absl::nullopt};
+  Delegate::Choices choices = {.sync_optin_choice = std::nullopt};
   auto owned_delegate = std::make_unique<Delegate>(choices);
   base::WeakPtr<Delegate> delegate = owned_delegate->GetWeakPtr();
   new TurnSyncOnHelper(
@@ -415,7 +415,7 @@ IN_PROC_BROWSER_TEST_F(TurnSyncOnHelperBrowserTestWithUnoDesktop,
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
   base::RunLoop run_loop;
-  Delegate::Choices choices = {.sync_optin_choice = absl::nullopt};
+  Delegate::Choices choices = {.sync_optin_choice = std::nullopt};
   auto owned_delegate = std::make_unique<Delegate>(choices);
   base::WeakPtr<Delegate> delegate = owned_delegate->GetWeakPtr();
   new TurnSyncOnHelper(

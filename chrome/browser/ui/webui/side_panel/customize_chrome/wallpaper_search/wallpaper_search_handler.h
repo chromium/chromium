@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_CUSTOMIZE_CHROME_WALLPAPER_SEARCH_WALLPAPER_SEARCH_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_CUSTOMIZE_CHROME_WALLPAPER_SEARCH_WALLPAPER_SEARCH_HANDLER_H_
 
+#include <optional>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -24,7 +25,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 class Profile;
@@ -67,8 +67,8 @@ class WallpaperSearchHandler
   void GetDescriptors(GetDescriptorsCallback callback) override;
   void GetWallpaperSearchResults(
       const std::string& descriptor_a,
-      const absl::optional<std::string>& descriptor_b,
-      const absl::optional<std::string>& descriptor_c,
+      const std::optional<std::string>& descriptor_b,
+      const std::optional<std::string>& descriptor_c,
       side_panel::customize_chrome::mojom::DescriptorDValuePtr
           descriptor_d_value,
       GetWallpaperSearchResultsCallback callback) override;
@@ -128,7 +128,7 @@ class WallpaperSearchHandler
   base::flat_map<
       base::Token,
       std::tuple<optimization_guide::proto::WallpaperSearchImageQuality*,
-                 absl::optional<base::Time>,
+                 std::optional<base::Time>,
                  SkBitmap>>
       wallpaper_search_results_;
   const int64_t session_id_;

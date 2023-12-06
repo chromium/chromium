@@ -53,6 +53,8 @@
 #include "v8/include/v8-version-string.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/new_window_delegate.h"
@@ -77,7 +79,6 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/version/version_loader.h"
 #include "components/user_manager/user_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "ui/chromeos/devicetype_utils.h"
 #endif
@@ -171,7 +172,7 @@ base::FilePath GetRegulatoryLabelDirForRegion(base::StringPiece region) {
 base::FilePath FindRegulatoryLabelDir() {
   base::FilePath region_path;
   // Use the VPD region code to find the label dir.
-  const absl::optional<base::StringPiece> region =
+  const std::optional<base::StringPiece> region =
       ash::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
           ash::system::kRegionKey);
   if (region && !region->empty()) {
@@ -202,7 +203,7 @@ std::string ReadRegulatoryLabelText(const base::FilePath& label_dir_path) {
 
 base::Value::Dict GetVersionInfo() {
   base::Value::Dict version_info;
-  absl::optional<std::string> version = chromeos::version_loader::GetVersion(
+  std::optional<std::string> version = chromeos::version_loader::GetVersion(
       chromeos::version_loader::VERSION_FULL);
   version_info.Set("osVersion", version.value_or("0.0.0.0"));
   version_info.Set("arcVersion", chromeos::version_loader::GetArcVersion());
@@ -744,7 +745,7 @@ void AboutHandler::HandleIsConsumerAutoUpdateEnabled(
 
 void AboutHandler::OnIsConsumerAutoUpdateEnabled(std::string callback_id,
                                                  std::string feature,
-                                                 absl::optional<bool> enabled) {
+                                                 std::optional<bool> enabled) {
   if (!enabled.has_value()) {
     LOG(ERROR) << "Failed to get feature value for " << feature
                << " defaulting to enabled";

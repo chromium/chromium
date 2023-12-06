@@ -81,11 +81,11 @@ static extensions::CWSInfoService::CWSInfo cws_info_no_data{
 
 class MockCWSInfoService : public extensions::CWSInfoService {
  public:
-  MOCK_METHOD(absl::optional<bool>,
+  MOCK_METHOD(std::optional<bool>,
               IsLiveInCWS,
               (const extensions::Extension&),
               (const, override));
-  MOCK_METHOD(absl::optional<CWSInfoServiceInterface::CWSInfo>,
+  MOCK_METHOD(std::optional<CWSInfoServiceInterface::CWSInfo>,
               GetCWSInfo,
               (const extensions::Extension&),
               (const, override));

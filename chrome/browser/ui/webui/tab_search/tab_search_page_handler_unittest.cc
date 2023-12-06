@@ -840,7 +840,7 @@ TEST_F(TabSearchPageHandlerTest, TabOrganizationToMojo) {
   std::unique_ptr<TabOrganization> organization =
       std::make_unique<TabOrganization>(
           std::vector<std::unique_ptr<TabData>>{},
-          std::vector<std::u16string>{u"default_name"}, 0u, absl::nullopt);
+          std::vector<std::u16string>{u"default_name"}, 0u, std::nullopt);
   tab_search::mojom::TabOrganizationPtr mojo_tab_org_ptr =
       handler()->GetMojoForTabOrganization(organization.get());
 

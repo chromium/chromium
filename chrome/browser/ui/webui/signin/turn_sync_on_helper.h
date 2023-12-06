@@ -296,7 +296,7 @@ class TurnSyncOnHelper {
   // * After the user acknowledge enterprise management
   //
   // Used for metrics, to output the timing histograms.
-  absl::optional<base::ElapsedTimer> user_input_complete_timer_;
+  std::optional<base::ElapsedTimer> user_input_complete_timer_;
 
   base::WeakPtrFactory<TurnSyncOnHelper> weak_pointer_factory_{this};
 };

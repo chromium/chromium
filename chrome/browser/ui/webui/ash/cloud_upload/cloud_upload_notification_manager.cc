@@ -290,7 +290,7 @@ void CloudUploadNotificationManager::CloseNotification() {
 }
 
 void CloudUploadNotificationManager::HandleProgressNotificationClick(
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   // If the "Cancel" button was pressed, rather than a click to somewhere
   // else in the notification.
   if (button_index && cancel_callback_ && CanCancel()) {
@@ -302,7 +302,7 @@ void CloudUploadNotificationManager::HandleProgressNotificationClick(
 }
 
 void CloudUploadNotificationManager::HandleErrorNotificationClick(
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   // If the "Sign in" button was pressed, rather than a click to somewhere
   // else in the notification.
   if (button_index) {
@@ -314,7 +314,7 @@ void CloudUploadNotificationManager::HandleErrorNotificationClick(
 }
 
 void CloudUploadNotificationManager::HandleCompleteNotificationClick(
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   if (callback_for_testing_) {
     std::move(callback_for_testing_).Run(destination_path_);
   } else if (button_index) {

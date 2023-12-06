@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_TEST_SUPPORT_FAKE_OS_SETTINGS_SECTION_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_TEST_SUPPORT_FAKE_OS_SETTINGS_SECTION_H_
 
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "ash/webui/settings/public/constants/setting.mojom-shared.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::settings {
 
@@ -33,8 +33,8 @@ class FakeOsSettingsSection : public OsSettingsSection {
   // Add fake subpage and settings information. If `subpage` is nullopt, the
   // `setting` must exist and is attached directly to the section.
   void AddSubpageAndSetting(
-      absl::optional<chromeos::settings::mojom::Subpage> subpage,
-      absl::optional<chromeos::settings::mojom::Setting> setting);
+      std::optional<chromeos::settings::mojom::Subpage> subpage,
+      std::optional<chromeos::settings::mojom::Setting> setting);
 
   // OsSettingsSection:
   void AddLoadTimeData(content::WebUIDataSource* html_source) override {}

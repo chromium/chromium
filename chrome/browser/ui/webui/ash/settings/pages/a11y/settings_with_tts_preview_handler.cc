@@ -60,7 +60,7 @@ void SettingsWithTtsPreviewHandler::HandlePreviewTtsVoice(
   if (text.empty() || voice_id.empty())
     return;
 
-  absl::optional<base::Value> json = base::JSONReader::Read(voice_id);
+  std::optional<base::Value> json = base::JSONReader::Read(voice_id);
   std::string name;
   std::string extension_id;
   if (const std::string* ptr = json->GetDict().FindString("name"))

@@ -94,7 +94,7 @@ ui::EventSink* CoreOobeHandler::GetEventSink() {
 
 void CoreOobeHandler::ShowScreenWithData(
     const OobeScreenId& screen,
-    absl::optional<base::Value::Dict> data) {
+    std::optional<base::Value::Dict> data) {
   const bool is_safe_priority_call =
       ui_init_state_ == UiState::kPriorityScreensLoaded &&
       PriorityScreenChecker::IsPriorityScreen(screen);

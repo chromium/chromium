@@ -1005,7 +1005,7 @@ void NewTabPageUI::OnCustomBackgroundImageUpdated() {
   auto custom_background_url =
       (ntp_custom_background_service_
            ? ntp_custom_background_service_->GetCustomBackground()
-           : absl::optional<CustomBackground>())
+           : std::optional<CustomBackground>())
           .value_or(CustomBackground())
           .custom_background_url;
   url::EncodeURIComponent(custom_background_url.spec(), &encoded_url);

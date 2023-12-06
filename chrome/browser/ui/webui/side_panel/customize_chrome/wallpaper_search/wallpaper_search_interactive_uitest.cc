@@ -87,7 +87,7 @@ class WallpaperSearchInteractiveTest : public InteractiveBrowserTest {
                       })";
                 content::URLLoaderInterceptor::WriteResponse(
                     headers, body, params->client.get(),
-                    absl::optional<net::SSLInfo>());
+                    std::optional<net::SSLInfo>());
                 return true;
               }
               return false;

@@ -457,7 +457,7 @@ void CompanionPageHandler::OnCqJumptagClicked(
 }
 
 void CompanionPageHandler::OpenUrlInBrowser(
-    const absl::optional<GURL>& url_to_open,
+    const std::optional<GURL>& url_to_open,
     bool use_new_tab) {
   if (!url_to_open.has_value() || !url_to_open.value().is_valid()) {
     return;

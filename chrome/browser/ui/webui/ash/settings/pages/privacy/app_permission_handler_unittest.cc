@@ -205,7 +205,7 @@ TEST_F(AppPermissionHandlerTest, UpdateExistingApp) {
 
   // Update the microphone permission.
   UpdateApp(app_id, {std::make_pair(apps::PermissionType::kMicrophone, false)},
-            absl::nullopt);
+            std::nullopt);
   EXPECT_EQ(2, observer()->app_update_count());
 }
 
@@ -217,7 +217,7 @@ TEST_F(AppPermissionHandlerTest, UninstallApp) {
 
   // Update the camera permission.
   UpdateApp(app_id, {std::make_pair(apps::PermissionType::kCamera, false)},
-            absl::nullopt);
+            std::nullopt);
   EXPECT_EQ(0, observer()->app_uninstall_count());
 
   UninstallApp(app_id);
@@ -236,7 +236,7 @@ TEST_F(AppPermissionHandlerTest, GetAppList) {
   // Update already installed app.
   UpdateApp("appWithCameraPermission",
             {std::make_pair(apps::PermissionType::kCamera, true)},
-            absl::nullopt);
+            std::nullopt);
   EXPECT_EQ(2, GetNumberOfInstalledApps());
 
   // Install app which is not relevant for Privacy controls sensor subpages.

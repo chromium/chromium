@@ -125,7 +125,7 @@ void CryptohomeWebUIHandler::OnGetTpmStatus(
 }
 
 void CryptohomeWebUIHandler::OnGetAuthFactorExtendedInfo(
-    absl::optional<user_data_auth::GetAuthFactorExtendedInfoReply> reply) {
+    std::optional<user_data_auth::GetAuthFactorExtendedInfoReply> reply) {
   std::string recovery_ids = "<empty>";
   if (reply.has_value() &&
       !reply->recovery_info_reply().recovery_ids().empty()) {
@@ -140,7 +140,7 @@ void CryptohomeWebUIHandler::OnGetAuthFactorExtendedInfo(
 }
 
 void CryptohomeWebUIHandler::OnIsMounted(
-    absl::optional<user_data_auth::IsMountedReply> reply) {
+    std::optional<user_data_auth::IsMountedReply> reply) {
   bool mounted = false;
   if (reply.has_value()) {
     mounted = reply->is_mounted();
@@ -149,7 +149,7 @@ void CryptohomeWebUIHandler::OnIsMounted(
 }
 
 void CryptohomeWebUIHandler::OnPkcs11IsTpmTokenReady(
-    absl::optional<user_data_auth::Pkcs11IsTpmTokenReadyReply> reply) {
+    std::optional<user_data_auth::Pkcs11IsTpmTokenReadyReply> reply) {
   bool ready = false;
   if (reply.has_value()) {
     ready = reply->ready();

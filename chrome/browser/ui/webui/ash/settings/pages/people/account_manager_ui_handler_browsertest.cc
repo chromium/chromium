@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/people/account_manager_ui_handler.h"
 
 #include <memory>
+#include <optional>
 #include <ostream>
 
 #include "ash/constants/ash_features.h"
@@ -35,7 +36,6 @@
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -89,7 +89,7 @@ DeviceAccountInfo GetChildDeviceAccountInfo() {
           "device-account-token" /*token*/};
 }
 
-absl::optional<account_manager::Account> GetAccountByKey(
+std::optional<account_manager::Account> GetAccountByKey(
     std::vector<account_manager::Account> accounts,
     account_manager::AccountKey key) {
   for (const account_manager::Account& account : accounts) {
@@ -97,7 +97,7 @@ absl::optional<account_manager::Account> GetAccountByKey(
       return account;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::string ValueOrEmpty(const std::string* str) {
@@ -436,7 +436,7 @@ class AccountManagerUIHandlerTestWithArcAccountRestrictions
     return future.Get();
   }
 
-  absl::optional<::account_manager::Account> FindAccountByEmail(
+  std::optional<::account_manager::Account> FindAccountByEmail(
       const std::vector<::account_manager::Account>& accounts,
       const std::string& email) {
     for (const auto& account : accounts) {
@@ -444,10 +444,10 @@ class AccountManagerUIHandlerTestWithArcAccountRestrictions
         return account;
       }
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<const base::Value> FindAccountDictByEmail(
+  std::optional<const base::Value> FindAccountDictByEmail(
       const base::Value::List& accounts,
       const std::string& email) {
     for (const base::Value& account : accounts) {
@@ -455,7 +455,7 @@ class AccountManagerUIHandlerTestWithArcAccountRestrictions
         return account.Clone();
       }
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   AccountAppsAvailability* account_apps_availability() {
@@ -480,10 +480,10 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTestWithArcAccountRestrictions,
   // Wait for accounts to propagate to IdentityManager.
   base::RunLoop().RunUntilIdle();
 
-  absl::optional<::account_manager::Account> account_1 =
+  std::optional<::account_manager::Account> account_1 =
       FindAccountByEmail(account_manager_accounts, kSecondaryAccount1Email);
   ASSERT_TRUE(account_1.has_value());
-  absl::optional<::account_manager::Account> account_2 =
+  std::optional<::account_manager::Account> account_2 =
       FindAccountByEmail(account_manager_accounts, kSecondaryAccount2Email);
   ASSERT_TRUE(account_2.has_value());
 
@@ -514,17 +514,17 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTestWithArcAccountRestrictions,
   EXPECT_TRUE(device_account.FindBool("isAvailableInArc").value());
 
   // Check secondary accounts.
-  absl::optional<const base::Value> secondary_1_dict =
+  std::optional<const base::Value> secondary_1_dict =
       FindAccountDictByEmail(result, kSecondaryAccount1Email);
   ASSERT_TRUE(secondary_1_dict.has_value());
-  absl::optional<const base::Value> secondary_2_dict =
+  std::optional<const base::Value> secondary_2_dict =
       FindAccountDictByEmail(result, kSecondaryAccount2Email);
   ASSERT_TRUE(secondary_2_dict.has_value());
 
-  absl::optional<bool> is_available_1 =
+  std::optional<bool> is_available_1 =
       secondary_1_dict.value().GetDict().FindBool("isAvailableInArc");
   ASSERT_TRUE(is_available_1.has_value());
-  absl::optional<bool> is_available_2 =
+  std::optional<bool> is_available_2 =
       secondary_2_dict.value().GetDict().FindBool("isAvailableInArc");
   ASSERT_TRUE(is_available_2.has_value());
 
@@ -544,10 +544,10 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTestWithArcAccountRestrictions,
   // Wait for accounts to propagate to IdentityManager.
   base::RunLoop().RunUntilIdle();
 
-  absl::optional<::account_manager::Account> account_1 =
+  std::optional<::account_manager::Account> account_1 =
       FindAccountByEmail(account_manager_accounts, kSecondaryAccount1Email);
   ASSERT_TRUE(account_1.has_value());
-  absl::optional<::account_manager::Account> account_2 =
+  std::optional<::account_manager::Account> account_2 =
       FindAccountByEmail(account_manager_accounts, kSecondaryAccount2Email);
   ASSERT_TRUE(account_2.has_value());
 
@@ -577,7 +577,7 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTestWithArcAccountRestrictions,
   // Get results from JS callback.
   const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();
   const base::Value::List& accounts_dict = call_data.arg3()->GetList();
-  absl::optional<const base::Value> secondary_1_dict =
+  std::optional<const base::Value> secondary_1_dict =
       FindAccountDictByEmail(accounts_dict, kSecondaryAccount1Email);
   ASSERT_TRUE(secondary_1_dict.has_value());
 

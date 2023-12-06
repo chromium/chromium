@@ -107,13 +107,13 @@ class CloudUploadNotificationManager
   void CloseNotification();
 
   // "Cancel" click handler for upload progress notification.
-  void HandleProgressNotificationClick(absl::optional<int> button_index);
+  void HandleProgressNotificationClick(std::optional<int> button_index);
 
   // "Sign in" click handler for authentication error notification.
-  void HandleErrorNotificationClick(absl::optional<int> button_index);
+  void HandleErrorNotificationClick(std::optional<int> button_index);
 
   // "Show in folder" click handler for upload complete notification.
-  void HandleCompleteNotificationClick(absl::optional<int> button_index);
+  void HandleCompleteNotificationClick(std::optional<int> button_index);
 
   // A state machine and the possible transitions. The state of showing the
   // error notification is not explicit because it is never used to determine

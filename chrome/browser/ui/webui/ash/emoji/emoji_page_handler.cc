@@ -307,14 +307,14 @@ void EmojiPageHandler::GetCategories(GetCategoriesCallback callback) {
                                          url_loader_factory_);
 }
 
-void EmojiPageHandler::GetFeaturedGifs(const absl::optional<std::string>& pos,
+void EmojiPageHandler::GetFeaturedGifs(const std::optional<std::string>& pos,
                                        GetFeaturedGifsCallback callback) {
   gif_tenor_api_fetcher_.FetchFeaturedGifs(std::move(callback),
                                            url_loader_factory_, pos);
 }
 
 void EmojiPageHandler::SearchGifs(const std::string& query,
-                                  const absl::optional<std::string>& pos,
+                                  const std::optional<std::string>& pos,
                                   SearchGifsCallback callback) {
   gif_tenor_api_fetcher_.FetchGifSearch(std::move(callback),
                                         url_loader_factory_, query, pos);

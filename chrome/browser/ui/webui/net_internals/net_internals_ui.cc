@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/net_internals/net_internals_ui.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -48,7 +49,6 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/resources/grit/webui_resources.h"
 #include "url/origin.h"
 #include "url/scheme_host_port.h"
@@ -79,10 +79,10 @@ base::Value::List IPEndpointsToBaseList(
   return resolved_addresses_list;
 }
 
-// This function converts absl::optional<net::HostResolverEndpointResults> to
+// This function converts std::optional<net::HostResolverEndpointResults> to
 // base::Value::List.
 base::Value::List HostResolverEndpointResultsToBaseList(
-    const absl::optional<net::HostResolverEndpointResults>& endpoint_results) {
+    const std::optional<net::HostResolverEndpointResults>& endpoint_results) {
   base::Value::List endpoint_results_list;
 
   if (!endpoint_results) {
@@ -114,8 +114,8 @@ class NetInternalsResolveHostClient : public network::mojom::ResolveHostClient {
  public:
   using Callback = base::OnceCallback<void(
       const net::ResolveErrorInfo&,
-      const absl::optional<net::AddressList>&,
-      const absl::optional<net::HostResolverEndpointResults>&,
+      const std::optional<net::AddressList>&,
+      const std::optional<net::HostResolverEndpointResults>&,
       NetInternalsResolveHostClient*)>;
 
   NetInternalsResolveHostClient(
@@ -125,8 +125,8 @@ class NetInternalsResolveHostClient : public network::mojom::ResolveHostClient {
     receiver_.set_disconnect_handler(base::BindOnce(
         &NetInternalsResolveHostClient::OnComplete, base::Unretained(this),
         net::ERR_FAILED, net::ResolveErrorInfo(net::ERR_FAILED),
-        /*resolved_addresses=*/absl::nullopt,
-        /*endpoint_results_with_metadata=*/absl::nullopt));
+        /*resolved_addresses=*/std::nullopt,
+        /*endpoint_results_with_metadata=*/std::nullopt));
   }
   ~NetInternalsResolveHostClient() override = default;
 
@@ -138,8 +138,8 @@ class NetInternalsResolveHostClient : public network::mojom::ResolveHostClient {
   // network::mojom::ResolveHostClient:
   void OnComplete(int32_t error,
                   const net::ResolveErrorInfo& resolve_error_info,
-                  const absl::optional<net::AddressList>& resolved_addresses,
-                  const absl::optional<net::HostResolverEndpointResults>&
+                  const std::optional<net::AddressList>& resolved_addresses,
+                  const std::optional<net::HostResolverEndpointResults>&
                       endpoint_results_with_metadata) override {
     std::move(callback_).Run(resolve_error_info, resolved_addresses,
                              endpoint_results_with_metadata, this);
@@ -195,12 +195,11 @@ class NetInternalsMessageHandler : public content::WebUIMessageHandler {
   void OnHSTSAdd(const base::Value::List& list);
   void OnCloseIdleSockets(const base::Value::List& list);
   void OnFlushSocketPools(const base::Value::List& list);
-  void OnResolveHostDone(
-      const std::string& callback_id,
-      const net::ResolveErrorInfo&,
-      const absl::optional<net::AddressList>&,
-      const absl::optional<net::HostResolverEndpointResults>&,
-      NetInternalsResolveHostClient* dns_lookup_client);
+  void OnResolveHostDone(const std::string& callback_id,
+                         const net::ResolveErrorInfo&,
+                         const std::optional<net::AddressList>&,
+                         const std::optional<net::HostResolverEndpointResults>&,
+                         NetInternalsResolveHostClient* dns_lookup_client);
   void OnClearSharedDictionary(const base::Value::List& list);
   void OnClearSharedDictionaryCacheForIsolationKey(
       const base::Value::List& list);
@@ -449,8 +448,8 @@ void NetInternalsMessageHandler::OnCloseIdleSockets(
 void NetInternalsMessageHandler::OnResolveHostDone(
     const std::string& callback_id,
     const net::ResolveErrorInfo& resolve_error_info,
-    const absl::optional<net::AddressList>& resolved_addresses,
-    const absl::optional<net::HostResolverEndpointResults>&
+    const std::optional<net::AddressList>& resolved_addresses,
+    const std::optional<net::HostResolverEndpointResults>&
         endpoint_results_with_metadata,
     NetInternalsResolveHostClient* dns_lookup_client) {
   DCHECK_EQ(dns_lookup_clients_.count(dns_lookup_client), 1u);

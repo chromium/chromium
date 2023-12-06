@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/settings_security_key_handler.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -36,7 +37,6 @@
 #include "device/fido/public_key_credential_user_entity.h"
 #include "device/fido/reset_request_handler.h"
 #include "device/fido/set_pin_request_handler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -147,7 +147,7 @@ void SecurityKeysPINHandler::HandleStartSetPIN(const base::Value::List& args) {
 
 void SecurityKeysPINHandler::OnGatherPIN(uint32_t current_min_pin_length,
                                          uint32_t new_min_pin_length,
-                                         absl::optional<int64_t> num_retries) {
+                                         std::optional<int64_t> num_retries) {
   DCHECK_EQ(State::kStartSetPIN, state_);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -492,9 +492,9 @@ void SecurityKeysCredentialHandler::OnCredentialManagementReady() {
 
 void SecurityKeysCredentialHandler::OnHaveCredentials(
     device::CtapDeviceResponseCode status,
-    absl::optional<std::vector<device::AggregatedEnumerateCredentialsResponse>>
+    std::optional<std::vector<device::AggregatedEnumerateCredentialsResponse>>
         responses,
-    absl::optional<size_t> remaining_credentials) {
+    std::optional<size_t> remaining_credentials) {
   DCHECK_EQ(State::kGettingCredentials, state_);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(credential_management_);
@@ -840,7 +840,7 @@ void SecurityKeysBioEnrollmentHandler::HandleEnumerate(
 
 void SecurityKeysBioEnrollmentHandler::OnHaveEnumeration(
     device::CtapDeviceResponseCode code,
-    absl::optional<std::map<std::vector<uint8_t>, std::string>> enrollments) {
+    std::optional<std::map<std::vector<uint8_t>, std::string>> enrollments) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!callback_id_.empty());
   DCHECK_EQ(state_, State::kEnumerating);
@@ -907,7 +907,7 @@ void SecurityKeysBioEnrollmentHandler::OnEnrollmentFinished(
 void SecurityKeysBioEnrollmentHandler::OnHavePostEnrollmentEnumeration(
     std::vector<uint8_t> enrolled_template_id,
     device::CtapDeviceResponseCode code,
-    absl::optional<std::map<std::vector<uint8_t>, std::string>> enrollments) {
+    std::optional<std::map<std::vector<uint8_t>, std::string>> enrollments) {
   DCHECK_EQ(state_, State::kEnrolling);
   DCHECK(!callback_id_.empty());
   state_ = State::kReady;
@@ -1083,7 +1083,7 @@ void SecurityKeysPhonesHandler::DoEnumerate(const base::Value& callback_id) {
 
   base::Value::List synced;
   base::Value::List linked;
-  absl::optional<std::string> last_synced_device_name;
+  std::optional<std::string> last_synced_device_name;
   for (const auto& pairing : pairings) {
     base::Value::Dict dict;
     dict.Set("name", pairing->name);
@@ -1207,7 +1207,7 @@ void PasskeysHandler::DoEnumerate(std::string callback_id) {
 
 void PasskeysHandler::OnEnumerateComplete(
     std::string callback_id,
-    absl::optional<std::vector<device::DiscoverableCredentialMetadata>>
+    std::optional<std::vector<device::DiscoverableCredentialMetadata>>
         credentials) {
   base::Value result;
 

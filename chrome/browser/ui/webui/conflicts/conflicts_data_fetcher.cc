@@ -240,7 +240,7 @@ enum ThirdPartyFeaturesStatus {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 ThirdPartyFeaturesStatus GetThirdPartyFeaturesStatus(
-    absl::optional<ThirdPartyConflictsManager::State>
+    std::optional<ThirdPartyConflictsManager::State>
         third_party_conflicts_manager_state) {
   // The ThirdPartyConflictsManager instance exists if we have its state.
   if (third_party_conflicts_manager_state.has_value()) {
@@ -326,7 +326,7 @@ void OnConflictsDataFetched(
 void OnModuleDataFetched(ConflictsDataFetcher::OnConflictsDataFetchedCallback
                              on_conflicts_data_fetched_callback,
                          base::Value::Dict results,
-                         absl::optional<ThirdPartyConflictsManager::State>
+                         std::optional<ThirdPartyConflictsManager::State>
                              third_party_conflicts_manager_state) {
   OnConflictsDataFetched(
       std::move(on_conflicts_data_fetched_callback), std::move(results),
@@ -462,7 +462,7 @@ void ConflictsDataFetcher::OnModuleDatabaseIdle() {
   base::Value::Dict results;
   results.Set("moduleCount", static_cast<int>(module_list_->size()));
   results.Set("moduleList", std::move(*module_list_));
-  module_list_ = absl::nullopt;
+  module_list_ = std::nullopt;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // The state of third-party features must be determined on the UI thread.

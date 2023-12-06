@@ -48,7 +48,7 @@ class AccessCodeCastUI : public ui::MojoWebDialogUI,
 
   media_router::CastModeSet cast_mode_set_;
   std::unique_ptr<media_router::MediaRouteStarter> media_route_starter_;
-  absl::optional<base::Time> dialog_creation_timestamp_;
+  std::optional<base::Time> dialog_creation_timestamp_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

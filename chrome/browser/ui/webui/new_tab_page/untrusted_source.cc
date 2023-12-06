@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/new_tab_page/untrusted_source.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -29,7 +30,6 @@
 #include "content/public/common/url_constants.h"
 #include "net/base/url_util.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/template_expressions.h"
@@ -234,14 +234,14 @@ bool UntrustedSource::ShouldServiceRequest(
 }
 
 void UntrustedSource::OnOneGoogleBarDataUpdated() {
-  absl::optional<OneGoogleBarData> data =
+  std::optional<OneGoogleBarData> data =
       one_google_bar_service_->one_google_bar_data();
 
   if (one_google_bar_load_start_time_.has_value()) {
     NTPUserDataLogger::LogOneGoogleBarFetchDuration(
         /*success=*/data.has_value(),
         /*duration=*/base::TimeTicks::Now() - *one_google_bar_load_start_time_);
-    one_google_bar_load_start_time_ = absl::nullopt;
+    one_google_bar_load_start_time_ = std::nullopt;
   }
 
   std::string html;

@@ -250,7 +250,7 @@ class DriveUploadHandlerTest
 
   // `Wait` will not complete until this is called.
   void OnUploadDone(OfficeTaskResult task_result,
-                    absl::optional<GURL> url,
+                    std::optional<GURL> url,
                     int64_t size) {
     if (fail_sync_) {
       ASSERT_FALSE(url);
@@ -507,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFromMyFilesNoConnection) {
   base::RunLoop run_loop;
   base::MockCallback<DriveUploadHandler::UploadCallback> upload_callback;
   EXPECT_CALL(upload_callback, Run(OfficeTaskResult::kFailedToUpload,
-                                   absl::optional<GURL>(absl::nullopt), _))
+                                   std::optional<GURL>(std::nullopt), _))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   DriveUploadHandler::Upload(profile(), source_file_url, upload_callback.Get(),
                              cloud_open_metrics_ref_);
@@ -543,7 +543,7 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest,
   base::RunLoop run_loop;
   base::MockCallback<DriveUploadHandler::UploadCallback> upload_callback;
   EXPECT_CALL(upload_callback, Run(OfficeTaskResult::kFailedToUpload,
-                                   absl::optional<GURL>(absl::nullopt), _))
+                                   std::optional<GURL>(std::nullopt), _))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   DriveUploadHandler::Upload(profile(), source_file_url, upload_callback.Get(),
                              cloud_open_metrics_ref_);

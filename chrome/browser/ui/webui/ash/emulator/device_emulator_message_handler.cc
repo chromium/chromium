@@ -426,7 +426,7 @@ void DeviceEmulatorMessageHandler::UpdatePowerSources(
     source->set_active_by_default(!dual_role);
     if (dual_role)
       props.set_supports_dual_role_devices(true);
-    absl::optional<int> port = val.GetDict().FindInt("port");
+    std::optional<int> port = val.GetDict().FindInt("port");
     CHECK(port.has_value());
     source->set_port(
         static_cast<power_manager::PowerSupplyProperties_PowerSource_Port>(
@@ -571,7 +571,7 @@ std::string DeviceEmulatorMessageHandler::CreateBluetoothDeviceFromListValue(
   CHECK(GetString(device_dict, "pairingAuthToken", &props.pairing_auth_token));
   CHECK(GetString(device_dict, "pairingAction", &props.pairing_action));
 
-  absl::optional<int> class_value = device_dict.FindInt("classValue");
+  std::optional<int> class_value = device_dict.FindInt("classValue");
   CHECK(class_value);
   props.device_class = *class_value;
 

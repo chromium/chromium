@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/safety_check_handler.h"
 
+#include <optional>
 #include <string>
 #include <unordered_map>
 
@@ -52,7 +53,6 @@
 #include "extensions/common/extension_builder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/chromeos/devicetype_utils.h"
@@ -398,7 +398,7 @@ SafetyCheckHandlerTest::GetSafetyCheckStatusChangedWithDataIfExists(
     if (!dictionary) {
       continue;
     }
-    absl::optional<int> cur_new_state = dictionary->FindInt("newState");
+    std::optional<int> cur_new_state = dictionary->FindInt("newState");
     if (cur_new_state == new_state)
       return dictionary;
   }

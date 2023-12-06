@@ -225,10 +225,10 @@ AboutSection::AboutSection(Profile* profile,
       pref_service_(pref_service),
       crostini_subsection_(
           ash::features::IsOsSettingsRevampWayfindingEnabled()
-              ? absl::make_optional<CrostiniSection>(profile,
-                                                     search_tag_registry,
-                                                     pref_service)
-              : absl::nullopt) {
+              ? std::make_optional<CrostiniSection>(profile,
+                                                    search_tag_registry,
+                                                    pref_service)
+              : std::nullopt) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetAboutSearchConcepts());
 

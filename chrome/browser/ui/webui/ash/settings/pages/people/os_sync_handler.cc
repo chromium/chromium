@@ -125,7 +125,7 @@ void OSSyncHandler::HandleSetOsSyncDatatypes(const base::Value::List& args) {
   for (UserSelectableOsType type : UserSelectableOsTypeSet::All()) {
     std::string key =
         syncer::GetUserSelectableOsTypeName(type) + std::string("Synced");
-    absl::optional<bool> sync_value = result.FindBool(key);
+    std::optional<bool> sync_value = result.FindBool(key);
     CHECK(sync_value.has_value()) << key;
     if (sync_value.value()) {
       selected_types.Put(type);

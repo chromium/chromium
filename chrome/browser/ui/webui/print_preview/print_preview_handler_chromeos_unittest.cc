@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -29,7 +30,6 @@
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -107,7 +107,7 @@ class TestLocalPrinter : public FakeLocalPrinter {
 
   std::vector<crosapi::mojom::LocalDestinationInfoPtr> local_printers_;
   mojo::Remote<crosapi::mojom::PrintServerObserver> remote_;
-  absl::optional<std::vector<std::string>> print_server_ids_;
+  std::optional<std::vector<std::string>> print_server_ids_;
   crosapi::mojom::PrintServersConfigPtr config_;
 };
 

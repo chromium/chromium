@@ -700,14 +700,14 @@ bool AllowAddESim(const network_config::mojom::GlobalPolicyPtr& global_policy) {
   return !global_policy->allow_only_policy_cellular_networks;
 }
 
-absl::optional<std::string> GetCellularActiveSimIccid(
+std::optional<std::string> GetCellularActiveSimIccid(
     const network_config::mojom::DeviceStatePropertiesPtr& device) {
   for (const auto& sim_info : *device->sim_infos) {
     if (sim_info->is_primary) {
       return sim_info->iccid;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool IsPolicySource(network_config::mojom::OncSource onc_source) {

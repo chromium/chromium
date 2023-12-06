@@ -197,7 +197,7 @@ void InlineLoginHandler::HandleCompleteLoginMessageWithCookies(
   }
 
   params.skip_for_now = dict.FindBool("skipForNow").value_or(false);
-  absl::optional<bool> trusted = dict.FindBool("trusted");
+  std::optional<bool> trusted = dict.FindBool("trusted");
   params.trusted_value = trusted.value_or(false);
   params.trusted_found = trusted.has_value();
 

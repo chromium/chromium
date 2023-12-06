@@ -37,10 +37,10 @@ class EmojiPageHandler : public emoji_picker::mojom::PageHandler {
   void IsIncognitoTextField(IsIncognitoTextFieldCallback callback) override;
   void GetFeatureList(GetFeatureListCallback callback) override;
   void GetCategories(GetCategoriesCallback callback) override;
-  void GetFeaturedGifs(const absl::optional<std::string>& pos,
+  void GetFeaturedGifs(const std::optional<std::string>& pos,
                        GetFeaturedGifsCallback callback) override;
   void SearchGifs(const std::string& query,
-                  const absl::optional<std::string>& pos,
+                  const std::optional<std::string>& pos,
                   SearchGifsCallback callback) override;
   void GetGifsByIds(const std::vector<std::string>& ids,
                     GetGifsByIdsCallback callback) override;

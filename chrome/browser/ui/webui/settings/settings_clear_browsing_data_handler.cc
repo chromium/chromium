@@ -170,7 +170,7 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
       Profile::FromWebUI(web_ui()));
   for (const base::Value& type : data_type_list) {
     const std::string pref_name = type.GetString();
-    absl::optional<BrowsingDataType> data_type =
+    std::optional<BrowsingDataType> data_type =
         browsing_data::GetDataTypeFromDeletionPreference(pref_name);
     CHECK(data_type);
     data_type_vector.push_back(*data_type);

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/flat_set.h"
@@ -69,7 +70,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
@@ -102,8 +102,8 @@ const signin_metrics::Reason kSigninReason =
 struct ExpectedMetricsState {
   // Access point that triggered sign-in, might be different from the one
   // associated sync opt-in, which is always `kAccessPoint`.
-  absl::optional<signin_metrics::AccessPoint> sign_in_access_point =
-      absl::nullopt;
+  std::optional<signin_metrics::AccessPoint> sign_in_access_point =
+      std::nullopt;
 
   // Whether TurnSyncOnHelper is expected to have recorded a sign-in.
   bool sign_in_recorded = false;
@@ -869,7 +869,7 @@ class TurnSyncOnHelperTest : public testing::Test {
   bool run_delegate_callbacks_ = true;
 
   // Expected delegate calls.
-  absl::optional<SigninUIError> expected_login_error_;
+  std::optional<SigninUIError> expected_login_error_;
   std::string expected_enterprise_confirmation_email_;
   std::string expected_merge_data_previous_email_;
   std::string expected_merge_data_new_email_;
@@ -904,7 +904,7 @@ class TurnSyncOnHelperTest : public testing::Test {
 
   // State of the delegate calls.
   int delegate_destroyed_ = 0;
-  absl::optional<SigninUIError> login_error_;
+  std::optional<SigninUIError> login_error_;
   std::string enterprise_confirmation_email_;
   std::string merge_data_previous_email_;
   std::string merge_data_new_email_;
@@ -938,14 +938,14 @@ class TurnSyncOnHelperWithMockSigninManagerTest : public TurnSyncOnHelperTest {
             mock_signin_manager->handle_deletion_count()};
   }
 
-  static absl::optional<signin::ConsentLevel>
+  static std::optional<signin::ConsentLevel>
   GetExpectedPreSyncFlowConsentLevel() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     // For the primary profile, there is always a primary account set by the
     // `SigninManager`.
     return signin::ConsentLevel::kSignin;
 #else
-    return absl::nullopt;
+    return std::nullopt;
 #endif
   }
 };
@@ -1147,8 +1147,8 @@ TEST_F(TurnSyncOnHelperWithMockSigninManagerTest,
   CheckSigninMetrics(
       {.sign_in_access_point =
            GetExpectedPreSyncFlowConsentLevel().has_value()
-               ? absl::nullopt
-               : absl::optional<signin_metrics::AccessPoint>(kAccessPoint),
+               ? std::nullopt
+               : std::optional<signin_metrics::AccessPoint>(kAccessPoint),
        .sign_in_recorded = true,
        .sync_opt_in_started = true,
        .sync_opt_in_completed = true});
@@ -1184,8 +1184,8 @@ TEST_F(TurnSyncOnHelperWithMockSigninManagerTest,
   CheckSigninMetrics(
       {.sign_in_access_point =
            GetExpectedPreSyncFlowConsentLevel().has_value()
-               ? absl::nullopt
-               : absl::optional<signin_metrics::AccessPoint>(kAccessPoint),
+               ? std::nullopt
+               : std::optional<signin_metrics::AccessPoint>(kAccessPoint),
        .sign_in_recorded = true,
        .sync_opt_in_started = true,
        .sync_opt_in_completed = true});

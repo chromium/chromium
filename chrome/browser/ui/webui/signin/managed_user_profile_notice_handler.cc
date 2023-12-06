@@ -60,7 +60,7 @@ std::string GetManagedAccountTitle(ProfileAttributesEntry* entry,
 }
 
 std::string GetManagedDeviceTitle() {
-  absl::optional<std::string> device_manager =
+  std::optional<std::string> device_manager =
       chrome::GetDeviceManagerIdentity();
   if (!device_manager)
     return std::string();
@@ -222,9 +222,9 @@ std::string ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(
   DCHECK(!email.empty());
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  absl::optional<std::string> account_manager =
+  std::optional<std::string> account_manager =
       chrome::GetAccountManagerIdentity(profile);
-  absl::optional<std::string> device_manager =
+  std::optional<std::string> device_manager =
       chrome::GetDeviceManagerIdentity();
 
   if (!signin_util::IsProfileSeparationEnforcedByProfile(
@@ -359,7 +359,7 @@ ProfileAttributesEntry* ManagedUserProfileNoticeHandler::GetProfileEntry()
 }
 
 std::string ManagedUserProfileNoticeHandler::GetPictureUrl() {
-  absl::optional<gfx::Image> icon;
+  std::optional<gfx::Image> icon;
   if (type_ ==
       ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation) {
     AccountInfo account_info =

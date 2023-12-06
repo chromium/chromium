@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "base/check.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,7 +18,6 @@
 #include "content/public/common/input/native_web_keyboard_event.h"
 #include "content/public/common/url_constants.h"
 #include "net/base/url_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -168,8 +168,8 @@ void MakoBubbleCoordinator::LoadConsentUI(Profile* profile) {
 void MakoBubbleCoordinator::LoadEditorUI(
     Profile* profile,
     MakoEditorMode mode,
-    absl::optional<std::string_view> preset_query_id,
-    absl::optional<std::string_view> freeform_text) {
+    std::optional<std::string_view> preset_query_id,
+    std::optional<std::string_view> freeform_text) {
   if (IsShowingUI()) {
     contents_wrapper_->CloseUI();
   }

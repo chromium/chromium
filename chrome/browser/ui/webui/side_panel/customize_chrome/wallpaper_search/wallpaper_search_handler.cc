@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_handler.h"
 
+#include <optional>
 #include <tuple>
 #include <utility>
 #include <variant>
@@ -48,7 +49,6 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "skia/ext/image_operations.h"
 #include "skia/ext/skia_utils_base.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -212,8 +212,8 @@ void WallpaperSearchHandler::GetDescriptors(GetDescriptorsCallback callback) {
 
 void WallpaperSearchHandler::GetWallpaperSearchResults(
     const std::string& descriptor_a,
-    const absl::optional<std::string>& descriptor_b,
-    const absl::optional<std::string>& descriptor_c,
+    const std::optional<std::string>& descriptor_b,
+    const std::optional<std::string>& descriptor_c,
     side_panel::customize_chrome::mojom::DescriptorDValuePtr descriptor_d_value,
     GetWallpaperSearchResultsCallback callback) {
   callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
@@ -597,7 +597,7 @@ void WallpaperSearchHandler::SetResultRenderTime(
     CHECK(base::Contains(wallpaper_search_results_, id));
     auto& tuple = wallpaper_search_results_[id];
     std::get<1>(tuple) =
-        absl::make_optional(base::Time::FromMillisecondsSinceUnixEpoch(time));
+        std::make_optional(base::Time::FromMillisecondsSinceUnixEpoch(time));
   }
 }
 
@@ -628,7 +628,7 @@ void WallpaperSearchHandler::OnWallpaperSearchResultsDecoded(
           side_panel::customize_chrome::mojom::WallpaperSearchResult::New();
       auto id = base::Token::CreateRandom();
       wallpaper_search_results_[id] =
-          std::make_tuple(image_quality, absl::nullopt, std::move(bitmap));
+          std::make_tuple(image_quality, std::nullopt, std::move(bitmap));
       thumbnail->image = base::Base64Encode(encoded);
       thumbnail->id = std::move(id);
       thumbnails.push_back(std::move(thumbnail));

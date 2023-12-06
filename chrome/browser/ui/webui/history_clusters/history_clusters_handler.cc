@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/history_clusters/history_clusters_handler.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -47,7 +48,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/time_format.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -341,7 +341,7 @@ void HistoryClustersHandler::RemoveVisits(
 
 void HistoryClustersHandler::OpenVisitUrlsInTabGroup(
     std::vector<mojom::URLVisitPtr> visits,
-    const absl::optional<std::string>& tab_group_name) {
+    const std::optional<std::string>& tab_group_name) {
   auto* browser = chrome::FindTabbedBrowser(profile_, false);
   if (!browser) {
     return;

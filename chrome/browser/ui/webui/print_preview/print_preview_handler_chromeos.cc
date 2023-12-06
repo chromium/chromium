@@ -301,7 +301,7 @@ void PrintPreviewHandlerChromeOS::HandleRequestPrinterStatusUpdate(
 
 void PrintPreviewHandlerChromeOS::HandleRequestPrinterStatusUpdateCompletion(
     base::Value callback_id,
-    absl::optional<base::Value::Dict> result) {
+    std::optional<base::Value::Dict> result) {
   if (result)
     ResolveJavascriptCallback(callback_id, *result);
   else

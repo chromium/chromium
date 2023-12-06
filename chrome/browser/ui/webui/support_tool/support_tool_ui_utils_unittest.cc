@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/support_tool/support_tool_ui_utils.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -25,7 +26,6 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -84,7 +84,7 @@ class SupportToolUiUtilsTest : public ::testing::Test {
           included_data_collectors) {
     for (auto& data_collector : data_collectors) {
       base::Value::Dict& data_collector_item = data_collector.GetDict();
-      absl::optional<int> data_collector_enum =
+      std::optional<int> data_collector_enum =
           data_collector_item.FindInt(support_tool_ui::kDataCollectorProtoEnum);
       ASSERT_TRUE(data_collector_enum);
       if (base::Contains(included_data_collectors,

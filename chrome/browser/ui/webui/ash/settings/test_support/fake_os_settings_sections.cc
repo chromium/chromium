@@ -4,11 +4,12 @@
 
 #include "chrome/browser/ui/webui/ash/settings/test_support/fake_os_settings_sections.h"
 
+#include <optional>
+
 #include "ash/webui/settings/public/constants/routes.mojom-shared.h"
 #include "base/rand_util.h"
 #include "chrome/browser/ui/webui/ash/settings/constants/constants_util.h"
 #include "chrome/browser/ui/webui/ash/settings/test_support/fake_os_settings_section.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::settings {
 
@@ -40,7 +41,7 @@ void FakeOsSettingsSections::FillWithFakeSettings() {
     // one subpage with one setting.
     fake_section->AddSubpageAndSetting(*subpage_it, *setting_it);
     // one setting directly on the section.
-    fake_section->AddSubpageAndSetting(absl::nullopt, *setting_it);
+    fake_section->AddSubpageAndSetting(std::nullopt, *setting_it);
     subpage_it++;
     setting_it++;
   }

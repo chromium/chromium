@@ -142,7 +142,7 @@ TEST_F(SiteSettingsHelperTest, ExceptionListWithEmbargoedAndBlockedOrigins) {
   ASSERT_EQ(2U, exceptions.size());
 
   // Get last added origin.
-  absl::optional<bool> is_embargoed =
+  std::optional<bool> is_embargoed =
       exceptions[0].GetDict().FindBool(site_settings::kIsEmbargoed);
   ASSERT_TRUE(is_embargoed.has_value());
   // Last added origin is blocked, |embargo| key should be false.
@@ -363,7 +363,7 @@ TEST_F(SiteSettingsHelperTest, ExceptionListFedCmEmbargo) {
   // |exceptions| should have an exception for the embargoed origin.
   ASSERT_EQ(1U, exceptions.size());
 
-  absl::optional<bool> is_embargoed =
+  std::optional<bool> is_embargoed =
       exceptions[0].GetDict().FindBool(site_settings::kIsEmbargoed);
   ASSERT_TRUE(is_embargoed.has_value());
   EXPECT_TRUE(*is_embargoed);
@@ -703,7 +703,7 @@ void ExpectValidSiteExceptionObject(const base::Value& actual_site_object,
   ASSERT_TRUE(source_value);
   EXPECT_EQ(*source_value, source);
 
-  absl::optional<bool> incognito_value = actual_site_dict.FindBool(kIncognito);
+  std::optional<bool> incognito_value = actual_site_dict.FindBool(kIncognito);
   ASSERT_TRUE(incognito_value.has_value());
   EXPECT_EQ(*incognito_value, incognito);
 }

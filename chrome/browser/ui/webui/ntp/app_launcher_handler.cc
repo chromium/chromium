@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -96,7 +97,6 @@
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "net/base/url_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "url/gurl.h"
@@ -224,8 +224,8 @@ base::Value::Dict AppLauncherHandler::CreateWebAppInfo(
   const bool hide_display_mode = registrar.IsIsolated(app_id);
   dict.Set("hideDisplayMode", hide_display_mode);
 
-  absl::optional<std::string> icon_big;
-  absl::optional<std::string> icon_small;
+  std::optional<std::string> icon_big;
+  std::optional<std::string> icon_small;
 
   if (HasMatchingOrGreaterThanIcon(
           registrar.GetAppDownloadedIconSizesAny(app_id),
@@ -493,7 +493,7 @@ void AppLauncherHandler::RegisterMessages() {
 
 void AppLauncherHandler::OnAppsReordered(
     content::BrowserContext* context,
-    const absl::optional<std::string>& extension_id) {
+    const std::optional<std::string>& extension_id) {
   if (ignore_changes_ || !has_loaded_apps_)
     return;
 
@@ -554,7 +554,7 @@ void AppLauncherHandler::OnWebAppInstalled(const webapps::AppId& app_id) {
 
   visible_apps_.insert(app_id);
   base::Value highlight(attempting_web_app_install_page_ordinal_.has_value());
-  attempting_web_app_install_page_ordinal_ = absl::nullopt;
+  attempting_web_app_install_page_ordinal_ = std::nullopt;
   web_ui()->CallJavascriptFunctionUnsafe("ntp.appAdded",
                                          CreateWebAppInfo(app_id), highlight);
 }
@@ -1274,7 +1274,7 @@ void AppLauncherHandler::OnFaviconForAppInstallFromLink(
           return;
         if (install_result != webapps::InstallResultCode::kSuccessNewInstall) {
           app_launcher_handler->attempting_web_app_install_page_ordinal_ =
-              absl::nullopt;
+              std::nullopt;
         }
       },
       weak_ptr_factory_.GetWeakPtr());

@@ -61,7 +61,7 @@ class WebAppInternalsHandler : public mojom::WebAppInternalsHandler {
 
   void OnIsolatedWebAppDevModeBundleSelected(
       SelectFileAndInstallIsolatedWebAppFromDevBundleCallback callback,
-      absl::optional<base::FilePath> path);
+      std::optional<base::FilePath> path);
   void OnInstallIsolatedWebAppFromDevModeProxy(
       InstallIsolatedWebAppFromDevProxyCallback callback,
       web_app::IsolatedWebAppInstallationManager::

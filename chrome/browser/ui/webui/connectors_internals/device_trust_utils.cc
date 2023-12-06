@@ -56,7 +56,7 @@ connectors_internals::mojom::KeyType AlgorithmToType(
 }
 
 connectors_internals::mojom::KeyManagerPermanentFailure ConvertPermanentFailure(
-    absl::optional<DeviceTrustKeyManager::PermanentFailure> permanent_failure) {
+    std::optional<DeviceTrustKeyManager::PermanentFailure> permanent_failure) {
   if (!permanent_failure) {
     return connectors_internals::mojom::KeyManagerPermanentFailure::UNSPECIFIED;
   }
@@ -86,7 +86,7 @@ std::string HashAndEncodeString(const std::string& spki_bytes) {
 }
 
 connectors_internals::mojom::Int32ValuePtr ToMojomValue(
-    absl::optional<int> integer_value) {
+    std::optional<int> integer_value) {
   return integer_value ? connectors_internals::mojom::Int32Value::New(
                              integer_value.value())
                        : nullptr;

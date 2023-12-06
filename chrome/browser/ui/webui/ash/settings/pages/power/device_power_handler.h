@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_POWER_DEVICE_POWER_HANDLER_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 
 #include "base/memory/raw_ptr.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefChangeRegistrar;
 class PrefService;
@@ -152,7 +152,7 @@ class PowerHandler : public ::settings::SettingsPageUIHandler,
 
   // Callback used to receive switch states from PowerManagerClient.
   void OnGotSwitchStates(
-      absl::optional<chromeos::PowerManagerClient::SwitchStates> result);
+      std::optional<chromeos::PowerManagerClient::SwitchStates> result);
 
   // Returns all possible idle behaviors (that a user can choose from) and
   // current idle behavior based on enterprise policy and other factors when on

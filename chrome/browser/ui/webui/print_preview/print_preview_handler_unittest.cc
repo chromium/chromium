@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/print_preview/print_preview_handler.h"
 
 #include <map>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -51,7 +52,6 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/printing_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/common.h"
@@ -348,7 +348,7 @@ class TestLocalPrinter : public FakeLocalPrinter {
   }
 
  private:
-  absl::optional<crosapi::mojom::Policies> policies_;
+  std::optional<crosapi::mojom::Policies> policies_;
   std::vector<mojom::PrinterType> deny_list_;
 };
 #endif
@@ -649,7 +649,7 @@ class PrintPreviewHandlerTest : public testing::Test {
   void ValidateInitialSettingsValuePolicy(
       const content::TestWebUI::CallData& data,
       const std::string& policy_name,
-      absl::optional<base::Value> expected_policy_value) {
+      std::optional<base::Value> expected_policy_value) {
     CheckWebUIResponse(data, "test-callback-id-0", true);
     const base::Value::Dict& settings = data.arg3()->GetDict();
 
@@ -669,8 +669,8 @@ class PrintPreviewHandlerTest : public testing::Test {
   void ValidateInitialSettingsAllowedDefaultModePolicy(
       const content::TestWebUI::CallData& data,
       const std::string& policy_name,
-      absl::optional<base::Value> expected_allowed_mode,
-      absl::optional<base::Value> expected_default_mode) {
+      std::optional<base::Value> expected_allowed_mode,
+      std::optional<base::Value> expected_default_mode) {
     CheckWebUIResponse(data, "test-callback-id-0", true);
     const base::Value::Dict& settings = data.arg3()->GetDict();
 
@@ -813,15 +813,15 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsRuLocale) {
 TEST_F(PrintPreviewHandlerTest, InitialSettingsNoPolicies) {
   Initialize();
   ValidateInitialSettingsAllowedDefaultModePolicy(*web_ui()->call_data().back(),
-                                                  "headerFooter", absl::nullopt,
-                                                  absl::nullopt);
+                                                  "headerFooter", std::nullopt,
+                                                  std::nullopt);
   ValidateInitialSettingsAllowedDefaultModePolicy(*web_ui()->call_data().back(),
-                                                  "cssBackground",
-                                                  absl::nullopt, absl::nullopt);
+                                                  "cssBackground", std::nullopt,
+                                                  std::nullopt);
   ValidateInitialSettingsAllowedDefaultModePolicy(
-      *web_ui()->call_data().back(), "mediaSize", absl::nullopt, absl::nullopt);
+      *web_ui()->call_data().back(), "mediaSize", std::nullopt, std::nullopt);
   ValidateInitialSettingsValuePolicy(*web_ui()->call_data().back(), "sheets",
-                                     absl::nullopt);
+                                     std::nullopt);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -833,15 +833,15 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsNoAsh) {
                           kDummyInitiatorName);
   // Verify policy settings are empty.
   ValidateInitialSettingsAllowedDefaultModePolicy(*web_ui()->call_data().back(),
-                                                  "headerFooter", absl::nullopt,
-                                                  absl::nullopt);
+                                                  "headerFooter", std::nullopt,
+                                                  std::nullopt);
   ValidateInitialSettingsAllowedDefaultModePolicy(*web_ui()->call_data().back(),
-                                                  "cssBackground",
-                                                  absl::nullopt, absl::nullopt);
+                                                  "cssBackground", std::nullopt,
+                                                  std::nullopt);
   ValidateInitialSettingsAllowedDefaultModePolicy(
-      *web_ui()->call_data().back(), "mediaSize", absl::nullopt, absl::nullopt);
+      *web_ui()->call_data().back(), "mediaSize", std::nullopt, std::nullopt);
   ValidateInitialSettingsValuePolicy(*web_ui()->call_data().back(), "sheets",
-                                     absl::nullopt);
+                                     std::nullopt);
 }
 #endif
 
@@ -859,7 +859,7 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsRestrictHeaderFooterEnabled) {
   Initialize();
   ValidateInitialSettingsAllowedDefaultModePolicy(
       *web_ui()->call_data().back(), "headerFooter", base::Value(true),
-      absl::nullopt);
+      std::nullopt);
 }
 
 TEST_F(PrintPreviewHandlerTest, InitialSettingsRestrictHeaderFooterDisabled) {
@@ -876,7 +876,7 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsRestrictHeaderFooterDisabled) {
   Initialize();
   ValidateInitialSettingsAllowedDefaultModePolicy(
       *web_ui()->call_data().back(), "headerFooter", base::Value(false),
-      absl::nullopt);
+      std::nullopt);
 }
 
 TEST_F(PrintPreviewHandlerTest, InitialSettingsEnableHeaderFooter) {
@@ -891,7 +891,7 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsEnableHeaderFooter) {
 #endif
   Initialize();
   ValidateInitialSettingsAllowedDefaultModePolicy(*web_ui()->call_data().back(),
-                                                  "headerFooter", absl::nullopt,
+                                                  "headerFooter", std::nullopt,
                                                   base::Value(true));
 }
 
@@ -907,7 +907,7 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsDisableHeaderFooter) {
 #endif
   Initialize();
   ValidateInitialSettingsAllowedDefaultModePolicy(*web_ui()->call_data().back(),
-                                                  "headerFooter", absl::nullopt,
+                                                  "headerFooter", std::nullopt,
                                                   base::Value(false));
 }
 
@@ -923,9 +923,9 @@ TEST_F(PrintPreviewHandlerTest,
   prefs()->SetInteger(prefs::kPrintingAllowedBackgroundGraphicsModes, 1);
 #endif
   Initialize();
-  ValidateInitialSettingsAllowedDefaultModePolicy(
-      *web_ui()->call_data().back(), "cssBackground", base::Value(1),
-      absl::nullopt);
+  ValidateInitialSettingsAllowedDefaultModePolicy(*web_ui()->call_data().back(),
+                                                  "cssBackground",
+                                                  base::Value(1), std::nullopt);
 }
 
 TEST_F(PrintPreviewHandlerTest,
@@ -940,9 +940,9 @@ TEST_F(PrintPreviewHandlerTest,
   prefs()->SetInteger(prefs::kPrintingAllowedBackgroundGraphicsModes, 2);
 #endif
   Initialize();
-  ValidateInitialSettingsAllowedDefaultModePolicy(
-      *web_ui()->call_data().back(), "cssBackground", base::Value(2),
-      absl::nullopt);
+  ValidateInitialSettingsAllowedDefaultModePolicy(*web_ui()->call_data().back(),
+                                                  "cssBackground",
+                                                  base::Value(2), std::nullopt);
 }
 
 TEST_F(PrintPreviewHandlerTest, InitialSettingsEnableBackgroundGraphics) {
@@ -956,9 +956,9 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsEnableBackgroundGraphics) {
   prefs()->SetInteger(prefs::kPrintingBackgroundGraphicsDefault, 1);
 #endif
   Initialize();
-  ValidateInitialSettingsAllowedDefaultModePolicy(
-      *web_ui()->call_data().back(), "cssBackground", absl::nullopt,
-      base::Value(1));
+  ValidateInitialSettingsAllowedDefaultModePolicy(*web_ui()->call_data().back(),
+                                                  "cssBackground", std::nullopt,
+                                                  base::Value(1));
 }
 
 TEST_F(PrintPreviewHandlerTest, InitialSettingsDisableBackgroundGraphics) {
@@ -972,9 +972,9 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsDisableBackgroundGraphics) {
   prefs()->SetInteger(prefs::kPrintingBackgroundGraphicsDefault, 2);
 #endif
   Initialize();
-  ValidateInitialSettingsAllowedDefaultModePolicy(
-      *web_ui()->call_data().back(), "cssBackground", absl::nullopt,
-      base::Value(2));
+  ValidateInitialSettingsAllowedDefaultModePolicy(*web_ui()->call_data().back(),
+                                                  "cssBackground", std::nullopt,
+                                                  base::Value(2));
 }
 
 TEST_F(PrintPreviewHandlerTest, InitialSettingsDefaultPaperSizeName) {
@@ -1000,7 +1000,7 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsDefaultPaperSizeName) {
   Initialize();
 
   ValidateInitialSettingsAllowedDefaultModePolicy(
-      *web_ui()->call_data().back(), "mediaSize", absl::nullopt,
+      *web_ui()->call_data().back(), "mediaSize", std::nullopt,
       base::test::ParseJson(kExpectedInitialSettingsPolicy));
 }
 
@@ -1031,7 +1031,7 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsDefaultPaperSizeCustomSize) {
   Initialize();
 
   ValidateInitialSettingsAllowedDefaultModePolicy(
-      *web_ui()->call_data().back(), "mediaSize", absl::nullopt,
+      *web_ui()->call_data().back(), "mediaSize", std::nullopt,
       base::test::ParseJson(kExpectedInitialSettingsPolicy));
 }
 
@@ -1061,7 +1061,7 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsEnableColorAndMonochrome) {
 #endif
   Initialize();
   ValidateInitialSettingsAllowedDefaultModePolicy(
-      *web_ui()->call_data().back(), "color", base::Value(3), absl::nullopt);
+      *web_ui()->call_data().back(), "color", base::Value(3), std::nullopt);
 }
 
 TEST_F(PrintPreviewHandlerTest, InitialSettingsDefaultColor) {
@@ -1075,7 +1075,7 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsDefaultColor) {
 #endif
   Initialize();
   ValidateInitialSettingsAllowedDefaultModePolicy(
-      *web_ui()->call_data().back(), "color", absl::nullopt, base::Value(2));
+      *web_ui()->call_data().back(), "color", std::nullopt, base::Value(2));
 }
 
 TEST_F(PrintPreviewHandlerTest, InitialSettingsEnableSimplexAndDuplex) {
@@ -1089,7 +1089,7 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsEnableSimplexAndDuplex) {
 #endif
   Initialize();
   ValidateInitialSettingsAllowedDefaultModePolicy(
-      *web_ui()->call_data().back(), "duplex", base::Value(7), absl::nullopt);
+      *web_ui()->call_data().back(), "duplex", base::Value(7), std::nullopt);
 }
 
 TEST_F(PrintPreviewHandlerTest, InitialSettingsDefaultSimplex) {
@@ -1104,7 +1104,7 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsDefaultSimplex) {
 #endif
   Initialize();
   ValidateInitialSettingsAllowedDefaultModePolicy(
-      *web_ui()->call_data().back(), "duplex", absl::nullopt, base::Value(1));
+      *web_ui()->call_data().back(), "duplex", std::nullopt, base::Value(1));
 }
 
 TEST_F(PrintPreviewHandlerTest, InitialSettingsRestrictPin) {
@@ -1118,7 +1118,7 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsRestrictPin) {
 #endif
   Initialize();
   ValidateInitialSettingsAllowedDefaultModePolicy(
-      *web_ui()->call_data().back(), "pin", base::Value(1), absl::nullopt);
+      *web_ui()->call_data().back(), "pin", base::Value(1), std::nullopt);
 }
 
 TEST_F(PrintPreviewHandlerTest, InitialSettingsDefaultNoPin) {
@@ -1132,7 +1132,7 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsDefaultNoPin) {
 #endif
   Initialize();
   ValidateInitialSettingsAllowedDefaultModePolicy(
-      *web_ui()->call_data().back(), "pin", absl::nullopt, base::Value(2));
+      *web_ui()->call_data().back(), "pin", std::nullopt, base::Value(2));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -1434,11 +1434,11 @@ TEST_F(PrintPreviewHandlerTest, SendPreviewUpdates) {
   const base::Value::Dict& preview_params = print_render_frame.GetSettings();
 
   // Read the preview UI ID and request ID
-  absl::optional<int> request_value = preview_params.FindInt(kPreviewRequestID);
+  std::optional<int> request_value = preview_params.FindInt(kPreviewRequestID);
   ASSERT_TRUE(request_value.has_value());
   int preview_request_id = request_value.value();
 
-  absl::optional<int> ui_value = preview_params.FindInt(kPreviewUIID);
+  std::optional<int> ui_value = preview_params.FindInt(kPreviewUIID);
   ASSERT_TRUE(ui_value.has_value());
   int preview_ui_id = ui_value.value();
 

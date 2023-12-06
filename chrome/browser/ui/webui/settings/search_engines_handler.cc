@@ -122,7 +122,7 @@ base::Value::Dict SearchEnginesHandler::GetSearchEnginesList() {
   // Find the default engine.
   const TemplateURL* default_engine =
       list_controller_.GetDefaultSearchProvider();
-  absl::optional<size_t> default_index =
+  std::optional<size_t> default_index =
       list_controller_.table_model()->IndexOfTemplateURL(default_engine);
 
   // Build the first list (default search engines).

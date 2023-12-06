@@ -58,7 +58,7 @@ void LacrosDataMigrationScreenHandler::SetLowBatteryStatus(bool low_battery) {
 }
 
 void LacrosDataMigrationScreenHandler::SetFailureStatus(
-    const absl::optional<uint64_t>& required_size,
+    const std::optional<uint64_t>& required_size,
     bool show_goto_files) {
   CallExternalAPI(
       "setFailureStatus",

@@ -369,7 +369,7 @@ void MultideviceHandler::HandleSetFeatureEnabledState(
 
   bool enabled = list[2].GetBool();
 
-  absl::optional<std::string> auth_token;
+  std::optional<std::string> auth_token;
   if (list.size() >= 4 && list[3].is_string()) {
     auth_token = list[3].GetString();
   }

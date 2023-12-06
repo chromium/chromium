@@ -225,7 +225,7 @@ class OneDriveUploadHandlerTest : public InProcessBrowserTest,
   // Watch for a valid `uploaded_file_url`.
   void OnUploadSuccessful(
       OfficeTaskResult task_result,
-      absl::optional<storage::FileSystemURL> uploaded_file_url,
+      std::optional<storage::FileSystemURL> uploaded_file_url,
       int64_t size) {
     ASSERT_TRUE(uploaded_file_url.has_value());
     observed_task_result_ = task_result;
@@ -234,7 +234,7 @@ class OneDriveUploadHandlerTest : public InProcessBrowserTest,
 
   // Watch for an invalid `uploaded_file_url`.
   void OnUploadFailed(OfficeTaskResult task_result,
-                      absl::optional<storage::FileSystemURL> uploaded_file_url,
+                      std::optional<storage::FileSystemURL> uploaded_file_url,
                       int64_t size) {
     ASSERT_FALSE(uploaded_file_url.has_value());
     observed_task_result_ = task_result;

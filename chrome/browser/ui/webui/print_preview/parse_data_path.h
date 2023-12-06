@@ -5,9 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_PRINT_PREVIEW_PARSE_DATA_PATH_H_
 #define CHROME_BROWSER_UI_WEBUI_PRINT_PREVIEW_PARSE_DATA_PATH_H_
 
+#include <optional>
 #include <string>
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace printing {
 
@@ -29,7 +28,7 @@ struct PrintPreviewIdAndPageIndex {
 //
 // Example:
 //   chrome-untrusted://print/123/10/print.pdf
-absl::optional<PrintPreviewIdAndPageIndex> ParseDataPath(
+std::optional<PrintPreviewIdAndPageIndex> ParseDataPath(
     const std::string& path);
 
 }  // namespace printing

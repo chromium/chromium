@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_LANGUAGES_LANGUAGES_SECTION_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_LANGUAGES_LANGUAGES_SECTION_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/inputs_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebUIDataSource;
@@ -39,7 +40,7 @@ class LanguagesSection : public OsSettingsSection {
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
  private:
-  absl::optional<InputsSection> inputs_subsection_;
+  std::optional<InputsSection> inputs_subsection_;
 };
 
 }  // namespace ash::settings

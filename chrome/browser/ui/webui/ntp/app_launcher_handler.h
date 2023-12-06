@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_NTP_APP_LAUNCHER_HANDLER_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -33,7 +34,6 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class ExtensionEnableFlow;
 class PrefChangeRegistrar;
@@ -90,9 +90,8 @@ class AppLauncherHandler
   void RegisterMessages() override;
 
   // extensions::InstallObserver
-  void OnAppsReordered(
-      content::BrowserContext* context,
-      const absl::optional<std::string>& extension_id) override;
+  void OnAppsReordered(content::BrowserContext* context,
+                       const std::optional<std::string>& extension_id) override;
 
   // extensions::ExtensionRegistryObserver:
   void OnExtensionLoaded(content::BrowserContext* browser_context,
@@ -285,8 +284,7 @@ class AppLauncherHandler
 
   // When populated, we have attempted to install a bookmark app, and are still
   // waiting to hear about success or failure from the extensions system.
-  absl::optional<syncer::StringOrdinal>
-      attempting_web_app_install_page_ordinal_;
+  std::optional<syncer::StringOrdinal> attempting_web_app_install_page_ordinal_;
 
   // True if we have executed HandleGetApps() at least once.
   bool has_loaded_apps_;

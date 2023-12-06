@@ -74,13 +74,13 @@ void NotificationTesterHandler::HandleGenerateNotificationForm(
   DCHECK(origin_url_str);
   GURL origin_url(*origin_url_str);
 
-  absl::optional<int> warning_level_int = notifObj->FindInt("warningLevel");
+  std::optional<int> warning_level_int = notifObj->FindInt("warningLevel");
   DCHECK(warning_level_int);
   auto warning_level =
       static_cast<message_center::SystemNotificationWarningLevel>(
           warning_level_int.value());
 
-  absl::optional<int> notification_type_int =
+  std::optional<int> notification_type_int =
       notifObj->FindInt("notificationType");
   DCHECK(notification_type_int);
   auto notification_type = static_cast<message_center::NotificationType>(
@@ -88,7 +88,7 @@ void NotificationTesterHandler::HandleGenerateNotificationForm(
 
   // notifier_id should be constructed differently if the notifier type is
   // message_center::NotifierType::WEB_PAGE.
-  absl::optional<int> notifier_type = notifObj->FindInt("notifierType");
+  std::optional<int> notifier_type = notifObj->FindInt("notifierType");
   DCHECK(notifier_type);
   message_center::NotifierId notifier_id;
   if (notifier_type.value() ==
@@ -109,7 +109,7 @@ void NotificationTesterHandler::HandleGenerateNotificationForm(
   // Delegate does nothing.
   auto delegate =
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          base::BindRepeating([](absl::optional<int> button_index) {}));
+          base::BindRepeating([](std::optional<int> button_index) {}));
 
   auto notification = std::make_unique<message_center::Notification>(
       notification_type, notification_id, base::UTF8ToUTF16(*title),
@@ -210,47 +210,47 @@ NotificationTesterHandler::DictToOptionalFields(
   optional_fields.vector_small_image =
       &GetRichDataSmallImageFromString(*small_image);
 
-  absl::optional<bool> never_timeout =
+  std::optional<bool> never_timeout =
       notifObj->FindBool("richDataNeverTimeout");
   DCHECK(never_timeout);
   optional_fields.never_timeout = never_timeout.value();
 
-  absl::optional<int> priority = notifObj->FindInt("richDataPriority");
+  std::optional<int> priority = notifObj->FindInt("richDataPriority");
   DCHECK(priority);
   optional_fields.priority = priority.value();
 
-  absl::optional<int> num_mins_since_received =
+  std::optional<int> num_mins_since_received =
       notifObj->FindInt("richDataTimestamp");
   DCHECK(num_mins_since_received);
   optional_fields.timestamp =
       base::Time::Now() - base::Minutes(num_mins_since_received.value());
 
-  absl::optional<bool> pinned = notifObj->FindBool("richDataPinned");
+  std::optional<bool> pinned = notifObj->FindBool("richDataPinned");
   DCHECK(pinned);
   optional_fields.pinned = pinned.value();
 
-  absl::optional<bool> show_snooze = notifObj->FindBool("richDataShowSnooze");
+  std::optional<bool> show_snooze = notifObj->FindBool("richDataShowSnooze");
   DCHECK(show_snooze);
   optional_fields.should_show_snooze_button = show_snooze.value();
 
-  absl::optional<bool> show_settings =
+  std::optional<bool> show_settings =
       notifObj->FindBool("richDataShowSettings");
   DCHECK(show_settings);
   optional_fields.settings_button_handler =
       show_settings.value() ? message_center::SettingsButtonHandler::INLINE
                             : message_center::SettingsButtonHandler::NONE;
 
-  absl::optional<int> num_buttons = notifObj->FindInt("richDataNumButtons");
+  std::optional<int> num_buttons = notifObj->FindInt("richDataNumButtons");
   DCHECK(num_buttons);
   optional_fields.buttons = GetRichDataButtons(num_buttons.value());
 
   // Set additional fields for specific notification types.
-  absl::optional<int> notification_type = notifObj->FindInt("notificationType");
+  std::optional<int> notification_type = notifObj->FindInt("notificationType");
   DCHECK(notification_type);
 
   if (notification_type ==
       message_center::NotificationType::NOTIFICATION_TYPE_PROGRESS) {
-    absl::optional<int> progress = notifObj->FindInt("richDataProgress");
+    std::optional<int> progress = notifObj->FindInt("richDataProgress");
     DCHECK(progress);
     optional_fields.progress = progress.value();
 
@@ -260,7 +260,7 @@ NotificationTesterHandler::DictToOptionalFields(
     optional_fields.progress_status = base::UTF8ToUTF16(*progress_status);
   } else if (notification_type ==
              message_center::NotificationType::NOTIFICATION_TYPE_MULTIPLE) {
-    absl::optional<int> num_items = notifObj->FindInt("richDataNumNotifItems");
+    std::optional<int> num_items = notifObj->FindInt("richDataNumNotifItems");
     DCHECK(num_items);
     optional_fields.items = GetRichDataNotifItems(num_items.value());
   }

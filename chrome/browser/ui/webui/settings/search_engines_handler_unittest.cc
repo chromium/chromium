@@ -32,7 +32,7 @@ namespace {
 TemplateURL* AddSearchEngine(TemplateURLService* template_url_service,
                              const std::string& name,
                              int prepopulated_id,
-                             absl::optional<std::string> url) {
+                             std::optional<std::string> url) {
   TemplateURLData default_search_engine;
   default_search_engine.SetShortName(base::UTF8ToUTF16(name));
   default_search_engine.prepopulate_id = prepopulated_id;
@@ -67,7 +67,7 @@ class SearchEnginesHandlerTestBase : public testing::Test {
         TemplateURLServiceFactory::GetForProfile(profile());
     TemplateURL* default_engine =
         AddSearchEngine(template_url_service, "foo.com", /*prepopulated_id=*/0,
-                        /*url=*/absl::nullopt);
+                        /*url=*/std::nullopt);
     AddSearchEngine(template_url_service, "bing",
                     TemplateURLPrepopulateData::bing.id,
                     TemplateURLPrepopulateData::bing.search_url);
@@ -141,7 +141,7 @@ TEST_P(SearchEnginesHandlerParametrizedTest,
       TemplateURLServiceFactory::GetForProfile(profile());
   TemplateURL* template_url =
       AddSearchEngine(template_url_service, "bar.com", /*prepopulated_id=*/0,
-                      /*url=*/absl::nullopt);
+                      /*url=*/std::nullopt);
 
   EXPECT_EQ(1U, web_ui()->call_data().size());
   const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();

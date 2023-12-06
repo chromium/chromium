@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/base64.h"
@@ -28,7 +29,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::_;
 
@@ -211,7 +211,7 @@ TEST_P(ParentAccessUiHandlerImplTestParameterized, GetOauthTokenError) {
   // Expect metric to be recorded.
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
-          parent_access::kParentAccessWidgetErrorHistogramBase, absl::nullopt),
+          parent_access::kParentAccessWidgetErrorHistogramBase, std::nullopt),
       ParentAccessUiHandlerImpl::ParentAccessWidgetError::kOAuthError, 1);
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
@@ -307,7 +307,7 @@ TEST_P(ParentAccessUiHandlerImplTestParameterized,
   parent_access_ui_handler_.reset();
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
-          parent_access::kParentAccessFlowResultHistogramBase, absl::nullopt),
+          parent_access::kParentAccessFlowResultHistogramBase, std::nullopt),
       ParentAccessStateTracker::FlowResult::kAccessApproved, 1);
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
@@ -382,7 +382,7 @@ TEST_P(ParentAccessUiHandlerImplTestParameterized, OnParentDeclined) {
   parent_access_ui_handler_.reset();
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
-          parent_access::kParentAccessFlowResultHistogramBase, absl::nullopt),
+          parent_access::kParentAccessFlowResultHistogramBase, std::nullopt),
       ParentAccessStateTracker::FlowResult::kAccessDeclined, 1);
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
@@ -408,7 +408,7 @@ TEST_P(ParentAccessUiHandlerImplTestParameterized, OnCanceled) {
   parent_access_ui_handler_.reset();
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
-          parent_access::kParentAccessFlowResultHistogramBase, absl::nullopt),
+          parent_access::kParentAccessFlowResultHistogramBase, std::nullopt),
       GetInitialStateForFlow(), 1);
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
@@ -434,7 +434,7 @@ TEST_P(ParentAccessUiHandlerImplTestParameterized, OnError) {
   parent_access_ui_handler_.reset();
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
-          parent_access::kParentAccessFlowResultHistogramBase, absl::nullopt),
+          parent_access::kParentAccessFlowResultHistogramBase, std::nullopt),
       ParentAccessStateTracker::FlowResult::kError, 1);
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
@@ -473,7 +473,7 @@ TEST_P(ParentAccessUiHandlerImplTestParameterized, ConsentDeclinedParsed) {
   // Expect metric to be recorded.
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
-          parent_access::kParentAccessWidgetErrorHistogramBase, absl::nullopt),
+          parent_access::kParentAccessWidgetErrorHistogramBase, std::nullopt),
       ParentAccessUiHandlerImpl::ParentAccessWidgetError::kUnknownCallback, 1);
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
@@ -512,7 +512,7 @@ TEST_P(ParentAccessUiHandlerImplTestParameterized, OnPageSizeChangedIgnored) {
   // Expect metric to be recorded.
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
-          parent_access::kParentAccessWidgetErrorHistogramBase, absl::nullopt),
+          parent_access::kParentAccessWidgetErrorHistogramBase, std::nullopt),
       ParentAccessUiHandlerImpl::ParentAccessWidgetError::kUnknownCallback, 1);
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
@@ -553,7 +553,7 @@ TEST_P(ParentAccessUiHandlerImplTestParameterized,
   // Expect metric to be recorded.
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
-          parent_access::kParentAccessWidgetErrorHistogramBase, absl::nullopt),
+          parent_access::kParentAccessWidgetErrorHistogramBase, std::nullopt),
       ParentAccessUiHandlerImpl::ParentAccessWidgetError::kUnknownCallback, 1);
 }
 
@@ -580,7 +580,7 @@ TEST_P(ParentAccessUiHandlerImplTestParameterized,
   // Expect metric to be recorded.
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
-          parent_access::kParentAccessWidgetErrorHistogramBase, absl::nullopt),
+          parent_access::kParentAccessWidgetErrorHistogramBase, std::nullopt),
       ParentAccessUiHandlerImpl::ParentAccessWidgetError::kDelegateNotAvailable,
       1);
 }
@@ -601,7 +601,7 @@ TEST_P(ParentAccessUiHandlerImplTestParameterized,
   // Expect metric to be recorded.
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
-          parent_access::kParentAccessWidgetErrorHistogramBase, absl::nullopt),
+          parent_access::kParentAccessWidgetErrorHistogramBase, std::nullopt),
       ParentAccessUiHandlerImpl::ParentAccessWidgetError::kDecodingError, 1);
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
@@ -628,7 +628,7 @@ TEST_P(ParentAccessUiHandlerImplTestParameterized, ParsingErrorMetricRecorded) {
   // Expect metric to be recorded.
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
-          parent_access::kParentAccessWidgetErrorHistogramBase, absl::nullopt),
+          parent_access::kParentAccessWidgetErrorHistogramBase, std::nullopt),
       ParentAccessUiHandlerImpl::ParentAccessWidgetError::kParsingError, 1);
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
@@ -669,7 +669,7 @@ TEST_F(ExtensionApprovalsDisabledTest, OnDisabled) {
   parent_access_ui_handler_.reset();
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
-          parent_access::kParentAccessFlowResultHistogramBase, absl::nullopt),
+          parent_access::kParentAccessFlowResultHistogramBase, std::nullopt),
       ParentAccessStateTracker::FlowResult::kRequestsDisabled, 1);
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(

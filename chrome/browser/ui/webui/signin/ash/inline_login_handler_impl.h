@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_HANDLER_IMPL_H_
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_HANDLER_IMPL_H_
 
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_set.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/ui/webui/signin/ash/signin_helper.h"
 #include "chrome/browser/ui/webui/signin/inline_login_handler.h"
 #include "components/account_manager_core/account.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 
@@ -71,7 +71,7 @@ class InlineLoginHandlerImpl : public ::InlineLoginHandler {
 
   // Email address provided at the start of the flow. Empty optional if no email
   // was provided.
-  absl::optional<std::string> initial_email_;
+  std::optional<std::string> initial_email_;
   base::RepeatingClosure close_dialog_closure_;
   base::RepeatingCallback<void(const std::string&, const std::string&)>
       show_signin_error_;

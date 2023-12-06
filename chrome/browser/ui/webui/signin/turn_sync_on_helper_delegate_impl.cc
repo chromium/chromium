@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper_delegate_impl.h"
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
@@ -36,7 +38,6 @@
 #include "components/policy/core/common/policy_utils.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "google_apis/gaia/gaia_auth_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace {

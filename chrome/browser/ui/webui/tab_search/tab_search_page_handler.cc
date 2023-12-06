@@ -214,7 +214,7 @@ TabSearchPageHandler::~TabSearchPageHandler() {
 }
 
 void TabSearchPageHandler::CloseTab(int32_t tab_id) {
-  absl::optional<TabDetails> optional_details = GetTabDetails(tab_id);
+  std::optional<TabDetails> optional_details = GetTabDetails(tab_id);
   if (!optional_details)
     return;
 
@@ -358,7 +358,7 @@ void TabSearchPageHandler::GetTabOrganizationSession(
   std::move(callback).Run(std::move(mojo_session));
 }
 
-absl::optional<TabSearchPageHandler::TabDetails>
+std::optional<TabSearchPageHandler::TabDetails>
 TabSearchPageHandler::GetTabDetails(int32_t tab_id) {
   for (auto* browser : *BrowserList::GetInstance()) {
     if (!ShouldTrackBrowser(browser)) {
@@ -374,12 +374,12 @@ TabSearchPageHandler::GetTabDetails(int32_t tab_id) {
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void TabSearchPageHandler::SwitchToTab(
     tab_search::mojom::SwitchToTabInfoPtr switch_to_tab_info) {
-  absl::optional<TabDetails> optional_details =
+  std::optional<TabDetails> optional_details =
       GetTabDetails(switch_to_tab_info->tab_id);
   if (!optional_details)
     return;
@@ -800,7 +800,7 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
   tab_data->active = tab_strip_model->active_index() == index;
   tab_data->tab_id = extensions::ExtensionTabUtil::GetTabId(contents);
   tab_data->index = index;
-  const absl::optional<tab_groups::TabGroupId> group_id =
+  const std::optional<tab_groups::TabGroupId> group_id =
       tab_strip_model->GetTabGroupForTab(index);
   if (group_id.has_value()) {
     tab_data->group_id = group_id.value().token();

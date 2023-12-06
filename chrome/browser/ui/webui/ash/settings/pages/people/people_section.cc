@@ -476,8 +476,8 @@ PeopleSection::PeopleSection(Profile* profile,
     : OsSettingsSection(profile, search_tag_registry),
       sync_subsection_(
           !ash::features::IsOsSettingsRevampWayfindingEnabled()
-              ? absl::make_optional<SyncSection>(profile, search_tag_registry)
-              : absl::nullopt),
+              ? std::make_optional<SyncSection>(profile, search_tag_registry)
+              : std::nullopt),
       identity_manager_(identity_manager),
       pref_service_(pref_service),
       auth_performer_(UserDataAuthClient::Get()),

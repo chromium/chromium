@@ -40,7 +40,7 @@ namespace {
 void OnUploadDone(scoped_refptr<OneDriveUploadHandler> one_drive_upload_handler,
                   OneDriveUploadHandler::UploadCallback callback,
                   OfficeTaskResult task_result,
-                  absl::optional<FileSystemURL> uploaded_file_url,
+                  std::optional<FileSystemURL> uploaded_file_url,
                   int64_t upload_size) {
   std::move(callback).Run(task_result, std::move(uploaded_file_url),
                           upload_size);
@@ -236,7 +236,7 @@ void OneDriveUploadHandler::OnFailedUpload(
     notification_manager_->ShowUploadError(error_message);
   }
   if (callback_) {
-    std::move(callback_).Run(OfficeTaskResult::kFailedToUpload, absl::nullopt,
+    std::move(callback_).Run(OfficeTaskResult::kFailedToUpload, std::nullopt,
                              0);
   }
 }

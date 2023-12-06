@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_MAKO_MAKO_BUBBLE_COORDINATOR_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_MAKO_MAKO_BUBBLE_COORDINATOR_H_
 
+#include <optional>
 #include <string_view>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 class BubbleContentsWrapper;
@@ -31,8 +31,8 @@ class MakoBubbleCoordinator {
   void LoadConsentUI(Profile* profile);
   void LoadEditorUI(Profile* profile,
                     MakoEditorMode mode,
-                    absl::optional<std::string_view> preset_query_id,
-                    absl::optional<std::string_view> freeform_text);
+                    std::optional<std::string_view> preset_query_id,
+                    std::optional<std::string_view> freeform_text);
   void ShowUI();
   void CloseUI();
 

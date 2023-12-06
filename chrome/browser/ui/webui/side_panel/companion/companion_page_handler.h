@@ -66,7 +66,7 @@ class CompanionPageHandler
       const std::vector<std::string>& text_directives) override;
   void OnPhFeedback(side_panel::mojom::PhFeedback ph_feedback) override;
   void OnCqJumptagClicked(const std::string& text_directive) override;
-  void OpenUrlInBrowser(const absl::optional<GURL>& url_to_open,
+  void OpenUrlInBrowser(const std::optional<GURL>& url_to_open,
                         bool use_new_tab) override;
   void OnLoadingState(side_panel::mojom::LoadingState loading_state) override;
   void RefreshCompanionPage() override;
@@ -167,9 +167,9 @@ class CompanionPageHandler
       consent_helper_observation_{this};
   PrefChangeRegistrar pref_change_registrar_;
 
-  absl::optional<base::TimeTicks> full_load_start_time_;
-  absl::optional<base::TimeTicks> reload_start_time_;
-  absl::optional<base::TimeTicks> ui_loading_start_time_;
+  std::optional<base::TimeTicks> full_load_start_time_;
+  std::optional<base::TimeTicks> reload_start_time_;
+  std::optional<base::TimeTicks> ui_loading_start_time_;
 
   base::WeakPtrFactory<CompanionPageHandler> weak_ptr_factory_{this};
 };

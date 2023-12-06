@@ -56,9 +56,9 @@ void AddBluetoothStrings(content::WebUIDataSource* html_source) {
 
 // static
 SystemWebDialogDelegate* BluetoothPairingDialog::ShowDialog(
-    absl::optional<base::StringPiece> device_address) {
+    std::optional<base::StringPiece> device_address) {
   std::string dialog_id = chrome::kChromeUIBluetoothPairingURL;
-  absl::optional<std::string> canonical_device_address;
+  std::optional<std::string> canonical_device_address;
 
   if (device_address.has_value()) {
     canonical_device_address =
@@ -90,7 +90,7 @@ SystemWebDialogDelegate* BluetoothPairingDialog::ShowDialog(
 
 BluetoothPairingDialog::BluetoothPairingDialog(
     const std::string& dialog_id,
-    absl::optional<base::StringPiece> canonical_device_address)
+    std::optional<base::StringPiece> canonical_device_address)
     : SystemWebDialogDelegate(GURL(chrome::kChromeUIBluetoothPairingURL),
                               /*title=*/std::u16string()),
       dialog_id_(dialog_id) {
@@ -105,7 +105,7 @@ BluetoothPairingDialog::BluetoothPairingDialog(
                   session_manager::SessionManager::Get()->session_state() !=
                       session_manager::SessionState::ACTIVE);
 
-  absl::optional<std::string> args = base::WriteJson(device_data);
+  std::optional<std::string> args = base::WriteJson(device_data);
   CHECK(args.has_value());
   set_dialog_args(*args);
 }

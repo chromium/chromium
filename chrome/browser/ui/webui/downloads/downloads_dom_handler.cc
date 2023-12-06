@@ -255,7 +255,7 @@ void DownloadsDOMHandler::DiscardDangerous(const std::string& id) {
             download,
             safe_browsing::ClientSafeBrowsingReportRequest::
                 DANGEROUS_DOWNLOAD_RECOVERY,
-            /*did_proceed=*/false, /*show_download_in_folder=*/absl::nullopt);
+            /*did_proceed=*/false, /*show_download_in_folder=*/std::nullopt);
       }
     }
   }

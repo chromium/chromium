@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/internals/user_education/user_education_internals_page_handler_impl.h"
+
 #include <stdint.h>
 #include <sstream>
 

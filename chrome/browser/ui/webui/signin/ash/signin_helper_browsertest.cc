@@ -147,13 +147,13 @@ class SigninHelperTest : public InProcessBrowserTest,
                                      "access_token");
     base::RunLoop().RunUntilIdle();
     on_token_upserted_call_count_ = 0;
-    on_token_upserted_account_ = absl::nullopt;
+    on_token_upserted_account_ = std::nullopt;
   }
 
   void TearDownOnMainThread() override {
     account_manager_->RemoveObserver(this);
     on_token_upserted_call_count_ = 0;
-    on_token_upserted_account_ = absl::nullopt;
+    on_token_upserted_account_ = std::nullopt;
   }
 
   void CreateSigninHelper(const base::RepeatingClosure& exit_closure,
@@ -188,7 +188,7 @@ class SigninHelperTest : public InProcessBrowserTest,
 
   int on_token_upserted_call_count() { return on_token_upserted_call_count_; }
 
-  absl::optional<account_manager::Account> on_token_upserted_account() {
+  std::optional<account_manager::Account> on_token_upserted_account() {
     return on_token_upserted_account_;
   }
 
@@ -269,7 +269,7 @@ class SigninHelperTest : public InProcessBrowserTest,
           DanglingUntriaged | ExperimentalAsh>
       account_manager_mojo_service_ = nullptr;
   int on_token_upserted_call_count_ = 0;
-  absl::optional<account_manager::Account> on_token_upserted_account_;
+  std::optional<account_manager::Account> on_token_upserted_account_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
 };
@@ -340,8 +340,8 @@ class SigninHelperTestWithArcAccountRestrictions
     account_apps_availability()->RemoveObserver(this);
     on_account_available_in_arc_call_count_ = 0;
     on_account_unavailable_in_arc_call_count_ = 0;
-    on_account_available_in_arc_account_ = absl::nullopt;
-    on_account_unavailable_in_arc_account_ = absl::nullopt;
+    on_account_available_in_arc_account_ = std::nullopt;
+    on_account_unavailable_in_arc_account_ = std::nullopt;
     SigninHelperTest::TearDownOnMainThread();
   }
 
@@ -378,12 +378,12 @@ class SigninHelperTestWithArcAccountRestrictions
     return on_account_unavailable_in_arc_call_count_;
   }
 
-  absl::optional<account_manager::Account>
+  std::optional<account_manager::Account>
   on_account_available_in_arc_account() {
     return on_account_available_in_arc_account_;
   }
 
-  absl::optional<account_manager::Account>
+  std::optional<account_manager::Account>
   on_account_unavailable_in_arc_account() {
     return on_account_unavailable_in_arc_account_;
   }
@@ -403,8 +403,8 @@ class SigninHelperTestWithArcAccountRestrictions
 
   int on_account_available_in_arc_call_count_ = 0;
   int on_account_unavailable_in_arc_call_count_ = 0;
-  absl::optional<account_manager::Account> on_account_available_in_arc_account_;
-  absl::optional<account_manager::Account>
+  std::optional<account_manager::Account> on_account_available_in_arc_account_;
+  std::optional<account_manager::Account>
       on_account_unavailable_in_arc_account_;
   raw_ptr<ash::AccountAppsAvailability, DanglingUntriaged | ExperimentalAsh>
       account_apps_availability_;

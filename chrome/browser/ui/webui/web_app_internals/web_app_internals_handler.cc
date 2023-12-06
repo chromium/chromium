@@ -404,7 +404,7 @@ class WebAppInternalsHandler::IsolatedWebAppDevBundleSelectListener
     : public content::FileSelectListener {
  public:
   explicit IsolatedWebAppDevBundleSelectListener(
-      base::OnceCallback<void(absl::optional<base::FilePath>)> callback)
+      base::OnceCallback<void(std::optional<base::FilePath>)> callback)
       : callback_(std::move(callback)) {}
 
   void Show(content::WebContentsDelegate* web_contents_delegate,
@@ -432,13 +432,13 @@ class WebAppInternalsHandler::IsolatedWebAppDevBundleSelectListener
 
   void FileSelectionCanceled() override {
     CHECK(callback_);
-    std::move(callback_).Run(absl::nullopt);
+    std::move(callback_).Run(std::nullopt);
   }
 
  private:
   ~IsolatedWebAppDevBundleSelectListener() override = default;
 
-  base::OnceCallback<void(absl::optional<base::FilePath>)> callback_;
+  base::OnceCallback<void(std::optional<base::FilePath>)> callback_;
 };
 
 // static
@@ -539,7 +539,7 @@ void WebAppInternalsHandler::SelectFileAndInstallIsolatedWebAppFromDevBundle(
 
 void WebAppInternalsHandler::OnIsolatedWebAppDevModeBundleSelected(
     SelectFileAndInstallIsolatedWebAppFromDevBundleCallback callback,
-    absl::optional<base::FilePath> path) {
+    std::optional<base::FilePath> path) {
   if (!path) {
     SendError(std::move(callback), "no file selected");
     return;

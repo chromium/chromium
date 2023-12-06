@@ -275,10 +275,9 @@ class SafetyHubHandlerTest : public testing::Test {
                   base::Version({CHROME_VERSION_MAJOR, CHROME_VERSION_MINOR,
                                  CHROME_VERSION_BUILD,
                                  CHROME_VERSION_PATCH + 1}),
-                  absl::nullopt)
+                  std::nullopt)
             : g_browser_process->GetBuildState()->SetUpdate(
-                  BuildState::UpdateType::kNone, base::Version(),
-                  absl::nullopt);
+                  BuildState::UpdateType::kNone, base::Version(), std::nullopt);
         break;
       case SafetyHubHandler::SafetyHubModule::kSafeBrowsing:
         isModuleRecommended
@@ -767,7 +766,7 @@ TEST_F(SafetyHubHandlerTest, VersionCardOutOfDate) {
       BuildState::UpdateType::kNormalUpdate,
       base::Version({CHROME_VERSION_MAJOR, CHROME_VERSION_MINOR,
                      CHROME_VERSION_BUILD, CHROME_VERSION_PATCH + 1}),
-      absl::nullopt);
+      std::nullopt);
 
   base::Value::List args;
   args.Append("getVersionCardData");

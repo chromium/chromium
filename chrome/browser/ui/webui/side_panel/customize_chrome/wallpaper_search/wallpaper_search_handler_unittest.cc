@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_handler.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -45,7 +46,6 @@
 #include "skia/ext/image_operations.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image.h"
@@ -97,7 +97,7 @@ class MockWallpaperSearchBackgroundManager
                void(const base::Token&,
                     const SkBitmap&,
                     base::ElapsedTimer timer));
-  MOCK_METHOD0(SaveCurrentBackgroundToHistory, absl::optional<base::Token>());
+  MOCK_METHOD0(SaveCurrentBackgroundToHistory, std::optional<base::Token>());
 };
 
 std::unique_ptr<TestingProfile> MakeTestingProfile(
@@ -769,7 +769,7 @@ TEST_F(WallpaperSearchHandlerTest,
   auto handler = MakeHandler(/*session_id=*/123);
 
   handler->GetWallpaperSearchResults(
-      "foo", absl::nullopt, absl::nullopt,
+      "foo", std::nullopt, std::nullopt,
       side_panel::customize_chrome::mojom::DescriptorDValue::NewColor(
           SK_ColorRED),
       callback.Get());
@@ -800,7 +800,7 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_ConvertsHueToHex) {
   auto handler = MakeHandler(/*session_id=*/123);
 
   handler->GetWallpaperSearchResults(
-      "foo", absl::nullopt, absl::nullopt,
+      "foo", std::nullopt, std::nullopt,
       side_panel::customize_chrome::mojom::DescriptorDValue::NewHue(0),
       callback.Get());
 
@@ -831,8 +831,8 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_NoResponse) {
       callback;
   auto handler = MakeHandler(/*session_id=*/123);
 
-  handler->GetWallpaperSearchResults("foo", absl::nullopt, absl::nullopt,
-                                     nullptr, callback.Get());
+  handler->GetWallpaperSearchResults("foo", std::nullopt, std::nullopt, nullptr,
+                                     callback.Get());
   EXPECT_EQ("foo", request.descriptors().descriptor_a());
   EXPECT_TRUE(request.descriptors().descriptor_b().empty());
   EXPECT_TRUE(request.descriptors().descriptor_c().empty());
@@ -908,8 +908,8 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_NoImages) {
       callback;
   auto handler = MakeHandler(/*session_id=*/123);
 
-  handler->GetWallpaperSearchResults("foo", absl::nullopt, absl::nullopt,
-                                     nullptr, callback.Get());
+  handler->GetWallpaperSearchResults("foo", std::nullopt, std::nullopt, nullptr,
+                                     callback.Get());
   EXPECT_EQ("foo", request.descriptors().descriptor_a());
   EXPECT_TRUE(request.descriptors().descriptor_b().empty());
   EXPECT_TRUE(request.descriptors().descriptor_c().empty());
@@ -985,8 +985,8 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_RequestThrottled) {
       callback;
   auto handler = MakeHandler(/*session_id=*/123);
 
-  handler->GetWallpaperSearchResults("foo", absl::nullopt, absl::nullopt,
-                                     nullptr, callback.Get());
+  handler->GetWallpaperSearchResults("foo", std::nullopt, std::nullopt, nullptr,
+                                     callback.Get());
   EXPECT_EQ("foo", request.descriptors().descriptor_a());
   EXPECT_TRUE(request.descriptors().descriptor_b().empty());
   EXPECT_TRUE(request.descriptors().descriptor_c().empty());
@@ -1134,8 +1134,8 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
       callback;
   auto handler = MakeHandler(/*session_id=*/123);
 
-  handler->GetWallpaperSearchResults("foo", absl::nullopt, absl::nullopt,
-                                     nullptr, callback.Get());
+  handler->GetWallpaperSearchResults("foo", std::nullopt, std::nullopt, nullptr,
+                                     callback.Get());
   EXPECT_EQ("foo", request.descriptors().descriptor_a());
   EXPECT_TRUE(request.descriptors().descriptor_b().empty());
   EXPECT_TRUE(request.descriptors().descriptor_c().empty());
@@ -1217,7 +1217,7 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
   // Simulate current background is saved to history.
   ON_CALL(mock_wallpaper_search_background_manager(),
           SaveCurrentBackgroundToHistory)
-      .WillByDefault(Return(absl::make_optional(token)));
+      .WillByDefault(Return(std::make_optional(token)));
 
   std::vector<
       std::unique_ptr<optimization_guide::proto::WallpaperSearchQuality>>

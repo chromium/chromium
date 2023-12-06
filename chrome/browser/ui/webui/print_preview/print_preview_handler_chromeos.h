@@ -97,7 +97,7 @@ class PrintPreviewHandlerChromeOS
   void HandleRequestPrinterStatusUpdate(const base::Value::List& args);
   void HandleRequestPrinterStatusUpdateCompletion(
       base::Value callback_id,
-      absl::optional<base::Value::Dict> result);
+      std::optional<base::Value::Dict> result);
 
   // crosapi::mojom::PrintServerObserver Implementation
   void OnPrintServersChanged(

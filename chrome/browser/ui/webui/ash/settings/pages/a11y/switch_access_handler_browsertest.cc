@@ -69,8 +69,8 @@ class SwitchAccessHandlerTest : public InProcessBrowserTest {
     auto& details = call_data->arg2()->GetDict();
     ASSERT_EQ(details.size(), 3u);
 
-    absl::optional<int> key_code = details.FindInt("keyCode");
-    ASSERT_NE(key_code, absl::nullopt);
+    std::optional<int> key_code = details.FindInt("keyCode");
+    ASSERT_NE(key_code, std::nullopt);
     ASSERT_EQ(*key_code, code);
 
     const std::string* key = details.FindString("key");

@@ -137,7 +137,7 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
   // results of GetProfileData. Tab url/group combinations that have been
   // previously added to the ProfileData will not be added more than once by
   // leveraging DedupKey comparisons.
-  typedef std::tuple<GURL, absl::optional<base::Token>> DedupKey;
+  typedef std::tuple<GURL, std::optional<base::Token>> DedupKey;
 
   // Encapsulates tab details to facilitate performing an action on a tab.
   struct TabDetails {
@@ -184,7 +184,7 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
       const base::Time& close_time);
 
   // Returns tab details required to perform an action on the tab.
-  absl::optional<TabDetails> GetTabDetails(int32_t tab_id);
+  std::optional<TabDetails> GetTabDetails(int32_t tab_id);
 
   // Schedule a timer to call TabsChanged() when it times out
   // in order to reduce numbers of RPC.
