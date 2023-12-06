@@ -6,6 +6,7 @@
 
 #include <dlfcn.h>
 
+#include <bit>
 #include <bitset>
 #include <queue>
 #include <unordered_set>
@@ -146,7 +147,7 @@ int DefaultBitsPerComponent() {
 
   // Next, try getting the number of colormap entries per subfield.  If it's a
   // power of 2, log2 is a possible guess for the number of bits per component.
-  if (base::bits::IsPowerOfTwo(visual.colormap_entries)) {
+  if (std::has_single_bit(visual.colormap_entries)) {
     return base::bits::Log2Ceiling(visual.colormap_entries);
   }
 
