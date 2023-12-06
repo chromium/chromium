@@ -29,7 +29,7 @@ chromium-metrics-reviews@google.com.
 <enum name="AutomaticBeaconOutcome">
   <int value="0" label="Success"/>
   <int value="1" label="No transient user activation"/>
-  <int value="2" label="Initiator frame not same-origin with mapped URL"/>
+  <int value="2" label="Cross origin frame to mapped URL not opted in"/>
 </enum>
 
 <enum name="FencedFrameAutomaticBeaconEventType">

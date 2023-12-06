@@ -7174,13 +7174,21 @@ class FencedFrameAutomaticBeaconBrowserTest
             : https_server()->GetURL(config.secondary_initiator_url.origin,
                                      config.secondary_initiator_url.path);
     if (secondary_initiator_url.is_valid()) {
-      TestFrameNavigationObserver ad_frame_new_navigation_observer(
-          ad_frame_root_node->current_frame_host());
-      EXPECT_TRUE(
-          ExecJs(ad_frame_root_node,
-                 JsReplace(R"(window.location = $1;)", secondary_initiator_url),
-                 ad_frame_execjs_options));
-      ad_frame_new_navigation_observer.WaitForCommit();
+      EXPECT_TRUE(ExecJs(ad_frame_root_node, R"(
+        var x_origin_frame = document.createElement('iframe');
+        document.body.appendChild(x_origin_frame);
+      )"));
+      FrameTreeNode* x_origin_frame_node = ad_frame_root_node->child_at(0);
+      TestFrameNavigationObserver x_origin_frame_navigation_observer(
+          x_origin_frame_node->current_frame_host());
+      EXPECT_TRUE(ExecJs(
+          ad_frame_root_node,
+          JsReplace("x_origin_frame.src = $1;", secondary_initiator_url)));
+      x_origin_frame_navigation_observer.WaitForCommit();
+      // We will be navigating the cross-origin iframe, so we set
+      // ad_frame_root_node so that the navigation script uses that frame
+      // instead of the root ad frame.
+      ad_frame_root_node = x_origin_frame_node;
     }
 
     std::string target;
@@ -7244,7 +7252,7 @@ class FencedFrameAutomaticBeaconBrowserTest
       if (secondary_initiator_url.is_valid()) {
         histogram_tester_.ExpectUniqueSample(
             blink::kAutomaticBeaconOutcomeHistogram,
-            blink::AutomaticBeaconOutcome::kNotSameOrigin, 1);
+            blink::AutomaticBeaconOutcome::kNotSameOriginNotOptedIn, 1);
       }
       return;
     }

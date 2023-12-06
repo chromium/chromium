@@ -273,7 +273,8 @@ void FakeLocalFrameHost::SetFencedFrameAutomaticBeaconReportEventData(
     const WTF::Vector<blink::FencedFrame::ReportingDestination>& destinations,
     network::AttributionReportingRuntimeFeatures
         attribution_reporting_runtime_features,
-    bool once) {}
+    bool once,
+    bool cross_origin_exposed) {}
 
 void FakeLocalFrameHost::SendLegacyTechEvent(
     const WTF::String& type,

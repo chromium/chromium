@@ -294,7 +294,8 @@ void Fence::setReportEventDataForAutomaticBeacons(
   }
   frame->GetLocalFrameHostRemote().SetFencedFrameAutomaticBeaconReportEventData(
       beacon_type.value(), event->getEventDataOr(String{""}), destinations,
-      attribution_reporting_runtime_features, event->once());
+      attribution_reporting_runtime_features, event->once(),
+      event->crossOriginExposed());
 }
 
 HeapVector<Member<FencedFrameConfig>> Fence::getNestedConfigs(

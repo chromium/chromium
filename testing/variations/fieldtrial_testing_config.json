@@ -7233,6 +7233,26 @@
             ]
         }
     ],
+    "FencedFramesEnableCrossOriginAutomaticBeacons": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FencedFramesCrossOriginAutomaticBeacons"
+                    ]
+                }
+            ]
+        }
+    ],
     "FencedFramesEnableM120Features": [
         {
             "platforms": [

@@ -76,6 +76,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "content/browser/fenced_frame/automatic_beacon_info.h"
+#include "content/browser/fenced_frame/fenced_document_data.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/attribution_reporting_runtime_features.h"
@@ -110,33 +112,6 @@ using AdAuctionData = blink::FencedFrame::AdAuctionData;
 using DeprecatedFencedFrameMode = blink::FencedFrame::DeprecatedFencedFrameMode;
 using SharedStorageBudgetMetadata =
     blink::FencedFrame::SharedStorageBudgetMetadata;
-
-struct CONTENT_EXPORT AutomaticBeaconInfo {
-  AutomaticBeaconInfo(
-      const std::string& data,
-      const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
-      network::AttributionReportingRuntimeFeatures
-          attribution_reporting_runtime_features,
-      bool once);
-
-  AutomaticBeaconInfo(const AutomaticBeaconInfo&);
-  AutomaticBeaconInfo(AutomaticBeaconInfo&&);
-
-  AutomaticBeaconInfo& operator=(const AutomaticBeaconInfo&);
-  AutomaticBeaconInfo& operator=(AutomaticBeaconInfo&&);
-
-  ~AutomaticBeaconInfo();
-
-  std::string data;
-  std::vector<blink::FencedFrame::ReportingDestination> destinations;
-  // Indicates whether Attribution Reporting API related runtime features are
-  // enabled and is needed for integration with Attribution Reporting API.
-  network::AttributionReportingRuntimeFeatures
-      attribution_reporting_runtime_features;
-  // Indicates whether the automatic beacon will only be sent out for one event,
-  // or if it will be sent out every time an event occurs.
-  bool once;
-};
 
 // Different kinds of entities (renderers) that should receive different
 // views of the information in fenced frame configs.
@@ -396,7 +371,8 @@ struct CONTENT_EXPORT FencedFrameProperties {
       const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
       network::AttributionReportingRuntimeFeatures
           attribution_reporting_runtime_features,
-      bool once);
+      bool once,
+      bool cross_origin_exposed);
 
   // Automatic beacon data is cleared out after one automatic beacon if `once`
   // was set to true when calling `setReportEventDataForAutomaticBeacons()`.

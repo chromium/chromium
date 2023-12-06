@@ -18,7 +18,19 @@ dictionary FenceEvent {
   DOMString eventType;
   DOMString eventData;
   sequence<FenceReportingDestination> destination;
+
+  // When setting event data to be used later in an automatic beacon, the
+  // following properties are used:
+  // Determines if the beacon data will be used for only the next automatic
+  // beacon event, or if it will be reused for all subsequent automatic beacons.
   boolean once = false;
+  // Determines if this data can be used for an automatic beacon that originates
+  // from a document that is cross-origin to the mapped URL of the fenced frame
+  // config that loaded this frame tree. Note that automatic beacon data can
+  // only be set from documents that are same-origin to the fenced frame
+  // config's mapped URL, so this effectively opts in the data to being used
+  // cross-origin.
+  boolean crossOriginExposed = false;
 
   // When reporting to a custom destination URL (with substitution of macros
   // defined by the buyer), the following property is used:
