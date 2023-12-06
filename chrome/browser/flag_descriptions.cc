@@ -1312,6 +1312,14 @@ const char kEnableRedInterstitialFaceliftDescription[] =
     "Enables red interstitial facelift UI changes, including icon, string, and "
     "style changes.";
 
+const char kEnableSearchEngineChoiceName[] = "Search engine choice";
+const char kEnableSearchEngineChoiceDescription[] =
+    "Enables the search engine choice screen and related features."
+    "The search engine choice screen will be displayed in the first run "
+    "experience, profile creation flow and in a modal dialog on Desktop. This "
+    "also enables the new UI for the search engine settings page on both "
+    "Desktop and Android.";
+
 const char kEnableSuspiciousSiteDetectionRTLookupsName[] =
     "Suspicious site detection RT lookups";
 const char kEnableSuspiciousSiteDetectionRTLookupsDescription[] =
