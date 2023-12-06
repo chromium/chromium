@@ -4344,7 +4344,7 @@
     Help me write
   </message>
   <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE1_SUBLABEL" desc="Secondary description explaining the 'Help me write' feature." translateable="false">
-    Helps you write short-form content for common things on the web, like product reviews and social media posts. Suggested content is based on your prompts and the content of the web page. To use this feature, right-click on a text box.
+    Helps you write short-form content for things on the web, like reviews. Suggested content is based on your prompts and the content of the web page. To use this feature, right-click on a text box.
   </message>
   <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE2_LABEL" desc="Toggle primary description" translateable="false">
     Tab Organizer
