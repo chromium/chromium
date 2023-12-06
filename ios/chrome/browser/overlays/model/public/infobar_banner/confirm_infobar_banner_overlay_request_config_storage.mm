@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/overlays/model/public/infobar_banner/confirm_infobar_banner_overlay_request_config_storage.h"
 
 #import "components/infobars/core/infobar.h"
-#import "ios/chrome/browser/infobars/infobar_ios.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/overlays/model/public/infobar_banner/confirm_infobar_banner_overlay_request_config.h"
 #import "ui/base/models/image_model.h"
 

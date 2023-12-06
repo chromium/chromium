@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_view_controller.h"
 
-#import "ios/chrome/browser/infobars/infobar_type.h"
+#import "ios/chrome/browser/infobars/model/infobar_type.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_delegate.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "testing/gtest_mac.h"

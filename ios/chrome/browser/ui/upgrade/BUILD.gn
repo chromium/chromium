@@ -11,7 +11,7 @@ source_set("upgrade") {
   ]
   deps = [
     "//ios/chrome/browser/browser_state/model",
-    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/main/model:public",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/upgrade/model",

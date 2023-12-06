@@ -6,8 +6,8 @@
 #define IOS_CHROME_BROWSER_OVERLAYS_MODEL_PUBLIC_DEFAULT_DEFAULT_INFOBAR_OVERLAY_REQUEST_CONFIG_H_
 
 #import "components/infobars/core/infobar_delegate.h"
-#import "ios/chrome/browser/infobars/infobar_ios.h"
-#import "ios/chrome/browser/infobars/overlays/infobar_overlay_type.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
+#import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_type.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_config.h"
 
 // Default configuration object for OverlayRequests for an InfoBar.

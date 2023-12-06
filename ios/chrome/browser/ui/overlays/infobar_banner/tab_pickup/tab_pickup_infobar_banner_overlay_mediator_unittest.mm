@@ -9,7 +9,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "components/sync_device_info/device_info.h"
-#import "ios/chrome/browser/infobars/infobar_ios.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"

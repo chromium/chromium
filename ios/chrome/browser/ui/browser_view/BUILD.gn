@@ -68,7 +68,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/follow/model:service",
     "//ios/chrome/browser/follow/model:tab_helper",
     "//ios/chrome/browser/geolocation/model",
-    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/intents:intents_donation_helper",
     "//ios/chrome/browser/itunes_urls/model",
     "//ios/chrome/browser/language/model",

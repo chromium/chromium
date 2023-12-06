@@ -59,9 +59,9 @@ source_set("test_support") {
   deps = [
     "//base",
     "//components/infobars/core",
-    "//ios/chrome/browser/infobars",
-    "//ios/chrome/browser/infobars:badge",
-    "//ios/chrome/browser/infobars:public",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/model:badge",
+    "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/ui/badges",
   ]
 }
@@ -79,7 +79,7 @@ source_set("eg_app_support+eg2") {
     "//base",
     "//components/infobars/core",
     "//ios/chrome/app:app_internal",
-    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/tabs/model",

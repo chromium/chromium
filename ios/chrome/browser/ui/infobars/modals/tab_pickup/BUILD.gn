@@ -14,7 +14,7 @@ source_set("tab_pickup") {
     "//base",
     "//base:i18n",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/infobars:public",
+    "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/shared/ui/table_view:utils",

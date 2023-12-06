@@ -8,7 +8,7 @@
 
 #import "base/notreached.h"
 #import "components/translate/core/browser/translate_infobar_delegate.h"
-#import "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
+#import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_util.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/infobar_banner/infobar_banner_overlay_responses.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"

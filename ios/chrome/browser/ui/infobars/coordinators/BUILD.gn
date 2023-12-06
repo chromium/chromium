@@ -12,7 +12,7 @@ source_set("coordinators") {
   deps = [
     "//base",
     "//components/infobars/core",
-    "//ios/chrome/browser/infobars:public",
+    "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/model/browser",

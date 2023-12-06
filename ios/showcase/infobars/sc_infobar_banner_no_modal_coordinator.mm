@@ -5,7 +5,7 @@
 #import "ios/showcase/infobars/sc_infobar_banner_no_modal_coordinator.h"
 
 #import "base/ios/block_types.h"
-#import "ios/chrome/browser/infobars/infobar_type.h"
+#import "ios/chrome/browser/infobars/model/infobar_type.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_delegate.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_view_controller.h"
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_banner_transition_driver.h"

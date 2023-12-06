@@ -18,7 +18,7 @@
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/version_info/version_info.h"
-#import "ios/chrome/browser/infobars/infobar_utils.h"
+#import "ios/chrome/browser/infobars/model/infobar_utils.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"

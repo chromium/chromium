@@ -11,7 +11,7 @@ include_rules = [
   "+ios/chrome/browser/flags/ios_chrome_field_trials.h",
   "+ios/chrome/browser/follow/model",
   "+ios/chrome/browser/https_upgrades/model",
-  "+ios/chrome/browser/infobars",
+  "+ios/chrome/browser/infobars/model",
   "+ios/chrome/browser/lens/model/lens_browser_agent.h",
   "+ios/chrome/browser/link_to_text/model",
   "+ios/chrome/browser/mailto_handler/model",

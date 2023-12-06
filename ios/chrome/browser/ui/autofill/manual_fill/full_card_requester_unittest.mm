@@ -20,7 +20,7 @@
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"

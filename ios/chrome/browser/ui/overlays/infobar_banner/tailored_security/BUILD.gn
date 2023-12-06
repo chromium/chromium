@@ -10,7 +10,7 @@ source_set("tailored_security") {
   deps = [
     "//base",
     "//components/infobars/core",
-    "//ios/chrome/browser/infobars/overlays:util",
+    "//ios/chrome/browser/infobars/model/overlays:util",
     "//ios/chrome/browser/overlays/model/public/default",
     "//ios/chrome/browser/overlays/model/public/infobar_banner",
     "//ios/chrome/browser/safe_browsing/model/tailored_security:infobar_delegates",
@@ -27,7 +27,7 @@ source_set("unit_tests") {
   sources = [ "tailored_security_infobar_banner_overlay_mediator_unittest.mm" ]
   deps = [
     ":tailored_security",
-    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/default",
     "//ios/chrome/browser/overlays/model/public/infobar_banner",

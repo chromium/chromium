@@ -41,7 +41,7 @@ source_set("unit_tests") {
     "//components/url_formatter",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/credential_provider_promo/model:features",
-    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/default",
     "//ios/chrome/browser/overlays/model/public/infobar_banner",

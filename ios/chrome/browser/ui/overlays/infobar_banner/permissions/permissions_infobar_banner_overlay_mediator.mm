@@ -6,8 +6,8 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/infobars/core/infobar.h"
-#import "ios/chrome/browser/infobars/infobar_ios.h"
-#import "ios/chrome/browser/infobars/overlays/infobar_overlay_type.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
+#import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_type.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/permissions/model/permissions_infobar_delegate.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"

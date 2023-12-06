@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/overlays/infobar_banner/permissions/permissions_infobar_banner_overlay_mediator.h"
 
-#import "ios/chrome/browser/infobars/infobar_ios.h"
-#import "ios/chrome/browser/infobars/infobar_type.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
+#import "ios/chrome/browser/infobars/model/infobar_type.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/infobar_banner/infobar_banner_overlay_responses.h"
 #import "ios/chrome/browser/overlays/model/test/fake_overlay_request_callback_installer.h"

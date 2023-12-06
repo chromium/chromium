@@ -32,7 +32,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/sync_device_info",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/default",
     "//ios/chrome/browser/shared/model/browser/test:test_support",

@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/overlays/infobar_banner/sync_error/sync_error_infobar_banner_overlay_mediator.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/infobars/infobar_ios.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_error_infobar_delegate.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"

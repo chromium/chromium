@@ -6,8 +6,8 @@
 
 #import "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
 #import "components/infobars/core/infobar.h"
-#import "ios/chrome/browser/infobars/infobar_ios.h"
-#import "ios/chrome/browser/infobars/overlays/infobar_overlay_type.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
+#import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_type.h"
 #import "ios/chrome/browser/overlays/model/public/common/infobars/infobar_overlay_request_config.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"

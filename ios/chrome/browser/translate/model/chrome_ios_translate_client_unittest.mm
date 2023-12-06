@@ -18,7 +18,7 @@
 #import "components/translate/core/language_detection/language_detection_model.h"
 #import "components/translate/ios/browser/language_detection_model_service.h"
 #import "components/translate/ios/browser/translate_java_script_feature.h"
-#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/language/model/language_model_manager_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"

@@ -5,7 +5,7 @@ include_rules = [
   "+ios/chrome/browser/feature_engagement/model",
   "+ios/chrome/browser/first_run/model",
   "+ios/chrome/browser/geolocation/model",
-  "+ios/chrome/browser/infobars",
+  "+ios/chrome/browser/infobars/model",
   "+ios/chrome/browser/mailto_handler/model",
   "+ios/chrome/browser/intents",
   "+ios/chrome/browser/main/model",

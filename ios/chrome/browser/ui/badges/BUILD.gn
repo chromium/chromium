@@ -11,7 +11,7 @@ source_set("public") {
     "badges_histograms.h",
     "badges_histograms.mm",
   ]
-  deps = [ "//ios/chrome/browser/infobars:badge_state_public" ]
+  deps = [ "//ios/chrome/browser/infobars/model:badge_state_public" ]
 }
 
 source_set("util") {
@@ -27,7 +27,7 @@ source_set("util") {
     "//components/password_manager/core/common",
     "//components/strings",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/infobars:public",
+    "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ui/base",
   ]
@@ -58,11 +58,11 @@ source_set("badges") {
     "//components/autofill/core/browser",
     "//components/password_manager/core/common",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/infobars",
-    "//ios/chrome/browser/infobars:badge",
-    "//ios/chrome/browser/infobars:public",
-    "//ios/chrome/browser/infobars/overlays",
-    "//ios/chrome/browser/infobars/overlays:util",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/model:badge",
+    "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/infobars/model/overlays",
+    "//ios/chrome/browser/infobars/model/overlays:util",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/common/infobars",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
@@ -94,10 +94,10 @@ source_set("unit_tests") {
     ":public",
     ":util",
     "//base/test:test_support",
-    "//ios/chrome/browser/infobars",
-    "//ios/chrome/browser/infobars:badge",
-    "//ios/chrome/browser/infobars:badge_state_public",
-    "//ios/chrome/browser/infobars/test",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/model:badge",
+    "//ios/chrome/browser/infobars/model:badge_state_public",
+    "//ios/chrome/browser/infobars/model/test",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/common/infobars",
     "//ios/chrome/browser/overlays/model/test",

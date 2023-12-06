@@ -11,7 +11,7 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
-#import "ios/chrome/browser/infobars/infobar_metrics_recorder.h"
+#import "ios/chrome/browser/infobars/model/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"

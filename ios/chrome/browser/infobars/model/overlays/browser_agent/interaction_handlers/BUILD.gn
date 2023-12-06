@@ -1,0 +1,17 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("interaction_handlers") {
+  friend = [ ":unit_tests" ]
+  sources = [
+    "infobar_interaction_handler.h",
+    "infobar_interaction_handler.mm",
+  ]
+  public_deps = [ "//base" ]
+  deps = [
+    "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/infobars/model/overlays:overlay_type",
+    "//ios/chrome/browser/overlays/model",
+  ]
+}

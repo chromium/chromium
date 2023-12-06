@@ -6,8 +6,8 @@
 #define IOS_CHROME_BROWSER_OVERLAYS_MODEL_PUBLIC_COMMON_INFOBARS_INFOBAR_OVERLAY_REQUEST_CONFIG_H_
 
 #include "base/memory/weak_ptr.h"
-#import "ios/chrome/browser/infobars/infobar_type.h"
-#import "ios/chrome/browser/infobars/overlays/infobar_overlay_type.h"
+#import "ios/chrome/browser/infobars/model/infobar_type.h"
+#import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_type.h"
 #include "ios/chrome/browser/overlays/model/public/overlay_request_config.h"
 
 class InfoBarIOS;

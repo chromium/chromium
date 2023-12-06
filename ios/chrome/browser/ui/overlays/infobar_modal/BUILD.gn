@@ -50,7 +50,7 @@ source_set("unit_tests") {
     ":mediators",
     "//base/test:test_support",
     "//components/infobars/core",
-    "//ios/chrome/browser/infobars/test",
+    "//ios/chrome/browser/infobars/model/test",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/infobar_modal",
     "//ios/chrome/browser/overlays/model/test",

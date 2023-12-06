@@ -202,7 +202,7 @@ source_set("eg_app_support+eg2") {
     "adaptive_toolbar_app_interface.mm",
   ]
   deps = [
-    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/ui/infobars:eg_app_support+eg2",
     "//ios/chrome/test/app:test_support",
     "//ios/testing:nserror_support",

@@ -10,8 +10,8 @@ source_set("default") {
 
   deps = [
     "//components/infobars/core",
-    "//ios/chrome/browser/infobars",
-    "//ios/chrome/browser/infobars/overlays:overlay_type",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/model/overlays:overlay_type",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/common/infobars",
   ]

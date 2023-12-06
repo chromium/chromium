@@ -3,7 +3,7 @@ include_rules = [
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/webdata_services/model",
-  "+ios/chrome/browser/infobars",
+  "+ios/chrome/browser/infobars/model",
 ]
 
 specific_include_rules = {

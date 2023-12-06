@@ -11,7 +11,7 @@
 #import "build/build_config.h"
 #import "components/infobars/core/infobar.h"
 #import "ios/chrome/browser/credential_provider_promo/model/features.h"
-#import "ios/chrome/browser/infobars/infobar_ios.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_response.h"

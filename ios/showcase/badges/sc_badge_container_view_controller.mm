@@ -4,7 +4,7 @@
 
 #import "ios/showcase/badges/sc_badge_container_view_controller.h"
 
-#import "ios/chrome/browser/infobars/badge_state.h"
+#import "ios/chrome/browser/infobars/model/badge_state.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/badges/badge_button.h"
 #import "ios/chrome/browser/ui/badges/badge_button_factory.h"

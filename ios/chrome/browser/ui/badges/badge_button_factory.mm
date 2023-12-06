@@ -9,7 +9,7 @@
 #import "base/notreached.h"
 #import "build/build_config.h"
 #import "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
-#import "ios/chrome/browser/infobars/infobar_ios.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/badges/badge_button.h"
 #import "ios/chrome/browser/ui/badges/badge_constants.h"

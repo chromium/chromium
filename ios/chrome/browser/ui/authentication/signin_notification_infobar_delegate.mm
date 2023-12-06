@@ -15,7 +15,7 @@
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_delegate.h"
 #import "components/infobars/core/infobar_manager.h"
-#import "ios/chrome/browser/infobars/infobar_utils.h"
+#import "ios/chrome/browser/infobars/model/infobar_utils.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"

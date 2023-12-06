@@ -8,7 +8,7 @@
 #import "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "ios/chrome/browser/autofill/model/message/save_card_message_with_links.h"
-#import "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
+#import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_util.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_save_card_modal_consumer.h"

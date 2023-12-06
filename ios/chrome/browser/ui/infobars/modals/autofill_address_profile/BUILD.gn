@@ -18,7 +18,7 @@ source_set("modals") {
     "//components/autofill/core/common:features",
     "//components/strings",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/infobars:public",
+    "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:styler",

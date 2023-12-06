@@ -13,7 +13,7 @@
 #import "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
-#import "ios/chrome/browser/infobars/infobar_ios.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/overlays/model/public/infobar_banner/infobar_banner_overlay_responses.h"
 #import "ios/chrome/browser/overlays/model/public/infobar_banner/save_address_profile_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/test/fake_overlay_request_callback_installer.h"
