@@ -439,7 +439,6 @@ crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test
 ####################
 
 crbug.com/1371306 [ fuchsia fuchsia-board-nelson web-engine-shell ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
-crbug.com/1371306 [ fuchsia fuchsia-board-sherlock web-engine-shell ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
 
 # Flaky tests
 crbug.com/1489477 [ fuchsia fuchsia-board-astro ] conformance/more/conformance/quickCheck* [ Failure ]
@@ -538,7 +537,6 @@ crbug.com/784817 [ mac nvidia-0xfe9 ] conformance/glsl/bugs/init-array-with-loop
 
 ## Mac / M1 / OpenGL ##
 
-crbug.com/1493524 [ mac apple passthrough angle-opengl ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ RetryOnFailure ]
 
 
 ####################
@@ -712,7 +710,6 @@ crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] 
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/limits/gl-max-texture-dimensions.html [ Failure ]
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/misc/shader-precision-format.html [ Failure ]
 
-crbug.com/1481267 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] conformance/textures/misc/texture-size-limit.html [ Failure ]
 
 ###########################
 # Lacros/Wayland failures #
