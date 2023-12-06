@@ -33,6 +33,7 @@
   outline-color: var(--color-button-foreground);
   outline-offset: 2px;
   text-decoration: underline;
+  width: fit-content;
 }
 
 .tab-organization-text-container {

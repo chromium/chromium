@@ -1,9 +1,4 @@
 <style include="tab-organization-shared-style">
-  cr-button {
-    align-self: flex-end;
-    width: fit-content;
-  }
-
   .footer {
     background-color: var(--color-bubble-footer-background);
     display: flex;
@@ -14,6 +9,14 @@
 
   .inline {
     display: inline-block;
+  }
+
+  /* Explicitly provide a hard-coded width for each text block.
+   * This ensures accuracy in the tab-organization-page calculation for
+   * animating bubble height, as text wraps when rendered offscreen.
+   */
+  .tab-organization-body {
+    width: 280px;
   }
 </style>
 
@@ -36,7 +39,7 @@
       <div class="tab-organization-body">
         <b>$i18n{tipTitle}</b> $i18n{tipBody}
       </div>
-      <div class="tab-organization-link" on-click="onTipClick_">
+      <div class="tab-organization-link" tabindex="0" on-click="onTipClick_">
         $i18n{tipAction}
       </div>
     </div>
