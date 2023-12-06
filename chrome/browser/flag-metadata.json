@@ -1745,7 +1745,7 @@
     "name": "disable-process-reuse",
     "owners": [
       "yangsharon@google.com", "alexmos@google.com", "creis@google.com" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 140
   },
   {
     "name": "disable-quick-answers-v2-translation",
@@ -3480,7 +3480,7 @@
     // Note: while password-triggered site isolation launched in M77, it only
     // affected devices above a predefined memory threshold.  This flag is kept
     // around because it allows users of low-memory devices to opt in.
-    "expiry_milestone": 122
+    "expiry_milestone": 140
   },
   {
     "name": "enable-site-per-process",
@@ -5033,7 +5033,7 @@
     // This is useful for isolating additional origins beyond the normal site
     // isolation policy, as well as for diagnosing problems when site isolation
     // only applies to some sites.
-    "expiry_milestone": 122
+    "expiry_milestone": 140
   },
   {
     "name": "isolation-by-default",
@@ -7425,7 +7425,7 @@
     "_comment2": "in https://crbug.com/849815.",
     "name": "site-isolation-trial-opt-out",
     "owners": [ "site-isolation-dev@chromium.org", "alexmos@chromium.org", "creis@chromium.org", "lukasza@chromium.org" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 140
   },
   {
     "name": "skia-graphite",
