@@ -36,10 +36,6 @@ ADC_AUTH_FLAGS = """
 use_application_default_credentials=true
 """
 
-GCLOUD_AUTH_FLAGS = """
-use_gcloud_creds=true
-"""
-
 
 def ClangRevision():
     sys.path.insert(0, os.path.join(CHROMIUM_SRC, "tools", "clang", "scripts"))
@@ -164,8 +160,6 @@ def GenerateReproxyCfg(reproxy_cfg_template, rbe_instance, rbe_project):
     if sys.platform.startswith("win"):
         depsscanner_address += ".exe"
         auth_flags = ADC_AUTH_FLAGS
-    if sys.platform == "darwin":
-        auth_flags = GCLOUD_AUTH_FLAGS
     reproxy_cfg = reproxy_cfg_tmpl.substitute({
         "rbe_instance": rbe_instance,
         "rbe_project": rbe_project,
