@@ -389,7 +389,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     AutocompleteUnrecognizedFieldsTest,
     AutocompleteUnrecognizedFormShown_NoSuitableData_FallbackOptionsNotPresent) {
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile.SetRawInfo(COMPANY_NAME, u"company");
   AddAutofillProfile(profile);
   FormData form = CreateAndAttachAutocompleteUnrecognizedForm();

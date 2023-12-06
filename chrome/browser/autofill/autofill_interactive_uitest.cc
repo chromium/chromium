@@ -732,7 +732,7 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
   }
 
   void CreateTestProfile() {
-    AutofillProfile profile;
+    AutofillProfile profile(AddressCountryCode(kDefaultAddressValues.country));
     test::SetProfileInfo(
         &profile, kDefaultAddressValues.first_name,
         kDefaultAddressValues.middle_name, kDefaultAddressValues.last_name,
@@ -746,7 +746,7 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
   }
 
   void CreateSecondTestProfile() {
-    AutofillProfile profile;
+    AutofillProfile profile(AddressCountryCode("US"));
     test::SetProfileInfo(&profile, "Alice", "M.", "Wonderland",
                          "alice@wonderland.com", "Magic", "333 Cat Queen St.",
                          "Rooftop", "Liliput", "CA", "10003", "US",
@@ -2166,14 +2166,13 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillAfterTranslate) {
 // field, invoke the autofill popup list, select the first profile within the
 // list, and commit to the profile to populate the form.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ComparePhoneNumbers) {
-  AutofillProfile profile;
+  AutofillProfile profile(AddressCountryCode("US"));
   profile.SetRawInfo(NAME_FIRST, u"Bob");
   profile.SetRawInfo(NAME_LAST, u"Smith");
   profile.SetRawInfo(ADDRESS_HOME_LINE1, u"1234 H St.");
   profile.SetRawInfo(ADDRESS_HOME_CITY, u"San Jose");
   profile.SetRawInfo(ADDRESS_HOME_STATE, u"CA");
   profile.SetRawInfo(ADDRESS_HOME_ZIP, u"95110");
-  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
   profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"1-408-555-4567");
   AddTestProfile(browser()->profile(), profile);
 
@@ -2218,7 +2217,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, NoAutofillForCompanyName) {
   std::string addr_line1("1234 H St.");
   std::string company_name("Company X");
 
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile.SetRawInfo(NAME_FIRST, u"Bob");
   profile.SetRawInfo(NAME_LAST, u"Smith");
   profile.SetRawInfo(EMAIL_ADDRESS, u"bsmith@gmail.com");
@@ -2289,7 +2288,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, NoAutofillForReadOnlyFields) {
   std::string addr_line1("1234 H St.");
 
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile.SetRawInfo(NAME_FIRST, u"Bob");
   profile.SetRawInfo(NAME_LAST, u"Smith");
   profile.SetRawInfo(EMAIL_ADDRESS, u"bsmith@gmail.com");
@@ -2358,7 +2357,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
                        MultipleEmailFilledByOneUserGesture) {
   std::string email("bsmith@gmail.com");
 
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile.SetRawInfo(NAME_FIRST, u"Bob");
   profile.SetRawInfo(NAME_LAST, u"Smith");
   profile.SetRawInfo(EMAIL_ADDRESS, ASCIIToUTF16(email));
@@ -2395,7 +2394,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
 
   constexpr int kNumProfiles = 1500;
   for (int i = 0; i < kNumProfiles; i++) {
-    AutofillProfile profile;
+    AutofillProfile profile(AddressCountryCode("US"));
     std::u16string name(base::NumberToString16(i));
     std::u16string email(name + u"@example.com");
     std::u16string street =
@@ -2410,7 +2409,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
     profile.SetRawInfo(ADDRESS_HOME_CITY, city);
     profile.SetRawInfo(ADDRESS_HOME_STATE, u"CA");
     profile.SetRawInfo(ADDRESS_HOME_ZIP, zip);
-    profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
     AddTestProfile(browser()->profile(), profile);
   }
 

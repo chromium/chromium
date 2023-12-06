@@ -103,7 +103,8 @@ class AutofillCounterTest : public InProcessBrowserTest {
   void AddAddress(const std::string& name,
                   const std::string& surname,
                   const std::string& address) {
-    autofill::AutofillProfile profile;
+    autofill::AutofillProfile profile(
+        autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
     std::string id = base::Uuid::GenerateRandomV4().AsLowercaseString();
     address_ids_.push_back(id);
     profile.set_guid(id);

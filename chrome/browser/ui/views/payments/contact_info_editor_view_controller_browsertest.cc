@@ -302,7 +302,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestContactInfoEditorTest,
   incomplete_profile.SetInfo(autofill::NAME_FULL, kNameFull, GetLocale());
   AddAutofillProfile(incomplete_profile);
 
-  autofill::AutofillProfile other_incomplete_profile;
+  autofill::AutofillProfile other_incomplete_profile(
+      autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
   other_incomplete_profile.SetInfo(autofill::NAME_FULL, u"other", GetLocale());
   AddAutofillProfile(other_incomplete_profile);
 

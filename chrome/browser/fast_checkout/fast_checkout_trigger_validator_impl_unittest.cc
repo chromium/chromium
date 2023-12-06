@@ -143,7 +143,8 @@ class FastCheckoutTriggerValidatorTest
   base::HistogramTester histogram_tester_;
 
  private:
-  autofill::AutofillProfile profile_;
+  autofill::AutofillProfile profile_{
+      autofill::i18n_model_definition::kLegacyHierarchyCountryCode};
   autofill::CreditCard credit_card_;
   autofill::FormData form_;
   autofill::TestAutofillClientInjector<MockAutofillClient>

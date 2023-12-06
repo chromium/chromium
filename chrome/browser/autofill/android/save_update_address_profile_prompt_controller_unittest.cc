@@ -81,7 +81,7 @@ class SaveUpdateAddressProfilePromptControllerTest
 
   // Profile with verified data as it is returned from Java.
   AutofillProfile GetFullProfileWithVerifiedData() {
-    AutofillProfile profile;
+    AutofillProfile profile(AddressCountryCode("US"));
     profile.SetRawInfoWithVerificationStatus(NAME_FULL, u"Mona J. Liza",
                                              VerificationStatus::kUserVerified);
     test::SetProfileInfo(&profile, "", "", "", "email@example.com",
@@ -100,9 +100,11 @@ class SaveUpdateAddressProfilePromptControllerTest
   signin::IdentityTestEnvironment identity_test_env_;
   autofill::TestPersonalDataManager test_personal_data_;
   std::unique_ptr<syncer::TestSyncService> sync_service_;
-  raw_ptr<MockSaveUpdateAddressProfilePromptView> prompt_view_;
-  AutofillProfile profile_;
-  AutofillProfile original_profile_;
+  raw_ptr<MockSaveUpdateAddressProfilePromptView> prompt_view_ = nullptr;
+  AutofillProfile profile_{
+      autofill::i18n_model_definition::kLegacyHierarchyCountryCode};
+  AutofillProfile original_profile_{
+      autofill::i18n_model_definition::kLegacyHierarchyCountryCode};
   bool is_update_;
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback>
       decision_callback_;

@@ -971,7 +971,8 @@ class RemoveAutofillTester {
   // Add one profile and two credit cards to the database. One credit card has a
   // web origin and the other has a Chrome origin.
   void AddProfilesAndCards() {
-    autofill::AutofillProfile profile;
+    autofill::AutofillProfile profile(
+        autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
     profile.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
     profile.SetRawInfo(autofill::NAME_FIRST, u"Bob");
     profile.SetRawInfo(autofill::NAME_LAST, u"Smith");

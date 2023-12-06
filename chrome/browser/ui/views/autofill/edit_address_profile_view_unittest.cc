@@ -81,7 +81,8 @@ class EditAddressProfileViewTest : public ChromeViewsTestBase {
  private:
   base::test::ScopedFeatureList feature_list_;
   TestingProfile profile_;
-  AutofillProfile address_profile_to_edit_;
+  AutofillProfile address_profile_to_edit_{
+      i18n_model_definition::kLegacyHierarchyCountryCode};
   // This enables uses of TestWebContents.
   content::RenderViewHostTestEnabler test_render_host_factories_;
   std::unique_ptr<content::WebContents> test_web_contents_;
