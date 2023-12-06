@@ -1623,9 +1623,13 @@ if (enable_java_templates) {
         depfile = "$target_gen_dir/$target_name.d"
         outputs = [ invoker.output ]
         inputs = [
-          java_path_for_inputs,
-          _d8_path,
+          "$android_sdk/optional/android.test.base.jar",
+          "$android_sdk/optional/org.apache.http.legacy.jar",
+          "//third_party/jdk/current/bin/java",
           _custom_d8_path,
+          _d8_path,
+          android_sdk_jar,
+          java_path_for_inputs,
         ]
         if (defined(invoker.inputs)) {
           inputs += invoker.inputs

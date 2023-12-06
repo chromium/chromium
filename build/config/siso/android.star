@@ -100,13 +100,6 @@ def __step_config(ctx, step_config):
             "name": "android/dex",
             "command_prefix": "python3 ../../build/android/gyp/dex.py",
             "handler": "android_dex",
-            # TODO(crrev.com/c/4596899): Add Java inputs in GN config.
-            "inputs": [
-                "third_party/jdk/current/bin/java",
-                "third_party/android_sdk/public/platforms/android-34/android.jar",
-                "third_party/android_sdk/public/platforms/android-34/optional/android.test.base.jar",
-                "third_party/android_sdk/public/platforms/android-34/optional/org.apache.http.legacy.jar",
-            ],
             # TODO(crbug.com/1452038): include only required jar, dex files in GN config.
             "indirect_inputs": {
                 "includes": ["*.dex", "*.ijar.jar", "*.turbine.jar"],
