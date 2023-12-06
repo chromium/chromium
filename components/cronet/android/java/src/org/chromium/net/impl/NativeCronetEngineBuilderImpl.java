@@ -10,6 +10,9 @@ import org.chromium.net.ExperimentalCronetEngine;
 import org.chromium.net.ICronetEngineBuilder;
 
 /** Implementation of {@link ICronetEngineBuilder} that builds native Cronet engine. */
+// WARNING: the fully qualified name of this class is hardcoded in the Google Play Services Cronet
+// provider code, which is part of the Google Play Services SDK. This means THIS CLASS CANNOT BE
+// RENAMED, MOVED NOR DELETED without breaking the Google Play Services provider.
 public class NativeCronetEngineBuilderImpl extends CronetEngineBuilderImpl {
     /**
      * Builder for Native Cronet Engine.
