@@ -22,31 +22,6 @@ NSString* const kFormSuggestionAssistButtonPreviousElement = @"previousTap";
 NSString* const kFormSuggestionAssistButtonNextElement = @"nextTap";
 NSString* const kFormSuggestionAssistButtonDone = @"done";
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class FormInputAccessoryAction {
-  kPreviousElement = 0,
-  kNextElement = 1,
-  kDone = 2,
-  kUnknown = 3,
-  kMaxValue = kUnknown,
-};
-
-FormInputAccessoryAction UMAActionForAssistAction(NSString* assistAction) {
-  if ([assistAction
-          isEqualToString:kFormSuggestionAssistButtonPreviousElement]) {
-    return FormInputAccessoryAction::kPreviousElement;
-  }
-  if ([assistAction isEqualToString:kFormSuggestionAssistButtonNextElement]) {
-    return FormInputAccessoryAction::kNextElement;
-  }
-  if ([assistAction isEqualToString:kFormSuggestionAssistButtonDone]) {
-    return FormInputAccessoryAction::kDone;
-  }
-  NOTREACHED();
-  return FormInputAccessoryAction::kUnknown;
-}
-
 }  // namespace
 
 namespace {
@@ -206,9 +181,6 @@ NSArray* FindDescendantToolbarItemsForActionName(
     [[item target] performSelector:[item action] withObject:item];
   } @catch (NSException* exception) {
     NOTREACHED() << exception.debugDescription;
-    UMA_HISTOGRAM_ENUMERATION(
-        "FormInputAccessory.ExecuteFormAssistActionException",
-        UMAActionForAssistAction(actionName));
     return NO;
   }
 #pragma clang diagnostic pop

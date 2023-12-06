@@ -904,16 +904,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.FormInputAccessory.ExecuteFormAssistActionException"
-    enum="FormInputAccessoryAction" expires_after="2022-12-11">
-  <owner>rohitrao@chromium.org</owner>
-  <owner>djean@chromium.org</owner>
-  <summary>
-    Reports exceptions when trying to send a form input accessory action to the
-    virtual keyboard.
-  </summary>
-</histogram>
-
 <histogram name="IOS.Frame.FirstContentfulPaint.MainFrame" units="ms"
     expires_after="2024-05-12">
   <owner>danieltwhite@chromium.org</owner>
