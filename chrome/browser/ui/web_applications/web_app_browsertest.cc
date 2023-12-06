@@ -131,6 +131,9 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/metrics/structured/event_logging_features.h"
 #include "chrome/browser/metrics/structured/test/test_structured_metrics_recorder.h"
+#include "ui/views/test/dialog_test.h"
+#include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/widget/widget.h"
 // TODO(crbug/4925196): enable gn check once it learn about conditional includes
 #include "components/metrics/structured/structured_events.h"  // nogncheck
 #endif
@@ -1076,6 +1079,12 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, InstallInstallableSite) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 class WebAppBrowserCrOSEventsTest : public WebAppBrowserTest {
+ protected:
+  GURL GetUrlWithScreenshots() {
+    return https_server()->GetURL(
+        "/banners/manifest_test_page_screenshots.html");
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       metrics::structured::kAppDiscoveryLogging};
@@ -1094,6 +1103,66 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserCrOSEventsTest,
   auto* provider = WebAppProvider::GetForTest(profile());
   EXPECT_EQ(provider->registrar_unsafe().GetAppShortName(app_id),
             GetInstallableAppName());
+
+  // Installed PWAs should launch in their own window.
+  EXPECT_EQ(provider->registrar_unsafe().GetAppUserDisplayMode(app_id),
+            web_app::mojom::UserDisplayMode::kStandalone);
+
+  // Installed PWAs should have install time set.
+  EXPECT_TRUE(provider->registrar_unsafe().GetAppFirstInstallTime(app_id) >=
+              before_install_time);
+
+  const std::vector<metrics::structured::Event>& events =
+      test_recorder->GetEvents();
+  ASSERT_EQ(events.size(), 3U);
+
+  // Events that should be recorded will be ClickInstallAppFromMenu ->
+  // AppInstallDialogShown -> AppInstallDialogResult (Accepted).
+  cros_events::AppDiscovery_Browser_ClickInstallAppFromMenu event1;
+  event1.SetAppId(app_id);
+
+  EXPECT_EQ(events[0].event_name(), event1.event_name());
+  EXPECT_EQ(events[0].metric_values(), event1.metric_values());
+
+  cros_events::AppDiscovery_Browser_AppInstallDialogShown event2;
+  event2.SetAppId(app_id);
+
+  EXPECT_EQ(events[1].event_name(), event2.event_name());
+  EXPECT_EQ(events[1].metric_values(), event2.metric_values());
+
+  cros_events::AppDiscovery_Browser_AppInstallDialogResult event3;
+  event3.SetAppId(app_id).SetWebAppInstallStatus(
+      static_cast<int64_t>(web_app::WebAppInstallStatus::kAccepted));
+
+  EXPECT_EQ(events[2].event_name(), event3.event_name());
+  EXPECT_EQ(events[2].metric_values(), event3.metric_values());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppBrowserCrOSEventsTest,
+                       DetailedInstallDialogSupport) {
+  auto test_recorder =
+      std::make_unique<metrics::structured::TestStructuredMetricsRecorder>();
+  test_recorder->Initialize();
+
+  base::Time before_install_time = base::Time::Now();
+  NavigateToURLAndWait(browser(), GetUrlWithScreenshots());
+
+  // Wait for the detailed install dialog to show up post install, and accept
+  // it.
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "WebAppDetailedInstallDialog");
+
+  WebAppTestInstallWithOsHooksObserver observer(browser()->profile());
+  observer.BeginListening();
+  WebAppProvider* provider = WebAppProvider::GetForTest(browser()->profile());
+  CHECK(chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA));
+  views::Widget* widget = waiter.WaitIfNeededAndGet();
+  EXPECT_NE(widget, nullptr);
+  views::test::AcceptDialog(widget);
+  const webapps::AppId app_id = observer.Wait();
+
+  EXPECT_EQ(provider->registrar_unsafe().GetAppShortName(app_id),
+            "PWA Bottom Sheet");
 
   // Installed PWAs should launch in their own window.
   EXPECT_EQ(provider->registrar_unsafe().GetAppUserDisplayMode(app_id),
