@@ -86,6 +86,9 @@
   if (!ios::provider::IsChoiceEnabled()) {
     return NO;
   }
+  if (self.appState.initStage == InitStageFirstRun) {
+    return NO;
+  }
   ChromeBrowserState* browserState = self.appState.mainBrowserState;
   if (!browserState) {
     return NO;
