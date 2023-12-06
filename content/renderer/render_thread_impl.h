@@ -126,13 +126,6 @@ class CONTENT_EXPORT RenderThreadImpl
       public viz::mojom::CompositingModeWatcher {
  public:
   static RenderThreadImpl* current();
-  static mojom::RenderMessageFilter* current_render_message_filter();
-  static RendererBlinkPlatformImpl* current_blink_platform_impl();
-
-  static void SetRenderMessageFilterForTesting(
-      mojom::RenderMessageFilter* render_message_filter);
-  static void SetRendererBlinkPlatformImplForTesting(
-      RendererBlinkPlatformImpl* blink_platform_impl);
 
   // Returns the task runner for the main thread where the RenderThread lives.
   static scoped_refptr<base::SingleThreadTaskRunner>

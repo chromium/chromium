@@ -64,8 +64,6 @@ class MockRenderMessageFilterImpl : public mojom::RenderMessageFilter {
 MockRenderThread::MockRenderThread()
     : next_routing_id_(kFirstGeneratedRoutingId),
       mock_render_message_filter_(new MockRenderMessageFilterImpl()) {
-  RenderThreadImpl::SetRenderMessageFilterForTesting(
-      mock_render_message_filter_.get());
 }
 
 MockRenderThread::~MockRenderThread() {

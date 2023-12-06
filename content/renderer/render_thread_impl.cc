@@ -237,14 +237,6 @@ using ::blink::WebSecurityPolicy;
 using ::blink::WebString;
 using ::blink::WebView;
 
-// An implementation of mojom::RenderMessageFilter which can be mocked out
-// for tests which may indirectly send messages over this interface.
-mojom::RenderMessageFilter* g_render_message_filter_for_testing;
-
-// An implementation of RendererBlinkPlatformImpl which can be mocked out
-// for tests.
-RendererBlinkPlatformImpl* g_current_blink_platform_impl_for_testing;
-
 // Keep the global RenderThreadImpl in a TLS slot so it is impossible to access
 // incorrectly from the wrong thread.
 ABSL_CONST_INIT thread_local RenderThreadImpl* render_thread = nullptr;
@@ -438,34 +430,6 @@ bool RenderThreadImpl::HistogramCustomizer::IsAlexaTop10NonGoogleSite(
 // static
 RenderThreadImpl* RenderThreadImpl::current() {
   return render_thread;
-}
-
-// static
-mojom::RenderMessageFilter* RenderThreadImpl::current_render_message_filter() {
-  if (g_render_message_filter_for_testing)
-    return g_render_message_filter_for_testing;
-  DCHECK(current());
-  return current()->render_message_filter();
-}
-
-// static
-RendererBlinkPlatformImpl* RenderThreadImpl::current_blink_platform_impl() {
-  if (g_current_blink_platform_impl_for_testing)
-    return g_current_blink_platform_impl_for_testing;
-  DCHECK(current());
-  return current()->blink_platform_impl();
-}
-
-// static
-void RenderThreadImpl::SetRenderMessageFilterForTesting(
-    mojom::RenderMessageFilter* render_message_filter) {
-  g_render_message_filter_for_testing = render_message_filter;
-}
-
-// static
-void RenderThreadImpl::SetRendererBlinkPlatformImplForTesting(
-    RendererBlinkPlatformImpl* blink_platform_impl) {
-  g_current_blink_platform_impl_for_testing = blink_platform_impl;
 }
 
 // static

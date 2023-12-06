@@ -423,9 +423,6 @@ void RenderViewTest::SetUp() {
   // since we are using a MockRenderThread.
   RenderThreadImpl::RegisterSchemes();
 
-  RenderThreadImpl::SetRendererBlinkPlatformImplForTesting(
-      blink_platform_impl_.Get());
-
   // This check is needed because when run under content_browsertests,
   // ResourceBundle isn't initialized (since we have to use a diferent test
   // suite implementation than for content_unittests). For browser_tests, this
@@ -514,8 +511,6 @@ void RenderViewTest::TearDown() {
   // some new tasks which need to be processed before shutting down WebKit
   // (http://crbug.com/21508).
   base::RunLoop().RunUntilIdle();
-
-  RenderThreadImpl::SetRendererBlinkPlatformImplForTesting(nullptr);
 
 #if BUILDFLAG(IS_WIN)
   ClearDWriteFontProxySenderForTesting();
