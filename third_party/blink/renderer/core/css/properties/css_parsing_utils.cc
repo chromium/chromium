@@ -862,6 +862,7 @@ bool IsGeneratedImage(const CSSValueID id) {
     case CSSValueID::kWebkitGradient:
     case CSSValueID::kWebkitCrossFade:
     case CSSValueID::kPaint:
+    case CSSValueID::kCrossFade:
       return true;
 
     default:
@@ -2883,8 +2884,9 @@ CSSValue* ConsumeIntrinsicSizeLonghand(CSSParserTokenRange& range,
   return list;
 }
 
-static CSSValue* ConsumeCrossFade(CSSParserTokenRange& args,
-                                  const CSSParserContext& context) {
+static CSSValue* ConsumeDeprecatedWebkitCrossFade(
+    CSSParserTokenRange& args,
+    const CSSParserContext& context) {
   CSSValue* from_image_value = ConsumeImageOrNone(args, context);
   if (!from_image_value || !ConsumeCommaIncludingWhitespace(args)) {
     return nullptr;
@@ -2911,7 +2913,66 @@ static CSSValue* ConsumeCrossFade(CSSParserTokenRange& args,
     return nullptr;
   }
   return MakeGarbageCollected<cssvalue::CSSCrossfadeValue>(
-      from_image_value, to_image_value, percentage);
+      /*is_legacy_variant=*/true,
+      HeapVector<std::pair<CSSValue*, CSSPrimitiveValue*>>{
+          {from_image_value, nullptr}, {to_image_value, percentage}});
+}
+
+// https://drafts.csswg.org/css-images-4/#cross-fade-function
+static CSSValue* ConsumeCrossFade(CSSParserTokenRange& args,
+                                  const CSSParserContext& context) {
+  // Parse an arbitrary comma-separated image|color values,
+  // where each image may have a percentage before or after it.
+  HeapVector<std::pair<CSSValue*, CSSPrimitiveValue*>> image_and_percentages;
+  CSSValue* image = nullptr;
+  CSSPrimitiveValue* percentage = nullptr;
+  for (;;) {
+    if (CSSPrimitiveValue* percent_value = ConsumePercent(
+            args, context, CSSPrimitiveValue::ValueRange::kAll)) {
+      if (percentage) {
+        return nullptr;
+      }
+      if (percent_value->IsNumericLiteralValue()) {
+        double val = percent_value->GetDoubleValue();
+        if (!(val >= 0.0 &&
+              val <= 100.0)) {  // Includes checks for NaN and infinities.
+          return nullptr;
+        }
+      }
+      percentage = percent_value;
+      continue;
+    } else if (CSSValue* image_value = ConsumeImage(args, context)) {
+      if (image) {
+        return nullptr;
+      }
+      image = image_value;
+    } else if (CSSValue* color_value = ConsumeColor(args, context)) {
+      if (image) {
+        return nullptr;
+      }
+
+      // Wrap the color in a constant gradient, so that we can treat it as a
+      // gradient in nearly all the remaining code.
+      image =
+          MakeGarbageCollected<cssvalue::CSSConstantGradientValue>(color_value);
+    } else {
+      if (!image) {
+        return nullptr;
+      }
+      image_and_percentages.emplace_back(image, percentage);
+      image = nullptr;
+      percentage = nullptr;
+      if (!ConsumeCommaIncludingWhitespace(args)) {
+        break;
+      }
+    }
+  }
+  if (image_and_percentages.empty()) {
+    return nullptr;
+  }
+
+  return MakeGarbageCollected<cssvalue::CSSCrossfadeValue>(
+      /*is_legacy_variant=*/false, image_and_percentages);
 }
 
 static CSSValue* ConsumePaint(CSSParserTokenRange& args,
@@ -3004,6 +3065,9 @@ static CSSValue* ConsumeGeneratedImage(CSSParserTokenRange& range,
   } else if (id == CSSValueID::kRepeatingConicGradient) {
     result = ConsumeConicGradient(args, context, cssvalue::kRepeating);
   } else if (id == CSSValueID::kWebkitCrossFade) {
+    result = ConsumeDeprecatedWebkitCrossFade(args, context);
+  } else if (RuntimeEnabledFeatures::CSSCrossFadeEnabled() &&
+             id == CSSValueID::kCrossFade) {
     result = ConsumeCrossFade(args, context);
   } else if (id == CSSValueID::kPaint) {
     result = context.IsSecureContext() ? ConsumePaint(args, context) : nullptr;

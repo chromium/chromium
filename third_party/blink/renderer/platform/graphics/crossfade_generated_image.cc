@@ -31,22 +31,14 @@
 
 namespace blink {
 
-CrossfadeGeneratedImage::CrossfadeGeneratedImage(
-    scoped_refptr<Image> from_image,
-    scoped_refptr<Image> to_image,
-    float percentage,
-    const gfx::SizeF& size)
-    : GeneratedImage(size),
-      from_image_(std::move(from_image)),
-      to_image_(std::move(to_image)),
-      percentage_(percentage) {}
+CrossfadeGeneratedImage::CrossfadeGeneratedImage(Vector<WeightedImage> images,
+                                                 const gfx::SizeF& size)
+    : GeneratedImage(size), images_(std::move(images)) {}
 
 void CrossfadeGeneratedImage::DrawCrossfade(
     cc::PaintCanvas* canvas,
     const cc::PaintFlags& flags,
     const ImageDrawOptions& draw_options) {
-  gfx::RectF from_image_rect(gfx::SizeF(from_image_->Size()));
-  gfx::RectF to_image_rect(gfx::SizeF(to_image_->Size()));
   gfx::RectF dest_rect(size_);
 
   // TODO(junov): The various effects encoded into paint should probably be
@@ -59,19 +51,25 @@ void CrossfadeGeneratedImage::DrawCrossfade(
   canvas->saveLayer(layer_flags);
 
   cc::PaintFlags image_flags(flags);
-  image_flags.setBlendMode(SkBlendMode::kSrcOver);
-  image_flags.setColor(ScaleAlpha(flags.getColor(), 1 - percentage_));
-  // TODO(junov): This code should probably be propagating the
-  // RespectImageOrientationEnum from CrossfadeGeneratedImage::draw(). Code
-  // was written this way during refactoring to avoid modifying existing
-  // behavior, but this warrants further investigation. crbug.com/472634
-  ImageDrawOptions from_draw_options(draw_options);
-  from_draw_options.respect_orientation = kDoNotRespectImageOrientation;
-  from_image_->Draw(canvas, image_flags, dest_rect, from_image_rect,
-                    from_draw_options);
-  image_flags.setBlendMode(SkBlendMode::kPlus);
-  image_flags.setColor(ScaleAlpha(flags.getColor(), percentage_));
-  to_image_->Draw(canvas, image_flags, dest_rect, to_image_rect, draw_options);
+
+  for (unsigned image_idx = 0; image_idx < images_.size(); ++image_idx) {
+    ImageDrawOptions image_draw_options(draw_options);
+    if (image_idx == 0) {
+      // TODO(junov): This code should probably be propagating the
+      // RespectImageOrientationEnum from CrossfadeGeneratedImage::draw(). Code
+      // was written this way during refactoring to avoid modifying existing
+      // behavior, but this warrants further investigation. crbug.com/472634
+      image_draw_options.respect_orientation = kDoNotRespectImageOrientation;
+      image_flags.setBlendMode(SkBlendMode::kSrcOver);
+    } else {
+      image_flags.setBlendMode(SkBlendMode::kPlus);
+    }
+    const WeightedImage& image = images_[image_idx];
+    image_flags.setColor(ScaleAlpha(flags.getColor(), image.weight));
+    image.image->Draw(canvas, image_flags, dest_rect,
+                      gfx::RectF(gfx::SizeF(image.image->Size())),
+                      image_draw_options);
+  }
 }
 
 void CrossfadeGeneratedImage::Draw(cc::PaintCanvas* canvas,
@@ -79,9 +77,12 @@ void CrossfadeGeneratedImage::Draw(cc::PaintCanvas* canvas,
                                    const gfx::RectF& dst_rect,
                                    const gfx::RectF& src_rect,
                                    const ImageDrawOptions& draw_options) {
-  // Draw nothing if either of the images hasn't loaded yet.
-  if (from_image_ == Image::NullImage() || to_image_ == Image::NullImage())
-    return;
+  // Draw nothing if any of the images have not loaded yet.
+  for (const WeightedImage& image : images_) {
+    if (image.image == Image::NullImage()) {
+      return;
+    }
+  }
 
   PaintCanvasAutoRestore ar(canvas, true);
   SkRect src_sk_rect = gfx::RectFToSkRect(src_rect);
@@ -95,8 +96,11 @@ void CrossfadeGeneratedImage::DrawTile(cc::PaintCanvas* canvas,
                                        const gfx::RectF& src_rect,
                                        const ImageDrawOptions& options) {
   // Draw nothing if either of the images hasn't loaded yet.
-  if (from_image_ == Image::NullImage() || to_image_ == Image::NullImage())
-    return;
+  for (const WeightedImage& image : images_) {
+    if (image.image == Image::NullImage()) {
+      return;
+    }
+  }
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   DrawCrossfade(canvas, flags, options);

@@ -876,6 +876,12 @@
       status: "stable",
     },
     {
+      // Unprefixed cross-fade() (in addition to the existing -webkit-cross-fade()).
+      // https://drafts.csswg.org/css-images-4/#cross-fade-function
+      name: "CSSCrossFade",
+      status: "experimental",
+    },
+    {
       name: "CSSDisplayAnimation",
       status: "stable",
     },
