@@ -151,7 +151,6 @@ void ScreenAIServiceRouter::LaunchIfNotRunning() {
   auto* screen_ai_install = ScreenAIInstallState::GetInstance();
   // Callers of the service should ensure that the component is downloaded
   // before promising it to the users and triggering its launch.
-  // TODO(crbug.com/1443345): Add tests to cover this case.
   CHECK(screen_ai_install->IsComponentAvailable())
       << "ScreenAI service launch triggered when component is not "
          "available.";

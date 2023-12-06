@@ -202,13 +202,6 @@ void ScreenAIInstallState::SetState(State state) {
     return;
   }
 
-  // Switching state from `Ready` to `Fail` is unexpected and requires
-  // investigation.
-  // TODO(crbug.com/1443345): Remove after verifying this case does not happen.
-  if (state == State::kFailed && state_ == State::kReady) {
-    base::debug::DumpWithoutCrashing();
-  }
-
   state_ = state;
   for (ScreenAIInstallState::Observer* observer : observers_) {
     observer->StateChanged(state_);
