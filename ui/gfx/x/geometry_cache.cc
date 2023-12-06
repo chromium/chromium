@@ -23,23 +23,15 @@ GeometryCache::GeometryCache(Connection* connection,
   window_events_ =
       connection_->ScopedSelectEvent(window_, EventMask::StructureNotify);
 
-  // Unretained is safe since we disconnect the futures in the destructor.
   parent_future_ = connection_->QueryTree(window_);
   parent_future_.OnResponse(base::BindOnce(&GeometryCache::OnQueryTreeResponse,
-                                           base::Unretained(this)));
+                                           weak_ptr_factory_.GetWeakPtr()));
   geometry_future_ = connection_->GetGeometry(window_);
   geometry_future_.OnResponse(base::BindOnce(
-      &GeometryCache::OnGetGeometryResponse, base::Unretained(this)));
+      &GeometryCache::OnGetGeometryResponse, weak_ptr_factory_.GetWeakPtr()));
 }
 
-GeometryCache::~GeometryCache() {
-  if (!have_parent_) {
-    parent_future_.IgnoreError();
-  }
-  if (!have_geometry_) {
-    geometry_future_.IgnoreError();
-  }
-}
+GeometryCache::~GeometryCache() = default;
 
 gfx::Rect GeometryCache::GetBoundsPx() {
   if (!have_parent_) {
@@ -78,11 +70,10 @@ void GeometryCache::OnParentChanged(Window parent, const gfx::Point& position) {
   if (parent == Window::None) {
     parent_.reset();
   } else if (!parent_ || parent_->window_ != parent) {
-    // Unretained is safe since we own `parent_`.
     parent_ = std::make_unique<GeometryCache>(
         connection_, parent,
         base::BindRepeating(&GeometryCache::OnParentGeometryChanged,
-                            base::Unretained(this)));
+                            weak_ptr_factory_.GetWeakPtr()));
   } else {
     parent_changed = false;
   }

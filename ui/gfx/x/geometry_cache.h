@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/x/connection.h"
@@ -61,6 +62,8 @@ class COMPONENT_EXPORT(X11) GeometryCache final : public EventObserver {
   ScopedEventSelector window_events_;
 
   base::ScopedObservation<Connection, EventObserver> scoped_observation_{this};
+
+  base::WeakPtrFactory<GeometryCache> weak_ptr_factory_{this};
 };
 
 }  // namespace x11
