@@ -8,6 +8,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/uuid.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
+#import "components/autofill/core/browser/data_model/autofill_i18n_api.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
@@ -73,7 +74,8 @@ class SaveAddressProfileInfobarModalOverlayRequestCallbackInstallerTest
   }
 
  protected:
-  autofill::AutofillProfile profile_;
+  autofill::AutofillProfile profile_{
+      autofill::i18n_model_definition::kLegacyHierarchyCountryCode};
   web::FakeWebState web_state_;
   InfoBarIOS* infobar_ = nullptr;
   OverlayRequest* request_ = nullptr;

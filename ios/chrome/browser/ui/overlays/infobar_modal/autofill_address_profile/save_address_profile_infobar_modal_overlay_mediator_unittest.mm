@@ -113,7 +113,8 @@ TEST_F(SaveAddressProfileInfobarModalOverlayMediatorTest, SetUpEditConsumer) {
 // Tests that calling saveEditedProfileWithProfileData: triggers a
 // EditedProfileSaveAction response.
 TEST_F(SaveAddressProfileInfobarModalOverlayMediatorTest, EditAction) {
-  autofill::AutofillProfile profile;
+  autofill::AutofillProfile profile(
+      autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
   EXPECT_CALL(callback_receiver_,
               DispatchCallback(request_.get(),
                                EditedProfileSaveAction::ResponseSupport()));

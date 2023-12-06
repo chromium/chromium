@@ -34,20 +34,20 @@ class AutofillSaveUpdateAddressProfileDelegateIOSTest : public testing::Test {
       absl::optional<std::u16string> email = absl::nullopt,
       bool is_migration_to_account = false,
       bool is_account_profile = false) {
-    profile_ = test::GetFullProfile();
+    profile_ = std::make_unique<AutofillProfile>(test::GetFullProfile());
     if (is_account_profile) {
-      profile_.set_source_for_testing(
+      profile_->set_source_for_testing(
           autofill::AutofillProfile::Source::kAccount);
     }
     return std::make_unique<AutofillSaveUpdateAddressProfileDelegateIOS>(
-        profile_, original_profile, email,
+        *profile_, original_profile, email,
         /*locale=*/"en-US",
         AutofillClient::SaveAddressProfilePromptOptions{
             .is_migration_to_account = is_migration_to_account},
         callback_.Get());
   }
 
-  AutofillProfile profile_;
+  std::unique_ptr<AutofillProfile> profile_;
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback>
       callback_;
 };

@@ -36,7 +36,8 @@ class SaveAddressProfileInfobarModalInteractionHandlerTest
  protected:
   SaveAddressProfileInfobarModalInteractionHandler handler_;
   MockAutofillSaveUpdateAddressProfileDelegateIOSFactory delegate_factory_;
-  autofill::AutofillProfile profile_;
+  autofill::AutofillProfile profile_{
+      autofill::i18n_model_definition::kLegacyHierarchyCountryCode};
   std::unique_ptr<InfoBarIOS> infobar_;
 };
 

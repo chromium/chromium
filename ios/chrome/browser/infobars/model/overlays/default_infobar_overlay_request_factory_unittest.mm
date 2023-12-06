@@ -7,6 +7,7 @@
 #import "base/feature_list.h"
 #import "base/uuid.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
+#import "components/autofill/core/browser/data_model/autofill_i18n_api.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/infobars/core/infobar.h"
@@ -145,7 +146,8 @@ TEST_F(DefaultInfobarOverlayRequestFactoryTest, Translate) {
 
 // Tests that the factory creates a save address profile request.
 TEST_F(DefaultInfobarOverlayRequestFactoryTest, SaveAddressProfile) {
-  autofill::AutofillProfile profile;
+  autofill::AutofillProfile profile(
+      autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
   InfoBarIOS infobar(
       InfobarType::kInfobarTypeSaveAutofillAddressProfile,
       MockAutofillSaveUpdateAddressProfileDelegateIOSFactory::

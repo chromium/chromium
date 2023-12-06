@@ -39,7 +39,8 @@ class MockAutofillSaveUpdateAddressProfileDelegateIOSFactory {
       autofill::AutofillProfile profile);
 
  private:
-  autofill::AutofillProfile profile_;
+  autofill::AutofillProfile profile_{
+      autofill::i18n_model_definition::kLegacyHierarchyCountryCode};
 };
 
 #endif  // IOS_CHROME_BROWSER_INFOBARS_MODEL_OVERLAYS_BROWSER_AGENT_INTERACTION_HANDLERS_TEST_MOCK_AUTOFILL_SAVE_UPDATE_ADDRESS_PROFILE_DELEGATE_IOS_H_
