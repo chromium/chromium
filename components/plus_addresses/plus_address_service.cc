@@ -111,36 +111,6 @@ bool PlusAddressService::IsPlusAddress(std::string potential_plus_address) {
   return plus_addresses_.contains(potential_plus_address);
 }
 
-void PlusAddressService::OfferPlusAddressCreation(
-    const url::Origin& origin,
-    PlusAddressCallback callback) {
-  if (!is_enabled()) {
-    return;
-  }
-  // Check the local mapping before issuing a network request.
-  if (absl::optional<std::string> plus_address = GetPlusAddress(origin);
-      plus_address) {
-    std::move(callback).Run(plus_address.value());
-    return;
-  }
-  plus_address_client_.CreatePlusAddress(
-      origin,
-      // On receiving the PlusAddress...
-      base::BindOnce(
-          // ... first send it back to Autofill
-          [](PlusAddressCallback callback, const std::string& plus_address) {
-            std::move(callback).Run(plus_address);
-            return plus_address;
-          },
-          std::move(callback))
-          // ... then save it in this service.
-          .Then(base::BindOnce(
-              &PlusAddressService::SavePlusAddress,
-              // base::Unretained is safe here since PlusAddressService owns
-              // the PlusAddressClient and they will have the same lifetime.
-              base::Unretained(this), origin)));
-}
-
 void PlusAddressService::ReservePlusAddress(
     const url::Origin& origin,
     PlusAddressRequestCallback on_completed) {

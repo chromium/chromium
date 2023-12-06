@@ -584,7 +584,6 @@ after discussions on the right group.
   </group>
   <group name="PlusAddresses" hidden="true">
     <sender name="PlusAddresses">
-      <annotation id="plus_address_creation"/>
       <annotation id="get_all_plus_addresses"/>
       <annotation id="plus_address_reservation"/>
       <annotation id="plus_address_confirmation"/>

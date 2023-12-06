@@ -126,12 +126,9 @@ TEST_F(PlusAddressServiceTest, NoAccountPlusAddressCreation) {
   const url::Origin no_subdomain_origin =
       url::Origin::Create(GURL("https://test.example"));
 
-  base::MockOnceCallback<void(const std::string&)> offer_callback;
   base::MockOnceCallback<void(const PlusProfileOrError&)> reserve_callback;
   base::MockOnceCallback<void(const PlusProfileOrError&)> confirm_callback;
   // Ensure that the lambdas aren't called since there is no signed-in account.
-  EXPECT_CALL(offer_callback, Run).Times(0);
-  service.OfferPlusAddressCreation(no_subdomain_origin, offer_callback.Get());
   EXPECT_CALL(reserve_callback, Run).Times(0);
   service.ReservePlusAddress(no_subdomain_origin, reserve_callback.Get());
   EXPECT_CALL(confirm_callback, Run).Times(0);
@@ -149,12 +146,9 @@ TEST_F(PlusAddressServiceTest, AbortPlusAddressCreation) {
   const url::Origin no_subdomain_origin =
       url::Origin::Create(GURL("https://test.example"));
 
-  base::MockOnceCallback<void(const std::string&)> offer_callback;
   base::MockOnceCallback<void(const PlusProfileOrError&)> reserve_callback;
   base::MockOnceCallback<void(const PlusProfileOrError&)> confirm_callback;
   // Ensure that the lambdas aren't called since there is no signed-in account.
-  EXPECT_CALL(offer_callback, Run).Times(0);
-  service.OfferPlusAddressCreation(no_subdomain_origin, offer_callback.Get());
   EXPECT_CALL(reserve_callback, Run).Times(0);
   service.ReservePlusAddress(no_subdomain_origin, reserve_callback.Get());
   EXPECT_CALL(confirm_callback, Run).Times(0);
@@ -198,44 +192,6 @@ class PlusAddressServiceRequestsTest : public ::testing::Test {
   data_decoder::test::InProcessDataDecoder decoder_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-TEST_F(PlusAddressServiceRequestsTest, OfferPlusAddressCreation) {
-  signin::IdentityTestEnvironment identity_test_env;
-  identity_test_env.MakeAccountAvailable("plus@plus.plus",
-                                         {signin::ConsentLevel::kSignin});
-  identity_test_env.SetAutomaticIssueOfAccessTokens(true);
-
-  PlusAddressService service(
-      identity_test_env.identity_manager(), nullptr,
-      PlusAddressClient(identity_test_env.identity_manager(),
-                        test_shared_loader_factory));
-
-  const url::Origin no_subdomain_origin =
-      url::Origin::Create(GURL("https://test.example"));
-  const std::string site = "test.example";
-  const std::string plus_address = "plus+remote@plus.plus";
-
-  base::test::TestFuture<const std::string&> future;
-  service.OfferPlusAddressCreation(no_subdomain_origin, future.GetCallback());
-
-  // Check that the future callback is blocked and unblock it.
-  ASSERT_FALSE(future.IsReady());
-  test_url_loader_factory.SimulateResponseForPendingRequest(
-      plus_profiles_endpoint,
-      test::MakeCreationResponse(
-          PlusProfile({.facet = site, .plus_address = plus_address})));
-  ASSERT_TRUE(future.IsReady());
-  EXPECT_EQ(future.Get(), plus_address);
-
-  // Assert that ensuing calls to the same facet do not make a network request.
-  const url::Origin subdomain_origin =
-      url::Origin::Create(GURL("https://subdomain.test.example"));
-  base::test::TestFuture<const std::string&> second_future;
-  service.OfferPlusAddressCreation(no_subdomain_origin,
-                                   second_future.GetCallback());
-  ASSERT_TRUE(second_future.IsReady());
-  EXPECT_EQ(second_future.Get(), plus_address);
-}
 
 TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_ReturnsUnconfirmed) {
   signin::IdentityTestEnvironment identity_test_env;

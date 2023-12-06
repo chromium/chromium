@@ -53,14 +53,6 @@ class PlusAddressClient {
   PlusAddressClient(PlusAddressClient&&);
   PlusAddressClient& operator=(PlusAddressClient&&);
 
-  // Initiates a request to get a plus address for use on `origin` and only
-  // runs `callback` with a plus address if the request to the server
-  // completes successfully and returns the expected response.
-  //
-  // TODO (crbug.com/1467623): Should callback be run if the request fails?
-  void CreatePlusAddress(const url::Origin& origin,
-                         PlusAddressCallback callback);
-
   // Initiates a request to get a plus address for use on `origin` and runs
   // `on_completed` when the request is completed.
   void ReservePlusAddress(const url::Origin& origin,
@@ -87,9 +79,6 @@ class PlusAddressClient {
  private:
   using UrlLoaderList = std::list<std::unique_ptr<network::SimpleURLLoader>>;
 
-  void CreatePlusAddressInternal(const url::Origin& origin,
-                                 PlusAddressCallback callback,
-                                 absl::optional<std::string> auth_token);
   void ReservePlusAddressInternal(const url::Origin& origin,
                                   PlusAddressRequestCallback on_completed,
                                   absl::optional<std::string> auth_token);
@@ -99,12 +88,6 @@ class PlusAddressClient {
                                   absl::optional<std::string> auth_token);
   void GetAllPlusAddressesInternal(PlusAddressMapCallback callback,
                                    absl::optional<std::string> auth_token);
-
-  // Only used by CreatePlusAddress.
-  void OnCreatePlusAddressComplete(UrlLoaderList::iterator it,
-                                   base::Time request_start,
-                                   PlusAddressCallback on_completed,
-                                   std::unique_ptr<std::string> response);
 
   // This is shared by the Reserve and Confirm PlusAddress methods since
   // they both use `loaders_for_creation_` and have the same return type.

@@ -67,14 +67,6 @@ class PlusAddressService : public KeyedService,
   // Check whether the passed-in string is a known plus address.
   bool IsPlusAddress(std::string potential_plus_address);
 
-  // Asks the PlusAddressClient to get a plus address for use on `origin` and on
-  // completion: runs`callback` with the created plus address, and stores the
-  // plus address in this service.
-  // Virtual to allow overriding the behavior in tests.
-  // TODO (crbug.com/1467623): Remove this once dependencies are migrated away.
-  virtual void OfferPlusAddressCreation(const url::Origin& origin,
-                                        PlusAddressCallback callback);
-
   // Asks the PlusAddressClient to reserve a plus address for use on `origin`,
   // and returns the plus address via `on_completed`.
   //
