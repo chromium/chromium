@@ -138,6 +138,10 @@ tast_disabled_tests_from_chrome_all = [
   # b/314989173
   "platform.FlexHWIS@reven-vmtest",
 
+  # b/288933829, matched with CrOS exoneration (as of Dec 5)
+  "inputs.VirtualKeyboardHandwriting.floating_lacros@jacuzzi",
+  "inputs.VirtualKeyboardHandwriting.floating_lacros@octopus",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
