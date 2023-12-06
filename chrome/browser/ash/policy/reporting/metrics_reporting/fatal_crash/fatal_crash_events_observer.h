@@ -9,6 +9,7 @@
 #include <queue>
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -95,6 +96,11 @@ class FatalCrashEventsObserver
       scoped_refptr<base::SequencedTaskRunner> reported_local_id_io_task_runner,
       scoped_refptr<base::SequencedTaskRunner>
           uploaded_crash_info_io_task_runner);
+
+  // Get allowed crash types.
+  static const base::flat_set<
+      ::ash::cros_healthd::mojom::CrashEventInfo::CrashType>&
+  GetAllowedCrashTypes();
 
   MetricData FillFatalCrashTelemetry(
       const ::ash::cros_healthd::mojom::CrashEventInfoPtr& info);

@@ -19,6 +19,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
@@ -111,6 +112,10 @@ class FatalCrashEventsObserverTestBase : public ::ash::NoSessionAshTestBase {
   // param.
   static CrashEventInfoPtr NewCrashEventInfo(bool is_uploaded) {
     auto crash_event_info = CrashEventInfo::New();
+    // Only allowed crash types are reported. Make "kernel" the default type for
+    // test purposes.
+    crash_event_info->crash_type = CrashEventInfo::CrashType::kKernel;
+
     if (is_uploaded) {
       crash_event_info->upload_info = CrashUploadInfo::New();
       crash_event_info->upload_info->crash_report_id = kCrashReportId;
@@ -254,6 +259,62 @@ class FatalCrashEventsObserverTestBase : public ::ash::NoSessionAshTestBase {
   ::ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
 };
 
+// Tests `FatalCrashEventsObserver` passing the type field with `type` and
+// `uploaded` being parameterized.
+class FatalCrashEventsObserverTypeFieldTest
+    : public FatalCrashEventsObserverTestBase,
+      public ::testing::WithParamInterface<
+          std::tuple</*type=*/CrashEventInfo::CrashType, /*uploaded=*/bool>> {
+ public:
+  FatalCrashEventsObserverTypeFieldTest(
+      const FatalCrashEventsObserverTypeFieldTest&) = delete;
+  FatalCrashEventsObserverTypeFieldTest& operator=(
+      const FatalCrashEventsObserverTypeFieldTest&) = delete;
+
+ protected:
+  FatalCrashEventsObserverTypeFieldTest() = default;
+  ~FatalCrashEventsObserverTypeFieldTest() override = default;
+
+  CrashEventInfo::CrashType type() const { return std::get<0>(GetParam()); }
+  bool is_uploaded() const { return std::get<1>(GetParam()); }
+};
+
+TEST_P(FatalCrashEventsObserverTypeFieldTest, FieldTypePassedThrough) {
+  auto crash_event_info = NewCrashEventInfo(is_uploaded());
+  crash_event_info->crash_type = type();
+
+  const auto fatal_crash_telemetry =
+      WaitForFatalCrashTelemetry(std::move(crash_event_info));
+  ASSERT_TRUE(fatal_crash_telemetry.has_type());
+  FatalCrashTelemetry::CrashType expected_crash_type;
+  switch (type()) {
+    case CrashEventInfo::CrashType::kKernel:
+      expected_crash_type = FatalCrashTelemetry::CRASH_TYPE_KERNEL;
+      break;
+    case CrashEventInfo::CrashType::kEmbeddedController:
+      expected_crash_type = FatalCrashTelemetry::CRASH_TYPE_EMBEDDED_CONTROLLER;
+      break;
+    default:  // Crash types that are not tested but should be tested.
+      NOTREACHED_NORETURN() << "Encountered untested crash type " << type();
+  }
+  EXPECT_EQ(fatal_crash_telemetry.type(), expected_crash_type);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    FatalCrashEventsObserverTypeFieldTests,
+    FatalCrashEventsObserverTypeFieldTest,
+    ::testing::Combine(
+        ::testing::ValuesIn(
+            FatalCrashEventsObserver::TestEnvironment::GetAllowedCrashTypes()),
+        ::testing::Bool()),
+    [](const testing::TestParamInfo<
+        FatalCrashEventsObserverTypeFieldTest::ParamType>& info) {
+      std::ostringstream ss;
+      ss << "type_" << std::get<0>(info.param) << '_'
+         << (std::get<1>(info.param) ? "uploaded" : "unuploaded");
+      return ss.str();
+    });
+
 // Tests `FatalCrashEventsObserver` with `uploaded` being parameterized.
 class FatalCrashEventsObserverTest
     : public FatalCrashEventsObserverTestBase,
@@ -269,17 +330,6 @@ class FatalCrashEventsObserverTest
 
   bool is_uploaded() const { return GetParam(); }
 };
-
-TEST_P(FatalCrashEventsObserverTest, FieldTypePassedThrough) {
-  auto crash_event_info = NewCrashEventInfo(is_uploaded());
-  crash_event_info->crash_type = CrashEventInfo::CrashType::kKernel;
-
-  const auto fatal_crash_telemetry =
-      WaitForFatalCrashTelemetry(std::move(crash_event_info));
-  ASSERT_TRUE(fatal_crash_telemetry.has_type());
-  EXPECT_EQ(fatal_crash_telemetry.type(),
-            FatalCrashTelemetry::CRASH_TYPE_KERNEL);
-}
 
 TEST_P(FatalCrashEventsObserverTest, FieldLocalIdPassedThrough) {
   static constexpr std::string_view kLocalId = "local ID a";
@@ -382,6 +432,28 @@ TEST_P(FatalCrashEventsObserverTest, FieldUserEmailAbsentIfUnaffiliated) {
   const auto fatal_crash_telemetry =
       WaitForFatalCrashTelemetry(std::move(crash_event_info));
   EXPECT_FALSE(fatal_crash_telemetry.has_affiliated_user());
+}
+
+TEST_P(FatalCrashEventsObserverTest, FieldUnknownTypeSkipped) {
+  auto fatal_crash_events_observer = CreateAndEnableFatalCrashEventsObserver();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(
+      FatalCrashEventsObserver::TestEnvironment::GetTestSettings(
+          *fatal_crash_events_observer)
+          .sequence_checker);
+
+  base::test::TestFuture<CrashEventInfo::CrashType> result;
+  FatalCrashEventsObserver::TestEnvironment::GetTestSettings(
+      *fatal_crash_events_observer)
+      .skipped_uninteresting_crash_type_callback =
+      result.GetRepeatingCallback();
+
+  auto crash_event_info = NewCrashEventInfo(is_uploaded());
+  crash_event_info->crash_type = CrashEventInfo::CrashType::kUnknown;
+  FakeCrosHealthd::Get()->EmitEventForCategory(
+      EventCategoryEnum::kCrash,
+      EventInfo::NewCrashEventInfo(std::move(crash_event_info)));
+
+  EXPECT_EQ(result.Take(), CrashEventInfo::CrashType::kUnknown);
 }
 
 TEST_P(FatalCrashEventsObserverTest, ObserveMultipleEvents) {

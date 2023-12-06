@@ -125,6 +125,12 @@ void FatalCrashEventsObserver::TestEnvironment::
   run_loop.Run();
 }
 
+// static
+const base::flat_set<::ash::cros_healthd::mojom::CrashEventInfo::CrashType>&
+FatalCrashEventsObserver::TestEnvironment::GetAllowedCrashTypes() {
+  return FatalCrashEventsObserver::GetAllowedCrashTypes();
+}
+
 FatalCrashEventsObserver::TestEnvironment::SaveFilePathsProvider::
     SaveFilePathsProvider() = default;
 FatalCrashEventsObserver::TestEnvironment::SaveFilePathsProvider::

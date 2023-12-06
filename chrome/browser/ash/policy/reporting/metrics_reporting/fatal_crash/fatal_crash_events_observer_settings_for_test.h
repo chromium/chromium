@@ -18,6 +18,8 @@
 
 namespace reporting {
 struct FatalCrashEventsObserver::SettingsForTest final {
+  using SkippedUninterestingCrashTypeCallback = base::RepeatingCallback<void(
+      ash::cros_healthd::mojom::CrashEventInfo::CrashType)>;
   using SkippedUnuploadedCrashCallback =
       base::RepeatingCallback<void(LocalIdEntry)>;
   using SkippedUploadedCrashCallback =
@@ -45,6 +47,11 @@ struct FatalCrashEventsObserver::SettingsForTest final {
   // right after it's finished.
   bool interrupted_after_event_observed GUARDED_BY_CONTEXT(sequence_checker){
       false};
+
+  // Called when a crash is skipped due to an unintetesting crash type.
+  SkippedUninterestingCrashTypeCallback
+      skipped_uninteresting_crash_type_callback
+          GUARDED_BY_CONTEXT(sequence_checker){base::DoNothing()};
 
   // Called when an unuploaded crash is skipped and not reported.
   SkippedUnuploadedCrashCallback skipped_unuploaded_crash_callback

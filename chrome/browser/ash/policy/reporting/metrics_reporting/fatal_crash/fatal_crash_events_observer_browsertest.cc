@@ -94,6 +94,7 @@ class FatalCrashEventsBrowserTest
   static void EmitCrash(bool is_uploaded) {
     auto crash_event_info = CrashEventInfo::New();
     crash_event_info->local_id = kTestLocalId;
+    crash_event_info->crash_type = CrashEventInfo::CrashType::kKernel;
     if (is_uploaded) {
       crash_event_info->upload_info = CrashUploadInfo::New();
       crash_event_info->upload_info->crash_report_id = kTestCrashReportId;

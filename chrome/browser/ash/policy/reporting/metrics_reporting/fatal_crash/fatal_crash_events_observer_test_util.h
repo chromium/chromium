@@ -109,6 +109,11 @@ class FatalCrashEventsObserver::TestEnvironment {
   static void FlushTaskRunnerWithCurrentSequenceBlocked(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
+  // Get allowed crash types. Proxy of `FatalCrashEvents::GetAllowedCrashTypes`.
+  static const base::flat_set<
+      ::ash::cros_healthd::mojom::CrashEventInfo::CrashType>&
+  GetAllowedCrashTypes();
+
  private:
   // Save file paths used in unit tests.
   const SaveFilePathsProvider save_file_paths_provider_;
