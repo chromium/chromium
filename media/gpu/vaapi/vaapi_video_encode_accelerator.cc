@@ -51,7 +51,6 @@
 #include "media/gpu/vaapi/vp9_vaapi_video_encoder_delegate.h"
 #include "media/gpu/vp8_reference_frame_vector.h"
 #include "media/gpu/vp9_reference_frame_vector.h"
-#include "media/gpu/vp9_svc_layers_stateful.h"
 
 namespace media {
 

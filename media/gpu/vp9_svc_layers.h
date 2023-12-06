@@ -19,7 +19,7 @@ namespace media {
 
 class MEDIA_GPU_EXPORT VP9SVCLayers {
  public:
-  constexpr static size_t kMaxSupportedTemporalLayers = 3u;
+  constexpr static size_t kMaxTemporalLayers = 3u;
   constexpr static size_t kMaxSpatialLayers = 3u;
 
   // Config is the SVC configuration used in VP9SVCLayers. It cannot be changed
