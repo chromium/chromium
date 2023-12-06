@@ -359,16 +359,14 @@ class Runner():
         required=True,
         metavar='build_id',
     )
-    # TODO(crbug.com/1500395) deprecate shards
     parser.add_argument(
-        '-s',
-        '-c', '--clones'
-        '--shards',
+        '-c',
+        '--clones',
         help='Number of iOS simulator clones to split test cases across',
         metavar='n',
         type=int,
         default=1,
-        dest='clones')
+    )
     parser.add_argument(
         '-e',
         '--env-var',
@@ -544,14 +542,11 @@ class Runner():
         help='Run tests using xcodebuild\'s on real device.',
         action='store_true',
     )
-
-    # TODO(crbug.com/1500395) deprecate xcode-parallelization
     parser.add_argument(
         '--xcodebuild-sim-runner',
-        '--xcode-parallelization',
         help='Run tests using xcodebuild\'s on iOS simulators',
         action='store_true',
-        dest='xcodebuild_sim_runner')
+    )
     parser.add_argument(
         '--xctest',
         action='store_true',

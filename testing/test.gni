@@ -705,9 +705,6 @@ template("test") {
                                "deps",
                                "executable_args",
                                "retries",
-
-                               # TODO(crbug.com/1500395) deprecate shards
-                               "shards",
                              ])
 
       _root_build_dir = rebase_path("${root_build_dir}", root_build_dir)

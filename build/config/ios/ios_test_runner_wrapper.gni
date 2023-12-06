@@ -90,20 +90,11 @@ template("ios_test_runner_wrapper") {
     ]
 
     # Clones is not required by test runner so only pass if defined.
-    # For now preserve passing shards during transition ifff clones not passed
-    # TODO(crbug.com/1500395) deprecate shards
     if (defined(clones)) {
       executable_args += [
         "--clones",
         "${clones}",
       ]
-    } else {
-      if (defined(shards)) {
-        executable_args += [
-          "--shards",
-          "${shards}",
-        ]
-      }
     }
 
     if (xcode_version_int >= 1400) {

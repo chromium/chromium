@@ -43,9 +43,6 @@ template("ios_test_runner_xcuitest") {
                              "deps",
                              "executable_args",
                              "retries",
-
-                             # TODO(crbug.com/1500395) deprecate shards
-                             "shards",
                              "xcode_test_application_name",
                            ])
     _root_build_dir = rebase_path("${root_build_dir}", root_build_dir)
