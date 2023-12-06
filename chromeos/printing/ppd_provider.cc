@@ -689,7 +689,7 @@ class PpdProviderImpl : public PpdProvider {
   // Caller must provide nonempty |ppd_basename| when |ppd_origin|
   // identifies the PPD as coming from the the serving root.
   void StorePpdWithContents(const std::string& ppd_contents,
-                            absl::optional<std::string> ppd_basename,
+                            std::optional<std::string> ppd_basename,
                             ResolvedPpdOrigin ppd_origin,
                             Printer::PpdReference reference) {
     switch (ppd_origin) {
@@ -728,7 +728,7 @@ class PpdProviderImpl : public PpdProvider {
   // Called when we have the contents of the PPD being resolved; we are
   // on the cusp of being able to invoke the |cb|.
   void ResolvePpdWithContents(ResolvedPpdOrigin ppd_origin,
-                              absl::optional<std::string> ppd_basename,
+                              std::optional<std::string> ppd_basename,
                               std::string ppd_contents,
                               Printer::PpdReference reference,
                               ResolvePpdCallback cb) {
@@ -878,7 +878,7 @@ class PpdProviderImpl : public PpdProvider {
     }
 
     ResolvePpdWithContents(ResolvedPpdOrigin::kFromPpdCache,
-                           /*ppd_basename=*/absl::nullopt, result.contents,
+                           /*ppd_basename=*/std::nullopt, result.contents,
                            std::move(reference), std::move(cb));
   }
 
@@ -902,7 +902,7 @@ class PpdProviderImpl : public PpdProvider {
     }
 
     ResolvePpdWithContents(ResolvedPpdOrigin::kFromUserSuppliedUrl,
-                           /*ppd_basename=*/absl::nullopt, result,
+                           /*ppd_basename=*/std::nullopt, result,
                            std::move(reference), std::move(cb));
   }
 

@@ -6,18 +6,19 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chromeos/ash/components/dbus/userdataauth/install_attributes_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::install_attributes_util {
 
 bool InstallAttributesGet(const std::string& name, std::string* value) {
   ::user_data_auth::InstallAttributesGetRequest request;
   request.set_name(name);
-  absl::optional<::user_data_auth::InstallAttributesGetReply> result =
+  std::optional<::user_data_auth::InstallAttributesGetReply> result =
       InstallAttributesClient::Get()->BlockingInstallAttributesGet(request);
   if (!result.has_value() ||
       result->error() !=
@@ -40,7 +41,7 @@ bool InstallAttributesSet(const std::string& name, const std::string& value) {
   request.set_name(name);
   request.set_value(value);
   request.mutable_value()->push_back('\0');
-  absl::optional<::user_data_auth::InstallAttributesSetReply> result =
+  std::optional<::user_data_auth::InstallAttributesSetReply> result =
       InstallAttributesClient::Get()->BlockingInstallAttributesSet(request);
   if (!result.has_value() ||
       result->error() !=
@@ -53,7 +54,7 @@ bool InstallAttributesSet(const std::string& name, const std::string& value) {
 }
 
 bool InstallAttributesFinalize() {
-  absl::optional<::user_data_auth::InstallAttributesFinalizeReply> result =
+  std::optional<::user_data_auth::InstallAttributesFinalizeReply> result =
       InstallAttributesClient::Get()->BlockingInstallAttributesFinalize(
           ::user_data_auth::InstallAttributesFinalizeRequest());
   if (!result.has_value() ||
@@ -67,7 +68,7 @@ bool InstallAttributesFinalize() {
 }
 
 user_data_auth::InstallAttributesState InstallAttributesGetStatus() {
-  absl::optional<::user_data_auth::InstallAttributesGetStatusReply> result =
+  std::optional<::user_data_auth::InstallAttributesGetStatusReply> result =
       InstallAttributesClient::Get()->BlockingInstallAttributesGetStatus(
           ::user_data_auth::InstallAttributesGetStatusRequest());
   if (!result.has_value() ||

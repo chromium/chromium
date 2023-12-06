@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/dbus/hermes/fake_hermes_profile_client.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
@@ -13,7 +15,6 @@
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "dbus/property.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -82,7 +83,7 @@ void FakeHermesProfileClient::EnableCarrierProfile(
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   next_enable_carrier_profile_result_.value()));
-    next_enable_carrier_profile_result_ = absl::nullopt;
+    next_enable_carrier_profile_result_ = std::nullopt;
     return;
   }
 

@@ -127,7 +127,7 @@ ACTION_P(PopulateSearchItems, items) {
 
 // An action that populates no search results. This is required as the final
 // `GetNextPage` query will return 0 items and this ensures the `MOCK_METHOD`
-// returns the appropriate type (instead of `absl::nullopt`).
+// returns the appropriate type (instead of `std::nullopt`).
 ACTION(PopulateNoSearchItems) {
   *arg0 = vector<QueryItemPtr>();
 }
@@ -156,10 +156,10 @@ class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
 
   MOCK_METHOD(FileError,
               OnGetNextPage,
-              (absl::optional<vector<QueryItemPtr>> * items));
+              (std::optional<vector<QueryItemPtr>> * items));
 
   void GetNextPage(GetNextPageCallback callback) override {
-    absl::optional<vector<QueryItemPtr>> items;
+    std::optional<vector<QueryItemPtr>> items;
     const FileError error = OnGetNextPage(&items);
     SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, BindOnce(std::move(callback), error, std::move(items)));
@@ -2467,7 +2467,7 @@ TEST_F(DriveFsPinningManagerTest, DropQuery) {
 
   EXPECT_CALL(drivefs_, OnGetNextPage(_))
       .WillOnce(
-          Invoke([&manager](absl::optional<vector<QueryItemPtr>>* const items) {
+          Invoke([&manager](std::optional<vector<QueryItemPtr>>* const items) {
             manager.Stop();
             *items = {};
             return FileError::FILE_ERROR_OK;

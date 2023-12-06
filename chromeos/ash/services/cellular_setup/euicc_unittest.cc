@@ -554,8 +554,8 @@ TEST_F(EuiccTest_SmdsSupportEnabled, RequestAvailableProfiles) {
   mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
   ASSERT_TRUE(euicc.is_bound());
 
-  absl::optional<mojom::ESimOperationResult> result;
-  absl::optional<std::vector<mojom::ESimProfilePropertiesPtr>>
+  std::optional<mojom::ESimOperationResult> result;
+  std::optional<std::vector<mojom::ESimProfilePropertiesPtr>>
       profile_properties_list;
 
   base::RunLoop run_loop;
@@ -595,8 +595,8 @@ TEST_F(EuiccTest_SmdsSupportEnabled, RequestAvailableProfiles_FailToInhibit) {
   // failure to inhibit by making the next attempt to set a property fail.
   SetErrorForNextSetPropertyAttempt("error_name");
 
-  absl::optional<mojom::ESimOperationResult> result;
-  absl::optional<std::vector<mojom::ESimProfilePropertiesPtr>>
+  std::optional<mojom::ESimOperationResult> result;
+  std::optional<std::vector<mojom::ESimProfilePropertiesPtr>>
       profile_properties_list;
 
   {

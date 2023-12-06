@@ -6,10 +6,10 @@
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_ECIES_ENCRYPTOR_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "chromeos/ash/services/device_sync/cryptauth_ecies_encryptor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace securemessage {
 class Header;
@@ -80,7 +80,7 @@ class CryptAuthEciesEncryptorImpl : public CryptAuthEciesEncryptor {
   void OnBatchDecryptionStarted() override;
 
   void OnSingleOutputFinished(const std::string& id,
-                              const absl::optional<std::string>& output);
+                              const std::optional<std::string>& output);
   void OnSessionKeyPairGenerated(const std::string& session_public_key,
                                  const std::string& session_private_key);
   void OnDiffieHellmanEncryptionKeyDerived(

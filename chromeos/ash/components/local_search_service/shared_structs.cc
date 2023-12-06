@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/local_search_service/shared_structs.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/strings/string_split.h"
@@ -11,7 +12,6 @@
 #include "chromeos/ash/components/local_search_service/linear_map_search.h"
 #include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::local_search_service {
 

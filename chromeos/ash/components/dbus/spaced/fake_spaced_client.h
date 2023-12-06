@@ -49,19 +49,19 @@ class COMPONENT_EXPORT(SPACED_CLIENT) FakeSpacedClient : public SpacedClient {
                                         uint32_t project_id,
                                         GetSizeCallback callback) override;
 
-  void set_free_disk_space(absl::optional<int64_t> space) {
+  void set_free_disk_space(std::optional<int64_t> space) {
     free_disk_space_ = space;
   }
 
-  void set_total_disk_space(absl::optional<int64_t> space) {
+  void set_total_disk_space(std::optional<int64_t> space) {
     total_disk_space_ = space;
   }
 
-  void set_root_device_size(absl::optional<int64_t> size) {
+  void set_root_device_size(std::optional<int64_t> size) {
     root_device_size_ = size;
   }
 
-  void set_quota_supported(absl::optional<bool> quota_supported) {
+  void set_quota_supported(std::optional<bool> quota_supported) {
     quota_supported_ = quota_supported;
   }
 
@@ -80,10 +80,10 @@ class COMPONENT_EXPORT(SPACED_CLIENT) FakeSpacedClient : public SpacedClient {
   void set_connected(bool connected) { connected_ = connected; }
 
  private:
-  absl::optional<int64_t> free_disk_space_;
-  absl::optional<int64_t> total_disk_space_;
-  absl::optional<int64_t> root_device_size_;
-  absl::optional<bool> quota_supported_;
+  std::optional<int64_t> free_disk_space_;
+  std::optional<int64_t> total_disk_space_;
+  std::optional<int64_t> root_device_size_;
+  std::optional<bool> quota_supported_;
   std::map<uint32_t, int64_t> quota_current_space_uid_;
   std::map<uint32_t, int64_t> quota_current_space_gid_;
   std::map<uint32_t, int64_t> quota_current_space_project_id_;

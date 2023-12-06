@@ -320,7 +320,7 @@ TEST_F(ServiceConnectionTest, FakeServiceConnectionForBuiltinModel) {
                  base::BindOnce(
                      [](bool* callback_done, double expected_value,
                         const mojom::ExecuteResult result,
-                        absl::optional<std::vector<mojom::TensorPtr>> outputs) {
+                        std::optional<std::vector<mojom::TensorPtr>> outputs) {
                        EXPECT_EQ(result, mojom::ExecuteResult::OK);
                        ASSERT_TRUE(outputs.has_value());
                        ASSERT_EQ(outputs->size(), 1LU);
@@ -390,7 +390,7 @@ TEST_F(ServiceConnectionTest, FakeServiceConnectionForFlatBufferModel) {
                  base::BindOnce(
                      [](bool* callback_done, double expected_value,
                         const mojom::ExecuteResult result,
-                        absl::optional<std::vector<mojom::TensorPtr>> outputs) {
+                        std::optional<std::vector<mojom::TensorPtr>> outputs) {
                        EXPECT_EQ(result, mojom::ExecuteResult::OK);
                        ASSERT_TRUE(outputs.has_value());
                        ASSERT_EQ(outputs->size(), 1LU);
@@ -622,7 +622,7 @@ TEST_F(ServiceConnectionTest, FakeWebPlatformHandWritingRecognizer) {
       std::move(strokes), std::move(hints),
       base::BindOnce(
           [](bool* infer_callback_done,
-             absl::optional<std::vector<
+             std::optional<std::vector<
                  web_platform::mojom::HandwritingPredictionPtr>> predictions) {
             *infer_callback_done = true;
             ASSERT_TRUE(predictions.has_value());
@@ -1050,7 +1050,7 @@ TEST_F(ServiceConnectionTest,
       std::move(input_tensors),
       base::BindOnce(
           [](bool* callback_done, ml::model_loader::mojom::ComputeResult result,
-             const absl::optional<base::flat_map<
+             const std::optional<base::flat_map<
                  std::string, std::vector<uint8_t>>>& output_tensors) {
             ASSERT_TRUE(output_tensors.has_value());
             ASSERT_EQ(output_tensors->size(), 1u);

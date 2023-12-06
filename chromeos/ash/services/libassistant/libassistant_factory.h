@@ -6,9 +6,8 @@
 #define CHROMEOS_ASH_SERVICES_LIBASSISTANT_LIBASSISTANT_FACTORY_H_
 
 #include <memory>
+#include <optional>
 #include <string>
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace assistant_client {
 class AssistantManager;

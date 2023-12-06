@@ -5,9 +5,8 @@
 #ifndef CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_KEY_PROOF_COMPUTER_H_
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_KEY_PROOF_COMPUTER_H_
 
+#include <optional>
 #include <string>
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -55,11 +54,11 @@ class CryptAuthKeyProofComputer {
   // Returns null if key proof computation failed.
   // Note: The parameter |info| must be non-null for symmetric keys, but it is
   // not used for asymmetric keys.
-  virtual absl::optional<std::string> ComputeKeyProof(
+  virtual std::optional<std::string> ComputeKeyProof(
       const CryptAuthKey& key,
       const std::string& payload,
       const std::string& salt,
-      const absl::optional<std::string>& info) = 0;
+      const std::optional<std::string>& info) = 0;
 };
 
 }  // namespace device_sync

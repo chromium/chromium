@@ -24,7 +24,7 @@ HostConnectionMetricsLogger::~HostConnectionMetricsLogger() {
 void HostConnectionMetricsLogger::RecordConnectionToHostResult(
     ConnectionToHostResult result,
     const std::string& device_id,
-    absl::optional<ConnectionToHostInternalError> internal_error) {
+    std::optional<ConnectionToHostInternalError> internal_error) {
   if (!active_host_device_id_.empty()) {
     active_host_device_id_.clear();
   }

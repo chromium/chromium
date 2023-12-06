@@ -37,7 +37,7 @@ void LoginTextfield::AboutToRequestFocusFromTabTraversal(bool reverse) {
 void LoginTextfield::OnBlur() {
   dispatcher_->DispatchEvent(AuthPanelEventDispatcher::UserAction{
       AuthPanelEventDispatcher::UserAction::Type::kPasswordTextfieldBlurred,
-      absl::nullopt});
+      std::nullopt});
   SystemTextfield::OnBlur();
 }
 
@@ -45,7 +45,7 @@ void LoginTextfield::OnFocus() {
   SystemTextfield::OnFocus();
   dispatcher_->DispatchEvent(AuthPanelEventDispatcher::UserAction{
       AuthPanelEventDispatcher::UserAction::Type::kPasswordTextfieldFocused,
-      absl::nullopt});
+      std::nullopt});
 }
 
 gfx::Size LoginTextfield::CalculatePreferredSize() const {

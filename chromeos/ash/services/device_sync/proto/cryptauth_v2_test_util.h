@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_DEVICE_SYNC_PROTO_CRYPTAUTH_V2_TEST_UTIL_H_
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_PROTO_CRYPTAUTH_V2_TEST_UTIL_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -15,7 +16,6 @@
 #include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_directive.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cryptauthv2 {
 
@@ -38,7 +38,7 @@ extern const char kTestClientDirectivePolicyReferenceName[];
 ClientMetadata BuildClientMetadata(
     int32_t retry_count,
     const ClientMetadata::InvocationReason& invocation_reason,
-    const absl::optional<std::string>& session_id = absl::nullopt);
+    const std::optional<std::string>& session_id = std::nullopt);
 
 PolicyReference BuildPolicyReference(const std::string& name, int64_t version);
 

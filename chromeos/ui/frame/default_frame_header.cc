@@ -133,7 +133,7 @@ void DefaultFrameHeader::UpdateFrameColors() {
                                   ? ui::kColorSysPrimary
                                   : ui::kColorFrameCaptionButtonUnfocused);
   } else {
-    UpdateCaptionButtonColors(absl::nullopt);
+    UpdateCaptionButtonColors(std::nullopt);
   }
 }
 

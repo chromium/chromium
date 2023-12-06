@@ -76,7 +76,7 @@ class AuthenticatedChannelImpl : public AuthenticatedChannel,
 
   void OnRssiFetched(
       base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback,
-      absl::optional<int32_t> current_rssi);
+      std::optional<int32_t> current_rssi);
 
   const std::vector<mojom::ConnectionCreationDetail>
       connection_creation_details_;

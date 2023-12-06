@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_ASSISTANT_CLIENT_V1_H_
 #define CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_ASSISTANT_CLIENT_V1_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -12,7 +14,6 @@
 #include "base/observer_list.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::libassistant {
 
@@ -109,7 +110,7 @@ class AssistantClientV1 : public AssistantClient {
 
   void NotifyAllServicesReady();
 
-  absl::optional<bool> dark_mode_enabled_;
+  std::optional<bool> dark_mode_enabled_;
 
   std::unique_ptr<DeviceStateListener> device_state_listener_;
 

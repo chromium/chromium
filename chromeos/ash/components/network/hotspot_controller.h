@@ -78,7 +78,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
   struct HotspotControlRequest {
     HotspotControlRequest(
         bool enabled,
-        absl::optional<hotspot_config::mojom::DisableReason> disable_reason,
+        std::optional<hotspot_config::mojom::DisableReason> disable_reason,
         HotspotControlCallback callback);
     HotspotControlRequest(const HotspotControlRequest&) = delete;
     HotspotControlRequest& operator=(const HotspotControlRequest&) = delete;
@@ -87,10 +87,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
     bool enabled;
     bool abort = false;
     // Set for disable requests and will be nullopt for enable requests.
-    absl::optional<hotspot_config::mojom::DisableReason> disable_reason;
+    std::optional<hotspot_config::mojom::DisableReason> disable_reason;
     // Tracks the latency of enable hotspot operation and will be nullopt for
     // disable requests.
-    absl::optional<base::ElapsedTimer> enable_latency_timer;
+    std::optional<base::ElapsedTimer> enable_latency_timer;
     HotspotControlCallback callback;
   };
 

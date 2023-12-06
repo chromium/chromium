@@ -5,13 +5,13 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_AUTH_PANEL_EVENT_DISPATCHER_H_
 #define CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_AUTH_PANEL_EVENT_DISPATCHER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/osauth/public/auth_factor_status_consumer.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -33,11 +33,11 @@ class AuthPanelEventDispatcher {
       kMaxValue = kPasswordTextfieldBlurred,
     };
 
-    UserAction(Type type, absl::optional<std::string> payload);
+    UserAction(Type type, std::optional<std::string> payload);
     ~UserAction();
 
     Type type_;
-    absl::optional<std::string> payload_;
+    std::optional<std::string> payload_;
   };
 
   enum AuthVerdict {

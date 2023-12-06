@@ -34,11 +34,10 @@ class FakeFastPairDelegate : public FastPairDelegate {
     return forgotten_device_addresses_;
   }
 
-  absl::optional<std::string> GetDeviceNickname(
-      const std::string& mac_address) {
+  std::optional<std::string> GetDeviceNickname(const std::string& mac_address) {
     const auto it = mac_address_to_nickname_.find(mac_address);
     if (it == mac_address_to_nickname_.end()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return it->second;
   }
@@ -48,7 +47,7 @@ class FakeFastPairDelegate : public FastPairDelegate {
           fast_pairable_device_properties);
 
   // FastPairDelegate:
-  absl::optional<DeviceImageInfo> GetDeviceImageInfo(
+  std::optional<DeviceImageInfo> GetDeviceImageInfo(
       const std::string& mac_address) override;
   std::vector<mojom::PairedBluetoothDevicePropertiesPtr>
   GetFastPairableDeviceProperties() override;

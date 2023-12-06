@@ -95,7 +95,7 @@ TEST_F(QuickPairProcessTest,
        GetHexModelIdFromServiceData_NoValueIfNoProcessManagerSet) {
   GetHexModelIdFromServiceData(
       std::vector<uint8_t>(),
-      base::BindLambdaForTesting([](const absl::optional<std::string>& result) {
+      base::BindLambdaForTesting([](const std::optional<std::string>& result) {
         EXPECT_FALSE(result.has_value());
       }),
       base::DoNothing());
@@ -106,7 +106,7 @@ TEST_F(QuickPairProcessTest,
   ParseDecryptedResponse(
       std::vector<uint8_t>(), std::vector<uint8_t>(),
       base::BindLambdaForTesting(
-          [](const absl::optional<DecryptedResponse>& result) {
+          [](const std::optional<DecryptedResponse>& result) {
             EXPECT_FALSE(result.has_value());
           }),
       base::DoNothing());
@@ -116,7 +116,7 @@ TEST_F(QuickPairProcessTest,
        ParseDecryptedPasskey_NoValueIfNoProcessManagerSet) {
   ParseDecryptedPasskey(std::vector<uint8_t>(), std::vector<uint8_t>(),
                         base::BindLambdaForTesting(
-                            [](const absl::optional<DecryptedPasskey>& result) {
+                            [](const std::optional<DecryptedPasskey>& result) {
                               EXPECT_FALSE(result.has_value());
                             }),
                         base::DoNothing());
@@ -127,7 +127,7 @@ TEST_F(QuickPairProcessTest,
   ParseNotDiscoverableAdvertisement(
       /*service_data=*/std::vector<uint8_t>(), /*address=*/"",
       base::BindLambdaForTesting(
-          [](const absl::optional<NotDiscoverableAdvertisement>& result) {
+          [](const std::optional<NotDiscoverableAdvertisement>& result) {
             EXPECT_FALSE(result.has_value());
           }),
       base::DoNothing());
@@ -156,7 +156,7 @@ TEST_F(QuickPairProcessTest, ParseDecryptedResponse_ValueIfProcessManagerSet) {
       std::vector<uint8_t>(encrypted_response_bytes.begin(),
                            encrypted_response_bytes.end()),
       base::BindLambdaForTesting(
-          [&run_loop](const absl::optional<DecryptedResponse>& result) {
+          [&run_loop](const std::optional<DecryptedResponse>& result) {
             EXPECT_TRUE(result.has_value());
             run_loop.Quit();
           }),
@@ -176,7 +176,7 @@ TEST_F(QuickPairProcessTest, ParseDecryptedPasskey_ValueIfProcessManagerSet) {
       std::vector<uint8_t>(encrypted_passkey_bytes.begin(),
                            encrypted_passkey_bytes.end()),
       base::BindLambdaForTesting(
-          [&run_loop](const absl::optional<DecryptedPasskey>& result) {
+          [&run_loop](const std::optional<DecryptedPasskey>& result) {
             EXPECT_TRUE(result.has_value());
             run_loop.Quit();
           }),

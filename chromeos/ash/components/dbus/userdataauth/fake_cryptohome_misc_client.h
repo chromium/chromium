@@ -43,7 +43,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeCryptohomeMiscClient
   void GetRsuDeviceId(const ::user_data_auth::GetRsuDeviceIdRequest& request,
                       GetRsuDeviceIdCallback callback) override;
 
-  absl::optional<::user_data_auth::GetSanitizedUsernameReply>
+  std::optional<::user_data_auth::GetSanitizedUsernameReply>
   BlockingGetSanitizedUsername(
       const ::user_data_auth::GetSanitizedUsernameRequest& request) override;
 

@@ -7,11 +7,11 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <utility>
 
 #include "base/component_export.h"
 #include "base/observer_list.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -38,7 +38,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
   // Gets the most recent reply from debugd for SetSchedulerConfiguration D-Bus
   // call. Returns nullopt when the D-Bus client hasn't received any replies
   // yet.
-  virtual absl::optional<std::pair<bool, size_t>> GetLastReply() const = 0;
+  virtual std::optional<std::pair<bool, size_t>> GetLastReply() const = 0;
 
   void AddObserver(Observer* obs);
   void RemoveObserver(Observer* obs);

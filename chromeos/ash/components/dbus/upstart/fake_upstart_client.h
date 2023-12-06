@@ -16,13 +16,13 @@ class COMPONENT_EXPORT(UPSTART_CLIENT) FakeUpstartClient
  public:
   struct StartJobResult {
     StartJobResult(bool success,
-                   absl::optional<std::string> error_name = absl::nullopt,
-                   absl::optional<std::string> error_message = absl::nullopt);
+                   std::optional<std::string> error_name = std::nullopt,
+                   std::optional<std::string> error_message = std::nullopt);
     ~StartJobResult();
 
     bool success;
-    absl::optional<std::string> error_name;
-    absl::optional<std::string> error_message;
+    std::optional<std::string> error_name;
+    std::optional<std::string> error_message;
   };
 
   using StartJobCallback = base::RepeatingCallback<StartJobResult(

@@ -65,7 +65,7 @@ void FakeInstallAttributesClient::InstallAttributesFinalize(
 void FakeInstallAttributesClient::InstallAttributesGetStatus(
     const ::user_data_auth::InstallAttributesGetStatusRequest& request,
     InstallAttributesGetStatusCallback callback) {
-  absl::optional<::user_data_auth::InstallAttributesGetStatusReply> reply =
+  std::optional<::user_data_auth::InstallAttributesGetStatusReply> reply =
       BlockingInstallAttributesGetStatus(request);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), reply));
@@ -74,7 +74,7 @@ void FakeInstallAttributesClient::RemoveFirmwareManagementParameters(
     const ::user_data_auth::RemoveFirmwareManagementParametersRequest& request,
     RemoveFirmwareManagementParametersCallback callback) {
   remove_firmware_management_parameters_from_tpm_call_count_++;
-  fwmp_flags_ = absl::nullopt;
+  fwmp_flags_ = std::nullopt;
   ReturnProtobufMethodCallback(
       ::user_data_auth::RemoveFirmwareManagementParametersReply(),
       std::move(callback));
@@ -102,7 +102,7 @@ void FakeInstallAttributesClient::GetFirmwareManagementParameters(
   }
   ReturnProtobufMethodCallback(reply, std::move(callback));
 }
-absl::optional<::user_data_auth::InstallAttributesGetReply>
+std::optional<::user_data_auth::InstallAttributesGetReply>
 FakeInstallAttributesClient::BlockingInstallAttributesGet(
     const ::user_data_auth::InstallAttributesGetRequest& request) {
   ::user_data_auth::InstallAttributesGetReply reply;
@@ -114,14 +114,14 @@ FakeInstallAttributesClient::BlockingInstallAttributesGet(
   }
   return reply;
 }
-absl::optional<::user_data_auth::InstallAttributesSetReply>
+std::optional<::user_data_auth::InstallAttributesSetReply>
 FakeInstallAttributesClient::BlockingInstallAttributesSet(
     const ::user_data_auth::InstallAttributesSetRequest& request) {
   ::user_data_auth::InstallAttributesSetReply reply;
   install_attrs_[request.name()] = request.value();
   return reply;
 }
-absl::optional<::user_data_auth::InstallAttributesFinalizeReply>
+std::optional<::user_data_auth::InstallAttributesFinalizeReply>
 FakeInstallAttributesClient::BlockingInstallAttributesFinalize(
     const ::user_data_auth::InstallAttributesFinalizeRequest& request) {
   locked_ = true;
@@ -158,7 +158,7 @@ FakeInstallAttributesClient::BlockingInstallAttributesFinalize(
 
   return reply;
 }
-absl::optional<::user_data_auth::InstallAttributesGetStatusReply>
+std::optional<::user_data_auth::InstallAttributesGetStatusReply>
 FakeInstallAttributesClient::BlockingInstallAttributesGetStatus(
     const ::user_data_auth::InstallAttributesGetStatusRequest& request) {
   ::user_data_auth::InstallAttributesGetStatusReply reply;

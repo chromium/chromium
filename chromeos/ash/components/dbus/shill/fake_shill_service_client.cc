@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/dbus/shill/fake_shill_service_client.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -25,7 +26,6 @@
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
@@ -170,7 +170,7 @@ void FakeShillServiceClient::RemovePropertyChangedObserver(
 void FakeShillServiceClient::GetProperties(
     const dbus::ObjectPath& service_path,
     chromeos::DBusMethodCallback<base::Value::Dict> callback) {
-  absl::optional<base::Value::Dict> result_properties;
+  std::optional<base::Value::Dict> result_properties;
   const base::Value::Dict* nested_dict =
       GetServiceProperties(service_path.value());
   if (nested_dict) {
@@ -216,7 +216,7 @@ void FakeShillServiceClient::SetProperties(const dbus::ObjectPath& service_path,
     std::move(error_callback)
         .Run(set_properties_error_name_.value(),
              /*error_message=*/std::string());
-    set_properties_error_name_ = absl::nullopt;
+    set_properties_error_name_ = std::nullopt;
     return;
   }
   for (auto iter : properties) {
@@ -284,7 +284,7 @@ void FakeShillServiceClient::Connect(const dbus::ObjectPath& service_path,
         FROM_HERE,
         base::BindOnce(std::move(error_callback), *connect_error_name_,
                        /*error_message=*/std::string()));
-    connect_error_name_ = absl::nullopt;
+    connect_error_name_ = std::nullopt;
     return;
   }
 
@@ -408,7 +408,7 @@ void FakeShillServiceClient::RequestPortalDetection(
   if (request_portal_state_) {
     SetServiceProperty(service_path.value(), shill::kStateProperty,
                        base::Value(*request_portal_state_));
-    request_portal_state_ = absl::nullopt;
+    request_portal_state_ = std::nullopt;
   }
   std::move(callback).Run(/*success=*/true);
 }
@@ -484,7 +484,7 @@ base::Value::Dict* FakeShillServiceClient::SetServiceProperties(
   std::string guid_to_set = guid;
   if (guid_to_set.empty()) {
     std::string profile_path;
-    absl::optional<base::Value::Dict> profile_properties =
+    std::optional<base::Value::Dict> profile_properties =
         ShillProfileClient::Get()->GetTestInterface()->GetService(
             service_path, &profile_path);
     if (profile_properties) {
@@ -635,7 +635,7 @@ bool FakeShillServiceClient::ClearConfiguredServiceProperties(
   if (!service_dict)
     return false;
 
-  const absl::optional<bool> visible_property =
+  const std::optional<bool> visible_property =
       service_dict->FindBool(shill::kVisibleProperty);
   const std::string* service_type =
       service_dict->FindString(shill::kTypeProperty);

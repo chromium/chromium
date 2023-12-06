@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <optional>
 #include <string_view>
 #include <utility>
 
@@ -24,7 +25,6 @@
 #include "components/crx_file/id_util.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/onc/onc_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos::onc {
 
@@ -76,7 +76,7 @@ Validator::Validator(bool error_on_unknown_field,
 
 Validator::~Validator() = default;
 
-absl::optional<base::Value::Dict> Validator::ValidateAndRepairObject(
+std::optional<base::Value::Dict> Validator::ValidateAndRepairObject(
     const OncValueSignature* object_signature,
     const base::Value::Dict& onc_object,
     Result* result) {
@@ -87,7 +87,7 @@ absl::optional<base::Value::Dict> Validator::ValidateAndRepairObject(
       MapObject(*object_signature, onc_object, &error);
   if (error) {
     *result = INVALID;
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!validation_issues_.empty()) {
     *result = VALID_WITH_WARNINGS;
@@ -268,7 +268,7 @@ bool Validator::ValidateRecommendedField(
     base::Value::Dict* result) {
   CHECK(result);
 
-  absl::optional<base::Value> recommended_value =
+  std::optional<base::Value> recommended_value =
       result->Extract(::onc::kRecommended);
   // This remove passes ownership to |recommended_value|.
   if (!recommended_value) {
@@ -420,7 +420,7 @@ bool Validator::FieldExistsAndIsNotInRange(const base::Value::Dict& object,
                                            const std::string& field_name,
                                            int lower_bound,
                                            int upper_bound) {
-  absl::optional<int> actual_value = object.FindInt(field_name);
+  std::optional<int> actual_value = object.FindInt(field_name);
   if (!actual_value || (lower_bound <= actual_value.value() &&
                         actual_value.value() <= upper_bound)) {
     return false;
@@ -1074,7 +1074,7 @@ bool Validator::ValidateCertificatePattern(base::Value::Dict* result) {
 bool Validator::ValidateGlobalNetworkConfiguration(base::Value::Dict* result) {
   // Replace the deprecated kBlacklistedHexSSIDs with kBlockedHexSSIDs.
   if (!result->contains(::onc::global_network_config::kBlockedHexSSIDs)) {
-    absl::optional<base::Value> blocked =
+    std::optional<base::Value> blocked =
         result->Extract(::onc::global_network_config::kBlacklistedHexSSIDs);
     if (blocked) {
       result->Set(::onc::global_network_config::kBlockedHexSSIDs,

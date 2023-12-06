@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_DBUS_MISSIVE_MISSIVE_CLIENT_TEST_OBSERVER_H_
 #define CHROMEOS_DBUS_MISSIVE_MISSIVE_CLIENT_TEST_OBSERVER_H_
 
+#include <optional>
 #include <tuple>
 
 #include "base/functional/callback_forward.h"
@@ -12,7 +13,6 @@
 #include "chromeos/dbus/missive/missive_client.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -27,7 +27,7 @@ class MissiveClientTestObserver
   // records with the specified |destination|, otherwise, all records will be
   // captured.
   explicit MissiveClientTestObserver(
-      absl::optional<::reporting::Destination> destination = absl::nullopt);
+      std::optional<::reporting::Destination> destination = std::nullopt);
 
   // The observer will capture only enqueued records that satisfy the condition
   // specified by |observed_record_cb|.

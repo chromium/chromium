@@ -4,13 +4,14 @@
 
 #include "chromeos/ash/components/sync_wifi/pending_network_configuration_tracker_impl.h"
 
+#include <optional>
+
 #include "base/base64url.h"
 #include "base/strings/stringprintf.h"
 #include "base/uuid.h"
 #include "chromeos/ash/components/sync_wifi/network_identifier.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::sync_wifi {
 
@@ -32,7 +33,7 @@ PendingNetworkConfigurationUpdate ConvertToPendingUpdate(
     base::Value::Dict* dict,
     const NetworkIdentifier& id) {
   std::string* change_guid = dict->FindString(kChangeGuidKey);
-  absl::optional<sync_pb::WifiConfigurationSpecifics> specifics;
+  std::optional<sync_pb::WifiConfigurationSpecifics> specifics;
   std::string* encoded_specifics_string = dict->FindString(kSpecificsKey);
   std::string specifics_string;
   if (encoded_specifics_string &&
@@ -44,7 +45,7 @@ PendingNetworkConfigurationUpdate ConvertToPendingUpdate(
     data.ParseFromString(specifics_string);
     specifics = data;
   }
-  absl::optional<int> completed_attempts = dict->FindInt(kCompletedAttemptsKey);
+  std::optional<int> completed_attempts = dict->FindInt(kCompletedAttemptsKey);
 
   DCHECK(change_guid);
   DCHECK(completed_attempts);
@@ -72,7 +73,7 @@ PendingNetworkConfigurationTrackerImpl::
 
 std::string PendingNetworkConfigurationTrackerImpl::TrackPendingUpdate(
     const NetworkIdentifier& id,
-    const absl::optional<sync_pb::WifiConfigurationSpecifics>& specifics) {
+    const std::optional<sync_pb::WifiConfigurationSpecifics>& specifics) {
   std::string serialized_specifics;
   if (!specifics)
     serialized_specifics = std::string();
@@ -122,14 +123,14 @@ PendingNetworkConfigurationTrackerImpl::GetPendingUpdates() {
   }
   return list;
 }
-absl::optional<PendingNetworkConfigurationUpdate>
+std::optional<PendingNetworkConfigurationUpdate>
 PendingNetworkConfigurationTrackerImpl::GetPendingUpdate(
     const std::string& change_guid,
     const NetworkIdentifier& id) {
   std::string* found_id =
       dict_.FindStringByDottedPath(GeneratePath(id, kChangeGuidKey));
   if (!found_id || *found_id != change_guid)
-    return absl::nullopt;
+    return std::nullopt;
 
   return ConvertToPendingUpdate(dict_.FindDict(id.SerializeToString()), id);
 }

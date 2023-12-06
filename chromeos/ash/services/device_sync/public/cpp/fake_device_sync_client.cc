@@ -100,7 +100,7 @@ multidevice::RemoteDeviceRefList FakeDeviceSyncClient::GetSyncedDevices() {
   return synced_devices_;
 }
 
-absl::optional<multidevice::RemoteDeviceRef>
+std::optional<multidevice::RemoteDeviceRef>
 FakeDeviceSyncClient::GetLocalDeviceMetadata() {
   return local_device_metadata_;
 }
@@ -249,7 +249,7 @@ void FakeDeviceSyncClient::InvokePendingNotifyDevicesCallback(
 
 void FakeDeviceSyncClient::InvokePendingGetDevicesActivityStatusCallback(
     mojom::NetworkRequestResult result_code,
-    absl::optional<std::vector<mojom::DeviceActivityStatusPtr>>
+    std::optional<std::vector<mojom::DeviceActivityStatusPtr>>
         device_activity_status) {
   DCHECK(get_devices_activity_status_callback_queue_.size() > 0);
   std::move(get_devices_activity_status_callback_queue_.front())

@@ -476,7 +476,7 @@ class SecureChannelBluetoothLowEnergyWeaveClientConnectionTest
     std::move(create_gatt_connection_callback_)
         .Run(std::make_unique<NiceMock<device::MockBluetoothGattConnection>>(
                  adapter_, kTestRemoteDeviceBluetoothAddress),
-             /*error_code=*/absl::nullopt);
+             /*error_code=*/std::nullopt);
 
     EXPECT_EQ(connection->sub_status(), SubStatus::WAITING_CHARACTERISTICS);
     EXPECT_EQ(connection->status(), Connection::Status::IN_PROGRESS);
@@ -653,14 +653,14 @@ class SecureChannelBluetoothLowEnergyWeaveClientConnectionTest
                              GATT_SERVICE_OPERATION_RESULT_GATT_ERROR_UNKNOWN;
   }
 
-  absl::optional<int32_t> GetRssi(
+  std::optional<int32_t> GetRssi(
       TestBluetoothLowEnergyWeaveClientConnection* connection) {
     connection->GetConnectionRssi(base::BindOnce(
         &SecureChannelBluetoothLowEnergyWeaveClientConnectionTest::
             OnConnectionRssi,
         base::Unretained(this)));
 
-    absl::optional<int32_t> rssi = rssi_;
+    std::optional<int32_t> rssi = rssi_;
     rssi_.reset();
 
     return rssi;
@@ -723,9 +723,9 @@ class SecureChannelBluetoothLowEnergyWeaveClientConnectionTest
         rssi_for_channel_, 0 /* transmit_power */, 0 /* max_transmit_power */));
   }
 
-  void OnConnectionRssi(absl::optional<int32_t> rssi) { rssi_ = rssi; }
+  void OnConnectionRssi(std::optional<int32_t> rssi) { rssi_ = rssi; }
 
-  absl::optional<int32_t> rssi_;
+  std::optional<int32_t> rssi_;
 };
 
 TEST_F(SecureChannelBluetoothLowEnergyWeaveClientConnectionTest,
@@ -1413,7 +1413,7 @@ TEST_F(SecureChannelBluetoothLowEnergyWeaveClientConnectionTest,
   std::move(create_gatt_connection_callback_)
       .Run(std::make_unique<NiceMock<device::MockBluetoothGattConnection>>(
                adapter_, kTestRemoteDeviceBluetoothAddress),
-           /*error_code=*/absl::nullopt);
+           /*error_code=*/std::nullopt);
 
   CharacteristicsFound(connection.get());
   NotifySessionStarted(connection.get());
@@ -1462,7 +1462,7 @@ TEST_F(SecureChannelBluetoothLowEnergyWeaveClientConnectionTest,
   std::move(create_gatt_connection_callback_)
       .Run(std::make_unique<NiceMock<device::MockBluetoothGattConnection>>(
                adapter_, kTestRemoteDeviceBluetoothAddress),
-           /*error_code=*/absl::nullopt);
+           /*error_code=*/std::nullopt);
 
   CharacteristicsFound(connection.get());
   NotifySessionStarted(connection.get());
@@ -1522,7 +1522,7 @@ TEST_F(SecureChannelBluetoothLowEnergyWeaveClientConnectionTest,
   std::move(create_gatt_connection_callback_)
       .Run(std::make_unique<NiceMock<device::MockBluetoothGattConnection>>(
                adapter_, kTestRemoteDeviceBluetoothAddress),
-           /*error_code=*/absl::nullopt);
+           /*error_code=*/std::nullopt);
 
   CharacteristicsFound(connection.get());
   NotifySessionStarted(connection.get());

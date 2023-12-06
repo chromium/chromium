@@ -5,13 +5,13 @@
 #include "chromeos/components/onc/onc_parsed_certificates.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/json/json_reader.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "net/cert/x509_certificate.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos::onc {
 
@@ -23,7 +23,7 @@ class OncParsedCertificatesTest : public testing::Test {
  protected:
   std::unique_ptr<OncParsedCertificates> ReadFromJSON(
       base::StringPiece onc_certificates_json) {
-    absl::optional<base::Value> onc_certificates =
+    std::optional<base::Value> onc_certificates =
         base::JSONReader::Read(onc_certificates_json);
     if (!onc_certificates || !onc_certificates->is_list()) {
       return nullptr;
@@ -390,7 +390,7 @@ TEST_F(OncParsedCertificatesTest, EqualityChecks) {
       -----END CERTIFICATE-----" }
       ])";
 
-  absl::optional<base::Value> onc_certificates =
+  std::optional<base::Value> onc_certificates =
       base::JSONReader::Read(onc_certificates_json);
   ASSERT_TRUE(onc_certificates);
   ASSERT_TRUE(onc_certificates->is_list());

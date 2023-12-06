@@ -17,7 +17,7 @@
 namespace ash::standalone_browser::migrator_util {
 namespace {
 
-absl::optional<bool> g_profile_migration_completed_for_test;
+std::optional<bool> g_profile_migration_completed_for_test;
 
 // Local state pref name to keep track of the number of previous migration
 // attempts. It is a dictionary of the form `{<user_id_hash>: <count>}`.
@@ -57,7 +57,7 @@ bool IsMigrationCompletedForUserForMode(PrefService* local_state,
 
   const base::Value* value = pref->GetValue();
   DCHECK(value->is_dict());
-  absl::optional<bool> is_completed = value->GetDict().FindBool(user_id_hash);
+  std::optional<bool> is_completed = value->GetDict().FindBool(user_id_hash);
 
   return is_completed.value_or(false);
 }
@@ -104,7 +104,7 @@ void ClearMigrationAttemptCountForUser(PrefService* local_state,
   dict.Remove(user_id_hash);
 }
 
-absl::optional<MigrationMode> GetCompletedMigrationMode(
+std::optional<MigrationMode> GetCompletedMigrationMode(
     PrefService* local_state,
     std::string_view user_id_hash) {
   // Note that `kCopy` needs to be checked last because the underlying pref
@@ -117,7 +117,7 @@ absl::optional<MigrationMode> GetCompletedMigrationMode(
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool IsProfileMigrationCompletedForUser(PrefService* local_state,
@@ -130,7 +130,7 @@ bool IsProfileMigrationCompletedForUser(PrefService* local_state,
     return g_profile_migration_completed_for_test.value();
   }
 
-  absl::optional<MigrationMode> mode =
+  std::optional<MigrationMode> mode =
       GetCompletedMigrationMode(local_state, user_id_hash);
 
   if (print_mode && mode.has_value()) {
@@ -201,7 +201,7 @@ void ClearProfileMigrationCompletedForUser(PrefService* local_state,
   }
 }
 
-void SetProfileMigrationCompletedForTest(absl::optional<bool> is_completed) {
+void SetProfileMigrationCompletedForTest(std::optional<bool> is_completed) {
   g_profile_migration_completed_for_test = is_completed;
 }
 

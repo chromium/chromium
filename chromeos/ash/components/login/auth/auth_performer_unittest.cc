@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
@@ -27,7 +28,6 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -105,7 +105,7 @@ TEST_F(AuthPerformerTest, StartWithUntypedPasswordKey) {
 
   // Act.
   base::test::TestFuture<bool, std::unique_ptr<UserContext>,
-                         absl::optional<AuthenticationError>>
+                         std::optional<AuthenticationError>>
       result;
   performer.StartAuthSession(std::move(context_), /*ephemeral=*/false,
                              AuthSessionIntent::kDecrypt, result.GetCallback());
@@ -143,7 +143,7 @@ TEST_F(AuthPerformerTest, StartWithUntypedKioskKey) {
 
   // Act.
   base::test::TestFuture<bool, std::unique_ptr<UserContext>,
-                         absl::optional<AuthenticationError>>
+                         std::optional<AuthenticationError>>
       result;
   performer.StartAuthSession(std::move(context_), /*ephemeral=*/false,
                              AuthSessionIntent::kDecrypt, result.GetCallback());
@@ -179,7 +179,7 @@ TEST_F(AuthPerformerTest, KnowledgeKeyCorrectLabelFallback) {
             ReplyAsSuccess(std::move(callback));
           });
   base::test::TestFuture<std::unique_ptr<UserContext>,
-                         absl::optional<AuthenticationError>>
+                         std::optional<AuthenticationError>>
       result;
   performer.AuthenticateUsingKnowledgeKey(std::move(context_),
                                           result.GetCallback());
@@ -213,7 +213,7 @@ TEST_F(AuthPerformerTest, KnowledgeKeyNoFallbackOnPin) {
             ReplyAsKeyMismatch(std::move(callback));
           });
   base::test::TestFuture<std::unique_ptr<UserContext>,
-                         absl::optional<AuthenticationError>>
+                         std::optional<AuthenticationError>>
       result;
   performer.AuthenticateUsingKnowledgeKey(std::move(context_),
                                           result.GetCallback());
@@ -243,7 +243,7 @@ TEST_F(AuthPerformerTest, AuthenticateWithPasswordCorrectLabel) {
             ReplyAsSuccess(std::move(callback));
           });
   base::test::TestFuture<std::unique_ptr<UserContext>,
-                         absl::optional<AuthenticationError>>
+                         std::optional<AuthenticationError>>
       result;
 
   performer.AuthenticateWithPassword("legacy-0", "secret", std::move(context_),
@@ -261,7 +261,7 @@ TEST_F(AuthPerformerTest, AuthenticateWithPasswordBadLabel) {
   AuthPerformer performer(&mock_client_);
 
   base::test::TestFuture<std::unique_ptr<UserContext>,
-                         absl::optional<AuthenticationError>>
+                         std::optional<AuthenticationError>>
       result;
 
   performer.AuthenticateWithPassword("gaia", "secret", std::move(context_),
@@ -300,7 +300,7 @@ TEST_F(AuthPerformerTest, AuthenticateWithPinSuccess) {
             ReplyAsSuccess(std::move(callback));
           });
   base::test::TestFuture<std::unique_ptr<UserContext>,
-                         absl::optional<AuthenticationError>>
+                         std::optional<AuthenticationError>>
       result;
 
   performer.AuthenticateWithPin("1234", "pin-salt", std::move(context_),

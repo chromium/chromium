@@ -20,7 +20,7 @@ class FakeHidDetectionManager : public HidDetectionManager {
   void SetHidStatusTouchscreenDetected(bool touchscreen_detected);
   void SetHidStatusPointerMetadata(InputMetadata metadata);
   void SetHidStatusKeyboardMetadata(InputMetadata metadata);
-  void SetPairingState(absl::optional<BluetoothHidPairingState> pairing_state);
+  void SetPairingState(std::optional<BluetoothHidPairingState> pairing_state);
 
   bool is_hid_detection_active() const { return is_hid_detection_active_; }
 
@@ -38,7 +38,7 @@ class FakeHidDetectionManager : public HidDetectionManager {
   InputMetadata pointer_metadata_;
   InputMetadata keyboard_metadata_;
   bool touchscreen_detected_ = false;
-  absl::optional<BluetoothHidPairingState> pairing_state_;
+  std::optional<BluetoothHidPairingState> pairing_state_;
 };
 
 }  // namespace ash::hid_detection

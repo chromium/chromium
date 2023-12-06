@@ -54,17 +54,17 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
   // |hermes_status| is the status of the eSIM installation.
   // |profile_path| is the path to the newly installed eSIM profile
   // and |service_path| is the path to the corresponding network service.
-  // |profile_path| and |service_path| will be absl::nullopt on error.
+  // |profile_path| and |service_path| will be std::nullopt on error.
   using InstallProfileFromActivationCodeCallback =
       base::OnceCallback<void(HermesResponseStatus hermes_status,
-                              absl::optional<dbus::ObjectPath> profile_path,
-                              absl::optional<std::string> service_path)>;
+                              std::optional<dbus::ObjectPath> profile_path,
+                              std::optional<std::string> service_path)>;
 
   // Return callback for the ConfigureESimService method. |service_path|
   // is the path of the newly configured eSIM service. A nullopt |service_path|
   // indicates failure.
   using ConfigureESimServiceCallback =
-      base::OnceCallback<void(absl::optional<dbus::ObjectPath> service_path)>;
+      base::OnceCallback<void(std::optional<dbus::ObjectPath> service_path)>;
 
   // Installs an ESim profile and network with given |activation_code|,
   // |confirmation_code| and |euicc_path|. This method will attempt to create
@@ -145,7 +145,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
   // the first installation attempt or not. When |status| is not provided this
   // function assumes that we failed to inhibit the cellular device.
   static void RecordInstallESimProfileResult(
-      absl::optional<HermesResponseStatus> status,
+      std::optional<HermesResponseStatus> status,
       bool is_managed,
       bool is_initial_install,
       cellular_setup::mojom::ProfileInstallMethod install_method);
@@ -180,7 +180,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
   void EnableProfile(InstallProfileFromActivationCodeCallback callback,
                      const dbus::ObjectPath& euicc_path,
                      const dbus::ObjectPath& profile_path,
-                     absl::optional<dbus::ObjectPath> service_path);
+                     std::optional<dbus::ObjectPath> service_path);
   void OnPrepareCellularNetworkForConnectionSuccess(
       const dbus::ObjectPath& profile_path,
       InstallProfileFromActivationCodeCallback callback,

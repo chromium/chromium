@@ -53,7 +53,7 @@ void OnGetDictionaryError(
     LOG(ERROR) << log_string;
   }
 
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
 // The ShillServiceClient implementation.

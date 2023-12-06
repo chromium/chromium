@@ -126,7 +126,7 @@ void SecureChannelInitializer::InitiateConnectionToDevice(
 }
 void SecureChannelInitializer::GetLastSeenTimestamp(
     const std::string& remote_device_id,
-    base::OnceCallback<void(absl::optional<base::Time>)> callback) {
+    base::OnceCallback<void(std::optional<base::Time>)> callback) {
   if (secure_channel_impl_) {
     secure_channel_impl_->GetLastSeenTimestamp(remote_device_id,
                                                std::move(callback));

@@ -93,7 +93,7 @@ void LoginPerformer::OnAuthSuccess(const UserContext& user_context) {
 
 void LoginPerformer::OnEarlyPrefsApplied(
     std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     LOG(ERROR) << "Could not apply policies due to error:"
                << error->ToDebugString();

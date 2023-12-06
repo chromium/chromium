@@ -55,7 +55,7 @@ class ProximityAuthSystem : public ScreenlockBridge::Observer {
   void SetRemoteDevicesForUser(
       const AccountId& account_id,
       const ash::multidevice::RemoteDeviceRefList& remote_devices,
-      absl::optional<ash::multidevice::RemoteDeviceRef> local_device);
+      std::optional<ash::multidevice::RemoteDeviceRef> local_device);
 
   // Returns the RemoteDevices registered for |account_id|. Returns an empty
   // list if no devices are registered for |account_id|.
@@ -94,7 +94,7 @@ class ProximityAuthSystem : public ScreenlockBridge::Observer {
   // Exposed for testing.
   virtual std::unique_ptr<RemoteDeviceLifeCycle> CreateRemoteDeviceLifeCycle(
       ash::multidevice::RemoteDeviceRef remote_device,
-      absl::optional<ash::multidevice::RemoteDeviceRef> local_device);
+      std::optional<ash::multidevice::RemoteDeviceRef> local_device);
 
   // ScreenlockBridge::Observer:
   void OnScreenDidLock() override;

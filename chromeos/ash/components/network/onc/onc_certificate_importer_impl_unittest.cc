@@ -77,7 +77,7 @@ class ONCCertificateImporterImplTest : public testing::Test {
                                bool expected_import_success) {
     base::Value::Dict onc =
         chromeos::onc::test_utils::ReadTestDictionary(filename);
-    absl::optional<base::Value> certificates_value =
+    std::optional<base::Value> certificates_value =
         onc.Extract(::onc::toplevel_config::kCertificates);
     onc_certificates_ = std::move(*certificates_value).TakeList();
 

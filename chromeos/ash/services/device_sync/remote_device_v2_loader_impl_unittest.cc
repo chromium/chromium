@@ -54,7 +54,7 @@ CryptAuthDevice CreateCryptAuthDevice(const std::string& suffix,
                                       bool has_beto_metadata,
                                       bool has_public_key,
                                       bool has_bluetooth_address) {
-  absl::optional<cryptauthv2::BetterTogetherDeviceMetadata> beto_metadata;
+  std::optional<cryptauthv2::BetterTogetherDeviceMetadata> beto_metadata;
 
   if (has_beto_metadata) {
     beto_metadata = cryptauthv2::BetterTogetherDeviceMetadata();
@@ -188,7 +188,7 @@ class DeviceSyncRemoteDeviceV2LoaderImplTest : public testing::Test {
 
  protected:
   // Null until Load() finishes.
-  absl::optional<multidevice::RemoteDeviceList> remote_devices_;
+  std::optional<multidevice::RemoteDeviceList> remote_devices_;
 
   std::unique_ptr<multidevice::FakeSecureMessageDelegateFactory>
       fake_secure_message_delegate_factory_;

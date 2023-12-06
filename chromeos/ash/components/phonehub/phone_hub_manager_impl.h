@@ -92,7 +92,7 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   PhoneHubUiReadinessRecorder* GetPhoneHubUiReadinessRecorder() override;
 
   void GetHostLastSeenTimestamp(
-      base::OnceCallback<void(absl::optional<base::Time>)> callback) override;
+      base::OnceCallback<void(std::optional<base::Time>)> callback) override;
 
   eche_app::EcheConnectionStatusHandler* GetEcheConnectionStatusHandler()
       override;

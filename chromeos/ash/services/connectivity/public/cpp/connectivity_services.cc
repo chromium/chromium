@@ -16,7 +16,7 @@ void BindToPasspointService(
     mojo::PendingReceiver<chromeos::connectivity::mojom::PasspointService>
         receiver) {
   mojo_service_manager::GetServiceManagerProxy()->Request(
-      chromeos::mojo_services::kCrosPasspointService, absl::nullopt,
+      chromeos::mojo_services::kCrosPasspointService, std::nullopt,
       std::move(receiver).PassPipe());
 }
 

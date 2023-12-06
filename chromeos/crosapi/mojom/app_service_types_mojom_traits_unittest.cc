@@ -45,7 +45,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTrip) {
   input->show_in_shelf = true;
   input->show_in_search = true;
   input->show_in_management = true;
-  input->has_badge = absl::nullopt;
+  input->has_badge = std::nullopt;
   input->paused = false;
   input->app_size_in_bytes = 1000000;
   input->data_size_in_bytes = 1000000;
@@ -147,7 +147,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripNoOptional) {
   input->show_in_shelf = true;
   input->show_in_search = true;
   input->show_in_management = true;
-  input->has_badge = absl::nullopt;
+  input->has_badge = std::nullopt;
   input->paused = false;
 
   auto intent_filter = std::make_unique<apps::IntentFilter>();
@@ -157,10 +157,10 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripNoOptional) {
   input->window_mode = apps::WindowMode::kBrowser;
   input->allow_uninstall = true;
   input->handles_intents = true;
-  input->is_platform_app = absl::nullopt;
-  input->app_size_in_bytes = absl::nullopt;
-  input->data_size_in_bytes = absl::nullopt;
-  input->allow_close = absl::nullopt;
+  input->is_platform_app = std::nullopt;
+  input->app_size_in_bytes = std::nullopt;
+  input->data_size_in_bytes = std::nullopt;
+  input->allow_close = std::nullopt;
 
   apps::AppPtr output;
   ASSERT_TRUE(
@@ -419,7 +419,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripInstallReason) {
 TEST(AppServiceTypesMojomTraitsTest, RoundTripRecommendable) {
   auto input = std::make_unique<apps::App>(apps::AppType::kArc, "abcdefg");
   {
-    input->recommendable = absl::nullopt;
+    input->recommendable = std::nullopt;
     apps::AppPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(
         input, output));
@@ -445,7 +445,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripRecommendable) {
 TEST(AppServiceTypesMojomTraitsTest, RoundTripSearchable) {
   auto input = std::make_unique<apps::App>(apps::AppType::kArc, "abcdefg");
   {
-    input->searchable = absl::nullopt;
+    input->searchable = std::nullopt;
     apps::AppPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(
         input, output));
@@ -472,7 +472,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripSearchable) {
 TEST(AppServiceTypesMojomTraitsTest, RoundTripShowInLauncher) {
   auto input = std::make_unique<apps::App>(apps::AppType::kArc, "abcdefg");
   {
-    input->show_in_launcher = absl::nullopt;
+    input->show_in_launcher = std::nullopt;
     apps::AppPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(
         input, output));
@@ -499,7 +499,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripShowInLauncher) {
 TEST(AppServiceTypesMojomTraitsTest, RoundTripShowInShelf) {
   auto input = std::make_unique<apps::App>(apps::AppType::kArc, "abcdefg");
   {
-    input->show_in_shelf = absl::nullopt;
+    input->show_in_shelf = std::nullopt;
     apps::AppPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(
         input, output));
@@ -526,7 +526,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripShowInShelf) {
 TEST(AppServiceTypesMojomTraitsTest, RoundTripShowInSearch) {
   auto input = std::make_unique<apps::App>(apps::AppType::kArc, "abcdefg");
   {
-    input->show_in_search = absl::nullopt;
+    input->show_in_search = std::nullopt;
     apps::AppPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(
         input, output));
@@ -553,7 +553,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripShowInSearch) {
 TEST(AppServiceTypesMojomTraitsTest, RoundTripShowInManagement) {
   auto input = std::make_unique<apps::App>(apps::AppType::kArc, "abcdefg");
   {
-    input->show_in_management = absl::nullopt;
+    input->show_in_management = std::nullopt;
     apps::AppPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(
         input, output));
@@ -579,7 +579,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripShowInManagement) {
 TEST(AppServiceTypesMojomTraitsTest, RoundTripHasBadge) {
   auto input = std::make_unique<apps::App>(apps::AppType::kArc, "abcdefg");
   {
-    input->has_badge = absl::nullopt;
+    input->has_badge = std::nullopt;
     apps::AppPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(
         input, output));
@@ -605,7 +605,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripHasBadge) {
 TEST(AppServiceTypesMojomTraitsTest, RoundTripPaused) {
   auto input = std::make_unique<apps::App>(apps::AppType::kArc, "abcdefg");
   {
-    input->paused = absl::nullopt;
+    input->paused = std::nullopt;
     apps::AppPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(
         input, output));

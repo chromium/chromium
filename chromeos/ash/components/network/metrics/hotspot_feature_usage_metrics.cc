@@ -39,9 +39,9 @@ bool HotspotFeatureUsageMetrics::IsEligible() const {
          allow_status != HotspotAllowStatus::kDisallowedNoWiFiSecurityModes;
 }
 
-absl::optional<bool> HotspotFeatureUsageMetrics::IsAccessible() const {
+std::optional<bool> HotspotFeatureUsageMetrics::IsAccessible() const {
   if (!enterprise_managed_metadata_store_->is_enterprise_managed()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!IsEligible()) {

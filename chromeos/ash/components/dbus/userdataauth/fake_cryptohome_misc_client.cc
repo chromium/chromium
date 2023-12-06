@@ -43,7 +43,7 @@ void FakeCryptohomeMiscClient::GetSystemSalt(
 void FakeCryptohomeMiscClient::GetSanitizedUsername(
     const ::user_data_auth::GetSanitizedUsernameRequest& request,
     GetSanitizedUsernameCallback callback) {
-  absl::optional<::user_data_auth::GetSanitizedUsernameReply> reply;
+  std::optional<::user_data_auth::GetSanitizedUsernameReply> reply;
   reply = BlockingGetSanitizedUsername(request);
   ReturnProtobufMethodCallback(*reply, std::move(callback));
 }
@@ -78,7 +78,7 @@ void FakeCryptohomeMiscClient::GetRsuDeviceId(
   ReturnProtobufMethodCallback(reply, std::move(callback));
 }
 
-absl::optional<::user_data_auth::GetSanitizedUsernameReply>
+std::optional<::user_data_auth::GetSanitizedUsernameReply>
 FakeCryptohomeMiscClient::BlockingGetSanitizedUsername(
     const ::user_data_auth::GetSanitizedUsernameRequest& request) {
   user_data_auth::GetSanitizedUsernameReply reply;

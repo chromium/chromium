@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/attestation/attestation_flow.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -20,14 +21,13 @@
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "components/account_id/account_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace attestation {
 
 namespace {
 
-absl::optional<::attestation::CertificateProfile> ProfileToAttestationProtoEnum(
+std::optional<::attestation::CertificateProfile> ProfileToAttestationProtoEnum(
     AttestationCertificateProfile p) {
   switch (p) {
     case PROFILE_ENTERPRISE_MACHINE_CERTIFICATE:
@@ -102,7 +102,7 @@ void AttestationFlow::GetCertificate(
     bool force_new_key,
     ::attestation::KeyType key_crypto_type,
     const std::string& key_name,
-    const absl::optional<CertProfileSpecificData>& profile_specific_data,
+    const std::optional<CertProfileSpecificData>& profile_specific_data,
     CertificateCallback callback) {
   DCHECK(!key_name.empty());
 
@@ -273,7 +273,7 @@ void AttestationFlow::StartCertificateRequest(
     bool generate_new_key,
     ::attestation::KeyType key_crypto_type,
     const std::string& key_name,
-    const absl::optional<CertProfileSpecificData>& profile_specific_data,
+    const std::optional<CertProfileSpecificData>& profile_specific_data,
     CertificateCallback callback,
     EnrollState enroll_state) {
   switch (enroll_state) {
@@ -292,9 +292,8 @@ void AttestationFlow::StartCertificateRequest(
   AttestationKeyType key_type = GetKeyTypeForProfile(certificate_profile);
   if (generate_new_key) {
     // Get the attestation service to create a Privacy CA certificate request.
-    const absl::optional<::attestation::CertificateProfile>
-        attestation_profile =
-            ProfileToAttestationProtoEnum(certificate_profile);
+    const std::optional<::attestation::CertificateProfile> attestation_profile =
+        ProfileToAttestationProtoEnum(certificate_profile);
     if (!attestation_profile) {
       LOG(DFATAL) << "Attestation: Unrecognized profile type: "
                   << certificate_profile;
@@ -359,7 +358,7 @@ void AttestationFlow::OnGetKeyInfoComplete(
     ::attestation::KeyType key_crypto_type,
     const std::string& key_name,
     AttestationKeyType key_type,
-    const absl::optional<CertProfileSpecificData>& profile_specific_data,
+    const std::optional<CertProfileSpecificData>& profile_specific_data,
     CertificateCallback callback,
     const ::attestation::GetKeyInfoReply& reply) {
   // If the key already exists, return the existing certificate.

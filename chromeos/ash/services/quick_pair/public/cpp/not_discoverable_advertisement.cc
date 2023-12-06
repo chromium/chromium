@@ -13,7 +13,7 @@ NotDiscoverableAdvertisement::NotDiscoverableAdvertisement(
     std::vector<uint8_t> account_key_filter,
     bool show_ui,
     std::vector<uint8_t> salt,
-    absl::optional<BatteryNotification> battery_notification)
+    std::optional<BatteryNotification> battery_notification)
     : account_key_filter(std::move(account_key_filter)),
       show_ui(show_ui),
       salt(std::move(salt)),

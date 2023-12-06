@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_NETWORK_HEALTH_PUBLIC_CPP_NETWORK_HEALTH_HELPER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::network_health {
 

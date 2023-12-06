@@ -82,7 +82,7 @@ class DeviceSyncCryptAuthDeviceRegistryImplTest : public testing::Test {
                           kFakeFeatureStates0),
           CryptAuthDevice(kInstanceId1, kDeviceName1,
                           kDeviceBetterTogetherPublicKey1, kLastUpdateTime1,
-                          absl::nullopt /* better_together_device_metadata */,
+                          std::nullopt /* better_together_device_metadata */,
                           kFakeFeatureStates1)};
     }());
 

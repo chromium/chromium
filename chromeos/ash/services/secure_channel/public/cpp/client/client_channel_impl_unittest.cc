@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/secure_channel/public/cpp/client/client_channel_impl.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -31,7 +32,6 @@
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "chromeos/ash/services/secure_channel/secure_channel_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {
 

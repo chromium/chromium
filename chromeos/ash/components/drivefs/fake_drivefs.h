@@ -131,9 +131,9 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
 
   const base::FilePath& mount_path() { return mount_path_; }
 
-  absl::optional<bool> IsItemPinned(const std::string& path);
+  std::optional<bool> IsItemPinned(const std::string& path);
 
-  absl::optional<bool> IsItemDirty(const std::string& path);
+  std::optional<bool> IsItemDirty(const std::string& path);
 
   bool SetCanPin(const std::string& path, bool can_pin);
 
@@ -159,11 +159,11 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
     std::string doc_id;
     int64_t stable_id = 0;
     std::string alternate_url;
-    absl::optional<mojom::ShortcutDetails> shortcut_details;
+    std::optional<mojom::ShortcutDetails> shortcut_details;
     bool can_pin = true;
   };
 
-  absl::optional<FakeDriveFs::FileMetadata> GetItemMetadata(
+  std::optional<FakeDriveFs::FileMetadata> GetItemMetadata(
       const base::FilePath& path);
 
  private:

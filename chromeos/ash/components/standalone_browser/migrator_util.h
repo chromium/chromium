@@ -5,10 +5,10 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER_MIGRATOR_UTIL_H_
 #define CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER_MIGRATOR_UTIL_H_
 
+#include <optional>
 #include <string_view>
 
 #include "base/component_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -60,7 +60,7 @@ void ClearMigrationAttemptCountForUser(PrefService* local_state,
 // completed. If migration is not completed, the `optional` will not have a
 // value.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
-absl::optional<MigrationMode> GetCompletedMigrationMode(
+std::optional<MigrationMode> GetCompletedMigrationMode(
     PrefService* local_state,
     std::string_view user_id_hash);
 
@@ -91,7 +91,7 @@ void ClearProfileMigrationCompletedForUser(PrefService* local_state,
 // completed by getting user_id_hash of the logged in user and updating
 // g_browser_process->local_state() etc.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
-void SetProfileMigrationCompletedForTest(absl::optional<bool> is_completed);
+void SetProfileMigrationCompletedForTest(std::optional<bool> is_completed);
 
 }  // namespace ash::standalone_browser::migrator_util
 

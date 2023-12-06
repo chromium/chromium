@@ -25,18 +25,18 @@ void EarlyLoginAuthPolicyConnector::SetLoginScreenAuthPolicyConnector(
   login_screen_connector_ = connector;
 }
 
-absl::optional<bool> EarlyLoginAuthPolicyConnector::GetRecoveryInitialState(
+std::optional<bool> EarlyLoginAuthPolicyConnector::GetRecoveryInitialState(
     const AccountId& account) {
   return login_screen_connector_->GetRecoveryInitialState(account);
 }
 
-absl::optional<bool> EarlyLoginAuthPolicyConnector::GetRecoveryDefaultState(
+std::optional<bool> EarlyLoginAuthPolicyConnector::GetRecoveryDefaultState(
     const AccountId& account) {
   NOTIMPLEMENTED();
   return false;
 }
 
-absl::optional<bool> EarlyLoginAuthPolicyConnector::GetRecoveryMandatoryState(
+std::optional<bool> EarlyLoginAuthPolicyConnector::GetRecoveryMandatoryState(
     const AccountId& account) {
   if (early_prefs_->HasPref(ash::prefs::kRecoveryFactorBehavior) &&
       early_prefs_->IsManaged(ash::prefs::kRecoveryFactorBehavior) &&
@@ -44,7 +44,7 @@ absl::optional<bool> EarlyLoginAuthPolicyConnector::GetRecoveryMandatoryState(
     return early_prefs_->GetValue(ash::prefs::kRecoveryFactorBehavior)
         ->GetIfBool();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool EarlyLoginAuthPolicyConnector::IsAuthFactorManaged(

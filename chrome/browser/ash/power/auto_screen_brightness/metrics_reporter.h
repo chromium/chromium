@@ -7,6 +7,7 @@
 
 #include <array>
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -96,7 +97,7 @@ class MetricsReporter : public chromeos::PowerManagerClient::Observer {
 
   // Used as an index into |daily_counts_| for counting adjustments.
   // Set once and then never changed during the Chrome session.
-  absl::optional<DeviceClass> device_class_;
+  std::optional<DeviceClass> device_class_;
 
   base::ScopedObservation<chromeos::PowerManagerClient,
                           chromeos::PowerManagerClient::Observer>

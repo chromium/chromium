@@ -7,6 +7,7 @@
 
 #include <array>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/flat_set.h"
@@ -16,7 +17,6 @@
 #include "chromeos/ash/services/secure_channel/ble_advertiser.h"
 #include "chromeos/ash/services/secure_channel/device_id_pair.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/ble_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class OneShotTimer;
@@ -116,12 +116,12 @@ class BleAdvertiserImpl : public BleAdvertiser {
 
   bool ReplaceLowPriorityAdvertisementIfPossible(
       ConnectionPriority connection_priority);
-  absl::optional<size_t> GetIndexWithLowerPriority(
+  std::optional<size_t> GetIndexWithLowerPriority(
       ConnectionPriority connection_priority);
   void UpdateAdvertisementState();
   void AddActiveAdvertisementRequest(size_t index_to_add);
   void AttemptToAddActiveAdvertisement(size_t index_to_add);
-  absl::optional<size_t> GetIndexForActiveRequest(const DeviceIdPair& request);
+  std::optional<size_t> GetIndexForActiveRequest(const DeviceIdPair& request);
   void StopAdvertisementRequestAndUpdateActiveRequests(
       size_t index,
       bool replaced_by_higher_priority_advertisement,

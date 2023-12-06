@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_DBUS_DLP_FAKE_DLP_CLIENT_H_
 #define CHROMEOS_DBUS_DLP_FAKE_DLP_CLIENT_H_
 
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -12,7 +13,6 @@
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "dbus/object_proxy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -63,14 +63,13 @@ class COMPONENT_EXPORT(DLP) FakeDlpClient : public DlpClient,
   // Map from file path to a pair of source_url and referrer_url.
   base::flat_map<std::string, std::pair<std::string, std::string>>
       files_database_;
-  absl::optional<std::string> fake_source_;
-  absl::optional<dlp::CheckFilesTransferResponse>
-      check_files_transfer_response_;
-  absl::optional<AddFilesCall> add_files_mock_;
-  absl::optional<GetFilesSourceCall> get_files_source_mock_;
+  std::optional<std::string> fake_source_;
+  std::optional<dlp::CheckFilesTransferResponse> check_files_transfer_response_;
+  std::optional<AddFilesCall> add_files_mock_;
+  std::optional<GetFilesSourceCall> get_files_source_mock_;
   dlp::CheckFilesTransferRequest last_check_files_transfer_request_;
-  absl::optional<RequestFileAccessCall> request_file_access_mock_;
-  absl::optional<CheckFilesTransferCall> check_files_transfer_mock_;
+  std::optional<RequestFileAccessCall> request_file_access_mock_;
+  std::optional<CheckFilesTransferCall> check_files_transfer_mock_;
   base::ObserverList<Observer> observers_;
 };
 

@@ -145,7 +145,7 @@ class AssistantServiceTest : public testing::Test {
   }
 
   void ResetFakeAssistantManager() {
-    assistant_manager()->SetUser(absl::nullopt);
+    assistant_manager()->SetUser(std::nullopt);
   }
 
   signin::IdentityTestEnvironment* identity_test_env() {

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/enrollment/psm/construct_rlwe_id.h"
 
+#include <optional>
 #include <string>
 
 #include "base/check.h"
@@ -19,9 +20,9 @@ psm_rlwe::RlwePlaintextId ConstructRlweId() {
   // Retrieve the device's serial number and RLZ brand code.
   ash::system::StatisticsProvider* provider =
       ash::system::StatisticsProvider::GetInstance();
-  const absl::optional<base::StringPiece> device_serial_number =
+  const std::optional<base::StringPiece> device_serial_number =
       provider->GetMachineID();
-  const absl::optional<base::StringPiece> device_rlz_brand_code =
+  const std::optional<base::StringPiece> device_rlz_brand_code =
       provider->GetMachineStatistic(ash::system::kRlzBrandCodeKey);
 
   // Verify the existence of the device's data.

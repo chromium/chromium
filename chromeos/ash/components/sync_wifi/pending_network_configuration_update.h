@@ -5,12 +5,12 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_SYNC_WIFI_PENDING_NETWORK_CONFIGURATION_UPDATE_H_
 #define CHROMEOS_ASH_COMPONENTS_SYNC_WIFI_PENDING_NETWORK_CONFIGURATION_UPDATE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/unguessable_token.h"
 #include "chromeos/ash/components/sync_wifi/network_identifier.h"
 #include "components/sync/protocol/wifi_configuration_specifics.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::sync_wifi {
 
@@ -21,7 +21,7 @@ class PendingNetworkConfigurationUpdate {
   PendingNetworkConfigurationUpdate(
       const NetworkIdentifier& id,
       const std::string& change_guid,
-      const absl::optional<sync_pb::WifiConfigurationSpecifics>& specifics,
+      const std::optional<sync_pb::WifiConfigurationSpecifics>& specifics,
       int completed_attempts);
   PendingNetworkConfigurationUpdate(
       const PendingNetworkConfigurationUpdate& update);
@@ -37,7 +37,7 @@ class PendingNetworkConfigurationUpdate {
 
   // When null, this is a delete operation, if there is a
   // WifiConfigurationSpecifics then it is an add or update.
-  const absl::optional<sync_pb::WifiConfigurationSpecifics>& specifics() const {
+  const std::optional<sync_pb::WifiConfigurationSpecifics>& specifics() const {
     return specifics_;
   }
 
@@ -55,7 +55,7 @@ class PendingNetworkConfigurationUpdate {
 
   NetworkIdentifier id_;
   std::string change_guid_;
-  absl::optional<sync_pb::WifiConfigurationSpecifics> specifics_;
+  std::optional<sync_pb::WifiConfigurationSpecifics> specifics_;
   int completed_attempts_;
 };
 

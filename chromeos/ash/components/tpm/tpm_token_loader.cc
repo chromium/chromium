@@ -165,7 +165,7 @@ void TPMTokenLoader::ContinueTokenInitialization() {
 }
 
 void TPMTokenLoader::OnGotTpmTokenInfo(
-    absl::optional<user_data_auth::TpmTokenInfo> token_info) {
+    std::optional<user_data_auth::TpmTokenInfo> token_info) {
   if (!token_info.has_value()) {
     tpm_token_state_ = TPM_DISABLED;
     ContinueTokenInitialization();

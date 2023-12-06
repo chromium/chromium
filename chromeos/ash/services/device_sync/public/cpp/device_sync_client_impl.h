@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_PUBLIC_CPP_DEVICE_SYNC_CLIENT_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -21,7 +22,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TaskRunner;
@@ -72,8 +72,7 @@ class DeviceSyncClientImpl : public DeviceSyncClient,
   void GetGroupPrivateKeyStatus(
       mojom::DeviceSync::GetGroupPrivateKeyStatusCallback callback) override;
   multidevice::RemoteDeviceRefList GetSyncedDevices() override;
-  absl::optional<multidevice::RemoteDeviceRef> GetLocalDeviceMetadata()
-      override;
+  std::optional<multidevice::RemoteDeviceRef> GetLocalDeviceMetadata() override;
   void SetSoftwareFeatureState(
       const std::string public_key,
       multidevice::SoftwareFeature software_feature,
@@ -109,10 +108,10 @@ class DeviceSyncClientImpl : public DeviceSyncClient,
   void LoadLocalDeviceMetadata();
 
   void OnGetSyncedDevicesCompleted(
-      const absl::optional<std::vector<multidevice::RemoteDevice>>&
+      const std::optional<std::vector<multidevice::RemoteDevice>>&
           remote_devices);
   void OnGetLocalDeviceMetadataCompleted(
-      const absl::optional<multidevice::RemoteDevice>& local_device_metadata);
+      const std::optional<multidevice::RemoteDevice>& local_device_metadata);
   void OnFindEligibleDevicesCompleted(
       FindEligibleDevicesCallback callback,
       mojom::NetworkRequestResult result_code,
@@ -133,7 +132,7 @@ class DeviceSyncClientImpl : public DeviceSyncClient,
   bool pending_notify_enrollment_finished_ = false;
   bool pending_notify_new_synced_devices_ = false;
 
-  absl::optional<std::string> local_instance_id_;
+  std::optional<std::string> local_instance_id_;
 
   // TODO(https://crbug.com/1019206): Track only the local Instance ID after v1
   // DeviceSync is disabled, when the local device is guaranteed to have an
@@ -142,7 +141,7 @@ class DeviceSyncClientImpl : public DeviceSyncClient,
   // is possible that only v1 device data--which does not contain Instance
   // IDs--is loaded by the RemoteDeviceProvider. In that case, the local device
   // will not have an Instance ID until the very first v2 DeviceSync succeeds.
-  absl::optional<std::string> local_legacy_device_id_;
+  std::optional<std::string> local_legacy_device_id_;
 
   base::WeakPtrFactory<DeviceSyncClientImpl> weak_ptr_factory_{this};
 };

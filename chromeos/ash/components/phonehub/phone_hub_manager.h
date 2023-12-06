@@ -5,11 +5,12 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PHONEHUB_PHONE_HUB_MANAGER_H_
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_PHONE_HUB_MANAGER_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/phonehub/app_stream_launcher_data_model.h"
 #include "chromeos/ash/components/phonehub/app_stream_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -84,7 +85,7 @@ class PhoneHubManager {
   // Retrieves the timestamp of the last successful discovery for active host,
   // or nullopt if it hasn't been seen in the current Chrome session.
   virtual void GetHostLastSeenTimestamp(
-      base::OnceCallback<void(absl::optional<base::Time>)> callback) = 0;
+      base::OnceCallback<void(std::optional<base::Time>)> callback) = 0;
 
  protected:
   PhoneHubManager() = default;

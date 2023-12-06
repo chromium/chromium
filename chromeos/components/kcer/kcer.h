@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -22,7 +23,6 @@
 #include "base/types/strong_alias.h"
 #include "chromeos/components/kcer/key_permissions.pb.h"
 #include "net/cert/x509_certificate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
 namespace kcer {
@@ -167,10 +167,10 @@ struct COMPONENT_EXPORT(KCER) KeyInfo {
   bool is_hardware_backed;
   KeyType key_type;
   std::vector<SigningScheme> supported_signing_schemes;
-  absl::optional<std::string> nickname;
+  std::optional<std::string> nickname;
   // Custom ChromeOS attributes.
-  absl::optional<chaps::KeyPermissions> key_permissions;
-  absl::optional<std::string> cert_provisioning_profile_id;
+  std::optional<chaps::KeyPermissions> key_permissions;
+  std::optional<std::string> cert_provisioning_profile_id;
 };
 
 class COMPONENT_EXPORT(KCER) Cert : public base::RefCountedThreadSafe<Cert> {
@@ -223,7 +223,7 @@ class COMPONENT_EXPORT(KCER) PrivateKeyHandle {
   PrivateKeyHandle& operator=(PrivateKeyHandle&&);
 
   // Public for implementations of Kcer only.
-  const absl::optional<Token>& GetTokenInternal() const { return token_; }
+  const std::optional<Token>& GetTokenInternal() const { return token_; }
   const Pkcs11Id& GetPkcs11IdInternal() const { return pkcs11_id_; }
   const PublicKeySpki& GetSpkiInternal() const { return pub_key_spki_; }
 
@@ -234,7 +234,7 @@ class COMPONENT_EXPORT(KCER) PrivateKeyHandle {
   // * Only `token_` and `pub_key_spki_` are populated.
   // * Only `pub_key_spki_` is populated.
   // * All member variables are populated.
-  absl::optional<Token> token_;
+  std::optional<Token> token_;
   Pkcs11Id pkcs11_id_;
   PublicKeySpki pub_key_spki_;
 };
@@ -248,8 +248,8 @@ class COMPONENT_EXPORT(KCER) PrivateKeyHandle {
 class COMPONENT_EXPORT(KCER) Kcer {
  public:
   // base::expected<void, Error> could also be expressed as
-  // absl::optional<Error>, but then result.has_value() would mean opposite
-  // things for methods with base::expected vs absl::optional.
+  // std::optional<Error>, but then result.has_value() would mean opposite
+  // things for methods with base::expected vs std::optional.
   using StatusCallback = base::OnceCallback<void(base::expected<void, Error>)>;
   using GenerateKeyCallback =
       base::OnceCallback<void(base::expected<PublicKey, Error>)>;

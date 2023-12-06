@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
@@ -31,7 +32,6 @@
 #include "components/qr_code_generator/qr_code_generator.h"
 #include "dbus/object_path.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::cellular_setup {
 
@@ -163,15 +163,15 @@ void Euicc::InstallProfileFromActivationCode(
 void Euicc::OnESimInstallProfileResult(
     InstallProfileFromActivationCodeCallback callback,
     HermesResponseStatus hermes_status,
-    absl::optional<dbus::ObjectPath> profile_path,
-    absl::optional<std::string> /*service_path*/) {
+    std::optional<dbus::ObjectPath> profile_path,
+    std::optional<std::string> /*service_path*/) {
   mojom::ProfileInstallResult status = InstallResultFromStatus(hermes_status);
   if (status != mojom::ProfileInstallResult::kSuccess) {
     std::move(callback).Run(status, mojo::NullRemote());
     return;
   }
 
-  DCHECK(profile_path != absl::nullopt);
+  DCHECK(profile_path != std::nullopt);
   ESimProfile* esim_profile = GetProfileFromPath(profile_path.value());
   if (!esim_profile) {
     // An ESimProfile may not exist for the newly created esim profile object
@@ -213,7 +213,7 @@ void Euicc::GetEidQRCode(GetEidQRCodeCallback callback) {
   std::string qr_code_string =
       base::StrCat({kEidQrCodePrefix, properties_->eid});
   qr_code_generator::QRCodeGenerator qr_generator;
-  absl::optional<qr_code_generator::QRCodeGenerator::GeneratedCode> qr_data =
+  std::optional<qr_code_generator::QRCodeGenerator::GeneratedCode> qr_data =
       qr_generator.Generate(base::as_bytes(
           base::make_span(qr_code_string.data(), qr_code_string.size())));
   if (!qr_data || qr_data->data.data() == nullptr ||

@@ -100,7 +100,7 @@ HostBackendDelegateImpl::~HostBackendDelegateImpl() {
 }
 
 void HostBackendDelegateImpl::AttemptToSetMultiDeviceHostOnBackend(
-    const absl::optional<multidevice::RemoteDeviceRef>& host_device) {
+    const std::optional<multidevice::RemoteDeviceRef>& host_device) {
   if (host_device && !IsHostEligible(*host_device)) {
     PA_LOG(WARNING) << "HostBackendDelegateImpl::"
                     << "AttemptToSetMultiDeviceHostOnBackend(): Tried to set a "
@@ -174,7 +174,7 @@ bool HostBackendDelegateImpl::HasPendingHostRequest() {
   return false;
 }
 
-absl::optional<multidevice::RemoteDeviceRef>
+std::optional<multidevice::RemoteDeviceRef>
 HostBackendDelegateImpl::GetPendingHostRequest() const {
   const std::string pending_host_id_from_prefs =
       pref_service_->GetString(kPendingRequestHostIdPrefName);
@@ -185,9 +185,9 @@ HostBackendDelegateImpl::GetPendingHostRequest() const {
       << "host request.";
 
   if (pending_host_id_from_prefs == kPendingRemovalOfCurrentHost)
-    return absl::nullopt;
+    return std::nullopt;
 
-  absl::optional<multidevice::RemoteDeviceRef> pending_host =
+  std::optional<multidevice::RemoteDeviceRef> pending_host =
       FindDeviceById(pending_host_id_from_prefs);
   DCHECK(pending_host)
       << "HostBackendDelegateImpl::GetPendingHostRequest(): Tried to get "
@@ -196,7 +196,7 @@ HostBackendDelegateImpl::GetPendingHostRequest() const {
   return pending_host;
 }
 
-absl::optional<multidevice::RemoteDeviceRef>
+std::optional<multidevice::RemoteDeviceRef>
 HostBackendDelegateImpl::GetMultiDeviceHostFromBackend() const {
   return host_from_last_sync_;
 }
@@ -219,7 +219,7 @@ void HostBackendDelegateImpl::SetPendingHostRequest(
   NotifyPendingHostRequestChange();
 }
 
-absl::optional<multidevice::RemoteDeviceRef>
+std::optional<multidevice::RemoteDeviceRef>
 HostBackendDelegateImpl::FindDeviceById(const std::string& id) const {
   DCHECK(!id.empty());
   for (const auto& remote_device : device_sync_client_->GetSyncedDevices()) {
@@ -232,7 +232,7 @@ HostBackendDelegateImpl::FindDeviceById(const std::string& id) const {
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void HostBackendDelegateImpl::AttemptNetworkRequest(bool is_retry) {
@@ -240,7 +240,7 @@ void HostBackendDelegateImpl::AttemptNetworkRequest(bool is_retry) {
       << "HostBackendDelegateImpl::AttemptNetworkRequest(): Tried to attempt a "
       << "network request, but there was no pending host request.";
 
-  absl::optional<multidevice::RemoteDeviceRef> pending_host_request =
+  std::optional<multidevice::RemoteDeviceRef> pending_host_request =
       GetPendingHostRequest();
 
   // If |pending_host_request| is non-null, the request should be to set that
@@ -250,7 +250,7 @@ void HostBackendDelegateImpl::AttemptNetworkRequest(bool is_retry) {
 
   // Likewise, if |pending_host_request| is non-null, that device should be
   // enabled, and if it is null, the old device should be disabled.
-  bool should_enable = pending_host_request != absl::nullopt;
+  bool should_enable = pending_host_request != std::nullopt;
 
   PA_LOG(INFO) << "HostBackendDelegateImpl::AttemptNetworkRequest(): "
                << (is_retry ? "Retrying attempt" : "Attempting") << " to "
@@ -287,7 +287,7 @@ void HostBackendDelegateImpl::AttemptNetworkRequest(bool is_retry) {
 }
 
 void HostBackendDelegateImpl::OnNewDevicesSynced() {
-  absl::optional<multidevice::RemoteDeviceRef> host_from_sync =
+  std::optional<multidevice::RemoteDeviceRef> host_from_sync =
       GetHostFromDeviceSync();
   if (host_from_last_sync_ == host_from_sync)
     return;
@@ -314,7 +314,7 @@ void HostBackendDelegateImpl::OnNewDevicesSynced() {
   NotifyHostChangedOnBackend();
 }
 
-absl::optional<multidevice::RemoteDeviceRef>
+std::optional<multidevice::RemoteDeviceRef>
 HostBackendDelegateImpl::GetHostFromDeviceSync() {
   multidevice::RemoteDeviceRefList synced_devices =
       device_sync_client_->GetSyncedDevices();
@@ -326,7 +326,7 @@ HostBackendDelegateImpl::GetHostFromDeviceSync() {
       });
 
   if (it == synced_devices.end())
-    return absl::nullopt;
+    return std::nullopt;
 
   return *it;
 }
@@ -355,7 +355,7 @@ void HostBackendDelegateImpl::OnSetHostNetworkRequestFinished(
   if (!HasPendingHostRequest())
     return;
 
-  absl::optional<multidevice::RemoteDeviceRef> pending_host_request =
+  std::optional<multidevice::RemoteDeviceRef> pending_host_request =
       GetPendingHostRequest();
 
   bool failed_request_was_to_set_pending_host =

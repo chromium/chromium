@@ -126,7 +126,7 @@ TEST_F(HostConnectionMetricsLoggerTest,
 
   metrics_logger_->RecordConnectionToHostResult(
       HostConnectionMetricsLogger::ConnectionToHostResult::PROVISIONING_FAILURE,
-      test_devices_[0].GetDeviceId(), absl::nullopt);
+      test_devices_[0].GetDeviceId(), std::nullopt);
 
   VerifyProvisioningFailure(
       HostConnectionMetricsLogger::
@@ -139,7 +139,7 @@ TEST_F(HostConnectionMetricsLoggerTest, RecordConnectionResultSuccess) {
 
   metrics_logger_->RecordConnectionToHostResult(
       HostConnectionMetricsLogger::ConnectionToHostResult::SUCCESS,
-      test_devices_[0].GetDeviceId(), absl::nullopt);
+      test_devices_[0].GetDeviceId(), std::nullopt);
 
   VerifySuccess(HostConnectionMetricsLogger::
                     ConnectionToHostResult_SuccessEventType::SUCCESS);
@@ -155,7 +155,7 @@ TEST_F(HostConnectionMetricsLoggerTest,
 
   metrics_logger_->RecordConnectionToHostResult(
       HostConnectionMetricsLogger::ConnectionToHostResult::SUCCESS,
-      test_devices_[1].GetDeviceId(), absl::nullopt);
+      test_devices_[1].GetDeviceId(), std::nullopt);
 
   VerifySuccess(HostConnectionMetricsLogger::
                     ConnectionToHostResult_SuccessEventType::SUCCESS);
@@ -293,7 +293,7 @@ TEST_F(HostConnectionMetricsLoggerTest,
 
   metrics_logger_->RecordConnectionToHostResult(
       HostConnectionMetricsLogger::ConnectionToHostResult::USER_CANCELLATION,
-      test_devices_[0].GetDeviceId(), absl::nullopt);
+      test_devices_[0].GetDeviceId(), std::nullopt);
 
   VerifySuccess(HostConnectionMetricsLogger::
                     ConnectionToHostResult_SuccessEventType::FAILURE);
@@ -384,7 +384,7 @@ TEST_F(HostConnectionMetricsLoggerTest,
   metrics_logger_->RecordConnectionToHostResult(
       HostConnectionMetricsLogger::ConnectionToHostResult::
           TETHERING_UNSUPPORTED,
-      test_devices_[0].GetDeviceId(), absl::nullopt);
+      test_devices_[0].GetDeviceId(), std::nullopt);
 
   VerifySuccess(HostConnectionMetricsLogger::
                     ConnectionToHostResult_SuccessEventType::FAILURE);
@@ -397,7 +397,7 @@ TEST_F(HostConnectionMetricsLoggerTest,
 
   metrics_logger_->RecordConnectionToHostResult(
       HostConnectionMetricsLogger::ConnectionToHostResult::NO_CELLULAR_DATA,
-      test_devices_[0].GetDeviceId(), absl::nullopt);
+      test_devices_[0].GetDeviceId(), std::nullopt);
 
   VerifySuccess(HostConnectionMetricsLogger::
                     ConnectionToHostResult_SuccessEventType::FAILURE);

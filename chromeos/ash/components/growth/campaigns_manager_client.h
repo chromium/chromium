@@ -7,11 +7,11 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/growth/action_performer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Version;
@@ -20,7 +20,7 @@ class Version;
 namespace growth {
 
 using CampaignComponentLoadedCallback = base::OnceCallback<void(
-    const absl::optional<const base::FilePath>& file_path)>;
+    const std::optional<const base::FilePath>& file_path)>;
 
 using ActionMap = std::map<ActionType, std::unique_ptr<ActionPerformer>>;
 

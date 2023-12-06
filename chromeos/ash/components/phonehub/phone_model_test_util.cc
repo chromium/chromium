@@ -82,7 +82,7 @@ const Notification::AppMetadata& CreateFakeAppMetadata() {
       kFakeAppVisibleName,
       kFakeAppPackageName,
       gfx::Image(),
-      /*icon_color=*/absl::nullopt,
+      /*icon_color=*/std::nullopt,
       /*icon_is_monochrome=*/true,
       kUserId,
       phonehub::proto::AppStreamabilityStatus::STREAMABLE};

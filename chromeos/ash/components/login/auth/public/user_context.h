@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_USER_CONTEXT_H_
 #define CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_USER_CONTEXT_H_
 
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
@@ -22,7 +23,6 @@
 #include "components/account_id/account_id.h"
 #include "components/password_manager/core/browser/password_hash_data.h"
 #include "components/user_manager/user_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
 
@@ -95,8 +95,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
    private:
     bool is_forcing_dircrypto_ = false;
     SessionAuthFactors session_auth_factors_;
-    mutable absl::optional<AuthFactorsConfiguration>
-        auth_factors_configuration_;
+    mutable std::optional<AuthFactorsConfiguration> auth_factors_configuration_;
     std::string authsession_id_;
     std::string broadcast_id_;
     AuthSessionIntents authorized_for_;
@@ -155,11 +154,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
   const std::string& GetDeviceId() const;
   const std::string& GetGAPSCookie() const;
   const std::string& GetReauthProofToken() const;
-  const absl::optional<password_manager::PasswordHashData>&
-  GetSyncPasswordData() const;
-  const absl::optional<SamlPasswordAttributes>& GetSamlPasswordAttributes()
+  const std::optional<password_manager::PasswordHashData>& GetSyncPasswordData()
       const;
-  const absl::optional<SyncTrustedVaultKeys>& GetSyncTrustedVaultKeys() const;
+  const std::optional<SamlPasswordAttributes>& GetSamlPasswordAttributes()
+      const;
+  const std::optional<SyncTrustedVaultKeys>& GetSyncTrustedVaultKeys() const;
   bool CanLockManagedGuestSession() const;
   AuthSessionIntents GetAuthorizedIntents() const;
 
@@ -167,8 +166,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
   void SetSamlPassword(const SamlPassword& password);
   void SetLocalPasswordInput(const LocalPasswordInput& password);
 
-  absl::optional<OnlinePassword> GetOnlinePassword() const;
-  absl::optional<PasswordInput> GetPassword() const;
+  std::optional<OnlinePassword> GetOnlinePassword() const;
+  std::optional<PasswordInput> GetPassword() const;
 
   bool HasCredentials() const;
   bool HasReplacementKey() const;
@@ -260,10 +259,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
   AccountId account_id_;
   Key key_;
   Key password_key_;
-  absl::optional<GaiaPassword> gaia_password_;
-  absl::optional<SamlPassword> saml_password_;
-  absl::optional<LocalPasswordInput> local_input_;
-  absl::optional<Key> replacement_key_ = absl::nullopt;
+  std::optional<GaiaPassword> gaia_password_;
+  std::optional<SamlPassword> saml_password_;
+  std::optional<LocalPasswordInput> local_input_;
+  std::optional<Key> replacement_key_ = std::nullopt;
   std::vector<ChallengeResponseKey> challenge_response_keys_;
   std::string auth_code_;
   std::string refresh_token_;
@@ -287,13 +286,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
   CryptohomeContext cryptohome_;
 
   // For password reuse detection use.
-  absl::optional<password_manager::PasswordHashData> sync_password_data_;
+  std::optional<password_manager::PasswordHashData> sync_password_data_;
 
   // Info about the user's SAML password, such as when it will expire.
-  absl::optional<SamlPasswordAttributes> saml_password_attributes_;
+  std::optional<SamlPasswordAttributes> saml_password_attributes_;
 
   // Info about the user's sync encryption keys.
-  absl::optional<SyncTrustedVaultKeys> sync_trusted_vault_keys_;
+  std::optional<SyncTrustedVaultKeys> sync_trusted_vault_keys_;
 };
 
 }  // namespace ash

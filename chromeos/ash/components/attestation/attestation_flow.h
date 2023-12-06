@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
@@ -17,7 +18,6 @@
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -136,7 +136,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
       bool force_new_key,
       ::attestation::KeyType key_crypto_type,
       const std::string& key_name,
-      const absl::optional<CertProfileSpecificData>& profile_specific_data,
+      const std::optional<CertProfileSpecificData>& profile_specific_data,
       CertificateCallback callback);
 
  protected:
@@ -260,7 +260,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
       bool generate_new_key,
       ::attestation::KeyType key_crypto_type,
       const std::string& key_name,
-      const absl::optional<CertProfileSpecificData>& profile_specific_data,
+      const std::optional<CertProfileSpecificData>& profile_specific_data,
       CertificateCallback callback,
       EnrollState enroll_state);
 
@@ -286,7 +286,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
       ::attestation::KeyType key_crypto_type,
       const std::string& key_name,
       AttestationKeyType key_type,
-      const absl::optional<CertProfileSpecificData>& profile_specific_data,
+      const std::optional<CertProfileSpecificData>& profile_specific_data,
       CertificateCallback callback,
       const ::attestation::GetKeyInfoReply& reply);
 

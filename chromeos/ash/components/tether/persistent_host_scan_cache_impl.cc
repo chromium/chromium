@@ -61,7 +61,7 @@ std::unique_ptr<HostScanCacheEntry> DictionaryToHostScanCacheEntry(
     return nullptr;
   builder.SetCarrier(*carrier);
 
-  absl::optional<int> battery_percentage =
+  std::optional<int> battery_percentage =
       dictionary.FindInt(kBatteryPercentageKey);
   if (!battery_percentage || *battery_percentage < 0 ||
       *battery_percentage > 100) {
@@ -69,13 +69,13 @@ std::unique_ptr<HostScanCacheEntry> DictionaryToHostScanCacheEntry(
   }
   builder.SetBatteryPercentage(*battery_percentage);
 
-  absl::optional<int> signal_strength = dictionary.FindInt(kSignalStrengthKey);
+  std::optional<int> signal_strength = dictionary.FindInt(kSignalStrengthKey);
   if (!signal_strength || *signal_strength < 0 || *signal_strength > 100) {
     return nullptr;
   }
   builder.SetSignalStrength(*signal_strength);
 
-  absl::optional<bool> setup_required = dictionary.FindBool(kSetupRequiredKey);
+  std::optional<bool> setup_required = dictionary.FindBool(kSetupRequiredKey);
   if (!setup_required)
     return nullptr;
 

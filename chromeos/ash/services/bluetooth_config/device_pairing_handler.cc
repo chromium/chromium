@@ -32,7 +32,7 @@ std::string PasskeyToString(uint32_t passkey) {
 }
 
 mojom::PairingResult GetPairingResult(
-    absl::optional<device::ConnectionFailureReason> failure_reason) {
+    std::optional<device::ConnectionFailureReason> failure_reason) {
   if (!failure_reason) {
     return mojom::PairingResult::kSuccess;
   }
@@ -132,7 +132,7 @@ void DevicePairingHandler::SendAuthorizePairing() {
 }
 
 void DevicePairingHandler::FinishCurrentPairingRequest(
-    absl::optional<device::ConnectionFailureReason> failure_reason) {
+    std::optional<device::ConnectionFailureReason> failure_reason) {
   PerformFinishCurrentPairingRequest(
       failure_reason, base::Time::Now() - pairing_start_timestamp_);
   current_pairing_device_id_.clear();

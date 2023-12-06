@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CLIENT_NEARBY_API_CALL_FLOW_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -13,7 +14,6 @@
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_api_call_flow.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::nearby {
 
@@ -88,12 +88,12 @@ class NearbyApiCallFlowImpl : public NearbyApiCallFlow,
 
   // Serialized request message proto that will be sent in the request body.
   // Null if request is GET.
-  absl::optional<std::string> serialized_request_;
+  std::optional<std::string> serialized_request_;
 
   // The request message proto represented as key-value pairs that will be sent
   // as query parameters in the API GET request. Note: A key can have multiple
   // values. Null if HTTP method is not GET.
-  absl::optional<QueryParameters> request_as_query_parameters_;
+  std::optional<QueryParameters> request_as_query_parameters_;
 
   // Callback invoked with the serialized response message proto when the flow
   // completes successfully.

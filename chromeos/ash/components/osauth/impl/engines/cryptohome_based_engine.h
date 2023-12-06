@@ -4,13 +4,14 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_ENGINES_CRYPTOHOME_BASED_ENGINE_H_
 #define CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_ENGINES_CRYPTOHOME_BASED_ENGINE_H_
 
+#include <optional>
+
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/osauth/public/auth_factor_engine.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 #include "chromeos/ash/components/osauth/public/cryptohome_core.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -43,26 +44,26 @@ class CryptohomeBasedEngine : public AuthFactorEngine,
  protected:
   // Subclasses should provide a method that looks up particular
   // cryptohome key reference for the
-  virtual absl::optional<cryptohome::AuthFactorRef> LookUpFactor(
+  virtual std::optional<cryptohome::AuthFactorRef> LookUpFactor(
       UserContext& context) = 0;
 
   FactorEngineObserver* get_observer() const { return observer_; }
   CryptohomeCore* get_core() const { return core_; }
-  absl::optional<cryptohome::AuthFactorRef> get_ref() const { return key_ref_; }
+  std::optional<cryptohome::AuthFactorRef> get_ref() const { return key_ref_; }
   UsageAllowed get_usage_allowed() const { return usage_allowed_; }
 
  private:
   void OnCryptohomeReady(CommonInitCallback callback, bool service_available);
   void OnSessionStarted();
   void OnAuthAttempt(std::unique_ptr<UserContext>,
-                     absl::optional<AuthenticationError>);
+                     std::optional<AuthenticationError>);
 
   raw_ptr<FactorEngineObserver> observer_;
   raw_ptr<CryptohomeCore> core_;
   UsageAllowed usage_allowed_ = UsageAllowed::kDisabled;
   ShutdownCallback shutdown_callback_;
 
-  absl::optional<cryptohome::AuthFactorRef> key_ref_;
+  std::optional<cryptohome::AuthFactorRef> key_ref_;
   AshAuthFactor factor_;
   base::WeakPtrFactory<CryptohomeBasedEngine> weak_factory_{this};
 };

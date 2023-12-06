@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_AUTH_SESSION_STORAGE_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <queue>
 
 #include "base/component_export.h"
@@ -19,7 +20,6 @@
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -63,7 +63,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorageImpl
               std::unique_ptr<UserContext> context) override;
   void Withdraw(const AuthProofToken& token, BorrowCallback callback) override;
   void Invalidate(const AuthProofToken& token,
-                  absl::optional<InvalidationCallback> on_invalidated) override;
+                  std::optional<InvalidationCallback> on_invalidated) override;
   std::unique_ptr<ScopedSessionRefresher> KeepAlive(
       const AuthProofToken& token) override;
 
@@ -91,7 +91,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorageImpl
     bool invalidate_on_return = false;
 
     std::queue<InvalidationCallback> invalidation_queue;
-    absl::optional<BorrowCallback> withdraw_callback;
+    std::optional<BorrowCallback> withdraw_callback;
     std::queue<std::pair<base::Location, BorrowCallback>> borrow_queue;
 
     // Timer to perform next action (extending or invalidating session).
@@ -105,13 +105,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorageImpl
                                       const AuthProofToken& token);
   void OnSessionInvalidated(const AuthProofToken& token,
                             std::unique_ptr<UserContext> context,
-                            absl::optional<AuthenticationError> error);
+                            std::optional<AuthenticationError> error);
 
   void HandleSessionRefresh(const AuthProofToken& token);
   void ExtendAuthSession(const AuthProofToken& token);
   void OnExtendAuthSession(const AuthProofToken& token,
                            std::unique_ptr<UserContext> context,
-                           absl::optional<AuthenticationError> error);
+                           std::optional<AuthenticationError> error);
 
   // Internal API for ScopedSessionRefresher.
   void IncreaseKeepAliveCounter(const AuthProofToken& token);

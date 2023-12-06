@@ -540,14 +540,14 @@ const std::string* GetSMDPAddressFromONC(const base::Value::Dict& onc_config) {
   return smdp_address;
 }
 
-absl::optional<SmdxActivationCode> GetSmdxActivationCodeFromONC(
+std::optional<SmdxActivationCode> GetSmdxActivationCodeFromONC(
     const base::Value::Dict& onc_config) {
   const std::string* type = onc_config.FindString(::onc::network_config::kType);
   const base::Value::Dict* cellular_dict =
       onc_config.FindDict(::onc::network_config::kCellular);
 
   if (!type || (*type != ::onc::network_type::kCellular) || !cellular_dict) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const std::string* const smdp_activation_code =
@@ -559,7 +559,7 @@ absl::optional<SmdxActivationCode> GetSmdxActivationCodeFromONC(
     NET_LOG(ERROR) << "Failed to get SM-DX activation code from ONC "
                    << "configuration. Expected either an SM-DP+ activation "
                    << "code or an SM-DS activation code but got both.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (smdp_activation_code) {
@@ -574,7 +574,7 @@ absl::optional<SmdxActivationCode> GetSmdxActivationCodeFromONC(
   NET_LOG(ERROR) << "Failed to get SM-DX activation code from ONC "
                  << "configuration. Expected either an SM-DP+ activation code "
                  << "or an SM-DS activation code but got neither.";
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void SetEphemeralNetworkPoliciesEnabled() {

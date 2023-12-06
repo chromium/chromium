@@ -94,8 +94,8 @@ class CryptAuthDeviceManagerImpl : public CryptAuthDeviceManager,
  private:
   // CryptAuthGCMManager::Observer:
   void OnResyncMessage(
-      const absl::optional<std::string>& session_id,
-      const absl::optional<CryptAuthFeatureType>& feature_type) override;
+      const std::optional<std::string>& session_id,
+      const std::optional<CryptAuthFeatureType>& feature_type) override;
 
   // Updates |unlock_keys_| by fetching the list stored in |pref_service_|.
   void UpdateUnlockKeysFromPrefs();

@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_FAKE_BLUETOOTH_HELPER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -13,7 +14,6 @@
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/services/secure_channel/bluetooth_helper.h"
 #include "chromeos/ash/services/secure_channel/data_with_timestamp.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {
 
@@ -46,7 +46,7 @@ class FakeBluetoothHelper : public BluetoothHelper {
   // BluetoothHelper:
   std::unique_ptr<DataWithTimestamp> GenerateForegroundAdvertisement(
       const DeviceIdPair& device_id_pair) override;
-  absl::optional<DeviceWithBackgroundBool> PerformIdentifyRemoteDevice(
+  std::optional<DeviceWithBackgroundBool> PerformIdentifyRemoteDevice(
       const std::string& service_data,
       const DeviceIdPairSet& device_id_pair_set) override;
   std::string GetBluetoothPublicAddress(const std::string& device_id) override;

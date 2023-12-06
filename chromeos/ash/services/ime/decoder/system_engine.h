@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_SERVICES_IME_DECODER_SYSTEM_ENGINE_H_
 #define CHROMEOS_ASH_SERVICES_IME_DECODER_SYSTEM_ENGINE_H_
 
+#include <optional>
+
 #include "base/scoped_native_library.h"
 #include "chromeos/ash/services/ime/ime_shared_library_wrapper.h"
 #include "chromeos/ash/services/ime/public/cpp/shared_lib/interfaces.h"
@@ -16,7 +18,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace ime {
@@ -31,7 +32,7 @@ class SystemEngine {
  public:
   explicit SystemEngine(
       ImeCrosPlatform* platform,
-      absl::optional<ImeSharedLibraryWrapper::EntryPoints> entry_points);
+      std::optional<ImeSharedLibraryWrapper::EntryPoints> entry_points);
 
   SystemEngine(const SystemEngine&) = delete;
   SystemEngine& operator=(const SystemEngine&) = delete;
@@ -44,7 +45,7 @@ class SystemEngine {
   bool IsConnected();
 
  private:
-  absl::optional<ImeSharedLibraryWrapper::EntryPoints> decoder_entry_points_;
+  std::optional<ImeSharedLibraryWrapper::EntryPoints> decoder_entry_points_;
 };
 
 }  // namespace ime

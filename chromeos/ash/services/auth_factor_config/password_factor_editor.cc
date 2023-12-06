@@ -33,7 +33,7 @@ mojom::PasswordComplexity CheckLocalPasswordComplexityImpl(
   // We're counting unicode points here because we already have a function for
   // that, but graphemes might be closer to the user's understanding of what
   // the length of a string is.
-  absl::optional<size_t> unicode_size =
+  std::optional<size_t> unicode_size =
       base::CountUnicodeCharacters(password.data(), password.size());
   CHECK(unicode_size.has_value());
 
@@ -237,7 +237,7 @@ void PasswordFactorEditor::OnPasswordConfigured(
     base::OnceCallback<void(mojom::ConfigureResult)> callback,
     const std::string& auth_token,
     std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   if (error) {
     LOG(ERROR) << "Failed to configure password, code "
                << error->get_cryptohome_code();

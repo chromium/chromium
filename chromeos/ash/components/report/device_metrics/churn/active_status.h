@@ -6,13 +6,13 @@
 #define CHROMEOS_ASH_COMPONENTS_REPORT_DEVICE_METRICS_CHURN_ACTIVE_STATUS_H_
 
 #include <bitset>
+#include <optional>
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/report/prefs/fresnel_pref_names.h"
 #include "chromeos/ash/components/report/proto/fresnel_service.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -63,14 +63,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) ActiveStatus {
 
   // Returns a copy of the 28 bit updated active status value which reflects
   // the current month is also active.
-  absl::optional<int> CalculateNewValue(base::Time ts) const;
+  std::optional<int> CalculateNewValue(base::Time ts) const;
 
   // The inception month and the month count since inception are utilized to
   // generate a fresh timestamp that signifies the presently active month.
-  absl::optional<base::Time> GetCurrentActiveMonthTimestamp() const;
+  std::optional<base::Time> GetCurrentActiveMonthTimestamp() const;
 
   // Return necessary information used to send the churn cohort request.
-  absl::optional<ChurnCohortMetadata> CalculateCohortMetadata(
+  std::optional<ChurnCohortMetadata> CalculateCohortMetadata(
       base::Time active_ts) const;
 
   // Return necessary information used to send the churn observation request,
@@ -79,7 +79,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) ActiveStatus {
   // |period| = 0 indicates 3-month period starting current month.
   // |period| = 1 indicates 3-month period starting last month.
   // |period| = 2 indicates 3-month period starting two months ago.
-  absl::optional<ChurnObservationMetadata> CalculateObservationMetadata(
+  std::optional<ChurnObservationMetadata> CalculateObservationMetadata(
       base::Time active_ts,
       int period) const;
 
@@ -88,21 +88,21 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) ActiveStatus {
   friend class ActiveStatusTest;
 
   // Return |kActiveStatusInceptionDate| as a GMT timestamp.
-  absl::optional<base::Time> GetInceptionMonthTimestamp() const;
+  std::optional<base::Time> GetInceptionMonthTimestamp() const;
 
   // Return timestamp representing the first GMT monday of the year in |ts|.
   base::Time GetFirstMondayFromNewYear(base::Time ts) const;
 
   // The ActivateDate is formatted: YYYY-WW and is generated based on GMT date.
   // Return the first day of the ISO8601 week.
-  absl::optional<base::Time> Iso8601DateWeekAsTime(
+  std::optional<base::Time> Iso8601DateWeekAsTime(
       int activate_year,
       int activate_week_of_year) const;
 
   // Get 1st day of the GMT based first active week, which uses ISO8601 date
   // (week) format. Field relies on ActivateDate VPD field, which is set
   // after OOBE is completed on the device for the first time.
-  absl::optional<base::Time> GetFirstActiveWeek() const;
+  std::optional<base::Time> GetFirstActiveWeek() const;
 
   // Return the int representation of the known months since inception, based
   // on the active status value in local state pref.
@@ -117,7 +117,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) ActiveStatus {
   bool IsDeviceActiveInMonth(int month_idx) const;
 
   // Helper to check if |active_ts| aligns with the first active month.
-  absl::optional<bool> IsFirstActiveInCohort(base::Time active_ts) const;
+  std::optional<bool> IsFirstActiveInCohort(base::Time active_ts) const;
 
   // Used to read/write the latest active status value.
   const raw_ptr<PrefService, ExperimentalAsh> local_state_;

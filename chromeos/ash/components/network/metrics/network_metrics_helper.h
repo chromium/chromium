@@ -5,10 +5,11 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_METRICS_NETWORK_METRICS_HELPER_H_
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_METRICS_NETWORK_METRICS_HELPER_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "chromeos/ash/components/network/metrics/connection_results.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -37,15 +38,15 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetricsHelper {
       const std::string& guid,
       bool is_auto_connect,
       bool is_repeated_error,
-      const absl::optional<std::string>& shill_error = absl::nullopt);
+      const std::optional<std::string>& shill_error = std::nullopt);
 
   // Logs result of a user initiated connection attempt for a network with a
   // given |guid|. If |network_connection_error| has no value, a connection
   // success is logged.
   static void LogUserInitiatedConnectionResult(
       const std::string& guid,
-      const absl::optional<std::string>& network_connection_error =
-          absl::nullopt);
+      const std::optional<std::string>& network_connection_error =
+          std::nullopt);
 
   // Logs to relevant connection states such as non-user initiated
   // disconnections from a connected state and successful connections. More may
@@ -53,21 +54,21 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetricsHelper {
   static void LogConnectionStateResult(
       const std::string& guid,
       const ConnectionState status,
-      const absl::optional<ShillConnectResult> shill_error);
+      const std::optional<ShillConnectResult> shill_error);
 
   // Logs result of an attempt to enable a shill associated network technology
   // type.
   static void LogEnableTechnologyResult(
       const std::string& technology,
       bool success,
-      const absl::optional<std::string>& shill_error = absl::nullopt);
+      const std::optional<std::string>& shill_error = std::nullopt);
 
   // Logs result of an attempt to disable a shill associated network technology
   // type.
   static void LogDisableTechnologyResult(
       const std::string& technology,
       bool success,
-      const absl::optional<std::string>& shill_error = absl::nullopt);
+      const std::optional<std::string>& shill_error = std::nullopt);
 
   NetworkMetricsHelper();
   ~NetworkMetricsHelper();

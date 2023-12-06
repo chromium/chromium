@@ -370,7 +370,7 @@ NetworkTypePattern NetworkTypePatternFromOncType(const std::string& type) {
   return NetworkTypePattern::Default();
 }
 
-absl::optional<base::Value::Dict> ConvertOncProxySettingsToProxyConfig(
+std::optional<base::Value::Dict> ConvertOncProxySettingsToProxyConfig(
     const base::Value::Dict& onc_proxy_settings) {
   std::string type = GetString(onc_proxy_settings, ::onc::proxy::kType);
 
@@ -391,7 +391,7 @@ absl::optional<base::Value::Dict> ConvertOncProxySettingsToProxyConfig(
         onc_proxy_settings.FindDict(::onc::proxy::kManual);
     if (!manual_dict) {
       NET_LOG(ERROR) << "Manual proxy missing dictionary";
-      return absl::nullopt;
+      return std::nullopt;
     }
     std::string manual_spec;
     AppendProxyServerForScheme(*manual_dict, ::onc::proxy::kFtp, &manual_spec);
@@ -410,10 +410,10 @@ absl::optional<base::Value::Dict> ConvertOncProxySettingsToProxyConfig(
                                                      bypass_rules.ToString());
   }
   NOTREACHED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<base::Value::Dict> ConvertProxyConfigToOncProxySettings(
+std::optional<base::Value::Dict> ConvertProxyConfigToOncProxySettings(
     const base::Value::Dict& proxy_config_dict) {
   // Create a ProxyConfigDictionary from the dictionary.
   ProxyConfigDictionary proxy_config(proxy_config_dict.Clone());
@@ -422,7 +422,7 @@ absl::optional<base::Value::Dict> ConvertProxyConfigToOncProxySettings(
   base::Value::Dict proxy_settings;
   ProxyPrefs::ProxyMode mode;
   if (!proxy_config.GetMode(&mode)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   switch (mode) {
     case ProxyPrefs::MODE_DIRECT: {
@@ -475,7 +475,7 @@ absl::optional<base::Value::Dict> ConvertProxyConfigToOncProxySettings(
     }
     default: {
       LOG(ERROR) << "Unexpected proxy mode in Shill config: " << mode;
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
   return proxy_settings;

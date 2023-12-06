@@ -182,7 +182,7 @@ class TwentyEightDayImplDirectCheckIn : public TwentyEightDayImplBase {
     twenty_eight_day_impl_->SetLastPingTimestamp(ts);
   }
 
-  absl::optional<FresnelImportDataRequest>
+  std::optional<FresnelImportDataRequest>
   GenerateImportRequestBodyForTesting() {
     return twenty_eight_day_impl_->GenerateImportRequestBody();
   }

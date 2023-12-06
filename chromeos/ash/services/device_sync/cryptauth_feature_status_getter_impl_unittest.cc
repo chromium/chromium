@@ -5,6 +5,7 @@
 #include "chromeos/ash/services/device_sync/cryptauth_feature_status_getter_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -28,7 +29,6 @@
 #include "chromeos/ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_v2_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -178,7 +178,7 @@ class DeviceSyncCryptAuthFeatureStatusGetterImplTest
       const base::flat_set<CryptAuthFeatureType>& feature_types) {
     cryptauthv2::BatchGetFeatureStatusesResponse response;
     for (const std::string& device_id : device_ids) {
-      absl::optional<CryptAuthDevice> device = GetTestDeviceWithId(device_id);
+      std::optional<CryptAuthDevice> device = GetTestDeviceWithId(device_id);
       if (!device)
         continue;
 
@@ -245,7 +245,7 @@ class DeviceSyncCryptAuthFeatureStatusGetterImplTest
     device_sync_result_code_ = device_sync_result_code;
   }
 
-  absl::optional<cryptauthv2::BatchGetFeatureStatusesRequest>
+  std::optional<cryptauthv2::BatchGetFeatureStatusesRequest>
       batch_get_feature_statuses_request_;
   CryptAuthClient::BatchGetFeatureStatusesCallback
       batch_get_feature_statuses_success_callback_;
@@ -253,8 +253,7 @@ class DeviceSyncCryptAuthFeatureStatusGetterImplTest
 
   CryptAuthFeatureStatusGetter::IdToDeviceSoftwareFeatureInfoMap
       id_to_device_software_feature_info_map_;
-  absl::optional<CryptAuthDeviceSyncResult::ResultCode>
-      device_sync_result_code_;
+  std::optional<CryptAuthDeviceSyncResult::ResultCode> device_sync_result_code_;
 
   std::unique_ptr<MockCryptAuthClientFactory> client_factory_;
   raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh> timer_;

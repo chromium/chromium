@@ -5,12 +5,12 @@
 #ifndef CHROMEOS_STARTUP_STARTUP_H_
 #define CHROMEOS_STARTUP_STARTUP_H_
 
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -22,13 +22,13 @@ bool IsLaunchedWithPostLoginParams();
 // specified via the kCrosStartupDataFD command line flag. This function
 // consumes the FD, so this must not be called twice in a process.
 COMPONENT_EXPORT(CHROMEOS_STARTUP)
-absl::optional<std::string> ReadStartupData();
+std::optional<std::string> ReadStartupData();
 
 // Reads the post-login data. The FD to be read for the startup data should be
 // specified via the kCrosPostLoginDataFD command line flag. This function
 // consumes the FD, so this must not be called twice in a process.
 COMPONENT_EXPORT(CHROMEOS_STARTUP)
-absl::optional<std::string> ReadPostLoginData();
+std::optional<std::string> ReadPostLoginData();
 
 // Creates a memory backed file containing the serialized |params|,
 // and returns its FD.

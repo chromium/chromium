@@ -5,10 +5,11 @@
 #ifndef CHROMEOS_CROSAPI_CPP_KEYSTORE_SERVICE_UTIL_H_
 #define CHROMEOS_CROSAPI_CPP_KEYSTORE_SERVICE_UTIL_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/values.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
 namespace keystore_service_util {
@@ -26,15 +27,15 @@ COMPONENT_EXPORT(CROSAPI)
 extern const char kWebCryptoNamedCurveP256[];
 
 // Converts a crosapi signing algorithm into a WebCrypto dictionary. Returns
-// absl::nullopt on error.
+// std::nullopt on error.
 COMPONENT_EXPORT(CROSAPI)
-absl::optional<base::Value::Dict> DictionaryFromSigningAlgorithm(
+std::optional<base::Value::Dict> DictionaryFromSigningAlgorithm(
     const mojom::KeystoreSigningAlgorithmPtr& algorithm);
 
 // Converts a WebCrypto dictionary into a crosapi signing algorithm. Returns
-// absl::nullopt on error.
+// std::nullopt on error.
 COMPONENT_EXPORT(CROSAPI)
-absl::optional<mojom::KeystoreSigningAlgorithmPtr>
+std::optional<mojom::KeystoreSigningAlgorithmPtr>
 SigningAlgorithmFromDictionary(const base::Value::Dict& dictionary);
 
 // Creates the KeystorePKCS115Params variant of the KeystoreSigningAlgorithm

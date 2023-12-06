@@ -5,10 +5,11 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER_LACROS_AVAILABILITY_H_
 #define CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER_LACROS_AVAILABILITY_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/strings/string_piece.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 class PolicyMap;
@@ -56,7 +57,7 @@ BASE_DECLARE_FEATURE(kLacrosGooglePolicyRollout);
 // Parses the string representation of LacrosAvailability policy value into
 // the enum value. Returns nullopt on unknown value.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
-absl::optional<LacrosAvailability> ParseLacrosAvailability(
+std::optional<LacrosAvailability> ParseLacrosAvailability(
     base::StringPiece value);
 
 // Returns the policy value name from the given value.

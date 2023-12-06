@@ -81,14 +81,14 @@ CryptAuthFeatureStatusSetterImpl::CryptAuthFeatureStatusSetterImpl(
 CryptAuthFeatureStatusSetterImpl::~CryptAuthFeatureStatusSetterImpl() = default;
 
 // static
-absl::optional<base::TimeDelta>
+std::optional<base::TimeDelta>
 CryptAuthFeatureStatusSetterImpl::GetTimeoutForState(State state) {
   switch (state) {
     case State::kWaitingForBatchSetFeatureStatusesResponse:
       return kWaitingForBatchSetFeatureStatusesResponseTimeout;
     default:
       // Signifies that there should not be a timeout.
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -134,7 +134,7 @@ void CryptAuthFeatureStatusSetterImpl::SetState(State state) {
   state_ = state;
   last_state_change_timestamp_ = base::TimeTicks::Now();
 
-  absl::optional<base::TimeDelta> timeout_for_state = GetTimeoutForState(state);
+  std::optional<base::TimeDelta> timeout_for_state = GetTimeoutForState(state);
   if (!timeout_for_state)
     return;
 
@@ -217,7 +217,7 @@ void CryptAuthFeatureStatusSetterImpl::OnBatchSetFeatureStatusesSuccess(
   RecordBatchSetFeatureStatusesMetrics(
       base::TimeTicks::Now() - last_state_change_timestamp_,
       CryptAuthApiCallResult::kSuccess);
-  FinishAttempt(absl::nullopt /* error */);
+  FinishAttempt(std::nullopt /* error */);
 }
 
 void CryptAuthFeatureStatusSetterImpl::OnBatchSetFeatureStatusesFailure(
@@ -232,7 +232,7 @@ void CryptAuthFeatureStatusSetterImpl::OnBatchSetFeatureStatusesFailure(
 }
 
 void CryptAuthFeatureStatusSetterImpl::FinishAttempt(
-    absl::optional<NetworkRequestError> error) {
+    std::optional<NetworkRequestError> error) {
   cryptauth_client_.reset();
   SetState(State::kIdle);
 

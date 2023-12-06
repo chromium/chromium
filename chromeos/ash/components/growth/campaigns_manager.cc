@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
@@ -13,7 +15,6 @@
 #include "chromeos/ash/components/growth/campaigns_matcher.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace growth {
 
@@ -23,7 +24,7 @@ CampaignsManager* g_instance = nullptr;
 
 inline constexpr char kCampaignFileName[] = "campaigns.json";
 
-absl::optional<base::Value::Dict> ReadCampaignsFile(
+std::optional<base::Value::Dict> ReadCampaignsFile(
     const base::FilePath& campaigns_component_path) {
   const auto campaigns_load_start_time = base::TimeTicks::Now();
 
@@ -35,16 +36,16 @@ absl::optional<base::Value::Dict> ReadCampaignsFile(
     RecordCampaignsManagerError(CampaignsManagerError::kCampaignsFileLoadFail);
     RecordCampaignsComponentReadDuration(base::TimeTicks::Now() -
                                          campaigns_load_start_time);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<base::Value> value(base::JSONReader::Read(campaigns_data));
+  std::optional<base::Value> value(base::JSONReader::Read(campaigns_data));
   if (!value || !value->is_dict()) {
     LOG(ERROR) << "Failed to parse campaigns file.";
     RecordCampaignsManagerError(CampaignsManagerError::kCampaignsParsingFail);
     RecordCampaignsComponentReadDuration(base::TimeTicks::Now() -
                                          campaigns_load_start_time);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   RecordCampaignsComponentReadDuration(base::TimeTicks::Now() -
@@ -103,14 +104,14 @@ const Campaign* CampaignsManager::GetCampaignBySlot(Slot slot) const {
 
 void CampaignsManager::OnCampaignsComponentLoaded(
     base::OnceClosure load_callback,
-    const absl::optional<const base::FilePath>& path) {
+    const std::optional<const base::FilePath>& path) {
   RecordCampaignsComponentDownloadDuration(base::TimeTicks::Now() -
                                            campaigns_download_start_time_);
   if (!path.has_value()) {
     LOG(ERROR) << "Failed to load campaign component.";
     RecordCampaignsManagerError(
         CampaignsManagerError::kCampaignsComponentLoadFail);
-    OnCampaignsLoaded(std::move(load_callback), /*campaigns=*/absl::nullopt);
+    OnCampaignsLoaded(std::move(load_callback), /*campaigns=*/std::nullopt);
     return;
   }
   // Read the campaigns file from component mounted path.
@@ -122,7 +123,7 @@ void CampaignsManager::OnCampaignsComponentLoaded(
 
 void CampaignsManager::OnCampaignsLoaded(
     base::OnceClosure load_callback,
-    absl::optional<base::Value::Dict> campaigns_dict) {
+    std::optional<base::Value::Dict> campaigns_dict) {
   // Load campaigns into campaigns store.
   if (campaigns_dict.has_value()) {
     // Update campaigns store.

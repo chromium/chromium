@@ -5,12 +5,12 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_POLICY_WEEKLY_TIME_TIME_UTILS_H_
 #define CHROMEOS_ASH_COMPONENTS_POLICY_WEEKLY_TIME_TIME_UTILS_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace base {
@@ -62,9 +62,9 @@ bool Contains(const base::Time& time,
               const std::vector<WeeklyTimeInterval>& intervals);
 
 // Returns next start or end interval time after |current_time|, or
-// absl::nullopt in case |weekly_time_intervals| is empty.
+// std::nullopt in case |weekly_time_intervals| is empty.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
-absl::optional<base::Time> GetNextEventTime(
+std::optional<base::Time> GetNextEventTime(
     const base::Time& current_time,
     const std::vector<WeeklyTimeInterval>& weekly_time_intervals);
 

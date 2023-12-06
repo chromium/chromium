@@ -507,7 +507,7 @@ void AuthFactorEditor::ReplacePasswordFactorImpl(
 void AuthFactorEditor::OnListAuthFactors(
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback,
-    absl::optional<user_data_auth::ListAuthFactorsReply> reply) {
+    std::optional<user_data_auth::ListAuthFactorsReply> reply) {
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
   if (cryptohome::HasError(error)) {
     LOGIN_LOG(ERROR) << "Could not list auth factors " << error;
@@ -561,7 +561,7 @@ void AuthFactorEditor::OnListAuthFactors(
     if (proto_type == user_data_auth::AUTH_FACTOR_TYPE_FINGERPRINT) {
       continue;
     }
-    absl::optional<cryptohome::AuthFactorType> type =
+    std::optional<cryptohome::AuthFactorType> type =
         cryptohome::SafeConvertFactorTypeFromProto(
             static_cast<user_data_auth::AuthFactorType>(proto_type));
     if (!type.has_value()) {
@@ -575,13 +575,13 @@ void AuthFactorEditor::OnListAuthFactors(
   AuthFactorsConfiguration configured_factors(std::move(factor_list),
                                               supported_factors);
   context->SetAuthFactorsConfiguration(std::move(configured_factors));
-  std::move(callback).Run(std::move(context), absl::nullopt);
+  std::move(callback).Run(std::move(context), std::nullopt);
 }
 
 void AuthFactorEditor::OnAddAuthFactor(
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback,
-    absl::optional<user_data_auth::AddAuthFactorReply> reply) {
+    std::optional<user_data_auth::AddAuthFactorReply> reply) {
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
   if (cryptohome::HasError(error)) {
     LOGIN_LOG(ERROR) << "AddAuthFactor failed with error " << error;
@@ -591,7 +591,7 @@ void AuthFactorEditor::OnAddAuthFactor(
   CHECK(reply.has_value());
   LOGIN_LOG(EVENT) << "Successfully added auth factor";
   context->ClearAuthFactorsConfiguration();
-  std::move(callback).Run(std::move(context), absl::nullopt);
+  std::move(callback).Run(std::move(context), std::nullopt);
   // TODO(crbug.com/1310312): Think if we should update SessionAuthFactors in
   // context after such operation.
 }
@@ -599,7 +599,7 @@ void AuthFactorEditor::OnAddAuthFactor(
 void AuthFactorEditor::OnUpdateAuthFactor(
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback,
-    absl::optional<user_data_auth::UpdateAuthFactorReply> reply) {
+    std::optional<user_data_auth::UpdateAuthFactorReply> reply) {
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
   if (cryptohome::HasError(error)) {
     LOGIN_LOG(ERROR) << "UpdateAuthFactor failed with error " << error;
@@ -609,13 +609,13 @@ void AuthFactorEditor::OnUpdateAuthFactor(
   CHECK(reply.has_value());
   LOGIN_LOG(EVENT) << "Successfully updated auth factor";
   context->ClearAuthFactorsConfiguration();
-  std::move(callback).Run(std::move(context), absl::nullopt);
+  std::move(callback).Run(std::move(context), std::nullopt);
 }
 
 void AuthFactorEditor::OnRemoveAuthFactor(
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback,
-    absl::optional<::user_data_auth::RemoveAuthFactorReply> reply) {
+    std::optional<::user_data_auth::RemoveAuthFactorReply> reply) {
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
   if (cryptohome::HasError(error)) {
     LOG(WARNING) << "RemoveAuthFactor failed with error " << error;
@@ -626,7 +626,7 @@ void AuthFactorEditor::OnRemoveAuthFactor(
   CHECK(reply.has_value());
   LOGIN_LOG(EVENT) << "Successfully removed auth factor";
   context->ClearAuthFactorsConfiguration();
-  std::move(callback).Run(std::move(context), absl::nullopt);
+  std::move(callback).Run(std::move(context), std::nullopt);
 }
 
 }  // namespace ash

@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_RECORDING_WEBM_ENCODER_MUXER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/queue.h"
@@ -24,7 +25,6 @@
 #include "media/muxers/muxer_timestamp_adapter.h"
 #include "media/video/vpx_video_encoder.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace base {
@@ -155,12 +155,12 @@ class WebmEncoderMuxer : public RecordingEncoder {
   // which will then be sent to the muxer.
   void OnVideoEncoderOutput(
       media::VideoEncoderOutput output,
-      absl::optional<media::VideoEncoder::CodecDescription> codec_description);
+      std::optional<media::VideoEncoder::CodecDescription> codec_description);
 
   // Called by the audio encoder to provide the |encoded_audio|.
   void OnAudioEncoded(
       media::EncodedAudioBuffer encoded_audio,
-      absl::optional<media::AudioEncoder::CodecDescription> codec_description);
+      std::optional<media::AudioEncoder::CodecDescription> codec_description);
 
   // Called when the audio encoder flushes all its buffered frames, at which
   // point we can flush the video encoder. |on_done| will be passed to

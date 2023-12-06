@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -39,7 +40,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 namespace stable::mojom {
@@ -352,7 +352,7 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
   // Returns ash's version of the Crosapi mojo interface version. This
   // determines which interface methods are available. This is safe to call from
   // any sequence. This can only be called after BindReceiver().
-  absl::optional<uint32_t> CrosapiVersion() const;
+  std::optional<uint32_t> CrosapiVersion() const;
 
   // Requests ash-chrome to send idle info updates.
   void StartSystemIdleCache();

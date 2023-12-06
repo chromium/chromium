@@ -479,7 +479,7 @@ TEST_F(NetworkMetricsHelperTest, CellularESim) {
 
   NetworkMetricsHelper::LogConnectionStateResult(
       kTestGuid, NetworkMetricsHelper::ConnectionState::kConnected,
-      /*shill_error=*/absl::nullopt);
+      /*shill_error=*/std::nullopt);
   histogram_tester_->ExpectTotalCount(kCellularESimConnectionStateHistogram, 1);
   histogram_tester_->ExpectTotalCount(kCellularConnectionStateHistogram, 1);
   histogram_tester_->ExpectTotalCount(kCellularPSimConnectionStateHistogram, 0);
@@ -566,7 +566,7 @@ TEST_F(NetworkMetricsHelperTest, CellularESimPolicy) {
 
   NetworkMetricsHelper::LogConnectionStateResult(
       kTestGuid, NetworkMetricsHelper::ConnectionState::kConnected,
-      /*shill_error=*/absl::nullopt);
+      /*shill_error=*/std::nullopt);
   histogram_tester_->ExpectTotalCount(kCellularESimConnectionStateHistogram, 1);
   histogram_tester_->ExpectTotalCount(
       kCellularESimPolicyConnectionStateHistogram, 1);
@@ -662,7 +662,7 @@ TEST_F(NetworkMetricsHelperTest, CellularPSim) {
 
   NetworkMetricsHelper::LogConnectionStateResult(
       kTestGuid, NetworkMetricsHelper::ConnectionState::kConnected,
-      /*shill_error=*/absl::nullopt);
+      /*shill_error=*/std::nullopt);
   histogram_tester_->ExpectTotalCount(kCellularPSimConnectionStateHistogram, 1);
   histogram_tester_->ExpectTotalCount(kCellularConnectionStateHistogram, 1);
   histogram_tester_->ExpectTotalCount(kCellularESimConnectionStateHistogram, 0);
@@ -750,7 +750,7 @@ TEST_F(NetworkMetricsHelperTest, VPN) {
       base::BindRepeating(&NetworkMetricsHelper::LogAllConnectionResult,
                           kTestGuid,
                           /*is_auto_connect=*/false, /*is_repeated_error=*/true,
-                          /*shill_error=*/absl::nullopt);
+                          /*shill_error=*/std::nullopt);
 
   base::RepeatingClosure log_user_initiated_connection_result =
       base::BindRepeating(
@@ -759,7 +759,7 @@ TEST_F(NetworkMetricsHelperTest, VPN) {
   base::RepeatingClosure log_connection_state_result = base::BindRepeating(
       &NetworkMetricsHelper::LogConnectionStateResult, kTestGuid,
       NetworkMetricsHelper::ConnectionState::kConnected,
-      /*shill_error=*/absl::nullopt);
+      /*shill_error=*/std::nullopt);
   base::RepeatingClosure log_connection_state_shill_error_result =
       base::BindRepeating(
           &NetworkMetricsHelper::LogConnectionStateResult, kTestGuid,
@@ -949,7 +949,7 @@ TEST_F(NetworkMetricsHelperTest, WifiOpen) {
 
   NetworkMetricsHelper::LogConnectionStateResult(
       kTestGuid, NetworkMetricsHelper::ConnectionState::kConnected,
-      /*shill_error=*/absl::nullopt);
+      /*shill_error=*/std::nullopt);
   histogram_tester_->ExpectTotalCount(kWifiConnectionStateHistogram, 1);
   histogram_tester_->ExpectTotalCount(kWifiOpenConnectionStateHistogram, 1);
   histogram_tester_->ExpectTotalCount(
@@ -1033,7 +1033,7 @@ TEST_F(NetworkMetricsHelperTest, WifiPasswordProtected) {
 
   NetworkMetricsHelper::LogConnectionStateResult(
       kTestGuid, NetworkMetricsHelper::ConnectionState::kConnected,
-      /*shill_error=*/absl::nullopt);
+      /*shill_error=*/std::nullopt);
   histogram_tester_->ExpectTotalCount(kWifiConnectionStateHistogram, 1);
   histogram_tester_->ExpectTotalCount(kWifiOpenConnectionStateHistogram, 0);
   histogram_tester_->ExpectTotalCount(
@@ -1116,7 +1116,7 @@ TEST_F(NetworkMetricsHelperTest, EthernetNoEap) {
 
   NetworkMetricsHelper::LogConnectionStateResult(
       kTestGuid, NetworkMetricsHelper::ConnectionState::kConnected,
-      /*shill_error=*/absl::nullopt);
+      /*shill_error=*/std::nullopt);
   histogram_tester_->ExpectTotalCount(kEthernetConnectionStateHistogram, 1);
   histogram_tester_->ExpectTotalCount(kEthernetEapConnectionStateHistogram, 0);
   histogram_tester_->ExpectTotalCount(kEthernetNoEapConnectionStateHistogram,
@@ -1214,7 +1214,7 @@ TEST_F(NetworkMetricsHelperTest, EthernetEap) {
 
   NetworkMetricsHelper::LogConnectionStateResult(
       kTestGuid, NetworkMetricsHelper::ConnectionState::kConnected,
-      /*shill_error=*/absl::nullopt);
+      /*shill_error=*/std::nullopt);
   histogram_tester_->ExpectTotalCount(kEthernetConnectionStateHistogram, 1);
   histogram_tester_->ExpectTotalCount(kEthernetEapConnectionStateHistogram, 1);
   histogram_tester_->ExpectTotalCount(kEthernetNoEapConnectionStateHistogram,

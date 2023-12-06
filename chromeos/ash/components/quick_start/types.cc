@@ -5,11 +5,11 @@
 #include "chromeos/ash/components/quick_start/types.h"
 
 #include <cstdint>
+#include <optional>
 #include <vector>
 
 #include "base/base64.h"
 #include "base/base64url.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::quick_start {
 
@@ -24,11 +24,10 @@ Base64UrlString Base64UrlEncode(const std::string& data) {
   return Base64UrlEncode(std::vector<uint8_t>(data.begin(), data.end()));
 }
 
-absl::optional<Base64UrlString> Base64UrlTranscode(const Base64String& data) {
-  absl::optional<std::vector<uint8_t>> decoded_bytes =
-      base::Base64Decode(*data);
+std::optional<Base64UrlString> Base64UrlTranscode(const Base64String& data) {
+  std::optional<std::vector<uint8_t>> decoded_bytes = base::Base64Decode(*data);
   if (!decoded_bytes) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return Base64UrlEncode(*decoded_bytes);

@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
 
+#include <optional>
 #include "ash/constants/ash_features.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
@@ -16,7 +17,6 @@
 #include "dbus/mock_object_proxy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::_;
 using ::testing::Invoke;
@@ -705,14 +705,14 @@ TEST_F(FwupdClientTest, SetFeatureFlagsWithV2FlagEnabled) {
 
   // Helper function to get the int64 args passed to the given method_call.
   auto GetInt64ArgumentOfMethod =
-      [](dbus::MethodCall* method_call) -> absl::optional<int64_t> {
+      [](dbus::MethodCall* method_call) -> std::optional<int64_t> {
     dbus::MessageReader reader(method_call);
     if (!reader.HasMoreData()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     int64_t feature_flag_arguments;
     if (!reader.PopInt64(&feature_flag_arguments)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return feature_flag_arguments;
   };

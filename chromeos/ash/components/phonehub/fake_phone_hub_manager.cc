@@ -91,7 +91,7 @@ FakePingManager* FakePhoneHubManager::GetPingManager() {
 }
 
 void FakePhoneHubManager::GetHostLastSeenTimestamp(
-    base::OnceCallback<void(absl::optional<base::Time>)> callback) {
+    base::OnceCallback<void(std::optional<base::Time>)> callback) {
   std::move(callback).Run(host_last_seen_timestamp_);
 }
 

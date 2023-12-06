@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string>
-
 #include "chromeos/ash/components/language_packs/language_packs_impl.h"
 
+#include <optional>
+#include <string>
+
 #include "base/no_destructor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::language_packs {
 
@@ -20,7 +20,7 @@ using ::ash::language::mojom::PackState;
 
 namespace {
 
-absl::optional<std::string> ConvertMojoFeatureToPackId(FeatureId mojo_id) {
+std::optional<std::string> ConvertMojoFeatureToPackId(FeatureId mojo_id) {
   switch (mojo_id) {
     case FeatureId::HANDWRITING_RECOGNITION:
       return kHandwritingFeatureId;
@@ -30,7 +30,7 @@ absl::optional<std::string> ConvertMojoFeatureToPackId(FeatureId mojo_id) {
 
     // Catch all unknown cases here.
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -112,7 +112,7 @@ void LanguagePacksImpl::BindReceiver(
 void LanguagePacksImpl::GetPackInfo(FeatureId feature_id,
                                     const std::string& language,
                                     GetPackInfoCallback mojo_callback) {
-  const absl::optional<std::string> pack_id =
+  const std::optional<std::string> pack_id =
       ConvertMojoFeatureToPackId(feature_id);
 
   if (pack_id.has_value()) {
@@ -129,7 +129,7 @@ void LanguagePacksImpl::GetPackInfo(FeatureId feature_id,
 void LanguagePacksImpl::InstallPack(FeatureId feature_id,
                                     const std::string& language,
                                     InstallPackCallback mojo_callback) {
-  const absl::optional<std::string> pack_id =
+  const std::optional<std::string> pack_id =
       ConvertMojoFeatureToPackId(feature_id);
 
   if (pack_id.has_value()) {
@@ -145,7 +145,7 @@ void LanguagePacksImpl::InstallPack(FeatureId feature_id,
 
 void LanguagePacksImpl::InstallBasePack(FeatureId feature_id,
                                         InstallBasePackCallback mojo_callback) {
-  const absl::optional<std::string> pack_id =
+  const std::optional<std::string> pack_id =
       ConvertMojoFeatureToPackId(feature_id);
 
   if (pack_id.has_value()) {
@@ -162,7 +162,7 @@ void LanguagePacksImpl::InstallBasePack(FeatureId feature_id,
 void LanguagePacksImpl::UninstallPack(FeatureId feature_id,
                                       const std::string& language,
                                       UninstallPackCallback mojo_callback) {
-  const absl::optional<std::string> pack_id =
+  const std::optional<std::string> pack_id =
       ConvertMojoFeatureToPackId(feature_id);
 
   // We ignore the request if the input parameters are incorrect.

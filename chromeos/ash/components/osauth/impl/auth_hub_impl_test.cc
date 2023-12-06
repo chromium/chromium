@@ -126,7 +126,7 @@ class AuthHubTestBase : public ::testing::Test {
   raw_ptr<MockAuthFactorEngine> engine_ = nullptr;
   raw_ptr<AuthFactorEngine::FactorEngineObserver, AcrossTasksDanglingUntriaged>
       engine_observer_ = nullptr;
-  absl::optional<AuthFactorEngine::UsageAllowed> engine_usage_;
+  std::optional<AuthFactorEngine::UsageAllowed> engine_usage_;
 };
 
 using AuthHubTestMode = AuthHubTestBase;

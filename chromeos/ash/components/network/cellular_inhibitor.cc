@@ -77,10 +77,10 @@ void CellularInhibitor::InhibitCellularScanning(InhibitReason reason,
   ProcessRequests();
 }
 
-absl::optional<CellularInhibitor::InhibitReason>
+std::optional<CellularInhibitor::InhibitReason>
 CellularInhibitor::GetInhibitReason() const {
   if (state_ == State::kIdle)
-    return absl::nullopt;
+    return std::nullopt;
 
   return inhibit_requests_.front()->inhibit_reason;
 }
@@ -153,7 +153,7 @@ void CellularInhibitor::ProcessRequests() {
 
 void CellularInhibitor::OnInhibit(
     bool success,
-    absl::optional<CellularInhibitor::InhibitOperationResult> result) {
+    std::optional<CellularInhibitor::InhibitOperationResult> result) {
   DCHECK(state_ == State::kWaitForInhibit || state_ == State::kInhibiting);
 
   if (success) {
@@ -255,7 +255,7 @@ void CellularInhibitor::SetInhibitProperty() {
 
   // If the new value is already set, return early.
   if (cellular_device->inhibited() == new_inhibit_value) {
-    ReturnSetInhibitPropertyResult(/*success=*/true, /*result=*/absl::nullopt);
+    ReturnSetInhibitPropertyResult(/*success=*/true, /*result=*/std::nullopt);
     return;
   }
 
@@ -292,7 +292,7 @@ void CellularInhibitor::OnSetPropertyError(bool attempted_inhibit,
 
 void CellularInhibitor::ReturnSetInhibitPropertyResult(
     bool success,
-    absl::optional<CellularInhibitor::InhibitOperationResult> result) {
+    std::optional<CellularInhibitor::InhibitOperationResult> result) {
   set_inhibit_timer_.Stop();
   if (state_ == State::kInhibiting || state_ == State::kWaitForInhibit) {
     OnInhibit(success, result);
@@ -317,7 +317,7 @@ void CellularInhibitor::CheckInhibitPropertyIfNeeded() {
   if (state_ == State::kWaitForUninhibit && cellular_device->inhibited())
     return;
 
-  ReturnSetInhibitPropertyResult(/*success=*/true, /*result=*/absl::nullopt);
+  ReturnSetInhibitPropertyResult(/*success=*/true, /*result=*/std::nullopt);
 }
 
 void CellularInhibitor::OnInhibitPropertyChangeTimeout() {

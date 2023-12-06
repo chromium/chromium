@@ -10,7 +10,7 @@ namespace proximity_auth {
 
 FakeRemoteDeviceLifeCycle::FakeRemoteDeviceLifeCycle(
     ash::multidevice::RemoteDeviceRef remote_device,
-    absl::optional<ash::multidevice::RemoteDeviceRef> local_device)
+    std::optional<ash::multidevice::RemoteDeviceRef> local_device)
     : remote_device_(remote_device),
       local_device_(local_device),
       started_(false),

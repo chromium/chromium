@@ -17,7 +17,7 @@
 
 namespace ash::network_name_util {
 
-absl::optional<std::string> GetESimProfileName(
+std::optional<std::string> GetESimProfileName(
     CellularESimProfileHandler* cellular_esim_profile_handler,
     const NetworkState* network_state) {
   DCHECK(network_state);
@@ -25,15 +25,15 @@ absl::optional<std::string> GetESimProfileName(
   // CellularESimProfileHandler is not available if the relevant flag is
   // disabled.
   if (!cellular_esim_profile_handler)
-    return absl::nullopt;
+    return std::nullopt;
 
   // Only Cellular networks correspond to eSIM profiles.
   if (network_state->type() != shill::kTypeCellular)
-    return absl::nullopt;
+    return std::nullopt;
 
   // eSIM profiles have an associated EID and ICCID.
   if (network_state->eid().empty() || network_state->iccid().empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   std::vector<CellularESimProfile> profiles =
       cellular_esim_profile_handler->GetESimProfiles();
@@ -56,10 +56,10 @@ absl::optional<std::string> GetESimProfileName(
       return base::UTF16ToUTF8(profile.name());
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<CellularESimProfile> GetMatchedESimProfile(
+std::optional<CellularESimProfile> GetMatchedESimProfile(
     CellularESimProfileHandler* cellular_esim_profile_handler,
     const NetworkState* network_state) {
   std::vector<CellularESimProfile> profiles =
@@ -72,7 +72,7 @@ absl::optional<CellularESimProfile> GetMatchedESimProfile(
     return profile;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::string GetNetworkName(
@@ -80,7 +80,7 @@ std::string GetNetworkName(
     const NetworkState* network_state) {
   DCHECK(network_state);
   if (!network_state->eid().empty()) {
-    absl::optional<std::string> network_name;
+    std::optional<std::string> network_name;
     network_name =
         GetESimProfileName(cellular_esim_profile_handler, network_state);
     if (network_name.has_value())
@@ -95,7 +95,7 @@ bool HasNickName(CellularESimProfileHandler* cellular_esim_profile_handler,
   if (!cellular_esim_profile_handler) {
     return false;
   }
-  absl::optional<CellularESimProfile> profile =
+  std::optional<CellularESimProfile> profile =
       GetMatchedESimProfile(cellular_esim_profile_handler, network_state);
   if (profile.has_value() && !profile.value().nickname().empty()) {
     return true;
@@ -110,7 +110,7 @@ std::string GetServiceProvider(
   if (!cellular_esim_profile_handler) {
     return "";
   }
-  absl::optional<CellularESimProfile> profile =
+  std::optional<CellularESimProfile> profile =
       GetMatchedESimProfile(cellular_esim_profile_handler, network_state);
   if (profile.has_value()) {
     return base::UTF16ToUTF8(profile.value().service_provider());

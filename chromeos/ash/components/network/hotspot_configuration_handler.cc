@@ -123,7 +123,7 @@ void HotspotConfigurationHandler::OnSetHotspotConfigFailure(
 void HotspotConfigurationHandler::LoggedInStateChanged() {
   if (!LoginState::Get()->IsUserLoggedIn()) {
     if (hotspot_config_) {
-      hotspot_config_ = absl::nullopt;
+      hotspot_config_ = std::nullopt;
       NotifyHotspotConfigurationChanged();
     }
     return;
@@ -135,7 +135,7 @@ void HotspotConfigurationHandler::LoggedInStateChanged() {
 
 void HotspotConfigurationHandler::UpdateHotspotConfigAndRunCallback(
     SetHotspotConfigCallback callback,
-    absl::optional<base::Value::Dict> properties) {
+    std::optional<base::Value::Dict> properties) {
   if (!properties) {
     NET_LOG(EVENT) << "Error getting Shill manager properties.";
     std::move(callback).Run(

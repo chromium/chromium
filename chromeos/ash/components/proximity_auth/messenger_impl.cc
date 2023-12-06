@@ -147,7 +147,7 @@ void MessengerImpl::OnMessageReceived(const std::string& payload) {
 
 void MessengerImpl::HandleMessage(const std::string& message) {
   // The decoded message should be a JSON string.
-  absl::optional<base::Value> message_value = base::JSONReader::Read(message);
+  std::optional<base::Value> message_value = base::JSONReader::Read(message);
   if (!message_value || !message_value->is_dict()) {
     PA_LOG(ERROR) << "Unable to parse message as JSON:\n" << message;
     return;

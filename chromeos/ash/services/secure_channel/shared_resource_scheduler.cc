@@ -36,11 +36,11 @@ void RemoveItemFromList(const DeviceIdPair& item,
 }
 
 // Remove the first item from |list| and returns it. If |list| is empty,
-// absl::nullopt is returned.
-absl::optional<DeviceIdPair> RemoveFirstItemFromList(
+// std::nullopt is returned.
+std::optional<DeviceIdPair> RemoveFirstItemFromList(
     std::list<DeviceIdPair>* list) {
   if (list->empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   DeviceIdPair first_item = list->front();
   list->pop_front();
@@ -139,10 +139,10 @@ void SharedResourceScheduler::RemoveScheduledRequest(
   }
 }
 
-absl::optional<std::pair<DeviceIdPair, ConnectionPriority>>
+std::optional<std::pair<DeviceIdPair, ConnectionPriority>>
 SharedResourceScheduler::GetNextScheduledRequest() {
   for (const auto& priority : kOrderedPriorities) {
-    absl::optional<DeviceIdPair> potential_request =
+    std::optional<DeviceIdPair> potential_request =
         RemoveFirstItemFromList(&priority_to_queued_requests_map_[priority]);
     if (!potential_request)
       continue;
@@ -159,17 +159,17 @@ SharedResourceScheduler::GetNextScheduledRequest() {
     return std::make_pair(*potential_request, priority);
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<ConnectionPriority>
+std::optional<ConnectionPriority>
 SharedResourceScheduler::GetHighestPriorityOfScheduledRequests() {
   for (const auto& priority : kOrderedPriorities) {
     if (!priority_to_queued_requests_map_[priority].empty())
       return priority;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace ash::secure_channel

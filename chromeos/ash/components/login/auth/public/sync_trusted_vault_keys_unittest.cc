@@ -4,10 +4,11 @@
 
 #include "chromeos/ash/components/login/auth/public/sync_trusted_vault_keys.h"
 
+#include <optional>
+
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace {

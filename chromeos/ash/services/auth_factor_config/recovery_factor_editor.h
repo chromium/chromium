@@ -45,7 +45,7 @@ class RecoveryFactorEditor : public mojom::RecoveryFactorEditor {
       base::OnceCallback<void(mojom::ConfigureResult)> callback,
       const std::string& auth_token,
       std::unique_ptr<UserContext> context,
-      absl::optional<AuthenticationError> error);
+      std::optional<AuthenticationError> error);
 
   raw_ptr<AuthFactorConfig> auth_factor_config_;
   AuthFactorEditor auth_factor_editor_;

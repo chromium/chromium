@@ -6,11 +6,11 @@
 #define CHROMEOS_ASH_COMPONENTS_TETHER_DISCONNECT_TETHERING_REQUEST_SENDER_IMPL_H_
 
 #include <map>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/tether/disconnect_tethering_operation.h"
 #include "chromeos/ash/components/tether/disconnect_tethering_request_sender.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::device_sync {
 class DeviceSyncClient;
@@ -71,7 +71,7 @@ class DisconnectTetheringRequestSenderImpl
  private:
   void OnTetherHostFetched(
       const std::string& device_id,
-      absl::optional<multidevice::RemoteDeviceRef> tether_host);
+      std::optional<multidevice::RemoteDeviceRef> tether_host);
 
   raw_ptr<device_sync::DeviceSyncClient, ExperimentalAsh> device_sync_client_;
   raw_ptr<secure_channel::SecureChannelClient, ExperimentalAsh>

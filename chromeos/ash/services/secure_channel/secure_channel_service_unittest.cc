@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
@@ -47,7 +48,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {
 
@@ -485,10 +485,9 @@ class FakeClientConnectionParametersFactory
     return id_to_active_client_parameters_map_;
   }
 
-  const std::unordered_map<
-      base::UnguessableToken,
-      absl::optional<mojom::ConnectionAttemptFailureReason>,
-      base::UnguessableTokenHash>&
+  const std::unordered_map<base::UnguessableToken,
+                           std::optional<mojom::ConnectionAttemptFailureReason>,
+                           base::UnguessableTokenHash>&
   id_to_failure_reason_when_deleted_map() {
     return id_to_failure_reason_when_deleted_map_;
   }
@@ -525,7 +524,7 @@ class FakeClientConnectionParametersFactory
       id_to_active_client_parameters_map_;
 
   std::unordered_map<base::UnguessableToken,
-                     absl::optional<mojom::ConnectionAttemptFailureReason>,
+                     std::optional<mojom::ConnectionAttemptFailureReason>,
                      base::UnguessableTokenHash>
       id_to_failure_reason_when_deleted_map_;
 };
@@ -1001,7 +1000,7 @@ class SecureChannelServiceTest : public testing::Test {
     EXPECT_EQ(expected_failure_reason, GetFailureReasonForRequest(id));
   }
 
-  const absl::optional<mojom::ConnectionAttemptFailureReason>&
+  const std::optional<mojom::ConnectionAttemptFailureReason>&
   GetFailureReasonForRequest(const base::UnguessableToken& id) {
     return fake_client_connection_parameters_factory_
         ->id_to_failure_reason_when_deleted_map()

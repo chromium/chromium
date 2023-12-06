@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/auth_panel/views/password_auth_view.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/login/ui/arrow_button_view.h"
 #include "ash/login/ui/non_accessible_view.h"
@@ -17,7 +18,6 @@
 #include "chromeos/ash/components/auth_panel/views/login_textfield.h"
 #include "chromeos/ash/components/auth_panel/views/view_size_constants.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -239,19 +239,19 @@ bool PasswordAuthView::OnKeyPressed(const ui::KeyEvent& event) {
 void PasswordAuthView::OnCapsLockChanged(bool enabled) {
   dispatcher_->DispatchEvent(AuthPanelEventDispatcher::UserAction{
       AuthPanelEventDispatcher::UserAction::Type::kCapslockKeyPressed,
-      absl::nullopt});
+      std::nullopt});
 }
 
 void PasswordAuthView::OnSubmitButtonPressed() {
   dispatcher_->DispatchEvent(AuthPanelEventDispatcher::UserAction{
       AuthPanelEventDispatcher::UserAction::Type::kPasswordSubmit,
-      absl::nullopt});
+      std::nullopt});
 }
 
 void PasswordAuthView::OnDisplayPasswordButtonPressed() {
   dispatcher_->DispatchEvent(AuthPanelEventDispatcher::UserAction{
       AuthPanelEventDispatcher::UserAction::Type::kDisplayPasswordButtonPressed,
-      absl::nullopt});
+      std::nullopt});
 }
 
 void PasswordAuthView::ContentsChanged(views::Textfield* sender,

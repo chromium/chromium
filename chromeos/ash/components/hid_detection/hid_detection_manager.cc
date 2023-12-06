@@ -12,7 +12,7 @@ HidDetectionManager::HidDetectionStatus::HidDetectionStatus(
     InputMetadata pointer_metadata,
     InputMetadata keyboard_metadata,
     bool touchscreen_detected,
-    absl::optional<BluetoothHidPairingState> pairing_state)
+    std::optional<BluetoothHidPairingState> pairing_state)
     : pointer_metadata(pointer_metadata),
       keyboard_metadata(keyboard_metadata),
       touchscreen_detected(touchscreen_detected),

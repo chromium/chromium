@@ -23,9 +23,9 @@ NearbyOnDemandScheduler::NearbyOnDemandScheduler(bool retry_failures,
 
 NearbyOnDemandScheduler::~NearbyOnDemandScheduler() = default;
 
-absl::optional<base::TimeDelta>
+std::optional<base::TimeDelta>
 NearbyOnDemandScheduler::TimeUntilRecurringRequest(base::Time now) const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace ash::nearby

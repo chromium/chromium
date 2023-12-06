@@ -5,9 +5,10 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_GROWTH_ACTION_PERFORMER_H_
 #define CHROMEOS_ASH_COMPONENTS_GROWTH_ACTION_PERFORMER_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace growth {
 
@@ -34,8 +35,8 @@ enum class ActionResultReason {
 // can make.
 class ActionPerformer {
  public:
-  using Callback = base::OnceCallback<void(ActionResult,
-                                           absl::optional<ActionResultReason>)>;
+  using Callback =
+      base::OnceCallback<void(ActionResult, std::optional<ActionResultReason>)>;
   ActionPerformer() = default;
   ActionPerformer(const ActionPerformer&) = delete;
   ActionPerformer& operator=(const ActionPerformer&) = delete;

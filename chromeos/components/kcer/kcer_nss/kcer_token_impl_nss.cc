@@ -9,6 +9,7 @@
 #include <secerr.h>
 #include <stdint.h>
 
+#include <optional>
 #include <queue>
 #include <string>
 #include <vector>
@@ -32,7 +33,6 @@
 #include "net/cert/scoped_nss_types.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util_nss.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/constants/pkcs11_custom_attributes.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -739,7 +739,7 @@ std::vector<SigningScheme> GetSigningSchemes(bool supports_pss,
   return result;
 }
 
-base::expected<absl::optional<chaps::KeyPermissions>, Error>
+base::expected<std::optional<chaps::KeyPermissions>, Error>
 GetKeyPermissionsOnWorkerThread(
     KeyPermissionsAttributeId key_permissions_attribute_id,
     const crypto::ScopedSECKEYPrivateKey& sec_private_key) {
@@ -760,7 +760,7 @@ GetKeyPermissionsOnWorkerThread(
     // and to return nullopt |attribute_value| instead.
     int error = PORT_GetError();
     if (error == SEC_ERROR_BAD_DATA) {
-      return absl::nullopt;
+      return std::nullopt;
     } else {
       return base::unexpected(Error::kFailedToReadAttribute);
     }
@@ -774,7 +774,7 @@ GetKeyPermissionsOnWorkerThread(
   return key_permissions;
 }
 
-base::expected<absl::optional<std::string>, Error>
+base::expected<std::optional<std::string>, Error>
 GetCertProvisioningIdOnWorkerThread(
     CertProvisioningIdAttributeId cert_prov_attribute_id,
     const crypto::ScopedSECKEYPrivateKey& sec_private_key) {
@@ -794,7 +794,7 @@ GetCertProvisioningIdOnWorkerThread(
     // and to return nullopt |attribute_value| instead.
     int error = PORT_GetError();
     if (error == SEC_ERROR_BAD_DATA) {
-      return absl::nullopt;
+      return std::nullopt;
     } else {
       return base::unexpected(Error::kFailedToReadAttribute);
     }
@@ -854,7 +854,7 @@ void GetKeyInfoOnWorkerThread(
     PORT_Free(nickname);
   }
 
-  base::expected<absl::optional<chaps::KeyPermissions>, Error> key_permissions =
+  base::expected<std::optional<chaps::KeyPermissions>, Error> key_permissions =
       GetKeyPermissionsOnWorkerThread(key_permissions_attribute_id,
                                       sec_private_key);
   if (!key_permissions.has_value()) {
@@ -862,7 +862,7 @@ void GetKeyInfoOnWorkerThread(
   }
   key_info.key_permissions = std::move(key_permissions).value();
 
-  base::expected<absl::optional<std::string>, Error> cert_prov_id =
+  base::expected<std::optional<std::string>, Error> cert_prov_id =
       GetCertProvisioningIdOnWorkerThread(cert_prov_attribute_id,
                                           sec_private_key);
   if (!cert_prov_id.has_value()) {

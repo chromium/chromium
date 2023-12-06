@@ -68,7 +68,7 @@ class CryptAuthDeviceNotifierImpl : public CryptAuthDeviceNotifier {
 
   friend std::ostream& operator<<(std::ostream& stream, const State& state);
 
-  static absl::optional<base::TimeDelta> GetTimeoutForState(State state);
+  static std::optional<base::TimeDelta> GetTimeoutForState(State state);
 
   struct Request {
     Request(const base::flat_set<std::string>& device_ids,
@@ -108,7 +108,7 @@ class CryptAuthDeviceNotifierImpl : public CryptAuthDeviceNotifier {
   void OnBatchNotifyGroupDevicesSuccess(
       const cryptauthv2::BatchNotifyGroupDevicesResponse& response);
   void OnBatchNotifyGroupDevicesFailure(NetworkRequestError error);
-  void FinishAttempt(absl::optional<NetworkRequestError> error);
+  void FinishAttempt(std::optional<NetworkRequestError> error);
 
   State state_ = State::kIdle;
   base::TimeTicks last_state_change_timestamp_;

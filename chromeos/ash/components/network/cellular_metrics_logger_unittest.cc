@@ -1432,7 +1432,7 @@ TEST_F(CellularMetricsLoggerTest,
   CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
       device_prefs.registry());
 
-  const absl::optional<base::Value::Dict> policy =
+  const std::optional<base::Value::Dict> policy =
       base::JSONReader::ReadDict(kEnterpriseESimPolicy);
   ASSERT_TRUE(policy.has_value());
 
@@ -1473,7 +1473,7 @@ TEST_F(CellularMetricsLoggerTest,
   CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
       device_prefs.registry());
 
-  const absl::optional<base::Value::Dict> policy =
+  const std::optional<base::Value::Dict> policy =
       base::JSONReader::ReadDict(kEnterpriseESimPolicy);
   ASSERT_TRUE(policy.has_value());
 

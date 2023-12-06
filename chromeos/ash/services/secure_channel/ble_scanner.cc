@@ -72,11 +72,11 @@ void BleScanner::NotifyReceivedAdvertisementFromDevice(
   }
 }
 
-absl::optional<base::Time> BleScanner::GetLastSeenTimestamp(
+std::optional<base::Time> BleScanner::GetLastSeenTimestamp(
     const std::string& remote_device_id) {
   auto it = remote_device_id_to_last_seen_timestamp_.find(remote_device_id);
   if (it == remote_device_id_to_last_seen_timestamp_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return it->second;

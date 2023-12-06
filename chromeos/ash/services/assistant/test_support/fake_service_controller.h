@@ -6,9 +6,8 @@
 #define CHROMEOS_ASH_SERVICES_ASSISTANT_TEST_SUPPORT_FAKE_SERVICE_CONTROLLER_H_
 
 #include <mutex>
+#include <optional>
 #include <string>
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -27,7 +26,7 @@ class FakeServiceController : public libassistant::mojom::ServiceController,
                               public libassistant::mojom::SettingsController {
  public:
   // Value returned when optional fields |access_token| or |user_id| are
-  // missing. Note we use this instead of a |absl::optional| because this
+  // missing. Note we use this instead of a |std::optional| because this
   // results in a much nicer error message if the test fails. (otherwise you get
   // a message like this:
   //     Expected equality of these values:
@@ -76,7 +75,7 @@ class FakeServiceController : public libassistant::mojom::ServiceController,
   // True if ResetAllDataAndStop() was called.
   bool has_data_been_reset() const { return has_data_been_reset_; }
 
-  absl::optional<bool> dark_mode_enabled() const { return dark_mode_enabled_; }
+  std::optional<bool> dark_mode_enabled() const { return dark_mode_enabled_; }
 
  private:
   // mojom::ServiceController implementation:
@@ -118,7 +117,7 @@ class FakeServiceController : public libassistant::mojom::ServiceController,
   std::vector<libassistant::mojom::AuthenticationTokenPtr>
       authentication_tokens_;
 
-  absl::optional<bool> dark_mode_enabled_;
+  std::optional<bool> dark_mode_enabled_;
 
   State state_ = State::kStopped;
   mojo::Receiver<libassistant::mojom::ServiceController> service_receiver_{

@@ -247,7 +247,7 @@ void ExpectSyncedDevicesAndPrefAreEqual(
       EXPECT_FALSE(expected_device.has_bluetooth_address());
     }
 
-    absl::optional<bool> unlock_key = device_dictionary->FindBool("unlock_key");
+    std::optional<bool> unlock_key = device_dictionary->FindBool("unlock_key");
     if (unlock_key.has_value()) {
       EXPECT_TRUE(expected_device.has_unlock_key());
       EXPECT_EQ(expected_device.unlock_key(), unlock_key.value());
@@ -255,7 +255,7 @@ void ExpectSyncedDevicesAndPrefAreEqual(
       EXPECT_FALSE(expected_device.has_unlock_key());
     }
 
-    absl::optional<bool> unlockable = device_dictionary->FindBool("unlockable");
+    std::optional<bool> unlockable = device_dictionary->FindBool("unlockable");
     if (unlockable.has_value()) {
       EXPECT_TRUE(expected_device.has_unlockable());
       EXPECT_EQ(expected_device.unlockable(), unlockable.value());
@@ -276,7 +276,7 @@ void ExpectSyncedDevicesAndPrefAreEqual(
       EXPECT_FALSE(expected_device.has_last_update_time_millis());
     }
 
-    absl::optional<bool> mobile_hotspot_supported =
+    std::optional<bool> mobile_hotspot_supported =
         device_dictionary->FindBool("mobile_hotspot_supported");
     if (mobile_hotspot_supported.has_value()) {
       EXPECT_TRUE(expected_device.has_mobile_hotspot_supported());
@@ -286,7 +286,7 @@ void ExpectSyncedDevicesAndPrefAreEqual(
       EXPECT_FALSE(expected_device.has_mobile_hotspot_supported());
     }
 
-    absl::optional<int> device_type = device_dictionary->FindInt("device_type");
+    std::optional<int> device_type = device_dictionary->FindInt("device_type");
     if (device_type.has_value()) {
       EXPECT_TRUE(expected_device.has_device_type());
       EXPECT_EQ(DeviceTypeStringToEnum(expected_device.device_type()),
@@ -332,7 +332,7 @@ void ExpectSyncedDevicesAndPrefAreEqual(
       EXPECT_FALSE(expected_device.beacon_seeds_size());
     }
 
-    absl::optional<bool> arc_plus_plus =
+    std::optional<bool> arc_plus_plus =
         device_dictionary->FindBool("arc_plus_plus");
     if (arc_plus_plus.has_value()) {
       EXPECT_TRUE(expected_device.has_arc_plus_plus());
@@ -341,7 +341,7 @@ void ExpectSyncedDevicesAndPrefAreEqual(
       EXPECT_FALSE(expected_device.has_arc_plus_plus());
     }
 
-    absl::optional<bool> pixel_phone =
+    std::optional<bool> pixel_phone =
         device_dictionary->FindBool("pixel_phone");
     if (pixel_phone.has_value()) {
       EXPECT_TRUE(expected_device.has_pixel_phone());
@@ -973,8 +973,8 @@ TEST_F(DeviceSyncCryptAuthDeviceManagerImplTest, SyncOnGCMPushMessage) {
   device_manager_->Start();
 
   EXPECT_CALL(*sync_scheduler(), ForceSync());
-  gcm_manager_.PushResyncMessage(absl::nullopt /* session_id */,
-                                 absl::nullopt /* feature_type */);
+  gcm_manager_.PushResyncMessage(std::nullopt /* session_id */,
+                                 std::nullopt /* feature_type */);
 
   FireSchedulerForSync(cryptauth::INVOCATION_REASON_SERVER_INITIATED);
 
@@ -991,8 +991,8 @@ TEST_F(DeviceSyncCryptAuthDeviceManagerImplTest, SyncDeviceWithNoContents) {
   device_manager_->Start();
 
   EXPECT_CALL(*sync_scheduler(), ForceSync());
-  gcm_manager_.PushResyncMessage(absl::nullopt /* session_id */,
-                                 absl::nullopt /* feature_type */);
+  gcm_manager_.PushResyncMessage(std::nullopt /* session_id */,
+                                 std::nullopt /* feature_type */);
 
   FireSchedulerForSync(cryptauth::INVOCATION_REASON_SERVER_INITIATED);
 

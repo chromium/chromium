@@ -142,7 +142,7 @@ base::Value::Dict SupportedAndEnabledSoftwareFeaturesToDictionaryValue(
     cryptauth::SoftwareFeature software_feature =
         SoftwareFeatureStringToEnum(software_feature_key);
 
-    absl::optional<int> software_feature_state =
+    std::optional<int> software_feature_state =
         dictionary.FindInt(software_feature_key);
     bool software_feature_success_result = true;
     if (!software_feature_state ||
@@ -445,7 +445,7 @@ bool DictionaryToUnlockKey(const base::Value::Dict& dictionary,
 
   // TODO(crbug.com/848477): Migrate |unlockable| into
   // |supported_software_features|.
-  absl::optional<bool> unlockable =
+  std::optional<bool> unlockable =
       dictionary.FindBool(kExternalDeviceKeyUnlockable);
   if (unlockable.has_value())
     external_device->set_unlockable(unlockable.value());
@@ -463,7 +463,7 @@ bool DictionaryToUnlockKey(const base::Value::Dict& dictionary,
     }
   }
 
-  absl::optional<int> device_type =
+  std::optional<int> device_type =
       dictionary.FindInt(kExternalDeviceKeyDeviceType);
   if (device_type.has_value() &&
       cryptauth::DeviceType_IsValid(device_type.value())) {
@@ -476,12 +476,12 @@ bool DictionaryToUnlockKey(const base::Value::Dict& dictionary,
   if (beacon_seeds)
     AddBeaconSeedsToExternalDevice(*beacon_seeds, external_device);
 
-  absl::optional<bool> arc_plus_plus =
+  std::optional<bool> arc_plus_plus =
       dictionary.FindBool(kExternalDeviceKeyArcPlusPlus);
   if (arc_plus_plus.has_value())
     external_device->set_arc_plus_plus(arc_plus_plus.value());
 
-  absl::optional<bool> pixel_phone =
+  std::optional<bool> pixel_phone =
       dictionary.FindBool(kExternalDeviceKeyPixelPhone);
   if (pixel_phone.has_value())
     external_device->set_pixel_phone(pixel_phone.value());
@@ -497,9 +497,9 @@ bool DictionaryToUnlockKey(const base::Value::Dict& dictionary,
     }
   }
 
-  absl::optional<bool> unlock_key =
+  std::optional<bool> unlock_key =
       dictionary.FindBool(kExternalDeviceKeyUnlockKey);
-  absl::optional<bool> mobile_hotspot_supported =
+  std::optional<bool> mobile_hotspot_supported =
       dictionary.FindBool(kExternalDeviceKeyMobileHotspotSupported);
 
   const base::Value::Dict* software_features_dictionary =
@@ -739,8 +739,8 @@ void CryptAuthDeviceManagerImpl::OnGetMyDevicesFailure(
 }
 
 void CryptAuthDeviceManagerImpl::OnResyncMessage(
-    const absl::optional<std::string>& session_id,
-    const absl::optional<CryptAuthFeatureType>& feature_type) {
+    const std::optional<std::string>& session_id,
+    const std::optional<CryptAuthFeatureType>& feature_type) {
   ForceSyncNow(cryptauth::INVOCATION_REASON_SERVER_INITIATED);
 }
 

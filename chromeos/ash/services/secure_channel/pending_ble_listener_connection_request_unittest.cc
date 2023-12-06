@@ -56,15 +56,14 @@ class SecureChannelPendingBleListenerConnectionRequestTest
             fake_pending_connection_request_delegate_.get(), mock_adapter_);
   }
 
-  const absl::optional<
-      PendingConnectionRequestDelegate::FailedConnectionReason>&
+  const std::optional<PendingConnectionRequestDelegate::FailedConnectionReason>&
   GetFailedConnectionReason() {
     return fake_pending_connection_request_delegate_
         ->GetFailedConnectionReasonForId(
             pending_ble_listener_request_->GetRequestId());
   }
 
-  const absl::optional<mojom::ConnectionAttemptFailureReason>&
+  const std::optional<mojom::ConnectionAttemptFailureReason>&
   GetConnectionAttemptFailureReason() {
     return fake_client_connection_parameters_->failure_reason();
   }

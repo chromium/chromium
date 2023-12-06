@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/osauth/impl/auth_session_storage_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/check.h"
@@ -18,7 +19,6 @@
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -148,7 +148,7 @@ void AuthSessionStorageImpl::Return(const AuthProofToken& token,
 
   if (data_it->second->invalidate_on_return) {
     data_it->second->invalidate_on_return = false;
-    Invalidate(token, absl::nullopt);
+    Invalidate(token, std::nullopt);
     return;
   }
 
@@ -232,7 +232,7 @@ void AuthSessionStorageImpl::Withdraw(const AuthProofToken& token,
 
 void AuthSessionStorageImpl::Invalidate(
     const AuthProofToken& token,
-    absl::optional<InvalidationCallback> on_invalidated) {
+    std::optional<InvalidationCallback> on_invalidated) {
   auto data_it = tokens_.find(token);
   // If token was already invalidated, just call a callback.
   if (data_it == std::end(tokens_)) {
@@ -284,7 +284,7 @@ std::unique_ptr<ScopedSessionRefresher> AuthSessionStorageImpl::KeepAlive(
 void AuthSessionStorageImpl::OnSessionInvalidated(
     const AuthProofToken& token,
     std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     LOG(ERROR)
         << "There was an error during attempt to invalidate auth session:"
@@ -330,7 +330,7 @@ void AuthSessionStorageImpl::HandleSessionRefresh(const AuthProofToken& token) {
   if (remaining_lifetime.is_negative()) {
     // Too late.
     LOG(ERROR) << "Could not extend authsession lifetime before it timed out.";
-    Invalidate(token, absl::nullopt);
+    Invalidate(token, std::nullopt);
     return;
   }
   if (data_it->second->keep_alive_counter <= 0) {
@@ -374,7 +374,7 @@ void AuthSessionStorageImpl::ExtendAuthSession(const AuthProofToken& token) {
 void AuthSessionStorageImpl::OnExtendAuthSession(
     const AuthProofToken& token,
     std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     LOG(ERROR)
         << "There was an error during attempt to extend auth session lifetime "
@@ -389,7 +389,7 @@ void AuthSessionStorageImpl::OnExtendAuthSession(
 
   if (data_it->second->invalidate_on_return) {
     data_it->second->invalidate_on_return = false;
-    Invalidate(token, absl::nullopt);
+    Invalidate(token, std::nullopt);
     return;
   }
   // Schedule next refresh if needed.

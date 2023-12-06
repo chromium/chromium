@@ -169,7 +169,7 @@ class CohortImplDirectCheckInTest : public CohortImplTestBase {
 
   CohortImpl* GetCohortImpl() { return cohort_impl_.get(); }
 
-  absl::optional<FresnelImportDataRequest>
+  std::optional<FresnelImportDataRequest>
   GenerateImportRequestBodyForTesting() {
     return cohort_impl_->GenerateImportRequestBody();
   }
@@ -213,7 +213,7 @@ TEST_F(CohortImplDirectCheckInTest, ValidateBrandNewDeviceFlow) {
 
   // Validate FresnelImportRequest body is generated as expected.
   // active status 72351745 represents 0100010100 000000000000000001
-  absl::optional<FresnelImportDataRequest> data =
+  std::optional<FresnelImportDataRequest> data =
       GenerateImportRequestBodyForTesting();
   EXPECT_EQ(data->import_data_size(), 1);
   FresnelImportData import_data = data->import_data().at(0);

@@ -39,12 +39,12 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
     total_system_memory_kb_ = mem_kb;
   }
 
-  void set_set_game_mode_response(absl::optional<GameMode> response) {
+  void set_set_game_mode_response(std::optional<GameMode> response) {
     set_game_mode_response_ = response;
   }
 
   void set_set_game_mode_with_timeout_response(
-      absl::optional<GameMode> response) {
+      std::optional<GameMode> response) {
     previous_game_mode_state_ = response;
   }
 
@@ -76,8 +76,8 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
   void RemoveArcContainerObserver(ArcContainerObserver* observer) override;
 
  private:
-  absl::optional<GameMode> set_game_mode_response_;
-  absl::optional<GameMode> previous_game_mode_state_ = GameMode::OFF;
+  std::optional<GameMode> set_game_mode_response_;
+  std::optional<GameMode> previous_game_mode_state_ = GameMode::OFF;
 
   int enter_game_mode_count_ = 0;
   int exit_game_mode_count_ = 0;

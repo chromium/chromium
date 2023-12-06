@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/language_packs/language_packs_util.h"
 
+#include <optional>
+
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
@@ -16,7 +18,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
 
 namespace ash::language_packs {
@@ -190,11 +191,11 @@ bool IsOobe() {
 
 base::flat_set<std::string> MapThenFilterStrings(
     base::span<const std::string> inputs,
-    base::RepeatingCallback<absl::optional<std::string>(const std::string&)>
+    base::RepeatingCallback<std::optional<std::string>(const std::string&)>
         input_mapping) {
   std::vector<std::string> output;
   for (const auto& input : inputs) {
-    const absl::optional<std::string> result = input_mapping.Run(input);
+    const std::optional<std::string> result = input_mapping.Run(input);
     if (result.has_value()) {
       output.push_back(std::move(*result));
     }

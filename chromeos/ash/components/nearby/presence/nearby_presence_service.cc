@@ -26,7 +26,7 @@ NearbyPresenceService::ScanDelegate::~ScanDelegate() = default;
 
 NearbyPresenceService::PresenceDevice::PresenceDevice(
     ::nearby::internal::Metadata metadata,
-    absl::optional<std::string> stable_device_id,
+    std::optional<std::string> stable_device_id,
     std::string endpoint_id,
     std::vector<Action> actions,
     int rssi)

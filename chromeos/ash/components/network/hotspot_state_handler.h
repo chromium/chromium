@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_HOTSPOT_STATE_HANDLER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
@@ -16,7 +17,6 @@
 #include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -46,7 +46,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
 
   // Returns the reason for hotspot being disabled. nullopt is returned when the
   // disable reason isn't set
-  const absl::optional<hotspot_config::mojom::DisableReason> GetDisableReason()
+  const std::optional<hotspot_config::mojom::DisableReason> GetDisableReason()
       const;
 
   // Return the latest hotspot active client count
@@ -77,7 +77,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
     size_t value_ = 0;
 
     // The wake lock id. It has values if and only if the wake lock is enabled.
-    absl::optional<int> wake_lock_id_ = std::nullopt;
+    std::optional<int> wake_lock_id_ = std::nullopt;
   };
 
   // ShillPropertyChangedObserver overrides
@@ -85,7 +85,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
                          const base::Value& value) override;
 
   // Callback to handle the manager properties with hotspot related properties.
-  void OnManagerProperties(absl::optional<base::Value::Dict> properties);
+  void OnManagerProperties(std::optional<base::Value::Dict> properties);
 
   // Update the cached hotspot_state_ and active_client_count_ from hotspot
   // status in Shill.
@@ -100,8 +100,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
   hotspot_config::mojom::HotspotState hotspot_state_ =
       hotspot_config::mojom::HotspotState::kDisabled;
 
-  absl::optional<hotspot_config::mojom::DisableReason> disable_reason_ =
-      absl::nullopt;
+  std::optional<hotspot_config::mojom::DisableReason> disable_reason_ =
+      std::nullopt;
 
   ActiveClientCount active_client_count_;
 

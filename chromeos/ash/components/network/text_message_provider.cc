@@ -45,7 +45,7 @@ void TextMessageProvider::MessageReceivedFromNetwork(
 }
 
 void TextMessageProvider::PoliciesChanged(const std::string& userhash) {
-  absl::optional<PolicyTextMessageSuppressionState> old_state =
+  std::optional<PolicyTextMessageSuppressionState> old_state =
       policy_suppression_state_;
 
   policy_suppression_state_ =

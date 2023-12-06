@@ -66,14 +66,14 @@ class FakeMultiplexedChannelDelegate : public MultiplexedChannel::Delegate {
 
   ~FakeMultiplexedChannelDelegate() override;
 
-  const absl::optional<ConnectionDetails>& disconnected_connection_details() {
+  const std::optional<ConnectionDetails>& disconnected_connection_details() {
     return disconnected_connection_details_;
   }
 
  private:
   void OnDisconnected(const ConnectionDetails& connection_details) override;
 
-  absl::optional<ConnectionDetails> disconnected_connection_details_;
+  std::optional<ConnectionDetails> disconnected_connection_details_;
 };
 
 }  // namespace ash::secure_channel

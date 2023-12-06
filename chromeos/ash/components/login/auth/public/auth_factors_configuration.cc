@@ -5,13 +5,13 @@
 #include "chromeos/ash/components/login/auth/public/auth_factors_configuration.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/cryptohome/common_types.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 

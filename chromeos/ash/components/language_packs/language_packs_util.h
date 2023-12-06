@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_LANGUAGE_PACKS_LANGUAGE_PACKS_UTIL_H_
 #define CHROMEOS_ASH_COMPONENTS_LANGUAGE_PACKS_LANGUAGE_PACKS_UTIL_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -13,7 +14,6 @@
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/language_packs/language_pack_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -60,7 +60,7 @@ bool IsOobe();
 // filtered strings from the input.
 base::flat_set<std::string> MapThenFilterStrings(
     base::span<const std::string> inputs,
-    base::RepeatingCallback<absl::optional<std::string>(const std::string&)>
+    base::RepeatingCallback<std::optional<std::string>(const std::string&)>
         input_mapping);
 
 // Extracts the set of input method IDs from the appropriate user Pref.

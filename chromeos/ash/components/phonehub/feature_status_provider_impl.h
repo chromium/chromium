@@ -89,7 +89,7 @@ class FeatureStatusProviderImpl
   raw_ptr<chromeos::PowerManagerClient, ExperimentalAsh> power_manager_client_;
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
-  absl::optional<FeatureStatus> status_;
+  std::optional<FeatureStatus> status_;
   bool is_suspended_ = false;
 
   base::WeakPtrFactory<FeatureStatusProviderImpl> weak_ptr_factory_{this};

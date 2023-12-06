@@ -108,7 +108,7 @@ std::vector<Result> Find(InvertedIndexSearch* index,
       base::BindOnce(
           [](bool* callback_done, ResponseStatus* status,
              std::vector<Result>* results, ResponseStatus status_callback,
-             const absl::optional<std::vector<Result>>& results_callback) {
+             const std::optional<std::vector<Result>>& results_callback) {
             *callback_done = true;
             *status = status_callback;
             if (results_callback.has_value())

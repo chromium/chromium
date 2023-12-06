@@ -268,7 +268,7 @@ class TetherConnectorImplTest : public testing::Test {
       ConnectTetheringOperation::HostResponseErrorCode response_code,
       bool setup_required,
       HostConnectionMetricsLogger::ConnectionToHostResult expected_event_type,
-      absl::optional<HostConnectionMetricsLogger::ConnectionToHostInternalError>
+      std::optional<HostConnectionMetricsLogger::ConnectionToHostInternalError>
           expected_internal_error) {
     EXPECT_CALL(*mock_host_connection_metrics_logger_,
                 RecordConnectionToHostResult(
@@ -363,7 +363,7 @@ TEST_F(TetherConnectorImplTest, DISABLED_TestCannotFetchDevice) {
       RecordConnectionToHostResult(
           HostConnectionMetricsLogger::ConnectionToHostResult::INTERNAL_ERROR,
           kNonexistentDeviceId,
-          absl::optional(
+          std::optional(
               HostConnectionMetricsLogger::ConnectionToHostInternalError::
                   CLIENT_CONNECTION_INTERNAL_ERROR)));
 
@@ -383,7 +383,7 @@ TEST_F(TetherConnectorImplTest, DISABLED_TestCancelWhileOperationActive) {
               RecordConnectionToHostResult(
                   HostConnectionMetricsLogger::ConnectionToHostResult::
                       USER_CANCELLATION,
-                  test_devices_[0].GetDeviceId(), Eq(absl::nullopt)));
+                  test_devices_[0].GetDeviceId(), Eq(std::nullopt)));
 
   CallConnect(GetTetherNetworkGuid(test_devices_[0].GetDeviceId()));
   EXPECT_EQ(ActiveHost::ActiveHostStatus::CONNECTING,
@@ -419,8 +419,8 @@ TEST_F(TetherConnectorImplTest,
       ConnectTetheringOperation::HostResponseErrorCode::UNKNOWN_ERROR,
       false /* setup_required */,
       HostConnectionMetricsLogger::ConnectionToHostResult::INTERNAL_ERROR,
-      absl::optional(HostConnectionMetricsLogger::
-                         ConnectionToHostInternalError::UNKNOWN_ERROR));
+      std::optional(HostConnectionMetricsLogger::ConnectionToHostInternalError::
+                        UNKNOWN_ERROR));
 }
 
 TEST_F(TetherConnectorImplTest,
@@ -429,8 +429,8 @@ TEST_F(TetherConnectorImplTest,
       ConnectTetheringOperation::HostResponseErrorCode::UNKNOWN_ERROR,
       true /* setup_required */,
       HostConnectionMetricsLogger::ConnectionToHostResult::INTERNAL_ERROR,
-      absl::optional(HostConnectionMetricsLogger::
-                         ConnectionToHostInternalError::UNKNOWN_ERROR));
+      std::optional(HostConnectionMetricsLogger::ConnectionToHostInternalError::
+                        UNKNOWN_ERROR));
 }
 
 TEST_F(TetherConnectorImplTest,
@@ -439,7 +439,7 @@ TEST_F(TetherConnectorImplTest,
       ConnectTetheringOperation::HostResponseErrorCode::PROVISIONING_FAILED,
       false /* setup_required */,
       HostConnectionMetricsLogger::ConnectionToHostResult::PROVISIONING_FAILURE,
-      absl::nullopt);
+      std::nullopt);
 }
 
 TEST_F(
@@ -449,9 +449,8 @@ TEST_F(
       ConnectTetheringOperation::HostResponseErrorCode::TETHERING_TIMEOUT,
       false /* setup_required */,
       HostConnectionMetricsLogger::ConnectionToHostResult::INTERNAL_ERROR,
-      absl::optional(
-          HostConnectionMetricsLogger::ConnectionToHostInternalError::
-              TETHERING_TIMED_OUT_FIRST_TIME_SETUP_NOT_REQUIRED));
+      std::optional(HostConnectionMetricsLogger::ConnectionToHostInternalError::
+                        TETHERING_TIMED_OUT_FIRST_TIME_SETUP_NOT_REQUIRED));
 }
 
 TEST_F(
@@ -461,9 +460,8 @@ TEST_F(
       ConnectTetheringOperation::HostResponseErrorCode::TETHERING_TIMEOUT,
       true /* setup_required */,
       HostConnectionMetricsLogger::ConnectionToHostResult::INTERNAL_ERROR,
-      absl::optional(
-          HostConnectionMetricsLogger::ConnectionToHostInternalError::
-              TETHERING_TIMED_OUT_FIRST_TIME_SETUP_REQUIRED));
+      std::optional(HostConnectionMetricsLogger::ConnectionToHostInternalError::
+                        TETHERING_TIMED_OUT_FIRST_TIME_SETUP_REQUIRED));
 }
 
 TEST_F(TetherConnectorImplTest,
@@ -473,7 +471,7 @@ TEST_F(TetherConnectorImplTest,
       false /* setup_required */,
       HostConnectionMetricsLogger::ConnectionToHostResult::
           TETHERING_UNSUPPORTED,
-      absl::nullopt);
+      std::nullopt);
 }
 
 TEST_F(TetherConnectorImplTest,
@@ -482,7 +480,7 @@ TEST_F(TetherConnectorImplTest,
       ConnectTetheringOperation::HostResponseErrorCode::NO_CELL_DATA,
       false /* setup_required */,
       HostConnectionMetricsLogger::ConnectionToHostResult::NO_CELLULAR_DATA,
-      absl::nullopt);
+      std::nullopt);
 }
 
 TEST_F(TetherConnectorImplTest,
@@ -491,9 +489,8 @@ TEST_F(TetherConnectorImplTest,
       ConnectTetheringOperation::HostResponseErrorCode::ENABLING_HOTSPOT_FAILED,
       false /* setup_required */,
       HostConnectionMetricsLogger::ConnectionToHostResult::INTERNAL_ERROR,
-      absl::optional(
-          HostConnectionMetricsLogger::ConnectionToHostInternalError::
-              ENABLING_HOTSPOT_FAILED));
+      std::optional(HostConnectionMetricsLogger::ConnectionToHostInternalError::
+                        ENABLING_HOTSPOT_FAILED));
 }
 
 TEST_F(TetherConnectorImplTest,
@@ -503,9 +500,8 @@ TEST_F(TetherConnectorImplTest,
           ENABLING_HOTSPOT_TIMEOUT,
       false /* setup_required */,
       HostConnectionMetricsLogger::ConnectionToHostResult::INTERNAL_ERROR,
-      absl::optional(
-          HostConnectionMetricsLogger::ConnectionToHostInternalError::
-              ENABLING_HOTSPOT_TIMEOUT));
+      std::optional(HostConnectionMetricsLogger::ConnectionToHostInternalError::
+                        ENABLING_HOTSPOT_TIMEOUT));
 }
 
 TEST_F(TetherConnectorImplTest,
@@ -590,7 +586,7 @@ TEST_F(TetherConnectorImplTest, DISABLED_TestCancelWhileConnectingToWifi) {
               RecordConnectionToHostResult(
                   HostConnectionMetricsLogger::ConnectionToHostResult::
                       USER_CANCELLATION,
-                  test_devices_[0].GetDeviceId(), Eq(absl::nullopt)));
+                  test_devices_[0].GetDeviceId(), Eq(std::nullopt)));
 
   CallConnect(GetTetherNetworkGuid(test_devices_[0].GetDeviceId()));
   EXPECT_EQ(ActiveHost::ActiveHostStatus::CONNECTING,
@@ -637,7 +633,7 @@ TEST_F(TetherConnectorImplTest, DISABLED_TestSuccessfulConnection) {
   EXPECT_CALL(*mock_host_connection_metrics_logger_,
               RecordConnectionToHostResult(
                   HostConnectionMetricsLogger::ConnectionToHostResult::SUCCESS,
-                  test_devices_[0].GetDeviceId(), Eq(absl::nullopt)));
+                  test_devices_[0].GetDeviceId(), Eq(std::nullopt)));
 
   CallConnect(GetTetherNetworkGuid(test_devices_[0].GetDeviceId()));
   EXPECT_EQ(ActiveHost::ActiveHostStatus::CONNECTING,
@@ -690,7 +686,7 @@ TEST_F(TetherConnectorImplTest,
   EXPECT_CALL(*mock_host_connection_metrics_logger_,
               RecordConnectionToHostResult(
                   HostConnectionMetricsLogger::ConnectionToHostResult::SUCCESS,
-                  test_devices_[1].GetDeviceId(), Eq(absl::nullopt)));
+                  test_devices_[1].GetDeviceId(), Eq(std::nullopt)));
   EXPECT_FALSE(
       fake_notification_presenter_->is_setup_required_notification_shown());
 
@@ -726,11 +722,11 @@ TEST_F(TetherConnectorImplTest,
               RecordConnectionToHostResult(
                   HostConnectionMetricsLogger::ConnectionToHostResult::
                       USER_CANCELLATION,
-                  test_devices_[0].GetDeviceId(), Eq(absl::nullopt)));
+                  test_devices_[0].GetDeviceId(), Eq(std::nullopt)));
   EXPECT_CALL(*mock_host_connection_metrics_logger_,
               RecordConnectionToHostResult(
                   HostConnectionMetricsLogger::ConnectionToHostResult::SUCCESS,
-                  test_devices_[1].GetDeviceId(), Eq(absl::nullopt)));
+                  test_devices_[1].GetDeviceId(), Eq(std::nullopt)));
 
   CallConnect(GetTetherNetworkGuid(test_devices_[0].GetDeviceId()));
   EXPECT_EQ(ActiveHost::ActiveHostStatus::CONNECTING,
@@ -791,11 +787,11 @@ TEST_F(TetherConnectorImplTest,
               RecordConnectionToHostResult(
                   HostConnectionMetricsLogger::ConnectionToHostResult::
                       USER_CANCELLATION,
-                  test_devices_[0].GetDeviceId(), Eq(absl::nullopt)));
+                  test_devices_[0].GetDeviceId(), Eq(std::nullopt)));
   EXPECT_CALL(*mock_host_connection_metrics_logger_,
               RecordConnectionToHostResult(
                   HostConnectionMetricsLogger::ConnectionToHostResult::SUCCESS,
-                  test_devices_[1].GetDeviceId(), Eq(absl::nullopt)));
+                  test_devices_[1].GetDeviceId(), Eq(std::nullopt)));
 
   CallConnect(GetTetherNetworkGuid(test_devices_[0].GetDeviceId()));
   EXPECT_EQ(ActiveHost::ActiveHostStatus::CONNECTING,

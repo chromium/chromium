@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_HOTSPOT_CONFIGURATION_HANDLER_H_
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_HOTSPOT_CONFIGURATION_HANDLER_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -14,7 +16,6 @@
 #include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -72,7 +73,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotConfigurationHandler
   // from |manager_properties|, and then run the |callback|.
   void UpdateHotspotConfigAndRunCallback(
       SetHotspotConfigCallback callback,
-      absl::optional<base::Value::Dict> manager_properties);
+      std::optional<base::Value::Dict> manager_properties);
 
   // Callback when the SetHotspotConfig operation succeeded.
   void OnSetHotspotConfigSuccess(SetHotspotConfigCallback callback);
@@ -82,7 +83,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotConfigurationHandler
                                  const std::string& error_name,
                                  const std::string& error_message);
 
-  absl::optional<base::Value::Dict> hotspot_config_;
+  std::optional<base::Value::Dict> hotspot_config_;
 
   base::ObserverList<Observer> observer_list_;
   base::WeakPtrFactory<HotspotConfigurationHandler> weak_ptr_factory_{this};

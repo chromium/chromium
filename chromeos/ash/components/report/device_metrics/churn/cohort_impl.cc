@@ -250,7 +250,7 @@ void CohortImpl::OnCheckMembershipQueryComplete(
 }
 
 void CohortImpl::CheckIn() {
-  absl::optional<FresnelImportDataRequest> import_request =
+  std::optional<FresnelImportDataRequest> import_request =
       GenerateImportRequestBody();
   if (!import_request.has_value()) {
     LOG(ERROR) << "Failed to create the import request body.";
@@ -308,7 +308,7 @@ std::vector<psm_rlwe::RlwePlaintextId> CohortImpl::GetPsmIdentifiersToQuery() {
   return query_psm_ids;
 }
 
-absl::optional<FresnelImportDataRequest>
+std::optional<FresnelImportDataRequest>
 CohortImpl::GenerateImportRequestBody() {
   FresnelImportDataRequest import_request;
   import_request.set_use_case(kPsmUseCase);
@@ -327,14 +327,14 @@ CohortImpl::GenerateImportRequestBody() {
   device_metadata->set_market_segment(market_segment);
 
   std::string window_id = utils::TimeToYYYYMMString(GetParams()->GetActiveTs());
-  absl::optional<psm_rlwe::RlwePlaintextId> psm_id =
+  std::optional<psm_rlwe::RlwePlaintextId> psm_id =
       utils::GeneratePsmIdentifier(GetParams()->GetHighEntropySeed(),
                                    psm_rlwe::RlweUseCase_Name(kPsmUseCase),
                                    window_id);
 
   if (window_id.empty() || !psm_id.has_value()) {
     LOG(ERROR) << "Window ID or Psm ID is empty.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   FresnelImportData* import_data = import_request.add_import_data();
@@ -344,11 +344,11 @@ CohortImpl::GenerateImportRequestBody() {
 
   ChurnCohortMetadata* cohort_metadata =
       import_data->mutable_churn_cohort_metadata();
-  absl::optional<ChurnCohortMetadata> new_cohort_metadata =
+  std::optional<ChurnCohortMetadata> new_cohort_metadata =
       active_status_->CalculateCohortMetadata(GetParams()->GetActiveTs());
   if (!new_cohort_metadata.has_value()) {
     LOG(ERROR) << "Failed to calculate new cohort metadata.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   *cohort_metadata = new_cohort_metadata.value();
@@ -357,7 +357,7 @@ CohortImpl::GenerateImportRequestBody() {
 
 void CohortImpl::UpdateLocalStateOnCheckInSuccess() {
   // Check the new cohort active status value is valid.
-  absl::optional<int> new_active_val =
+  std::optional<int> new_active_val =
       active_status_->CalculateNewValue(GetParams()->GetActiveTs());
   if (!new_active_val.has_value()) {
     LOG(ERROR)

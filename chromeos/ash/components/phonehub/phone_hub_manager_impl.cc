@@ -289,7 +289,7 @@ PhoneHubManagerImpl::GetPhoneHubUiReadinessRecorder() {
 }
 
 void PhoneHubManagerImpl::GetHostLastSeenTimestamp(
-    base::OnceCallback<void(absl::optional<base::Time>)> callback) {
+    base::OnceCallback<void(std::optional<base::Time>)> callback) {
   connection_manager_->GetHostLastSeenTimestamp(std::move(callback));
 }
 

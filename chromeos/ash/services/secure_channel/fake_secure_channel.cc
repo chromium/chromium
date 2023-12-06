@@ -4,8 +4,9 @@
 
 #include "chromeos/ash/services/secure_channel/fake_secure_channel.h"
 
+#include <optional>
+
 #include "base/memory/ptr_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {
 
@@ -36,7 +37,7 @@ void FakeSecureChannel::InitiateConnectionToDevice(
 void FakeSecureChannel::GetLastSeenTimestamp(
     const std::string& remote_device_id,
     GetLastSeenTimestampCallback callback) {
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
 }  // namespace ash::secure_channel

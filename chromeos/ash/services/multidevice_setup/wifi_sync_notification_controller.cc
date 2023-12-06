@@ -5,6 +5,7 @@
 #include "chromeos/ash/services/multidevice_setup/wifi_sync_notification_controller.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/ptr_util.h"
 #include "base/power_monitor/power_monitor.h"
@@ -22,7 +23,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -149,7 +149,7 @@ bool WifiSyncNotificationController::IsWifiSyncSupported() {
     return false;
   }
 
-  absl::optional<multidevice::RemoteDeviceRef> host_device =
+  std::optional<multidevice::RemoteDeviceRef> host_device =
       host_with_status.host_device();
   if (!host_device) {
     PA_LOG(ERROR) << "WifiSyncNotificationController::" << __func__
@@ -163,7 +163,7 @@ bool WifiSyncNotificationController::IsWifiSyncSupported() {
     return false;
   }
 
-  absl::optional<multidevice::RemoteDeviceRef> local_device =
+  std::optional<multidevice::RemoteDeviceRef> local_device =
       device_sync_client_->GetLocalDeviceMetadata();
   if (!local_device) {
     PA_LOG(ERROR) << "WifiSyncNotificationController::" << __func__

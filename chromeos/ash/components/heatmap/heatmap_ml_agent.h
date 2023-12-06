@@ -22,7 +22,7 @@ class HeatmapMlAgent {
   ~HeatmapMlAgent();
 
   using ExecuteCallback =
-      base::OnceCallback<void(absl::optional<double> result)>;
+      base::OnceCallback<void(std::optional<double> result)>;
 
   // Sends a frame of heatmap data to ML service and calls the provided callback
   // method.
@@ -33,7 +33,7 @@ class HeatmapMlAgent {
   void OnExecuteDone(
       ExecuteCallback callback,
       chromeos::machine_learning::mojom::ExecuteResult result,
-      absl::optional<std::vector<chromeos::machine_learning::mojom::TensorPtr>>
+      std::optional<std::vector<chromeos::machine_learning::mojom::TensorPtr>>
           outputs);
   void OnLoadModel(chromeos::machine_learning::mojom::LoadModelResult result);
   void OnConnectionError();

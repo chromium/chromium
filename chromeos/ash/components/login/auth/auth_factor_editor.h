@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_AUTH_FACTOR_EDITOR_H_
 #define CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_AUTH_FACTOR_EDITOR_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -13,7 +15,6 @@
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -126,16 +127,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthFactorEditor {
   void OnListAuthFactors(
       std::unique_ptr<UserContext> context,
       AuthOperationCallback callback,
-      absl::optional<user_data_auth::ListAuthFactorsReply> reply);
+      std::optional<user_data_auth::ListAuthFactorsReply> reply);
 
   void HashContextKeyAndAdd(std::unique_ptr<UserContext> context,
                             AuthOperationCallback callback,
                             const std::string& system_salt);
 
-  void OnAddAuthFactor(
-      std::unique_ptr<UserContext> context,
-      AuthOperationCallback callback,
-      absl::optional<user_data_auth::AddAuthFactorReply> reply);
+  void OnAddAuthFactor(std::unique_ptr<UserContext> context,
+                       AuthOperationCallback callback,
+                       std::optional<user_data_auth::AddAuthFactorReply> reply);
 
   void HashContextKeyAndReplace(std::unique_ptr<UserContext> context,
                                 AuthOperationCallback callback,
@@ -144,12 +144,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthFactorEditor {
   void OnUpdateAuthFactor(
       std::unique_ptr<UserContext> context,
       AuthOperationCallback callback,
-      absl::optional<user_data_auth::UpdateAuthFactorReply> reply);
+      std::optional<user_data_auth::UpdateAuthFactorReply> reply);
 
   void OnRemoveAuthFactor(
       std::unique_ptr<UserContext> context,
       AuthOperationCallback callback,
-      absl::optional<user_data_auth::RemoveAuthFactorReply> reply);
+      std::optional<user_data_auth::RemoveAuthFactorReply> reply);
 
   void SetPasswordFactorImpl(std::unique_ptr<UserContext> context,
                              cryptohome::RawPassword new_password,

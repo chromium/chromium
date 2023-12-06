@@ -5,6 +5,7 @@
 #include "chromeos/ash/services/device_sync/cryptauth_device.h"
 
 #include <map>
+#include <optional>
 
 #include "base/time/time.h"
 #include "chromeos/ash/components/multidevice/software_feature.h"
@@ -12,7 +13,6 @@
 #include "chromeos/ash/services/device_sync/proto/cryptauth_better_together_device_metadata.pb.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_v2_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -46,7 +46,7 @@ TEST(DeviceSyncCryptAuthDevice, ToAndFromDictionary) {
       cryptauthv2::GetBetterTogetherDeviceMetadataForTest(),
       kFakeFeatureStates);
 
-  absl::optional<CryptAuthDevice> device =
+  std::optional<CryptAuthDevice> device =
       CryptAuthDevice::FromDictionary(expected_device.AsDictionary());
 
   ASSERT_TRUE(device);

@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/i18n/streaming_utf8_validator.h"
@@ -19,7 +20,6 @@
 #include "chromeos/ash/components/network/tether_constants.h"
 #include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -383,17 +383,17 @@ TEST_F(NetworkStateTest, TetherProperties) {
   base::Value::Dict dictionary;
   network_state_->GetStateProperties(&dictionary);
 
-  absl::optional<int> signal_strength =
+  std::optional<int> signal_strength =
       dictionary.FindInt(kTetherSignalStrength);
   EXPECT_TRUE(signal_strength.has_value());
   EXPECT_EQ(75, signal_strength.value());
 
-  absl::optional<int> battery_percentage =
+  std::optional<int> battery_percentage =
       dictionary.FindInt(kTetherBatteryPercentage);
   EXPECT_TRUE(battery_percentage.has_value());
   EXPECT_EQ(85, battery_percentage.value());
 
-  absl::optional<bool> tether_has_connected_to_host =
+  std::optional<bool> tether_has_connected_to_host =
       dictionary.FindBool(kTetherHasConnectedToHost);
   EXPECT_TRUE(tether_has_connected_to_host.has_value());
   EXPECT_TRUE(tether_has_connected_to_host.value());

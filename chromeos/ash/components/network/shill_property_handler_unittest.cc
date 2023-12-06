@@ -622,7 +622,7 @@ TEST_F(ShillPropertyHandlerTest, RequestTrafficCounters) {
       kStubWiFi1, base::BindOnce(
                       [](base::Value::List* expected_traffic_counters,
                          base::OnceClosure quit_closure,
-                         absl::optional<base::Value> actual_traffic_counters) {
+                         std::optional<base::Value> actual_traffic_counters) {
                         ASSERT_TRUE(actual_traffic_counters);
                         EXPECT_EQ(*expected_traffic_counters,
                                   *actual_traffic_counters);

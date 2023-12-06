@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -20,7 +21,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -97,19 +97,19 @@ void FakeDebugDaemonClient::GetRoutes(
     chromeos::DBusMethodCallback<std::vector<std::string>> callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback), absl::make_optional(routes_)));
+      base::BindOnce(std::move(callback), std::make_optional(routes_)));
 }
 
 void FakeDebugDaemonClient::GetNetworkStatus(
     chromeos::DBusMethodCallback<std::string> callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+      FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
 }
 
 void FakeDebugDaemonClient::GetNetworkInterfaces(
     chromeos::DBusMethodCallback<std::string> callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+      FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
 }
 
 void FakeDebugDaemonClient::GetPerfOutput(
@@ -169,7 +169,7 @@ void FakeDebugDaemonClient::GetLog(
 void FakeDebugDaemonClient::TestICMP(const std::string& ip_address,
                                      TestICMPCallback callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+      FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
 }
 
 void FakeDebugDaemonClient::TestICMPWithOptions(
@@ -177,7 +177,7 @@ void FakeDebugDaemonClient::TestICMPWithOptions(
     const std::map<std::string, std::string>& options,
     TestICMPCallback callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+      FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
 }
 
 void FakeDebugDaemonClient::UploadCrashes(UploadCrashesCallback callback) {
@@ -331,7 +331,7 @@ void FakeDebugDaemonClient::GetU2fFlags(
     chromeos::DBusMethodCallback<std::set<std::string>> callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback), absl::make_optional(u2f_flags_)));
+      base::BindOnce(std::move(callback), std::make_optional(u2f_flags_)));
 }
 
 void FakeDebugDaemonClient::AddObserver(Observer* observer) {

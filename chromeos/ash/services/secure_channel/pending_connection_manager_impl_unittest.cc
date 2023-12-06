@@ -5,6 +5,7 @@
 #include "chromeos/ash/services/secure_channel/pending_connection_manager_impl.h"
 
 #include <memory>
+#include <optional>
 #include <sstream>
 
 #include "base/containers/contains.h"
@@ -30,7 +31,6 @@
 #include "chromeos/ash/services/secure_channel/pending_nearby_initiator_connection_request.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {
 
@@ -107,7 +107,7 @@ class FakeBleInitiatorConnectionAttemptFactory
 
   raw_ptr<FakeBleConnectionManager, ExperimentalAsh>
       expected_ble_connection_manager_;
-  absl::optional<ConnectionAttemptDetails> expected_connection_attempt_details_;
+  std::optional<ConnectionAttemptDetails> expected_connection_attempt_details_;
 
   base::flat_map<ConnectionAttemptDetails,
                  FakeConnectionAttempt<BleInitiatorFailureType>*>
@@ -189,7 +189,7 @@ class FakeBleListenerConnectionAttemptFactory
 
   raw_ptr<FakeBleConnectionManager, ExperimentalAsh>
       expected_ble_connection_manager_;
-  absl::optional<ConnectionAttemptDetails> expected_connection_attempt_details_;
+  std::optional<ConnectionAttemptDetails> expected_connection_attempt_details_;
 
   base::flat_map<ConnectionAttemptDetails,
                  FakeConnectionAttempt<BleListenerFailureType>*>
@@ -272,7 +272,7 @@ class FakeNearbyInitiatorConnectionAttemptFactory
 
   raw_ptr<FakeNearbyConnectionManager, ExperimentalAsh>
       expected_nearby_connection_manager_;
-  absl::optional<ConnectionAttemptDetails> expected_connection_attempt_details_;
+  std::optional<ConnectionAttemptDetails> expected_connection_attempt_details_;
 
   base::flat_map<ConnectionAttemptDetails,
                  FakeConnectionAttempt<NearbyInitiatorFailureType>*>
@@ -333,7 +333,7 @@ class FakePendingBleInitiatorConnectionRequestFactory
   // for: #constexpr-ctor-field-initializer
   RAW_PTR_EXCLUSION ClientConnectionParameters*
       expected_client_connection_parameters_ = nullptr;
-  absl::optional<ConnectionPriority> expected_connection_priority_;
+  std::optional<ConnectionPriority> expected_connection_priority_;
 
   // This field is not a raw_ptr<> because it was filtered by the rewriter
   // for: #constexpr-ctor-field-initializer
@@ -387,7 +387,7 @@ class FakePendingBleListenerConnectionRequestFactory
 
   raw_ptr<ClientConnectionParameters, DanglingUntriaged | ExperimentalAsh>
       expected_client_connection_parameters_ = nullptr;
-  absl::optional<ConnectionPriority> expected_connection_priority_;
+  std::optional<ConnectionPriority> expected_connection_priority_;
 
   // This field is not a raw_ptr<> because it was filtered by the rewriter
   // for: #constexpr-ctor-field-initializer
@@ -443,7 +443,7 @@ class FakePendingNearbyInitiatorConnectionRequestFactory
   // for: #constexpr-ctor-field-initializer
   RAW_PTR_EXCLUSION ClientConnectionParameters*
       expected_client_connection_parameters_ = nullptr;
-  absl::optional<ConnectionPriority> expected_connection_priority_;
+  std::optional<ConnectionPriority> expected_connection_priority_;
 
   // This field is not a raw_ptr<> because it was filtered by the rewriter
   // for: #constexpr-ctor-field-initializer

@@ -48,7 +48,7 @@ TEST_F(ConvertToPdfTest, ToFileNoDpi) {
 
   EXPECT_TRUE(ConvertJpgImagesToPdf(images, output_path,
                                     /*rotate_alternate_pages=*/false,
-                                    /*dpi=*/absl::nullopt));
+                                    /*dpi=*/std::nullopt));
   EXPECT_TRUE(base::PathExists(output_path));
 
   int64_t file_size;

@@ -39,7 +39,7 @@ class DevicePairingHandler : public mojom::DevicePairingHandler,
 
   // Implementation-specific method that handles the pairing request finishing.
   virtual void PerformFinishCurrentPairingRequest(
-      absl::optional<device::ConnectionFailureReason> failure_reason,
+      std::optional<device::ConnectionFailureReason> failure_reason,
       base::TimeDelta duration) = 0;
 
   // Implementation-specific method that cancels the current pairing attempt.
@@ -62,7 +62,7 @@ class DevicePairingHandler : public mojom::DevicePairingHandler,
   // Invokes |pair_device_callback_| and resets this class' state to be ready
   // for another pairing request.
   void FinishCurrentPairingRequest(
-      absl::optional<device::ConnectionFailureReason> failure_reason);
+      std::optional<device::ConnectionFailureReason> failure_reason);
 
   const std::string& current_pairing_device_id() const {
     return current_pairing_device_id_;

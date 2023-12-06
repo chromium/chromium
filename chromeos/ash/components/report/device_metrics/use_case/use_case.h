@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_REPORT_DEVICE_METRICS_USE_CASE_USE_CASE_H_
 #define CHROMEOS_ASH_COMPONENTS_REPORT_DEVICE_METRICS_USE_CASE_USE_CASE_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -12,7 +14,6 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/report/device_metrics/use_case/psm_client_manager.h"
 #include "chromeos/ash/components/report/proto/fresnel_service.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
 
 namespace net {
@@ -149,7 +150,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) UseCase {
 
   // Create the import request body that is sent to Fresnel.
   // Important: Any dimension that is sent requires privacy approval.
-  virtual absl::optional<FresnelImportDataRequest>
+  virtual std::optional<FresnelImportDataRequest>
   GenerateImportRequestBody() = 0;
 
   // Define the Fresnel network request annotation tags.

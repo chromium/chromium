@@ -56,7 +56,7 @@ class HostConnectionMetricsLogger : public ActiveHost::Observer {
   virtual void RecordConnectionToHostResult(
       ConnectionToHostResult result,
       const std::string& device_id,
-      absl::optional<ConnectionToHostInternalError> internal_error);
+      std::optional<ConnectionToHostInternalError> internal_error);
 
   HostConnectionMetricsLogger(ActiveHost* active_host);
 

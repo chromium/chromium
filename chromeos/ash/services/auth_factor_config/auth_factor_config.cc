@@ -368,7 +368,7 @@ void AuthFactorConfig::OnGetAuthFactorsConfiguration(
     base::OnceCallback<void(mojom::ConfigureResult)> callback,
     const std::string& auth_token,
     std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   bool has_knowledge_factor =
       context->GetAuthFactorsConfiguration().HasConfiguredFactor(
           cryptohome::AuthFactorType::kPassword) ||

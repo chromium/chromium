@@ -12,7 +12,7 @@ FakePendingConnectionRequestDelegate::FakePendingConnectionRequestDelegate() =
 FakePendingConnectionRequestDelegate::~FakePendingConnectionRequestDelegate() =
     default;
 
-const absl::optional<PendingConnectionRequestDelegate::FailedConnectionReason>&
+const std::optional<PendingConnectionRequestDelegate::FailedConnectionReason>&
 FakePendingConnectionRequestDelegate::GetFailedConnectionReasonForId(
     const base::UnguessableToken& request_id) {
   return request_id_to_failed_connection_reason_map_[request_id];

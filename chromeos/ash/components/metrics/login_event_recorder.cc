@@ -167,7 +167,7 @@ void WriteTimes(const std::string base_name,
 }  // namespace
 
 LoginEventRecorder::TimeMarker::TimeMarker(const char* name,
-                                           absl::optional<std::string> url,
+                                           std::optional<std::string> url,
                                            bool send_to_uma,
                                            bool write_to_file)
     : name_(name),
@@ -214,7 +214,7 @@ LoginEventRecorder::Stats LoginEventRecorder::Stats::DeserializeFromString(
   if (source.empty())
     return Stats();
 
-  absl::optional<base::Value> maybe_value = base::JSONReader::Read(source);
+  std::optional<base::Value> maybe_value = base::JSONReader::Read(source);
   if (!maybe_value || !maybe_value->is_dict()) {
     LOG(ERROR) << "LoginEventRecorder::Stats::DeserializeFromString(): not a "
                   "dictionary: '"
@@ -316,13 +316,13 @@ LoginEventRecorder* LoginEventRecorder::Get() {
 void LoginEventRecorder::AddLoginTimeMarker(const char* marker_name,
                                             bool send_to_uma,
                                             bool write_to_file) {
-  AddLoginTimeMarkerWithURL(marker_name, absl::optional<std::string>(),
+  AddLoginTimeMarkerWithURL(marker_name, std::optional<std::string>(),
                             send_to_uma, write_to_file);
 }
 
 void LoginEventRecorder::AddLoginTimeMarkerWithURL(
     const char* marker_name,
-    absl::optional<std::string> url,
+    std::optional<std::string> url,
     bool send_to_uma,
     bool write_to_file) {
   AddMarker(&login_time_markers_,
@@ -337,7 +337,7 @@ void LoginEventRecorder::AddLoginTimeMarkerWithURL(
 void LoginEventRecorder::AddLogoutTimeMarker(const char* marker_name,
                                              bool send_to_uma) {
   AddMarker(&logout_time_markers_,
-            TimeMarker(marker_name, absl::optional<std::string>(), send_to_uma,
+            TimeMarker(marker_name, std::optional<std::string>(), send_to_uma,
                        /*write_to_file=*/true));
 }
 

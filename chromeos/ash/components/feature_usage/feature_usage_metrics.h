@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_FEATURE_USAGE_FEATURE_USAGE_METRICS_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
@@ -13,7 +14,6 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Clock;
@@ -48,7 +48,7 @@ class FeatureUsageMetrics final : public base::PowerSuspendObserver {
     virtual bool IsEligible() const = 0;
 
     // Whether the feature is accessible to users (e.g. allowed by admins).
-    virtual absl::optional<bool> IsAccessible() const;
+    virtual std::optional<bool> IsAccessible() const;
 
     // Whether the user has enabled the feature for themselves. If `IsEnabled`
     // returns true `IsEligible` must return true too.
@@ -108,7 +108,7 @@ class FeatureUsageMetrics final : public base::PowerSuspendObserver {
   base::OneShotTimer timer_;
 
 #if DCHECK_IS_ON()
-  absl::optional<bool> last_record_usage_outcome_;
+  std::optional<bool> last_record_usage_outcome_;
 #endif
   SEQUENCE_CHECKER(sequence_checker_);
 };

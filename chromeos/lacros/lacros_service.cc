@@ -769,7 +769,7 @@ void LacrosService::BindSensorHalClient(
 }
 
 bool LacrosService::IsOnBrowserStartupAvailable() const {
-  absl::optional<uint32_t> version = CrosapiVersion();
+  std::optional<uint32_t> version = CrosapiVersion();
   return version && version.value() >=
                         Crosapi::MethodMinVersions::kOnBrowserStartupMinVersion;
 }
@@ -804,9 +804,9 @@ void LacrosService::BindStableVideoDecoderFactory(
       mojo::GenericPendingReceiver(std::move(receiver)));
 }
 
-absl::optional<uint32_t> LacrosService::CrosapiVersion() const {
+std::optional<uint32_t> LacrosService::CrosapiVersion() const {
   if (chromeos::BrowserParamsProxy::Get()->IsCrosapiDisabledForTesting()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   DCHECK(did_bind_receiver_);
   return chromeos::BrowserParamsProxy::Get()->CrosapiVersion();

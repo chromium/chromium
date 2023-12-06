@@ -22,7 +22,7 @@ namespace ash::standalone_browser {
 namespace {
 
 BrowserSupport* g_instance = nullptr;
-absl::optional<bool> g_cpu_supported_override_ = absl::nullopt;
+std::optional<bool> g_cpu_supported_override_ = std::nullopt;
 
 // Returns true if `kDisallowLacros` is set by command line.
 bool IsLacrosDisallowedByCommand() {
@@ -123,7 +123,7 @@ bool BrowserSupport::IsCpuSupported() {
 #endif
 }
 
-void BrowserSupport::SetCpuSupportedForTesting(absl::optional<bool> value) {
+void BrowserSupport::SetCpuSupportedForTesting(std::optional<bool> value) {
   g_cpu_supported_override_ = value;
 }
 

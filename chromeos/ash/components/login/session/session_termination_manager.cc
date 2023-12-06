@@ -106,7 +106,7 @@ void SessionTerminationManager::DidWaitForServiceToBeAvailable(
 }
 
 void SessionTerminationManager::ProcessCryptohomeLoginStatusReply(
-    const absl::optional<user_data_auth::GetLoginStatusReply>& reply) {
+    const std::optional<user_data_auth::GetLoginStatusReply>& reply) {
   if (!reply.has_value() ||
       reply->error() !=
           user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
@@ -120,7 +120,7 @@ void SessionTerminationManager::ProcessCryptohomeLoginStatusReply(
 }
 
 void SessionTerminationManager::RebootIfNecessaryProcessReply(
-    absl::optional<user_data_auth::GetLoginStatusReply> reply) {
+    std::optional<user_data_auth::GetLoginStatusReply> reply) {
   ProcessCryptohomeLoginStatusReply(reply);
   if (is_locked_to_single_user_) {
     Reboot(power_manager::REQUEST_RESTART_OTHER,

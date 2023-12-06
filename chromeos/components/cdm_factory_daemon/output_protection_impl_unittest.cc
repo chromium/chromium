@@ -89,7 +89,7 @@ class OutputProtectionImplTest : public testing::Test {
     UpdateDisplays(2);
 
     EXPECT_CALL(*delegate_, RegisterClient())
-        .WillOnce(Return(absl::optional<uint64_t>(kFakeClientId)));
+        .WillOnce(Return(std::optional<uint64_t>(kFakeClientId)));
   }
 
   void UpdateDisplays(size_t count) {

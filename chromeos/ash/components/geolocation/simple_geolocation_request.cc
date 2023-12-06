@@ -233,7 +233,7 @@ bool ParseServerResponse(const GURL& server_url,
   }
 
   if (location_object) {
-    absl::optional<double> latitude = location_object->FindDouble(kLatString);
+    std::optional<double> latitude = location_object->FindDouble(kLatString);
     if (!latitude) {
       PrintGeolocationError(server_url, "Missing 'lat' attribute.", position);
       RecordUmaEvent(SIMPLE_GEOLOCATION_REQUEST_EVENT_RESPONSE_MALFORMED);
@@ -241,7 +241,7 @@ bool ParseServerResponse(const GURL& server_url,
     }
     position->latitude = latitude.value();
 
-    absl::optional<double> longitude = location_object->FindDouble(kLngString);
+    std::optional<double> longitude = location_object->FindDouble(kLngString);
     if (!longitude) {
       PrintGeolocationError(server_url, "Missing 'lon' attribute.", position);
       RecordUmaEvent(SIMPLE_GEOLOCATION_REQUEST_EVENT_RESPONSE_MALFORMED);
@@ -249,7 +249,7 @@ bool ParseServerResponse(const GURL& server_url,
     }
     position->longitude = longitude.value();
 
-    absl::optional<double> accuracy =
+    std::optional<double> accuracy =
         response_value_dict.FindDouble(kAccuracyString);
     if (!accuracy) {
       PrintGeolocationError(server_url, "Missing 'accuracy' attribute.",

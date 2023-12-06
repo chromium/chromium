@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_LOGIN_PERFORMER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
@@ -21,7 +22,6 @@
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/user_manager/user_type.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
 
@@ -125,11 +125,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) LoginPerformer
   // contain additional information whether this user is explicitly listed or
   // not (may be relevant for external-based sign-in). |user_type| will be used
   // to check if the user is allowed because of the user type, pass
-  // absl::nullopt if user type is not known.
+  // std::nullopt if user type is not known.
   virtual bool IsUserAllowlisted(
       const AccountId& account_id,
       bool* wildcard_match,
-      const absl::optional<user_manager::UserType>& user_type) = 0;
+      const std::optional<user_manager::UserType>& user_type) = 0;
 
   virtual void LoadAndApplyEarlyPrefs(std::unique_ptr<UserContext> context,
                                       AuthOperationCallback callback) = 0;
@@ -196,7 +196,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) LoginPerformer
 
   // Callback passed to `LoadAndApplyEarlyPrefs`.
   void OnEarlyPrefsApplied(std::unique_ptr<UserContext> context,
-                           absl::optional<AuthenticationError> error);
+                           std::optional<AuthenticationError> error);
 
   // Used for logging in.
   scoped_refptr<Authenticator> authenticator_;

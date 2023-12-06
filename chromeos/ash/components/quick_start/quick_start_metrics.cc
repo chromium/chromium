@@ -129,14 +129,14 @@ void QuickStartMetrics::RecordScreenClosed(
     ScreenName screen,
     int32_t session_id,
     base::Time timestamp,
-    absl::optional<ScreenName> previous_screen) {
+    std::optional<ScreenName> previous_screen) {
   // TODO(b/298042953): Add metric for screen duration.
 }
 
 // static
 void QuickStartMetrics::RecordWifiTransferResult(
     bool succeeded,
-    absl::optional<WifiTransferResultFailureReason> failure_reason) {
+    std::optional<WifiTransferResultFailureReason> failure_reason) {
   if (succeeded) {
     CHECK(!failure_reason.has_value());
   } else {
@@ -159,7 +159,7 @@ void QuickStartMetrics::RecordAttestationCertificateRequested() {
 }
 
 void QuickStartMetrics::RecordAttestationCertificateRequestEnded(
-    absl::optional<AttestationCertificateRequestErrorCode> error_code) {
+    std::optional<AttestationCertificateRequestErrorCode> error_code) {
   CHECK(attestation_certificate_timer_)
       << "Attestation certificate request timer was not active. Unexpected "
          "response.";
@@ -182,7 +182,7 @@ void QuickStartMetrics::RecordAttestationCertificateRequestEnded(
 // static
 void QuickStartMetrics::RecordGaiaTransferResult(
     bool succeeded,
-    absl::optional<GaiaTransferResultFailureReason> failure_reason) {
+    std::optional<GaiaTransferResultFailureReason> failure_reason) {
   if (succeeded) {
     CHECK(!failure_reason.has_value());
   } else {
@@ -216,7 +216,7 @@ void QuickStartMetrics::RecordFastPairAdvertisementStarted(
 
 void QuickStartMetrics::RecordFastPairAdvertisementEnded(
     bool succeeded,
-    absl::optional<FastPairAdvertisingErrorCode> error_code) {
+    std::optional<FastPairAdvertisingErrorCode> error_code) {
   CHECK(fast_pair_advertising_timer_);
   CHECK(fast_pair_advertising_method_.has_value());
 
@@ -237,7 +237,7 @@ void QuickStartMetrics::RecordFastPairAdvertisementEnded(
       kFastPairAdvertisementEndedAdvertisingMethodHistogramName,
       fast_pair_advertising_method_.value());
 
-  fast_pair_advertising_method_ = absl::nullopt;
+  fast_pair_advertising_method_ = std::nullopt;
   fast_pair_advertising_timer_.reset();
 }
 
@@ -249,7 +249,7 @@ void QuickStartMetrics::RecordNearbyConnectionsAdvertisementStarted(
 
 void QuickStartMetrics::RecordNearbyConnectionsAdvertisementEnded(
     bool succeeded,
-    absl::optional<NearbyConnectionsAdvertisingErrorCode> error_code) {
+    std::optional<NearbyConnectionsAdvertisingErrorCode> error_code) {
   // TODO(b/279614071): Add advertising metrics.
 }
 
@@ -264,7 +264,7 @@ void QuickStartMetrics::RecordHandshakeStarted(bool handshake_started) {
 
 void QuickStartMetrics::RecordHandshakeResult(
     bool succeeded,
-    absl::optional<HandshakeErrorCode> error_code) {
+    std::optional<HandshakeErrorCode> error_code) {
   CHECK(handshake_elapsed_timer_);
 
   if (!succeeded) {
@@ -286,7 +286,7 @@ void QuickStartMetrics::RecordMessageSent(MessageType message_type) {
 void QuickStartMetrics::RecordMessageReceived(
     MessageType desired_message_type,
     bool succeeded,
-    absl::optional<MessageReceivedErrorCode> error_code) {
+    std::optional<MessageReceivedErrorCode> error_code) {
   std::string metric_name = MapMessageTypeToMetric(desired_message_type);
   if (succeeded) {
     CHECK(!error_code.has_value());

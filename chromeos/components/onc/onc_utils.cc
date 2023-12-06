@@ -43,7 +43,7 @@ bool GetString(const base::Value::Dict& dict,
 }
 
 bool GetInt(const base::Value::Dict& dict, const char* key, int* result) {
-  const absl::optional<int> value = dict.FindInt(key);
+  const std::optional<int> value = dict.FindInt(key);
   if (!value) {
     return false;
   }
@@ -357,12 +357,12 @@ bool ResolveServerCertRefsInObject(const CertPEMsByGUIDMap& certs_by_guid,
 
 }  // namespace
 
-absl::optional<base::Value::Dict> ReadDictionaryFromJson(
+std::optional<base::Value::Dict> ReadDictionaryFromJson(
     const std::string& json) {
   if (json.empty()) {
     // Policy may contain empty values, just log a debug message.
     NET_LOG(DEBUG) << "Empty json string";
-    return absl::nullopt;
+    return std::nullopt;
   }
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
       json,
@@ -370,17 +370,17 @@ absl::optional<base::Value::Dict> ReadDictionaryFromJson(
   if (!parsed_json.has_value()) {
     NET_LOG(ERROR) << "Invalid JSON Dictionary: "
                    << parsed_json.error().message;
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!parsed_json->is_dict()) {
     NET_LOG(ERROR) << "Invalid JSON Dictionary: Expected a dictionary.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   return std::move(*parsed_json).TakeDict();
 }
 
-absl::optional<base::Value::Dict> Decrypt(const std::string& passphrase,
-                                          const base::Value::Dict& root) {
+std::optional<base::Value::Dict> Decrypt(const std::string& passphrase,
+                                         const base::Value::Dict& root) {
   const int kKeySizeInBits = 256;
   const int kMaxIterationCount = 500000;
   std::string onc_type;
@@ -404,32 +404,32 @@ absl::optional<base::Value::Dict> Decrypt(const std::string& passphrase,
       !GetString(root, ::onc::toplevel_config::kType, &onc_type) ||
       onc_type != ::onc::toplevel_config::kEncryptedConfiguration) {
     NET_LOG(ERROR) << "Encrypted ONC malformed.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (hmac_method != ::onc::encrypted::kSHA1 ||
       cipher != ::onc::encrypted::kAES256 ||
       stretch_method != ::onc::encrypted::kPBKDF2) {
     NET_LOG(ERROR) << "Encrypted ONC unsupported encryption scheme.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Make sure iterations != 0, since that's not valid.
   if (iterations == 0) {
     NET_LOG(ERROR) << kUnableToDecrypt;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Simply a sanity check to make sure we can't lock up the machine
   // for too long with a huge number (or a negative number).
   if (iterations < 0 || iterations > kMaxIterationCount) {
     NET_LOG(ERROR) << "Too many iterations in encrypted ONC";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!base::Base64Decode(salt, &salt)) {
     NET_LOG(ERROR) << kUnableToDecode;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::unique_ptr<crypto::SymmetricKey> key(
@@ -439,38 +439,37 @@ absl::optional<base::Value::Dict> Decrypt(const std::string& passphrase,
 
   if (!base::Base64Decode(initial_vector, &initial_vector)) {
     NET_LOG(ERROR) << kUnableToDecode;
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!base::Base64Decode(ciphertext, &ciphertext)) {
     NET_LOG(ERROR) << kUnableToDecode;
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!base::Base64Decode(hmac, &hmac)) {
     NET_LOG(ERROR) << kUnableToDecode;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   crypto::HMAC hmac_verifier(crypto::HMAC::SHA1);
   if (!hmac_verifier.Init(key.get()) ||
       !hmac_verifier.Verify(ciphertext, hmac)) {
     NET_LOG(ERROR) << kUnableToDecrypt;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   crypto::Encryptor decryptor;
   if (!decryptor.Init(key.get(), crypto::Encryptor::CBC, initial_vector)) {
     NET_LOG(ERROR) << kUnableToDecrypt;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::string plaintext;
   if (!decryptor.Decrypt(ciphertext, &plaintext)) {
     NET_LOG(ERROR) << kUnableToDecrypt;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<base::Value::Dict> new_root =
-      ReadDictionaryFromJson(plaintext);
+  std::optional<base::Value::Dict> new_root = ReadDictionaryFromJson(plaintext);
   if (!new_root) {
     NET_LOG(ERROR) << "Property dictionary malformed.";
   }
@@ -647,7 +646,7 @@ bool ParseAndValidateOncForImport(const std::string& onc_blob,
     return true;
   }
 
-  absl::optional<base::Value::Dict> toplevel_onc =
+  std::optional<base::Value::Dict> toplevel_onc =
       ReadDictionaryFromJson(onc_blob);
   if (!toplevel_onc) {
     NET_LOG(ERROR) << "Not a valid ONC JSON dictionary: "
@@ -681,7 +680,7 @@ bool ParseAndValidateOncForImport(const std::string& onc_blob,
   validator.SetOncSource(onc_source);
 
   Validator::Result validation_result;
-  absl::optional<base::Value::Dict> validated_toplevel_onc =
+  std::optional<base::Value::Dict> validated_toplevel_onc =
       validator.ValidateAndRepairObject(&kToplevelConfigurationSignature,
                                         toplevel_onc.value(),
                                         &validation_result);

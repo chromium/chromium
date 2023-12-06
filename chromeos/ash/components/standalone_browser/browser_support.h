@@ -5,10 +5,11 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER_BROWSER_SUPPORT_H_
 #define CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER_BROWSER_SUPPORT_H_
 
+#include <optional>
+
 #include "base/auto_reset.h"
 #include "base/component_export.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 class PolicyMap;
@@ -46,7 +47,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
 
   // Directly sets the value to be returned by IsCpuSupported for testing.
   // Setting nullopt unsets the overridden behavior of IsCpuSupported.
-  static void SetCpuSupportedForTesting(absl::optional<bool> value);
+  static void SetCpuSupportedForTesting(std::optional<bool> value);
 
   // Returns true if the standalone browser is allowed to be enabled.
   bool IsAllowed() const { return is_allowed_; }

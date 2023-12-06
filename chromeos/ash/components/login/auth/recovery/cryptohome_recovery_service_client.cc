@@ -234,7 +234,7 @@ void CryptohomeRecoveryServiceClient::OnFetchEpochComplete(
     if (!shouldRetry(status_code) ||
         epoch_retry_backoff_.failure_count() >= kMaxRetries) {
       epoch_retry_backoff_.Reset();
-      std::move(callback).Run(absl::nullopt, status_code);
+      std::move(callback).Run(std::nullopt, status_code);
     } else {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
@@ -276,7 +276,7 @@ void CryptohomeRecoveryServiceClient::OnFetchRecoveryResponseComplete(
     if (!shouldRetry(status_code) ||
         recovery_retry_backoff_.failure_count() >= kMaxRetries) {
       recovery_retry_backoff_.Reset();
-      std::move(callback).Run(absl::nullopt, status_code);
+      std::move(callback).Run(std::nullopt, status_code);
     } else {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,

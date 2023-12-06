@@ -5,13 +5,13 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_METRICS_LOGIN_EVENT_RECORDER_H_
 #define CHROMEOS_ASH_COMPONENTS_METRICS_LOGIN_EVENT_RECORDER_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -25,7 +25,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_METRICS) LoginEventRecorder {
   class TimeMarker {
    public:
     TimeMarker(const char* name,
-               absl::optional<std::string> url,
+               std::optional<std::string> url,
                bool send_to_uma,
                bool write_to_file);
     TimeMarker(const TimeMarker& other);
@@ -33,7 +33,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_METRICS) LoginEventRecorder {
 
     const char* name() const { return name_; }
     base::TimeTicks time() const { return time_; }
-    const absl::optional<std::string>& url() const { return url_; }
+    const std::optional<std::string>& url() const { return url_; }
     bool send_to_uma() const { return send_to_uma_; }
     bool write_to_file() const { return write_to_file_; }
 
@@ -46,7 +46,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_METRICS) LoginEventRecorder {
     friend class std::vector<TimeMarker>;
     const char* name_;
     base::TimeTicks time_ = base::TimeTicks::Now();
-    absl::optional<std::string> url_;
+    std::optional<std::string> url_;
     bool send_to_uma_;
     bool write_to_file_;
   };
@@ -105,7 +105,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_METRICS) LoginEventRecorder {
                           bool write_to_file = true);
 
   void AddLoginTimeMarkerWithURL(const char* marker_name,
-                                 absl::optional<std::string> url,
+                                 std::optional<std::string> url,
                                  bool send_to_uma,
                                  bool write_to_file = true);
 
@@ -161,7 +161,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_METRICS) LoginEventRecorder {
   // This list is never cleared. It has copy of all the login events that
   // login_time_markers_ had when PrepareEventCollectionForTesting() was
   // called and all login avents since that moment.
-  absl::optional<std::vector<TimeMarker>> login_time_markers_for_testing_;
+  std::optional<std::vector<TimeMarker>> login_time_markers_for_testing_;
 
   base::WeakPtrFactory<LoginEventRecorder> weak_ptr_factory_{this};
 };

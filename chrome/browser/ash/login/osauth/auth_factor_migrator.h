@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_OSAUTH_AUTH_FACTOR_MIGRATOR_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -54,7 +55,7 @@ class AuthFactorMigrator {
                AuthOperationCallback callback);
   void OnRun(AuthOperationCallback callback,
              std::unique_ptr<UserContext> context,
-             absl::optional<AuthenticationError> error);
+             std::optional<AuthenticationError> error);
 
   size_t last_migration_step_ = 0;
   std::vector<std::unique_ptr<AuthFactorMigration>> migration_steps_;

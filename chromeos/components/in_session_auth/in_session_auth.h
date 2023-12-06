@@ -30,7 +30,7 @@ class InSessionAuth : public chromeos::auth::mojom::InSessionAuth {
 
   // chromeos::auth::mojom::InSessionAuth:
   void RequestToken(chromeos::auth::mojom::Reason reason,
-                    const absl::optional<std::string>& prompt,
+                    const std::optional<std::string>& prompt,
                     RequestTokenCallback callback) override;
   void CheckToken(chromeos::auth::mojom::Reason reason,
                   const std::string& token,

@@ -138,7 +138,7 @@ class OtaActivatorImpl : public OtaActivator,
   NetworkStateHandlerScopedObservation network_state_handler_observer_{this};
 
   State state_ = State::kNotYetStarted;
-  absl::optional<mojom::CarrierPortalStatus> last_carrier_portal_status_;
+  std::optional<mojom::CarrierPortalStatus> last_carrier_portal_status_;
   std::string iccid_;
   bool has_sent_metadata_ = false;
   bool has_called_complete_activation_ = false;

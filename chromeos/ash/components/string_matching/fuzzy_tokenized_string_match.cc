@@ -8,6 +8,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <iterator>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -19,7 +20,6 @@
 #include "chromeos/ash/components/string_matching/diacritic_utils.h"
 #include "chromeos/ash/components/string_matching/prefix_matcher.h"
 #include "chromeos/ash/components/string_matching/sequence_matcher.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::string_matching {
 
@@ -260,8 +260,8 @@ double FuzzyTokenizedStringMatch::Relevance(const TokenizedString& query_input,
     return 0.0;
   }
 
-  absl::optional<TokenizedString> stripped_query;
-  absl::optional<TokenizedString> stripped_text;
+  std::optional<TokenizedString> stripped_query;
+  std::optional<TokenizedString> stripped_text;
   if (strip_diacritics) {
     stripped_query.emplace(RemoveDiacritics(query_input.text()));
     stripped_text.emplace(RemoveDiacritics(text_input.text()));

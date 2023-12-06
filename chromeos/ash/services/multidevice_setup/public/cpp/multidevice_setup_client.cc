@@ -34,7 +34,7 @@ std::string HostStatusToString(mojom::HostStatus status) {
 MultiDeviceSetupClient::HostStatusWithDevice
 MultiDeviceSetupClient::GenerateDefaultHostStatusWithDevice() {
   return HostStatusWithDevice{mojom::HostStatus::kNoEligibleHosts,
-                              absl::nullopt /* host_device */};
+                              std::nullopt /* host_device */};
 }
 
 // static

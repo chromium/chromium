@@ -23,7 +23,7 @@ class HeatmapPalmDetector : public ui::PalmDetector {
 
  private:
   void OnExecuteDone(DetectionDoneCallback callback,
-                     absl::optional<double> result);
+                     std::optional<double> result);
 
   std::unique_ptr<HeatmapMlAgent> ml_agent_;
 

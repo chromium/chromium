@@ -68,10 +68,10 @@ multidevice::RemoteDeviceList RefListToRawList(
   return raw_list;
 }
 
-absl::optional<multidevice::RemoteDevice> RefToRaw(
-    const absl::optional<multidevice::RemoteDeviceRef>& ref) {
+std::optional<multidevice::RemoteDevice> RefToRaw(
+    const std::optional<multidevice::RemoteDeviceRef>& ref) {
   if (!ref)
-    return absl::nullopt;
+    return std::nullopt;
 
   return *GetMutableRemoteDevice(*ref);
 }
@@ -818,7 +818,7 @@ class MultiDeviceSetupImplTest : public ::testing::TestWithParam<bool> {
     return success;
   }
 
-  std::pair<mojom::HostStatus, absl::optional<multidevice::RemoteDevice>>
+  std::pair<mojom::HostStatus, std::optional<multidevice::RemoteDevice>>
   CallGetHostStatus() {
     base::RunLoop run_loop;
     multidevice_setup_->GetHostStatus(
@@ -826,7 +826,7 @@ class MultiDeviceSetupImplTest : public ::testing::TestWithParam<bool> {
                        base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
 
-    std::pair<mojom::HostStatus, absl::optional<multidevice::RemoteDevice>>
+    std::pair<mojom::HostStatus, std::optional<multidevice::RemoteDevice>>
         host_status_update = *last_host_status_;
     last_host_status_.reset();
 
@@ -836,7 +836,7 @@ class MultiDeviceSetupImplTest : public ::testing::TestWithParam<bool> {
   bool CallSetFeatureEnabledState(
       mojom::Feature feature,
       bool enabled,
-      const absl::optional<std::string>& auth_token) {
+      const std::optional<std::string>& auth_token) {
     base::RunLoop run_loop;
     multidevice_setup_->SetFeatureEnabledState(
         feature, enabled, auth_token,
@@ -894,14 +894,14 @@ class MultiDeviceSetupImplTest : public ::testing::TestWithParam<bool> {
     return success;
   }
 
-  absl::optional<std::string> CallGetQuickStartPhoneInstanceID() {
+  std::optional<std::string> CallGetQuickStartPhoneInstanceID() {
     base::RunLoop run_loop;
     multidevice_setup_->GetQuickStartPhoneInstanceID(base::BindOnce(
         &MultiDeviceSetupImplTest::OnGetQuickStartPhoneInstanceID,
         base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
 
-    absl::optional<std::string> qs_phone_instance_id =
+    std::optional<std::string> qs_phone_instance_id =
         last_qs_phone_instance_id_;
     last_qs_phone_instance_id_.reset();
     return qs_phone_instance_id;
@@ -909,10 +909,10 @@ class MultiDeviceSetupImplTest : public ::testing::TestWithParam<bool> {
 
   void VerifyCurrentHostStatus(
       mojom::HostStatus host_status,
-      const absl::optional<multidevice::RemoteDeviceRef>& host_device,
+      const std::optional<multidevice::RemoteDeviceRef>& host_device,
       FakeHostStatusObserver* observer = nullptr,
       size_t expected_observer_index = 0u) {
-    std::pair<mojom::HostStatus, absl::optional<multidevice::RemoteDevice>>
+    std::pair<mojom::HostStatus, std::optional<multidevice::RemoteDevice>>
         host_status_and_device = CallGetHostStatus();
     EXPECT_EQ(host_status, host_status_and_device.first);
     EXPECT_EQ(RefToRaw(host_device), host_status_and_device.second);
@@ -1021,7 +1021,7 @@ class MultiDeviceSetupImplTest : public ::testing::TestWithParam<bool> {
   void OnHostStatusReceived(
       base::OnceClosure quit_closure,
       mojom::HostStatus host_status,
-      const absl::optional<multidevice::RemoteDevice>& host_device) {
+      const std::optional<multidevice::RemoteDevice>& host_device) {
     EXPECT_FALSE(last_host_status_);
     last_host_status_ = std::make_pair(host_status, host_device);
     std::move(quit_closure).Run();
@@ -1056,8 +1056,8 @@ class MultiDeviceSetupImplTest : public ::testing::TestWithParam<bool> {
 
   void OnGetQuickStartPhoneInstanceID(
       base::OnceClosure quit_closure,
-      const absl::optional<std::string>& qs_phone_instance_id) {
-    EXPECT_EQ(absl::nullopt, last_qs_phone_instance_id_);
+      const std::optional<std::string>& qs_phone_instance_id) {
+    EXPECT_EQ(std::nullopt, last_qs_phone_instance_id_);
     last_qs_phone_instance_id_ = qs_phone_instance_id;
     std::move(quit_closure).Run();
   }
@@ -1106,20 +1106,20 @@ class MultiDeviceSetupImplTest : public ::testing::TestWithParam<bool> {
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  absl::optional<bool> last_debug_event_success_;
-  absl::optional<multidevice::RemoteDeviceList> last_eligible_devices_list_;
-  absl::optional<std::vector<mojom::HostDevicePtr>>
+  std::optional<bool> last_debug_event_success_;
+  std::optional<multidevice::RemoteDeviceList> last_eligible_devices_list_;
+  std::optional<std::vector<mojom::HostDevicePtr>>
       last_eligible_active_devices_list_;
-  absl::optional<bool> last_set_host_success_;
-  absl::optional<bool> last_set_host_without_auth_success_;
-  absl::optional<
-      std::pair<mojom::HostStatus, absl::optional<multidevice::RemoteDevice>>>
+  std::optional<bool> last_set_host_success_;
+  std::optional<bool> last_set_host_without_auth_success_;
+  std::optional<
+      std::pair<mojom::HostStatus, std::optional<multidevice::RemoteDevice>>>
       last_host_status_;
-  absl::optional<bool> last_set_feature_enabled_state_success_;
-  absl::optional<base::flat_map<mojom::Feature, mojom::FeatureState>>
+  std::optional<bool> last_set_feature_enabled_state_success_;
+  std::optional<base::flat_map<mojom::Feature, mojom::FeatureState>>
       last_get_feature_states_result_;
-  absl::optional<bool> last_retry_success_;
-  absl::optional<std::string> last_qs_phone_instance_id_;
+  std::optional<bool> last_retry_success_;
+  std::optional<std::string> last_qs_phone_instance_id_;
 
   std::unique_ptr<MultiDeviceSetupBase> multidevice_setup_;
 };
@@ -1179,7 +1179,7 @@ TEST_P(MultiDeviceSetupImplTest, FeatureStateChanges_NoAuthTokenRequired) {
 
   EXPECT_TRUE(CallSetFeatureEnabledState(mojom::Feature::kInstantTethering,
                                          false /* enabled */,
-                                         absl::nullopt /* auth_token */));
+                                         std::nullopt /* auth_token */));
   SendPendingObserverMessages();
   EXPECT_EQ(mojom::FeatureState::kDisabledByUser,
             CallGetFeatureStates()[mojom::Feature::kInstantTethering]);
@@ -1205,7 +1205,7 @@ TEST_P(MultiDeviceSetupImplTest,
   // No authentication is required to disable the feature.
   EXPECT_TRUE(CallSetFeatureEnabledState(mojom::Feature::kSmartLock,
                                          false /* enabled */,
-                                         absl::nullopt /* auth_token */));
+                                         std::nullopt /* auth_token */));
   SendPendingObserverMessages();
   EXPECT_EQ(mojom::FeatureState::kDisabledByUser,
             CallGetFeatureStates()[mojom::Feature::kSmartLock]);
@@ -1249,7 +1249,7 @@ TEST_P(MultiDeviceSetupImplTest,
   // No authentication is required to disable the feature.
   EXPECT_TRUE(CallSetFeatureEnabledState(mojom::Feature::kBetterTogetherSuite,
                                          false /* enabled */,
-                                         absl::nullopt /* auth_token */));
+                                         std::nullopt /* auth_token */));
   SendPendingObserverMessages();
   EXPECT_EQ(mojom::FeatureState::kDisabledByUser,
             CallGetFeatureStates()[mojom::Feature::kBetterTogetherSuite]);
@@ -1279,7 +1279,7 @@ TEST_P(MultiDeviceSetupImplTest,
   // Disable one more time.
   EXPECT_TRUE(CallSetFeatureEnabledState(mojom::Feature::kBetterTogetherSuite,
                                          false /* enabled */,
-                                         absl::nullopt /* auth_token */));
+                                         std::nullopt /* auth_token */));
   SendPendingObserverMessages();
   EXPECT_EQ(mojom::FeatureState::kDisabledByUser,
             CallGetFeatureStates()[mojom::Feature::kBetterTogetherSuite]);
@@ -1311,7 +1311,7 @@ TEST_P(MultiDeviceSetupImplTest, ComprehensiveHostTest) {
   // Start with no eligible devices.
   EXPECT_TRUE(CallGetEligibleHostDevices().empty());
   VerifyCurrentHostStatus(mojom::HostStatus::kNoEligibleHosts,
-                          absl::nullopt /* host_device */);
+                          std::nullopt /* host_device */);
 
   // Cannot retry without a host.
   EXPECT_FALSE(CallRetrySetHostNow());
@@ -1326,10 +1326,10 @@ TEST_P(MultiDeviceSetupImplTest, ComprehensiveHostTest) {
   EXPECT_EQ(RefListToRawList(test_devices()), CallGetEligibleHostDevices());
   fake_host_status_provider()->SetHostWithStatus(
       mojom::HostStatus::kEligibleHostExistsButNoHostSet,
-      absl::nullopt /* host_device */);
+      std::nullopt /* host_device */);
   SendPendingObserverMessages();
   VerifyCurrentHostStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
-                          absl::nullopt /* host_device */, observer.get(),
+                          std::nullopt /* host_device */, observer.get(),
                           0u /* expected_observer_index */);
 
   // There are eligible hosts, but none is set; thus, cannot retry.
@@ -1383,14 +1383,14 @@ TEST_P(MultiDeviceSetupImplTest, ComprehensiveHostTest) {
   fake_host_verifier()->set_is_host_verified(false);
   fake_host_status_provider()->SetHostWithStatus(
       mojom::HostStatus::kEligibleHostExistsButNoHostSet,
-      absl::nullopt /* host_device */);
+      std::nullopt /* host_device */);
   SendPendingObserverMessages();
   VerifyCurrentHostStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
-                          absl::nullopt /* host_device */, observer.get(),
+                          std::nullopt /* host_device */, observer.get(),
                           4u /* expected_observer_index */);
 
   // Simulate the host being removed on the back-end.
-  fake_host_backend_delegate()->NotifyHostChangedOnBackend(absl::nullopt);
+  fake_host_backend_delegate()->NotifyHostChangedOnBackend(std::nullopt);
 }
 
 TEST_P(MultiDeviceSetupImplTest, TestGetEligibleActiveHosts) {
@@ -1423,7 +1423,7 @@ TEST_P(MultiDeviceSetupImplTest, TestSetHostDevice_InvalidAuthToken) {
   EXPECT_EQ(RefListToRawList(test_devices()), CallGetEligibleHostDevices());
   fake_host_status_provider()->SetHostWithStatus(
       mojom::HostStatus::kEligibleHostExistsButNoHostSet,
-      absl::nullopt /* host_device */);
+      std::nullopt /* host_device */);
 
   // Set a valid host as the host device, but pass an invalid token.
   std::string host_id = IsV1DeviceSyncEnabled()
@@ -1444,10 +1444,10 @@ TEST_P(MultiDeviceSetupImplTest, TestSetHostDeviceWithoutAuthToken) {
   EXPECT_EQ(RefListToRawList(test_devices()), CallGetEligibleHostDevices());
   fake_host_status_provider()->SetHostWithStatus(
       mojom::HostStatus::kEligibleHostExistsButNoHostSet,
-      absl::nullopt /* host_device */);
+      std::nullopt /* host_device */);
   SendPendingObserverMessages();
   VerifyCurrentHostStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
-                          absl::nullopt /* host_device */, observer.get(),
+                          std::nullopt /* host_device */, observer.get(),
                           0u /* expected_observer_index */);
 
   // Set a valid host as the host device without an auth token.
@@ -1484,10 +1484,10 @@ TEST_P(MultiDeviceSetupImplTest,
   EXPECT_EQ(RefListToRawList(test_devices()), CallGetEligibleHostDevices());
   fake_host_status_provider()->SetHostWithStatus(
       mojom::HostStatus::kEligibleHostExistsButNoHostSet,
-      absl::nullopt /* host_device */);
+      std::nullopt /* host_device */);
   SendPendingObserverMessages();
   VerifyCurrentHostStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
-                          absl::nullopt /* host_device */, observer.get(),
+                          std::nullopt /* host_device */, observer.get(),
                           0u /* expected_observer_index */);
 
   // Set the host device using its legacy device ID.
@@ -1520,7 +1520,7 @@ TEST_P(MultiDeviceSetupImplTest,
 }
 
 TEST_P(MultiDeviceSetupImplTest, SetAndGetQuickStartPhoneInstanceID) {
-  EXPECT_EQ(absl::nullopt, CallGetQuickStartPhoneInstanceID());
+  EXPECT_EQ(std::nullopt, CallGetQuickStartPhoneInstanceID());
   const std::string& expected_qs_phone_instance_id = "qsPhoneInstanceID1";
   multidevice_setup()->SetQuickStartPhoneInstanceID(
       expected_qs_phone_instance_id);

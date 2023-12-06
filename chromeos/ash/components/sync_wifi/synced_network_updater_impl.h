@@ -76,7 +76,7 @@ class SyncedNetworkUpdaterImpl
   void OnConfigureNetworkResult(
       const std::string& change_guid,
       const sync_pb::WifiConfigurationSpecifics& proto,
-      const absl::optional<std::string>& network_guid,
+      const std::optional<std::string>& network_guid,
       const std::string& error_message);
   void OnForgetNetworkResult(const std::string& change_guid,
                              const NetworkIdentifier& id,

@@ -136,8 +136,8 @@ class UpstartClientImpl : public UpstartClient {
   void OnStartJobWithErrorDetails(StartJobWithErrorDetailsCallback callback,
                                   dbus::Response* response,
                                   dbus::ErrorResponse* error_response) {
-    absl::optional<std::string> error_name;
-    absl::optional<std::string> error_message;
+    std::optional<std::string> error_name;
+    std::optional<std::string> error_message;
     if (!response && error_response) {
       // Error response may contain the error message as string.
       error_name = error_response->GetErrorName();

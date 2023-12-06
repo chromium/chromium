@@ -53,7 +53,7 @@ TEST_F(QuickStartRequestTest, CBOREncodeGetAssertionRequest) {
   cbor::Value request = GenerateGetAssertionRequest(client_data_hash);
   std::vector<uint8_t> cbor_encoded_request =
       CBOREncodeGetAssertionRequest(std::move(request));
-  absl::optional<cbor::Value> cbor;
+  std::optional<cbor::Value> cbor;
   const base::span<const uint8_t> ctap_request_span =
       base::make_span(cbor_encoded_request);
   cbor = cbor::Reader::Read(ctap_request_span.subspan(1));

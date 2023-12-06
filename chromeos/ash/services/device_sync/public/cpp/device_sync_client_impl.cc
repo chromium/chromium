@@ -131,7 +131,7 @@ multidevice::RemoteDeviceRefList DeviceSyncClientImpl::GetSyncedDevices() {
   return expiring_device_cache_->GetNonExpiredRemoteDevices();
 }
 
-absl::optional<multidevice::RemoteDeviceRef>
+std::optional<multidevice::RemoteDeviceRef>
 DeviceSyncClientImpl::GetLocalDeviceMetadata() {
   DCHECK(is_ready());
   base::UmaHistogramBoolean("CryptAuth.GetLocalDeviceMetadata.IsReady",
@@ -139,7 +139,7 @@ DeviceSyncClientImpl::GetLocalDeviceMetadata() {
 
   // Because we expect the the client to be ready when this function is called,
   // we also expect the local device to be non-null.
-  absl::optional<multidevice::RemoteDeviceRef> local_device =
+  std::optional<multidevice::RemoteDeviceRef> local_device =
       expiring_device_cache_->GetRemoteDevice(local_instance_id_,
                                               local_legacy_device_id_);
   base::UmaHistogramBoolean("CryptAuth.GetLocalDeviceMetadata.Result",
@@ -246,7 +246,7 @@ void DeviceSyncClientImpl::LoadLocalDeviceMetadata() {
 }
 
 void DeviceSyncClientImpl::OnGetSyncedDevicesCompleted(
-    const absl::optional<std::vector<multidevice::RemoteDevice>>&
+    const std::optional<std::vector<multidevice::RemoteDevice>>&
         remote_devices) {
   if (!remote_devices) {
     PA_LOG(INFO) << "Tried to fetch synced devices before service was fully "
@@ -277,7 +277,7 @@ void DeviceSyncClientImpl::OnGetSyncedDevicesCompleted(
 }
 
 void DeviceSyncClientImpl::OnGetLocalDeviceMetadataCompleted(
-    const absl::optional<multidevice::RemoteDevice>& local_device_metadata) {
+    const std::optional<multidevice::RemoteDevice>& local_device_metadata) {
   if (!local_device_metadata) {
     PA_LOG(INFO) << "Tried to get local device metadata before service was "
                     "fully initialized; waiting for enrollment to complete "
@@ -287,17 +287,17 @@ void DeviceSyncClientImpl::OnGetLocalDeviceMetadataCompleted(
 
   if (features::ShouldUseV1DeviceSync()) {
     local_instance_id_ = local_device_metadata->instance_id.empty()
-                             ? absl::nullopt
-                             : absl::make_optional<std::string>(
+                             ? std::nullopt
+                             : std::make_optional<std::string>(
                                    local_device_metadata->instance_id);
     local_legacy_device_id_ = local_device_metadata->GetDeviceId().empty()
-                                  ? absl::nullopt
-                                  : absl::make_optional<std::string>(
+                                  ? std::nullopt
+                                  : std::make_optional<std::string>(
                                         local_device_metadata->GetDeviceId());
   } else {
     local_instance_id_ = local_device_metadata->instance_id.empty()
-                             ? absl::nullopt
-                             : absl::make_optional<std::string>(
+                             ? std::nullopt
+                             : std::make_optional<std::string>(
                                    local_device_metadata->instance_id);
   }
 

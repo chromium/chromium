@@ -76,7 +76,7 @@ class NearbyPresenceService {
   class PresenceDevice {
    public:
     PresenceDevice(::nearby::internal::Metadata metadata,
-                   absl::optional<std::string> stable_device_id,
+                   std::optional<std::string> stable_device_id,
                    std::string endpoint_id,
                    std::vector<Action> actions,
                    int rssi);
@@ -89,7 +89,7 @@ class NearbyPresenceService {
       return metadata_.device_type();
     }
 
-    const absl::optional<std::string> GetStableId() const {
+    const std::optional<std::string> GetStableId() const {
       return stable_device_id_;
     }
     const std::string& GetEndpointId() const { return endpoint_id_; }
@@ -99,7 +99,7 @@ class NearbyPresenceService {
 
    private:
     ::nearby::internal::Metadata metadata_;
-    absl::optional<std::string> stable_device_id_;
+    std::optional<std::string> stable_device_id_;
     std::string endpoint_id_;
     std::vector<Action> actions_;
     int rssi_;

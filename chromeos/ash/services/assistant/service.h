@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_ASSISTANT_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/assistant/assistant_state.h"
@@ -26,7 +27,6 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/backoff_entry.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GoogleServiceAuthError;
 class PrefService;
@@ -151,7 +151,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) Service
 
   void UpdateListeningState();
 
-  absl::optional<AssistantManagerService::UserInfo> GetUserInfo() const;
+  std::optional<AssistantManagerService::UserInfo> GetUserInfo() const;
 
   ServiceContext* context() { return context_.get(); }
 
@@ -212,7 +212,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) Service
   std::unique_ptr<AssistantManagerService>
       assistant_manager_service_for_testing_;
 
-  absl::optional<std::string> access_token_;
+  std::optional<std::string> access_token_;
 
   // non-null until |assistant_manager_service_| is created.
   std::unique_ptr<network::PendingSharedURLLoaderFactory>

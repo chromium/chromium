@@ -29,7 +29,7 @@ TEST(OperationChainRunnerTest, TestSingleSuccessfulOperation) {
   operations.push_back(base::BindLambdaForTesting(
       [](std::unique_ptr<UserContext> context, AuthOperationCallback callback) {
         context->SetAuthSessionIds("session", "broadcast");
-        std::move(callback).Run(std::move(context), absl::nullopt);
+        std::move(callback).Run(std::move(context), std::nullopt);
       }));
 
   bool chain_finished = false;
@@ -82,7 +82,7 @@ TEST(OperationChainRunnerTest, TestSuccesfulSequenceOrdering) {
                                      AuthOperationCallback callback) {
         EXPECT_EQ(order, 0);
         order++;
-        std::move(callback).Run(std::move(context), absl::nullopt);
+        std::move(callback).Run(std::move(context), std::nullopt);
       }));
   operations.push_back(
       base::BindLambdaForTesting([&](std::unique_ptr<UserContext> context,
@@ -90,14 +90,14 @@ TEST(OperationChainRunnerTest, TestSuccesfulSequenceOrdering) {
         EXPECT_EQ(order, 1);
         order++;
         context->SetAuthSessionIds("session", "broadcast");
-        std::move(callback).Run(std::move(context), absl::nullopt);
+        std::move(callback).Run(std::move(context), std::nullopt);
       }));
   operations.push_back(
       base::BindLambdaForTesting([&](std::unique_ptr<UserContext> context,
                                      AuthOperationCallback callback) {
         EXPECT_EQ(order, 2);
         order++;
-        std::move(callback).Run(std::move(context), absl::nullopt);
+        std::move(callback).Run(std::move(context), std::nullopt);
       }));
 
   bool chain_finished = false;
@@ -124,7 +124,7 @@ TEST(OperationChainRunnerTest, TestFailedMiddleOperation) {
       base::BindLambdaForTesting([&](std::unique_ptr<UserContext> context,
                                      AuthOperationCallback callback) {
         called_first = true;
-        std::move(callback).Run(std::move(context), absl::nullopt);
+        std::move(callback).Run(std::move(context), std::nullopt);
       }));
   operations.push_back(
       base::BindLambdaForTesting([&](std::unique_ptr<UserContext> context,
@@ -138,7 +138,7 @@ TEST(OperationChainRunnerTest, TestFailedMiddleOperation) {
       base::BindLambdaForTesting([&](std::unique_ptr<UserContext> context,
                                      AuthOperationCallback callback) {
         called_last = true;
-        std::move(callback).Run(std::move(context), absl::nullopt);
+        std::move(callback).Run(std::move(context), std::nullopt);
       }));
 
   bool chain_finished = false;

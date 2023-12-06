@@ -46,7 +46,7 @@ TEST_F(HeatmapMlAgentTest, RunsExecute) {
   bool callback_done = false;
   agent.Execute(data,
                 base::BindOnce(
-                    [](bool* callback_done, absl::optional<double> result) {
+                    [](bool* callback_done, std::optional<double> result) {
                       EXPECT_TRUE(result.has_value());
                       EXPECT_EQ(result.value(), kExpectedResult);
                       *callback_done = true;
@@ -64,8 +64,8 @@ TEST_F(HeatmapMlAgentTest, ReturnsNulloptOnInvalidData) {
   bool callback_done = false;
   agent.Execute(data,
                 base::BindOnce(
-                    [](bool* callback_done, absl::optional<double> result) {
-                      EXPECT_EQ(result, absl::nullopt);
+                    [](bool* callback_done, std::optional<double> result) {
+                      EXPECT_EQ(result, std::nullopt);
                       *callback_done = true;
                     },
                     &callback_done));

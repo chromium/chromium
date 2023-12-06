@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/device_sync/stub_device_sync.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "chromeos/ash/services/device_sync/group_private_key_and_better_together_metadata_status.h"
 #include "chromeos/ash/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -110,8 +110,8 @@ class StubDeviceSync : public DeviceSyncBase {
       bool enabled,
       bool is_exclusive,
       SetSoftwareFeatureStateCallback callback) override {
-    multidevice::RemoteDevice* device = GetRemoteDevice(
-        device_public_key, /*device_instance_id=*/absl::nullopt);
+    multidevice::RemoteDevice* device =
+        GetRemoteDevice(device_public_key, /*device_instance_id=*/std::nullopt);
     if (!device) {
       std::move(callback).Run(
           /*result=*/mojom::NetworkRequestResult::kBadRequest);
@@ -129,7 +129,7 @@ class StubDeviceSync : public DeviceSyncBase {
                         FeatureStatusChange status_change,
                         SetFeatureStatusCallback callback) override {
     multidevice::RemoteDevice* device = GetRemoteDevice(
-        /*device_public_key=*/absl::nullopt, device_instance_id);
+        /*device_public_key=*/std::nullopt, device_instance_id);
     if (!device) {
       std::move(callback).Run(
           /*result=*/mojom::NetworkRequestResult::kBadRequest);
@@ -177,15 +177,15 @@ class StubDeviceSync : public DeviceSyncBase {
   void GetDevicesActivityStatus(
       GetDevicesActivityStatusCallback callback) override {
     std::move(callback).Run(/*result=*/mojom::NetworkRequestResult::kSuccess,
-                            /*response=*/absl::nullopt);
+                            /*response=*/std::nullopt);
   }
 
  private:
   // Returns the synced device that has a matching |device_public_key| or a
   // matching |device_instance_id|, otherwise returns nullptr.
   multidevice::RemoteDevice* GetRemoteDevice(
-      const absl::optional<std::string>& device_public_key,
-      const absl::optional<std::string>& device_instance_id) {
+      const std::optional<std::string>& device_public_key,
+      const std::optional<std::string>& device_instance_id) {
     auto it = base::ranges::find_if(synced_devices_, [&](const auto& device) {
       if (device_public_key.has_value())
         return device.public_key == device_public_key;
@@ -200,7 +200,7 @@ class StubDeviceSync : public DeviceSyncBase {
   }
 
   std::vector<multidevice::RemoteDevice> synced_devices_;
-  absl::optional<multidevice::RemoteDevice> local_device_metadata_;
+  std::optional<multidevice::RemoteDevice> local_device_metadata_;
 };
 
 class StubDeviceSyncImplFactory : public DeviceSyncImpl::Factory {

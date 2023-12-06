@@ -32,7 +32,7 @@ constexpr int kRotationDegrees = 180;
 bool AddPdfPage(sk_sp<SkDocument> pdf_doc,
                 const sk_sp<SkData>& jpeg_image_data,
                 bool rotate,
-                absl::optional<int> dpi) {
+                std::optional<int> dpi) {
   if (!SkJpegDecoder::IsJpeg(jpeg_image_data->data(),
                              jpeg_image_data->size())) {
     LOG(ERROR) << "Not a valid JPEG image.";
@@ -83,7 +83,7 @@ bool AddPdfPage(sk_sp<SkDocument> pdf_doc,
 bool ConvertJpgImagesToPdf(const std::vector<std::string>& jpg_images,
                            const base::FilePath& file_path,
                            bool rotate_alternate_pages,
-                           absl::optional<int> dpi) {
+                           std::optional<int> dpi) {
   DCHECK(!file_path.empty());
 
   // Register Jpeg Decoder for use by DeferredFromEncodedData in AddPdfPage.
@@ -147,7 +147,7 @@ bool ConvertJpgImagesToPdf(const std::vector<std::vector<uint8_t>>& jpg_images,
       return false;
     }
 
-    if (!AddPdfPage(pdf_doc, img_data, false, absl::nullopt)) {
+    if (!AddPdfPage(pdf_doc, img_data, false, std::nullopt)) {
       LOG(ERROR) << "Unable to add new PDF page.";
       return false;
     }

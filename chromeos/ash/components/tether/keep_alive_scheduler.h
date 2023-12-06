@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_TETHER_KEEP_ALIVE_SCHEDULER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -13,7 +14,6 @@
 #include "chromeos/ash/components/tether/active_host.h"
 #include "chromeos/ash/components/tether/device_status_util.h"
 #include "chromeos/ash/components/tether/keep_alive_operation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::device_sync {
 class DeviceSyncClient;
@@ -80,7 +80,7 @@ class KeepAliveScheduler : public ActiveHost::Observer,
       device_id_tether_network_guid_map_;
 
   std::unique_ptr<base::RepeatingTimer> timer_;
-  absl::optional<multidevice::RemoteDeviceRef> active_host_device_;
+  std::optional<multidevice::RemoteDeviceRef> active_host_device_;
   std::unique_ptr<KeepAliveOperation> keep_alive_operation_;
 
   base::WeakPtrFactory<KeepAliveScheduler> weak_ptr_factory_{this};

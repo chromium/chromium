@@ -101,12 +101,12 @@ const base::Value::List* TargetingBase::GetListCriteria(
   return targeting_->FindListByDottedPath(GetCriteriaPath(path_suffix));
 }
 
-const absl::optional<bool> TargetingBase::GetBoolCriteria(
+const std::optional<bool> TargetingBase::GetBoolCriteria(
     const char* path_suffix) const {
   return targeting_->FindBoolByDottedPath(GetCriteriaPath(path_suffix));
 }
 
-const absl::optional<int> TargetingBase::GetIntCriteria(
+const std::optional<int> TargetingBase::GetIntCriteria(
     const char* path_suffix) const {
   return targeting_->FindIntByDottedPath(GetCriteriaPath(path_suffix));
 }
@@ -147,11 +147,11 @@ const std::string* DemoModeTargeting::GetAppMaxVersion() const {
   return GetStringCriteria(kMaxDemoModeAppVersion);
 }
 
-const absl::optional<bool> DemoModeTargeting::TargetCloudGamingDevice() const {
+const std::optional<bool> DemoModeTargeting::TargetCloudGamingDevice() const {
   return GetBoolCriteria(kDemoModeCloudGaming);
 }
 
-const absl::optional<bool> DemoModeTargeting::TargetFeatureAwareDevice() const {
+const std::optional<bool> DemoModeTargeting::TargetFeatureAwareDevice() const {
   return GetBoolCriteria(kDemoModeFeatureAware);
 }
 
@@ -165,11 +165,11 @@ const base::Value::List* DeviceTargeting::GetLocales() const {
   return GetListCriteria(kDeviceLocales);
 }
 
-const absl::optional<int> DeviceTargeting::GetMinMilestone() const {
+const std::optional<int> DeviceTargeting::GetMinMilestone() const {
   return GetIntCriteria(kMinMilestone);
 }
 
-const absl::optional<int> DeviceTargeting::GetMaxMilestone() const {
+const std::optional<int> DeviceTargeting::GetMaxMilestone() const {
   return GetIntCriteria(kMaxMilestone);
 }
 

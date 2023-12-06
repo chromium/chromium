@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 
 #include <map>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -35,7 +36,6 @@
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/sha2.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/switches/chrome_switches.h"
 
 namespace ash {
@@ -340,7 +340,7 @@ void FakeSessionManagerClient::LoginScreenStorageStore(
   // need to store data into the file. Currently all the data is cleared on
   // session exit.
   login_screen_storage_[key] = data;
-  PostReply(FROM_HERE, std::move(callback), absl::nullopt /* error */);
+  PostReply(FROM_HERE, std::move(callback), std::nullopt /* error */);
 }
 
 void FakeSessionManagerClient::LoginScreenStorageRetrieve(
@@ -353,7 +353,7 @@ void FakeSessionManagerClient::LoginScreenStorageRetrieve(
   }
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback), data, absl::nullopt /* error */));
+      base::BindOnce(std::move(callback), data, std::nullopt /* error */));
 }
 
 void FakeSessionManagerClient::LoginScreenStorageListKeys(
@@ -364,7 +364,7 @@ void FakeSessionManagerClient::LoginScreenStorageListKeys(
   }
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback), keys, absl::nullopt /* error */));
+      base::BindOnce(std::move(callback), keys, std::nullopt /* error */));
 }
 
 void FakeSessionManagerClient::LoginScreenStorageDelete(
@@ -808,7 +808,7 @@ void FakeSessionManagerClient::GetArcStartTime(
     chromeos::DBusMethodCallback<base::TimeTicks> callback) {
   PostReply(
       FROM_HERE, std::move(callback),
-      arc_available_ ? absl::make_optional(arc_start_time_) : absl::nullopt);
+      arc_available_ ? std::make_optional(arc_start_time_) : std::nullopt);
 }
 
 void FakeSessionManagerClient::EnableAdbSideload(

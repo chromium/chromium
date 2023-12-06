@@ -48,7 +48,7 @@ class {{class_name}}
   bool has_next_ = true;
   // Used to cached the check result.
   bool check_reentry_status_ = false;
-  absl::optional<bool> check_result_;
+  std::optional<bool> check_result_;
 
   ::mojo::Remote<{{interface.mojom_name}}> remote_;
 

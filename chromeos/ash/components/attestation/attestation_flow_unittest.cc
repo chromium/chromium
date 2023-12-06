@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -28,7 +29,6 @@
 #include "components/account_id/account_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::_;
 using testing::AtLeast;
@@ -155,7 +155,7 @@ TEST_F(AttestationFlowTest, GetCertificate) {
       /*request_origin=*/"fake_origin", /*force_new_key=*/true,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
       /*key_name=*/kFakeKeyName,
-      /*profile_specific_data=*/absl::nullopt,
+      /*profile_specific_data=*/std::nullopt,
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
 
@@ -238,7 +238,7 @@ TEST_F(AttestationFlowTest, GetCertificate_DeviceSetupCertificate) {
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
       /*key_name=*/kFakeKeyName,
       /*profile_specific_data=*/
-      absl::make_optional(
+      std::make_optional(
           AttestationFlow::CertProfileSpecificData(profile_specific_data)),
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
@@ -317,7 +317,7 @@ TEST_F(AttestationFlowTest, GetCertificateCreatedByFactory) {
       /*account_id=*/account_id, /*request_origin=*/"fake_origin",
       /*force_new_key=*/true,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/std::nullopt,
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
 
@@ -394,7 +394,7 @@ TEST_F(AttestationFlowTest, GetCertificate_Ecc) {
       /*request_origin=*/"fake_origin", /*force_new_key=*/true,
       /*key_crypto_type=*/::attestation::KEY_TYPE_ECC,
       /*key_name=*/kFakeKeyName,
-      /*profile_specific_data=*/absl::nullopt,
+      /*profile_specific_data=*/std::nullopt,
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
 
@@ -477,7 +477,7 @@ TEST_F(AttestationFlowTest, GetCertificate_TestACA) {
       /*account_id=*/account_id,
       /*request_origin=*/"fake_origin", /*force_new_key=*/true,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/std::nullopt,
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
 
@@ -554,7 +554,7 @@ TEST_F(AttestationFlowTest, GetCertificate_Attestation_Not_Prepared) {
       /*account_id=*/account_id,
       /*request_origin=*/"fake_origin", /*force_new_key=*/true,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/kEnterpriseUserKey, /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/kEnterpriseUserKey, /*profile_specific_data=*/std::nullopt,
       /*callback=*/std::move(callback));
 
   Run();
@@ -597,7 +597,7 @@ TEST_F(AttestationFlowTest, GetCertificate_Attestation_Never_Prepared) {
       /*account_id=*/EmptyAccountId(),
       /*request_origin=*/"fake_origin", /*force_new_key=*/true,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/"fake_key_name", /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/"fake_key_name", /*profile_specific_data=*/std::nullopt,
       /*callback=*/std::move(callback));
 
   Run();
@@ -635,7 +635,7 @@ TEST_F(AttestationFlowTest, GetCertificate_Attestation_Not_Available) {
       /*account_id=*/EmptyAccountId(),
       /*request_origin=*/"fake_origin", /*force_new_key=*/true,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/std::nullopt,
       /*callback=*/std::move(callback));
 
   Run();
@@ -674,7 +674,7 @@ TEST_F(AttestationFlowTest, GetCertificate_Attestation_Never_Confirm_Prepared) {
       /*account_id=*/EmptyAccountId(),
       /*request_origin=*/"fake_origin", /*force_new_key=*/true,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/"fake_key_name", /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/"fake_key_name", /*profile_specific_data=*/std::nullopt,
       /*callback=*/std::move(callback));
 
   Run();
@@ -715,7 +715,7 @@ TEST_F(AttestationFlowTest, GetCertificate_Attestation_Not_Verified) {
       /*account_id=*/EmptyAccountId(),
       /*request_origin=*/"fake_origin", /*force_new_key=*/true,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/"fake_key_name", /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/"fake_key_name", /*profile_specific_data=*/std::nullopt,
       /*callback=*/std::move(callback));
 
   Run();
@@ -748,7 +748,7 @@ TEST_F(AttestationFlowTest, GetCertificate_NoEK) {
       /*certificate_profile=*/PROFILE_ENTERPRISE_USER_CERTIFICATE,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
       /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/"fake_key_name", /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/"fake_key_name", /*profile_specific_data=*/std::nullopt,
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
 }
@@ -783,7 +783,7 @@ TEST_F(AttestationFlowTest, GetCertificate_EKRejected) {
       /*certificate_profile=*/PROFILE_ENTERPRISE_USER_CERTIFICATE,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
       /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/"fake_key_name", /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/"fake_key_name", /*profile_specific_data=*/std::nullopt,
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
 }
@@ -821,7 +821,7 @@ TEST_F(AttestationFlowTest, GetCertificate_FailEnroll) {
       /*certificate_profile=*/PROFILE_ENTERPRISE_USER_CERTIFICATE,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
       /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/"fake_key_name", /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/"fake_key_name", /*profile_specific_data=*/std::nullopt,
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
 }
@@ -867,7 +867,7 @@ TEST_F(AttestationFlowTest, GetMachineCertificateAlreadyEnrolled) {
       /*account_id=*/EmptyAccountId(),
       /*request_origin=*/"", /*force_new_key=*/true,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/std::nullopt,
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
   EXPECT_EQ(AttestationClient::Get()->GetTestInterface()->GetFakeCertificate(),
@@ -925,7 +925,7 @@ TEST_F(AttestationFlowTest, GetMachineCertificateWithUsername) {
       /*certificate_profile=*/PROFILE_ENTERPRISE_MACHINE_CERTIFICATE,
       /*account_id=*/account_id, /*request_origin=*/"",
       /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/std::nullopt,
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
   // The certificate should be stored as a machine key instead of a user key.
@@ -976,7 +976,7 @@ TEST_F(AttestationFlowTest, GetEnrollmentCertificateAlreadyEnrolled) {
       /*certificate_profile=*/PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
       /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/std::nullopt,
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
   EXPECT_EQ(AttestationClient::Get()->GetTestInterface()->GetFakeCertificate(),
@@ -1015,7 +1015,7 @@ TEST_F(AttestationFlowTest, GetCertificate_FailCreateCertRequest) {
       /*certificate_profile=*/PROFILE_ENTERPRISE_USER_CERTIFICATE,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
       /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/"fake_key_name", /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/"fake_key_name", /*profile_specific_data=*/std::nullopt,
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
 }
@@ -1055,7 +1055,7 @@ TEST_F(AttestationFlowTest, GetCertificate_CertRequestRejected) {
       /*certificate_profile=*/PROFILE_ENTERPRISE_USER_CERTIFICATE,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
       /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/"fake_key_name", /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/"fake_key_name", /*profile_specific_data=*/std::nullopt,
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
 }
@@ -1100,7 +1100,7 @@ TEST_F(AttestationFlowTest, GetCertificate_CertRequestBadRequest) {
       /*certificate_profile=*/PROFILE_ENTERPRISE_USER_CERTIFICATE,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
       /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/"fake_key_name", /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/"fake_key_name", /*profile_specific_data=*/std::nullopt,
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
 }
@@ -1128,7 +1128,7 @@ TEST_F(AttestationFlowTest, GetCertificate_FailIsEnrolled) {
       /*certificate_profile=*/PROFILE_ENTERPRISE_USER_CERTIFICATE,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
       /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/"fake_key_name", /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/"fake_key_name", /*profile_specific_data=*/std::nullopt,
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
 }
@@ -1173,7 +1173,7 @@ TEST_F(AttestationFlowTest, GetCertificate_CheckExisting) {
       /*certificate_profile=*/PROFILE_ENTERPRISE_USER_CERTIFICATE,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
       /*force_new_key=*/false, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/std::nullopt,
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
   EXPECT_EQ(AttestationClient::Get()->GetTestInterface()->GetFakeCertificate(),
@@ -1211,7 +1211,7 @@ TEST_F(AttestationFlowTest, GetCertificate_AlreadyExists) {
       /*certificate_profile=*/PROFILE_ENTERPRISE_USER_CERTIFICATE,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
       /*force_new_key=*/false, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/kEnterpriseUserKey, /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/kEnterpriseUserKey, /*profile_specific_data=*/std::nullopt,
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
 }
@@ -1250,7 +1250,7 @@ TEST_F(AttestationFlowTest, GetCertificate_LookupMachineKeyWithAccountId) {
       /*account_id=*/account_id, /*request_origin=*/"",
       /*force_new_key=*/false, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
       /*key_name=*/kEnterpriseMachineKey,
-      /*profile_specific_data=*/absl::nullopt,
+      /*profile_specific_data=*/std::nullopt,
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
 }
@@ -1287,7 +1287,7 @@ TEST_F(AttestationFlowDeathTest,
       /*force_new_key=*/true,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
       /*key_name=*/"fake_key_name",
-      /*profile_specific_data=*/absl::nullopt, /*callback=*/base::DoNothing());
+      /*profile_specific_data=*/std::nullopt, /*callback=*/base::DoNothing());
   EXPECT_DCHECK_DEATH(RunUntilIdle());
 }
 

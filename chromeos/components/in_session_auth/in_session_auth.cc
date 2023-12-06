@@ -36,7 +36,7 @@ void InSessionAuth::BindReceiver(
 }
 
 void InSessionAuth::RequestToken(chromeos::auth::mojom::Reason reason,
-                                 const absl::optional<std::string>& prompt,
+                                 const std::optional<std::string>& prompt,
                                  RequestTokenCallback callback) {
   ash::InSessionAuthDialogController::Get()->ShowAuthDialog(
       ToAshReason(reason),

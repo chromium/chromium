@@ -127,7 +127,7 @@ void AuthSessionAuthenticator::OnStartAuthSessionForLogin(
     StartAuthSessionCallback callback,
     bool user_exists,
     std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     std::move(callback).Run(/*user_exists=*/false, std::move(context),
                             error.value());
@@ -142,7 +142,7 @@ void AuthSessionAuthenticator::OnStartAuthSessionForLogin(
     return;
   }
   std::move(callback).Run(user_exists, std::move(context),
-                          /*error=*/absl::nullopt);
+                          /*error=*/std::nullopt);
 }
 
 void AuthSessionAuthenticator::RemoveStaleUserForEphemeral(
@@ -167,7 +167,7 @@ void AuthSessionAuthenticator::OnRemoveStaleUserForEphemeral(
     std::unique_ptr<UserContext> original_context,
     AuthSessionIntent intent,
     StartAuthSessionCallback callback,
-    absl::optional<user_data_auth::RemoveReply> reply) {
+    std::optional<user_data_auth::RemoveReply> reply) {
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
   if (cryptohome::HasError(error)) {
     LOGIN_LOG(ERROR) << "Stale ephemeral user removal failed with error "
@@ -188,7 +188,7 @@ void AuthSessionAuthenticator::OnStartAuthSessionForLoginAfterStaleRemoval(
     StartAuthSessionCallback callback,
     bool user_exists,
     std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     std::move(callback).Run(/*user_exists=*/false, std::move(context),
                             error.value());
@@ -201,7 +201,7 @@ void AuthSessionAuthenticator::OnStartAuthSessionForLoginAfterStaleRemoval(
     return;
   }
   std::move(callback).Run(user_exists, std::move(context),
-                          /*error=*/absl::nullopt);
+                          /*error=*/std::nullopt);
 }
 
 void AuthSessionAuthenticator::StartAuthSessionForLoggedIn(
@@ -219,7 +219,7 @@ void AuthSessionAuthenticator::RecordCreatingNewUser(
   user_manager::UserDirectoryIntegrityManager integrity_manager(local_state_);
   integrity_manager.RecordCreatingNewUser(context->GetAccountId());
   std::move(callback).Run(std::move(context),
-                          /*authentication_error=*/absl::nullopt);
+                          /*authentication_error=*/std::nullopt);
 }
 
 void AuthSessionAuthenticator::RecordFirstAuthFactorAdded(
@@ -228,14 +228,14 @@ void AuthSessionAuthenticator::RecordFirstAuthFactorAdded(
   user_manager::UserDirectoryIntegrityManager integrity_manager(local_state_);
   integrity_manager.ClearPrefs();
   std::move(callback).Run(std::move(context),
-                          /*authentication_error=*/absl::nullopt);
+                          /*authentication_error=*/std::nullopt);
 }
 
 void AuthSessionAuthenticator::DoCompleteLogin(
     bool ephemeral,
     bool user_exists,
     std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   AuthErrorCallback error_callback =
       base::BindOnce(&AuthSessionAuthenticator::ProcessCryptohomeError,
                      weak_factory_.GetWeakPtr(),
@@ -440,7 +440,7 @@ void AuthSessionAuthenticator::DoLoginAsExistingUser(
     bool ephemeral,
     bool user_exists,
     std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   AuthErrorCallback error_callback =
       base::BindOnce(&AuthSessionAuthenticator::ProcessCryptohomeError,
                      weak_factory_.GetWeakPtr(),
@@ -503,7 +503,7 @@ void AuthSessionAuthenticator::DoUnlock(
     bool ephemeral,
     bool user_exists,
     std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   AuthErrorCallback error_callback =
       base::BindOnce(&AuthSessionAuthenticator::ProcessCryptohomeError,
                      weak_factory_.GetWeakPtr(), AuthFailure::UNLOCK_FAILED);
@@ -607,7 +607,7 @@ void AuthSessionAuthenticator::LoginAsPublicSession(
 void AuthSessionAuthenticator::DoLoginAsPublicSession(
     bool user_exists,
     std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   AuthErrorCallback error_callback = base::BindOnce(
       &AuthSessionAuthenticator::ProcessCryptohomeError,
       weak_factory_.GetWeakPtr(), AuthFailure::COULD_NOT_MOUNT_TMPFS);
@@ -687,7 +687,7 @@ void AuthSessionAuthenticator::DoLoginAsKiosk(
     bool ephemeral,
     bool user_exists,
     std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   AuthErrorCallback error_callback =
       base::BindOnce(&AuthSessionAuthenticator::ProcessCryptohomeError,
                      weak_factory_.GetWeakPtr(),
@@ -1098,7 +1098,7 @@ void AuthSessionAuthenticator::CheckOwnershipOperation(
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback) {
   if (!safe_mode_delegate_->IsSafeMode()) {
-    std::move(callback).Run(std::move(context), absl::nullopt);
+    std::move(callback).Run(std::move(context), std::nullopt);
     return;
   }
   LOGIN_LOG(EVENT) << "Running in safe mode";
@@ -1118,7 +1118,7 @@ void AuthSessionAuthenticator::OnSafeModeOwnershipCheck(
     bool is_owner) {
   if (is_owner) {
     LOGIN_LOG(EVENT) << "Safe mode: owner";
-    std::move(callback).Run(std::move(context), absl::nullopt);
+    std::move(callback).Run(std::move(context), std::nullopt);
     return;
   }
   LOGIN_LOG(EVENT) << "Safe mode: non-owner";
@@ -1132,7 +1132,7 @@ void AuthSessionAuthenticator::OnSafeModeOwnershipCheck(
 // Crash if directory could not be unmounted
 void AuthSessionAuthenticator::OnUnmountForNonOwner(
     std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   if (error) {
     // Crash if could not unmount home directory, and let session_manager
     // handle it.
@@ -1147,7 +1147,7 @@ void AuthSessionAuthenticator::SaveKnownUser(
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback) {
   user_recorder_.Run(context->GetAccountId());
-  std::move(callback).Run(std::move(context), absl::nullopt);
+  std::move(callback).Run(std::move(context), std::nullopt);
 }
 
 }  // namespace ash

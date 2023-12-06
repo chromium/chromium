@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/services/device_sync/cryptauth_v2_device_manager_impl.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -21,7 +23,6 @@
 #include "chromeos/ash/services/device_sync/proto/cryptauth_v2_test_util.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -43,7 +44,7 @@ class FakeCryptAuthSchedulerUpdatedByDeviceSyncResults
 
     if (device_sync_result.IsSuccess()) {
       set_num_consecutive_device_sync_failures(0);
-      set_time_to_next_device_sync_request(absl::nullopt);
+      set_time_to_next_device_sync_request(std::nullopt);
       set_last_successful_device_sync_time(
           base::Time::FromSecondsSinceUnixEpoch(kFakeLastSuccessTimeSeconds));
     } else {
@@ -126,7 +127,7 @@ class DeviceSyncCryptAuthV2DeviceManagerImplTest
 
   void RequestDeviceSyncThroughSchedulerAndVerify(
       const cryptauthv2::ClientMetadata::InvocationReason& invocation_reason,
-      const absl::optional<std::string>& session_id) {
+      const std::optional<std::string>& session_id) {
     fake_scheduler_.RequestDeviceSync(invocation_reason, session_id);
 
     ProcessAndVerifyNewDeviceSyncRequest(cryptauthv2::BuildClientMetadata(
@@ -136,7 +137,7 @@ class DeviceSyncCryptAuthV2DeviceManagerImplTest
 
   void ForceDeviceSyncRequestAndVerify(
       const cryptauthv2::ClientMetadata::InvocationReason& invocation_reason,
-      const absl::optional<std::string>& session_id) {
+      const std::optional<std::string>& session_id) {
     device_manager_->ForceDeviceSyncNow(invocation_reason, session_id);
 
     ProcessAndVerifyNewDeviceSyncRequest(cryptauthv2::BuildClientMetadata(
@@ -145,9 +146,9 @@ class DeviceSyncCryptAuthV2DeviceManagerImplTest
   }
 
   void RequestDeviceSyncThroughGcmAndVerify(
-      const absl::optional<std::string>& session_id) {
+      const std::optional<std::string>& session_id) {
     fake_gcm_manager_.PushResyncMessage(session_id,
-                                        absl::nullopt /* feature_type */);
+                                        std::nullopt /* feature_type */);
 
     ProcessAndVerifyNewDeviceSyncRequest(cryptauthv2::BuildClientMetadata(
         fake_scheduler_.GetNumConsecutiveDeviceSyncFailures(),
@@ -324,7 +325,7 @@ TEST_F(DeviceSyncCryptAuthV2DeviceManagerImplTest,
   CreateAndStartDeviceManager();
   RequestDeviceSyncThroughSchedulerAndVerify(
       cryptauthv2::ClientMetadata::INITIALIZATION,
-      absl::nullopt /* session_id */);
+      std::nullopt /* session_id */);
   FinishDeviceSyncAttemptAndVerifyResult(
       0u /* expected_device_sync_instance_index */,
       CryptAuthDeviceSyncResult(CryptAuthDeviceSyncResult::ResultCode::kSuccess,
@@ -357,7 +358,7 @@ TEST_F(DeviceSyncCryptAuthV2DeviceManagerImplTest,
 TEST_F(DeviceSyncCryptAuthV2DeviceManagerImplTest, FailureRetry) {
   CreateAndStartDeviceManager();
   RequestDeviceSyncThroughSchedulerAndVerify(
-      cryptauthv2::ClientMetadata::PERIODIC, absl::nullopt /* session_id */);
+      cryptauthv2::ClientMetadata::PERIODIC, std::nullopt /* session_id */);
 
   // Fail first attempt with fatal error.
   FinishDeviceSyncAttemptAndVerifyResult(
@@ -366,9 +367,9 @@ TEST_F(DeviceSyncCryptAuthV2DeviceManagerImplTest, FailureRetry) {
           CryptAuthDeviceSyncResult::ResultCode::
               kErrorSyncMetadataApiCallInternalServerError,
           false /* did_device_registry_change */,
-          absl::nullopt /* client_directive */));
+          std::nullopt /* client_directive */));
   EXPECT_EQ(kFakeFailureRetryTime, device_manager()->GetTimeToNextAttempt());
-  EXPECT_EQ(absl::nullopt, device_manager()->GetLastDeviceSyncTime());
+  EXPECT_EQ(std::nullopt, device_manager()->GetLastDeviceSyncTime());
   EXPECT_TRUE(device_manager()->IsRecoveringFromFailure());
 
   // Fail second attempt with non-fatal error.
@@ -379,9 +380,9 @@ TEST_F(DeviceSyncCryptAuthV2DeviceManagerImplTest, FailureRetry) {
       CryptAuthDeviceSyncResult(
           CryptAuthDeviceSyncResult::ResultCode::kFinishedWithNonFatalErrors,
           false /* did_device_registry_change */,
-          absl::nullopt /* client_directive */));
+          std::nullopt /* client_directive */));
   EXPECT_EQ(kFakeFailureRetryTime, device_manager()->GetTimeToNextAttempt());
-  EXPECT_EQ(absl::nullopt, device_manager()->GetLastDeviceSyncTime());
+  EXPECT_EQ(std::nullopt, device_manager()->GetLastDeviceSyncTime());
   EXPECT_TRUE(device_manager()->IsRecoveringFromFailure());
 
   // Succeed third attempt.
@@ -393,7 +394,7 @@ TEST_F(DeviceSyncCryptAuthV2DeviceManagerImplTest, FailureRetry) {
           CryptAuthDeviceSyncResult::ResultCode::kSuccess,
           true /* did_device_registry_change */,
           cryptauthv2::GetClientDirectiveForTest() /* client_directive */));
-  EXPECT_EQ(absl::nullopt, device_manager()->GetTimeToNextAttempt());
+  EXPECT_EQ(std::nullopt, device_manager()->GetTimeToNextAttempt());
   EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(kFakeLastSuccessTimeSeconds),
             device_manager()->GetLastDeviceSyncTime());
   EXPECT_FALSE(device_manager()->IsRecoveringFromFailure());

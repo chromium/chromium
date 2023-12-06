@@ -123,7 +123,7 @@ void EligibleHostDevicesProviderImpl::UpdateEligibleDevicesSet() {
 
 void EligibleHostDevicesProviderImpl::OnGetDevicesActivityStatus(
     device_sync::mojom::NetworkRequestResult network_result,
-    absl::optional<std::vector<device_sync::mojom::DeviceActivityStatusPtr>>
+    std::optional<std::vector<device_sync::mojom::DeviceActivityStatusPtr>>
         devices_activity_status_optional) {
   if (network_result != device_sync::mojom::NetworkRequestResult::kSuccess ||
       !devices_activity_status_optional) {

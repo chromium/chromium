@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_LANGUAGE_PACKS_LANGUAGE_PACK_MANAGER_H_
 #define CHROMEOS_ASH_COMPONENTS_LANGUAGE_PACKS_LANGUAGE_PACK_MANAGER_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -14,7 +15,6 @@
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/input_method_util.h"
 
 class PrefService;
@@ -149,8 +149,8 @@ struct PackSpecPair {
 const base::flat_map<PackSpecPair, std::string>& GetAllLanguagePackDlcIds();
 
 // Finds the ID of the DLC corresponding to the given spec.
-// Returns the DLC ID if the DLC exists or absl::nullopt otherwise.
-absl::optional<std::string> GetDlcIdForLanguagePack(
+// Returns the DLC ID if the DLC exists or std::nullopt otherwise.
+std::optional<std::string> GetDlcIdForLanguagePack(
     const std::string& feature_id,
     const std::string& locale);
 

@@ -5,10 +5,11 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_QUICK_START_QUICK_START_METRICS_H_
 #define CHROMEOS_ASH_COMPONENTS_QUICK_START_QUICK_START_METRICS_H_
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "chromeos/ash/components/quick_start/quick_start_response_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::quick_start {
 
@@ -188,11 +189,11 @@ class QuickStartMetrics {
   static void RecordScreenClosed(ScreenName screen,
                                  int32_t session_id,
                                  base::Time timestamp,
-                                 absl::optional<ScreenName> previous_screen);
+                                 std::optional<ScreenName> previous_screen);
 
   static void RecordWifiTransferResult(
       bool succeeded,
-      absl::optional<WifiTransferResultFailureReason> failure_reason);
+      std::optional<WifiTransferResultFailureReason> failure_reason);
 
   static void RecordGaiaTransferAttempted(bool attempted);
 
@@ -204,7 +205,7 @@ class QuickStartMetrics {
 
   static void RecordGaiaTransferResult(
       bool succeeded,
-      absl::optional<GaiaTransferResultFailureReason> failure_reason);
+      std::optional<GaiaTransferResultFailureReason> failure_reason);
 
   static void RecordEntryPoint(EntryPoint entry_point);
 
@@ -219,13 +220,13 @@ class QuickStartMetrics {
   // is empty if the request was successful - otherwise it contains the details
   // of the error.
   void RecordAttestationCertificateRequestEnded(
-      absl::optional<AttestationCertificateRequestErrorCode> error_code);
+      std::optional<AttestationCertificateRequestErrorCode> error_code);
 
   void RecordFastPairAdvertisementStarted(AdvertisingMethod advertising_method);
 
   void RecordFastPairAdvertisementEnded(
       bool succeeded,
-      absl::optional<FastPairAdvertisingErrorCode> error_code);
+      std::optional<FastPairAdvertisingErrorCode> error_code);
 
   void RecordNearbyConnectionsAdvertisementStarted(
       int32_t session_id,
@@ -233,27 +234,27 @@ class QuickStartMetrics {
 
   void RecordNearbyConnectionsAdvertisementEnded(
       bool succeeded,
-      absl::optional<NearbyConnectionsAdvertisingErrorCode> error_code);
+      std::optional<NearbyConnectionsAdvertisingErrorCode> error_code);
 
   // TODO(b/308200138): Change the wording here to make this less confusing.
   void RecordHandshakeStarted(bool handshake_started);
 
   void RecordHandshakeResult(bool succeeded,
-                             absl::optional<HandshakeErrorCode> error_code);
+                             std::optional<HandshakeErrorCode> error_code);
 
   void RecordMessageSent(MessageType message_type);
 
   void RecordMessageReceived(
       MessageType desired_message_type,
       bool succeeded,
-      absl::optional<MessageReceivedErrorCode> error_code);
+      std::optional<MessageReceivedErrorCode> error_code);
 
  private:
   // Timer to keep track of Fast Pair advertising duration. Should be
   // constructed when advertising starts and destroyed when advertising
   // finishes.
   std::unique_ptr<base::ElapsedTimer> fast_pair_advertising_timer_;
-  absl::optional<AdvertisingMethod> fast_pair_advertising_method_;
+  std::optional<AdvertisingMethod> fast_pair_advertising_method_;
 
   // Timer to keep track of handshake duration. Should be constructed when
   // the handshake starts and destroyed when the handshake finishes.

@@ -274,7 +274,7 @@ void SettingsController::UpdateSettings(const std::string& settings,
 }
 
 void SettingsController::UpdateListeningEnabled(
-    absl::optional<bool> listening_enabled) {
+    std::optional<bool> listening_enabled) {
   if (!assistant_client_)
     return;
   if (!listening_enabled.has_value())
@@ -284,7 +284,7 @@ void SettingsController::UpdateListeningEnabled(
 }
 
 void SettingsController::UpdateAuthenticationTokens(
-    const absl::optional<std::vector<mojom::AuthenticationTokenPtr>>& tokens) {
+    const std::optional<std::vector<mojom::AuthenticationTokenPtr>>& tokens) {
   if (!assistant_client_)
     return;
   if (!tokens.has_value())
@@ -294,9 +294,9 @@ void SettingsController::UpdateAuthenticationTokens(
 }
 
 void SettingsController::UpdateInternalOptions(
-    const absl::optional<std::string>& locale,
-    absl::optional<bool> spoken_feedback_enabled,
-    absl::optional<bool> dark_mode_enabled) {
+    const std::optional<std::string>& locale,
+    std::optional<bool> spoken_feedback_enabled,
+    std::optional<bool> dark_mode_enabled) {
   if (!assistant_client_)
     return;
 
@@ -307,7 +307,7 @@ void SettingsController::UpdateInternalOptions(
 }
 
 void SettingsController::UpdateLocaleOverride(
-    const absl::optional<std::string>& locale) {
+    const std::optional<std::string>& locale) {
   if (!assistant_client_)
     return;
 
@@ -318,8 +318,8 @@ void SettingsController::UpdateLocaleOverride(
 }
 
 void SettingsController::UpdateDeviceSettings(
-    const absl::optional<std::string>& locale,
-    absl::optional<bool> hotword_enabled) {
+    const std::optional<std::string>& locale,
+    std::optional<bool> hotword_enabled) {
   if (!device_settings_updater_)
     return;
 
@@ -330,7 +330,7 @@ void SettingsController::UpdateDeviceSettings(
 }
 
 void SettingsController::UpdateDarkModeEnabledV2(
-    absl::optional<bool> dark_mode_enabled) {
+    std::optional<bool> dark_mode_enabled) {
   if (!assistant_client_)
     return;
 

@@ -94,9 +94,9 @@ void ConnectionManagerImpl::AttemptNearbyConnection() {
     return;
   }
 
-  const absl::optional<multidevice::RemoteDeviceRef> remote_device =
+  const std::optional<multidevice::RemoteDeviceRef> remote_device =
       multidevice_setup_client_->GetHostStatus().second;
-  const absl::optional<multidevice::RemoteDeviceRef> local_device =
+  const std::optional<multidevice::RemoteDeviceRef> local_device =
       device_sync_client_->GetLocalDeviceMetadata();
 
   if (!remote_device || !local_device) {
@@ -154,11 +154,11 @@ void ConnectionManagerImpl::RegisterPayloadFile(
 }
 
 void ConnectionManagerImpl::GetHostLastSeenTimestamp(
-    base::OnceCallback<void(absl::optional<base::Time>)> callback) {
-  const absl::optional<multidevice::RemoteDeviceRef> remote_device =
+    base::OnceCallback<void(std::optional<base::Time>)> callback) {
+  const std::optional<multidevice::RemoteDeviceRef> remote_device =
       multidevice_setup_client_->GetHostStatus().second;
   if (!remote_device) {
-    std::move(callback).Run(/*timestamp=*/absl::nullopt);
+    std::move(callback).Run(/*timestamp=*/std::nullopt);
     return;
   }
 

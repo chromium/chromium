@@ -257,9 +257,9 @@ bool HidDetectionManagerImpl::AttemptSetDeviceAsConnectedHid(
 }
 
 HidDetectionManager::InputMetadata HidDetectionManagerImpl::GetInputMetadata(
-    const absl::optional<std::string>& connected_device_id,
+    const std::optional<std::string>& connected_device_id,
     BluetoothHidType input_type,
-    const absl::optional<BluetoothHidDetector::BluetoothHidMetadata>&
+    const std::optional<BluetoothHidDetector::BluetoothHidMetadata>&
         current_pairing_device) const {
   if (connected_device_id.has_value()) {
     const device::mojom::InputDeviceInfoPtr& device =

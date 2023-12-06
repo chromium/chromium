@@ -92,7 +92,7 @@ class OnboardingUiTrackerImplTest : public testing::Test {
 
   void InvokePendingSetFeatureEnabledStateCallback(bool expected_enabled) {
     fake_multidevice_setup_client_.InvokePendingSetFeatureEnabledStateCallback(
-        Feature::kPhoneHub, expected_enabled, absl::nullopt, true);
+        Feature::kPhoneHub, expected_enabled, std::nullopt, true);
   }
 
   size_t GetOnShouldShowOnboardingUiChangedCallCount() {

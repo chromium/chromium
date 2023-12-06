@@ -634,7 +634,7 @@ TEST_F(CampaignsManagerTest, LoadCampaignsFailed) {
 
   EXPECT_CALL(mock_client_, LoadCampaignsComponent(_))
       .WillOnce(InvokeCallbackArgument<0, CampaignComponentLoadedCallback>(
-          absl::nullopt));
+          std::nullopt));
 
   campaigns_manager_->LoadCampaigns(base::DoNothing());
   observer.Wait();

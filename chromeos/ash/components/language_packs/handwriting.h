@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_LANGUAGE_PACKS_HANDWRITING_H_
 #define CHROMEOS_ASH_COMPONENTS_LANGUAGE_PACKS_HANDWRITING_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -13,7 +14,6 @@
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/language_packs/diff.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/input_method_util.h"
 
@@ -25,7 +25,7 @@ namespace ash::language_packs {
 //
 // Intended to be used with `base::BindRepeating` to be passed into
 // `MapIdsToHandwritingLocales`.
-absl::optional<std::string> MapEngineIdToHandwritingLocale(
+std::optional<std::string> MapEngineIdToHandwritingLocale(
     input_method::InputMethodUtil* const util,
     const std::string& engine_id);
 
@@ -35,7 +35,7 @@ absl::optional<std::string> MapEngineIdToHandwritingLocale(
 //
 // Intended to be used with `base::BindRepeating` to be passed into
 // `MapIdsToHandwritingLocales`.
-absl::optional<std::string> MapInputMethodIdToHandwritingLocale(
+std::optional<std::string> MapInputMethodIdToHandwritingLocale(
     input_method::InputMethodUtil* const util,
     const std::string& input_method_id);
 
@@ -43,11 +43,11 @@ absl::optional<std::string> MapInputMethodIdToHandwritingLocale(
 // This function takes in handwriting locales as given in the Google ChromeOS 1P
 // IME manifest. If the locale is not of that form, consider converting it to
 // one using `ResolveLocale`.
-absl::optional<std::string> HandwritingLocaleToDlc(std::string_view locale);
+std::optional<std::string> HandwritingLocaleToDlc(std::string_view locale);
 
 // Given a DLC ID, returns the handwriting recognition locale for it if it
 // exists.
-absl::optional<std::string> DlcToHandwritingLocale(std::string_view dlc_id);
+std::optional<std::string> DlcToHandwritingLocale(std::string_view dlc_id);
 
 // Given a DLC ID, returns whether it is a DLC for handwriting recognition.
 // Intended to be used to filter a list of DLCs that a user has installed to

@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_CAMERA_ROLL_MANAGER_IMPL_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -21,7 +22,6 @@
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace phonehub {
@@ -79,7 +79,7 @@ class CameraRollManagerImpl
   void OnPayloadFilesCreated(
       const proto::FetchCameraRollItemDataResponse& response,
       CameraRollDownloadManager::CreatePayloadFilesResult result,
-      absl::optional<secure_channel::mojom::PayloadFilesPtr> payload_files);
+      std::optional<secure_channel::mojom::PayloadFilesPtr> payload_files);
   void OnPayloadFileRegistered(const proto::CameraRollItemMetadata& metadata,
                                int64_t payload_id,
                                bool success);
@@ -94,7 +94,7 @@ class CameraRollManagerImpl
 
   bool is_android_feature_enabled_ = false;
   bool is_android_storage_granted_ = false;
-  absl::optional<base::TimeTicks> fetch_items_request_start_timestamp_;
+  std::optional<base::TimeTicks> fetch_items_request_start_timestamp_;
 
   raw_ptr<MessageReceiver, ExperimentalAsh> message_receiver_;
   raw_ptr<MessageSender, ExperimentalAsh> message_sender_;

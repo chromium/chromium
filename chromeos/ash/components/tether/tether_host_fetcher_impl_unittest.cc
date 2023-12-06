@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/tether/tether_host_fetcher_impl.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -18,7 +19,6 @@
 #include "chromeos/ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -87,7 +87,7 @@ class TetherHostFetcherImplTest : public testing::Test {
   }
 
   void OnSingleTetherHostFetched(
-      absl::optional<multidevice::RemoteDeviceRef> device) {
+      std::optional<multidevice::RemoteDeviceRef> device) {
     last_fetched_single_host_ = device;
   }
 
@@ -101,7 +101,7 @@ class TetherHostFetcherImplTest : public testing::Test {
 
   void VerifySingleTetherHost(
       const std::string& device_id,
-      absl::optional<multidevice::RemoteDeviceRef> expected_device) {
+      std::optional<multidevice::RemoteDeviceRef> expected_device) {
     tether_host_fetcher_->FetchTetherHost(
         device_id,
         base::BindOnce(&TetherHostFetcherImplTest::OnSingleTetherHostFetched,
@@ -109,7 +109,7 @@ class TetherHostFetcherImplTest : public testing::Test {
     if (expected_device)
       EXPECT_EQ(expected_device, last_fetched_single_host_);
     else
-      EXPECT_EQ(absl::nullopt, last_fetched_single_host_);
+      EXPECT_EQ(std::nullopt, last_fetched_single_host_);
   }
 
   multidevice::RemoteDeviceList CreateTestRemoteDeviceList() {
@@ -149,7 +149,7 @@ class TetherHostFetcherImplTest : public testing::Test {
     if (devices.empty()) {
       fake_multidevice_setup_client_->SetHostStatusWithDevice(
           std::make_pair(multidevice_setup::mojom::HostStatus::kNoEligibleHosts,
-                         absl::nullopt /* host_device */));
+                         std::nullopt /* host_device */));
       fake_multidevice_setup_client_->SetFeatureState(
           multidevice_setup::mojom::Feature::kInstantTethering,
           multidevice_setup::mojom::FeatureState::
@@ -205,7 +205,7 @@ class TetherHostFetcherImplTest : public testing::Test {
   multidevice::RemoteDeviceRefList test_remote_device_ref_list_;
 
   multidevice::RemoteDeviceRefList last_fetched_list_;
-  absl::optional<multidevice::RemoteDeviceRef> last_fetched_single_host_;
+  std::optional<multidevice::RemoteDeviceRef> last_fetched_single_host_;
   std::unique_ptr<TestObserver> test_observer_;
 
   std::unique_ptr<device_sync::FakeDeviceSyncClient> fake_device_sync_client_;
@@ -292,19 +292,19 @@ TEST_F(TetherHostFetcherImplTest, TestSingleTetherHost) {
   SetSyncedDevices(multidevice::RemoteDeviceList{remote_device});
   NotifyNewDevicesSynced();
   VerifySingleTetherHost(test_remote_device_ref_list_[0].GetDeviceId(),
-                         absl::nullopt);
+                         std::nullopt);
 
   // Update the list; now, there are no more devices.
   SetSyncedDevices(multidevice::RemoteDeviceList());
   NotifyNewDevicesSynced();
   VerifySingleTetherHost(test_remote_device_ref_list_[0].GetDeviceId(),
-                         absl::nullopt);
+                         std::nullopt);
 }
 
 TEST_F(TetherHostFetcherImplTest,
        TestSingleTetherHost_IdDoesNotCorrespondToDevice) {
   InitializeTest();
-  VerifySingleTetherHost("nonexistentId", absl::nullopt);
+  VerifySingleTetherHost("nonexistentId", std::nullopt);
 }
 
 }  // namespace tether

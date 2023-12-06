@@ -123,7 +123,7 @@ class AuthFactorConfig : public mojom::AuthFactorConfig {
       base::OnceCallback<void(mojom::ConfigureResult)> callback,
       const std::string& auth_token,
       std::unique_ptr<UserContext> context,
-      absl::optional<AuthenticationError> error);
+      std::optional<AuthenticationError> error);
   void SetAddKnowledgeFactorCallbackForTesting(base::OnceClosure callback);
 
   raw_ptr<QuickUnlockStorageDelegate> quick_unlock_storage_;

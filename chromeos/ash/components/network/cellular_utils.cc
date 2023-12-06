@@ -189,14 +189,14 @@ bool IsStubCellularServicePath(const std::string& service_path) {
   return base::StartsWith(service_path, kNonShillCellularNetworkPathPrefix);
 }
 
-absl::optional<dbus::ObjectPath> GetCurrentEuiccPath() {
+std::optional<dbus::ObjectPath> GetCurrentEuiccPath() {
   // Always use the first Euicc if Hermes only exposes one Euicc.
   // If useSecondEuicc flag is set and there are two Euicc available,
   // use the second available Euicc.
   const std::vector<dbus::ObjectPath>& euicc_paths =
       HermesManagerClient::Get()->GetAvailableEuiccs();
   if (euicc_paths.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   if (euicc_paths.size() == 1)
     return euicc_paths[0];

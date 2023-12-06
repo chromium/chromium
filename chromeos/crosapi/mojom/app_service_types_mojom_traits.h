@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_CROSAPI_MOJOM_APP_SERVICE_TYPES_MOJOM_TRAITS_H_
 #define CHROMEOS_CROSAPI_MOJOM_APP_SERVICE_TYPES_MOJOM_TRAITS_H_
 
+#include <optional>
 #include <string>
 
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
@@ -16,7 +17,6 @@
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace mojo {
@@ -31,24 +31,23 @@ struct StructTraits<crosapi::mojom::AppDataView, apps::AppPtr> {
     return r->readiness;
   }
 
-  static const absl::optional<std::string>& name(const apps::AppPtr& r) {
+  static const std::optional<std::string>& name(const apps::AppPtr& r) {
     return r->name;
   }
 
-  static const absl::optional<std::string>& short_name(const apps::AppPtr& r) {
+  static const std::optional<std::string>& short_name(const apps::AppPtr& r) {
     return r->short_name;
   }
 
-  static const absl::optional<std::string>& publisher_id(
-      const apps::AppPtr& r) {
+  static const std::optional<std::string>& publisher_id(const apps::AppPtr& r) {
     return r->publisher_id;
   }
 
-  static const absl::optional<std::string>& description(const apps::AppPtr& r) {
+  static const std::optional<std::string>& description(const apps::AppPtr& r) {
     return r->description;
   }
 
-  static const absl::optional<std::string>& version(const apps::AppPtr& r) {
+  static const std::optional<std::string>& version(const apps::AppPtr& r) {
     return r->version;
   }
 
@@ -59,12 +58,12 @@ struct StructTraits<crosapi::mojom::AppDataView, apps::AppPtr> {
 
   static apps::IconKeyPtr icon_key(const apps::AppPtr& r);
 
-  static const absl::optional<base::Time>& last_launch_time(
+  static const std::optional<base::Time>& last_launch_time(
       const apps::AppPtr& r) {
     return r->last_launch_time;
   }
 
-  static const absl::optional<base::Time>& install_time(const apps::AppPtr& r) {
+  static const std::optional<base::Time>& install_time(const apps::AppPtr& r) {
     return r->install_time;
   }
 
@@ -73,8 +72,7 @@ struct StructTraits<crosapi::mojom::AppDataView, apps::AppPtr> {
   }
 
   // This method is required for Ash-Lacros backwards compatibility.
-  static absl::optional<std::string> deprecated_policy_id(
-      const apps::AppPtr& r);
+  static std::optional<std::string> deprecated_policy_id(const apps::AppPtr& r);
 
   static const std::vector<std::string>& policy_ids(const apps::AppPtr& r) {
     return r->policy_ids;
@@ -120,9 +118,9 @@ struct StructTraits<crosapi::mojom::AppDataView, apps::AppPtr> {
 
   static crosapi::mojom::OptionalBool is_platform_app(const apps::AppPtr& r);
 
-  static absl::optional<uint64_t> app_size_in_bytes(const apps::AppPtr& r);
+  static std::optional<uint64_t> app_size_in_bytes(const apps::AppPtr& r);
 
-  static absl::optional<uint64_t> data_size_in_bytes(const apps::AppPtr& r);
+  static std::optional<uint64_t> data_size_in_bytes(const apps::AppPtr& r);
 
   static crosapi::mojom::OptionalBool allow_close(const apps::AppPtr& r);
 
@@ -217,12 +215,12 @@ struct StructTraits<crosapi::mojom::IntentFilterDataView,
     return r->conditions;
   }
 
-  static const absl::optional<std::string>& activity_name(
+  static const std::optional<std::string>& activity_name(
       const apps::IntentFilterPtr& r) {
     return r->activity_name;
   }
 
-  static const absl::optional<std::string>& activity_label(
+  static const std::optional<std::string>& activity_label(
       const apps::IntentFilterPtr& r) {
     return r->activity_label;
   }
@@ -448,13 +446,13 @@ struct StructTraits<crosapi::mojom::AppShortcutDataView, apps::ShortcutPtr> {
     return r->local_id;
   }
 
-  static const absl::optional<std::string>& name(const apps::ShortcutPtr& r) {
+  static const std::optional<std::string>& name(const apps::ShortcutPtr& r) {
     return r->name;
   }
 
   static apps::IconKeyPtr icon_key(const apps::ShortcutPtr& r);
 
-  static const absl::optional<bool>& allow_removal(const apps::ShortcutPtr& r) {
+  static const std::optional<bool>& allow_removal(const apps::ShortcutPtr& r) {
     return r->allow_removal;
   }
 

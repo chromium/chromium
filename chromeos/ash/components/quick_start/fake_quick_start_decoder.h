@@ -5,13 +5,14 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_QUICK_START_FAKE_QUICK_START_DECODER_H_
 #define CHROMEOS_ASH_COMPONENTS_QUICK_START_FAKE_QUICK_START_DECODER_H_
 
+#include <optional>
+
 #include "base/containers/queue.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-forward.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::quick_start {
 
@@ -26,7 +27,7 @@ class FakeQuickStartDecoder : public mojom::QuickStartDecoder {
 
   // mojom::QuickStartDecoder:
   void DecodeQuickStartMessage(
-      const absl::optional<std::vector<uint8_t>>& data,
+      const std::optional<std::vector<uint8_t>>& data,
       DecodeQuickStartMessageCallback callback) override;
 
   void SetAssertionResponse(mojom::FidoAssertionResponsePtr fido_assertion);
@@ -54,7 +55,7 @@ class FakeQuickStartDecoder : public mojom::QuickStartDecoder {
  private:
   mojo::ReceiverSet<ash::quick_start::mojom::QuickStartDecoder> receiver_set_;
   base::queue<std::pair<mojom::QuickStartMessagePtr,
-                        absl::optional<mojom::QuickStartDecoderError>>>
+                        std::optional<mojom::QuickStartDecoderError>>>
       results_;
 };
 

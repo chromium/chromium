@@ -35,7 +35,7 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   crosapi::mojom::DeviceMode DeviceMode() const;
 
-  const absl::optional<base::flat_map<base::Token, uint32_t>>&
+  const std::optional<base::flat_map<base::Token, uint32_t>>&
   InterfaceVersions() const;
 
   const crosapi::mojom::DefaultPathsPtr& DefaultPaths() const;
@@ -44,9 +44,9 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   crosapi::mojom::ExoImeSupport ExoImeSupport() const;
 
-  const absl::optional<std::string>& CrosUserIdHash() const;
+  const std::optional<std::string>& CrosUserIdHash() const;
 
-  const absl::optional<std::vector<uint8_t>>& DeviceAccountPolicy() const;
+  const std::optional<std::vector<uint8_t>>& DeviceAccountPolicy() const;
 
   uint64_t LastPolicyFetchAttemptTimestamp() const;
 
@@ -62,14 +62,14 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   crosapi::mojom::OndeviceHandwritingSupport OndeviceHandwritingSupport() const;
 
-  const absl::optional<std::vector<crosapi::mojom::BuildFlag>>& BuildFlags()
+  const std::optional<std::vector<crosapi::mojom::BuildFlag>>& BuildFlags()
       const;
 
   crosapi::mojom::OpenUrlFrom StartupUrlsFrom() const;
 
   const crosapi::mojom::DeviceSettingsPtr& DeviceSettings() const;
 
-  const absl::optional<std::string>& MetricsServiceClientId() const;
+  const std::optional<std::string>& MetricsServiceClientId() const;
 
   const crosapi::mojom::EntropySourcePtr& EntropySource() const;
 
@@ -83,9 +83,9 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   bool IsUnfilteredBluetoothDeviceEnabled() const;
 
-  const absl::optional<std::vector<std::string>>& AshCapabilities() const;
+  const std::optional<std::vector<std::string>>& AshCapabilities() const;
 
-  const absl::optional<std::vector<GURL>>& AcceptedInternalAshUrls() const;
+  const std::optional<std::vector<GURL>>& AcceptedInternalAshUrls() const;
 
   bool IsDeviceEnterprisedManaged() const;
 
@@ -93,10 +93,10 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   bool IsOndeviceSpeechSupported() const;
 
-  const absl::optional<base::flat_map<policy::PolicyNamespace, base::Value>>&
+  const std::optional<base::flat_map<policy::PolicyNamespace, base::Value>>&
   DeviceAccountComponentPolicy() const;
 
-  const absl::optional<std::string>& AshChromeVersion() const;
+  const std::optional<std::string>& AshChromeVersion() const;
 
   bool UseCupsForPrinting() const;
 

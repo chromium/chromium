@@ -10,7 +10,7 @@
 namespace ash::libassistant {
 
 AudioInputProviderImpl::AudioInputProviderImpl()
-    : audio_input_(/*device_id=*/absl::nullopt) {}
+    : audio_input_(/*device_id=*/std::nullopt) {}
 
 AudioInputProviderImpl::~AudioInputProviderImpl() = default;
 

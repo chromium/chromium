@@ -62,7 +62,7 @@ NetworkStateHandler* GetNetworkStateHandler() {
   return NetworkHandler::Get()->network_state_handler();
 }
 
-const absl::optional<const std::string> GetTechnologyTypeSuffix(
+const std::optional<const std::string> GetTechnologyTypeSuffix(
     const std::string& technology) {
   // Note that Tether is a fake technology that does not correspond to shill
   // technology type.
@@ -74,7 +74,7 @@ const absl::optional<const std::string> GetTechnologyTypeSuffix(
     return kCellular;
   else if (technology == shill::kTypeVPN)
     return kVPN;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 const std::vector<std::string> GetCellularNetworkTypeHistogams(
@@ -179,7 +179,7 @@ void NetworkMetricsHelper::LogAllConnectionResult(
     const std::string& guid,
     bool is_auto_connect,
     bool is_repeated_error,
-    const absl::optional<std::string>& shill_error) {
+    const std::optional<std::string>& shill_error) {
   DCHECK(GetNetworkStateHandler());
   const NetworkState* network_state =
       GetNetworkStateHandler()->GetNetworkStateFromGuid(guid);
@@ -217,7 +217,7 @@ void NetworkMetricsHelper::LogAllConnectionResult(
 // static
 void NetworkMetricsHelper::LogUserInitiatedConnectionResult(
     const std::string& guid,
-    const absl::optional<std::string>& network_connection_error) {
+    const std::optional<std::string>& network_connection_error) {
   DCHECK(GetNetworkStateHandler());
   const NetworkState* network_state =
       GetNetworkStateHandler()->GetNetworkStateFromGuid(guid);
@@ -242,7 +242,7 @@ void NetworkMetricsHelper::LogUserInitiatedConnectionResult(
 void NetworkMetricsHelper::LogConnectionStateResult(
     const std::string& guid,
     const ConnectionState connection_state,
-    const absl::optional<ShillConnectResult> shill_error) {
+    const std::optional<ShillConnectResult> shill_error) {
   DCHECK(GetNetworkStateHandler());
   const NetworkState* network_state =
       GetNetworkStateHandler()->GetNetworkStateFromGuid(guid);
@@ -267,9 +267,8 @@ void NetworkMetricsHelper::LogConnectionStateResult(
 void NetworkMetricsHelper::LogEnableTechnologyResult(
     const std::string& technology,
     bool success,
-    const absl::optional<std::string>& shill_error) {
-  absl::optional<const std::string> suffix =
-      GetTechnologyTypeSuffix(technology);
+    const std::optional<std::string>& shill_error) {
+  std::optional<const std::string> suffix = GetTechnologyTypeSuffix(technology);
 
   if (!suffix)
     return;
@@ -302,9 +301,8 @@ void NetworkMetricsHelper::LogEnableTechnologyResult(
 void NetworkMetricsHelper::LogDisableTechnologyResult(
     const std::string& technology,
     bool success,
-    const absl::optional<std::string>& shill_error) {
-  absl::optional<const std::string> suffix =
-      GetTechnologyTypeSuffix(technology);
+    const std::optional<std::string>& shill_error) {
+  std::optional<const std::string> suffix = GetTechnologyTypeSuffix(technology);
 
   if (!suffix)
     return;

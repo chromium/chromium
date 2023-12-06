@@ -354,7 +354,7 @@ void FakeHermesEuiccClient::InstallProfileFromActivationCode(
     std::move(callback).Run(next_install_profile_result_.value(),
                             dbus::DBusResult::kSuccess,
                             /*carrier_profile_path=*/nullptr);
-    next_install_profile_result_ = absl::nullopt;
+    next_install_profile_result_ = std::nullopt;
     return;
   }
 
@@ -587,7 +587,7 @@ void FakeHermesEuiccClient::DoRefreshSmdxProfiles(
 
   if (next_refresh_smdx_profiles_result_.has_value()) {
     std::move(callback).Run(status, next_refresh_smdx_profiles_result_.value());
-    next_refresh_smdx_profiles_result_ = absl::nullopt;
+    next_refresh_smdx_profiles_result_ = std::nullopt;
     return;
   }
 

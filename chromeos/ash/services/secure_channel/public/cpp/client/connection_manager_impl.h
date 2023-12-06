@@ -60,7 +60,7 @@ class ConnectionManagerImpl : public ConnectionManager,
           file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback) override;
   void GetHostLastSeenTimestamp(
-      base::OnceCallback<void(absl::optional<base::Time>)> callback) override;
+      base::OnceCallback<void(std::optional<base::Time>)> callback) override;
 
  private:
   friend class ConnectionManagerImplTest;

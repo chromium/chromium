@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_SMS_HANDLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,23 +20,22 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
 // Struct used for passing around text message data like number, text and
 // timestamp.
 struct COMPONENT_EXPORT(CHROMEOS_NETWORK) TextMessageData {
-  TextMessageData(absl::optional<const std::string> number,
-                  absl::optional<const std::string> text,
-                  absl::optional<const std::string> timestamp);
+  TextMessageData(std::optional<const std::string> number,
+                  std::optional<const std::string> text,
+                  std::optional<const std::string> timestamp);
   TextMessageData(TextMessageData&& other);
   TextMessageData& operator=(TextMessageData&& other);
   ~TextMessageData();
 
-  absl::optional<std::string> number;
-  absl::optional<std::string> text;
-  absl::optional<std::string> timestamp;
+  std::optional<std::string> number;
+  std::optional<std::string> text;
+  std::optional<std::string> timestamp;
 };
 
 // Class to watch sms without Libcros.
@@ -114,7 +114,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkSmsHandler
   void MessageReceived(const base::Value::Dict& message);
 
   // Callback to handle the manager properties with the list of devices.
-  void ManagerPropertiesCallback(absl::optional<base::Value::Dict> properties);
+  void ManagerPropertiesCallback(std::optional<base::Value::Dict> properties);
 
   // Requests properties for each entry in |devices|.
   void UpdateDevices(const base::Value::List& devices);
@@ -122,7 +122,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkSmsHandler
   // Callback to handle the device properties for |device_path|.
   // A NetworkSmsDeviceHandler will be instantiated for each cellular device.
   void DevicePropertiesCallback(const std::string& device_path,
-                                absl::optional<base::Value::Dict> properties);
+                                std::optional<base::Value::Dict> properties);
 
   // Called when the cellular device's object path changes. This means that
   // there has been an update to the device's SIM (removed or inserted) and that

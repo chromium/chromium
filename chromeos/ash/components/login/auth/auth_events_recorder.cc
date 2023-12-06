@@ -391,7 +391,7 @@ void AuthEventsRecorder::OnAuthSubmit() {
   AddAuthEvent("auth_submit");
 }
 
-void AuthEventsRecorder::OnAuthComplete(absl::optional<bool> auth_success) {
+void AuthEventsRecorder::OnAuthComplete(std::optional<bool> auth_success) {
   const std::string auth_complete_str = "auth_complete";
   if (!auth_success.has_value()) {
     AddAuthEvent(auth_complete_str);
@@ -503,10 +503,10 @@ void AuthEventsRecorder::UpdateAuthEventsCrashKey() {
 }
 
 void AuthEventsRecorder::Reset() {
-  user_count_ = absl::nullopt;
-  show_users_on_signin_ = absl::nullopt;
-  user_login_type_ = absl::nullopt;
-  auth_surface_ = absl::nullopt;
+  user_count_ = std::nullopt;
+  show_users_on_signin_ = std::nullopt;
+  user_login_type_ = std::nullopt;
+  auth_surface_ = std::nullopt;
   knowledge_factor_auth_failure_count_ = 0;
 }
 

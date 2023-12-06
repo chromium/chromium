@@ -109,7 +109,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorage {
   // it would be properly invalidated once it is returned.
   virtual void Invalidate(
       const AuthProofToken& token,
-      absl::optional<InvalidationCallback> on_invalidated) = 0;
+      std::optional<InvalidationCallback> on_invalidated) = 0;
 
   // This method allows caller to make sure that authenticated authsession
   // associated with `token` would not expire by timeout as long as returned

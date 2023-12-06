@@ -55,7 +55,7 @@ void GetFreeSpace(const Path& path, PinningManager::SpaceResult callback) {
   spaced->GetFreeDiskSpace(path.value(),
                            base::BindOnce(
                                [](PinningManager::SpaceResult callback,
-                                  const absl::optional<int64_t> space) {
+                                  const std::optional<int64_t> space) {
                                  std::move(callback).Run(space.value_or(-1));
                                },
                                std::move(callback)));
@@ -147,8 +147,8 @@ ostream& operator<<(ostream& out, Quoter<Path> q) {
 }
 
 template <typename T>
-ostream& operator<<(ostream& out, Quoter<absl::optional<T>> q) {
-  const absl::optional<T>& v = *q.value;
+ostream& operator<<(ostream& out, Quoter<std::optional<T>> q) {
+  const std::optional<T>& v = *q.value;
   if (!v.has_value()) {
     return out << "(nullopt)";
   }
@@ -811,7 +811,7 @@ void PinningManager::OnFreeSpaceRetrieved2(const int64_t free_space) {
 }
 
 void PinningManager::OnGotBatterySaverState(
-    absl::optional<power_manager::BatterySaverModeState> state) {
+    std::optional<power_manager::BatterySaverModeState> state) {
   if (state) {
     BatterySaverModeStateChanged(*state);
   }
@@ -882,7 +882,7 @@ void PinningManager::GetNextPage(const Id dir_id, Path dir_path, Query query) {
   q->GetNextPage(base::BindOnce(
       [](const base::WeakPtr<PinningManager> pinning_manager, Id dir_id,
          Path dir_path, Query query, const drive::FileError error,
-         const absl::optional<std::vector<QueryItemPtr>> items) {
+         const std::optional<std::vector<QueryItemPtr>> items) {
         if (pinning_manager) {
           pinning_manager->OnSearchResult(
               dir_id, std::move(dir_path), std::move(query), error,

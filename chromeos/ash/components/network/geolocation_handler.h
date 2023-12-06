@@ -7,13 +7,14 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -68,7 +69,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) GeolocationHandler
   void Init();
 
   // ShillManagerClient callback
-  void ManagerPropertiesCallback(absl::optional<base::Value::Dict> properties);
+  void ManagerPropertiesCallback(std::optional<base::Value::Dict> properties);
 
   // Called from OnPropertyChanged or ManagerPropertiesCallback.
   void HandlePropertyChanged(const std::string& key, const base::Value& value);
@@ -78,7 +79,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) GeolocationHandler
   void RequestGeolocationObjects();
 
   // Callback for receiving Geolocation data.
-  void GeolocationCallback(absl::optional<base::Value::Dict> properties);
+  void GeolocationCallback(std::optional<base::Value::Dict> properties);
 
   bool cellular_enabled_ = false;
   bool wifi_enabled_ = false;

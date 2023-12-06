@@ -5,6 +5,7 @@
 #include "chromeos/ash/services/multidevice_setup/feature_state_manager_impl.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -20,7 +21,6 @@
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -144,7 +144,7 @@ class MultiDeviceSetupFeatureStateManagerImplTest : public testing::Test {
         (previously_had_eligible_hosts ? 1u : 0u);
 
     fake_host_status_provider_->SetHostWithStatus(
-        mojom::HostStatus::kNoEligibleHosts, absl::nullopt /* host_device */);
+        mojom::HostStatus::kNoEligibleHosts, std::nullopt /* host_device */);
     if (previously_had_eligible_hosts) {
       VerifyFeatureStateChange(
           num_observer_events_before_call, feature,
@@ -157,7 +157,7 @@ class MultiDeviceSetupFeatureStateManagerImplTest : public testing::Test {
 
     fake_host_status_provider_->SetHostWithStatus(
         mojom::HostStatus::kEligibleHostExistsButNoHostSet,
-        absl::nullopt /* host_device */);
+        std::nullopt /* host_device */);
     // Updating host status here updates feature state from
     // kUnavailableNoVerifiedHost_NoEligibleHosts to
     // kUnavailableNoVerifiedHost_HostExistsButNotSetAndVerified.

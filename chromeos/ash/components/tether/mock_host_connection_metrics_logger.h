@@ -31,7 +31,7 @@ class MockHostConnectionMetricsLogger : public HostConnectionMetricsLogger {
       RecordConnectionToHostResult,
       void(HostConnectionMetricsLogger::ConnectionToHostResult,
            const std::string&,
-           absl::optional<
+           std::optional<
                HostConnectionMetricsLogger::ConnectionToHostInternalError>));
 };
 

@@ -10,6 +10,7 @@
 #include <pkcs11.h>
 #include <pkcs11t.h>
 
+#include <optional>
 #include <ostream>
 #include <vector>
 
@@ -24,7 +25,6 @@
 #include "chromeos/ash/components/chaps_util/pkcs12_validator.h"
 #include "crypto/chaps_support.h"
 #include "crypto/scoped_nss_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 #include "third_party/boringssl/src/include/openssl/pkcs8.h"
 
@@ -75,7 +75,7 @@ bool PerformWithRetries(ChapsSlotSession* chaps_session,
 
 // Uses |chaps_session| to generate a software-backed RSA key pair with modulus
 // length |num_bits|.
-absl::optional<KeyPairHandles> GenerateSoftwareBackedRSAKeyPair(
+std::optional<KeyPairHandles> GenerateSoftwareBackedRSAKeyPair(
     ChapsSlotSession* chaps_session,
     uint16_t num_bits) {
   CK_ULONG modulus_bits = num_bits;
@@ -125,7 +125,7 @@ absl::optional<KeyPairHandles> GenerateSoftwareBackedRSAKeyPair(
 
 // Read the modulus of the public key identified by |pub_key_handle| and return
 // it.
-absl::optional<std::vector<CK_BYTE>> ExtractModulus(
+std::optional<std::vector<CK_BYTE>> ExtractModulus(
     ChapsSlotSession* chaps_session,
     CK_OBJECT_HANDLE pub_key_handle) {
   std::vector<CK_BYTE> modulus(256);
@@ -144,8 +144,8 @@ absl::optional<std::vector<CK_BYTE>> ExtractModulus(
 
 // Read the modulus of the public key identified by |pub_key_handle| and return
 // it.
-absl::optional<bool> IsKeySoftwareBacked(ChapsSlotSession* chaps_session,
-                                         CK_OBJECT_HANDLE private_key_handle) {
+std::optional<bool> IsKeySoftwareBacked(ChapsSlotSession* chaps_session,
+                                        CK_OBJECT_HANDLE private_key_handle) {
   CK_BBOOL key_in_software = CK_FALSE;
   CK_ATTRIBUTE attrs_get_key_in_software[] = {
       {kKeyInSoftware, &key_in_software, sizeof(key_in_software)}};
@@ -413,14 +413,14 @@ bool ChapsUtilImpl::GenerateSoftwareBackedRSAKey(
     return false;
   }
 
-  absl::optional<KeyPairHandles> key_pair =
+  std::optional<KeyPairHandles> key_pair =
       GenerateSoftwareBackedRSAKeyPair(chaps_session.get(), num_bits);
   if (!key_pair) {
     return false;
   }
 
   // Safety check that software-backed key generation was triggered.
-  absl::optional<bool> is_software_backed =
+  std::optional<bool> is_software_backed =
       IsKeySoftwareBacked(chaps_session.get(), key_pair->private_key);
   if (!is_software_backed || !is_software_backed.value()) {
     return false;

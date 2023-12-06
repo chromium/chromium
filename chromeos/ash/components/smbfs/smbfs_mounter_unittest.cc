@@ -475,7 +475,7 @@ TEST_F(SmbFsMounterTest, KerberosAuthentication) {
   // authentication is being used.
   mount_options.password = kPassword;
   mount_options.kerberos_options =
-      absl::make_optional<SmbFsMounter::KerberosOptions>(
+      std::make_optional<SmbFsMounter::KerberosOptions>(
           SmbFsMounter::KerberosOptions::Source::kKerberos, kKerberosIdentity);
   std::unique_ptr<SmbFsMounter> mounter = std::make_unique<TestSmbFsMounter>(
       kSharePath, mount_options, &mock_delegate_, base::FilePath(kMountPath),

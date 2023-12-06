@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_AUTH_SESSION_AUTHENTICATOR_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
@@ -22,7 +23,6 @@
 #include "chromeos/ash/components/login/hibernate/hibernate_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AuthFailure;
 
@@ -106,7 +106,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
   using StartAuthSessionCallback =
       base::OnceCallback<void(bool user_exists,
                               std::unique_ptr<UserContext> context,
-                              absl::optional<AuthenticationError> error)>;
+                              std::optional<AuthenticationError> error)>;
 
   // Callbacks that handles auth session started for particular login flows.
   // |user_exists| indicates if cryptohome actually exists on the disk,
@@ -114,23 +114,23 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
   // the keys.
   void DoLoginAsPublicSession(bool user_exists,
                               std::unique_ptr<UserContext> context,
-                              absl::optional<AuthenticationError> error);
+                              std::optional<AuthenticationError> error);
   void DoLoginAsKiosk(bool ephemeral,
                       bool user_exists,
                       std::unique_ptr<UserContext> context,
-                      absl::optional<AuthenticationError> error);
+                      std::optional<AuthenticationError> error);
   void DoLoginAsExistingUser(bool ephemeral,
                              bool user_exists,
                              std::unique_ptr<UserContext> context,
-                             absl::optional<AuthenticationError> error);
+                             std::optional<AuthenticationError> error);
   void DoCompleteLogin(bool ephemeral,
                        bool user_exists,
                        std::unique_ptr<UserContext> context,
-                       absl::optional<AuthenticationError> error);
+                       std::optional<AuthenticationError> error);
   void DoUnlock(bool ephemeral,
                 bool user_exists,
                 std::unique_ptr<UserContext> context,
-                absl::optional<AuthenticationError> error);
+                std::optional<AuthenticationError> error);
 
   // Common part of login logic shared by user creation flow and flow when
   // user have changed password elsewhere and decides to re-create cryptohome.
@@ -152,7 +152,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
                                   StartAuthSessionCallback callback,
                                   bool user_exists,
                                   std::unique_ptr<UserContext> context,
-                                  absl::optional<AuthenticationError> error);
+                                  std::optional<AuthenticationError> error);
   void RemoveStaleUserForEphemeral(
       const std::string& auth_session_id,
       std::unique_ptr<UserContext> original_context,
@@ -162,12 +162,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
       std::unique_ptr<UserContext> original_context,
       AuthSessionIntent intent,
       StartAuthSessionCallback callback,
-      absl::optional<user_data_auth::RemoveReply> reply);
+      std::optional<user_data_auth::RemoveReply> reply);
   void OnStartAuthSessionForLoginAfterStaleRemoval(
       StartAuthSessionCallback callback,
       bool user_exists,
       std::unique_ptr<UserContext> context,
-      absl::optional<AuthenticationError> error);
+      std::optional<AuthenticationError> error);
   // Similar to `StartAuthSessionForLogin()`, but doesn't trigger the stale data
   // removal logic.
   void StartAuthSessionForLoggedIn(bool ephemeral,
@@ -228,7 +228,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
                                 AuthOperationCallback callback,
                                 bool is_owner);
   void OnUnmountForNonOwner(std::unique_ptr<UserContext> context,
-                            absl::optional<AuthenticationError> error);
+                            std::optional<AuthenticationError> error);
 
   // Save information about user so that it can be used by
   // `CryptohomeKeyDelegateServiceProvider`.

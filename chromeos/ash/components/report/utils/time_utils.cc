@@ -33,10 +33,10 @@ base::Time ConvertGmtToPt(base::Clock* clock) {
   return gmt_ts - base::Milliseconds(pt_offset);
 }
 
-absl::optional<base::Time> GetPreviousMonth(base::Time ts) {
+std::optional<base::Time> GetPreviousMonth(base::Time ts) {
   if (ts == base::Time()) {
     LOG(ERROR) << "Timestamp not set = " << ts;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   base::Time::Exploded exploded;
@@ -54,16 +54,16 @@ absl::optional<base::Time> GetPreviousMonth(base::Time ts) {
 
   if (!success) {
     LOG(ERROR) << "Failed to get previous month of ts = " << ts;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return new_month_ts;
 }
 
-absl::optional<base::Time> GetNextMonth(base::Time ts) {
+std::optional<base::Time> GetNextMonth(base::Time ts) {
   if (ts == base::Time()) {
     LOG(ERROR) << "Timestamp not set = " << ts;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   base::Time::Exploded exploded;
@@ -81,16 +81,16 @@ absl::optional<base::Time> GetNextMonth(base::Time ts) {
 
   if (!success) {
     LOG(ERROR) << "Failed to get next month of ts = " << ts;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return new_month_ts;
 }
 
-absl::optional<base::Time> GetPreviousYear(base::Time ts) {
+std::optional<base::Time> GetPreviousYear(base::Time ts) {
   if (ts == base::Time()) {
     LOG(ERROR) << "Timestamp not set = " << ts;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   base::Time::Exploded exploded;
@@ -109,7 +109,7 @@ absl::optional<base::Time> GetPreviousYear(base::Time ts) {
 
   if (!success) {
     LOG(ERROR) << "Failed to get previous year of ts = " << ts;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return new_year_ts;

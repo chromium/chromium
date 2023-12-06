@@ -6,6 +6,8 @@
 
 #include <fcntl.h>
 
+#include <optional>
+
 #include "base/files/file_enumerator.h"
 #include "base/files/scoped_file.h"
 #include "base/no_destructor.h"
@@ -14,7 +16,6 @@
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_routines.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/mojo/service_constants.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 
@@ -102,7 +103,7 @@ void ServiceConnectionImpl::BindDiagnosticsService(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   mojo_service_manager::GetServiceManagerProxy()->Request(
-      chromeos::mojo_services::kCrosHealthdDiagnostics, absl::nullopt,
+      chromeos::mojo_services::kCrosHealthdDiagnostics, std::nullopt,
       std::move(service).PassPipe());
 }
 
@@ -111,7 +112,7 @@ void ServiceConnectionImpl::BindProbeService(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   mojo_service_manager::GetServiceManagerProxy()->Request(
-      chromeos::mojo_services::kCrosHealthdProbe, absl::nullopt,
+      chromeos::mojo_services::kCrosHealthdProbe, std::nullopt,
       std::move(service).PassPipe());
 }
 
@@ -185,7 +186,7 @@ void ServiceConnectionImpl::BindCrosHealthdEventServiceIfNeeded() {
   }
 
   mojo_service_manager::GetServiceManagerProxy()->Request(
-      chromeos::mojo_services::kCrosHealthdEvent, absl::nullopt,
+      chromeos::mojo_services::kCrosHealthdEvent, std::nullopt,
       cros_healthd_event_service_.BindNewPipeAndPassReceiver().PassPipe());
   cros_healthd_event_service_.reset_on_disconnect();
 }
@@ -197,7 +198,7 @@ void ServiceConnectionImpl::BindCrosHealthdRoutinesServiceIfNeeded() {
   }
 
   mojo_service_manager::GetServiceManagerProxy()->Request(
-      chromeos::mojo_services::kCrosHealthdRoutines, absl::nullopt,
+      chromeos::mojo_services::kCrosHealthdRoutines, std::nullopt,
       cros_healthd_routines_service_.BindNewPipeAndPassReceiver().PassPipe());
   cros_healthd_routines_service_.reset_on_disconnect();
 }

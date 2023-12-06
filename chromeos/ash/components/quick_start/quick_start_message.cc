@@ -81,7 +81,7 @@ QuickStartMessage::ReadMessage(std::vector<uint8_t> data) {
     CHECK(sandbox::policy::Sandbox::IsProcessSandboxed());
   }
   std::string str_data(data.begin(), data.end());
-  absl::optional<base::Value> data_value = base::JSONReader::Read(str_data);
+  std::optional<base::Value> data_value = base::JSONReader::Read(str_data);
   if (!data_value.has_value()) {
     LOG(ERROR) << "Message is not JSON";
     return base::unexpected(QuickStartMessage::ReadError::INVALID_JSON);
@@ -116,7 +116,7 @@ QuickStartMessage::ReadMessage(std::vector<uint8_t> data) {
           QuickStartMessage::ReadError::BASE64_DESERIALIZATION_FAILURE);
     }
 
-    absl::optional<base::Value> json_reader_result =
+    std::optional<base::Value> json_reader_result =
         base::JSONReader::Read(json_payload);
     if (!json_reader_result.has_value()) {
       LOG(ERROR) << "Unable to decode base64 encoded payload into JSON";

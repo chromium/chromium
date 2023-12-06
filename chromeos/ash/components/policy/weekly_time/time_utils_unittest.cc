@@ -174,8 +174,8 @@ TEST(TimeUtilsEmptyIntervalVector, NeverContainsTime) {
 }
 
 TEST(TimeUtilsEmptyIntervalVector, HasNoNextEvent) {
-  EXPECT_EQ(GetNextEventTime(base::Time{}, {}), absl::nullopt);
-  EXPECT_EQ(GetNextEventTime(base::Time::Now(), {}), absl::nullopt);
+  EXPECT_EQ(GetNextEventTime(base::Time{}, {}), std::nullopt);
+  EXPECT_EQ(GetNextEventTime(base::Time::Now(), {}), std::nullopt);
 }
 
 TEST(TimeUtilsNonEmptyIntervalVector, SometimesContainsTime) {

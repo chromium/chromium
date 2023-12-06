@@ -93,7 +93,7 @@ void RecoveryFactorEditor::OnRecoveryFactorConfigured(
     base::OnceCallback<void(mojom::ConfigureResult)> callback,
     const std::string& auth_token,
     std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     if (error->get_cryptohome_code() ==
         user_data_auth::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN) {

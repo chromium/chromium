@@ -92,7 +92,7 @@ class TestImeSharedLibraryWrapper : public ImeSharedLibraryWrapper {
     return instance.get();
   }
 
-  absl::optional<ImeSharedLibraryWrapper::EntryPoints>
+  std::optional<ImeSharedLibraryWrapper::EntryPoints>
   MaybeLoadThenReturnEntryPoints() override {
     return entry_points_;
   }
@@ -130,7 +130,7 @@ class TestImeSharedLibraryWrapper : public ImeSharedLibraryWrapper {
 
   ~TestImeSharedLibraryWrapper() override = default;
 
-  absl::optional<ImeSharedLibraryWrapper::EntryPoints> entry_points_;
+  std::optional<ImeSharedLibraryWrapper::EntryPoints> entry_points_;
 };
 
 struct MockInputMethodHost : public mojom::InputMethodHost {
@@ -160,7 +160,7 @@ struct MockInputMethodHost : public mojom::InputMethodHost {
                           RequestSuggestionsCallback callback) override {}
   void DisplaySuggestions(
       const std::vector<AssistiveSuggestion>& suggestions,
-      const absl::optional<SuggestionsTextContext>& context) override {}
+      const std::optional<SuggestionsTextContext>& context) override {}
   void UpdateCandidatesWindow(mojom::CandidatesWindowPtr window) override {}
   void RecordUkm(mojom::UkmEntryPtr entry) override {}
   void DEPRECATED_ReportKoreanAction(mojom::KoreanAction action) override {}
@@ -221,7 +221,7 @@ class ImeServiceTest : public testing::Test, public mojom::InputMethodHost {
                           RequestSuggestionsCallback callback) override {}
   void DisplaySuggestions(
       const std::vector<AssistiveSuggestion>& suggestions,
-      const absl::optional<SuggestionsTextContext>& context) override {}
+      const std::optional<SuggestionsTextContext>& context) override {}
   void UpdateCandidatesWindow(mojom::CandidatesWindowPtr window) override {}
   void RecordUkm(mojom::UkmEntryPtr entry) override {}
   void DEPRECATED_ReportKoreanAction(mojom::KoreanAction action) override {}

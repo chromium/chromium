@@ -5,6 +5,7 @@
 #include "chromeos/printing/printer_translator.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -16,7 +17,6 @@
 #include "chromeos/printing/cups_printer_status.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/printing/uri.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_constants.h"
 
 namespace chromeos {
@@ -115,7 +115,7 @@ std::string PrinterAddress(const Uri& uri) {
 
 bool ValidateAndSetPpdReference(const base::Value::Dict& ppd_resource,
                                 Printer& printer) {
-  absl::optional<bool> autoconf = ppd_resource.FindBool(kAutoconf);
+  std::optional<bool> autoconf = ppd_resource.FindBool(kAutoconf);
   const std::string* effective_model = ppd_resource.FindString(kEffectiveModel);
 
   bool is_autoconf = autoconf.value_or(false);
@@ -174,7 +174,7 @@ std::unique_ptr<Printer> RecommendedPrinterToPrinter(
     const std::string* make_and_model = ppd->FindString(kEffectiveModel);
     if (make_and_model)
       ppd_reference->effective_make_and_model = *make_and_model;
-    absl::optional<bool> autoconf = ppd->FindBool(kAutoconf);
+    std::optional<bool> autoconf = ppd->FindBool(kAutoconf);
     if (autoconf.has_value())
       ppd_reference->autoconf = *autoconf;
   }

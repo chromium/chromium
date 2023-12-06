@@ -275,7 +275,7 @@ bool ParseServerResponse(const GURL& server_url,
 
   const bool status_ok = (timezone->status == TimeZoneResponseData::OK);
 
-  absl::optional<double> dst_offset =
+  std::optional<double> dst_offset =
       response_object.FindDouble(kDstOffsetString);
   if (dst_offset.has_value()) {
     timezone->dstOffset = dst_offset.value();
@@ -285,7 +285,7 @@ bool ParseServerResponse(const GURL& server_url,
     return false;
   }
 
-  absl::optional<double> raw_offset =
+  std::optional<double> raw_offset =
       response_object.FindDouble(kRawOffsetString);
   if (raw_offset.has_value()) {
     timezone->rawOffset = raw_offset.value();

@@ -5,11 +5,11 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_QUICK_START_TYPES_H_
 #define CHROMEOS_ASH_COMPONENTS_QUICK_START_TYPES_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/types/strong_alias.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // This file contains user defined type aliases that are used throughout Quick
 // Start to ensure strong typing of encoded data. Using types like `std::string`
@@ -38,7 +38,7 @@ Base64UrlString Base64UrlEncode(const std::string& data);
 // Transcodes a Base64 encoded string to Base64Url. Returns an empty optional if
 // the input string is incorrectly encoded. Omits padding characters in the
 // output.
-absl::optional<Base64UrlString> Base64UrlTranscode(const Base64String& data);
+std::optional<Base64UrlString> Base64UrlTranscode(const Base64String& data);
 
 }  // namespace ash::quick_start
 

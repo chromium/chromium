@@ -129,7 +129,7 @@ void SecureChannelClientImpl::FlushForTesting() {
 
 void SecureChannelClientImpl::GetLastSeenTimestamp(
     const std::string& remote_device_id,
-    base::OnceCallback<void(absl::optional<base::Time>)> callback) {
+    base::OnceCallback<void(std::optional<base::Time>)> callback) {
   secure_channel_remote_->GetLastSeenTimestamp(remote_device_id,
                                                std::move(callback));
 }

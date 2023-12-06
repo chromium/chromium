@@ -99,7 +99,7 @@ void RemoteDeviceV2LoaderImpl::OnPskDerived(const CryptAuthDevice& device,
 void RemoteDeviceV2LoaderImpl::AddRemoteDevice(const CryptAuthDevice& device,
                                                const std::string& user_email,
                                                const std::string& psk) {
-  const absl::optional<cryptauthv2::BetterTogetherDeviceMetadata>&
+  const std::optional<cryptauthv2::BetterTogetherDeviceMetadata>&
       beto_metadata = device.better_together_device_metadata;
   remote_devices_.emplace_back(
       user_email, device.instance_id(), device.device_name,

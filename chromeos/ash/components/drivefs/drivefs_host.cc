@@ -96,7 +96,7 @@ class DriveFsHost::MountState : public DriveFsSession {
       DriveFsHost::Delegate* delegate) {
     auto access_token = auth_delegate->GetCachedAccessToken();
     mojom::DriveFsConfigurationPtr config = {
-        absl::in_place,
+        std::in_place,
         auth_delegate->GetAccountId().GetUserEmail(),
         std::move(access_token),
         auth_delegate->IsMetricsCollectionEnabled(),

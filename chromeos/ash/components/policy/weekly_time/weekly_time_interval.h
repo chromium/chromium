@@ -6,12 +6,12 @@
 #define CHROMEOS_ASH_COMPONENTS_POLICY_WEEKLY_TIME_WEEKLY_TIME_INTERVAL_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/component_export.h"
 #include "base/values.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -54,7 +54,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY) WeeklyTimeInterval {
   bool Contains(const WeeklyTime& w) const;
 
   // Returns the timezone_offset that |start_| and |end_| have.
-  absl::optional<int> GetIntervalOffset(int timezone_offset) const {
+  std::optional<int> GetIntervalOffset(int timezone_offset) const {
     return start_.timezone_offset();
   }
 
@@ -62,7 +62,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY) WeeklyTimeInterval {
   // nullptr if the proto contains an invalid interval.
   static std::unique_ptr<WeeklyTimeInterval> ExtractFromProto(
       const enterprise_management::WeeklyTimeIntervalProto& container,
-      absl::optional<int> timezone_offset);
+      std::optional<int> timezone_offset);
 
   // Return time interval made from Value::Dict in format:
   // { "start" : WeeklyTime,
@@ -76,7 +76,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY) WeeklyTimeInterval {
   // Return nullptr if `dict` contains an invalid interval.
   static std::unique_ptr<WeeklyTimeInterval> ExtractFromDict(
       const base::Value::Dict& dict,
-      absl::optional<int> timezone_offset);
+      std::optional<int> timezone_offset);
 
   WeeklyTime start() const { return start_; }
 

@@ -52,7 +52,7 @@ class FakeTcpSocketFactory : public sharing::mojom::TcpSocketFactory {
       CreateTCPServerSocketCallback callback) override;
   void CreateTCPConnectedSocket(
       base::TimeDelta timeout,
-      const absl::optional<net::IPEndPoint>& local_addr,
+      const std::optional<net::IPEndPoint>& local_addr,
       const net::AddressList& remote_addr_list,
       network::mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,

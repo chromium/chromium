@@ -89,7 +89,7 @@ class MultiDeviceSetupInitializer
 
     std::string host_instance_id_or_legacy_device_id;
     // Null for SetHostDeviceWithoutAuthToken().
-    absl::optional<std::string> auth_token;
+    std::optional<std::string> auth_token;
     base::OnceCallback<void(bool)> callback;
   };
 
@@ -121,7 +121,7 @@ class MultiDeviceSetupInitializer
   void GetHostStatus(GetHostStatusCallback callback) override;
   void SetFeatureEnabledState(mojom::Feature feature,
                               bool enabled,
-                              const absl::optional<std::string>& auth_token,
+                              const std::optional<std::string>& auth_token,
                               SetFeatureEnabledStateCallback callback) override;
   void GetFeatureStates(GetFeatureStatesCallback callback) override;
   void RetrySetHostNow(RetrySetHostNowCallback callback) override;
@@ -172,7 +172,7 @@ class MultiDeviceSetupInitializer
   std::vector<GetHostStatusCallback> pending_get_host_args_;
   std::vector<std::tuple<mojom::Feature,
                          bool,
-                         absl::optional<std::string>,
+                         std::optional<std::string>,
                          SetFeatureEnabledStateCallback>>
       pending_set_feature_enabled_args_;
   std::vector<GetFeatureStatesCallback> pending_get_feature_states_args_;
@@ -185,7 +185,7 @@ class MultiDeviceSetupInitializer
   // RemoveHostDevice(), only keep track of the most recent call. Since each
   // call to either of these functions overwrites the previous call, only one
   // needs to be passed.
-  absl::optional<SetHostDeviceArgs> pending_set_host_args_;
+  std::optional<SetHostDeviceArgs> pending_set_host_args_;
   bool pending_should_remove_host_device_ = false;
 };
 

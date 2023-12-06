@@ -33,8 +33,8 @@ constexpr char kExpectedMountPath[] = "/media/drivefsroot/mountdir";
 constexpr char kExpectedDataDir[] = "/path/to/profile/GCache/v2/salt-g-ID";
 constexpr char kExpectedMyFilesDir[] = "/path/to/profile/MyFiles";
 
-static const absl::optional<base::TimeDelta> kEmptyDelay;
-static const absl::optional<base::TimeDelta> kDefaultDelay = base::Seconds(5);
+static const std::optional<base::TimeDelta> kEmptyDelay;
+static const std::optional<base::TimeDelta> kDefaultDelay = base::Seconds(5);
 
 using testing::_;
 using testing::Invoke;
@@ -268,10 +268,10 @@ class DriveFsSessionTest : public ::testing::Test,
 
  protected:
   MOCK_METHOD1(OnMounted, void(const base::FilePath& path));
-  MOCK_METHOD1(OnUnmounted, void(absl::optional<base::TimeDelta> delay));
+  MOCK_METHOD1(OnUnmounted, void(std::optional<base::TimeDelta> delay));
   MOCK_METHOD2(OnMountFailed,
                void(MountFailure failure,
-                    absl::optional<base::TimeDelta> delay));
+                    std::optional<base::TimeDelta> delay));
 
   void StartMounting() {
     DCHECK(!holder_);

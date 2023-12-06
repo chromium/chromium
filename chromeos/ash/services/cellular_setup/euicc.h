@@ -85,8 +85,8 @@ class Euicc : public mojom::Euicc {
   void OnESimInstallProfileResult(
       InstallProfileFromActivationCodeCallback callback,
       HermesResponseStatus hermes_status,
-      absl::optional<dbus::ObjectPath> profile_path,
-      absl::optional<std::string> service_path);
+      std::optional<dbus::ObjectPath> profile_path,
+      std::optional<std::string> service_path);
   void PerformRequestPendingProfiles(
       RequestPendingProfilesCallback callback,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);

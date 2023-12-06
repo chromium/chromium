@@ -7,12 +7,12 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/component_export.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
 #include "dbus/object_path.h"
 #include "dbus/property.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -75,7 +75,7 @@ class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesProfileClient
 
   // When set, this will be returned as the result of the next attempt to enable
   // a carrier profile.
-  absl::optional<HermesResponseStatus> next_enable_carrier_profile_result_;
+  std::optional<HermesResponseStatus> next_enable_carrier_profile_result_;
 };
 
 }  // namespace ash

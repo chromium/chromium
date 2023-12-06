@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_DBUS_SESSION_MANAGER_SESSION_MANAGER_CLIENT_H_
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "base/time/time.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/login_manager/dbus-constants.h"
 
 namespace arc {
@@ -204,8 +204,8 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   // returned by the session manager. |error| contains an error message if an
   // error occurred, otherwise empty.
   using LoginScreenStorageRetrieveCallback =
-      base::OnceCallback<void(absl::optional<std::string> /* data */,
-                              absl::optional<std::string> /* error */)>;
+      base::OnceCallback<void(std::optional<std::string> /* data */,
+                              std::optional<std::string> /* error */)>;
 
   // Retrieve data stored earlier with the |LoginScreenStorageStore()| method.
   virtual void LoginScreenStorageRetrieve(
@@ -217,7 +217,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   // |keys| is empty and |error| contains the error message.
   using LoginScreenStorageListKeysCallback =
       base::OnceCallback<void(std::vector<std::string> /* keys */,
-                              absl::optional<std::string> /* error */)>;
+                              std::optional<std::string> /* error */)>;
 
   // List all keys currently stored in the login screen storage.
   virtual void LoginScreenStorageListKeys(

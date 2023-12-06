@@ -172,7 +172,7 @@ struct FuzzKey {
   FuzzKey(PublicKey pub_key,
           Token token,
           KeyType type,
-          absl::optional<RsaModulusLength> rsa_key_size,
+          std::optional<RsaModulusLength> rsa_key_size,
           bool can_be_listed)
       : public_key(std::move(pub_key)),
         token(token),
@@ -195,7 +195,7 @@ struct FuzzKey {
   PublicKey public_key;
   Token token;
   KeyType key_type;
-  absl::optional<RsaModulusLength> rsa_key_size;
+  std::optional<RsaModulusLength> rsa_key_size;
   // Contains imported net::X509Certificate certs. The corresponding kcer::Cert
   // certs will be found on the next ListCerts (from the related token) and
   // pending certs will be "converted" into kcer::Cert certs and stored in
@@ -213,9 +213,9 @@ struct FuzzKey {
   // cases. Kcer-without-NSS won't do that. For now for simplicity the nickname
   // is only checked after a SetNickname() call, and not after importing certs.
   bool nickname_known = false;
-  absl::optional<std::string> nickname;
-  absl::optional<chaps::KeyPermissions> key_permissions;
-  absl::optional<std::string> cert_provisioning_profile_id;
+  std::optional<std::string> nickname;
+  std::optional<chaps::KeyPermissions> key_permissions;
+  std::optional<std::string> cert_provisioning_profile_id;
 };
 
 //==============================================================================
@@ -481,11 +481,11 @@ void CertGenerator::GenerateCert() {
     cert_builder_->SetPolicyMappings(policy_mappings);
   }
   if (GetBool()) {
-    absl::optional<uint64_t> require_explicit_policy;
+    std::optional<uint64_t> require_explicit_policy;
     if (GetBool()) {
       require_explicit_policy = GetUint64();
     }
-    absl::optional<uint64_t> inhibit_policy_mapping;
+    std::optional<uint64_t> inhibit_policy_mapping;
     if (GetBool()) {
       inhibit_policy_mapping = GetUint64();
     }
@@ -738,7 +738,7 @@ void KcerFuzzer::RunGenerateEcKey() {
 
   kcer_data_.emplace(std::move(spki),
                      FuzzKey(std::move(public_key), token, KeyType::kEcc,
-                             /*rsa_key_size=*/absl::nullopt,
+                             /*rsa_key_size=*/std::nullopt,
                              /*can_be_listed=*/true));
 }
 
@@ -748,8 +748,7 @@ void KcerFuzzer::RunImportKey() {
   std::vector<uint8_t> pkcs8_key;
   bool good_key_is_used = false;
   if (!example_pkcs8_key_used_ && data_provider_.ConsumeBool()) {
-    absl::optional<std::vector<uint8_t>> key_der =
-        base::Base64Decode(kPkcs8Key);
+    std::optional<std::vector<uint8_t>> key_der = base::Base64Decode(kPkcs8Key);
     ASSERT_TRUE(key_der.has_value());
     pkcs8_key = std::move(key_der).value();
     example_pkcs8_key_used_ = true;
@@ -775,7 +774,7 @@ void KcerFuzzer::RunImportKey() {
 
     kcer_data_.emplace(std::move(spki),
                        FuzzKey(std::move(public_key), token, KeyType::kRsa,
-                               /*rsa_key_size=*/absl::nullopt,
+                               /*rsa_key_size=*/std::nullopt,
                                /*can_be_listed=*/false));
     return;
   }

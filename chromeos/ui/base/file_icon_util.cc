@@ -4,6 +4,7 @@
 
 #include "chromeos/ui/base/file_icon_util.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -16,7 +17,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -196,7 +196,7 @@ const IconParams& GetIconParamsFromIconType(IconType icon) {
 
 gfx::ImageSkia GetVectorIconFromIconType(IconType icon,
                                          bool dark_background,
-                                         absl::optional<int> dip_size) {
+                                         std::optional<int> dip_size) {
   const IconParams& params = GetIconParamsFromIconType(icon);
   const gfx::IconDescription description(
       *params.icon, dip_size.value_or(kIconDefaultDipSize),
@@ -376,7 +376,7 @@ const gfx::VectorIcon& GetIconForPath(const base::FilePath& filepath) {
 
 gfx::ImageSkia GetIconForPath(const base::FilePath& filepath,
                               bool dark_background,
-                              absl::optional<int> dip_size) {
+                              std::optional<int> dip_size) {
   return GetVectorIconFromIconType(internal::GetIconTypeForPath(filepath),
                                    dark_background, dip_size);
 }
@@ -394,11 +394,11 @@ const gfx::VectorIcon& GetIconFromType(const std::string& icon_type) {
 gfx::ImageSkia GetIconFromType(const std::string& icon_type,
                                bool dark_background) {
   return GetVectorIconFromIconType(internal::GetIconTypeFromString(icon_type),
-                                   dark_background, absl::nullopt);
+                                   dark_background, std::nullopt);
 }
 
 gfx::ImageSkia GetIconFromType(IconType icon_type, bool dark_background) {
-  return GetVectorIconFromIconType(icon_type, dark_background, absl::nullopt);
+  return GetVectorIconFromIconType(icon_type, dark_background, std::nullopt);
 }
 
 SkColor GetIconColorForPath(const base::FilePath& filepath,

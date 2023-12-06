@@ -51,7 +51,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenu
  private:
   raw_ptr<MultitaskMenuView> multitask_menu_view_ = nullptr;
 
-  absl::optional<display::ScopedDisplayObserver> display_observer_;
+  std::optional<display::ScopedDisplayObserver> display_observer_;
 
   base::WeakPtrFactory<MultitaskMenu> weak_factory_{this};
 };

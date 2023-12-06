@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/language_packs/handwriting.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -16,7 +17,6 @@
 #include "chromeos/ash/components/language_packs/language_packs_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/fake_input_method_delegate.h"
 #include "ui/base/ime/ash/input_method_descriptor.h"
@@ -49,7 +49,7 @@ dlcservice::DlcsWithContent CreateDlcsWithContent(
 
 struct PartialDescriptor {
   std::string engine_id;
-  absl::optional<std::string> handwriting_language;
+  std::optional<std::string> handwriting_language;
 };
 
 // Ensures the lifetime of the fake `InputMethodDelegate` outlives the
@@ -92,37 +92,37 @@ TEST_F(HandwritingTest, MapEngineIdToHandwritingLocaleNoInputMethods) {
   DelegateUtil delegate_util({});
   input_method::InputMethodUtil* util = delegate_util.util();
   EXPECT_THAT(MapEngineIdToHandwritingLocale(util, "xkb:us::eng"),
-              absl::nullopt);
+              std::nullopt);
   EXPECT_THAT(MapEngineIdToHandwritingLocale(util, "xkb:fr::fra"),
-              absl::nullopt);
+              std::nullopt);
   EXPECT_THAT(MapEngineIdToHandwritingLocale(util, "xkb:de::ger"),
-              absl::nullopt);
+              std::nullopt);
 }
 
 TEST_F(HandwritingTest,
        MapEngineIdToHandwritingLocaleInputMethodsWithoutHandwriting) {
   DelegateUtil delegate_util(
-      {{{"xkb:us::eng", absl::nullopt}, {"xkb:fr::fra", absl::nullopt}}});
+      {{{"xkb:us::eng", std::nullopt}, {"xkb:fr::fra", std::nullopt}}});
   input_method::InputMethodUtil* util = delegate_util.util();
   EXPECT_THAT(MapEngineIdToHandwritingLocale(util, "xkb:us::eng"),
-              absl::nullopt);
+              std::nullopt);
   EXPECT_THAT(MapEngineIdToHandwritingLocale(util, "xkb:fr::fra"),
-              absl::nullopt);
+              std::nullopt);
   EXPECT_THAT(MapEngineIdToHandwritingLocale(util, "xkb:de::ger"),
-              absl::nullopt);
+              std::nullopt);
 }
 
 TEST_F(HandwritingTest,
        MapEngineIdToHandwritingLocaleSomeInputMethodsWithHandwriting) {
   DelegateUtil delegate_util(
-      {{{"xkb:us::eng", "en"}, {"xkb:fr::fra", absl::nullopt}}});
+      {{{"xkb:us::eng", "en"}, {"xkb:fr::fra", std::nullopt}}});
   input_method::InputMethodUtil* util = delegate_util.util();
   EXPECT_THAT(MapEngineIdToHandwritingLocale(util, "xkb:us::eng"),
               Optional(Eq("en")));
   EXPECT_THAT(MapEngineIdToHandwritingLocale(util, "xkb:fr::fra"),
-              absl::nullopt);
+              std::nullopt);
   EXPECT_THAT(MapEngineIdToHandwritingLocale(util, "xkb:de::ger"),
-              absl::nullopt);
+              std::nullopt);
 }
 
 TEST_F(HandwritingTest,
@@ -134,7 +134,7 @@ TEST_F(HandwritingTest,
   EXPECT_THAT(MapEngineIdToHandwritingLocale(util, "xkb:fr::fra"),
               Optional(Eq("fr")));
   EXPECT_THAT(MapEngineIdToHandwritingLocale(util, "xkb:de::ger"),
-              absl::nullopt);
+              std::nullopt);
 }
 
 TEST_F(HandwritingTest, MapEngineIdsToHandwritingLocalesIntegration) {
@@ -156,40 +156,40 @@ TEST_F(HandwritingTest, MapInputMethodIdToHandwritingLocaleNoInputMethods) {
   EXPECT_THAT(
       MapInputMethodIdToHandwritingLocale(
           util, extension_ime_util::GetInputMethodIDByEngineID("xkb:us::eng")),
-      absl::nullopt);
+      std::nullopt);
   EXPECT_THAT(
       MapInputMethodIdToHandwritingLocale(
           util, extension_ime_util::GetInputMethodIDByEngineID("xkb:fr::fra")),
-      absl::nullopt);
+      std::nullopt);
   EXPECT_THAT(
       MapInputMethodIdToHandwritingLocale(
           util, extension_ime_util::GetInputMethodIDByEngineID("xkb:de::ger")),
-      absl::nullopt);
+      std::nullopt);
 }
 
 TEST_F(HandwritingTest,
        MapInputMethodIdToHandwritingLocaleInputMethodsWithoutHandwriting) {
   DelegateUtil delegate_util(
-      {{{"xkb:us::eng", absl::nullopt}, {"xkb:fr::fra", absl::nullopt}}});
+      {{{"xkb:us::eng", std::nullopt}, {"xkb:fr::fra", std::nullopt}}});
   input_method::InputMethodUtil* util = delegate_util.util();
   EXPECT_THAT(
       MapInputMethodIdToHandwritingLocale(
           util, extension_ime_util::GetInputMethodIDByEngineID("xkb:us::eng")),
-      absl::nullopt);
+      std::nullopt);
   EXPECT_THAT(
       MapInputMethodIdToHandwritingLocale(
           util, extension_ime_util::GetInputMethodIDByEngineID("xkb:fr::fra")),
-      absl::nullopt);
+      std::nullopt);
   EXPECT_THAT(
       MapInputMethodIdToHandwritingLocale(
           util, extension_ime_util::GetInputMethodIDByEngineID("xkb:de::ger")),
-      absl::nullopt);
+      std::nullopt);
 }
 
 TEST_F(HandwritingTest,
        MapInputMethodIdToHandwritingLocaleSomeInputMethodsWithHandwriting) {
   DelegateUtil delegate_util(
-      {{{"xkb:us::eng", "en"}, {"xkb:fr::fra", absl::nullopt}}});
+      {{{"xkb:us::eng", "en"}, {"xkb:fr::fra", std::nullopt}}});
   input_method::InputMethodUtil* util = delegate_util.util();
   EXPECT_THAT(
       MapInputMethodIdToHandwritingLocale(
@@ -198,11 +198,11 @@ TEST_F(HandwritingTest,
   EXPECT_THAT(
       MapInputMethodIdToHandwritingLocale(
           util, extension_ime_util::GetInputMethodIDByEngineID("xkb:fr::fra")),
-      absl::nullopt);
+      std::nullopt);
   EXPECT_THAT(
       MapInputMethodIdToHandwritingLocale(
           util, extension_ime_util::GetInputMethodIDByEngineID("xkb:de::ger")),
-      absl::nullopt);
+      std::nullopt);
 }
 
 TEST_F(HandwritingTest,
@@ -220,7 +220,7 @@ TEST_F(HandwritingTest,
   EXPECT_THAT(
       MapInputMethodIdToHandwritingLocale(
           util, extension_ime_util::GetInputMethodIDByEngineID("xkb:de::ger")),
-      absl::nullopt);
+      std::nullopt);
 }
 
 TEST_F(HandwritingTest, MapInputMethodIdsToHandwritingLocalesIntegration) {
@@ -242,7 +242,7 @@ TEST_F(HandwritingTest, MapInputMethodIdsToHandwritingLocalesIntegration) {
 struct HandwritingLocaleToDlcTestCase {
   std::string test_name;
   std::string_view locale;
-  absl::optional<std::string> expected;
+  std::optional<std::string> expected;
 };
 
 class HandwritingLocaleToDlcTest
@@ -259,10 +259,10 @@ INSTANTIATE_TEST_SUITE_P(
     HandwritingLocaleToDlcTests,
     HandwritingLocaleToDlcTest,
     testing::ValuesIn<HandwritingLocaleToDlcTestCase>(
-        {{"InvalidEmpty", "", absl::nullopt},
-         {"InvalidEn", "en", absl::nullopt},
-         {"InvalidDeDe", "de-DE", absl::nullopt},
-         {"InvalidCy", "cy", absl::nullopt},
+        {{"InvalidEmpty", "", std::nullopt},
+         {"InvalidEn", "en", std::nullopt},
+         {"InvalidDeDe", "de-DE", std::nullopt},
+         {"InvalidCy", "cy", std::nullopt},
          {"ValidDe", "de", "handwriting-de"},
          {"ValidZhHk", "zh-HK", "handwriting-zh-HK"}}),
     [](const testing::TestParamInfo<HandwritingLocaleToDlcTest::ParamType>&
@@ -271,7 +271,7 @@ INSTANTIATE_TEST_SUITE_P(
 struct DlcToHandwritingLocaleTestCase {
   std::string test_name;
   std::string_view dlc_id;
-  absl::optional<std::string> expected;
+  std::optional<std::string> expected;
 };
 
 class DlcToHandwritingLocaleTest
@@ -288,13 +288,13 @@ INSTANTIATE_TEST_SUITE_P(
     DlcToHandwritingLocaleTests,
     DlcToHandwritingLocaleTest,
     testing::ValuesIn<DlcToHandwritingLocaleTestCase>(
-        {{"InvalidEmpty", "", absl::nullopt},
-         {"InvalidEn", "handwriting-en", absl::nullopt},
-         {"InvalidCy", "handwriting-cy", absl::nullopt},
-         {"InvalidDeDe", "handwriting-de-DE", absl::nullopt},
-         {"InvalidTypoDe", "handwritting-de", absl::nullopt},
-         {"InvalidTtsEnUs", "tts-en-us", absl::nullopt},
-         {"InvalidDeWithoutPrefix", "de", absl::nullopt},
+        {{"InvalidEmpty", "", std::nullopt},
+         {"InvalidEn", "handwriting-en", std::nullopt},
+         {"InvalidCy", "handwriting-cy", std::nullopt},
+         {"InvalidDeDe", "handwriting-de-DE", std::nullopt},
+         {"InvalidTypoDe", "handwritting-de", std::nullopt},
+         {"InvalidTtsEnUs", "tts-en-us", std::nullopt},
+         {"InvalidDeWithoutPrefix", "de", std::nullopt},
          {"ValidDe", "handwriting-de", "de"},
          {"ValidZhHk", "handwriting-zh-HK", "zh-HK"}}),
     [](const testing::TestParamInfo<DlcToHandwritingLocaleTest::ParamType>&

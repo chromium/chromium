@@ -218,7 +218,7 @@ class BleConnectionManagerImpl : public BleConnectionManager,
       remote_device_id_to_secure_channel_map_;
   base::flat_map<std::string, std::unique_ptr<ConnectionAttemptTimestamps>>
       remote_device_id_to_timestamps_map_;
-  absl::optional<std::string> notifying_remote_device_id_;
+  std::optional<std::string> notifying_remote_device_id_;
 };
 
 }  // namespace ash::secure_channel

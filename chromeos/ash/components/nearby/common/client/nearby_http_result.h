@@ -5,11 +5,11 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CLIENT_NEARBY_HTTP_RESULT_H_
 #define CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CLIENT_NEARBY_HTTP_RESULT_H_
 
+#include <optional>
 #include <ostream>
 #include <string>
 
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::nearby {
 
@@ -66,7 +66,7 @@ class NearbyHttpStatus {
  private:
   enum class Status { kSuccess, kNetworkFailure, kHttpFailure } status_;
   int net_error_code_;
-  absl::optional<int> http_response_code_;
+  std::optional<int> http_response_code_;
 };
 
 NearbyHttpError NearbyHttpErrorForHttpResponseCode(int response_code);

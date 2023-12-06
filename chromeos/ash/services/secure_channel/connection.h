@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_CONNECTION_H_
 
 #include <memory>
+#include <optional>
 #include <ostream>
 
 #include "base/functional/callback_forward.h"
@@ -13,7 +14,6 @@
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/services/secure_channel/file_transfer_update_callback.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {
 
@@ -67,9 +67,9 @@ class Connection {
   multidevice::RemoteDeviceRef remote_device() const { return remote_device_; }
 
   // Returns the RSSI of the connection; if no derived class overrides this
-  // function, absl::nullopt is returned.
+  // function, std::nullopt is returned.
   virtual void GetConnectionRssi(
-      base::OnceCallback<void(absl::optional<int32_t>)> callback);
+      base::OnceCallback<void(std::optional<int32_t>)> callback);
 
   // Abstract methods that subclasses should implement:
 

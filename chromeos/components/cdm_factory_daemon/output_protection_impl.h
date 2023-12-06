@@ -109,7 +109,7 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) OutputProtectionImpl
   std::unique_ptr<DisplaySystemDelegate> delegate_;
   display::ContentProtectionManager::ClientId client_id_;
 
-  absl::optional<display::ScopedOptionalDisplayObserver> display_observer_;
+  std::optional<display::ScopedOptionalDisplayObserver> display_observer_;
 
   std::vector<int64_t> display_id_list_;
 

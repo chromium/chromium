@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/dbus/biod/fake_biod_client.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -25,7 +26,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "dbus/object_path.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
@@ -392,7 +392,7 @@ void FakeBiodClient::LoadRecords() {
                << fake_biod_db_filepath_;
     return;
   }
-  absl::optional<base::Value> records_json = base::JSONReader::Read(content);
+  std::optional<base::Value> records_json = base::JSONReader::Read(content);
   if (!records_json.has_value()) {
     LOG(ERROR) << "FakeBiod parse failed.";
     return;

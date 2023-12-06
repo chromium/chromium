@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_SYNC_WIFI_LOCAL_NETWORK_COLLECTOR_IMPL_H_
 #define CHROMEOS_ASH_COMPONENTS_SYNC_WIFI_LOCAL_NETWORK_COLLECTOR_IMPL_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "chromeos/ash/components/sync_wifi/synced_network_metrics_logger.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_pb {
 class WifiConfigurationSpecifics;
@@ -56,7 +56,7 @@ class LocalNetworkCollectorImpl
   void GetSyncableNetwork(const std::string& guid,
                           ProtoCallback callback) override;
 
-  absl::optional<NetworkIdentifier> GetNetworkIdentifierFromGuid(
+  std::optional<NetworkIdentifier> GetNetworkIdentifierFromGuid(
       const std::string& guid) override;
 
   void SetNetworkMetadataStore(

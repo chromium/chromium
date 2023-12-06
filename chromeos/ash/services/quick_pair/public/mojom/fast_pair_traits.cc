@@ -5,11 +5,11 @@
 #include "chromeos/ash/services/quick_pair/public/mojom/fast_pair_traits.h"
 
 #include <cstdint>
+#include <optional>
 #include <vector>
 
 #include "base/ranges/algorithm.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
@@ -100,8 +100,8 @@ bool StructTraits<BatteryInfoDataView, BatteryInfo>::Read(
 
   out->is_charging = data.is_charging();
   out->percentage = data.percentage() == -1
-                        ? absl::nullopt
-                        : absl::make_optional(data.percentage());
+                        ? std::nullopt
+                        : std::make_optional(data.percentage());
 
   return true;
 }

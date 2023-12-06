@@ -63,12 +63,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   // Triggred when campaigns component loaded.
   void OnCampaignsComponentLoaded(
       base::OnceClosure load_callback,
-      const absl::optional<const base::FilePath>& file_path);
+      const std::optional<const base::FilePath>& file_path);
 
   // Triggered when campaigns are loaded from the campaigns component mounted
   // path.
   void OnCampaignsLoaded(base::OnceClosure load_callback,
-                         absl::optional<base::Value::Dict> campaigns);
+                         std::optional<base::Value::Dict> campaigns);
 
   // Notify observers that campaigns are loaded and CampaignsManager is ready
   // to query.

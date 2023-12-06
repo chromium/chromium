@@ -86,19 +86,19 @@ bool HostDeviceTimestampManagerImpl::WasHostSetFromThisChromebook() {
   return pref_service_->GetBoolean(kWasHostSetFromThisChromebookPrefName);
 }
 
-absl::optional<base::Time>
+std::optional<base::Time>
 HostDeviceTimestampManagerImpl::GetLatestSetupFlowCompletionTimestamp() {
   if (pref_service_->GetInt64(kSetupFlowCompletedPrefName) == kTimestampNotSet)
-    return absl::nullopt;
+    return std::nullopt;
   return base::Time::FromMillisecondsSinceUnixEpoch(
       pref_service_->GetInt64(kSetupFlowCompletedPrefName));
 }
 
-absl::optional<base::Time>
+std::optional<base::Time>
 HostDeviceTimestampManagerImpl::GetLatestVerificationTimestamp() {
   if (pref_service_->GetInt64(kHostVerifiedUpdateReceivedPrefName) ==
       kTimestampNotSet)
-    return absl::nullopt;
+    return std::nullopt;
   return base::Time::FromMillisecondsSinceUnixEpoch(
       pref_service_->GetInt64(kHostVerifiedUpdateReceivedPrefName));
 }

@@ -6,9 +6,10 @@
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_STATE_H_
 
 #include <stdint.h>
-#include <sstream>
 
 #include <memory>
+#include <optional>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "chromeos/ash/components/network/managed_state.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 #include "components/onc/onc_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "url/gurl.h"
 
@@ -118,10 +118,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
 
   int priority() const { return priority_; }
 
-  const absl::optional<base::Value::Dict>& proxy_config() const {
+  const std::optional<base::Value::Dict>& proxy_config() const {
     return proxy_config_;
   }
-  const absl::optional<base::Value::Dict>& ipv4_config() const {
+  const std::optional<base::Value::Dict>& ipv4_config() const {
     return ipv4_config_;
   }
   std::string GetIpAddress() const;
@@ -130,12 +130,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
 
   // Network service property accessors.
   // Link speeds are set when service is connected or link speeds get updated
-  // during the connection. When link speeds are not set, absl::nullopt is
+  // during the connection. When link speeds are not set, std::nullopt is
   // returned.
-  const absl::optional<uint32_t> max_uplink_speed_kbps() const {
+  const std::optional<uint32_t> max_uplink_speed_kbps() const {
     return max_uplink_speed_kbps_;
   }
-  const absl::optional<uint32_t> max_downlink_speed_kbps() const {
+  const std::optional<uint32_t> max_downlink_speed_kbps() const {
     return max_downlink_speed_kbps_;
   }
 
@@ -345,8 +345,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   std::vector<uint8_t> raw_ssid_;  // Unknown encoding. Not necessarily UTF-8.
   int priority_ = 0;  // kPriority, used for organizing known networks.
   ::onc::ONCSource onc_source_ = ::onc::ONC_SOURCE_UNKNOWN;
-  absl::optional<uint32_t> max_uplink_speed_kbps_;
-  absl::optional<uint32_t> max_downlink_speed_kbps_;
+  std::optional<uint32_t> max_uplink_speed_kbps_;
+  std::optional<uint32_t> max_downlink_speed_kbps_;
 
   // Last non empty Service.Error property. Expected to be cleared via
   // ClearError() when a connection attempt is initiated and when an associated
@@ -359,7 +359,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
 
   // Cached copy of the Shill Service IPConfig object. For ipv6 properties use
   // the ip_configs_ property in the corresponding DeviceState.
-  absl::optional<base::Value::Dict> ipv4_config_;
+  std::optional<base::Value::Dict> ipv4_config_;
 
   // Wireless properties, used for icons and Connect logic.
   bool connectable_ = false;
@@ -407,7 +407,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
 
   // TODO(pneubeck): Remove this once (Managed)NetworkConfigurationHandler
   // provides proxy configuration. crbug.com/241775
-  absl::optional<base::Value::Dict> proxy_config_;
+  std::optional<base::Value::Dict> proxy_config_;
 
   // Set while a network connect request is queued. Cleared on connect or
   // if the request is aborted.

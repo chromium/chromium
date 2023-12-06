@@ -28,13 +28,13 @@ void AudioInputController::SetHotwordEnabled(bool enable) {
 }
 
 void AudioInputController::SetDeviceId(
-    const absl::optional<std::string>& device_id) {
+    const std::optional<std::string>& device_id) {
   DCHECK(device_id != "");
   audio_input().SetDeviceId(device_id);
 }
 
 void AudioInputController::SetHotwordDeviceId(
-    const absl::optional<std::string>& device_id) {
+    const std::optional<std::string>& device_id) {
   DCHECK(device_id != "");
   audio_input().SetHotwordDeviceId(device_id);
 }

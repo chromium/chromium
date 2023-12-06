@@ -40,8 +40,8 @@ namespace ash {
 namespace {
 
 using InstallResultTuple = std::tuple<HermesResponseStatus,
-                                      absl::optional<dbus::ObjectPath>,
-                                      absl::optional<std::string>>;
+                                      std::optional<dbus::ObjectPath>,
+                                      std::optional<std::string>>;
 
 using cellular_setup::mojom::ProfileInstallMethod;
 
@@ -163,8 +163,8 @@ class CellularESimInstallerLegacyTest : public testing::Test {
       bool is_install_via_qr_code = false,
       bool auto_connected = false) {
     HermesResponseStatus out_install_result;
-    absl::optional<dbus::ObjectPath> out_esim_profile_path;
-    absl::optional<std::string> out_service_path;
+    std::optional<dbus::ObjectPath> out_esim_profile_path;
+    std::optional<std::string> out_service_path;
 
     base::RunLoop run_loop;
     cellular_esim_installer_->InstallProfileFromActivationCode(
@@ -172,8 +172,8 @@ class CellularESimInstallerLegacyTest : public testing::Test {
         std::move(new_shill_properties),
         base::BindLambdaForTesting(
             [&](HermesResponseStatus install_result,
-                absl::optional<dbus::ObjectPath> esim_profile_path,
-                absl::optional<std::string> service_path) {
+                std::optional<dbus::ObjectPath> esim_profile_path,
+                std::optional<std::string> service_path) {
               out_install_result = install_result;
               out_esim_profile_path = esim_profile_path;
               out_service_path = service_path;
@@ -212,16 +212,16 @@ class CellularESimInstallerLegacyTest : public testing::Test {
                            out_service_path);
   }
 
-  absl::optional<dbus::ObjectPath> ConfigureESimService(
+  std::optional<dbus::ObjectPath> ConfigureESimService(
       const dbus::ObjectPath euicc_path,
       const dbus::ObjectPath& profile_path,
       base::Value::Dict& new_shill_properties) {
-    absl::optional<dbus::ObjectPath> service_path_out;
+    std::optional<dbus::ObjectPath> service_path_out;
     base::RunLoop run_loop;
     cellular_esim_installer_->ConfigureESimService(
         new_shill_properties, euicc_path, profile_path,
         base::BindLambdaForTesting(
-            [&](absl::optional<dbus::ObjectPath> service_path) {
+            [&](std::optional<dbus::ObjectPath> service_path) {
               service_path_out = service_path;
               run_loop.Quit();
             }));
@@ -231,8 +231,8 @@ class CellularESimInstallerLegacyTest : public testing::Test {
 
   void CheckInstallSuccess(const InstallResultTuple& actual_result_tuple) {
     EXPECT_EQ(HermesResponseStatus::kSuccess, std::get<0>(actual_result_tuple));
-    EXPECT_NE(std::get<1>(actual_result_tuple), absl::nullopt);
-    EXPECT_NE(std::get<2>(actual_result_tuple), absl::nullopt);
+    EXPECT_NE(std::get<1>(actual_result_tuple), std::nullopt);
+    EXPECT_NE(std::get<2>(actual_result_tuple), std::nullopt);
     const base::Value::Dict* properties =
         ShillServiceClient::Get()->GetTestInterface()->GetServiceProperties(
             *std::get<2>(actual_result_tuple));
@@ -343,8 +343,8 @@ TEST_F(CellularESimInstallerLegacyTest, InstallProfileInvalidActivationCode) {
       /*wait_for_connect=*/false, /*fail_connect=*/false);
   EXPECT_EQ(HermesResponseStatus::kErrorInvalidActivationCode,
             std::get<0>(result_tuple));
-  EXPECT_EQ(std::get<1>(result_tuple), absl::nullopt);
-  EXPECT_EQ(std::get<2>(result_tuple), absl::nullopt);
+  EXPECT_EQ(std::get<1>(result_tuple), std::nullopt);
+  EXPECT_EQ(std::get<2>(result_tuple), std::nullopt);
   CheckESimInstallHistograms(
       /*expected_count=*/1, HermesResponseStatus::kErrorInvalidActivationCode,
       CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed);
@@ -359,8 +359,8 @@ TEST_F(CellularESimInstallerLegacyTest, InstallProfileInvalidActivationCode) {
       /*wait_for_connect=*/false, /*fail_connect=*/false);
   EXPECT_EQ(HermesResponseStatus::kErrorInvalidActivationCode,
             std::get<0>(result_tuple));
-  EXPECT_EQ(std::get<1>(result_tuple), absl::nullopt);
-  EXPECT_EQ(std::get<2>(result_tuple), absl::nullopt);
+  EXPECT_EQ(std::get<1>(result_tuple), std::nullopt);
+  EXPECT_EQ(std::get<2>(result_tuple), std::nullopt);
   CheckESimInstallHistograms(
       /*expected_count=*/2, HermesResponseStatus::kErrorInvalidActivationCode,
       CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed);
@@ -558,7 +558,7 @@ TEST_F(CellularESimInstallerLegacyTest, ConfigureESimService) {
   std::unique_ptr<NetworkUIData> ui_data =
       NetworkUIData::CreateFromONC(::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY);
   new_shill_properties.Set(shill::kUIDataProperty, ui_data->GetAsJson());
-  absl::optional<dbus::ObjectPath> service_path = ConfigureESimService(
+  std::optional<dbus::ObjectPath> service_path = ConfigureESimService(
       dbus::ObjectPath(kTestEuiccPath), profile_path, new_shill_properties);
   EXPECT_TRUE(service_path.has_value());
 
@@ -590,7 +590,7 @@ TEST_F(CellularESimInstallerLegacyTest, ConfigureESimServiceFailure) {
       FakeShillSimulatedResult::kFailure);
 
   base::Value::Dict new_shill_properties;
-  absl::optional<dbus::ObjectPath> service_path = ConfigureESimService(
+  std::optional<dbus::ObjectPath> service_path = ConfigureESimService(
       dbus::ObjectPath(kTestEuiccPath), profile_path, new_shill_properties);
   EXPECT_FALSE(service_path.has_value());
 }

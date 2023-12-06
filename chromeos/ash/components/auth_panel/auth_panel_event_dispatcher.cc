@@ -4,18 +4,18 @@
 
 #include "chromeos/ash/components/auth_panel/auth_panel_event_dispatcher.h"
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "chromeos/ash/components/auth_panel/auth_factor_store.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
 AuthPanelEventDispatcher::UserAction::UserAction(
     Type type,
-    absl::optional<std::string> payload)
+    std::optional<std::string> payload)
     : type_(type), payload_(payload) {}
 
 AuthPanelEventDispatcher::UserAction::~UserAction() = default;

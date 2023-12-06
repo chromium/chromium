@@ -5,12 +5,12 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PHONEHUB_NOTIFICATION_ACCESS_SETUP_OPERATION_H_
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_NOTIFICATION_ACCESS_SETUP_OPERATION_H_
 
+#include <optional>
 #include <ostream>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace phonehub {
@@ -87,7 +87,7 @@ class NotificationAccessSetupOperation {
 
   void NotifyNotificationStatusChanged(Status new_status);
 
-  absl::optional<Status> current_status_;
+  std::optional<Status> current_status_;
   const base::TimeTicks start_timestamp_ = base::TimeTicks::Now();
   const raw_ptr<Delegate, ExperimentalAsh> delegate_;
   base::OnceClosure destructor_callback_;

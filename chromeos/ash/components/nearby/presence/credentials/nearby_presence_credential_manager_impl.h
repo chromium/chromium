@@ -311,7 +311,7 @@ class NearbyPresenceCredentialManagerImpl
 
   // Stores the last success time of a daily sync to prevent slamming the
   // server with requests to `UpdateCredentials()`.
-  absl::optional<base::Time> last_daily_sync_success_time_;
+  std::optional<base::Time> last_daily_sync_success_time_;
 
   // Stores a count of the number of requests to `UpdateCredentials()` made
   // to match with a corresponding cool off period in between requests to

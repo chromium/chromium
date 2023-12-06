@@ -4,17 +4,18 @@
 
 #include "chromeos/ash/components/hid_detection/hid_detection_utils.h"
 
+#include <optional>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "components/device_event_log/device_event_log.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::hid_detection {
 namespace {
 
 using InputDeviceType = device::mojom::InputDeviceType;
 
-absl::optional<HidType> GetHidType(
+std::optional<HidType> GetHidType(
     const device::mojom::InputDeviceInfo& device) {
   if (device.is_touchscreen || device.is_tablet)
     return HidType::kTouchscreen;
@@ -45,7 +46,7 @@ absl::optional<HidType> GetHidType(
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -59,7 +60,7 @@ bool IsDeviceTouchscreen(const device::mojom::InputDeviceInfo& device) {
 }
 
 void RecordHidConnected(const device::mojom::InputDeviceInfo& device) {
-  absl::optional<HidType> hid_type = GetHidType(device);
+  std::optional<HidType> hid_type = GetHidType(device);
 
   // If |device| is not relevant (i.e. an accelerometer, joystick, etc), don't
   // emit metric.
@@ -74,7 +75,7 @@ void RecordHidConnected(const device::mojom::InputDeviceInfo& device) {
 }
 
 void RecordHidDisconnected(const device::mojom::InputDeviceInfo& device) {
-  absl::optional<HidType> hid_type = GetHidType(device);
+  std::optional<HidType> hid_type = GetHidType(device);
 
   // If |device| is not relevant (i.e. an accelerometer, joystick, etc), don't
   // emit metric.

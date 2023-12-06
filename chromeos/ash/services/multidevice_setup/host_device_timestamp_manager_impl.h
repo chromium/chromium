@@ -6,12 +6,12 @@
 #define CHROMEOS_ASH_SERVICES_MULTIDEVICE_SETUP_HOST_DEVICE_TIMESTAMP_MANAGER_IMPL_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/multidevice_setup/host_device_timestamp_manager.h"
 #include "chromeos/ash/services/multidevice_setup/host_status_provider.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -58,8 +58,8 @@ class HostDeviceTimestampManagerImpl : public HostDeviceTimestampManager,
 
   // HostDeviceTimestampManager:
   bool WasHostSetFromThisChromebook() override;
-  absl::optional<base::Time> GetLatestSetupFlowCompletionTimestamp() override;
-  absl::optional<base::Time> GetLatestVerificationTimestamp() override;
+  std::optional<base::Time> GetLatestSetupFlowCompletionTimestamp() override;
+  std::optional<base::Time> GetLatestVerificationTimestamp() override;
 
  private:
   static const char kWasHostSetFromThisChromebookPrefName[];

@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_FAKE_USERDATAAUTH_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_FAKE_USERDATAAUTH_CLIENT_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -20,7 +21,6 @@
 #include "chromeos/ash/components/dbus/cryptohome/account_identifier_operators.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 namespace ash {
@@ -125,7 +125,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
 
     // Returns the user's home directory, or an empty optional if the user data
     // directory is not initialized or the user doesn't exist.
-    absl::optional<base::FilePath> GetUserProfileDir(
+    std::optional<base::FilePath> GetUserProfileDir(
         const cryptohome::AccountIdentifier& account_id) const;
 
     // Creates user directories once UserDataDir is available.
@@ -389,7 +389,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   void OnDircryptoMigrationProgressUpdated();
 
   // Returns a path to home directory for account.
-  absl::optional<base::FilePath> GetUserProfileDir(
+  std::optional<base::FilePath> GetUserProfileDir(
       const cryptohome::AccountIdentifier& account_id) const;
 
   // The method takes serialized auth session id and returns an authenticated
@@ -452,7 +452,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   // Other stuff/miscellaneous:
 
   // Base directory of user directories.
-  absl::optional<base::FilePath> user_data_dir_;
+  std::optional<base::FilePath> user_data_dir_;
 
   // List of observers.
   base::ObserverList<Observer> observer_list_;

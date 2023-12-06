@@ -5,6 +5,7 @@
 #include "chromeos/ash/services/secure_channel/connect_to_device_operation_base.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -14,7 +15,6 @@
 #include "chromeos/ash/services/secure_channel/device_id_pair.h"
 #include "chromeos/ash/services/secure_channel/fake_authenticated_channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {
 
@@ -53,7 +53,7 @@ class TestConnectToDeviceOperation
 
   bool has_attempted_connection() const { return has_attempted_connection_; }
   bool has_canceled_connection() const { return has_canceled_connection_; }
-  const absl::optional<ConnectionPriority>& current_connection_priority() {
+  const std::optional<ConnectionPriority>& current_connection_priority() {
     return current_connection_priority_;
   }
 
@@ -97,7 +97,7 @@ class TestConnectToDeviceOperation
   scoped_refptr<base::TestSimpleTaskRunner> test_task_runner_;
   bool has_attempted_connection_ = false;
   bool has_canceled_connection_ = false;
-  absl::optional<ConnectionPriority> current_connection_priority_;
+  std::optional<ConnectionPriority> current_connection_priority_;
 };
 
 }  // namespace

@@ -134,14 +134,14 @@ class CrosNetworkConfig
   void OnGetManagedProperties(GetManagedPropertiesCallback callback,
                               std::string guid,
                               const std::string& service_path,
-                              absl::optional<base::Value::Dict> properties,
-                              absl::optional<std::string> error);
+                              std::optional<base::Value::Dict> properties,
+                              std::optional<std::string> error);
   void OnGetManagedPropertiesEap(
       GetManagedPropertiesCallback callback,
       chromeos::network_config::mojom::ManagedPropertiesPtr managed_properties,
       const std::string& service_path,
-      absl::optional<base::Value::Dict> properties,
-      absl::optional<std::string> error);
+      std::optional<base::Value::Dict> properties,
+      std::optional<std::string> error);
   void SetPropertiesInternal(const std::string& guid,
                              const NetworkState& network,
                              base::Value::Dict onc,
@@ -182,9 +182,9 @@ class CrosNetworkConfig
                         std::string service_path);
   void OnGetSupportedVpnTypes(
       GetSupportedVpnTypesCallback callback,
-      absl::optional<base::Value::Dict> manager_properties);
+      std::optional<base::Value::Dict> manager_properties);
   void PopulateTrafficCounters(RequestTrafficCountersCallback callback,
-                               absl::optional<base::Value> traffic_counters);
+                               std::optional<base::Value> traffic_counters);
 
   // NetworkStateHandlerObserver:
   void NetworkListChanged() override;
@@ -237,7 +237,7 @@ class CrosNetworkConfig
   mojo::ReceiverSet<chromeos::network_config::mojom::CrosNetworkConfig>
       receivers_;
 
-  absl::optional<base::StringPiece> serial_number_;
+  std::optional<base::StringPiece> serial_number_;
 
   int callback_id_ = 1;
   base::flat_map<int, SetPropertiesCallback> set_properties_callbacks_;

@@ -164,7 +164,7 @@ void DriveFsSession::MaybeNotifyOnMounted() {
 
 void DriveFsSession::NotifyFailed(
     MountFailure failure,
-    absl::optional<base::TimeDelta> remount_delay) {
+    std::optional<base::TimeDelta> remount_delay) {
   // May delete |this|.
   auto connection = std::move(connection_);
   if (connection) {
@@ -173,7 +173,7 @@ void DriveFsSession::NotifyFailed(
 }
 
 void DriveFsSession::NotifyUnmounted(
-    absl::optional<base::TimeDelta> remount_delay) {
+    std::optional<base::TimeDelta> remount_delay) {
   // May delete |this|.
   auto connection = std::move(connection_);
   if (connection) {
@@ -192,7 +192,7 @@ void DriveFsSession::OnMounted() {
 }
 
 void DriveFsSession::OnMountFailed(
-    absl::optional<base::TimeDelta> remount_delay) {
+    std::optional<base::TimeDelta> remount_delay) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!drivefs_has_started_);
   DCHECK(!is_mounted_);
@@ -205,8 +205,7 @@ void DriveFsSession::OnMountFailed(
   }
 }
 
-void DriveFsSession::OnUnmounted(
-    absl::optional<base::TimeDelta> remount_delay) {
+void DriveFsSession::OnUnmounted(std::optional<base::TimeDelta> remount_delay) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(drivefs_has_started_);
   DCHECK(!drivefs_has_terminated_);

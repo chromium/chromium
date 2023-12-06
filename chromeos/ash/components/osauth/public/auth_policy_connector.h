@@ -29,7 +29,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthPolicyConnector {
 
   // Returns `true` if the recovery opt-in UIs should be shown for the user, and
   // `false` otherwise.
-  virtual absl::optional<bool> GetRecoveryInitialState(
+  virtual std::optional<bool> GetRecoveryInitialState(
       const AccountId& account) = 0;
   // Returns `true` if the recovery auth factor should be activated (by default
   // or by policy), and `false` otherwise.
@@ -38,11 +38,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthPolicyConnector {
   // recovery factor is configured.
   // - For managed users this value may change due to
   // the policy change and may not correspond to the actual state in cryptohome.
-  virtual absl::optional<bool> GetRecoveryDefaultState(
+  virtual std::optional<bool> GetRecoveryDefaultState(
       const AccountId& account) = 0;
 
   // Returns non-empty value if the recovery factor is enforced by the policy.
-  virtual absl::optional<bool> GetRecoveryMandatoryState(
+  virtual std::optional<bool> GetRecoveryMandatoryState(
       const AccountId& account) = 0;
 
   virtual bool IsAuthFactorManaged(const AccountId& account,

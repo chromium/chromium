@@ -36,7 +36,7 @@ BASE_FEATURE(kLacrosGooglePolicyRollout,
              "LacrosGooglePolicyRollout",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-absl::optional<LacrosAvailability> ParseLacrosAvailability(
+std::optional<LacrosAvailability> ParseLacrosAvailability(
     base::StringPiece value) {
   auto* it = kLacrosAvailabilityMap.find(value);
   if (it != kLacrosAvailabilityMap.end()) {
@@ -44,7 +44,7 @@ absl::optional<LacrosAvailability> ParseLacrosAvailability(
   }
 
   LOG(ERROR) << "Unknown LacrosAvailability policy value is passed: " << value;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 base::StringPiece GetLacrosAvailabilityPolicyName(LacrosAvailability value) {

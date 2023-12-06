@@ -205,7 +205,7 @@ bool ParseCellularSIMSlotInfo(
       sim_slot_info.iccid = *iccid;
     }
 
-    absl::optional<bool> primary = value->FindBool(shill::kSIMSlotInfoPrimary);
+    std::optional<bool> primary = value->FindBool(shill::kSIMSlotInfoPrimary);
     sim_slot_info.primary = primary.has_value() ? *primary : false;
 
     sim_slot_infos->push_back(sim_slot_info);

@@ -60,7 +60,7 @@ class NetworkTestHelperBase {
   std::string ConfigureWiFi(const std::string& state);
 
   // Returns a double value for property |key| associated with |service_path|.
-  absl::optional<double> GetServiceDoubleProperty(
+  std::optional<double> GetServiceDoubleProperty(
       const std::string& service_path,
       const std::string& key);
 

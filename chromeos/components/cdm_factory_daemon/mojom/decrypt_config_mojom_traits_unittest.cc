@@ -40,7 +40,7 @@ TEST(DecryptConfigStructTraitsTest, ConvertDecryptConfig) {
           media::EncryptionScheme::kCbcs, "FAKEKEY",
           std::string(media::DecryptConfig::kDecryptionKeySize, '1'),
           std::vector<media::SubsampleEntry>({media::SubsampleEntry(1, 3)}),
-          absl::make_optional<media::EncryptionPattern>(22, 42));
+          std::make_optional<media::EncryptionPattern>(22, 42));
 
   std::vector<uint8_t> data =
       chromeos::cdm::mojom::DecryptConfig::Serialize(&input);

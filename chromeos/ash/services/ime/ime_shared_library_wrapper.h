@@ -5,11 +5,11 @@
 #ifndef CHROMEOS_ASH_SERVICES_IME_IME_SHARED_LIBRARY_WRAPPER_H_
 #define CHROMEOS_ASH_SERVICES_IME_IME_SHARED_LIBRARY_WRAPPER_H_
 
-#include "chromeos/ash/services/ime/public/cpp/shared_lib/interfaces.h"
+#include <optional>
 
 #include "base/no_destructor.h"
 #include "base/scoped_native_library.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "chromeos/ash/services/ime/public/cpp/shared_lib/interfaces.h"
 
 namespace ash {
 namespace ime {
@@ -84,7 +84,7 @@ class ImeSharedLibraryWrapper {
   // Loads the IME shared library (if not already loaded) then returns its entry
   // points. Entry points are only available if the IME shared library has been
   // successfully loaded.
-  virtual absl::optional<EntryPoints> MaybeLoadThenReturnEntryPoints() = 0;
+  virtual std::optional<EntryPoints> MaybeLoadThenReturnEntryPoints() = 0;
 };
 
 // A proxy class for the IME decoder.
@@ -99,7 +99,7 @@ class ImeSharedLibraryWrapperImpl : public ImeSharedLibraryWrapper {
   ImeSharedLibraryWrapperImpl& operator=(const ImeSharedLibraryWrapperImpl&) =
       delete;
 
-  absl::optional<EntryPoints> MaybeLoadThenReturnEntryPoints() override;
+  std::optional<EntryPoints> MaybeLoadThenReturnEntryPoints() override;
 
  private:
   friend class base::NoDestructor<ImeSharedLibraryWrapperImpl>;
@@ -108,9 +108,9 @@ class ImeSharedLibraryWrapperImpl : public ImeSharedLibraryWrapper {
   ~ImeSharedLibraryWrapperImpl() override;
 
   // Result of IME decoder DSO initialization.
-  absl::optional<base::ScopedNativeLibrary> library_;
+  std::optional<base::ScopedNativeLibrary> library_;
 
-  absl::optional<EntryPoints> entry_points_;
+  std::optional<EntryPoints> entry_points_;
 };
 
 }  // namespace ime

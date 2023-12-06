@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/network/cellular_policy_handler.h"
 
 #include <memory>
+#include <optional>
 #include <queue>
 
 #include "ash/constants/ash_features.h"
@@ -30,7 +31,6 @@
 #include "components/onc/onc_constants.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -85,7 +85,7 @@ const char kInstallViaPolicyRetryOperationHistogram[] =
 
 std::string GenerateCellularPolicy(
     const policy_util::SmdxActivationCode& activation_code,
-    absl::optional<std::string> iccid = absl::nullopt) {
+    std::optional<std::string> iccid = std::nullopt) {
   const char* const activation_code_type =
       activation_code.type() == policy_util::SmdxActivationCode::Type::SMDP
           ? onc::cellular::kSMDPAddress
@@ -111,15 +111,15 @@ class CellularInhibitorObserver : public CellularInhibitor::Observer {
   }
 
   void OnInhibitStateChanged() override {
-    absl::optional<InhibitReason> inhibit_reason =
+    std::optional<InhibitReason> inhibit_reason =
         NetworkHandler::Get()->cellular_inhibitor()->GetInhibitReason();
     if (inhibit_reason.has_value()) {
       inhibit_reasons_.push(*inhibit_reason);
     }
   }
 
-  absl::optional<InhibitReason> PopInhibitReason() {
-    absl::optional<InhibitReason> inhibit_reason;
+  std::optional<InhibitReason> PopInhibitReason() {
+    std::optional<InhibitReason> inhibit_reason;
     if (!inhibit_reasons_.empty()) {
       inhibit_reason = inhibit_reasons_.front();
       inhibit_reasons_.pop();
@@ -226,7 +226,7 @@ class CellularPolicyHandlerTest : public testing::Test {
 
   HermesProfileClient::Properties* FindProfileProperties(
       const std::string& activation_code_value) {
-    absl::optional<dbus::ObjectPath> euicc_path =
+    std::optional<dbus::ObjectPath> euicc_path =
         cellular_utils::GetCurrentEuiccPath();
     if (!euicc_path.has_value()) {
       return nullptr;
@@ -322,7 +322,7 @@ class CellularPolicyHandlerTest : public testing::Test {
   }
 
   void CheckCurrentEuiccSlot(int32_t physical_slot) {
-    absl::optional<dbus::ObjectPath> euicc_path =
+    std::optional<dbus::ObjectPath> euicc_path =
         cellular_utils::GetCurrentEuiccPath();
     ASSERT_TRUE(euicc_path.has_value());
 
@@ -514,7 +514,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
       HermesEuiccClient::Get()
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
-  absl::optional<base::Value::Dict> onc_config =
+  std::optional<base::Value::Dict> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -576,7 +576,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  absl::optional<base::Value::Dict> onc_config =
+  std::optional<base::Value::Dict> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -619,7 +619,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  absl::optional<base::Value::Dict> onc_config =
+  std::optional<base::Value::Dict> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -654,7 +654,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  absl::optional<base::Value::Dict> onc_config =
+  std::optional<base::Value::Dict> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -768,7 +768,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  absl::optional<base::Value::Dict> onc_config =
+  std::optional<base::Value::Dict> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -808,7 +808,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  absl::optional<base::Value::Dict> onc_config =
+  std::optional<base::Value::Dict> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -848,7 +848,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  absl::optional<base::Value::Dict> onc_config =
+  std::optional<base::Value::Dict> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -888,7 +888,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  absl::optional<base::Value::Dict> onc_config =
+  std::optional<base::Value::Dict> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -936,7 +936,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
       HermesEuiccClient::Get()
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
-  absl::optional<base::Value::Dict> onc_config =
+  std::optional<base::Value::Dict> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code, kTestProfileIccid0));
   ASSERT_TRUE(onc_config.has_value());
@@ -1002,7 +1002,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
       HermesEuiccClient::Get()
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
-  absl::optional<base::Value::Dict> onc_config =
+  std::optional<base::Value::Dict> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -1054,7 +1054,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
   ExpectedHistogramState expected_state;
   CheckHistogramState(expected_state);
 
-  absl::optional<base::Value::Dict> onc_config =
+  std::optional<base::Value::Dict> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           base::StringPrintf(kCellularPolicyPattern, base::RandUint64(), "{}"));
   ASSERT_TRUE(onc_config.has_value());
@@ -1092,7 +1092,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  absl::optional<base::Value::Dict> onc_config =
+  std::optional<base::Value::Dict> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -1125,7 +1125,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  absl::optional<base::Value::Dict> onc_config =
+  std::optional<base::Value::Dict> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -1204,7 +1204,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  absl::optional<base::Value::Dict> onc_config =
+  std::optional<base::Value::Dict> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -1284,7 +1284,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  absl::optional<base::Value::Dict> onc_config =
+  std::optional<base::Value::Dict> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -1328,7 +1328,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccEnabled,
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  absl::optional<base::Value::Dict> onc_config =
+  std::optional<base::Value::Dict> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());

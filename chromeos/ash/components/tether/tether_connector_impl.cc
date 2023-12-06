@@ -150,7 +150,7 @@ bool TetherConnectorImpl::CancelConnectionAttempt(
 
   host_connection_metrics_logger_->RecordConnectionToHostResult(
       ConnectionToHostResult::USER_CANCELLATION, device_id_pending_connection_,
-      absl::nullopt);
+      std::nullopt);
 
   SetConnectionFailed(NetworkConnectionHandler::kErrorConnectCanceled);
   return true;
@@ -241,7 +241,7 @@ void TetherConnectorImpl::OnConnectTetheringFailure(
 
 void TetherConnectorImpl::OnTetherHostToConnectFetched(
     const std::string& device_id,
-    absl::optional<multidevice::RemoteDeviceRef> tether_host_to_connect) {
+    std::optional<multidevice::RemoteDeviceRef> tether_host_to_connect) {
   if (device_id_pending_connection_ != device_id) {
     PA_LOG(VERBOSE) << "Device to connect to has changed while device with ID "
                     << multidevice::RemoteDeviceRef::TruncateDeviceIdForLogs(
@@ -310,7 +310,7 @@ void TetherConnectorImpl::SetConnectionSucceeded(
 
   host_connection_metrics_logger_->RecordConnectionToHostResult(
       HostConnectionMetricsLogger::ConnectionToHostResult::SUCCESS, device_id,
-      absl::nullopt);
+      std::nullopt);
 
   notification_presenter_->RemoveSetupRequiredNotification();
 
@@ -378,9 +378,9 @@ void TetherConnectorImpl::OnWifiConnection(
 void TetherConnectorImpl::RecordConnectTetheringOperationResult(
     const std::string& device_id,
     ConnectTetheringOperation::HostResponseErrorCode error_code) {
-  absl::optional<ConnectionToHostResult> result =
+  std::optional<ConnectionToHostResult> result =
       ConnectionToHostResult::INTERNAL_ERROR;
-  absl::optional<ConnectionToHostInternalError> internal_error = absl::nullopt;
+  std::optional<ConnectionToHostInternalError> internal_error = std::nullopt;
 
   switch (error_code) {
     case ConnectTetheringOperation::HostResponseErrorCode::PROVISIONING_FAILED:

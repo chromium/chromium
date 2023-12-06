@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_DRIVEFS_DRIVEFS_AUTH_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
 class GoogleServiceAuthError;
@@ -76,7 +76,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsAuth {
     return delegate_->IsMetricsCollectionEnabled();
   }
 
-  absl::optional<std::string> GetCachedAccessToken();
+  std::optional<std::string> GetCachedAccessToken();
 
   virtual void GetAccessToken(bool use_cached, AccessTokenCallback callback);
 

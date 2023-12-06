@@ -17,7 +17,7 @@ namespace ash {
 
 HotspotController::HotspotControlRequest::HotspotControlRequest(
     bool enabled,
-    absl::optional<hotspot_config::mojom::DisableReason> disable_reason,
+    std::optional<hotspot_config::mojom::DisableReason> disable_reason,
     HotspotControlCallback callback)
     : enabled(enabled),
       disable_reason(disable_reason),
@@ -60,8 +60,7 @@ void HotspotController::EnableHotspot(HotspotControlCallback callback) {
   }
   if (!current_enable_request_) {
     current_enable_request_ = std::make_unique<HotspotControlRequest>(
-        /*enabled=*/true, /*disable_reason=*/absl::nullopt,
-        std::move(callback));
+        /*enabled=*/true, /*disable_reason=*/std::nullopt, std::move(callback));
     if (hotspot_state_handler_->GetHotspotState() ==
         hotspot_config::mojom::HotspotState::kEnabled) {
       CompleteEnableRequest(
@@ -316,7 +315,7 @@ void HotspotController::OnHotspotStatusChanged() {
     return;
   }
 
-  absl::optional<hotspot_config::mojom::DisableReason> disable_reason =
+  std::optional<hotspot_config::mojom::DisableReason> disable_reason =
       hotspot_state_handler_->GetDisableReason();
   if (disable_reason) {
     NET_LOG(EVENT)

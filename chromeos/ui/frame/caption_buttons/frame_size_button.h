@@ -153,7 +153,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
   // right.
   bool in_snap_mode_ = false;
 
-  absl::optional<display::ScopedDisplayObserver> display_observer_;
+  std::optional<display::ScopedDisplayObserver> display_observer_;
 
   base::WeakPtrFactory<FrameSizeButton> weak_factory_{this};
 };

@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chromeos/ash/services/recording/lzw_pixel_color_indices_writer.h"
+
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -10,13 +13,11 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "chromeos/ash/services/recording/gif_file_writer.h"
-#include "chromeos/ash/services/recording/lzw_pixel_color_indices_writer.h"
 #include "chromeos/ash/services/recording/public/mojom/recording_service.mojom.h"
 #include "chromeos/ash/services/recording/recording_file_io_helper.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace recording {
 
@@ -77,7 +78,7 @@ TEST_F(LzwTest, VerifyOutputStream) {
 
   // Verify that the contents of the file are the expected output of the
   // encoder.
-  absl::optional<std::vector<uint8_t>> actual_file_contents =
+  std::optional<std::vector<uint8_t>> actual_file_contents =
       base::ReadFileToBytes(gif_path);
   ASSERT_TRUE(actual_file_contents.has_value());
   EXPECT_THAT(

@@ -20,7 +20,7 @@ void DeviceNameManager::RemoveObserver(Observer* observer) {
 
 void DeviceNameManager::NotifyDeviceNicknameChanged(
     const std::string& device_id,
-    const absl::optional<std::string>& nickname) {
+    const std::optional<std::string>& nickname) {
   for (auto& observer : observers_)
     observer.OnDeviceNicknameChanged(device_id, nickname);
 }

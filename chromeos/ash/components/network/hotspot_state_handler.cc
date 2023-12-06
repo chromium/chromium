@@ -99,7 +99,7 @@ HotspotStateHandler::GetHotspotState() const {
   return hotspot_state_;
 }
 
-const absl::optional<hotspot_config::mojom::DisableReason>
+const std::optional<hotspot_config::mojom::DisableReason>
 HotspotStateHandler::GetDisableReason() const {
   return disable_reason_;
 }
@@ -116,7 +116,7 @@ void HotspotStateHandler::OnPropertyChanged(const std::string& key,
 }
 
 void HotspotStateHandler::OnManagerProperties(
-    absl::optional<base::Value::Dict> properties) {
+    std::optional<base::Value::Dict> properties) {
   if (!properties) {
     NET_LOG(ERROR) << "HotspotStateHandler: Failed to get manager properties.";
     return;
@@ -168,7 +168,7 @@ void HotspotStateHandler::UpdateDisableReason(const base::Value::Dict& status) {
   const std::string* idle_reason =
       status.FindString(shill::kTetheringStatusIdleReasonProperty);
   if (!idle_reason) {
-    disable_reason_ = absl::nullopt;
+    disable_reason_ = std::nullopt;
     NET_LOG(EVENT) << "HotspotStateHandler: No string value for: "
                    << shill::kTetheringStatusIdleReasonProperty << " in "
                    << shill::kTetheringStatusProperty;

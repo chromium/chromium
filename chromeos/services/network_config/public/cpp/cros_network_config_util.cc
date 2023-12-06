@@ -10,10 +10,10 @@ namespace chromeos::network_config {
 
 namespace {
 
-absl::optional<std::string> GetString(const base::Value::Dict& onc_apn,
-                                      const char* key) {
+std::optional<std::string> GetString(const base::Value::Dict& onc_apn,
+                                     const char* key) {
   const std::string* v = onc_apn.FindString(key);
-  return v ? absl::make_optional<std::string>(*v) : absl::nullopt;
+  return v ? std::make_optional<std::string>(*v) : std::nullopt;
 }
 
 std::string GetRequiredString(const base::Value::Dict& onc_apn,
@@ -46,7 +46,7 @@ std::vector<std::string> GetRequiredStringList(const base::Value::Dict& dict,
 }
 
 mojom::ApnAuthenticationType OncApnAuthenticationTypeToMojo(
-    const absl::optional<std::string>& authentication_type) {
+    const std::optional<std::string>& authentication_type) {
   if (!authentication_type.has_value() || authentication_type->empty() ||
       authentication_type == ::onc::cellular_apn::kAuthenticationAutomatic) {
     return mojom::ApnAuthenticationType::kAutomatic;
@@ -63,8 +63,7 @@ mojom::ApnAuthenticationType OncApnAuthenticationTypeToMojo(
   return mojom::ApnAuthenticationType::kAutomatic;
 }
 
-mojom::ApnIpType OncApnIpTypeToMojo(
-    const absl::optional<std::string>& ip_type) {
+mojom::ApnIpType OncApnIpTypeToMojo(const std::optional<std::string>& ip_type) {
   if (!ip_type.has_value() || ip_type->empty() ||
       ip_type == ::onc::cellular_apn::kIpTypeAutomatic) {
     return mojom::ApnIpType::kAutomatic;
@@ -96,14 +95,14 @@ bool GetBoolean(const base::Value::Dict* dict,
   return v ? v->GetBool() : value_if_key_missing_from_dict;
 }
 
-absl::optional<std::string> GetString(const base::Value::Dict* dict,
-                                      const char* key) {
+std::optional<std::string> GetString(const base::Value::Dict* dict,
+                                     const char* key) {
   const base::Value* v = dict->Find(key);
   if (v && !v->is_string()) {
     NET_LOG(ERROR) << "Expected string, found: " << *v;
-    return absl::nullopt;
+    return std::nullopt;
   }
-  return v ? absl::make_optional(v->GetString()) : absl::nullopt;
+  return v ? std::make_optional(v->GetString()) : std::nullopt;
 }
 
 const base::Value::Dict* GetDictionary(const base::Value::Dict* dict,
@@ -128,7 +127,7 @@ ManagedDictionary GetManagedDictionary(const base::Value::Dict* onc_dict) {
         onc_dict->Find(::onc::kAugmentationActiveSetting)->Clone();
   }
 
-  absl::optional<std::string> effective =
+  std::optional<std::string> effective =
       GetString(onc_dict, ::onc::kAugmentationEffectiveSetting);
   if (!effective) {
     return result;

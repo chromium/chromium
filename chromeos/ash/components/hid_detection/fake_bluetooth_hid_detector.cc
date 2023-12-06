@@ -18,14 +18,14 @@ void FakeBluetoothHidDetector::SetInputDevicesStatus(
 
 const BluetoothHidDetector::BluetoothHidDetectionStatus
 FakeBluetoothHidDetector::GetBluetoothHidDetectionStatus() {
-  absl::optional<BluetoothHidMetadata> current_pairing_device;
+  std::optional<BluetoothHidMetadata> current_pairing_device;
   if (current_pairing_device_.has_value()) {
     current_pairing_device =
         BluetoothHidMetadata{current_pairing_device_.value().name,
                              current_pairing_device_.value().type};
   }
 
-  absl::optional<BluetoothHidPairingState> pairing_state;
+  std::optional<BluetoothHidPairingState> pairing_state;
   if (current_pairing_state_.has_value()) {
     pairing_state = BluetoothHidPairingState{
         current_pairing_state_.value().code,
@@ -43,7 +43,7 @@ void FakeBluetoothHidDetector::SimulatePairingStarted(
 }
 
 void FakeBluetoothHidDetector::SetPairingState(
-    absl::optional<BluetoothHidPairingState> pairing_state) {
+    std::optional<BluetoothHidPairingState> pairing_state) {
   current_pairing_state_ = std::move(pairing_state);
   NotifyBluetoothHidDetectionStatusChanged();
 }

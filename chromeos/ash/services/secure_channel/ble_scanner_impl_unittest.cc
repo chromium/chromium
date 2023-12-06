@@ -188,9 +188,9 @@ class SecureChannelBleScannerImplTest : public testing::Test {
       const std::string& service_data,
       multidevice::RemoteDeviceRef expected_remote_device,
       bool is_background_advertisement,
-      const absl::optional<
+      const std::optional<
           std::vector<std::pair<ConnectionMedium, ConnectionRole>>>&
-          expected_scan_results = absl::nullopt) {
+          expected_scan_results = std::nullopt) {
     std::vector<std::pair<ConnectionMedium, ConnectionRole>>
         new_expected_results =
             expected_scan_results.has_value()
@@ -261,7 +261,7 @@ class SecureChannelBleScannerImplTest : public testing::Test {
 
     if (success) {
       le_scan_delegate_->OnSessionStarted(scan_session_ptr_,
-                                          /*error_code=*/absl::nullopt);
+                                          /*error_code=*/std::nullopt);
     } else {
       le_scan_delegate_->OnSessionStarted(
           scan_session_ptr_,

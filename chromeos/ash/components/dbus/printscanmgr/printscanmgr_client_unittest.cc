@@ -293,7 +293,7 @@ TEST_F(PrintscanmgrClientTest, CupsAddManuallyConfiguredPrinter) {
   GetClient()->CupsAddManuallyConfiguredPrinter(
       CreateCupsAddManuallyConfiguredPrinterRequest(),
       base::BindLambdaForTesting(
-          [&](absl::optional<
+          [&](std::optional<
               printscanmgr::CupsAddManuallyConfiguredPrinterResponse> result) {
             ASSERT_TRUE(result.has_value());
             EXPECT_THAT(result.value(), EqualsProto(kExpectedResponse));
@@ -315,7 +315,7 @@ TEST_F(PrintscanmgrClientTest, NullResponseToCupsAddManuallyConfiguredPrinter) {
   GetClient()->CupsAddManuallyConfiguredPrinter(
       CreateCupsAddManuallyConfiguredPrinterRequest(),
       base::BindLambdaForTesting(
-          [&](absl::optional<
+          [&](std::optional<
               printscanmgr::CupsAddManuallyConfiguredPrinterResponse> result) {
             ASSERT_TRUE(result.has_value());
             EXPECT_THAT(result.value(), EqualsProto(kExpectedResponse));
@@ -339,7 +339,7 @@ TEST_F(PrintscanmgrClientTest,
   GetClient()->CupsAddManuallyConfiguredPrinter(
       CreateCupsAddManuallyConfiguredPrinterRequest(),
       base::BindLambdaForTesting(
-          [&](absl::optional<
+          [&](std::optional<
               printscanmgr::CupsAddManuallyConfiguredPrinterResponse> result) {
             ASSERT_TRUE(result.has_value());
             EXPECT_THAT(result.value(), EqualsProto(kExpectedResponse));
@@ -363,7 +363,7 @@ TEST_F(PrintscanmgrClientTest, CupsAddAutoConfiguredPrinter) {
   GetClient()->CupsAddAutoConfiguredPrinter(
       CreateCupsAddAutoConfiguredPrinterRequest(),
       base::BindLambdaForTesting(
-          [&](absl::optional<printscanmgr::CupsAddAutoConfiguredPrinterResponse>
+          [&](std::optional<printscanmgr::CupsAddAutoConfiguredPrinterResponse>
                   result) {
             ASSERT_TRUE(result.has_value());
             EXPECT_THAT(result.value(), EqualsProto(kExpectedResponse));
@@ -385,7 +385,7 @@ TEST_F(PrintscanmgrClientTest, NullResponseToCupsAddAutoConfiguredPrinter) {
   GetClient()->CupsAddAutoConfiguredPrinter(
       CreateCupsAddAutoConfiguredPrinterRequest(),
       base::BindLambdaForTesting(
-          [&](absl::optional<printscanmgr::CupsAddAutoConfiguredPrinterResponse>
+          [&](std::optional<printscanmgr::CupsAddAutoConfiguredPrinterResponse>
                   result) {
             ASSERT_TRUE(result.has_value());
             EXPECT_THAT(result.value(), EqualsProto(kExpectedResponse));
@@ -408,7 +408,7 @@ TEST_F(PrintscanmgrClientTest, EmptyResponseToCupsAddAutoConfiguredPrinter) {
   GetClient()->CupsAddAutoConfiguredPrinter(
       CreateCupsAddAutoConfiguredPrinterRequest(),
       base::BindLambdaForTesting(
-          [&](absl::optional<printscanmgr::CupsAddAutoConfiguredPrinterResponse>
+          [&](std::optional<printscanmgr::CupsAddAutoConfiguredPrinterResponse>
                   result) {
             ASSERT_TRUE(result.has_value());
             EXPECT_THAT(result.value(), EqualsProto(kExpectedResponse));
@@ -432,7 +432,7 @@ TEST_F(PrintscanmgrClientTest, CupsRemovePrinter) {
   GetClient()->CupsRemovePrinter(
       CreateCupsRemovePrinterRequest(),
       base::BindLambdaForTesting(
-          [&](absl::optional<printscanmgr::CupsRemovePrinterResponse> result) {
+          [&](std::optional<printscanmgr::CupsRemovePrinterResponse> result) {
             ASSERT_TRUE(result.has_value());
             EXPECT_THAT(result.value(), EqualsProto(kExpectedResponse));
             run_loop.Quit();
@@ -454,7 +454,7 @@ TEST_F(PrintscanmgrClientTest, NullResponseToCupsRemovePrinter) {
   GetClient()->CupsRemovePrinter(
       CreateCupsRemovePrinterRequest(),
       base::BindLambdaForTesting(
-          [&](absl::optional<printscanmgr::CupsRemovePrinterResponse> result) {
+          [&](std::optional<printscanmgr::CupsRemovePrinterResponse> result) {
             callback_called = true;
           }),
       base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
@@ -475,7 +475,7 @@ TEST_F(PrintscanmgrClientTest, EmptyResponseToCupsRemovePrinter) {
   GetClient()->CupsRemovePrinter(
       CreateCupsRemovePrinterRequest(),
       base::BindLambdaForTesting(
-          [&](absl::optional<printscanmgr::CupsRemovePrinterResponse> result) {
+          [&](std::optional<printscanmgr::CupsRemovePrinterResponse> result) {
             callback_called = true;
           }),
       base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
@@ -499,7 +499,7 @@ TEST_F(PrintscanmgrClientTest, CupsRetrievePpd) {
   GetClient()->CupsRetrievePrinterPpd(
       CreateCupsRetrievePpdRequest(),
       base::BindLambdaForTesting(
-          [&](absl::optional<printscanmgr::CupsRetrievePpdResponse> result) {
+          [&](std::optional<printscanmgr::CupsRetrievePpdResponse> result) {
             ASSERT_TRUE(result.has_value());
             EXPECT_THAT(result.value(), EqualsProto(kExpectedResponse));
             run_loop.Quit();
@@ -521,7 +521,7 @@ TEST_F(PrintscanmgrClientTest, NullResponseToCupsRetrievePpd) {
   GetClient()->CupsRetrievePrinterPpd(
       CreateCupsRetrievePpdRequest(),
       base::BindLambdaForTesting(
-          [&](absl::optional<printscanmgr::CupsRetrievePpdResponse> result) {
+          [&](std::optional<printscanmgr::CupsRetrievePpdResponse> result) {
             callback_called = true;
           }),
       base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
@@ -544,7 +544,7 @@ TEST_F(PrintscanmgrClientTest, EmptyResponseToCupsRetrievePpd) {
   GetClient()->CupsRetrievePrinterPpd(
       CreateCupsRetrievePpdRequest(),
       base::BindLambdaForTesting(
-          [&](absl::optional<printscanmgr::CupsRetrievePpdResponse> result) {
+          [&](std::optional<printscanmgr::CupsRetrievePpdResponse> result) {
             callback_called = true;
           }),
       base::BindLambdaForTesting([&]() { run_loop.Quit(); }));

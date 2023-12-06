@@ -201,7 +201,7 @@ void FakeRmadClient::AbortRma(
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback),
-                     absl::optional<rmad::AbortRmaReply>(abort_rma_reply_)));
+                     std::optional<rmad::AbortRmaReply>(abort_rma_reply_)));
 }
 
 void FakeRmadClient::GetLog(
@@ -209,7 +209,7 @@ void FakeRmadClient::GetLog(
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback),
-                     absl::optional<rmad::GetLogReply>(get_log_reply_)));
+                     std::optional<rmad::GetLogReply>(get_log_reply_)));
 }
 
 void FakeRmadClient::SaveLog(
@@ -219,7 +219,7 @@ void FakeRmadClient::SaveLog(
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback),
-                     absl::optional<rmad::SaveLogReply>(save_log_reply_)));
+                     std::optional<rmad::SaveLogReply>(save_log_reply_)));
 }
 
 void FakeRmadClient::RecordBrowserActionMetric(
@@ -229,7 +229,7 @@ void FakeRmadClient::RecordBrowserActionMetric(
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback),
-                     absl::optional<rmad::RecordBrowserActionMetricReply>(
+                     std::optional<rmad::RecordBrowserActionMetricReply>(
                          record_browser_action_metric_reply_)));
 }
 
@@ -250,7 +250,7 @@ void FakeRmadClient::ExtractExternalDiagnosticsApp(
       FROM_HERE,
       base::BindOnce(
           std::move(callback),
-          absl::optional<rmad::ExtractExternalDiagnosticsAppReply>(reply)));
+          std::optional<rmad::ExtractExternalDiagnosticsAppReply>(reply)));
 }
 
 void FakeRmadClient::InstallExtractedDiagnosticsApp(
@@ -267,7 +267,7 @@ void FakeRmadClient::InstallExtractedDiagnosticsApp(
       FROM_HERE,
       base::BindOnce(
           std::move(callback),
-          absl::optional<rmad::InstallExtractedDiagnosticsAppReply>(reply)));
+          std::optional<rmad::InstallExtractedDiagnosticsAppReply>(reply)));
 }
 
 void FakeRmadClient::GetInstalledDiagnosticsApp(
@@ -287,7 +287,7 @@ void FakeRmadClient::GetInstalledDiagnosticsApp(
       FROM_HERE,
       base::BindOnce(
           std::move(callback),
-          absl::optional<rmad::GetInstalledDiagnosticsAppReply>(reply)));
+          std::optional<rmad::GetInstalledDiagnosticsAppReply>(reply)));
 }
 
 void FakeRmadClient::AddObserver(Observer* observer) {

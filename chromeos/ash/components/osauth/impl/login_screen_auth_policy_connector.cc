@@ -4,12 +4,13 @@
 
 #include "chromeos/ash/components/osauth/impl/login_screen_auth_policy_connector.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/notreached.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -26,21 +27,21 @@ LoginScreenAuthPolicyConnector::LoginScreenAuthPolicyConnector(
 
 LoginScreenAuthPolicyConnector::~LoginScreenAuthPolicyConnector() = default;
 
-absl::optional<bool> LoginScreenAuthPolicyConnector::GetRecoveryInitialState(
+std::optional<bool> LoginScreenAuthPolicyConnector::GetRecoveryInitialState(
     const AccountId& account) {
   return !IsUserManaged(local_state_, account);
 }
 
-absl::optional<bool> LoginScreenAuthPolicyConnector::GetRecoveryDefaultState(
+std::optional<bool> LoginScreenAuthPolicyConnector::GetRecoveryDefaultState(
     const AccountId& account) {
   NOTIMPLEMENTED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<bool> LoginScreenAuthPolicyConnector::GetRecoveryMandatoryState(
+std::optional<bool> LoginScreenAuthPolicyConnector::GetRecoveryMandatoryState(
     const AccountId& account) {
   NOTIMPLEMENTED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool LoginScreenAuthPolicyConnector::IsAuthFactorManaged(

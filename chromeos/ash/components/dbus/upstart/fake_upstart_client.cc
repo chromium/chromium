@@ -36,8 +36,8 @@ FakeUpstartClient* FakeUpstartClient::Get() {
 
 FakeUpstartClient::StartJobResult::StartJobResult(
     bool success,
-    absl::optional<std::string> error_name,
-    absl::optional<std::string> error_message)
+    std::optional<std::string> error_name,
+    std::optional<std::string> error_message)
     : success(success),
       error_name(std::move(error_name)),
       error_message(std::move(error_message)) {}

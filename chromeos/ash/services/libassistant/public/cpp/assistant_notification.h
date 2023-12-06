@@ -5,11 +5,11 @@
 #ifndef CHROMEOS_ASH_SERVICES_LIBASSISTANT_PUBLIC_CPP_ASSISTANT_NOTIFICATION_H_
 #define CHROMEOS_ASH_SERVICES_LIBASSISTANT_PUBLIC_CPP_ASSISTANT_NOTIFICATION_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash::assistant {
@@ -80,7 +80,7 @@ struct COMPONENT_EXPORT(LIBASSISTANT_PUBLIC_STRUCTS) AssistantNotification {
 
   // When the notification should expire.
   // Expressed as milliseconds since Unix Epoch.
-  absl::optional<base::Time> expiry_time;
+  std::optional<base::Time> expiry_time;
 
   // If |true|, the notification will be removed on click.
   bool remove_on_click = true;

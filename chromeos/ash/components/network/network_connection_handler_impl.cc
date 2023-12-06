@@ -645,7 +645,7 @@ void NetworkConnectionHandlerImpl::OnConnectTimeout(ConnectRequest* request) {
 void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
     bool check_error_state,
     const std::string& service_path,
-    absl::optional<base::Value::Dict> properties) {
+    std::optional<base::Value::Dict> properties) {
   if (!properties) {
     HandleConfigurationFailure(
         service_path, "GetShillProperties failed",

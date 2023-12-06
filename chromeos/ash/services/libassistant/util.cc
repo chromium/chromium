@@ -166,13 +166,13 @@ base::FilePath GetBaseAssistantDir() {
 }
 
 std::string CreateLibAssistantConfig(
-    absl::optional<std::string> s3_server_uri_override,
-    absl::optional<std::string> device_id_override) {
+    std::optional<std::string> s3_server_uri_override,
+    std::optional<std::string> device_id_override) {
   using Value = base::Value;
 
   Value::Dict config;
 
-  absl::optional<std::string> version = chromeos::version_loader::GetVersion(
+  std::optional<std::string> version = chromeos::version_loader::GetVersion(
       chromeos::version_loader::VERSION_FULL);
   config.Set("device",
              Value::Dict()

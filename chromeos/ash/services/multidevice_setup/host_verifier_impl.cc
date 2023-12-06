@@ -120,7 +120,7 @@ HostVerifierImpl::~HostVerifierImpl() {
 }
 
 bool HostVerifierImpl::IsHostVerified() {
-  absl::optional<multidevice::RemoteDeviceRef> current_host =
+  std::optional<multidevice::RemoteDeviceRef> current_host =
       host_backend_delegate_->GetMultiDeviceHostFromBackend();
   if (!current_host)
     return false;
@@ -258,7 +258,7 @@ void HostVerifierImpl::StartRetryTimer(const base::Time& time_to_fire) {
 }
 
 void HostVerifierImpl::AttemptHostVerification() {
-  absl::optional<multidevice::RemoteDeviceRef> current_host =
+  std::optional<multidevice::RemoteDeviceRef> current_host =
       host_backend_delegate_->GetMultiDeviceHostFromBackend();
   if (!current_host) {
     PA_LOG(WARNING) << "HostVerifierImpl::AttemptHostVerification(): Cannot "

@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/network/profile_policies.h"
 
 #include <iterator>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -18,7 +19,6 @@
 #include "chromeos/components/onc/variable_expander.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/onc/onc_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -123,7 +123,7 @@ ProfilePolicies::NetworkPolicy::GetPolicyWithRuntimeValues() const {
 
 ProfilePolicies::ChangeEffect
 ProfilePolicies::NetworkPolicy::ReapplyRuntimeValues() {
-  absl::optional<base::Value::Dict> old_policy_with_runtime_values =
+  std::optional<base::Value::Dict> old_policy_with_runtime_values =
       std::move(policy_with_runtime_values_);
 
   policy_with_runtime_values_ = parent_->runtime_values_setter_.Run(

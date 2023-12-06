@@ -5,8 +5,9 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_REPORT_UTILS_TIME_UTILS_H_
 #define CHROMEOS_ASH_COMPONENTS_REPORT_UTILS_TIME_UTILS_H_
 
+#include <optional>
+
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Clock;
@@ -20,13 +21,13 @@ namespace ash::report::utils {
 base::Time ConvertGmtToPt(base::Clock* clock);
 
 // Return first UTC midnight of the previous month of |ts|.
-absl::optional<base::Time> GetPreviousMonth(base::Time ts);
+std::optional<base::Time> GetPreviousMonth(base::Time ts);
 
 // Return first UTC midnight of the next month of |ts|.
-absl::optional<base::Time> GetNextMonth(base::Time ts);
+std::optional<base::Time> GetNextMonth(base::Time ts);
 
 // Return the first UTC midnight of the previous year of |ts|.
-absl::optional<base::Time> GetPreviousYear(base::Time ts);
+std::optional<base::Time> GetPreviousYear(base::Time ts);
 
 // Return if |ts1| and |ts2| have the same month and year.
 bool IsSameYearAndMonth(base::Time ts1, base::Time ts2);

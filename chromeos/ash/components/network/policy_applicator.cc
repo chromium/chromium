@@ -268,7 +268,7 @@ void PolicyApplicator::GetEntryCallback(const std::string& entry_identifier,
     if (ash::features::IsSmdsSupportEnabled()) {
       const std::string* name =
           new_policy->FindString(::onc::network_config::kName);
-      absl::optional<policy_util::SmdxActivationCode> activation_code =
+      std::optional<policy_util::SmdxActivationCode> activation_code =
           policy_util::GetSmdxActivationCodeFromONC(*new_policy);
       if (managed_cellular_pref_handler_ && iccid && name &&
           activation_code.has_value()) {

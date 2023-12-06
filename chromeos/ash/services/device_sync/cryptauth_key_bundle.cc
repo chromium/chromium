@@ -59,7 +59,7 @@ std::string CryptAuthKeyBundle::KeyBundleNameEnumToString(
 }
 
 // static
-absl::optional<CryptAuthKeyBundle::Name>
+std::optional<CryptAuthKeyBundle::Name>
 CryptAuthKeyBundle::KeyBundleNameStringToEnum(const std::string& name) {
   if (name == kCryptAuthUserKeyPairName)
     return CryptAuthKeyBundle::Name::kUserKeyPair;
@@ -70,45 +70,45 @@ CryptAuthKeyBundle::KeyBundleNameStringToEnum(const std::string& name) {
   if (name == kDeviceSyncBetterTogetherGroupKeyName)
     return CryptAuthKeyBundle::Name::kDeviceSyncBetterTogetherGroupKey;
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // static
-absl::optional<CryptAuthKeyBundle> CryptAuthKeyBundle::FromDictionary(
+std::optional<CryptAuthKeyBundle> CryptAuthKeyBundle::FromDictionary(
     const base::Value::Dict& dict) {
   const std::string* name_string = dict.FindString(kBundleNameDictKey);
   if (!name_string)
-    return absl::nullopt;
+    return std::nullopt;
 
-  absl::optional<CryptAuthKeyBundle::Name> name =
+  std::optional<CryptAuthKeyBundle::Name> name =
       KeyBundleNameStringToEnum(*name_string);
   if (!name)
-    return absl::nullopt;
+    return std::nullopt;
 
   CryptAuthKeyBundle bundle(*name);
 
   const base::Value::List* keys = dict.FindList(kKeyListDictKey);
   if (!keys)
-    return absl::nullopt;
+    return std::nullopt;
 
   bool active_key_exists = false;
   for (const base::Value& key_dict : *keys) {
-    absl::optional<CryptAuthKey> key =
+    std::optional<CryptAuthKey> key =
         CryptAuthKey::FromDictionary(key_dict.GetDict());
     if (!key)
-      return absl::nullopt;
+      return std::nullopt;
 
     // Return nullopt if there are multiple active keys.
     if (key->status() == CryptAuthKey::Status::kActive) {
       if (active_key_exists)
-        return absl::nullopt;
+        return std::nullopt;
 
       active_key_exists = true;
     }
 
     // Return nullopt if duplicate handles exist.
     if (base::Contains(bundle.handle_to_key_map(), key->handle()))
-      return absl::nullopt;
+      return std::nullopt;
 
     bundle.AddKey(*key);
   }
@@ -116,11 +116,11 @@ absl::optional<CryptAuthKeyBundle> CryptAuthKeyBundle::FromDictionary(
   const base::Value* encoded_serialized_key_directive =
       dict.Find(kKeyDirectiveDictKey);
   if (encoded_serialized_key_directive) {
-    absl::optional<cryptauthv2::KeyDirective> key_directive =
+    std::optional<cryptauthv2::KeyDirective> key_directive =
         util::DecodeProtoMessageFromValueString<cryptauthv2::KeyDirective>(
             encoded_serialized_key_directive);
     if (!key_directive)
-      return absl::nullopt;
+      return std::nullopt;
 
     bundle.set_key_directive(*key_directive);
   }

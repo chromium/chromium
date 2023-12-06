@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_FEDERATED_PUBLIC_CPP_FAKE_SERVICE_CONNECTION_H_
 #define CHROMEOS_ASH_SERVICES_FEDERATED_PUBLIC_CPP_FAKE_SERVICE_CONNECTION_H_
 
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -13,7 +14,6 @@
 #include "chromeos/ash/services/federated/public/mojom/federated_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace federated {
@@ -42,7 +42,7 @@ class FakeServiceConnectionImpl
   void ReportExample(const std::string& client_name,
                      chromeos::federated::mojom::ExamplePtr example) override;
   void StartScheduling(
-      const absl::optional<base::flat_map<std::string, std::string>>&
+      const std::optional<base::flat_map<std::string, std::string>>&
           client_launch_stage) override;
 
  private:

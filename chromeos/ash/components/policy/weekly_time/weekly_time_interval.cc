@@ -46,7 +46,7 @@ bool WeeklyTimeInterval::Contains(const WeeklyTime& w) const {
 // static
 std::unique_ptr<WeeklyTimeInterval> WeeklyTimeInterval::ExtractFromProto(
     const em::WeeklyTimeIntervalProto& container,
-    absl::optional<int> timezone_offset) {
+    std::optional<int> timezone_offset) {
   if (!container.has_start() || !container.has_end()) {
     LOG(WARNING) << "Interval without start or/and end.";
     return nullptr;
@@ -61,7 +61,7 @@ std::unique_ptr<WeeklyTimeInterval> WeeklyTimeInterval::ExtractFromProto(
 // static
 std::unique_ptr<WeeklyTimeInterval> WeeklyTimeInterval::ExtractFromDict(
     const base::Value::Dict& dict,
-    absl::optional<int> timezone_offset) {
+    std::optional<int> timezone_offset) {
   const base::Value* start_value = dict.Find(kStart);
   if (!start_value) {
     LOG(WARNING) << "Interval without start.";

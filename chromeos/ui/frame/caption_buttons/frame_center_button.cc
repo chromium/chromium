@@ -87,7 +87,7 @@ void FrameCenterButton::SetSubImage(const gfx::VectorIcon& icon_definition) {
     parent()->InvalidateLayout();
 }
 
-void FrameCenterButton::SetText(absl::optional<std::u16string> text) {
+void FrameCenterButton::SetText(std::optional<std::u16string> text) {
   if (text_ && text_->text() == text)
     return;
 
@@ -167,8 +167,8 @@ void FrameCenterButton::DrawIconContents(gfx::Canvas* canvas,
                                          int x,
                                          int y,
                                          cc::PaintFlags flags) {
-  absl::optional<gfx::ImageSkia> left_icon = icon_image();
-  absl::optional<gfx::ImageSkia> right_icon = sub_icon_image_;
+  std::optional<gfx::ImageSkia> left_icon = icon_image();
+  std::optional<gfx::ImageSkia> right_icon = sub_icon_image_;
   const bool is_rtl = base::i18n::IsRTL();
   if (is_rtl) {
     std::swap(left_icon, right_icon);

@@ -55,8 +55,8 @@ void TokenHolder::FailInitialization() {
 
 //==============================================================================
 
-bool KeyPermissionsEqual(const absl::optional<chaps::KeyPermissions>& a,
-                         const absl::optional<chaps::KeyPermissions>& b) {
+bool KeyPermissionsEqual(const std::optional<chaps::KeyPermissions>& a,
+                         const std::optional<chaps::KeyPermissions>& b) {
   if (!a.has_value() || !b.has_value()) {
     return (a.has_value() == b.has_value());
   }

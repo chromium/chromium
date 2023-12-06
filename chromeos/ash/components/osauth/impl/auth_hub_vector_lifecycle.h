@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_AUTH_HUB_VECTOR_LIFECYCLE_H_
 #define CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_AUTH_HUB_VECTOR_LIFECYCLE_H_
 
+#include <optional>
+
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
@@ -12,7 +14,6 @@
 #include "chromeos/ash/components/osauth/impl/auth_hub_common.h"
 #include "chromeos/ash/components/osauth/public/auth_factor_engine.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -89,10 +90,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHubVectorLifecycle
 
   Stage stage_ = Stage::kIdle;
 
-  absl::optional<AuthAttemptVector> current_attempt_;
-  absl::optional<AuthAttemptVector> target_attempt_;
-  absl::optional<AuthAttemptVector> initializing_for_;
-  absl::optional<AuthAttemptVector> last_started_attempt_;
+  std::optional<AuthAttemptVector> current_attempt_;
+  std::optional<AuthAttemptVector> target_attempt_;
+  std::optional<AuthAttemptVector> initializing_for_;
+  std::optional<AuthAttemptVector> last_started_attempt_;
 
   AuthEnginesMap available_engines_;
 

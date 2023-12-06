@@ -6,10 +6,10 @@
 #define CHROMEOS_ASH_COMPONENTS_GROWTH_CAMPAIGNS_MODEL_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/component_export.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Time;
@@ -135,8 +135,8 @@ class TargetingBase {
 
  protected:
   const base::Value::List* GetListCriteria(const char* path_suffix) const;
-  const absl::optional<bool> GetBoolCriteria(const char* path_suffix) const;
-  const absl::optional<int> GetIntCriteria(const char* path_suffix) const;
+  const std::optional<bool> GetBoolCriteria(const char* path_suffix) const;
+  const std::optional<int> GetIntCriteria(const char* path_suffix) const;
   const std::string* GetStringCriteria(const char* path_suffix) const;
 
  private:
@@ -171,8 +171,8 @@ class DemoModeTargeting : public TargetingBase {
   const base::Value::List* GetCountries() const;
   const std::string* GetAppMinVersion() const;
   const std::string* GetAppMaxVersion() const;
-  const absl::optional<bool> TargetCloudGamingDevice() const;
-  const absl::optional<bool> TargetFeatureAwareDevice() const;
+  const std::optional<bool> TargetCloudGamingDevice() const;
+  const std::optional<bool> TargetFeatureAwareDevice() const;
 };
 
 // Wrapper around Device targeting dictionary. The structure looks like:
@@ -191,8 +191,8 @@ class DeviceTargeting : public TargetingBase {
   ~DeviceTargeting();
 
   const base::Value::List* GetLocales() const;
-  const absl::optional<int> GetMinMilestone() const;
-  const absl::optional<int> GetMaxMilestone() const;
+  const std::optional<int> GetMinMilestone() const;
+  const std::optional<int> GetMaxMilestone() const;
 };
 
 // Wrapper around scheduling targeting dictionary.

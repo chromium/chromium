@@ -105,7 +105,7 @@ class FakePhoneHubManager : public PhoneHubManager {
 
   FakeIconDecoder* fake_icon_decoder() { return &fake_icon_decoder_; }
 
-  void set_host_last_seen_timestamp(absl::optional<base::Time> timestamp) {
+  void set_host_last_seen_timestamp(std::optional<base::Time> timestamp) {
     host_last_seen_timestamp_ = timestamp;
   }
 
@@ -135,7 +135,7 @@ class FakePhoneHubManager : public PhoneHubManager {
   ConnectionScheduler* GetConnectionScheduler() override;
   UserActionRecorder* GetUserActionRecorder() override;
   void GetHostLastSeenTimestamp(
-      base::OnceCallback<void(absl::optional<base::Time>)> callback) override;
+      base::OnceCallback<void(std::optional<base::Time>)> callback) override;
   IconDecoder* GetIconDecoder() override;
   AppStreamManager* GetAppStreamManager() override;
   PhoneHubUiReadinessRecorder* GetPhoneHubUiReadinessRecorder() override;
@@ -174,7 +174,7 @@ class FakePhoneHubManager : public PhoneHubManager {
       eche_connection_status_handler_ = nullptr;
   raw_ptr<eche_app::SystemInfoProvider, DanglingUntriaged | ExperimentalAsh>
       system_info_provider_ = nullptr;
-  absl::optional<base::Time> host_last_seen_timestamp_ = absl::nullopt;
+  std::optional<base::Time> host_last_seen_timestamp_ = std::nullopt;
 };
 
 }  // namespace phonehub

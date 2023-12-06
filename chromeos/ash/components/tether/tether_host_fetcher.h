@@ -6,11 +6,11 @@
 #define CHROMEOS_ASH_COMPONENTS_TETHER_TETHER_HOST_FETCHER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -48,7 +48,7 @@ class TetherHostFetcher {
 
   // Fetches the tether host with the ID |device_id|.
   using TetherHostCallback =
-      base::OnceCallback<void(absl::optional<multidevice::RemoteDeviceRef>)>;
+      base::OnceCallback<void(std::optional<multidevice::RemoteDeviceRef>)>;
   virtual void FetchTetherHost(const std::string& device_id,
                                TetherHostCallback callback) = 0;
 

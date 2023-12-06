@@ -5,6 +5,7 @@
 #include "chromeos/ash/services/multidevice_setup/feature_state_manager_impl.h"
 
 #include <array>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
@@ -20,7 +21,6 @@
 #include "chromeos/ash/services/multidevice_setup/global_state_feature_manager.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -424,7 +424,7 @@ bool FeatureStateManagerImpl::IsSupportedByChromebook(mojom::Feature feature) {
            multidevice::SoftwareFeature::kWifiSyncClient},
           {mojom::Feature::kEche, multidevice::SoftwareFeature::kEcheClient}};
 
-  absl::optional<multidevice::RemoteDeviceRef> local_device =
+  std::optional<multidevice::RemoteDeviceRef> local_device =
       device_sync_client_->GetLocalDeviceMetadata();
   if (!local_device) {
     PA_LOG(ERROR) << "FeatureStateManagerImpl::" << __func__

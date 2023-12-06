@@ -75,7 +75,7 @@ void FakeTcpSocketFactory::CreateTCPServerSocket(
       [local_addr, port, socket = std::move(socket),
        callback = std::move(callback)](int32_t result) mutable {
         if (result != net::OK) {
-          std::move(callback).Run(result, /*local_addr_out=*/absl::nullopt);
+          std::move(callback).Run(result, /*local_addr_out=*/std::nullopt);
           return;
         }
 
@@ -98,7 +98,7 @@ void FakeTcpSocketFactory::CreateTCPServerSocket(
 
 void FakeTcpSocketFactory::CreateTCPConnectedSocket(
     base::TimeDelta timeout,
-    const absl::optional<net::IPEndPoint>& local_addr,
+    const std::optional<net::IPEndPoint>& local_addr,
     const net::AddressList& remote_addr_list,
     network::mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
@@ -111,8 +111,8 @@ void FakeTcpSocketFactory::CreateTCPConnectedSocket(
            remote_addr = remote_addr_list[0], socket = std::move(socket),
            callback = std::move(callback)](int32_t result) mutable {
             if (result != net::OK) {
-              std::move(callback).Run(result, /*local_addr=*/absl::nullopt,
-                                      /*peer_addr=*/absl::nullopt,
+              std::move(callback).Run(result, /*local_addr=*/std::nullopt,
+                                      /*peer_addr=*/std::nullopt,
                                       mojo::ScopedDataPipeConsumerHandle(),
                                       mojo::ScopedDataPipeProducerHandle());
               return;
