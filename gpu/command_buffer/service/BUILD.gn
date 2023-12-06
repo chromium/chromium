@@ -404,6 +404,7 @@ target(link_target_type, "gles2_sources") {
     "//third_party/re2",
     "//third_party/zlib",
     "//ui/base:features",
+    "//ui/base:ozone_buildflags",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/gl",

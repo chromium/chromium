@@ -31,6 +31,7 @@
 #include "gpu/command_buffer/service/shared_image/wrapped_sk_image_backing_factory.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_shared_memory.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -445,11 +446,11 @@ bool SharedImageFactory::IsNativeBufferSupported(gfx::BufferFormat format,
   if (!supported_gmb_configurations_inited_) {
     supported_gmb_configurations_inited_ = true;
     if (WillGetGmbConfigFromGpu()) {
-#if defined(USE_OZONE_PLATFORM_X11)
+#if BUILDFLAG(IS_OZONE_X11)
       for (const auto& config : gpu_extra_info_.gpu_memory_buffer_support_x11) {
         supported_gmb_configurations_.emplace(config);
       }
-#endif
+#endif  // BUILDFLAG(IS_OZONE_X11)
     } else {
       supported_gmb_configurations_ =
           gpu::GpuMemoryBufferSupport::GetNativeGpuMemoryBufferConfigurations();
