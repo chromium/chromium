@@ -1247,10 +1247,6 @@ cc_library(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":str_format_internal",
-        ":string_view",
-        "//absl/base:config",
-        "//absl/base:core_headers",
-        "//absl/types:span",
     ],
 )
 
@@ -1281,7 +1277,6 @@ cc_library(
         ":strings",
         "//absl/base:config",
         "//absl/base:core_headers",
-        "//absl/container:fixed_array",
         "//absl/container:inlined_vector",
         "//absl/functional:function_ref",
         "//absl/meta:type_traits",
@@ -1335,7 +1330,6 @@ cc_test(
     deps = [
         ":str_format",
         ":str_format_internal",
-        "//absl/base:config",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
@@ -1372,16 +1366,12 @@ cc_test(
     copts = ABSL_TEST_COPTS,
     visibility = ["//visibility:private"],
     deps = [
-        ":str_format",
         ":str_format_internal",
         ":strings",
-        "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/base:raw_logging_internal",
         "//absl/log",
-        "//absl/numeric:int128",
         "//absl/types:optional",
-        "//absl/types:span",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
@@ -1407,8 +1397,6 @@ cc_test(
     visibility = ["//visibility:private"],
     deps = [
         ":str_format_internal",
-        ":string_view",
-        "//absl/base:config",
         "//absl/base:core_headers",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
