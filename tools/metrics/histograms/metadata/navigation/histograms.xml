@@ -571,27 +571,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation.DownloadPolicy.LogArbitraryPolicyPerDownload"
-    enum="NavigationDownloadPolicy" expires_after="2020-11-01">
-  <owner>csharrison@chromium.org</owner>
-  <owner>yaoxia@chromium.org</owner>
-  <summary>
-    When a navigation results in a download, logs the download policy applied to
-    that navigation. This is logged once per download and when multiple policies
-    exist, an arbitrary one will be chosen.
-  </summary>
-</histogram>
-
-<histogram name="Navigation.DownloadPolicy.LogPerPolicyApplied"
-    enum="NavigationDownloadPolicy" expires_after="2020-11-01">
-  <owner>csharrison@chromium.org</owner>
-  <owner>yaoxia@chromium.org</owner>
-  <summary>
-    When a navigation results in a download, for each download policy applied to
-    that navigation, logs the policy.
-  </summary>
-</histogram>
-
 <histogram name="Navigation.Earlyhints.EarlyHintsToResponseStartTime"
     units="ms" expires_after="2024-01-28">
   <owner>bashi@chromium.org</owner>

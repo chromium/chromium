@@ -4024,10 +4024,6 @@ void NavigationRequest::OnResponseStarted(
     net::NetworkAnonymizationKey network_anonymization_key,
     absl::optional<SubresourceLoaderParams> subresource_loader_params,
     EarlyHints early_hints) {
-  if (is_download) {
-    download_policy().RecordHistogram();
-  }
-
   ScopedCrashKeys crash_keys(*this);
 
   // The |loader_|'s job is finished. It must not call the NavigationRequest

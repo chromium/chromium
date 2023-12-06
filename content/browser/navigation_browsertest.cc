@@ -1651,8 +1651,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, IPCFlood_Navigation) {
 }
 
 // TODO(http://crbug.com/632514): This test currently expects opener downloads
-// go through and UMA is logged, but when the linked bug is resolved the
-// download should be disallowed.
+// go through, but when the linked bug is resolved the download should be
+// disallowed.
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, OpenerNavigation_DownloadPolicy) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir download_dir;
@@ -1680,10 +1680,6 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, OpenerNavigation_DownloadPolicy) {
       "window.opener.location ='data:html/text;base64,'+btoa('payload');",
       EXECUTE_SCRIPT_NO_USER_GESTURE));
   observer.WaitForFinished();
-
-  // Implies NavigationDownloadType::kOpenerCrossOrigin has 0 count.
-  histograms.ExpectUniqueSample("Navigation.DownloadPolicy.LogPerPolicyApplied",
-                                blink::NavigationDownloadType::kNoGesture, 1);
 }
 
 // A variation of the OpenerNavigation_DownloadPolicy test above, but uses a
@@ -1724,10 +1720,6 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   ASSERT_TRUE(manager.WaitForNavigationFinished());
 
   EXPECT_FALSE(manager.was_successful());
-
-  histograms.ExpectBucketCount(
-      "Navigation.DownloadPolicy.LogPerPolicyApplied",
-      blink::NavigationDownloadType::kOpenerCrossOrigin, 1);
 }
 
 // Regression test for https://crbug.com/872284.

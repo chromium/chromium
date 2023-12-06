@@ -39904,18 +39904,6 @@ Called by update_use_counter_css.py.-->
   <int value="4" label="Disable cache"/>
 </enum>
 
-<enum name="NavigationDownloadPolicy">
-  <int value="0" label="DefaultAllowed"/>
-  <int value="1" label="View-source"/>
-  <int value="2" label="Interstitial"/>
-  <int value="5" label="Opener x-origin"/>
-  <int value="7" label="Sandbox no gesture"/>
-  <int value="8" label="Ad frame no gesture"/>
-  <int value="10" label="Ad frame"/>
-  <int value="11" label="Sandbox"/>
-  <int value="12" label="No gesture"/>
-</enum>
-
 <enum name="NavigationIsGuest">
   <int value="0" label="Not a guest navigation"/>
   <int value="1" label="Guest navigation"/>
