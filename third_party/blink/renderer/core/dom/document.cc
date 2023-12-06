@@ -263,7 +263,6 @@
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
-#include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_critical_path_predictor.h"
 #include "third_party/blink/renderer/core/loader/anchor_element_interaction_tracker.h"
 #include "third_party/blink/renderer/core/loader/cookie_jar.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
@@ -3988,10 +3987,6 @@ bool Document::CheckCompletedInternal() {
       // anchors.
       View()->ScheduleAnimation();
     }
-  }
-
-  if (LCPCriticalPathPredictor* lcpp = GetFrame()->GetLCPP()) {
-    lcpp->OnOutermostMainFrameDocumentLoad();
   }
 
   return true;
@@ -9207,6 +9202,18 @@ void Document::RunPostPrerenderingActivationSteps() {
   for (auto& callback : post_prerendering_activation_callbacks_)
     std::move(callback).Run();
   post_prerendering_activation_callbacks_.clear();
+}
+
+void Document::AddLCPPredictedCallback(LCPCallback callback) {
+  lcp_predicted_callbacks_.push_back(std::move(callback));
+}
+
+void Document::RunLCPPredictedCallbacks(const Element& lcp_element) {
+  Vector<LCPCallback> callbacks;
+  callbacks.swap(lcp_predicted_callbacks_);
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(lcp_element);
+  }
 }
 
 bool Document::InStyleRecalc() const {

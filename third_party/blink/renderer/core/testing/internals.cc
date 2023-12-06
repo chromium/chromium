@@ -124,7 +124,6 @@
 #include "third_party/blink/renderer/core/layout/layout_tree_as_text.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/lcp_critical_path_predictor/element_locator.h"
-#include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_critical_path_predictor.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/core/loader/history_item.h"
@@ -621,9 +620,8 @@ TestWritableStreamSink::Optimizer::PerformInProcessOptimization(
 }
 
 void OnLCPPredicted(ScriptPromiseResolver* resolver,
-                    const Element* lcp_element) {
-  const ElementLocator locator =
-      lcp_element ? element_locator::OfElement(*lcp_element) : ElementLocator();
+                    const Element& lcp_element) {
+  const ElementLocator locator = element_locator::OfElement(lcp_element);
   resolver->Resolve(element_locator::ToStringForTesting(locator));
 }
 
@@ -4033,9 +4031,7 @@ ScriptPromise Internals::LCPPrediction(ScriptState* script_state,
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  LCPCriticalPathPredictor* lcpp = document->GetFrame()->GetLCPP();
-  CHECK(lcpp);
-  lcpp->AddLCPPredictedCallback(
+  document->AddLCPPredictedCallback(
       WTF::BindOnce(&OnLCPPredicted, WrapPersistent(resolver)));
   return promise;
 }

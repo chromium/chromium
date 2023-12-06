@@ -1946,6 +1946,10 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void AddPostPrerenderingActivationStep(base::OnceClosure callback);
 
+  using LCPCallback = base::OnceCallback<void(const Element&)>;
+  void AddLCPPredictedCallback(LCPCallback callback);
+  void RunLCPPredictedCallbacks(const Element& lcp_element);
+
   class CORE_EXPORT PaintPreviewScope {
     STACK_ALLOCATED();
 
@@ -2278,6 +2282,10 @@ class CORE_EXPORT Document : public ContainerNode,
   // The callback list for post-prerendering activation step.
   // https://wicg.github.io/nav-speculation/prerendering.html#document-post-prerendering-activation-steps-list
   Vector<base::OnceClosure> post_prerendering_activation_callbacks_;
+
+  // Callbacks are called when predicted LCP is painted. Never called if
+  // prediction is incorrect.
+  Vector<LCPCallback> lcp_predicted_callbacks_;
 
   bool evaluate_media_queries_on_style_recalc_;
 
