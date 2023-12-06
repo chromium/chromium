@@ -25,6 +25,7 @@ tools/metrics/histograms/metadata/bookmarks/enums.xml
 tools/metrics/histograms/metadata/bookmarks/histograms.xml
 tools/metrics/histograms/metadata/borealis/enums.xml
 tools/metrics/histograms/metadata/borealis/histograms.xml
+tools/metrics/histograms/metadata/browser/enums.xml
 tools/metrics/histograms/metadata/browser/histograms.xml
 tools/metrics/histograms/metadata/browsing_topics/enums.xml
 tools/metrics/histograms/metadata/browsing_topics/histograms.xml
