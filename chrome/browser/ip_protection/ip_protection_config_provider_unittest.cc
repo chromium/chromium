@@ -725,6 +725,36 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyListProxyChains) {
               testing::Optional(testing::ElementsAreArray(proxy_list)));
 }
 
+TEST_F(IpProtectionConfigProviderTest, ProxyOverrideFlagsAll) {
+  std::vector<std::vector<std::string>> proxy_override_list = {
+      {"proxyAOverride", "proxyBOverride"},
+      {"proxyAOverride", "proxyBOverride"},
+  };
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kEnableIpProtectionProxy,
+      {
+          {net::features::kIpPrivacyUseProxyChains.name, "true"},
+          {net::features::kIpPrivacyProxyAHostnameOverride.name,
+           proxy_override_list[0][0]},
+          {net::features::kIpPrivacyProxyBHostnameOverride.name,
+           proxy_override_list[0][1]},
+      });
+  std::vector<std::vector<std::string>> proxy_list = {{"proxyA1", "proxyB1"},
+                                                      {"proxyA2", "proxyB2"}};
+  getter_->SetUpForTesting(
+      std::make_unique<MockIpProtectionConfigHttp>(proxy_list), bsa_.get());
+
+  base::test::TestFuture<
+      const absl::optional<std::vector<std::vector<std::string>>>&>
+      proxy_list_future;
+  getter_->GetProxyList(proxy_list_future.GetCallback());
+  ASSERT_TRUE(proxy_list_future.Wait()) << "GetProxyList did not call back";
+  EXPECT_THAT(
+      proxy_list_future.Get(),
+      testing::Optional(testing::ElementsAreArray(proxy_override_list)));
+}
+
 TEST_F(IpProtectionConfigProviderTest, GetProxyListFailure) {
   base::test::TestFuture<
       const absl::optional<std::vector<std::vector<std::string>>>&>

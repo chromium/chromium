@@ -408,6 +408,14 @@ const base::FeatureParam<bool> kIpPrivacyUseProxyChains{
     &kEnableIpProtectionProxy, /*name=*/"IpPrivacyUseProxyChains",
     /*default_value=*/false};
 
+const base::FeatureParam<std::string> kIpPrivacyProxyAHostnameOverride{
+    &kEnableIpProtectionProxy, /*name=*/"IpPrivacyProxyAHostnameOverride",
+    /*default_value=*/""};
+
+const base::FeatureParam<std::string> kIpPrivacyProxyBHostnameOverride{
+    &kEnableIpProtectionProxy, /*name=*/"IpPrivacyProxyBHostnameOverride",
+    /*default_value=*/""};
+
 // Network-change migration requires NetworkHandle support, which are currently
 // only supported on Android (see
 // NetworkChangeNotifier::AreNetworkHandlesSupported).

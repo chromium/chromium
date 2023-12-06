@@ -116,11 +116,24 @@ void IpProtectionConfigProvider::GetProxyList(GetProxyListCallback callback) {
         std::vector<std::vector<std::string>> proxy_list;
         if (net::features::kIpPrivacyUseProxyChains.Get()) {
           for (const auto& proxy_chain : response->proxy_chain()) {
-            std::vector<std::string> proxies = {proxy_chain.proxy_a()};
-            // TODO(crbug.com/1491092): Remove check once proxy_b is populated
-            // by Phosphor.
-            if (!proxy_chain.proxy_b().empty()) {
-              proxies.emplace_back(proxy_chain.proxy_b());
+            std::vector<std::string> proxies = {};
+            if (const std::string a_override =
+                    net::features::kIpPrivacyProxyAHostnameOverride.Get();
+                a_override != "") {
+              proxies.push_back(a_override);
+            } else {
+              proxies.push_back(proxy_chain.proxy_a());
+            }
+            if (const std::string b_override =
+                    net::features::kIpPrivacyProxyBHostnameOverride.Get();
+                b_override != "") {
+              proxies.push_back(b_override);
+            } else {
+              // TODO(crbug.com/1491092): Remove check once proxy_b is populated
+              // by Phosphor.
+              if (!proxy_chain.proxy_b().empty()) {
+                proxies.push_back(proxy_chain.proxy_b());
+              }
             }
             proxy_list.push_back(std::move(proxies));
           }
