@@ -1897,7 +1897,7 @@
   {
     "name": "drop-input-events-before-first-paint",
     "owners": [ "mustaq@chromium.org", "blink-interactions-team@google.com" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 126
   },
   {
     "name": "dropdown-panel",
