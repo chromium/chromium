@@ -5234,6 +5234,61 @@ TEST_F(MLGraphBuilderTest, LeakyReluTest) {
   }
 }
 
+MLOperand* BuildLinear(V8TestingScope& scope,
+                       MLGraphBuilder* builder,
+                       const MLOperand* input,
+                       const MLLinearOptions* options) {
+  auto* output = builder->linear(input, options, scope.GetExceptionState());
+  EXPECT_NE(output, nullptr);
+  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->DataType(), input->DataType());
+  auto* linear = output->Operator();
+  EXPECT_NE(linear, nullptr);
+  EXPECT_EQ(linear->Kind(), MLOperator::OperatorKind::kLinear);
+  EXPECT_EQ(linear->IsConnected(), true);
+  EXPECT_NE(linear->Options(), nullptr);
+  return output;
+}
+
+TEST_F(MLGraphBuilderTest, LinearTest) {
+  V8TestingScope scope;
+  MLGraphBuilder* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
+  {
+    // Test building linear with float32 input.
+    auto* input = BuildInput(builder, "input", {1, 2, 3},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* options = MLLinearOptions::Create();
+    auto* output = BuildLinear(scope, builder, input, options);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 2, 3}));
+  }
+  {
+    // Test throwing exception when the input data type is int32.
+    auto* input = BuildInput(builder, "input", {1, 2, 3},
+                             V8MLOperandDataType::Enum::kInt32,
+                             scope.GetExceptionState());
+    auto* options = MLLinearOptions::Create();
+    auto* output = builder->linear(input, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The input data type must be one of the float32,float16 types.");
+  }
+  {
+    // Test building linear as a standalone operator.
+    auto* linear =
+        builder->linear(MLLinearOptions::Create(), scope.GetExceptionState());
+    EXPECT_NE(linear, nullptr);
+    EXPECT_NE(linear->Operator(), nullptr);
+    EXPECT_EQ(linear->Operator()->Kind(), MLOperator::OperatorKind::kLinear);
+    EXPECT_EQ(linear->Operator()->IsConnected(), false);
+    EXPECT_NE(linear->Operator()->Options(), nullptr);
+  }
+}
+
 MLOperand* BuildPad(V8TestingScope& scope,
                     MLGraphBuilder* builder,
                     const MLOperand* input,

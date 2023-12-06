@@ -75,6 +75,11 @@ dictionary MLLeakyReluOptions {
   float alpha = 0.01;
 };
 
+dictionary MLLinearOptions {
+  float alpha = 1.0;
+  float beta = 0;
+};
+
 enum MLPaddingMode {
   "constant",
   "edge",
@@ -202,6 +207,9 @@ dictionary MLSplitOptions {
 
   [RaisesException] MLOperand leakyRelu(MLOperand x, optional MLLeakyReluOptions options = {});
   [RaisesException] MLActivation leakyRelu(optional MLLeakyReluOptions options = {});
+
+  [RaisesException] MLOperand linear(MLOperand input, optional MLLinearOptions options = {});
+  [RaisesException] MLActivation linear(optional MLLinearOptions options = {});
 
   [RaisesException] MLOperand pad(MLOperand input, sequence<[EnforceRange] unsigned long> beginningPadding,
                 sequence<[EnforceRange] unsigned long> endingPadding, optional MLPadOptions options = {});

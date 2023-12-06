@@ -1203,6 +1203,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method layerNormalization
 [Worker]     method leakyRelu
 [Worker]     method lesser
+[Worker]     method linear
 [Worker]     method log
 [Worker]     method logicalNot
 [Worker]     method matmul

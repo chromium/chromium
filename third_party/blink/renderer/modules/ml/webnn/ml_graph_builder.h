@@ -35,6 +35,7 @@ class MLGemmOptions;
 class MLGraph;
 class MLLayerNormalizationOptions;
 class MLLeakyReluOptions;
+class MLLinearOptions;
 class MLPadOptions;
 class MLPool2dOptions;
 class MLReduceOptions;
@@ -190,6 +191,12 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                        ExceptionState& exception_state);
   MLActivation* leakyRelu(const MLLeakyReluOptions* options,
                           ExceptionState& exception_state);
+
+  MLOperand* linear(const MLOperand* input,
+                    const MLLinearOptions* options,
+                    ExceptionState& exception_state);
+  MLActivation* linear(const MLLinearOptions* options,
+                       ExceptionState& exception_state);
 
   MLOperand* matmul(const MLOperand* a,
                     const MLOperand* b,

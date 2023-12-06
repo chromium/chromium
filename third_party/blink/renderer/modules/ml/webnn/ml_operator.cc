@@ -76,6 +76,8 @@ String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
       return "layerNormalization";
     case MLOperator::OperatorKind::kLeakyRelu:
       return "leakyRelu";
+    case MLOperator::OperatorKind::kLinear:
+      return "linear";
     case MLOperator::OperatorKind::kElu:
       return "elu";
     case MLOperator::OperatorKind::kExpand:

@@ -5649,6 +5649,7 @@ interface MLGraphBuilder
     method layerNormalization
     method leakyRelu
     method lesser
+    method linear
     method log
     method logicalNot
     method matmul

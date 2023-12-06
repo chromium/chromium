@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_layer_normalization_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_linear_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
@@ -1065,8 +1066,8 @@ MLOperand* MLGraphBuilder::leakyRelu(const MLOperand* input,
   // https://github.com/webmachinelearning/webnn/issues/283.
   //
   // According to WebNN spec
-  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-relu, the output tensor of
-  // relu has the same data type and dimensions as its input.
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-leakyrelu, the output
+  // tensor of leaky relu has the same type and dimensions as its input.
   return BuildUnaryOperator(this, exception_state,
                             MLOperator::OperatorKind::kLeakyRelu,
                             webnn::DataTypeConstraint::kFloat, input, options);
@@ -1078,6 +1079,29 @@ MLActivation* MLGraphBuilder::leakyRelu(const MLLeakyReluOptions* options,
   // function.
   return MakeGarbageCollected<MLActivation>(
       this, MLOperator::OperatorKind::kLeakyRelu, options);
+}
+
+MLOperand* MLGraphBuilder::linear(const MLOperand* input,
+                                  const MLLinearOptions* options,
+                                  ExceptionState& exception_state) {
+  // The current spec doesn't specify the operand data type constraints of
+  // linear. An issue has been filed to track it:
+  // https://github.com/webmachinelearning/webnn/issues/283.
+  //
+  // According to WebNN spec
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-linear, the output tensor
+  // of linear has the same type and dimensions as its input.
+  return BuildUnaryOperator(this, exception_state,
+                            MLOperator::OperatorKind::kLinear,
+                            webnn::DataTypeConstraint::kFloat, input, options);
+}
+
+MLActivation* MLGraphBuilder::linear(const MLLinearOptions* options,
+                                     ExceptionState& exception_state) {
+  // Create the linear operator that would be used as an activation
+  // function.
+  return MakeGarbageCollected<MLActivation>(
+      this, MLOperator::OperatorKind::kLinear, options);
 }
 
 MLOperand* MLGraphBuilder::matmul(const MLOperand* a,
