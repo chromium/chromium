@@ -200,33 +200,26 @@ class ScalableIphE2EBrowserTestCounterfactualControl
     : public ScalableIphE2EBrowserTest {
  public:
   ScalableIphE2EBrowserTestCounterfactualControl()
-      : ScalableIphE2EBrowserTest("CounterfactualControl_CANARY_DEV_20231109") {
-  }
+      : ScalableIphE2EBrowserTest("CounterfactualControl_BETA_20231204") {}
 };
 
 class ScalableIphE2EBrowserTestUnlockedBased
     : public ScalableIphE2EBrowserTest {
  public:
   ScalableIphE2EBrowserTestUnlockedBased()
-      : ScalableIphE2EBrowserTest("UnlockedBased_CANARY_DEV_20231109") {}
+      : ScalableIphE2EBrowserTest("UnlockedBased_BETA_20231204") {}
 };
 
 class ScalableIphE2EBrowserTestTimerBased : public ScalableIphE2EBrowserTest {
  public:
   ScalableIphE2EBrowserTestTimerBased()
-      : ScalableIphE2EBrowserTest("TimerBased_CANARY_DEV_20231109") {}
+      : ScalableIphE2EBrowserTest("TimerBased_BETA_20231204") {}
 };
 
 class ScalableIphE2EBrowserTestHelpAppBased : public ScalableIphE2EBrowserTest {
  public:
   ScalableIphE2EBrowserTestHelpAppBased()
-      : ScalableIphE2EBrowserTest("HelpAppBased_CANARY_DEV_20231109") {}
-};
-
-class ScalableIphE2EBrowserTestTeamfood : public ScalableIphE2EBrowserTest {
- public:
-  ScalableIphE2EBrowserTestTeamfood()
-      : ScalableIphE2EBrowserTest("ScalableIph_Teamfood") {}
+      : ScalableIphE2EBrowserTest("HelpAppBased_BETA_20231204") {}
 };
 
 }  // namespace
@@ -271,12 +264,3 @@ IN_PROC_BROWSER_TEST_F(ScalableIphE2EBrowserTestHelpAppBased, E2E) {
   // TODO(b/285225729): add more expectations to test the config.
 }
 
-IN_PROC_BROWSER_TEST_F(ScalableIphE2EBrowserTestTeamfood, E2E) {
-  if (!IsGoogleChrome()) {
-    GTEST_SKIP() << "E2E tests are designed to be run under Google Chrome";
-  }
-
-  EXPECT_TRUE(ash::ShelfModel::Get()->IsAppPinned(web_app::kHelpAppId));
-
-  // TODO(b/285225729): add more expectations to test the config.
-}
