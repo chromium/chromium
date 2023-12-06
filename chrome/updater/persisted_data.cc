@@ -85,6 +85,16 @@ void PersistedData::SetProductVersion(const std::string& id,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(pv.IsValid());
   delegate_->SetProductVersion(id, pv);
+
+#if BUILDFLAG(IS_WIN)
+  // For backwards compatibility, we record the PV in ClientState as well.
+  // (Some applications read it from there.) This has the side effect of
+  // creating the ClientState key, which is read to sense for application
+  // uninstallation.
+  SetRegistryKey(UpdaterScopeToHKeyRoot(scope_),
+                 GetAppClientStateKey(base::SysUTF8ToWide(id)), L"pv",
+                 base::SysUTF8ToWide(pv.GetString()));
+#endif
 }
 
 base::FilePath PersistedData::GetProductVersionPath(

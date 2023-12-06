@@ -470,4 +470,15 @@ void PrivilegedHelperInstall(UpdaterScope scope) {
   ASSERT_EQ(InstallUpdater(temp_dir.GetPath()), 0);
 }
 
+void ExpectAppVersion(UpdaterScope scope,
+                      const std::string& app_id,
+                      const base::Version& version) {
+  const base::Version app_version =
+      base::MakeRefCounted<PersistedData>(
+          scope, CreateGlobalPrefs(scope)->GetPrefService(), nullptr)
+          ->GetProductVersion(app_id);
+  EXPECT_TRUE(app_version.IsValid());
+  EXPECT_EQ(version, app_version);
+}
+
 }  // namespace updater::test

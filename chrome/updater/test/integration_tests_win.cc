@@ -2057,4 +2057,23 @@ void SetPlatformPolicies(const base::Value::Dict& values) {
   }
 }
 
+void ExpectAppVersion(UpdaterScope scope,
+                      const std::string& app_id,
+                      const base::Version& version) {
+  const base::Version app_version =
+      base::MakeRefCounted<PersistedData>(
+          scope, CreateGlobalPrefs(scope)->GetPrefService(), nullptr)
+          ->GetProductVersion(app_id);
+  EXPECT_TRUE(app_version.IsValid());
+  EXPECT_EQ(version, app_version);
+
+  std::wstring pv;
+  EXPECT_EQ(
+      ERROR_SUCCESS,
+      base::win::RegKey(UpdaterScopeToHKeyRoot(scope),
+                        GetAppClientStateKey(app_id).c_str(), Wow6432(KEY_READ))
+          .ReadValue(kRegValuePV, &pv));
+  EXPECT_EQ(base::SysUTF8ToWide(version.GetString()), pv);
+}
+
 }  // namespace updater::test

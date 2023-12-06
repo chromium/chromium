@@ -921,17 +921,6 @@ void ExpectAppTag(UpdaterScope scope,
                      ->GetAP(app_id));
 }
 
-void ExpectAppVersion(UpdaterScope scope,
-                      const std::string& app_id,
-                      const base::Version& version) {
-  const base::Version app_version =
-      base::MakeRefCounted<PersistedData>(
-          scope, CreateGlobalPrefs(scope)->GetPrefService(), nullptr)
-          ->GetProductVersion(app_id);
-  EXPECT_TRUE(app_version.IsValid());
-  EXPECT_EQ(version, app_version);
-}
-
 void Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code) {
   base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait_process;
   command_line.AppendSwitch(kEnableLoggingSwitch);

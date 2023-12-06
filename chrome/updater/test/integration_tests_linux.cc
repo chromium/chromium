@@ -243,4 +243,15 @@ void SetPlatformPolicies(const base::Value::Dict& values) {
   // TODO(crbug.com/1464354): implement.
 }
 
+void ExpectAppVersion(UpdaterScope scope,
+                      const std::string& app_id,
+                      const base::Version& version) {
+  const base::Version app_version =
+      base::MakeRefCounted<PersistedData>(
+          scope, CreateGlobalPrefs(scope)->GetPrefService(), nullptr)
+          ->GetProductVersion(app_id);
+  EXPECT_TRUE(app_version.IsValid());
+  EXPECT_EQ(version, app_version);
+}
+
 }  // namespace updater::test
