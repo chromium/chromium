@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+import './icons.html.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {BigBuffer} from 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
@@ -14,7 +15,7 @@ import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-we
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './trace_report.html.js';
-import {ClientTraceReport} from './trace_report.mojom-webui.js';
+import {ClientTraceReport, SkipUploadReason} from './trace_report.mojom-webui.js';
 import {TraceReportBrowserProxy} from './trace_report_browser_proxy.js';
 import {Notification, NotificationTypeEnum} from './trace_report_list.js';
 
@@ -92,9 +93,14 @@ export class TraceReportElement extends PolymerElement {
       'Size limit exceeded',
       'Not anonymized',
       'Scenario quota exceeded',
+      'Upload timed out',
     ];
 
     return skipReasonMap[skipReason];
+  }
+
+  private isManualUploadPermitted_(skipReason: number): boolean {
+    return skipReason !== SkipUploadReason.kNotAnonymized;
   }
 
   private getTraceSize_(size: bigint): string {
