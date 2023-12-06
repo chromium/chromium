@@ -289,6 +289,7 @@ void SoftNavigationHeuristics::CheckSoftNavigationConditions(
   }
 
   if (paint_conditions_met_) {
+    v8::HandleScope handle_scope(script_state->GetIsolate());
     LocalFrame* frame = ToLocalFrameIfNotDetached(script_state->GetContext());
     if (frame && frame->IsOutermostMainFrame()) {
       EmitSoftNavigationEntry(frame);
