@@ -12,28 +12,25 @@ import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
  */
 export class MockFolderShortcutDataModel extends ArrayDataModel {
   /**
-   * @param {!Array<*>} array
    */
-  constructor(array) {
+  constructor(array: unknown[]) {
     super(array);
   }
 
   /**
-   * @return {!FolderShortcutsDataModel}
    * @public
    */
-  asFolderShortcutsDataModel() {
-    const instance = /** @type {!Object} */ (this);
-    return /** @type {!FolderShortcutsDataModel} */ (instance);
+  asFolderShortcutsDataModel(): FolderShortcutsDataModel {
+    return this as any as FolderShortcutsDataModel;
   }
 
   /**
    * Mock function for FolderShortcutDataModel.compare().
-   * @param {MockEntry} a First parameter to be compared.
-   * @param {MockEntry} b Second parameter to be compared with.
-   * @return {number} Negative if a < b, positive if a > b, or zero if a == b.
+   * @param a First parameter to be compared.
+   * @param b Second parameter to be compared with.
+   * @return Negative if a < b, positive if a > b, or zero if a == b.
    */
-  compare(a, b) {
+  compare(a: MockEntry, b: MockEntry): number {
     return a.fullPath.localeCompare(b.fullPath);
   }
 }
