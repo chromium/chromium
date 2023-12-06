@@ -123,7 +123,7 @@ void SystemInfoUIHandler::HandleRequestSystemInfo(
   callback_id_ = args[0].GetString();
 
   system_logs::SystemLogsFetcher* fetcher =
-      system_logs::BuildAboutSystemLogsFetcher();
+      system_logs::BuildAboutSystemLogsFetcher(web_ui());
   fetcher->Fetch(base::BindOnce(&SystemInfoUIHandler::OnSystemInfo,
                                 weak_ptr_factory_.GetWeakPtr()));
 }

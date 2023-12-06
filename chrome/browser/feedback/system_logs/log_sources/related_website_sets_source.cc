@@ -10,9 +10,6 @@
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
-#include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/schemeful_site.h"
@@ -49,17 +46,9 @@ const char* GetSiteType(const net::SiteType type) {
 //   "AssociatedSites": [ "https://a2.com", "https://b2.com" ],
 //   "PrimarySites": [ "https://example2.com", "https://example2.com.co" ]
 // } ]
-std::string ComputeRelatedWebsiteSetsInfo() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-#else
-  Profile* profile = ProfileManager::GetLastUsedProfile();
-#endif
-  first_party_sets::FirstPartySetsPolicyService* service = first_party_sets::
-      FirstPartySetsPolicyServiceFactory::GetForBrowserContext(profile);
-  CHECK(service);
-
-  if (!service->is_enabled()) {
+std::string ComputeRelatedWebsiteSetsInfo(
+    base::WeakPtr<first_party_sets::FirstPartySetsPolicyService> service) {
+  if (!service || !service->is_enabled()) {
     return kRelatedWebsiteSetsDisabled;
   }
   if (!service->is_ready()) {
@@ -96,8 +85,9 @@ std::string ComputeRelatedWebsiteSetsInfo() {
 
 }  // namespace
 
-RelatedWebsiteSetsSource::RelatedWebsiteSetsSource()
-    : SystemLogsSource("RelatedWebsiteSets") {}
+RelatedWebsiteSetsSource::RelatedWebsiteSetsSource(
+    first_party_sets::FirstPartySetsPolicyService* service)
+    : SystemLogsSource("RelatedWebsiteSets"), service_(service->GetWeakPtr()) {}
 
 RelatedWebsiteSetsSource::~RelatedWebsiteSetsSource() = default;
 
@@ -106,7 +96,7 @@ void RelatedWebsiteSetsSource::Fetch(SysLogsSourceCallback callback) {
   CHECK(callback);
 
   auto response = std::make_unique<SystemLogsResponse>();
-  response->emplace(kSetsInfoField, ComputeRelatedWebsiteSetsInfo());
+  response->emplace(kSetsInfoField, ComputeRelatedWebsiteSetsInfo(service_));
 
   std::move(callback).Run(std::move(response));
 }

@@ -12,6 +12,8 @@
 #include "chrome/browser/feedback/system_logs/log_sources/device_event_log_source.h"
 #include "chrome/browser/feedback/system_logs/log_sources/memory_details_log_source.h"
 #include "chrome/browser/feedback/system_logs/log_sources/related_website_sets_source.h"
+#include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/feedback/system_logs/system_logs_fetcher.h"
 #include "net/net_buildflags.h"
 
@@ -37,7 +39,7 @@
 
 namespace system_logs {
 
-SystemLogsFetcher* BuildAboutSystemLogsFetcher() {
+SystemLogsFetcher* BuildAboutSystemLogsFetcher(content::WebUI* web_ui) {
   const bool scrub_data = false;
   // We aren't anonymizing, so we can pass null for the 1st party IDs.
   SystemLogsFetcher* fetcher = new SystemLogsFetcher(scrub_data, nullptr);
@@ -45,7 +47,9 @@ SystemLogsFetcher* BuildAboutSystemLogsFetcher() {
   fetcher->AddSource(std::make_unique<ChromeInternalLogSource>());
   fetcher->AddSource(std::make_unique<DeviceEventLogSource>());
   fetcher->AddSource(std::make_unique<MemoryDetailsLogSource>());
-  fetcher->AddSource(std::make_unique<RelatedWebsiteSetsSource>());
+  fetcher->AddSource(std::make_unique<RelatedWebsiteSetsSource>(
+      first_party_sets::FirstPartySetsPolicyServiceFactory::
+          GetForBrowserContext(Profile::FromWebUI(web_ui))));
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   fetcher->AddSource(std::make_unique<ChromeRootStoreLogSource>());
