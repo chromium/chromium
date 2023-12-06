@@ -413,15 +413,6 @@ component("skia") {
     libs = [ "fontsub.lib" ]
   }
 
-  # need separate win section to handle chromes auto gn filter
-  # (build/config/BUILDCONFIG.gn)
-  if (is_win) {
-    sources -= [
-      #windows
-      "//third_party/skia/src/utils/win/SkWGL_win.cpp",
-    ]
-  }
-
   # Select Skia ports.
 
   # FreeType is needed everywhere where blink is used, on Linux and Android as main
