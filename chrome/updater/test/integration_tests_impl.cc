@@ -47,6 +47,7 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/updater/activity.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/device_management/dm_policy_builder_for_testing.h"
 #include "chrome/updater/device_management/dm_storage.h"
@@ -864,7 +865,8 @@ void SetExistenceCheckerPath(UpdaterScope scope,
                              const std::string& app_id,
                              const base::FilePath& path) {
   scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(scope);
-  base::MakeRefCounted<PersistedData>(scope, global_prefs->GetPrefService())
+  base::MakeRefCounted<PersistedData>(scope, global_prefs->GetPrefService(),
+                                      nullptr)
       ->SetExistenceCheckerPath(app_id, path);
   PrefsCommitPendingWrites(global_prefs->GetPrefService());
 }
@@ -896,26 +898,26 @@ void ExpectLogRotated(UpdaterScope scope) {
 }
 
 void ExpectRegistered(UpdaterScope scope, const std::string& app_id) {
-  ASSERT_TRUE(
-      base::Contains(base::MakeRefCounted<PersistedData>(
-                         scope, CreateGlobalPrefs(scope)->GetPrefService())
-                         ->GetAppIds(),
-                     app_id));
+  ASSERT_TRUE(base::Contains(
+      base::MakeRefCounted<PersistedData>(
+          scope, CreateGlobalPrefs(scope)->GetPrefService(), nullptr)
+          ->GetAppIds(),
+      app_id));
 }
 
 void ExpectNotRegistered(UpdaterScope scope, const std::string& app_id) {
-  ASSERT_FALSE(
-      base::Contains(base::MakeRefCounted<PersistedData>(
-                         scope, CreateGlobalPrefs(scope)->GetPrefService())
-                         ->GetAppIds(),
-                     app_id));
+  ASSERT_FALSE(base::Contains(
+      base::MakeRefCounted<PersistedData>(
+          scope, CreateGlobalPrefs(scope)->GetPrefService(), nullptr)
+          ->GetAppIds(),
+      app_id));
 }
 
 void ExpectAppTag(UpdaterScope scope,
                   const std::string& app_id,
                   const std::string& tag) {
   EXPECT_EQ(tag, base::MakeRefCounted<PersistedData>(
-                     scope, CreateGlobalPrefs(scope)->GetPrefService())
+                     scope, CreateGlobalPrefs(scope)->GetPrefService(), nullptr)
                      ->GetAP(app_id));
 }
 
@@ -924,7 +926,7 @@ void ExpectAppVersion(UpdaterScope scope,
                       const base::Version& version) {
   const base::Version app_version =
       base::MakeRefCounted<PersistedData>(
-          scope, CreateGlobalPrefs(scope)->GetPrefService())
+          scope, CreateGlobalPrefs(scope)->GetPrefService(), nullptr)
           ->GetProductVersion(app_id);
   EXPECT_TRUE(app_version.IsValid());
   EXPECT_EQ(version, app_version);
@@ -1199,24 +1201,25 @@ void RunRecoveryComponent(UpdaterScope scope,
 
 void SetLastChecked(UpdaterScope updater_scope, const base::Time& time) {
   base::MakeRefCounted<PersistedData>(
-      updater_scope, CreateGlobalPrefs(updater_scope)->GetPrefService())
+      updater_scope, CreateGlobalPrefs(updater_scope)->GetPrefService(),
+      nullptr)
       ->SetLastChecked(time);
 }
 
 void ExpectLastChecked(UpdaterScope updater_scope) {
-  EXPECT_FALSE(
-      base::MakeRefCounted<PersistedData>(
-          updater_scope, CreateGlobalPrefs(updater_scope)->GetPrefService())
-          ->GetLastChecked()
-          .is_null());
+  EXPECT_FALSE(base::MakeRefCounted<PersistedData>(
+                   updater_scope,
+                   CreateGlobalPrefs(updater_scope)->GetPrefService(), nullptr)
+                   ->GetLastChecked()
+                   .is_null());
 }
 
 void ExpectLastStarted(UpdaterScope updater_scope) {
-  EXPECT_FALSE(
-      base::MakeRefCounted<PersistedData>(
-          updater_scope, CreateGlobalPrefs(updater_scope)->GetPrefService())
-          ->GetLastStarted()
-          .is_null());
+  EXPECT_FALSE(base::MakeRefCounted<PersistedData>(
+                   updater_scope,
+                   CreateGlobalPrefs(updater_scope)->GetPrefService(), nullptr)
+                   ->GetLastStarted()
+                   .is_null());
 }
 
 std::set<base::FilePath::StringType> GetTestProcessNames() {

@@ -122,7 +122,6 @@ class UpdateEngine : public base::RefCountedThreadSafe<UpdateEngine> {
   scoped_refptr<Configurator> config_;
   UpdateChecker::Factory update_checker_factory_;
   scoped_refptr<PingManager> ping_manager_;
-  std::unique_ptr<PersistedData> metadata_;
 
   // Called when CRX state changes occur.
   const NotifyObserversCallback notify_observers_callback_;

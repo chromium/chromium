@@ -131,9 +131,6 @@ RemoveUninstalledAppsTask::RemoveUninstalledAppsTask(
     scoped_refptr<Configurator> config,
     UpdaterScope scope)
     : config_(config),
-      persisted_data_(
-          base::MakeRefCounted<PersistedData>(scope,
-                                              config_->GetPrefService())),
       update_client_(update_client::UpdateClientFactory(config_)),
       scope_(scope) {}
 
@@ -144,11 +141,12 @@ void RemoveUninstalledAppsTask::Run(base::OnceClosure callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(
-          GetAppIDsToRemove, GetRegisteredApps(persisted_data_),
+          GetAppIDsToRemove,
+          GetRegisteredApps(config_->GetUpdaterPersistedData()),
           base::BindRepeating(&RemoveUninstalledAppsTask::GetUnregisterReason,
                               this)),
       base::BindOnce(&RemoveAppIDsAndSendUninstallPings, std::move(callback),
-                     persisted_data_, update_client_));
+                     config_->GetUpdaterPersistedData(), update_client_));
 }
 
 }  // namespace updater

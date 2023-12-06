@@ -5,6 +5,7 @@
 #ifndef CHROME_UPDATER_PERSISTED_DATA_H_
 #define CHROME_UPDATER_PERSISTED_DATA_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -14,6 +15,7 @@
 #include "base/sequence_checker.h"
 #include "base/values.h"
 #include "chrome/updater/updater_scope.h"
+#include "components/update_client/persisted_data.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -28,25 +30,28 @@ class Time;
 class Version;
 }  // namespace base
 
+namespace update_client {
+class ActivityDataService;
+}  // namespace update_client
+
 namespace updater {
 
 struct RegistrationRequest;
 
 // PersistedData uses the PrefService to persist updater data that outlives
 // the updater processes.
-class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
+class PersistedData : public base::RefCountedThreadSafe<PersistedData>,
+                      public update_client::PersistedData {
  public:
   // Constructs a provider using the specified |pref_service|.
   // The associated preferences are assumed to already be registered.
   // The |pref_service| must outlive the instance of this class.
-  PersistedData(UpdaterScope scope, PrefService* pref_service);
+  PersistedData(
+      UpdaterScope scope,
+      PrefService* pref_service,
+      std::unique_ptr<update_client::ActivityDataService> activity_service);
   PersistedData(const PersistedData&) = delete;
   PersistedData& operator=(const PersistedData&) = delete;
-
-  // These functions access |pv| data for the specified |id|. Returns an empty
-  // version, if the version is not found.
-  base::Version GetProductVersion(const std::string& id) const;
-  void SetProductVersion(const std::string& id, const base::Version& pv);
 
   // These functions access the version path for the specified id.
   base::FilePath GetProductVersionPath(const std::string& id) const;
@@ -56,9 +61,6 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
   std::string GetProductVersionKey(const std::string& id) const;
   void SetProductVersionKey(const std::string& id, const std::string& value);
 
-  // These functions access |fingerprint| data for the specified |id|.
-  std::string GetFingerprint(const std::string& id) const;
-  void SetFingerprint(const std::string& id, const std::string& fp);
 
   // These functions access the existence checker path for the specified id.
   base::FilePath GetExistenceCheckerPath(const std::string& id) const;
@@ -84,24 +86,6 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
   // These functions access the AP key for the specified id.
   std::string GetAPKey(const std::string& id) const;
   void SetAPKey(const std::string& id, const std::string& value);
-
-  // These functions get/set the client-regulated-counting data for the
-  // specified id. The functions are for app migration only.
-  // The getters return nullopt when the persisted data does not have the
-  // corresponding value, or any node subtype is not expected along the
-  // path to the target value.
-  std::optional<int> GetDateLastActive(const std::string& id) const;
-  void SetDateLastActive(const std::string& id, int dla);
-  std::optional<int> GetDateLastRollcall(const std::string& id) const;
-  void SetDateLastRollcall(const std::string& id, int dlrc);
-
-  // These functions access the cohort values for the specified id.
-  std::string GetCohort(const std::string& id) const;
-  void SetCohort(const std::string& id, const std::string& cohort);
-  std::string GetCohortName(const std::string& id) const;
-  void SetCohortName(const std::string& id, const std::string& cohort_name);
-  std::string GetCohortHint(const std::string& id) const;
-  void SetCohortHint(const std::string& id, const std::string& cohort_hint);
 
   // This function sets any non-empty field in the registration request object
   // into the persistent data store.
@@ -147,9 +131,40 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
   void SetLastOSVersion();
 #endif
 
+  // update_client::PersistedData overrides:
+  base::Version GetProductVersion(const std::string& id) const override;
+  void SetProductVersion(const std::string& id,
+                         const base::Version& pv) override;
+  std::string GetFingerprint(const std::string& id) const override;
+  void SetFingerprint(const std::string& id, const std::string& fp) override;
+  int GetDateLastActive(const std::string& id) const override;
+  int GetDaysSinceLastActive(const std::string& id) const override;
+  void SetDateLastActive(const std::string& id, int dla) override;
+  int GetDateLastRollCall(const std::string& id) const override;
+  int GetDaysSinceLastRollCall(const std::string& id) const override;
+  void SetDateLastRollCall(const std::string& id, int dlrc) override;
+  std::string GetCohort(const std::string& id) const override;
+  void SetCohort(const std::string& id, const std::string& cohort) override;
+  std::string GetCohortName(const std::string& id) const override;
+  void SetCohortName(const std::string& id,
+                     const std::string& cohort_name) override;
+  std::string GetCohortHint(const std::string& id) const override;
+  void SetCohortHint(const std::string& id,
+                     const std::string& cohort_hint) override;
+  std::string GetPingFreshness(const std::string& id) const override;
+  void SetDateLastData(const std::vector<std::string>& ids,
+                       int datenum,
+                       base::OnceClosure callback) override;
+  int GetInstallDate(const std::string& id) const override;
+  void GetActiveBits(const std::vector<std::string>& ids,
+                     base::OnceCallback<void(const std::set<std::string>&)>
+                         callback) const override;
+  base::Time GetThrottleUpdatesUntil() const override;
+  void SetThrottleUpdatesUntil(const base::Time& time) override;
+
  private:
   friend class base::RefCountedThreadSafe<PersistedData>;
-  ~PersistedData();
+  ~PersistedData() override;
 
   // Returns nullptr if the app key does not exist.
   const base::Value::Dict* GetAppKey(const std::string& id) const;
@@ -170,6 +185,7 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
 
   const UpdaterScope scope_;
   raw_ptr<PrefService, DanglingUntriaged> pref_service_ = nullptr;
+  std::unique_ptr<update_client::PersistedData> delegate_;
 };
 
 void RegisterPersistedDataPrefs(scoped_refptr<PrefRegistrySimple> registry);

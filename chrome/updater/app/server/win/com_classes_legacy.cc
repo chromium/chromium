@@ -33,6 +33,7 @@
 #include "base/types/expected_macros.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_handle.h"
+#include "chrome/updater/activity.h"
 #include "chrome/updater/app/app_server_win.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/persisted_data.h"
@@ -463,7 +464,8 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
               const base::Version current_version =
                   base::MakeRefCounted<const PersistedData>(
                       GetUpdaterScope(),
-                      GetAppServerWinInstance()->prefs()->GetPrefService())
+                      GetAppServerWinInstance()->prefs()->GetPrefService(),
+                      nullptr)
                       ->GetProductVersion(app_id);
               if (!current_version.IsValid()) {
                 return;
@@ -1153,7 +1155,8 @@ STDMETHODIMP PolicyStatusImpl::get_lastCheckedTime(DATE* last_checked) {
             const base::Time last_checked_time =
                 base::MakeRefCounted<const PersistedData>(
                     GetUpdaterScope(),
-                    GetAppServerWinInstance()->prefs()->GetPrefService())
+                    GetAppServerWinInstance()->prefs()->GetPrefService(),
+                    nullptr)
                     ->GetLastChecked();
             if (last_checked_time.is_null()) {
               return;

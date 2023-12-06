@@ -9,6 +9,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "chrome/updater/activity.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/prefs_impl.h"
@@ -25,7 +26,7 @@ TEST(PrefsTest, PrefsCommitPendingWrites) {
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());
   auto metadata =
-      base::MakeRefCounted<PersistedData>(GetTestScope(), pref.get());
+      base::MakeRefCounted<PersistedData>(GetTestScope(), pref.get(), nullptr);
 
   // Writes something to prefs.
   metadata->SetBrandCode("someappid", "brand");

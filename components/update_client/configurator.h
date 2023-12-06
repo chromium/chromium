@@ -26,10 +26,10 @@ class Version;
 
 namespace update_client {
 
-class ActivityDataService;
 class CrxDownloaderFactory;
 class NetworkFetcherFactory;
 class PatcherFactory;
+class PersistedData;
 class ProtocolHandlerFactory;
 class UnzipperFactory;
 
@@ -120,15 +120,11 @@ class Configurator : public base::RefCountedThreadSafe<Configurator> {
   // persistent storage.
   virtual PrefService* GetPrefService() const = 0;
 
-  // Returns an ActivityDataService that the update_client can use to access
-  // to update information (namely active bit, last active/rollcall days)
-  // normally stored in the user extension profile.
-  // Similar to PrefService, ActivityDataService must outlive the entire
-  // update_client, and be safe to access from the sequence the update_client
-  // is constructed on.
-  // Returning null is safe and will disable any functionality that requires
-  // accessing to the information provided by ActivityDataService.
-  virtual ActivityDataService* GetActivityDataService() const = 0;
+  // Returns a PersistedData instance that the update_client can use to access
+  // to update information. Similar to PrefService, PersistedData must outlive
+  // the entire update_client, and be safe to access from the sequence the
+  // update_client is constructed on.
+  virtual PersistedData* GetPersistedData() const = 0;
 
   // Returns true if the Chrome is installed for the current user only, or false
   // if Chrome is installed for all users on the machine. This function must be

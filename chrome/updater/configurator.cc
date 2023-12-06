@@ -24,6 +24,7 @@
 #include "chrome/updater/crx_downloader_factory.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/net/network.h"
+#include "chrome/updater/persisted_data.h"
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/updater_scope.h"
@@ -50,8 +51,10 @@ Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
     : prefs_(prefs),
       policy_service_(base::MakeRefCounted<PolicyService>(external_constants)),
       external_constants_(external_constants),
-      activity_data_service_(
-          std::make_unique<ActivityDataService>(GetUpdaterScope())),
+      persisted_data_(base::MakeRefCounted<PersistedData>(
+          GetUpdaterScope(),
+          prefs->GetPrefService(),
+          std::make_unique<ActivityDataService>(GetUpdaterScope()))),
       unzip_factory_(
           base::MakeRefCounted<update_client::InProcessUnzipperFactory>()),
       patch_factory_(
@@ -185,9 +188,12 @@ PrefService* Configurator::GetPrefService() const {
   return prefs_->GetPrefService();
 }
 
-update_client::ActivityDataService* Configurator::GetActivityDataService()
-    const {
-  return activity_data_service_.get();
+update_client::PersistedData* Configurator::GetPersistedData() const {
+  return persisted_data_.get();
+}
+
+scoped_refptr<PersistedData> Configurator::GetUpdaterPersistedData() const {
+  return persisted_data_;
 }
 
 bool Configurator::IsPerUserInstall() const {

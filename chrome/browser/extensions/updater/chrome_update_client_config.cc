@@ -35,6 +35,7 @@
 #include "components/update_client/net/network_chromium.h"
 #include "components/update_client/patch/patch_impl.h"
 #include "components/update_client/patcher.h"
+#include "components/update_client/persisted_data.h"
 #include "components/update_client/protocol_handler.h"
 #include "components/update_client/unzip/unzip_impl.h"
 #include "components/update_client/unzipper.h"
@@ -143,8 +144,10 @@ ChromeUpdateClientConfig::ChromeUpdateClientConfig(
                 base::CommandLine::ForCurrentProcess()),
             /*require_encryption=*/true),
       pref_service_(ExtensionPrefs::Get(context)->pref_service()),
-      activity_data_service_(std::make_unique<ExtensionActivityDataService>(
-          ExtensionPrefs::Get(context))),
+      persisted_data_(update_client::CreatePersistedData(
+          pref_service_,
+          std::make_unique<ExtensionActivityDataService>(
+              ExtensionPrefs::Get(context)))),
       url_override_(url_override) {
   DCHECK(pref_service_);
 }
@@ -273,9 +276,9 @@ PrefService* ChromeUpdateClientConfig::GetPrefService() const {
   return pref_service_;
 }
 
-update_client::ActivityDataService*
-ChromeUpdateClientConfig::GetActivityDataService() const {
-  return activity_data_service_.get();
+update_client::PersistedData* ChromeUpdateClientConfig::GetPersistedData()
+    const {
+  return persisted_data_.get();
 }
 
 bool ChromeUpdateClientConfig::IsPerUserInstall() const {

@@ -846,7 +846,8 @@ TEST_F(IntegrationTest, ReportsActive) {
   test_server.ExpectOnce(
       {request::GetUpdaterUserAgentMatcher(),
        request::GetContentMatcher(
-           {R"(.*"appid":"test1","enabled":true,"ping":{"a":-2,.*)"})},
+           {R"(.*"appid":"test1","enabled":true,"installdate":-1,)",
+            R"("ping":{"a":-2,.*)"})},
       R"()]}')"
       "\n"
       R"({"response":{"protocol":"3.1","daystart":{"elapsed_)"

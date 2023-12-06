@@ -18,6 +18,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
+#include "chrome/updater/activity.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/test_scope.h"
 #include "chrome/updater/util/unit_test_util.h"
@@ -52,8 +53,8 @@ class AutoRunOnOsUpgradeTaskTest : public testing::Test {
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     update_client::RegisterPrefs(pref_service_->registry());
     RegisterPersistedDataPrefs(pref_service_->registry());
-    persisted_data_ = base::MakeRefCounted<PersistedData>(GetTestScope(),
-                                                          pref_service_.get());
+    persisted_data_ = base::MakeRefCounted<PersistedData>(
+        GetTestScope(), pref_service_.get(), nullptr);
     SetupCmdExe(GetTestScope(), cmd_exe_command_line_, temp_programfiles_dir_);
   }
 

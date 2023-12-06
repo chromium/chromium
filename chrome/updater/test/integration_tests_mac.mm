@@ -30,6 +30,7 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/updater/activity.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants_builder.h"
 #include "chrome/updater/mac/privileged_helper/service.h"
@@ -312,7 +313,7 @@ void SetupFakeLegacyUpdater(UpdaterScope scope) {
 void ExpectLegacyUpdaterMigrated(UpdaterScope scope) {
   scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(scope);
   auto persisted_data = base::MakeRefCounted<PersistedData>(
-      scope, global_prefs->GetPrefService());
+      scope, global_prefs->GetPrefService(), nullptr);
 
   // Keystone should not be migrated.
   EXPECT_FALSE(
@@ -332,8 +333,8 @@ void ExpectLegacyUpdaterMigrated(UpdaterScope scope) {
   EXPECT_TRUE(persisted_data->GetBrandCode(kKippleApp).empty());
   EXPECT_TRUE(persisted_data->GetBrandPath(kKippleApp).empty());
   EXPECT_TRUE(persisted_data->GetFingerprint(kKippleApp).empty());
-  EXPECT_FALSE(persisted_data->GetDateLastActive(kKippleApp));    // no data.
-  EXPECT_FALSE(persisted_data->GetDateLastRollcall(kKippleApp));  // wrong type.
+  EXPECT_EQ(persisted_data->GetDateLastActive(kKippleApp), -2);
+  EXPECT_EQ(persisted_data->GetDateLastRollCall(kKippleApp), -2);
 
   // App PopularApp.
   const std::string kPopularApp = "com.chromium.PopularApp";
@@ -345,8 +346,8 @@ void ExpectLegacyUpdaterMigrated(UpdaterScope scope) {
   EXPECT_TRUE(persisted_data->GetBrandCode(kPopularApp).empty());
   EXPECT_EQ(persisted_data->GetBrandPath(kPopularApp), base::FilePath("/"));
   EXPECT_TRUE(persisted_data->GetFingerprint(kPopularApp).empty());
-  EXPECT_EQ(persisted_data->GetDateLastActive(kPopularApp).value(), 5921);
-  EXPECT_EQ(persisted_data->GetDateLastRollcall(kPopularApp).value(), 5922);
+  EXPECT_EQ(persisted_data->GetDateLastActive(kPopularApp), 5921);
+  EXPECT_EQ(persisted_data->GetDateLastRollCall(kPopularApp), 5922);
 
   EXPECT_EQ(persisted_data->GetCohort(kPopularApp), "TestCohort");
   EXPECT_EQ(persisted_data->GetCohortName(kPopularApp), "TestCohortName");
@@ -359,8 +360,8 @@ void ExpectLegacyUpdaterMigrated(UpdaterScope scope) {
   EXPECT_EQ(persisted_data->GetExistenceCheckerPath(kCorruptedApp),
             base::FilePath("/"));
   EXPECT_EQ(persisted_data->GetAP(kCorruptedApp), "canary");
-  EXPECT_FALSE(persisted_data->GetDateLastActive(kCorruptedApp));
-  EXPECT_FALSE(persisted_data->GetDateLastRollcall(kCorruptedApp));
+  EXPECT_EQ(persisted_data->GetDateLastActive(kCorruptedApp), -2);
+  EXPECT_EQ(persisted_data->GetDateLastRollCall(kCorruptedApp), -2);
 }
 
 void InstallApp(UpdaterScope scope,
@@ -372,7 +373,7 @@ void InstallApp(UpdaterScope scope,
 void UninstallApp(UpdaterScope scope, const std::string& app_id) {
   const base::FilePath& install_path =
       base::MakeRefCounted<PersistedData>(
-          scope, CreateGlobalPrefs(scope)->GetPrefService())
+          scope, CreateGlobalPrefs(scope)->GetPrefService(), nullptr)
           ->GetExistenceCheckerPath(app_id);
   VLOG(1) << "Deleting app install path: " << install_path;
   base::DeletePathRecursively(install_path);

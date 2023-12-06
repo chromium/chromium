@@ -17,6 +17,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -78,10 +79,10 @@ class UpdateCheckerTest : public testing::TestWithParam<bool> {
   base::Value GetFirstAppAsValue(const base::Value::Dict& request);
   base::Value::Dict GetFirstAppAsDict(const base::Value::Dict& request);
 
-  scoped_refptr<TestConfigurator> config_;
-  std::unique_ptr<TestActivityDataService> activity_data_service_;
   std::unique_ptr<TestingPrefServiceSimple> pref_;
   std::unique_ptr<PersistedData> metadata_;
+  scoped_refptr<TestConfigurator> config_;
+  raw_ptr<TestActivityDataService> activity_data_service_;
 
   std::unique_ptr<UpdateChecker> update_checker_;
 
@@ -115,13 +116,14 @@ UpdateCheckerTest::~UpdateCheckerTest() = default;
 void UpdateCheckerTest::SetUp() {
   is_foreground_ = GetParam();
 
-  config_ = base::MakeRefCounted<TestConfigurator>();
-
   pref_ = std::make_unique<TestingPrefServiceSimple>();
-  activity_data_service_ = std::make_unique<TestActivityDataService>();
-  PersistedData::RegisterPrefs(pref_->registry());
-  metadata_ = std::make_unique<PersistedData>(pref_.get(),
-                                              activity_data_service_.get());
+  RegisterPersistedDataPrefs(pref_->registry());
+  config_ = base::MakeRefCounted<TestConfigurator>(pref_.get());
+
+  auto activity_data_service = std::make_unique<TestActivityDataService>();
+  activity_data_service_ = activity_data_service.get();
+  metadata_ =
+      CreatePersistedData(pref_.get(), std::move(activity_data_service));
 
   post_interceptor_ = std::make_unique<URLLoaderPostInterceptor>(
       config_->test_url_loader_factory());

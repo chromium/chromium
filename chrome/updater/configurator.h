@@ -28,7 +28,6 @@ enum class VerifierFormat;
 }
 
 namespace update_client {
-class ActivityDataService;
 class NetworkFetcherFactory;
 class CrxDownloaderFactory;
 class ProtocolHandlerFactory;
@@ -36,8 +35,8 @@ class ProtocolHandlerFactory;
 
 namespace updater {
 
-class ActivityDataService;
 class ExternalConstants;
+class PersistedData;
 class PolicyService;
 class UpdaterPrefs;
 
@@ -74,7 +73,7 @@ class Configurator : public update_client::Configurator {
   bool EnabledBackgroundDownloader() const override;
   bool EnabledCupSigning() const override;
   PrefService* GetPrefService() const override;
-  update_client::ActivityDataService* GetActivityDataService() const override;
+  update_client::PersistedData* GetPersistedData() const override;
   bool IsPerUserInstall() const override;
   std::unique_ptr<update_client::ProtocolHandlerFactory>
   GetProtocolHandlerFactory() const override;
@@ -82,6 +81,7 @@ class Configurator : public update_client::Configurator {
   update_client::UpdaterStateProvider GetUpdaterStateProvider() const override;
   std::optional<base::FilePath> GetCrxCachePath() const override;
 
+  scoped_refptr<PersistedData> GetUpdaterPersistedData() const;
   virtual GURL CrashUploadURL() const;
   virtual GURL DeviceManagementURL() const;
 
@@ -96,7 +96,7 @@ class Configurator : public update_client::Configurator {
   scoped_refptr<UpdaterPrefs> prefs_;
   scoped_refptr<PolicyService> policy_service_;
   scoped_refptr<ExternalConstants> external_constants_;
-  std::unique_ptr<ActivityDataService> activity_data_service_;
+  scoped_refptr<PersistedData> persisted_data_;
   scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory_;
   scoped_refptr<update_client::CrxDownloaderFactory> crx_downloader_factory_;
   scoped_refptr<update_client::UnzipperFactory> unzip_factory_;

@@ -14,9 +14,11 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/crx_file/crx_verifier.h"
+#include "components/services/unzip/in_process_unzipper.h"
 #include "components/update_client/puffin_component_unpacker.h"
 #include "components/update_client/test_configurator.h"
 #include "components/update_client/test_utils.h"
+#include "components/update_client/unzip/unzip_impl.h"
 #include "components/update_client/unzipper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -34,13 +36,15 @@ class PuffinComponentUnpackerTest : public testing::Test {
 };
 
 TEST_F(PuffinComponentUnpackerTest, UnpackFullCrx) {
-  auto config = base::MakeRefCounted<TestConfigurator>();
   SEQUENCE_CHECKER(sequence_checker);
   base::RunLoop loop;
   PuffinComponentUnpacker::Unpack(
       std::vector<uint8_t>(std::begin(jebg_hash), std::end(jebg_hash)),
       GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"),
-      config->GetUnzipperFactory()->Create(), crx_file::VerifierFormat::CRX3,
+      base::MakeRefCounted<update_client::UnzipChromiumFactory>(
+          base::BindRepeating(&unzip::LaunchInProcessUnzipper))
+          ->Create(),
+      crx_file::VerifierFormat::CRX3,
       base::BindLambdaForTesting(
           [&](const PuffinComponentUnpacker::Result& result) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
@@ -111,12 +115,14 @@ TEST_F(PuffinComponentUnpackerTest, UnpackFileHashMismatch) {
 
 TEST_F(PuffinComponentUnpackerTest, UnpackWithVerifiedContents) {
   SEQUENCE_CHECKER(sequence_checker);
-  auto config = base::MakeRefCounted<TestConfigurator>();
   base::RunLoop loop;
   PuffinComponentUnpacker::Unpack(
       std::vector<uint8_t>(),
       GetTestFilePath("gndmhdcefbhlchkhipcnnbkcmicncehk_22_314.crx3"),
-      config->GetUnzipperFactory()->Create(), crx_file::VerifierFormat::CRX3,
+      base::MakeRefCounted<update_client::UnzipChromiumFactory>(
+          base::BindRepeating(&unzip::LaunchInProcessUnzipper))
+          ->Create(),
+      crx_file::VerifierFormat::CRX3,
       base::BindLambdaForTesting(
           [&](const PuffinComponentUnpacker::Result& result) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);

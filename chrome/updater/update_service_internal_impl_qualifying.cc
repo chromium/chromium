@@ -128,9 +128,7 @@ class UpdateServiceInternalQualifyingImpl : public UpdateServiceInternal {
   void UpdateCheckDone(base::OnceCallback<void(bool)> callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     const base::Version qualification_app_version =
-        base::MakeRefCounted<PersistedData>(GetUpdaterScope(),
-                                            local_prefs_->GetPrefService())
-            ->GetProductVersion(kQualificationAppId);
+        config_->GetPersistedData()->GetProductVersion(kQualificationAppId);
     VLOG(2) << "qualification_app_version: " << qualification_app_version;
     std::move(callback).Run(qualification_app_version.CompareTo(base::Version(
                                 kQualificationInitialVersion)) == 1);

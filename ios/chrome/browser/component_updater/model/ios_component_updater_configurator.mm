@@ -24,6 +24,7 @@
 #import "components/update_client/net/network_chromium.h"
 #import "components/update_client/patch/patch_impl.h"
 #import "components/update_client/patcher.h"
+#import "components/update_client/persisted_data.h"
 #import "components/update_client/protocol_handler.h"
 #import "components/update_client/unzip/unzip_impl.h"
 #import "components/update_client/unzipper.h"
@@ -64,7 +65,7 @@ class IOSConfigurator : public update_client::Configurator {
   bool EnabledBackgroundDownloader() const override;
   bool EnabledCupSigning() const override;
   PrefService* GetPrefService() const override;
-  update_client::ActivityDataService* GetActivityDataService() const override;
+  update_client::PersistedData* GetPersistedData() const override;
   bool IsPerUserInstall() const override;
   std::unique_ptr<update_client::ProtocolHandlerFactory>
   GetProtocolHandlerFactory() const override;
@@ -76,6 +77,7 @@ class IOSConfigurator : public update_client::Configurator {
   friend class base::RefCountedThreadSafe<IOSConfigurator>;
 
   ConfiguratorImpl configurator_impl_;
+  std::unique_ptr<update_client::PersistedData> persisted_data_;
   scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory_;
   scoped_refptr<update_client::CrxDownloaderFactory> crx_downloader_factory_;
   scoped_refptr<update_client::UnzipperFactory> unzip_factory_;
@@ -89,7 +91,10 @@ class IOSConfigurator : public update_client::Configurator {
 // a custom message signing protocol and it does not depend on using HTTPS.
 IOSConfigurator::IOSConfigurator(const base::CommandLine* cmdline)
     : configurator_impl_(ComponentUpdaterCommandLineConfigPolicy(cmdline),
-                         false) {}
+                         false),
+      persisted_data_(update_client::CreatePersistedData(
+          GetApplicationContext()->GetLocalState(),
+          nullptr)) {}
 
 base::TimeDelta IOSConfigurator::InitialDelay() const {
   return configurator_impl_.InitialDelay();
@@ -200,9 +205,8 @@ PrefService* IOSConfigurator::GetPrefService() const {
   return GetApplicationContext()->GetLocalState();
 }
 
-update_client::ActivityDataService* IOSConfigurator::GetActivityDataService()
-    const {
-  return nullptr;
+update_client::PersistedData* IOSConfigurator::GetPersistedData() const {
+  return persisted_data_.get();
 }
 
 bool IOSConfigurator::IsPerUserInstall() const {

@@ -194,8 +194,7 @@ class ComponentUpdaterTest : public testing::Test {
 
   std::unique_ptr<TestingPrefServiceSimple> pref_ =
       std::make_unique<TestingPrefServiceSimple>();
-  scoped_refptr<TestConfigurator> config_ =
-      base::MakeRefCounted<TestConfigurator>(pref_.get());
+  scoped_refptr<TestConfigurator> config_;
   scoped_refptr<MockUpdateClient> update_client_ =
       base::MakeRefCounted<MockUpdateClient>();
   std::unique_ptr<ComponentUpdateService> component_updater_;
@@ -242,9 +241,11 @@ ComponentUpdaterTest::ComponentUpdaterTest() {
   scheduler_ = scheduler.get();
   ON_CALL(*scheduler_, Schedule(_, _, _, _))
       .WillByDefault(Invoke(this, &ComponentUpdaterTest::Schedule));
+  RegisterComponentUpdateServicePrefs(pref_->registry());
+  update_client::RegisterPrefs(pref_->registry());
+  config_ = base::MakeRefCounted<TestConfigurator>(pref_.get());
   component_updater_ = std::make_unique<CrxUpdateService>(
       config_, std::move(scheduler), update_client_, "");
-  RegisterComponentUpdateServicePrefs(pref_->registry());
 }
 
 ComponentUpdaterTest::~ComponentUpdaterTest() {

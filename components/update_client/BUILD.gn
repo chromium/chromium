@@ -315,6 +315,7 @@ source_set("unit_tests") {
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/services/patch:in_process",
+    "//components/services/unzip:in_process",
     "//components/version_info:version_info",
     "//courgette:courgette_lib",
     "//net:test_support",

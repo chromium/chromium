@@ -31,6 +31,7 @@ class UpdateClient;
 namespace updater {
 class Configurator;
 class PersistedData;
+class PolicyService;
 struct RegistrationRequest;
 
 using AppClientInstallData = base::flat_map<std::string, std::string>;
@@ -144,7 +145,8 @@ namespace internal {
 UpdateService::Result ToResult(update_client::Error error);
 
 void GetComponents(
-    scoped_refptr<Configurator> config,
+    scoped_refptr<PolicyService> policy_service,
+    crx_file::VerifierFormat verifier_format,
     scoped_refptr<PersistedData> persisted_data,
     const AppClientInstallData& app_client_install_data,
     const AppInstallDataIndex& app_install_data_index,

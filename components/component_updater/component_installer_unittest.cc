@@ -231,8 +231,7 @@ class ComponentInstallerTest : public testing::Test {
   std::unique_ptr<TestingPrefServiceSimple> pref_ =
       std::make_unique<TestingPrefServiceSimple>();
 
-  scoped_refptr<TestConfigurator> config_ =
-      base::MakeRefCounted<TestConfigurator>(pref_.get());
+  scoped_refptr<TestConfigurator> config_;
   scoped_refptr<MockUpdateClient> update_client_ =
       base::MakeRefCounted<MockUpdateClient>();
   ComponentUnpacker::Result result_;
@@ -246,10 +245,11 @@ ComponentInstallerTest::ComponentInstallerTest() {
   scheduler_ = scheduler.get();
   ON_CALL(*scheduler_, Schedule(_, _, _, _))
       .WillByDefault(Invoke(this, &ComponentInstallerTest::Schedule));
+  update_client::RegisterPrefs(pref_->registry());
+  RegisterComponentUpdateServicePrefs(pref_->registry());
+  config_ = base::MakeRefCounted<TestConfigurator>(pref_.get());
   component_updater_ = std::make_unique<CrxUpdateService>(
       config_, std::move(scheduler), update_client_, "");
-  RegisterComponentUpdateServicePrefs(pref_->registry());
-  update_client::RegisterPrefs(pref_->registry());
 }
 
 ComponentInstallerTest::~ComponentInstallerTest() {
@@ -261,11 +261,10 @@ void ComponentInstallerTest::RunThreads() {
 }
 
 void ComponentInstallerTest::Unpack(const base::FilePath& crx_path) {
-  auto config = base::MakeRefCounted<TestConfigurator>();
   auto component_unpacker = base::MakeRefCounted<ComponentUnpacker>(
       std::vector<uint8_t>(std::begin(kSha256Hash), std::end(kSha256Hash)),
-      crx_path, nullptr, config->GetUnzipperFactory()->Create(),
-      config->GetPatcherFactory()->Create(), crx_file::VerifierFormat::CRX3);
+      crx_path, nullptr, config_->GetUnzipperFactory()->Create(),
+      config_->GetPatcherFactory()->Create(), crx_file::VerifierFormat::CRX3);
   component_unpacker->Unpack(base::BindOnce(
       &ComponentInstallerTest::UnpackComplete, base::Unretained(this)));
   RunThreads();

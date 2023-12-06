@@ -5,7 +5,9 @@
 #ifndef ANDROID_WEBVIEW_NONEMBEDDED_COMPONENT_UPDATER_AW_COMPONENT_UPDATER_CONFIGURATOR_H_
 #define ANDROID_WEBVIEW_NONEMBEDDED_COMPONENT_UPDATER_AW_COMPONENT_UPDATER_CONFIGURATOR_H_
 
+#include <memory>
 #include <optional>
+
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -58,7 +60,7 @@ class AwComponentUpdaterConfigurator : public update_client::Configurator {
   bool EnabledBackgroundDownloader() const override;
   bool EnabledCupSigning() const override;
   PrefService* GetPrefService() const override;
-  update_client::ActivityDataService* GetActivityDataService() const override;
+  update_client::PersistedData* GetPersistedData() const override;
   bool IsPerUserInstall() const override;
   std::unique_ptr<update_client::ProtocolHandlerFactory>
   GetProtocolHandlerFactory() const override;
@@ -74,6 +76,7 @@ class AwComponentUpdaterConfigurator : public update_client::Configurator {
   component_updater::ConfiguratorImpl configurator_impl_;
   raw_ptr<PrefService>
       pref_service_;  // This member is not owned by this class.
+  std::unique_ptr<update_client::PersistedData> persisted_data_;
   scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory_;
   scoped_refptr<update_client::CrxDownloaderFactory> crx_downloader_factory_;
   scoped_refptr<update_client::UnzipperFactory> unzip_factory_;

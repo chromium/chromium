@@ -14,10 +14,12 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "chrome/updater/activity.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/persisted_data.h"
+#include "chrome/updater/policy/service.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/test_scope.h"
 #include "chrome/updater/update_service.h"
@@ -69,7 +71,7 @@ TEST(UpdateServiceImplTest, TestGetComponentsInOrder) {
   update_client::RegisterPrefs(pref->registry());
   RegisterPersistedDataPrefs(pref->registry());
   auto metadata =
-      base::MakeRefCounted<PersistedData>(GetTestScope(), pref.get());
+      base::MakeRefCounted<PersistedData>(GetTestScope(), pref.get(), nullptr);
   metadata->SetProductVersion("id1", base::Version("1.2.3.4"));
   metadata->SetProductVersionKey("id1", "pv_key");
   metadata->SetAP("id1", "ap");
@@ -82,8 +84,9 @@ TEST(UpdateServiceImplTest, TestGetComponentsInOrder) {
   std::vector<std::optional<update_client::CrxComponent>> crxs;
   base::RunLoop loop;
   internal::GetComponents(
-      base::MakeRefCounted<Configurator>(nullptr, CreateExternalConstants()),
-      metadata, {}, {}, UpdateService::Priority::kForeground, false,
+      base::MakeRefCounted<PolicyService>(CreateExternalConstants()),
+      crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF, metadata, {}, {},
+      UpdateService::Priority::kForeground, false,
       UpdateService::PolicySameVersionUpdate::kNotAllowed,
       {"id1", "id2", "id3", "id4"},
       base::BindLambdaForTesting(

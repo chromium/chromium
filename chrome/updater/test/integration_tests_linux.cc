@@ -21,6 +21,7 @@
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "build/branding_buildflags.h"
+#include "chrome/updater/activity.h"
 #include "chrome/updater/activity_impl_util_posix.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants_builder.h"
@@ -225,7 +226,7 @@ void UninstallApp(UpdaterScope scope, const std::string& app_id) {
   // This can probably be combined with mac into integration_tests_posix.cc.
   const base::FilePath& install_path =
       base::MakeRefCounted<PersistedData>(
-          scope, CreateGlobalPrefs(scope)->GetPrefService())
+          scope, CreateGlobalPrefs(scope)->GetPrefService(), nullptr)
           ->GetExistenceCheckerPath(app_id);
   VLOG(1) << "Deleting app install path: " << install_path;
   base::DeletePathRecursively(install_path);

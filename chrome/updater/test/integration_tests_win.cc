@@ -57,6 +57,7 @@
 #include "base/win/window_enumerator.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/updater/activity.h"
 #include "chrome/updater/app/server/win/com_classes.h"
 #include "chrome/updater/app/server/win/updater_idl.h"
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
@@ -703,7 +704,7 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
 
   const base::Version pv =
       base::MakeRefCounted<PersistedData>(
-          scope, CreateGlobalPrefs(scope)->GetPrefService())
+          scope, CreateGlobalPrefs(scope)->GetPrefService(), nullptr)
           ->GetProductVersion(base::WideToASCII(kTestAppID));
 
   base::win::RegKey key;
@@ -1879,7 +1880,7 @@ void CloseInstallCompleteDialog(const std::wstring& child_window_text_to_find) {
 void ExpectLegacyUpdaterMigrated(UpdaterScope scope) {
   scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(scope);
   auto persisted_data = base::MakeRefCounted<PersistedData>(
-      scope, global_prefs->GetPrefService());
+      scope, global_prefs->GetPrefService(), nullptr);
 
   // Legacy updater itself should not be migrated.
   const std::string kLegacyUpdaterAppId =
@@ -1896,16 +1897,16 @@ void ExpectLegacyUpdaterMigrated(UpdaterScope scope) {
   EXPECT_TRUE(persisted_data->GetAP(kNoPVAppId).empty());
   EXPECT_TRUE(persisted_data->GetBrandCode(kNoPVAppId).empty());
   EXPECT_TRUE(persisted_data->GetFingerprint(kNoPVAppId).empty());
-  EXPECT_FALSE(persisted_data->GetDateLastActive(kNoPVAppId));
-  EXPECT_FALSE(persisted_data->GetDateLastRollcall(kNoPVAppId));
+  EXPECT_EQ(persisted_data->GetDateLastActive(kNoPVAppId), -2);
+  EXPECT_EQ(persisted_data->GetDateLastRollCall(kNoPVAppId), -2);
 
   EXPECT_EQ(persisted_data->GetProductVersion(kChromeAppId),
             base::Version("99.0.0.1"));
   EXPECT_EQ(persisted_data->GetAP(kChromeAppId), "TestAP");
   EXPECT_EQ(persisted_data->GetBrandCode(kChromeAppId), "GGLS");
   EXPECT_TRUE(persisted_data->GetFingerprint(kChromeAppId).empty());
-  EXPECT_EQ(persisted_data->GetDateLastActive(kChromeAppId).value(), -1);
-  EXPECT_EQ(persisted_data->GetDateLastRollcall(kChromeAppId).value(), 5929);
+  EXPECT_EQ(persisted_data->GetDateLastActive(kChromeAppId), -1);
+  EXPECT_EQ(persisted_data->GetDateLastRollCall(kChromeAppId), 5929);
   EXPECT_EQ(persisted_data->GetCohort(kChromeAppId), "TestCohort");
   EXPECT_EQ(persisted_data->GetCohortName(kChromeAppId), "TestCohortName");
   EXPECT_EQ(persisted_data->GetCohortHint(kChromeAppId), "TestCohortHint");

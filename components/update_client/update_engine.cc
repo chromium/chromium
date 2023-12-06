@@ -75,9 +75,6 @@ UpdateEngine::UpdateEngine(
     : config_(config),
       update_checker_factory_(update_checker_factory),
       ping_manager_(ping_manager),
-      metadata_(
-          std::make_unique<PersistedData>(config->GetPrefService(),
-                                          config->GetActivityDataService())),
       notify_observers_callback_(notify_observers_callback) {
   absl::optional<base::FilePath> crx_cache_path = config->GetCrxCachePath();
   if (base::FeatureList::IsEnabled(features::kPuffinPatches) &&
@@ -144,7 +141,8 @@ base::RepeatingClosure UpdateEngine::InvokeOperation(
       base::MakeRefCounted<UpdateContext>(
           config_, crx_cache_, is_foreground, is_install, ids,
           crx_state_change_callback, notify_observers_callback_,
-          std::move(callback), metadata_.get(), is_update_check_only);
+          std::move(callback), config_->GetPersistedData(),
+          is_update_check_only);
   CHECK(!update_context->session_id.empty());
 
   const auto result = update_contexts_.insert(
@@ -216,7 +214,7 @@ void UpdateEngine::DoUpdateCheck(scoped_refptr<UpdateContext> update_context) {
     update_context->components[id]->Handle(base::DoNothing());
 
   update_context->update_checker =
-      update_checker_factory_.Run(config_, metadata_.get());
+      update_checker_factory_.Run(config_, config_->GetPersistedData());
 
   update_context->update_checker->CheckForUpdates(
       update_context, config_->ExtraRequestParams(),
@@ -242,10 +240,9 @@ void UpdateEngine::UpdateCheckResultsAvailable(
   const int throttle_sec =
       std::min(update_context->retry_after_sec, kMaxRetryAfterSec);
   if (throttle_sec >= 0) {
-    PersistedData(config_->GetPrefService(), nullptr)
-        .SetThrottleUpdatesUntil(throttle_sec ? base::Time::Now() +
-                                                    base::Seconds(throttle_sec)
-                                              : base::Time());
+    config_->GetPersistedData()->SetThrottleUpdatesUntil(
+        throttle_sec ? base::Time::Now() + base::Seconds(throttle_sec)
+                     : base::Time());
   }
 
   update_context->update_check_error = error;
@@ -406,7 +403,7 @@ void UpdateEngine::HandleComponentComplete(
     queue.pop();
     if (!component->events().empty()) {
       ping_manager_->SendPing(
-          *component, *metadata_,
+          *component, *config_->GetPersistedData(),
           base::BindOnce([](base::OnceClosure callback, int,
                             const std::string&) { std::move(callback).Run(); },
                          std::move(callback)));
@@ -448,8 +445,7 @@ bool UpdateEngine::IsThrottled(bool is_foreground) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::Time throttle_updates_until =
-      PersistedData(config_->GetPrefService(), nullptr)
-          .GetThrottleUpdatesUntil();
+      config_->GetPersistedData()->GetThrottleUpdatesUntil();
 
   if (is_foreground || throttle_updates_until.is_null()) {
     return false;
@@ -477,7 +473,7 @@ void UpdateEngine::SendPing(const CrxComponent& crx_component,
       config_, crx_cache_, false, false, std::vector<std::string>{id},
       UpdateClient::CrxStateChangeCallback(),
       UpdateEngine::NotifyObserversCallback(), std::move(callback),
-      metadata_.get(), /*is_update_check_only=*/false);
+      config_->GetPersistedData(), /*is_update_check_only=*/false);
   CHECK(!update_context->session_id.empty());
 
   const auto result = update_contexts_.insert(

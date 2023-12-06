@@ -140,9 +140,7 @@ base::Version CrxUpdateService::GetRegisteredVersion(
     const std::string& app_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Version registered_version =
-      std::make_unique<update_client::PersistedData>(
-          config_->GetPrefService(), config_->GetActivityDataService())
-          ->GetProductVersion(app_id);
+      config_->GetPersistedData()->GetProductVersion(app_id);
 
   return (registered_version.IsValid()) ? registered_version
                                         : base::Version(kNullVersion);
@@ -260,12 +258,11 @@ std::vector<std::string> CrxUpdateService::GetComponentIDs() const {
 std::vector<ComponentInfo> CrxUpdateService::GetComponents() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<ComponentInfo> result;
-  auto data = std::make_unique<update_client::PersistedData>(
-      config_->GetPrefService(), config_->GetActivityDataService());
   for (const auto& it : components_) {
     result.push_back(ComponentInfo(
         it.first, it.second.fingerprint, base::UTF8ToUTF16(it.second.name),
-        it.second.version, data->GetCohort(it.second.app_id)));
+        it.second.version,
+        config_->GetPersistedData()->GetCohort(it.second.app_id)));
   }
   return result;
 }
