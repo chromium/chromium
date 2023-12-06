@@ -9264,7 +9264,8 @@ void RenderFrameHostImpl::HandleAXEvents(
     blink::mojom::AXUpdatesAndEventsPtr updates_and_events,
     uint32_t reset_token) {
   TRACE_EVENT0("accessibility", "RenderFrameHostImpl::HandleAXEvents");
-  SCOPED_UMA_HISTOGRAM_TIMER("Accessibility.Performance.HandleAXEvents");
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "Accessibility.Performance.HandleAXEvents2");
 
   if (tree_id != GetAXTreeID()) {
     // The message has arrived after the frame has navigated which means its

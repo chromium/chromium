@@ -23,6 +23,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -1338,16 +1339,16 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
   }
   // Also log the time taken in this function to track serialization
   // performance.
-  UMA_HISTOGRAM_TIMES(
-      "Accessibility.Performance.SendPendingAccessibilityEvents",
-      elapsed_time_ms);
+  UMA_HISTOGRAM_CUSTOM_TIMES(
+      "Accessibility.Performance.SendPendingAccessibilityEvents2",
+      elapsed_time_ms, base::Microseconds(1), base::Seconds(1), 50);
 
   if (loading_stage_ == LoadingStage::kPostLoad) {
     // Track serialization after document load in order to measure the
     // contribution of serialization to interaction latency.
-    UMA_HISTOGRAM_TIMES(
-        "Accessibility.Performance.SendPendingAccessibilityEvents.PostLoad",
-        elapsed_time_ms);
+    UMA_HISTOGRAM_CUSTOM_TIMES(
+        "Accessibility.Performance.SendPendingAccessibilityEvents.PostLoad2",
+        elapsed_time_ms, base::Microseconds(1), base::Seconds(1), 50);
   }
 
   if (loading_stage_ == LoadingStage::kLoadCompleted) {

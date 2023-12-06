@@ -809,8 +809,9 @@ void AXTree::Destroy() {
     DestroyNodeAndSubtree(root_.ExtractAsDangling(), nullptr);
   }  // tree_update_in_progress.
 
-  UMA_HISTOGRAM_TIMES("Accessibility.Performance.AXTree.Destroy",
-                      timer.Elapsed());
+  UMA_HISTOGRAM_CUSTOM_TIMES("Accessibility.Performance.AXTree.Destroy2",
+                             timer.Elapsed(), base::Microseconds(1),
+                             base::Seconds(1), 50);
 }
 
 void AXTree::UpdateDataForTesting(const AXTreeData& new_data) {
@@ -1068,7 +1069,8 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
     return false;
 
   // Log unserialize perf after early returns.
-  SCOPED_UMA_HISTOGRAM_TIMER("Accessibility.Performance.Tree.Unserialize");
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "Accessibility.Performance.Tree.Unserialize2");
 
   // Notify observers of subtrees and nodes that are about to be destroyed or
   // reparented, this must be done before applying any updates to the tree.
