@@ -2768,7 +2768,10 @@ enum class ToolbarKind {
     (syncer::TrustedVaultUserActionTriggerForUMA)trigger {
   [HandlerForProtocol(self.dispatcher, ApplicationCommands)
       showTrustedVaultReauthForFetchKeysFromViewController:self.viewController
-                                                   trigger:trigger];
+                                                   trigger:trigger
+                                               accessPoint:
+                                                   signin_metrics::AccessPoint::
+                                                       ACCESS_POINT_SETTINGS];
 }
 
 - (void)showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
@@ -2776,8 +2779,11 @@ enum class ToolbarKind {
   [HandlerForProtocol(self.dispatcher, ApplicationCommands)
       showTrustedVaultReauthForDegradedRecoverabilityFromViewController:
           self.viewController
-                                                                trigger:
-                                                                    trigger];
+                                                                trigger:trigger
+                                                            accessPoint:
+                                                                signin_metrics::
+                                                                    AccessPoint::
+                                                                        ACCESS_POINT_SETTINGS];
 }
 
 #pragma mark - SigninPresenter

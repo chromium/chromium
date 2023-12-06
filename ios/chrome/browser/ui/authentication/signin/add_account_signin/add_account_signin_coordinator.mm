@@ -47,8 +47,6 @@ using signin_metrics::PromoAction;
     HistorySyncPopupCoordinator* historySyncPopupCoordinator;
 // Manager that handles sign-in add account UI.
 @property(nonatomic, strong) AddAccountSigninManager* addAccountSigninManager;
-// View where the sign-in button was displayed.
-@property(nonatomic, assign) AccessPoint accessPoint;
 // Promo button used to trigger the sign-in.
 @property(nonatomic, assign) PromoAction promoAction;
 // Add account sign-in intent.
@@ -68,10 +66,11 @@ using signin_metrics::PromoAction;
                                promoAction:(PromoAction)promoAction
                               signinIntent:
                                   (AddAccountSigninIntent)signinIntent {
-  self = [super initWithBaseViewController:viewController browser:browser];
+  self = [super initWithBaseViewController:viewController
+                                   browser:browser
+                               accessPoint:accessPoint];
   if (self) {
     _signinIntent = signinIntent;
-    _accessPoint = accessPoint;
     _promoAction = promoAction;
   }
   return self;
@@ -327,7 +326,7 @@ using signin_metrics::PromoAction;
                    showUserEmail:NO
                signOutIfDeclined:NO
                       isOptional:YES
-                     accessPoint:_accessPoint];
+                     accessPoint:self.accessPoint];
   self.historySyncPopupCoordinator.delegate = self;
   [self.historySyncPopupCoordinator start];
 }

@@ -33,9 +33,13 @@
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                            screenProvider:(ScreenProvider*)screenProvider {
+                            screenProvider:(ScreenProvider*)screenProvider
+                               accessPoint:
+                                   (signin_metrics::AccessPoint)accessPoint {
   DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
-  self = [super initWithBaseViewController:viewController browser:browser];
+  self = [super initWithBaseViewController:viewController
+                                   browser:browser
+                               accessPoint:accessPoint];
   if (self) {
     _screenProvider = screenProvider;
   }

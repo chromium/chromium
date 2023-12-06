@@ -67,7 +67,9 @@ class UserSigninCoordinatorTest : public PlatformTest {
                            browser:browser_.get()
                           identity:nil
                       signinIntent:UserSigninIntentUpgrade
-                            logger:logger_mock_];
+                            logger:logger_mock_
+                       accessPoint:signin_metrics::AccessPoint::
+                                       ACCESS_POINT_START_PAGE];
     coordinator_.userSigninViewControllerMock =
         user_signin_view_controller_mock_;
   }

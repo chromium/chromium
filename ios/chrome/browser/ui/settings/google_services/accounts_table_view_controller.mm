@@ -958,7 +958,10 @@ constexpr CGFloat kErrorSymbolSize = 22.;
       syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
   [self.applicationCommandsHandler
       showTrustedVaultReauthForFetchKeysFromViewController:self
-                                                   trigger:trigger];
+                                                   trigger:trigger
+                                               accessPoint:
+                                                   AccessPoint::
+                                                       ACCESS_POINT_SETTINGS];
 }
 
 // Opens the trusted vault reauth dialog for degraded recoverability.
@@ -967,8 +970,10 @@ constexpr CGFloat kErrorSymbolSize = 22.;
       syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
   [self.applicationCommandsHandler
       showTrustedVaultReauthForDegradedRecoverabilityFromViewController:self
-                                                                trigger:
-                                                                    trigger];
+                                                                trigger:trigger
+                                                            accessPoint:
+                                                                AccessPoint::
+                                                                    ACCESS_POINT_SETTINGS];
 }
 
 // Opens the passphrase dialog.

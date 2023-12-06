@@ -39,7 +39,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-using signin_metrics::AccessPoint;
 using signin_metrics::PromoAction;
 
 @interface GoogleServicesSettingsCoordinator () <

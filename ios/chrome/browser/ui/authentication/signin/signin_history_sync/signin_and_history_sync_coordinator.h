@@ -23,8 +23,12 @@ enum class PromoAction : int;
                    accessPoint:(signin_metrics::AccessPoint)accessPoint
                    promoAction:(signin_metrics::PromoAction)promoAction
     NS_DESIGNATED_INITIALIZER;
+
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser NS_UNAVAILABLE;
+                                   browser:(Browser*)browser
+                               accessPoint:
+                                   (signin_metrics::AccessPoint)accessPoint
+    NS_UNAVAILABLE;
 
 @end
 

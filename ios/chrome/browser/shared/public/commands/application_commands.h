@@ -16,9 +16,6 @@ class GURL;
 @class StartVoiceSearchCommand;
 @class UIViewController;
 enum class DefaultBrowserPromoSource;
-namespace syncer {
-enum class TrustedVaultUserActionTriggerForUMA;
-}  // namespace syncer
 namespace autofill {
 class CreditCard;
 }  // namespace autofill
@@ -27,6 +24,12 @@ struct CredentialUIEntry;
 enum class PasswordCheckReferrer;
 enum class WarningType;
 }  // namespace password_manager
+namespace signin_metrics {
+enum class AccessPoint;
+}  // namespace signin_metrics
+namespace syncer {
+enum class TrustedVaultUserActionTriggerForUMA;
+}  // namespace syncer
 
 // This protocol groups commands that are part of ApplicationCommands, but
 // may also be forwarded directly to a settings navigation controller.
@@ -150,7 +153,10 @@ enum class WarningType;
                                                  trigger:
                                                      (syncer::
                                                           TrustedVaultUserActionTriggerForUMA)
-                                                         trigger;
+                                                         trigger
+                                             accessPoint:
+                                                 (signin_metrics::AccessPoint)
+                                                     accessPoint;
 
 // Presents the Trusted Vault degraded recoverability (to enroll additional
 // recovery factors).
@@ -162,7 +168,11 @@ enum class WarningType;
                                                               trigger:
                                                                   (syncer::
                                                                        TrustedVaultUserActionTriggerForUMA)
-                                                                      trigger;
+                                                                      trigger
+                                                          accessPoint:
+                                                              (signin_metrics::
+                                                                   AccessPoint)
+                                                                  accessPoint;
 
 // Starts a voice search on the current BVC.
 - (void)startVoiceSearch;

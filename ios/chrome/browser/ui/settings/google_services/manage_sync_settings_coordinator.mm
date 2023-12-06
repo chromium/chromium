@@ -476,7 +476,10 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
                                                    trigger:
                                                        syncer::
                                                            TrustedVaultUserActionTriggerForUMA::
-                                                               kSettings];
+                                                               kSettings
+                                               accessPoint:
+                                                   AccessPoint::
+                                                       ACCESS_POINT_SETTINGS];
 }
 
 - (void)openTrustedVaultReauthForDegradedRecoverability {
@@ -487,8 +490,12 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
       showTrustedVaultReauthForDegradedRecoverabilityFromViewController:
           self.viewController
                                                                 trigger:
-                                                                    syncer::TrustedVaultUserActionTriggerForUMA::
-                                                                        kSettings];
+                                                                    syncer::
+                                                                        TrustedVaultUserActionTriggerForUMA::
+                                                                            kSettings
+                                                            accessPoint:
+                                                                AccessPoint::
+                                                                    ACCESS_POINT_SETTINGS];
 }
 
 - (void)openMDMErrodDialogWithSystemIdentity:(id<SystemIdentity>)identity {

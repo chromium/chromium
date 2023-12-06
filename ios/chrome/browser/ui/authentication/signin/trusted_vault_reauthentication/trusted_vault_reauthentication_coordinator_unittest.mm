@@ -79,8 +79,12 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestCancel) {
           base_view_controller_
                                                             browser:browser()
                                                              intent:
-                                         SigninTrustedVaultDialogIntentFetchKeys
-                                                            trigger:trigger];
+                                                                 SigninTrustedVaultDialogIntentFetchKeys
+                                                            trigger:trigger
+                                                        accessPoint:
+                                                            signin_metrics::
+                                                                AccessPoint::
+                                                                    ACCESS_POINT_START_PAGE];
   // Open and cancel the web sign-in dialog.
   __block bool signin_completion_called = false;
   signinCoordinator.signinCompletion =
@@ -134,8 +138,12 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestInterruptWithDismiss) {
           base_view_controller_
                                                             browser:browser()
                                                              intent:
-                                         SigninTrustedVaultDialogIntentFetchKeys
-                                                            trigger:trigger];
+                                                                 SigninTrustedVaultDialogIntentFetchKeys
+                                                            trigger:trigger
+                                                        accessPoint:
+                                                            signin_metrics::
+                                                                AccessPoint::
+                                                                    ACCESS_POINT_START_PAGE];
   // Open and cancel the web sign-in dialog.
   __block bool signin_completion_called = false;
   signinCoordinator.signinCompletion =
@@ -184,7 +192,11 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest,
                                                             browser:browser()
                                                              intent:
                                                                  SigninTrustedVaultDialogIntentFetchKeys
-                                                            trigger:trigger];
+                                                            trigger:trigger
+                                                        accessPoint:
+                                                            signin_metrics::
+                                                                AccessPoint::
+                                                                    ACCESS_POINT_START_PAGE];
   // Open and cancel the web sign-in dialog.
   __block bool signin_completion_called = false;
   signinCoordinator.signinCompletion =

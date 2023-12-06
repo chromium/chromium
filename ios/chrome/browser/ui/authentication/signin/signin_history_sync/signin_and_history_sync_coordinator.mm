@@ -46,8 +46,6 @@ enum class SignInHistorySyncStep {
   InterruptibleChromeCoordinator* _childCoordinator;
   // The current step.
   SignInHistorySyncStep _currentStep;
-  // Access point associated with the history opt-in screen.
-  signin_metrics::AccessPoint _accessPoint;
   // Promo button used to trigger the sign-in.
   signin_metrics::PromoAction _promoAction;
 }
@@ -57,9 +55,10 @@ enum class SignInHistorySyncStep {
                        browser:(Browser*)browser
                    accessPoint:(signin_metrics::AccessPoint)accessPoint
                    promoAction:(signin_metrics::PromoAction)promoAction {
-  self = [super initWithBaseViewController:viewController browser:browser];
+  self = [super initWithBaseViewController:viewController
+                                   browser:browser
+                               accessPoint:accessPoint];
   if (self) {
-    _accessPoint = accessPoint;
     _promoAction = promoAction;
     _currentStep = SignInHistorySyncStep::kStart;
   }
@@ -160,7 +159,7 @@ enum class SignInHistorySyncStep {
           [[ConsistencyPromoSigninCoordinator alloc]
               initWithBaseViewController:self.baseViewController
                                  browser:self.browser
-                             accessPoint:_accessPoint];
+                             accessPoint:self.accessPoint];
       __weak __typeof(self) weakSelf = self;
       coordinator.signinCompletion =
           ^(SigninCoordinatorResult result, SigninCompletionInfo* info) {
@@ -173,7 +172,7 @@ enum class SignInHistorySyncStep {
           initWithBaseViewController:self.baseViewController
                              browser:self.browser
                             identity:nil
-                         accessPoint:_accessPoint
+                         accessPoint:self.accessPoint
                          promoAction:_promoAction];
       __weak __typeof(self) weakSelf = self;
       coordinator.signinCompletion =
@@ -190,7 +189,7 @@ enum class SignInHistorySyncStep {
                            showUserEmail:NO
                        signOutIfDeclined:NO
                               isOptional:YES
-                             accessPoint:_accessPoint];
+                             accessPoint:self.accessPoint];
       coordinator.delegate = self;
       return coordinator;
     }
@@ -242,7 +241,7 @@ enum class SignInHistorySyncStep {
                        @"accessPoint %d, promoAction %d>",
                        self.class.description, self, _childCoordinator,
                        static_cast<int>(_currentStep),
-                       static_cast<int>(_accessPoint),
+                       static_cast<int>(self.accessPoint),
                        static_cast<int>(_promoAction)];
 }
 

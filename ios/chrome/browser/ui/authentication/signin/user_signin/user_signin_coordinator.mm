@@ -87,8 +87,12 @@ using signin_metrics::PromoAction;
                                    browser:(Browser*)browser
                                   identity:(id<SystemIdentity>)identity
                               signinIntent:(UserSigninIntent)signinIntent
-                                    logger:(UserSigninLogger*)logger {
-  self = [super initWithBaseViewController:viewController browser:browser];
+                                    logger:(UserSigninLogger*)logger
+                               accessPoint:
+                                   (signin_metrics::AccessPoint)accessPoint {
+  self = [super initWithBaseViewController:viewController
+                                   browser:browser
+                               accessPoint:accessPoint];
   if (self) {
     _defaultIdentity = identity;
     _signinIntent = signinIntent;
@@ -409,7 +413,8 @@ using signin_metrics::PromoAction;
           self.viewController
                                                       browser:self.browser
                                                   signinState:
-                                                      self.signinStateOnStart];
+                                                      self.signinStateOnStart
+                                                  accessPoint:self.accessPoint];
   __weak UserSigninCoordinator* weakSelf = self;
   self.advancedSettingsSigninCoordinator.signinCompletion = ^(
       SigninCoordinatorResult advancedSigninResult,

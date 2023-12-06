@@ -30,6 +30,19 @@ class PrefRegistrySyncable;
 // This completion needs to be set before calling -[SigninCoordinator start].
 @property(nonatomic, copy) SigninCoordinatorCompletionCallback signinCompletion;
 
+// The access point which caused this coordinator to open.
+// Used for histogram only.
+@property(nonatomic, readonly) signin_metrics::AccessPoint accessPoint;
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                               accessPoint:
+                                   (signin_metrics::AccessPoint)accessPoint
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser NS_UNAVAILABLE;
+
 // Registers preferences related to sign-in coordinator.
 + (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry;
 
@@ -65,9 +78,12 @@ class PrefRegistrySyncable;
 
 // Returns a coordinator for forced sign-in workflow.
 // `viewController` presents the sign-in.
-+ (instancetype)forcedSigninCoordinatorWithBaseViewController:
-                    (UIViewController*)viewController
-                                                      browser:(Browser*)browser;
++ (instancetype)
+    forcedSigninCoordinatorWithBaseViewController:
+        (UIViewController*)viewController
+                                          browser:(Browser*)browser
+                                      accessPoint:(signin_metrics::AccessPoint)
+                                                      accessPoint;
 
 // Returns a coordinator for the sign-in and sync workflow. The views will be
 // the newer FRE style views. `viewController` presents the sign-in.
@@ -99,7 +115,10 @@ class PrefRegistrySyncable;
                                                     browser:(Browser*)browser
                                                 signinState:
                                                     (IdentitySigninState)
-                                                        signinState;
+                                                        signinState
+                                                accessPoint:(signin_metrics::
+                                                                 AccessPoint)
+                                                                accessPoint;
 
 // Returns a coordinator to add an account.
 // `viewController` presents the sign-in.
@@ -160,7 +179,11 @@ class PrefRegistrySyncable;
                                                           trigger:
                                                               (syncer::
                                                                    TrustedVaultUserActionTriggerForUMA)
-                                                                  trigger;
+                                                                  trigger
+                                                      accessPoint:
+                                                          (signin_metrics::
+                                                               AccessPoint)
+                                                              accessPoint;
 
 // Returns a coordinator to display the account consistency promo with a list
 // of accounts available on the device for sign-in.

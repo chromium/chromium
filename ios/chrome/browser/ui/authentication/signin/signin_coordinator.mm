@@ -38,6 +38,17 @@ using signin_metrics::PromoAction;
 
 @implementation SigninCoordinator
 
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                               accessPoint:
+                                   (signin_metrics::AccessPoint)accessPoint {
+  self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    _accessPoint = accessPoint;
+  }
+  return self;
+}
+
 + (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry {
   // ConsistencyPromoSigninCoordinator.
   registry->RegisterIntegerPref(prefs::kSigninWebSignDismissalCount, 0);
@@ -60,7 +71,8 @@ using signin_metrics::PromoAction;
                          browser:browser
                         identity:identity
                     signinIntent:UserSigninIntentSignin
-                          logger:logger];
+                          logger:logger
+                     accessPoint:accessPoint];
 }
 
 + (instancetype)
@@ -80,14 +92,17 @@ using signin_metrics::PromoAction;
                      promoAction:promoAction];
 }
 
-+ (instancetype)forcedSigninCoordinatorWithBaseViewController:
-                    (UIViewController*)viewController
-                                                      browser:
-                                                          (Browser*)browser {
++ (instancetype)
+    forcedSigninCoordinatorWithBaseViewController:
+        (UIViewController*)viewController
+                                          browser:(Browser*)browser
+                                      accessPoint:(signin_metrics::AccessPoint)
+                                                      accessPoint {
   return [[ForcedSigninCoordinator alloc]
       initWithBaseViewController:viewController
                          browser:browser
-                  screenProvider:[[SigninScreenProvider alloc] init]];
+                  screenProvider:[[SigninScreenProvider alloc] init]
+                     accessPoint:accessPoint];
 }
 
 + (instancetype)
@@ -127,7 +142,8 @@ using signin_metrics::PromoAction;
                          browser:browser
                         identity:nil
                     signinIntent:UserSigninIntentUpgrade
-                          logger:logger];
+                          logger:logger
+                     accessPoint:accessPoint];
 }
 
 + (instancetype)
@@ -136,11 +152,15 @@ using signin_metrics::PromoAction;
                                                     browser:(Browser*)browser
                                                 signinState:
                                                     (IdentitySigninState)
-                                                        signinState {
+                                                        signinState
+                                                accessPoint:(signin_metrics::
+                                                                 AccessPoint)
+                                                                accessPoint {
   return [[AdvancedSettingsSigninCoordinator alloc]
       initWithBaseViewController:viewController
                          browser:browser
-                     signinState:signinState];
+                     signinState:signinState
+                     accessPoint:accessPoint];
 }
 
 + (instancetype)addAccountCoordinatorWithBaseViewController:
@@ -199,13 +219,18 @@ using signin_metrics::PromoAction;
                                                           trigger:
                                                               (syncer::
                                                                    TrustedVaultUserActionTriggerForUMA)
-                                                                  trigger {
+                                                                  trigger
+                                                      accessPoint:
+                                                          (signin_metrics::
+                                                               AccessPoint)
+                                                              accessPoint {
   DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
   return [[TrustedVaultReauthenticationCoordinator alloc]
       initWithBaseViewController:viewController
                          browser:browser
                           intent:intent
-                         trigger:trigger];
+                         trigger:trigger
+                     accessPoint:accessPoint];
 }
 
 + (instancetype)

@@ -1797,16 +1797,23 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
 - (void)showTrustedVaultReauthForFetchKeysWithTrigger:
     (syncer::TrustedVaultUserActionTriggerForUMA)trigger {
-  [self.handler showTrustedVaultReauthForFetchKeysFromViewController:self
-                                                             trigger:trigger];
+  [self.handler
+      showTrustedVaultReauthForFetchKeysFromViewController:self
+                                                   trigger:trigger
+                                               accessPoint:
+                                                   signin_metrics::AccessPoint::
+                                                       ACCESS_POINT_RECENT_TABS];
 }
 
 - (void)showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
     (syncer::TrustedVaultUserActionTriggerForUMA)trigger {
   [self.handler
       showTrustedVaultReauthForDegradedRecoverabilityFromViewController:self
-                                                                trigger:
-                                                                    trigger];
+                                                                trigger:trigger
+                                                            accessPoint:
+                                                                signin_metrics::
+                                                                    AccessPoint::
+                                                                        ACCESS_POINT_RECENT_TABS];
 }
 
 #pragma mark - SigninPresenter

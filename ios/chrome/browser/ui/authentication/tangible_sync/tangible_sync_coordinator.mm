@@ -132,7 +132,7 @@ constexpr signin_metrics::AccessPoint kTangibleSyncAccessPoint =
   if (_advancedSettingsRequested) {
     // TODO(crbug.com/1256784): Log a UserActions histogram to track the touch
     // interactions on the advanced settings button.
-    [self showAdvancedSettings];
+    [self showAdvancedSettingsWithAccessPoint:kTangibleSyncAccessPoint];
   } else {
     if (_firstRun) {
       base::UmaHistogramEnumeration(
@@ -219,7 +219,8 @@ constexpr signin_metrics::AccessPoint kTangibleSyncAccessPoint =
 }
 
 // Shows the advanced sync settings.
-- (void)showAdvancedSettings {
+- (void)showAdvancedSettingsWithAccessPoint:
+    (signin_metrics::AccessPoint)accessPoint {
   DCHECK(!_advancedSettingsSigninCoordinator);
 
   const IdentitySigninState signinState =
@@ -228,7 +229,8 @@ constexpr signin_metrics::AccessPoint kTangibleSyncAccessPoint =
   _advancedSettingsSigninCoordinator = [SigninCoordinator
       advancedSettingsSigninCoordinatorWithBaseViewController:_viewController
                                                       browser:self.browser
-                                                  signinState:signinState];
+                                                  signinState:signinState
+                                                  accessPoint:accessPoint];
   __weak __typeof(self) weakSelf = self;
   _advancedSettingsSigninCoordinator.signinCompletion =
       ^(SigninCoordinatorResult advancedSigninResult,

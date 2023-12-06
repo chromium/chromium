@@ -20,15 +20,6 @@ enum class AccessPoint : int;
                               browser:(Browser*)browser
                           accessPoint:(signin_metrics::AccessPoint)accessPoint;
 
-- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
-                                   browser:(Browser*)browser
-                               accessPoint:
-                                   (signin_metrics::AccessPoint)AccessPoint
-    NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
-                                   browser:(Browser*)browser NS_UNAVAILABLE;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_CONSISTENCY_PROMO_SIGNIN_CONSISTENCY_PROMO_SIGNIN_COORDINATOR_H_

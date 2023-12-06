@@ -52,8 +52,12 @@ using l10n_util::GetNSString;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                               signinState:(IdentitySigninState)signinState {
-  self = [super initWithBaseViewController:viewController browser:browser];
+                               signinState:(IdentitySigninState)signinState
+                               accessPoint:
+                                   (signin_metrics::AccessPoint)accessPoint {
+  self = [super initWithBaseViewController:viewController
+                                   browser:browser
+                               accessPoint:accessPoint];
   if (self) {
     _signinStateForCancel = signinState;
   }

@@ -30,8 +30,6 @@
 @implementation InstantSigninCoordinator {
   // The identity to which the user should be signed-in.
   id<SystemIdentity> _identity;
-  // Access point where sign-in coordinator was triggered.
-  signin_metrics::AccessPoint _accessPoint;
   // Promo action that triggered the sign-in coordinator.
   signin_metrics::PromoAction _promoAction;
   // Instant sign-in mediator.
@@ -54,10 +52,11 @@
                       identity:(id<SystemIdentity>)identity
                    accessPoint:(signin_metrics::AccessPoint)accessPoint
                    promoAction:(signin_metrics::PromoAction)promoAction {
-  self = [super initWithBaseViewController:viewController browser:browser];
+  self = [super initWithBaseViewController:viewController
+                                   browser:browser
+                               accessPoint:accessPoint];
   if (self) {
     _identity = identity;
-    _accessPoint = accessPoint;
     _promoAction = promoAction;
   }
   return self;
@@ -73,12 +72,13 @@
 
 - (void)start {
   [super start];
-  signin_metrics::LogSignInStarted(_accessPoint);
+  signin_metrics::LogSignInStarted(self.accessPoint);
   ChromeBrowserState* chromeState = self.browser->GetBrowserState();
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(chromeState);
-  _mediator = [[InstantSigninMediator alloc] initWithSyncService:syncService
-                                                     accessPoint:_accessPoint];
+  _mediator =
+      [[InstantSigninMediator alloc] initWithSyncService:syncService
+                                             accessPoint:self.accessPoint];
   _mediator.delegate = self;
 
   if (_identity) {
@@ -101,7 +101,7 @@
     signin_metrics::RecordConsistencyPromoUserAction(
         signin_metrics::AccountConsistencyPromoAction::
             ADD_ACCOUNT_STARTED_WITH_NO_DEVICE_ACCOUNT,
-        _accessPoint);
+        self.accessPoint);
     _actionToRecordOnSuccess = signin_metrics::AccountConsistencyPromoAction::
         SIGNED_IN_WITH_NO_DEVICE_ACCOUNT;
     [self startAddAccountForSignInOnly];
@@ -109,7 +109,7 @@
   }
   // Otherwise, the user needs to choose an identity.
   signin_metrics::RecordConsistencyPromoUserAction(
-      signin_metrics::AccountConsistencyPromoAction::SHOWN, _accessPoint);
+      signin_metrics::AccountConsistencyPromoAction::SHOWN, self.accessPoint);
   // TODO(crbug.com/1480440): Stop hardcoding "non-default identity" here. The
   // user might still choose the default one, or a new one, those map to
   // different actions. Instead, plumb the correct value to didSigninWithResult.
@@ -231,7 +231,7 @@
   switch (result) {
     case SigninCoordinatorResultSuccess: {
       signin_metrics::RecordConsistencyPromoUserAction(_actionToRecordOnSuccess,
-                                                       _accessPoint);
+                                                       self.accessPoint);
       SigninCompletionInfo* info =
           [SigninCompletionInfo signinCompletionInfoWithIdentity:_identity];
       [self runCompletionCallbackWithSigninResult:SigninCoordinatorResultSuccess
@@ -251,7 +251,7 @@
 // Starts the sign-in flow.
 - (void)startSignInOnlyFlow {
   [self showActivityOverlay];
-  signin_metrics::RecordSigninUserActionForAccessPoint(_accessPoint);
+  signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
   // If this was triggered by the user tapping the default button in the sign-in
   // promo, give the user a chance to see the full email, by showing a snackbar.
   auto postSigninAction =
@@ -263,7 +263,7 @@
   AuthenticationFlow* authenticationFlow =
       [[AuthenticationFlow alloc] initWithBrowser:self.browser
                                          identity:_identity
-                                      accessPoint:_accessPoint
+                                      accessPoint:self.accessPoint
                                  postSignInAction:postSigninAction
                          presentingViewController:self.baseViewController];
   authenticationFlow.delegate = self;
@@ -275,7 +275,7 @@
   _addAccountSigninCoordinator = [SigninCoordinator
       addAccountCoordinatorWithBaseViewController:self.baseViewController
                                           browser:self.browser
-                                      accessPoint:_accessPoint];
+                                      accessPoint:self.accessPoint];
   __weak __typeof(self) weakSelf = self;
   _addAccountSigninCoordinator.signinCompletion =
       ^(SigninCoordinatorResult result, SigninCompletionInfo* info) {
@@ -332,7 +332,7 @@
           @"identityChooserCoordinator %p, addAccountSigninCoordinator %p, "
           @"baseViewController: %@, window: %p>",
           self.class.description, self, _identity,
-          static_cast<int>(_accessPoint), _mediator,
+          static_cast<int>(self.accessPoint), _mediator,
           _identityChooserCoordinator, _addAccountSigninCoordinator,
           NSStringFromClass([self.baseViewController class]),
           self.baseViewController.view.window];

@@ -1678,7 +1678,8 @@ void InjectNTP(Browser* browser) {
     case AuthenticationOperation::kForcedSigninAndSync:
       self.signinCoordinator = [SigninCoordinator
           forcedSigninCoordinatorWithBaseViewController:baseViewController
-                                                browser:mainBrowser];
+                                                browser:mainBrowser
+                                            accessPoint:command.accessPoint];
       break;
     case AuthenticationOperation::kSigninAndSyncWithTwoScreens:
       self.signinCoordinator = [SigninCoordinator
@@ -1717,12 +1718,16 @@ void InjectNTP(Browser* browser) {
                                                  trigger:
                                                      (syncer::
                                                           TrustedVaultUserActionTriggerForUMA)
-                                                         trigger {
+                                                         trigger
+                                             accessPoint:
+                                                 (signin_metrics::AccessPoint)
+                                                     accessPoint {
   [self
       showTrustedVaultDialogFromViewController:viewController
                                         intent:
                                             SigninTrustedVaultDialogIntentFetchKeys
-                                       trigger:trigger];
+                                       trigger:trigger
+                                   accessPoint:accessPoint];
 }
 
 - (void)
@@ -1731,12 +1736,17 @@ void InjectNTP(Browser* browser) {
                                                               trigger:
                                                                   (syncer::
                                                                        TrustedVaultUserActionTriggerForUMA)
-                                                                      trigger {
+                                                                      trigger
+                                                          accessPoint:
+                                                              (signin_metrics::
+                                                                   AccessPoint)
+                                                                  accessPoint {
   [self
       showTrustedVaultDialogFromViewController:viewController
                                         intent:
                                             SigninTrustedVaultDialogIntentDegradedRecoverability
-                                       trigger:trigger];
+                                       trigger:trigger
+                                   accessPoint:accessPoint];
 }
 
 - (void)showWebSigninPromoFromViewController:
@@ -3187,7 +3197,9 @@ void InjectNTP(Browser* browser) {
                                      trigger:
                                          (syncer::
                                               TrustedVaultUserActionTriggerForUMA)
-                                             trigger {
+                                             trigger
+                                 accessPoint:
+                                     (signin_metrics::AccessPoint)accessPoint {
   DCHECK(!self.signinCoordinator)
       << "self.signinCoordinator: "
       << base::SysNSStringToUTF8([self.signinCoordinator description]);
@@ -3197,7 +3209,9 @@ void InjectNTP(Browser* browser) {
           viewController
                                                             browser:mainBrowser
                                                              intent:intent
-                                                            trigger:trigger];
+                                                            trigger:trigger
+                                                        accessPoint:
+                                                            accessPoint];
   [self startSigninCoordinatorWithCompletion:nil];
 }
 
